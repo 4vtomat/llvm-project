@@ -542,6 +542,18 @@ def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
+// SIFIVE
+def : ProcessorModel<"sifive-viu75", SiFive7Model, [Feature64Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtD,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtV,
+                                                    FeatureStdExtZfh],
+                     [TuneSiFive7]>;
+// end SIFIVE
+
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.
 //===----------------------------------------------------------------------===//

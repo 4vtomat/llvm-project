@@ -156,3 +156,11 @@
 
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=generic-rv64 | FileCheck -check-prefix=MISMATCH-MCPU %s
 // MISMATCH-MCPU: error: the clang compiler does not support '-mcpu=generic-rv64'
+
+// mcpu with default march include experimental extensions
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-viu75 | FileCheck -check-prefix=MCPU-SIFIVE-VIU75 %s
+// MCPU-SIFIVE-VIU75: "-nostdsysteminc" "-target-cpu" "sifive-viu75"
+// MCPU-SIFIVE-VIU75-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-VIU75-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zfh"
+// MCPU-SIFIVE-VIU75-SAME: "-target-feature" "+64bit"
+// MCPU-SIFIVE-VIU75-SAME: "-target-abi" "lp64d"
