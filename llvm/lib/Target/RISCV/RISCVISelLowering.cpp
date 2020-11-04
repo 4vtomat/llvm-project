@@ -163,6 +163,53 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         if (useRVVForFixedLengthVectorVT(VT))
           addRegClassForFixedVectors(VT);
     }
+
+#if SIFIVE_CUSTOMIZATION
+    // Need to custom type legalize vcast_to_fixed/vcast_from_fixed.
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v16i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v32i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v64i8, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v16i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v32i16, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1i32, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i32, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4i32, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8i32, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v16i32, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1i64, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i64, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4i64, Custom);
+    setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8i64, Custom);
+    if (Subtarget.hasStdExtD()) {
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1f32, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2f32, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4f32, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8f32, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v16f32, Custom);
+    }
+    if (Subtarget.hasStdExtD()) {
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1f64, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2f64, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4f64, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8f64, Custom);
+    }
+
+    if (Subtarget.hasStdExtZfh()) {
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2f16, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4f16, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8f16, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v16f16, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v32f16, Custom);
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Compute derived properties from the register classes.
@@ -921,7 +968,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasVInstructions())
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
-                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR});
+                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR, // SIFIVE
+                         ISD::INTRINSIC_WO_CHAIN}); // SIFIVE
 
   setLibcallName(RTLIB::FPEXT_F16_F32, "__extendhfsf2");
   setLibcallName(RTLIB::FPROUND_F32_F16, "__truncsfhf2");
@@ -4769,6 +4817,29 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return lowerScalarSplat(Op.getOperand(1), Op.getOperand(2),
                             Op.getOperand(3), Op.getSimpleValueType(), DL, DAG,
                             Subtarget);
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::riscv_vcast_from_fixed: {
+    EVT DestVT = Op.getValueType();
+    SDValue Src = Op.getOperand(1);
+    EVT SrcVT = Src.getValueType();
+    Align SrcAlign(16);
+
+    SDLoc dl(Op);
+    SDValue StackPtr = DAG.CreateStackTemporary(SrcVT.getStoreSize(), SrcAlign);
+    // Emit a store to the stack slot.
+    SDValue Store = DAG.getStore(DAG.getEntryNode(), dl, Src, StackPtr,
+                                 MachinePointerInfo(), SrcAlign);
+
+    SDVTList VTs = DAG.getVTList(DestVT, MVT::Other);
+    SDValue Result = DAG.getNode(
+        ISD::INTRINSIC_W_CHAIN, dl, VTs, Store,
+        DAG.getTargetConstant(Intrinsic::riscv_vle, DL, MVT::i64),
+        DAG.getUNDEF(DestVT), StackPtr,
+        DAG.getConstant(SrcVT.getVectorNumElements(), DL,
+                        Subtarget.getXLenVT()));
+    return Result;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::riscv_vfmv_v_f:
     return DAG.getNode(RISCVISD::VFMV_V_F_VL, DL, Op.getValueType(),
                        Op.getOperand(1), Op.getOperand(2), Op.getOperand(3));
@@ -7243,6 +7314,30 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
           DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64, EltLo, EltHi));
       break;
     }
+#if SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_vcast_to_fixed: {
+      EVT DestVT = N->getValueType(0);
+      SDValue Src = N->getOperand(1);
+      Align DestAlign(16);
+
+      SDLoc dl(N);
+      SDValue StackPtr =
+          DAG.CreateStackTemporary(DestVT.getStoreSize(), DestAlign);
+
+      SDValue Store =
+          DAG.getNode(ISD::INTRINSIC_VOID, dl, MVT::Other, DAG.getEntryNode(),
+                      DAG.getTargetConstant(Intrinsic::riscv_vse, DL, MVT::i64),
+                      Src, StackPtr,
+                      DAG.getConstant(DestVT.getVectorNumElements(), DL,
+                                      Subtarget.getXLenVT()));
+      // FIXME: MemOperand?
+
+      SDValue Result = DAG.getLoad(DestVT, dl, Store, StackPtr,
+                                   MachinePointerInfo(), DestAlign);
+      Results.push_back(Result);
+      break;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     }
     break;
   }
@@ -9013,6 +9108,34 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
         return DAG.getConstant(-1, DL, VT);
       return DAG.getConstant(0, DL, VT);
     }
+#if SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_vcast_to_fixed: {
+      // Combine away (vcast_to_fixed (vcast_from_fixed)) if the original type
+      // matches the result type.
+      SDValue Src = N->getOperand(1);
+      if (Src.getOpcode() == ISD::INTRINSIC_WO_CHAIN) {
+        IntNo = cast<ConstantSDNode>(Src.getOperand(0))->getZExtValue();
+        if (IntNo == Intrinsic::riscv_vcast_from_fixed &&
+            Src.getOperand(1).getValueType() == N->getValueType(0)) {
+          return Src.getOperand(1);
+        }
+      }
+      return SDValue();
+    }
+    case Intrinsic::riscv_vcast_from_fixed: {
+      // Combine away (vcast_from_fixed (vcast_to_fixed)) if the original type
+      // matches the result type.
+      SDValue Src = N->getOperand(1);
+      if (Src.getOpcode() == ISD::INTRINSIC_WO_CHAIN) {
+        IntNo = cast<ConstantSDNode>(Src.getOperand(0))->getZExtValue();
+        if (IntNo == Intrinsic::riscv_vcast_to_fixed &&
+            Src.getOperand(1).getValueType() == N->getValueType(0)) {
+          return Src.getOperand(1);
+        }
+      }
+      return SDValue();
+    }
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
   }

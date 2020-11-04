@@ -40,6 +40,12 @@ void DAGTypeLegalizer::ScalarizeVectorResult(SDNode *N, unsigned ResNo) {
              dbgs() << "\n");
   SDValue R = SDValue();
 
+  // See if the target wants to custom expand this node.
+  if (CustomLowerNode(N, N->getValueType(ResNo), true)) {
+    LLVM_DEBUG(dbgs() << "Node has been custom expanded, done\n");
+    return;
+  }
+
   switch (N->getOpcode()) {
   default:
 #ifndef NDEBUG
@@ -624,6 +630,11 @@ bool DAGTypeLegalizer::ScalarizeVectorOperand(SDNode *N, unsigned OpNo) {
   LLVM_DEBUG(dbgs() << "Scalarize node operand " << OpNo << ": "; N->dump(&DAG);
              dbgs() << "\n");
   SDValue Res = SDValue();
+
+  if (CustomLowerNode(N, N->getOperand(OpNo).getValueType(), false)) {
+    LLVM_DEBUG(dbgs() << "Node has been custom lowered, done\n");
+    return false;
+  }
 
   switch (N->getOpcode()) {
   default:

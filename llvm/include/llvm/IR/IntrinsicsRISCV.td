@@ -1520,6 +1520,13 @@ let TargetPrefix = "riscv" in {
                       [NoCapture<ArgIndex<0>>, IntrReadMem]>;
   }
 
+  // These represent bitcasts between scalable and fixed vectors.
+  def int_riscv_vcast_to_fixed : Intrinsic<[ llvm_anyvector_ty ],
+                                           [ llvm_anyvector_ty ],
+                                           [ IntrNoMem ]>;
+  def int_riscv_vcast_from_fixed : Intrinsic<[ llvm_anyvector_ty ],
+                                             [ llvm_anyvector_ty ],
+                                             [ IntrNoMem ]>;
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//
