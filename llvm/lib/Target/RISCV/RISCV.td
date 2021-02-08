@@ -400,6 +400,23 @@ def FeatureStdExtZvfh
                        "'Zvfh' (Vector Half-Precision Floating-Point)",
                        [FeatureStdExtZve32f]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtXsfvqmaccqoq
+    : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",
+                       "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
+                       [FeatureStdExtZve32x]>;
+def HasExtXsfvqmaccqoq : Predicate<"Subtarget->hasExtXsfvqmaccqoq()">,
+                         AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccqoq),
+                         "'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)">;
+def FeatureStdExtXsfvqmaccdod
+    : SubtargetFeature<"xsfvqmaccdod", "HasExtXsfvqmaccdod", "true",
+                       "Xsfvqmaccdod (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)",
+                       [FeatureStdExtZve32x]>;
+def HasExtXsfvqmaccdod : Predicate<"Subtarget->hasExtXsfvqmaccdod()">,
+                         AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccdod),
+                         "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
+#endif
+
 def Feature64Bit
     : SubtargetFeature<"64bit", "HasRV64", "true", "Implements RV64">;
 def IsRV64 : Predicate<"Subtarget->is64Bit()">,

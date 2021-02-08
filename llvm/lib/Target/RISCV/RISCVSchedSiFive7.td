@@ -17,7 +17,8 @@ def SiFive7Model : SchedMachineModel {
   let CompleteModel = 0;
   let UnsupportedFeatures = [HasStdExtZbkb, HasStdExtZbkc, HasStdExtZbkx,
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
-                             HasStdExtZksed, HasStdExtZksh, HasStdExtZkr];
+                             HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
+                             HasExtXsfvqmaccqoq, HasExtXsfvqmaccdod]; // SIFIVE
 }
 
 // The SiFive7 microarchitecure has three pipelines: A, B, V.

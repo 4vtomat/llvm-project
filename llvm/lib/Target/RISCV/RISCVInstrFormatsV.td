@@ -123,6 +123,28 @@ class RVInstVV<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
   let RVVConstraint = VMConstraint;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+class RVInstVVCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
+                      string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
+  bits<5> vs2;
+  bits<5> vs1;
+  bits<5> vd;
+  bit vm;
+
+  let Inst{31-26} = funct6;
+  let Inst{25} = vm;
+  let Inst{24-20} = vs2;
+  let Inst{19-15} = vs1;
+  let Inst{14-12} = opv.Value;
+  let Inst{11-7} = vd;
+  let Opcode = OPC_CUSTOM_2.Value;
+
+  let Uses = [VTYPE, VL];
+  let RVVConstraint = VMConstraint;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 class RVInstVX<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
                 string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {

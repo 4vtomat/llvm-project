@@ -757,6 +757,10 @@ static const char *ImpliedExtsZk[] = {"zkn", "zkt", "zkr"};
 static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx", "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
+#if SIFIVE_CUSTOMIZATION
+static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
+static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
+#endif // SIFIVE_CUSTOMIZATION
 
 struct ImpliedExtsEntry {
   StringLiteral Name;
@@ -772,6 +776,8 @@ struct ImpliedExtsEntry {
 // Note: The table needs to be sorted by name.
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"v"}, {ImpliedExtsV}},
+    {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
+    {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
     {{"zdinx"}, {ImpliedExtsZdinx}},
     {{"zfh"}, {ImpliedExtsZfh}},
     {{"zfhmin"}, {ImpliedExtsZfhmin}},
