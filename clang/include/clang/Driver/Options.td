@@ -3403,6 +3403,9 @@ def mcmodel_EQ_medlow : Flag<["-"], "mcmodel=medlow">, Group<m_riscv_Features_Gr
 def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_riscv_Features_Group>,
   Flags<[CC1Option]>, Alias<mcmodel_EQ>, AliasArgs<["medium"]>,
   HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
+def mcmodel_EQ_compact : Flag<["-"], "mcmodel=compact">, Group<m_riscv_Features_Group>,
+  Flags<[CC1Option]>, Alias<mcmodel_EQ>, AliasArgs<["large"]>,
+  HelpText<"Equivalent to -mcmodel=large, compatible with RISC-V gcc.">;
 def menable_experimental_extensions : Flag<["-"], "menable-experimental-extensions">, Group<m_Group>,
   HelpText<"Enable use of experimental RISC-V extensions.">;
 
