@@ -452,6 +452,15 @@ let TargetPrefix = "riscv" in {
                    [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 4;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  // Input: (vector_in, vector_in, vector_in, vl)
+  class RISCVSFCustomVQMACC: Intrinsic<[llvm_anyvector_ty],
+                                       [LLVMMatchType<0>, llvm_anyvector_ty,
+                                        llvm_anyvector_ty, llvm_anyint_ty],
+                                       [IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 3;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // For destination vector type is the same as first source vector.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryAAXUnMasked
@@ -1529,7 +1538,7 @@ let TargetPrefix = "riscv" in {
                       [NoCapture<ArgIndex<0>>, IntrReadMem]>;
   }
 
-  // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
   // These represent bitcasts between scalable and fixed vectors.
   def int_riscv_vcast_to_fixed : Intrinsic<[ llvm_anyvector_ty ],
                                            [ llvm_anyvector_ty ],
@@ -1541,7 +1550,17 @@ let TargetPrefix = "riscv" in {
   // This intrinsic decides at compile time if a vector is a splat or not.
   def int_riscv_is_splat : Intrinsic<[llvm_i1_ty], [llvm_anyvector_ty],
                                      [IntrNoMem]>;
-  // end SIFIVE
+
+  def int_riscv_sf_vqmaccu_4x8x4 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmacc_4x8x4 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmaccus_4x8x4 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmaccsu_4x8x4 : RISCVSFCustomVQMACC;
+
+  def int_riscv_sf_vqmaccu_2x8x2 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmacc_2x8x2 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmaccus_2x8x2 : RISCVSFCustomVQMACC;
+  def int_riscv_sf_vqmaccsu_2x8x2 : RISCVSFCustomVQMACC;
+#endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//

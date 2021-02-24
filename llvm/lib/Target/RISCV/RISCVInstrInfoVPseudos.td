@@ -302,6 +302,22 @@ class VTypeInfoToFraction<VTypeInfo vti, VTypeInfo fti>
   VTypeInfo Fti = fti;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+defset list<VTypeInfoToWide> AllVQMACCQoQVectors = {
+  def : VTypeInfoToWide<VI8MF2,  VI32M1>;
+  def : VTypeInfoToWide<VI8M1,   VI32M2>;
+  def : VTypeInfoToWide<VI8M2,   VI32M4>;
+  def : VTypeInfoToWide<VI8M4,   VI32M8>;
+}
+
+defset list<VTypeInfoToWide> AllVQMACCDoDVectors = {
+  def : VTypeInfoToWide<VI8M1,   VI32M1>;
+  def : VTypeInfoToWide<VI8M2,   VI32M2>;
+  def : VTypeInfoToWide<VI8M4,   VI32M4>;
+  def : VTypeInfoToWide<VI8M8,   VI32M8>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 defset list<VTypeInfoToWide> AllWidenableIntVectors = {
   def : VTypeInfoToWide<VI8MF8,  VI16MF4>;
   def : VTypeInfoToWide<VI8MF4,  VI16MF2>;
@@ -3710,6 +3726,20 @@ multiclass VPatBinaryW_VV<string intrinsic, string instruction,
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass XPatSFVQMACC_VV<string intrinsic, string instruction,
+                           list<VTypeInfoToWide> vtilist> {
+  foreach VtiToWti = vtilist in {
+    defvar Vti = VtiToWti.Vti;
+    defvar Wti = VtiToWti.Wti;
+    def : VPatTernaryNoMask<intrinsic, instruction, "VV",
+                            Wti.Vector, vint8m1_t, Vti.Vector,
+                            Vti.Log2SEW, Vti.LMul,
+                            Wti.RegClass, VR, Vti.RegClass>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryW_VX<string intrinsic, string instruction,
                           list<VTypeInfoToWide> vtilist> {
   foreach VtiToWti = vtilist in {
@@ -5019,6 +5049,31 @@ defm PseudoVRGATHEREI16 : VPseudoVGTR_VV_EEW</* eew */ 16, "@earlyclobber $rd">;
 //===----------------------------------------------------------------------===//
 defm PseudoVCOMPRESS : VPseudoVCPR_V;
 
+#ifdef SIFIVE_CUSTOMIZATION
+//===----------------------------------------------------------------------===//
+// SiFive Custom Instructions
+//===----------------------------------------------------------------------===//
+foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
+  }
+}
+
+foreach m = [V_M1, V_M2, V_M4, V_M8] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 //===----------------------------------------------------------------------===//
 // Patterns.
 //===----------------------------------------------------------------------===//
@@ -5598,6 +5653,24 @@ let Predicates = [HasVInstructionsAnyF] in {
   defm : VPatUnaryV_V_AnyMask<"int_riscv_vcompress", "PseudoVCOMPRESS", AllFloatVectors>;
 } // Predicates = [HasVInstructionsAnyF]
 
+#ifdef SIFIVE_CUSTOMIZATION
+//===----------------------------------------------------------------------===//
+// SiFive Custom Instructions
+//===----------------------------------------------------------------------===//
+let Predicates = [HasExtXsfvqmaccqoq] in {
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_4x8x4", "PseudoVQMACCU4x8x4", AllVQMACCQoQVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_4x8x4", "PseudoVQMACC4x8x4", AllVQMACCQoQVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_4x8x4", "PseudoVQMACCUS4x8x4", AllVQMACCQoQVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_4x8x4", "PseudoVQMACCSU4x8x4", AllVQMACCQoQVectors>;
+} // Predicates = [HasExtXsfvqmaccqoq]
+
+let Predicates = [HasExtXsfvqmaccdod] in {
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_2x8x2", "PseudoVQMACCU2x8x2", AllVQMACCDoDVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_2x8x2", "PseudoVQMACC2x8x2", AllVQMACCDoDVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_2x8x2", "PseudoVQMACCUS2x8x2", AllVQMACCDoDVectors>;
+  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_2x8x2", "PseudoVQMACCSU2x8x2", AllVQMACCDoDVectors>;
+} // Predicates = [HasExtXsfvqmaccdod]
+
 def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
 
 def : Pat<(int_riscv_vsetvxrm GPR:$rm),
@@ -5605,6 +5678,7 @@ def : Pat<(int_riscv_vsetvxrm GPR:$rm),
 
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
+#endif // SIFIVE_CUSTOMIZATION
 
 // Include the non-intrinsic ISel patterns
 include "RISCVInstrInfoVVLPatterns.td"
