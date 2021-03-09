@@ -190,6 +190,19 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
+  // These code will be removed, We need to give correct information for MC.
+  if (TM.getCodeModel() == CodeModel::Large) {
+    StringRef GlobalInfo = "\t.section .text.__global_pointer__,\"aMG\","
+                           "@progbits, 8, __global_pointer__, comdat\n"
+                           "\t.align 3\n"
+                           "\t.global __global_pointer__\n"
+                           "\t.hidden __global_pointer__\n"
+                           "\t.type __global_pointer__, object\n"
+                           "__global_pointer__:\n"
+                           "\t.quad __global_pointer$ -.";
+    OutStreamer->emitRawText(GlobalInfo);
+  }
+
   if (TM.getTargetTriple().isOSBinFormatELF())
     RTS.finishAttributeSection();
 }
