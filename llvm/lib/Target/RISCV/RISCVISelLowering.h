@@ -496,6 +496,8 @@ public:
                     SmallVectorImpl<SDValue> &InVals) const override;
   template <class NodeTy>
   SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true) const;
+  template <class NodeTy>
+  SDValue getLargeAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
 
   bool shouldConvertConstantLoadToIntImm(const APInt &Imm,
                                          Type *Ty) const override {

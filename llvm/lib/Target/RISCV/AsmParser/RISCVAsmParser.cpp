@@ -435,6 +435,19 @@ public:
            VK == RISCVMCExpr::VK_RISCV_TPREL_ADD;
   }
 
+  bool isGPRelAddSymbol() const {
+    int64_t Imm;
+    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
+    // Must be of 'immediate' type but not a constant.
+    if (!isImm() || evaluateConstantImm(getImm(), Imm, VK))
+      return false;
+    return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
+           (VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_RISCV_GPREL_ADD);
+  }
+
   bool isCSRSystemRegister() const { return isSystemRegister(); }
 
   bool isVTypeImm(unsigned N) const {
@@ -1270,6 +1283,10 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   case Match_InvalidTPRelAddSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be a symbol with %tprel_add modifier");
+  }
+  case Match_InvalidGPRelAddSymbol: {
+    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
+    return Error(ErrorLoc, "operand must be a symbol with %gprel_add modifier");
   }
   case Match_InvalidVTypeI: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
@@ -2737,6 +2754,9 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
     if (checkPseudoAddTPRel(Inst, Operands))
       return true;
     break;
+  case RISCV::PseudoAddGPRel:
+    assert(Inst.getOperand(2).isReg() && "Unexpected second operand kind");
+    return true;
   case RISCV::PseudoSEXT_B:
     emitPseudoExtend(Inst, /*SignExtend=*/true, /*Width=*/8, IDLoc, Out);
     return false;

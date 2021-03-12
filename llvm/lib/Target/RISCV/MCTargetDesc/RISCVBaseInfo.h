@@ -203,11 +203,23 @@ enum {
   MO_TPREL_ADD = 10,
   MO_TLS_GOT_HI = 11,
   MO_TLS_GD_HI = 12,
+  MO_TLS_GOT_GPREL_LO = 13,
+  MO_TLS_GOT_GPREL_HI = 14,
+  MO_TLS_GOT_GPREL_ADD = 15,
+  MO_TLS_GD_GPREL_LO = 16,
+  MO_TLS_GD_GPREL_HI = 17,
+  MO_TLS_GD_GPREL_ADD = 18,
+  MO_GPREL_LO = 19,
+  MO_GPREL_HI = 20,
+  MO_GPREL_ADD = 21,
+  MO_GOT_GPREL_LO = 22,
+  MO_GOT_GPREL_HI = 23,
+  MO_GOT_GPREL_ADD = 24,
 
   // Used to differentiate between target-specific "direct" flags and "bitmask"
   // flags. A machine operand can only have one "direct" flag, but can have
   // multiple "bitmask" flags.
-  MO_DIRECT_FLAG_MASK = 15
+  MO_DIRECT_FLAG_MASK = 31
 };
 } // namespace RISCVII
 

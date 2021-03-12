@@ -145,16 +145,40 @@ StringRef RISCVMCExpr::getVariantKindName(VariantKind Kind) {
     return "tprel_hi";
   case VK_RISCV_TPREL_ADD:
     return "tprel_add";
-  case VK_RISCV_TLS_GOT_HI:
-    return "tls_ie_pcrel_hi";
-  case VK_RISCV_TLS_GD_HI:
-    return "tls_gd_pcrel_hi";
   case VK_RISCV_CALL:
     return "call";
   case VK_RISCV_CALL_PLT:
     return "call_plt";
   case VK_RISCV_32_PCREL:
     return "32_pcrel";
+   case VK_RISCV_TLS_GOT_HI:
+     return "tls_ie_pcrel_hi";
+   case VK_RISCV_TLS_GD_HI:
+     return "tls_gd_pcrel_hi";
+  case VK_RISCV_TLS_GOT_GPREL_LO:
+    return "tls_ie_gprel_lo";
+   case VK_RISCV_TLS_GOT_GPREL_HI:
+     return "tls_ie_gprel_hi";
+  case VK_RISCV_TLS_GOT_GPREL_ADD:
+    return "tls_ie_gprel";
+  case VK_RISCV_TLS_GD_GPREL_LO:
+    return "tls_gd_gprel_lo";
+   case VK_RISCV_TLS_GD_GPREL_HI:
+     return "tls_gd_gprel_hi";
+  case VK_RISCV_TLS_GD_GPREL_ADD:
+    return "tls_gd_gprel";
+  case VK_RISCV_GPREL_LO:
+    return "gprel_lo";
+  case VK_RISCV_GPREL_HI:
+    return "gprel_hi";
+  case VK_RISCV_GPREL_ADD:
+    return "gprel";
+  case VK_RISCV_GOT_GPREL_LO:
+    return "got_gprel_lo";
+  case VK_RISCV_GOT_GPREL_HI:
+    return "got_gprel_hi";
+  case VK_RISCV_GOT_GPREL_ADD:
+    return "got_gprel";
   }
   llvm_unreachable("Invalid ELF symbol kind");
 }

@@ -1176,7 +1176,19 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_TPREL_HI, "riscv-tprel-hi"},
       {MO_TPREL_ADD, "riscv-tprel-add"},
       {MO_TLS_GOT_HI, "riscv-tls-got-hi"},
-      {MO_TLS_GD_HI, "riscv-tls-gd-hi"}};
+      {MO_TLS_GD_HI, "riscv-tls-gd-hi"},
+      {MO_TLS_GOT_GPREL_LO, "riscv-tls-got-gprel-lo"},
+      {MO_TLS_GOT_GPREL_HI, "riscv-tls-got-gprel-hi"},
+      {MO_TLS_GOT_GPREL_ADD, "riscv-tls-got-gprel-add"},
+      {MO_TLS_GD_GPREL_LO, "riscv-tls-gd-gprel-lo"},
+      {MO_TLS_GD_GPREL_HI, "riscv-tls-gd-gprel-hi"},
+      {MO_TLS_GD_GPREL_ADD, "riscv-tls-gd-gprel-add"},
+      {MO_GPREL_LO, "riscv-gprel-lo"},
+      {MO_GPREL_HI, "riscv-gprel-hi"},
+      {MO_GPREL_ADD, "riscv-gprel-add"},
+      {MO_GOT_GPREL_LO, "riscv-got-gprel-lo"},
+      {MO_GOT_GPREL_HI, "riscv-got-gprel-hi"},
+      {MO_GOT_GPREL_ADD, "riscv-got-gprel-add"}};
   return makeArrayRef(TargetFlags);
 }
 bool RISCVInstrInfo::isFunctionSafeToOutlineFrom(
