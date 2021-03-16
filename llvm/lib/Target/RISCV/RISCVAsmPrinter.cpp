@@ -182,6 +182,10 @@ bool RISCVAsmPrinter::runOnMachineFunction(MachineFunction &MF) {
 }
 
 void RISCVAsmPrinter::emitStartOfAsmFile(Module &M) {
+  // These code will be removed, this hint is for GNU AS.
+  if (TM.getCodeModel() == CodeModel::Large)
+    OutStreamer->emitRawText(StringRef("\t.option compact\n"));
+
   if (TM.getTargetTriple().isOSBinFormatELF())
     emitAttributes();
 }
