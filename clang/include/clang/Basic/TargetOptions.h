@@ -90,6 +90,11 @@ public:
   /// \brief Code object version for AMDGPU.
   CodeObjectVersionKind CodeObjectVersion;
 
+#if SIFIVE_CUSTOMIZATION
+  /// \brief The architecture SiFive Recode targets to.
+  std::string SiFiveRecode;
+#endif // SIFIVE_CUSTOMIZATION
+
   // The code model to be used as specified by the user. Corresponds to
   // CodeModel::Model enum defined in include/llvm/Support/CodeGen.h, plus
   // "default" for the case when the user has not explicitly specified a

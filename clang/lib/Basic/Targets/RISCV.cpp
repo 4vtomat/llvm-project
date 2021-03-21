@@ -192,6 +192,12 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 
   if (ISAInfo->hasExtension("zve32x"))
     Builder.defineMacro("__riscv_vector");
+
+  // SIFIVE
+  StringRef SiFiveRecodeTarget = getTargetOpts().SiFiveRecode;
+  if (SiFiveRecodeTarget == "neon")
+    Builder.defineMacro("__sifive_recode_neon");
+  // end SIFIVE
 }
 
 const Builtin::Info RISCVTargetInfo::BuiltinInfo[] = {

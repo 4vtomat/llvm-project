@@ -3403,6 +3403,12 @@ def mcmodel_EQ_medlow : Flag<["-"], "mcmodel=medlow">, Group<m_riscv_Features_Gr
 def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_riscv_Features_Group>,
   Flags<[CC1Option]>, Alias<mcmodel_EQ>, AliasArgs<["medium"]>,
   HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
+// SIFIVE
+def msifive_recode_EQ : Joined<["-"], "msifive-recode=">, Group<m_Group>,
+  HelpText<"Set the target of SiFive Recode.">,
+  Values<"off,neon">,
+  Flags<[CC1Option]>, MarshallingInfoString<TargetOpts<"SiFiveRecode">, [{"off"}]>;
+// end SIFIVE
 def menable_experimental_extensions : Flag<["-"], "menable-experimental-extensions">, Group<m_Group>,
   HelpText<"Enable use of experimental RISC-V extensions.">;
 

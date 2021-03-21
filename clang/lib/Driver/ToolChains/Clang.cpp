@@ -2205,6 +2205,23 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     CmdArgs.push_back("-tune-cpu");
     CmdArgs.push_back(Args.MakeArgString(TuneCPU));
   }
+
+  // SiFive specific options.
+  // Check SiFive Recode option.
+  if (const Arg *A = Args.getLastArg(clang::driver::options::OPT_msifive_recode_EQ)) {
+    StringRef Target = A->getValue();
+    if (Target == "neon") {
+      CmdArgs.push_back("-msifive-recode=neon");
+      // Add sifive_wrappers/* to our system include path.  This lets us wrap
+      // standard library headers.
+      const Driver &D = getToolChain().getDriver();
+      SmallString<128> P(D.ResourceDir);
+      llvm::sys::path::append(P, "include");
+      llvm::sys::path::append(P, "sifive_wrappers");
+      CmdArgs.push_back("-internal-isystem");
+      CmdArgs.push_back(Args.MakeArgString(P));
+    }
+  }
 }
 
 void Clang::AddSparcTargetArgs(const ArgList &Args,

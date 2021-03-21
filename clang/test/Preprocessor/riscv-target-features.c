@@ -42,6 +42,7 @@
 // CHECK-NOT: __riscv_zkr
 // CHECK-NOT: __riscv_zkt
 // CHECK-NOT: __riscv_zk
+// CHECK-NOT: __sifive_recode_neon
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-M-EXT %s
@@ -433,3 +434,12 @@
 // RUN: -march=rv64i_zbkb_zbkc_zbkx_zksed_zksh -x c -E -dM %s -o - \
 // RUN: | FileCheck --check-prefix=CHECK-COMBINE-INTO-ZKS %s
 // CHECK-COMBINE-INTO-ZKS: __riscv_zks 1
+//
+// RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
+// RUN:   -msifive-recode=neon -o - \
+// RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-NEON %s
+// CHECK-SIFIVE-RECODE-NEON: __sifive_recode_neon
+// RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
+// RUN:   -msifive-recode=off -o - \
+// RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
+// CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
