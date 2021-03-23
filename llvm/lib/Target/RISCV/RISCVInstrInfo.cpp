@@ -25,6 +25,7 @@
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/RegisterScavenging.h"
+#include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCInstBuilder.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -1925,4 +1926,37 @@ RISCVInstrInfo::isRVVSpillForZvlsseg(unsigned Opcode) const {
   case RISCV::PseudoVRELOAD8_M1:
     return std::make_pair(8u, 1u);
   }
+}
+
+Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
+  RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
+  Register GlobalBaseReg = RVFI->getGlobalBaseReg();
+  if (GlobalBaseReg)
+    return GlobalBaseReg;
+
+  if (MF->getTarget().isPositionIndependent()) {
+    DebugLoc dl;
+    MachineBasicBlock &FirstMBB = MF->front();
+    MachineBasicBlock::iterator MBBI = FirstMBB.begin();
+    MachineRegisterInfo &MRI = MF->getRegInfo();
+
+    Register TempReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    Register Temp2Reg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    GlobalBaseReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    // Insert a pseudo instruction to set the GlobalBaseReg into the first
+    // MBB of the function.
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::PseudoLLA), TempReg)
+        .addExternalSymbol("__global_pointer__");
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::LD), Temp2Reg)
+        .addReg(TempReg)
+        .addImm(0);
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::ADD), GlobalBaseReg)
+        .addReg(TempReg)
+        .addReg(Temp2Reg);
+  } else {
+    GlobalBaseReg = RISCV::X3;
+  }
+
+  RVFI->setGlobalBaseReg(GlobalBaseReg);
+  return GlobalBaseReg;
 }

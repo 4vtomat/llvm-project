@@ -185,6 +185,11 @@ public:
   Optional<std::pair<unsigned, unsigned>>
   isRVVSpillForZvlsseg(unsigned Opcode) const;
 
+  /// Return a virtual register initialized with the global base
+  /// register value. Output instructions required to initialize
+  // the register in the function entry block, if necessary.
+  Register getGlobalBaseReg(MachineFunction *MF) const;
+
 protected:
   const RISCVSubtarget &STI;
 };

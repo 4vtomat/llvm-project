@@ -46,6 +46,10 @@ template <> struct MappingTraits<RISCVMachineFunctionInfo> {
 /// and contains private RISCV-specific information for each MachineFunction.
 class RISCVMachineFunctionInfo : public MachineFunctionInfo {
 private:
+  // GlobalBaseReg - keeps track of the virtual register initialized for
+  // use as the global base register. This is used for PIC in some PIC
+  // relocation models.
+  Register GlobalBaseReg;
   /// FrameIndex for start of varargs area
   int VarArgsFrameIndex = 0;
   /// Size of the save area used for varargs
@@ -64,6 +68,9 @@ private:
 
 public:
   RISCVMachineFunctionInfo(const MachineFunction &MF) {}
+
+  Register getGlobalBaseReg() const { return GlobalBaseReg; }
+  void setGlobalBaseReg(Register Reg) { GlobalBaseReg = Reg; }
 
   int getVarArgsFrameIndex() const { return VarArgsFrameIndex; }
   void setVarArgsFrameIndex(int Index) { VarArgsFrameIndex = Index; }

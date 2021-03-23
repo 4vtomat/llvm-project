@@ -11204,6 +11204,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(SplitF64)
   NODE_NAME_CASE(TAIL)
   NODE_NAME_CASE(MULHSU)
+  NODE_NAME_CASE(GlobalBaseReg)
   NODE_NAME_CASE(SLLW)
   NODE_NAME_CASE(SRAW)
   NODE_NAME_CASE(SRLW)
