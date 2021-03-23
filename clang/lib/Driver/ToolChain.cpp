@@ -100,6 +100,12 @@ llvm::vfs::FileSystem &ToolChain::getVFS() const {
 }
 
 bool ToolChain::useIntegratedAs() const {
+  // Hack:
+  // This enables GNU AS when cmodel is equal large.
+  // After we fully support MC, These code must be removed.
+  if (Args.getLastArgValue(options::OPT_mcmodel_EQ).equals_insensitive("large"))
+    return false;
+
   return Args.hasFlag(options::OPT_fintegrated_as,
                       options::OPT_fno_integrated_as,
                       IsIntegratedAssemblerDefault());
