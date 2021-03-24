@@ -71,3 +71,12 @@
 // RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64 %s
 // GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64: .
 // GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk3 \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafc -mabi=lp64 -mcmodel=compact \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT: rv64imac/lp64/compact
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT-NOT: {{^.+$}}

@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+
+print("rv64imac/lp64;@march=rv64imac@mabi=lp64")
+print("rv64imac/lp64/compact;@march=rv64imac@mabi=lp64@mcmodel=compact")
