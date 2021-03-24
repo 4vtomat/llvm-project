@@ -29,6 +29,7 @@
 #include "llvm/Support/Program.h"
 #include "llvm/Support/TargetParser.h"
 #include "llvm/Support/VirtualFileSystem.h"
+#include "llvm/Support/RISCVArchStringParser.h"
 #include <system_error>
 
 using namespace clang::driver;
@@ -1716,6 +1717,135 @@ static std::string getGCCPath(const Driver &D, const ArgList &Args) {
   }
 }
 
+/// Extend the multi-lib re-use selection mechanism for RISC-V.
+/// This funciton will try to re-use multi-lib if they are compatible.
+/// Define of compatible:
+///   - ABI must be same.
+///   - multi-lib is subset of current arch, e.g. multi-lib=march=rv32im
+///     march=rv32imc.
+///   - Atomic extension must be enabled or disabled at same status, e.g.
+///     multi-lib=march=rv32im not march=rv32ima are not compatible,
+///     because software and hardware atomic operation can't work together
+///     correctly.
+static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
+                                StringRef Arch,
+                                const Multilib::flags_list &Flags,
+                                Multilib &SelectedMultilib) {
+  // Try to find exact matched multi-lib first.
+  if (RISCVMultilibSet.select(Flags, SelectedMultilib))
+    return true;
+
+  llvm::StringMap<bool> FlagSet;
+  Multilib::flags_list NewFlags;
+  std::vector<Multilib> NewMultilibs;
+
+  llvm::RISCVArchStringParser Parser;
+
+  if (auto E = Parser.parse(Arch, /* EnableExperimentalExtension */ true,
+                            /* ExperimentalExtensionVersionCheck */ false)) {
+    handleAllErrors(std::move(E), [&](llvm::StringError &ErrMsg) {
+      // Ignore any error here, we assume it will handled in another place.
+    });
+
+    return false;
+  }
+
+  auto CurrentExts = Parser.getExtensions();
+
+  addMultilibFlag(Parser.getXLEN() == 32, "m32", NewFlags);
+  addMultilibFlag(Parser.getXLEN() == 64, "m64", NewFlags);
+
+  // Collect all flags except march=*
+  for (StringRef Flag : Flags) {
+    if (Flag.startswith("+march=") || Flag.startswith("-march="))
+      continue;
+
+    NewFlags.push_back(Flag.str());
+  }
+
+  llvm::StringSet<> AllArchExts;
+  int Priority = 0;
+  // Reconstruct multi-lib list, and break march option into seperated
+  // extension. e.g. march=rv32im -> +i +m
+  for (auto M : RISCVMultilibSet) {
+    bool Skip = false;
+    llvm::RISCVArchStringParser ConfigArchParser;
+    Multilib NewMultilib =
+        Multilib(M.gccSuffix(), M.osSuffix(), M.includeSuffix(), Priority++);
+    NewMultilib.flags() = Multilib::flags_list();
+    for (StringRef Flag : M.flags()) {
+      // Add back the all option except -march.
+      if (!Flag.startswith("+march=")) {
+        NewMultilib.flag(Flag);
+        continue;
+      }
+
+      // Break down -march to individual extension.
+      if (auto E = ConfigArchParser.parse(
+              Flag.drop_front(7), /* EnableExperimentalExtension */ true,
+              /* ExperimentalExtensionVersionCheck */ false)) {
+        handleAllErrors(std::move(E), [&](llvm::StringError &ErrMsg) {
+          // Ignore any error here, we assume it will handled in another place.
+        });
+
+	// We might got parsing error if rv32e in the list, we could just skip
+	// that and process all rest multi-lib configs.
+        Skip = true;
+        continue;
+      }
+
+      auto ConfigArchExts = ConfigArchParser.getExtensions();
+      for (auto &ConfigArchExt : ConfigArchExts) {
+        auto ExtName = ConfigArchExt.first();
+        NewMultilib.flag(Twine("+", ExtName).str());
+
+        if (!AllArchExts.contains(ExtName)) {
+          AllArchExts.insert(ExtName);
+          addMultilibFlag(CurrentExts.count(ExtName), ExtName.str().c_str(),
+                          NewFlags);
+        }
+      }
+
+      // Check XLEN explicitly.
+      if (ConfigArchParser.getXLEN() == 32) {
+        NewMultilib.flag("+m32");
+        NewMultilib.flag("-m64");
+      } else {
+        NewMultilib.flag("-m32");
+        NewMultilib.flag("+m64");
+      }
+
+      // Atomic extension must explicitly check, soft and hard atomic operation
+      // never co-work correctly.
+      if (ConfigArchParser.find("a") == None)
+        NewMultilib.flag("-a");
+    }
+
+    if (Skip)
+      continue;
+
+    NewMultilibs.emplace_back(NewMultilib);
+  }
+
+  // Build an internal used only multi-lib list, used for check any compatible
+  // multi-lib.
+  MultilibSet NewRISCVMultilibs =
+      MultilibSet().Either(ArrayRef<Multilib>(NewMultilibs));
+
+  Multilib NewSelectedM;
+  if (NewRISCVMultilibs.select(NewFlags, NewSelectedM)) {
+    for (auto M : RISCVMultilibSet) {
+      // Look up the corresponding multi-lib entry in original multi-lib set.
+      if (M.gccSuffix() == NewSelectedM.gccSuffix()) {
+        SelectedMultilib = M;
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 static bool scanRISCVGCCMultilibConfig(const Driver &D,
                                        const llvm::Triple &TargetTriple,
                                        StringRef Path, const ArgList &Args,
@@ -1813,9 +1943,17 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   }
 
   MultilibSet RISCVMultilibs =
-      MultilibSet().Either(ArrayRef<Multilib>(Ms)).FilterOut(NonExistent);
+      MultilibSet()
+          .Either(ArrayRef<Multilib>(Ms))
+          .FilterOut(NonExistent)
+          .setFilePathsCallback([](const Multilib &M) {
+            return std::vector<std::string>(
+                {M.gccSuffix(),
+                 "/../../../../riscv64-unknown-elf/lib" + M.gccSuffix(),
+                 "/../../../../riscv32-unknown-elf/lib" + M.gccSuffix()});
+          });
 
-  RISCVMultilibs.select(Flags, Result.SelectedMultilib);
+  RISCVMultilibSelect(RISCVMultilibs, MArch, Flags, Result.SelectedMultilib);
 
   Result.Multilibs = RISCVMultilibs;
 
@@ -1921,7 +2059,8 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
     }
   }
 
-  if (RISCVMultilibs.select(Flags, Result.SelectedMultilib))
+  if (RISCVMultilibSelect(RISCVMultilibs, MArch, Flags,
+                          Result.SelectedMultilib))
     Result.Multilibs = RISCVMultilibs;
 }
 
