@@ -287,6 +287,18 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     case RISCVMCExpr::VK_RISCV_None:
     case RISCVMCExpr::VK_RISCV_Invalid:
     case RISCVMCExpr::VK_RISCV_32_PCREL:
+    case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO:
+    case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI:
+    case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
+    case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO:
+    case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI:
+    case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD:
+    case RISCVMCExpr::VK_RISCV_GPREL_LO:
+    case RISCVMCExpr::VK_RISCV_GPREL_HI:
+    case RISCVMCExpr::VK_RISCV_GPREL_ADD:
+    case RISCVMCExpr::VK_RISCV_GOT_GPREL_LO:
+    case RISCVMCExpr::VK_RISCV_GOT_GPREL_HI:
+    case RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
       llvm_unreachable("Unhandled fixup kind!");
     case RISCVMCExpr::VK_RISCV_TPREL_ADD:
       // tprel_add is only used to indicate that a relocation should be emitted
