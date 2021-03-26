@@ -2246,7 +2246,7 @@ static inline int vesetxround(int round)
 	case VE_TONEARESTEVEN:
 	case VE_DOWNWARD:
 	case VE_TOODD:
-		asm volatile("csrw vxrm,%z0"::"rJ"(round));
+		__asm__ __volatile__("csrw vxrm,%z0"::"rJ"(round));
 		return 0;
 	default:
 		return -1;
@@ -2257,7 +2257,7 @@ static inline int vesetxround(int round)
 static inline int vegetxround(void)
 {
 	int vxrm;
-	asm volatile("csrr %0,vxrm":"=r"(vxrm));
+	__asm__ __volatile__("csrr %0,vxrm":"=r"(vxrm));
 	switch(vxrm)
 	{
 	case VE_TONEARESTUP:
@@ -2277,7 +2277,7 @@ static inline int vesetxsat(int sat)
     {
     case 0:
     case 1:
-		asm volatile("csrw vxsat,%z0"::"rJ"(sat));
+		__asm__ __volatile__("csrw vxsat,%z0"::"rJ"(sat));
         return 0;
     default:
         return -1;
@@ -2288,7 +2288,7 @@ static inline int vesetxsat(int sat)
 static inline int vegetxsat(void)
 {
 	int vxsat;
-	asm volatile("csrr %0,vxsat":"=r"(vxsat));
+	__asm__ __volatile__("csrr %0,vxsat":"=r"(vxsat));
 	return vxsat;
 }
 
