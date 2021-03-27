@@ -567,7 +567,9 @@ def : ProcessorModel<"sifive-viu75", SiFive7Model, [Feature64Bit,
                                                     FeatureStdExtD,
                                                     FeatureStdExtC,
                                                     FeatureStdExtV,
-                                                    FeatureStdExtZfh],
+                                                    FeatureStdExtZfh,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
 // end SIFIVE
 
