@@ -209,6 +209,26 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     AddRunTimeLibs(ToolChain, ToolChain.getDriver(), CmdArgs, Args);
   }
 
+  bool UseNewlibNano = false;
+  if (const Arg *A = Args.getLastArg(clang::driver::options::OPT_specs_EQ)) {
+    if (StringRef(A->getValue()) == "nano.specs")
+      UseNewlibNano = true;
+  }
+
+  if (UseNewlibNano) {
+    for (size_t i = 0; i < CmdArgs.size(); ++i) {
+      StringRef Arg = CmdArgs[i];
+      if (Arg == "-lc")
+        CmdArgs[i] = "-lc_nano";
+      if (Arg == "-lgloss")
+        CmdArgs[i] = "-lgloss_nano";
+      if (Arg == "-lm")
+        CmdArgs[i] = "-lm_nano";
+      if (Arg == "-lg")
+        CmdArgs[i] = "-lg_nano";
+    }
+  }
+
   if (WantCRTs)
     CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath(crtend)));
 
