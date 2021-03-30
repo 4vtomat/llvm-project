@@ -74,6 +74,35 @@ def : WriteRes<WriteIDiv32,  [SiFive7PipeB, SiFive7IDiv]> {
   let ResourceCycles = [1, 15];
 }
 
+// Bitmanip
+let Latency = 3 in {
+// Rotates are in the late-B ALU.
+def : WriteRes<WriteRotateImm, [SiFive7PipeB]>;
+def : WriteRes<WriteRotateImm32, [SiFive7PipeB]>;
+def : WriteRes<WriteRotateReg, [SiFive7PipeB]>;
+def : WriteRes<WriteRotateReg32, [SiFive7PipeB]>;
+
+// clz[w]/ctz[w] are in the late-B ALU.
+def : WriteRes<WriteCLZ, [SiFive7PipeB]>;
+def : WriteRes<WriteCLZ32, [SiFive7PipeB]>;
+def : WriteRes<WriteCTZ, [SiFive7PipeB]>;
+def : WriteRes<WriteCTZ32, [SiFive7PipeB]>;
+
+// cpop[w] look exactly like multiply.
+def : WriteRes<WriteCPOP, [SiFive7PipeB]>;
+def : WriteRes<WriteCPOP32, [SiFive7PipeB]>;
+
+// orc.b is in the late-B ALU.
+def : WriteRes<WriteORCB, [SiFive7PipeB]>;
+
+// rev8 is in the late-A and late-B ALUs.
+def : WriteRes<WriteREV8, [SiFive7PipeAB]>;
+
+// shNadd[.uw] is on the early-B and late-B ALUs.
+def : WriteRes<WriteSHXADD, [SiFive7PipeB]>;
+def : WriteRes<WriteSHXADD32, [SiFive7PipeB]>;
+}
+
 // Memory
 def : WriteRes<WriteSTB, [SiFive7PipeA]>;
 def : WriteRes<WriteSTH, [SiFive7PipeA]>;
@@ -673,10 +702,24 @@ def : ReadAdvance<ReadVMov8V, 0>;
 // Others
 def : ReadAdvance<ReadVMask, 0>;
 
+// Bitmanip
+def : ReadAdvance<ReadRotateImm, 0>;
+def : ReadAdvance<ReadRotateImm32, 0>;
+def : ReadAdvance<ReadRotateReg, 0>;
+def : ReadAdvance<ReadRotateReg32, 0>;
+def : ReadAdvance<ReadCLZ, 0>;
+def : ReadAdvance<ReadCLZ32, 0>;
+def : ReadAdvance<ReadCTZ, 0>;
+def : ReadAdvance<ReadCTZ32, 0>;
+def : ReadAdvance<ReadCPOP, 0>;
+def : ReadAdvance<ReadCPOP32, 0>;
+def : ReadAdvance<ReadORCB, 0>;
+def : ReadAdvance<ReadREV8, 0>;
+def : ReadAdvance<ReadSHXADD, 0>;
+def : ReadAdvance<ReadSHXADD32, 0>;
+
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
-defm : UnsupportedSchedZba;
-defm : UnsupportedSchedZbb;
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbe;
