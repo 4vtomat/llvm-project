@@ -34,6 +34,6 @@ PROC(SIFIVE_U54, {"sifive-u54"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_U74, {"sifive-u74"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_832, {"sifive-8-rv32"}, FK_NONE, {""})
 PROC(SIFIVE_864, {"sifive-8-rv64"}, FK_64BIT, {""})
-PROC(SIFIVE_U77, {"sifive-viu75"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zba1p0_zbb1p0"})
+PROC(SIFIVE_U77, {"sifive-viu75"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zba1p0_zbb1p0_xsfvqmaccdod_xsfvqmaccqoq"})
 
 #undef PROC
