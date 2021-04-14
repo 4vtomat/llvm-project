@@ -68,6 +68,7 @@ private:
   bool HasStdExtZve64d = false;
   bool HasExtXsfvqmaccdod = false; // SIFIVE
   bool HasExtXsfvqmaccqoq = false; // SIFIVE
+  bool HasExtXsfvfhbfmin = false; // SIFIVE
   bool HasStdExtZvfh = false;
   bool HasStdExtZfhmin = false;
   bool HasStdExtZfh = false;
@@ -163,6 +164,7 @@ public:
   bool hasStdExtZvl() const { return ZvlLen != 0; }
   bool hasExtXsfvqmaccqoq() const { return HasExtXsfvqmaccqoq; } // SIFIVE
   bool hasExtXsfvqmaccdod() const { return HasExtXsfvqmaccdod; } // SIFIVE
+  bool hasExtXsfvfhbfmin() const { return HasExtXsfvfhbfmin; }; // SIFIVE
   bool hasStdExtZvfh() const { return HasStdExtZvfh; }
   bool hasStdExtZfhmin() const { return HasStdExtZfhmin; }
   bool hasStdExtZfh() const { return HasStdExtZfh; }

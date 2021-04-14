@@ -31,3 +31,12 @@ let vm = 1, Predicates = [HasExtXsfvqmaccdod] in {
   def VQMACCUS2x8x2_VV : CustomSiFiveV<"sf.vqmaccus.2x8x2", OPMVV, 0b101110>;
   def VQMACCSU2x8x2_VV : CustomSiFiveV<"sf.vqmaccsu.2x8x2", OPMVV, 0b101111>;
 } // Predicates = [HasExtXsfvqmaccdod]
+
+let Predicates = [HasExtXsfvfhbfmin] in {
+let Constraints = "@earlyclobber $vd", RVVConstraint = WidenCvt in {
+defm VFWCVT_F_BF16_V : VWCVTF_FV_VS2<"sf.vfwcvt.f.bf16.v", 0b010010, 0b01101>;
+}
+let Constraints = "@earlyclobber $vd" in {
+defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
+}
+} // Predicates = [HasExtXsfvqmaccdod]

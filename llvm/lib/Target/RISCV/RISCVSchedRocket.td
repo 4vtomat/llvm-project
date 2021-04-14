@@ -21,7 +21,8 @@ def RocketModel : SchedMachineModel {
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
                              HasVInstructions, HasVInstructionsI64,
-                             HasExtXsfvqmaccqoq, HasExtXsfvqmaccdod]; // SIFIVE
+                             HasExtXsfvqmaccqoq, HasExtXsfvqmaccdod, // SIFIVE
+                             HasExtXsfvfhbfmin]; // SIFIVE
 }
 
 //===----------------------------------------------------------------------===//

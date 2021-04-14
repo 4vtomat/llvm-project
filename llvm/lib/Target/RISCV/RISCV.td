@@ -415,7 +415,15 @@ def FeatureStdExtXsfvqmaccdod
 def HasExtXsfvqmaccdod : Predicate<"Subtarget->hasExtXsfvqmaccdod()">,
                          AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccdod),
                          "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
-#endif
+
+def FeatureStdExtXsfvfhbfmin
+    : SubtargetFeature<"xsfvfhbfmin", "HasExtXsfvfhbfmin", "true",
+                       "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
+                       [FeatureStdExtZve32f]>;
+def HasExtXsfvfhbfmin : Predicate<"Subtarget->hasExtXsfvfhbfmin()">,
+                         AssemblerPredicate<(all_of FeatureStdExtXsfvfhbfmin),
+                         "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
+#endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
     : SubtargetFeature<"64bit", "HasRV64", "true", "Implements RV64">;
@@ -570,7 +578,8 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZfh,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb,
-                                                   FeatureStdExtXsfvqmaccqoq],
+                                                   FeatureStdExtXsfvqmaccqoq,
+                                                   FeatureStdExtXsfvfhbfmin],
                      [TuneSiFive7]>;
 // end SIFIVE
 

@@ -99,6 +99,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}},
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}},
+    {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}},
     // end SIFIVE
 };
 
@@ -763,6 +764,7 @@ static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx", "zkne", "zknd", "
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
 #if SIFIVE_CUSTOMIZATION
+static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
 #endif // SIFIVE_CUSTOMIZATION
@@ -781,6 +783,7 @@ struct ImpliedExtsEntry {
 // Note: The table needs to be sorted by name.
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"v"}, {ImpliedExtsV}},
+    {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
     {{"zdinx"}, {ImpliedExtsZdinx}},

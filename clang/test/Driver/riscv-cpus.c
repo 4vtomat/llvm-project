@@ -163,6 +163,6 @@
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zfh"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+xsfvqmaccdod" "-target-feature" "+xsfvqmaccqoq"
+// MCPU-SIFIVE-X280-SAME: "-target-feature" "+xsfvfhbfmin" "-target-feature" "+xsfvqmaccqoq"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+64bit"
 // MCPU-SIFIVE-X280-SAME: "-target-abi" "lp64d"
