@@ -1559,7 +1559,12 @@ bool InductionDescriptor::isInductionPHI(
   Type *ElementType = PtrTy->isOpaque()
                           ? Type::getInt8Ty(PtrTy->getContext())
                           : PtrTy->getNonOpaquePointerElementType();
-  if (!ElementType->isSized())
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Why is this not upstream?
+  // The pointer stride cannot be determined if the pointer element type is not
+  // sized or is scalable.
+  if (!ElementType->isSized() || ElementType->getTypeID() == Type::ScalableVectorTyID)
+#endif // SIFIVE_CUSTOMIZATION
     return false;
 
   ConstantInt *CV = ConstStep->getValue();
