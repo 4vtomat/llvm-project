@@ -399,10 +399,16 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
 
     if (ExperimentalExtensionVersionCheck &&
         (MajorStr.empty() && MinorStr.empty())) {
+#if 0
       std::string Error =
           "experimental extension requires explicit version number `" +
           Ext.str() + "`";
       return createStringError(errc::invalid_argument, Error);
+#endif
+      // XXX: SiFive specific logic:
+      //      Disable version checking for integration with FESDK.
+      //      If major and minor versions are both empty, treat it as valid.
+      return Error::success();
     }
 
     auto SupportedVers = *ExperimentalExtension;
