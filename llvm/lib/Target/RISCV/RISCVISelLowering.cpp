@@ -3617,7 +3617,7 @@ SDValue RISCVTargetLowering::getLargeAddr(NodeTy *N, SelectionDAG &DAG,
 
   SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
   SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
-  SDValue MNAdd = SDValue(DAG.getMachineNode(RISCV::PseudoAddGPRel,
+  SDValue MNAdd = SDValue(DAG.getMachineNode(RISCV::PseudoAddRegRel,
                                              DL, Ty, MNHi, GPReg, AddrAdd), 0);
   return SDValue(DAG.getMachineNode(Opcode, DL, Ty, MNAdd, AddrLo), 0);
 }
@@ -3790,7 +3790,7 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
   SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
   SDValue MNAdd = SDValue(
-      DAG.getMachineNode(RISCV::PseudoAddTPRel, DL, Ty, MNHi, TPReg, AddrAdd),
+      DAG.getMachineNode(RISCV::PseudoAddRegRel, DL, Ty, MNHi, TPReg, AddrAdd),
       0);
   return SDValue(DAG.getMachineNode(RISCV::ADDI, DL, Ty, MNAdd, AddrLo), 0);
 }

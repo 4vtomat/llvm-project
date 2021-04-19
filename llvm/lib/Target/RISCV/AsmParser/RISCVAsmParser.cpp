@@ -137,11 +137,11 @@ class RISCVAsmParser : public MCTargetAsmParser {
   // Helper to emit pseudo vmsge{u}.vx instruction.
   void emitVMSGE(MCInst &Inst, unsigned Opcode, SMLoc IDLoc, MCStreamer &Out);
 
-  // Checks that a PseudoAddTPRel is using x4/tp in its second input operand.
-  // Enforcing this using a restricted register class for the second input
-  // operand of PseudoAddTPRel results in a poor diagnostic due to the fact
-  // 'add' is an overloaded mnemonic.
-  bool checkPseudoAddTPRel(MCInst &Inst, OperandVector &Operands);
+  // Checks that a PseudoAddRegRel is using a register in its second input
+  // operand.  Enforcing this using a restricted register class for the
+  // second input operand of PseudoAddRegRel results in a poor diagnostic
+  // due to the fact 'add' is an overloaded mnemonic.
+  bool checkPseudoAddRegRel(MCInst &Inst, OperandVector &Operands);
 
   // Check instruction constraints.
   bool validateInstruction(MCInst &Inst, OperandVector &Operands);
@@ -425,27 +425,18 @@ public:
            VK == RISCVMCExpr::VK_RISCV_CALL;
   }
 
-  bool isTPRelAddSymbol() const {
+  bool isRegRelAddSymbol() const {
     int64_t Imm;
     RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
     // Must be of 'immediate' type but not a constant.
     if (!isImm() || evaluateConstantImm(getImm(), Imm, VK))
       return false;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           VK == RISCVMCExpr::VK_RISCV_TPREL_ADD;
-  }
-
-  bool isGPRelAddSymbol() const {
-    int64_t Imm;
-    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
-    // Must be of 'immediate' type but not a constant.
-    if (!isImm() || evaluateConstantImm(getImm(), Imm, VK))
-      return false;
-    return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           (VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD ||
+           (VK == RISCVMCExpr::VK_RISCV_TPREL_ADD ||
+            VK == RISCVMCExpr::VK_RISCV_GPREL_ADD ||
             VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_GPREL_ADD);
+            VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD);
   }
 
   bool isCSRSystemRegister() const { return isSystemRegister(); }
@@ -719,7 +710,11 @@ public:
     return IsValid && ((IsConstantImm && VK == RISCVMCExpr::VK_RISCV_None) ||
                        VK == RISCVMCExpr::VK_RISCV_LO ||
                        VK == RISCVMCExpr::VK_RISCV_PCREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO);
+                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO ||
+                       VK == RISCVMCExpr::VK_RISCV_GPREL_LO ||
+                       VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_LO ||
+                       VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO ||
+                       VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO);
   }
 
   bool isSImm12Lsb0() const { return isBareSimmNLsb0<12>(); }
@@ -746,11 +741,19 @@ public:
     if (!IsConstantImm) {
       IsValid = RISCVAsmParser::classifySymbolRef(getImm(), VK);
       return IsValid && (VK == RISCVMCExpr::VK_RISCV_HI ||
-                         VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
+                         VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
+                         VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
+                         VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
+                         VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
+                         VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
     } else {
       return isUInt<20>(Imm) && (VK == RISCVMCExpr::VK_RISCV_None ||
                                  VK == RISCVMCExpr::VK_RISCV_HI ||
-                                 VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
+                                 VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
+                                 VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
+                                 VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
+                                 VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
+                                 VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
     }
   }
 
@@ -1280,13 +1283,11 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be a bare symbol name");
   }
-  case Match_InvalidTPRelAddSymbol: {
+  case Match_InvalidRegRelAddSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a symbol with %tprel_add modifier");
-  }
-  case Match_InvalidGPRelAddSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a symbol with %gprel_add modifier");
+    return Error(ErrorLoc, "operand must be a symbol with any of "
+                           "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
+                           "and %tls_gd_gprel modifier");
   }
   case Match_InvalidVTypeI: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
@@ -2581,14 +2582,34 @@ void RISCVAsmParser::emitVMSGE(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
   }
 }
 
-bool RISCVAsmParser::checkPseudoAddTPRel(MCInst &Inst,
-                                         OperandVector &Operands) {
-  assert(Inst.getOpcode() == RISCV::PseudoAddTPRel && "Invalid instruction");
-  assert(Inst.getOperand(2).isReg() && "Unexpected second operand kind");
-  if (Inst.getOperand(2).getReg() != RISCV::X4) {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
-    return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
-                           "%tprel_add modifier");
+bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
+                                          OperandVector &Operands) {
+  const MCOperand &Op2 = Inst.getOperand(2);
+  const MCOperand &Op3 = Inst.getOperand(3);
+
+  assert(Inst.getOpcode() == RISCV::PseudoAddRegRel && "Invalid instruction");
+  assert(Op2.isReg() && "Unexpected second operand kind");
+  assert(Op3.isExpr() && "Unexpected third operand kind");
+
+  auto *RE = cast<RISCVMCExpr>(Op3.getExpr());
+  RISCVMCExpr::VariantKind VK = RE->getKind();
+  switch (VK) {
+  default: {
+    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[4]).getStartLoc();
+    return Error(ErrorLoc, "unknown third operand modifier for TP/GP-relative ADD");
+  }
+  case llvm::RISCVMCExpr::VK_RISCV_TPREL_ADD:
+    if (Op2.getReg() != RISCV::X4) {
+      SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
+      return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
+                             "%tprel_add modifier");
+    }
+  break;
+  case llvm::RISCVMCExpr::VK_RISCV_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD:
+    break;
   }
 
   return false;
@@ -2750,13 +2771,10 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
   case RISCV::PseudoFSD:
     emitLoadStoreSymbol(Inst, RISCV::FSD, IDLoc, Out, /*HasTmpReg=*/true);
     return false;
-  case RISCV::PseudoAddTPRel:
-    if (checkPseudoAddTPRel(Inst, Operands))
+  case RISCV::PseudoAddRegRel:
+    if (checkPseudoAddRegRel(Inst, Operands))
       return true;
     break;
-  case RISCV::PseudoAddGPRel:
-    assert(Inst.getOperand(2).isReg() && "Unexpected second operand kind");
-    return true;
   case RISCV::PseudoSEXT_B:
     emitPseudoExtend(Inst, /*SignExtend=*/true, /*Width=*/8, IDLoc, Out);
     return false;

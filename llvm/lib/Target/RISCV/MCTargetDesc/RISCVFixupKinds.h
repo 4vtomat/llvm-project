@@ -48,7 +48,49 @@ enum Fixups {
   // 20-bit fixup corresponding to %tls_gd_pcrel_hi(foo) for instructions like
   // auipc
   fixup_riscv_tls_gd_hi20,
-  // 20-bit fixup for symbol references in the jal instruction
+  // fixup_riscv_gprel_hi20 - 20-bit fixup corresponding to gprel_hi(foo) for
+  // instructions like lui
+  fixup_riscv_gprel_hi20,
+  // fixup_riscv_gprel_lo12_i - 12-bit fixup corresponding to gprel_lo(foo) for
+  // instructions like addi
+  fixup_riscv_gprel_lo12_i,
+  // fixup_riscv_gprel_lo12_i - 12-bit fixup corresponding to gprel_lo(foo) for
+  // instructions like the S-type store instructions
+  fixup_riscv_gprel_lo12_s,
+  // fixup_riscv_pprel_add - A fixup corresponding to %gprel(foo) for the
+  // add_gprel instruction. Used to provide a hint to the linker
+  fixup_riscv_gprel_add,
+  // fixup_riscv_got_gprel_hi20 - 20-bit fixup corresponding to
+  // got_gprel_hi(foo) for instructions like lui
+  fixup_riscv_got_gprel_hi20,
+  // fixup_riscv_got_gprel_lo12_i - 12-bit fixup corresponding to
+  // got_gprel_lo(foo) for instructions like I-type load instructions
+  fixup_riscv_got_gprel_lo12_i,
+  // fixup_riscv_got_gprel_add - A fixup corresponding to %got_gprel(foo) for
+  // the add_got_gprel instruction. Used to provide a hint to the linker
+  fixup_riscv_got_gprel_add,
+  // fixup_riscv_tls_got_gprel_hi20 - 20-bit fixup corresponding to
+  // tls_ie_gprel_hi(foo) for instructions like lui
+  fixup_riscv_tls_got_gprel_hi20,
+  // fixup_riscv_tls_got_gprel_lo12_i - 12-bit fixup corresponding to
+  // tls_ie_gprel_lo(foo) for instructions like I-type load instructions
+  fixup_riscv_tls_got_gprel_lo12_i,
+  // fixup_riscv_tls_ie_gprel_add - A fixup corresponding to
+  // %tls_ie_gprel(foo) for the add_tls_ie_gprel instruction.
+  // Used to provide a hint to the linker
+  fixup_riscv_tls_got_gprel_add,
+  // fixup_riscv_tls_gd_gprel_hi20 - 20-bit fixup corresponding to
+  // tls_gd_gprel_hi(foo) for instructions like lui
+  fixup_riscv_tls_gd_gprel_hi20,
+  // fixup_riscv_tls_gd_gprel_lo12_i - 12-bit fixup corresponding to
+  // tls_gd_gprel_lo(foo) for instructions like I-type load instructions
+  fixup_riscv_tls_gd_gprel_lo12_i,
+  // fixup_riscv_tls_gd_gprel_add - A fixup corresponding to
+  // %tls_gd_gprel(foo) for the add_tls_gd_gprel instruction.
+  // Used to provide a hint to the linker
+  fixup_riscv_tls_gd_gprel_add,
+  // fixup_riscv_jal - 20-bit fixup for symbol references in the jal
+  // instruction
   fixup_riscv_jal,
   // 12-bit fixup for symbol references in the branch instructions
   fixup_riscv_branch,

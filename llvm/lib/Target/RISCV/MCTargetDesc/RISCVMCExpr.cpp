@@ -121,6 +121,18 @@ RISCVMCExpr::VariantKind RISCVMCExpr::getVariantKindForName(StringRef name) {
       .Case("tprel_add", VK_RISCV_TPREL_ADD)
       .Case("tls_ie_pcrel_hi", VK_RISCV_TLS_GOT_HI)
       .Case("tls_gd_pcrel_hi", VK_RISCV_TLS_GD_HI)
+      .Case("gprel_lo", VK_RISCV_GPREL_LO)
+      .Case("gprel_hi", VK_RISCV_GPREL_HI)
+      .Case("gprel", VK_RISCV_GPREL_ADD)
+      .Case("got_gprel_lo", VK_RISCV_GOT_GPREL_LO)
+      .Case("got_gprel_hi", VK_RISCV_GOT_GPREL_HI)
+      .Case("got_gprel", VK_RISCV_GOT_GPREL_ADD)
+      .Case("tls_ie_gprel_lo", VK_RISCV_TLS_GOT_GPREL_LO)
+      .Case("tls_ie_gprel_hi", VK_RISCV_TLS_GOT_GPREL_HI)
+      .Case("tls_ie_gprel", VK_RISCV_TLS_GOT_GPREL_ADD)
+      .Case("tls_gd_gprel_lo", VK_RISCV_TLS_GD_GPREL_LO)
+      .Case("tls_gd_gprel_hi", VK_RISCV_TLS_GD_GPREL_HI)
+      .Case("tls_gd_gprel", VK_RISCV_TLS_GD_GPREL_ADD)
       .Default(VK_RISCV_Invalid);
 }
 
@@ -145,28 +157,16 @@ StringRef RISCVMCExpr::getVariantKindName(VariantKind Kind) {
     return "tprel_hi";
   case VK_RISCV_TPREL_ADD:
     return "tprel_add";
+  case VK_RISCV_TLS_GOT_HI:
+    return "tls_ie_pcrel_hi";
+  case VK_RISCV_TLS_GD_HI:
+    return "tls_gd_pcrel_hi";
   case VK_RISCV_CALL:
     return "call";
   case VK_RISCV_CALL_PLT:
     return "call_plt";
   case VK_RISCV_32_PCREL:
     return "32_pcrel";
-   case VK_RISCV_TLS_GOT_HI:
-     return "tls_ie_pcrel_hi";
-   case VK_RISCV_TLS_GD_HI:
-     return "tls_gd_pcrel_hi";
-  case VK_RISCV_TLS_GOT_GPREL_LO:
-    return "tls_ie_gprel_lo";
-   case VK_RISCV_TLS_GOT_GPREL_HI:
-     return "tls_ie_gprel_hi";
-  case VK_RISCV_TLS_GOT_GPREL_ADD:
-    return "tls_ie_gprel";
-  case VK_RISCV_TLS_GD_GPREL_LO:
-    return "tls_gd_gprel_lo";
-   case VK_RISCV_TLS_GD_GPREL_HI:
-     return "tls_gd_gprel_hi";
-  case VK_RISCV_TLS_GD_GPREL_ADD:
-    return "tls_gd_gprel";
   case VK_RISCV_GPREL_LO:
     return "gprel_lo";
   case VK_RISCV_GPREL_HI:
@@ -179,6 +179,18 @@ StringRef RISCVMCExpr::getVariantKindName(VariantKind Kind) {
     return "got_gprel_hi";
   case VK_RISCV_GOT_GPREL_ADD:
     return "got_gprel";
+  case VK_RISCV_TLS_GOT_GPREL_LO:
+    return "tls_ie_gprel_lo";
+  case VK_RISCV_TLS_GOT_GPREL_HI:
+    return "tls_ie_gprel_hi";
+  case VK_RISCV_TLS_GOT_GPREL_ADD:
+    return "tls_ie_gprel";
+  case VK_RISCV_TLS_GD_GPREL_LO:
+    return "tls_gd_gprel_lo";
+  case VK_RISCV_TLS_GD_GPREL_HI:
+    return "tls_gd_gprel_hi";
+  case VK_RISCV_TLS_GD_GPREL_ADD:
+    return "tls_gd_gprel";
   }
   llvm_unreachable("Invalid ELF symbol kind");
 }

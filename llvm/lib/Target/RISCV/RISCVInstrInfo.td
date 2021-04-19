@@ -312,28 +312,16 @@ def pseudo_jump_symbol : Operand<XLenVT> {
   let ParserMatchClass = PseudoJumpSymbol;
 }
 
-def TPRelAddSymbol : AsmOperandClass {
-  let Name = "TPRelAddSymbol";
+def RegRelAddSymbol : AsmOperandClass {
+  let Name = "RegRelAddSymbol";
   let RenderMethod = "addImmOperands";
-  let DiagnosticType = "InvalidTPRelAddSymbol";
+  let DiagnosticType = "InvalidRegRelAddSymbol";
   let ParserMethod = "parseOperandWithModifier";
 }
 
-// A bare symbol with the %tprel_add variant.
-def tprel_add_symbol : Operand<XLenVT> {
-  let ParserMatchClass = TPRelAddSymbol;
-}
-
-def GPRelAddSymbol : AsmOperandClass {
-  let Name = "GPRelAddSymbol";
-  let RenderMethod = "addImmOperands";
-  let DiagnosticType = "InvalidGPRelAddSymbol";
-  let ParserMethod = "parseOperandWithModifier";
-}
-
-// A bare symbol with the %gprel_add variant.
-def gprel_add_symbol : Operand<XLenVT> {
-  let ParserMatchClass = GPRelAddSymbol;
+// A bare symbol attached to the Add for linker relaxation.
+def regrel_add_symbol : Operand<XLenVT> {
+  let ParserMatchClass = RegRelAddSymbol;
 }
 
 def CSRSystemRegister : AsmOperandClass {
@@ -1211,9 +1199,9 @@ def : PatGprGpr<shiftop<sra>, SRA>;
 // The relocation does not affect any bits of the instruction itself but is used
 // as a hint to the linker.
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, isCodeGenOnly = 0 in
-def PseudoAddTPRel : Pseudo<(outs GPR:$rd),
-                            (ins GPR:$rs1, GPR:$rs2, tprel_add_symbol:$src), [],
-                            "add", "$rd, $rs1, $rs2, $src">;
+def PseudoAddRegRel : Pseudo<(outs GPR:$rd),
+                             (ins GPR:$rs1, GPR:$rs2, regrel_add_symbol:$src), [],
+                             "add", "$rd, $rs1, $rs2, $src">;
 
 /// FrameIndex calculations
 
@@ -1387,10 +1375,6 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 0,
 def PseudoLA_TLS_GD : Pseudo<(outs GPR:$dst), (ins bare_symbol:$src), [],
                              "la.tls.gd", "$dst, $src">;
 
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, isCodeGenOnly = 0 in
-def PseudoAddGPRel : Pseudo<(outs GPR:$rd),
-                            (ins GPR:$rs1, GPR:$rs2, gprel_add_symbol:$src), [],
-                            "add", "$rd, $rs1, $rs2, $src">;
 
 /// Sign/Zero Extends
 
