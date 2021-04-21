@@ -3588,7 +3588,7 @@ SDValue RISCVTargetLowering::getLargeAddr(NodeTy *N, SelectionDAG &DAG,
 
   switch (FlagsHi) {
   default:
-    report_fatal_error("Don't support this relaxcation type");
+    report_fatal_error("Don't support this relaxation type");
   case RISCVII::MO_GPREL_HI:
     FlagsAdd = RISCVII::MO_GPREL_ADD;
     FlagsLo = RISCVII::MO_GPREL_LO;

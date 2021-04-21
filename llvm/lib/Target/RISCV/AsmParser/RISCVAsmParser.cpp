@@ -130,6 +130,15 @@ class RISCVAsmParser : public MCTargetAsmParser {
   void emitLoadStoreSymbol(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
                            MCStreamer &Out, bool HasTmpReg);
 
+  // Helper to emit compact pseudo load address instruction used in GP-rel
+  // addressing.
+  bool emitCompactLoadAddress(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
+                              MCStreamer &Out);
+
+  // Helper to emit compact pseudo load/store instruction with a symbol.
+  void emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
+                                  MCStreamer &Out, bool HasTmpReg);
+
   // Helper to emit pseudo sign/zero extend instruction.
   void emitPseudoExtend(MCInst &Inst, bool SignExtend, int64_t Width,
                         SMLoc IDLoc, MCStreamer &Out);
@@ -222,6 +231,8 @@ class RISCVAsmParser : public MCTargetAsmParser {
   }
 
   std::unique_ptr<RISCVOperand> defaultMaskRegOp() const;
+
+  std::unique_ptr<RISCVOperand> defaultPseudoGPRegisterOperands() const;
 
 public:
   enum RISCVMatchResultTy {
@@ -2474,6 +2485,137 @@ void RISCVAsmParser::emitLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
                     Opcode, IDLoc, Out);
 }
 
+bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
+                                            SMLoc IDLoc, MCStreamer &Out) {
+  MCContext &Ctx = getContext();
+  MCOperand DestReg = Inst.getOperand(0);
+  MCOperand PseudoGpReg = Inst.getOperand(2);
+  const MCExpr *Symbol = Inst.getOperand(1).getExpr();
+  RISCVMCExpr::VariantKind VKHi;
+  RISCVMCExpr::VariantKind VKAdd;
+  RISCVMCExpr::VariantKind VKLow;
+  unsigned LowOpcode;
+  switch (Opcode) {
+  default:
+    return Error(IDLoc, "unknown opcode when emitting compact load address");
+  case RISCV::PseudoLLA_GPREL:
+    // The load address pseudo-instruction "lla.gprel" is used in
+    // GP-relative addressing of symbols:
+    //   la.got.gprel rdest, symbol, rpseudogp
+    // expands to
+    //   LUI  rdest, %gprel_hi(symbol)
+    //   ADD  rdest, rpseudogp, rdest, %gprel(symbol)
+    //   ADDI rdest, %gprel_lo(symbol)(rdest)
+    VKHi = RISCVMCExpr::VK_RISCV_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_RISCV_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_RISCV_GPREL_ADD;
+    LowOpcode = RISCV::ADDI;
+    break;
+  case RISCV::PseudoLA_GOT_GPREL:
+    // The load address pseudo-instruction "la.got.gprel" is used in
+    // GP-relative to GOT-indirect addressing of symbols:
+    //   la.got.gprel rdest, symbol, rpseudogp
+    // expands to
+    //   LUI  rdest, %got_gprel_hi(symbol)
+    //   ADD  rdest, rpseudogp, rdest, %got_gprel(symbol)
+    //   LX   rdest, %got_gprel_lo(symbol)(rdest)
+    VKHi = RISCVMCExpr::VK_RISCV_GOT_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_RISCV_GOT_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD;
+    LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
+    break;
+  case RISCV::PseudoLA_TLS_IE_GPREL:
+    // The load TLS IE address pseudo-instruction "la.tls.ie.gprel" is
+    // used in initial-exec TLS model addressing of global symbols, for
+    // compact code model:
+    //   la.tls.ie.gprel rdest, symbol
+    // expands to
+    //   LUI  rdest, %tls_ie_gprel_hi(symbol)
+    //   ADD  rdest, rpseudogp, rdest, %tls_ie_gprel_add(symbol)
+    //   LX   rdest, %tls_ie_gprel_lo(symbol)(rdest)
+    VKHi = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD;
+    LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
+    break;
+  case RISCV::PseudoLA_TLS_GD_GPREL:
+    // The load TLS GD address pseudo-instruction "la.tls.gd.gprel" is
+    // used in global-dynamic TLS model addressing of global symbols, for
+    // compact code model:
+    //   la.tls.gd.gprel rdest, symbol
+    // expands to
+    //   LUI  rdest, %tls_gd_gprel_hi(symbol)
+    //   ADD  rdest, rpseudogp, rdest, %tls_gd_gprel_add(symbol)
+    //   ADDI rdest, %tls_gd_gprel_lo(symbol)(rdest)
+    VKHi = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD;
+    LowOpcode = RISCV::ADDI;
+    break;
+  }
+  const RISCVMCExpr *SymbolHi = RISCVMCExpr::create(Symbol, VKHi, Ctx);
+  const RISCVMCExpr *SymbolAdd = RISCVMCExpr::create(Symbol, VKAdd, Ctx);
+  const RISCVMCExpr *SymbolLow = RISCVMCExpr::create(Symbol, VKLow, Ctx);
+  emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
+                          .addOperand(DestReg)
+                          .addExpr(SymbolHi));
+  MCRegister Reg = PseudoGpReg.getReg();
+  if (Reg == RISCV::NoRegister)
+    PseudoGpReg.setReg(RISCV::X3);
+  emitToStreamer(Out, MCInstBuilder(RISCV::PseudoAddRegRel)
+                          .addOperand(DestReg)
+                          .addOperand(PseudoGpReg)
+                          .addOperand(DestReg)
+                          .addExpr(SymbolAdd));
+  emitToStreamer(Out, MCInstBuilder(LowOpcode)
+                          .addOperand(DestReg)
+                          .addOperand(DestReg)
+                          .addExpr(SymbolLow));
+  return false;
+}
+
+void RISCVAsmParser::emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
+                                                SMLoc IDLoc, MCStreamer &Out,
+                                                bool HasTmpReg) {
+  // The Compact load/store pseudo-instruction does a gp-relative
+  // load/store with a symbol.
+  //
+  // The expansion looks like this
+  //
+  //   LUI    rtemp, %gprel_hi(symbol)
+  //   ADD    rtemp, rpseudogp, rtemp, %gprel_add(symbol)
+  //   [S|L]X rdest, %gprel_lo(symbol)(rtemp)
+  MCContext &Ctx = getContext();
+  MCOperand DestReg = Inst.getOperand(0);
+  unsigned PseudoGpRegOpIdx = HasTmpReg ? 3 : 2;
+  unsigned SymbolOpIdx = HasTmpReg ? 2 : 1;
+  unsigned TmpRegOpIdx = HasTmpReg ? 1 : 0;
+  MCOperand PseudoGpReg = Inst.getOperand(PseudoGpRegOpIdx);
+  MCOperand TmpReg = Inst.getOperand(TmpRegOpIdx);
+  const MCExpr *Symbol = Inst.getOperand(SymbolOpIdx).getExpr();
+  const RISCVMCExpr *SymbolHi =
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_HI, Ctx);
+  const RISCVMCExpr *SymbolAdd =
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_ADD, Ctx);
+  const RISCVMCExpr *SymbolLow =
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_LO, Ctx);
+  emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
+                          .addOperand(TmpReg)
+                          .addExpr(SymbolHi));
+  MCRegister Reg = PseudoGpReg.getReg();
+  if (Reg == RISCV::NoRegister)
+    PseudoGpReg.setReg(RISCV::X3);
+  emitToStreamer(Out, MCInstBuilder(RISCV::PseudoAddRegRel)
+                          .addOperand(TmpReg)
+                          .addOperand(PseudoGpReg)
+                          .addOperand(TmpReg)
+                          .addExpr(SymbolAdd));
+  emitToStreamer(Out, MCInstBuilder(Opcode)
+                          .addOperand(DestReg)
+                          .addOperand(TmpReg)
+                          .addExpr(SymbolLow));
+}
+
 void RISCVAsmParser::emitPseudoExtend(MCInst &Inst, bool SignExtend,
                                       int64_t Width, SMLoc IDLoc,
                                       MCStreamer &Out) {
@@ -2616,6 +2758,11 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
 }
 
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultMaskRegOp() const {
+  return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
+                                 llvm::SMLoc(), isRV64());
+}
+
+std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultPseudoGPRegisterOperands() const {
   return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
                                  llvm::SMLoc(), isRV64());
 }
@@ -2841,6 +2988,80 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
 
     return false;
   }
+
+  case RISCV::PseudoLLA_GPREL:
+  case RISCV::PseudoLA_GOT_GPREL:
+  case RISCV::PseudoLA_TLS_IE_GPREL:
+  case RISCV::PseudoLA_TLS_GD_GPREL:
+    return emitCompactLoadAddress(Inst, Inst.getOpcode(), IDLoc, Out);
+  case RISCV::PseudoLB_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LB, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLBU_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LBU, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLH_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LH, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLHU_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LHU, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLW_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LW, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLWU_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LWU, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoLD_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::LD, IDLoc,
+                               Out, /*HasTmpReg=*/false);
+    return false;
+  case RISCV::PseudoFLH_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FLH, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoFLW_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FLW, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoFLD_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FLD, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoSB_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::SB, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoSH_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::SH, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoSW_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::SW, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoSD_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::SD, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoFSH_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FSH, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoFSW_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FSW, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
+  case RISCV::PseudoFSD_GPREL:
+    emitCompactLoadStoreSymbol(Inst, RISCV::FSD, IDLoc,
+                               Out, /*HasTmpReg=*/true);
+    return false;
   }
 
   emitToStreamer(Out, Inst);
