@@ -18,6 +18,7 @@
 #include "RISCVTargetMachine.h"
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/ADT/Statistic.h"
+#include "llvm/BinaryFormat/ELF.h"
 #include "llvm/CodeGen/AsmPrinter.h"
 #include "llvm/CodeGen/MachineConstantPool.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
@@ -73,6 +74,7 @@ public:
 
 private:
   void emitAttributes();
+  void emitCompactStub();
 };
 }
 
@@ -182,10 +184,6 @@ bool RISCVAsmPrinter::runOnMachineFunction(MachineFunction &MF) {
 }
 
 void RISCVAsmPrinter::emitStartOfAsmFile(Module &M) {
-  // These code will be removed, this hint is for GNU AS.
-  if (TM.getCodeModel() == CodeModel::Large)
-    OutStreamer->emitRawText(StringRef("\t.option compact\n"));
-
   if (TM.getTargetTriple().isOSBinFormatELF())
     emitAttributes();
 }
@@ -194,18 +192,8 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
-  // These code will be removed, We need to give correct information for MC.
-  if (TM.getCodeModel() == CodeModel::Large) {
-    StringRef GlobalInfo = "\t.section .text.__global_pointer__,\"aMG\","
-                           "@progbits, 8, __global_pointer__, comdat\n"
-                           "\t.align 3\n"
-                           "\t.global __global_pointer__\n"
-                           "\t.hidden __global_pointer__\n"
-                           "\t.type __global_pointer__, object\n"
-                           "__global_pointer__:\n"
-                           "\t.quad __global_pointer$ -.";
-    OutStreamer->emitRawText(GlobalInfo);
-  }
+  if (TM.getCodeModel() == CodeModel::Large)
+    emitCompactStub();
 
   if (TM.getTargetTriple().isOSBinFormatELF())
     RTS.finishAttributeSection();
@@ -222,6 +210,38 @@ void RISCVAsmPrinter::emitFunctionEntryLabel() {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
   RTS.setTargetABI(STI->getTargetABI());
+}
+
+void RISCVAsmPrinter::emitCompactStub() {
+  StringRef LabelName = "__global_pointer__";
+  MCSection *Current = OutStreamer->getCurrentSectionOnly();
+  MCSectionELF *CompactSec = OutContext.getELFSection(
+      Twine(".text.") + LabelName, ELF::SHT_PROGBITS,
+      ELF::SHF_ALLOC | ELF::SHF_MERGE | ELF::SHF_GROUP,
+      8, LabelName, /*IsComdat=*/true);
+  OutStreamer->SwitchSection((MCSection *)CompactSec);
+
+  emitAlignment(Align(8));
+
+  MCSymbol *Label = OutContext.getOrCreateSymbol(LabelName);
+  OutStreamer->emitSymbolAttribute(Label, MCSA_Global);
+  OutStreamer->emitSymbolAttribute(Label, MCSA_Hidden);
+  OutStreamer->emitSymbolAttribute(Label, MCSA_ELF_TypeObject);
+  OutStreamer->emitLabel(Label);
+
+  /* Emit ".quad __global_pointer$ - .".  MC doesn't have a concept
+     of the '.', so just emit a local label and reference that instead,
+     like what ARM did in their ARMAsmPrinter.cpp.  */
+  StringRef GPName = "__global_pointer$";
+  MCSymbol *GPSym = OutContext.getOrCreateSymbol(GPName);
+  MCSymbol *DotSym = OutContext.createTempSymbol();
+  OutStreamer->emitLabel(DotSym);
+  const MCExpr *PCRelExpr = MCSymbolRefExpr::create(GPSym, OutContext);
+  const MCExpr *DotExpr = MCSymbolRefExpr::create(DotSym, OutContext);
+  PCRelExpr = MCBinaryExpr::createSub(PCRelExpr, DotExpr, OutContext);
+  OutStreamer->emitValue(PCRelExpr, 8);
+
+  OutStreamer->SwitchSection(Current);
 }
 
 // Force static initialization.
