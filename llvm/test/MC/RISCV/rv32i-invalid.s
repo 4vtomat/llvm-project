@@ -132,7 +132,7 @@ auipc a0, %pcrel_lo(foo) # CHECK: :[[@LINE]]:11: error: operand must be a symbol
 
 # TP-relative symbol names require a %tprel_add modifier.
 add a0, a0, tp, zero # CHECK: :[[@LINE]]:17: error: expected '%' for operand modifier
-add a0, a0, tp, %hi(foo) # CHECK: :[[@LINE]]:17: error: operand must be a symbol with %tprel_add modifier
+add a0, a0, tp, %hi(foo) # CHECK: :[[@LINE]]:17: error: operand must be a symbol with any of %tprel_add, %gprel, %got_gprel, %tls_ie_gprel and %tls_gd_gprel modifier
 add a0, tp, a0, %tprel_add(foo) # CHECK: :[[@LINE]]:13: error: the second input operand must be tp/x4 when using %tprel_add modifier
 
 # Unrecognized operand modifier
