@@ -378,3 +378,13 @@ foreach i = 0...3 in {
 //===-----------------------------------------------
 
 def SEED : SysReg<"seed", 0x015>;
+
+// SIFIVE
+//===-----------------------------------------------
+// Interrupt Clic CSRs (August 2018)
+//===-----------------------------------------------
+def : SysReg<"mtvt", 0x307>;
+def : SysReg<"mnxti", 0x345>;
+def : SysReg<"mintstatus", 0x346>;
+def : SysReg<"mscratchcsw", 0x348>;
+// end SIFIVE
