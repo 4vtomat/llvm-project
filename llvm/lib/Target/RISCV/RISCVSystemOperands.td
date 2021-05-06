@@ -399,4 +399,12 @@ def : SysReg<"mtvt", 0x307>;
 def : SysReg<"mnxti", 0x345>;
 def : SysReg<"mintstatus", 0x346>;
 def : SysReg<"mscratchcsw", 0x348>;
+
+//===-----------------------------------------------
+// Interrupt Rnmi CSRs
+//===-----------------------------------------------
+def : SysReg<"mnscratch", 0x350>;
+def : SysReg<"mnepc", 0x351>;
+def : SysReg<"mncause", 0x352>;
+def : SysReg<"mnstatus", 0x353>;
 // end SIFIVE

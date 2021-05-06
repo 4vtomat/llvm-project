@@ -40,3 +40,13 @@ let Constraints = "@earlyclobber $vd" in {
 defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
 }
 } // Predicates = [HasExtXsfvqmaccdod]
+
+
+let isBarrier = 1, isReturn = 1, isTerminator = 1,
+    hasNoSchedulingInfo = 1 in {
+def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
+  let rd = 0;
+  let rs1 = 0;
+  let rs2 = 0b00010;
+}
+} // let isBarrier = 1, ...
