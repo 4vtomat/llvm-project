@@ -50,3 +50,28 @@ def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
   let rs2 = 0b00010;
 }
 } // let isBarrier = 1, ...
+
+let hasNoSchedulingInfo = 1, hasSideEffects = 1,
+    mayLoad = 0, mayStore = 0 in {
+def CFLUSH_D_L1
+    : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1),
+              "cflush.d.l1", "$rs1">, Sched<[]> {
+  let rd = 0;
+  let rs2 = 0b00000;
+}
+
+def CDISCARD_D_L1
+    : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1),
+              "cdiscard.d.l1", "$rs1">, Sched<[]> {
+  let rd = 0;
+  let rs2 = 0b00010;
+}
+
+def CFLUSH_I_L1
+    : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins),
+              "cflush.i.l1", "">, Sched<[]> {
+  let rd = 0;
+  let rs1 = 0;
+  let rs2 = 0b00001;
+}
+} // hasNoSchedulingInfo = 1, ...
