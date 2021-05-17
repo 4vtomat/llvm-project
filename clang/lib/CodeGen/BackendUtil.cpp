@@ -300,6 +300,7 @@ getCodeModel(const CodeGenOptions &CodeGenOpts) {
                            .Case("small", llvm::CodeModel::Small)
                            .Case("kernel", llvm::CodeModel::Kernel)
                            .Case("medium", llvm::CodeModel::Medium)
+                           .Case("compact", llvm::CodeModel::Compact)
                            .Case("large", llvm::CodeModel::Large)
                            .Case("default", ~1u)
                            .Default(~0u);

@@ -856,6 +856,7 @@ void CodeGenModule::Release() {
                   .Case("small", llvm::CodeModel::Small)
                   .Case("kernel", llvm::CodeModel::Kernel)
                   .Case("medium", llvm::CodeModel::Medium)
+                  .Case("compact", llvm::CodeModel::Compact)
                   .Case("large", llvm::CodeModel::Large)
                   .Default(~0u);
     if (CM != ~0u) {

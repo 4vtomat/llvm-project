@@ -156,6 +156,7 @@ codegen::RegisterCodeGenFlags::RegisterCodeGenFlags() {
                  clEnumValN(CodeModel::Small, "small", "Small code model"),
                  clEnumValN(CodeModel::Kernel, "kernel", "Kernel code model"),
                  clEnumValN(CodeModel::Medium, "medium", "Medium code model"),
+                 clEnumValN(CodeModel::Compact, "compact", "Compact code model"),
                  clEnumValN(CodeModel::Large, "large", "Large code model")));
   CGBINDOPT(CodeModel);
 

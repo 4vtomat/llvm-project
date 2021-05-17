@@ -135,7 +135,7 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_cmodel_medlow");
   else if (CodeModel == "medium")
     Builder.defineMacro("__riscv_cmodel_medany");
-  else if (CodeModel == "large")
+  else if (CodeModel == "compact")
     Builder.defineMacro("__riscv_cmodel_compact");
 
   StringRef ABIName = getABI();

@@ -58,6 +58,7 @@ typedef enum {
     LLVMCodeModelSmall,
     LLVMCodeModelKernel,
     LLVMCodeModelMedium,
+    LLVMCodeModelCompact,
     LLVMCodeModelLarge
 } LLVMCodeModel;
 

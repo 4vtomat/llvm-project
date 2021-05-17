@@ -65,6 +65,7 @@ const (
 	CodeModelSmall      CodeModel = C.LLVMCodeModelSmall
 	CodeModelKernel     CodeModel = C.LLVMCodeModelKernel
 	CodeModelMedium     CodeModel = C.LLVMCodeModelMedium
+	CodeModelCompact    CodeModel = C.LLVMCodeModelCompact
 	CodeModelLarge      CodeModel = C.LLVMCodeModelLarge
 )
 

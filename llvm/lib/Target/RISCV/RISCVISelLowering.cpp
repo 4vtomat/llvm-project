@@ -3578,8 +3578,8 @@ static SDValue getTargetNode(ExternalSymbolSDNode *N, SDLoc DL, EVT Ty,
 }
 
 template <class NodeTy>
-SDValue RISCVTargetLowering::getLargeAddr(NodeTy *N, SelectionDAG &DAG,
-                                          unsigned FlagsHi) const {
+SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
+                                            unsigned FlagsHi) const {
   SDLoc DL(N);
   EVT Ty = getPointerTy(DAG.getDataLayout());
   unsigned FlagsAdd;
@@ -3629,7 +3629,7 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
   EVT Ty = getPointerTy(DAG.getDataLayout());
 
   if (isPositionIndependent()
-      && getTargetMachine().getCodeModel() != CodeModel::Large) {
+      && getTargetMachine().getCodeModel() != CodeModel::Compact) {
     SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
     if (IsLocal)
       // Use PC-relative addressing to access the symbol. This generates the
@@ -3670,7 +3670,7 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
     return SDValue(DAG.getMachineNode(RISCV::PseudoLLA, DL, Ty, Addr), 0);
   }
-  case CodeModel::Large: {
+  case CodeModel::Compact: {
     // Generate a sequence for accessing the whole 64-bit address space,
     // with the appropriate adjustment for the global pointer offset.
     // The generates the pattern of local symbol:
@@ -3678,9 +3678,9 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     // The generates the pattern of global symbol:
     // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
     if (IsLocal)
-      return getLargeAddr(N, DAG, RISCVII::MO_GPREL_HI);
+      return getCompactAddr(N, DAG, RISCVII::MO_GPREL_HI);
     else
-      return getLargeAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
+      return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
   }
   }
 }
@@ -3705,7 +3705,7 @@ SDValue RISCVTargetLowering::lowerGlobalAddress(SDValue Op,
   const GlobalValue *GV = N->getGlobal();
   bool IsLocal = getTargetMachine().shouldAssumeDSOLocal(*GV->getParent(), GV);
 
-  if (getTargetMachine().getCodeModel() == CodeModel::Large)
+  if (getTargetMachine().getCodeModel() == CodeModel::Compact)
     IsLocal = GV->hasLocalLinkage();
 
   SDValue Addr = getAddr(N, DAG, IsLocal);
@@ -3750,11 +3750,15 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   MVT XLenVT = Subtarget.getXLenVT();
 
   if (UseGOT) {
-    // Use PC-relative addressing to access the GOT for this TLS symbol, then
-    // load the address from the GOT and add the thread pointer. This generates
-    // the pattern (PseudoLA_TLS_IE sym), which expands to
-    // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
-    if (getTargetMachine().getCodeModel() != CodeModel::Large) {
+    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+      SDValue Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
+      SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
+      return SDValue(DAG.getMachineNode(RISCV::ADD, DL, Ty, Load, TPReg), 0);
+    } else {
+      // Use PC-relative addressing to access the GOT for this TLS symbol, then
+      // load the address from the GOT and add the thread pointer. This generates
+      // the pattern (PseudoLA_TLS_IE sym), which expands to
+      // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
       SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
       SDValue Load =
           SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_IE, DL, Ty, Addr), 0);
@@ -3769,10 +3773,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
       // Add the thread pointer.
       SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
       return DAG.getNode(ISD::ADD, DL, Ty, Load, TPReg);
-    } else {
-      SDValue Load = getLargeAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
-      SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
-      return SDValue(DAG.getMachineNode(RISCV::ADD, DL, Ty, Load, TPReg), 0);
     }
   }
 
@@ -3808,10 +3808,10 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
   SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
   SDValue Load;
 
-  if (getTargetMachine().getCodeModel() != CodeModel::Large) {
-    Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
+  if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+    Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
   } else {
-    Load = getLargeAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
+    Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
   }
 
   // Prepare argument list to generate call.
@@ -11034,25 +11034,25 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   // TargetGlobalAddress/TargetExternalSymbol node so that legalize won't
   // split it and then direct call can be matched by PseudoCALL.
   if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
-    if (getTargetMachine().getCodeModel() != CodeModel::Large) {
+    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+      Callee = lowerGlobalAddress(Callee, DAG);
+    } else {
       const GlobalValue *GV = S->getGlobal();
 
       unsigned OpFlags = RISCVII::MO_CALL;
       if (!getTargetMachine().shouldAssumeDSOLocal(*GV->getParent(), GV))
         OpFlags = RISCVII::MO_PLT;
       Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, OpFlags);
-    } else {
-      Callee = lowerGlobalAddress(Callee, DAG);
     }
   } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
-    if (getTargetMachine().getCodeModel() != CodeModel::Large) {
+    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+      Callee = getCompactAddr(S, DAG, RISCVII::MO_GOT_GPREL_HI);
+    } else {
       const TargetMachine &TM = getTargetMachine();
       unsigned OpFlags = RISCVII::MO_CALL;
       if (!TM.shouldAssumeDSOLocal(*MF.getFunction().getParent(), nullptr))
         OpFlags = RISCVII::MO_PLT;
       Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, OpFlags);
-    } else {
-      Callee = getLargeAddr(S, DAG, RISCVII::MO_GOT_GPREL_HI);
     }
   }
 

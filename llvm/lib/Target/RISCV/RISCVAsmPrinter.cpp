@@ -192,7 +192,7 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
-  if (TM.getCodeModel() == CodeModel::Large)
+  if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
 
   if (TM.getTargetTriple().isOSBinFormatELF())

@@ -38,6 +38,8 @@ inline Optional<CodeModel::Model> unwrap(LLVMCodeModel Model, bool &JIT) {
     return CodeModel::Kernel;
   case LLVMCodeModelMedium:
     return CodeModel::Medium;
+  case LLVMCodeModelCompact:
+    return CodeModel::Compact;
   case LLVMCodeModelLarge:
     return CodeModel::Large;
   }
@@ -54,6 +56,8 @@ inline LLVMCodeModel wrap(CodeModel::Model Model) {
     return LLVMCodeModelKernel;
   case CodeModel::Medium:
     return LLVMCodeModelMedium;
+  case CodeModel::Compact:
+    return LLVMCodeModelCompact;
   case CodeModel::Large:
     return LLVMCodeModelLarge;
   }

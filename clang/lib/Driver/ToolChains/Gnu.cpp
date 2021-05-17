@@ -1888,7 +1888,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   std::string CurrentArchOpt = Twine("march=", MArch).str();
   std::string CurrentMCmodelOpt = llvm::StringSwitch<const char *>(CodeModel)
                                       .Case("medium", "mcmodel=medany")
-                                      .Case("large", "mcmodel=compact")
+                                      .Case("compact", "mcmodel=compact")
                                       .Default("mcmodel=medlow");
 
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> File =

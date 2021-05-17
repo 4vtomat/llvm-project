@@ -5361,7 +5361,7 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   if (Arg *A = Args.getLastArg(options::OPT_mcmodel_EQ)) {
     StringRef CM = A->getValue();
     if (CM == "small" || CM == "kernel" || CM == "medium" || CM == "large" ||
-        CM == "tiny") {
+        CM == "tiny" || CM == "compact") {
       if (Triple.isOSAIX() && CM == "medium")
         CmdArgs.push_back("-mcmodel=large");
       else

@@ -114,6 +114,9 @@ void JITTargetMachineBuilderPrinter::print(raw_ostream &OS) const {
     case CodeModel::Medium:
       OS << "Medium";
       break;
+    case CodeModel::Compact:
+      OS << "Compact";
+      break;
     case CodeModel::Large:
       OS << "Large";
       break;
