@@ -450,6 +450,7 @@ include "RISCVInstrInfo.td"
 include "RISCVRegisterBanks.td"
 include "RISCVSchedRocket.td"
 include "RISCVSchedSiFive7.td"
+include "RISCVSchedSiFive8.td"
 
 //===----------------------------------------------------------------------===//
 // RISC-V processors supported.
@@ -468,6 +469,11 @@ def : ProcessorModel<"sifive-7-rv32", SiFive7Model, [],
                      [TuneSiFive7]>;
 def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
                      [TuneSiFive7]>;
+
+// SIFIVE
+def : ProcessorModel<"sifive-8-rv32", SiFive8Model, []>;
+def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit]>;
+// end SIFIVE
 
 def : ProcessorModel<"sifive-e20", RocketModel, [FeatureStdExtM,
                                                  FeatureStdExtC]>;

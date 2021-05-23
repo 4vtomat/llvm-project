@@ -5,6 +5,7 @@
 PROC_ALIAS("generic", "generic-rv32", "generic-rv64")
 PROC_ALIAS("rocket", "rocket-rv32", "rocket-rv64")
 PROC_ALIAS("sifive-7-series", "sifive-7-rv32", "sifive-7-rv64")
+PROC_ALIAS("sifive-8-series", "sifive-8-rv32", "sifive-8-rv64")
 
 #undef PROC_ALIAS
 
@@ -31,5 +32,7 @@ PROC(SIFIVE_S54, {"sifive-s54"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_S76, {"sifive-s76"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_U54, {"sifive-u54"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_U74, {"sifive-u74"}, FK_64BIT, {"rv64gc"})
+PROC(SIFIVE_832, {"sifive-8-rv32"}, FK_NONE, {""})
+PROC(SIFIVE_864, {"sifive-8-rv64"}, FK_64BIT, {""})
 
 #undef PROC
