@@ -12,6 +12,7 @@
 #include "Arch/M68k.h"
 #include "Arch/Mips.h"
 #include "Arch/PPC.h"
+#include "Arch/RISCV.h"
 #include "Arch/SystemZ.h"
 #include "Arch/VE.h"
 #include "Arch/X86.h"
@@ -637,6 +638,17 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
         Args.MakeArgString(Twine("-plugin-opt=stats-file=") + StatsFile));
 
   addX86AlignBranchArgs(D, Args, CmdArgs, /*IsLTO=*/true);
+
+  // pass more options in specific target
+  switch (ToolChain.getArch()) {
+  default:
+    break;
+  case llvm::Triple::riscv32:
+  case llvm::Triple::riscv64: {
+    riscv::addRISCVTargetABIArgs(ToolChain, Args, CmdArgs);
+    break;
+  }
+  }
 
   // Handle remark diagnostics on screen options: '-Rpass-*'.
   renderRpassOptions(Args, CmdArgs);

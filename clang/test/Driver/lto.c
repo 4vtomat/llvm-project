@@ -105,3 +105,49 @@
 // FLTO-THIN: -flto=thin
 // FLTO-THIN-NOT: "-flto"
 // FLTO-THIN-NOT: -flto=full
+
+// Need to pass -target-abi option in RISC-V target.
+// RUN: %clang -target riscv32 %s -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT
+// RUN: %clang -target riscv64 %s -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT
+// RV32-DEFAULT: "-plugin-opt=-target-abi=ilp32"
+// RV64-DEFAULT: "-plugin-opt=-target-abi=lp64"
+//
+// RUN: %clang -target riscv32-unknown-elf %s -fuse-ld=gold -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT-ELF
+// RUN: %clang -target riscv32-unknown-elf %s -fuse-ld=lld -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT-ELF
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT-LINUX
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=lld -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT-LINUX
+//
+// RV32-DEFAULT-ELF: "-plugin-opt=-target-abi=ilp32"
+// RV32-DEFAULT-LINUX: "-plugin-opt=-target-abi=ilp32d"
+
+// RUN: %clang -target riscv64-unknown-elf %s -fuse-ld=gold -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT-ELF
+// RUN: %clang -target riscv64-unknown-elf %s -fuse-ld=lld -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT-ELF
+// RUN: %clang -target riscv64-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT-LINUX
+// RUN: %clang -target riscv64-unknown-linux-gnu %s -fuse-ld=lld -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT-LINUX
+//
+// RV64-DEFAULT-ELF: "-plugin-opt=-target-abi=lp64"
+// RV64-DEFAULT-LINUX: "-plugin-opt=-target-abi=lp64d"
+
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -mabi=ilp32f -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-ABI-1
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -mabi=ilp32d -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-ABI-2
+// RUN: %clang -target riscv64-unknown-linux-gnu %s -fuse-ld=lld -flto \
+// RUN:   -mabi=lp64 -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-ABI-3
+// RUN: %clang -target riscv64-unknown-linux-gnu %s -fuse-ld=lld -flto \
+// RUN:   -mabi=lp64f -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-ABI-4
+//
+// RISCV-SPEC-ABI-1: "-plugin-opt=-target-abi=ilp32f"
+// RISCV-SPEC-ABI-2: "-plugin-opt=-target-abi=ilp32d"
+// RISCV-SPEC-ABI-3: "-plugin-opt=-target-abi=lp64"
+// RISCV-SPEC-ABI-4: "-plugin-opt=-target-abi=lp64f"

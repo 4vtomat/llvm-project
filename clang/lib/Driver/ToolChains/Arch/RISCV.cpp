@@ -312,3 +312,13 @@ StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
 
   return CodeModel;
 }
+
+void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
+                                  const llvm::opt::ArgList &Args,
+                                  llvm::opt::ArgStringList &CmdArgs) {
+  // We need to pass target-abi option to check it is equal to module's
+  // target-abi information.
+  StringRef ABIName = getRISCVABI(Args, ToolChain.getTriple());
+  CmdArgs.push_back(
+      Args.MakeArgString(Twine("-plugin-opt=-target-abi=") + ABIName));
+}
