@@ -23,7 +23,6 @@ define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift,
 ; CHECK-NEXT:    vrsub.vi v12, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, mu
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
-; CHECK-NEXT:    vmv.v.v v16, v16
 ; CHECK-NEXT:    vsll.vv v8, v16, v8
 ; CHECK-NEXT:    vssra.vv v8, v8, v12
 ; CHECK-NEXT:    add a6, a3, a6

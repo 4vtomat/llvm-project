@@ -64,6 +64,8 @@ private:
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
   bool expandVSPILL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVRELOAD(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool removeRedundantVMV(MachineBasicBlock &MBB,
+                          MachineBasicBlock::iterator MBBI);
 };
 
 char RISCVExpandPseudo::ID = 0;
@@ -150,6 +152,14 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVRELOAD7_M1:
   case RISCV::PseudoVRELOAD8_M1:
     return expandVRELOAD(MBB, MBBI);
+  case RISCV::PseudoVMV_V_V_MF8:
+  case RISCV::PseudoVMV_V_V_MF4:
+  case RISCV::PseudoVMV_V_V_MF2:
+  case RISCV::PseudoVMV_V_V_M1:
+  case RISCV::PseudoVMV_V_V_M2:
+  case RISCV::PseudoVMV_V_V_M4:
+  case RISCV::PseudoVMV_V_V_M8:
+    return removeRedundantVMV(MBB, MBBI);
   }
 
   return false;
@@ -375,6 +385,15 @@ bool RISCVExpandPseudo::expandVRELOAD(MachineBasicBlock &MBB,
   }
   MBBI->eraseFromParent();
   return true;
+}
+
+bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
+                                           MachineBasicBlock::iterator MBBI) {
+  if (MBBI->getOperand(0).getReg() == MBBI->getOperand(1).getReg()) {
+    MBBI->eraseFromParent();
+    return true;
+  }
+  return false;
 }
 
 } // end of anonymous namespace
