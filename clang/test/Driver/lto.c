@@ -151,3 +151,19 @@
 // RISCV-SPEC-ABI-2: "-plugin-opt=-target-abi=ilp32d"
 // RISCV-SPEC-ABI-3: "-plugin-opt=-target-abi=lp64"
 // RISCV-SPEC-ABI-4: "-plugin-opt=-target-abi=lp64f"
+
+// Need to pass -mattr option in RISC-V target.
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-MARCH-1
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -march=rv32i -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-MARCH-2
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -march=rv32gc -### 2>&1 | FileCheck %s --check-prefix=RISCV-SPEC-MARCH-3
+//
+// RISCV-SPEC-MARCH-1: "-plugin-opt=-mattr=+m,+a,+f,+d,+c,+relax,-save-restore"
+// RISCV-SPEC-MARCH-2: "-plugin-opt=-mattr=+relax,-save-restore"
+// RISCV-SPEC-MARCH-3: "-plugin-opt=-mattr=+m,+a,+f,+d,+c,+relax,-save-restore"
+
+// RUN: %clang -target x86_64-unknown-linux-gnu %s -flto \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=CHECK-NO-TARGET-ABI
+// CHECK-NO-TARGET-ABI-NOT: "-plugin-opt=-target-abi

@@ -13,6 +13,7 @@
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
 #include "llvm/ADT/Optional.h"
+#include "llvm/ADT/StringExtras.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/RISCVISAInfo.h"
@@ -318,7 +319,39 @@ void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
                                   llvm::opt::ArgStringList &CmdArgs) {
   // We need to pass target-abi option to check it is equal to module's
   // target-abi information.
-  StringRef ABIName = getRISCVABI(Args, ToolChain.getTriple());
+  // SIFIVE
+  const llvm::Triple &Triple = ToolChain.getTriple();
+  StringRef ABIName = getRISCVABI(Args, Triple);
   CmdArgs.push_back(
       Args.MakeArgString(Twine("-plugin-opt=-target-abi=") + ABIName));
+  std::vector<StringRef> Features;
+  // Pass -mattr from driver to LTO code generator
+  // In two steps compilation, for example:
+  // 1. clang++ clang/test/CodeGenCXX/noexcept.cpp -flto -c -O0 -std=c++11
+  // -fcxx-exceptions -fexceptions
+  // 2. clang++ noexcept.o -flto
+  //
+  // Some builtin/comdat functions have empty target-feature. Compiling a
+  // function with empty target-feature and mismatched target-abi would show the
+  // message, like “Hard-float 'd' ABI can't be used for a target that doesn't
+  // support the D instruction set extension (ignoring target-abi)“.
+  // This is failure alarm because driver would pass target-abi option to LTO
+  // code generator, so the result object ABI flags still has “Hard-float 'd'.
+  //
+  // In addition, the arch attribute is default value if driver does not pass
+  // -mattr to LTO code generator. So in the above example, the result arch
+  // attribute is rv[32|64]i.
+  //
+  // Generally, one compilation unit only have one arch attribute, but RISC-V
+  // arch attribute is based on function scope attribute `target-feature`.
+  // Currently we don't have time to find a good way to handle different
+  // target-featues between functions or modules. (ex. combining all feature is
+  // not suitable in ifunc case. Linker need to new merge behavior).
+  // See more in D102925 and D102926.
+  riscv::getRISCVTargetFeatures(ToolChain.getDriver(), Triple, Args, Features);
+  std::string AttrString = join(Features, ",");
+  if (!AttrString.empty())
+    CmdArgs.push_back(
+        Args.MakeArgString(Twine("-plugin-opt=-mattr=") + AttrString));
+  // end SIFIVE
 }
