@@ -37,6 +37,7 @@ public:
   enum RISCVProcFamilyEnum : uint8_t {
     Others,
     SiFive7,
+    SiFiveX280, // SIFIVE
   };
 
 private:

@@ -457,6 +457,10 @@ def FeatureSaveRestore : SubtargetFeature<"save-restore", "EnableSaveRestore",
 
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors">;
+#ifdef SIFIVE_CUSTOMIZATION
+def  TuneSiFiveX280: SubtargetFeature<"sifive-x280","RISCVProcFamily", "SiFiveX280",
+                                      "SiFive X280 Processor">;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Named operands for CSR instructions.
@@ -589,7 +593,7 @@ def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
@@ -624,7 +628,7 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
-                     [TuneSiFive7]>;
+                     [TuneSiFiveX280]>;
 
 def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtM,
@@ -635,7 +639,7 @@ def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtZfh,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb]>;
-// end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.
