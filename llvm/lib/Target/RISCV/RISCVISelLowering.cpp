@@ -3673,14 +3673,9 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
   case CodeModel::Compact: {
     // Generate a sequence for accessing the whole 64-bit address space,
     // with the appropriate adjustment for the global pointer offset.
-    // The generates the pattern of local symbol:
-    // (add (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
     // The generates the pattern of global symbol:
     // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
-    if (IsLocal)
-      return getCompactAddr(N, DAG, RISCVII::MO_GPREL_HI);
-    else
-      return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
+    return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
   }
   }
 }
@@ -3704,10 +3699,6 @@ SDValue RISCVTargetLowering::lowerGlobalAddress(SDValue Op,
 
   const GlobalValue *GV = N->getGlobal();
   bool IsLocal = getTargetMachine().shouldAssumeDSOLocal(*GV->getParent(), GV);
-
-  if (getTargetMachine().getCodeModel() == CodeModel::Compact)
-    IsLocal = GV->hasLocalLinkage();
-
   SDValue Addr = getAddr(N, DAG, IsLocal);
 
   // In order to maximise the opportunity for common subexpression elimination,
