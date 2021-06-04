@@ -188,6 +188,26 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
   return Desc.getNumOperands() - Offset;
 }
 
+#if SIFIVE_CUSTOMIZATION
+/// \returns the number of V registers grouped by LMUL.
+static inline unsigned getLMULGroups(VLMUL LMul) {
+  switch (LMul) {
+  default:
+    // Return zero for LMUL_RESERVED, but it's not expected to be used.
+    return 0;
+  case LMUL_F8:
+  case LMUL_F4:
+  case LMUL_F2:
+  case LMUL_1:
+    return 1;
+  case LMUL_2:
+  case LMUL_4:
+  case LMUL_8:
+    return 1 << static_cast<unsigned>(LMul);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // RISC-V Specific Machine Operand Flags
 enum {
   MO_None = 0,
