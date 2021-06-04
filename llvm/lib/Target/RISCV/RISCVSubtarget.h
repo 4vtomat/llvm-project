@@ -30,6 +30,8 @@
 #include "RISCVGenSubtargetInfo.inc"
 
 namespace llvm {
+class SDep; // SIFIVE
+class SUnit; // SIFIVE
 class StringRef;
 
 class RISCVSubtarget : public RISCVGenSubtargetInfo {
@@ -95,6 +97,7 @@ private:
   bool EnableLinkerRelax = false;
   bool EnableRVCHintInstrs = true;
   bool EnableSaveRestore = false;
+  unsigned VLen = 128; // SIFIVE
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
   MVT XLenVT = MVT::i32;
@@ -114,6 +117,11 @@ private:
                                                   StringRef TuneCPU,
                                                   StringRef FS,
                                                   StringRef ABIName);
+
+  // SIFIVE
+  /// Initialize processor specific properties.
+  void initializeProperties();
+  // end SIFIVE
 
 public:
   // Initializes the data members to match that of the specified triple.
@@ -212,6 +220,7 @@ public:
     unsigned VLen = getMaxRVVVectorSizeInBits();
     return VLen == 0 ? getMaxVLen() : VLen;
   }
+  unsigned getVLen() const { return VLen; } // SIFIVE
   RISCVABI::ABI getTargetABI() const { return TargetABI; }
   bool isRegisterReservedByUser(Register i) const {
     assert(i < RISCV::NUM_TARGET_REGS && "Register out of range");
@@ -260,6 +269,11 @@ public:
   bool useRVVForFixedLengthVectors() const;
 
   bool enableSubRegLiveness() const override;
+
+#if SIFIVE_CUSTOMIZATION
+  void adjustSchedDependency(SUnit *Def, int DefOpIdx, SUnit *Use, int UseOpIdx,
+                             SDep &Dep) const override;
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // End llvm namespace
 

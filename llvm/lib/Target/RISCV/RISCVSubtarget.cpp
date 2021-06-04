@@ -17,6 +17,7 @@
 #include "RISCVLegalizerInfo.h"
 #include "RISCVRegisterBankInfo.h"
 #include "RISCVTargetMachine.h"
+#include "llvm/CodeGen/ScheduleDAG.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/ErrorHandling.h"
 
@@ -30,6 +31,14 @@ using namespace llvm;
 
 static cl::opt<bool> EnableSubRegLiveness("riscv-enable-subreg-liveness",
                                           cl::init(false), cl::Hidden);
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned> RVVVectorBits(
+    "riscv-v-vector-bits",
+    cl::desc("Length of the V extension vector registers, "
+             "with zero meaning the processor default."),
+    cl::init(0), cl::Hidden);
+#endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<int> RVVVectorBitsMax(
     "riscv-v-vector-bits-max",
@@ -83,8 +92,29 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
 
   TargetABI = RISCVABI::computeTargetABI(TT, getFeatureBits(), ABIName);
   RISCVFeatures::validate(TT, getFeatureBits());
+
+  initializeProperties(); // SIFIVE
   return *this;
 }
+
+// SIFIVE
+void RISCVSubtarget::initializeProperties() {
+  switch (getProcFamily()) {
+  default:
+    break;
+  case SiFiveX280:
+    VLen = 512;
+  }
+
+  // Override and cap the VLEN.
+  if (RVVVectorBits)
+    VLen = RVVVectorBits;
+  if (RVVVectorBitsMin)
+    VLen = std::max(VLen, static_cast<unsigned>(RVVVectorBitsMin));
+  if (RVVVectorBitsMax)
+    VLen = std::min(VLen, static_cast<unsigned>(RVVVectorBitsMax));
+}
+// end SIFIVE
 
 RISCVSubtarget::RISCVSubtarget(const Triple &TT, StringRef CPU,
                                StringRef TuneCPU, StringRef FS,
@@ -204,3 +234,175 @@ bool RISCVSubtarget::enableSubRegLiveness() const {
   // TODO: Enable for for RVV to better handle LMUL>1 and segment load/store.
   return EnableSubRegLiveness;
 }
+
+#if SIFIVE_CUSTOMIZATION
+static unsigned calculateLatency(const RISCVSubtarget* ST,
+                                 const MachineInstr* MI, unsigned Lat,
+                                 RISCVSubtarget::RISCVProcFamilyEnum ProcFamily) {
+  switch (ProcFamily) {
+  default:
+    return Lat;
+
+  case RISCVSubtarget::SiFiveX280:
+    {
+      const MCInstrDesc &Desc = MI->getDesc();
+
+      // Use the latency information from the base instruction for pseudos.
+      const RISCVVPseudosTable::PseudoInfo *RVV =
+          RISCVVPseudosTable::getPseudoInfo(MI->getOpcode());
+      if (RVV == nullptr)
+        return Lat;
+
+      // Use the base opcode.
+      unsigned Opcode = RVV->BaseInstr;
+
+      RISCVII::VLMUL LMul = RISCVII::getLMul(Desc.TSFlags);
+
+      // Instructions without SEW, if any.
+      if (!RISCVII::hasSEWOp(Desc.TSFlags))
+        return Lat * RISCVII::getLMULGroups(LMul);
+
+      unsigned SEW =
+          1 << MI->getOperand(MI->getNumExplicitOperands() - 1).getImm();
+
+      switch(Opcode) {
+      default:
+        return Lat * RISCVII::getLMULGroups(LMul);
+      // VRGATHER latency is proportional to the number of elements.
+      case RISCV::VRGATHER_VV:
+      case RISCV::VRGATHER_VI:
+      case RISCV::VRGATHER_VX:
+      // VRGATHEREI16 always uses an EEW of 16 bits.
+      case RISCV::VRGATHEREI16_VV:
+      // VCOMPRESS latency is proportional to the number of elements.
+      case RISCV::VCOMPRESS_VM:
+        return RISCVII::getLMULGroups(LMul) * ST->getVLen() / SEW;
+      // Reduction latency is complex.
+      case RISCV::VREDAND_VS:
+      case RISCV::VREDMAX_VS:
+      case RISCV::VREDMAXU_VS:
+      case RISCV::VREDMIN_VS:
+      case RISCV::VREDMINU_VS:
+      case RISCV::VREDOR_VS:
+      case RISCV::VREDSUM_VS:
+      case RISCV::VREDXOR_VS:
+      case RISCV::VFREDMAX_VS:
+      case RISCV::VFREDMIN_VS:
+      case RISCV::VFREDUSUM_VS:
+      // TODO: Assuming that the SEW is based on the input operands.
+      case RISCV::VFWREDUSUM_VS:
+      case RISCV::VWREDSUM_VS:
+      case RISCV::VWREDSUMU_VS:
+        return RISCVII::getLMULGroups(LMul) *
+            7 * (4 + Log2_32(ST->getVLen()) - 1 - Log2_32(SEW));
+      case RISCV::VFREDOSUM_VS:
+      case RISCV::VFWREDOSUM_VS:
+        return RISCVII::getLMULGroups(LMul) * 5 * ST->getVLen() / SEW ;
+      // Narrowing latency:
+      case RISCV::VNCLIP_WV:
+      case RISCV::VNCLIP_WX:
+      case RISCV::VNCLIP_WI:
+      case RISCV::VNCLIPU_WV:
+      case RISCV::VNCLIPU_WX:
+      case RISCV::VNCLIPU_WI:
+      case RISCV::VFNCVT_F_F_W:
+      case RISCV::VFNCVT_F_X_W:
+      case RISCV::VFNCVT_F_XU_W:
+      case RISCV::VFNCVT_ROD_F_F_W:
+      case RISCV::VFNCVT_RTZ_X_F_W:
+      case RISCV::VFNCVT_RTZ_XU_F_W:
+      case RISCV::VFNCVT_X_F_W:
+      case RISCV::VFNCVT_XU_F_W:
+      case RISCV::VNSRA_WV:
+      case RISCV::VNSRA_WX:
+      case RISCV::VNSRA_WI:
+      case RISCV::VNSRL_WV:
+      case RISCV::VNSRL_WX:
+      case RISCV::VNSRL_WI:
+        // FIXME: It may be more complex than this.
+        return Lat * RISCVII::getLMULGroups(LMul);
+      // Widening latency.
+      case RISCV::VFWADD_VV:
+      case RISCV::VFWADD_VF:
+      case RISCV::VFWCVT_F_F_V:
+      case RISCV::VFWCVT_F_X_V:
+      case RISCV::VFWCVT_F_XU_V:
+      case RISCV::VFWCVT_RTZ_X_F_V:
+      case RISCV::VFWCVT_RTZ_XU_F_V:
+      case RISCV::VFWCVT_X_F_V:
+      case RISCV::VFWCVT_XU_F_V:
+      case RISCV::VFWMACC_VV:
+      case RISCV::VFWMACC_VF:
+      case RISCV::VFWMUL_VV:
+      case RISCV::VFWMUL_VF:
+      case RISCV::VFWNMACC_VV:
+      case RISCV::VFWNMACC_VF:
+      case RISCV::VFWNMSAC_VV:
+      case RISCV::VFWNMSAC_VF:
+      case RISCV::VFWMSAC_VV:
+      case RISCV::VFWMSAC_VF:
+      case RISCV::VFWSUB_VV:
+      case RISCV::VFWSUB_VF:
+      case RISCV::VWADD_VV:
+      case RISCV::VWADD_VX:
+      case RISCV::VWADD_WV:
+      case RISCV::VWADD_WX:
+      case RISCV::VWADDU_VV:
+      case RISCV::VWADDU_VX:
+      case RISCV::VWADDU_WV:
+      case RISCV::VWADDU_WX:
+      case RISCV::VWMACC_VV:
+      case RISCV::VWMACC_VX:
+      case RISCV::VWMACCSU_VV:
+      case RISCV::VWMACCSU_VX:
+      case RISCV::VWMACCU_VV:
+      case RISCV::VWMACCU_VX:
+      case RISCV::VWMACCUS_VX:
+      case RISCV::VWMUL_VV:
+      case RISCV::VWMUL_VX:
+      case RISCV::VWMULSU_VV:
+      case RISCV::VWMULSU_VX:
+      case RISCV::VWMULU_VV:
+      case RISCV::VWMULU_VX:
+      case RISCV::VWSUB_VV:
+      case RISCV::VWSUB_VX:
+      case RISCV::VWSUB_WV:
+      case RISCV::VWSUB_WX:
+      case RISCV::VWSUBU_VV:
+      case RISCV::VWSUBU_VX:
+      case RISCV::VWSUBU_WV:
+      case RISCV::VWSUBU_WX:
+        // FIXME: It may be more complex than this.
+        return Lat * RISCVII::getLMULGroups(LMul);
+      }
+    }
+  }
+
+  llvm_unreachable("Unexpected processor model!");
+}
+
+// Perform adjustments to the latency of a schedule dependency.
+// TODO: Consider the impact on the throughput.
+void RISCVSubtarget::adjustSchedDependency(SUnit *SrcSU, int SrcOpIdx,
+                                           SUnit *DstSU, int DstOpIdx,
+                                           SDep &Dep) const {
+  // At the moment, only RVV uses the adjustment of the latency.
+  if (!hasVInstructions())
+    return;
+
+  if (SrcSU->isInstr()) {
+    MachineInstr *SrcMI = SrcSU->getInstr();
+    Dep.setLatency(
+        calculateLatency(this, SrcMI, Dep.getLatency(), getProcFamily()));
+  }
+
+  if (DstSU->isInstr()) {
+    MachineInstr *DstMI = DstSU->getInstr();
+    // Stores don't have dependents, but occupy units.
+    if (DstMI->mayStore()) {
+      Dep.setLatency(
+          calculateLatency(this, DstMI, Dep.getLatency(), getProcFamily()));
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
