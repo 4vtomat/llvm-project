@@ -568,6 +568,18 @@ def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                      [TuneSiFive7]>;
 
 // SIFIVE
+def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtV,
+                                                   FeatureStdExtZfh,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                     [TuneSiFive7]>;
+
 def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
@@ -581,6 +593,16 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
                      [TuneSiFive7]>;
+
+def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZfh,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb]>;
 // end SIFIVE
 
 //===----------------------------------------------------------------------===//
