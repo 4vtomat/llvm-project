@@ -5,6 +5,9 @@
 PROC_ALIAS("generic", "generic-rv32", "generic-rv64")
 PROC_ALIAS("rocket", "rocket-rv32", "rocket-rv64")
 PROC_ALIAS("sifive-7-series", "sifive-7-rv32", "sifive-7-rv64")
+// FIXME: Dummy entry for compatible, alias to sifive-7-series,
+//        but we should implement this in next release.
+PROC_ALIAS("sifive-7m-series", "sifive-7-rv32", "sifive-7-rv64")
 PROC_ALIAS("sifive-8-series", "sifive-8-rv32", "sifive-8-rv64")
 
 #undef PROC_ALIAS
