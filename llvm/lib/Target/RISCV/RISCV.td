@@ -527,6 +527,16 @@ def : ProcessorModel<"sifive-e76", SiFive7Model, [FeatureStdExtM,
                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
+// SIFIVE
+def : ProcessorModel<"sifive-e76m", SiFive7Model, [FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                     [TuneSiFive7]>;
+// end SIFIVE
+
 def : ProcessorModel<"sifive-s21", RocketModel, [Feature64Bit,
                                                  FeatureStdExtM,
                                                  FeatureStdExtA,
@@ -568,6 +578,16 @@ def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                      [TuneSiFive7]>;
 
 // SIFIVE
+def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                     [TuneSiFive7]>;
+
 def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
