@@ -35,6 +35,9 @@ FunctionPass *createRISCVCodeGenPreparePass();
 void initializeRISCVCodeGenPreparePass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
+FunctionPass *createRISCVTypePromotionPass(); // SIFIVE
+void initializeRISCVTypePromotionPass(PassRegistry &); // SIFIVE
+
 bool lowerRISCVMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
                                     AsmPrinter &AP);
 bool lowerRISCVMachineOperandToMCOperand(const MachineOperand &MO,
