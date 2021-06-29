@@ -210,8 +210,8 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   }
 
   bool UseNewlibNano = false;
-  if (const Arg *A = Args.getLastArg(clang::driver::options::OPT_specs_EQ)) {
-    if (StringRef(A->getValue()) == "nano.specs")
+  for (auto Specs : Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
+    if (Specs == "nano.specs")
       UseNewlibNano = true;
   }
 
