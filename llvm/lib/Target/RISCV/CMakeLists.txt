@@ -28,6 +28,7 @@ add_llvm_target(RISCVCodeGen
   RISCVInsertVSETVLI.cpp
   RISCVInstrInfo.cpp
   RISCVInstructionSelector.cpp
+  SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
   RISCVISelLowering.cpp
   RISCVLegalizerInfo.cpp
