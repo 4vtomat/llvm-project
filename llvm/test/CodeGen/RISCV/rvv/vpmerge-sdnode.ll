@@ -376,6 +376,7 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV32-NEXT:    li t1, 24
 ; RV32-NEXT:    mul t0, t0, t1
 ; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
 ; RV32-NEXT:    add a4, a0, a1
@@ -428,6 +429,7 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV32-NEXT:    li t1, 24
 ; RV32-NEXT:    mul t0, t0, t1
 ; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -438,6 +440,7 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV64-NEXT:    csrr t0, vlenb
 ; RV64-NEXT:    slli t0, t0, 3
 ; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
 ; RV64-NEXT:    add a4, a0, a1
@@ -470,6 +473,7 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV64-NEXT:    csrr t0, vlenb
 ; RV64-NEXT:    slli t0, t0, 3
 ; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <vscale x 128 x i8> @llvm.vp.merge.nxv128i8(<vscale x 128 x i1> %m, <vscale x 128 x i8> %va, <vscale x 128 x i8> %vb, i32 %evl)

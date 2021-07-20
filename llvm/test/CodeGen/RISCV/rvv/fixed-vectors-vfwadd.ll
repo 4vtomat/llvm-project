@@ -93,6 +93,7 @@ define <64 x float> @vfwadd_v64f16(<64 x half> *%x, <64 x half> *%y) {
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, mu
 ; CHECK-NEXT:    vle16.v v16, (a0)
@@ -111,6 +112,7 @@ define <64 x float> @vfwadd_v64f16(<64 x half> *%x, <64 x half> *%y) {
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <64 x half>, <64 x half>* %x
@@ -193,6 +195,7 @@ define <32 x double> @vfwadd_v32f32(<32 x float> *%x, <32 x float> *%y) {
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    li a2, 32
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m8, ta, mu
 ; CHECK-NEXT:    vle32.v v16, (a0)
@@ -210,6 +213,7 @@ define <32 x double> @vfwadd_v32f32(<32 x float> *%x, <32 x float> *%y) {
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <32 x float>, <32 x float>* %x

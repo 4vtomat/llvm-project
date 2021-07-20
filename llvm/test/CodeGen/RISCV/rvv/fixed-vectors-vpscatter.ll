@@ -1754,6 +1754,7 @@ define void @vpscatter_v32f64(<32 x double> %val, <32 x double*> %ptrs, <32 x i1
 ; RV64-NEXT:    csrr t0, vlenb
 ; RV64-NEXT:    slli t0, t0, 4
 ; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
 ; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, mu
 ; RV64-NEXT:    vle64.v v24, (a0)
 ; RV64-NEXT:    csrr a1, vlenb
@@ -1793,6 +1794,7 @@ define void @vpscatter_v32f64(<32 x double> %val, <32 x double*> %ptrs, <32 x i1
 ; RV64-NEXT:    csrr t0, vlenb
 ; RV64-NEXT:    slli t0, t0, 4
 ; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   call void @llvm.vp.scatter.v32f64.v32p0f64(<32 x double> %val, <32 x double*> %ptrs, <32 x i1> %m, i32 %evl)
@@ -1836,6 +1838,7 @@ define void @vpscatter_baseidx_v32i32_v32f64(<32 x double> %val, double* %base, 
 ; RV64-NEXT:    slli t1, t0, 3
 ; RV64-NEXT:    add t0, t1, t0
 ; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x09, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 9 * VLEB
 ; RV64-NEXT:    li a3, 32
 ; RV64-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; RV64-NEXT:    vle32.v v24, (a1)
@@ -1885,6 +1888,7 @@ define void @vpscatter_baseidx_v32i32_v32f64(<32 x double> %val, double* %base, 
 ; RV64-NEXT:    slli t1, t0, 3
 ; RV64-NEXT:    add t0, t1, t0
 ; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %ptrs = getelementptr inbounds double, double* %base, <32 x i32> %idxs
@@ -1900,6 +1904,7 @@ define void @vpscatter_baseidx_sext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV32-NEXT:    csrr t0, vlenb
 ; RV32-NEXT:    slli t0, t0, 4
 ; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
 ; RV32-NEXT:    li a3, 32
 ; RV32-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; RV32-NEXT:    vle32.v v24, (a1)
@@ -1950,6 +1955,7 @@ define void @vpscatter_baseidx_sext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV32-NEXT:    csrr t0, vlenb
 ; RV32-NEXT:    slli t0, t0, 4
 ; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -1961,6 +1967,7 @@ define void @vpscatter_baseidx_sext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV64-NEXT:    li t1, 24
 ; RV64-NEXT:    mul t0, t0, t1
 ; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
 ; RV64-NEXT:    li a3, 32
 ; RV64-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; RV64-NEXT:    vle32.v v24, (a1)
@@ -2018,6 +2025,7 @@ define void @vpscatter_baseidx_sext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV64-NEXT:    li t1, 24
 ; RV64-NEXT:    mul t0, t0, t1
 ; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %eidxs = sext <32 x i32> %idxs to <32 x i64>
@@ -2034,6 +2042,7 @@ define void @vpscatter_baseidx_zext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV32-NEXT:    csrr t0, vlenb
 ; RV32-NEXT:    slli t0, t0, 4
 ; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
 ; RV32-NEXT:    li a3, 32
 ; RV32-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; RV32-NEXT:    vle32.v v24, (a1)
@@ -2084,6 +2093,7 @@ define void @vpscatter_baseidx_zext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV32-NEXT:    csrr t0, vlenb
 ; RV32-NEXT:    slli t0, t0, 4
 ; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -2095,6 +2105,7 @@ define void @vpscatter_baseidx_zext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV64-NEXT:    li t1, 24
 ; RV64-NEXT:    mul t0, t0, t1
 ; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
 ; RV64-NEXT:    li a3, 32
 ; RV64-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; RV64-NEXT:    vle32.v v24, (a1)
@@ -2152,6 +2163,7 @@ define void @vpscatter_baseidx_zext_v32i32_v32f64(<32 x double> %val, double* %b
 ; RV64-NEXT:    li t1, 24
 ; RV64-NEXT:    mul t0, t0, t1
 ; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %eidxs = zext <32 x i32> %idxs to <32 x i64>

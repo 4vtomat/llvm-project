@@ -33,6 +33,7 @@ body: |
   ; CHECK:   $x5 = frame-destroy PseudoReadVLENB
   ; CHECK:   $x5 = frame-destroy SLLI killed $x5, 1
   ; CHECK:   $x2 = frame-destroy ADD $x2, killed $x5
+  ; CHECK:   frame-destroy CFI_INSTRUCTION def_cfa_offset 0
   ; CHECK:   PseudoRET
   bb.0:
   bb.1:

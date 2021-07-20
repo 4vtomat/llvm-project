@@ -29,6 +29,7 @@ define <vscale x 16 x i32> @foo(i32 %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5, 
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 4
 ; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x30, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 48 + 16 * VLEB
 ; CHECK-NEXT:    addi t0, sp, 40
 ; CHECK-NEXT:    sd t0, 8(sp)
 ; CHECK-NEXT:    csrr t0, vlenb
@@ -49,6 +50,7 @@ define <vscale x 16 x i32> @foo(i32 %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5, 
 ; CHECK-NEXT:    slli t0, t0, 4
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    ld ra, 40(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_def_cfa_offset 48
 ; CHECK-NEXT:    addi sp, sp, 48
 ; CHECK-NEXT:    ret
   %ret = call <vscale x 16 x i32> @bar(i32 %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5, i32 %6, i32 %7, <vscale x 16 x i32> %x, <vscale x 16 x i32> %x, <vscale x 16 x i32> %x, <vscale x 16 x i32> %x)

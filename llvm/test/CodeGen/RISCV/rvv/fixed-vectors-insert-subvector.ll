@@ -558,6 +558,7 @@ define void @insert_v2i64_nxv16i64_hi(<2 x i64>* %psv, <vscale x 16 x i64>* %out
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 4
 ; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    addi a0, sp, 80
@@ -575,6 +576,7 @@ define void @insert_v2i64_nxv16i64_hi(<2 x i64>* %psv, <vscale x 16 x i64>* %out
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 4
 ; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %sv = load <2 x i64>, <2 x i64>* %psv

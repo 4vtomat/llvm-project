@@ -23,6 +23,7 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 24 * VLEB
 ; CHECK-NEXT:    li a0, 55
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
 ; CHECK-NEXT:    vloxseg2ei32.v v8, (a0), v8
@@ -85,6 +86,7 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_def_cfa_offset 32
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 ;
@@ -99,6 +101,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    csrr t0, vlenb
 ; SUBREGLIVENESS-NEXT:    slli t0, t0, 4
 ; SUBREGLIVENESS-NEXT:    sub sp, sp, t0
+; SUBREGLIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * VLEB
 ; SUBREGLIVENESS-NEXT:    li a0, 55
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
 ; SUBREGLIVENESS-NEXT:    vloxseg2ei32.v v8, (a0), v8
@@ -145,6 +148,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    add sp, sp, t0
 ; SUBREGLIVENESS-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
 ; SUBREGLIVENESS-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
+; SUBREGLIVENESS-NEXT:    .cfi_def_cfa_offset 32
 ; SUBREGLIVENESS-NEXT:    addi sp, sp, 32
 ; SUBREGLIVENESS-NEXT:    ret
 entry:
