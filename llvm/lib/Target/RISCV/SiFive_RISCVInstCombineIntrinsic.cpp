@@ -23,23 +23,31 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscvtti"
 
-// Look for a splat, ignoring whether the operand is scalar or vector.
+static CallInst *CreateIntrinsic(IntrinsicInst *II, Intrinsic::ID IID,
+                                 ArrayRef<Type *> Types,
+                                 ArrayRef<Value *> Args) {
+  Function *Merge = Intrinsic::getDeclaration(II->getModule(), IID, Types);
+  return CallInst::Create(Merge, Args);
+}
+
 static Value *getVSplat(Value *Op, Value *VL) {
-  Type *Ty = Op->getType();
-  if (Ty->isIntegerTy() || Ty->isFloatingPointTy())
-    return Op;
-
-  assert(Ty->isVectorTy() && "Unexpected type!");
-
-  if (auto *II = dyn_cast<IntrinsicInst>(Op)) {
+  if (auto *II = dyn_cast<IntrinsicInst>(Op))
     if ((II->getIntrinsicID() == Intrinsic::riscv_vmv_v_x ||
          II->getIntrinsicID() == Intrinsic::riscv_vfmv_v_f) &&
         isa<UndefValue>(II->getArgOperand(0)) &&
         II->getArgOperand(2) == VL)
       return II->getOperand(1);
-  }
 
   return nullptr;
+}
+
+// Look for a splat, ignoring whether the operand is scalar or vector.
+static Value *getVSplatOrScalar(Value *Op, Value *VL) {
+  Type *Ty = Op->getType();
+  if (Ty->isIntegerTy() || Ty->isFloatingPointTy())
+    return Op;
+
+  return getVSplat(Op, VL);
 }
 
 // Try to match
@@ -52,17 +60,16 @@ static Instruction *foldVAndWithVMerge(Value *LHS, Value *RHS, Value *VL) {
       !isa<UndefValue>(II2->getArgOperand(0)) || II2->getArgOperand(4) != VL)
     return nullptr;
 
-  Value *FalseVal = getVSplat(II2->getArgOperand(1), VL);
-  Value *TrueVal = getVSplat(II2->getArgOperand(2), VL);
+  Value *FalseVal = getVSplatOrScalar(II2->getArgOperand(1), VL);
+  Value *TrueVal = getVSplatOrScalar(II2->getArgOperand(2), VL);
   auto *FalseC = dyn_cast_or_null<ConstantInt>(FalseVal);
   auto *TrueC = dyn_cast_or_null<ConstantInt>(TrueVal);
   if (FalseC && TrueC && FalseC->isZero() && TrueC->isMinusOne()) {
-    Function *Merge = Intrinsic::getDeclaration(
-        II2->getModule(), Intrinsic::riscv_vmerge,
-        {II2->getType(), RHS->getType(), VL->getType()});
-    return CallInst::Create(Merge, {UndefValue::get(II2->getType()),
-                                    II2->getArgOperand(1), RHS,
-                                    II2->getArgOperand(3), VL});
+    return CreateIntrinsic(II2, Intrinsic::riscv_vmerge,
+                           {II2->getType(), RHS->getType(), VL->getType()},
+                           {UndefValue::get(II2->getType()),
+                            II2->getArgOperand(1), RHS, II2->getArgOperand(3),
+                            VL});
   }
 
   // FIXME: Handle the (vmerge -1, 0, C) case. Trickier if other AND operand
@@ -84,7 +91,7 @@ static Instruction *foldVXorWithVMergeVXor(Value *LHS, Value *RHS, Value *VL) {
   auto MatchBitSelect = [](Value *Other, Value *Op0, Value *Op1,
                            Value *VL) -> Value * {
     // One operand of the vmerge needs to be 0.
-    auto *Zero = dyn_cast_or_null<ConstantInt>(getVSplat(Op0, VL));
+    auto *Zero = dyn_cast_or_null<ConstantInt>(getVSplatOrScalar(Op0, VL));
     if (!Zero || !Zero->isZero())
       return nullptr;
 
@@ -111,23 +118,17 @@ static Instruction *foldVXorWithVMergeVXor(Value *LHS, Value *RHS, Value *VL) {
   // operand of vmerge.
   if (A->getType()->isVectorTy()) {
     // (vxor (vmerge 0, (vxor A, B), C), A) -> (vmerge A, B, C)
-    if (Value *B = MatchBitSelect(A, FalseVal, TrueVal, VL)) {
-      Function *Merge = Intrinsic::getDeclaration(
-          II2->getModule(), Intrinsic::riscv_vmerge,
-          {II2->getType(), B->getType(), VL->getType()});
-      return CallInst::Create(Merge,
-                              {UndefValue::get(II2->getType()), A, B, C, VL});
-    }
+    if (Value *B = MatchBitSelect(A, FalseVal, TrueVal, VL))
+      return CreateIntrinsic(II2, Intrinsic::riscv_vmerge,
+                             {II2->getType(), B->getType(), VL->getType()},
+                             {UndefValue::get(II2->getType()), A, B, C, VL});
   }
   // (vxor (vmerge (vxor A, B), 0, C), A) -> (vmerge B, A, C)
   if (Value *B = MatchBitSelect(A, TrueVal, FalseVal, VL)) {
-    if (B->getType()->isVectorTy()) {
-      Function *Merge = Intrinsic::getDeclaration(
-          II2->getModule(), Intrinsic::riscv_vmerge,
-          {II2->getType(), A->getType(), VL->getType()});
-      return CallInst::Create(Merge,
-                              {UndefValue::get(II2->getType()), B, A, C, VL});
-    }
+    if (B->getType()->isVectorTy())
+      return CreateIntrinsic(II2, Intrinsic::riscv_vmerge,
+                             {II2->getType(), A->getType(), VL->getType()},
+                             {UndefValue::get(II2->getType()), B, A, C, VL});
   }
 
   return nullptr;
@@ -263,6 +264,191 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
   return RetVal;
 }
 
+static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
+  Intrinsic::ID IID = II.getIntrinsicID();
+  switch (IID) {
+  case Intrinsic::riscv_vaadd:
+  case Intrinsic::riscv_vaaddu:
+  case Intrinsic::riscv_vadd:
+  case Intrinsic::riscv_vand:
+  case Intrinsic::riscv_vmax:
+  case Intrinsic::riscv_vmaxu:
+  case Intrinsic::riscv_vmin:
+  case Intrinsic::riscv_vminu:
+  case Intrinsic::riscv_vmul:
+  case Intrinsic::riscv_vmulh:
+  case Intrinsic::riscv_vmulhu:
+  case Intrinsic::riscv_vor:
+  case Intrinsic::riscv_vsadd:
+  case Intrinsic::riscv_vsaddu:
+  case Intrinsic::riscv_vsmul:
+  case Intrinsic::riscv_vsub:
+  case Intrinsic::riscv_vxor:
+  case Intrinsic::riscv_vfadd:
+  case Intrinsic::riscv_vfdiv:
+  case Intrinsic::riscv_vfmax:
+  case Intrinsic::riscv_vfmin:
+  case Intrinsic::riscv_vfmul:
+  case Intrinsic::riscv_vfsub:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
+    // These instructions are commutable if we change the opcode
+    if (II.getArgOperand(2)->getType()->isVectorTy()) {
+      if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3))) {
+        // Some intrinsics need their opcode changed to commute them.
+        switch (IID) {
+        default:
+          break;
+        case Intrinsic::riscv_vsub:
+          IID = Intrinsic::riscv_vrsub;
+          break;
+        case Intrinsic::riscv_vfdiv:
+          IID = Intrinsic::riscv_vfrdiv;
+          break;
+        case Intrinsic::riscv_vfsub:
+          IID = Intrinsic::riscv_vfrsub;
+          break;
+        }
+        return CreateIntrinsic(
+            &II, IID,
+            {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+            {II.getArgOperand(0), II.getArgOperand(2), V, II.getArgOperand(3)});
+      }
+    }
+    break;
+  case Intrinsic::riscv_vasub:
+  case Intrinsic::riscv_vasubu:
+  case Intrinsic::riscv_vdiv:
+  case Intrinsic::riscv_vdivu:
+  case Intrinsic::riscv_vmulhsu:
+  case Intrinsic::riscv_vrem:
+  case Intrinsic::riscv_vremu:
+  case Intrinsic::riscv_vssub:
+  case Intrinsic::riscv_vssubu:
+  case Intrinsic::riscv_vwadd_w:
+  case Intrinsic::riscv_vwaddu_w:
+  case Intrinsic::riscv_vwsub_w:
+  case Intrinsic::riscv_vwsubu_w:
+  case Intrinsic::riscv_vfsgnj:
+  case Intrinsic::riscv_vfsgnjn:
+  case Intrinsic::riscv_vfsgnjx:
+  case Intrinsic::riscv_vfwadd_w:
+  case Intrinsic::riscv_vfwsub_w:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
+    // These instructions are not commutable.
+    break;
+  case Intrinsic::riscv_vwadd:
+  case Intrinsic::riscv_vwaddu:
+  case Intrinsic::riscv_vwmul:
+  case Intrinsic::riscv_vwmulu:
+  case Intrinsic::riscv_vfwadd:
+  case Intrinsic::riscv_vfwmul:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), II.getArgOperand(1)->getType(), V->getType(),
+           II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
+    // These instructions are commutable so check the other operand.
+    if (II.getArgOperand(2)->getType()->isVectorTy())
+      if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3)))
+        return CreateIntrinsic(
+            &II, IID,
+            {II.getType(), II.getArgOperand(2)->getType(), V->getType(),
+             II.getArgOperand(3)->getType()},
+            {II.getArgOperand(0), II.getArgOperand(2), V, II.getArgOperand(3)});
+    break;
+  case Intrinsic::riscv_vwmulsu:
+  case Intrinsic::riscv_vwsub:
+  case Intrinsic::riscv_vwsubu:
+  case Intrinsic::riscv_vfwsub:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), II.getArgOperand(1)->getType(), V->getType(),
+           II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
+    // These instructions are not commutable.
+    break;
+  case Intrinsic::riscv_vmacc:
+  case Intrinsic::riscv_vnmsac:
+  case Intrinsic::riscv_vfmacc:
+  case Intrinsic::riscv_vfnmacc:
+  case Intrinsic::riscv_vfmsac:
+  case Intrinsic::riscv_vfnmsac:
+    if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), V, II.getArgOperand(2), II.getArgOperand(3),
+           II.getArgOperand(4)});
+    // These instructions are commutable so check the other multiply operand.
+    if (II.getArgOperand(1)->getType()->isVectorTy())
+      if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+        return CreateIntrinsic(
+            &II, IID,
+            {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+            {II.getArgOperand(0), V, II.getArgOperand(1), II.getArgOperand(3),
+             II.getArgOperand(4)});
+    // FIXME: If these were tail agnostic there would be more commuting
+    // options for these intrinsics.
+    break;
+  case Intrinsic::riscv_vmadd:
+  case Intrinsic::riscv_vnmsub:
+  case Intrinsic::riscv_vfmadd:
+  case Intrinsic::riscv_vfnmadd:
+  case Intrinsic::riscv_vfmsub:
+  case Intrinsic::riscv_vfnmsub:
+    if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), V, II.getArgOperand(2), II.getArgOperand(3),
+           II.getArgOperand(4)});
+    // FIXME: If these were tail agnostic there would be more commuting
+    // options for these intrinsics.
+    break;
+  case Intrinsic::riscv_vwmacc:
+  case Intrinsic::riscv_vwmaccu:
+  case Intrinsic::riscv_vwmaccsu:
+  case Intrinsic::riscv_vfwmacc:
+  case Intrinsic::riscv_vfwnmacc:
+  case Intrinsic::riscv_vfwmsac:
+  case Intrinsic::riscv_vfwnmsac:
+    if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3)))
+      return CreateIntrinsic(&II, IID,
+                             {II.getType(), V->getType(),
+                              II.getArgOperand(2)->getType(),
+                              II.getArgOperand(3)->getType()},
+                             {II.getArgOperand(0), V, II.getArgOperand(2),
+                              II.getArgOperand(3), II.getArgOperand(4)});
+    // These instructions are commutable so check the other multiply operand.
+    if (II.getArgOperand(1)->getType()->isVectorTy()) {
+      // Commute the opcode for vwmaccsu.
+      if (IID == Intrinsic::riscv_vwmaccsu)
+        IID = Intrinsic::riscv_vwmaccus;
+      if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
+        return CreateIntrinsic(&II, IID,
+                               {II.getType(), V->getType(),
+                                II.getArgOperand(1)->getType(),
+                                II.getArgOperand(3)->getType()},
+                               {II.getArgOperand(0), V, II.getArgOperand(1),
+                                II.getArgOperand(3), II.getArgOperand(4)});
+      }
+    }
+    break;
+  }
+
+  return nullptr;
+}
+
 Optional<Instruction *>
 RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   Intrinsic::ID IID = II.getIntrinsicID();
@@ -315,6 +501,10 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     break;
   }
   }
+
+  // Try to fold broadcasts.
+  if (Instruction *V = foldVBroadcast(IC, II))
+    return V;
 
   return None;
 }
