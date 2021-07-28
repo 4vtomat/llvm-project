@@ -486,6 +486,17 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
       }
     }
     break;
+  case Intrinsic::riscv_vmerge:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(4))) {
+      // For floating point we need to change the intrinsic.
+      if (V->getType()->isFloatingPointTy())
+        IID = Intrinsic::riscv_vfmerge;
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(4)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3),
+           II.getArgOperand(4)});
+    }
   }
 
   return nullptr;

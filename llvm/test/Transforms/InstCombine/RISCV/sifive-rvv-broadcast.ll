@@ -1817,6 +1817,26 @@ define <vscale x 4 x double> @test_vfwnmsac_scalar(<vscale x 4 x double> %x, flo
   ret <vscale x 4 x double> %b
 }
 
+define <vscale x 4 x i32> @test_vmerge(<vscale x 4 x i32> %x, i32 %y, <vscale x 4 x i1> %z) {
+; CHECK-LABEL: @test_vmerge(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[X:%.*]], i32 [[Y:%.*]], <vscale x 4 x i1> [[Z:%.*]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %x, <vscale x 4 x i32> %a, <vscale x 4 x i1> %z, i64 4)
+  ret <vscale x 4 x i32> %b
+}
+
+define <vscale x 4 x float> @test_vfmerge(<vscale x 4 x float> %x, float %y, <vscale x 4 x i1> %z) {
+; CHECK-LABEL: @test_vfmerge(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmerge.nxv4f32.f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> [[X:%.*]], float [[Y:%.*]], <vscale x 4 x i1> [[Z:%.*]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x float> [[B]]
+;
+  %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)
+  %b = call <vscale x 4 x float> @llvm.riscv.vmerge.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %x, <vscale x 4 x float> %a, <vscale x 4 x i1> %z, i64 4)
+  ret <vscale x 4 x float> %b
+}
+
 declare <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32>, i32, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vaadd.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vaadd.nxv4i32.i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, i32, i64)
@@ -1947,3 +1967,6 @@ declare <vscale x 4 x double> @llvm.riscv.vfwmsac.nxv4f64.nxv4f32.nxv4f32.i64(<v
 declare <vscale x 4 x double> @llvm.riscv.vfwmsac.nxv4f64.f32.nxv4f32.i64(<vscale x 4 x double>, float, <vscale x 4 x float>, i64, i64)
 declare <vscale x 4 x double> @llvm.riscv.vfwnmsac.nxv4f64.nxv4f32.nxv4f32.i64(<vscale x 4 x double>, <vscale x 4 x float>, <vscale x 4 x float>, i64, i64)
 declare <vscale x 4 x double> @llvm.riscv.vfwnmsac.nxv4f64.f32.nxv4f32.i64(<vscale x 4 x double>, float, <vscale x 4 x float>, i64, i64)
+
+declare <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i1>, i64)
+declare <vscale x 4 x float> @llvm.riscv.vmerge.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x i1>, i64)

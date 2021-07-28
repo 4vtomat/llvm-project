@@ -205,9 +205,8 @@ define <vscale x 4 x i32> @test_vxor_vmerge_scalar_y_2(<vscale x 4 x i1> %mask, 
 ; extra splat intrinsic.
 define <vscale x 4 x i32> @test_vxor_vmerge_scalar_y_3(<vscale x 4 x i1> %mask, <vscale x 4 x i32> %x, i32 %y) {
 ; CHECK-LABEL: @test_vxor_vmerge_scalar_y_3(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 0, i64 4)
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[X:%.*]], i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[B]], <vscale x 4 x i32> [[A]], <vscale x 4 x i1> [[MASK:%.*]], i64 4)
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[B]], i32 0, <vscale x 4 x i1> [[MASK:%.*]], i64 4)
 ; CHECK-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[C]], <vscale x 4 x i32> [[X]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
@@ -222,9 +221,8 @@ define <vscale x 4 x i32> @test_vxor_vmerge_scalar_y_3(<vscale x 4 x i1> %mask, 
 ; extra splat intrinsic.
 define <vscale x 4 x i32> @test_vxor_vmerge_scalar_y_4(<vscale x 4 x i1> %mask, <vscale x 4 x i32> %x, i32 %y) {
 ; CHECK-LABEL: @test_vxor_vmerge_scalar_y_4(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 0, i64 4)
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[X:%.*]], i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[B]], <vscale x 4 x i32> [[A]], <vscale x 4 x i1> [[MASK:%.*]], i64 4)
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[B]], i32 0, <vscale x 4 x i1> [[MASK:%.*]], i64 4)
 ; CHECK-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[X]], <vscale x 4 x i32> [[C]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
