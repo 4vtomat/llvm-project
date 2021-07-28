@@ -143,6 +143,9 @@ public:
   }
 
   void addIRPasses() override;
+#if SIFIVE_CUSTOMIZATION
+  void addCodeGenPrepare() override;
+#endif // SIFIVE_CUSTOMIZATION
   bool addPreISel() override;
   bool addInstSelector() override;
   bool addIRTranslator() override;
@@ -169,6 +172,14 @@ void RISCVPassConfig::addIRPasses() {
 
   TargetPassConfig::addIRPasses();
 }
+
+#if SIFIVE_CUSTOMIZATION
+void RISCVPassConfig::addCodeGenPrepare() {
+  if (getOptLevel() != CodeGenOpt::None)
+    addPass(createTypePromotionPass());
+  TargetPassConfig::addCodeGenPrepare();
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVPassConfig::addPreISel() {
   if (TM->getOptLevel() != CodeGenOpt::None) {
