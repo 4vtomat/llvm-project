@@ -295,22 +295,16 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
           &II, IID,
           {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
           {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
-    // These instructions are commutable if we change the opcode
+    // These instructions are commutable so check the other operand.
     if (II.getArgOperand(2)->getType()->isVectorTy()) {
       if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3))) {
         // Some intrinsics need their opcode changed to commute them.
         switch (IID) {
         default:
           break;
-        case Intrinsic::riscv_vsub:
-          IID = Intrinsic::riscv_vrsub;
-          break;
-        case Intrinsic::riscv_vfdiv:
-          IID = Intrinsic::riscv_vfrdiv;
-          break;
-        case Intrinsic::riscv_vfsub:
-          IID = Intrinsic::riscv_vfrsub;
-          break;
+        case Intrinsic::riscv_vsub:  IID = Intrinsic::riscv_vrsub;  break;
+        case Intrinsic::riscv_vfdiv: IID = Intrinsic::riscv_vfrdiv; break;
+        case Intrinsic::riscv_vfsub: IID = Intrinsic::riscv_vfrsub; break;
         }
         return CreateIntrinsic(
             &II, IID,
@@ -441,6 +435,54 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
                                 II.getArgOperand(3)->getType()},
                                {II.getArgOperand(0), V, II.getArgOperand(1),
                                 II.getArgOperand(3), II.getArgOperand(4)});
+      }
+    }
+    break;
+  case Intrinsic::riscv_vmseq:
+  case Intrinsic::riscv_vmsne:
+  case Intrinsic::riscv_vmslt:
+  case Intrinsic::riscv_vmsltu:
+  case Intrinsic::riscv_vmsle:
+  case Intrinsic::riscv_vmsleu:
+  case Intrinsic::riscv_vmsgt:
+  case Intrinsic::riscv_vmsgtu:
+  case Intrinsic::riscv_vmsge:
+  case Intrinsic::riscv_vmsgeu:
+  case Intrinsic::riscv_vmfeq:
+  case Intrinsic::riscv_vmfne:
+  case Intrinsic::riscv_vmflt:
+  case Intrinsic::riscv_vmfle:
+  case Intrinsic::riscv_vmfgt:
+  case Intrinsic::riscv_vmfge:
+    if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(2)))
+      return CreateIntrinsic(&II, IID,
+                             {II.getArgOperand(0)->getType(), V->getType(),
+                              II.getArgOperand(2)->getType()},
+                             {II.getArgOperand(0), V, II.getArgOperand(2)});
+    // These instructions are commutable so check the other operand.
+    if (II.getArgOperand(1)->getType()->isVectorTy()) {
+      if (Value *V = getVSplat(II.getArgOperand(0), II.getArgOperand(2))) {
+        // Most of these intrinsics need their opcode changed to commute them.
+        switch (IID) {
+        default:
+          break;
+        case Intrinsic::riscv_vmslt:  IID = Intrinsic::riscv_vmsgt;  break;
+        case Intrinsic::riscv_vmsltu: IID = Intrinsic::riscv_vmsgtu; break;
+        case Intrinsic::riscv_vmsle:  IID = Intrinsic::riscv_vmsge;  break;
+        case Intrinsic::riscv_vmsleu: IID = Intrinsic::riscv_vmsgeu; break;
+        case Intrinsic::riscv_vmsgt:  IID = Intrinsic::riscv_vmslt;  break;
+        case Intrinsic::riscv_vmsgtu: IID = Intrinsic::riscv_vmsltu; break;
+        case Intrinsic::riscv_vmsge:  IID = Intrinsic::riscv_vmsle;  break;
+        case Intrinsic::riscv_vmsgeu: IID = Intrinsic::riscv_vmsleu; break;
+        case Intrinsic::riscv_vmflt:  IID = Intrinsic::riscv_vmfgt;  break;
+        case Intrinsic::riscv_vmfle:  IID = Intrinsic::riscv_vmfge;  break;
+        case Intrinsic::riscv_vmfgt:  IID = Intrinsic::riscv_vmflt;  break;
+        case Intrinsic::riscv_vmfge:  IID = Intrinsic::riscv_vmfle;  break;
+        }
+        return CreateIntrinsic(&II, IID,
+                               {II.getArgOperand(1)->getType(), V->getType(),
+                                II.getArgOperand(2)->getType()},
+                               {II.getArgOperand(1), V, II.getArgOperand(2)});
       }
     }
     break;
