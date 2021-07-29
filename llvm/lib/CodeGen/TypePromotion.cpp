@@ -713,14 +713,46 @@ bool TypePromotion::isSupportedValue(Value *V) {
       return isSupportedType(I);
     case Instruction::ZExt:
       return isSupportedType(I->getOperand(0));
-    case Instruction::ICmp:
+#if SIFIVE_CUSTOMIZATION
+    case Instruction::ICmp: {
       // Now that we allow small types than TypeSize, only allow icmp of
       // TypeSize because they will require a trunc to be legalised.
       // TODO: Allow icmp of smaller types, and calculate at the end
       // whether the transform would be beneficial.
       if (isa<PointerType>(I->getOperand(0)->getType()))
         return true;
-      return EqualTypeSize(I->getOperand(0));
+      // SIFIVE
+      if (EqualTypeSize(I->getOperand(0)))
+        return true;
+      if (!LessThanTypeSize(I->getOperand(0)))
+        return false;
+
+      // Try to determine if the trunc would be cheap or already required.
+      // TODO: Implementing the earlier TODO may be better.
+      bool Op0Free = isa<ConstantInt>(I->getOperand(0)) ||
+                     isa<TruncInst>(I->getOperand(0));
+      bool Op1Free = isa<ConstantInt>(I->getOperand(1)) ||
+                     isa<TruncInst>(I->getOperand(1));
+      if (auto *BO = dyn_cast<BinaryOperator>(I->getOperand(0))) {
+        if (BO->getOpcode() == Instruction::And &&
+            isa<ConstantInt>(BO->getOperand(1)))
+          Op0Free = true;
+        if (BO->getOpcode() == Instruction::LShr &&
+            isa<ConstantInt>(BO->getOperand(1)))
+          Op0Free = true;
+      }
+      if (auto *BO = dyn_cast<BinaryOperator>(I->getOperand(1))) {
+        if (BO->getOpcode() == Instruction::And &&
+            isa<ConstantInt>(BO->getOperand(1)))
+          Op1Free = true;
+        if (BO->getOpcode() == Instruction::LShr &&
+            isa<ConstantInt>(BO->getOperand(1)))
+          Op1Free = true;
+      }
+
+      return Op0Free && Op1Free;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     case Instruction::Call: {
       // Special cases for calls as we need to check for zeroext
       // TODO We should accept calls even if they don't have zeroext, as they
