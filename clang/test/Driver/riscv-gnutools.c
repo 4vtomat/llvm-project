@@ -46,6 +46,8 @@
 
 // CHECK-RV64-RELAX: "{{.*}}as{{(.exe)?}}"
 // CHECK-RV64-RELAX-NOT: "-mno-relax"
-// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64" "-march" "rv64i2p0_m2p0_a2p0_c2p0"
+// SIFIVE_CUSTOMIZATION
+// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+// end SIFIVE_CUSTOMIZATION
 // CHECK-RV64IMAFDC-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
 // CHECK-RV64G-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p0_m2p0_a2p0_f2p0_d2p0"

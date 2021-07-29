@@ -112,7 +112,7 @@
 // RUN: %clang -target riscv64 %s -flto \
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT
 // RV32-DEFAULT: "-plugin-opt=-target-abi=ilp32"
-// RV64-DEFAULT: "-plugin-opt=-target-abi=lp64"
+// RV64-DEFAULT: "-plugin-opt=-target-abi=lp64d"
 //
 // RUN: %clang -target riscv32-unknown-elf %s -fuse-ld=gold -flto \
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT-ELF
@@ -135,7 +135,7 @@
 // RUN: %clang -target riscv64-unknown-linux-gnu %s -fuse-ld=lld -flto \
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV64-DEFAULT-LINUX
 //
-// RV64-DEFAULT-ELF: "-plugin-opt=-target-abi=lp64"
+// RV64-DEFAULT-ELF: "-plugin-opt=-target-abi=lp64d"
 // RV64-DEFAULT-LINUX: "-plugin-opt=-target-abi=lp64d"
 
 // RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \

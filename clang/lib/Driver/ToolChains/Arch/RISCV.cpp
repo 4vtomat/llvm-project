@@ -227,12 +227,9 @@ StringRef riscv::getRISCVABI(const ArgList &Args, const llvm::Triple &Triple) {
       return "ilp32";
     else
       return "ilp32d";
-  } else {
-    if (Triple.getOS() == llvm::Triple::UnknownOS)
-      return "lp64";
-    else
-      return "lp64d";
   }
+
+  return "lp64d";
 }
 
 StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
@@ -305,12 +302,9 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
       return "rv32imac";
     else
       return "rv32imafdc";
-  } else {
-    if (Triple.getOS() == llvm::Triple::UnknownOS)
-      return "rv64imac";
-    else
-      return "rv64imafdc";
   }
+
+  return "rv64imafdc";
 }
 
 StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {

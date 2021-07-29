@@ -45,16 +45,20 @@
 
 // CHECK-RV32-LP64: error: unknown target ABI 'lp64'
 
+// SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv64-unknown-elf %s -### 2>&1 \
-// RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
+// RUN:   | FileCheck -check-prefix=CHECK-LP64D %s
+// end SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv64-unknown-elf %s -### -mabi=lp64 2>&1 \
 // RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
 // RUN: %clang --target=riscv64-unknown-elf %s -### -march=rv64imc 2>&1 \
 // RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
 // RUN: %clang --target=riscv64-unknown-elf %s -### -march=rv64imf 2>&1 \
 // RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
+// SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv64-unknown-elf -x assembler %s -### 2>&1 \
-// RUN:   | FileCheck -check-prefix=CHECK-LP64  %s
+// RUN:   | FileCheck -check-prefix=CHECK-LP64D  %s
+// end SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv64-unknown-elf -x assembler %s -### \
 // RUN:   -mabi=lp64 2>&1 | FileCheck -check-prefix=CHECK-LP64 %s
 
