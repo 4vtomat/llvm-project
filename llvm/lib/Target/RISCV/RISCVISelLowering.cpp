@@ -936,6 +936,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     }
   }
 
+  EnableExtLdPromotion = true; // SIFIVE
+
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtC() ? 2 : 4);
   setMinFunctionAlignment(FunctionAlignment);
@@ -1095,9 +1097,10 @@ bool RISCVTargetLowering::isLegalAddImmediate(int64_t Imm) const {
 
 // On RV32, 64-bit integers are split into their high and low parts and held
 // in two different registers, so the trunc is free since the low register can
-// just be used.
+// just be used. Also consider it free for RV64 since W instructions can // SIFIVE
+// compensate in many cases. // SIFIVE
 bool RISCVTargetLowering::isTruncateFree(Type *SrcTy, Type *DstTy) const {
-  if (Subtarget.is64Bit() || !SrcTy->isIntegerTy() || !DstTy->isIntegerTy())
+  if (!SrcTy->isIntegerTy() || !DstTy->isIntegerTy()) // SIFIVE
     return false;
   unsigned SrcBits = SrcTy->getPrimitiveSizeInBits();
   unsigned DestBits = DstTy->getPrimitiveSizeInBits();
@@ -1105,7 +1108,7 @@ bool RISCVTargetLowering::isTruncateFree(Type *SrcTy, Type *DstTy) const {
 }
 
 bool RISCVTargetLowering::isTruncateFree(EVT SrcVT, EVT DstVT) const {
-  if (Subtarget.is64Bit() || SrcVT.isVector() || DstVT.isVector() ||
+  if (SrcVT.isVector() || DstVT.isVector() || // SIFIVE
       !SrcVT.isInteger() || !DstVT.isInteger())
     return false;
   unsigned SrcBits = SrcVT.getSizeInBits();
