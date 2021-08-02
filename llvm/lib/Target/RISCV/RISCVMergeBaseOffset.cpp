@@ -46,6 +46,9 @@ struct RISCVMergeBaseOffsetOpt : public MachineFunctionPass {
   void foldOffset(MachineInstr &HiLUI, MachineInstr &LoADDI, MachineInstr &Tail,
                   int64_t Offset);
   bool matchLargeOffset(MachineInstr &TailAdd, Register GSReg, int64_t &Offset);
+
+  bool foldPseudoLLA(MachineFunction &MF, MachineInstr &MI);
+
   RISCVMergeBaseOffsetOpt() : MachineFunctionPass(ID) {}
 
   MachineFunctionProperties getRequiredProperties() const override {
@@ -262,6 +265,100 @@ bool RISCVMergeBaseOffsetOpt::detectAndFoldOffset(MachineInstr &HiLUI,
   return false;
 }
 
+bool RISCVMergeBaseOffsetOpt::foldPseudoLLA(MachineFunction &MF,
+                                            MachineInstr &MI) {
+  if (MF.getTarget().isPositionIndependent())
+    return false;
+
+  // Make sure we have a single use PseudoLLA.
+  if (MI.getOpcode() != RISCV::PseudoLLA ||
+      MI.getOperand(1).getType() != MachineOperand::MO_GlobalAddress ||
+      MI.getOperand(1).getOffset() != 0 ||
+      !MRI->hasOneUse(MI.getOperand(0).getReg()))
+    return false;
+
+  Register DestReg = MI.getOperand(0).getReg();
+  MachineInstr &Mem = *MRI->use_begin(DestReg)->getParent();
+
+  // If the memory op and the PseudoLLA aren't in the same block, don't fold.
+  if (Mem.getParent() != MI.getParent())
+    return false;
+
+  bool NeedsTmpReg = false;
+  unsigned NewOpc;
+  switch (Mem.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SB:
+    NewOpc = RISCV::PseudoSB;
+    NeedsTmpReg = true;
+    break;
+  case RISCV::SH:
+    NewOpc = RISCV::PseudoSH;
+    NeedsTmpReg = true;
+    break;
+  case RISCV::SW:
+    NewOpc = RISCV::PseudoSW;
+    NeedsTmpReg = true;
+    break;
+  case RISCV::SD:
+    NewOpc = RISCV::PseudoSD;
+    NeedsTmpReg = true;
+    break;
+  case RISCV::LB:
+    NewOpc = RISCV::PseudoLB;
+    break;
+  case RISCV::LBU:
+    NewOpc = RISCV::PseudoLBU;
+    break;
+  case RISCV::LH:
+    NewOpc = RISCV::PseudoLH;
+    break;
+  case RISCV::LHU:
+    NewOpc = RISCV::PseudoLHU;
+    break;
+  case RISCV::LW:
+    NewOpc = RISCV::PseudoLW;
+    break;
+  case RISCV::LWU:
+    NewOpc = RISCV::PseudoLWU;
+    break;
+  case RISCV::LD:
+    NewOpc = RISCV::PseudoLD;
+    break;
+    // TODO: Support FP load/store.
+  }
+
+  // Register defined by MI should be used in the base part of the
+  // load\store instruction. Otherwise, no folding possible.
+  if (!Mem.getOperand(1).getReg())
+    return false;
+  if (DestReg != Mem.getOperand(1).getReg())
+    return false;
+
+  // Load/store offset must be 0.
+  if (Mem.getOperand(2).getImm() != 0)
+    return false;
+
+  auto *TII = MF.getSubtarget().getInstrInfo();
+  if (NeedsTmpReg) {
+    Register TempReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
+    BuildMI(*Mem.getParent(), &Mem, Mem.getDebugLoc(), TII->get(NewOpc),
+            TempReg)
+        .add(Mem.getOperand(0))
+        .add(MI.getOperand(1));
+  } else {
+    BuildMI(*Mem.getParent(), &Mem, Mem.getDebugLoc(), TII->get(NewOpc))
+        .add(Mem.getOperand(0))
+        .add(MI.getOperand(1));
+  }
+
+  DeadInstrs.insert(&Mem);
+  DeadInstrs.insert(&MI);
+
+  return true;
+}
+
 bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   if (skipFunction(Fn.getFunction()))
     return false;
@@ -271,14 +368,15 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   MRI = &Fn.getRegInfo();
   for (MachineBasicBlock &MBB : Fn) {
     LLVM_DEBUG(dbgs() << "MBB: " << MBB.getName() << "\n");
-    for (MachineInstr &HiLUI : MBB) {
+    for (MachineInstr &MI : MBB) {
       MachineInstr *LoADDI = nullptr;
-      if (!detectLuiAddiGlobal(HiLUI, LoADDI))
-        continue;
-      LLVM_DEBUG(dbgs() << "  Found lowered global address with one use: "
-                        << *LoADDI->getOperand(2).getGlobal() << "\n");
-      // If the use count is only one, merge the offset
-      MadeChange |= detectAndFoldOffset(HiLUI, *LoADDI);
+      if (detectLuiAddiGlobal(MI, LoADDI)) {
+        LLVM_DEBUG(dbgs() << "  Found lowered global address with one use: "
+                          << *LoADDI->getOperand(2).getGlobal() << "\n");
+        // If the use count is only one, merge the offset
+        MadeChange |= detectAndFoldOffset(MI, *LoADDI);
+      }
+      MadeChange |= foldPseudoLLA(Fn, MI);
     }
   }
   // Delete dead instructions.
