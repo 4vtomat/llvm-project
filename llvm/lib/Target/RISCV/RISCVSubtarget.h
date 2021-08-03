@@ -97,6 +97,7 @@ private:
   bool EnableLinkerRelax = false;
   bool EnableRVCHintInstrs = true;
   bool EnableSaveRestore = false;
+  bool HasCMOVBranchOpt = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
@@ -195,6 +196,7 @@ public:
   bool enableLinkerRelax() const { return EnableLinkerRelax; }
   bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
+  bool hasCMOVBranchOpt() const { return HasCMOVBranchOpt; } // SIFIVE
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
   unsigned getFLen() const {

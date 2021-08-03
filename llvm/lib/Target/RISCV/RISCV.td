@@ -455,6 +455,13 @@ foreach i = {1-31} in
 def FeatureSaveRestore : SubtargetFeature<"save-restore", "EnableSaveRestore",
                                           "true", "Enable save/restore.">;
 
+// SIFIVE
+def FeatureCMOVBranchOpt
+    : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
+                       "true", "Enable CMOV branch optimization">;
+def HasCMOVBranchOpt : Predicate<"Subtarget->hasCMOVBranchOpt()">;
+// end SIFIVE
+
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors">;
 #ifdef SIFIVE_CUSTOMIZATION
@@ -500,8 +507,10 @@ def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
                      [TuneSiFive7]>;
 
 // SIFIVE
-def : ProcessorModel<"sifive-8-rv32", SiFive8Model, []>;
-def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit]>;
+def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
+                     [FeatureCMOVBranchOpt]>;
+def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
+                     [FeatureCMOVBranchOpt]>;
 // end SIFIVE
 
 def : ProcessorModel<"sifive-e20", RocketModel, [FeatureStdExtM,
@@ -638,7 +647,8 @@ def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZfh,
                                                    FeatureStdExtZba,
-                                                   FeatureStdExtZbb]>;
+                                                   FeatureStdExtZbb],
+                                                  [FeatureCMOVBranchOpt]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
