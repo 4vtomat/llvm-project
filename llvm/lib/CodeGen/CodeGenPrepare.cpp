@@ -2317,7 +2317,12 @@ bool CodeGenPrepare::dupRetToEnableTailCallOpts(BasicBlock *BB, bool &ModifiedDT
   ExtractValueInst *EVI = nullptr;
   BitCastInst *BCI = nullptr;
   Value *V = RetI->getReturnValue();
+#if SIFIVE_CUSTOMIZATION
+  // Treat undef similar to void.
+  if (V && !isa<UndefValue>(V)) {
+#else
   if (V) {
+#endif // SIFIVE_CUSTOMIZATION
     BCI = dyn_cast<BitCastInst>(V);
     if (BCI)
       V = BCI->getOperand(0);

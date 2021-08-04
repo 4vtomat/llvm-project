@@ -651,9 +651,6 @@ declare dso_local i32 @crng_reseed(...) local_unnamed_addr
 define dso_local i32 @_extract_crng_crng() {
 ; CHECK-LABEL: _extract_crng_crng:
 ; CHECK:       // %bb.0: // %entry
-; CHECK-NEXT:    str x30, [sp, #-16]! // 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    .cfi_offset w30, -16
 ; CHECK-NEXT:    adrp x8, _extract_crng_crng
 ; CHECK-NEXT:    add x8, x8, :lo12:_extract_crng_crng
 ; CHECK-NEXT:    tbnz x8, #63, .LBB36_2
@@ -671,9 +668,8 @@ define dso_local i32 @_extract_crng_crng() {
 ; CHECK-NEXT:    ldr w8, [x8, :lo12:primary_crng]
 ; CHECK-NEXT:    cmp w8, #0
 ; CHECK-NEXT:    csel x0, xzr, x9, eq
-; CHECK-NEXT:    bl crng_reseed
+; CHECK-NEXT:    b crng_reseed
 ; CHECK-NEXT:  .LBB36_3: // %if.end
-; CHECK-NEXT:    ldr x30, [sp], #16 // 8-byte Folded Reload
 ; CHECK-NEXT:    ret
 entry:
   br i1 icmp slt (i32 ()* @_extract_crng_crng, i32 ()* null), label %if.then, label %lor.lhs.false
