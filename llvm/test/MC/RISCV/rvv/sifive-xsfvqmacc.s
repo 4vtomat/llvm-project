@@ -1,11 +1,11 @@
-# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+experimental-v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
+# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: not llvm-mc -triple=riscv64 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+experimental-v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
-# RUN:        | llvm-objdump -d --mattr=+experimental-v,+xsfvqmaccqoq,+xsfvqmaccdod - \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
+# RUN:        | llvm-objdump -d --mattr=+v,+xsfvqmaccqoq,+xsfvqmaccdod - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+experimental-v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+v,+xsfvqmaccqoq,+xsfvqmaccdod %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
 sf.vqmaccu.4x8x4 v8, v4, v20
@@ -55,3 +55,9 @@ sf.vqmaccsu.2x8x2 v8, v4, v20
 # CHECK-ENCODING: [0x5b,0x24,0x42,0xbf]
 # CHECK-ERROR: instruction requires the following: 'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)
 # CHECK-UNKNOWN: 5b 24 42 bf <unknown>
+
+sf.vqmaccu.4x8x4 v0, v4, v20
+# CHECK-INST: sf.vqmaccu.4x8x4 v0, v4, v20
+# CHECK-ENCODING: [0x5b,0x20,0x42,0xf3]
+# CHECK-ERROR: instruction requires the following: 'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)
+# CHECK-UNKNOWN: 5b 20 42 f3 <unknown>

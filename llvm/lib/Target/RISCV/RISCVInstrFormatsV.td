@@ -141,7 +141,7 @@ class RVInstVVCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
   let Opcode = OPC_CUSTOM_2.Value;
 
   let Uses = [VTYPE, VL];
-  let RVVConstraint = VMConstraint;
+  let RVVConstraint = NoConstraint;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
