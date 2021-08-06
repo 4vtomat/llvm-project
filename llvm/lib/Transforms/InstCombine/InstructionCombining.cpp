@@ -1377,8 +1377,14 @@ static Type *findElementAtOffset(PointerType *PtrTy, int64_t IntOffset,
                                  const DataLayout &DL) {
   // Only used by visitGEPOfBitcast(), which is skipped for opaque pointers.
   Type *Ty = PtrTy->getNonOpaquePointerElementType();
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Why isn't this upstream?
+  if (!Ty->isSized() || Ty->getTypeID() == Type::ScalableVectorTyID)
+    return nullptr;
+#else
   if (!Ty->isSized())
     return nullptr;
+#endif //SIFIVE_CUSTOMIZATION
 
   APInt Offset(DL.getIndexTypeSizeInBits(PtrTy), IntOffset);
   SmallVector<APInt> Indices = DL.getGEPIndicesForOffset(Ty, Offset);
@@ -2560,7 +2566,12 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
       // %V = mul i64 %N, 4
       // %t = getelementptr i8* bitcast (i32* %arr to i8*), i32 %V
       // into:  %t1 = getelementptr i32* %arr, i32 %N; bitcast
+#if SIFIVE_CUSTOMIZATION
+      if (GEPEltType->isSized() && StrippedPtrEltTy->isSized() &&
+          StrippedPtrEltTy->getTypeID() != Type::ScalableVectorTyID) {
+#else
       if (GEPEltType->isSized() && StrippedPtrEltTy->isSized()) {
+#endif // SIFIVE_CUSTOMIZATION
         // Check that changing the type amounts to dividing the index by a scale
         // factor.
         uint64_t ResSize = DL.getTypeAllocSize(GEPEltType).getFixedSize();
