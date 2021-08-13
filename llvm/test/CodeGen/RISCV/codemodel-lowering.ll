@@ -145,3 +145,170 @@ define float @lower_constantpool(float %a) nounwind {
   %1 = fadd float %a, 1.0
   ret float %1
 }
+
+; Test that we duplicate the auipc and fold %pcrel_lo when it used multiple
+; times.
+define void @lower_global_rmw(i32 %a) nounwind {
+; RV32I-SMALL-LABEL: lower_global_rmw:
+; RV32I-SMALL:       # %bb.0:
+; RV32I-SMALL-NEXT:    lui a1, %hi(G)
+; RV32I-SMALL-NEXT:    lw a2, %lo(G)(a1)
+; RV32I-SMALL-NEXT:    or a0, a2, a0
+; RV32I-SMALL-NEXT:    sw a0, %lo(G)(a1)
+; RV32I-SMALL-NEXT:    ret
+;
+; RV32I-MEDIUM-LABEL: lower_global_rmw:
+; RV32I-MEDIUM:       # %bb.0:
+; RV32I-MEDIUM-NEXT:  .LBB4_1: # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    lw a1, %pcrel_lo(.LBB4_1)(a1)
+; RV32I-MEDIUM-NEXT:    or a0, a1, a0
+; RV32I-MEDIUM-NEXT:  .LBB4_2: # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.LBB4_2)(a1)
+; RV32I-MEDIUM-NEXT:    ret
+  %1 = load volatile i32, i32* @G
+  %2 = or i32 %1, %a
+  store i32 %2, i32* @G
+  ret void
+}
+
+; Check that we duplicate the auipc and fold the pcrel_lo into loads and stores
+; in both blocks.
+define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
+; RV32I-SMALL-LABEL: lower_global_rmw_multiple_blocks:
+; RV32I-SMALL:       # %bb.0:
+; RV32I-SMALL-NEXT:    lui a2, %hi(G)
+; RV32I-SMALL-NEXT:    lw a3, %lo(G)(a2)
+; RV32I-SMALL-NEXT:    andi a1, a1, 1
+; RV32I-SMALL-NEXT:    or a0, a3, a0
+; RV32I-SMALL-NEXT:    beqz a1, .LBB5_2
+; RV32I-SMALL-NEXT:  # %bb.1: # %cond.store
+; RV32I-SMALL-NEXT:    sw a0, %lo(G)(a2)
+; RV32I-SMALL-NEXT:  .LBB5_2: # %merge
+; RV32I-SMALL-NEXT:    ret
+;
+; RV32I-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
+; RV32I-MEDIUM:       # %bb.0:
+; RV32I-MEDIUM-NEXT:  .LBB5_3: # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.LBB5_3)(a2)
+; RV32I-MEDIUM-NEXT:    andi a1, a1, 1
+; RV32I-MEDIUM-NEXT:    or a0, a2, a0
+; RV32I-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV32I-MEDIUM-NEXT:  # %bb.1: # %cond.store
+; RV32I-MEDIUM-NEXT:  .LBB5_4: # %cond.store
+; RV32I-MEDIUM-NEXT:    # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.LBB5_4)(a1)
+; RV32I-MEDIUM-NEXT:  .LBB5_2: # %merge
+; RV32I-MEDIUM-NEXT:    ret
+  %1 = load volatile i32, i32* @G
+  %2 = or i32 %1, %a
+  br i1 %c, label %cond.store, label %merge
+
+cond.store:
+  store i32 %2, i32* @G
+  br label %merge
+
+merge:
+  ret i32 %2
+}
+
+declare void @foo(i32*)
+
+; Check that we fold auipc into the load even when it still used by a
+; non-load/store.
+define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
+; RV32I-SMALL-LABEL: lower_global_nonload_use:
+; RV32I-SMALL:       # %bb.0:
+; RV32I-SMALL-NEXT:    addi sp, sp, -16
+; RV32I-SMALL-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32I-SMALL-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32I-SMALL-NEXT:    lui a0, %hi(G)
+; RV32I-SMALL-NEXT:    lw s0, %lo(G)(a0)
+; RV32I-SMALL-NEXT:    addi a0, a0, %lo(G)
+; RV32I-SMALL-NEXT:    call foo@plt
+; RV32I-SMALL-NEXT:    mv a0, s0
+; RV32I-SMALL-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32I-SMALL-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
+; RV32I-SMALL-NEXT:    addi sp, sp, 16
+; RV32I-SMALL-NEXT:    ret
+;
+; RV32I-MEDIUM-LABEL: lower_global_nonload_use:
+; RV32I-MEDIUM:       # %bb.0:
+; RV32I-MEDIUM-NEXT:    addi sp, sp, -16
+; RV32I-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32I-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32I-MEDIUM-NEXT:  .LBB6_1: # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc s0, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    lw s0, %pcrel_lo(.LBB6_1)(s0)
+; RV32I-MEDIUM-NEXT:  .LBB6_2: # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.LBB6_2)
+; RV32I-MEDIUM-NEXT:    call foo@plt
+; RV32I-MEDIUM-NEXT:    mv a0, s0
+; RV32I-MEDIUM-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32I-MEDIUM-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
+; RV32I-MEDIUM-NEXT:    addi sp, sp, 16
+; RV32I-MEDIUM-NEXT:    ret
+  %1 = load volatile i32, i32* @G
+  call void @foo(i32* @G)
+  ret i32 %1
+}
+
+; Make sure we don't fold the auipc+addi if it is outside a loop.
+define void @lower_global_loop(i32* %a) {
+; RV32I-SMALL-LABEL: lower_global_loop:
+; RV32I-SMALL:       # %bb.0: # %entry
+; RV32I-SMALL-NEXT:    li a1, 0
+; RV32I-SMALL-NEXT:    lui a2, %hi(G)
+; RV32I-SMALL-NEXT:    li a3, 40
+; RV32I-SMALL-NEXT:  .LBB7_1: # %for.body
+; RV32I-SMALL-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV32I-SMALL-NEXT:    lw a4, %lo(G)(a2)
+; RV32I-SMALL-NEXT:    add a5, a0, a1
+; RV32I-SMALL-NEXT:    lw a6, 0(a5)
+; RV32I-SMALL-NEXT:    or a4, a6, a4
+; RV32I-SMALL-NEXT:    addi a1, a1, 4
+; RV32I-SMALL-NEXT:    sw a4, 0(a5)
+; RV32I-SMALL-NEXT:    bne a1, a3, .LBB7_1
+; RV32I-SMALL-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV32I-SMALL-NEXT:    ret
+;
+; RV32I-MEDIUM-LABEL: lower_global_loop:
+; RV32I-MEDIUM:       # %bb.0: # %entry
+; RV32I-MEDIUM-NEXT:    li a1, 0
+; RV32I-MEDIUM-NEXT:  .LBB7_3: # %entry
+; RV32I-MEDIUM-NEXT:    # Label of block must be emitted
+; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32I-MEDIUM-NEXT:    addi a2, a2, %pcrel_lo(.LBB7_3)
+; RV32I-MEDIUM-NEXT:    li a3, 40
+; RV32I-MEDIUM-NEXT:  .LBB7_1: # %for.body
+; RV32I-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV32I-MEDIUM-NEXT:    lw a4, 0(a2)
+; RV32I-MEDIUM-NEXT:    add a5, a0, a1
+; RV32I-MEDIUM-NEXT:    lw a6, 0(a5)
+; RV32I-MEDIUM-NEXT:    or a4, a6, a4
+; RV32I-MEDIUM-NEXT:    addi a1, a1, 4
+; RV32I-MEDIUM-NEXT:    sw a4, 0(a5)
+; RV32I-MEDIUM-NEXT:    bne a1, a3, .LBB7_1
+; RV32I-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV32I-MEDIUM-NEXT:    ret
+entry:
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body
+  ret void
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.04 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
+  %0 = load i32, i32* @G
+  %arrayidx = getelementptr inbounds i32, i32* %a, i32 %i.04
+  %1 = load i32, i32* %arrayidx
+  %or = or i32 %1, %0
+  store i32 %or, i32* %arrayidx
+  %inc = add nuw nsw i32 %i.04, 1
+  %exitcond.not = icmp eq i32 %inc, 10
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
