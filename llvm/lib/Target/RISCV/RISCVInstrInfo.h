@@ -172,10 +172,13 @@ public:
                           unsigned OpIdx,
                           const TargetRegisterInfo *TRI) const override;
 
+#if SIFIVE_CUSTOMIZATION
   Register getVLENFactoredAmount(
       MachineFunction &MF, MachineBasicBlock &MBB,
       MachineBasicBlock::iterator II, const DebugLoc &DL, int64_t Amount,
+      bool IsPrologue = false,
       MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Returns true if the given MI is an RVV instruction opcode for which we may
   // expect to see a FrameIndex operand. When CheckFIs is true, the instruction

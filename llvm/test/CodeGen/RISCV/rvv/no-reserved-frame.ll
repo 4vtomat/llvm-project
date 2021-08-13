@@ -15,8 +15,8 @@ define signext i32 @foo(i32 signext %aa) #0 {
 ; CHECK-NEXT:    .cfi_offset s1, -24
 ; CHECK-NEXT:    addi s0, sp, 80
 ; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    sub sp, sp, a1
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    andi sp, sp, -8
 ; CHECK-NEXT:    mv s1, sp
 ; CHECK-NEXT:    lw t0, 44(s1)

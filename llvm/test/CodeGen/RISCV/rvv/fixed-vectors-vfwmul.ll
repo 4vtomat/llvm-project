@@ -90,9 +90,9 @@ define <64 x float> @vfwmul_v64f16(<64 x half> *%x, <64 x half> *%y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, mu
 ; CHECK-NEXT:    vle16.v v16, (a0)
@@ -108,9 +108,9 @@ define <64 x float> @vfwmul_v64f16(<64 x half> *%x, <64 x half> *%y) {
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfwmul.vv v16, v24, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <64 x half>, <64 x half>* %x
@@ -190,9 +190,9 @@ define <32 x double> @vfwmul_v32f32(<32 x float> *%x, <32 x float> *%y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a2, 32
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m8, ta, mu
 ; CHECK-NEXT:    vle32.v v16, (a0)
@@ -207,9 +207,9 @@ define <32 x double> @vfwmul_v32f32(<32 x float> *%x, <32 x float> *%y) {
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfwmul.vv v16, v24, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <32 x float>, <32 x float>* %x

@@ -153,10 +153,10 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    li a4, 24
-; CHECK-NEXT:    mul a2, a2, a4
-; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a4, 128
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, mu
 ; CHECK-NEXT:    vle8.v v24, (a1)
@@ -204,10 +204,10 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmerge.vvm v16, v24, v16, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 24
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <256 x i8> @llvm.vp.select.v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i32 %evl)
@@ -219,10 +219,10 @@ define <256 x i8> @select_evl_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    li a3, 24
-; CHECK-NEXT:    mul a2, a2, a3
-; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vle8.v v24, (a0)
@@ -261,10 +261,10 @@ define <256 x i8> @select_evl_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c
 ; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
 ; CHECK-NEXT:    vmv8r.v v16, v24
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 24
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <256 x i8> @llvm.vp.select.v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i32 129)
@@ -422,10 +422,10 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a3, 24
-; CHECK-NEXT:    mul a1, a1, a3
-; CHECK-NEXT:    sub sp, sp, a1
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    addi a1, a0, 128
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, mu
 ; CHECK-NEXT:    vle64.v v24, (a1)
@@ -473,10 +473,10 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v24, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 24
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <32 x i64> @llvm.vp.select.v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32 %evl)
@@ -603,9 +603,9 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 4
-; CHECK-NEXT:    sub sp, sp, a1
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a3, 32
 ; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; CHECK-NEXT:    vle32.v v24, (a0)
@@ -642,9 +642,9 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmerge.vvm v16, v16, v24, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <64 x float> @llvm.vp.select.v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %c, i32 %evl)

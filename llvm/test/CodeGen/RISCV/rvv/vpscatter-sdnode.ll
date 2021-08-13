@@ -2103,9 +2103,9 @@ define void @vpscatter_nxv16f64(<vscale x 16 x double> %val, <vscale x 16 x doub
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 3
-; RV64-NEXT:    sub sp, sp, a1
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    sub sp, sp, t0
 ; RV64-NEXT:    addi a1, sp, 16
 ; RV64-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
 ; RV64-NEXT:    vl8re64.v v16, (a0)
@@ -2133,9 +2133,9 @@ define void @vpscatter_nxv16f64(<vscale x 16 x double> %val, <vscale x 16 x doub
 ; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v24, v0.t
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    add sp, sp, t0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   call void @llvm.vp.scatter.nxv16f64.nxv16p0f64(<vscale x 16 x double> %val, <vscale x 16 x double*> %ptrs, <vscale x 16 x i1> %m, i32 %evl)
@@ -2209,9 +2209,9 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr a3, vlenb
-; RV32-NEXT:    slli a3, a3, 4
-; RV32-NEXT:    sub sp, sp, a3
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    sub sp, sp, t0
 ; RV32-NEXT:    vl4re16.v v24, (a1)
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
@@ -2256,9 +2256,9 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV32-NEXT:    addi a1, a1, 16
 ; RV32-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; RV32-NEXT:    vsoxei32.v v8, (a0), v16, v0.t
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 4
-; RV32-NEXT:    add sp, sp, a0
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    add sp, sp, t0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -2266,9 +2266,9 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr a3, vlenb
-; RV64-NEXT:    slli a3, a3, 4
-; RV64-NEXT:    sub sp, sp, a3
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    sub sp, sp, t0
 ; RV64-NEXT:    vl4re16.v v24, (a1)
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
@@ -2309,9 +2309,9 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64-NEXT:    addi a1, a1, 16
 ; RV64-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsoxei64.v v16, (a0), v8, v0.t
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
-; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    add sp, sp, t0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %eidxs = sext <vscale x 16 x i16> %idxs to <vscale x 16 x i64>
@@ -2325,9 +2325,9 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr a3, vlenb
-; RV32-NEXT:    slli a3, a3, 4
-; RV32-NEXT:    sub sp, sp, a3
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    sub sp, sp, t0
 ; RV32-NEXT:    vl4re16.v v24, (a1)
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
@@ -2372,9 +2372,9 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV32-NEXT:    addi a1, a1, 16
 ; RV32-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; RV32-NEXT:    vsoxei32.v v8, (a0), v16, v0.t
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 4
-; RV32-NEXT:    add sp, sp, a0
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    add sp, sp, t0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -2382,9 +2382,9 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr a3, vlenb
-; RV64-NEXT:    slli a3, a3, 4
-; RV64-NEXT:    sub sp, sp, a3
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    sub sp, sp, t0
 ; RV64-NEXT:    vl4re16.v v24, (a1)
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
@@ -2425,9 +2425,9 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64-NEXT:    addi a1, a1, 16
 ; RV64-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsoxei64.v v16, (a0), v8, v0.t
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
-; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    add sp, sp, t0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %eidxs = zext <vscale x 16 x i16> %idxs to <vscale x 16 x i64>

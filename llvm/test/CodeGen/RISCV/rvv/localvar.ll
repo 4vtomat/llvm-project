@@ -7,9 +7,9 @@ define void @local_var_mf8() {
 ; RV64IV:       # %bb.0:
 ; RV64IV-NEXT:    addi sp, sp, -16
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 16
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 1
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    vsetvli a0, zero, e8, mf8, ta, mu
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    add a0, sp, a0
@@ -17,9 +17,9 @@ define void @local_var_mf8() {
 ; RV64IV-NEXT:    vle8.v v8, (a0)
 ; RV64IV-NEXT:    addi a0, sp, 16
 ; RV64IV-NEXT:    vle8.v v8, (a0)
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 1
-; RV64IV-NEXT:    add sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
+; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 1 x i8>
@@ -34,18 +34,18 @@ define void @local_var_m1() {
 ; RV64IV:       # %bb.0:
 ; RV64IV-NEXT:    addi sp, sp, -16
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 16
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 1
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    add a0, sp, a0
 ; RV64IV-NEXT:    addi a0, a0, 16
 ; RV64IV-NEXT:    vl1r.v v8, (a0)
 ; RV64IV-NEXT:    addi a0, sp, 16
 ; RV64IV-NEXT:    vl1r.v v8, (a0)
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 1
-; RV64IV-NEXT:    add sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
+; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 8 x i8>
@@ -60,9 +60,9 @@ define void @local_var_m2() {
 ; RV64IV:       # %bb.0:
 ; RV64IV-NEXT:    addi sp, sp, -16
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 16
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 2
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    add a0, sp, a0
@@ -70,9 +70,9 @@ define void @local_var_m2() {
 ; RV64IV-NEXT:    vl2r.v v8, (a0)
 ; RV64IV-NEXT:    addi a0, sp, 16
 ; RV64IV-NEXT:    vl2r.v v8, (a0)
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 2
-; RV64IV-NEXT:    add sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 16 x i8>
@@ -93,9 +93,9 @@ define void @local_var_m4() {
 ; RV64IV-NEXT:    .cfi_offset s0, -16
 ; RV64IV-NEXT:    addi s0, sp, 32
 ; RV64IV-NEXT:    .cfi_def_cfa s0, 0
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 3
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 3
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    andi sp, sp, -32
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 2
@@ -127,9 +127,9 @@ define void @local_var_m8() {
 ; RV64IV-NEXT:    .cfi_offset s0, -16
 ; RV64IV-NEXT:    addi s0, sp, 64
 ; RV64IV-NEXT:    .cfi_def_cfa s0, 0
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 4
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 4
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    andi sp, sp, -64
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 3
@@ -155,9 +155,9 @@ define void @local_var_m2_mix_local_scalar() {
 ; RV64IV:       # %bb.0:
 ; RV64IV-NEXT:    addi sp, sp, -32
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 32
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 2
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    lw a0, 28(sp)
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
@@ -167,9 +167,9 @@ define void @local_var_m2_mix_local_scalar() {
 ; RV64IV-NEXT:    addi a0, sp, 32
 ; RV64IV-NEXT:    vl2r.v v8, (a0)
 ; RV64IV-NEXT:    lw a0, 24(sp)
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 2
-; RV64IV-NEXT:    add sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    addi sp, sp, 32
 ; RV64IV-NEXT:    ret
   %local_scalar0 = alloca i32
@@ -194,9 +194,9 @@ define void @local_var_m2_with_varsize_object(i64 %n) {
 ; RV64IV-NEXT:    .cfi_offset s0, -16
 ; RV64IV-NEXT:    addi s0, sp, 32
 ; RV64IV-NEXT:    .cfi_def_cfa s0, 0
-; RV64IV-NEXT:    csrr a1, vlenb
-; RV64IV-NEXT:    slli a1, a1, 2
-; RV64IV-NEXT:    sub sp, sp, a1
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    addi a0, a0, 15
 ; RV64IV-NEXT:    andi a0, a0, -16
 ; RV64IV-NEXT:    sub a0, sp, a0
@@ -243,9 +243,9 @@ define void @local_var_m2_with_bp(i64 %n) {
 ; RV64IV-NEXT:    .cfi_offset s1, -24
 ; RV64IV-NEXT:    addi s0, sp, 256
 ; RV64IV-NEXT:    .cfi_def_cfa s0, 0
-; RV64IV-NEXT:    csrr a1, vlenb
-; RV64IV-NEXT:    slli a1, a1, 2
-; RV64IV-NEXT:    sub sp, sp, a1
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 2
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    andi sp, sp, -128
 ; RV64IV-NEXT:    mv s1, sp
 ; RV64IV-NEXT:    addi a0, a0, 15
@@ -291,16 +291,16 @@ define i64 @fixed_object(i64 %0, i64 %1, i64 %2, i64 %3, i64 %4, i64 %5, i64 %6,
 ; RV64IV-LABEL: fixed_object:
 ; RV64IV:       # %bb.0:
 ; RV64IV-NEXT:    addi sp, sp, -16
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 3
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 3
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 3
 ; RV64IV-NEXT:    add a0, sp, a0
 ; RV64IV-NEXT:    ld a0, 16(a0)
-; RV64IV-NEXT:    csrr a1, vlenb
-; RV64IV-NEXT:    slli a1, a1, 3
-; RV64IV-NEXT:    add sp, sp, a1
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 3
+; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %fixed_size = alloca i32

@@ -35,9 +35,9 @@ define <vscale x 64 x i8> @caller() {
 ; RV64IV-NEXT:    .cfi_offset s0, -16
 ; RV64IV-NEXT:    addi s0, sp, 64
 ; RV64IV-NEXT:    .cfi_def_cfa s0, 0
-; RV64IV-NEXT:    csrr a0, vlenb
-; RV64IV-NEXT:    slli a0, a0, 5
-; RV64IV-NEXT:    sub sp, sp, a0
+; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 5
+; RV64IV-NEXT:    sub sp, sp, t0
 ; RV64IV-NEXT:    andi sp, sp, -64
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    li a1, 24

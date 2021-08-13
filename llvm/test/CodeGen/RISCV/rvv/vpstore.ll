@@ -404,9 +404,9 @@ define void @vpstore_nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    csrr a3, vlenb
 ; CHECK-NEXT:    slli a4, a3, 1
 ; CHECK-NEXT:    vmv1r.v v24, v0
@@ -458,9 +458,9 @@ define void @vpstore_nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double
 ; CHECK-NEXT:  .LBB31_10:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
 ; CHECK-NEXT:    vse64.v v16, (a1), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 3
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   call void @llvm.vp.store.nxv17f64.p0nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double>* %ptr, <vscale x 17 x i1> %m, i32 %evl)

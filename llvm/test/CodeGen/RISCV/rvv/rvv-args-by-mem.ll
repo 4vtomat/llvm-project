@@ -45,9 +45,9 @@ define <vscale x 16 x i32> @foo(i32 %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5, 
 ; CHECK-NEXT:    vs8r.v v8, (t0)
 ; CHECK-NEXT:    vmv8r.v v16, v8
 ; CHECK-NEXT:    call bar@plt
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    ld ra, 40(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 48
 ; CHECK-NEXT:    ret

@@ -1785,6 +1785,7 @@ Register RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
                                                MachineBasicBlock::iterator II,
                                                const DebugLoc &DL,
                                                int64_t Amount,
+                                               bool IsPrologue, // SIFIVE
                                                MachineInstr::MIFlag Flag) const {
   assert(Amount > 0 && "There is no need to get VLEN scaled value.");
   assert(Amount % 8 == 0 &&
@@ -1793,11 +1794,22 @@ Register RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
   MachineRegisterInfo &MRI = MF.getRegInfo();
   int64_t NumOfVReg = Amount / 8;
 
-  Register VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+#if SIFIVE_CUSTOMIZATION
+  Register VL;
+  Register Tmp1;
+  if (IsPrologue) {
+    // T0 and T1 are available in the prologue.
+    VL = RISCV::X5;      // RISCV::T0
+    Tmp1 = RISCV::X6;    // RISCV::T1
+  } else {
+    VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    Tmp1 = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+  }
+
   BuildMI(MBB, II, DL, get(RISCV::PseudoReadVLENB), VL)
     .setMIFlag(Flag);
   assert(isInt<32>(NumOfVReg) &&
-         "Expect the number of vector registers within 32-bits.");
+         "Expect the number of vector registers within 12-bits.");
   if (isPowerOf2_32(NumOfVReg)) {
     uint32_t ShiftAmount = Log2_32(NumOfVReg);
     if (ShiftAmount == 0)
@@ -1822,39 +1834,37 @@ Register RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
         .addReg(VL)
         .setMIFlag(Flag);
   } else if (isPowerOf2_32(NumOfVReg - 1)) {
-    Register ScaledRegister = MRI.createVirtualRegister(&RISCV::GPRRegClass);
     uint32_t ShiftAmount = Log2_32(NumOfVReg - 1);
-    BuildMI(MBB, II, DL, get(RISCV::SLLI), ScaledRegister)
+    BuildMI(MBB, II, DL, get(RISCV::SLLI), Tmp1)
         .addReg(VL)
         .addImm(ShiftAmount)
         .setMIFlag(Flag);
     BuildMI(MBB, II, DL, get(RISCV::ADD), VL)
-        .addReg(ScaledRegister, RegState::Kill)
+        .addReg(Tmp1, RegState::Kill)
         .addReg(VL, RegState::Kill)
         .setMIFlag(Flag);
   } else if (isPowerOf2_32(NumOfVReg + 1)) {
-    Register ScaledRegister = MRI.createVirtualRegister(&RISCV::GPRRegClass);
     uint32_t ShiftAmount = Log2_32(NumOfVReg + 1);
-    BuildMI(MBB, II, DL, get(RISCV::SLLI), ScaledRegister)
+    BuildMI(MBB, II, DL, get(RISCV::SLLI), Tmp1)
         .addReg(VL)
         .addImm(ShiftAmount)
         .setMIFlag(Flag);
     BuildMI(MBB, II, DL, get(RISCV::SUB), VL)
-        .addReg(ScaledRegister, RegState::Kill)
+        .addReg(Tmp1, RegState::Kill)
         .addReg(VL, RegState::Kill)
         .setMIFlag(Flag);
   } else {
-    Register N = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-    movImm(MBB, II, DL, N, NumOfVReg, Flag);
+    movImm(MBB, II, DL, Tmp1, NumOfVReg, Flag);
     if (!STI.hasStdExtM())
       MF.getFunction().getContext().diagnose(DiagnosticInfoUnsupported{
           MF.getFunction(),
           "M-extension must be enabled to calculate the vscaled size/offset."});
     BuildMI(MBB, II, DL, get(RISCV::MUL), VL)
         .addReg(VL, RegState::Kill)
-        .addReg(N, RegState::Kill)
+        .addReg(Tmp1, RegState::Kill)
         .setMIFlag(Flag);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   return VL;
 }

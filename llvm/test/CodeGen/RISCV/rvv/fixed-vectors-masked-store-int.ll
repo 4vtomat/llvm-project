@@ -400,9 +400,9 @@ define void @masked_store_v32i64(<32 x i64>* %val_ptr, <32 x i64>* %a, <32 x i64
 ; RV32-LABEL: masked_store_v32i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    csrr a3, vlenb
-; RV32-NEXT:    slli a3, a3, 4
-; RV32-NEXT:    sub sp, sp, a3
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    sub sp, sp, t0
 ; RV32-NEXT:    addi a3, a2, 128
 ; RV32-NEXT:    vsetivli zero, 16, e64, m8, ta, mu
 ; RV32-NEXT:    vle64.v v8, (a3)
@@ -434,18 +434,18 @@ define void @masked_store_v32i64(<32 x i64>* %val_ptr, <32 x i64>* %a, <32 x i64
 ; RV32-NEXT:    addi a0, sp, 16
 ; RV32-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vse64.v v8, (a1), v0.t
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 4
-; RV32-NEXT:    add sp, sp, a0
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    slli t0, t0, 4
+; RV32-NEXT:    add sp, sp, t0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: masked_store_v32i64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    csrr a3, vlenb
-; RV64-NEXT:    slli a3, a3, 4
-; RV64-NEXT:    sub sp, sp, a3
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    sub sp, sp, t0
 ; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, mu
 ; RV64-NEXT:    vle64.v v8, (a2)
 ; RV64-NEXT:    addi a2, a2, 128
@@ -473,9 +473,9 @@ define void @masked_store_v32i64(<32 x i64>* %val_ptr, <32 x i64>* %a, <32 x i64
 ; RV64-NEXT:    addi a1, sp, 16
 ; RV64-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; RV64-NEXT:    vse64.v v8, (a0), v0.t
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
-; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 4
+; RV64-NEXT:    add sp, sp, t0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %m = load <32 x i64>, <32 x i64>* %m_ptr
@@ -526,9 +526,9 @@ define void @masked_store_v64i32(<64 x i32>* %val_ptr, <64 x i32>* %a, <64 x i32
 ; CHECK-LABEL: masked_store_v64i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a3, 32
 ; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a2)
@@ -557,9 +557,9 @@ define void @masked_store_v64i32(<64 x i32>* %val_ptr, <64 x i32>* %a, <64 x i32
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vse32.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %m = load <64 x i32>, <64 x i32>* %m_ptr
@@ -592,9 +592,9 @@ define void @masked_store_v128i16(<128 x i16>* %val_ptr, <128 x i16>* %a, <128 x
 ; CHECK-LABEL: masked_store_v128i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a3, 64
 ; CHECK-NEXT:    vsetvli zero, a3, e16, m8, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a2)
@@ -623,9 +623,9 @@ define void @masked_store_v128i16(<128 x i16>* %val_ptr, <128 x i16>* %a, <128 x
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vse16.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %m = load <128 x i16>, <128 x i16>* %m_ptr
@@ -640,9 +640,9 @@ define void @masked_store_v256i8(<256 x i8>* %val_ptr, <256 x i8>* %a, <256 x i8
 ; CHECK-LABEL: masked_store_v256i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    li a3, 128
 ; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a2)
@@ -671,9 +671,9 @@ define void @masked_store_v256i8(<256 x i8>* %val_ptr, <256 x i8>* %a, <256 x i8
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vse8.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %m = load <256 x i8>, <256 x i8>* %m_ptr

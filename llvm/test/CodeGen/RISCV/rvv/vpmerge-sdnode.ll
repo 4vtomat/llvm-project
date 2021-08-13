@@ -372,10 +372,10 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    li a4, 24
-; RV32-NEXT:    mul a1, a1, a4
-; RV32-NEXT:    sub sp, sp, a1
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    li t1, 24
+; RV32-NEXT:    mul t0, t0, t1
+; RV32-NEXT:    sub sp, sp, t0
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
 ; RV32-NEXT:    add a4, a0, a1
@@ -424,10 +424,10 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV32-NEXT:    addi a0, sp, 16
 ; RV32-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vmerge.vvm v8, v8, v24, v0
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    li a1, 24
-; RV32-NEXT:    mul a0, a0, a1
-; RV32-NEXT:    add sp, sp, a0
+; RV32-NEXT:    csrr t0, vlenb
+; RV32-NEXT:    li t1, 24
+; RV32-NEXT:    mul t0, t0, t1
+; RV32-NEXT:    add sp, sp, t0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -435,9 +435,9 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 3
-; RV64-NEXT:    sub sp, sp, a1
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    sub sp, sp, t0
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
 ; RV64-NEXT:    add a4, a0, a1
@@ -467,9 +467,9 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; RV64-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; RV64-NEXT:    vmv8r.v v16, v24
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    add sp, sp, t0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <vscale x 128 x i8> @llvm.vp.merge.nxv128i8(<vscale x 128 x i1> %m, <vscale x 128 x i8> %va, <vscale x 128 x i8> %vb, i32 %evl)

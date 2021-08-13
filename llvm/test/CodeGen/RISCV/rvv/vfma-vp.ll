@@ -1199,10 +1199,10 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a3, 48
-; CHECK-NEXT:    mul a1, a1, a3
-; CHECK-NEXT:    sub sp, sp, a1
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 48
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    li a3, 24
@@ -1300,10 +1300,10 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 48
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 48
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <vscale x 16 x double> @llvm.vp.fma.nxv16f64(<vscale x 16 x double> %va, <vscale x 16 x double> %b, <vscale x 16 x double> %c, <vscale x 16 x i1> %m, i32 %evl)
@@ -1315,10 +1315,10 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64_unmasked(<vscale x 16 x double> 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a3, 24
-; CHECK-NEXT:    mul a1, a1, a3
-; CHECK-NEXT:    sub sp, sp, a1
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    sub sp, sp, t0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
 ; CHECK-NEXT:    add a5, a2, a3
@@ -1367,10 +1367,10 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64_unmasked(<vscale x 16 x double> 
 ; CHECK-NEXT:    vfmadd.vv v0, v16, v8
 ; CHECK-NEXT:    vmv.v.v v8, v0
 ; CHECK-NEXT:    vmv8r.v v16, v24
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 24
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    csrr t0, vlenb
+; CHECK-NEXT:    li t1, 24
+; CHECK-NEXT:    mul t0, t0, t1
+; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 16 x i1> poison, i1 true, i32 0

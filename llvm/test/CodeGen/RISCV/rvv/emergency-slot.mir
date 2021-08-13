@@ -82,10 +82,10 @@ body:             |
   ; CHECK-NEXT:   $x8 = frame-setup ADDI $x2, 2032
   ; CHECK-NEXT:   frame-setup CFI_INSTRUCTION def_cfa $x8, 0
   ; CHECK-NEXT:   $x2 = frame-setup ADDI $x2, -272
-  ; CHECK-NEXT:   $x10 = frame-setup PseudoReadVLENB
-  ; CHECK-NEXT:   $x11 = frame-setup ADDI killed $x0, 51
-  ; CHECK-NEXT:   $x10 = frame-setup MUL killed $x10, killed $x11
-  ; CHECK-NEXT:   $x2 = frame-setup SUB $x2, killed $x10
+  ; CHECK-NEXT:   $x5 = frame-setup PseudoReadVLENB
+  ; CHECK-NEXT:   $x6 = frame-setup ADDI killed $x0, 51
+  ; CHECK-NEXT:   $x5 = frame-setup MUL killed $x5, killed $x6
+  ; CHECK-NEXT:   $x2 = frame-setup SUB $x2, killed $x5
   ; CHECK-NEXT:   $x2 = frame-setup ANDI $x2, -128
   ; CHECK-NEXT:   dead renamable $x15 = PseudoVSETIVLI 1, 72 /* e16, m1, ta, mu */, implicit-def $vl, implicit-def $vtype
   ; CHECK-NEXT:   renamable $v25 = PseudoVMV_V_X_M1 killed renamable $x12, $noreg, 4 /* e16 */, implicit $vl, implicit $vtype
@@ -153,9 +153,9 @@ body:             |
   ; CHECK-NEXT:   PseudoBR %bb.2
   ; CHECK-NEXT: {{  $}}
   ; CHECK-NEXT: bb.2:
-  ; CHECK-NEXT:   $x10 = frame-destroy LUI 1
-  ; CHECK-NEXT:   $x10 = frame-destroy ADDIW killed $x10, -1792
-  ; CHECK-NEXT:   $x2 = frame-destroy SUB $x8, killed $x10
+  ; CHECK-NEXT:   $x6 = frame-destroy LUI 1
+  ; CHECK-NEXT:   $x6 = frame-destroy ADDIW killed $x6, -1792
+  ; CHECK-NEXT:   $x2 = frame-destroy SUB $x8, killed $x6
   ; CHECK-NEXT:   $x2 = frame-destroy ADDI $x2, 272
   ; CHECK-NEXT:   $x1 = LD $x2, 2024 :: (load (s64) from %stack.3)
   ; CHECK-NEXT:   $x8 = LD $x2, 2016 :: (load (s64) from %stack.4)
