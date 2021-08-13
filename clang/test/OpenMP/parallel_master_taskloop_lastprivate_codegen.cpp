@@ -554,7 +554,6 @@ void loop() {
 // CHECK1-LABEL: define {{[^@]+}}@.omp_task_destructor.
 // CHECK1-SAME: (i32 noundef [[TMP0:%.*]], %struct.kmp_task_t_with_privates* noalias noundef [[TMP1:%.*]]) #[[ATTR7]] {
 // CHECK1-NEXT:  entry:
-// CHECK1-NEXT:    [[RETVAL:%.*]] = alloca i32, align 4
 // CHECK1-NEXT:    [[DOTADDR:%.*]] = alloca i32, align 4
 // CHECK1-NEXT:    [[DOTADDR1:%.*]] = alloca %struct.kmp_task_t_with_privates*, align 8
 // CHECK1-NEXT:    store i32 [[TMP0]], i32* [[DOTADDR]], align 4
@@ -574,8 +573,7 @@ void loop() {
 // CHECK1-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq %struct.S* [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK1-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK1:       arraydestroy.done2:
-// CHECK1-NEXT:    [[TMP7:%.*]] = load i32, i32* [[RETVAL]], align 4
-// CHECK1-NEXT:    ret i32 [[TMP7]]
+// CHECK1-NEXT:    ret i32 poison
 //
 //
 // CHECK1-LABEL: define {{[^@]+}}@_ZN1SIdED1Ev
@@ -963,7 +961,6 @@ void loop() {
 // CHECK1-LABEL: define {{[^@]+}}@.omp_task_destructor..7
 // CHECK1-SAME: (i32 noundef [[TMP0:%.*]], %struct.kmp_task_t_with_privates.2* noalias noundef [[TMP1:%.*]]) #[[ATTR7]] {
 // CHECK1-NEXT:  entry:
-// CHECK1-NEXT:    [[RETVAL:%.*]] = alloca i32, align 4
 // CHECK1-NEXT:    [[DOTADDR:%.*]] = alloca i32, align 4
 // CHECK1-NEXT:    [[DOTADDR1:%.*]] = alloca %struct.kmp_task_t_with_privates.2*, align 8
 // CHECK1-NEXT:    store i32 [[TMP0]], i32* [[DOTADDR]], align 4
@@ -983,8 +980,7 @@ void loop() {
 // CHECK1-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq %struct.S.0* [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK1-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK1:       arraydestroy.done2:
-// CHECK1-NEXT:    [[TMP7:%.*]] = load i32, i32* [[RETVAL]], align 4
-// CHECK1-NEXT:    ret i32 [[TMP7]]
+// CHECK1-NEXT:    ret i32 poison
 //
 //
 // CHECK1-LABEL: define {{[^@]+}}@_ZN1SIiED1Ev
@@ -1388,7 +1384,6 @@ void loop() {
 // CHECK2-LABEL: define {{[^@]+}}@.omp_task_destructor.
 // CHECK2-SAME: (i32 noundef [[TMP0:%.*]], %struct.kmp_task_t_with_privates* noalias noundef [[TMP1:%.*]]) #[[ATTR7]] {
 // CHECK2-NEXT:  entry:
-// CHECK2-NEXT:    [[RETVAL:%.*]] = alloca i32, align 4
 // CHECK2-NEXT:    [[DOTADDR:%.*]] = alloca i32, align 4
 // CHECK2-NEXT:    [[DOTADDR1:%.*]] = alloca %struct.kmp_task_t_with_privates*, align 8
 // CHECK2-NEXT:    store i32 [[TMP0]], i32* [[DOTADDR]], align 4
@@ -1408,8 +1403,7 @@ void loop() {
 // CHECK2-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq %struct.S* [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK2-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK2:       arraydestroy.done2:
-// CHECK2-NEXT:    [[TMP7:%.*]] = load i32, i32* [[RETVAL]], align 4
-// CHECK2-NEXT:    ret i32 [[TMP7]]
+// CHECK2-NEXT:    ret i32 poison
 //
 //
 // CHECK2-LABEL: define {{[^@]+}}@_ZN1SIdED1Ev
@@ -1797,7 +1791,6 @@ void loop() {
 // CHECK2-LABEL: define {{[^@]+}}@.omp_task_destructor..7
 // CHECK2-SAME: (i32 noundef [[TMP0:%.*]], %struct.kmp_task_t_with_privates.2* noalias noundef [[TMP1:%.*]]) #[[ATTR7]] {
 // CHECK2-NEXT:  entry:
-// CHECK2-NEXT:    [[RETVAL:%.*]] = alloca i32, align 4
 // CHECK2-NEXT:    [[DOTADDR:%.*]] = alloca i32, align 4
 // CHECK2-NEXT:    [[DOTADDR1:%.*]] = alloca %struct.kmp_task_t_with_privates.2*, align 8
 // CHECK2-NEXT:    store i32 [[TMP0]], i32* [[DOTADDR]], align 4
@@ -1817,8 +1810,7 @@ void loop() {
 // CHECK2-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq %struct.S.0* [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK2-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK2:       arraydestroy.done2:
-// CHECK2-NEXT:    [[TMP7:%.*]] = load i32, i32* [[RETVAL]], align 4
-// CHECK2-NEXT:    ret i32 [[TMP7]]
+// CHECK2-NEXT:    ret i32 poison
 //
 //
 // CHECK2-LABEL: define {{[^@]+}}@_ZN1SIiED1Ev

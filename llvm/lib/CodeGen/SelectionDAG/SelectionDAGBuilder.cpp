@@ -1973,6 +1973,10 @@ void SelectionDAGBuilder::visitRet(const ReturnInst &I) {
       else if (F->getAttributes().hasRetAttr(Attribute::ZExt))
         ExtendKind = ISD::ZERO_EXTEND;
 
+      // Don't extend poison.
+      if (isa<PoisonValue>(I.getOperand(0)))
+        ExtendKind = ISD::ANY_EXTEND;
+
       LLVMContext &Context = F->getContext();
       bool RetInReg = F->getAttributes().hasRetAttr(Attribute::InReg);
 

@@ -13,14 +13,12 @@ int no_return() {
   // CHECK-OPT:     unreachable
 
   // -fno-strict-return should not emit trap + unreachable but it should return
-  // an undefined value instead.
+  // a poison value instead.
 
-  // CHECK-NOSTRICT: alloca
-  // CHECK-NOSTRICT-NEXT: load
-  // CHECK-NOSTRICT-NEXT: ret i32
+  // CHECK-NOSTRICT: ret i32 poison
   // CHECK-NOSTRICT-NEXT: }
 
-  // CHECK-NOSTRICT-OPT: ret i32 undef
+  // CHECK-NOSTRICT-OPT: ret i32 poison
 }
 
 enum Enum {
