@@ -218,6 +218,10 @@ public:
     // FIXME: Should we exclude fixed registers like SP, TP or GP?
     return 31;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  unsigned getInliningThresholdMultiplier() { return 2; }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // end namespace llvm
