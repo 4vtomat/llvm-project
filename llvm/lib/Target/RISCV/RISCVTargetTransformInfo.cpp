@@ -349,18 +349,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
 void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                            TTI::UnrollingPreferences &UP,
                                            OptimizationRemarkEmitter *ORE) {
-  // TODO: More tuning on benchmarks and metrics with changes as needed
-  //       would apply to all settings below to enable performance.
-
-  // Support explicit targets enabled for SiFive with the unrolling preferences
-  // below
-  bool UseDefaultPreferences = true;
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    UseDefaultPreferences = false;
-
-  if (UseDefaultPreferences)
-    return BasicTTIImplBase::getUnrollingPreferences(L, SE, UP, ORE);
-
   // Enable Upper bound unrolling universally, not dependant upon the conditions
   // below.
   UP.UpperBound = true;
