@@ -57,16 +57,19 @@ static bool optimizeZExtWUses(Instruction *I) {
       !I->getType()->isIntegerTy(64))
     return false;
 
-  // Make sure all users are GEPs.
-  // TODO: This isn't strictly necessary, but it ensures we don't extend the
+  // Make sure all users are GEPs or left shifts by constant.
+  // NOTE: This isn't strictly necessary, but it ensures we don't extend the
   // live range of Src without removing all non-local users of I.
   bool HasNonLocalUser = false;
   for (auto *U : I->users()) {
-    auto *GEP = dyn_cast<GetElementPtrInst>(U);
-    if (!GEP)
+    auto *UserI = cast<Instruction>(U);
+
+    if (!isa<GetElementPtrInst>(UserI) &&
+        !(UserI->getOpcode() == Instruction::Shl &&
+          isa<ConstantInt>(UserI->getOperand(1))))
       return false;
 
-    if (GEP->getParent() != DefBB)
+    if (UserI->getParent() != DefBB)
       HasNonLocalUser = true;
   }
 

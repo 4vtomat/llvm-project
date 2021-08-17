@@ -122,3 +122,40 @@ define signext i32 @test3(i32 signext %0, i32* %1, i32* %2, i32* %3, i32 signext
   %18 = phi i32 [ %16, %10 ], [ %8, %5 ]
   ret i32 %18
 }
+
+; Similar to test1, but now the other user is a shl instead of gep.
+define signext i32 @test4(i32 signext %0, i32* %1, i32* %2, i32 signext %3) {
+; CHECK-LABEL: @test4(
+; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3:%.*]] to i64
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP15:%.*]], label [[TMP9:%.*]]
+; CHECK:       9:
+; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP3]] to i64
+; CHECK-NEXT:    [[TMP11:%.*]] = shl i64 [[TMP10]], 1
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = add nsw i32 [[TMP13]], [[TMP7]]
+; CHECK-NEXT:    br label [[TMP15]]
+; CHECK:       15:
+; CHECK-NEXT:    [[TMP16:%.*]] = phi i32 [ [[TMP14]], [[TMP9]] ], [ [[TMP7]], [[TMP4:%.*]] ]
+; CHECK-NEXT:    ret i32 [[TMP16]]
+;
+  %5 = zext i32 %3 to i64
+  %6 = getelementptr inbounds i32, i32* %1, i64 %5
+  %7 = load i32, i32* %6, align 4
+  %8 = icmp eq i32 %0, 0
+  br i1 %8, label %14, label %9
+
+9:                                                ; preds = %4
+  %10 = shl i64 %5, 1
+  %11 = getelementptr inbounds i32, i32* %2, i64 %10
+  %12 = load i32, i32* %11, align 4
+  %13 = add nsw i32 %12, %7
+  br label %14
+
+14:                                               ; preds = %9, %4
+  %15 = phi i32 [ %13, %9 ], [ %7, %4 ]
+  ret i32 %15
+}
