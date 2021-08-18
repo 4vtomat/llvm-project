@@ -159,3 +159,191 @@ define signext i32 @test4(i32 signext %0, i32* %1, i32* %2, i32 signext %3) {
   %15 = phi i32 [ %13, %9 ], [ %7, %4 ]
   ret i32 %15
 }
+
+declare void @bar(i64)
+
+; Test that we can convert the %wide.trip.count zext to a sext. The dominating
+; condition %cmp4 ruled out %n being negative.
+define void @test5(i32 signext %n) nounwind {
+; CHECK-LABEL: @test5(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[CMP4:%.*]] = icmp sgt i32 [[N:%.*]], 0
+; CHECK-NEXT:    br i1 [[CMP4]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; CHECK:       for.body.preheader:
+; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = sext i32 [[N]] to i64
+; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK:       for.cond.cleanup:
+; CHECK-NEXT:    ret void
+; CHECK:       for.body:
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV]])
+; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+entry:
+  %cmp4 = icmp sgt i32 %n, 0
+  br i1 %cmp4, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  tail call void @bar(i64 %indvars.iv)
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+; Test that we can convert %wide.tripcount to a sext. And because we know the
+; upper 32 bits are zero, we can use a -2 instead of 4294967294 for the
+; %unroll_iter. This allows the use of ANDI.
+define void @test6(i32 signext %n) {
+; CHECK-LABEL: @test6(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[CMP4:%.*]] = icmp sgt i32 [[N:%.*]], 0
+; CHECK-NEXT:    br i1 [[CMP4]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; CHECK:       for.body.preheader:
+; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = sext i32 [[N]] to i64
+; CHECK-NEXT:    [[XTRAITER:%.*]] = and i64 [[WIDE_TRIP_COUNT]], 1
+; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[N]], 1
+; CHECK-NEXT:    br i1 [[TMP0]], label [[FOR_COND_CLEANUP_LOOPEXIT_UNR_LCSSA:%.*]], label [[FOR_BODY_PREHEADER_NEW:%.*]]
+; CHECK:       for.body.preheader.new:
+; CHECK-NEXT:    [[UNROLL_ITER:%.*]] = and i64 [[WIDE_TRIP_COUNT]], -2
+; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK:       for.cond.cleanup.loopexit.unr-lcssa:
+; CHECK-NEXT:    [[INDVARS_IV_UNR:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INDVARS_IV_NEXT_1:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[LCMP_MOD_NOT:%.*]] = icmp eq i64 [[XTRAITER]], 0
+; CHECK-NEXT:    br i1 [[LCMP_MOD_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY_EPIL:%.*]]
+; CHECK:       for.body.epil:
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV_UNR]])
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
+; CHECK:       for.cond.cleanup:
+; CHECK-NEXT:    ret void
+; CHECK:       for.body:
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER_NEW]] ], [ [[INDVARS_IV_NEXT_1]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[NITER:%.*]] = phi i64 [ [[UNROLL_ITER]], [[FOR_BODY_PREHEADER_NEW]] ], [ [[NITER_NSUB_1:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV]])
+; CHECK-NEXT:    [[INDVARS_IV_NEXT:%.*]] = or i64 [[INDVARS_IV]], 1
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV_NEXT]])
+; CHECK-NEXT:    [[INDVARS_IV_NEXT_1]] = add nuw nsw i64 [[INDVARS_IV]], 2
+; CHECK-NEXT:    [[NITER_NSUB_1]] = add i64 [[NITER]], -2
+; CHECK-NEXT:    [[NITER_NCMP_1:%.*]] = icmp eq i64 [[NITER_NSUB_1]], 0
+; CHECK-NEXT:    br i1 [[NITER_NCMP_1]], label [[FOR_COND_CLEANUP_LOOPEXIT_UNR_LCSSA]], label [[FOR_BODY]]
+;
+entry:
+  %cmp4 = icmp sgt i32 %n, 0
+  br i1 %cmp4, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  %xtraiter = and i64 %wide.trip.count, 1
+  %0 = icmp eq i32 %n, 1
+  br i1 %0, label %for.cond.cleanup.loopexit.unr-lcssa, label %for.body.preheader.new
+
+for.body.preheader.new:                           ; preds = %for.body.preheader
+  %unroll_iter = and i64 %wide.trip.count, 4294967294
+  br label %for.body
+
+for.cond.cleanup.loopexit.unr-lcssa:              ; preds = %for.body, %for.body.preheader
+  %indvars.iv.unr = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next.1, %for.body ]
+  %lcmp.mod.not = icmp eq i64 %xtraiter, 0
+  br i1 %lcmp.mod.not, label %for.cond.cleanup, label %for.body.epil
+
+for.body.epil:                                    ; preds = %for.cond.cleanup.loopexit.unr-lcssa
+  tail call void @bar(i64 %indvars.iv.unr)
+  br label %for.cond.cleanup
+
+for.cond.cleanup:                                 ; preds = %for.body.epil, %for.cond.cleanup.loopexit.unr-lcssa, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body, %for.body.preheader.new
+  %indvars.iv = phi i64 [ 0, %for.body.preheader.new ], [ %indvars.iv.next.1, %for.body ]
+  %niter = phi i64 [ %unroll_iter, %for.body.preheader.new ], [ %niter.nsub.1, %for.body ]
+  tail call void @bar(i64 %indvars.iv)
+  %indvars.iv.next = or i64 %indvars.iv, 1
+  tail call void @bar(i64 %indvars.iv.next)
+  %indvars.iv.next.1 = add nuw nsw i64 %indvars.iv, 2
+  %niter.nsub.1 = add i64 %niter, -2
+  %niter.ncmp.1 = icmp eq i64 %niter.nsub.1, 0
+  br i1 %niter.ncmp.1, label %for.cond.cleanup.loopexit.unr-lcssa, label %for.body
+}
+
+; Same as test6, but the constant has been bitcast to match ConstantHoisting
+; output.
+define void @test7(i32 signext %n) {
+; CHECK-LABEL: @test7(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[CMP4:%.*]] = icmp sgt i32 [[N:%.*]], 0
+; CHECK-NEXT:    br i1 [[CMP4]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; CHECK:       for.body.preheader:
+; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = sext i32 [[N]] to i64
+; CHECK-NEXT:    [[XTRAITER:%.*]] = and i64 [[WIDE_TRIP_COUNT]], 1
+; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[N]], 1
+; CHECK-NEXT:    br i1 [[TMP0]], label [[FOR_COND_CLEANUP_LOOPEXIT_UNR_LCSSA:%.*]], label [[FOR_BODY_PREHEADER_NEW:%.*]]
+; CHECK:       for.body.preheader.new:
+; CHECK-NEXT:    [[UNROLL_ITER:%.*]] = and i64 [[WIDE_TRIP_COUNT]], -2
+; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK:       for.cond.cleanup.loopexit.unr-lcssa:
+; CHECK-NEXT:    [[INDVARS_IV_UNR:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INDVARS_IV_NEXT_1:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[LCMP_MOD_NOT:%.*]] = icmp eq i64 [[XTRAITER]], 0
+; CHECK-NEXT:    br i1 [[LCMP_MOD_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY_EPIL:%.*]]
+; CHECK:       for.body.epil:
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV_UNR]])
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
+; CHECK:       for.cond.cleanup:
+; CHECK-NEXT:    ret void
+; CHECK:       for.body:
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER_NEW]] ], [ [[INDVARS_IV_NEXT_1]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[NITER:%.*]] = phi i64 [ [[UNROLL_ITER]], [[FOR_BODY_PREHEADER_NEW]] ], [ [[NITER_NSUB_1:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV]])
+; CHECK-NEXT:    [[INDVARS_IV_NEXT:%.*]] = or i64 [[INDVARS_IV]], 1
+; CHECK-NEXT:    tail call void @bar(i64 [[INDVARS_IV_NEXT]])
+; CHECK-NEXT:    [[INDVARS_IV_NEXT_1]] = add nuw nsw i64 [[INDVARS_IV]], 2
+; CHECK-NEXT:    [[NITER_NSUB_1]] = add i64 [[NITER]], -2
+; CHECK-NEXT:    [[NITER_NCMP_1:%.*]] = icmp eq i64 [[NITER_NSUB_1]], 0
+; CHECK-NEXT:    br i1 [[NITER_NCMP_1]], label [[FOR_COND_CLEANUP_LOOPEXIT_UNR_LCSSA]], label [[FOR_BODY]]
+;
+entry:
+  %cmp4 = icmp sgt i32 %n, 0
+  br i1 %cmp4, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  %xtraiter = and i64 %wide.trip.count, 1
+  %0 = icmp eq i32 %n, 1
+  br i1 %0, label %for.cond.cleanup.loopexit.unr-lcssa, label %for.body.preheader.new
+
+for.body.preheader.new:                           ; preds = %for.body.preheader
+  %bitcast_c = bitcast i64 4294967294 to i64
+  %unroll_iter = and i64 %wide.trip.count, %bitcast_c
+  br label %for.body
+
+for.cond.cleanup.loopexit.unr-lcssa:              ; preds = %for.body, %for.body.preheader
+  %indvars.iv.unr = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next.1, %for.body ]
+  %lcmp.mod.not = icmp eq i64 %xtraiter, 0
+  br i1 %lcmp.mod.not, label %for.cond.cleanup, label %for.body.epil
+
+for.body.epil:                                    ; preds = %for.cond.cleanup.loopexit.unr-lcssa
+  tail call void @bar(i64 %indvars.iv.unr)
+  br label %for.cond.cleanup
+
+for.cond.cleanup:                                 ; preds = %for.body.epil, %for.cond.cleanup.loopexit.unr-lcssa, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body, %for.body.preheader.new
+  %indvars.iv = phi i64 [ 0, %for.body.preheader.new ], [ %indvars.iv.next.1, %for.body ]
+  %niter = phi i64 [ %unroll_iter, %for.body.preheader.new ], [ %niter.nsub.1, %for.body ]
+  tail call void @bar(i64 %indvars.iv)
+  %indvars.iv.next = or i64 %indvars.iv, 1
+  tail call void @bar(i64 %indvars.iv.next)
+  %indvars.iv.next.1 = add nuw nsw i64 %indvars.iv, 2
+  %niter.nsub.1 = add i64 %niter, -2
+  %niter.ncmp.1 = icmp eq i64 %niter.nsub.1, 0
+  br i1 %niter.ncmp.1, label %for.cond.cleanup.loopexit.unr-lcssa, label %for.body
+}

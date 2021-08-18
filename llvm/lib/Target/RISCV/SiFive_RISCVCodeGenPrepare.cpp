@@ -14,10 +14,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "RISCV.h"
+#include "RISCVTargetMachine.h"
+#include "llvm/Analysis/ValueTracking.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/Pass.h"
-#include "RISCVTargetMachine.h"
 
 #define DEBUG_TYPE "riscv-codegenprepare"
 #define PASS_NAME "RISCV CodeGenPrepare"
@@ -27,6 +29,9 @@ using namespace llvm;
 namespace {
 
 class RISCVCodeGenPrepare : public FunctionPass {
+  const DataLayout *DL;
+  const RISCVSubtarget *ST;
+
 public:
   static char ID;
 
@@ -41,13 +46,19 @@ public:
   bool runOnFunction(Function &F) override;
 
 private:
+  bool optimizeZExt(ZExtInst *I);
+  bool optimizeZExtWUses(ZExtInst *I);
+  bool optimizeBinaryOperator(BinaryOperator *BO);
 };
 
 } // end anonymous namespace
 
 // If the result of a zext.w is used by a GEP in another basic block, duplicate
 // the zext to enable add.uw or shXadd.uw.
-static bool optimizeZExtWUses(Instruction *I) {
+bool RISCVCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
+  if (!ST->hasStdExtZba())
+    return false;
+
   BasicBlock *DefBB = I->getParent();
 
   Value *Src = I->getOperand(0);
@@ -118,6 +129,95 @@ static bool optimizeZExtWUses(Instruction *I) {
   return MadeChange;
 }
 
+bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
+  Value *Src = ZExt->getOperand(0);
+
+  // We only care about ZExt from i32 to i64.
+  if (!ZExt->getType()->isIntegerTy(64) || !Src->getType()->isIntegerTy(32))
+    return false;
+
+  // Look for an opportunity to replace (i64 (zext (i32 X))) with a sext if we
+  // can determine that bit 31 of X is zero via a dominating condition. This
+  // often occurs with widened induction variables.
+  const DataLayout &DL = ZExt->getModule()->getDataLayout();
+  if (isImpliedByDomCondition(ICmpInst::ICMP_SGE, Src,
+                              Constant::getNullValue(Src->getType()), ZExt,
+                              DL)) {
+    IRBuilder<> Builder(ZExt);
+    Value *SExt = Builder.CreateSExt(Src, ZExt->getType());
+    SExt->takeName(ZExt);
+
+    ZExt->replaceAllUsesWith(SExt);
+    ZExt->eraseFromParent();
+    return true;
+  }
+
+  return optimizeZExtWUses(ZExt);
+}
+
+// Try to optimize (i64 and (zext/sext (i32 X), C1)) if C1 has bit 31 is one,
+// but bits 63:32 are zero. If we can prove that bit 31 of X is 0, we can fill
+// the upper 32 bits with ones. A separate transform will turn (zext X) into
+// (sext X) for the same condition.
+bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
+  if (BO->getOpcode() != Instruction::And)
+    return false;
+
+  if (!BO->getType()->isIntegerTy(64))
+    return false;
+
+  // Left hand side should be sext or zext.
+  Instruction *LHS = dyn_cast<Instruction>(BO->getOperand(0));
+  if (!LHS || (LHS->getOpcode() != Instruction::SExt &&
+               LHS->getOpcode() != Instruction::ZExt))
+    return false;
+
+  Value *LHSSrc = LHS->getOperand(0);
+  if (!LHSSrc->getType()->isIntegerTy(32))
+    return false;
+
+  // Right hand side should be a constant.
+  Value *RHS = BO->getOperand(1);
+
+  auto *CI = dyn_cast<ConstantInt>(RHS);
+  // Handle the case where constant hoisting may have hidden the constant.
+  if (!CI && isa<BitCastInst>(RHS))
+    CI = dyn_cast<ConstantInt>(cast<BitCastInst>(RHS)->getOperand(0));
+  if (!CI)
+    return false;
+  uint64_t C = CI->getZExtValue();
+
+  // Look for constants that fit in 32 bits but not simm12, and can be made
+  // into simm12 by sign extending bit 31.
+  if (!isUInt<32>(C) || isInt<12>(C) || !isInt<12>(SignExtend64(C, 32)))
+    return false;
+
+  // If we can determine the sign bit of the input is 0, we can replace the
+  // And mask constant.
+  const DataLayout &DL = BO->getModule()->getDataLayout();
+  if (!isImpliedByDomCondition(ICmpInst::ICMP_SGE, LHSSrc,
+                               Constant::getNullValue(LHSSrc->getType()), LHS,
+                               DL))
+    return false;
+
+  // Sign extend the constant and create a new And.
+  C = SignExtend64(C, 32);
+  IRBuilder<> Builder(BO);
+  Value *NewBO = Builder.CreateAnd(LHS, ConstantInt::get(LHS->getType(), C));
+  NewBO->takeName(BO);
+
+  // Remove the old And.
+  BO->replaceAllUsesWith(NewBO);
+  BO->eraseFromParent();
+
+  // Erase any bitcasts of constants we made dead.
+  if (auto *RHSI = dyn_cast<Instruction>(RHS))
+    if (RHSI->use_empty())
+      RHSI->eraseFromParent();
+
+  return true;
+}
+
 bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
@@ -127,18 +227,22 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
     return false;
 
   auto &TM = TPC->getTM<RISCVTargetMachine>();
-  const RISCVSubtarget *ST = TM.getSubtargetImpl(F);
+  ST = TM.getSubtargetImpl(F);
 
-  // TODO: Our only optimizations are for RV64 with Zba.
-  if (!ST->is64Bit() || !ST->hasStdExtZba())
+  DL = &F.getParent()->getDataLayout();
+
+  // TODO: Our only optimizations are for RV64.
+  if (!ST->is64Bit())
     return false;
 
   bool MadeChange = false;
   for (auto &BB : F) {
     for (auto II = BB.begin(), IE = BB.end(); II != IE; ) {
       Instruction *I = &*II++;
-      if (isa<ZExtInst>(I))
-        MadeChange |= optimizeZExtWUses(I);
+      if (auto *ZExt = dyn_cast<ZExtInst>(I))
+        MadeChange |= optimizeZExt(ZExt);
+      else if (auto *BO = dyn_cast<BinaryOperator>(I))
+        MadeChange |= optimizeBinaryOperator(BO);
     }
   }
 
