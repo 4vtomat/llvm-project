@@ -176,6 +176,102 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
                          {II.getArgOperand(0), Result, VL});
 }
 
+static Optional<ICmpInst::Predicate> getPredicate(Intrinsic::ID IID) {
+  switch (IID) {
+  default:
+    return None;
+  case Intrinsic::riscv_vmseq:
+    return ICmpInst::ICMP_EQ;
+  case Intrinsic::riscv_vmsne:
+    return ICmpInst::ICMP_NE;
+  case Intrinsic::riscv_vmsltu:
+    return ICmpInst::ICMP_ULT;
+  case Intrinsic::riscv_vmslt:
+    return ICmpInst::ICMP_SLT;
+  case Intrinsic::riscv_vmsleu:
+    return ICmpInst::ICMP_ULE;
+  case Intrinsic::riscv_vmsle:
+    return ICmpInst::ICMP_SLE;
+  case Intrinsic::riscv_vmsgtu:
+    return ICmpInst::ICMP_UGT;
+  case Intrinsic::riscv_vmsgt:
+    return ICmpInst::ICMP_SGT;
+  case Intrinsic::riscv_vmsgeu:
+    return ICmpInst::ICMP_UGE;
+  case Intrinsic::riscv_vmsge:
+    return ICmpInst::ICMP_SGE;
+  case Intrinsic::riscv_vmfeq:
+    return ICmpInst::FCMP_OEQ;
+  case Intrinsic::riscv_vmfne:
+    // vmfne writes 1 to the destination element when either operand is NaN,
+    // whereas the other comparisons write 0 when either operand is NaN.
+    return ICmpInst::FCMP_UNE;
+  case Intrinsic::riscv_vmflt:
+    return ICmpInst::FCMP_OLT;
+  case Intrinsic::riscv_vmfle:
+    return ICmpInst::FCMP_OLE;
+  case Intrinsic::riscv_vmfgt:
+    return ICmpInst::FCMP_OGT;
+  case Intrinsic::riscv_vmfge:
+    return ICmpInst::FCMP_OGE;
+  }
+}
+
+// Try to match
+//   (vfirst (vmslt (vmv.v.x A), (vmv.v.x B)))
+// To
+//   (select (icmp slt A, B), 0, -1)
+static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
+  Type *Ty = II.getType();
+  Value *Val = II.getArgOperand(0);
+  Value *VL = II.getArgOperand(1);
+
+  // If vl == 0, vfirst.m returns -1.
+  auto *VLC = dyn_cast<ConstantInt>(VL);
+  if (VLC && VLC->isZero()) {
+    Value *MinusOne = Constant::getIntegerValue(
+        Ty, APInt(Ty->getScalarSizeInBits(), -1, true));
+    return IC.replaceInstUsesWith(II, MinusOne);
+  }
+
+  // The remaining cases are vl is not zero or we don't know it.
+  // If we don't know it, skip the folding.
+  if (!isKnownNonZero(VL, IC.getDataLayout()))
+    return nullptr;
+
+  auto *ValII = dyn_cast<IntrinsicInst>(Val);
+  if (!ValII)
+    return nullptr;
+
+  Optional<ICmpInst::Predicate> Pred = getPredicate(ValII->getIntrinsicID());
+  if (!Pred.hasValue())
+    return nullptr;
+  if (ValII->getArgOperand(2) != VL)
+    return nullptr;
+
+  Value *LHSScalar = getVSplat(ValII->getArgOperand(0), VL);
+  if (!LHSScalar)
+    return nullptr;
+  Value *RHSScalar = getVSplatOrScalar(ValII->getArgOperand(1), VL);
+  if (!RHSScalar)
+    return nullptr;
+
+  Value *CmpV;
+  if (LHSScalar->getType()->isIntegerTy())
+    CmpV = IC.Builder.CreateICmp(Pred.getValue(), LHSScalar, RHSScalar);
+  else if (LHSScalar->getType()->isFloatingPointTy())
+    CmpV = IC.Builder.CreateFCmp(Pred.getValue(), LHSScalar, RHSScalar);
+  else
+    return nullptr;
+
+  Value *V = IC.Builder.CreateSelect(
+      CmpV, Constant::getNullValue(Ty),
+      Constant::getIntegerValue(Ty,
+                                APInt(Ty->getScalarSizeInBits(), -1, true)));
+
+  return IC.replaceInstUsesWith(II, V);
+}
+
 /// This function handles following case
 ///
 ///     A  ->  B    cast to fixed
@@ -603,6 +699,11 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vfrsub: {
     // TODO: Add more intrinsics here.
     if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
+  }
+  case Intrinsic::riscv_vfirst: {
+    if (Instruction *V = foldVFirstWithCompare(IC, II))
       return V;
     break;
   }
