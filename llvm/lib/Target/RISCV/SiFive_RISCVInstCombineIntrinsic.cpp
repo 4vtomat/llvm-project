@@ -134,6 +134,48 @@ static Instruction *foldVXorWithVMergeVXor(Value *LHS, Value *RHS, Value *VL) {
   return nullptr;
 }
 
+static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
+  Value *VL = II.getArgOperand(3);
+  Value *LHSScalar = getVSplat(II.getArgOperand(1), VL);
+  if (!LHSScalar)
+    return nullptr;
+  Value *RHSScalar = getVSplatOrScalar(II.getArgOperand(2), VL);
+  if (!RHSScalar)
+    return nullptr;
+  Value *Result;
+  switch (II.getIntrinsicID()) {
+  case Intrinsic::riscv_vadd:
+    Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vsub:
+    Result = IC.Builder.CreateSub(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vrsub:
+    Result = IC.Builder.CreateSub(RHSScalar, LHSScalar);
+    break;
+  case Intrinsic::riscv_vfadd:
+    Result = IC.Builder.CreateFAdd(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vfsub:
+    Result = IC.Builder.CreateFSub(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vfrsub:
+    Result = IC.Builder.CreateFSub(RHSScalar, LHSScalar);
+    break;
+  }
+  Type *ResultTy = Result->getType();
+  Intrinsic::ID IID;
+  if (ResultTy->isIntegerTy())
+    IID = Intrinsic::riscv_vmv_v_x;
+  else if (ResultTy->isFloatingPointTy())
+    IID = Intrinsic::riscv_vfmv_v_f;
+  else
+    return nullptr;
+
+  return CreateIntrinsic(&II, IID, {II.getType(), VL->getType()},
+                         {II.getArgOperand(0), Result, VL});
+}
+
 /// This function handles following case
 ///
 ///     A  ->  B    cast to fixed
@@ -551,6 +593,17 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldVXorWithVMergeVXor(RHS, LHS, VL))
       return V;
 
+    break;
+  }
+  case Intrinsic::riscv_vadd:
+  case Intrinsic::riscv_vsub:
+  case Intrinsic::riscv_vrsub:
+  case Intrinsic::riscv_vfadd:
+  case Intrinsic::riscv_vfsub:
+  case Intrinsic::riscv_vfrsub: {
+    // TODO: Add more intrinsics here.
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
     break;
   }
   }
