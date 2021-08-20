@@ -272,6 +272,59 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   return IC.replaceInstUsesWith(II, V);
 }
 
+//   (vmerge (vmslt (vmv.v.x A), (vmv.v.x B)), c, d)
+// To
+//   (select (icmp slt A, B), c, d)
+static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
+  if (!isa<UndefValue>(II.getArgOperand(0)))
+    return nullptr;
+
+  Value *LHS = II.getArgOperand(1);
+  Value *RHS = II.getArgOperand(2);
+  Value *Mask = II.getArgOperand(3);
+  Value *VL = II.getArgOperand(4);
+
+  auto *MaskII = dyn_cast<IntrinsicInst>(Mask);
+  if (!MaskII)
+    return nullptr;
+
+  Optional<ICmpInst::Predicate> Pred = getPredicate(MaskII->getIntrinsicID());
+  if (!Pred.hasValue())
+    return nullptr;
+  if (MaskII->getArgOperand(2) != VL)
+    return nullptr;
+
+  Value *MaskLHSScalar = getVSplat(MaskII->getArgOperand(0), VL);
+  if (!MaskLHSScalar)
+    return nullptr;
+  Value *MaskRHSScalar = getVSplatOrScalar(MaskII->getArgOperand(1), VL);
+  if (!MaskRHSScalar)
+    return nullptr;
+
+  if (RHS->getType()->isIntegerTy())
+    RHS = IC.Builder.CreateIntrinsic(
+        Intrinsic::riscv_vmv_v_x, {LHS->getType(), VL->getType()},
+        {UndefValue::get(LHS->getType()), RHS, VL});
+  else if (RHS->getType()->isFloatingPointTy())
+    RHS = IC.Builder.CreateIntrinsic(
+        Intrinsic::riscv_vfmv_v_f, {LHS->getType(), VL->getType()},
+        {UndefValue::get(LHS->getType()), RHS, VL});
+  else
+    assert(RHS->getType()->isVectorTy() && "vmerge has an unexpected type.");
+
+  Value *CmpV;
+  if (MaskLHSScalar->getType()->isIntegerTy())
+    CmpV = IC.Builder.CreateICmp(Pred.getValue(), MaskLHSScalar, MaskRHSScalar);
+  else if (MaskLHSScalar->getType()->isFloatingPointTy())
+    CmpV = IC.Builder.CreateFCmp(Pred.getValue(), MaskLHSScalar, MaskRHSScalar);
+  else
+    llvm_unreachable("Unexpected types for scalar comparison.");
+
+  Value *V = IC.Builder.CreateSelect(CmpV, LHS, RHS);
+
+  return IC.replaceInstUsesWith(II, V);
+}
+
 /// This function handles following case
 ///
 ///     A  ->  B    cast to fixed
@@ -704,6 +757,12 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   }
   case Intrinsic::riscv_vfirst: {
     if (Instruction *V = foldVFirstWithCompare(IC, II))
+      return V;
+    break;
+  }
+  case Intrinsic::riscv_vmerge:
+  case Intrinsic::riscv_vfmerge: {
+    if (Instruction *V = foldVMergeWithCompare(IC, II))
       return V;
     break;
   }
