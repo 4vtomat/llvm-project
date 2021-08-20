@@ -8,6 +8,17 @@
 # can encode and disassemble these registers if given their value.
 
 ######################################
+# Machine Trap Setup
+######################################
+
+# mstatush
+# uimm12
+# CHECK-INST: csrrs t2, 784, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x31]
+# CHECK-INST-ALIAS: csrr t2, 784
+csrrs t2, 0x310, zero
+
+######################################
 # Machine Protection and Translation
 ######################################
 
@@ -24,6 +35,48 @@ csrrs t2, 0x3A1, zero
 # CHECK-ENC: encoding: [0xf3,0x23,0x30,0x3a]
 # CHECK-INST-ALIAS: csrr t2, 931
 csrrs t2, 0x3A3, zero
+
+# pmpcfg5
+# uimm12
+# CHECK-INST: csrrs t2, 933, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0x50,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 933
+csrrs t2, 0x3A5, zero
+
+# pmpcfg7
+# uimm12
+# CHECK-INST: csrrs t2, 935, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0x70,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 935
+csrrs t2, 0x3A7, zero
+
+# pmpcfg9
+# uimm12
+# CHECK-INST: csrrs t2, 937, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0x90,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 937
+csrrs t2, 0x3A9, zero
+
+# pmpcfg11
+# uimm12
+# CHECK-INST: csrrs t2, 939, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xb0,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 939
+csrrs t2, 0x3AB, zero
+
+# pmpcfg13
+# uimm12
+# CHECK-INST: csrrs t2, 941, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xd0,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 941
+csrrs t2, 0x3AD, zero
+
+# pmpcfg15
+# uimm12
+# CHECK-INST: csrrs t2, 943, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xf0,0x3a]
+# CHECK-INST-ALIAS: csrr t2, 943
+csrrs t2, 0x3AF, zero
 
 ######################################
 # Machine Counter and Timers

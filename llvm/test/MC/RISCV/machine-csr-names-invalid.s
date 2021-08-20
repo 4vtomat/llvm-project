@@ -3,8 +3,16 @@
 
 # These machine mode CSR register names are RV32 only.
 
+csrrs t1, mstatush, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+
 csrrs t1, pmpcfg1, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
 csrrs t1, pmpcfg3, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg5, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg7, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg9, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg11, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg13, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
+csrrs t1, pmpcfg15, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
 
 csrrs t1, mcycleh, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
 csrrs t1, minstreth, zero # CHECK-NEED-RV32: :[[@LINE]]:11: error: system register use requires an option to be enabled
