@@ -2,6 +2,7 @@
 ; RUN: opt < %s -mtriple=riscv64 -instcombine -S | FileCheck %s
 
 declare <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32>, i32, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64>, i64, i64)
 declare <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float>, float, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vadd.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vsub.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
@@ -9,6 +10,30 @@ declare <vscale x 4 x i32> @llvm.riscv.vrsub.nxv4i32.i32.i64(<vscale x 4 x i32>,
 declare <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, i64)
 declare <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, i64)
 declare <vscale x 4 x float> @llvm.riscv.vfrsub.nxv4f32.f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, float, i64)
+declare <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vand.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vsrl.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vsra.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vmul.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vmulh.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vmulhu.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vmulhsu.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwmul.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwmulu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwmulsu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwaddu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwadd.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwsubu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwsub.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwaddu.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwadd.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwsubu.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vwsub.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vnsrl.nxv4i32.nxv4i64.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vnsra.nxv4i32.nxv4i64.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i64>, <vscale x 4 x i32>, i64)
 
 define <vscale x 4 x i32> @test_vadd(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vadd(
@@ -80,3 +105,329 @@ define <vscale x 4 x float> @test_vfrsub(float %x, float %y) {
   ret <vscale x 4 x float> %c
 }
 
+define <vscale x 4 x i32> @test_vand(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vand(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[X:%.*]], [[Y:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vand.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vor(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vor(
+; CHECK-NEXT:    [[TMP1:%.*]] = or i32 [[X:%.*]], [[Y:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vxor(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vxor(
+; CHECK-NEXT:    [[TMP1:%.*]] = xor i32 [[X:%.*]], [[Y:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vsll(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vsll(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 31
+; CHECK-NEXT:    [[TMP2:%.*]] = shl i32 [[X:%.*]], [[TMP1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vsrl(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vsrl(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 31
+; CHECK-NEXT:    [[TMP2:%.*]] = lshr i32 [[X:%.*]], [[TMP1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vsrl.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vsra(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vsra(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 31
+; CHECK-NEXT:    [[TMP2:%.*]] = ashr i32 [[X:%.*]], [[TMP1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vsra.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vmul(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vmul(
+; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[X:%.*]], [[Y:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vmul.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vmulh(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vmulh(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vmulh.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vmulhu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vmulhu(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vmulhu.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vmulhsu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vmulhsu(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vmulhsu.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x float> @test_vfmul(float %x, float %y) {
+; CHECK-LABEL: @test_vfmul(
+; CHECK-NEXT:    [[TMP1:%.*]] = fmul float [[X:%.*]], [[Y:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[TMP1]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x float> [[C]]
+;
+  %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
+  %b = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)
+  %c = call <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, i64 4)
+  ret <vscale x 4 x float> %c
+}
+
+define <vscale x 4 x i64> @test_vwmul(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwmul(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwmul.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwmulu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwmulu(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwmulu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwmulsu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwmulsu(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwmulsu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwaddu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwaddu(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = add nuw nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwaddu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwadd(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwadd(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = add nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwadd.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwsubu(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwsubu(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = sub nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwsubu.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwsub(i32 %x, i32 %y) {
+; CHECK-LABEL: @test_vwsub(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[X:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = sub nsw i64 [[TMP1]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwsub.nxv4i64.nxv4i32.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwaddu_w(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vwaddu_w(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwaddu.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwadd_w(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vwadd_w(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwadd.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwsubu_w(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vwsubu_w(
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[X:%.*]], [[TMP1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwsubu.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i64> @test_vwsub_w(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vwsub_w(
+; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[X:%.*]], [[TMP1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i64> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i64> @llvm.riscv.vwsub.w.nxv4i64.nxv4i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i64> %c
+}
+
+define <vscale x 4 x i32> @test_vnsrl(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vnsrl(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = lshr i64 [[X:%.*]], [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP4]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vnsrl.nxv4i32.nxv4i64.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vnsra(i64 %x, i32 %y) {
+; CHECK-LABEL: @test_vnsra(
+; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = ashr i64 [[X:%.*]], [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP4]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 %x, i64 4)
+  %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vnsra.nxv4i32.nxv4i64.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}

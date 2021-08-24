@@ -162,6 +162,185 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vfrsub:
     Result = IC.Builder.CreateFSub(RHSScalar, LHSScalar);
     break;
+  case Intrinsic::riscv_vand:
+    Result = IC.Builder.CreateAnd(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vor:
+    Result = IC.Builder.CreateOr(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vxor:
+    Result = IC.Builder.CreateXor(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vsll: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    Result = IC.Builder.CreateShl(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vsrl: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    Result = IC.Builder.CreateLShr(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vsra: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    Result = IC.Builder.CreateAShr(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vmul:
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vmulh: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    Result = IC.Builder.CreateAShr(Result, ConstantInt::get(DestTy, TypeWidth));
+    Result = IC.Builder.CreateTrunc(Result, Ty);
+    break;
+  }
+  case Intrinsic::riscv_vmulhu: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateZExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    Result = IC.Builder.CreateLShr(
+        Result,
+        Constant::getIntegerValue(
+            DestTy, APInt(DestTy->getScalarSizeInBits(), TypeWidth, true)));
+    Result = IC.Builder.CreateTrunc(Result, Ty);
+    break;
+  }
+  case Intrinsic::riscv_vmulhsu: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    Result = IC.Builder.CreateAShr(
+        Result,
+        Constant::getIntegerValue(
+            DestTy, APInt(DestTy->getScalarSizeInBits(), TypeWidth, true)));
+    Result = IC.Builder.CreateTrunc(Result, Ty);
+    break;
+  }
+  case Intrinsic::riscv_vfmul:
+    Result = IC.Builder.CreateFMul(LHSScalar, RHSScalar);
+    break;
+  case Intrinsic::riscv_vwmul: {
+    unsigned TypeWidth = LHSScalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwmulu: {
+    unsigned TypeWidth = LHSScalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateZExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwmulsu: {
+    unsigned TypeWidth = LHSScalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateMul(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwaddu: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateZExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwadd: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwsubu: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateZExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateSub(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwsub: {
+    Type *Ty = LHSScalar->getType();
+    unsigned TypeWidth = Ty->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    LHSScalar = IC.Builder.CreateSExt(LHSScalar, DestTy);
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, DestTy);
+    Result = IC.Builder.CreateSub(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwaddu_w: {
+    Type *Ty = LHSScalar->getType();
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, Ty);
+    Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwadd_w: {
+    Type *Ty = LHSScalar->getType();
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, Ty);
+    Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwsubu_w: {
+    Type *Ty = LHSScalar->getType();
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, Ty);
+    Result = IC.Builder.CreateSub(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vwsub_w: {
+    Type *Ty = LHSScalar->getType();
+    RHSScalar = IC.Builder.CreateSExt(RHSScalar, Ty);
+    Result = IC.Builder.CreateSub(LHSScalar, RHSScalar);
+    break;
+  }
+  case Intrinsic::riscv_vnsrl: {
+    Type *LHSTy = LHSScalar->getType();
+    Type *RHSTy = RHSScalar->getType();
+    unsigned TypeWidth = LHSTy->getScalarSizeInBits();
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, LHSTy);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    Result = IC.Builder.CreateLShr(LHSScalar, RHSScalar);
+    Result = IC.Builder.CreateTrunc(Result, RHSTy);
+    break;
+  }
+  case Intrinsic::riscv_vnsra: {
+    Type *LHSTy = LHSScalar->getType();
+    Type *RHSTy = RHSScalar->getType();
+    unsigned TypeWidth = LHSTy->getScalarSizeInBits();
+    RHSScalar = IC.Builder.CreateZExt(RHSScalar, LHSTy);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    Result = IC.Builder.CreateAShr(LHSScalar, RHSScalar);
+    Result = IC.Builder.CreateTrunc(Result, RHSTy);
+    break;
+  }
   }
   Type *ResultTy = Result->getType();
   Intrinsic::ID IID;
@@ -727,6 +906,9 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     // And is commutable, try the other order.
     if (Instruction *V = foldVAndWithVMerge(RHS, LHS, VL))
       return V;
+    // If two sources are both scalar, fold it to scalar operation + vmv.v.x.
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
     break;
   }
   case Intrinsic::riscv_vxor: {
@@ -741,6 +923,9 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     // Xor is commutable, try the other order.
     if (Instruction *V = foldVXorWithVMergeVXor(RHS, LHS, VL))
       return V;
+    // If two sources are both scalar, fold it to scalar operation + vmv.v.x.
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
 
     break;
   }
@@ -749,7 +934,29 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
   case Intrinsic::riscv_vfsub:
-  case Intrinsic::riscv_vfrsub: {
+  case Intrinsic::riscv_vfrsub:
+  case Intrinsic::riscv_vor:
+  case Intrinsic::riscv_vsll:
+  case Intrinsic::riscv_vsrl:
+  case Intrinsic::riscv_vsra:
+  case Intrinsic::riscv_vmul:
+  case Intrinsic::riscv_vmulh:
+  case Intrinsic::riscv_vmulhu:
+  case Intrinsic::riscv_vmulhsu:
+  case Intrinsic::riscv_vfmul:
+  case Intrinsic::riscv_vwmul:
+  case Intrinsic::riscv_vwmulu:
+  case Intrinsic::riscv_vwmulsu:
+  case Intrinsic::riscv_vwaddu:
+  case Intrinsic::riscv_vwadd:
+  case Intrinsic::riscv_vwsubu:
+  case Intrinsic::riscv_vwsub:
+  case Intrinsic::riscv_vwaddu_w:
+  case Intrinsic::riscv_vwadd_w:
+  case Intrinsic::riscv_vwsubu_w:
+  case Intrinsic::riscv_vwsub_w:
+  case Intrinsic::riscv_vnsrl:
+  case Intrinsic::riscv_vnsra: {
     // TODO: Add more intrinsics here.
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
