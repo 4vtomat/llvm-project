@@ -356,6 +356,30 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     Result = IC.Builder.CreateTrunc(Result, DestTy);
     break;
   }
+  case Intrinsic::riscv_vminu: {
+    Type *Ty = LHSScalar->getType();
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::umin, {Ty},
+                                        {LHSScalar, RHSScalar});
+    break;
+  }
+  case Intrinsic::riscv_vmin: {
+    Type *Ty = LHSScalar->getType();
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::smin, {Ty},
+                                        {LHSScalar, RHSScalar});
+    break;
+  }
+  case Intrinsic::riscv_vmaxu: {
+    Type *Ty = LHSScalar->getType();
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::umax, {Ty},
+                                        {LHSScalar, RHSScalar});
+    break;
+  }
+  case Intrinsic::riscv_vmax: {
+    Type *Ty = LHSScalar->getType();
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::smax, {Ty},
+                                        {LHSScalar, RHSScalar});
+    break;
+  }
   }
   Type *ResultTy = Result->getType();
   Intrinsic::ID IID;
@@ -971,7 +995,11 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vwsubu_w:
   case Intrinsic::riscv_vwsub_w:
   case Intrinsic::riscv_vnsrl:
-  case Intrinsic::riscv_vnsra: {
+  case Intrinsic::riscv_vnsra:
+  case Intrinsic::riscv_vminu:
+  case Intrinsic::riscv_vmin:
+  case Intrinsic::riscv_vmaxu:
+  case Intrinsic::riscv_vmax: {
     // TODO: Add more intrinsics here.
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;

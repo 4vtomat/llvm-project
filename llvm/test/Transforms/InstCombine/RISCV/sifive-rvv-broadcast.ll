@@ -240,8 +240,8 @@ define <vscale x 4 x i32> @test_vmax_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmax_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmax_scalar(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmax.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.smax.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -272,8 +272,8 @@ define <vscale x 4 x i32> @test_vmaxu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmaxu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmaxu_scalar(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmaxu.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.umax.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -304,8 +304,8 @@ define <vscale x 4 x i32> @test_vmin_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmin_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmin_scalar(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmin.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.smin.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -336,8 +336,8 @@ define <vscale x 4 x i32> @test_vminu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vminu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vminu_scalar(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vminu.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.umin.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
