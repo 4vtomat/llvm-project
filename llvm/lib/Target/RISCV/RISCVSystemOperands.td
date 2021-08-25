@@ -350,7 +350,7 @@ def : SysReg<"dscratch1", 0x7B3>;
 //===----------------------------------------------------------------------===//
 def : SysReg<"vstart", 0x008>;
 def : SysReg<"vxsat", 0x009>;
-def : SysReg<"vxrm", 0x00A>;
+def SysRegVXRM : SysReg<"vxrm", 0x00A>; // SIFIVE
 def : SysReg<"vcsr", 0x00F>;
 def : SysReg<"vl", 0xC20>;
 def : SysReg<"vtype", 0xC21>;

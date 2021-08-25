@@ -1510,7 +1510,13 @@ def WriteFRMImm : WriteSysRegImm<SysRegFRM, [FRM]>;
 let hasSideEffects = true in {
 def ReadFFLAGS : ReadSysReg<SysRegFFLAGS, [FFLAGS]>;
 def WriteFFLAGS : WriteSysReg<SysRegFFLAGS, [FFLAGS]>;
+
+// SIFIVE
+def ReadVXRM : ReadSysReg<SysRegVXRM, [VXRM]>;
+def WriteVXRM: WriteSysReg<SysRegVXRM, [VXRM]>;
+// end SIFIVE
 }
+
 /// Other pseudo-instructions
 
 // Pessimistically assume the stack pointer will be clobbered

@@ -186,6 +186,15 @@ let TargetPrefix = "riscv" in {
                                            ImmArg<ArgIndex<0>>,
                                            ImmArg<ArgIndex<1>>]>;
 
+  // SIFIVE
+  def int_riscv_vsetvxrm   : Intrinsic<[],
+                           /* mode */  [llvm_anyint_ty],
+                                       [IntrNoMem, IntrHasSideEffects]>;
+  def int_riscv_vgetvxrm   : Intrinsic<[llvm_anyint_ty],
+                                       [],
+                                       [IntrNoMem, IntrHasSideEffects]>;
+  // end SIFIVE
+
   // For unit stride mask load
   // Input: (pointer, vl)
   class RISCVUSMLoad
