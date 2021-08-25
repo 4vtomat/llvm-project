@@ -15,6 +15,7 @@ declare <vscale x 4 x i32> @llvm.riscv.vand.nxv4i32.nxv4i32.i64(<vscale x 4 x i3
 declare <vscale x 4 x i32> @llvm.riscv.vor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
+declare <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.i64.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, i64, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vsrl.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vsra.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vmul.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, i64)
@@ -151,6 +152,19 @@ define <vscale x 4 x i32> @test_vsll(i32 %x, i32 %y) {
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
   %b = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
   %c = call <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.nxv4i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, i64 4)
+  ret <vscale x 4 x i32> %c
+}
+
+define <vscale x 4 x i32> @test_vsll_vx(i32 %x, i64 %y) {
+; CHECK-LABEL: @test_vsll_vx(
+; CHECK-NEXT:    [[TMP1:%.*]] = trunc i64 [[Y:%.*]] to i32
+; CHECK-NEXT:    [[TMP2:%.*]] = and i32 [[TMP1]], 31
+; CHECK-NEXT:    [[TMP3:%.*]] = shl i32 [[X:%.*]], [[TMP2]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(i32 [[TMP3]], i64 4)
+; CHECK-NEXT:    ret <vscale x 4 x i32> [[C]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(i32 %x, i64 4)
+  %c = call <vscale x 4 x i32> @llvm.riscv.vsll.nxv4i32.i64.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> %a, i64 %y, i64 4)
   ret <vscale x 4 x i32> %c
 }
 
