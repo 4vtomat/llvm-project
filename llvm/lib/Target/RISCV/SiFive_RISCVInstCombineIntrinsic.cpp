@@ -177,9 +177,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
     // If RHSScalar comes from vsll.vx or vsll.vi, its type is i64 for RV64 and
     // i32 for RV32.
-    Type *RTy = RHSScalar->getType();
-    if (TypeWidth < RTy->getScalarSizeInBits())
-      RHSScalar = IC.Builder.CreateTrunc(RHSScalar, Ty);
+    RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
     Result = IC.Builder.CreateShl(LHSScalar, RHSScalar);
     break;
   }
@@ -189,9 +187,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
     // If RHSScalar comes from vsrl.vx or vsrl.vi, its type is i64 for RV64 and
     // i32 for RV32.
-    Type *RTy = RHSScalar->getType();
-    if (TypeWidth < RTy->getScalarSizeInBits())
-      RHSScalar = IC.Builder.CreateTrunc(RHSScalar, Ty);
+    RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
     Result = IC.Builder.CreateLShr(LHSScalar, RHSScalar);
     break;
   }
@@ -201,9 +197,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
     // If RHSScalar comes from vsra.vx or vsra.vi, its type is i64 for RV64 and
     // i32 for RV32.
-    Type *RTy = RHSScalar->getType();
-    if (TypeWidth < RTy->getScalarSizeInBits())
-      RHSScalar = IC.Builder.CreateTrunc(RHSScalar, Ty);
+    RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
     Result = IC.Builder.CreateAShr(LHSScalar, RHSScalar);
     break;
   }
@@ -340,7 +334,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     Type *LHSTy = LHSScalar->getType();
     unsigned TypeWidth = LHSTy->getScalarSizeInBits();
     Type *DestTy = IC.Builder.getIntNTy(TypeWidth / 2);
-    RHSScalar = IC.Builder.CreateZExt(RHSScalar, LHSTy);
+    RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, LHSTy);
     RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
     Result = IC.Builder.CreateLShr(LHSScalar, RHSScalar);
     Result = IC.Builder.CreateTrunc(Result, DestTy);
@@ -350,7 +344,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     Type *LHSTy = LHSScalar->getType();
     unsigned TypeWidth = LHSTy->getScalarSizeInBits();
     Type *DestTy = IC.Builder.getIntNTy(TypeWidth / 2);
-    RHSScalar = IC.Builder.CreateZExt(RHSScalar, LHSTy);
+    RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, LHSTy);
     RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
     Result = IC.Builder.CreateAShr(LHSScalar, RHSScalar);
     Result = IC.Builder.CreateTrunc(Result, DestTy);
