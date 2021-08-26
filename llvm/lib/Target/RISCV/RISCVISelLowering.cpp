@@ -9255,7 +9255,48 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
 #endif // SIFIVE_CUSTOMIZATION
     }
+    break; // SIFIVE
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCVISD::VMV_S_X_VL: {
+    SDValue Src = N->getOperand(1);
+    if (Src.getOpcode() == RISCVISD::VMV_X_S &&
+        Src.getOperand(0).getValueType() == N->getValueType(0) &&
+        isa<ConstantSDNode>(N->getOperand(2))) {
+      if (N->getOperand(0).isUndef())
+        return Src.getOperand(0);
+      if (cast<ConstantSDNode>(N->getOperand(2))->getZExtValue() == 0)
+        return N->getOperand(0);
+      SDLoc DL(N);
+      if (Src.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
+          Src.getOperand(0).getOperand(0).isUndef()) {
+        auto Slidedown = Src.getOperand(0);
+        if (isa<ConstantSDNode>(Slidedown.getOperand(4)) &&
+            cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue() == 0)
+          return N->getOperand(0);
+        if ((!isa<ConstantSDNode>(Slidedown.getOperand(4)) ||
+            1 < cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue()) &&
+            !Slidedown.hasOneUse())
+          return SDValue();
+        return DAG.getNode(Slidedown.getOpcode(), DL,
+                           Slidedown.getValueType(), N->getOperand(0),
+                           Slidedown.getOperand(1), Slidedown.getOperand(2),
+                           Slidedown.getOperand(3), Slidedown.getOperand(4));
+      }
+      MVT VecVT = N->getSimpleValueType(0);
+      MVT XLenVT = Subtarget.getXLenVT();
+      SDValue Mask, VL;
+      std::tie(Mask, VL) =
+          getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
+      SDValue Zero = DAG.getConstant(0, DL, XLenVT);
+      SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
+      return DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, VecVT,
+                         N->getOperand(0), Src.getOperand(0), Zero, Mask,
+                         OneVL);
+    }
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return SDValue();
