@@ -1126,3 +1126,30 @@ define i64 @bswap_i64(i64 %a) {
   %1 = call i64 @llvm.bswap.i64(i64 %a)
   ret i64 %1
 }
+
+; SIFIVE
+; Make sure we use ADDIW. It can enable more opportunities for RISCVMIPeephole
+; to remove sext.w.
+define signext i32 @max1_sub1_i32(i32 signext %a, i32 signext %b) nounwind {
+; RV64I-LABEL: max1_sub1_i32:
+; RV64I:       # %bb.0:
+; RV64I-NEXT:    li a1, 1
+; RV64I-NEXT:    blt a1, a0, .LBB34_2
+; RV64I-NEXT:  # %bb.1:
+; RV64I-NEXT:    li a0, 1
+; RV64I-NEXT:  .LBB34_2:
+; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    ret
+;
+; RV64ZBB-LABEL: max1_sub1_i32:
+; RV64ZBB:       # %bb.0:
+; RV64ZBB-NEXT:    li a1, 1
+; RV64ZBB-NEXT:    max a0, a0, a1
+; RV64ZBB-NEXT:    addiw a0, a0, -1
+; RV64ZBB-NEXT:    ret
+  %cmp = icmp sgt i32 %a, 1
+  %cond = select i1 %cmp, i32 %a, i32 1
+  %sub = sub i32 %cond, 1
+  ret i32 %sub
+}
+; end SIFIVE
