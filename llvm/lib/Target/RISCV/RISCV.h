@@ -66,6 +66,11 @@ void initializeRISCVInsertVSETVLIPass(PassRegistry &);
 FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 
+#if SIFIVE_CUSTOMIZATION
+FunctionPass *createRISCVCleanupVXRMPass();
+void initializeRISCVCleanupVXRMPass(PassRegistry &);
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionSelector *createRISCVInstructionSelector(const RISCVTargetMachine &,
                                                     RISCVSubtarget &,
                                                     RISCVRegisterBankInfo &);

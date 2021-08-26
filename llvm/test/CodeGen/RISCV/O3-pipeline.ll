@@ -98,6 +98,7 @@
 ; CHECK-NEXT:       Remove dead machine instructions
 ; RV64-NEXT:        RISCV sext.w Removal
 ; CHECK-NEXT:       RISCV Merge Base Offset
+; CHECK-NEXT:       RISCV Cleanup VXRM pass
 ; CHECK-NEXT:       RISCV Insert VSETVLI pass
 ; CHECK-NEXT:       Detect Dead Lanes
 ; CHECK-NEXT:       Process Implicit Definitions
