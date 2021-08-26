@@ -363,15 +363,15 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32isabc_xdef -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-X-ORDER %s
-// RV32-X-ORDER: error: invalid arch name 'rv32isabc_xdef',
-// RV32-X-ORDER: non-standard user-level extension not given
-// RV32-X-ORDER: in canonical order 'xdef'
+// SIFIVE_CUSTOMIZATION
+// RV32-X-ORDER: "-target-abi" "ilp32"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32isxabc_sdef -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-S-ORDER %s
-// RV32-S-ORDER: error: invalid arch name 'rv32isxabc_sdef',
-// RV32-S-ORDER: standard supervisor-level extension not given
-// RV32-S-ORDER: in canonical order 'sdef'
+// SIFIVE_CUSTOMIZATION
+// RV32-S-ORDER: "-target-abi" "ilp32"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XDUP %s

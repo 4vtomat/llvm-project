@@ -626,9 +626,6 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
   OtherExts.split(Split, '_');
 
   SmallVector<StringRef, 8> AllExts;
-  std::array<StringRef, 4> Prefix{"z", "x", "s", "sx"};
-  auto I = Prefix.begin();
-  auto E = Prefix.end();
   if (Split.size() > 1 || Split[0] != "") {
     for (StringRef Ext : Split) {
       if (Ext.empty())
@@ -644,15 +641,6 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
       if (Type.empty())
         return createStringError(errc::invalid_argument,
                                  "invalid extension prefix '" + Ext + "'");
-
-      // Check ISA extensions are specified in the canonical order.
-      while (I != E && *I != Type)
-        ++I;
-
-      if (I == E)
-        return createStringError(errc::invalid_argument,
-                                 "%s not given in canonical order '%s'",
-                                 Desc.str().c_str(), Ext.str().c_str());
 
       if (Name.size() == Type.size()) {
         return createStringError(errc::invalid_argument,
