@@ -945,8 +945,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
   setMinimumJumpTableEntries(5);
 
-  // Jumps are expensive, compared to logic
-  setJumpIsExpensive();
+  setJumpIsExpensive(!Subtarget.setJumpIsCheap()); // SIFIVE
 
   setTargetDAGCombine({ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::AND,
                        ISD::OR, ISD::XOR});

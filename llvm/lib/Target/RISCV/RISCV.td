@@ -467,15 +467,19 @@ def FeatureShortForwardBranchOpt
     : SubtargetFeature<"short-forward-branch-opt", "HasShortForwardBranchOpt",
                        "true", "Enable short forward branch optimization">;
 def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
-#endif // SIFIVE_CUSTOMIZATION
+
+def FeatureJumpIsCheap
+    : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
+                       "true", "Set jump is cheap.">;
 
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
-                                   [FeatureShortForwardBranchOpt]>;
-#ifdef SIFIVE_CUSTOMIZATION
+                                   [FeatureShortForwardBranchOpt,
+                                    FeatureJumpIsCheap]>;
 def  TuneSiFiveX280: SubtargetFeature<"sifive-x280","RISCVProcFamily", "SiFiveX280",
                                       "SiFive X280 Processor",
-                                      [FeatureShortForwardBranchOpt]>;
+                                      [FeatureShortForwardBranchOpt,
+                                       FeatureJumpIsCheap]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
