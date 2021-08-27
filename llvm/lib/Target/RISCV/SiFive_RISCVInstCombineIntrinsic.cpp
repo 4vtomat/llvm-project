@@ -741,6 +741,20 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
           {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
     // These instructions are not commutable.
     break;
+  case Intrinsic::riscv_vsll:
+  case Intrinsic::riscv_vsrl:
+  case Intrinsic::riscv_vsra:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
+      // Expect II.getArgOperand(2)->getType() is a XLen value type.
+      Value *ShiftAmount =
+          IC.Builder.CreateZExtOrTrunc(V, II.getArgOperand(3)->getType());
+      return CreateIntrinsic(&II, IID,
+                             {II.getType(), ShiftAmount->getType(),
+                              II.getArgOperand(3)->getType()},
+                             {II.getArgOperand(0), II.getArgOperand(1),
+                              ShiftAmount, II.getArgOperand(3)});
+    }
+    break;
   case Intrinsic::riscv_vwadd:
   case Intrinsic::riscv_vwaddu:
   case Intrinsic::riscv_vwmul:
@@ -773,6 +787,20 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
            II.getArgOperand(3)->getType()},
           {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
     // These instructions are not commutable.
+    break;
+  case Intrinsic::riscv_vnsrl:
+  case Intrinsic::riscv_vnsra:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
+      // Expect II.getArgOperand(2)->getType() is a XLen value type.
+      Value *ShiftAmount =
+          IC.Builder.CreateZExtOrTrunc(V, II.getArgOperand(3)->getType());
+      return CreateIntrinsic(&II, IID,
+                             {II.getType(), II.getArgOperand(1)->getType(),
+                              ShiftAmount->getType(),
+                              II.getArgOperand(3)->getType()},
+                             {II.getArgOperand(0), II.getArgOperand(1),
+                              ShiftAmount, II.getArgOperand(3)});
+    }
     break;
   case Intrinsic::riscv_vmacc:
   case Intrinsic::riscv_vnmsac:
