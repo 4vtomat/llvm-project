@@ -966,6 +966,43 @@ bool RISCVInstrInfo::isBranchOffsetInRange(unsigned BranchOp,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// If the operation has a predicated pseudo instruction, return the pseudo
+// instruction opcode. Otherwise, return RISCV::INSTRUCTION_LIST_END.
+// TODO: Support more operations.
+unsigned getPredicatedOpcode(unsigned Opcode) {
+  switch (Opcode) {
+  case RISCV::ADD:   return RISCV::PseudoCCADD;   break;
+  case RISCV::SUB:   return RISCV::PseudoCCSUB;   break;
+  case RISCV::SLL:   return RISCV::PseudoCCSLL;   break;
+  case RISCV::SRL:   return RISCV::PseudoCCSRL;   break;
+  case RISCV::SRA:   return RISCV::PseudoCCSRA;   break;
+  case RISCV::AND:   return RISCV::PseudoCCAND;   break;
+  case RISCV::OR:    return RISCV::PseudoCCOR;    break;
+  case RISCV::XOR:   return RISCV::PseudoCCXOR;   break;
+
+  case RISCV::ADDI:  return RISCV::PseudoCCADDI;  break;
+  case RISCV::SLLI:  return RISCV::PseudoCCSLLI;  break;
+  case RISCV::SRLI:  return RISCV::PseudoCCSRLI;  break;
+  case RISCV::SRAI:  return RISCV::PseudoCCSRAI;  break;
+  case RISCV::ANDI:  return RISCV::PseudoCCANDI;  break;
+  case RISCV::ORI:   return RISCV::PseudoCCORI;   break;
+  case RISCV::XORI:  return RISCV::PseudoCCXORI;  break;
+
+  case RISCV::ADDW:  return RISCV::PseudoCCADDW;  break;
+  case RISCV::SUBW:  return RISCV::PseudoCCSUBW;  break;
+  case RISCV::SLLW:  return RISCV::PseudoCCSLLW;  break;
+  case RISCV::SRLW:  return RISCV::PseudoCCSRLW;  break;
+  case RISCV::SRAW:  return RISCV::PseudoCCSRAW;  break;
+
+  case RISCV::ADDIW: return RISCV::PseudoCCADDIW; break;
+  case RISCV::SLLIW: return RISCV::PseudoCCSLLIW; break;
+  case RISCV::SRLIW: return RISCV::PseudoCCSRLIW; break;
+  case RISCV::SRAIW: return RISCV::PseudoCCSRAIW; break;
+  }
+
+  return RISCV::INSTRUCTION_LIST_END;
+}
+
 /// Identify instructions that can be folded into a CCMOV instruction, and
 /// return the defining instruction.
 static MachineInstr *canFoldIntoCCMOV(Register Reg,
@@ -979,12 +1016,12 @@ static MachineInstr *canFoldIntoCCMOV(Register Reg,
   if (!MI)
     return nullptr;
   // Check if MI can be predicated and folded into the CCMOV.
-  // TODO: Support more operations.
-  switch (MI->getOpcode()) {
-  default:
+  if (getPredicatedOpcode(MI->getOpcode()) == RISCV::INSTRUCTION_LIST_END)
     return nullptr;
-  case RISCV::XOR: break;
-  }
+  // Don't predicate li idiom.
+  if (MI->getOpcode() == RISCV::ADDI && MI->getOperand(1).isReg() &&
+      MI->getOperand(1).getReg() == RISCV::X0)
+    return nullptr;
   // Check if MI has any other defs or physreg uses.
   for (unsigned i = 1, e = MI->getNumOperands(); i != e; ++i) {
     const MachineOperand &MO = MI->getOperand(i);
@@ -1057,11 +1094,8 @@ RISCVInstrInfo::optimizeSelect(MachineInstr &MI,
     return nullptr;
 
   // TODO: Support more operations.
-  unsigned PredOpc;
-  switch (DefMI->getOpcode()) {
-  default: llvm_unreachable("Unexpected opcode!");
-  case RISCV::XOR: PredOpc = RISCV::PseudoCCXOR; break;
-  }
+  unsigned PredOpc = getPredicatedOpcode(DefMI->getOpcode());
+  assert(PredOpc != RISCV::INSTRUCTION_LIST_END && "Unexpected opcode!");
 
   // Create a new predicated version of DefMI.
   MachineInstrBuilder NewMI =

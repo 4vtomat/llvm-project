@@ -141,7 +141,30 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCMOVGPRNoX0:
+  case RISCV::PseudoCCADD:
+  case RISCV::PseudoCCSUB:
+  case RISCV::PseudoCCSLL:
+  case RISCV::PseudoCCSRL:
+  case RISCV::PseudoCCSRA:
+  case RISCV::PseudoCCAND:
+  case RISCV::PseudoCCOR:
   case RISCV::PseudoCCXOR:
+  case RISCV::PseudoCCADDI:
+  case RISCV::PseudoCCSLLI:
+  case RISCV::PseudoCCSRLI:
+  case RISCV::PseudoCCSRAI:
+  case RISCV::PseudoCCANDI:
+  case RISCV::PseudoCCORI:
+  case RISCV::PseudoCCXORI:
+  case RISCV::PseudoCCADDW:
+  case RISCV::PseudoCCSUBW:
+  case RISCV::PseudoCCSLLW:
+  case RISCV::PseudoCCSRLW:
+  case RISCV::PseudoCCSRAW:
+  case RISCV::PseudoCCADDIW:
+  case RISCV::PseudoCCSLLIW:
+  case RISCV::PseudoCCSRLIW:
+  case RISCV::PseudoCCSRAIW:
     return expandCCOp(MBB, MBBI, NextMBBI);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVSETVLI:
@@ -376,13 +399,39 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
     BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
         .add(MI.getOperand(5))
         .addImm(0);
-  } else if (MI.getOpcode() == RISCV::PseudoCCXOR) {
-    // Add XOR.
-    BuildMI(TrueBB, DL, TII->get(RISCV::XOR), DestReg)
+  } else {
+    unsigned NewOpc;
+    switch (MI.getOpcode()) {
+    default:
+      llvm_unreachable("Unexpected opcode!");
+    case RISCV::PseudoCCADD:   NewOpc = RISCV::ADD;   break;
+    case RISCV::PseudoCCSUB:   NewOpc = RISCV::SUB;   break;
+    case RISCV::PseudoCCSLL:   NewOpc = RISCV::SLL;   break;
+    case RISCV::PseudoCCSRL:   NewOpc = RISCV::SRL;   break;
+    case RISCV::PseudoCCSRA:   NewOpc = RISCV::SRA;   break;
+    case RISCV::PseudoCCAND:   NewOpc = RISCV::AND;   break;
+    case RISCV::PseudoCCOR:    NewOpc = RISCV::OR;    break;
+    case RISCV::PseudoCCXOR:   NewOpc = RISCV::XOR;   break;
+    case RISCV::PseudoCCADDI:  NewOpc = RISCV::ADDI;  break;
+    case RISCV::PseudoCCSLLI:  NewOpc = RISCV::SLLI;  break;
+    case RISCV::PseudoCCSRLI:  NewOpc = RISCV::SRLI;  break;
+    case RISCV::PseudoCCSRAI:  NewOpc = RISCV::SRAI;  break;
+    case RISCV::PseudoCCANDI:  NewOpc = RISCV::ANDI;  break;
+    case RISCV::PseudoCCORI:   NewOpc = RISCV::ORI;   break;
+    case RISCV::PseudoCCXORI:  NewOpc = RISCV::XORI;  break;
+    case RISCV::PseudoCCADDW:  NewOpc = RISCV::ADDW;  break;
+    case RISCV::PseudoCCSUBW:  NewOpc = RISCV::SUBW;  break;
+    case RISCV::PseudoCCSLLW:  NewOpc = RISCV::SLLW;  break;
+    case RISCV::PseudoCCSRLW:  NewOpc = RISCV::SRLW;  break;
+    case RISCV::PseudoCCSRAW:  NewOpc = RISCV::SRAW;  break;
+    case RISCV::PseudoCCADDIW: NewOpc = RISCV::ADDIW; break;
+    case RISCV::PseudoCCSLLIW: NewOpc = RISCV::SLLIW; break;
+    case RISCV::PseudoCCSRLIW: NewOpc = RISCV::SRLIW; break;
+    case RISCV::PseudoCCSRAIW: NewOpc = RISCV::SRAIW; break;
+    }
+    BuildMI(TrueBB, DL, TII->get(NewOpc), DestReg)
         .add(MI.getOperand(5))
         .add(MI.getOperand(6));
-  } else {
-    llvm_unreachable("Unexpected opcode!");
   }
 
   TrueBB->addSuccessor(MergeBB);

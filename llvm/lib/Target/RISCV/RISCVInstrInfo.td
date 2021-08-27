@@ -1293,14 +1293,88 @@ def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
 }
 
 let Constraints = "$dst = $falsev" in {
-// Conditional xor, that updates update $dst to (xor rs1, rs2) when condition
+// Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
-// TODO: Can we use DefaultOperands on the regular XOR to accomplish this more
+// TODO: Can we use DefaultOperands on the regular binop to accomplish this more
 // like how ARM does predication?
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8 in
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8 in {
+def PseudoCCADD : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSUB : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSLL : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSRL : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSRA : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCAND : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCOR  : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
 def PseudoCCXOR : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+
+def PseudoCCADDI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSLLI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSRLI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSRAI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCANDI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCORI  : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCXORI : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+
+// RV64I instructions
+def PseudoCCADDW : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSUBW : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSLLW : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSRLW : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+def PseudoCCSRAW : Pseudo<(outs GPR:$dst),
+                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+
+def PseudoCCADDIW : Pseudo<(outs GPR:$dst),
+                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSLLIW : Pseudo<(outs GPR:$dst),
+                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSRLIW : Pseudo<(outs GPR:$dst),
+                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+def PseudoCCSRAIW : Pseudo<(outs GPR:$dst),
+                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>;
+}
 } // Constraints = "$dst = $falsev"
 #endif // SIFIVE_CUSTOMIZATION
 
