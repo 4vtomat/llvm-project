@@ -27,9 +27,9 @@
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/Program.h"
+#include "llvm/Support/RISCVISAInfo.h"
 #include "llvm/Support/TargetParser.h"
 #include "llvm/Support/VirtualFileSystem.h"
-#include "llvm/Support/RISCVArchStringParser.h"
 #include <system_error>
 
 using namespace clang::driver;
@@ -802,10 +802,27 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
     CmdArgs.push_back("-mabi");
     CmdArgs.push_back(ABIName.data());
     StringRef MArchName = riscv::getRISCVArch(Args, getToolChain().getTriple());
+    // Canonicalize the arch string before passing to binutils, older binutils
+    // need arch string in canonical order.
+
     CmdArgs.push_back("-march");
-    CmdArgs.push_back(MArchName.data());
+    //CmdArgs.push_back(MArchName.data());
     if (!Args.hasFlag(options::OPT_mrelax, options::OPT_mno_relax, true))
       Args.addOptOutFlag(CmdArgs, options::OPT_mrelax, options::OPT_mno_relax);
+    auto ParseResult = llvm::RISCVISAInfo::parseArchString(
+        MArchName, /*EnableExperimentalExtension=*/true,
+        /*ExperimentalExtensionVersionCheck=*/false);
+    if (!ParseResult) {
+      consumeError(ParseResult.takeError());
+
+      // Something wrong during canonicalize, just bypass the -march value in
+      // this case.
+      CmdArgs.push_back(MArchName.data());
+    } else {
+      auto &ISAInfo = *ParseResult;
+      std::string Arch = ISAInfo->toString();
+      CmdArgs.push_back(Args.MakeArgStringRef(Arch));
+    }
     break;
   }
   case llvm::Triple::sparc:
@@ -1739,21 +1756,20 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   Multilib::flags_list NewFlags;
   std::vector<Multilib> NewMultilibs;
 
-  llvm::RISCVArchStringParser Parser;
-
-  if (auto E = Parser.parse(Arch, /* EnableExperimentalExtension */ true,
-                            /* ExperimentalExtensionVersionCheck */ false)) {
-    handleAllErrors(std::move(E), [&](llvm::StringError &ErrMsg) {
-      // Ignore any error here, we assume it will handled in another place.
-    });
-
+  auto ParseResult = llvm::RISCVISAInfo::parseArchString(
+      Arch, /*EnableExperimentalExtension=*/true,
+      /*ExperimentalExtensionVersionCheck=*/false);
+  if (!ParseResult) {
+    // Ignore any error here, we assume it will handled in another place.
+    consumeError(ParseResult.takeError());
     return false;
   }
+  auto &ISAInfo = *ParseResult;
 
-  auto CurrentExts = Parser.getExtensions();
+  auto CurrentExts = ISAInfo->getExtensions();
 
-  addMultilibFlag(Parser.getXLEN() == 32, "m32", NewFlags);
-  addMultilibFlag(Parser.getXLEN() == 64, "m64", NewFlags);
+  addMultilibFlag(ISAInfo->getXLen() == 32, "m32", NewFlags);
+  addMultilibFlag(ISAInfo->getXLen() == 64, "m64", NewFlags);
 
   // Collect all flags except march=*
   for (StringRef Flag : Flags) {
@@ -1769,7 +1785,7 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   // extension. e.g. march=rv32im -> +i +m
   for (auto M : RISCVMultilibSet) {
     bool Skip = false;
-    llvm::RISCVArchStringParser ConfigArchParser;
+
     Multilib NewMultilib =
         Multilib(M.gccSuffix(), M.osSuffix(), M.includeSuffix(), Priority++);
     NewMultilib.flags() = Multilib::flags_list();
@@ -1781,33 +1797,34 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
       }
 
       // Break down -march to individual extension.
-      if (auto E = ConfigArchParser.parse(
-              Flag.drop_front(7), /* EnableExperimentalExtension */ true,
-              /* ExperimentalExtensionVersionCheck */ false)) {
-        handleAllErrors(std::move(E), [&](llvm::StringError &ErrMsg) {
-          // Ignore any error here, we assume it will handled in another place.
-        });
+      auto MLConfigParseResult = llvm::RISCVISAInfo::parseArchString(
+          Flag.drop_front(7), /*EnableExperimentalExtension=*/true,
+          /*ExperimentalExtensionVersionCheck=*/false);
+      if (!MLConfigParseResult) {
+        // Ignore any error here, we assume it will handled in another place.
+        llvm::consumeError(MLConfigParseResult.takeError());
 
-	// We might got parsing error if rv32e in the list, we could just skip
-	// that and process all rest multi-lib configs.
+        // We might got parsing error if rv32e in the list, we could just skip
+        // that and process all rest multi-lib configs.
         Skip = true;
         continue;
       }
+      auto &MLConfigISAInfo = *MLConfigParseResult;
 
-      auto ConfigArchExts = ConfigArchParser.getExtensions();
-      for (auto &ConfigArchExt : ConfigArchExts) {
-        auto ExtName = ConfigArchExt.first();
+      auto MLConfigArchExts = MLConfigISAInfo->getExtensions();
+      for (auto MLConfigArchExt : MLConfigArchExts) {
+        auto ExtName = MLConfigArchExt.first;
         NewMultilib.flag(Twine("+", ExtName).str());
 
         if (!AllArchExts.contains(ExtName)) {
           AllArchExts.insert(ExtName);
-          addMultilibFlag(CurrentExts.count(ExtName), ExtName.str().c_str(),
+          addMultilibFlag(ISAInfo->hasExtension(ExtName), ExtName.c_str(),
                           NewFlags);
         }
       }
 
       // Check XLEN explicitly.
-      if (ConfigArchParser.getXLEN() == 32) {
+      if (MLConfigISAInfo->getXLen() == 32) {
         NewMultilib.flag("+m32");
         NewMultilib.flag("-m64");
       } else {
@@ -1817,7 +1834,7 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
 
       // Atomic extension must explicitly check, soft and hard atomic operation
       // never co-work correctly.
-      if (ConfigArchParser.find("a") == None)
+      if (!MLConfigISAInfo->hasExtension("a"))
         NewMultilib.flag("-a");
     }
 

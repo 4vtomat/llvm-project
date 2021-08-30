@@ -20,10 +20,10 @@
 // RUN: %clang -target riscv32-unknown-elf --gcc-toolchain=%S/Inputs/basic_riscv32_tree -mno-relax -fno-integrated-as %s -### -c \
 // RUN: 2>&1 | FileCheck -check-prefix=CHECK-RV32-NO-RELAX %s
 
-// CHECK-RV32IMAC-ILP32: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32" "-march" "rv32imac"
-// CHECK-RV32IMAFDC-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32imafdc"
-// CHECK-RV32G-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32g"
 // CHECK-RV32-NO-RELAX: "{{.*}}as{{(.exe)?}}" "{{.*}}" "-mno-relax"
+// CHECK-RV32IMAC-ILP32: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32" "-march" "rv32i2p0_m2p0_a2p0_c2p0"
+// CHECK-RV32IMAFDC-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+// CHECK-RV32G-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p0_m2p0_a2p0_f2p0_d2p0"
 
 
 // 64-bit checks
@@ -44,8 +44,8 @@
 // RUN: %clang -target riscv64-unknown-elf --gcc-toolchain=%S/Inputs/basic_riscv64_tree -mno-relax -mrelax -fno-integrated-as %s -### -c \
 // RUN: 2>&1 | FileCheck -check-prefix=CHECK-RV64-RELAX %s
 
-// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64" "-march" "rv64imac"
-// CHECK-RV64IMAFDC-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64imafdc"
-// CHECK-RV64G-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64g"
 // CHECK-RV64-RELAX: "{{.*}}as{{(.exe)?}}"
 // CHECK-RV64-RELAX-NOT: "-mno-relax"
+// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64" "-march" "rv64i2p0_m2p0_a2p0_c2p0"
+// CHECK-RV64IMAFDC-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+// CHECK-RV64G-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p0_m2p0_a2p0_f2p0_d2p0"
