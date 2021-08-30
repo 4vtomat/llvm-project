@@ -31,6 +31,16 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
                             const ArgList &Args) {
   bool EnableExperimentalExtensions =
       Args.hasArg(options::OPT_menable_experimental_extensions);
+
+  // SIFIVE
+  // XXX: SiFive specific logic:
+  //      Allow mcpu has experimental extension feature without giving
+  //      -menable-experimental-extensions option.
+  if (const Arg *A = Args.getLastArg(options::OPT_mcpu_EQ))
+    if (llvm::RISCV::getMArchFromMcpu(A->getValue()) != "")
+     EnableExperimentalExtensions = true;
+  // end SIFIVE
+
   auto ISAInfo =
       llvm::RISCVISAInfo::parseArchString(Arch, EnableExperimentalExtensions);
   if (!ISAInfo) {
