@@ -80,13 +80,13 @@ bool RISCVCleanupVXRM::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
 
       if (LastWrite && LastWrite->getOpcode() == MI.getOpcode()) {
         bool IsSame = false;
-        MachineOperand LastSrcOp = LastWrite->getOperand(0);
-        MachineOperand CurSrcOp = MI.getOperand(0);
+        MachineOperand &LastSrcOp = LastWrite->getOperand(0);
+        MachineOperand &CurSrcOp = MI.getOperand(0);
         if (MI.getOpcode() == RISCV::WriteVXRMImm &&
             LastSrcOp.getImm() == CurSrcOp.getImm()) {
           IsSame = true;
         } else if (MI.getOpcode() == RISCV::WriteVXRM &&
-                   Register::isVirtualRegister(CurSrcOp.getReg()) &&
+                   CurSrcOp.getReg().isVirtual() &&
                    LastSrcOp.getReg() == CurSrcOp.getReg()) {
           IsSame = true;
         }
@@ -127,7 +127,8 @@ bool RISCVCleanupVXRM::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
         for (auto *MO : Uses) {
           MO->setReg(PrevMode.getReg());
         }
-        LLVM_DEBUG(dbgs() << "Remove ReadVXRM that can reuse previous result:"; MI.dump());
+        LLVM_DEBUG(dbgs() << "Remove ReadVXRM that can reuse previous result:";
+                   MI.dump());
         MI.eraseFromParent();
 
         Updated = true;
