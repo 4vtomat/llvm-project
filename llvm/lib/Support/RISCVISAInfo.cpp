@@ -96,11 +96,13 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zve64f", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
 
-    // SIFIVE
+#if SIFIVE_CUSTOMIZATION
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}},
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}},
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}},
-    // end SIFIVE
+    {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}},
+    {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}},
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
@@ -771,6 +773,8 @@ static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
+static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
+static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
 #endif // SIFIVE_CUSTOMIZATION
@@ -790,6 +794,8 @@ struct ImpliedExtsEntry {
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
+    {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
+    {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
     {{"zdinx"}, {ImpliedExtsZdinx}},

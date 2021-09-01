@@ -423,6 +423,22 @@ def FeatureStdExtXsfvfhbfmin
 def HasExtXsfvfhbfmin : Predicate<"Subtarget->hasExtXsfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureStdExtXsfvfhbfmin),
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
+
+def FeatureStdExtXsfvfwmaccqqq
+    : SubtargetFeature<"xsfvfwmaccqqq", "HasExtXsfvfwmaccqqq", "true",
+                       "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
+                       [FeatureStdExtZve32f]>;
+def HasExtXsfvfwmaccqqq : Predicate<"Subtarget->hasExtXsfvfwmaccqqq()">,
+                          AssemblerPredicate<(all_of FeatureStdExtXsfvfwmaccqqq),
+                          "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
+
+def FeatureStdExtXsfvfnrclipxfqf
+    : SubtargetFeature<"xsfvfnrclipxfqf", "HasExtXsfvfnrclipxfqf", "true",
+                       "Xsfvfnrclipxfqf (Support SiFive custom FP32-to-int8 ranged clip instructions)",
+                       [FeatureStdExtZve32f]>;
+def HasExtXsfvfnrclipxfqf : Predicate<"Subtarget->hasExtXsfvfnrclipxfqf()">,
+                            AssemblerPredicate<(all_of FeatureStdExtXsfvfnrclipxfqf),
+                            "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
