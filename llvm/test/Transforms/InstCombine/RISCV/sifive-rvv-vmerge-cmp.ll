@@ -29,7 +29,7 @@ declare <vscale x 4 x float> @llvm.riscv.vfmerge.nxv4f32.nxv4f32.i64(<vscale x 4
 define <vscale x 4 x i32> @test_vmerge_vmseq(i32 %x, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmseq(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq i32 [[X:%.*]], 0
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -41,7 +41,7 @@ define <vscale x 4 x i32> @test_vmerge_vmseq(i32 %x, <vscale x 4 x i32> %op1, <v
 define <vscale x 4 x i32> @test_vmerge_vmsne(i32 %x, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsne(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i32 [[X:%.*]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -53,7 +53,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsne(i32 %x, <vscale x 4 x i32> %op1, <v
 define <vscale x 4 x i32> @test_vmerge_vmsltu(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsltu(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ult i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -65,7 +65,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsltu(i32 %x, i32 %y, <vscale x 4 x i32>
 define <vscale x 4 x i32> @test_vmerge_vmslt(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmslt(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp slt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -77,7 +77,7 @@ define <vscale x 4 x i32> @test_vmerge_vmslt(i32 %x, i32 %y, <vscale x 4 x i32> 
 define <vscale x 4 x i32> @test_vmerge_vmsleu(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsleu(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp ugt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -89,7 +89,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsleu(i32 %x, i32 %y, <vscale x 4 x i32>
 define <vscale x 4 x i32> @test_vmerge_vmsle(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsle(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp sgt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -101,7 +101,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsle(i32 %x, i32 %y, <vscale x 4 x i32> 
 define <vscale x 4 x i32> @test_vmerge_vmsgtu(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsgtu(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ugt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -113,7 +113,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsgtu(i32 %x, i32 %y, <vscale x 4 x i32>
 define <vscale x 4 x i32> @test_vmerge_vmsgt(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsgt(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp sgt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -125,7 +125,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsgt(i32 %x, i32 %y, <vscale x 4 x i32> 
 define <vscale x 4 x i32> @test_vmerge_vmsgeu(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsgeu(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp ult i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -137,7 +137,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsgeu(i32 %x, i32 %y, <vscale x 4 x i32>
 define <vscale x 4 x i32> @test_vmerge_vmsge(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsge(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp slt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -149,7 +149,7 @@ define <vscale x 4 x i32> @test_vmerge_vmsge(i32 %x, i32 %y, <vscale x 4 x i32> 
 define <vscale x 4 x i32> @test_vmerge_vmsge_vv(i32 %x, i32 %y, <vscale x 4 x i32> %op1, <vscale x 4 x i32> %op2) {
 ; CHECK-LABEL: @test_vmerge_vmsge_vv(
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp slt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP2:%.*]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[OP2:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP1]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -163,7 +163,7 @@ define <vscale x 4 x i32> @test_vmerge_vx_vmsge_vv(i32 %x, i32 %y, <vscale x 4 x
 ; CHECK-LABEL: @test_vmerge_vx_vmsge_vv(
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[OP2:%.*]], i64 4)
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp slt i32 [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[TMP1]], <vscale x 4 x i32> [[OP1:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[DOTNOT]], <vscale x 4 x i32> [[OP1:%.*]], <vscale x 4 x i32> [[TMP1]]
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP2]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
@@ -176,7 +176,7 @@ define <vscale x 4 x i32> @test_vmerge_vx_vmsge_vv(i32 %x, i32 %y, <vscale x 4 x
 define <vscale x 4 x float> @test_vfmerge_vmfeq(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmfeq(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp oeq float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
@@ -188,7 +188,7 @@ define <vscale x 4 x float> @test_vfmerge_vmfeq(float %x, float %y, <vscale x 4 
 define <vscale x 4 x float> @test_vfmerge_vmfne(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmfne(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp une float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
@@ -200,7 +200,7 @@ define <vscale x 4 x float> @test_vfmerge_vmfne(float %x, float %y, <vscale x 4 
 define <vscale x 4 x float> @test_vfmerge_vmflt(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmflt(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp olt float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
@@ -212,7 +212,7 @@ define <vscale x 4 x float> @test_vfmerge_vmflt(float %x, float %y, <vscale x 4 
 define <vscale x 4 x float> @test_vfmerge_vmfle(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmfle(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp ole float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
@@ -224,7 +224,7 @@ define <vscale x 4 x float> @test_vfmerge_vmfle(float %x, float %y, <vscale x 4 
 define <vscale x 4 x float> @test_vfmerge_vmfgt(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmfgt(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp ogt float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
@@ -236,7 +236,7 @@ define <vscale x 4 x float> @test_vfmerge_vmfgt(float %x, float %y, <vscale x 4 
 define <vscale x 4 x float> @test_vfmerge_vmfge(float %x, float %y, <vscale x 4 x float> %op1, <vscale x 4 x float> %op2) {
 ; CHECK-LABEL: @test_vfmerge_vmfge(
 ; CHECK-NEXT:    [[TMP1:%.*]] = fcmp oge float [[X:%.*]], [[Y:%.*]]
-; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP1:%.*]], <vscale x 4 x float> [[OP2:%.*]]
+; CHECK-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], <vscale x 4 x float> [[OP2:%.*]], <vscale x 4 x float> [[OP1:%.*]]
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[TMP2]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)

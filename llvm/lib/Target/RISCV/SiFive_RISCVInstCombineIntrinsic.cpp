@@ -486,7 +486,7 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
 
 //   (vmerge (vmslt (vmv.v.x A), (vmv.v.x B)), c, d)
 // To
-//   (select (icmp slt A, B), c, d)
+//   (select (icmp slt A, B), d, c)
 static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   if (!isa<UndefValue>(II.getArgOperand(0)))
     return nullptr;
@@ -532,7 +532,7 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   else
     llvm_unreachable("Unexpected types for scalar comparison.");
 
-  Value *V = IC.Builder.CreateSelect(CmpV, LHS, RHS);
+  Value *V = IC.Builder.CreateSelect(CmpV, RHS, LHS);
 
   return IC.replaceInstUsesWith(II, V);
 }
