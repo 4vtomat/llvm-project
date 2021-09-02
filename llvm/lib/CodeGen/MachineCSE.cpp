@@ -199,8 +199,11 @@ bool MachineCSE::PerformTrivialCopyPropagation(MachineInstr *MI,
     // class given a super-reg class and subreg index.
     if (DefMI->getOperand(1).getSubReg())
       continue;
-    if (!MRI->constrainRegAttrs(SrcReg, Reg))
+#if SIFIVE_CUSTOMIZATION
+    // Don't shrink below 2 registers in the class.
+    if (!MRI->constrainRegAttrs(SrcReg, Reg, 2))
       continue;
+#endif // SIFIVE_CUSTOMIZATION
     LLVM_DEBUG(dbgs() << "Coalescing: " << *DefMI);
     LLVM_DEBUG(dbgs() << "***     to: " << *MI);
 
