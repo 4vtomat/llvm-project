@@ -514,6 +514,7 @@ include "RISCVCallingConv.td"
 include "RISCVInstrInfo.td"
 include "RISCVRegisterBanks.td"
 include "RISCVSchedRocket.td"
+include "RISCVSchedSiFive6.td"
 include "RISCVSchedSiFive7.td"
 include "RISCVSchedSiFive8.td"
 include "RISCVSchedSiFive9.td"
@@ -530,6 +531,13 @@ def : ProcessorModel<"generic", NoSchedModel, []>;
 
 def : ProcessorModel<"rocket-rv32", RocketModel, []>;
 def : ProcessorModel<"rocket-rv64", RocketModel, [Feature64Bit]>;
+
+def : ProcessorModel<"sifive-6-rv32", SiFive6Model, [],
+                                                    [FeatureShortForwardBranchOpt,
+                                                     FeatureJumpIsCheap]>;
+def : ProcessorModel<"sifive-6-rv64", SiFive6Model, [Feature64Bit],
+                                                    [FeatureShortForwardBranchOpt,
+                                                     FeatureJumpIsCheap]>;
 
 def : ProcessorModel<"sifive-7-rv32", SiFive7Model, [],
                      [TuneSiFive7]>;
@@ -569,6 +577,17 @@ def : ProcessorModel<"sifive-e34", RocketModel, [FeatureStdExtM,
                                                  FeatureStdExtF,
                                                  FeatureStdExtC]>;
 
+// SIFIVE
+def : ProcessorModel<"sifive-e66", SiFive6Model, [FeatureStdExtM,
+                                                  FeatureStdExtA,
+                                                  FeatureStdExtF,
+                                                  FeatureStdExtC,
+                                                  FeatureStdExtZba,
+                                                  FeatureStdExtZbb],
+                                                 [FeatureShortForwardBranchOpt,
+                                                  FeatureJumpIsCheap]>;
+// end SIFIVE
+
 def : ProcessorModel<"sifive-e76", SiFive7Model, [FeatureStdExtM,
                                                   FeatureStdExtA,
                                                   FeatureStdExtF,
@@ -602,6 +621,19 @@ def : ProcessorModel<"sifive-s54", RocketModel, [Feature64Bit,
                                                  FeatureStdExtD,
                                                  FeatureStdExtC]>;
 
+// SIFIVE
+def : ProcessorModel<"sifive-s66", SiFive6Model, [Feature64Bit,
+                                                  FeatureStdExtM,
+                                                  FeatureStdExtA,
+                                                  FeatureStdExtF,
+                                                  FeatureStdExtD,
+                                                  FeatureStdExtC,
+                                                  FeatureStdExtZba,
+                                                  FeatureStdExtZbb],
+                                                 [FeatureShortForwardBranchOpt,
+                                                  FeatureJumpIsCheap]>;
+// end SIFIVE
+
 def : ProcessorModel<"sifive-s76", SiFive7Model, [Feature64Bit,
                                                   FeatureStdExtM,
                                                   FeatureStdExtA,
@@ -628,6 +660,19 @@ def : ProcessorModel<"sifive-u54", RocketModel, [Feature64Bit,
                                                  FeatureStdExtF,
                                                  FeatureStdExtD,
                                                  FeatureStdExtC]>;
+
+// SIFIVE
+def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
+                                                  FeatureStdExtM,
+                                                  FeatureStdExtA,
+                                                  FeatureStdExtF,
+                                                  FeatureStdExtD,
+                                                  FeatureStdExtC,
+                                                  FeatureStdExtZba,
+                                                  FeatureStdExtZbb],
+                                                 [FeatureShortForwardBranchOpt,
+                                                  FeatureJumpIsCheap]>;
+// end SIFIVE
 
 def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                                                   FeatureStdExtM,
