@@ -9,6 +9,7 @@ PROC_ALIAS("sifive-7-series", "sifive-7-rv32", "sifive-7-rv64")
 //        but we should implement this in next release.
 PROC_ALIAS("sifive-7m-series", "sifive-7-rv32", "sifive-7-rv64")
 PROC_ALIAS("sifive-8-series", "sifive-8-rv32", "sifive-8-rv64")
+PROC_ALIAS("sifive-9-series", "sifive-9-rv32", "sifive-9-rv64")
 
 #undef PROC_ALIAS
 
@@ -43,5 +44,6 @@ PROC(SIFIVE_864, {"sifive-8-rv64"}, FK_64BIT, {""})
 PROC(SIFIVE_X280, {"sifive-x280"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zba1p0_zbb1p0_xsfvfhbfmin_xsfvqmaccqoq"})
 PROC(SIFIVE_P270, {"sifive-p270"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zba1p0_zbb1p0"})
 PROC(SIFIVE_P550, {"sifive-p550"}, FK_64BIT, {"rv64gc_zfh1p0_zba1p0_zbb1p0"})
+PROC(SIFIVE_P650, {"sifive-p650"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 
 #undef PROC

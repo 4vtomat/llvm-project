@@ -215,3 +215,10 @@
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+c" "-target-feature" "+zfh" "-target-feature" "+zba"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+zbb"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+64bit"
+
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p650 | FileCheck -check-prefix=MCPU-SIFIVE-P650 %s
+// MCPU-SIFIVE-P650: "-target-cpu" "sifive-p650"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+c" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+64bit"
+// MCPU-SIFIVE-P650-SAME: "-target-abi" "lp64d"

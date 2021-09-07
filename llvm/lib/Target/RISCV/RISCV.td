@@ -516,6 +516,7 @@ include "RISCVRegisterBanks.td"
 include "RISCVSchedRocket.td"
 include "RISCVSchedSiFive7.td"
 include "RISCVSchedSiFive8.td"
+include "RISCVSchedSiFive9.td"
 
 //===----------------------------------------------------------------------===//
 // RISC-V processors supported.
@@ -539,6 +540,11 @@ def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
 def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
                      [FeatureCMOVBranchOpt]>;
 def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
+                     [FeatureCMOVBranchOpt]>;
+
+def : ProcessorModel<"sifive-9-rv32", SiFive9Model, [],
+                     [FeatureCMOVBranchOpt]>;
+def : ProcessorModel<"sifive-9-rv64", SiFive9Model, [Feature64Bit],
                      [FeatureCMOVBranchOpt]>;
 // end SIFIVE
 
@@ -679,6 +685,16 @@ def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtZbb],
                                                   [FeatureCMOVBranchOpt]>;
 #endif // SIFIVE_CUSTOMIZATION
+
+def : ProcessorModel<"sifive-p650", SiFive9Model, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                                                  [FeatureCMOVBranchOpt]>;
 
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.
