@@ -331,7 +331,7 @@ bool RISCVMergeBaseOffsetOpt::foldPseudoLLA(MachineFunction &MF,
 
   // Register defined by MI should be used in the base part of the
   // load\store instruction. Otherwise, no folding possible.
-  if (!Mem.getOperand(1).getReg())
+  if (!Mem.getOperand(1).isReg())
     return false;
   if (DestReg != Mem.getOperand(1).getReg())
     return false;
