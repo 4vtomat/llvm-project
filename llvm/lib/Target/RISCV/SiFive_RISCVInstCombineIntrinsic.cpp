@@ -388,6 +388,138 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
                          {II.getArgOperand(0), Result, VL});
 }
 
+static Instruction *foldTernaryOp(InstCombiner &IC, IntrinsicInst &II) {
+  Value *VL = II.getArgOperand(3);
+  Value *VDScalar = getVSplat(II.getArgOperand(0), VL);
+  if (!VDScalar)
+    return nullptr;
+  Value *VS1Scalar = getVSplatOrScalar(II.getArgOperand(1), VL);
+  if (!VS1Scalar)
+    return nullptr;
+  Value *VS2Scalar = getVSplat(II.getArgOperand(2), VL);
+  if (!VS2Scalar)
+    return nullptr;
+  Value *Result;
+  switch (II.getIntrinsicID()) {
+  case Intrinsic::riscv_vmacc:
+    Result = IC.Builder.CreateAdd(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  case Intrinsic::riscv_vnmsac:
+    Result = IC.Builder.CreateSub(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  case Intrinsic::riscv_vmadd:
+    Result = IC.Builder.CreateAdd(VS2Scalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VDScalar));
+    break;
+  case Intrinsic::riscv_vnmsub:
+    Result = IC.Builder.CreateSub(VS2Scalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VDScalar));
+    break;
+  case Intrinsic::riscv_vwmaccu: {
+    unsigned TypeWidth = VS1Scalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    VS1Scalar = IC.Builder.CreateZExt(VS1Scalar, DestTy);
+    VS2Scalar = IC.Builder.CreateZExt(VS2Scalar, DestTy);
+    Result = IC.Builder.CreateAdd(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  }
+  case Intrinsic::riscv_vwmacc: {
+    unsigned TypeWidth = VS1Scalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    VS1Scalar = IC.Builder.CreateSExt(VS1Scalar, DestTy);
+    VS2Scalar = IC.Builder.CreateSExt(VS2Scalar, DestTy);
+    Result = IC.Builder.CreateAdd(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  }
+  case Intrinsic::riscv_vwmaccsu: {
+    unsigned TypeWidth = VS1Scalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    VS1Scalar = IC.Builder.CreateSExt(VS1Scalar, DestTy);
+    VS2Scalar = IC.Builder.CreateZExt(VS2Scalar, DestTy);
+    Result = IC.Builder.CreateAdd(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  }
+  case Intrinsic::riscv_vwmaccus: {
+    unsigned TypeWidth = VS1Scalar->getType()->getScalarSizeInBits();
+    Type *DestTy = IC.Builder.getIntNTy(TypeWidth * 2);
+    VS1Scalar = IC.Builder.CreateZExt(VS1Scalar, DestTy);
+    VS2Scalar = IC.Builder.CreateSExt(VS2Scalar, DestTy);
+    Result = IC.Builder.CreateAdd(VDScalar,
+                                  IC.Builder.CreateMul(VS1Scalar, VS2Scalar));
+    break;
+  }
+  case Intrinsic::riscv_vfmacc:
+    // vfmacc.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) + vd[i]
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::fma, {VDScalar->getType()},
+                                        {VS1Scalar, VS2Scalar, VDScalar});
+    break;
+  case Intrinsic::riscv_vfnmacc:
+    // vfnmacc.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vs2[i]) - vd[i]
+    Result =
+        IC.Builder.CreateIntrinsic(Intrinsic::fma, {VDScalar->getType()},
+                                   {IC.Builder.CreateFNeg(VS1Scalar), VS2Scalar,
+                                    IC.Builder.CreateFNeg(VDScalar)});
+    break;
+  case Intrinsic::riscv_vfmsac:
+    // vfmsac.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) - vd[i]
+    Result = IC.Builder.CreateIntrinsic(
+        Intrinsic::fma, {VDScalar->getType()},
+        {VS1Scalar, VS2Scalar, IC.Builder.CreateFNeg(VDScalar)});
+    break;
+  case Intrinsic::riscv_vfnmsac:
+    // vfnmsac.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vs2[i]) + vd[i]
+    Result = IC.Builder.CreateIntrinsic(
+        Intrinsic::fma, {VDScalar->getType()},
+        {IC.Builder.CreateFNeg(VS1Scalar), VS2Scalar, VDScalar});
+    break;
+  case Intrinsic::riscv_vfmadd:
+    // vfmadd.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vd[i]) + vs2[i]
+    Result = IC.Builder.CreateIntrinsic(Intrinsic::fma, {VDScalar->getType()},
+                                        {VS1Scalar, VDScalar, VS2Scalar});
+    break;
+  case Intrinsic::riscv_vfnmadd:
+    // vfnmadd.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vd[i]) - vs2[i]
+    Result =
+        IC.Builder.CreateIntrinsic(Intrinsic::fma, {VDScalar->getType()},
+                                   {IC.Builder.CreateFNeg(VS1Scalar), VDScalar,
+                                    IC.Builder.CreateFNeg(VS2Scalar)});
+    break;
+  case Intrinsic::riscv_vfmsub:
+    // vfmsub.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vd[i]) - vs2[i]
+    Result = IC.Builder.CreateIntrinsic(
+        Intrinsic::fma, {VDScalar->getType()},
+        {VS1Scalar, VDScalar, IC.Builder.CreateFNeg(VS2Scalar)});
+    break;
+  case Intrinsic::riscv_vfnmsub:
+    // vfnmsub.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vd[i]) + vs2[i]
+    Result = IC.Builder.CreateIntrinsic(
+        Intrinsic::fma, {VDScalar->getType()},
+        {IC.Builder.CreateFNeg(VS1Scalar), VDScalar, VS2Scalar});
+    break;
+  }
+  Type *ResultTy = Result->getType();
+  Intrinsic::ID IID;
+  if (ResultTy->isIntegerTy())
+    IID = Intrinsic::riscv_vmv_v_x;
+  else if (ResultTy->isFloatingPointTy())
+    IID = Intrinsic::riscv_vfmv_v_f;
+  else
+    return nullptr;
+
+  Value *PassThru = II.getArgOperand(0);
+  // FIXME: Only use undef if the policy is agnostic.
+  // if (!cast<ConstantInt>(II.getArgOperand(4))->isZero())
+  PassThru = UndefValue::get(II.getType());
+
+  return CreateIntrinsic(&II, IID, {II.getType(), VL->getType()},
+                         {PassThru, Result, VL});
+}
+
 static Optional<ICmpInst::Predicate> getPredicate(Intrinsic::ID IID) {
   switch (IID) {
   default:
@@ -1024,6 +1156,26 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vmax: {
     // TODO: Add more intrinsics here.
     if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
+  }
+  case Intrinsic::riscv_vmacc:
+  case Intrinsic::riscv_vnmsac:
+  case Intrinsic::riscv_vmadd:
+  case Intrinsic::riscv_vnmsub:
+  case Intrinsic::riscv_vwmaccu:
+  case Intrinsic::riscv_vwmacc:
+  case Intrinsic::riscv_vwmaccsu:
+  case Intrinsic::riscv_vwmaccus:
+  case Intrinsic::riscv_vfmacc:
+  case Intrinsic::riscv_vfnmacc:
+  case Intrinsic::riscv_vfmsac:
+  case Intrinsic::riscv_vfnmsac:
+  case Intrinsic::riscv_vfmadd:
+  case Intrinsic::riscv_vfnmadd:
+  case Intrinsic::riscv_vfmsub:
+  case Intrinsic::riscv_vfnmsub: {
+    if (Instruction *V = foldTernaryOp(IC, II))
       return V;
     break;
   }
