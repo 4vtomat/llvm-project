@@ -18,14 +18,14 @@ class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-let vm = 1, Predicates = [HasExtXsfvqmaccqoq] in {
+let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasExtXsfvqmaccqoq] in {
   def VQMACCU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccu.4x8x4", OPMVV, 0b111100>;
   def VQMACC4x8x4_VV : CustomSiFiveVV<"sf.vqmacc.4x8x4", OPMVV, 0b111101>;
   def VQMACCUS4x8x4_VV : CustomSiFiveVV<"sf.vqmaccus.4x8x4", OPMVV, 0b111110>;
   def VQMACCSU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccsu.4x8x4", OPMVV, 0b111111>;
 } // Predicates = [HasExtXsfvqmaccqoq]
 
-let vm = 1, Predicates = [HasExtXsfvqmaccdod] in {
+let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasExtXsfvqmaccdod] in {
   def VQMACCU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccu.2x8x2", OPMVV, 0b101100>;
   def VQMACC2x8x2_VV : CustomSiFiveVV<"sf.vqmacc.2x8x2", OPMVV, 0b101101>;
   def VQMACCUS2x8x2_VV : CustomSiFiveVV<"sf.vqmaccus.2x8x2", OPMVV, 0b101110>;
