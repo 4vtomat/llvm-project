@@ -775,8 +775,8 @@ static const char *ImpliedExtsZvfh[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f"};
-static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
-static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
+static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl256b"};
+static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl512b"};
 #endif // SIFIVE_CUSTOMIZATION
 
 struct ImpliedExtsEntry {
