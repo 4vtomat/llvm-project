@@ -407,4 +407,11 @@ def : SysReg<"mnscratch", 0x350>;
 def : SysReg<"mnepc", 0x351>;
 def : SysReg<"mncause", 0x352>;
 def : SysReg<"mnstatus", 0x353>;
+
+//===-----------------------------------------------
+// World Guard Security CSRs
+//===-----------------------------------------------
+def : SysReg<"mlwid", 0x7e0>;
+def : SysReg<"mwiddeleg", 0x7e1>;
+def : SysReg<"slwid", 0x9e0>;
 // end SIFIVE
