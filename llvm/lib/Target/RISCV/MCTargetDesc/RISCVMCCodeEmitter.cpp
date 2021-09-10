@@ -61,6 +61,10 @@ public:
                        SmallVectorImpl<MCFixup> &Fixups,
                        const MCSubtargetInfo &STI) const;
 
+  void expandLongCondBr(const MCInst &MI, raw_ostream &OS,
+                        SmallVectorImpl<MCFixup> &Fixups,
+                        const MCSubtargetInfo &STI) const;
+
   /// TableGen'erated function for getting the binary encoding for an
   /// instruction.
   uint64_t getBinaryCodeForInstr(const MCInst &MI,
@@ -207,6 +211,79 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI, raw_ostream &OS,
   support::endian::write(OS, Binary, support::little);
 }
 
+static unsigned getInvertedBranchOp(unsigned BrOp, bool UseCompressedBr) {
+  switch (BrOp) {
+  default:
+    llvm_unreachable("Unexpected branch opcode!");
+  case RISCV::PseudoLongBEQ:
+    if (UseCompressedBr)
+      return RISCV::C_BNEZ;
+    return RISCV::BNE;
+  case RISCV::PseudoLongBNE:
+    if (UseCompressedBr)
+      return RISCV::C_BEQZ;
+    return RISCV::BEQ;
+  case RISCV::PseudoLongBLT:
+    return RISCV::BGE;
+  case RISCV::PseudoLongBGE:
+    return RISCV::BLT;
+  case RISCV::PseudoLongBLTU:
+    return RISCV::BGEU;
+  case RISCV::PseudoLongBGEU:
+    return RISCV::BLTU;
+  }
+}
+
+// Expand PseudoLongBxx to an inverted conditional branch and an unconditional
+// jump.
+void RISCVMCCodeEmitter::expandLongCondBr(const MCInst &MI, raw_ostream &OS,
+                                          SmallVectorImpl<MCFixup> &Fixups,
+                                          const MCSubtargetInfo &STI) const {
+  MCOperand SrcReg1 = MI.getOperand(0);
+  MCOperand SrcReg2 = MI.getOperand(1);
+  MCOperand SrcSymbol = MI.getOperand(2);
+  unsigned Opcode = MI.getOpcode();
+  bool IsEqTest =
+      (Opcode == RISCV::PseudoLongBNE) || (Opcode == RISCV::PseudoLongBEQ);
+
+  if (IsEqTest && SrcReg1.getReg() == RISCV::X0)
+    std::swap(SrcReg1, SrcReg2);
+
+  // Emit an inverted conditional branch to skip the following jump.
+  bool UseCompressedBr =
+      STI.getFeatureBits()[RISCV::FeatureStdExtC] &&
+      (RISCV::X8 <= SrcReg1.getReg() && SrcReg1.getReg() <= RISCV::X15) &&
+      (SrcReg2.getReg() == RISCV::X0) && IsEqTest;
+  auto TmpInst =
+      MCInstBuilder(getInvertedBranchOp(MI.getOpcode(), UseCompressedBr))
+          .addOperand(SrcReg1);
+  if (UseCompressedBr)
+    TmpInst.addImm(6);
+  else
+    TmpInst.addOperand(SrcReg2).addImm(8);
+  uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+  uint32_t Offset;
+  if (UseCompressedBr) {
+    support::endian::write<uint16_t>(OS, Binary, support::little);
+    Offset = 2;
+  } else {
+    support::endian::write(OS, Binary, support::little);
+    Offset = 4;
+  }
+
+  // Emit an unconditional jump to the destination.
+  TmpInst = MCInstBuilder(RISCV::JAL).addReg(RISCV::X0).addOperand(SrcSymbol);
+  Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+  support::endian::write(OS, Binary, support::little);
+
+  Fixups.clear();
+  if (SrcSymbol.isExpr()) {
+    Fixups.push_back(MCFixup::create(Offset, SrcSymbol.getExpr(),
+                                     MCFixupKind(RISCV::fixup_riscv_jal),
+                                     MI.getLoc()));
+  }
+}
+
 void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
                                            SmallVectorImpl<MCFixup> &Fixups,
                                            const MCSubtargetInfo &STI) const {
@@ -216,24 +293,33 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   const MCInstrDesc &Desc = MCII.get(MI.getOpcode());
   // Get byte count of instruction.
   unsigned Size = Desc.getSize();
+  unsigned Opcode = MI.getOpcode(); // SIFIVE
 
   // RISCVInstrInfo::getInstSizeInBytes expects that the total size of the
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
-  if (MI.getOpcode() == RISCV::PseudoCALLReg ||
-      MI.getOpcode() == RISCV::PseudoCALL ||
-      MI.getOpcode() == RISCV::PseudoTAIL ||
-      MI.getOpcode() == RISCV::PseudoJump) {
+  // SIFIVE
+  if (Opcode == RISCV::PseudoCALLReg || Opcode == RISCV::PseudoCALL ||
+      Opcode == RISCV::PseudoTAIL || Opcode == RISCV::PseudoJump) {
     expandFunctionCall(MI, OS, Fixups, STI);
     MCNumEmitted += 2;
     return;
   }
 
-  if (MI.getOpcode() == RISCV::PseudoAddRegRel) {
+  if (Opcode == RISCV::PseudoAddRegRel) {
     expandAddRegRel(MI, OS, Fixups, STI);
     MCNumEmitted += 1;
     return;
   }
+
+  if (Opcode == RISCV::PseudoLongBEQ || Opcode == RISCV::PseudoLongBNE ||
+      Opcode == RISCV::PseudoLongBLT || Opcode == RISCV::PseudoLongBGE ||
+      Opcode == RISCV::PseudoLongBLTU || Opcode == RISCV::PseudoLongBGEU) {
+    expandLongCondBr(MI, OS, Fixups, STI);
+    MCNumEmitted += 2;
+    return;
+  }
+  // end SIFIVE
 
   switch (Size) {
   default:
