@@ -99,12 +99,6 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
 
 // SIFIVE
 void RISCVSubtarget::initializeProperties() {
-  switch (getProcFamily()) {
-  default:
-    break;
-  case SiFiveX280:
-    VLen = 512;
-  }
 
   // Override and cap the VLEN.
   if (RVVVectorBits)
