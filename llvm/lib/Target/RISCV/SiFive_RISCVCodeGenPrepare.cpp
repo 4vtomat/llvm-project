@@ -19,12 +19,14 @@
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/PatternMatch.h"
 #include "llvm/Pass.h"
 
 #define DEBUG_TYPE "riscv-codegenprepare"
 #define PASS_NAME "RISCV CodeGenPrepare"
 
 using namespace llvm;
+using namespace llvm::PatternMatch;
 
 namespace {
 
@@ -49,6 +51,7 @@ private:
   bool optimizeZExt(ZExtInst *I);
   bool optimizeZExtWUses(ZExtInst *I);
   bool optimizeBinaryOperator(BinaryOperator *BO);
+  bool optimizeICmp(ICmpInst *ICmp);
 };
 
 } // end anonymous namespace
@@ -130,6 +133,9 @@ bool RISCVCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
 }
 
 bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
+  if (!ST->is64Bit())
+    return false;
+
   Value *Src = ZExt->getOperand(0);
 
   // We only care about ZExt from i32 to i64.
@@ -160,6 +166,9 @@ bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
 // the upper 32 bits with ones. A separate transform will turn (zext X) into
 // (sext X) for the same condition.
 bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
+  if (!ST->is64Bit())
+    return false;
+
   if (BO->getOpcode() != Instruction::And)
     return false;
 
@@ -218,6 +227,32 @@ bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
   return true;
 }
 
+bool RISCVCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
+  if (ST->hasStdExtZbb())
+    return false;
+
+  auto *BO = dyn_cast<BinaryOperator>(ICmp->getOperand(0));
+  if (!BO)
+    return false;
+
+  // Fold (icmp sgt (A + 1), Op1) -> (icmp sge A, Op1) if the add won't wrap.
+  // InstCombine normally does this, but it is disabled if the add is part of a
+  // min pattern. Without Zbb, the min will be turned into control flow so it
+  // is better to separate the add from the cmp so we can sink it.
+  if (ICmp->getPredicate() == ICmpInst::ICMP_SGT &&
+      BO->getOpcode() == Instruction::Add && BO->hasNoSignedWrap() &&
+      match(BO->getOperand(1), m_One())) {
+    IRBuilder<> Builder(ICmp);
+    Value *NewICmp = Builder.CreateICmpSGE(BO->getOperand(0), ICmp->getOperand(1));
+    NewICmp->takeName(ICmp);
+    ICmp->replaceAllUsesWith(NewICmp);
+    ICmp->eraseFromParent();
+    return true;
+  }
+
+  return false;
+}
+
 bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
@@ -231,10 +266,6 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
 
   DL = &F.getParent()->getDataLayout();
 
-  // TODO: Our only optimizations are for RV64.
-  if (!ST->is64Bit())
-    return false;
-
   bool MadeChange = false;
   for (auto &BB : F) {
     for (auto II = BB.begin(), IE = BB.end(); II != IE; ) {
@@ -243,6 +274,8 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
         MadeChange |= optimizeZExt(ZExt);
       else if (auto *BO = dyn_cast<BinaryOperator>(I))
         MadeChange |= optimizeBinaryOperator(BO);
+      else if (auto *ICmp = dyn_cast<ICmpInst>(I))
+        MadeChange |= optimizeICmp(ICmp);
     }
   }
 

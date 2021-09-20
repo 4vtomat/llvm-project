@@ -3937,6 +3937,62 @@ static Instruction *foldICmpXNegX(ICmpInst &I) {
                           Constant::getNullValue(X->getType()), I.getName());
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Detect a min pattern that hasn't been converted to a select yet.
+// TODO: This isn't every form such a min can take.
+static bool isPHIMin(ICmpInst &I) {
+  if (I.getPredicate() != ICmpInst::ICMP_SGT)
+    return false;
+
+  if (!I.hasOneUse())
+    return false;
+
+  auto *Branch = dyn_cast<BranchInst>(I.user_back());
+  if (!Branch)
+    return false;
+  assert(Branch->getNumSuccessors() == 2);
+
+  BasicBlock *Block0 = Branch->getSuccessor(0);
+  BasicBlock *Block1 = Branch->getSuccessor(1);
+
+  // Block0 should unconditionally jump to Block1.
+  if (Block0->getSingleSuccessor() != Block1)
+    return false;
+
+  // Block 0 should only contain one branch.
+  if (Block0->sizeWithoutDebug() != 1)
+    return false;
+
+  // Make sure there is exactly one Phi in block 1.
+  unsigned NumPhis = 0;
+  for (BasicBlock::iterator I = Block1->begin(); isa<PHINode>(I);
+       ++NumPhis, ++I)
+    if (NumPhis > 1)
+      return false;
+
+  if (NumPhis != 1)
+    return false;
+
+  auto *Phi = cast<PHINode>(&Block1->front());
+  // Must be a 2 input phi.
+  if (Phi->getNumIncomingValues() != 2)
+    return false;
+
+  // Basic blocks must be Block0 and the block containing the conditional
+  // branch.
+  int Block0Idx = Phi->getBasicBlockIndex(Block0);
+  int ParentIdx = Phi->getBasicBlockIndex(Branch->getParent());
+  if (Block0Idx < 0 || ParentIdx < 0)
+    return false;
+
+  if (Phi->getIncomingValue(Block0Idx) != I.getOperand(1) ||
+      Phi->getIncomingValue(ParentIdx) != I.getOperand(0))
+    return false;
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Try to fold icmp (binop), X or icmp X, (binop).
 /// TODO: A large part of this logic is duplicated in InstSimplify's
 /// simplifyICmpWithBinOp(). We should be able to share that and avoid the code
@@ -4090,7 +4146,12 @@ Instruction *InstCombinerImpl::foldICmpBinOp(ICmpInst &I,
     return new ICmpInst(CmpInst::ICMP_SLT, A, Op1);
 
   // icmp sgt (A + 1), Op1 -> icmp sge A, Op1
+#if SIFIVE_CUSTOMIZATION
+  if (A && NoOp0WrapProblem && Pred == CmpInst::ICMP_SGT && match(B, m_One()) &&
+      !isPHIMin(I))
+#else
   if (A && NoOp0WrapProblem && Pred == CmpInst::ICMP_SGT && match(B, m_One()))
+#endif // SIFIVE_CUSTOMIZATION
     return new ICmpInst(CmpInst::ICMP_SGE, A, Op1);
 
   // icmp sgt Op0, (C + -1) -> icmp sge Op0, C
