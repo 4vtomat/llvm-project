@@ -218,6 +218,7 @@
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zfh"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zvl128b"
+// MCPU-SIFIVE-P270-SAME: "-target-feature" "+zvl256b"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zvl32b"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zvl64b"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+64bit"
