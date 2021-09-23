@@ -3,6 +3,9 @@
 ; RUN:   | FileCheck %s -check-prefix=RV32I-SMALL
 ; RUN: llc -mtriple=riscv32 -mattr=+f -code-model=medium -verify-machineinstrs < %s \
 ; RUN:   | FileCheck %s -check-prefix=RV32I-MEDIUM
+; RUN: llc -mtriple=riscv32 -mattr=+f -code-model=medium -verify-machineinstrs < %s \
+; RUN:     -riscv-enable-advanced-merge-base-offset-opt \
+; RUN:   | FileCheck %s -check-prefix=RV32I-MEDIUM-ADVANCED-OPT
 
 ; Check lowering of globals
 @G = global i32 0
@@ -20,6 +23,13 @@ define i32 @lower_global(i32 %a) nounwind {
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
 ; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.LBB0_1)(a0)
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_global:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB0_1: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a0, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a0, %pcrel_lo(.LBB0_1)(a0)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   %1 = load volatile i32, i32* @G
   ret i32 %1
 }
@@ -43,6 +53,14 @@ define void @lower_blockaddress() nounwind {
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(addr)
 ; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.LBB1_1)(a1)
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_blockaddress:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a0, 1
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB1_1: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(addr)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw a0, %pcrel_lo(.LBB1_1)(a1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   store volatile i8* blockaddress(@lower_blockaddress, %block), i8** @addr
   ret void
 
@@ -96,6 +114,29 @@ define signext i32 @lower_blockaddress_displ(i32 signext %w) nounwind {
 ; RV32I-MEDIUM-NEXT:    li a0, 3
 ; RV32I-MEDIUM-NEXT:    addi sp, sp, 16
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_blockaddress_displ:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0: # %entry
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi sp, sp, -16
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB2_4: # %entry
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(.Ltmp0)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a1, a1, %pcrel_lo(.LBB2_4)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a2, 101
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw a1, 8(sp)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    blt a0, a2, .LBB2_3
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  # %bb.1: # %if.then
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a0, 8(sp)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    jr a0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .Ltmp0: # Block address taken
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB2_2: # %return
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a0, 4
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi sp, sp, 16
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB2_3: # %return.clone
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a0, 3
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi sp, sp, 16
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
 entry:
   %x = alloca i8*, align 8
   store i8* blockaddress(@lower_blockaddress_displ, %test_block), i8** %x, align 8
@@ -142,12 +183,23 @@ define float @lower_constantpool(float %a) nounwind {
 ; RV32I-MEDIUM-NEXT:    fadd.s ft0, ft1, ft0
 ; RV32I-MEDIUM-NEXT:    fmv.x.w a0, ft0
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_constantpool:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB3_1: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(.LCPI3_0)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a1, a1, %pcrel_lo(.LBB3_1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    flw ft0, 0(a1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fmv.w.x ft1, a0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fadd.s ft0, ft1, ft0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fmv.x.w a0, ft0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   %1 = fadd float %a, 1.0
   ret float %1
 }
 
 ; Test that we duplicate the auipc and fold %pcrel_lo when it used multiple
-; times.
+; times for -riscv-enable-advanced-merge-base-offset-opt
 define void @lower_global_rmw(i32 %a) nounwind {
 ; RV32I-SMALL-LABEL: lower_global_rmw:
 ; RV32I-SMALL:       # %bb.0:
@@ -161,12 +213,22 @@ define void @lower_global_rmw(i32 %a) nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .LBB4_1: # Label of block must be emitted
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a1, %pcrel_lo(.LBB4_1)(a1)
-; RV32I-MEDIUM-NEXT:    or a0, a1, a0
-; RV32I-MEDIUM-NEXT:  .LBB4_2: # Label of block must be emitted
-; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.LBB4_2)(a1)
+; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.LBB4_1)
+; RV32I-MEDIUM-NEXT:    lw a2, 0(a1)
+; RV32I-MEDIUM-NEXT:    or a0, a2, a0
+; RV32I-MEDIUM-NEXT:    sw a0, 0(a1)
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_global_rmw:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB4_1: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a1, %pcrel_lo(.LBB4_1)(a1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    or a0, a1, a0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB4_2: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw a0, %pcrel_lo(.LBB4_2)(a1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   %1 = load volatile i32, i32* @G
   %2 = or i32 %1, %a
   store i32 %2, i32* @G
@@ -174,7 +236,7 @@ define void @lower_global_rmw(i32 %a) nounwind {
 }
 
 ; Check that we duplicate the auipc and fold the pcrel_lo into loads and stores
-; in both blocks.
+; in both blocks for -riscv-enable-advanced-merge-base-offset-opt
 define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-LABEL: lower_global_rmw_multiple_blocks:
 ; RV32I-SMALL:       # %bb.0:
@@ -192,17 +254,31 @@ define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .LBB5_3: # Label of block must be emitted
 ; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.LBB5_3)(a2)
+; RV32I-MEDIUM-NEXT:    addi a2, a2, %pcrel_lo(.LBB5_3)
+; RV32I-MEDIUM-NEXT:    lw a3, 0(a2)
 ; RV32I-MEDIUM-NEXT:    andi a1, a1, 1
-; RV32I-MEDIUM-NEXT:    or a0, a2, a0
+; RV32I-MEDIUM-NEXT:    or a0, a3, a0
 ; RV32I-MEDIUM-NEXT:    beqz a1, .LBB5_2
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV32I-MEDIUM-NEXT:  .LBB5_4: # %cond.store
-; RV32I-MEDIUM-NEXT:    # Label of block must be emitted
-; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.LBB5_4)(a1)
+; RV32I-MEDIUM-NEXT:    sw a0, 0(a2)
 ; RV32I-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_global_rmw_multiple_blocks:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB5_3: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a2, %pcrel_lo(.LBB5_3)(a2)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    andi a1, a1, 1
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    or a0, a2, a0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    beqz a1, .LBB5_2
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  # %bb.1: # %cond.store
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB5_4: # %cond.store
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw a0, %pcrel_lo(.LBB5_4)(a1)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB5_2: # %merge
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   %1 = load volatile i32, i32* @G
   %2 = or i32 %1, %a
   br i1 %c, label %cond.store, label %merge
@@ -218,7 +294,7 @@ merge:
 declare void @foo(i32*)
 
 ; Check that we fold auipc into the load even when it still used by a
-; non-load/store.
+; non-load/store for -riscv-enable-advanced-merge-base-offset-opt
 define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-LABEL: lower_global_nonload_use:
 ; RV32I-SMALL:       # %bb.0:
@@ -241,23 +317,40 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV32I-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; RV32I-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
 ; RV32I-MEDIUM-NEXT:  .LBB6_1: # Label of block must be emitted
-; RV32I-MEDIUM-NEXT:    auipc s0, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw s0, %pcrel_lo(.LBB6_1)(s0)
-; RV32I-MEDIUM-NEXT:  .LBB6_2: # Label of block must be emitted
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.LBB6_2)
+; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.LBB6_1)
+; RV32I-MEDIUM-NEXT:    lw s0, 0(a0)
 ; RV32I-MEDIUM-NEXT:    call foo@plt
 ; RV32I-MEDIUM-NEXT:    mv a0, s0
 ; RV32I-MEDIUM-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
 ; RV32I-MEDIUM-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
 ; RV32I-MEDIUM-NEXT:    addi sp, sp, 16
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_global_nonload_use:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi sp, sp, -16
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB6_1: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc s0, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw s0, %pcrel_lo(.LBB6_1)(s0)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB6_2: # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a0, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a0, a0, %pcrel_lo(.LBB6_2)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    call foo@plt
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    mv a0, s0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi sp, sp, 16
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
   %1 = load volatile i32, i32* @G
   call void @foo(i32* @G)
   ret i32 %1
 }
 
-; Make sure we don't fold the auipc+addi if it is outside a loop.
+; Make sure we don't fold the auipc+addi if it is outside a loop
+; for -riscv-enable-advanced-merge-base-offset-opt
 define void @lower_global_loop(i32* %a) {
 ; RV32I-SMALL-LABEL: lower_global_loop:
 ; RV32I-SMALL:       # %bb.0: # %entry
@@ -295,6 +388,26 @@ define void @lower_global_loop(i32* %a) {
 ; RV32I-MEDIUM-NEXT:    bne a1, a3, .LBB7_1
 ; RV32I-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV32I-MEDIUM-NEXT:    ret
+;
+; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_global_loop:
+; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0: # %entry
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a1, 0
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB7_3: # %entry
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    # Label of block must be emitted
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a2, a2, %pcrel_lo(.LBB7_3)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    li a3, 40
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .LBB7_1: # %for.body
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a4, 0(a2)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    add a5, a0, a1
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    lw a6, 0(a5)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    or a4, a6, a4
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a1, a1, 4
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    sw a4, 0(a5)
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    bne a1, a3, .LBB7_1
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
 entry:
   br label %for.body
 

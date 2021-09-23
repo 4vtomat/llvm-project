@@ -36,6 +36,13 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-merge-base-offset"
 #define RISCV_MERGE_BASE_OFFSET_NAME "RISCV Merge Base Offset"
+
+// Advanced merge base offset optimization allows PseudoLLA has multiple uses.
+// In some cases, this optimziation does not work well.
+static cl::opt<bool> EnableAdvancedMergeBaseOffsetOpt(
+    "riscv-enable-advanced-merge-base-offset-opt", cl::init(false), cl::Hidden,
+    cl::desc("Enable advanced merge base offset optimization."));
+
 namespace {
 
 struct RISCVMergeBaseOffsetOpt : public MachineFunctionPass {
@@ -273,14 +280,18 @@ bool RISCVMergeBaseOffsetOpt::foldPseudoLLA(MachineFunction &MF,
   if (MF.getTarget().isPositionIndependent())
     return false;
 
-  // Make sure we have a single use PseudoLLA.
   if (MI.getOpcode() != RISCV::PseudoLLA ||
       MI.getOperand(1).getType() != MachineOperand::MO_GlobalAddress ||
       MI.getOperand(1).getOffset() != 0)
     return false;
 
-  Register DestReg = MI.getOperand(0).getReg();
+  // If we don't enable advanced merge base offset opt, make sure we have a single
+  // use PseudoLLA.
+  if (!EnableAdvancedMergeBaseOffsetOpt &&
+      !MRI->hasOneUse(MI.getOperand(0).getReg()))
+    return false;
 
+  Register DestReg = MI.getOperand(0).getReg();
   bool AllUsesCombined = true;
   bool MadeChange = false;
   for (auto UI = MRI->use_instr_begin(DestReg), UE = MRI->use_instr_end(); UI != UE;) {
