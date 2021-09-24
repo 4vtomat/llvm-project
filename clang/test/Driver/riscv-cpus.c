@@ -227,7 +227,7 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p550 | FileCheck -check-prefix=MCPU-SIFIVE-P550 %s
 // MCPU-SIFIVE-P550: "-target-cpu" "sifive-p550"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P550-SAME: "-target-feature" "+c" "-target-feature" "+zfh" "-target-feature" "+zba"
+// MCPU-SIFIVE-P550-SAME: "-target-feature" "+c" "-target-feature" "+zba"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+zbb"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+64bit"
 

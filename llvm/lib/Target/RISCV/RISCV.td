@@ -744,7 +744,6 @@ def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtF,
                                                    FeatureStdExtD,
                                                    FeatureStdExtC,
-                                                   FeatureStdExtZfh,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
                                                   [FeatureCMOVBranchOpt]>;
