@@ -4904,19 +4904,25 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
 
     Align SrcAlign(16);
 
-    SDLoc dl(Op);
+    SDLoc DL(Op);
     SDValue StackPtr = DAG.CreateStackTemporary(SrcVT.getStoreSize(), SrcAlign);
+    int FI = cast<FrameIndexSDNode>(StackPtr)->getIndex();
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachinePointerInfo MPI = MachinePointerInfo::getFixedStack(MF, FI);
+
     // Emit a store to the stack slot.
-    SDValue Store = DAG.getStore(DAG.getEntryNode(), dl, Src, StackPtr,
-                                 MachinePointerInfo(), SrcAlign);
+    SDValue Store =
+        DAG.getStore(DAG.getEntryNode(), DL, Src, StackPtr, MPI, SrcAlign);
 
     SDVTList VTs = DAG.getVTList(DestVT, MVT::Other);
-    SDValue Result = DAG.getNode(
-        ISD::INTRINSIC_W_CHAIN, dl, VTs, Store,
-        DAG.getTargetConstant(Intrinsic::riscv_vle, DL, MVT::i64),
-        DAG.getUNDEF(DestVT), StackPtr,
-        DAG.getConstant(SrcVT.getVectorNumElements(), DL,
-                        Subtarget.getXLenVT()));
+    SDValue Ops[] = {Store,
+                     DAG.getTargetConstant(Intrinsic::riscv_vle, DL, MVT::i64),
+                     DAG.getUNDEF(DestVT), StackPtr,
+                     DAG.getConstant(SrcVT.getVectorNumElements(), DL,
+                                     Subtarget.getXLenVT())};
+    SDValue Result =
+        DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops, DestVT,
+                                MPI, SrcAlign, MachineMemOperand::MOStore);
     return Result;
   }
   case Intrinsic::riscv_vcast_to_fixed: {
@@ -4934,17 +4940,21 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
 
     SDValue StackPtr =
         DAG.CreateStackTemporary(DestVT.getStoreSize(), DestAlign);
+    int FI = cast<FrameIndexSDNode>(StackPtr)->getIndex();
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachinePointerInfo MPI = MachinePointerInfo::getFixedStack(MF, FI);
 
-    SDValue Store =
-        DAG.getNode(ISD::INTRINSIC_VOID, DL, MVT::Other, DAG.getEntryNode(),
-                    DAG.getTargetConstant(Intrinsic::riscv_vse, DL, MVT::i64),
-                    Src, StackPtr,
-                    DAG.getConstant(DestVT.getVectorNumElements(), DL,
-                                    Subtarget.getXLenVT()));
-    // FIXME: MemOperand?
+    SDValue Ops[] = {DAG.getEntryNode(),
+                     DAG.getTargetConstant(Intrinsic::riscv_vse, DL, MVT::i64),
+                     Src, StackPtr,
+                     DAG.getConstant(DestVT.getVectorNumElements(), DL,
+                                     Subtarget.getXLenVT())};
+    SDVTList VTs = DAG.getVTList(MVT::Other);
+    SDValue Store = DAG.getMemIntrinsicNode(ISD::INTRINSIC_VOID, DL, VTs, Ops,
+                                            Src.getValueType(), MPI, DestAlign,
+                                            MachineMemOperand::MOStore);
 
-    return DAG.getLoad(DestVT, DL, Store, StackPtr, MachinePointerInfo(),
-                       DestAlign);
+    return DAG.getLoad(DestVT, DL, Store, StackPtr, MPI, DestAlign);
   }
 #endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::riscv_vfmv_v_f:
@@ -7441,17 +7451,22 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
 
       SDValue StackPtr =
           DAG.CreateStackTemporary(DestVT.getStoreSize(), DestAlign);
+      int FI = cast<FrameIndexSDNode>(StackPtr)->getIndex();
+      MachineFunction &MF = DAG.getMachineFunction();
+      MachinePointerInfo MPI = MachinePointerInfo::getFixedStack(MF, FI);
 
-      SDValue Store =
-          DAG.getNode(ISD::INTRINSIC_VOID, DL, MVT::Other, DAG.getEntryNode(),
-                      DAG.getTargetConstant(Intrinsic::riscv_vse, DL, MVT::i64),
-                      Src, StackPtr,
-                      DAG.getConstant(DestVT.getVectorNumElements(), DL,
-                                      Subtarget.getXLenVT()));
-      // FIXME: MemOperand?
+      SDValue Ops[] = {
+          DAG.getEntryNode(),
+          DAG.getTargetConstant(Intrinsic::riscv_vse, DL, MVT::i64), Src,
+          StackPtr,
+          DAG.getConstant(DestVT.getVectorNumElements(), DL,
+                          Subtarget.getXLenVT())};
+      SDVTList VTs = DAG.getVTList(MVT::Other);
+      SDValue Store = DAG.getMemIntrinsicNode(
+          ISD::INTRINSIC_VOID, DL, VTs, Ops, Src.getValueType(), MPI, DestAlign,
+          MachineMemOperand::MOStore);
 
-      SDValue Result = DAG.getLoad(DestVT, DL, Store, StackPtr,
-                                   MachinePointerInfo(), DestAlign);
+      SDValue Result = DAG.getLoad(DestVT, DL, Store, StackPtr, MPI, DestAlign);
       Results.push_back(Result);
       break;
     }
