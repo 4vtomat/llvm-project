@@ -1054,6 +1054,16 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::riscv_vle:
+    Info.opc = ISD::INTRINSIC_W_CHAIN;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getType());
+    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOLoad;
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -9267,6 +9277,101 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
         }
       }
       return SDValue();
+    }
+    case Intrinsic::riscv_vslideup: {
+      SDValue Src1 = N->getOperand(1);
+      SDValue Src2 = N->getOperand(2);
+      SDValue Offset = N->getOperand(3);
+      // Offset must be constant.
+      auto *OffsetC = dyn_cast<ConstantSDNode>(Offset);
+      if (!OffsetC)
+        break;
+      SDValue VL = N->getOperand(4);
+      auto *VLC = dyn_cast<ConstantSDNode>(VL);
+      if (!VLC)
+        break;
+      // Peek through single use widening inserts.
+      if (Src1.getOpcode() == ISD::INSERT_SUBVECTOR && Src1.hasOneUse() &&
+          Src1.getOperand(0).isUndef() && isNullConstant(Src1.getOperand(2)))
+        Src1 = Src1.getOperand(1);
+      if (Src2.getOpcode() == ISD::INSERT_SUBVECTOR && Src2.hasOneUse() &&
+          Src2.getOperand(0).isUndef() && isNullConstant(Src2.getOperand(2)))
+        Src2 = Src2.getOperand(1);
+
+      // Do we have two VLE intrinsics?
+      if (Src1.getOpcode() != ISD::INTRINSIC_W_CHAIN ||
+          Src1.getConstantOperandVal(1) != Intrinsic::riscv_vle ||
+          !Src1.getOperand(2).isUndef())
+        break;
+      if (Src2.getOpcode() != ISD::INTRINSIC_W_CHAIN ||
+          Src2.getConstantOperandVal(1) != Intrinsic::riscv_vle ||
+          !Src2.getOperand(2).isUndef())
+        break;
+      // Need to be MemSDNodes so they have MemOperands we can copy.
+      if (!isa<MemSDNode>(Src1) || !isa<MemSDNode>(Src2))
+        break;
+      // Load result should only be used once.
+      if (!Src1->hasNUsesOfValue(1, 0) || !Src2->hasNUsesOfValue(1, 0))
+        break;
+      // The offset must be equal to the VL of the first vle.
+      if (Src1.getOperand(4) != Offset)
+        break;
+      // Second vle VL must be a constant.
+      auto *Src2VLC = dyn_cast<ConstantSDNode>(Src2.getOperand(4));
+      if (!Src2VLC)
+        break;
+      // The sum of the VLE VLs must match the slideup VL.
+      if (OffsetC->getZExtValue() + Src2VLC->getZExtValue() !=
+          VLC->getZExtValue())
+        break;
+      // Both most have the same chain.
+      SDValue Chain = Src1.getOperand(0);
+      if (Src2.getOperand(0) != Chain)
+        break;
+      SDValue Base1 = Src1.getOperand(3);
+      SDValue Base2 = Src2.getOperand(3);
+      int64_t Offset1 = 0;
+      int64_t Offset2 = 0;
+      // Peek through add to find a base and offset.
+      if (Base1.getOpcode() == ISD::ADD &&
+          isa<ConstantSDNode>(Base1.getOperand(1))) {
+        Offset1 = cast<ConstantSDNode>(Base1.getOperand(1))->getSExtValue();
+        Base1 = Base1.getOperand(0);
+      }
+      if (Base2.getOpcode() == ISD::ADD &&
+          isa<ConstantSDNode>(Base2.getOperand(1))) {
+        Offset2 = cast<ConstantSDNode>(Base2.getOperand(1))->getSExtValue();
+        Base2 = Base2.getOperand(0);
+      }
+      // Must have the same base.
+      if (Base1 != Base2)
+        break;
+      // Scale the element offset to be a byte offset.
+      int64_t OffsetBytes =
+          OffsetC->getZExtValue() * (Src1.getScalarValueSizeInBits() / 8);
+      // Pointer difference must match the offset difference.
+      int64_t PtrDiff = Offset2 - Offset1;
+      if (PtrDiff != OffsetBytes)
+        break;
+
+      // We can merge this into a single VLE.
+      auto *IntrNode = cast<MemSDNode>(Src1);
+      SDLoc DL(N);
+      SDVTList VTs = DAG.getVTList({N->getValueType(0), MVT::Other});
+      MVT XLenVT = Subtarget.getXLenVT();
+      SDValue Ops[] = {Chain,
+                       DAG.getTargetConstant(Intrinsic::riscv_vle, DL, XLenVT),
+                       DAG.getUNDEF(N->getValueType(0)),
+                       Src1.getOperand(3), VL};
+      SDValue NewVLE = DAG.getMemIntrinsicNode(
+          ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops, N->getValueType(0),
+          IntrNode->getPointerInfo(), IntrNode->getOriginalAlign(),
+          IntrNode->getMemOperand()->getFlags());
+      // Replace uses of the old chains with the new chain.
+      DAG.ReplaceAllUsesOfValueWith(Src1.getValue(1), NewVLE.getValue(1));
+      DAG.ReplaceAllUsesOfValueWith(Src2.getValue(1), NewVLE.getValue(1));
+
+      return NewVLE;
     }
 #endif // SIFIVE_CUSTOMIZATION
     }
