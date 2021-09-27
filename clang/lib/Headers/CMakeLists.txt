@@ -255,6 +255,16 @@ set(openmp_wrapper_files
   openmp_wrappers/new
 )
 
+# SIFIVE
+set(sifive_wrapper_files
+  sifive_wrappers/arm_neon.h
+  sifive_wrappers/arm_neon_64.h
+  sifive_wrappers/arm_neon_128.h
+  sifive_wrappers/arm_neon_256.h
+  sifive_wrappers/arm_neon_512.h
+)
+#end SIFIVE
+
 set(output_dir ${LLVM_LIBRARY_OUTPUT_INTDIR}/clang/${CLANG_VERSION}/include)
 set(out_files)
 set(generated_files)
@@ -433,6 +443,13 @@ install(
   FILES ${openmp_wrapper_files}
   DESTINATION ${header_install_dir}/openmp_wrappers
   COMPONENT clang-resource-headers)
+
+# SIFIVE
+install(
+  FILES ${sifive_wrapper_files}
+  DESTINATION ${header_install_dir}/sifive_wrappers
+  COMPONENT clang-resource-headers)
+#end SIFIVE
 
 #############################################################
 # Install rules for separate header lists
