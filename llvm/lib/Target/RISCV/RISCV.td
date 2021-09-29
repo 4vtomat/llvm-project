@@ -435,6 +435,13 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
+def FeatureStdExtSscofpmf
+    : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
+                       "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
+def HasStdExtSscofpmf : Predicate<"Subtarget->hasStdExtSscofpmf()">,
+                                  AssemblerPredicate<(all_of FeatureStdExtSscofpmf),
+                                  "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
+
 def FeatureStdExtXsfvqmaccqoq
     : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",
                        "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
