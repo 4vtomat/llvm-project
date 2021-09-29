@@ -356,6 +356,7 @@ bool RISCVTypePromotion::isPromotableOperation(Instruction *I) {
   case Instruction::Select:
   case Instruction::PHI:
   case Instruction::ICmp:
+  case Instruction::Switch:
     return true;
   }
 
