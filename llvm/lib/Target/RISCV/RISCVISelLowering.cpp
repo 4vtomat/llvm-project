@@ -12408,6 +12408,25 @@ RISCVTargetLowering::getRegisterByName(const char *RegName, LLT VT,
   return Reg;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// i32->i64 sign extends of most binary operators are free on RV64.
+bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
+  if (!Subtarget.is64Bit())
+    return false;
+
+  if (!isa<SExtInst>(Ext))
+    return false;
+
+  Value *Src = Ext->getOperand(0);
+  if (!Ext->getType()->isIntegerTy(64) || !Src->getType()->isIntegerTy(32))
+    return false;
+
+  // We have W instructions for all binary operators except AND/OR/XOR.
+  return isa<BinaryOperator>(Src) &&
+         !cast<BinaryOperator>(Src)->isBitwiseLogicOp();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 namespace llvm {
 namespace RISCVVIntrinsicsTable {
 

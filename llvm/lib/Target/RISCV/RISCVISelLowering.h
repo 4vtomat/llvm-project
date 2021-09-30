@@ -699,6 +699,8 @@ private:
   bool shouldNormalizeToSelectSequence(LLVMContext &, EVT) const override {
     return false;
   };
+
+  bool isExtFreeImpl(const Instruction *Ext) const override; // SIFIVE
 };
 namespace RISCVVIntrinsicsTable {
 
