@@ -27,6 +27,8 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-isel"
 
+extern cl::opt<bool> ForceTailUndisturbed; // SIFIVE
+
 namespace llvm {
 namespace RISCV {
 #define GET_RISCVVSSEGTable_IMPL
@@ -577,8 +579,11 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
   RISCVII::VLMUL VLMul = static_cast<RISCVII::VLMUL>(
       Node->getConstantOperandVal(Offset + 1) & 0x7);
 
-  unsigned VTypeI = RISCVVType::encodeVTYPE(VLMul, SEW, /*TailAgnostic*/ true,
-                                            /*MaskAgnostic*/ false);
+#if SIFIVE_CUSTOMIZATION
+  unsigned VTypeI = RISCVVType::encodeVTYPE(
+      VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
+      /*MaskAgnostic*/ false);
+#endif // SIFIVE_CUSTOMIZATION
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
   SmallVector<EVT, 2> VTs = {XLenVT};

@@ -41,6 +41,12 @@ static cl::opt<bool> UseStrictAsserts(
     "riscv-insert-vsetvl-strict-asserts", cl::init(false), cl::Hidden,
     cl::desc("Enable strict assertion checking for the dataflow algorithm"));
 
+#if SIFIVE_CUSTOMIZATION
+cl::opt<bool> ForceTailUndisturbed(
+    "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
+    cl::desc("Force to use tail undisturbed for all vector intrinsics."));
+#endif // SIFIVE_CUSTOMIZATION
+
 namespace {
 
 class VSETVLIInfo {
@@ -599,6 +605,13 @@ static VSETVLIInfo computeInfoForInstr(const MachineInstr &MI, uint64_t TSFlags,
     if (RISCVII::doesForceTailAgnostic(TSFlags))
       TailAgnostic = true;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Override to always use tail undisturbed. Useful to reduce vsetvli on
+  // CPUs that treat them the same.
+  if (ForceTailUndisturbed)
+    TailAgnostic = false;
+#endif // SIFIVE_CUSTOMIZATION
 
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);
 
