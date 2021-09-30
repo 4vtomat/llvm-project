@@ -3324,6 +3324,32 @@ class VPatTernaryNoMaskWithPolicy<string intrinsic,
                     op2_kind:$rs2,
                     GPR:$vl, sew, (XLenVT timm:$policy))>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// FIXME: Update intrinsic and use VPatTernaryNoMaskWithPolicy.
+class VPatTernaryNoMaskStaticPolicy<string intrinsic,
+                                    string inst,
+                                    string kind,
+                                    ValueType result_type,
+                                    ValueType op1_type,
+                                    ValueType op2_type,
+                                    int sew,
+                                    LMULInfo vlmul,
+                                    VReg result_reg_class,
+                                    RegisterClass op1_reg_class,
+                                    DAGOperand op2_kind,
+                                    int policy = TAIL_UNDISTURBED> :
+  Pat<(result_type (!cast<Intrinsic>(intrinsic)
+                    (result_type result_reg_class:$rs3),
+                    (op1_type op1_reg_class:$rs1),
+                    (op2_type op2_kind:$rs2),
+                    VLOpFrag)),
+                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
+                    result_reg_class:$rs3,
+                    (op1_type op1_reg_class:$rs1),
+                    op2_kind:$rs2,
+                    GPR:$vl, sew, policy)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 class VPatTernaryMask<string intrinsic,
                       string inst,
                       string kind,
@@ -3732,10 +3758,11 @@ multiclass XPatSFVQMACC_VV<string intrinsic, string instruction,
   foreach VtiToWti = vtilist in {
     defvar Vti = VtiToWti.Vti;
     defvar Wti = VtiToWti.Wti;
-    def : VPatTernaryNoMask<intrinsic, instruction, "VV",
-                            Wti.Vector, vint8m1_t, Vti.Vector,
-                            Vti.Log2SEW, Vti.LMul,
-                            Wti.RegClass, VR, Vti.RegClass>;
+    def : VPatTernaryNoMaskStaticPolicy<intrinsic, instruction, "VV",
+                                        Wti.Vector, vint8m1_t, Vti.Vector,
+                                        Vti.Log2SEW, Vti.LMul,
+                                        Wti.RegClass, VR, Vti.RegClass,
+                                        TAIL_AGNOSTIC>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5056,20 +5083,20 @@ defm PseudoVCOMPRESS : VPseudoVCPR_V;
 foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
-    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMask<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
   }
 }
 
 foreach m = [V_M1, V_M2, V_M4, V_M8] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
-    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMask<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
