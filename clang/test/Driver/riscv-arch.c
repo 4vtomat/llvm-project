@@ -1,6 +1,6 @@
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32i -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32i2p0 -### %s \
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32i2p1 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32im -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
@@ -70,7 +70,7 @@
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64i -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
-// RUN: %clang --target=riscv64-unknown-elf -march=rv64i2p0 -### %s \
+// RUN: %clang --target=riscv64-unknown-elf -march=rv64i2p1 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64im -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck %s
@@ -150,7 +150,9 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32ID %s
-// RV32ID: error: invalid arch name 'rv32id'
+// SIFIVE_CUSTOMIZATION
+// RV32ID: "-target-feature" "+d"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32L %s
@@ -178,7 +180,9 @@
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64ID %s
-// RV64ID: error: invalid arch name 'rv64id'
+// SIFIVE_CUSTOMIZATION
+// RV64ID: "-target-feature" "+d"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64L %s
@@ -230,8 +234,9 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
-// RV32-DER: error: invalid arch name 'rv32id',
-// RV32-DER: d requires f extension to also be specified
+// SIFIVE_CUSTOMIZATION
+// RV32-DER: "-target-feature" "+d"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izve32f -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVE32F-ER %s
@@ -333,8 +338,9 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32i2p1 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-IMINOR1 %s
-// RV32-IMINOR1: error: invalid arch name 'rv32i2p1', unsupported
-// RV32-IMINOR1: version number 2.1 for extension 'i'
+// SIFIVE_CUSTOMIZATION
+// RV32-IMINOR1: "-target-feature" "+relax"
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixt2p -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XMINOR-MISS %s

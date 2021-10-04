@@ -1,22 +1,22 @@
-# RUN: llvm-mc %s -triple=riscv32 -M no-aliases \
+# RUN: llvm-mc %s -triple=riscv32 --mattr=+zicsr -M no-aliases \
 # RUN:     | FileCheck -check-prefixes=CHECK-S-NOALIAS,CHECK-S-OBJ-NOALIAS %s
-# RUN: llvm-mc %s -triple=riscv32 \
+# RUN: llvm-mc %s -triple=riscv32 --mattr=+zicsr \
 # RUN:     | FileCheck -check-prefixes=CHECK-S,CHECK-S-OBJ %s
-# RUN: llvm-mc %s -triple=riscv64 -M no-aliases \
+# RUN: llvm-mc %s -triple=riscv64 --mattr=+zicsr -M no-aliases \
 # RUN:     | FileCheck -check-prefixes=CHECK-S-NOALIAS,CHECK-S-OBJ-NOALIAS %s
-# RUN: llvm-mc %s -triple=riscv64 \
+# RUN: llvm-mc %s -triple=riscv64 --mattr=+zicsr \
 # RUN:     | FileCheck -check-prefixes=CHECK-S,CHECK-S-OBJ %s
-# RUN: llvm-mc -filetype=obj -triple riscv32 < %s \
-# RUN:     | llvm-objdump -d -r -M no-aliases - \
+# RUN: llvm-mc -filetype=obj -triple riscv32 --mattr=+zicsr < %s \
+# RUN:     | llvm-objdump -d -r -M no-aliases --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ-NOALIAS,CHECK-S-OBJ-NOALIAS %s
-# RUN: llvm-mc -filetype=obj -triple riscv32 < %s \
-# RUN:     | llvm-objdump -d -r - \
+# RUN: llvm-mc -filetype=obj -triple riscv32 --mattr=+zicsr < %s \
+# RUN:     | llvm-objdump -d -r --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ,CHECK-S-OBJ %s
-# RUN: llvm-mc -filetype=obj -triple riscv64 < %s \
-# RUN:     | llvm-objdump -d -r -M no-aliases - \
+# RUN: llvm-mc -filetype=obj -triple riscv64 --mattr=+zicsr < %s \
+# RUN:     | llvm-objdump -d -r -M no-aliases --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ-NOALIAS,CHECK-S-OBJ-NOALIAS %s
-# RUN: llvm-mc -filetype=obj -triple riscv64 < %s \
-# RUN:     | llvm-objdump -d -r - \
+# RUN: llvm-mc -filetype=obj -triple riscv64 --mattr=+zicsr < %s \
+# RUN:     | llvm-objdump -d -r --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ,CHECK-S-OBJ %s
 
 # The following check prefixes are used in this test:

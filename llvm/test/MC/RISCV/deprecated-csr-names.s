@@ -1,16 +1,16 @@
-# RUN: llvm-mc -triple riscv32 -riscv-no-aliases -show-encoding %s \
+# RUN: llvm-mc -triple riscv32 --mattr=+zicsr -riscv-no-aliases -show-encoding %s \
 # RUN:     | FileCheck -check-prefixes CHECK-INST,CHECK-ENC %s
-# RUN: llvm-mc -filetype obj -triple riscv32 %s \
-# RUN:     | llvm-objdump -d - \
+# RUN: llvm-mc -filetype obj -triple riscv32 --mattr=+zicsr %s \
+# RUN:     | llvm-objdump -d --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefix=CHECK-INST-ALIAS %s
 
-# RUN: llvm-mc -triple riscv64 -riscv-no-aliases -show-encoding %s \
+# RUN: llvm-mc -triple riscv64 --mattr=+zicsr -riscv-no-aliases -show-encoding %s \
 # RUN:     | FileCheck -check-prefixes CHECK-INST,CHECK-ENC %s
-# RUN: llvm-mc -filetype obj -triple riscv64 %s \
-# RUN:     | llvm-objdump -d - \
+# RUN: llvm-mc -filetype obj -triple riscv64 --mattr=+zicsr %s \
+# RUN:     | llvm-objdump -d --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefix=CHECK-INST-ALIAS %s
 
-# RUN: llvm-mc -triple riscv32 %s 2>&1 | FileCheck -check-prefix CHECK-WARN %s
+# RUN: llvm-mc -triple riscv32 --mattr=+zicsr %s 2>&1 | FileCheck -check-prefix CHECK-WARN %s
 
 # sbadaddr
 # name

@@ -53,6 +53,8 @@ private:
   bool HasStdExtD = false;
   bool HasStdExtC = false;
   bool HasStdExtZihintpause = false;
+  bool HasStdExtZicsr = false; // SIFIVE
+  bool HasStdExtZifencei = false; // SIFIVE
   bool HasStdExtZba = false;
   bool HasStdExtZbb = false;
   bool HasStdExtZbc = false;
@@ -163,6 +165,10 @@ public:
   bool hasStdExtF() const { return HasStdExtF; }
   bool hasStdExtD() const { return HasStdExtD; }
   bool hasStdExtC() const { return HasStdExtC; }
+#if SIFIVE_CUSTOMIZATION
+  bool hasStdExtZicsr() const { return HasStdExtZicsr; }
+  bool hasStdExtZifencei() const { return HasStdExtZifencei; }
+#endif // SIFIVE_CUSTOMIZATION
   bool hasStdExtV() const { return HasStdExtV; }
   bool hasStdExtZihintpause() const { return HasStdExtZihintpause; }
   bool hasStdExtZba() const { return HasStdExtZba; }

@@ -12,6 +12,20 @@ include "llvm/Target/Target.td"
 // RISC-V subtarget features and instruction predicates.
 //===----------------------------------------------------------------------===//
 
+def FeatureStdExtZicsr
+    : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
+                       "'Zicsr' (Control and Status Register (CSR) Instructions)">;
+def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
+                             AssemblerPredicate<(all_of FeatureStdExtZicsr),
+                             "'Zicsr' (Control and Status Register (CSR) Instructions)">;
+
+def FeatureStdExtZifencei
+    : SubtargetFeature<"zifencei", "HasStdExtZifencei", "true",
+                       "'Zifencei' (Instruction-Fetch Fence)">;
+def HasStdExtZifencei : Predicate<"Subtarget->hasStdExtZifencei()">,
+                             AssemblerPredicate<(all_of FeatureStdExtZifencei),
+                             "'Zifencei' (Instruction-Fetch Fence)">;
+
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
                        "'M' (Integer Multiplication and Division)">;
@@ -28,7 +42,8 @@ def HasStdExtA : Predicate<"Subtarget->hasStdExtA()">,
 
 def FeatureStdExtF
     : SubtargetFeature<"f", "HasStdExtF", "true",
-                       "'F' (Single-Precision Floating-Point)">;
+                       "'F' (Single-Precision Floating-Point)",
+                       [FeatureStdExtZicsr]>;
 def HasStdExtF : Predicate<"Subtarget->hasStdExtF()">,
                            AssemblerPredicate<(all_of FeatureStdExtF),
                            "'F' (Single-Precision Floating-Point)">;

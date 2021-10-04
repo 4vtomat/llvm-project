@@ -2,7 +2,7 @@
 // RUN: %clang --target=riscv64-unknown-elf -S -emit-llvm %s -o - | FileCheck %s -check-prefix=RV64
 
 // RV32: "target-features"="+a,+c,+m,+relax,-save-restore"
-// RV64: "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,-save-restore"
+// RV64: "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+zicsr,-save-restore"
 
 // Dummy function
 int foo(void){

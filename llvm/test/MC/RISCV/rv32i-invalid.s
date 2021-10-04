@@ -1,4 +1,4 @@
-# RUN: not llvm-mc -triple riscv32 %s 2>&1 | FileCheck %s
+# RUN: not llvm-mc -triple riscv32 --mattr=+zicsr %s 2>&1 | FileCheck %s
 
 # Out of range immediates
 ## fencearg

@@ -662,6 +662,7 @@ def FENCE_I : RVInstI<0b001, OPC_MISC_MEM, (outs), (ins), "fence.i", "">, Sched<
   let rs1 = 0;
   let rd = 0;
   let imm12 = 0;
+  let Predicates = [HasStdExtZifencei];
 }
 
 def ECALL : RVInstI<0b000, OPC_SYSTEM, (outs), (ins), "ecall", "">, Sched<[WriteJmp]> {
@@ -688,6 +689,7 @@ def UNIMP : RVInstI<0b001, OPC_SYSTEM, (outs), (ins), "unimp", "">,
 }
 } // hasSideEffects = 1, mayLoad = 0, mayStore = 0
 
+let Predicates = [HasStdExtZicsr] in {
 def CSRRW : CSR_ir<0b001, "csrrw">;
 def CSRRS : CSR_ir<0b010, "csrrs">;
 def CSRRC : CSR_ir<0b011, "csrrc">;
@@ -695,6 +697,7 @@ def CSRRC : CSR_ir<0b011, "csrrc">;
 def CSRRWI : CSR_ii<0b101, "csrrwi">;
 def CSRRSI : CSR_ii<0b110, "csrrsi">;
 def CSRRCI : CSR_ii<0b111, "csrrci">;
+} // Predicates = [HasStdExtZicsr]
 
 /// RV64I instructions
 

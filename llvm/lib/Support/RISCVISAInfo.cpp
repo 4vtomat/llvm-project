@@ -39,14 +39,20 @@ struct RISCVSupportedExtension {
 
 static constexpr StringLiteral AllStdExts = "mafdqlcbkjtpvn";
 
+static const char *RISCVGImplications[] = {
+  "i", "m", "a", "f", "d", "zicsr", "zifencei"
+};
+
 static const RISCVSupportedExtension SupportedExtensions[] = {
-    {"i", RISCVExtensionVersion{2, 0}},
+    {"i", RISCVExtensionVersion{2, 1}},
     {"e", RISCVExtensionVersion{1, 9}},
     {"m", RISCVExtensionVersion{2, 0}},
-    {"a", RISCVExtensionVersion{2, 0}},
-    {"f", RISCVExtensionVersion{2, 0}},
-    {"d", RISCVExtensionVersion{2, 0}},
+    {"a", RISCVExtensionVersion{2, 1}},
+    {"f", RISCVExtensionVersion{2, 2}},
+    {"d", RISCVExtensionVersion{2, 2}},
     {"c", RISCVExtensionVersion{2, 0}},
+    {"zicsr", RISCVExtensionVersion{2, 0}},
+    {"zifencei", RISCVExtensionVersion{2, 0}},
 
     {"zihintpause", RISCVExtensionVersion{2, 0}},
 
@@ -555,7 +561,7 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
     // No matter which version is given to `g`, we always set imafd to default
     // version since the we don't have clear version scheme for that on
     // ISA spec.
-    for (auto Ext : {"i", "m", "a", "f", "d"})
+    for (auto Ext : RISCVGImplications)
       if (auto Version = findDefaultVersion(Ext))
         ISAInfo->addExtension(Ext, Version->Major, Version->Minor);
       else
@@ -708,14 +714,6 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "standard user-level extension 'e' requires 'rv32'");
 
-  // It's illegal to specify the 'd' (double-precision floating point)
-  // extension without also specifying the 'f' (single precision
-  // floating-point) extension.
-  // TODO: This has been removed in later specs, which specify that D implies F
-  if (HasD && !HasF)
-    return createStringError(errc::invalid_argument,
-                             "d requires f extension to also be specified");
-
   if (HasZve32f && !HasF && !HasZfinx)
     return createStringError(
         errc::invalid_argument,
@@ -745,6 +743,10 @@ Error RISCVISAInfo::checkDependency() {
   return Error::success();
 }
 
+#if SIFIVE_CUSTOMIZATION
+static const char *ImpliedExtsF[] = {"zicsr", "f"};
+static const char *ImpliedExtsD[] = {"zicsr"};
+#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d", "f", "d"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
 static const char *ImpliedExtsZfh[] = {"f"};
@@ -792,6 +794,8 @@ struct ImpliedExtsEntry {
 
 // Note: The table needs to be sorted by name.
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
+    {{"d"}, {ImpliedExtsD}},
+    {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE

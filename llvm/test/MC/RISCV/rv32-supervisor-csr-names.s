@@ -1,7 +1,7 @@
-# RUN: llvm-mc %s -triple=riscv32 -riscv-no-aliases -show-encoding \
+# RUN: llvm-mc %s -triple=riscv32 --mattr=+zicsr -riscv-no-aliases -show-encoding \
 # RUN:     | FileCheck -check-prefixes=CHECK-INST,CHECK-ENC %s
-# RUN: llvm-mc -filetype=obj -triple riscv32 < %s \
-# RUN:     | llvm-objdump -d - \
+# RUN: llvm-mc -filetype=obj -triple riscv32 --mattr=+zicsr < %s \
+# RUN:     | llvm-objdump -d --mattr=+zicsr - \
 # RUN:     | FileCheck -check-prefix=CHECK-INST-ALIAS %s
 
 ##################################
