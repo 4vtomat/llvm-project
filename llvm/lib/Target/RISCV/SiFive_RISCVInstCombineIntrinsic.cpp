@@ -876,6 +876,8 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vsll:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
+  case Intrinsic::riscv_vssrl:
+  case Intrinsic::riscv_vssra:
     if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
       // Expect II.getArgOperand(2)->getType() is a XLen value type.
       Value *ShiftAmount =
