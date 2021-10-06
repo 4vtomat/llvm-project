@@ -43,13 +43,18 @@ static const char *RISCVGImplications[] = {
   "i", "m", "a", "f", "d", "zicsr", "zifencei"
 };
 
+// The first definition of extension info is default version.
 static const RISCVSupportedExtension SupportedExtensions[] = {
-    {"i", RISCVExtensionVersion{2, 1}},
+    {"i", RISCVExtensionVersion{2, 1}}, // default
+    {"i", RISCVExtensionVersion{2, 0}},
     {"e", RISCVExtensionVersion{1, 9}},
     {"m", RISCVExtensionVersion{2, 0}},
-    {"a", RISCVExtensionVersion{2, 1}},
-    {"f", RISCVExtensionVersion{2, 2}},
-    {"d", RISCVExtensionVersion{2, 2}},
+    {"a", RISCVExtensionVersion{2, 1}}, // default
+    {"a", RISCVExtensionVersion{2, 0}},
+    {"f", RISCVExtensionVersion{2, 2}}, // default
+    {"f", RISCVExtensionVersion{2, 0}},
+    {"d", RISCVExtensionVersion{2, 2}}, // default
+    {"d", RISCVExtensionVersion{2, 0}},
     {"c", RISCVExtensionVersion{2, 0}},
     {"zicsr", RISCVExtensionVersion{2, 0}},
     {"zifencei", RISCVExtensionVersion{2, 0}},
@@ -69,6 +74,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zbc", RISCVExtensionVersion{1, 0}},
     {"zbs", RISCVExtensionVersion{1, 0}},
 
+    {"zba", RISCVExtensionVersion{0, 93}}, // SIFIVE
+    {"zbb", RISCVExtensionVersion{0, 93}}, // SIFIVE
+
+    {"v", RISCVExtensionVersion{1, 0}}, // default
+
     {"zbkb", RISCVExtensionVersion{1, 0}},
     {"zbkc", RISCVExtensionVersion{1, 0}},
     {"zbkx", RISCVExtensionVersion{1, 0}},
@@ -83,7 +93,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zkt", RISCVExtensionVersion{1, 0}},
     {"zk", RISCVExtensionVersion{1, 0}},
 
-    {"v", RISCVExtensionVersion{1, 0}},
+    {"v", RISCVExtensionVersion{1, 0}}, // default // SIFIVE
+    {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
     {"zvl32b", RISCVExtensionVersion{1, 0}},
     {"zvl64b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
@@ -203,13 +214,25 @@ static StringRef getExtensionType(StringRef Ext) {
   return StringRef();
 }
 
-static Optional<RISCVExtensionVersion> isExperimentalExtension(StringRef Ext) {
+static bool isExperimentalExtension(StringRef Ext) {
   auto ExtIterator =
       llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
-  if (ExtIterator == std::end(SupportedExperimentalExtensions))
-    return None;
+  return ExtIterator != std::end(SupportedExperimentalExtensions);
+}
 
-  return ExtIterator->Version;
+static SmallVector<RISCVExtensionVersion, 4>
+getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
+  SmallVector<RISCVExtensionVersion, 4> SupportedVersions;
+
+  auto SupportedExtensionInfos =
+      IsExperimental ? makeArrayRef(SupportedExperimentalExtensions)
+                     : makeArrayRef(SupportedExtensions);
+
+  for (auto ExtInfo : SupportedExtensionInfos) {
+    if (ExtInfo.Name == Ext)
+      SupportedVersions.push_back(ExtInfo.Version);
+  }
+  return SupportedVersions;
 }
 
 bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
@@ -396,8 +419,26 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
     return createStringError(errc::invalid_argument, Error);
   }
 
+  auto getUnsupportedError = [=](bool IsExperimental = false) {
+    std::string Error = "unsupported version number " + MajorStr.str();
+    if (!MinorStr.empty())
+      Error += "." + MinorStr.str();
+    Error += " for ";
+    if (IsExperimental)
+      Error += "experimental ";
+    Error += "extension '" + Ext.str() + "' (this compiler supports ";
+    auto SupportedVersions = getSupportedExtensionVersions(Ext, IsExperimental);
+    ListSeparator LS;
+    for (auto SupportedVers : SupportedVersions) {
+      Error += StringRef(LS).str() + utostr(SupportedVers.Major) + "." +
+                  utostr(SupportedVers.Minor);
+    }
+    Error += ")";
+    return createStringError(errc::invalid_argument, Error);
+  };
+
   // If experimental extension, require use of current version number number
-  if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
+  if (isExperimentalExtension(Ext)) {
     if (!EnableExperimentalExtension) {
       std::string Error = "requires '-menable-experimental-extensions' for "
                           "experimental extension '" +
@@ -419,16 +460,16 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
       return Error::success();
     }
 
-    auto SupportedVers = *ExperimentalExtension;
-    if (ExperimentalExtensionVersionCheck &&
-        (Major != SupportedVers.Major || Minor != SupportedVers.Minor)) {
-      std::string Error = "unsupported version number " + MajorStr.str();
-      if (!MinorStr.empty())
-        Error += "." + MinorStr.str();
-      Error += " for experimental extension '" + Ext.str() +
-               "' (this compiler supports " + utostr(SupportedVers.Major) +
-               "." + utostr(SupportedVers.Minor) + ")";
-      return createStringError(errc::invalid_argument, Error);
+    if (ExperimentalExtensionVersionCheck) {
+      auto SupportedVersions =
+          getSupportedExtensionVersions(Ext, /* IsExperimental =*/true);
+      bool FoundAnySupportedVersion = llvm::any_of(
+          SupportedVersions, [=](const RISCVExtensionVersion &SupportedVers) {
+            return (Major == SupportedVers.Major &&
+                    Minor == SupportedVers.Minor);
+          });
+      if (!FoundAnySupportedVersion)
+        return getUnsupportedError(/* IsExperimental =*/ true);
     }
     return Error::success();
   }
@@ -451,11 +492,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   if (RISCVISAInfo::isSupportedExtension(Ext, Major, Minor))
     return Error::success();
 
-  std::string Error = "unsupported version number " + std::string(MajorStr);
-  if (!MinorStr.empty())
-    Error += "." + MinorStr.str();
-  Error += " for extension '" + Ext.str() + "'";
-  return createStringError(errc::invalid_argument, Error);
+  return getUnsupportedError();
 }
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>
