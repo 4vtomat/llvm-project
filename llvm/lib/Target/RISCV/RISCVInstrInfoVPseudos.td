@@ -2924,6 +2924,31 @@ multiclass VPseudoISegStore<bit Ordered> {
   }
 }
 
+let usesCustomInserter = 1, hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class VPseudoSelectCC_rrirr<RegisterClass valty, RegisterClass cmpty>
+    : Pseudo<(outs valty:$dst),
+             (ins cmpty:$lhs, cmpty:$rhs, ixlenimm:$imm,
+              valty:$truev, valty:$falsev),
+             []>;
+
+def Select_VR_Using_CC_GPR : VPseudoSelectCC_rrirr<VR, GPR>;
+def Select_VRM2_Using_CC_GPR : VPseudoSelectCC_rrirr<VRM2, GPR>;
+def Select_VRM4_Using_CC_GPR : VPseudoSelectCC_rrirr<VRM4, GPR>;
+def Select_VRM8_Using_CC_GPR : VPseudoSelectCC_rrirr<VRM8, GPR>;
+
+class VPatSelectCC<ValueType vt, RegisterClass reg_class> :
+  Pat<(vt (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs, cond,
+                                   (vt reg_class:$truev),
+                                   (vt reg_class:$falsev))),
+      (!cast<Instruction>("Select_"#!cast<string>(reg_class)#"_Using_CC_GPR")
+           GPR:$lhs, GPR:$rhs, (IntCCtoRISCVCC $cc), reg_class:$truev,
+           reg_class:$falsev)>;
+
+foreach vti = AllVectors in
+def : VPatSelectCC<vti.Vector, vti.RegClass>;
+foreach mti = AllMasks in
+def : VPatSelectCC<mti.Mask, VR>;
+
 //===----------------------------------------------------------------------===//
 // Helpers to define the intrinsic patterns.
 //===----------------------------------------------------------------------===//

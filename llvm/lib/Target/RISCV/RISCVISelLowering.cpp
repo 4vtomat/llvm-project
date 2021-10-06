@@ -3882,13 +3882,16 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   MVT VT = Op.getSimpleValueType();
   MVT XLenVT = Subtarget.getXLenVT();
 
-  // Lower vector SELECTs to VSELECTs by splatting the condition.
-  if (VT.isVector()) {
-    MVT SplatCondVT = VT.changeVectorElementType(MVT::i1);
-    SDValue CondSplat = VT.isScalableVector()
-                            ? DAG.getSplatVector(SplatCondVT, DL, CondV)
-                            : DAG.getSplatBuildVector(SplatCondVT, DL, CondV);
-    return DAG.getNode(ISD::VSELECT, DL, VT, CondSplat, TrueV, FalseV);
+  // Lower fixed vector SELECTs to a scalable vector select.
+  // Scalable vector selects will be turned into select_cc and expanded to
+  // control flow via a custom inserter just like scalar.
+  if (VT.isFixedLengthVector()) {
+    MVT ContainerVT = getContainerForFixedLengthVector(VT);
+    TrueV = convertToScalableVector(ContainerVT, TrueV, DAG, Subtarget);
+    FalseV = convertToScalableVector(ContainerVT, FalseV, DAG, Subtarget);
+    SDValue Sel =
+        DAG.getNode(ISD::SELECT, DL, ContainerVT, CondV, TrueV, FalseV);
+    return convertFromScalableVector(VT, Sel, DAG, Subtarget);
   }
 
   // If the result type is XLenVT and CondV is the output of a SETCC node
@@ -9889,6 +9892,10 @@ static bool isSelectPseudo(MachineInstr &MI) {
   case RISCV::Select_FPR16_Using_CC_GPR:
   case RISCV::Select_FPR32_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
+  case RISCV::Select_VR_Using_CC_GPR:
+  case RISCV::Select_VRM2_Using_CC_GPR:
+  case RISCV::Select_VRM4_Using_CC_GPR:
+  case RISCV::Select_VRM8_Using_CC_GPR:
     return true;
   }
 }
@@ -10065,6 +10072,10 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
   case RISCV::Select_FPR16_Using_CC_GPR:
   case RISCV::Select_FPR32_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
+  case RISCV::Select_VR_Using_CC_GPR:
+  case RISCV::Select_VRM2_Using_CC_GPR:
+  case RISCV::Select_VRM4_Using_CC_GPR:
+  case RISCV::Select_VRM8_Using_CC_GPR:
     return emitSelectPseudo(MI, BB, Subtarget);
   case RISCV::BuildPairF64Pseudo:
     return emitBuildPairF64Pseudo(MI, BB);
