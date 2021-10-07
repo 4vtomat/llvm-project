@@ -971,7 +971,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR, // SIFIVE
-                         ISD::INTRINSIC_WO_CHAIN}); // SIFIVE
+                         ISD::INTRINSIC_WO_CHAIN,                 // SIFIVE
+                         ISD::INTRINSIC_W_CHAIN});                // SIFIVE
 
   setLibcallName(RTLIB::FPEXT_F16_F32, "__extendhfsf2");
   setLibcallName(RTLIB::FPROUND_F32_F16, "__truncsfhf2");
@@ -9230,6 +9231,24 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ISD::INTRINSIC_W_CHAIN: {
+    unsigned IntNo = cast<ConstantSDNode>(N->getOperand(1))->getZExtValue();
+    switch (IntNo) {
+    case Intrinsic::riscv_vssrl:
+    case Intrinsic::riscv_vssra: {
+      // Shift by scalar only demand the lower log2(SEW) bits.
+      if (!N->getOperand(4).getSimpleValueType().isVector()) {
+        unsigned SEW = N->getOperand(3).getScalarValueSizeInBits();
+        if (SimplifyDemandedLowBitsHelper(4, Log2_32(SEW)))
+          return SDValue(N, 0);
+      }
+      break;
+    }
+    }
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntNo = N->getConstantOperandVal(0);
     switch (IntNo) {
@@ -9280,6 +9299,19 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
         }
       }
       return SDValue();
+    }
+    case Intrinsic::riscv_vsll:
+    case Intrinsic::riscv_vsrl:
+    case Intrinsic::riscv_vsra:
+    case Intrinsic::riscv_vnsrl:
+    case Intrinsic::riscv_vnsra: {
+      // Shift by scalar only demand the lower log2(SEW) bits.
+      if (!N->getOperand(3).getSimpleValueType().isVector()) {
+        unsigned SEW = N->getOperand(2).getScalarValueSizeInBits();
+        if (SimplifyDemandedLowBitsHelper(3, Log2_32(SEW)))
+          return SDValue(N, 0);
+      }
+      break;
     }
     case Intrinsic::riscv_vslideup: {
       SDValue Src1 = N->getOperand(1);
