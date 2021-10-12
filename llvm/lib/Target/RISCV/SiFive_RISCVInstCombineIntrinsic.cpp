@@ -1192,6 +1192,15 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       return V;
     break;
   }
+  case Intrinsic::riscv_is_splat:
+    // If the input is provably a splat, constant fold it to true. If it is not
+    // a splat keep the is_splat intrinsic. Other optimizations may enable it to
+    // become true later.
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vmv_v_x ||
+          II2->getIntrinsicID() == Intrinsic::riscv_vfmv_v_f)
+        return IC.replaceInstUsesWith(II, ConstantInt::getTrue(II.getType()));
+    break;
   }
 
   // Try to fold broadcasts.

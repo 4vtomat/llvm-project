@@ -26,6 +26,7 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
@@ -41,6 +42,16 @@ STATISTIC(IsConstantIntrinsicsHandled,
           "Number of 'is.constant' intrinsic calls handled");
 STATISTIC(ObjectSizeIntrinsicsHandled,
           "Number of 'objectsize' intrinsic calls handled");
+
+// SIFIVE
+static Value *lowerIsSplatIntrinsic(IntrinsicInst *II) {
+  if (auto *II2 = dyn_cast<IntrinsicInst>(II->getArgOperand(0)))
+    if (II2->getIntrinsicID() == Intrinsic::riscv_vmv_v_x ||
+        II2->getIntrinsicID() == Intrinsic::riscv_vfmv_v_f)
+    return ConstantInt::getTrue(II->getType());
+  return ConstantInt::getFalse(II->getType());
+}
+// end SIFIVE
 
 static Value *lowerIsConstantIntrinsic(IntrinsicInst *II) {
   if (auto *C = dyn_cast<Constant>(II->getOperand(0)))
@@ -115,6 +126,7 @@ static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo &TLI,
         break;
       case Intrinsic::is_constant:
       case Intrinsic::objectsize:
+      case Intrinsic::riscv_is_splat: // SIFIVE
         Worklist.push_back(WeakTrackingVH(&I));
         break;
       }
@@ -133,6 +145,11 @@ static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo &TLI,
     switch (II->getIntrinsicID()) {
     default:
       continue;
+    // SIFIVE
+    case Intrinsic::riscv_is_splat:
+      NewValue = lowerIsSplatIntrinsic(II);
+      break;
+    // end SIFIVE
     case Intrinsic::is_constant:
       NewValue = lowerIsConstantIntrinsic(II);
       IsConstantIntrinsicsHandled++;

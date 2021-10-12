@@ -1529,6 +1529,7 @@ let TargetPrefix = "riscv" in {
                       [NoCapture<ArgIndex<0>>, IntrReadMem]>;
   }
 
+  // SIFIVE
   // These represent bitcasts between scalable and fixed vectors.
   def int_riscv_vcast_to_fixed : Intrinsic<[ llvm_anyvector_ty ],
                                            [ llvm_anyvector_ty ],
@@ -1536,6 +1537,11 @@ let TargetPrefix = "riscv" in {
   def int_riscv_vcast_from_fixed : Intrinsic<[ llvm_anyvector_ty ],
                                              [ llvm_anyvector_ty ],
                                              [ IntrNoMem ]>;
+
+  // This intrinsic decides at compile time if a vector is a splat or not.
+  def int_riscv_is_splat : Intrinsic<[llvm_i1_ty], [llvm_anyvector_ty],
+                                     [IntrNoMem]>;
+  // end SIFIVE
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//
