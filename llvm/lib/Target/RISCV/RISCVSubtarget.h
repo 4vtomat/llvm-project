@@ -104,6 +104,7 @@ private:
   bool HasCMOVBranchOpt = false; // SIFIVE
   bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
+  bool HasLUIADDIFusion = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
@@ -214,6 +215,7 @@ public:
     return HasCMOVBranchOpt && !HasShortForwardBranchOpt;
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
+  bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
 #endif // SIFIVE_CUSTOMIZATION
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }

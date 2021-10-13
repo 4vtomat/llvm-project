@@ -151,6 +151,11 @@ void RISCVDAGToDAGISel::PostprocessISelDAG() {
 
   CurDAG->setRoot(Dummy.getValue());
 
+#if SIFIVE_CUSTOMIZATION
+  // Done as a separate pass to avoid interfering with doPeepholeLoadStoreADDI.
+  MadeChange |= doPeepholeLUIADDI();
+#endif // SIFIVE_CUSTOMIZATION
+
   if (MadeChange)
     CurDAG->RemoveDeadNodes();
 }
@@ -2443,6 +2448,64 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(SDNode *N) {
 
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVDAGToDAGISel::doPeepholeLUIADDI() {
+  if (!Subtarget->hasLUIADDIFusion())
+    return false;
+
+  SelectionDAG::allnodes_iterator Position = CurDAG->allnodes_end();
+
+  bool MadeChange = false;
+  while (Position != CurDAG->allnodes_begin()) {
+    SDNode *N = &*--Position;
+    // Skip dead nodes and any non-machine opcodes.
+    if (N->use_empty() || !N->isMachineOpcode())
+      continue;
+
+    unsigned Opc = N->getMachineOpcode();
+    if (Opc != RISCV::ADDI && Opc != RISCV::ADDIW)
+      continue;
+
+    if (!isa<ConstantSDNode>(N->getOperand(1)))
+      continue;
+
+    SDValue Src = N->getOperand(0);
+    if (!Src.isMachineOpcode() || Src.getMachineOpcode() != RISCV::LUI ||
+        !Src.hasOneUse() || !isa<ConstantSDNode>(Src.getOperand(0)))
+      continue;
+
+    uint64_t Imm = cast<ConstantSDNode>(Src.getOperand(0))->getZExtValue();
+    assert(isUInt<20>(Imm) && "Unexpected immediate");
+
+    // Emulate LUI.
+    Imm <<= 12;
+    Imm = SignExtend64(Imm, 32);
+
+    // Add the low immediate from ADDI/ADDIW.
+    int64_t LoImm = cast<ConstantSDNode>(N->getOperand(1))->getSExtValue();
+    assert(isInt<12>(LoImm) && "Unexpected immediate");
+    Imm += LoImm;
+
+    // If this is an ADDIW or RV32, sign extend the result.
+    if (Opc == RISCV::ADDIW || !Subtarget->is64Bit())
+      Imm = SignExtend64(Imm, 32);
+
+    // Final constant should be simm32.
+    if (!isInt<32>(Imm))
+      continue;
+
+    EVT VT = N->getValueType(0);
+    SDLoc DL(N);
+    SDNode *Result = CurDAG->getMachineNode(RISCV::PseudoLIsimm32, DL, VT,
+                                            CurDAG->getTargetConstant(Imm, DL, VT));
+    ReplaceUses(N, Result);
+    MadeChange = true;
+  }
+
+  return MadeChange;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // This pass converts a legalized DAG into a RISCV-specific DAG, ready
 // for instruction scheduling.

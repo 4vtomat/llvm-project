@@ -503,6 +503,10 @@ def FeatureJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
                        "true", "Set jump is cheap.">;
 
+def FeatureLUIADDIFusion
+    : SubtargetFeature<"lui-addi-fusion", "HasLUIADDIFusion",
+                       "true", "Enable LUI+ADDI fusion">;
+
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [FeatureShortForwardBranchOpt,
@@ -547,12 +551,12 @@ def : ProcessorModel<"generic", NoSchedModel, []>;
 def : ProcessorModel<"rocket-rv32", RocketModel, []>;
 def : ProcessorModel<"rocket-rv64", RocketModel, [Feature64Bit]>;
 
+// SIFIVE
 def : ProcessorModel<"sifive-6-rv32", SiFive6Model, [],
-                                                    [FeatureShortForwardBranchOpt,
-                                                     FeatureJumpIsCheap]>;
+                     [FeatureShortForwardBranchOpt, FeatureJumpIsCheap]>;
 def : ProcessorModel<"sifive-6-rv64", SiFive6Model, [Feature64Bit],
-                                                    [FeatureShortForwardBranchOpt,
-                                                     FeatureJumpIsCheap]>;
+                     [FeatureShortForwardBranchOpt, FeatureJumpIsCheap]>;
+// end SIFIVE
 
 def : ProcessorModel<"sifive-7-rv32", SiFive7Model, [],
                      [TuneSiFive7]>;
@@ -561,14 +565,14 @@ def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
 
 // SIFIVE
 def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
-                     [FeatureCMOVBranchOpt]>;
+                     [FeatureCMOVBranchOpt, FeatureLUIADDIFusion]>;
 def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
-                     [FeatureCMOVBranchOpt]>;
+                     [FeatureCMOVBranchOpt, FeatureLUIADDIFusion]>;
 
 def : ProcessorModel<"sifive-9-rv32", SiFive9Model, [],
-                     [FeatureCMOVBranchOpt]>;
+                     [FeatureCMOVBranchOpt, FeatureLUIADDIFusion]>;
 def : ProcessorModel<"sifive-9-rv64", SiFive9Model, [Feature64Bit],
-                     [FeatureCMOVBranchOpt]>;
+                     [FeatureCMOVBranchOpt, FeatureLUIADDIFusion]>;
 // end SIFIVE
 
 def : ProcessorModel<"sifive-e20", RocketModel, [FeatureStdExtM,
@@ -761,8 +765,8 @@ def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
-                                                  [FeatureCMOVBranchOpt]>;
-#endif // SIFIVE_CUSTOMIZATION
+                                                  [FeatureCMOVBranchOpt,
+                                                   FeatureLUIADDIFusion]>;
 
 def : ProcessorModel<"sifive-p650", SiFive9Model, [Feature64Bit,
                                                    FeatureStdExtM,
@@ -772,7 +776,9 @@ def : ProcessorModel<"sifive-p650", SiFive9Model, [Feature64Bit,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
-                                                  [FeatureCMOVBranchOpt]>;
+                                                  [FeatureCMOVBranchOpt,
+                                                   FeatureLUIADDIFusion]>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.

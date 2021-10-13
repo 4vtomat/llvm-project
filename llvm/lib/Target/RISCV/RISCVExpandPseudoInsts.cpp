@@ -15,6 +15,7 @@
 #include "RISCV.h"
 #include "RISCVInstrInfo.h"
 #include "RISCVTargetMachine.h"
+#include "MCTargetDesc/RISCVMatInt.h" // SIFIVE
 
 #include "llvm/CodeGen/LivePhysRegs.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
@@ -65,6 +66,7 @@ private:
 #if SIFIVE_CUSTOMIZATION
   bool expandCCOp(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                   MachineBasicBlock::iterator &NextMBBI);
+  bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
@@ -166,6 +168,8 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCSRLIW:
   case RISCV::PseudoCCSRAIW:
     return expandCCOp(MBB, MBBI, NextMBBI);
+  case RISCV::PseudoLIsimm32:
+    return expandLIsimm32(MBB, MBBI);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
@@ -450,6 +454,55 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   computeAndAddLiveIns(LiveRegs, *TrueBB);
   computeAndAddLiveIns(LiveRegs, *MergeBB);
 
+  return true;
+}
+
+bool RISCVExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
+                                       MachineBasicBlock::iterator MBBI) {
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  int64_t Val = MI.getOperand(1).getImm();
+  assert(isInt<32>(Val) && "Unexpected immediate");
+
+  RISCVMatInt::InstSeq Seq =
+      RISCVMatInt::generateInstSeq(Val, MBB.getParent()->getSubtarget().getFeatureBits());
+  assert(!Seq.empty());
+
+  Register SrcReg = RISCV::X0;
+  Register DstReg = MI.getOperand(0).getReg();
+  bool DstIsDead = MI.getOperand(0).isDead();
+  uint64_t RenamableState =
+      MI.getOperand(0).isRenamable() ? RegState::Renamable : 0;
+  unsigned Num = 0;
+
+  for (RISCVMatInt::Inst &Inst : Seq) {
+    bool LastItem = ++Num == Seq.size();
+    if (Inst.Opc == RISCV::LUI) {
+      BuildMI(MBB, MBBI, DL, TII->get(RISCV::LUI))
+          .addReg(DstReg, RegState::Define |
+                  getDeadRegState(DstIsDead && LastItem) |
+                  RenamableState)
+          .addImm(Inst.Imm);
+    } else if (Inst.Opc == RISCV::ADD_UW) {
+      BuildMI(MBB, MBBI, DL, TII->get(RISCV::ADD_UW))
+          .addReg(DstReg, RegState::Define |
+                  getDeadRegState(DstIsDead && LastItem) |
+                  RenamableState)
+          .addReg(SrcReg, RegState::Kill)
+          .addReg(RISCV::X0);
+    } else {
+      BuildMI(MBB, MBBI, DL, TII->get(Inst.Opc))
+          .addReg(DstReg, RegState::Define |
+                  getDeadRegState(DstIsDead && LastItem) |
+                  RenamableState)
+          .addReg(SrcReg, RegState::Kill)
+          .addImm(Inst.Imm);
+    }
+    // Only the first instruction has X0 as its source.
+    SrcReg = DstReg;
+  }
+  MI.eraseFromParent();
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION

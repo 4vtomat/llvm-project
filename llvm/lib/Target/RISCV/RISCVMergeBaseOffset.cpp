@@ -47,6 +47,7 @@ namespace {
 
 struct RISCVMergeBaseOffsetOpt : public MachineFunctionPass {
   static char ID;
+  const MachineFunction *MF;
   bool runOnMachineFunction(MachineFunction &Fn) override;
   bool detectLuiAddiGlobal(MachineInstr &LUI, MachineInstr *&ADDI);
 
@@ -188,6 +189,14 @@ bool RISCVMergeBaseOffsetOpt::matchLargeOffset(MachineInstr &TailAdd,
     // exists.
     LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
     Offset = OffsetTail.getOperand(1).getImm() << 12;
+    DeadInstrs.insert(&OffsetTail);
+    return true;
+  } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32 &&
+             !MF->getSubtarget<RISCVSubtarget>().is64Bit()) {
+    // The offset value has all zero bits in the lower 12 bits. Only LUI
+    // exists.
+    LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
+    Offset = OffsetTail.getOperand(1).getImm();
     DeadInstrs.insert(&OffsetTail);
     return true;
   }
@@ -367,6 +376,7 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   DeadInstrs.clear();
   MRI = &Fn.getRegInfo();
   MLI = &getAnalysis<MachineLoopInfo>();
+  MF = &Fn;
   for (MachineBasicBlock &MBB : Fn) {
     LLVM_DEBUG(dbgs() << "MBB: " << MBB.getName() << "\n");
     for (MachineInstr &MI : MBB) {
