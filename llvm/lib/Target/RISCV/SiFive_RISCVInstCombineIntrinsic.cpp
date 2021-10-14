@@ -174,7 +174,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vsll: {
     Type *Ty = LHSScalar->getType();
     unsigned TypeWidth = Ty->getScalarSizeInBits();
-    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, TypeWidth - 1);
     // If RHSScalar comes from vsll.vx or vsll.vi, its type is i64 for RV64 and
     // i32 for RV32.
     RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
@@ -184,7 +184,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vsrl: {
     Type *Ty = LHSScalar->getType();
     unsigned TypeWidth = Ty->getScalarSizeInBits();
-    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, TypeWidth - 1);
     // If RHSScalar comes from vsrl.vx or vsrl.vi, its type is i64 for RV64 and
     // i32 for RV32.
     RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
@@ -194,7 +194,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vsra: {
     Type *Ty = LHSScalar->getType();
     unsigned TypeWidth = Ty->getScalarSizeInBits();
-    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, TypeWidth - 1);
     // If RHSScalar comes from vsra.vx or vsra.vi, its type is i64 for RV64 and
     // i32 for RV32.
     RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, Ty);
@@ -335,7 +335,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     unsigned TypeWidth = LHSTy->getScalarSizeInBits();
     Type *DestTy = IC.Builder.getIntNTy(TypeWidth / 2);
     RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, LHSTy);
-    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, TypeWidth - 1);
     Result = IC.Builder.CreateLShr(LHSScalar, RHSScalar);
     Result = IC.Builder.CreateTrunc(Result, DestTy);
     break;
@@ -345,7 +345,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     unsigned TypeWidth = LHSTy->getScalarSizeInBits();
     Type *DestTy = IC.Builder.getIntNTy(TypeWidth / 2);
     RHSScalar = IC.Builder.CreateZExtOrTrunc(RHSScalar, LHSTy);
-    RHSScalar = IC.Builder.CreateAnd(RHSScalar, (1 << Log2_32(TypeWidth)) - 1);
+    RHSScalar = IC.Builder.CreateAnd(RHSScalar, TypeWidth - 1);
     Result = IC.Builder.CreateAShr(LHSScalar, RHSScalar);
     Result = IC.Builder.CreateTrunc(Result, DestTy);
     break;
@@ -1245,6 +1245,31 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   // Try to fold broadcasts.
   if (Instruction *V = foldVBroadcast(IC, II))
     return V;
+
+  switch (IID) {
+  case Intrinsic::riscv_vsll:
+  case Intrinsic::riscv_vsrl:
+  case Intrinsic::riscv_vsra:
+  case Intrinsic::riscv_vnsra:
+  case Intrinsic::riscv_vnsrl:
+  case Intrinsic::riscv_vssra:
+  case Intrinsic::riscv_vssrl: {
+    Type *ShAmtTy = II.getArgOperand(2)->getType();
+    // If shift amount is a scalar, we can use SimplifyDemandedBits on it. Only
+    // the lower log2(SEW) bits are needed. Where SEW is the scalar size of
+    // the source vector.
+    if (ShAmtTy->isIntegerTy()) {
+      unsigned TypeWidth =
+          II.getArgOperand(1)->getType()->getScalarSizeInBits();
+      unsigned BitWidth = ShAmtTy->getIntegerBitWidth();
+      KnownBits ShAmtKnown(BitWidth);
+      APInt DemandedBits = APInt::getLowBitsSet(BitWidth, Log2_32(TypeWidth));
+      if (IC.SimplifyDemandedBits(&II, 2, DemandedBits, ShAmtKnown))
+        return &II;
+    }
+    break;
+  }
+  }
 
   return None;
 }
