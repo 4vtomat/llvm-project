@@ -669,6 +669,35 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   return IC.replaceInstUsesWith(II, V);
 }
 
+// Fold (vmv.x.s (vmv.v.x X, vl)) -> X
+static Instruction *foldVMV_X_S(InstCombiner &IC, IntrinsicInst &II) {
+  auto *ValII = dyn_cast<IntrinsicInst>(II.getArgOperand(0));
+  if (!ValII || ValII->getIntrinsicID() != Intrinsic::riscv_vmv_v_x ||
+      !isa<UndefValue>(ValII->getArgOperand(0)))
+    return nullptr;
+
+  // Replace with the scalar input to the vmv.v.x.
+  // NOTE: If the VL of the vmv.v.x is zero, the vector value is undefined
+  // since it uses a tail agnostic policy. We should still be allowed to fold
+  // to the scalar in that case so we don't need to check VL.
+  return IC.replaceInstUsesWith(II, ValII->getArgOperand(1));
+}
+
+// Fold (vfmv.f.s (vfmv.v.f X, vl)) -> X
+static Instruction *foldVMV_F_S(InstCombiner &IC, IntrinsicInst &II) {
+  // Look for a splat from scalar.
+  auto *ValII = dyn_cast<IntrinsicInst>(II.getArgOperand(0));
+  if (!ValII || ValII->getIntrinsicID() != Intrinsic::riscv_vfmv_v_f ||
+      !isa<UndefValue>(ValII->getArgOperand(0)))
+    return nullptr;
+
+  // Replace with the scalar input to the vfmv.v.f.
+  // NOTE: If the VL of the vfmv.v.f is zero, the vector value is undefined
+  // since it uses a tail agnostic policy. We should still be allowed to fold
+  // to the scalar in that case so we don't need to check VL.
+  return IC.replaceInstUsesWith(II, ValII->getArgOperand(1));
+}
+
 /// This function handles following case
 ///
 ///     A  ->  B    cast to fixed
@@ -1189,6 +1218,16 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vmerge:
   case Intrinsic::riscv_vfmerge: {
     if (Instruction *V = foldVMergeWithCompare(IC, II))
+      return V;
+    break;
+  }
+  case Intrinsic::riscv_vmv_x_s: {
+    if (Instruction *V = foldVMV_X_S(IC, II))
+      return V;
+    break;
+  }
+  case Intrinsic::riscv_vfmv_f_s: {
+    if (Instruction *V = foldVMV_F_S(IC, II))
       return V;
     break;
   }

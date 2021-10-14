@@ -321,3 +321,42 @@ declare <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32>, i
 declare <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, i32, <vscale x 4 x i1>, i64)
 declare <vscale x 4 x i32> @llvm.riscv.vmerge.nxv4i32.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i1>, i64)
 declare <4 x i32> @llvm.riscv.vcast.to.fixed.v4i32.nxv4i32(<vscale x 4 x i32>)
+
+define i32 @test_vmv_x_s_splat_constant_vl(i32 %x) {
+; CHECK-LABEL: @test_vmv_x_s_splat_constant_vl(
+; CHECK-NEXT:    ret i32 [[X:%.*]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 4)
+  %b = call i32 @llvm.riscv.vmv.x.s.nxv4i32(<vscale x 4 x i32> %a)
+  ret i32 %b
+}
+
+define i32 @test_vmv_x_s_splat_variable_vl(i32 %x, i64 %vl) {
+; CHECK-LABEL: @test_vmv_x_s_splat_variable_vl(
+; CHECK-NEXT:    ret i32 [[X:%.*]]
+;
+  %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %x, i64 %vl)
+  %b = call i32 @llvm.riscv.vmv.x.s.nxv4i32(<vscale x 4 x i32> %a)
+  ret i32 %b
+}
+declare i32 @llvm.riscv.vmv.x.s.nxv4i32(<vscale x 4 x i32>)
+
+define float @test_vfmv_splat_constant_vl(float %x) {
+; CHECK-LABEL: @test_vfmv_splat_constant_vl(
+; CHECK-NEXT:    ret float [[X:%.*]]
+;
+  %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 4)
+  %b = call float @llvm.riscv.vfmv.f.s.nxv4f32(<vscale x 4 x float> %a)
+  ret float %b
+}
+
+define float @test_vfmv_splat_variable_vl(float %x, i64 %vl) {
+; CHECK-LABEL: @test_vfmv_splat_variable_vl(
+; CHECK-NEXT:    ret float [[X:%.*]]
+;
+  %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %x, i64 %vl)
+  %b = call float @llvm.riscv.vfmv.f.s.nxv4f32(<vscale x 4 x float> %a)
+  ret float %b
+}
+declare <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float>, float, i64)
+declare float @llvm.riscv.vfmv.f.s.nxv4f32(<vscale x 4 x float>)
