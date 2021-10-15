@@ -183,6 +183,8 @@ static Optional<RISCVExtensionVersion> findDefaultVersion(StringRef ExtName) {
 
 void RISCVISAInfo::addExtension(StringRef ExtName, unsigned MajorVersion,
                                 unsigned MinorVersion) {
+  assert(Exts.count(ExtName.str()) == 0 &&
+         "We should not add the same extension for multiple times");
   RISCVExtensionInfo Ext;
   Ext.ExtName = ExtName.str();
   Ext.MajorVersion = MajorVersion;
