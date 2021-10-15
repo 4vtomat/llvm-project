@@ -48,10 +48,12 @@ defvar TAIL_AGNOSTIC = 1;
 
 // This class describes information associated to the LMUL.
 class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
-               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx> {
+               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx,
+               VReg w2regclass> {
   bits<3> value = lmul; // This is encoded as the vlmul field of vtype.
   VReg vrclass = regclass;
   VReg wvrclass = wregclass;
+  VReg w2vrclass = w2regclass;
   VReg f8vrclass = f8regclass;
   VReg f4vrclass = f4regclass;
   VReg f2vrclass = f2regclass;
@@ -60,14 +62,14 @@ class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
 }
 
 // Associate LMUL with tablegen records of register classes.
-def V_M1  : LMULInfo<0b000,  8,   VR,        VRM2,   VR,   VR, VR, "M1">;
-def V_M2  : LMULInfo<0b001, 16, VRM2,        VRM4,   VR,   VR, VR, "M2">;
-def V_M4  : LMULInfo<0b010, 32, VRM4,        VRM8, VRM2,   VR, VR, "M4">;
-def V_M8  : LMULInfo<0b011, 64, VRM8,/*NoVReg*/VR, VRM4, VRM2, VR, "M8">;
+def V_M1  : LMULInfo<0b000,  8,   VR,        VRM2,   VR,   VR, VR, "M1", VRM4>;
+def V_M2  : LMULInfo<0b001, 16, VRM2,        VRM4,   VR,   VR, VR, "M2", VRM8>;
+def V_M4  : LMULInfo<0b010, 32, VRM4,        VRM8, VRM2,   VR, VR, "M4", /*NoVReg*/VR>;
+def V_M8  : LMULInfo<0b011, 64, VRM8,/*NoVReg*/VR, VRM4, VRM2, VR, "M8", /*NoVReg*/VR>;
 
-def V_MF8 : LMULInfo<0b101, 1, VR, VR,/*NoVReg*/VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF8">;
-def V_MF4 : LMULInfo<0b110, 2, VR, VR,          VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF4">;
-def V_MF2 : LMULInfo<0b111, 4, VR, VR,          VR,          VR,/*NoVReg*/VR, "MF2">;
+def V_MF8 : LMULInfo<0b101, 1, VR, VR,/*NoVReg*/VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF8", VR>;
+def V_MF4 : LMULInfo<0b110, 2, VR, VR,          VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF4", VR>;
+def V_MF2 : LMULInfo<0b111, 4, VR, VR,          VR,          VR,/*NoVReg*/VR, "MF2", VRM2>;
 
 // Used to iterate over all possible LMULs.
 defvar MxList = [V_MF8, V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
@@ -315,6 +317,14 @@ defset list<VTypeInfoToWide> AllVQMACCDoDVectors = {
   def : VTypeInfoToWide<VI8M2,   VI32M2>;
   def : VTypeInfoToWide<VI8M4,   VI32M4>;
   def : VTypeInfoToWide<VI8M8,   VI32M8>;
+}
+
+defset list<VTypeInfoToWide> AllVFNRCLIPVectors = {
+  def : VTypeInfoToWide<VI8MF8,  VF32MF2>;
+  def : VTypeInfoToWide<VI8MF4,  VF32M1>;
+  def : VTypeInfoToWide<VI8MF2,  VF32M2>;
+  def : VTypeInfoToWide<VI8M1,   VF32M4>;
+  def : VTypeInfoToWide<VI8M2,   VF32M8>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3104,6 +3114,26 @@ class VPatBinaryM<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    GPR:$vl, sew)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// FIXME: Should the instructions that use this use VPatBinaryNoMaskTA?
+class VPatBinaryNoMask<string intrinsic_name,
+                       string inst,
+                       ValueType result_type,
+                       ValueType op1_type,
+                       ValueType op2_type,
+                       int sew,
+                       VReg op1_reg_class,
+                       DAGOperand op2_kind> :
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   VLOpFrag)),
+                   (!cast<Instruction>(inst)
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   GPR:$vl, sew)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 class VPatBinaryNoMaskTA<string intrinsic_name,
                          string inst,
                          ValueType result_type,
@@ -3763,6 +3793,17 @@ multiclass XPatSFVQMACC_VV<string intrinsic, string instruction,
                                         Vti.Log2SEW, Vti.LMul,
                                         Wti.RegClass, VR, Vti.RegClass,
                                         TAIL_AGNOSTIC>;
+  }
+}
+
+multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
+                          list<VTypeInfoToWide> vtilist> {
+  foreach VtiToWti = vtilist in {
+    defvar Vti = VtiToWti.Vti;
+    defvar Wti = VtiToWti.Wti;
+    def : VPatBinaryNoMask<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
+                           Wti.Vector, Wti.Scalar, Vti.Log2SEW, Wti.RegClass,
+                           Wti.ScalarRegClass>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5099,6 +5140,14 @@ foreach m = [V_M1, V_M2, V_M4, V_M8] in {
     def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
   }
 }
+
+foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+  }
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -5685,18 +5734,23 @@ let Predicates = [HasVInstructionsAnyF] in {
 // SiFive Custom Instructions
 //===----------------------------------------------------------------------===//
 let Predicates = [HasExtXsfvqmaccqoq] in {
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_4x8x4", "PseudoVQMACCU4x8x4", AllVQMACCQoQVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_4x8x4", "PseudoVQMACC4x8x4", AllVQMACCQoQVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_4x8x4", "PseudoVQMACCUS4x8x4", AllVQMACCQoQVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_4x8x4", "PseudoVQMACCSU4x8x4", AllVQMACCQoQVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_4x8x4", "PseudoVQMACCU4x8x4", AllVQMACCQoQVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_4x8x4", "PseudoVQMACC4x8x4", AllVQMACCQoQVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_4x8x4", "PseudoVQMACCUS4x8x4", AllVQMACCQoQVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_4x8x4", "PseudoVQMACCSU4x8x4", AllVQMACCQoQVectors>;
 } // Predicates = [HasExtXsfvqmaccqoq]
 
 let Predicates = [HasExtXsfvqmaccdod] in {
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_2x8x2", "PseudoVQMACCU2x8x2", AllVQMACCDoDVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_2x8x2", "PseudoVQMACC2x8x2", AllVQMACCDoDVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_2x8x2", "PseudoVQMACCUS2x8x2", AllVQMACCDoDVectors>;
-  defm "" : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_2x8x2", "PseudoVQMACCSU2x8x2", AllVQMACCDoDVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_2x8x2", "PseudoVQMACCU2x8x2", AllVQMACCDoDVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_2x8x2", "PseudoVQMACC2x8x2", AllVQMACCDoDVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_2x8x2", "PseudoVQMACCUS2x8x2", AllVQMACCDoDVectors>;
+  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_2x8x2", "PseudoVQMACCSU2x8x2", AllVQMACCDoDVectors>;
 } // Predicates = [HasExtXsfvqmaccdod]
+
+let Predicates = [HasExtXsfvfnrclipxfqf] in {
+  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_xu", "PseudoVFNRCLIP_XU_F_QF", AllVFNRCLIPVectors>;
+  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_x",  "PseudoVFNRCLIP_X_F_QF",  AllVFNRCLIPVectors>;
+}
 
 def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
 

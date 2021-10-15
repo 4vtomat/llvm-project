@@ -460,7 +460,17 @@ let TargetPrefix = "riscv" in {
                                        [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 3;
   }
+
+  // Input: (vector_in, scalar_in, vl)
+  class RISCVSFCustomVFNRCLIP : Intrinsic<[llvm_anyvector_ty],
+                                          [llvm_anyfloat_ty,
+                                           LLVMVectorElementType<1>,
+                                           llvm_anyint_ty],
+                                          [IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 2;
+  }
 #endif // SIFIVE_CUSTOMIZATION
+
   // For destination vector type is the same as first source vector.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryAAXUnMasked
@@ -1560,6 +1570,9 @@ let TargetPrefix = "riscv" in {
   def int_riscv_sf_vqmacc_2x8x2 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccus_2x8x2 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccsu_2x8x2 : RISCVSFCustomVQMACC;
+
+  def int_riscv_sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
+  def int_riscv_sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
 #endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
 
