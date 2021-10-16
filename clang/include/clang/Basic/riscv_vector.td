@@ -68,6 +68,7 @@
 //   t: ptrdiff_t, ignores "t"
 //   u: unsigned long, ignores "t"
 //   l: long, ignores "t"
+//   f: float32, ignores "t"
 //
 // So for instance if t is "i", i.e. int, then "e" will yield int again. "v"
 // will yield an RVV vector type (assume LMUL=1), so __rvv_int32m1_t.
@@ -2276,6 +2277,16 @@ let RequiredFeatures = ["Xsfvqmaccdod"],
     def sf_vqmaccus_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvv", "c">;
   let MangledName = "sf_vqmaccsu_2x8x2" in
     def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
+}
+
+let RequiredFeatures = ["Xsfvfnrclipxfqf"],
+    Log2LMUL = [0, 1, -1, -2, -3],
+    HasMasked = false,
+    IntrinsicTypes = [-1, 0] in {
+  let MangledName = "sf_vfnrclip_xu_f_qf", Name = "sf_vfnrclip_xu_f_qf" in
+    def sf_vfnrclip_xu : RVVBuiltin<"Uv", "UvFqf", "c">;
+  let MangledName = "sf_vfnrclip_x_f_qf", Name = "sf_vfnrclip_x_f_qf"  in
+    def sf_vfnrclip_x : RVVBuiltin<"v", "vFqf", "c">;
 }
 // end SIFIVE
 

@@ -40,6 +40,7 @@ class RVVType {
     Ptrdiff_t,
     UnsignedLong,
     SignedLong,
+    Float32, // SIFIVE
     Boolean,
     SignedInteger,
     UnsignedInteger,
@@ -138,8 +139,11 @@ enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   VectorMaxELen64 = 1 << 4,
   VectorMaxELenFp32 = 1 << 5,
   VectorMaxELenFp64 = 1 << 6,
-  Xsfvqmaccqoq = 1 << 7, // SIFIVE
-  Xsfvqmaccdod = 1 << 8, // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  Xsfvqmaccqoq = 1 << 7,
+  Xsfvqmaccdod = 1 << 8,
+  Xsfvfnrclipxfqf = 1 << 9,
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 enum PolicyScheme : uint8_t {

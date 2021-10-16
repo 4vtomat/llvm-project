@@ -151,6 +151,11 @@ void RVVType::initBuiltinStr() {
   case ScalarTypeKind::SignedLong:
     BuiltinStr = "Li";
     return;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::Float32:
+    BuiltinStr = "f";
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::Boolean:
     assert(ElementBitwidth == 1);
     BuiltinStr += "b";
@@ -268,6 +273,11 @@ void RVVType::initTypeStr() {
   case ScalarTypeKind::SignedLong:
     Str = "long";
     return;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::Float32:
+    Str = "float";
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::Boolean:
     if (isScalar())
       Str += "bool";
@@ -407,6 +417,11 @@ void RVVType::applyModifier(StringRef Transformer, int CurLog2LMUL) {
   case 'l':
     ScalarType = ScalarTypeKind::SignedLong;
     break;
+#if SIFIVE_CUSTOMIZATION
+  case 'f':
+    ScalarType = ScalarTypeKind::Float32;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Illegal primitive type transformers!");
   }
@@ -580,6 +595,8 @@ RVVIntrinsic::RVVIntrinsic(
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccqoq;
     if (Feature == "Xsfvqmaccdod")
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccdod;
+    if (Feature == "Xsfvfnrclipxfqf")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfnrclipxfqf;
 #endif // SIFIVE_CUSTOMIZATION
   }
 

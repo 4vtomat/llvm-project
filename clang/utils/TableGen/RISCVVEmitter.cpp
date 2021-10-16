@@ -361,7 +361,7 @@ void RVVEmitter::createCodeGen(raw_ostream &OS) {
 
 void RVVEmitter::parsePrototypes(StringRef Prototypes,
                                  std::function<void(StringRef)> Handler) {
-  const StringRef Primaries("evwqom0ztul");
+  const StringRef Primaries("evwqom0ztulf"); // SIFIVE
   while (!Prototypes.empty()) {
     size_t Idx = 0;
     // Skip over complex prototype because it could contain primitive type
@@ -584,6 +584,8 @@ bool RVVEmitter::emitMacroRestrictionStr(RISCVPredefinedMacroT PredefinedMacros,
     OS << LS << "defined(__riscv_xsfvqmaccqoq)";
   if (PredefinedMacros & RISCVPredefinedMacro::Xsfvqmaccdod)
     OS << LS << "defined(__riscv_xsfvqmaccdod)";
+  if (PredefinedMacros & RISCVPredefinedMacro::Xsfvfnrclipxfqf)
+    OS << LS << "defined(__riscv_xsfvfnrclipxfqf)";
 #endif // SIFIVE_CUSTOMIZATION
   OS << "\n";
   return true;
