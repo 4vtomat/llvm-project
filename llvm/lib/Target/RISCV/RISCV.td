@@ -535,6 +535,7 @@ include "RISCVRegisterBanks.td"
 include "RISCVSchedRocket.td"
 include "RISCVSchedSiFive6.td"
 include "RISCVSchedSiFive7.td"
+include "RISCVSchedSiFive7N.td"
 include "RISCVSchedSiFive8.td"
 include "RISCVSchedSiFive9.td"
 
@@ -556,14 +557,17 @@ def : ProcessorModel<"sifive-6-rv32", SiFive6Model, [],
                      [FeatureShortForwardBranchOpt, FeatureJumpIsCheap]>;
 def : ProcessorModel<"sifive-6-rv64", SiFive6Model, [Feature64Bit],
                      [FeatureShortForwardBranchOpt, FeatureJumpIsCheap]>;
-// end SIFIVE
 
-def : ProcessorModel<"sifive-7-rv32", SiFive7Model, [],
+def : ProcessorModel<"sifive-7m-rv32", SiFive7Model, [],
                      [TuneSiFive7]>;
-def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
+def : ProcessorModel<"sifive-7m-rv64", SiFive7Model, [Feature64Bit],
                      [TuneSiFive7]>;
 
-// SIFIVE
+def : ProcessorModel<"sifive-7n-rv32", SiFive7NModel, [],
+                     [TuneSiFive7]>;
+def : ProcessorModel<"sifive-7n-rv64", SiFive7NModel, [Feature64Bit],
+                     [TuneSiFive7]>;
+
 def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
                      [FeatureCMOVBranchOpt, FeatureLUIADDIFusion]>;
 def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
@@ -605,21 +609,27 @@ def : ProcessorModel<"sifive-e66", SiFive6Model, [FeatureStdExtM,
                                                   FeatureStdExtZbb],
                                                  [FeatureShortForwardBranchOpt,
                                                   FeatureJumpIsCheap]>;
-// end SIFIVE
 
-def : ProcessorModel<"sifive-e76", SiFive7Model, [FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtC],
+def : ProcessorModel<"sifive-e76", SiFive7NModel, [FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
-// SIFIVE
 def : ProcessorModel<"sifive-e76m", SiFive7Model, [FeatureStdExtM,
                                                    FeatureStdExtA,
                                                    FeatureStdExtF,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
+                     [TuneSiFive7]>;
+
+def : ProcessorModel<"sifive-e76n", SiFive7NModel, [FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
 // end SIFIVE
 
@@ -651,17 +661,15 @@ def : ProcessorModel<"sifive-s66", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtZbb],
                                                  [FeatureShortForwardBranchOpt,
                                                   FeatureJumpIsCheap]>;
-// end SIFIVE
 
-def : ProcessorModel<"sifive-s76", SiFive7Model, [Feature64Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtD,
-                                                  FeatureStdExtC],
+def : ProcessorModel<"sifive-s76", SiFive7NModel, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
-// SIFIVE
 def : ProcessorModel<"sifive-s76m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
@@ -671,6 +679,16 @@ def : ProcessorModel<"sifive-s76m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
+
+def : ProcessorModel<"sifive-s76n", SiFive7NModel, [Feature64Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtD,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
+                                                   [TuneSiFive7]>;
 // end SIFIVE
 
 def : ProcessorModel<"sifive-u54", RocketModel, [Feature64Bit,
@@ -680,7 +698,7 @@ def : ProcessorModel<"sifive-u54", RocketModel, [Feature64Bit,
                                                  FeatureStdExtD,
                                                  FeatureStdExtC]>;
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtM,
                                                   FeatureStdExtA,
@@ -691,17 +709,15 @@ def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtZbb],
                                                  [FeatureShortForwardBranchOpt,
                                                   FeatureJumpIsCheap]>;
-// end SIFIVE
 
-def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtD,
-                                                  FeatureStdExtC],
+def : ProcessorModel<"sifive-u74", SiFive7NModel, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
-#ifdef SIFIVE_CUSTOMIZATION
 def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
@@ -710,6 +726,16 @@ def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
+                     [TuneSiFive7]>;
+
+def : ProcessorModel<"sifive-u74n", SiFive7NModel, [Feature64Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtD,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
 
 def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
@@ -725,6 +751,19 @@ def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
 
+def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
+                                                     FeatureStdExtM,
+                                                     FeatureStdExtA,
+                                                     FeatureStdExtF,
+                                                     FeatureStdExtD,
+                                                     FeatureStdExtC,
+                                                     FeatureStdExtV,
+                                                     FeatureStdExtZvl256b,
+                                                     FeatureStdExtZfh,
+                                                     FeatureStdExtZba,
+                                                     FeatureStdExtZbb],
+                                                    [TuneSiFive7]>;
+
 def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
@@ -738,24 +777,24 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
-                     [TuneSiFiveX280]>;
-
-def : ProcessorModel<"sifive-x280n", SiFive7Model, [Feature64Bit,
-                                                   FeatureStdExtM,
-                                                   FeatureStdExtA,
-                                                   FeatureStdExtF,
-                                                   FeatureStdExtD,
-                                                   FeatureStdExtC,
-                                                   FeatureStdExtV,
-                                                   FeatureStdExtZvl512b,
-                                                   FeatureStdExtZfh,
-                                                   FeatureStdExtZba,
-                                                   FeatureStdExtZbb,
-                                                   FeatureStdExtXsfvfhbfmin,
-                                                   FeatureStdExtXsfvqmaccqoq,
-                                                   FeatureStdExtXsfvfnrclipxfqf,
-                                                   FeatureStdExtXsfvfwmaccqqq],
                                                   [TuneSiFiveX280]>;
+
+def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtD,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtV,
+                                                    FeatureStdExtZvl512b,
+                                                    FeatureStdExtZfh,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb,
+                                                    FeatureStdExtXsfvfhbfmin,
+                                                    FeatureStdExtXsfvqmaccqoq,
+                                                    FeatureStdExtXsfvfnrclipxfqf,
+                                                    FeatureStdExtXsfvfwmaccqqq],
+                                                   [TuneSiFiveX280]>;
 
 def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtM,
