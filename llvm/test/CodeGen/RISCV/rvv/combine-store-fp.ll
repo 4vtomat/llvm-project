@@ -2,13 +2,12 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+d,+v -verify-machineinstrs -riscv-v-vector-bits-min=128 < %s | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+d,+v -verify-machineinstrs -riscv-v-vector-bits-min=128 < %s | FileCheck %s
 
+; FIXME: This test no longer tests what it was original written for.
 define void @combine_fp_zero_stores_crash(float* %ptr)  {
 ; CHECK-LABEL: combine_fp_zero_stores_crash:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi a0, a0, 4
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vse32.v v8, (a0)
+; CHECK-NEXT:    sw zero, 4(a0)
+; CHECK-NEXT:    sw zero, 8(a0)
 ; CHECK-NEXT:    ret
   %addr1 = getelementptr float, float * %ptr, i64 1
   %addr2 = getelementptr float, float * %ptr, i64 2
