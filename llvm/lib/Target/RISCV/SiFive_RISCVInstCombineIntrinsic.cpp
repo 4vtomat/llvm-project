@@ -1184,12 +1184,11 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vminu:
   case Intrinsic::riscv_vmin:
   case Intrinsic::riscv_vmaxu:
-  case Intrinsic::riscv_vmax: {
+  case Intrinsic::riscv_vmax:
     // TODO: Add more intrinsics here.
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
-  }
   case Intrinsic::riscv_vmacc:
   case Intrinsic::riscv_vnmsac:
   case Intrinsic::riscv_vmadd:
@@ -1205,32 +1204,27 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vfmadd:
   case Intrinsic::riscv_vfnmadd:
   case Intrinsic::riscv_vfmsub:
-  case Intrinsic::riscv_vfnmsub: {
+  case Intrinsic::riscv_vfnmsub:
     if (Instruction *V = foldTernaryOp(IC, II))
       return V;
     break;
-  }
-  case Intrinsic::riscv_vfirst: {
+  case Intrinsic::riscv_vfirst:
     if (Instruction *V = foldVFirstWithCompare(IC, II))
       return V;
     break;
-  }
   case Intrinsic::riscv_vmerge:
-  case Intrinsic::riscv_vfmerge: {
+  case Intrinsic::riscv_vfmerge:
     if (Instruction *V = foldVMergeWithCompare(IC, II))
       return V;
     break;
-  }
-  case Intrinsic::riscv_vmv_x_s: {
+  case Intrinsic::riscv_vmv_x_s:
     if (Instruction *V = foldVMV_X_S(IC, II))
       return V;
     break;
-  }
-  case Intrinsic::riscv_vfmv_f_s: {
+  case Intrinsic::riscv_vfmv_f_s:
     if (Instruction *V = foldVMV_F_S(IC, II))
       return V;
     break;
-  }
   case Intrinsic::riscv_is_splat:
     // If the input is provably a splat, constant fold it to true. If it is not
     // a splat keep the is_splat intrinsic. Other optimizations may enable it to
