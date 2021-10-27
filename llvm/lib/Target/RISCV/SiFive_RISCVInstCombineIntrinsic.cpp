@@ -1153,6 +1153,38 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
 
     break;
   }
+  case Intrinsic::riscv_vfcvt_f_xu_v:
+    // Try to convert to vwfcvt_f_xu_v.
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
+      // Look for the vwcvtu.x.x.v idiom with the same VL.
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vwaddu &&
+          isa<UndefValue>(II2->getArgOperand(0)) &&
+          II2->getArgOperand(3) == II.getArgOperand(2) &&
+          isa<ConstantInt>(II2->getArgOperand(2)) &&
+          cast<ConstantInt>(II2->getArgOperand(2))->isZero())
+        return CreateIntrinsic(
+            &II, Intrinsic::riscv_vfwcvt_f_xu_v,
+            {II.getType(), II2->getArgOperand(1)->getType(),
+             II.getArgOperand(2)->getType()},
+            {II.getArgOperand(0), II2->getArgOperand(1), II.getArgOperand(2)});
+    }
+    break;
+  case Intrinsic::riscv_vfcvt_f_x_v:
+    // Try to convert to vwfcvt_f_x_v.
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
+      // Look for the vwcvt.x.x.v idiom with the same VL.
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vwadd &&
+          isa<UndefValue>(II2->getArgOperand(0)) &&
+          II2->getArgOperand(3) == II.getArgOperand(2) &&
+          isa<ConstantInt>(II2->getArgOperand(2)) &&
+          cast<ConstantInt>(II2->getArgOperand(2))->isZero())
+        return CreateIntrinsic(
+            &II, Intrinsic::riscv_vfwcvt_f_x_v,
+            {II.getType(), II2->getArgOperand(1)->getType(),
+             II.getArgOperand(2)->getType()},
+            {II.getArgOperand(0), II2->getArgOperand(1), II.getArgOperand(2)});
+    }
+    break;
   case Intrinsic::riscv_vadd:
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vrsub:

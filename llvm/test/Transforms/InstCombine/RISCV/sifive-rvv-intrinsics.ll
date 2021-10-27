@@ -360,3 +360,47 @@ define float @test_vfmv_splat_variable_vl(float %x, i64 %vl) {
 }
 declare <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float>, float, i64)
 declare float @llvm.riscv.vfmv.f.s.nxv4f32(<vscale x 4 x float>)
+
+define <vscale x 1 x float> @test_vfcvt_f_xu_v_to_vfwcvt_f_xu_v(<vscale x 1 x i16> %x) {
+; CHECK-LABEL: @test_vfcvt_f_xu_v_to_vfwcvt_f_xu_v(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfwcvt.f.xu.v.nxv1f32.nxv1i16.i64(<vscale x 1 x float> undef, <vscale x 1 x i16> [[X:%.*]], i64 2)
+; CHECK-NEXT:    ret <vscale x 1 x float> [[B]]
+;
+  %a = call <vscale x 1 x i32> @llvm.riscv.vwaddu.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> %x, i16 0, i64 2)
+  %b = call <vscale x 1 x float> @llvm.riscv.vfcvt.f.xu.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float> undef, <vscale x 1 x i32> %a, i64 2)
+  ret <vscale x 1 x float> %b
+}
+declare <vscale x 1 x i32> @llvm.riscv.vwaddu.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32>, <vscale x 1 x i16>, i16, i64)
+declare <vscale x 1 x float> @llvm.riscv.vfcvt.f.xu.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float>, <vscale x 1 x i32>, i64)
+
+define <vscale x 1 x float> @test_vfcvt_f_x_v_to_vfwcvt_f_x_v(<vscale x 1 x i16> %x) {
+; CHECK-LABEL: @test_vfcvt_f_x_v_to_vfwcvt_f_x_v(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfwcvt.f.x.v.nxv1f32.nxv1i16.i64(<vscale x 1 x float> undef, <vscale x 1 x i16> [[X:%.*]], i64 2)
+; CHECK-NEXT:    ret <vscale x 1 x float> [[B]]
+;
+  %a = call <vscale x 1 x i32> @llvm.riscv.vwadd.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> %x, i16 0, i64 2)
+  %b = call <vscale x 1 x float> @llvm.riscv.vfcvt.f.x.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float> undef, <vscale x 1 x i32> %a, i64 2)
+  ret <vscale x 1 x float> %b
+}
+declare <vscale x 1 x i32> @llvm.riscv.vwadd.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32>, <vscale x 1 x i16>, i16, i64)
+declare <vscale x 1 x float> @llvm.riscv.vfcvt.f.x.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float>, <vscale x 1 x i32>, i64)
+
+define <vscale x 1 x float> @test_vfcvt_f_xu_v_to_vfwcvt_f_xu_v_variable_vl(<vscale x 1 x i16> %x, i64 %vl) {
+; CHECK-LABEL: @test_vfcvt_f_xu_v_to_vfwcvt_f_xu_v_variable_vl(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfwcvt.f.xu.v.nxv1f32.nxv1i16.i64(<vscale x 1 x float> undef, <vscale x 1 x i16> [[X:%.*]], i64 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 1 x float> [[B]]
+;
+  %a = call <vscale x 1 x i32> @llvm.riscv.vwaddu.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> %x, i16 0, i64 %vl)
+  %b = call <vscale x 1 x float> @llvm.riscv.vfcvt.f.xu.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float> undef, <vscale x 1 x i32> %a, i64 %vl)
+  ret <vscale x 1 x float> %b
+}
+
+define <vscale x 1 x float> @test_vfcvt_f_x_v_to_vfwcvt_f_x_v_variable_vl(<vscale x 1 x i16> %x, i64 %vl) {
+; CHECK-LABEL: @test_vfcvt_f_x_v_to_vfwcvt_f_x_v_variable_vl(
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfwcvt.f.x.v.nxv1f32.nxv1i16.i64(<vscale x 1 x float> undef, <vscale x 1 x i16> [[X:%.*]], i64 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 1 x float> [[B]]
+;
+  %a = call <vscale x 1 x i32> @llvm.riscv.vwadd.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> %x, i16 0, i64 %vl)
+  %b = call <vscale x 1 x float> @llvm.riscv.vfcvt.f.x.v.nxv1f32.nxv1i32.i64(<vscale x 1 x float> undef, <vscale x 1 x i32> %a, i64 %vl)
+  ret <vscale x 1 x float> %b
+}
