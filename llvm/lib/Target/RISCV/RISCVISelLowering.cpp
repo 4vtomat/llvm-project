@@ -188,7 +188,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i64, Custom);
     setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4i64, Custom);
     setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v8i64, Custom);
-    if (Subtarget.hasStdExtD()) {
+    if (Subtarget.hasStdExtF()) {
       setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v1f32, Custom);
       setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2f32, Custom);
       setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v4f32, Custom);
