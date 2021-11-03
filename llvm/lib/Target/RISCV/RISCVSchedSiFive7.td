@@ -384,7 +384,7 @@ let Latency = 16 in {
 def : WriteRes<WriteVFDivV, [SiFive7VA]>;
 def : WriteRes<WriteVFDivF, [SiFive7VA]>;
 }
-let Latency = 4 in {
+let Latency = 8 in {
 def : WriteRes<WriteVFWMulV, [SiFive7VA]>;
 def : WriteRes<WriteVFWMulF, [SiFive7VA]>;
 def : WriteRes<WriteVFMulAddV, [SiFive7VA]>;
