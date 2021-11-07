@@ -434,7 +434,7 @@ def HasExtXsfvqmaccdod : Predicate<"Subtarget->hasExtXsfvqmaccdod()">,
 def FeatureStdExtXsfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasExtXsfvfhbfmin", "true",
                        "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
-                       [FeatureStdExtZve32f]>;
+                       [FeatureStdExtV]>; // FIXME: Is this the right implication?
 def HasExtXsfvfhbfmin : Predicate<"Subtarget->hasExtXsfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureStdExtXsfvfhbfmin),
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;

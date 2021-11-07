@@ -1573,6 +1573,9 @@ let TargetPrefix = "riscv" in {
 
   def int_riscv_sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
   def int_riscv_sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
+
+  defm sf_vfwcvt_f_bf16_v : RISCVConversion;
+  defm sf_vfncvt_bf16_f_w : RISCVConversion;
 #endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
 
