@@ -236,17 +236,19 @@ namespace llvm {
       nxv2bf16       = 159,  // n x  2 x bf16
       nxv4bf16       = 160,  // n x  4 x bf16
       nxv8bf16       = 161,  // n x  8 x bf16
+      nxv16bf16      = 162,  // n x 16 x bf16
+      nxv32bf16      = 163,  // n x 32 x bf16
 
-      nxv1f32        = 162,  // n x  1 x f32
-      nxv2f32        = 163,  // n x  2 x f32
-      nxv4f32        = 164,  // n x  4 x f32
-      nxv8f32        = 165,  // n x  8 x f32
-      nxv16f32       = 166,  // n x 16 x f32
+      nxv1f32        = 164,  // n x  1 x f32
+      nxv2f32        = 165,  // n x  2 x f32
+      nxv4f32        = 166,  // n x  4 x f32
+      nxv8f32        = 167,  // n x  8 x f32
+      nxv16f32       = 168,  // n x 16 x f32
 
-      nxv1f64        = 167,  // n x  1 x f64
-      nxv2f64        = 168,  // n x  2 x f64
-      nxv4f64        = 169,  // n x  4 x f64
-      nxv8f64        = 170,  // n x  8 x f64
+      nxv1f64        = 169,  // n x  1 x f64
+      nxv2f64        = 170,  // n x  2 x f64
+      nxv4f64        = 171,  // n x  4 x f64
+      nxv8f64        = 172,  // n x  8 x f64
 
       FIRST_FP_SCALABLE_VECTOR_VALUETYPE = nxv1f16,
       LAST_FP_SCALABLE_VECTOR_VALUETYPE = nxv8f64,
@@ -257,20 +259,20 @@ namespace llvm {
       FIRST_VECTOR_VALUETYPE = v1i1,
       LAST_VECTOR_VALUETYPE  = nxv8f64,
 
-      x86mmx         = 171,    // This is an X86 MMX value
+      x86mmx         = 173,    // This is an X86 MMX value
 
-      Glue           = 172,    // This glues nodes together during pre-RA sched
+      Glue           = 174,    // This glues nodes together during pre-RA sched
 
-      isVoid         = 173,    // This has no value
+      isVoid         = 175,    // This has no value
 
-      Untyped        = 174,    // This value takes a register, but has
+      Untyped        = 176,    // This value takes a register, but has
                                // unspecified type.  The register class
                                // will be determined by the opcode.
 
-      funcref        = 175,    // WebAssembly's funcref type
-      externref      = 176,    // WebAssembly's externref type
-      x86amx         = 177,    // This is an X86 AMX value
-      i64x8          = 178,    // 8 Consecutive GPRs (AArch64)
+      funcref        = 177,    // WebAssembly's funcref type
+      externref      = 178,    // WebAssembly's externref type
+      x86amx         = 179,    // This is an X86 AMX value
+      i64x8          = 180,    // 8 Consecutive GPRs (AArch64)
 
       FIRST_VALUETYPE =  1,    // This is always the beginning of the list.
       LAST_VALUETYPE = i64x8,  // This always remains at the end of the list.
@@ -640,7 +642,9 @@ namespace llvm {
       case nxv1bf16:
       case nxv2bf16:
       case nxv4bf16:
-      case nxv8bf16: return bf16;
+      case nxv8bf16:
+      case nxv16bf16:
+      case nxv32bf16: return bf16;
       case v1f32:
       case v2f32:
       case v3f32:
@@ -738,7 +742,8 @@ namespace llvm {
       case nxv32i16:
       case nxv32i32:
       case nxv32i64:
-      case nxv32f16: return 32;
+      case nxv32f16:
+      case nxv32bf16: return 32;
       case v16i1:
       case v16i8:
       case v16i16:
@@ -754,6 +759,7 @@ namespace llvm {
       case nxv16i32:
       case nxv16i64:
       case nxv16f16:
+      case nxv16bf16:
       case nxv16f32: return 16;
       case v8i1:
       case v8i8:
@@ -990,6 +996,7 @@ namespace llvm {
       case nxv8i32:
       case nxv4i64:
       case nxv16f16:
+      case nxv16bf16:
       case nxv8f32:
       case nxv4f64: return TypeSize::Scalable(256);
       case i64x8:
@@ -1007,6 +1014,7 @@ namespace llvm {
       case nxv16i32:
       case nxv8i64:
       case nxv32f16:
+      case nxv32bf16:
       case nxv16f32:
       case nxv8f64: return TypeSize::Scalable(512);
       case v1024i1:
@@ -1376,6 +1384,8 @@ namespace llvm {
           if (NumElements == 2)  return MVT::nxv2bf16;
           if (NumElements == 4)  return MVT::nxv4bf16;
           if (NumElements == 8)  return MVT::nxv8bf16;
+          if (NumElements == 16)  return MVT::nxv16bf16;
+          if (NumElements == 32)  return MVT::nxv32bf16;
           break;
         case MVT::f32:
           if (NumElements == 1)  return MVT::nxv1f32;
