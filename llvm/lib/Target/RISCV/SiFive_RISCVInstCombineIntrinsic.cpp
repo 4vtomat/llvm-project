@@ -1112,6 +1112,19 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       if (auto *I = optimizeVCastFromFixedPhi(II, PN, IC))
         return I;
 
+    if (auto *Splat = getSplatValue(II.getArgOperand(0))) {
+      auto IntrinsicID = Splat->getType()->isIntegerTy()
+                             ? Intrinsic::riscv_vmv_v_x
+                             : Intrinsic::riscv_vfmv_v_f;
+      ConstantInt *VL =
+          ConstantInt::get(Type::getIntNTy(II.getContext(), ST->getXLen()),
+                           cast<VectorType>(II.getArgOperand(0)->getType())
+                               ->getElementCount()
+                               .getFixedValue());
+      return CreateIntrinsic(&II, IntrinsicID, {II.getType(), VL->getType()},
+                             {UndefValue::get(II.getType()), Splat, VL});
+    }
+
     break;
   case Intrinsic::riscv_vcast_to_fixed:
     if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
