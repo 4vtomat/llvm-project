@@ -225,7 +225,7 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   }
   OS << "#endif\n";
 
-  OS << "#if defined(__riscv_f)\n";
+  OS << "#if (__riscv_v_elen_fp >= 32)\n";
   for (int Log2LMUL : Log2LMULs) {
     auto T = computeType('f', Log2LMUL, "v");
     if (T.hasValue())
@@ -233,7 +233,7 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   }
   OS << "#endif\n";
 
-  OS << "#if defined(__riscv_d)\n";
+  OS << "#if (__riscv_v_elen_fp >= 64)\n";
   for (int Log2LMUL : Log2LMULs) {
     auto T = computeType('d', Log2LMUL, "v");
     if (T.hasValue())
