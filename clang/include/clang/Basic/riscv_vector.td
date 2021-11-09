@@ -41,6 +41,7 @@
 //   i: int32_t (i32)
 //   l: int64_t (i64)
 //   x: float16_t (half)
+//   y: bfloat16_t (bf16)
 //   f: float32_t (float)
 //   d: float64_t (double)
 //
@@ -2292,6 +2293,12 @@ let RequiredFeatures = ["Xsfvfnrclipxfqf"],
     def sf_vfnrclip_xu : RVVBuiltin<"Uv", "UvFqf", "c">;
   let MangledName = "sf_vfnrclip_x_f_qf", Name = "sf_vfnrclip_x_f_qf"  in
     def sf_vfnrclip_x : RVVBuiltin<"v", "vFqf", "c">;
+}
+
+let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,
+    Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
+  def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
+  def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;
 }
 // end SIFIVE
 

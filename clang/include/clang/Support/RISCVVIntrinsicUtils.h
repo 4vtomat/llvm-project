@@ -45,6 +45,7 @@ class RVVType {
     SignedInteger,
     UnsignedInteger,
     Float,
+    BFloat, // SIFIVE
     Invalid,
   };
   BasicType BT;
@@ -143,6 +144,7 @@ enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   Xsfvqmaccqoq = 1 << 7,
   Xsfvqmaccdod = 1 << 8,
   Xsfvfnrclipxfqf = 1 << 9,
+  Xsfvfhbfmin = 1 << 10,
 #endif // SIFIVE_CUSTOMIZATION
 };
 

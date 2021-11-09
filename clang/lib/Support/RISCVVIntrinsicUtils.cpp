@@ -198,6 +198,12 @@ void RVVType::initBuiltinStr() {
       llvm_unreachable("Unhandled ElementBitwidth!");
     }
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::BFloat:
+    assert(ElementBitwidth == 16 && "Unexpected bit width for BFloat16.");
+    BuiltinStr += "y";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("ScalarType is invalid!");
   }
@@ -230,6 +236,11 @@ void RVVType::initClangBuiltinStr() {
   case ScalarTypeKind::Float:
     ClangBuiltinStr += "float";
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::BFloat:
+    ClangBuiltinStr += "bfloat";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     ClangBuiltinStr += "int";
     break;
@@ -299,6 +310,15 @@ void RVVType::initTypeStr() {
     } else
       Str += getTypeString("float");
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::BFloat:
+    if (isScalar()) {
+      assert(ElementBitwidth == 16 && "Unexpected bit width for BFloat16");
+      Str += "__bf16";
+    } else
+      Str += getTypeString("bfloat");
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     Str += getTypeString("int");
     break;
@@ -321,6 +341,11 @@ void RVVType::initShortStr() {
   case ScalarTypeKind::Float:
     ShortStr = "f" + utostr(ElementBitwidth);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::BFloat:
+    ShortStr = "bf" + utostr(ElementBitwidth);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     ShortStr = "i" + utostr(ElementBitwidth);
     break;
@@ -356,6 +381,12 @@ void RVVType::applyBasicType() {
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::Float;
     break;
+#if SIFIVE_CUSTOMIZATION
+  case 'y':
+    ElementBitwidth = 16;
+    ScalarType = ScalarTypeKind::BFloat;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case 'f':
     ElementBitwidth = 32;
     ScalarType = ScalarTypeKind::Float;
@@ -386,6 +417,10 @@ void RVVType::applyModifier(StringRef Transformer, int CurLog2LMUL) {
     ElementBitwidth *= 2;
     LMUL *= 2;
     Scale = LMUL.getScale(ElementBitwidth);
+#if SIFIVE_CUSTOMIZATION
+    if (ScalarType == ScalarTypeKind::BFloat)
+      ScalarType = ScalarTypeKind::Float;
+#endif // SIFIVE_CUSTOMIZATION
     break;
   case 'q':
     ElementBitwidth *= 4;
