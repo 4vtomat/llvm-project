@@ -375,6 +375,11 @@ static unsigned calculateLatency(const RISCVSubtarget* ST,
   llvm_unreachable("Unexpected processor model!");
 }
 
+void RISCVSubtarget::getPostRAMutations(
+    std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
+  Mutations.push_back(createRISCVMacroFusionDAGMutation());
+}
+
 // Perform adjustments to the latency of a schedule dependency.
 // TODO: Consider the impact on the throughput.
 void RISCVSubtarget::adjustSchedDependency(SUnit *SrcSU, int SrcOpIdx,

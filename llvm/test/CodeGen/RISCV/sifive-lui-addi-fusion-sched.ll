@@ -7,8 +7,8 @@
 define void @food(i32 signext %0, i32 signext %1) {
 ; CHECK-LABEL: food:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a0, %hi(.L.str)
 ; CHECK-NEXT:    fcvt.s.w fa0, a1
+; CHECK-NEXT:    lui a0, %hi(.L.str)
 ; CHECK-NEXT:    addi a0, a0, %lo(.L.str)
 ; CHECK-NEXT:    tail bar@plt
   %3 = sitofp i32 %1 to float

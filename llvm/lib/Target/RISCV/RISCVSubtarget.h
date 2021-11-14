@@ -17,6 +17,7 @@
 #include "RISCVFrameLowering.h"
 #include "RISCVISelLowering.h"
 #include "RISCVInstrInfo.h"
+#include "SiFive_RISCVMacroFusion.h" // SIFIVE
 #include "llvm/CodeGen/GlobalISel/CallLowering.h"
 #include "llvm/CodeGen/GlobalISel/InstructionSelector.h"
 #include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
@@ -216,6 +217,7 @@ public:
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
+  bool hasFusion() const { return hasLUIADDIFusion(); }
 #endif // SIFIVE_CUSTOMIZATION
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
@@ -293,6 +295,9 @@ public:
   bool enableSubRegLiveness() const override;
 
 #if SIFIVE_CUSTOMIZATION
+  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
+                              &Mutations) const override;
+
   void adjustSchedDependency(SUnit *Def, int DefOpIdx, SUnit *Use, int UseOpIdx,
                              SDep &Dep) const override;
 #endif // SIFIVE_CUSTOMIZATION
