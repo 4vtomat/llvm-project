@@ -636,6 +636,8 @@ RVVIntrinsic::RVVIntrinsic(
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfhbfmin;
     if (Feature == "Xsfvfwmaccqqq")
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfwmaccqqq;
+    if (Feature == "HasBfloat16")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::HasBfloat16;
 #endif // SIFIVE_CUSTOMIZATION
   }
 

@@ -2308,6 +2308,18 @@ let RequiredFeatures = ["Xsfvfwmaccqqq"],
   let MangledName = "sf_vfwmacc_4x4x4" in
     def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
 }
+
+// reinterpret for bf16 <-> uint16
+let RequiredFeatures = ["HasBfloat16"], HasMask = false, HasVL = false, IRName = "" in {
+  let Name = "vreinterpret_v", HasPolicy = false,
+      ManualCodegen = [{
+        return Builder.CreateBitCast(Ops[0], ResultType);
+      }] in {
+    // Reinterpret between different type under the same SEW and LMUL
+    def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
+    def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
+  }
+}
 // end SIFIVE
 
 let HeaderCode = [{
