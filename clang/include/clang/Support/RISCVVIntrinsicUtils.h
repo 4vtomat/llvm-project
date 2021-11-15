@@ -145,6 +145,7 @@ enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   Xsfvqmaccdod = 1 << 8,
   Xsfvfnrclipxfqf = 1 << 9,
   Xsfvfhbfmin = 1 << 10,
+  Xsfvfwmaccqqq = 1 << 11,
 #endif // SIFIVE_CUSTOMIZATION
 };
 

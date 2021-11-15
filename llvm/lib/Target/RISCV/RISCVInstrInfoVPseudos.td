@@ -435,12 +435,20 @@ defset list<VTypeInfoToWide> AllWidenableIntToFloatVectors = {
   def : VTypeInfoToWide<VI32M4, VF64M8>;
 }
 
-defset list<VTypeInfoToWide> AllWidenableBFloatVectors = {
+defset list<VTypeInfoToWide> AllWidenableBFloatToFloatVectors = {
   def : VTypeInfoToWide<VBF16MF4, VF32MF2>;
   def : VTypeInfoToWide<VBF16MF2, VF32M1>;
   def : VTypeInfoToWide<VBF16M1, VF32M2>;
   def : VTypeInfoToWide<VBF16M2, VF32M4>;
   def : VTypeInfoToWide<VBF16M4, VF32M8>;
+}
+
+defset list<VTypeInfoToWide> AllWidenableBFloatVectors = {
+  def : VTypeInfoToWide<VBF16MF4, VBF16MF2>;
+  def : VTypeInfoToWide<VBF16MF2, VBF16M1>;
+  def : VTypeInfoToWide<VBF16M1, VBF16M2>;
+  def : VTypeInfoToWide<VBF16M2, VBF16M4>;
+  def : VTypeInfoToWide<VBF16M4, VBF16M8>;
 }
 
 // This class holds the record of the RISCVVPseudoTable below.
@@ -4432,7 +4440,7 @@ multiclass VPatCompare_VI<string intrinsic, string inst,
 }
 
 multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableBFloatVectors in
+  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
   {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
@@ -4444,7 +4452,7 @@ multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
 }
 
 multiclass XPatConversionVF_WF <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableBFloatVectors in
+  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
   {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
@@ -5203,12 +5211,19 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasExtXsfvfhbfmin] in {
 defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
 }
+
+foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVFWMACC4X4X4_VV # "_" # m.MX: VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Patterns.
@@ -5815,6 +5830,18 @@ let Predicates = [HasExtXsfvfnrclipxfqf] in {
 let Predicates = [HasExtXsfvfhbfmin] in {
 defm : XPatConversionWF_VF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVT_F_BF16">;
 defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVT_BF16_F">;
+}
+
+let Predicates = [HasExtXsfvfwmaccqqq] in {
+  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in {
+    defvar fvti = fvtiToFWti.Vti;
+    defvar fwti = fvtiToFWti.Wti;
+    def: VPatTernaryNoMaskStaticPolicy<"int_riscv_sf_vfwmacc_4x4x4", "PseudoVFWMACC4X4X4", "VV",
+                                       fwti.Vector, vbfloat16m1_t, fvti.Vector,
+                                       fvti.Log2SEW, fvti.LMul,
+                                       fwti.RegClass, VR, fvti.RegClass,
+                                       TAIL_AGNOSTIC>;
+  }
 }
 
 def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;

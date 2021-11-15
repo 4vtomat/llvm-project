@@ -632,6 +632,10 @@ RVVIntrinsic::RVVIntrinsic(
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccdod;
     if (Feature == "Xsfvfnrclipxfqf")
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfnrclipxfqf;
+    if (Feature == "Xsfvfhbfmin")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfhbfmin;
+    if (Feature == "Xsfvfwmaccqqq")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfwmaccqqq;
 #endif // SIFIVE_CUSTOMIZATION
   }
 

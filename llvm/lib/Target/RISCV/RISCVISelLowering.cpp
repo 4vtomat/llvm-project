@@ -143,7 +143,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       for (MVT VT : F16VecVTs)
         addRegClassForRVV(VT);
 
-    if (Subtarget.hasExtXsfvfhbfmin())
+    if (Subtarget.hasVInstructionsBF16())
       for (MVT VT : BF16VecVTs)
         addRegClassForRVV(VT);
 

@@ -2300,6 +2300,14 @@ let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,
   def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
   def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;
 }
+
+let RequiredFeatures = ["Xsfvfwmaccqqq"],
+    Log2LMUL = [-2, -1, 0, 1, 2],
+    HasMask = false,
+    IntrinsicTypes = [-1, 1, 2] in {
+  let MangledName = "sf_vfwmacc_4x4x4" in
+    def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
+}
 // end SIFIVE
 
 let HeaderCode = [{

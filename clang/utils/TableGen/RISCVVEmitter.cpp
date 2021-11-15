@@ -225,7 +225,7 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   }
   OS << "#endif\n";
 
-  OS << "#if defined(__riscv_xsfvfhbfmin)\n";
+  OS << "#if defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)\n";
   for (int Log2LMUL : Log2LMULs) {
     auto T = computeType('y', Log2LMUL, "v");
     if (T.hasValue())
@@ -596,6 +596,8 @@ bool RVVEmitter::emitMacroRestrictionStr(RISCVPredefinedMacroT PredefinedMacros,
     OS << LS << "defined(__riscv_xsfvfnrclipxfqf)";
   if (PredefinedMacros & RISCVPredefinedMacro::Xsfvfhbfmin)
     OS << LS << "defined(__riscv_xsfvfhbfmin)";
+  if (PredefinedMacros & RISCVPredefinedMacro::Xsfvfwmaccqqq)
+    OS << LS << "defined(__riscv_xsfvfwmaccqqq)";
 #endif // SIFIVE_CUSTOMIZATION
   OS << "\n";
   return true;
