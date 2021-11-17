@@ -15,6 +15,7 @@
 #include "RISCVCallLowering.h"
 #include "RISCVFrameLowering.h"
 #include "RISCVLegalizerInfo.h"
+#include "SiFive_RISCVMacroFusion.h"
 #include "RISCVRegisterBankInfo.h"
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/ScheduleDAG.h"

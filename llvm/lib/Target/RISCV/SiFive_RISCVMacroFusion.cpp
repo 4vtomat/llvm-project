@@ -18,21 +18,29 @@
 
 using namespace llvm;
 
+// Fuse LUI followed by ADDI or ADDIW.
+// rd = imm[31:0] which decomposes to
+// lui rd, imm[31:12]
+// addi(w) rd, rd, imm[11:0]
 static bool isLUIADDI(const MachineInstr *FirstMI,
                       const MachineInstr &SecondMI) {
   if (SecondMI.getOpcode() != RISCV::ADDI &&
       SecondMI.getOpcode() != RISCV::ADDIW)
     return false;
 
+  // Assume the 1st instr to be a wildcard if it is unspecified
   if (!FirstMI)
     return true;
 
   if (FirstMI->getOpcode() != RISCV::LUI)
     return false;
 
+  // The first operand of ADDI can be a frame index.
   if (!SecondMI.getOperand(1).isReg())
     return false;
 
+  // Destination of LUI should be the ADDI(W) source register.
+  // ADDI(W) source and destination should be the same register.
   return FirstMI->getOperand(0).getReg() == SecondMI.getOperand(0).getReg() &&
          SecondMI.getOperand(0).getReg() == SecondMI.getOperand(1).getReg();
 }
