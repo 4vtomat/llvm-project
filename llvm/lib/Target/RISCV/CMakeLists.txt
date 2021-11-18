@@ -55,6 +55,7 @@ add_llvm_target(RISCVCodeGen
   IPO
   CodeGen
   MC
+  Scalar
   RISCVDesc
   RISCVInfo
   SelectionDAG

@@ -35,12 +35,20 @@
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
+#include "llvm/Transforms/Scalar.h"
 using namespace llvm;
 
 static cl::opt<bool> EnableRedundantCopyElimination(
     "riscv-enable-copyelim",
     cl::desc("Enable the redundant copy elimination pass"), cl::init(true),
     cl::Hidden);
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableGEPOpt("riscv-gep-opt", cl::Hidden,
+                 cl::desc("Enable optimizations on complex GEPs"),
+                 cl::init(false));
+#endif // SIFIVE_CUSTOMIZATION
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -195,6 +203,12 @@ void RISCVPassConfig::addIRPasses() {
   addPass(createRISCVGatherScatterLoweringPass());
 
   TargetPassConfig::addIRPasses();
+
+  if (TM->getOptLevel() == CodeGenOpt::Aggressive && EnableGEPOpt) {
+    addPass(createSeparateConstOffsetFromGEPPass());
+    addPass(createEarlyCSEPass());
+    addPass(createLICMPass());
+  }
 }
 
 #if SIFIVE_CUSTOMIZATION
