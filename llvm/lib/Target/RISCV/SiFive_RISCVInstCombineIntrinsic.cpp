@@ -1199,6 +1199,27 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     }
     break;
   case Intrinsic::riscv_vadd:
+    if (isa<UndefValue>(II.getArgOperand(0))) {
+      for (int i = 0; i != 2; ++i) {
+        if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1 + i))) {
+          if (II2->getIntrinsicID() == Intrinsic::riscv_vmul &&
+              isa<UndefValue>(II2->getArgOperand(0)) &&
+              II.getArgOperand(3) == II2->getArgOperand(3) &&
+              // cannot combine vmul + vadd.vx to vmacc
+              II.getArgOperand(1 + (1 - i))->getType()->isVectorTy()) {
+            // Add a tail agnostic policy
+            Value *Policy = ConstantInt::get(II.getArgOperand(3)->getType(), 1);
+            return CreateIntrinsic(
+                &II, Intrinsic::riscv_vmacc,
+                {II.getType(), II2->getArgOperand(2)->getType(),
+                 II.getArgOperand(3)->getType()},
+                {II.getArgOperand(1 + (1 - i)), II2->getArgOperand(2),
+                 II2->getArgOperand(1), II.getArgOperand(3), Policy});
+          }
+        }
+      }
+    }
+    LLVM_FALLTHROUGH;
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
