@@ -1253,6 +1253,28 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
+  case Intrinsic::riscv_vfmul:
+    if (auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
+      if (auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
+        if (Op0->getIntrinsicID() == Intrinsic::riscv_vfwcvt_f_f_v &&
+            Op1->getIntrinsicID() == Intrinsic::riscv_vfwcvt_f_f_v &&
+            isa<UndefValue>(Op0->getArgOperand(0)) &&
+            isa<UndefValue>(Op1->getArgOperand(0)) &&
+            II.getArgOperand(3) == Op0->getArgOperand(2) &&
+            II.getArgOperand(3) == Op1->getArgOperand(2)) {
+          return CreateIntrinsic(&II, Intrinsic::riscv_vfwmul,
+                                 {II.getType(),
+                                  Op0->getArgOperand(1)->getType(),
+                                  Op1->getArgOperand(1)->getType(),
+                                  II.getArgOperand(3)->getType()},
+                                 {II.getArgOperand(0), Op0->getArgOperand(1),
+                                  Op1->getArgOperand(1), II.getArgOperand(3)});
+        }
+      }
+    }
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
@@ -1265,7 +1287,6 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vmulh:
   case Intrinsic::riscv_vmulhu:
   case Intrinsic::riscv_vmulhsu:
-  case Intrinsic::riscv_vfmul:
   case Intrinsic::riscv_vwmul:
   case Intrinsic::riscv_vwmulu:
   case Intrinsic::riscv_vwmulsu:
