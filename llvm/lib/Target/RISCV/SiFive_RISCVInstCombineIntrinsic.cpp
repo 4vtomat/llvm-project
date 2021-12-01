@@ -1219,7 +1219,40 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
         }
       }
     }
-    LLVM_FALLTHROUGH;
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
+  case Intrinsic::riscv_vmul:
+    if (auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
+      if (auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
+        Intrinsic::ID IID[] = {Intrinsic::riscv_vwadd, Intrinsic::riscv_vwaddu};
+        Intrinsic::ID IIDNew[] = {Intrinsic::riscv_vwmul,
+                                  Intrinsic::riscv_vwmulu};
+        for (int i = 0; i != 2; ++i) {
+          if (Op0->getIntrinsicID() == IID[i] &&
+              Op1->getIntrinsicID() == IID[i] &&
+              isa<UndefValue>(Op0->getArgOperand(0)) &&
+              isa<UndefValue>(Op1->getArgOperand(0)) &&
+              isa<ConstantInt>(Op0->getArgOperand(2)) &&
+              cast<ConstantInt>(Op0->getArgOperand(2))->isZero() &&
+              isa<ConstantInt>(Op1->getArgOperand(2)) &&
+              cast<ConstantInt>(Op1->getArgOperand(2))->isZero() &&
+              II.getArgOperand(3) == Op0->getArgOperand(3) &&
+              II.getArgOperand(3) == Op1->getArgOperand(3)) {
+            return CreateIntrinsic(
+                &II, IIDNew[i],
+                {II.getType(), Op0->getArgOperand(1)->getType(),
+                 Op1->getArgOperand(1)->getType(),
+                 II.getArgOperand(3)->getType()},
+                {II.getArgOperand(0), Op0->getArgOperand(1),
+                 Op1->getArgOperand(1), II.getArgOperand(3)});
+          }
+        }
+      }
+    }
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
@@ -1229,7 +1262,6 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vsll:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
-  case Intrinsic::riscv_vmul:
   case Intrinsic::riscv_vmulh:
   case Intrinsic::riscv_vmulhu:
   case Intrinsic::riscv_vmulhsu:
