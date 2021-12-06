@@ -709,7 +709,8 @@ static Instruction *foldVMV_F_S(InstCombiner &IC, IntrinsicInst &II) {
 /// NOTE: This is based on optimizeBitCastFromPhi with the load/store handling
 /// removed.
 static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
-                                              InstCombiner &IC) {
+                                              InstCombiner &IC,
+                                              const RISCVSubtarget *ST) {
   Value *Src = II.getArgOperand(0);
   Type *SrcTy = Src->getType(); // Type B
   Type *DestTy = II.getType();  // Type A
@@ -731,6 +732,9 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
           PhiWorklist.push_back(PNode);
         continue;
       }
+
+      if (getSplatValue(IncValue))
+        continue;
 
       auto *VCastTo = dyn_cast<IntrinsicInst>(IncValue);
       // We can't handle other instructions.
@@ -790,6 +794,19 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
         NewV = VCastTo->getArgOperand(0);
       } else if (auto *PrevPN = dyn_cast<PHINode>(V)) {
         NewV = NewPNodes[PrevPN];
+      } else if (auto *Splat = getSplatValue(V)) {
+        IC.Builder.SetInsertPoint(OldPN->getIncomingBlock(j)->getTerminator());
+        IC.Builder.SetCurrentDebugLocation(DebugLoc());
+        auto IntrinsicID = Splat->getType()->isIntegerTy()
+                               ? Intrinsic::riscv_vmv_v_x
+                               : Intrinsic::riscv_vfmv_v_f;
+        ConstantInt *VL = ConstantInt::get(
+            Type::getIntNTy(II.getContext(), ST->getXLen()),
+            cast<FixedVectorType>(II.getArgOperand(0)->getType())
+                ->getNumElements());
+        NewV = IC.Builder.CreateIntrinsic(
+            IntrinsicID, {II.getType(), VL->getType()},
+            {UndefValue::get(II.getType()), Splat, VL});
       }
       assert(NewV);
       NewPN->addIncoming(NewV, OldPN->getIncomingBlock(j));
@@ -1109,7 +1126,7 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
         return IC.replaceInstUsesWith(II, II2->getArgOperand(0));
 
     if (auto *PN = dyn_cast<PHINode>(II.getArgOperand(0)))
-      if (auto *I = optimizeVCastFromFixedPhi(II, PN, IC))
+      if (auto *I = optimizeVCastFromFixedPhi(II, PN, IC, ST))
         return I;
 
     if (auto *Splat = getSplatValue(II.getArgOperand(0))) {
@@ -1118,9 +1135,8 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
                              : Intrinsic::riscv_vfmv_v_f;
       ConstantInt *VL =
           ConstantInt::get(Type::getIntNTy(II.getContext(), ST->getXLen()),
-                           cast<VectorType>(II.getArgOperand(0)->getType())
-                               ->getElementCount()
-                               .getFixedValue());
+                           cast<FixedVectorType>(II.getArgOperand(0)->getType())
+                               ->getNumElements());
       return CreateIntrinsic(&II, IntrinsicID, {II.getType(), VL->getType()},
                              {UndefValue::get(II.getType()), Splat, VL});
     }

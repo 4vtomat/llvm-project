@@ -95,3 +95,57 @@ declare i64 @llvm.riscv.vfirst.nxv4i1.i64(<vscale x 4 x i1>, i64) #1
 declare <vscale x 2 x float> @llvm.riscv.vfmv.v.f.nxv2f32.i64(<vscale x 2 x float>, float, i64) #1
 declare <vscale x 2 x float> @llvm.riscv.vfredosum.nxv2f32.nxv4f32.i64(<vscale x 2 x float>, <vscale x 4 x float>, <vscale x 2 x float>, i64) #1
 declare float @llvm.riscv.vfmv.f.s.nxv2f32(<vscale x 2 x float>) #1
+
+define void @vcast(float* nocapture readonly %in, i64 %size, float* nocapture %out) {
+; CHECK-LABEL: @vcast(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[CMP_NOT16:%.*]] = icmp eq i64 [[SIZE:%.*]], 0
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfmv.v.f.nxv1f32.i64(<vscale x 1 x float> undef, float 0.000000e+00, i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfmv.v.f.nxv1f32.i64(<vscale x 1 x float> undef, float 0.000000e+00, i64 4)
+; CHECK-NEXT:    br i1 [[CMP_NOT16]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY:%.*]]
+; CHECK:       for.cond.cleanup:
+; CHECK-NEXT:    [[TMP2:%.*]] = phi <vscale x 1 x float> [ [[TMP1]], [[ENTRY:%.*]] ], [ [[TMP7:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP3:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 1 x float>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f32.i64(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float>* [[TMP3]], i64 4)
+; CHECK-NEXT:    ret void
+; CHECK:       for.body:
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 1 x float> [ [[TMP7]], [[FOR_BODY]] ], [ [[TMP0]], [[ENTRY]] ]
+; CHECK-NEXT:    [[I_017:%.*]] = phi i64 [ [[ADD:%.*]], [[FOR_BODY]] ], [ 0, [[ENTRY]] ]
+; CHECK-NEXT:    [[ADD_PTR:%.*]] = getelementptr inbounds float, float* [[IN:%.*]], i64 [[I_017]]
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast float* [[ADD_PTR]] to <vscale x 1 x float>*
+; CHECK-NEXT:    [[TMP6:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* [[TMP5]], i64 4)
+; CHECK-NEXT:    [[TMP7]] = tail call <vscale x 1 x float> @llvm.riscv.vfmacc.nxv1f32.nxv1f32.i64(<vscale x 1 x float> [[TMP4]], <vscale x 1 x float> [[TMP6]], <vscale x 1 x float> [[TMP6]], i64 4, i64 0)
+; CHECK-NEXT:    [[ADD]] = add i64 [[I_017]], 4
+; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[ADD]], [[SIZE]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+entry:
+  %cmp.not16 = icmp eq i64 %size, 0
+  br i1 %cmp.not16, label %for.cond.cleanup, label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  %.lcssa = phi <4 x float> [ zeroinitializer, %entry ], [ %7, %for.body ]
+  %0 = tail call <vscale x 1 x float> @llvm.riscv.vcast.from.fixed.nxv1f32.v4f32(<4 x float> %.lcssa)
+  %1 = bitcast float* %out to <vscale x 1 x float>*
+  tail call void @llvm.riscv.vse.nxv1f32.i64(<vscale x 1 x float> %0, <vscale x 1 x float>* %1, i64 4)
+  ret void
+
+for.body:                                         ; preds = %entry, %for.body
+  %2 = phi <4 x float> [ %7, %for.body ], [ zeroinitializer, %entry ]
+  %i.017 = phi i64 [ %add, %for.body ], [ 0, %entry ]
+  %add.ptr = getelementptr inbounds float, float* %in, i64 %i.017
+  %3 = bitcast float* %add.ptr to <vscale x 1 x float>*
+  %4 = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* %3, i64 4)
+  %5 = tail call <vscale x 1 x float> @llvm.riscv.vcast.from.fixed.nxv1f32.v4f32(<4 x float> %2)
+  %6 = tail call <vscale x 1 x float> @llvm.riscv.vfmacc.nxv1f32.nxv1f32.i64(<vscale x 1 x float> %5, <vscale x 1 x float> %4, <vscale x 1 x float> %4, i64 4, i64 0)
+  %7 = tail call <4 x float> @llvm.riscv.vcast.to.fixed.v4f32.nxv1f32(<vscale x 1 x float> %6)
+  %add = add i64 %i.017, 4
+  %cmp.not = icmp eq i64 %add, %size
+  br i1 %cmp.not, label %for.cond.cleanup, label %for.body
+}
+
+declare <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float>, <vscale x 1 x float>* nocapture, i64)
+declare <4 x float> @llvm.riscv.vcast.to.fixed.v4f32.nxv1f32(<vscale x 1 x float>)
+declare <vscale x 1 x float> @llvm.riscv.vcast.from.fixed.nxv1f32.v4f32(<4 x float>)
+declare <vscale x 1 x float> @llvm.riscv.vfmacc.nxv1f32.nxv1f32.i64(<vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, i64, i64)
+declare void @llvm.riscv.vse.nxv1f32.i64(<vscale x 1 x float>, <vscale x 1 x float>* nocapture, i64)
