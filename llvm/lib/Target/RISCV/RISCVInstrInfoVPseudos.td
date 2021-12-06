@@ -5189,6 +5189,7 @@ defm PseudoVCOMPRESS : VPseudoVCPR_V;
 //===----------------------------------------------------------------------===//
 // SiFive Custom Instructions
 //===----------------------------------------------------------------------===//
+let IsRVVWideningReduction = 1 in {
 foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
@@ -5208,6 +5209,7 @@ foreach m = [V_M1, V_M2, V_M4, V_M8] in {
     def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
   }
 }
+}
 
 foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
   defvar Constraint = "@earlyclobber $rd";
@@ -5222,11 +5224,13 @@ defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
 }
 
+let IsRVVWideningReduction = 1 in {
 foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
     def PseudoVFWMACC4X4X4_VV # "_" # m.MX: VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
   }
+}
 }
 #endif // SIFIVE_CUSTOMIZATION
 
