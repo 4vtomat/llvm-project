@@ -48,6 +48,11 @@ static cl::opt<bool>
     EnableGEPOpt("riscv-gep-opt", cl::Hidden,
                  cl::desc("Enable optimizations on complex GEPs"),
                  cl::init(false));
+
+static cl::opt<bool>
+    EnableMachineCombinerPass("riscv-machine-combiner",
+                              cl::desc("Enable the machine combiner pass"),
+                              cl::init(false), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
@@ -190,6 +195,7 @@ public:
   void addMachineSSAOptimization() override;
   void addPreRegAlloc() override;
   void addPostRegAlloc() override;
+  bool addILPOpts() override; // SIFIVE
 };
 } // namespace
 
@@ -257,6 +263,14 @@ bool RISCVPassConfig::addGlobalInstructionSelect() {
   addPass(new InstructionSelect(getOptLevel()));
   return false;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVPassConfig::addILPOpts() {
+  if (EnableMachineCombinerPass)
+    addPass(&MachineCombinerID);
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void RISCVPassConfig::addPreSched2() {}
 

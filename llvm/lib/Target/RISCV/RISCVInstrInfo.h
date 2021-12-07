@@ -203,6 +203,17 @@ public:
   // the register in the function entry block, if necessary.
   Register getGlobalBaseReg(MachineFunction *MF) const;
 
+#if SIFIVE_CUSTOMIZATION
+  bool useMachineCombiner() const override { return true; }
+
+  /// Return true when Inst is associative and commutative so that it can be
+  /// reassociated.
+  bool isAssociativeAndCommutative(const MachineInstr &Inst) const override;
+  void setSpecialOperandAttr(MachineInstr &OldMI1, MachineInstr &OldMI2,
+                             MachineInstr &NewMI1,
+                             MachineInstr &NewMI2) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
 protected:
   const RISCVSubtarget &STI;
 };

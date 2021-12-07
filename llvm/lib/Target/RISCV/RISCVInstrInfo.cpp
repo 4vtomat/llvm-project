@@ -2170,3 +2170,68 @@ Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RVFI->setGlobalBaseReg(GlobalBaseReg);
   return GlobalBaseReg;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVInstrInfo::isAssociativeAndCommutative(
+    const MachineInstr &Inst) const {
+  switch (Inst.getOpcode()) {
+  case RISCV::FADD_D:
+  case RISCV::FADD_H:
+  case RISCV::FADD_S:
+  case RISCV::FMUL_D:
+  case RISCV::FMUL_H:
+  case RISCV::FMUL_S:
+    // We only reassociate DYN rounding mode to ensure the two operations
+    // have the same rounding mode.
+    if (Inst.getOperand(3).getImm() != RISCVFPRndMode::DYN)
+      return false;
+    return Inst.getFlag(MachineInstr::MIFlag::FmReassoc) &&
+           Inst.getFlag(MachineInstr::MIFlag::FmNsz);
+  default:
+    return false;
+  }
+}
+
+// FIXME: This is abusing what this function was intended for. It is normally
+// used to copy fast math flags and dead flags.
+// TargetInstrInfo::reassociateOps doesn't know how to deal with the FRM
+// operands so we need to add them and this conveniently gets called right after
+// the instructions are created.
+void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
+                                           MachineInstr &OldMI2,
+                                           MachineInstr &NewMI1,
+                                           MachineInstr &NewMI2) const {
+  MachineFunction &MF = *OldMI1.getParent()->getParent();
+
+  // Copy the FRM operands.
+  auto Idx1 = RISCV::getNamedOperandIdx(OldMI2.getOpcode(), RISCV::OpName::frm);
+  if (Idx1 < 0)
+    return;
+  assert(NewMI1.getNumOperands() == (unsigned)Idx1);
+  NewMI1.addOperand(MF, OldMI1.getOperand(Idx1));
+  if (OldMI1.getOperand(Idx1).getImm() == RISCVFPRndMode::DYN &&
+      !NewMI1.readsRegister(RISCV::FRM))
+    NewMI1.addOperand(MF, MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false, /*isImp*/ true));
+
+  auto Idx2 = RISCV::getNamedOperandIdx(OldMI2.getOpcode(), RISCV::OpName::frm);
+  if (Idx2 < 0)
+    return;
+  assert(NewMI2.getNumOperands() == (unsigned)Idx2);
+  NewMI2.addOperand(MF, OldMI2.getOperand(Idx2));
+  if (OldMI2.getOperand(Idx2).getImm() == RISCVFPRndMode::DYN &&
+      !NewMI2.readsRegister(RISCV::FRM))
+    NewMI2.addOperand(MF, MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false, /*isImp*/ true));
+
+  // Merge the fast math flags, but drop the poison generating flags.
+  uint16_t IntersectedFlags = OldMI1.getFlags() & OldMI2.getFlags();
+  NewMI1.setFlags(IntersectedFlags);
+  NewMI1.clearFlag(MachineInstr::MIFlag::NoSWrap);
+  NewMI1.clearFlag(MachineInstr::MIFlag::NoUWrap);
+  NewMI1.clearFlag(MachineInstr::MIFlag::IsExact);
+
+  NewMI2.setFlags(IntersectedFlags);
+  NewMI2.clearFlag(MachineInstr::MIFlag::NoSWrap);
+  NewMI2.clearFlag(MachineInstr::MIFlag::NoUWrap);
+  NewMI2.clearFlag(MachineInstr::MIFlag::IsExact);
+}
+#endif // SIFIVE_CUSTOMIZATION
