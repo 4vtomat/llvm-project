@@ -1449,6 +1449,43 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldVMV_F_S(IC, II))
       return V;
     break;
+  case Intrinsic::riscv_vslideup:
+    // combine (vslideup a, (vslidedown undef, a, b), b) to a
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1)))
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vslidedown &&
+          isa<UndefValue>(II2->getArgOperand(0)) &&
+          // same source
+          II.getArgOperand(0) == II2->getArgOperand(1) &&
+          // same offset
+          II.getArgOperand(2) == II2->getArgOperand(2) &&
+          isa<ConstantInt>(II.getArgOperand(2)) &&
+          isa<ConstantInt>(II.getArgOperand(3)) &&
+          isa<ConstantInt>(II2->getArgOperand(3)) && ST->hasStdExtZvl()) {
+        uint64_t Offset =
+            cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
+        uint64_t SlideupVL =
+            cast<ConstantInt>(II.getArgOperand(3))->getZExtValue();
+        uint64_t SlidedownVL =
+            cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue();
+        unsigned SEW = II.getType()->getScalarSizeInBits();
+        // II.getType()->getPrimitiveSizeInBits().getKnownMinValue() /
+        // RISCV::RVVBitsPerBlock is LMUL. Do not use
+        // (II.getType()->getPrimitiveSizeInBits().getKnownMinValue() /
+        // RISCV::RVVBitsPerBlock), because
+        // II.getType()->getPrimitiveSizeInBits().getKnownMinValue() may be
+        // smaller than RISCV::RVVBitsPerBlock
+        unsigned VLMAX =
+            ((ST->getMinVLen() / SEW) *
+             II.getType()->getPrimitiveSizeInBits().getKnownMinValue()) /
+            RISCV::RVVBitsPerBlock;
+        if ((SlideupVL <= (Offset + SlidedownVL)) &&
+            // If (Offset + SlidedownVL) is greater than VLMAX, the output of
+            // slidedown will contain 0, but 0 does not belong to
+            // II.getArgOperand(0).
+            ((Offset + SlidedownVL) <= VLMAX))
+          return IC.replaceInstUsesWith(II, II.getArgOperand(0));
+      }
+    break;
   case Intrinsic::riscv_vrgather_vx:
     // Combine (vrgather a, 0, 1) to a
     if (isa<UndefValue>(II.getArgOperand(0)) &&
