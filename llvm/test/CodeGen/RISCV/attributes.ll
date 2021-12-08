@@ -146,6 +146,7 @@
 ; RV64COMBINEINTOZK: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
 ; RV64COMBINEINTOZKN: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
 ; RV64COMBINEINTOZKS: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
+; RV64XSFQMACC: .attribute 5, "rv64i2p0_f2p0_d2p0_v0p10_zve32f0p10_zve32x0p10_zve64d0p10_zve64f0p10_zve64x0p10_xsfvqmaccdod0p1_xsfvqmaccqoq0p1"
 
 define i32 @addi(i32 %a) {
   %1 = add i32 %a, 1
