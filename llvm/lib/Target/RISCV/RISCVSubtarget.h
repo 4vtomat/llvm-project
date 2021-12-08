@@ -200,9 +200,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool hasCMOVBranchOpt() const {
-    // U8 requires C extension for predicating a move. U7 can predicate many
-    // operations, but we need to start with move.
-    return (HasCMOVBranchOpt && HasStdExtC) || HasShortForwardBranchOpt;
+    return HasCMOVBranchOpt && !HasShortForwardBranchOpt;
   }
 #endif // SIFIVE_CUSTOMIZATION
   MVT getXLenVT() const { return XLenVT; }

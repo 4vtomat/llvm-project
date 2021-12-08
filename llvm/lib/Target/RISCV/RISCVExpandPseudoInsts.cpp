@@ -140,6 +140,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LD, /*HasTmpReg=*/false);
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR:
+  case RISCV::PseudoCCMOVGPRNoX0:
   case RISCV::PseudoCCXOR:
     return expandCCOp(MBB, MBBI, NextMBBI);
 #endif // SIFIVE_CUSTOMIZATION
@@ -369,7 +370,8 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   Register DestReg = MI.getOperand(0).getReg();
   assert(MI.getOperand(4).getReg() == DestReg);
 
-  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR) {
+  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
+      MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
     // Add MV.
     BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
         .add(MI.getOperand(5))

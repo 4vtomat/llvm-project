@@ -123,3 +123,36 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
   %f = add i32 %b, %e
   ret i32 %f
 }
+
+define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
+; NOCMOV-LABEL: test4:
+; NOCMOV:       # %bb.0:
+; NOCMOV-NEXT:    li a0, 3
+; NOCMOV-NEXT:    beqz a2, .LBB3_2
+; NOCMOV-NEXT:  # %bb.1:
+; NOCMOV-NEXT:    li a0, 0
+; NOCMOV-NEXT:  .LBB3_2:
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: test4:
+; CMOV:       # %bb.0:
+; CMOV-NEXT:    li a1, 0
+; CMOV-NEXT:    li a0, 3
+; CMOV-NEXT:    beqz a2, .LBB3_2
+; CMOV-NEXT:  # %bb.1:
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB3_2:
+; CMOV-NEXT:    ret
+;
+; SHORT_FORWARD-LABEL: test4:
+; SHORT_FORWARD:       # %bb.0:
+; SHORT_FORWARD-NEXT:    li a0, 3
+; SHORT_FORWARD-NEXT:    beqz a2, .LBB3_2
+; SHORT_FORWARD-NEXT:  # %bb.1:
+; SHORT_FORWARD-NEXT:    li a0, 0
+; SHORT_FORWARD-NEXT:  .LBB3_2:
+; SHORT_FORWARD-NEXT:    ret
+  %c = icmp eq i32 %z, 0
+  %a = select i1 %c, i32 3, i32 0
+  ret i32 %a
+}
