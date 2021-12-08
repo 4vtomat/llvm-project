@@ -62,6 +62,10 @@ private:
   bool expandLoadStore(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                        MachineBasicBlock::iterator &NextMBBI,
                        unsigned SecondOpcode, bool HasTmpReg);
+#if SIFIVE_CUSTOMIZATION
+  bool expandCCOp(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
+                  MachineBasicBlock::iterator &NextMBBI);
+#endif // SIFIVE_CUSTOMIZATION
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
@@ -134,6 +138,11 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LW, /*HasTmpReg=*/false);
   case RISCV::PseudoLD:
     return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LD, /*HasTmpReg=*/false);
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoCCMOVGPR:
+  case RISCV::PseudoCCXOR:
+    return expandCCOp(MBB, MBBI, NextMBBI);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
   case RISCV::PseudoVSETIVLI:
@@ -330,6 +339,69 @@ bool RISCVExpandPseudo::expandLoadTLSGDAddress(
   return expandAuipcInstPair(MBB, MBBI, NextMBBI, RISCVII::MO_TLS_GD_HI,
                              RISCV::ADDI);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
+                                   MachineBasicBlock::iterator MBBI,
+                                   MachineBasicBlock::iterator &NextMBBI) {
+  MachineFunction *MF = MBB.getParent();
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MI.getDebugLoc();
+
+  MachineBasicBlock *TrueBB = MF->CreateMachineBasicBlock(MBB.getBasicBlock());
+  MachineBasicBlock *MergeBB = MF->CreateMachineBasicBlock(MBB.getBasicBlock());
+
+  MF->insert(++MBB.getIterator(), TrueBB);
+  MF->insert(++TrueBB->getIterator(), MergeBB);
+
+  // We want to copy the "true" value when the condition is true which means
+  // we need to invert the branch condition to jump over TrueBB when the
+  // condition is false.
+  auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
+  CC = RISCVCC::getOppositeBranchCondition(CC);
+
+  // Insert branch instruction.
+  BuildMI(MBB, MBBI, DL, TII->getBrCond(CC))
+      .addReg(MI.getOperand(1).getReg())
+      .addReg(MI.getOperand(2).getReg())
+      .addMBB(MergeBB);
+
+  Register DestReg = MI.getOperand(0).getReg();
+  assert(MI.getOperand(4).getReg() == DestReg);
+
+  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR) {
+    // Add MV.
+    BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
+        .add(MI.getOperand(5))
+        .addImm(0);
+  } else if (MI.getOpcode() == RISCV::PseudoCCXOR) {
+    // Add XOR.
+    BuildMI(TrueBB, DL, TII->get(RISCV::XOR), DestReg)
+        .add(MI.getOperand(5))
+        .add(MI.getOperand(6));
+  } else {
+    llvm_unreachable("Unexpected opcode!");
+  }
+
+  TrueBB->addSuccessor(MergeBB);
+
+  MergeBB->splice(MergeBB->end(), &MBB, MI, MBB.end());
+  MergeBB->transferSuccessors(&MBB);
+
+  MBB.addSuccessor(TrueBB);
+  MBB.addSuccessor(MergeBB);
+
+  NextMBBI = MBB.end();
+  MI.eraseFromParent();
+
+  // Make sure live-ins are correctly attached to this new basic block.
+  LivePhysRegs LiveRegs;
+  computeAndAddLiveIns(LiveRegs, *TrueBB);
+  computeAndAddLiveIns(LiveRegs, *MergeBB);
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVExpandPseudo::expandVSetVL(MachineBasicBlock &MBB,
                                      MachineBasicBlock::iterator MBBI) {

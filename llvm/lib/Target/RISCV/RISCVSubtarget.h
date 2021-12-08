@@ -98,6 +98,7 @@ private:
   bool EnableRVCHintInstrs = true;
   bool EnableSaveRestore = false;
   bool HasCMOVBranchOpt = false; // SIFIVE
+  bool HasShortForwardBranchOpt = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
@@ -196,7 +197,14 @@ public:
   bool enableLinkerRelax() const { return EnableLinkerRelax; }
   bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
-  bool hasCMOVBranchOpt() const { return HasCMOVBranchOpt; } // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
+  bool hasCMOVBranchOpt() const {
+    // U8 requires C extension for predicating a move. U7 can predicate many
+    // operations, but we need to start with move.
+    return (HasCMOVBranchOpt && HasStdExtC) || HasShortForwardBranchOpt;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
   unsigned getFLen() const {

@@ -455,18 +455,27 @@ foreach i = {1-31} in
 def FeatureSaveRestore : SubtargetFeature<"save-restore", "EnableSaveRestore",
                                           "true", "Enable save/restore.">;
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 def FeatureCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
 def HasCMOVBranchOpt : Predicate<"Subtarget->hasCMOVBranchOpt()">;
-// end SIFIVE
+
+// This is a more advanced version of CMOVBranchOpt where ALU operations can be
+// predicated.
+def FeatureShortForwardBranchOpt
+    : SubtargetFeature<"short-forward-branch-opt", "HasShortForwardBranchOpt",
+                       "true", "Enable short forward branch optimization">;
+def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
+#endif // SIFIVE_CUSTOMIZATION
 
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
-                                   "SiFive 7-Series processors">;
+                                   "SiFive 7-Series processors",
+                                   [FeatureShortForwardBranchOpt]>;
 #ifdef SIFIVE_CUSTOMIZATION
 def  TuneSiFiveX280: SubtargetFeature<"sifive-x280","RISCVProcFamily", "SiFiveX280",
-                                      "SiFive X280 Processor">;
+                                      "SiFive X280 Processor",
+                                      [FeatureShortForwardBranchOpt]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//

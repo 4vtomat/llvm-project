@@ -1263,6 +1263,32 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasCMOVBranchOpt],
+    Constraints = "$dst = $falsev", isCommutable = 1, isSelect = 1, Size = 8 in {
+// This instruction moves $truev to $dst when the condition is true. It will
+// be expanded to control flow in RISCVExpandPseudoInsts.
+def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
+                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                             GPR:$falsev, GPR:$truev),
+                            [(set GPR:$dst,
+                              (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs,
+                                                       cond, GPR:$truev,
+                                                       GPR:$falsev))]>;
+}
+
+let Constraints = "$dst = $falsev" in {
+// Conditional xor, that updates update $dst to (xor rs1, rs2) when condition
+// is true. Returns $falsev otherwise. Selected by optimizeSelect.
+// TODO: Can we use DefaultOperands on the regular XOR to accomplish this more
+// like how ARM does predication?
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8 in
+def PseudoCCXOR : Pseudo<(outs GPR:$dst),
+                         (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                          GPR:$falsev, GPR:$rs1, GPR:$rs2), []>;
+} // Constraints = "$dst = $falsev"
+#endif // SIFIVE_CUSTOMIZATION
+
 let usesCustomInserter = 1 in
 class SelectCC_rrirr<RegisterClass valty, RegisterClass cmpty>
     : Pseudo<(outs valty:$dst),
