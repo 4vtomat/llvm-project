@@ -231,7 +231,8 @@ def : WriteRes<WriteFMovF64ToI64, [SiFive8FloatArith]>;
 def : WriteRes<WriteCSR, [SiFive8SYS]>;
 def : WriteRes<WriteNop, []>;
 
-def : InstRW<[WriteIALU], (instrs COPY)>;
+// FIXME: This could be better modeled by looking at the regclasses of the operands.
+def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
 //===----------------------------------------------------------------------===//
 // Bypass and advance

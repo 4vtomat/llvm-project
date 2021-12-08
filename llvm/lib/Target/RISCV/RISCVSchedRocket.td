@@ -176,7 +176,8 @@ def : WriteRes<WriteFSqrt64, [RocketUnitFPDivSqrt]> { let Latency = 25;
 def : WriteRes<WriteCSR, []>;
 def : WriteRes<WriteNop, []>;
 
-def : InstRW<[WriteIALU], (instrs COPY)>;
+// FIXME: This could be better modeled by looking at the regclasses of the operands.
+def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
 //===----------------------------------------------------------------------===//
 // Bypass and advance
