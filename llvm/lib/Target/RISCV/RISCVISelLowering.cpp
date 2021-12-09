@@ -9199,8 +9199,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     auto *Store = cast<StoreSDNode>(N);
     SDValue Val = Store->getValue();
     // Combine store of vmv.x.s to vse with VL of 1.
-    // FIXME: Support FP.
-    if (Val.getOpcode() == RISCVISD::VMV_X_S) {
+    if (Val.getOpcode() == RISCVISD::VMV_X_S ||
+        Val.getOpcode() == RISCVISD::VFMV_F_S) {
       SDValue Src = Val.getOperand(0);
       EVT VecVT = Src.getValueType();
       EVT MemVT = Store->getMemoryVT();
