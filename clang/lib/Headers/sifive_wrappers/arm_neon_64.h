@@ -1,4 +1,4 @@
-// eb8c3f851fd8e9ee399b9c8de3b00e1db5e93e0d
+// d0f61f37d8610a520be853446b406700609b41ce
 // ELEN=64, aarch=64, as_source=False, disable_assert=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -32579,7 +32579,7 @@ __attribute__((always_inline)) inline float16x4_t vzip1_f16(float16x4_t a, float
 {
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_f16m1(vreinterpret_f16m1(vreinterpret_u16m1(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_0)), 2), 65535U, vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2), vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2))));
+	return __builtin_rvv_vcast_to_fixed_64_f16m1(vreinterpret_f16m1(vreinterpret_u16m1(vwmaccu(vwaddu_vv(vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_0)), vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2), 65535U, vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1_f16") float16x4_t vzip1_f16(float16x4_t a, float16x4_t b);
@@ -32599,7 +32599,7 @@ __attribute__((always_inline)) inline int16x4_t vzip1_s16(int16x4_t a, int16x4_t
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_i16m1(vreinterpret_i16m1(vreinterpret_u16m1(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_0)), 2), 65535U, vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2), vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2))));
+	return __builtin_rvv_vcast_to_fixed_64_i16m1(vreinterpret_i16m1(vreinterpret_u16m1(vwmaccu(vwaddu_vv(vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_0)), vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2), 65535U, vlmul_trunc_u16mf2(vreinterpret_u16m1(temp_1)), 2))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1_s16") int16x4_t vzip1_s16(int16x4_t a, int16x4_t b);
@@ -32619,7 +32619,7 @@ __attribute__((always_inline)) inline int8x8_t vzip1_s8(int8x8_t a, int8x8_t b)
 {
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_i8m1(vreinterpret_i8m1(vreinterpret_u8m1(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_0)), 4), 255, vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_1)), 4), vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_1)), 4))));
+	return __builtin_rvv_vcast_to_fixed_64_i8m1(vreinterpret_i8m1(vreinterpret_u8m1(vwmaccu(vwaddu_vv(vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_0)), vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_1)), 4), 255, vlmul_trunc_u8mf2(vreinterpret_u8m1(temp_1)), 4))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1_s8") int8x8_t vzip1_s8(int8x8_t a, int8x8_t b);
@@ -32629,7 +32629,7 @@ __attribute__((always_inline)) inline uint16x4_t vzip1_u16(uint16x4_t a, uint16x
 {
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_u16m1(vreinterpret_u16m1(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16mf2(temp_0), 2), 65535U, vlmul_trunc_u16mf2(temp_1), 2), vlmul_trunc_u16mf2(temp_1), 2)));
+	return __builtin_rvv_vcast_to_fixed_64_u16m1(vreinterpret_u16m1(vwmaccu(vwaddu_vv(vlmul_trunc_u16mf2(temp_0), vlmul_trunc_u16mf2(temp_1), 2), 65535U, vlmul_trunc_u16mf2(temp_1), 2)));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1_u16") uint16x4_t vzip1_u16(uint16x4_t a, uint16x4_t b);
@@ -32649,7 +32649,7 @@ __attribute__((always_inline)) inline uint8x8_t vzip1_u8(uint8x8_t a, uint8x8_t 
 {
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_u8m1(vreinterpret_u8m1(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u8mf2(temp_0), 4), 255, vlmul_trunc_u8mf2(temp_1), 4), vlmul_trunc_u8mf2(temp_1), 4)));
+	return __builtin_rvv_vcast_to_fixed_64_u8m1(vreinterpret_u8m1(vwmaccu(vwaddu_vv(vlmul_trunc_u8mf2(temp_0), vlmul_trunc_u8mf2(temp_1), 4), 255, vlmul_trunc_u8mf2(temp_1), 4)));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1_u8") uint8x8_t vzip1_u8(uint8x8_t a, uint8x8_t b);
@@ -32659,7 +32659,7 @@ __attribute__((always_inline)) inline float16x8_t vzip1q_f16(float16x8_t a, floa
 {
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_f16m2(vreinterpret_f16m2(vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16m1(vreinterpret_u16m2(temp_0)), 4), 65535U, vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4), vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4))));
+	return __builtin_rvv_vcast_to_fixed_64_f16m2(vreinterpret_f16m2(vreinterpret_u16m2(vwmaccu(vwaddu_vv(vlmul_trunc_u16m1(vreinterpret_u16m2(temp_0)), vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4), 65535U, vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_f16") float16x8_t vzip1q_f16(float16x8_t a, float16x8_t b);
@@ -32669,7 +32669,7 @@ __attribute__((always_inline)) inline float32x4_t vzip1q_f32(float32x4_t a, floa
 {
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_f32m2(vreinterpret_f32m2(vreinterpret_u32m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u32m1(vreinterpret_u32m2(temp_0)), 2), 4294967295UL, vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2), vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2))));
+	return __builtin_rvv_vcast_to_fixed_64_f32m2(vreinterpret_f32m2(vreinterpret_u32m2(vwmaccu(vwaddu_vv(vlmul_trunc_u32m1(vreinterpret_u32m2(temp_0)), vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2), 4294967295UL, vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_f32") float32x4_t vzip1q_f32(float32x4_t a, float32x4_t b);
@@ -32689,7 +32689,7 @@ __attribute__((always_inline)) inline int16x8_t vzip1q_s16(int16x8_t a, int16x8_
 {
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_i16m2(vreinterpret_i16m2(vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16m1(vreinterpret_u16m2(temp_0)), 4), 65535U, vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4), vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4))));
+	return __builtin_rvv_vcast_to_fixed_64_i16m2(vreinterpret_i16m2(vreinterpret_u16m2(vwmaccu(vwaddu_vv(vlmul_trunc_u16m1(vreinterpret_u16m2(temp_0)), vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4), 65535U, vlmul_trunc_u16m1(vreinterpret_u16m2(temp_1)), 4))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_s16") int16x8_t vzip1q_s16(int16x8_t a, int16x8_t b);
@@ -32699,7 +32699,7 @@ __attribute__((always_inline)) inline int32x4_t vzip1q_s32(int32x4_t a, int32x4_
 {
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_i32m2(vreinterpret_i32m2(vreinterpret_u32m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u32m1(vreinterpret_u32m2(temp_0)), 2), 4294967295UL, vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2), vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2))));
+	return __builtin_rvv_vcast_to_fixed_64_i32m2(vreinterpret_i32m2(vreinterpret_u32m2(vwmaccu(vwaddu_vv(vlmul_trunc_u32m1(vreinterpret_u32m2(temp_0)), vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2), 4294967295UL, vlmul_trunc_u32m1(vreinterpret_u32m2(temp_1)), 2))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_s32") int32x4_t vzip1q_s32(int32x4_t a, int32x4_t b);
@@ -32719,7 +32719,7 @@ __attribute__((always_inline)) inline int8x16_t vzip1q_s8(int8x16_t a, int8x16_t
 {
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_i8m2(vreinterpret_i8m2(vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u8m1(vreinterpret_u8m2(temp_0)), 8), 255, vlmul_trunc_u8m1(vreinterpret_u8m2(temp_1)), 8), vlmul_trunc_u8m1(vreinterpret_u8m2(temp_1)), 8))));
+	return __builtin_rvv_vcast_to_fixed_64_i8m2(vreinterpret_i8m2(vreinterpret_u8m2(vwmaccu(vwaddu_vv(vlmul_trunc_u8m1(vreinterpret_u8m2(temp_0)), vlmul_trunc_u8m1(vreinterpret_u8m2(temp_1)), 8), 255, vlmul_trunc_u8m1(vreinterpret_u8m2(temp_1)), 8))));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_s8") int8x16_t vzip1q_s8(int8x16_t a, int8x16_t b);
@@ -32729,7 +32729,7 @@ __attribute__((always_inline)) inline uint16x8_t vzip1q_u16(uint16x8_t a, uint16
 {
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_u16m2(vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u16m1(temp_0), 4), 65535U, vlmul_trunc_u16m1(temp_1), 4), vlmul_trunc_u16m1(temp_1), 4)));
+	return __builtin_rvv_vcast_to_fixed_64_u16m2(vreinterpret_u16m2(vwmaccu(vwaddu_vv(vlmul_trunc_u16m1(temp_0), vlmul_trunc_u16m1(temp_1), 4), 65535U, vlmul_trunc_u16m1(temp_1), 4)));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_u16") uint16x8_t vzip1q_u16(uint16x8_t a, uint16x8_t b);
@@ -32739,7 +32739,7 @@ __attribute__((always_inline)) inline uint32x4_t vzip1q_u32(uint32x4_t a, uint32
 {
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_u32m2(vreinterpret_u32m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u32m1(temp_0), 2), 4294967295UL, vlmul_trunc_u32m1(temp_1), 2), vlmul_trunc_u32m1(temp_1), 2)));
+	return __builtin_rvv_vcast_to_fixed_64_u32m2(vreinterpret_u32m2(vwmaccu(vwaddu_vv(vlmul_trunc_u32m1(temp_0), vlmul_trunc_u32m1(temp_1), 2), 4294967295UL, vlmul_trunc_u32m1(temp_1), 2)));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_u32") uint32x4_t vzip1q_u32(uint32x4_t a, uint32x4_t b);
@@ -32759,7 +32759,7 @@ __attribute__((always_inline)) inline uint8x16_t vzip1q_u8(uint8x16_t a, uint8x1
 {
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
-	return __builtin_rvv_vcast_to_fixed_64_u8m2(vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(vlmul_trunc_u8m1(temp_0), 8), 255, vlmul_trunc_u8m1(temp_1), 8), vlmul_trunc_u8m1(temp_1), 8)));
+	return __builtin_rvv_vcast_to_fixed_64_u8m2(vreinterpret_u8m2(vwmaccu(vwaddu_vv(vlmul_trunc_u8m1(temp_0), vlmul_trunc_u8m1(temp_1), 8), 255, vlmul_trunc_u8m1(temp_1), 8)));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vzip1q_u8") uint8x16_t vzip1q_u8(uint8x16_t a, uint8x16_t b);
@@ -32769,7 +32769,7 @@ __attribute__((always_inline)) inline float16x4_t vzip2_f16(float16x4_t a, float
 {
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m1(temp_0), 4), 65535U, vreinterpret_u16m1(temp_1), 4), vreinterpret_u16m1(temp_1), 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(vreinterpret_u16m1(temp_0), vreinterpret_u16m1(temp_1), 4), 65535U, vreinterpret_u16m1(temp_1), 4));
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vlmul_trunc_f16m1(vslidedown(vundefined_f16m2(), vreinterpret_f16m2(temp_2), 4, 4)));
 }
 #else
@@ -32790,7 +32790,7 @@ __attribute__((always_inline)) inline int16x4_t vzip2_s16(int16x4_t a, int16x4_t
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m1(temp_0), 4), 65535U, vreinterpret_u16m1(temp_1), 4), vreinterpret_u16m1(temp_1), 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(vreinterpret_u16m1(temp_0), vreinterpret_u16m1(temp_1), 4), 65535U, vreinterpret_u16m1(temp_1), 4));
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vlmul_trunc_i16m1(vslidedown(vundefined_i16m2(), vreinterpret_i16m2(temp_2), 4, 4)));
 }
 #else
@@ -32811,7 +32811,7 @@ __attribute__((always_inline)) inline int8x8_t vzip2_s8(int8x8_t a, int8x8_t b)
 {
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
-	vuint8m2_t temp_2 = vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u8m1(temp_0), 8), 255, vreinterpret_u8m1(temp_1), 8), vreinterpret_u8m1(temp_1), 8));
+	vuint8m2_t temp_2 = vreinterpret_u8m2(vwmaccu(vwaddu_vv(vreinterpret_u8m1(temp_0), vreinterpret_u8m1(temp_1), 8), 255, vreinterpret_u8m1(temp_1), 8));
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vlmul_trunc_i8m1(vslidedown(vundefined_i8m2(), vreinterpret_i8m2(temp_2), 8, 8)));
 }
 #else
@@ -32822,7 +32822,7 @@ __attribute__((always_inline)) inline uint16x4_t vzip2_u16(uint16x4_t a, uint16x
 {
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 4), 65535U, temp_1, 4), temp_1, 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(temp_0, temp_1, 4), 65535U, temp_1, 4));
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vlmul_trunc_u16m1(vslidedown(vundefined_u16m2(), temp_2, 4, 4)));
 }
 #else
@@ -32843,7 +32843,7 @@ __attribute__((always_inline)) inline uint8x8_t vzip2_u8(uint8x8_t a, uint8x8_t 
 {
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
-	vuint8m2_t temp_2 = vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 8), 255, temp_1, 8), temp_1, 8));
+	vuint8m2_t temp_2 = vreinterpret_u8m2(vwmaccu(vwaddu_vv(temp_0, temp_1, 8), 255, temp_1, 8));
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vlmul_trunc_u8m1(vslidedown(vundefined_u8m2(), temp_2, 8, 8)));
 }
 #else
@@ -32854,7 +32854,7 @@ __attribute__((always_inline)) inline float16x8_t vzip2q_f16(float16x8_t a, floa
 {
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m2(temp_0), 8), 65535U, vreinterpret_u16m2(temp_1), 8), vreinterpret_u16m2(temp_1), 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(vreinterpret_u16m2(temp_0), vreinterpret_u16m2(temp_1), 8), 65535U, vreinterpret_u16m2(temp_1), 8));
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vlmul_trunc_f16m2(vslidedown(vundefined_f16m4(), vreinterpret_f16m4(temp_2), 8, 8)));
 }
 #else
@@ -32865,7 +32865,7 @@ __attribute__((always_inline)) inline float32x4_t vzip2q_f32(float32x4_t a, floa
 {
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u32m2(temp_0), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4), vreinterpret_u32m2(temp_1), 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(vreinterpret_u32m2(temp_0), vreinterpret_u32m2(temp_1), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4));
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vlmul_trunc_f32m2(vslidedown(vundefined_f32m4(), vreinterpret_f32m4(temp_2), 4, 4)));
 }
 #else
@@ -32886,7 +32886,7 @@ __attribute__((always_inline)) inline int16x8_t vzip2q_s16(int16x8_t a, int16x8_
 {
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m2(temp_0), 8), 65535U, vreinterpret_u16m2(temp_1), 8), vreinterpret_u16m2(temp_1), 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(vreinterpret_u16m2(temp_0), vreinterpret_u16m2(temp_1), 8), 65535U, vreinterpret_u16m2(temp_1), 8));
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vlmul_trunc_i16m2(vslidedown(vundefined_i16m4(), vreinterpret_i16m4(temp_2), 8, 8)));
 }
 #else
@@ -32897,7 +32897,7 @@ __attribute__((always_inline)) inline int32x4_t vzip2q_s32(int32x4_t a, int32x4_
 {
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u32m2(temp_0), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4), vreinterpret_u32m2(temp_1), 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(vreinterpret_u32m2(temp_0), vreinterpret_u32m2(temp_1), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4));
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vlmul_trunc_i32m2(vslidedown(vundefined_i32m4(), vreinterpret_i32m4(temp_2), 4, 4)));
 }
 #else
@@ -32918,7 +32918,7 @@ __attribute__((always_inline)) inline int8x16_t vzip2q_s8(int8x16_t a, int8x16_t
 {
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
-	vuint8m4_t temp_2 = vreinterpret_u8m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u8m2(temp_0), 16), 255, vreinterpret_u8m2(temp_1), 16), vreinterpret_u8m2(temp_1), 16));
+	vuint8m4_t temp_2 = vreinterpret_u8m4(vwmaccu(vwaddu_vv(vreinterpret_u8m2(temp_0), vreinterpret_u8m2(temp_1), 16), 255, vreinterpret_u8m2(temp_1), 16));
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vlmul_trunc_i8m2(vslidedown(vundefined_i8m4(), vreinterpret_i8m4(temp_2), 16, 16)));
 }
 #else
@@ -32929,7 +32929,7 @@ __attribute__((always_inline)) inline uint16x8_t vzip2q_u16(uint16x8_t a, uint16
 {
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 8), 65535U, temp_1, 8), temp_1, 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 8), 65535U, temp_1, 8));
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vlmul_trunc_u16m2(vslidedown(vundefined_u16m4(), temp_2, 8, 8)));
 }
 #else
@@ -32940,7 +32940,7 @@ __attribute__((always_inline)) inline uint32x4_t vzip2q_u32(uint32x4_t a, uint32
 {
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 4), 4294967295UL, temp_1, 4), temp_1, 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 4), 4294967295UL, temp_1, 4));
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vlmul_trunc_u32m2(vslidedown(vundefined_u32m4(), temp_2, 4, 4)));
 }
 #else
@@ -32961,7 +32961,7 @@ __attribute__((always_inline)) inline uint8x16_t vzip2q_u8(uint8x16_t a, uint8x1
 {
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
-	vuint8m4_t temp_2 = vreinterpret_u8m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 16), 255, temp_1, 16), temp_1, 16));
+	vuint8m4_t temp_2 = vreinterpret_u8m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 16), 255, temp_1, 16));
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vlmul_trunc_u8m2(vslidedown(vundefined_u8m4(), temp_2, 16, 16)));
 }
 #else
@@ -32972,7 +32972,7 @@ __attribute__((always_inline)) inline float16x4x2_t vzip_f16(float16x4_t a, floa
 {
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m1(temp_0), 4), 65535U, vreinterpret_u16m1(temp_1), 4), vreinterpret_u16m1(temp_1), 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(vreinterpret_u16m1(temp_0), vreinterpret_u16m1(temp_1), 4), 65535U, vreinterpret_u16m1(temp_1), 4));
 	return (float16x4x2_t){__builtin_rvv_vcast_to_fixed_64_f16m1(vlmul_trunc_f16m1(vreinterpret_f16m2(temp_2))), __builtin_rvv_vcast_to_fixed_64_f16m1(vlmul_trunc_f16m1(vslidedown(vundefined_f16m2(), vreinterpret_f16m2(temp_2), 4, 4)))};
 }
 #else
@@ -32993,7 +32993,7 @@ __attribute__((always_inline)) inline int16x4x2_t vzip_s16(int16x4_t a, int16x4_
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m1(temp_0), 4), 65535U, vreinterpret_u16m1(temp_1), 4), vreinterpret_u16m1(temp_1), 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(vreinterpret_u16m1(temp_0), vreinterpret_u16m1(temp_1), 4), 65535U, vreinterpret_u16m1(temp_1), 4));
 	return (int16x4x2_t){__builtin_rvv_vcast_to_fixed_64_i16m1(vlmul_trunc_i16m1(vreinterpret_i16m2(temp_2))), __builtin_rvv_vcast_to_fixed_64_i16m1(vlmul_trunc_i16m1(vslidedown(vundefined_i16m2(), vreinterpret_i16m2(temp_2), 4, 4)))};
 }
 #else
@@ -33014,7 +33014,7 @@ __attribute__((always_inline)) inline int8x8x2_t vzip_s8(int8x8_t a, int8x8_t b)
 {
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
-	vuint8m2_t temp_2 = vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u8m1(temp_0), 8), 255, vreinterpret_u8m1(temp_1), 8), vreinterpret_u8m1(temp_1), 8));
+	vuint8m2_t temp_2 = vreinterpret_u8m2(vwmaccu(vwaddu_vv(vreinterpret_u8m1(temp_0), vreinterpret_u8m1(temp_1), 8), 255, vreinterpret_u8m1(temp_1), 8));
 	return (int8x8x2_t){__builtin_rvv_vcast_to_fixed_64_i8m1(vlmul_trunc_i8m1(vreinterpret_i8m2(temp_2))), __builtin_rvv_vcast_to_fixed_64_i8m1(vlmul_trunc_i8m1(vslidedown(vundefined_i8m2(), vreinterpret_i8m2(temp_2), 8, 8)))};
 }
 #else
@@ -33025,7 +33025,7 @@ __attribute__((always_inline)) inline uint16x4x2_t vzip_u16(uint16x4_t a, uint16
 {
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
-	vuint16m2_t temp_2 = vreinterpret_u16m2(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 4), 65535U, temp_1, 4), temp_1, 4));
+	vuint16m2_t temp_2 = vreinterpret_u16m2(vwmaccu(vwaddu_vv(temp_0, temp_1, 4), 65535U, temp_1, 4));
 	return (uint16x4x2_t){__builtin_rvv_vcast_to_fixed_64_u16m1(vlmul_trunc_u16m1(temp_2)), __builtin_rvv_vcast_to_fixed_64_u16m1(vlmul_trunc_u16m1(vslidedown(vundefined_u16m2(), temp_2, 4, 4)))};
 }
 #else
@@ -33046,7 +33046,7 @@ __attribute__((always_inline)) inline uint8x8x2_t vzip_u8(uint8x8_t a, uint8x8_t
 {
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
-	vuint8m2_t temp_2 = vreinterpret_u8m2(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 8), 255, temp_1, 8), temp_1, 8));
+	vuint8m2_t temp_2 = vreinterpret_u8m2(vwmaccu(vwaddu_vv(temp_0, temp_1, 8), 255, temp_1, 8));
 	return (uint8x8x2_t){__builtin_rvv_vcast_to_fixed_64_u8m1(vlmul_trunc_u8m1(temp_2)), __builtin_rvv_vcast_to_fixed_64_u8m1(vlmul_trunc_u8m1(vslidedown(vundefined_u8m2(), temp_2, 8, 8)))};
 }
 #else
@@ -33057,7 +33057,7 @@ __attribute__((always_inline)) inline float16x8x2_t vzipq_f16(float16x8_t a, flo
 {
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m2(temp_0), 8), 65535U, vreinterpret_u16m2(temp_1), 8), vreinterpret_u16m2(temp_1), 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(vreinterpret_u16m2(temp_0), vreinterpret_u16m2(temp_1), 8), 65535U, vreinterpret_u16m2(temp_1), 8));
 	return (float16x8x2_t){__builtin_rvv_vcast_to_fixed_64_f16m2(vlmul_trunc_f16m2(vreinterpret_f16m4(temp_2))), __builtin_rvv_vcast_to_fixed_64_f16m2(vlmul_trunc_f16m2(vslidedown(vundefined_f16m4(), vreinterpret_f16m4(temp_2), 8, 8)))};
 }
 #else
@@ -33068,7 +33068,7 @@ __attribute__((always_inline)) inline float32x4x2_t vzipq_f32(float32x4_t a, flo
 {
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u32m2(temp_0), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4), vreinterpret_u32m2(temp_1), 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(vreinterpret_u32m2(temp_0), vreinterpret_u32m2(temp_1), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4));
 	return (float32x4x2_t){__builtin_rvv_vcast_to_fixed_64_f32m2(vlmul_trunc_f32m2(vreinterpret_f32m4(temp_2))), __builtin_rvv_vcast_to_fixed_64_f32m2(vlmul_trunc_f32m2(vslidedown(vundefined_f32m4(), vreinterpret_f32m4(temp_2), 4, 4)))};
 }
 #else
@@ -33079,7 +33079,7 @@ __attribute__((always_inline)) inline int16x8x2_t vzipq_s16(int16x8_t a, int16x8
 {
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u16m2(temp_0), 8), 65535U, vreinterpret_u16m2(temp_1), 8), vreinterpret_u16m2(temp_1), 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(vreinterpret_u16m2(temp_0), vreinterpret_u16m2(temp_1), 8), 65535U, vreinterpret_u16m2(temp_1), 8));
 	return (int16x8x2_t){__builtin_rvv_vcast_to_fixed_64_i16m2(vlmul_trunc_i16m2(vreinterpret_i16m4(temp_2))), __builtin_rvv_vcast_to_fixed_64_i16m2(vlmul_trunc_i16m2(vslidedown(vundefined_i16m4(), vreinterpret_i16m4(temp_2), 8, 8)))};
 }
 #else
@@ -33090,7 +33090,7 @@ __attribute__((always_inline)) inline int32x4x2_t vzipq_s32(int32x4_t a, int32x4
 {
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u32m2(temp_0), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4), vreinterpret_u32m2(temp_1), 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(vreinterpret_u32m2(temp_0), vreinterpret_u32m2(temp_1), 4), 4294967295UL, vreinterpret_u32m2(temp_1), 4));
 	return (int32x4x2_t){__builtin_rvv_vcast_to_fixed_64_i32m2(vlmul_trunc_i32m2(vreinterpret_i32m4(temp_2))), __builtin_rvv_vcast_to_fixed_64_i32m2(vlmul_trunc_i32m2(vslidedown(vundefined_i32m4(), vreinterpret_i32m4(temp_2), 4, 4)))};
 }
 #else
@@ -33101,7 +33101,7 @@ __attribute__((always_inline)) inline int8x16x2_t vzipq_s8(int8x16_t a, int8x16_
 {
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
-	vuint8m4_t temp_2 = vreinterpret_u8m4(vwaddu_wv(vwmaccu(vwcvtu_x(vreinterpret_u8m2(temp_0), 16), 255, vreinterpret_u8m2(temp_1), 16), vreinterpret_u8m2(temp_1), 16));
+	vuint8m4_t temp_2 = vreinterpret_u8m4(vwmaccu(vwaddu_vv(vreinterpret_u8m2(temp_0), vreinterpret_u8m2(temp_1), 16), 255, vreinterpret_u8m2(temp_1), 16));
 	return (int8x16x2_t){__builtin_rvv_vcast_to_fixed_64_i8m2(vlmul_trunc_i8m2(vreinterpret_i8m4(temp_2))), __builtin_rvv_vcast_to_fixed_64_i8m2(vlmul_trunc_i8m2(vslidedown(vundefined_i8m4(), vreinterpret_i8m4(temp_2), 16, 16)))};
 }
 #else
@@ -33112,7 +33112,7 @@ __attribute__((always_inline)) inline uint16x8x2_t vzipq_u16(uint16x8_t a, uint1
 {
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
-	vuint16m4_t temp_2 = vreinterpret_u16m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 8), 65535U, temp_1, 8), temp_1, 8));
+	vuint16m4_t temp_2 = vreinterpret_u16m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 8), 65535U, temp_1, 8));
 	return (uint16x8x2_t){__builtin_rvv_vcast_to_fixed_64_u16m2(vlmul_trunc_u16m2(temp_2)), __builtin_rvv_vcast_to_fixed_64_u16m2(vlmul_trunc_u16m2(vslidedown(vundefined_u16m4(), temp_2, 8, 8)))};
 }
 #else
@@ -33123,7 +33123,7 @@ __attribute__((always_inline)) inline uint32x4x2_t vzipq_u32(uint32x4_t a, uint3
 {
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
-	vuint32m4_t temp_2 = vreinterpret_u32m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 4), 4294967295UL, temp_1, 4), temp_1, 4));
+	vuint32m4_t temp_2 = vreinterpret_u32m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 4), 4294967295UL, temp_1, 4));
 	return (uint32x4x2_t){__builtin_rvv_vcast_to_fixed_64_u32m2(vlmul_trunc_u32m2(temp_2)), __builtin_rvv_vcast_to_fixed_64_u32m2(vlmul_trunc_u32m2(vslidedown(vundefined_u32m4(), temp_2, 4, 4)))};
 }
 #else
@@ -33134,7 +33134,7 @@ __attribute__((always_inline)) inline uint8x16x2_t vzipq_u8(uint8x16_t a, uint8x
 {
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
-	vuint8m4_t temp_2 = vreinterpret_u8m4(vwaddu_wv(vwmaccu(vwcvtu_x(temp_0, 16), 255, temp_1, 16), temp_1, 16));
+	vuint8m4_t temp_2 = vreinterpret_u8m4(vwmaccu(vwaddu_vv(temp_0, temp_1, 16), 255, temp_1, 16));
 	return (uint8x16x2_t){__builtin_rvv_vcast_to_fixed_64_u8m2(vlmul_trunc_u8m2(temp_2)), __builtin_rvv_vcast_to_fixed_64_u8m2(vlmul_trunc_u8m2(vslidedown(vundefined_u8m4(), temp_2, 16, 16)))};
 }
 #else
