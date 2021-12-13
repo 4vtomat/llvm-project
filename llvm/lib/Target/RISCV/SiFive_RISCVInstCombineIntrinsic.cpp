@@ -1291,12 +1291,65 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
+  case Intrinsic::riscv_vor: {
+    if (isa<UndefValue>(II.getArgOperand(0))) {
+      // combine (vor (vsll (vwaddu a, 0), HalfSewOfVor), (vwaddu, c, 0)) to
+      //         (vwmaccu (vwaddu a, c), (1 << HalfSewOfVor) - 1, a)
+      unsigned HalfSewOfVor = II.getType()->getScalarSizeInBits() / 2;
+      Value *VL = II.getArgOperand(3);
+      for (int i = 0; i != 2; ++i) {
+        if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1 + i))) {
+          if (auto *II3 =
+                  dyn_cast<IntrinsicInst>(II.getArgOperand(1 + (1 - i)))) {
+            if (II2->getIntrinsicID() == Intrinsic::riscv_vsll &&
+                isa<UndefValue>(II2->getArgOperand(0)) &&
+                isa<ConstantInt>(II2->getArgOperand(2)) &&
+                cast<ConstantInt>(II2->getArgOperand(2))->getZExtValue() ==
+                    HalfSewOfVor &&
+                VL == II2->getArgOperand(3) &&
+                II3->getIntrinsicID() == Intrinsic::riscv_vwaddu &&
+                isa<UndefValue>(II3->getArgOperand(0)) &&
+                isa<ConstantInt>(II3->getArgOperand(2)) &&
+                cast<ConstantInt>(II3->getArgOperand(2))->isZero() &&
+                VL == II3->getArgOperand(3)) {
+              if (auto *II4 = dyn_cast<IntrinsicInst>(II2->getArgOperand(1))) {
+                if (II4->getIntrinsicID() == Intrinsic::riscv_vwaddu &&
+                    isa<UndefValue>(II4->getArgOperand(0)) &&
+                    isa<ConstantInt>(II4->getArgOperand(2)) &&
+                    cast<ConstantInt>(II4->getArgOperand(2))->isZero() &&
+                    VL == II4->getArgOperand(3)) {
+                  Value *Vwaddu = IC.Builder.CreateIntrinsic(
+                      Intrinsic::riscv_vwaddu,
+                      {II.getType(), II4->getArgOperand(1)->getType(),
+                       II3->getArgOperand(1)->getType(), VL->getType()},
+                      {UndefValue::get(II.getType()), II4->getArgOperand(1),
+                       II3->getArgOperand(1), VL});
+                  ConstantInt *Multiplier = ConstantInt::get(
+                      Type::getIntNTy(II.getContext(), HalfSewOfVor),
+                      (1 << HalfSewOfVor) - 1);
+                  Value *Policy =
+                      ConstantInt::get(II.getArgOperand(3)->getType(), 1);
+                  return CreateIntrinsic(
+                      &II, Intrinsic::riscv_vwmaccu,
+                      {Vwaddu->getType(), Multiplier->getType(),
+                       II4->getArgOperand(1)->getType(), VL->getType()},
+                      {Vwaddu, Multiplier, II4->getArgOperand(1), VL, Policy});
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
+  }
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
   case Intrinsic::riscv_vfsub:
   case Intrinsic::riscv_vfrsub:
-  case Intrinsic::riscv_vor:
   case Intrinsic::riscv_vsll:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
