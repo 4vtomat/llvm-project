@@ -1360,6 +1360,15 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldVMV_F_S(IC, II))
       return V;
     break;
+  case Intrinsic::riscv_vrgather_vx:
+    // Combine (vrgather a, 0, 1) to a
+    if (isa<UndefValue>(II.getArgOperand(0)) &&
+        isa<ConstantInt>(II.getArgOperand(2)) &&
+        cast<ConstantInt>(II.getArgOperand(2))->isZero() &&
+        isa<ConstantInt>(II.getArgOperand(3)) &&
+        cast<ConstantInt>(II.getArgOperand(3))->getZExtValue() == 1)
+      return IC.replaceInstUsesWith(II, II.getArgOperand(1));
+    break;
   case Intrinsic::riscv_is_splat:
     // If the input is provably a splat, constant fold it to true. If it is not
     // a splat keep the is_splat intrinsic. Other optimizations may enable it to

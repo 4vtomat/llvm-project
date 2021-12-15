@@ -544,3 +544,24 @@ declare void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x do
 declare <vscale x 1 x double> @llvm.riscv.vfmul.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64)
 declare <vscale x 1 x double> @llvm.riscv.vfwcvt.f.f.v.nxv1f64.nxv1f32.i64(<vscale x 1 x double>, <vscale x 1 x float>, i64)
 declare <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float>, <vscale x 1 x float>* nocapture, i64)
+
+define void @vrgather_0(i16* nocapture readonly %in, i16* nocapture %out) {
+; CHECK-LABEL: @vrgather_0(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i16* [[IN:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP1]], <vscale x 1 x i16>* [[TMP2]], i64 1)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i16* %in to <vscale x 1 x i16>*
+  %1 = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vrgather.vx.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %1, i64 0, i64 1)
+  %3 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %2, <vscale x 1 x i16>* %3, i64 1)
+  ret void
+}
+
+declare <vscale x 1 x i16> @llvm.riscv.vrgather.vx.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, i64, i64)
+declare <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>* nocapture, i64)
