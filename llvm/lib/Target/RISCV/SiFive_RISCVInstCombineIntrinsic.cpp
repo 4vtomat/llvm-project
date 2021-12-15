@@ -1385,6 +1385,35 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       return V;
     break;
   case Intrinsic::riscv_vmacc:
+    // combine (vmacc a, (vwcvt b), (vwcvt c))
+    // to      (vwmacc a, b, c)
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1)))
+      if (auto *II3 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
+        Intrinsic::ID Vwcvt[] = {Intrinsic::riscv_vwadd,
+                                 Intrinsic::riscv_vwaddu};
+        Intrinsic::ID Vwmacc[] = {Intrinsic::riscv_vwmacc,
+                                  Intrinsic::riscv_vwmaccu};
+        Value *VL = II.getArgOperand(3);
+        for (int i = 0; i != 2; ++i)
+          if (II2->getIntrinsicID() == Vwcvt[i] &&
+              II3->getIntrinsicID() == Vwcvt[i] &&
+              isa<UndefValue>(II2->getArgOperand(0)) &&
+              isa<UndefValue>(II3->getArgOperand(0)) &&
+              isa<ConstantInt>(II2->getArgOperand(2)) &&
+              cast<ConstantInt>(II2->getArgOperand(2))->isZero() &&
+              isa<ConstantInt>(II3->getArgOperand(2)) &&
+              cast<ConstantInt>(II3->getArgOperand(2))->isZero() &&
+              VL == II2->getArgOperand(3) && VL == II3->getArgOperand(3))
+            return CreateIntrinsic(
+                &II, Vwmacc[i],
+                {II.getType(), II2->getArgOperand(1)->getType(),
+                 II3->getArgOperand(1)->getType(), VL->getType()},
+                {II.getArgOperand(0), II2->getArgOperand(1),
+                 II3->getArgOperand(1), VL, II.getOperand(4)});
+      }
+    if (Instruction *V = foldTernaryOp(IC, II))
+      return V;
+    break;
   case Intrinsic::riscv_vnmsac:
   case Intrinsic::riscv_vmadd:
   case Intrinsic::riscv_vnmsub:
