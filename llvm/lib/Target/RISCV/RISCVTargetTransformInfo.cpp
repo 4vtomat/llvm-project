@@ -383,6 +383,40 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
 void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                            TTI::UnrollingPreferences &UP,
                                            OptimizationRemarkEmitter *ORE) {
+  // TODO: More tuning on benchmarks and metrics with changes as needed
+  //       would apply to all settings below to enable performance.
+
+  // Support explicit targets enabled for SiFive with the unrolling preferences
+  // below
+  bool UseDefaultPreferences = true;
+  if (ST->getTuneCPU() == "sifive-7m-rv32" ||
+      ST->getTuneCPU() == "sifive-7m-rv64" ||
+      ST->getTuneCPU() == "sifive-7n-rv32" ||
+      ST->getTuneCPU() == "sifive-7n-rv64" ||
+      ST->getTuneCPU() == "sifive-8-rv32" ||
+      ST->getTuneCPU() == "sifive-8-rv64" ||
+      ST->getTuneCPU() == "sifive-9-rv32" ||
+      ST->getTuneCPU() == "sifive-9-rv64" ||
+      ST->getTuneCPU() == "sifive-e76" ||
+      ST->getTuneCPU() == "sifive-e76m" ||
+      ST->getTuneCPU() == "sifive-e76n" ||
+      ST->getTuneCPU() == "sifive-s76" ||
+      ST->getTuneCPU() == "sifive-s76m" ||
+      ST->getTuneCPU() == "sifive-s76n" ||
+      ST->getTuneCPU() == "sifive-u74m" ||
+      ST->getTuneCPU() == "sifive-u74n" ||
+      ST->getTuneCPU() == "sifive-u74" ||
+      ST->getTuneCPU() == "sifive-p270" ||
+      ST->getTuneCPU() == "sifive-p270n" ||
+      ST->getTuneCPU() == "sifive-x280" ||
+      ST->getTuneCPU() == "sifive-x280n" ||
+      ST->getTuneCPU() == "sifive-p550" ||
+      ST->getTuneCPU() == "sifive-p650")
+    UseDefaultPreferences = false;
+
+  if (UseDefaultPreferences)
+    return BasicTTIImplBase::getUnrollingPreferences(L, SE, UP, ORE);
+
   // Enable Upper bound unrolling universally, not dependant upon the conditions
   // below.
   UP.UpperBound = true;
