@@ -13892,6 +13892,21 @@ private:
 
   bool addOverflowAssumption(const SCEVAddRecExpr *AR,
                              SCEVWrapPredicate::IncrementWrapFlags AddedFlags) {
+#if SIFIVE_CUSTOMIZATION
+    const SCEVConstant *Start = dyn_cast_or_null<SCEVConstant>(AR->getStart());
+    unsigned ARSize = AR->getType()->getScalarSizeInBits();
+    unsigned TripCount = SE.getSmallConstantTripCount(L);
+    // If we're about to generate overflow runtime check, compare operand's
+    // size and trip count of the loop. If that happens that trip count and
+    // start value of the operand are known and trip count + start value is
+    // larger than operand's max value, certainly there will be overflow, which
+    // will make this runtime check obsolete.
+    // TODO: Take into account step.
+    if (Start && TripCount &&
+        (APInt::getMaxValue(ARSize) - Start->getAPInt()).ult(TripCount)) {
+      return false;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     auto *A = SE.getWrapPredicate(AR, AddedFlags);
     return addOverflowAssumption(A);
   }
