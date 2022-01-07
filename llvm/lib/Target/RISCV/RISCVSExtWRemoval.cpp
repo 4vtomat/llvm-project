@@ -396,6 +396,29 @@ static bool isSignExtendedW(MachineInstr &OrigMI, MachineRegisterInfo &MRI,
 
       break;
     }
+    case RISCV::PseudoCCADDW:
+    case RISCV::PseudoCCSUBW:
+    case RISCV::PseudoCCSLLW:
+    case RISCV::PseudoCCSRLW:
+    case RISCV::PseudoCCSRAW:
+    case RISCV::PseudoCCADDIW:
+    case RISCV::PseudoCCSLLIW:
+    case RISCV::PseudoCCSRLIW:
+    case RISCV::PseudoCCSRAIW: {
+      // These instructions select operand 4 or a binary W instruction formed
+      // from operand 5 and 6. We just need to check if operand 4 is sign
+      // extended.
+      Register SrcReg = MI->getOperand(4).getReg();
+      if (!SrcReg.isVirtual())
+        return false;
+      MachineInstr *SrcMI = MRI.getVRegDef(SrcReg);
+      if (!SrcMI)
+        return false;
+
+      // Add SrcMI to the worklist.
+      Worklist.push_back(SrcMI);
+      break;
+    }
     }
   }
 
