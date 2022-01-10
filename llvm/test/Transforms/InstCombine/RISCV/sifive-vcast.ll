@@ -26,10 +26,13 @@ define void @_Z4testPKfPf(float* readonly %in, float* %out) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = bitcast float* [[IN:%.*]] to <vscale x 4 x float>*
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float>* [[TMP0]], i64 4)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float 1.000000e+00, i64 4)
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmacc.nxv4f32.f32.i64(<vscale x 4 x float> [[TMP2]], float 0x3FF0000020000000, <vscale x 4 x float> [[TMP1]], i64 4, i64 0)
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 4 x float>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv4f32.i64(<vscale x 4 x float> [[TMP3]], <vscale x 4 x float>* [[TMP4]], i64 4)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 1065353216, i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = bitcast <vscale x 4 x i32> [[TMP2]] to <vscale x 4 x float>
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 1065353217, i64 4)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast <vscale x 4 x i32> [[TMP4]] to <vscale x 4 x float>
+; CHECK-NEXT:    [[TMP6:%.*]] = tail call <vscale x 4 x float> @llvm.riscv.vfmacc.nxv4f32.nxv4f32.i64(<vscale x 4 x float> [[TMP3]], <vscale x 4 x float> [[TMP5]], <vscale x 4 x float> [[TMP1]], i64 4, i64 0)
+; CHECK-NEXT:    [[TMP7:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 4 x float>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv4f32.i64(<vscale x 4 x float> [[TMP6]], <vscale x 4 x float>* [[TMP7]], i64 4)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -53,9 +56,11 @@ define void @_Z4testPKfPKiPf(float* readonly %in_0, i32* readonly %in_1, float* 
 ; CHECK-NEXT:    [[TMP4:%.*]] = tail call <4 x i32> @llvm.riscv.vcast.to.fixed.v4i32.nxv4i32(<vscale x 4 x i32> [[TMP3]])
 ; CHECK-NEXT:    [[TMP5:%.*]] = bitcast <4 x i32> [[TMP4]] to <4 x float>
 ; CHECK-NEXT:    [[TMP6:%.*]] = tail call <vscale x 4 x float> @llvm.riscv.vcast.from.fixed.nxv4f32.v4f32(<4 x float> [[TMP5]])
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfnmsac.nxv4f32.f32.i64(<vscale x 4 x float> [[TMP1]], float 0x3FE62E4300000000, <vscale x 4 x float> [[TMP6]], i64 4, i64 0)
-; CHECK-NEXT:    [[TMP8:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 4 x float>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv4f32.i64(<vscale x 4 x float> [[TMP7]], <vscale x 4 x float>* [[TMP8]], i64 4)
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 1060205080, i64 4)
+; CHECK-NEXT:    [[TMP8:%.*]] = bitcast <vscale x 4 x i32> [[TMP7]] to <vscale x 4 x float>
+; CHECK-NEXT:    [[TMP9:%.*]] = tail call <vscale x 4 x float> @llvm.riscv.vfnmsac.nxv4f32.nxv4f32.i64(<vscale x 4 x float> [[TMP1]], <vscale x 4 x float> [[TMP6]], <vscale x 4 x float> [[TMP8]], i64 4, i64 0)
+; CHECK-NEXT:    [[TMP10:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 4 x float>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv4f32.i64(<vscale x 4 x float> [[TMP9]], <vscale x 4 x float>* [[TMP10]], i64 4)
 ; CHECK-NEXT:    ret void
 ;
 entry:
