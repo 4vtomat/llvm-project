@@ -112,6 +112,7 @@ private:
   bool HasLUIADDIFusion = false; // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
+  unsigned DLen = 0; // SIFIVE
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
   MVT XLenVT = MVT::i32;
@@ -225,6 +226,11 @@ public:
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasFusion() const { return hasLUIADDIFusion(); }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
+  bool hasKnownDLen() const { return DLen != 0; }
+  unsigned getDLen() const {
+    assert(hasKnownDLen() && "The Datapath length not set");
+    return DLen;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
