@@ -1114,6 +1114,64 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
   return nullptr;
 }
 
+// Fold
+//   (vmv.x.s (vrgather.vx (vle X), Y, 1)) -> load (X + Y)
+//   (vfmv.f.s (vrgather.vx (vle X), Y, 1)) -> load (X + Y)
+//   (vmv.x.s (vle X)) -> load (X)
+//   (vfmv.f.s (vle X)) -> load (X)
+static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
+                                       const RISCVSubtarget *ST) {
+  if (II.getIntrinsicID() != Intrinsic::riscv_vmv_x_s &&
+      II.getIntrinsicID() != Intrinsic::riscv_vfmv_f_s)
+    return nullptr;
+  if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0))) {
+    uint64_t Offset;
+    IntrinsicInst *Vle;
+    if (II2->getIntrinsicID() == Intrinsic::riscv_vrgather_vx &&
+        isa<UndefValue>(II2->getArgOperand(0)) &&
+        isa<ConstantInt>(II2->getArgOperand(2)) &&
+        isa<ConstantInt>(II2->getArgOperand(3)) &&
+        cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue() == 1 &&
+        ST->hasStdExtZvl()) {
+      Offset = cast<ConstantInt>(II2->getArgOperand(2))->getZExtValue();
+      unsigned SEW = II.getType()->getScalarSizeInBits();
+      unsigned VLMAX =
+          ((ST->getMinVLen() / SEW) *
+           II.getType()->getPrimitiveSizeInBits().getKnownMinValue()) /
+          RISCV::RVVBitsPerBlock;
+      // Offset should be smaller than VLMAX.
+      if (VLMAX <= Offset)
+        return nullptr;
+      if (auto *II3 = dyn_cast<IntrinsicInst>(II2->getArgOperand(1)))
+        Vle = II3;
+      else
+        return nullptr;
+    } else {
+      Offset = 0;
+      Vle = II2;
+    }
+    if (Vle->getIntrinsicID() == Intrinsic::riscv_vle &&
+        isa<UndefValue>(Vle->getArgOperand(0)) &&
+        isa<ConstantInt>(Vle->getArgOperand(2)) &&
+        !cast<ConstantInt>(Vle->getArgOperand(2))->isZero()) {
+      PointerType *SrcPtrTy = Vle->getArgOperand(1)
+                                  ->getType()
+                                  ->getPointerElementType()
+                                  ->getScalarType()
+                                  ->getPointerTo();
+      IRBuilderBase::InsertPointGuard Guard(IC.Builder);
+      IC.Builder.SetInsertPoint(Vle);
+      Value *SrcPtr =
+          IC.Builder.CreatePointerCast(Vle->getArgOperand(1), SrcPtrTy);
+      SrcPtr = IC.Builder.CreateGEP(SrcPtrTy->getPointerElementType(), SrcPtr,
+                                    IC.Builder.getIntN(ST->getXLen(), Offset));
+      return IC.replaceInstUsesWith(
+          II, IC.Builder.CreateLoad(SrcPtrTy->getPointerElementType(), SrcPtr));
+    }
+  }
+  return nullptr;
+}
+
 Optional<Instruction *>
 RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   Intrinsic::ID IID = II.getIntrinsicID();
@@ -1491,9 +1549,13 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vmv_x_s:
     if (Instruction *V = foldVMV_X_S(IC, II))
       return V;
+    if (Instruction *V = foldVmvVRgatherVle(IC, II, ST))
+      return V;
     break;
   case Intrinsic::riscv_vfmv_f_s:
     if (Instruction *V = foldVMV_F_S(IC, II))
+      return V;
+    if (Instruction *V = foldVmvVRgatherVle(IC, II, ST))
       return V;
     break;
   case Intrinsic::riscv_vslideup: {
