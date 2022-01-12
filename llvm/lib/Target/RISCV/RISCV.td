@@ -515,14 +515,6 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [FeatureShortForwardBranchOpt,
                                     FeatureJumpIsCheap]>;
-// Split from SiFive7.
-// TODO: This is only used to calc vector latencies, can we use SiFive7?
-def TuneSiFiveX280: SubtargetFeature<"sifive-x280", "RISCVProcFamily",
-                                     "SiFiveX280",
-                                     "SiFive X280 Processor",
-                                     [FeatureShortForwardBranchOpt,
-                                      FeatureJumpIsCheap]>;
-
 def TuneSiFive8 : SubtargetFeature<"sifive8", "RISCVProcFamily", "SiFive8",
                                    "SiFive 8-Series processors",
                                    [FeatureCMOVBranchOpt,
@@ -790,7 +782,7 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
-                     [TuneSiFiveX280]>;
+                     [TuneSiFive7]>;
 
 def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
@@ -807,7 +799,7 @@ def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvqmaccqoq,
                                                      FeatureStdExtXsfvfnrclipxfqf,
                                                      FeatureStdExtXsfvfwmaccqqq],
-                     [TuneSiFiveX280]>;
+                     [TuneSiFive7]>;
 
 def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtM,

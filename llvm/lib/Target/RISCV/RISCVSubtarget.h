@@ -43,7 +43,6 @@ public:
 #if SIFIVE_CUSTOMIZATION
     SiFive8,
     SiFive9,
-    SiFiveX280,
 #endif // SIFIVE_CUSTOMIZATION
   };
 

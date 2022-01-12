@@ -238,11 +238,12 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
   default:
     return Lat;
 
-  case RISCVSubtarget::SiFiveX280:
+  case RISCVSubtarget::SiFive7:
     {
       const MCInstrDesc &Desc = MI->getDesc();
 
-      // Use the latency information from the base instruction for pseudos.
+      // Use the latency information from the base instruction for vector
+      // pseudos.
       const RISCVVPseudosTable::PseudoInfo *RVV =
           RISCVVPseudosTable::getPseudoInfo(MI->getOpcode());
       if (RVV == nullptr)

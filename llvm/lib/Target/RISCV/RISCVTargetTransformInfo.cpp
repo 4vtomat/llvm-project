@@ -395,7 +395,6 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
     return BasicTTIImplBase::getUnrollingPreferences(L, SE, UP, ORE);
   case RISCVSubtarget::SiFive6:
   case RISCVSubtarget::SiFive7:
-  case RISCVSubtarget::SiFiveX280:
   case RISCVSubtarget::SiFive8:
   case RISCVSubtarget::SiFive9:
     break;
