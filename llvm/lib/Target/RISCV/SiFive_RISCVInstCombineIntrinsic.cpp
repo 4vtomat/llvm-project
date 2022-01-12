@@ -1149,6 +1149,26 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
           II.getType() == II2->getArgOperand(0)->getType())
         return IC.replaceInstUsesWith(II, II2->getArgOperand(0));
     break;
+  case Intrinsic::riscv_vse:
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vcast_from_fixed &&
+          isa<ConstantInt>(II.getArgOperand(2))) {
+        uint64_t StoreCnt =
+            cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
+        PointerType *DesPtrTy =
+            II.getArgOperand(0)->getType()->getScalarType()->getPointerTo();
+        Value *DesPtr =
+            IC.Builder.CreatePointerCast(II.getArgOperand(1), DesPtrTy);
+        for (uint64_t i = 0; i != StoreCnt; ++i) {
+          IC.Builder.CreateStore(
+              IC.Builder.CreateExtractElement(II2->getArgOperand(0), i),
+              DesPtr);
+          DesPtr = IC.Builder.CreateConstGEP1_64(
+              DesPtrTy->getPointerElementType(), DesPtr, 1);
+        }
+        return IC.eraseInstFromFunction(II);
+      }
+    break;
   case Intrinsic::riscv_vand: {
     if (!isa<UndefValue>(II.getArgOperand(0)))
       break;
@@ -1511,6 +1531,43 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
             // II.getArgOperand(0).
             ((Offset + SlidedownVL) <= VLMAX))
           return IC.replaceInstUsesWith(II, II.getArgOperand(0));
+      }
+    // combine (vslideup A, vmv.v.x(B, 1), C, D) to A
+    // if A is a fixed vector or a vmv.v.x
+    if (isa<ConstantInt>(II.getArgOperand(2)) &&
+        isa<ConstantInt>(II.getArgOperand(3)) &&
+        cast<ConstantInt>(II.getArgOperand(2))->getZExtValue() <
+            cast<ConstantInt>(II.getArgOperand(3))->getZExtValue())
+      if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0))) {
+        if (auto *II3 = dyn_cast<IntrinsicInst>(II.getArgOperand(1)))
+          if ((II3->getIntrinsicID() == Intrinsic::riscv_vmv_v_x ||
+               II3->getIntrinsicID() == Intrinsic::riscv_vfmv_v_f) &&
+              isa<UndefValue>(II3->getArgOperand(0)) &&
+              isa<ConstantInt>(II3->getArgOperand(2)) &&
+              cast<ConstantInt>(II3->getArgOperand(2))->getZExtValue() == 1) {
+            Value *OriginVector = nullptr;
+            if ((II2->getIntrinsicID() == Intrinsic::riscv_vmv_v_x ||
+                 II2->getIntrinsicID() == Intrinsic::riscv_vfmv_v_f) &&
+                isa<UndefValue>(II2->getArgOperand(0)) &&
+                isa<ConstantInt>(II2->getArgOperand(2))) {
+              uint64_t VL =
+                  cast<ConstantInt>(II2->getArgOperand(2))->getZExtValue();
+              if (isPowerOf2_64(VL))
+                OriginVector =
+                    IC.Builder.CreateVectorSplat(VL, II2->getArgOperand(1));
+            } else if (II2->getIntrinsicID() ==
+                       Intrinsic::riscv_vcast_from_fixed) {
+              OriginVector = II2->getArgOperand(0);
+            }
+            if (OriginVector != nullptr) {
+              Value *NewSrc = IC.Builder.CreateInsertElement(
+                  OriginVector, II3->getArgOperand(1), II.getArgOperand(2));
+              return IC.replaceInstUsesWith(
+                  II, IC.Builder.CreateIntrinsic(
+                          Intrinsic::riscv_vcast_from_fixed,
+                          {II.getType(), NewSrc->getType()}, {NewSrc}));
+            }
+          }
       }
     break;
   case Intrinsic::riscv_vslidedown: {
