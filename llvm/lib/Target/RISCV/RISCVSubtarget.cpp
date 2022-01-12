@@ -231,10 +231,10 @@ bool RISCVSubtarget::enableSubRegLiveness() const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static unsigned calculateLatency(const RISCVSubtarget* ST,
-                                 const MachineInstr* MI, unsigned Lat,
-                                 RISCVSubtarget::RISCVProcFamilyEnum ProcFamily) {
-  switch (ProcFamily) {
+static unsigned
+calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
+                 RISCVSubtarget::RISCVProcFamilyEnum ProcModel) {
+  switch(ProcModel) {
   default:
     return Lat;
 

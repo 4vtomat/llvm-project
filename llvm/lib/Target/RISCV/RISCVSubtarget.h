@@ -38,8 +38,13 @@ class RISCVSubtarget : public RISCVGenSubtargetInfo {
 public:
   enum RISCVProcFamilyEnum : uint8_t {
     Others,
+    SiFive6,
     SiFive7,
-    SiFiveX280, // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+    SiFive8,
+    SiFive9,
+    SiFiveX280,
+#endif // SIFIVE_CUSTOMIZATION
   };
 
 private:
