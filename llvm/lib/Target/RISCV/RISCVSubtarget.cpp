@@ -225,12 +225,19 @@ bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
   return hasVInstructions() && getMinRVVVectorSizeInBits() != 0;
 }
 
+
 bool RISCVSubtarget::enableSubRegLiveness() const {
   // TODO: Enable for for RVV to better handle LMUL>1 and segment load/store.
   return EnableSubRegLiveness;
 }
 
 #if SIFIVE_CUSTOMIZATION
+static unsigned factorLMul(unsigned Lat, RISCVII::VLMUL LMul) {
+  // Every DLEN chunk is processed every VLEN / DLEN cycles, or, virtually
+  // always, every 2 cycles,
+  return Lat + (RISCVII::getLMULGroups(LMul) - 1) * 2;
+}
+
 static unsigned
 calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
                  RISCVSubtarget::RISCVProcFamilyEnum ProcModel) {
@@ -256,14 +263,14 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
 
       // Instructions without SEW, if any.
       if (!RISCVII::hasSEWOp(Desc.TSFlags))
-        return Lat * RISCVII::getLMULGroups(LMul);
+        return factorLMul(Lat, LMul);
 
       unsigned SEW =
           1 << MI->getOperand(MI->getNumExplicitOperands() - 1).getImm();
 
       switch(Opcode) {
       default:
-        return Lat * RISCVII::getLMULGroups(LMul);
+        return factorLMul(Lat, LMul);
       // VRGATHER latency is proportional to the number of elements.
       case RISCV::VRGATHER_VV:
       case RISCV::VRGATHER_VI:
@@ -316,7 +323,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VNSRL_WX:
       case RISCV::VNSRL_WI:
         // FIXME: It may be more complex than this.
-        return Lat * RISCVII::getLMULGroups(LMul);
+        return factorLMul(Lat, LMul);
       // Widening latency.
       case RISCV::VFWADD_VV:
       case RISCV::VFWADD_VF:
@@ -369,7 +376,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VWSUBU_WV:
       case RISCV::VWSUBU_WX:
         // FIXME: It may be more complex than this.
-        return Lat * RISCVII::getLMULGroups(LMul);
+        return factorLMul(Lat, LMul);
       }
     }
   }
