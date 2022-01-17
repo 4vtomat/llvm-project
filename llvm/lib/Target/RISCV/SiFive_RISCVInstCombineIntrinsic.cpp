@@ -846,6 +846,67 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
   return RetVal;
 }
 
+// Transform (v<bop> (wext a) (wext b)) into (vw<bop> a, b)
+static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
+  // Return true if V is a widening conversion intrinsic with VL vector length.
+  auto isWcvtWithVL = [](IntrinsicInst *II, Value *VL) {
+    if (!II)
+      return false;
+    switch (II->getIntrinsicID()) {
+    default:
+      return false;
+    case Intrinsic::riscv_vwadd:
+    case Intrinsic::riscv_vwaddu: {
+      auto *C = dyn_cast<ConstantInt>(II->getArgOperand(2));
+      return C && C->isZero() && isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(3) == VL;
+    }
+    case Intrinsic::riscv_vfwcvt_f_f_v:
+      return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
+    }
+  };
+
+  auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1));
+  auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2));
+  Value *VL = II.getArgOperand(3);
+  if (!isWcvtWithVL(Op0, VL) || !isWcvtWithVL(Op1, VL))
+    return nullptr;
+
+  // TODO: vwmulsu uses different widening ways for its operands. If we
+  // want to support vwmulsu in the case, we should loosen the constraint.
+  if (Op0->getIntrinsicID() != Op1->getIntrinsicID())
+    return nullptr;
+
+  bool Signed = Op0->getIntrinsicID() == Intrinsic::riscv_vwadd;
+  Intrinsic::ID NewOp;
+  switch (II.getIntrinsicID()) {
+  default:
+    llvm_unreachable(
+        "Unexpected instruction not having variety to widen arguments");
+  case Intrinsic::riscv_vadd:
+    NewOp = Signed ? Intrinsic::riscv_vwadd : Intrinsic::riscv_vwaddu;
+    break;
+  case Intrinsic::riscv_vsub:
+    NewOp = Signed ? Intrinsic::riscv_vwsub : Intrinsic::riscv_vwsubu;
+    break;
+  case Intrinsic::riscv_vfadd:
+    NewOp = Intrinsic::riscv_vfwadd;
+    break;
+  case Intrinsic::riscv_vfsub:
+    NewOp = Intrinsic::riscv_vfwsub;
+    break;
+  case Intrinsic::riscv_vmul:
+    NewOp = Signed ? Intrinsic::riscv_vwmul : Intrinsic::riscv_vwmulu;
+    break;
+  case Intrinsic::riscv_vfmul:
+    NewOp = Intrinsic::riscv_vfwmul;
+    break;
+  }
+  return CreateIntrinsic(&II, NewOp,
+                         {II.getType(), Op0->getArgOperand(1)->getType(),
+                          Op1->getArgOperand(1)->getType(), VL->getType()},
+                         {II.getArgOperand(0), Op0->getArgOperand(1), Op1->getArgOperand(1), VL});
+}
+
 static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
   Intrinsic::ID IID = II.getIntrinsicID();
   switch (IID) {
@@ -1314,59 +1375,22 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
         }
       }
     }
+
+    if (Instruction *V = foldVwcvtWithVBinaryOp(IC, II))
+      return V;
+
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
   case Intrinsic::riscv_vmul:
-    if (auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
-      if (auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
-        Intrinsic::ID IID[] = {Intrinsic::riscv_vwadd, Intrinsic::riscv_vwaddu};
-        Intrinsic::ID IIDNew[] = {Intrinsic::riscv_vwmul,
-                                  Intrinsic::riscv_vwmulu};
-        for (int i = 0; i != 2; ++i) {
-          if (Op0->getIntrinsicID() == IID[i] &&
-              Op1->getIntrinsicID() == IID[i] &&
-              isa<UndefValue>(Op0->getArgOperand(0)) &&
-              isa<UndefValue>(Op1->getArgOperand(0)) &&
-              isa<ConstantInt>(Op0->getArgOperand(2)) &&
-              cast<ConstantInt>(Op0->getArgOperand(2))->isZero() &&
-              isa<ConstantInt>(Op1->getArgOperand(2)) &&
-              cast<ConstantInt>(Op1->getArgOperand(2))->isZero() &&
-              II.getArgOperand(3) == Op0->getArgOperand(3) &&
-              II.getArgOperand(3) == Op1->getArgOperand(3)) {
-            return CreateIntrinsic(
-                &II, IIDNew[i],
-                {II.getType(), Op0->getArgOperand(1)->getType(),
-                 Op1->getArgOperand(1)->getType(),
-                 II.getArgOperand(3)->getType()},
-                {II.getArgOperand(0), Op0->getArgOperand(1),
-                 Op1->getArgOperand(1), II.getArgOperand(3)});
-          }
-        }
-      }
-    }
+    if (Instruction *V = foldVwcvtWithVBinaryOp(IC, II))
+      return V;
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
   case Intrinsic::riscv_vfmul:
-    if (auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1))) {
-      if (auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
-        if (Op0->getIntrinsicID() == Intrinsic::riscv_vfwcvt_f_f_v &&
-            Op1->getIntrinsicID() == Intrinsic::riscv_vfwcvt_f_f_v &&
-            isa<UndefValue>(Op0->getArgOperand(0)) &&
-            isa<UndefValue>(Op1->getArgOperand(0)) &&
-            II.getArgOperand(3) == Op0->getArgOperand(2) &&
-            II.getArgOperand(3) == Op1->getArgOperand(2)) {
-          return CreateIntrinsic(&II, Intrinsic::riscv_vfwmul,
-                                 {II.getType(),
-                                  Op0->getArgOperand(1)->getType(),
-                                  Op1->getArgOperand(1)->getType(),
-                                  II.getArgOperand(3)->getType()},
-                                 {II.getArgOperand(0), Op0->getArgOperand(1),
-                                  Op1->getArgOperand(1), II.getArgOperand(3)});
-        }
-      }
-    }
+    if (Instruction *V = foldVwcvtWithVBinaryOp(IC, II))
+      return V;
     if (Instruction *V = foldBinaryOp(IC, II))
       return V;
     break;
@@ -1433,9 +1457,14 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       return V;
     break;
   case Intrinsic::riscv_vsub:
-  case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfadd:
   case Intrinsic::riscv_vfsub:
+    if (Instruction *V = foldVwcvtWithVBinaryOp(IC, II))
+      return V;
+    if (Instruction *V = foldBinaryOp(IC, II))
+      return V;
+    break;
+  case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfrsub:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
