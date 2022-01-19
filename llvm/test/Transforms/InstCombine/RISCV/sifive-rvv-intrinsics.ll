@@ -509,6 +509,56 @@ entry:
   ret void
 }
 
+define void @add_zextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @add_zextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwaddu.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vadd.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
+define void @add_sextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @add_sextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vadd.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
 define void @sub_wcvt_1(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
 ; CHECK-LABEL: @sub_wcvt_1(
 ; CHECK-NEXT:  entry:
@@ -553,6 +603,56 @@ entry:
   %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
   %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
   %5 = tail call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i8 0, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vsub.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
+define void @sub_zextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @sub_zextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwsubu.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vsub.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
+define void @sub_sextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @sub_sextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwsub.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
   %6 = tail call <vscale x 1 x i16> @llvm.riscv.vsub.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
   %7 = bitcast i16* %out to <vscale x 1 x i16>*
   tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
@@ -609,6 +709,56 @@ entry:
   ret void
 }
 
+define void @mul_zextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @mul_zextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwmulu.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vmul.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
+define void @mul_sextf2(i8* nocapture readonly %in_0, i8* nocapture readonly %in_1, i16* nocapture %out) {
+; CHECK-LABEL: @mul_sextf2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN_0:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwmul.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], <vscale x 1 x i8> [[TMP3]], i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP4]], <vscale x 1 x i16>* [[TMP5]], i64 8)
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = bitcast i8* %in_0 to <vscale x 1 x i8>*
+  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
+  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i64 8)
+  %3 = bitcast i8* %in_1 to <vscale x 1 x i8>*
+  %4 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %3, i64 8)
+  %5 = tail call <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %4, i64 8)
+  %6 = tail call <vscale x 1 x i16> @llvm.riscv.vmul.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, <vscale x 1 x i16> %5, i64 8)
+  %7 = bitcast i16* %out to <vscale x 1 x i16>*
+  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %6, <vscale x 1 x i16>* %7, i64 8)
+  ret void
+}
+
 declare void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>* nocapture, i64)
 declare <vscale x 1 x i16> @llvm.riscv.vadd.nxv1i16.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64)
 declare <vscale x 1 x i16> @llvm.riscv.vsub.nxv1i16.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64)
@@ -616,6 +766,8 @@ declare <vscale x 1 x i16> @llvm.riscv.vmul.nxv1i16.nxv1i16.i64(<vscale x 1 x i1
 declare <vscale x 1 x i16> @llvm.riscv.vwaddu.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16>, <vscale x 1 x i8>, i8, i64)
 declare <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8>, <vscale x 1 x i8>* nocapture, i64)
 declare <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16>, <vscale x 1 x i8>, i8, i64)
+declare <vscale x 1 x i16> @llvm.riscv.vzext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16>, <vscale x 1 x i8>, i64)
+declare <vscale x 1 x i16> @llvm.riscv.vsext.nxv1i16.nxv1i8.i64(<vscale x 1 x i16>, <vscale x 1 x i8>, i64)
 
 define void @fwcvt_fadd(float* nocapture readonly %in_0, float* nocapture readonly %in_1, double* nocapture %out) {
 ; CHECK-LABEL: @fwcvt_fadd(

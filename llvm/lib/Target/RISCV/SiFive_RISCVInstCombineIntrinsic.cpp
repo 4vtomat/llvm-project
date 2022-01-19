@@ -860,6 +860,13 @@ static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) 
       auto *C = dyn_cast<ConstantInt>(II->getArgOperand(2));
       return C && C->isZero() && isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(3) == VL;
     }
+    case Intrinsic::riscv_vzext:
+    case Intrinsic::riscv_vsext:
+      // Only use v[sz]ext.vf2 to make up widen operations.
+      if (II->getType()->getScalarSizeInBits() !=
+          2 * II->getArgOperand(1)->getType()->getScalarSizeInBits())
+        return false;
+      return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
     case Intrinsic::riscv_vfwcvt_f_f_v:
       return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
     }
@@ -876,7 +883,8 @@ static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) 
   if (Op0->getIntrinsicID() != Op1->getIntrinsicID())
     return nullptr;
 
-  bool Signed = Op0->getIntrinsicID() == Intrinsic::riscv_vwadd;
+  bool Signed = Op0->getIntrinsicID() == Intrinsic::riscv_vwadd ||
+                Op0->getIntrinsicID() == Intrinsic::riscv_vsext;
   Intrinsic::ID NewOp;
   switch (II.getIntrinsicID()) {
   default:
