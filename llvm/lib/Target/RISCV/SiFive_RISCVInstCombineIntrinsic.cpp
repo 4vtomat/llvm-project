@@ -846,6 +846,12 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
   return RetVal;
 }
 
+// Return true if II is an intrinsic to widen signed elements.
+static bool isSignedWcvt(IntrinsicInst *II) {
+  return II->getIntrinsicID() == Intrinsic::riscv_vwadd ||
+         II->getIntrinsicID() == Intrinsic::riscv_vsext;
+}
+
 // Transform (v<bop> (wext a) (wext b)) into (vw<bop> a, b)
 static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
   // Return true if V is a widening conversion intrinsic with VL vector length.
@@ -878,13 +884,19 @@ static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) 
   if (!isWcvtWithVL(Op0, VL) || !isWcvtWithVL(Op1, VL))
     return nullptr;
 
-  // TODO: vwmulsu uses different widening ways for its operands. If we
-  // want to support vwmulsu in the case, we should loosen the constraint.
-  if (Op0->getIntrinsicID() != Op1->getIntrinsicID())
-    return nullptr;
+  bool Signed, MixSigned = false;
+  if (isSignedWcvt(Op0) == isSignedWcvt(Op1)) {
+    Signed = isSignedWcvt(Op0);
+  } else {
+    // vwmulsu is the only binary operation that uses both of signed-widening
+    // and unsigned-widening.
+    if (II.getIntrinsicID() != Intrinsic::riscv_vmul)
+      return nullptr;
+    if (isSignedWcvt(Op1))
+      std::swap(Op0, Op1);
+    MixSigned = true;
+  }
 
-  bool Signed = Op0->getIntrinsicID() == Intrinsic::riscv_vwadd ||
-                Op0->getIntrinsicID() == Intrinsic::riscv_vsext;
   Intrinsic::ID NewOp;
   switch (II.getIntrinsicID()) {
   default:
@@ -903,7 +915,9 @@ static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) 
     NewOp = Intrinsic::riscv_vfwsub;
     break;
   case Intrinsic::riscv_vmul:
-    NewOp = Signed ? Intrinsic::riscv_vwmul : Intrinsic::riscv_vwmulu;
+    NewOp = MixSigned
+                ? Intrinsic::riscv_vwmulsu
+                : (Signed ? Intrinsic::riscv_vwmul : Intrinsic::riscv_vwmulu);
     break;
   case Intrinsic::riscv_vfmul:
     NewOp = Intrinsic::riscv_vfwmul;
