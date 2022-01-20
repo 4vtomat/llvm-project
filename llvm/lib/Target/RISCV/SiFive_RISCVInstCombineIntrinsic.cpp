@@ -1293,6 +1293,8 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vse:
     if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
       if (II2->getIntrinsicID() == Intrinsic::riscv_vcast_from_fixed &&
+          (isa<InsertElementInst>(II2->getArgOperand(0)) ||
+           isa<ConstantDataVector>(II2->getArgOperand(0))) &&
           isa<ConstantInt>(II.getArgOperand(2))) {
         uint64_t StoreCnt =
             cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();

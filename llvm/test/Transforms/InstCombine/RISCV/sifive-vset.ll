@@ -236,6 +236,25 @@ entry:
   ret void
 }
 
+define dso_local void @vset_7(i32* nocapture %out) {
+; CHECK-LABEL: @vset_7(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    store i32 1, i32* [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
+; CHECK-NEXT:    store i32 2, i32* [[TMP0]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
+; CHECK-NEXT:    store i32 3, i32* [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
+; CHECK-NEXT:    store i32 4, i32* [[TMP2]], align 4
+; CHECK-NEXT:    ret void
+;
+entry:
+  %0 = tail call <vscale x 1 x i32> @llvm.riscv.vcast.from.fixed.nxv1i32.v4i32(<4 x i32> <i32 1, i32 2, i32 3, i32 4>)
+  %1 = bitcast i32* %out to <vscale x 1 x i32>*
+  tail call void @llvm.riscv.vse.nxv1i32.i64(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, i64 4)
+  ret void
+}
+
 declare <vscale x 1 x i32> @llvm.riscv.vcast.from.fixed.nxv1i32.v4i32(<4 x i32>)
 declare <vscale x 1 x i32> @llvm.riscv.vmv.v.x.nxv1i32.i64(<vscale x 1 x i32>, i32, i64)
 declare <vscale x 1 x i32> @llvm.riscv.vslideup.nxv1i32.i64(<vscale x 1 x i32>, <vscale x 1 x i32>, i64, i64, i64)
