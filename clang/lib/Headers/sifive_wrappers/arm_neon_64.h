@@ -1,5 +1,5 @@
-// d0f61f37d8610a520be853446b406700609b41ce
-// ELEN=64, aarch=64, as_source=False, disable_assert=False, indent='\t', only='.*'
+// 24d748369cc4290808e073e4265decb7d478b305
+// ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
 
@@ -23,7 +23,9 @@ RELATED TO THIS AGREEMENT.
 */
 #ifndef SIFIVE_RECODE_NEON_64_H
 #define SIFIVE_RECODE_NEON_64_H
+#ifdef __linux__
 #include <assert.h>
+#endif
 #include <fenv.h>
 #include <stdint.h>
 #ifdef __riscv_vector
@@ -126,16 +128,19 @@ typedef struct{uint64x1_t val[4];} uint64x1x4_t;
 typedef struct{uint64x2_t val[2];} uint64x2x2_t;
 typedef struct{uint64x2_t val[3];} uint64x2x3_t;
 typedef struct{uint64x2_t val[4];} uint64x2x4_t;
+#ifdef __linux__
+#define SIFIVE_RECODE_ASSERT(x) assert(x)
+#else
+#define SIFIVE_RECODE_ASSERT(x)
+#endif
 #ifndef FE_TONEARESTFROMZERO
 #define FE_TONEARESTFROMZERO FE_TONEAREST
 #endif
-
 #ifdef __clang__
 #define SIFIVE_RECODE_NOT_IMPLEMENT(message) __attribute__((diagnose_if(1, "SiFive Recode does not implement " message, "error")))
 #else
 #define SIFIVE_RECODE_NOT_IMPLEMENT(message) __attribute__((error("SiFive Recode does not implement " message)))
 #endif
-
 #ifdef __riscv_vector
 static inline int __saturation_occurred(void)
 {
@@ -147,7 +152,6 @@ static inline void __set_saturation_occurred(int sat)
 	vesetxsat(sat);
 }
 #endif
-
 static inline void __ignore_saturation(void){}
 SIFIVE_RECODE_NOT_IMPLEMENT("__crc32b") uint32_t __crc32b(uint32_t a, uint8_t b);
 SIFIVE_RECODE_NOT_IMPLEMENT("__crc32cb") uint32_t __crc32cb(uint32_t a, uint8_t b);
@@ -4621,8 +4625,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcombine_u8") uint8x16_t vcombine_u8(uint8x8_t low,
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vcopy_lane_f32(float32x2_t a, const int lane1, float32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4633,8 +4637,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_f32") float32x2_t vcopy_lane_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vcopy_lane_f64(float64x1_t a, const int lane1, float64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(temp_0);
 }
@@ -4644,8 +4648,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_f64") float64x1_t vcopy_lane_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vcopy_lane_s16(int16x4_t a, const int lane1, int16x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4656,8 +4660,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_s16") int16x4_t vcopy_lane_s16(int16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vcopy_lane_s32(int32x2_t a, const int lane1, int32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4668,8 +4672,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_s32") int32x2_t vcopy_lane_s32(int32x2_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vcopy_lane_s64(int64x1_t a, const int lane1, int64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(temp_0);
 }
@@ -4679,8 +4683,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_s64") int64x1_t vcopy_lane_s64(int64x1_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vcopy_lane_s8(int8x8_t a, const int lane1, int8x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4691,8 +4695,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_s8") int8x8_t vcopy_lane_s8(int8x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vcopy_lane_u16(uint16x4_t a, const int lane1, uint16x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4703,8 +4707,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_u16") uint16x4_t vcopy_lane_u16(uint16x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vcopy_lane_u32(uint32x2_t a, const int lane1, uint32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4715,8 +4719,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_u32") uint32x2_t vcopy_lane_u32(uint32x2
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vcopy_lane_u64(uint64x1_t a, const int lane1, uint64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(temp_0);
 }
@@ -4726,8 +4730,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_u64") uint64x1_t vcopy_lane_u64(uint64x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vcopy_lane_u8(uint8x8_t a, const int lane1, uint8x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4738,8 +4742,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_lane_u8") uint8x8_t vcopy_lane_u8(uint8x8_t a
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vcopy_laneq_f32(float32x2_t a, const int lane1, float32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vslideup(temp_0, vlmul_trunc_f32m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4750,8 +4754,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_f32") float32x2_t vcopy_laneq_f32(float
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vcopy_laneq_f64(float64x1_t a, const int lane1, float64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vlmul_trunc_f64m1(vrgather(temp_0, lane2, 1)));
 }
@@ -4761,8 +4765,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_f64") float64x1_t vcopy_laneq_f64(float
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vcopy_laneq_s16(int16x4_t a, const int lane1, int16x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vslideup(temp_0, vlmul_trunc_i16m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4773,8 +4777,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_s16") int16x4_t vcopy_laneq_s16(int16x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vcopy_laneq_s32(int32x2_t a, const int lane1, int32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vslideup(temp_0, vlmul_trunc_i32m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4785,8 +4789,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_s32") int32x2_t vcopy_laneq_s32(int32x2
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vcopy_laneq_s64(int64x1_t a, const int lane1, int64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vlmul_trunc_i64m1(vrgather(temp_0, lane2, 1)));
 }
@@ -4796,8 +4800,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_s64") int64x1_t vcopy_laneq_s64(int64x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vcopy_laneq_s8(int8x8_t a, const int lane1, int8x16_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (16)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vslideup(temp_0, vlmul_trunc_i8m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4808,8 +4812,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_s8") int8x8_t vcopy_laneq_s8(int8x8_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vcopy_laneq_u16(uint16x4_t a, const int lane1, uint16x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vslideup(temp_0, vlmul_trunc_u16m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4820,8 +4824,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_u16") uint16x4_t vcopy_laneq_u16(uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vcopy_laneq_u32(uint32x2_t a, const int lane1, uint32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vslideup(temp_0, vlmul_trunc_u32m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4832,8 +4836,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_u32") uint32x2_t vcopy_laneq_u32(uint32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vcopy_laneq_u64(uint64x1_t a, const int lane1, uint64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (1)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vlmul_trunc_u64m1(vrgather(temp_0, lane2, 1)));
 }
@@ -4843,8 +4847,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_u64") uint64x1_t vcopy_laneq_u64(uint64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vcopy_laneq_u8(uint8x8_t a, const int lane1, uint8x16_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (16)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vslideup(temp_0, vlmul_trunc_u8m1(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4855,8 +4859,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopy_laneq_u8") uint8x8_t vcopy_laneq_u8(uint8x8_t
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vcopyq_lane_f32(float32x4_t a, const int lane1, float32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vslideup(temp_0, vlmul_ext_f32m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4867,8 +4871,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_f32") float32x4_t vcopyq_lane_f32(float
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vcopyq_lane_f64(float64x2_t a, const int lane1, float64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vslideup(temp_0, vlmul_ext_f64m2(temp_1), lane1, (lane1) + (1)));
@@ -4879,8 +4883,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_f64") float64x2_t vcopyq_lane_f64(float
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vcopyq_lane_s16(int16x8_t a, const int lane1, int16x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vslideup(temp_0, vlmul_ext_i16m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4891,8 +4895,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_s16") int16x8_t vcopyq_lane_s16(int16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vcopyq_lane_s32(int32x4_t a, const int lane1, int32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vslideup(temp_0, vlmul_ext_i32m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4903,8 +4907,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_s32") int32x4_t vcopyq_lane_s32(int32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vcopyq_lane_s64(int64x2_t a, const int lane1, int64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vslideup(temp_0, vlmul_ext_i64m2(temp_1), lane1, (lane1) + (1)));
@@ -4915,8 +4919,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_s64") int64x2_t vcopyq_lane_s64(int64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vcopyq_lane_s8(int8x16_t a, const int lane1, int8x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (16)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vslideup(temp_0, vlmul_ext_i8m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4927,8 +4931,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_s8") int8x16_t vcopyq_lane_s8(int8x16_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vcopyq_lane_u16(uint16x8_t a, const int lane1, uint16x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vslideup(temp_0, vlmul_ext_u16m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4939,8 +4943,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_u16") uint16x8_t vcopyq_lane_u16(uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vcopyq_lane_u32(uint32x4_t a, const int lane1, uint32x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vslideup(temp_0, vlmul_ext_u32m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4951,8 +4955,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_u32") uint32x4_t vcopyq_lane_u32(uint32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vcopyq_lane_u64(uint64x2_t a, const int lane1, uint64x1_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (1)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vslideup(temp_0, vlmul_ext_u64m2(temp_1), lane1, (lane1) + (1)));
@@ -4963,8 +4967,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_u64") uint64x2_t vcopyq_lane_u64(uint64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vcopyq_lane_u8(uint8x16_t a, const int lane1, uint8x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (16)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vslideup(temp_0, vlmul_ext_u8m2(vrgather(temp_1, lane2, 1)), lane1, (lane1) + (1)));
@@ -4975,8 +4979,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_lane_u8") uint8x16_t vcopyq_lane_u8(uint8x16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vcopyq_laneq_f32(float32x4_t a, const int lane1, float32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4987,8 +4991,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_f32") float32x4_t vcopyq_laneq_f32(flo
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vcopyq_laneq_f64(float64x2_t a, const int lane1, float64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -4999,8 +5003,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_f64") float64x2_t vcopyq_laneq_f64(flo
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vcopyq_laneq_s16(int16x8_t a, const int lane1, int16x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5011,8 +5015,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_s16") int16x8_t vcopyq_laneq_s16(int16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vcopyq_laneq_s32(int32x4_t a, const int lane1, int32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5023,8 +5027,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_s32") int32x4_t vcopyq_laneq_s32(int32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vcopyq_laneq_s64(int64x2_t a, const int lane1, int64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5035,8 +5039,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_s64") int64x2_t vcopyq_laneq_s64(int64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vcopyq_laneq_s8(int8x16_t a, const int lane1, int8x16_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (16)));
-	assert(((0) <= (lane2)) && ((lane2) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5047,8 +5051,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_s8") int8x16_t vcopyq_laneq_s8(int8x16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vcopyq_laneq_u16(uint16x8_t a, const int lane1, uint16x8_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (8)));
-	assert(((0) <= (lane2)) && ((lane2) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5059,8 +5063,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_u16") uint16x8_t vcopyq_laneq_u16(uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vcopyq_laneq_u32(uint32x4_t a, const int lane1, uint32x4_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (4)));
-	assert(((0) <= (lane2)) && ((lane2) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5071,8 +5075,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_u32") uint32x4_t vcopyq_laneq_u32(uint
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vcopyq_laneq_u64(uint64x2_t a, const int lane1, uint64x2_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (2)));
-	assert(((0) <= (lane2)) && ((lane2) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5083,8 +5087,8 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcopyq_laneq_u64") uint64x2_t vcopyq_laneq_u64(uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vcopyq_laneq_u8(uint8x16_t a, const int lane1, uint8x16_t b, const int lane2)
 {
-	assert(((0) <= (lane1)) && ((lane1) < (16)));
-	assert(((0) <= (lane2)) && ((lane2) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane1)) && ((lane1) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane2)) && ((lane2) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vslideup(temp_0, vrgather(temp_1, lane2, 1), lane1, (lane1) + (1)));
@@ -5385,7 +5389,7 @@ __attribute__((always_inline)) inline int16x4_t vcvta_s16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m1_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5404,7 +5408,7 @@ __attribute__((always_inline)) inline int32x2_t vcvta_s32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m1_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5423,7 +5427,7 @@ __attribute__((always_inline)) inline int64x1_t vcvta_s64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m1_t temp_3 = vfcvt_x(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -5442,7 +5446,7 @@ __attribute__((always_inline)) inline uint16x4_t vcvta_u16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m1_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5461,7 +5465,7 @@ __attribute__((always_inline)) inline uint32x2_t vcvta_u32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m1_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5480,7 +5484,7 @@ __attribute__((always_inline)) inline uint64x1_t vcvta_u64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m1_t temp_3 = vfcvt_xu(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -5507,7 +5511,7 @@ __attribute__((always_inline)) inline int16x8_t vcvtaq_s16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m2_t temp_3 = vfcvt_x(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -5526,7 +5530,7 @@ __attribute__((always_inline)) inline int32x4_t vcvtaq_s32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m2_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5545,7 +5549,7 @@ __attribute__((always_inline)) inline int64x2_t vcvtaq_s64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m2_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5564,7 +5568,7 @@ __attribute__((always_inline)) inline uint16x8_t vcvtaq_u16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m2_t temp_3 = vfcvt_xu(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -5583,7 +5587,7 @@ __attribute__((always_inline)) inline uint32x4_t vcvtaq_u32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m2_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5602,7 +5606,7 @@ __attribute__((always_inline)) inline uint64x2_t vcvtaq_u64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m2_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5655,7 +5659,7 @@ __attribute__((always_inline)) inline int16x4_t vcvtm_s16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m1_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5674,7 +5678,7 @@ __attribute__((always_inline)) inline int32x2_t vcvtm_s32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m1_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5693,7 +5697,7 @@ __attribute__((always_inline)) inline int64x1_t vcvtm_s64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m1_t temp_3 = vfcvt_x(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -5747,7 +5751,7 @@ __attribute__((always_inline)) inline int16x8_t vcvtmq_s16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m2_t temp_3 = vfcvt_x(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -5766,7 +5770,7 @@ __attribute__((always_inline)) inline int32x4_t vcvtmq_s32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m2_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5785,7 +5789,7 @@ __attribute__((always_inline)) inline int64x2_t vcvtmq_s64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_DOWNWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m2_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5833,7 +5837,7 @@ __attribute__((always_inline)) inline int16x4_t vcvtn_s16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m1_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5852,7 +5856,7 @@ __attribute__((always_inline)) inline int32x2_t vcvtn_s32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m1_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5871,7 +5875,7 @@ __attribute__((always_inline)) inline int64x1_t vcvtn_s64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m1_t temp_3 = vfcvt_x(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -5890,7 +5894,7 @@ __attribute__((always_inline)) inline uint16x4_t vcvtn_u16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m1_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5909,7 +5913,7 @@ __attribute__((always_inline)) inline uint32x2_t vcvtn_u32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m1_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -5928,7 +5932,7 @@ __attribute__((always_inline)) inline uint64x1_t vcvtn_u64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m1_t temp_3 = vfcvt_xu(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -5955,7 +5959,7 @@ __attribute__((always_inline)) inline int16x8_t vcvtnq_s16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m2_t temp_3 = vfcvt_x(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -5974,7 +5978,7 @@ __attribute__((always_inline)) inline int32x4_t vcvtnq_s32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m2_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -5993,7 +5997,7 @@ __attribute__((always_inline)) inline int64x2_t vcvtnq_s64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m2_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6012,7 +6016,7 @@ __attribute__((always_inline)) inline uint16x8_t vcvtnq_u16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m2_t temp_3 = vfcvt_xu(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -6031,7 +6035,7 @@ __attribute__((always_inline)) inline uint32x4_t vcvtnq_u32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m2_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -6050,7 +6054,7 @@ __attribute__((always_inline)) inline uint64x2_t vcvtnq_u64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_TONEAREST);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m2_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6071,7 +6075,7 @@ __attribute__((always_inline)) inline int16x4_t vcvtp_s16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m1_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -6090,7 +6094,7 @@ __attribute__((always_inline)) inline int32x2_t vcvtp_s32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m1_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6109,7 +6113,7 @@ __attribute__((always_inline)) inline int64x1_t vcvtp_s64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m1_t temp_3 = vfcvt_x(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -6128,7 +6132,7 @@ __attribute__((always_inline)) inline uint16x4_t vcvtp_u16_f16(float16x4_t a)
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m1_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -6147,7 +6151,7 @@ __attribute__((always_inline)) inline uint32x2_t vcvtp_u32_f32(float32x2_t a)
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m1_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6166,7 +6170,7 @@ __attribute__((always_inline)) inline uint64x1_t vcvtp_u64_f64(float64x1_t a)
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m1_t temp_3 = vfcvt_xu(temp_0, 1);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
@@ -6193,7 +6197,7 @@ __attribute__((always_inline)) inline int16x8_t vcvtpq_s16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint16m2_t temp_3 = vfcvt_x(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -6212,7 +6216,7 @@ __attribute__((always_inline)) inline int32x4_t vcvtpq_s32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint32m2_t temp_3 = vfcvt_x(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -6231,7 +6235,7 @@ __attribute__((always_inline)) inline int64x2_t vcvtpq_s64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vint64m2_t temp_3 = vfcvt_x(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6250,7 +6254,7 @@ __attribute__((always_inline)) inline uint16x8_t vcvtpq_u16_f16(float16x8_t a)
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint16m2_t temp_3 = vfcvt_xu(temp_0, 8);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
@@ -6269,7 +6273,7 @@ __attribute__((always_inline)) inline uint32x4_t vcvtpq_u32_f32(float32x4_t a)
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint32m2_t temp_3 = vfcvt_xu(temp_0, 4);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
@@ -6288,7 +6292,7 @@ __attribute__((always_inline)) inline uint64x2_t vcvtpq_u64_f64(float64x2_t a)
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	int temp_1 = fegetround();
 	int temp_2 = fesetround(FE_UPWARD);
-	assert((temp_2) == (0));
+	SIFIVE_RECODE_ASSERT((temp_2) == (0));
 	vuint64m2_t temp_3 = vfcvt_xu(temp_0, 2);
 	fesetround(temp_1);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
@@ -6500,7 +6504,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdivq_f64") float64x2_t vdivq_f64(float64x2_t a, fl
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vdot_lane_s32(int32x2_t r, int8x8_t a, int8x8_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(r);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
@@ -6514,7 +6518,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdot_lane_s32") int32x2_t vdot_lane_s32(int32x2_t r
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vdot_lane_u32(uint32x2_t r, uint8x8_t a, uint8x8_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(r);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
@@ -6528,7 +6532,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdot_lane_u32") uint32x2_t vdot_lane_u32(uint32x2_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vdot_laneq_s32(int32x2_t r, int8x8_t a, int8x16_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(r);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
@@ -6542,7 +6546,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdot_laneq_s32") int32x2_t vdot_laneq_s32(int32x2_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vdot_laneq_u32(uint32x2_t r, uint8x8_t a, uint8x16_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(r);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
@@ -6582,7 +6586,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdot_u32") uint32x2_t vdot_u32(uint32x2_t r, uint8x
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x4_t vdotq_lane_s32(int32x4_t r, int8x16_t a, int8x8_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(r);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
@@ -6596,7 +6600,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdotq_lane_s32") int32x4_t vdotq_lane_s32(int32x4_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x4_t vdotq_lane_u32(uint32x4_t r, uint8x16_t a, uint8x8_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(r);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
@@ -6610,7 +6614,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdotq_lane_u32") uint32x4_t vdotq_lane_u32(uint32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x4_t vdotq_laneq_s32(int32x4_t r, int8x16_t a, int8x16_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(r);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
@@ -6624,7 +6628,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdotq_laneq_s32") int32x4_t vdotq_laneq_s32(int32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x4_t vdotq_laneq_u32(uint32x4_t r, uint8x16_t a, uint8x16_t b, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(r);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
@@ -6664,7 +6668,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdotq_u32") uint32x4_t vdotq_u32(uint32x4_t r, uint
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vdup_lane_f16(float16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vrgather(temp_0, lane, 4));
 }
@@ -6674,7 +6678,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_f16") float16x4_t vdup_lane_f16(float16x4
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vdup_lane_f32(float32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vrgather(temp_0, lane, 2));
 }
@@ -6684,7 +6688,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_f32") float32x2_t vdup_lane_f32(float32x2
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vdup_lane_f64(float64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(temp_0);
 }
@@ -6694,7 +6698,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_f64") float64x1_t vdup_lane_f64(float64x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vdup_lane_s16(int16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vrgather(temp_0, lane, 4));
 }
@@ -6704,7 +6708,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_s16") int16x4_t vdup_lane_s16(int16x4_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vdup_lane_s32(int32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vrgather(temp_0, lane, 2));
 }
@@ -6714,7 +6718,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_s32") int32x2_t vdup_lane_s32(int32x2_t v
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vdup_lane_s64(int64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(temp_0);
 }
@@ -6724,7 +6728,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_s64") int64x1_t vdup_lane_s64(int64x1_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vdup_lane_s8(int8x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vrgather(temp_0, lane, 8));
 }
@@ -6734,7 +6738,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_s8") int8x8_t vdup_lane_s8(int8x8_t vec, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vdup_lane_u16(uint16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vrgather(temp_0, lane, 4));
 }
@@ -6744,7 +6748,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_u16") uint16x4_t vdup_lane_u16(uint16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vdup_lane_u32(uint32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vrgather(temp_0, lane, 2));
 }
@@ -6754,7 +6758,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_u32") uint32x2_t vdup_lane_u32(uint32x2_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vdup_lane_u64(uint64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(temp_0);
 }
@@ -6764,7 +6768,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_u64") uint64x1_t vdup_lane_u64(uint64x1_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vdup_lane_u8(uint8x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vrgather(temp_0, lane, 8));
 }
@@ -6774,7 +6778,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_lane_u8") uint8x8_t vdup_lane_u8(uint8x8_t vec
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vdup_laneq_f16(float16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vlmul_trunc_f16m1(vrgather(temp_0, lane, 4)));
 }
@@ -6784,7 +6788,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_f16") float16x4_t vdup_laneq_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vdup_laneq_f32(float32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vlmul_trunc_f32m1(vrgather(temp_0, lane, 2)));
 }
@@ -6794,7 +6798,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_f32") float32x2_t vdup_laneq_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vdup_laneq_f64(float64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vlmul_trunc_f64m1(vrgather(temp_0, lane, 1)));
 }
@@ -6804,7 +6808,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_f64") float64x1_t vdup_laneq_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vdup_laneq_s16(int16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vlmul_trunc_i16m1(vrgather(temp_0, lane, 4)));
 }
@@ -6814,7 +6818,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_s16") int16x4_t vdup_laneq_s16(int16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vdup_laneq_s32(int32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vlmul_trunc_i32m1(vrgather(temp_0, lane, 2)));
 }
@@ -6824,7 +6828,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_s32") int32x2_t vdup_laneq_s32(int32x4_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vdup_laneq_s64(int64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vlmul_trunc_i64m1(vrgather(temp_0, lane, 1)));
 }
@@ -6834,7 +6838,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_s64") int64x1_t vdup_laneq_s64(int64x2_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vdup_laneq_s8(int8x16_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vlmul_trunc_i8m1(vrgather(temp_0, lane, 8)));
 }
@@ -6844,7 +6848,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_s8") int8x8_t vdup_laneq_s8(int8x16_t ve
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vdup_laneq_u16(uint16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vlmul_trunc_u16m1(vrgather(temp_0, lane, 4)));
 }
@@ -6854,7 +6858,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_u16") uint16x4_t vdup_laneq_u16(uint16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vdup_laneq_u32(uint32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vlmul_trunc_u32m1(vrgather(temp_0, lane, 2)));
 }
@@ -6864,7 +6868,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_u32") uint32x2_t vdup_laneq_u32(uint32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vdup_laneq_u64(uint64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vlmul_trunc_u64m1(vrgather(temp_0, lane, 1)));
 }
@@ -6874,7 +6878,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdup_laneq_u64") uint64x1_t vdup_laneq_u64(uint64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vdup_laneq_u8(uint8x16_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vlmul_trunc_u8m1(vrgather(temp_0, lane, 8)));
 }
@@ -7027,7 +7031,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vduph_laneq_u16") uint16_t vduph_laneq_u16(uint16x8
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vdupq_lane_f16(float16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vrgather(vlmul_ext_f16m2(temp_0), lane, 8));
 }
@@ -7037,7 +7041,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_f16") float16x8_t vdupq_lane_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vdupq_lane_f32(float32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vrgather(vlmul_ext_f32m2(temp_0), lane, 4));
 }
@@ -7047,7 +7051,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_f32") float32x4_t vdupq_lane_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vdupq_lane_f64(float64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vrgather(vlmul_ext_f64m2(temp_0), 0, 2));
 }
@@ -7057,7 +7061,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_f64") float64x2_t vdupq_lane_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vdupq_lane_s16(int16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vrgather(vlmul_ext_i16m2(temp_0), lane, 8));
 }
@@ -7067,7 +7071,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_s16") int16x8_t vdupq_lane_s16(int16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vdupq_lane_s32(int32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vrgather(vlmul_ext_i32m2(temp_0), lane, 4));
 }
@@ -7077,7 +7081,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_s32") int32x4_t vdupq_lane_s32(int32x2_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vdupq_lane_s64(int64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vrgather(vlmul_ext_i64m2(temp_0), 0, 2));
 }
@@ -7087,7 +7091,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_s64") int64x2_t vdupq_lane_s64(int64x1_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vdupq_lane_s8(int8x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vrgather(vlmul_ext_i8m2(temp_0), lane, 16));
 }
@@ -7097,7 +7101,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_s8") int8x16_t vdupq_lane_s8(int8x8_t ve
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vdupq_lane_u16(uint16x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vrgather(vlmul_ext_u16m2(temp_0), lane, 8));
 }
@@ -7107,7 +7111,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_u16") uint16x8_t vdupq_lane_u16(uint16x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vdupq_lane_u32(uint32x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vrgather(vlmul_ext_u32m2(temp_0), lane, 4));
 }
@@ -7117,7 +7121,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_u32") uint32x4_t vdupq_lane_u32(uint32x2
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vdupq_lane_u64(uint64x1_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vrgather(vlmul_ext_u64m2(temp_0), 0, 2));
 }
@@ -7127,7 +7131,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_u64") uint64x2_t vdupq_lane_u64(uint64x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vdupq_lane_u8(uint8x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vrgather(vlmul_ext_u8m2(temp_0), lane, 16));
 }
@@ -7137,7 +7141,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_lane_u8") uint8x16_t vdupq_lane_u8(uint8x8_t 
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vdupq_laneq_f16(float16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vrgather(temp_0, lane, 8));
 }
@@ -7147,7 +7151,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_f16") float16x8_t vdupq_laneq_f16(float
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vdupq_laneq_f32(float32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vrgather(temp_0, lane, 4));
 }
@@ -7157,7 +7161,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_f32") float32x4_t vdupq_laneq_f32(float
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vdupq_laneq_f64(float64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vrgather(temp_0, lane, 2));
 }
@@ -7167,7 +7171,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_f64") float64x2_t vdupq_laneq_f64(float
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vdupq_laneq_s16(int16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vrgather(temp_0, lane, 8));
 }
@@ -7177,7 +7181,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_s16") int16x8_t vdupq_laneq_s16(int16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vdupq_laneq_s32(int32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vrgather(temp_0, lane, 4));
 }
@@ -7187,7 +7191,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_s32") int32x4_t vdupq_laneq_s32(int32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vdupq_laneq_s64(int64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vrgather(temp_0, lane, 2));
 }
@@ -7197,7 +7201,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_s64") int64x2_t vdupq_laneq_s64(int64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vdupq_laneq_s8(int8x16_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vrgather(temp_0, lane, 16));
 }
@@ -7207,7 +7211,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_s8") int8x16_t vdupq_laneq_s8(int8x16_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vdupq_laneq_u16(uint16x8_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vrgather(temp_0, lane, 8));
 }
@@ -7217,7 +7221,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_u16") uint16x8_t vdupq_laneq_u16(uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vdupq_laneq_u32(uint32x4_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vrgather(temp_0, lane, 4));
 }
@@ -7227,7 +7231,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_u32") uint32x4_t vdupq_laneq_u32(uint32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vdupq_laneq_u64(uint64x2_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vrgather(temp_0, lane, 2));
 }
@@ -7237,7 +7241,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vdupq_laneq_u64") uint64x2_t vdupq_laneq_u64(uint64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vdupq_laneq_u8(uint8x16_t vec, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(vec);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vrgather(temp_0, lane, 16));
 }
@@ -7548,7 +7552,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("veorq_u8") uint8x16_t veorq_u8(uint8x16_t a, uint8x
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vext_f16(float16x4_t a, float16x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
 	vfloat16m2_t temp_2 = vslideup(vlmul_ext_f16m2(temp_0), vlmul_ext_f16m2(temp_1), 4, 8);
@@ -7560,7 +7564,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_f16") float16x4_t vext_f16(float16x4_t a, floa
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vext_f32(float32x2_t a, float32x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	vfloat32m2_t temp_2 = vslideup(vlmul_ext_f32m2(temp_0), vlmul_ext_f32m2(temp_1), 2, 4);
@@ -7572,7 +7576,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_f32") float32x2_t vext_f32(float32x2_t a, floa
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vext_f64(float64x1_t a, float64x1_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(temp_0);
 }
@@ -7582,7 +7586,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_f64") float64x1_t vext_f64(float64x1_t a, floa
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vext_s16(int16x4_t a, int16x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	vint16m2_t temp_2 = vslideup(vlmul_ext_i16m2(temp_0), vlmul_ext_i16m2(temp_1), 4, 8);
@@ -7594,7 +7598,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_s16") int16x4_t vext_s16(int16x4_t a, int16x4_
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vext_s32(int32x2_t a, int32x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	vint32m2_t temp_2 = vslideup(vlmul_ext_i32m2(temp_0), vlmul_ext_i32m2(temp_1), 2, 4);
@@ -7606,7 +7610,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_s32") int32x2_t vext_s32(int32x2_t a, int32x2_
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vext_s64(int64x1_t a, int64x1_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(temp_0);
 }
@@ -7616,7 +7620,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_s64") int64x1_t vext_s64(int64x1_t a, int64x1_
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vext_s8(int8x8_t a, int8x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
 	vint8m2_t temp_2 = vslideup(vlmul_ext_i8m2(temp_0), vlmul_ext_i8m2(temp_1), 8, 16);
@@ -7628,7 +7632,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_s8") int8x8_t vext_s8(int8x8_t a, int8x8_t b, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vext_u16(uint16x4_t a, uint16x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	vuint16m2_t temp_2 = vslideup(vlmul_ext_u16m2(temp_0), vlmul_ext_u16m2(temp_1), 4, 8);
@@ -7640,7 +7644,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_u16") uint16x4_t vext_u16(uint16x4_t a, uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vext_u32(uint32x2_t a, uint32x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	vuint32m2_t temp_2 = vslideup(vlmul_ext_u32m2(temp_0), vlmul_ext_u32m2(temp_1), 2, 4);
@@ -7652,7 +7656,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_u32") uint32x2_t vext_u32(uint32x2_t a, uint32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vext_u64(uint64x1_t a, uint64x1_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(temp_0);
 }
@@ -7662,7 +7666,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_u64") uint64x1_t vext_u64(uint64x1_t a, uint64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vext_u8(uint8x8_t a, uint8x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
 	vuint8m2_t temp_2 = vslideup(vlmul_ext_u8m2(temp_0), vlmul_ext_u8m2(temp_1), 8, 16);
@@ -7674,7 +7678,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vext_u8") uint8x8_t vext_u8(uint8x8_t a, uint8x8_t 
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vextq_f16(float16x8_t a, float16x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
 	vfloat16m4_t temp_2 = vslideup(vlmul_ext_f16m4(temp_0), vlmul_ext_f16m4(temp_1), 8, 16);
@@ -7686,7 +7690,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_f16") float16x8_t vextq_f16(float16x8_t a, fl
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vextq_f32(float32x4_t a, float32x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	vfloat32m4_t temp_2 = vslideup(vlmul_ext_f32m4(temp_0), vlmul_ext_f32m4(temp_1), 4, 8);
@@ -7698,7 +7702,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_f32") float32x4_t vextq_f32(float32x4_t a, fl
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vextq_f64(float64x2_t a, float64x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(b);
 	vfloat64m4_t temp_2 = vslideup(vlmul_ext_f64m4(temp_0), vlmul_ext_f64m4(temp_1), 2, 4);
@@ -7710,7 +7714,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_f64") float64x2_t vextq_f64(float64x2_t a, fl
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vextq_s16(int16x8_t a, int16x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	vint16m4_t temp_2 = vslideup(vlmul_ext_i16m4(temp_0), vlmul_ext_i16m4(temp_1), 8, 16);
@@ -7722,7 +7726,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_s16") int16x8_t vextq_s16(int16x8_t a, int16x
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vextq_s32(int32x4_t a, int32x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	vint32m4_t temp_2 = vslideup(vlmul_ext_i32m4(temp_0), vlmul_ext_i32m4(temp_1), 4, 8);
@@ -7734,7 +7738,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_s32") int32x4_t vextq_s32(int32x4_t a, int32x
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vextq_s64(int64x2_t a, int64x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(b);
 	vint64m4_t temp_2 = vslideup(vlmul_ext_i64m4(temp_0), vlmul_ext_i64m4(temp_1), 2, 4);
@@ -7746,7 +7750,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_s64") int64x2_t vextq_s64(int64x2_t a, int64x
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vextq_s8(int8x16_t a, int8x16_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
 	vint8m4_t temp_2 = vslideup(vlmul_ext_i8m4(temp_0), vlmul_ext_i8m4(temp_1), 16, 32);
@@ -7758,7 +7762,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_s8") int8x16_t vextq_s8(int8x16_t a, int8x16_
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vextq_u16(uint16x8_t a, uint16x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	vuint16m4_t temp_2 = vslideup(vlmul_ext_u16m4(temp_0), vlmul_ext_u16m4(temp_1), 8, 16);
@@ -7770,7 +7774,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_u16") uint16x8_t vextq_u16(uint16x8_t a, uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vextq_u32(uint32x4_t a, uint32x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	vuint32m4_t temp_2 = vslideup(vlmul_ext_u32m4(temp_0), vlmul_ext_u32m4(temp_1), 4, 8);
@@ -7782,7 +7786,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_u32") uint32x4_t vextq_u32(uint32x4_t a, uint
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vextq_u64(uint64x2_t a, uint64x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(b);
 	vuint64m4_t temp_2 = vslideup(vlmul_ext_u64m4(temp_0), vlmul_ext_u64m4(temp_1), 2, 4);
@@ -7794,7 +7798,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vextq_u64") uint64x2_t vextq_u64(uint64x2_t a, uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vextq_u8(uint8x16_t a, uint8x16_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
 	vuint8m4_t temp_2 = vslideup(vlmul_ext_u8m4(temp_0), vlmul_ext_u8m4(temp_1), 16, 32);
@@ -7839,7 +7843,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_f64") float64x1_t vfma_f64(float64x1_t a, floa
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vfma_lane_f16(float16x4_t a, float16x4_t b, float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
@@ -7851,7 +7855,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_lane_f16") float16x4_t vfma_lane_f16(float16x4
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vfma_lane_f32(float32x2_t a, float32x2_t b, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
@@ -7863,7 +7867,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_lane_f32") float32x2_t vfma_lane_f32(float32x2
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vfma_lane_f64(float64x1_t a, float64x1_t b, float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
 	vfloat64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m1(v);
@@ -7875,7 +7879,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_lane_f64") float64x1_t vfma_lane_f64(float64x1
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vfma_laneq_f16(float16x4_t a, float16x4_t b, float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(b);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
@@ -7888,7 +7892,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_laneq_f16") float16x4_t vfma_laneq_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vfma_laneq_f32(float32x2_t a, float32x2_t b, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
@@ -7901,7 +7905,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfma_laneq_f32") float32x2_t vfma_laneq_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vfma_laneq_f64(float64x1_t a, float64x1_t b, float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
@@ -7982,7 +7986,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_f64") float64x2_t vfmaq_f64(float64x2_t a, fl
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vfmaq_lane_f16(float16x8_t a, float16x8_t b, float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
@@ -7995,7 +7999,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_lane_f16") float16x8_t vfmaq_lane_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vfmaq_lane_f32(float32x4_t a, float32x4_t b, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
@@ -8008,7 +8012,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_lane_f32") float32x4_t vfmaq_lane_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vfmaq_lane_f64(float64x2_t a, float64x2_t b, float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(b);
 	vfloat64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m1(v);
@@ -8020,7 +8024,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_lane_f64") float64x2_t vfmaq_lane_f64(float64
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vfmaq_laneq_f16(float16x8_t a, float16x8_t b, float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(b);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
@@ -8032,7 +8036,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_laneq_f16") float16x8_t vfmaq_laneq_f16(float
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vfmaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
@@ -8044,7 +8048,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vfmaq_laneq_f32") float32x4_t vfmaq_laneq_f32(float
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vfmaq_laneq_f64(float64x2_t a, float64x2_t b, float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(b);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
@@ -8302,7 +8306,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_high_u8") uint8x8_t vget_high_u8(uint8x16_t a)
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16_t vget_lane_f16(float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
 	return vfmv_f(vrgather(temp_0, lane, 1));
 }
@@ -8312,7 +8316,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_f16") float16_t vget_lane_f16(float16x4_t
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32_t vget_lane_f32(float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
 	return vfmv_f(vrgather(temp_0, lane, 1));
 }
@@ -8322,7 +8326,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_f32") float32_t vget_lane_f32(float32x2_t
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64_t vget_lane_f64(float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(v);
 	return vfmv_f(temp_0);
 }
@@ -8332,7 +8336,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_f64") float64_t vget_lane_f64(float64x1_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16_t vget_lane_s16(int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8342,7 +8346,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_s16") int16_t vget_lane_s16(int16x4_t v, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32_t vget_lane_s32(int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8352,7 +8356,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_s32") int32_t vget_lane_s32(int32x2_t v, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64_t vget_lane_s64(int64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(v);
 	return vmv_x(temp_0);
 }
@@ -8362,7 +8366,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_s64") int64_t vget_lane_s64(int64x1_t v, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8_t vget_lane_s8(int8x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8372,7 +8376,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_s8") int8_t vget_lane_s8(int8x8_t v, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16_t vget_lane_u16(uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8382,7 +8386,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_u16") uint16_t vget_lane_u16(uint16x4_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32_t vget_lane_u32(uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8392,7 +8396,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_u32") uint32_t vget_lane_u32(uint32x2_t v
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64_t vget_lane_u64(uint64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(v);
 	return vmv_x(temp_0);
 }
@@ -8402,7 +8406,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_lane_u64") uint64_t vget_lane_u64(uint64x1_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8_t vget_lane_u8(uint8x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8511,7 +8515,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vget_low_u8") uint8x8_t vget_low_u8(uint8x16_t a);
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16_t vgetq_lane_f16(float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
 	return vfmv_f(vrgather(temp_0, lane, 1));
 }
@@ -8521,7 +8525,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_f16") float16_t vgetq_lane_f16(float16x8
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32_t vgetq_lane_f32(float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
 	return vfmv_f(vrgather(temp_0, lane, 1));
 }
@@ -8531,7 +8535,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_f32") float32_t vgetq_lane_f32(float32x4
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64_t vgetq_lane_f64(float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
 	return vfmv_f(vrgather(temp_0, lane, 1));
 }
@@ -8541,7 +8545,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_f64") float64_t vgetq_lane_f64(float64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16_t vgetq_lane_s16(int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8551,7 +8555,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_s16") int16_t vgetq_lane_s16(int16x8_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32_t vgetq_lane_s32(int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8561,7 +8565,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_s32") int32_t vgetq_lane_s32(int32x4_t v
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64_t vgetq_lane_s64(int64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8571,7 +8575,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_s64") int64_t vgetq_lane_s64(int64x2_t v
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8_t vgetq_lane_s8(int8x16_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8581,7 +8585,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_s8") int8_t vgetq_lane_s8(int8x16_t v, c
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16_t vgetq_lane_u16(uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8591,7 +8595,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_u16") uint16_t vgetq_lane_u16(uint16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32_t vgetq_lane_u32(uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8601,7 +8605,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_u32") uint32_t vgetq_lane_u32(uint32x4_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64_t vgetq_lane_u64(uint64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -8611,7 +8615,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vgetq_lane_u64") uint64_t vgetq_lane_u64(uint64x2_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8_t vgetq_lane_u8(uint8x16_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(v);
 	return vmv_x(vrgather(temp_0, lane, 1));
 }
@@ -9141,7 +9145,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_f64_x4") float64x1x4_t vld1_f64_x4(const float
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vld1_lane_f16(const float16_t * ptr, float16x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vslideup(temp_0, vle16_v_f16m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9151,7 +9155,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_f16") float16x4_t vld1_lane_f16(const flo
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vld1_lane_f32(const float32_t * ptr, float32x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vslideup(temp_0, vle32_v_f32m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9161,7 +9165,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_f32") float32x2_t vld1_lane_f32(const flo
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vld1_lane_f64(const float64_t * ptr, float64x1_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vle64_v_f64m1(ptr, 1));
 }
 #else
@@ -9170,7 +9174,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_f64") float64x1_t vld1_lane_f64(const flo
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vld1_lane_s16(const int16_t * ptr, int16x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vslideup(temp_0, vle16_v_i16m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9180,7 +9184,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_s16") int16x4_t vld1_lane_s16(const int16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vld1_lane_s32(const int32_t * ptr, int32x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vslideup(temp_0, vle32_v_i32m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9190,7 +9194,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_s32") int32x2_t vld1_lane_s32(const int32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vld1_lane_s64(const int64_t * ptr, int64x1_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vle64_v_i64m1(ptr, 1));
 }
 #else
@@ -9199,7 +9203,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_s64") int64x1_t vld1_lane_s64(const int64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vld1_lane_s8(const int8_t * ptr, int8x8_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vslideup(temp_0, vle8_v_i8m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9209,7 +9213,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_s8") int8x8_t vld1_lane_s8(const int8_t *
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vld1_lane_u16(const uint16_t * ptr, uint16x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vslideup(temp_0, vle16_v_u16m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9219,7 +9223,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_u16") uint16x4_t vld1_lane_u16(const uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vld1_lane_u32(const uint32_t * ptr, uint32x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vslideup(temp_0, vle32_v_u32m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9229,7 +9233,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_u32") uint32x2_t vld1_lane_u32(const uint
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vld1_lane_u64(const uint64_t * ptr, uint64x1_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vle64_v_u64m1(ptr, 1));
 }
 #else
@@ -9238,7 +9242,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1_lane_u64") uint64x1_t vld1_lane_u64(const uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vld1_lane_u8(const uint8_t * ptr, uint8x8_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(src);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vslideup(temp_0, vle8_v_u8m1(ptr, 1), lane, (lane) + (1)));
 }
@@ -9688,7 +9692,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_f64_x4") float64x2x4_t vld1q_f64_x4(const flo
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vld1q_lane_f16(const float16_t * ptr, float16x8_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vslideup(temp_0, vle16_v_f16m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9698,7 +9702,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_f16") float16x8_t vld1q_lane_f16(const f
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vld1q_lane_f32(const float32_t * ptr, float32x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vslideup(temp_0, vle32_v_f32m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9708,7 +9712,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_f32") float32x4_t vld1q_lane_f32(const f
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vld1q_lane_f64(const float64_t * ptr, float64x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vslideup(temp_0, vle64_v_f64m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9718,7 +9722,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_f64") float64x2_t vld1q_lane_f64(const f
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vld1q_lane_s16(const int16_t * ptr, int16x8_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vslideup(temp_0, vle16_v_i16m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9728,7 +9732,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_s16") int16x8_t vld1q_lane_s16(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vld1q_lane_s32(const int32_t * ptr, int32x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vslideup(temp_0, vle32_v_i32m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9738,7 +9742,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_s32") int32x4_t vld1q_lane_s32(const int
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vld1q_lane_s64(const int64_t * ptr, int64x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vslideup(temp_0, vle64_v_i64m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9748,7 +9752,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_s64") int64x2_t vld1q_lane_s64(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vld1q_lane_s8(const int8_t * ptr, int8x16_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vslideup(temp_0, vle8_v_i8m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9758,7 +9762,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_s8") int8x16_t vld1q_lane_s8(const int8_
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vld1q_lane_u16(const uint16_t * ptr, uint16x8_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vslideup(temp_0, vle16_v_u16m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9768,7 +9772,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_u16") uint16x8_t vld1q_lane_u16(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vld1q_lane_u32(const uint32_t * ptr, uint32x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vslideup(temp_0, vle32_v_u32m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9778,7 +9782,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_u32") uint32x4_t vld1q_lane_u32(const ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vld1q_lane_u64(const uint64_t * ptr, uint64x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vslideup(temp_0, vle64_v_u64m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -9788,7 +9792,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld1q_lane_u64") uint64x2_t vld1q_lane_u64(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vld1q_lane_u8(const uint8_t * ptr, uint8x16_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(src);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vslideup(temp_0, vle8_v_u8m2(ptr, 1), lane, (lane) + (1)));
 }
@@ -10208,7 +10212,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_f64") float64x1x2_t vld2_f64(const float64_t *
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4x2_t vld2_lane_f16(const float16_t * ptr, float16x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[1]);
 	vfloat16m1_t temp_2;
@@ -10222,7 +10226,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_f16") float16x4x2_t vld2_lane_f16(const f
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2x2_t vld2_lane_f32(const float32_t * ptr, float32x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[1]);
 	vfloat32m1_t temp_2;
@@ -10236,7 +10240,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_f32") float32x2x2_t vld2_lane_f32(const f
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1x2_t vld2_lane_f64(const float64_t * ptr, float64x1x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0;
 	vfloat64m1_t temp_1;
 	vlseg2e64_v_f64m1(&(temp_0), &(temp_1), ptr, 1);
@@ -10248,7 +10252,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_f64") float64x1x2_t vld2_lane_f64(const f
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4x2_t vld2_lane_s16(const int16_t * ptr, int16x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[1]);
 	vint16m1_t temp_2;
@@ -10262,7 +10266,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_s16") int16x4x2_t vld2_lane_s16(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2x2_t vld2_lane_s32(const int32_t * ptr, int32x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[1]);
 	vint32m1_t temp_2;
@@ -10276,7 +10280,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_s32") int32x2x2_t vld2_lane_s32(const int
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1x2_t vld2_lane_s64(const int64_t * ptr, int64x1x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0;
 	vint64m1_t temp_1;
 	vlseg2e64_v_i64m1(&(temp_0), &(temp_1), ptr, 1);
@@ -10288,7 +10292,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_s64") int64x1x2_t vld2_lane_s64(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8x2_t vld2_lane_s8(const int8_t * ptr, int8x8x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[1]);
 	vint8m1_t temp_2;
@@ -10302,7 +10306,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_s8") int8x8x2_t vld2_lane_s8(const int8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4x2_t vld2_lane_u16(const uint16_t * ptr, uint16x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[1]);
 	vuint16m1_t temp_2;
@@ -10316,7 +10320,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_u16") uint16x4x2_t vld2_lane_u16(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2x2_t vld2_lane_u32(const uint32_t * ptr, uint32x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[1]);
 	vuint32m1_t temp_2;
@@ -10330,7 +10334,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_u32") uint32x2x2_t vld2_lane_u32(const ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1x2_t vld2_lane_u64(const uint64_t * ptr, uint64x1x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0;
 	vuint64m1_t temp_1;
 	vlseg2e64_v_u64m1(&(temp_0), &(temp_1), ptr, 1);
@@ -10342,7 +10346,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2_lane_u64") uint64x1x2_t vld2_lane_u64(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8x2_t vld2_lane_u8(const uint8_t * ptr, uint8x8x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[1]);
 	vuint8m1_t temp_2;
@@ -10598,7 +10602,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_f64") float64x2x2_t vld2q_f64(const float64_t
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8x2_t vld2q_lane_f16(const float16_t * ptr, float16x8x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[1]);
 	vfloat16m2_t temp_2;
@@ -10612,7 +10616,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_f16") float16x8x2_t vld2q_lane_f16(const
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4x2_t vld2q_lane_f32(const float32_t * ptr, float32x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[1]);
 	vfloat32m2_t temp_2;
@@ -10626,7 +10630,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_f32") float32x4x2_t vld2q_lane_f32(const
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2x2_t vld2q_lane_f64(const float64_t * ptr, float64x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[1]);
 	vfloat64m2_t temp_2;
@@ -10640,7 +10644,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_f64") float64x2x2_t vld2q_lane_f64(const
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8x2_t vld2q_lane_s16(const int16_t * ptr, int16x8x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[1]);
 	vint16m2_t temp_2;
@@ -10654,7 +10658,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_s16") int16x8x2_t vld2q_lane_s16(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4x2_t vld2q_lane_s32(const int32_t * ptr, int32x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[1]);
 	vint32m2_t temp_2;
@@ -10668,7 +10672,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_s32") int32x4x2_t vld2q_lane_s32(const i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2x2_t vld2q_lane_s64(const int64_t * ptr, int64x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[1]);
 	vint64m2_t temp_2;
@@ -10682,7 +10686,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_s64") int64x2x2_t vld2q_lane_s64(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16x2_t vld2q_lane_s8(const int8_t * ptr, int8x16x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[1]);
 	vint8m2_t temp_2;
@@ -10696,7 +10700,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_s8") int8x16x2_t vld2q_lane_s8(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8x2_t vld2q_lane_u16(const uint16_t * ptr, uint16x8x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[1]);
 	vuint16m2_t temp_2;
@@ -10710,7 +10714,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_u16") uint16x8x2_t vld2q_lane_u16(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4x2_t vld2q_lane_u32(const uint32_t * ptr, uint32x4x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[1]);
 	vuint32m2_t temp_2;
@@ -10724,7 +10728,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_u32") uint32x4x2_t vld2q_lane_u32(const 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2x2_t vld2q_lane_u64(const uint64_t * ptr, uint64x2x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[1]);
 	vuint64m2_t temp_2;
@@ -10738,7 +10742,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld2q_lane_u64") uint64x2x2_t vld2q_lane_u64(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16x2_t vld2q_lane_u8(const uint8_t * ptr, uint8x16x2_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[1]);
 	vuint8m2_t temp_2;
@@ -11008,7 +11012,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_f64") float64x1x3_t vld3_f64(const float64_t *
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4x3_t vld3_lane_f16(const float16_t * ptr, float16x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[1]);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[2]);
@@ -11024,7 +11028,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_f16") float16x4x3_t vld3_lane_f16(const f
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2x3_t vld3_lane_f32(const float32_t * ptr, float32x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[1]);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[2]);
@@ -11040,7 +11044,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_f32") float32x2x3_t vld3_lane_f32(const f
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1x3_t vld3_lane_f64(const float64_t * ptr, float64x1x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0;
 	vfloat64m1_t temp_1;
 	vfloat64m1_t temp_2;
@@ -11053,7 +11057,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_f64") float64x1x3_t vld3_lane_f64(const f
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4x3_t vld3_lane_s16(const int16_t * ptr, int16x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[1]);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[2]);
@@ -11069,7 +11073,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_s16") int16x4x3_t vld3_lane_s16(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2x3_t vld3_lane_s32(const int32_t * ptr, int32x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[1]);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[2]);
@@ -11085,7 +11089,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_s32") int32x2x3_t vld3_lane_s32(const int
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1x3_t vld3_lane_s64(const int64_t * ptr, int64x1x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0;
 	vint64m1_t temp_1;
 	vint64m1_t temp_2;
@@ -11098,7 +11102,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_s64") int64x1x3_t vld3_lane_s64(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8x3_t vld3_lane_s8(const int8_t * ptr, int8x8x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[1]);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[2]);
@@ -11114,7 +11118,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_s8") int8x8x3_t vld3_lane_s8(const int8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4x3_t vld3_lane_u16(const uint16_t * ptr, uint16x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[1]);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[2]);
@@ -11130,7 +11134,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_u16") uint16x4x3_t vld3_lane_u16(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2x3_t vld3_lane_u32(const uint32_t * ptr, uint32x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[1]);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[2]);
@@ -11146,7 +11150,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_u32") uint32x2x3_t vld3_lane_u32(const ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1x3_t vld3_lane_u64(const uint64_t * ptr, uint64x1x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0;
 	vuint64m1_t temp_1;
 	vuint64m1_t temp_2;
@@ -11159,7 +11163,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3_lane_u64") uint64x1x3_t vld3_lane_u64(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8x3_t vld3_lane_u8(const uint8_t * ptr, uint8x8x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[1]);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[2]);
@@ -11439,7 +11443,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_f64") float64x2x3_t vld3q_f64(const float64_t
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8x3_t vld3q_lane_f16(const float16_t * ptr, float16x8x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[1]);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[2]);
@@ -11455,7 +11459,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_f16") float16x8x3_t vld3q_lane_f16(const
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4x3_t vld3q_lane_f32(const float32_t * ptr, float32x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[1]);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[2]);
@@ -11471,7 +11475,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_f32") float32x4x3_t vld3q_lane_f32(const
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2x3_t vld3q_lane_f64(const float64_t * ptr, float64x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[1]);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[2]);
@@ -11487,7 +11491,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_f64") float64x2x3_t vld3q_lane_f64(const
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8x3_t vld3q_lane_s16(const int16_t * ptr, int16x8x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[1]);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[2]);
@@ -11503,7 +11507,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_s16") int16x8x3_t vld3q_lane_s16(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4x3_t vld3q_lane_s32(const int32_t * ptr, int32x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[1]);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[2]);
@@ -11519,7 +11523,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_s32") int32x4x3_t vld3q_lane_s32(const i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2x3_t vld3q_lane_s64(const int64_t * ptr, int64x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[1]);
 	vint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[2]);
@@ -11535,7 +11539,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_s64") int64x2x3_t vld3q_lane_s64(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16x3_t vld3q_lane_s8(const int8_t * ptr, int8x16x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[1]);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[2]);
@@ -11551,7 +11555,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_s8") int8x16x3_t vld3q_lane_s8(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8x3_t vld3q_lane_u16(const uint16_t * ptr, uint16x8x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[1]);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[2]);
@@ -11567,7 +11571,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_u16") uint16x8x3_t vld3q_lane_u16(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4x3_t vld3q_lane_u32(const uint32_t * ptr, uint32x4x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[1]);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[2]);
@@ -11583,7 +11587,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_u32") uint32x4x3_t vld3q_lane_u32(const 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2x3_t vld3q_lane_u64(const uint64_t * ptr, uint64x2x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[1]);
 	vuint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[2]);
@@ -11599,7 +11603,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld3q_lane_u64") uint64x2x3_t vld3q_lane_u64(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16x3_t vld3q_lane_u8(const uint8_t * ptr, uint8x16x3_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[1]);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[2]);
@@ -11893,7 +11897,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_f64") float64x1x4_t vld4_f64(const float64_t *
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4x4_t vld4_lane_f16(const float16_t * ptr, float16x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[1]);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(((src).val)[2]);
@@ -11911,7 +11915,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_f16") float16x4x4_t vld4_lane_f16(const f
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2x4_t vld4_lane_f32(const float32_t * ptr, float32x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[1]);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(((src).val)[2]);
@@ -11929,7 +11933,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_f32") float32x2x4_t vld4_lane_f32(const f
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1x4_t vld4_lane_f64(const float64_t * ptr, float64x1x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0;
 	vfloat64m1_t temp_1;
 	vfloat64m1_t temp_2;
@@ -11943,7 +11947,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_f64") float64x1x4_t vld4_lane_f64(const f
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4x4_t vld4_lane_s16(const int16_t * ptr, int16x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[1]);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(((src).val)[2]);
@@ -11961,7 +11965,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_s16") int16x4x4_t vld4_lane_s16(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2x4_t vld4_lane_s32(const int32_t * ptr, int32x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[1]);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(((src).val)[2]);
@@ -11979,7 +11983,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_s32") int32x2x4_t vld4_lane_s32(const int
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1x4_t vld4_lane_s64(const int64_t * ptr, int64x1x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0;
 	vint64m1_t temp_1;
 	vint64m1_t temp_2;
@@ -11993,7 +11997,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_s64") int64x1x4_t vld4_lane_s64(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8x4_t vld4_lane_s8(const int8_t * ptr, int8x8x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[1]);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(((src).val)[2]);
@@ -12011,7 +12015,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_s8") int8x8x4_t vld4_lane_s8(const int8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4x4_t vld4_lane_u16(const uint16_t * ptr, uint16x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[1]);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(((src).val)[2]);
@@ -12029,7 +12033,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_u16") uint16x4x4_t vld4_lane_u16(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2x4_t vld4_lane_u32(const uint32_t * ptr, uint32x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[1]);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(((src).val)[2]);
@@ -12047,7 +12051,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_u32") uint32x2x4_t vld4_lane_u32(const ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1x4_t vld4_lane_u64(const uint64_t * ptr, uint64x1x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0;
 	vuint64m1_t temp_1;
 	vuint64m1_t temp_2;
@@ -12061,7 +12065,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4_lane_u64") uint64x1x4_t vld4_lane_u64(const ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8x4_t vld4_lane_u8(const uint8_t * ptr, uint8x8x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[1]);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(((src).val)[2]);
@@ -12365,7 +12369,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_f64") float64x2x4_t vld4q_f64(const float64_t
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8x4_t vld4q_lane_f16(const float16_t * ptr, float16x8x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[1]);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(((src).val)[2]);
@@ -12383,7 +12387,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_f16") float16x8x4_t vld4q_lane_f16(const
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4x4_t vld4q_lane_f32(const float32_t * ptr, float32x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[1]);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(((src).val)[2]);
@@ -12401,7 +12405,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_f32") float32x4x4_t vld4q_lane_f32(const
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2x4_t vld4q_lane_f64(const float64_t * ptr, float64x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[1]);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(((src).val)[2]);
@@ -12419,7 +12423,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_f64") float64x2x4_t vld4q_lane_f64(const
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8x4_t vld4q_lane_s16(const int16_t * ptr, int16x8x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[1]);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(((src).val)[2]);
@@ -12437,7 +12441,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_s16") int16x8x4_t vld4q_lane_s16(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4x4_t vld4q_lane_s32(const int32_t * ptr, int32x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[1]);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(((src).val)[2]);
@@ -12455,7 +12459,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_s32") int32x4x4_t vld4q_lane_s32(const i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2x4_t vld4q_lane_s64(const int64_t * ptr, int64x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[1]);
 	vint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m2(((src).val)[2]);
@@ -12473,7 +12477,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_s64") int64x2x4_t vld4q_lane_s64(const i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16x4_t vld4q_lane_s8(const int8_t * ptr, int8x16x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[1]);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(((src).val)[2]);
@@ -12491,7 +12495,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_s8") int8x16x4_t vld4q_lane_s8(const int
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8x4_t vld4q_lane_u16(const uint16_t * ptr, uint16x8x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[1]);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(((src).val)[2]);
@@ -12509,7 +12513,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_u16") uint16x8x4_t vld4q_lane_u16(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4x4_t vld4q_lane_u32(const uint32_t * ptr, uint32x4x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[1]);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(((src).val)[2]);
@@ -12527,7 +12531,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_u32") uint32x4x4_t vld4q_lane_u32(const 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2x4_t vld4q_lane_u64(const uint64_t * ptr, uint64x2x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[1]);
 	vuint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m2(((src).val)[2]);
@@ -12545,7 +12549,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vld4q_lane_u64") uint64x2x4_t vld4q_lane_u64(const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16x4_t vld4q_lane_u8(const uint8_t * ptr, uint8x16x4_t src, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[1]);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(((src).val)[2]);
@@ -13559,7 +13563,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_f64") float64x1_t vmla_f64(float64x1_t a, floa
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vmla_lane_f32(float32x2_t a, float32x2_t b, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
@@ -13571,7 +13575,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_lane_f32") float32x2_t vmla_lane_f32(float32x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vmla_lane_s16(int16x4_t a, int16x4_t b, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
@@ -13583,7 +13587,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_lane_s16") int16x4_t vmla_lane_s16(int16x4_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vmla_lane_s32(int32x2_t a, int32x2_t b, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
@@ -13595,7 +13599,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_lane_s32") int32x2_t vmla_lane_s32(int32x2_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vmla_lane_u16(uint16x4_t a, uint16x4_t b, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
@@ -13607,7 +13611,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_lane_u16") uint16x4_t vmla_lane_u16(uint16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vmla_lane_u32(uint32x2_t a, uint32x2_t b, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
@@ -13619,7 +13623,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_lane_u32") uint32x2_t vmla_lane_u32(uint32x2_t
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vmla_laneq_f32(float32x2_t a, float32x2_t b, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(b);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
@@ -13632,7 +13636,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_laneq_f32") float32x2_t vmla_laneq_f32(float32
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vmla_laneq_s16(int16x4_t a, int16x4_t b, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
@@ -13645,7 +13649,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_laneq_s16") int16x4_t vmla_laneq_s16(int16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vmla_laneq_s32(int32x2_t a, int32x2_t b, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
@@ -13658,7 +13662,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_laneq_s32") int32x2_t vmla_laneq_s32(int32x2_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vmla_laneq_u16(uint16x4_t a, uint16x4_t b, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
@@ -13671,7 +13675,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmla_laneq_u16") uint16x4_t vmla_laneq_u16(uint16x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vmla_laneq_u32(uint32x2_t a, uint32x2_t b, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
@@ -13890,7 +13894,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_high_u8") uint16x8_t vmlal_high_u8(uint16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmlal_lane_s16(int32x4_t a, int16x4_t b, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
@@ -13902,7 +13906,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_lane_s16") int32x4_t vmlal_lane_s16(int32x4_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vmlal_lane_s32(int64x2_t a, int32x2_t b, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
@@ -13914,7 +13918,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_lane_s32") int64x2_t vmlal_lane_s32(int64x2_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmlal_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
@@ -13926,7 +13930,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_lane_u16") uint32x4_t vmlal_lane_u16(uint32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vmlal_lane_u32(uint64x2_t a, uint32x2_t b, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
@@ -13938,7 +13942,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_lane_u32") uint64x2_t vmlal_lane_u32(uint64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmlal_laneq_s16(int32x4_t a, int16x4_t b, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
@@ -13951,7 +13955,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_laneq_s16") int32x4_t vmlal_laneq_s16(int32x4
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vmlal_laneq_s32(int64x2_t a, int32x2_t b, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
@@ -13964,7 +13968,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_laneq_s32") int64x2_t vmlal_laneq_s32(int64x2
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmlal_laneq_u16(uint32x4_t a, uint16x4_t b, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
@@ -13977,7 +13981,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlal_laneq_u16") uint32x4_t vmlal_laneq_u16(uint32
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vmlal_laneq_u32(uint64x2_t a, uint32x2_t b, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
@@ -14118,7 +14122,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_f64") float64x2_t vmlaq_f64(float64x2_t a, fl
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vmlaq_lane_f32(float32x4_t a, float32x4_t b, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
@@ -14131,7 +14135,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_lane_f32") float32x4_t vmlaq_lane_f32(float32
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vmlaq_lane_s16(int16x8_t a, int16x8_t b, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
@@ -14144,7 +14148,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_lane_s16") int16x8_t vmlaq_lane_s16(int16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmlaq_lane_s32(int32x4_t a, int32x4_t b, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
@@ -14157,7 +14161,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_lane_s32") int32x4_t vmlaq_lane_s32(int32x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vmlaq_lane_u16(uint16x8_t a, uint16x8_t b, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
@@ -14170,7 +14174,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_lane_u16") uint16x8_t vmlaq_lane_u16(uint16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmlaq_lane_u32(uint32x4_t a, uint32x4_t b, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
@@ -14183,7 +14187,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_lane_u32") uint32x4_t vmlaq_lane_u32(uint32x4
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(b);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
@@ -14195,7 +14199,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_laneq_f32") float32x4_t vmlaq_laneq_f32(float
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vmlaq_laneq_s16(int16x8_t a, int16x8_t b, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
@@ -14207,7 +14211,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_laneq_s16") int16x8_t vmlaq_laneq_s16(int16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmlaq_laneq_s32(int32x4_t a, int32x4_t b, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
@@ -14219,7 +14223,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_laneq_s32") int32x4_t vmlaq_laneq_s32(int32x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vmlaq_laneq_u16(uint16x8_t a, uint16x8_t b, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
@@ -14231,7 +14235,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmlaq_laneq_u16") uint16x8_t vmlaq_laneq_u16(uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmlaq_laneq_u32(uint32x4_t a, uint32x4_t b, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
@@ -15257,7 +15261,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_f64") float64x1_t vmul_f64(float64x1_t a, floa
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vmul_lane_f16(float16x4_t a, float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vfmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -15268,7 +15272,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_f16") float16x4_t vmul_lane_f16(float16x4
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vmul_lane_f32(float32x2_t a, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vfmul(temp_0, vrgather(temp_1, lane, 2), 2));
@@ -15279,7 +15283,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_f32") float32x2_t vmul_lane_f32(float32x2
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vmul_lane_f64(float64x1_t a, float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmul(temp_0, temp_1, 1));
@@ -15290,7 +15294,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_f64") float64x1_t vmul_lane_f64(float64x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vmul_lane_s16(int16x4_t a, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -15301,7 +15305,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_s16") int16x4_t vmul_lane_s16(int16x4_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vmul_lane_s32(int32x2_t a, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vmul(temp_0, vrgather(temp_1, lane, 2), 2));
@@ -15312,7 +15316,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_s32") int32x2_t vmul_lane_s32(int32x2_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vmul_lane_u16(uint16x4_t a, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -15323,7 +15327,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_u16") uint16x4_t vmul_lane_u16(uint16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vmul_lane_u32(uint32x2_t a, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vmul(temp_0, vrgather(temp_1, lane, 2), 2));
@@ -15334,7 +15338,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_lane_u32") uint32x2_t vmul_lane_u32(uint32x2_t
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vmul_laneq_f16(float16x4_t a, float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
 	vfloat16m2_t temp_2 = vrgather(temp_1, lane, 4);
@@ -15346,7 +15350,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_f16") float16x4_t vmul_laneq_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vmul_laneq_f32(float32x2_t a, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
 	vfloat32m2_t temp_2 = vrgather(temp_1, lane, 2);
@@ -15358,7 +15362,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_f32") float32x2_t vmul_laneq_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vmul_laneq_f64(float64x1_t a, float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
 	vfloat64m2_t temp_2 = vrgather(temp_1, lane, 1);
@@ -15370,7 +15374,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_f64") float64x1_t vmul_laneq_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vmul_laneq_s16(int16x4_t a, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
 	vint16m2_t temp_2 = vrgather(temp_1, lane, 4);
@@ -15382,7 +15386,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_s16") int16x4_t vmul_laneq_s16(int16x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vmul_laneq_s32(int32x2_t a, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
 	vint32m2_t temp_2 = vrgather(temp_1, lane, 2);
@@ -15394,7 +15398,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_s32") int32x2_t vmul_laneq_s32(int32x2_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vmul_laneq_u16(uint16x4_t a, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
 	vuint16m2_t temp_2 = vrgather(temp_1, lane, 4);
@@ -15406,7 +15410,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmul_laneq_u16") uint16x4_t vmul_laneq_u16(uint16x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vmul_laneq_u32(uint32x2_t a, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
 	vuint32m2_t temp_2 = vrgather(temp_1, lane, 2);
@@ -15771,7 +15775,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_f64") float64x2_t vmulq_f64(float64x2_t a, fl
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vmulq_lane_f16(float16x8_t a, float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
 	vfloat16m2_t temp_2 = vrgather(vlmul_ext_f16m2(temp_1), lane, 8);
@@ -15783,7 +15787,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_f16") float16x8_t vmulq_lane_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vmulq_lane_f32(float32x4_t a, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
 	vfloat32m2_t temp_2 = vrgather(vlmul_ext_f32m2(temp_1), lane, 4);
@@ -15795,7 +15799,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_f32") float32x4_t vmulq_lane_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vmulq_lane_f64(float64x2_t a, float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfmul(temp_0, vrgather(vlmul_ext_f64m2(temp_1), 0, 2), 2));
@@ -15806,7 +15810,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_f64") float64x2_t vmulq_lane_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vmulq_lane_s16(int16x8_t a, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
 	vint16m2_t temp_2 = vrgather(vlmul_ext_i16m2(temp_1), lane, 8);
@@ -15818,7 +15822,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_s16") int16x8_t vmulq_lane_s16(int16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmulq_lane_s32(int32x4_t a, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
 	vint32m2_t temp_2 = vrgather(vlmul_ext_i32m2(temp_1), lane, 4);
@@ -15830,7 +15834,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_s32") int32x4_t vmulq_lane_s32(int32x4_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vmulq_lane_u16(uint16x8_t a, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
 	vuint16m2_t temp_2 = vrgather(vlmul_ext_u16m2(temp_1), lane, 8);
@@ -15842,7 +15846,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_u16") uint16x8_t vmulq_lane_u16(uint16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmulq_lane_u32(uint32x4_t a, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
 	vuint32m2_t temp_2 = vrgather(vlmul_ext_u32m2(temp_1), lane, 4);
@@ -15854,7 +15858,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_lane_u32") uint32x4_t vmulq_lane_u32(uint32x4
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vmulq_laneq_f16(float16x8_t a, float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(a);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vfmul(temp_0, vrgather(temp_1, lane, 8), 8));
@@ -15865,7 +15869,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_f16") float16x8_t vmulq_laneq_f16(float
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vmulq_laneq_f32(float32x4_t a, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(a);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vfmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -15876,7 +15880,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_f32") float32x4_t vmulq_laneq_f32(float
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vmulq_laneq_f64(float64x2_t a, float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(a);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfmul(temp_0, vrgather(temp_1, lane, 2), 2));
@@ -15887,7 +15891,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_f64") float64x2_t vmulq_laneq_f64(float
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vmulq_laneq_s16(int16x8_t a, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vmul(temp_0, vrgather(temp_1, lane, 8), 8));
@@ -15898,7 +15902,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_s16") int16x8_t vmulq_laneq_s16(int16x8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vmulq_laneq_s32(int32x4_t a, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -15909,7 +15913,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_s32") int32x4_t vmulq_laneq_s32(int32x4
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vmulq_laneq_u16(uint16x8_t a, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vmul(temp_0, vrgather(temp_1, lane, 8), 8));
@@ -15920,7 +15924,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vmulq_laneq_u16") uint16x8_t vmulq_laneq_u16(uint16
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vmulq_laneq_u32(uint32x4_t a, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vmul(temp_0, vrgather(temp_1, lane, 4), 4));
@@ -19530,7 +19534,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrshrun_high_n_s64") uint32x4_t vqrshrun_high_n_s6
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vqrshrun_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vuint16m2_t temp_1 = vreinterpret_u16m2(vmax(temp_0, 0, 8));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -19545,7 +19549,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrshrun_n_s16") uint8x8_t vqrshrun_n_s16(int16x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vqrshrun_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vuint32m2_t temp_1 = vreinterpret_u32m2(vmax(temp_0, 0, 4));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -19560,7 +19564,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrshrun_n_s32") uint16x4_t vqrshrun_n_s32(int32x4_
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vqrshrun_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vuint64m2_t temp_1 = vreinterpret_u64m2(vmax(temp_0, 0, 2));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -19578,7 +19582,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrshruns_n_s32") uint16_t vqrshruns_n_s32(int32_t 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vqshl_n_s16(int16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vnclip(vwmulsu(temp_0, ((uint16_t)(1)) << (n), 4), 0, 4));
 }
@@ -19588,7 +19592,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_s16") int16x4_t vqshl_n_s16(int16x4_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vqshl_n_s32(int32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vnclip(vwmulsu(temp_0, ((uint32_t)(1)) << (n), 2), 0, 2));
 }
@@ -19598,7 +19602,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_s32") int32x2_t vqshl_n_s32(int32x2_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vqshl_n_s64(int64x1_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	vint64m1_t temp_1 = vsll(temp_0, n, 1);
 	vbool64_t temp_2 = vmsne(temp_0, vsra(temp_1, n, 1), 1);
@@ -19612,7 +19616,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_s64") int64x1_t vqshl_n_s64(int64x1_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vqshl_n_s8(int8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vnclip(vwmulsu(temp_0, ((uint8_t)(1)) << (n), 8), 0, 8));
 }
@@ -19622,7 +19626,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_s8") int8x8_t vqshl_n_s8(int8x8_t a, const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vqshl_n_u16(uint16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vnclipu(vwmulu(temp_0, ((uint16_t)(1)) << (n), 4), 0, 4));
 }
@@ -19632,7 +19636,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_u16") uint16x4_t vqshl_n_u16(uint16x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vqshl_n_u32(uint32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vnclipu(vwmulu(temp_0, ((uint32_t)(1)) << (n), 2), 0, 2));
 }
@@ -19642,7 +19646,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_u32") uint32x2_t vqshl_n_u32(uint32x2_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vqshl_n_u64(uint64x1_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	vuint64m1_t temp_1 = vsll(temp_0, n, 1);
 	vbool64_t temp_2 = vmsgtu(temp_0, (18446744073709551615ULL) >> (n), 1);
@@ -19655,7 +19659,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshl_n_u64") uint64x1_t vqshl_n_u64(uint64x1_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vqshl_n_u8(uint8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vnclipu(vwmulu(temp_0, ((uint8_t)(1)) << (n), 8), 0, 8));
 }
@@ -20068,7 +20072,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlh_u16") uint16_t vqshlh_u16(uint16_t a, int16_
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vqshlq_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vnclip(vwmulsu(temp_0, ((uint16_t)(1)) << (n), 8), 0, 8));
 }
@@ -20078,7 +20082,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_s16") int16x8_t vqshlq_n_s16(int16x8_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x4_t vqshlq_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vnclip(vwmulsu(temp_0, ((uint32_t)(1)) << (n), 4), 0, 4));
 }
@@ -20088,7 +20092,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_s32") int32x4_t vqshlq_n_s32(int32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vqshlq_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m2_t temp_1 = vsll(temp_0, n, 2);
 	vbool32_t temp_2 = vmsne(temp_0, vsra(temp_1, n, 2), 2);
@@ -20102,7 +20106,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_s64") int64x2_t vqshlq_n_s64(int64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vqshlq_n_s8(int8x16_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vnclip(vwmulsu(temp_0, ((uint8_t)(1)) << (n), 16), 0, 16));
 }
@@ -20112,7 +20116,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_s8") int8x16_t vqshlq_n_s8(int8x16_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vqshlq_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vnclipu(vwmulu(temp_0, ((uint16_t)(1)) << (n), 8), 0, 8));
 }
@@ -20122,7 +20126,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_u16") uint16x8_t vqshlq_n_u16(uint16x8_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x4_t vqshlq_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vnclipu(vwmulu(temp_0, ((uint32_t)(1)) << (n), 4), 0, 4));
 }
@@ -20132,7 +20136,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_u32") uint32x4_t vqshlq_n_u32(uint32x4_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vqshlq_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m2_t temp_1 = vsll(temp_0, n, 2);
 	vbool32_t temp_2 = vmsgtu(temp_0, (18446744073709551615ULL) >> (n), 2);
@@ -20145,7 +20149,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshlq_n_u64") uint64x2_t vqshlq_n_u64(uint64x2_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vqshlq_n_u8(uint8x16_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vnclipu(vwmulu(temp_0, ((uint8_t)(1)) << (n), 16), 0, 16));
 }
@@ -20568,7 +20572,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_high_n_u64") uint32x4_t vqshrn_high_n_u64(ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vqshrn_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20582,7 +20586,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_n_s16") int8x8_t vqshrn_n_s16(int16x8_t a, c
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vqshrn_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20596,7 +20600,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_n_s32") int16x4_t vqshrn_n_s32(int32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vqshrn_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20610,7 +20614,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_n_s64") int32x2_t vqshrn_n_s64(int64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vqshrn_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20624,7 +20628,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_n_u16") uint8x8_t vqshrn_n_u16(uint16x8_t a,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vqshrn_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20638,7 +20642,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_n_u32") uint16x4_t vqshrn_n_u32(uint32x4_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vqshrn_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
@@ -20661,7 +20665,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrun_high_n_s64") uint32x4_t vqshrun_high_n_s64(
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vqshrun_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vuint16m2_t temp_1 = vreinterpret_u16m2(vmax(temp_0, 0, 8));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -20676,7 +20680,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrun_n_s16") uint8x8_t vqshrun_n_s16(int16x8_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vqshrun_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vuint32m2_t temp_1 = vreinterpret_u32m2(vmax(temp_0, 0, 4));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -20691,7 +20695,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshrun_n_s32") uint16x4_t vqshrun_n_s32(int32x4_t 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vqshrun_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vuint64m2_t temp_1 = vreinterpret_u64m2(vmax(temp_0, 0, 2));
 	size_t temp_2 = __builtin_rvv_vgetvxrm();
@@ -23876,7 +23880,7 @@ __attribute__((always_inline)) inline float16x4_t vrnda_f16(float16x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m1_t temp_5 = vfcvt_x(temp_2, vundefined_i16m1(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vfsgnj(temp_1, vfmv_v_f_f16m1(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -23897,7 +23901,7 @@ __attribute__((always_inline)) inline float32x2_t vrnda_f32(float32x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m1_t temp_5 = vfcvt_x(temp_2, vundefined_i32m1(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vfsgnj(temp_1, vfmv_v_f_f32m1(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -23918,7 +23922,7 @@ __attribute__((always_inline)) inline float64x1_t vrnda_f64(float64x1_t a)
 	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, temp_5, 1), temp_0, 1));
@@ -23940,7 +23944,7 @@ __attribute__((always_inline)) inline float16x8_t vrndaq_f16(float16x8_t a)
 	vbool8_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m2_t temp_5 = vfcvt_x(temp_2, vundefined_i16m2(), temp_0, 8);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vfsgnj(temp_1, vfmv_v_f_f16m2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, temp_5, 8), temp_0, 8));
@@ -23961,7 +23965,7 @@ __attribute__((always_inline)) inline float32x4_t vrndaq_f32(float32x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m2_t temp_5 = vfcvt_x(temp_2, vundefined_i32m2(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vfsgnj(temp_1, vfmv_v_f_f32m2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -23982,7 +23986,7 @@ __attribute__((always_inline)) inline float64x2_t vrndaq_f64(float64x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m2_t temp_5 = vfcvt_x(temp_2, vundefined_i64m2(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfsgnj(temp_1, vfmv_v_f_f64m2(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24071,7 +24075,7 @@ __attribute__((always_inline)) inline float16x4_t vrndm_f16(float16x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m1_t temp_5 = vfcvt_x(temp_2, vundefined_i16m1(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vfsgnj(temp_1, vfmv_v_f_f16m1(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24092,7 +24096,7 @@ __attribute__((always_inline)) inline float32x2_t vrndm_f32(float32x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m1_t temp_5 = vfcvt_x(temp_2, vundefined_i32m1(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vfsgnj(temp_1, vfmv_v_f_f32m1(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24113,7 +24117,7 @@ __attribute__((always_inline)) inline float64x1_t vrndm_f64(float64x1_t a)
 	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, temp_5, 1), temp_0, 1));
@@ -24135,7 +24139,7 @@ __attribute__((always_inline)) inline float16x8_t vrndmq_f16(float16x8_t a)
 	vbool8_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m2_t temp_5 = vfcvt_x(temp_2, vundefined_i16m2(), temp_0, 8);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vfsgnj(temp_1, vfmv_v_f_f16m2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, temp_5, 8), temp_0, 8));
@@ -24156,7 +24160,7 @@ __attribute__((always_inline)) inline float32x4_t vrndmq_f32(float32x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m2_t temp_5 = vfcvt_x(temp_2, vundefined_i32m2(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vfsgnj(temp_1, vfmv_v_f_f32m2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24177,7 +24181,7 @@ __attribute__((always_inline)) inline float64x2_t vrndmq_f64(float64x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m2_t temp_5 = vfcvt_x(temp_2, vundefined_i64m2(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfsgnj(temp_1, vfmv_v_f_f64m2(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24198,7 +24202,7 @@ __attribute__((always_inline)) inline float16x4_t vrndn_f16(float16x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m1_t temp_5 = vfcvt_x(temp_2, vundefined_i16m1(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vfsgnj(temp_1, vfmv_v_f_f16m1(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24219,7 +24223,7 @@ __attribute__((always_inline)) inline float32x2_t vrndn_f32(float32x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m1_t temp_5 = vfcvt_x(temp_2, vundefined_i32m1(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vfsgnj(temp_1, vfmv_v_f_f32m1(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24240,7 +24244,7 @@ __attribute__((always_inline)) inline float64x1_t vrndn_f64(float64x1_t a)
 	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, temp_5, 1), temp_0, 1));
@@ -24262,7 +24266,7 @@ __attribute__((always_inline)) inline float16x8_t vrndnq_f16(float16x8_t a)
 	vbool8_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m2_t temp_5 = vfcvt_x(temp_2, vundefined_i16m2(), temp_0, 8);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vfsgnj(temp_1, vfmv_v_f_f16m2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, temp_5, 8), temp_0, 8));
@@ -24283,7 +24287,7 @@ __attribute__((always_inline)) inline float32x4_t vrndnq_f32(float32x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m2_t temp_5 = vfcvt_x(temp_2, vundefined_i32m2(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vfsgnj(temp_1, vfmv_v_f_f32m2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24304,7 +24308,7 @@ __attribute__((always_inline)) inline float64x2_t vrndnq_f64(float64x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m2_t temp_5 = vfcvt_x(temp_2, vundefined_i64m2(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfsgnj(temp_1, vfmv_v_f_f64m2(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24326,7 +24330,7 @@ __attribute__((always_inline)) inline float16x4_t vrndp_f16(float16x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m1_t temp_5 = vfcvt_x(temp_2, vundefined_i16m1(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vfsgnj(temp_1, vfmv_v_f_f16m1(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24347,7 +24351,7 @@ __attribute__((always_inline)) inline float32x2_t vrndp_f32(float32x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m1_t temp_5 = vfcvt_x(temp_2, vundefined_i32m1(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vfsgnj(temp_1, vfmv_v_f_f32m1(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -24368,7 +24372,7 @@ __attribute__((always_inline)) inline float64x1_t vrndp_f64(float64x1_t a)
 	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, temp_5, 1), temp_0, 1));
@@ -24390,7 +24394,7 @@ __attribute__((always_inline)) inline float16x8_t vrndpq_f16(float16x8_t a)
 	vbool8_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint16m2_t temp_5 = vfcvt_x(temp_2, vundefined_i16m2(), temp_0, 8);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vfsgnj(temp_1, vfmv_v_f_f16m2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, temp_5, 8), temp_0, 8));
@@ -24411,7 +24415,7 @@ __attribute__((always_inline)) inline float32x4_t vrndpq_f32(float32x4_t a)
 	vbool16_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint32m2_t temp_5 = vfcvt_x(temp_2, vundefined_i32m2(), temp_0, 4);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vfsgnj(temp_1, vfmv_v_f_f32m2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
@@ -24432,7 +24436,7 @@ __attribute__((always_inline)) inline float64x2_t vrndpq_f64(float64x2_t a)
 	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
-	assert((temp_4) == (0));
+	SIFIVE_RECODE_ASSERT((temp_4) == (0));
 	vint64m2_t temp_5 = vfcvt_x(temp_2, vundefined_i64m2(), temp_0, 2);
 	fesetround(temp_3);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vfsgnj(temp_1, vfmv_v_f_f64m2(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
@@ -25381,7 +25385,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshlq_u8") uint8x16_t vrshlq_u8(uint8x16_t a, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vrshr_n_s16(int16x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	if ((n) < (16))
 	{
@@ -25402,7 +25406,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_s16") int16x4_t vrshr_n_s16(int16x4_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vrshr_n_s32(int32x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	if ((n) < (32))
 	{
@@ -25423,7 +25427,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_s32") int32x2_t vrshr_n_s32(int32x2_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vrshr_n_s64(int64x1_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	if ((n) < (64))
 	{
@@ -25444,7 +25448,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_s64") int64x1_t vrshr_n_s64(int64x1_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vrshr_n_s8(int8x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	if ((n) < (8))
 	{
@@ -25465,7 +25469,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_s8") int8x8_t vrshr_n_s8(int8x8_t a, const 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vrshr_n_u16(uint16x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	if ((n) < (16))
 	{
@@ -25486,7 +25490,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_u16") uint16x4_t vrshr_n_u16(uint16x4_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vrshr_n_u32(uint32x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	if ((n) < (32))
 	{
@@ -25507,7 +25511,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_u32") uint32x2_t vrshr_n_u32(uint32x2_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vrshr_n_u64(uint64x1_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	if ((n) < (64))
 	{
@@ -25528,7 +25532,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshr_n_u64") uint64x1_t vrshr_n_u64(uint64x1_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vrshr_n_u8(uint8x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	if ((n) < (8))
 	{
@@ -25557,7 +25561,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_high_n_u64") uint32x4_t vrshrn_high_n_u64(ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vrshrn_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25571,7 +25575,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_s16") int8x8_t vrshrn_n_s16(int16x8_t a, c
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vrshrn_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25585,7 +25589,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_s32") int16x4_t vrshrn_n_s32(int32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vrshrn_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25599,7 +25603,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_s64") int32x2_t vrshrn_n_s64(int64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vrshrn_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25613,7 +25617,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_u16") uint8x8_t vrshrn_n_u16(uint16x8_t a,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vrshrn_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25627,7 +25631,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_u32") uint16x4_t vrshrn_n_u32(uint32x4_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vrshrn_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
@@ -25641,7 +25645,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrn_n_u64") uint32x2_t vrshrn_n_u64(uint64x2_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vrshrq_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	if ((n) < (16))
 	{
@@ -25662,7 +25666,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_s16") int16x8_t vrshrq_n_s16(int16x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vrshrq_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	if ((n) < (32))
 	{
@@ -25683,7 +25687,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_s32") int32x4_t vrshrq_n_s32(int32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vrshrq_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	if ((n) < (64))
 	{
@@ -25704,7 +25708,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_s64") int64x2_t vrshrq_n_s64(int64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vrshrq_n_s8(int8x16_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	if ((n) < (8))
 	{
@@ -25725,7 +25729,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_s8") int8x16_t vrshrq_n_s8(int8x16_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vrshrq_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	if ((n) < (16))
 	{
@@ -25746,7 +25750,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_u16") uint16x8_t vrshrq_n_u16(uint16x8_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vrshrq_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	if ((n) < (32))
 	{
@@ -25767,7 +25771,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_u32") uint32x4_t vrshrq_n_u32(uint32x4_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vrshrq_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	if ((n) < (64))
 	{
@@ -25788,7 +25792,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrshrq_n_u64") uint64x2_t vrshrq_n_u64(uint64x2_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vrshrq_n_u8(uint8x16_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	if ((n) < (8))
 	{
@@ -25961,7 +25965,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vrsubhn_u64") uint32x2_t vrsubhn_u64(uint64x2_t a, 
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vset_lane_f16(float16_t a, float16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f16m1(vslideup(temp_0, vfmv_v_f_f16m1(a, 1), lane, (lane) + (1)));
 }
@@ -25971,7 +25975,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_f16") float16x4_t vset_lane_f16(float16_t
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x2_t vset_lane_f32(float32_t a, float32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_f32m1(vslideup(temp_0, vfmv_v_f_f32m1(a, 1), lane, (lane) + (1)));
 }
@@ -25981,7 +25985,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_f32") float32x2_t vset_lane_f32(float32_t
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x1_t vset_lane_f64(float64_t a, float64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmv_v_f_f64m1(a, 1));
 }
 #else
@@ -25990,7 +25994,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_f64") float64x1_t vset_lane_f64(float64_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vset_lane_s16(int16_t a, int16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vslideup(temp_0, vmv_v_x_i16m1(a, 1), lane, (lane) + (1)));
 }
@@ -26000,7 +26004,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_s16") int16x4_t vset_lane_s16(int16_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vset_lane_s32(int32_t a, int32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vslideup(temp_0, vmv_v_x_i32m1(a, 1), lane, (lane) + (1)));
 }
@@ -26010,7 +26014,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_s32") int32x2_t vset_lane_s32(int32_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vset_lane_s64(int64_t a, int64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmv_v_x_i64m1(a, 1));
 }
 #else
@@ -26019,7 +26023,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_s64") int64x1_t vset_lane_s64(int64_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vset_lane_s8(int8_t a, int8x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vslideup(temp_0, vmv_v_x_i8m1(a, 1), lane, (lane) + (1)));
 }
@@ -26029,7 +26033,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_s8") int8x8_t vset_lane_s8(int8_t a, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vset_lane_u16(uint16_t a, uint16x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vslideup(temp_0, vmv_v_x_u16m1(a, 1), lane, (lane) + (1)));
 }
@@ -26039,7 +26043,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_u16") uint16x4_t vset_lane_u16(uint16_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vset_lane_u32(uint32_t a, uint32x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vslideup(temp_0, vmv_v_x_u32m1(a, 1), lane, (lane) + (1)));
 }
@@ -26049,7 +26053,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_u32") uint32x2_t vset_lane_u32(uint32_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vset_lane_u64(uint64_t a, uint64x1_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmv_v_x_u64m1(a, 1));
 }
 #else
@@ -26058,7 +26062,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_u64") uint64x1_t vset_lane_u64(uint64_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vset_lane_u8(uint8_t a, uint8x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(v);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vslideup(temp_0, vmv_v_x_u8m1(a, 1), lane, (lane) + (1)));
 }
@@ -26068,7 +26072,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vset_lane_u8") uint8x8_t vset_lane_u8(uint8_t a, ui
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x8_t vsetq_lane_f16(float16_t a, float16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f16m2(vslideup(temp_0, vfmv_v_f_f16m2(a, 1), lane, (lane) + (1)));
 }
@@ -26078,7 +26082,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_f16") float16x8_t vsetq_lane_f16(float16
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float32x4_t vsetq_lane_f32(float32_t a, float32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f32m2(vslideup(temp_0, vfmv_v_f_f32m2(a, 1), lane, (lane) + (1)));
 }
@@ -26088,7 +26092,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_f32") float32x4_t vsetq_lane_f32(float32
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline float64x2_t vsetq_lane_f64(float64_t a, float64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_f64m2(vslideup(temp_0, vfmv_v_f_f64m2(a, 1), lane, (lane) + (1)));
 }
@@ -26098,7 +26102,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_f64") float64x2_t vsetq_lane_f64(float64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vsetq_lane_s16(int16_t a, int16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vslideup(temp_0, vmv_v_x_i16m2(a, 1), lane, (lane) + (1)));
 }
@@ -26108,7 +26112,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_s16") int16x8_t vsetq_lane_s16(int16_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vsetq_lane_s32(int32_t a, int32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vslideup(temp_0, vmv_v_x_i32m2(a, 1), lane, (lane) + (1)));
 }
@@ -26118,7 +26122,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_s32") int32x4_t vsetq_lane_s32(int32_t a
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vsetq_lane_s64(int64_t a, int64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vslideup(temp_0, vmv_v_x_i64m2(a, 1), lane, (lane) + (1)));
 }
@@ -26128,7 +26132,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_s64") int64x2_t vsetq_lane_s64(int64_t a
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vsetq_lane_s8(int8_t a, int8x16_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vslideup(temp_0, vmv_v_x_i8m2(a, 1), lane, (lane) + (1)));
 }
@@ -26138,7 +26142,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_s8") int8x16_t vsetq_lane_s8(int8_t a, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vsetq_lane_u16(uint16_t a, uint16x8_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vslideup(temp_0, vmv_v_x_u16m2(a, 1), lane, (lane) + (1)));
 }
@@ -26148,7 +26152,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_u16") uint16x8_t vsetq_lane_u16(uint16_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vsetq_lane_u32(uint32_t a, uint32x4_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vslideup(temp_0, vmv_v_x_u32m2(a, 1), lane, (lane) + (1)));
 }
@@ -26158,7 +26162,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_u32") uint32x4_t vsetq_lane_u32(uint32_t
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vsetq_lane_u64(uint64_t a, uint64x2_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vslideup(temp_0, vmv_v_x_u64m2(a, 1), lane, (lane) + (1)));
 }
@@ -26168,7 +26172,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsetq_lane_u64") uint64x2_t vsetq_lane_u64(uint64_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vsetq_lane_u8(uint8_t a, uint8x16_t v, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(v);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vslideup(temp_0, vmv_v_x_u8m2(a, 1), lane, (lane) + (1)));
 }
@@ -26192,7 +26196,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsha512su1q_u64") uint64x2_t vsha512su1q_u64(uint64
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vshl_n_s16(int16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vsll(temp_0, n, 4));
 }
@@ -26202,7 +26206,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_s16") int16x4_t vshl_n_s16(int16x4_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vshl_n_s32(int32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vsll(temp_0, n, 2));
 }
@@ -26212,7 +26216,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_s32") int32x2_t vshl_n_s32(int32x2_t a, cons
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vshl_n_s64(int64x1_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vsll(temp_0, n, 1));
 }
@@ -26222,7 +26226,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_s64") int64x1_t vshl_n_s64(int64x1_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vshl_n_s8(int8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vsll(temp_0, n, 8));
 }
@@ -26232,7 +26236,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_s8") int8x8_t vshl_n_s8(int8x8_t a, const in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vshl_n_u16(uint16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vsll(temp_0, n, 4));
 }
@@ -26242,7 +26246,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_u16") uint16x4_t vshl_n_u16(uint16x4_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vshl_n_u32(uint32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vsll(temp_0, n, 2));
 }
@@ -26252,7 +26256,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_u32") uint32x2_t vshl_n_u32(uint32x2_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vshl_n_u64(uint64x1_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u64m1(vsll(temp_0, n, 1));
 }
@@ -26262,7 +26266,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshl_n_u64") uint64x1_t vshl_n_u64(uint64x1_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vshl_n_u8(uint8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vsll(temp_0, n, 8));
 }
@@ -26552,7 +26556,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_high_n_u8") uint16x8_t vshll_high_n_u8(uint8x
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vshll_n_s16(int16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint32m2_t temp_1 = vwcvt_x(temp_0, 4);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vsll(temp_1, n, 4));
@@ -26563,7 +26567,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_s16") int32x4_t vshll_n_s16(int16x4_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vshll_n_s32(int32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint64m2_t temp_1 = vwcvt_x(temp_0, 2);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vsll(temp_1, n, 2));
@@ -26574,7 +26578,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_s32") int64x2_t vshll_n_s32(int32x2_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vshll_n_s8(int8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint16m2_t temp_1 = vwcvt_x(temp_0, 8);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vsll(temp_1, n, 8));
@@ -26585,7 +26589,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_s8") int16x8_t vshll_n_s8(int8x8_t a, const
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vshll_n_u16(uint16x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint32m2_t temp_1 = vwcvtu_x(temp_0, 4);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vsll(temp_1, n, 4));
@@ -26596,7 +26600,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_u16") uint32x4_t vshll_n_u16(uint16x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vshll_n_u32(uint32x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint64m2_t temp_1 = vwcvtu_x(temp_0, 2);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vsll(temp_1, n, 2));
@@ -26607,7 +26611,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_u32") uint64x2_t vshll_n_u32(uint32x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vshll_n_u8(uint8x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) <= (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint16m2_t temp_1 = vwcvtu_x(temp_0, 8);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vsll(temp_1, n, 8));
@@ -26618,7 +26622,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshll_n_u8") uint16x8_t vshll_n_u8(uint8x8_t a, con
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vshlq_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vsll(temp_0, n, 8));
 }
@@ -26628,7 +26632,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_s16") int16x8_t vshlq_n_s16(int16x8_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vshlq_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vsll(temp_0, n, 4));
 }
@@ -26638,7 +26642,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_s32") int32x4_t vshlq_n_s32(int32x4_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vshlq_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vsll(temp_0, n, 2));
 }
@@ -26648,7 +26652,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_s64") int64x2_t vshlq_n_s64(int64x2_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vshlq_n_s8(int8x16_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vsll(temp_0, n, 16));
 }
@@ -26658,7 +26662,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_s8") int8x16_t vshlq_n_s8(int8x16_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vshlq_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u16m2(vsll(temp_0, n, 8));
 }
@@ -26668,7 +26672,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_u16") uint16x8_t vshlq_n_u16(uint16x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vshlq_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u32m2(vsll(temp_0, n, 4));
 }
@@ -26678,7 +26682,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_u32") uint32x4_t vshlq_n_u32(uint32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vshlq_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u64m2(vsll(temp_0, n, 2));
 }
@@ -26688,7 +26692,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_n_u64") uint64x2_t vshlq_n_u64(uint64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vshlq_n_u8(uint8x16_t a, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u8m2(vsll(temp_0, n, 16));
 }
@@ -26968,7 +26972,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshlq_u8") uint8x16_t vshlq_u8(uint8x16_t a, int8x1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vshr_n_s16(int16x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vsra(temp_0, ((n) < (16))? n: (15), 4));
 }
@@ -26978,7 +26982,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_s16") int16x4_t vshr_n_s16(int16x4_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vshr_n_s32(int32x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vsra(temp_0, ((n) < (32))? n: (31), 2));
 }
@@ -26988,7 +26992,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_s32") int32x2_t vshr_n_s32(int32x2_t a, cons
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vshr_n_s64(int64x1_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i64m1(vsra(temp_0, ((n) < (64))? n: (63), 1));
 }
@@ -26998,7 +27002,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_s64") int64x1_t vshr_n_s64(int64x1_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vshr_n_s8(int8x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vsra(temp_0, ((n) < (8))? n: (7), 8));
 }
@@ -27008,7 +27012,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_s8") int8x8_t vshr_n_s8(int8x8_t a, const in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vshr_n_u16(uint16x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	if ((n) < (16))
 	{
@@ -27025,7 +27029,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_u16") uint16x4_t vshr_n_u16(uint16x4_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vshr_n_u32(uint32x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	if ((n) < (32))
 	{
@@ -27042,7 +27046,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_u32") uint32x2_t vshr_n_u32(uint32x2_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vshr_n_u64(uint64x1_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	if ((n) < (64))
 	{
@@ -27059,7 +27063,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshr_n_u64") uint64x1_t vshr_n_u64(uint64x1_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vshr_n_u8(uint8x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	if ((n) < (8))
 	{
@@ -27084,7 +27088,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_high_n_u64") uint32x4_t vshrn_high_n_u64(uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vshrn_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m1(vnsra(temp_0, n, 8));
 }
@@ -27094,7 +27098,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_s16") int8x8_t vshrn_n_s16(int16x8_t a, con
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vshrn_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m1(vnsra(temp_0, n, 4));
 }
@@ -27104,7 +27108,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_s32") int16x4_t vshrn_n_s32(int32x4_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int32x2_t vshrn_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m1(vnsra(temp_0, n, 2));
 }
@@ -27114,7 +27118,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_s64") int32x2_t vshrn_n_s64(int64x2_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vshrn_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u8m1(vnsrl(temp_0, n, 8));
 }
@@ -27124,7 +27128,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_u16") uint8x8_t vshrn_n_u16(uint16x8_t a, c
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vshrn_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u16m1(vnsrl(temp_0, n, 4));
 }
@@ -27134,7 +27138,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_u32") uint16x4_t vshrn_n_u32(uint32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint32x2_t vshrn_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_u32m1(vnsrl(temp_0, n, 2));
 }
@@ -27144,7 +27148,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrn_n_u64") uint32x2_t vshrn_n_u64(uint64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vshrq_n_s16(int16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i16m2(vsra(temp_0, ((n) < (16))? n: (15), 8));
 }
@@ -27154,7 +27158,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_s16") int16x8_t vshrq_n_s16(int16x8_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vshrq_n_s32(int32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i32m2(vsra(temp_0, ((n) < (32))? n: (31), 4));
 }
@@ -27164,7 +27168,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_s32") int32x4_t vshrq_n_s32(int32x4_t a, co
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vshrq_n_s64(int64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i64m2(vsra(temp_0, ((n) < (64))? n: (63), 2));
 }
@@ -27174,7 +27178,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_s64") int64x2_t vshrq_n_s64(int64x2_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vshrq_n_s8(int8x16_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	return __builtin_rvv_vcast_to_fixed_64_i8m2(vsra(temp_0, ((n) < (8))? n: (7), 16));
 }
@@ -27184,7 +27188,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_s8") int8x16_t vshrq_n_s8(int8x16_t a, cons
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vshrq_n_u16(uint16x8_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	if ((n) < (16))
 	{
@@ -27201,7 +27205,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_u16") uint16x8_t vshrq_n_u16(uint16x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vshrq_n_u32(uint32x4_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	if ((n) < (32))
 	{
@@ -27218,7 +27222,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_u32") uint32x4_t vshrq_n_u32(uint32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vshrq_n_u64(uint64x2_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	if ((n) < (64))
 	{
@@ -27235,7 +27239,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_u64") uint64x2_t vshrq_n_u64(uint64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vshrq_n_u8(uint8x16_t a, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	if ((n) < (8))
 	{
@@ -27252,7 +27256,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vshrq_n_u8") uint8x16_t vshrq_n_u8(uint8x16_t a, co
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vsli_n_s16(int16x4_t a, int16x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	const uint16_t temp_2 = 1;
@@ -27264,7 +27268,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_s16") int16x4_t vsli_n_s16(int16x4_t a, int1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vsli_n_s32(int32x2_t a, int32x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	const uint32_t temp_2 = 1;
@@ -27276,7 +27280,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_s32") int32x2_t vsli_n_s32(int32x2_t a, int3
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vsli_n_s64(int64x1_t a, int64x1_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(b);
 	const uint64_t temp_2 = 1;
@@ -27288,7 +27292,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_s64") int64x1_t vsli_n_s64(int64x1_t a, int6
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vsli_n_s8(int8x8_t a, int8x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
 	const uint8_t temp_2 = 1;
@@ -27300,7 +27304,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_s8") int8x8_t vsli_n_s8(int8x8_t a, int8x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vsli_n_u16(uint16x4_t a, uint16x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	const uint16_t temp_2 = 1;
@@ -27312,7 +27316,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_u16") uint16x4_t vsli_n_u16(uint16x4_t a, ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vsli_n_u32(uint32x2_t a, uint32x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	const uint32_t temp_2 = 1;
@@ -27324,7 +27328,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_u32") uint32x2_t vsli_n_u32(uint32x2_t a, ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vsli_n_u64(uint64x1_t a, uint64x1_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(b);
 	const uint64_t temp_2 = 1;
@@ -27336,7 +27340,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsli_n_u64") uint64x1_t vsli_n_u64(uint64x1_t a, ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vsli_n_u8(uint8x8_t a, uint8x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
 	const uint8_t temp_2 = 1;
@@ -27350,7 +27354,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vslid_n_u64") uint64_t vslid_n_u64(uint64_t a, uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vsliq_n_s16(int16x8_t a, int16x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	const uint16_t temp_2 = 1;
@@ -27362,7 +27366,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_s16") int16x8_t vsliq_n_s16(int16x8_t a, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vsliq_n_s32(int32x4_t a, int32x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	const uint32_t temp_2 = 1;
@@ -27374,7 +27378,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_s32") int32x4_t vsliq_n_s32(int32x4_t a, in
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vsliq_n_s64(int64x2_t a, int64x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(b);
 	const uint64_t temp_2 = 1;
@@ -27386,7 +27390,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_s64") int64x2_t vsliq_n_s64(int64x2_t a, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vsliq_n_s8(int8x16_t a, int8x16_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
 	const uint8_t temp_2 = 1;
@@ -27398,7 +27402,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_s8") int8x16_t vsliq_n_s8(int8x16_t a, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vsliq_n_u16(uint16x8_t a, uint16x8_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	const uint16_t temp_2 = 1;
@@ -27410,7 +27414,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_u16") uint16x8_t vsliq_n_u16(uint16x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vsliq_n_u32(uint32x4_t a, uint32x4_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (32)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	const uint32_t temp_2 = 1;
@@ -27422,7 +27426,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_u32") uint32x4_t vsliq_n_u32(uint32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vsliq_n_u64(uint64x2_t a, uint64x2_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (64)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(b);
 	const uint64_t temp_2 = 1;
@@ -27434,7 +27438,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsliq_n_u64") uint64x2_t vsliq_n_u64(uint64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vsliq_n_u8(uint8x16_t a, uint8x16_t b, const int n)
 {
-	assert(((0) <= (n)) && ((n) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
 	const uint8_t temp_2 = 1;
@@ -27522,7 +27526,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsqrtq_f64") float64x2_t vsqrtq_f64(float64x2_t a);
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x4_t vsra_n_s16(int16x4_t a, int16x4_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(b);
 	if ((n) < (16))
@@ -27540,7 +27544,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_s16") int16x4_t vsra_n_s16(int16x4_t a, int1
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x2_t vsra_n_s32(int32x2_t a, int32x2_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(b);
 	if ((n) < (32))
@@ -27558,7 +27562,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_s32") int32x2_t vsra_n_s32(int32x2_t a, int3
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x1_t vsra_n_s64(int64x1_t a, int64x1_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(b);
 	if ((n) < (64))
@@ -27576,7 +27580,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_s64") int64x1_t vsra_n_s64(int64x1_t a, int6
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x8_t vsra_n_s8(int8x8_t a, int8x8_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(a);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(b);
 	if ((n) < (8))
@@ -27594,7 +27598,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_s8") int8x8_t vsra_n_s8(int8x8_t a, int8x8_t
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x4_t vsra_n_u16(uint16x4_t a, uint16x4_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(a);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(b);
 	if ((n) < (16))
@@ -27612,7 +27616,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_u16") uint16x4_t vsra_n_u16(uint16x4_t a, ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x2_t vsra_n_u32(uint32x2_t a, uint32x2_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(a);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(b);
 	if ((n) < (32))
@@ -27630,7 +27634,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_u32") uint32x2_t vsra_n_u32(uint32x2_t a, ui
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x1_t vsra_n_u64(uint64x1_t a, uint64x1_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(a);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(b);
 	if ((n) < (64))
@@ -27648,7 +27652,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsra_n_u64") uint64x1_t vsra_n_u64(uint64x1_t a, ui
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x8_t vsra_n_u8(uint8x8_t a, uint8x8_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(a);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(b);
 	if ((n) < (8))
@@ -27668,7 +27672,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsrad_n_u64") uint64_t vsrad_n_u64(uint64_t a, uint
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int16x8_t vsraq_n_s16(int16x8_t a, int16x8_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(a);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(b);
 	if ((n) < (16))
@@ -27686,7 +27690,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_s16") int16x8_t vsraq_n_s16(int16x8_t a, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int32x4_t vsraq_n_s32(int32x4_t a, int32x4_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(a);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(b);
 	if ((n) < (32))
@@ -27704,7 +27708,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_s32") int32x4_t vsraq_n_s32(int32x4_t a, in
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline int64x2_t vsraq_n_s64(int64x2_t a, int64x2_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(a);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(b);
 	if ((n) < (64))
@@ -27722,7 +27726,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_s64") int64x2_t vsraq_n_s64(int64x2_t a, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline int8x16_t vsraq_n_s8(int8x16_t a, int8x16_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(a);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(b);
 	if ((n) < (8))
@@ -27740,7 +27744,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_s8") int8x16_t vsraq_n_s8(int8x16_t a, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint16x8_t vsraq_n_u16(uint16x8_t a, uint16x8_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (16)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (16)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(a);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(b);
 	if ((n) < (16))
@@ -27758,7 +27762,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_u16") uint16x8_t vsraq_n_u16(uint16x8_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint32x4_t vsraq_n_u32(uint32x4_t a, uint32x4_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (32)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (32)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(a);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(b);
 	if ((n) < (32))
@@ -27776,7 +27780,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_u32") uint32x4_t vsraq_n_u32(uint32x4_t a, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline uint64x2_t vsraq_n_u64(uint64x2_t a, uint64x2_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (64)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (64)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(a);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(b);
 	if ((n) < (64))
@@ -27794,7 +27798,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vsraq_n_u64") uint64x2_t vsraq_n_u64(uint64x2_t a, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline uint8x16_t vsraq_n_u8(uint8x16_t a, uint8x16_t b, const int n)
 {
-	assert(((0) < (n)) && ((n) <= (8)));
+	SIFIVE_RECODE_ASSERT(((0) < (n)) && ((n) <= (8)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(a);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(b);
 	if ((n) < (8))
@@ -27974,7 +27978,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_f64_x4") void vst1_f64_x4(float64_t * ptr, flo
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst1_lane_f16(float16_t * ptr, float16x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(val);
 	vse16(ptr, vlmul_trunc_f16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -27984,7 +27988,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_f16") void vst1_lane_f16(float16_t * ptr,
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst1_lane_f32(float32_t * ptr, float32x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(val);
 	vse32(ptr, vlmul_trunc_f32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -27994,7 +27998,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_f32") void vst1_lane_f32(float32_t * ptr,
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst1_lane_f64(float64_t * ptr, float64x1_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(val);
 	vse64(ptr, temp_0, 1);
 }
@@ -28004,7 +28008,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_f64") void vst1_lane_f64(float64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_s16(int16_t * ptr, int16x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(val);
 	vse16(ptr, vlmul_trunc_i16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28014,7 +28018,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_s16") void vst1_lane_s16(int16_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_s32(int32_t * ptr, int32x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(val);
 	vse32(ptr, vlmul_trunc_i32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28024,7 +28028,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_s32") void vst1_lane_s32(int32_t * ptr, i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst1_lane_s64(int64_t * ptr, int64x1_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(val);
 	vse64(ptr, temp_0, 1);
 }
@@ -28034,7 +28038,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_s64") void vst1_lane_s64(int64_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_s8(int8_t * ptr, int8x8_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(val);
 	vse8(ptr, vlmul_trunc_i8mf8(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28044,7 +28048,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_s8") void vst1_lane_s8(int8_t * ptr, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_u16(uint16_t * ptr, uint16x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(val);
 	vse16(ptr, vlmul_trunc_u16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28054,7 +28058,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_u16") void vst1_lane_u16(uint16_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_u32(uint32_t * ptr, uint32x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(val);
 	vse32(ptr, vlmul_trunc_u32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28064,7 +28068,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_u32") void vst1_lane_u32(uint32_t * ptr, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst1_lane_u64(uint64_t * ptr, uint64x1_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(val);
 	vse64(ptr, temp_0, 1);
 }
@@ -28074,7 +28078,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1_lane_u64") void vst1_lane_u64(uint64_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1_lane_u8(uint8_t * ptr, uint8x8_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(val);
 	vse8(ptr, vlmul_trunc_u8mf8(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28612,7 +28616,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_f64_x4") void vst1q_f64_x4(float64_t * ptr, f
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst1q_lane_f16(float16_t * ptr, float16x8_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(val);
 	vse16(ptr, vlmul_trunc_f16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28622,7 +28626,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_f16") void vst1q_lane_f16(float16_t * pt
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst1q_lane_f32(float32_t * ptr, float32x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(val);
 	vse32(ptr, vlmul_trunc_f32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28632,7 +28636,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_f32") void vst1q_lane_f32(float32_t * pt
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst1q_lane_f64(float64_t * ptr, float64x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(val);
 	vse64(ptr, vlmul_trunc_f64m1(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28642,7 +28646,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_f64") void vst1q_lane_f64(float64_t * pt
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_s16(int16_t * ptr, int16x8_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(val);
 	vse16(ptr, vlmul_trunc_i16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28652,7 +28656,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_s16") void vst1q_lane_s16(int16_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_s32(int32_t * ptr, int32x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(val);
 	vse32(ptr, vlmul_trunc_i32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28662,7 +28666,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_s32") void vst1q_lane_s32(int32_t * ptr,
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst1q_lane_s64(int64_t * ptr, int64x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(val);
 	vse64(ptr, vlmul_trunc_i64m1(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28672,7 +28676,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_s64") void vst1q_lane_s64(int64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_s8(int8_t * ptr, int8x16_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(val);
 	vse8(ptr, vlmul_trunc_i8mf8(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28682,7 +28686,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_s8") void vst1q_lane_s8(int8_t * ptr, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_u16(uint16_t * ptr, uint16x8_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(val);
 	vse16(ptr, vlmul_trunc_u16mf4(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28692,7 +28696,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_u16") void vst1q_lane_u16(uint16_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_u32(uint32_t * ptr, uint32x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(val);
 	vse32(ptr, vlmul_trunc_u32mf2(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28702,7 +28706,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_u32") void vst1q_lane_u32(uint32_t * ptr
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst1q_lane_u64(uint64_t * ptr, uint64x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(val);
 	vse64(ptr, vlmul_trunc_u64m1(vrgather(temp_0, lane, 1)), 1);
 }
@@ -28712,7 +28716,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst1q_lane_u64") void vst1q_lane_u64(uint64_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst1q_lane_u8(uint8_t * ptr, uint8x16_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(val);
 	vse8(ptr, vlmul_trunc_u8mf8(vrgather(temp_0, lane, 1)), 1);
 }
@@ -29136,7 +29140,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_f64") void vst2_f64(float64_t * ptr, float64x1
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst2_lane_f16(float16_t * ptr, float16x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m1(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29147,7 +29151,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_f16") void vst2_lane_f16(float16_t * ptr,
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst2_lane_f32(float32_t * ptr, float32x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m1(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29158,7 +29162,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_f32") void vst2_lane_f32(float32_t * ptr,
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst2_lane_f64(float64_t * ptr, float64x1x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[0]);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[1]);
 	vsseg2e64(ptr, temp_0, temp_1, 1);
@@ -29169,7 +29173,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_f64") void vst2_lane_f64(float64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_s16(int16_t * ptr, int16x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m1(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29180,7 +29184,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_s16") void vst2_lane_s16(int16_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_s32(int32_t * ptr, int32x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m1(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29191,7 +29195,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_s32") void vst2_lane_s32(int32_t * ptr, i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst2_lane_s64(int64_t * ptr, int64x1x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[0]);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[1]);
 	vsseg2e64(ptr, temp_0, temp_1, 1);
@@ -29202,7 +29206,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_s64") void vst2_lane_s64(int64_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_s8(int8_t * ptr, int8x8x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[1]);
 	vsseg2e8(vmseq(vid_v_u8m1(8), lane, 8), (ptr) - ((lane) * (2)), temp_0, temp_1, 8);
@@ -29213,7 +29217,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_s8") void vst2_lane_s8(int8_t * ptr, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_u16(uint16_t * ptr, uint16x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m1(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29224,7 +29228,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_u16") void vst2_lane_u16(uint16_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_u32(uint32_t * ptr, uint32x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m1(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29235,7 +29239,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_u32") void vst2_lane_u32(uint32_t * ptr, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst2_lane_u64(uint64_t * ptr, uint64x1x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[0]);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[1]);
 	vsseg2e64(ptr, temp_0, temp_1, 1);
@@ -29246,7 +29250,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2_lane_u64") void vst2_lane_u64(uint64_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2_lane_u8(uint8_t * ptr, uint8x8x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[1]);
 	vsseg2e8(vmseq(vid_v_u8m1(8), lane, 8), (ptr) - ((lane) * (2)), temp_0, temp_1, 8);
@@ -29367,7 +29371,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_f64") void vst2q_f64(float64_t * ptr, float64
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst2q_lane_f16(float16_t * ptr, float16x8x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m2(8), lane, 8), (ptr) - ((lane) * (2)), temp_0, temp_1, 8);
@@ -29378,7 +29382,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_f16") void vst2q_lane_f16(float16_t * pt
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst2q_lane_f32(float32_t * ptr, float32x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m2(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29389,7 +29393,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_f32") void vst2q_lane_f32(float32_t * pt
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst2q_lane_f64(float64_t * ptr, float64x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[1]);
 	vsseg2e64(vmseq(vid_v_u64m2(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29400,7 +29404,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_f64") void vst2q_lane_f64(float64_t * pt
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_s16(int16_t * ptr, int16x8x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m2(8), lane, 8), (ptr) - ((lane) * (2)), temp_0, temp_1, 8);
@@ -29411,7 +29415,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_s16") void vst2q_lane_s16(int16_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_s32(int32_t * ptr, int32x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m2(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29422,7 +29426,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_s32") void vst2q_lane_s32(int32_t * ptr,
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst2q_lane_s64(int64_t * ptr, int64x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[1]);
 	vsseg2e64(vmseq(vid_v_u64m2(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29433,7 +29437,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_s64") void vst2q_lane_s64(int64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_s8(int8_t * ptr, int8x16x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[1]);
 	vsseg2e8(vmseq(vid_v_u8m2(16), lane, 16), (ptr) - ((lane) * (2)), temp_0, temp_1, 16);
@@ -29444,7 +29448,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_s8") void vst2q_lane_s8(int8_t * ptr, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_u16(uint16_t * ptr, uint16x8x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[1]);
 	vsseg2e16(vmseq(vid_v_u16m2(8), lane, 8), (ptr) - ((lane) * (2)), temp_0, temp_1, 8);
@@ -29455,7 +29459,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_u16") void vst2q_lane_u16(uint16_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_u32(uint32_t * ptr, uint32x4x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[1]);
 	vsseg2e32(vmseq(vid_v_u32m2(4), lane, 4), (ptr) - ((lane) * (2)), temp_0, temp_1, 4);
@@ -29466,7 +29470,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_u32") void vst2q_lane_u32(uint32_t * ptr
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst2q_lane_u64(uint64_t * ptr, uint64x2x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[1]);
 	vsseg2e64(vmseq(vid_v_u64m2(2), lane, 2), (ptr) - ((lane) * (2)), temp_0, temp_1, 2);
@@ -29477,7 +29481,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst2q_lane_u64") void vst2q_lane_u64(uint64_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst2q_lane_u8(uint8_t * ptr, uint8x16x2_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[1]);
 	vsseg2e8(vmseq(vid_v_u8m2(16), lane, 16), (ptr) - ((lane) * (2)), temp_0, temp_1, 16);
@@ -29601,7 +29605,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_f64") void vst3_f64(float64_t * ptr, float64x1
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst3_lane_f16(float16_t * ptr, float16x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[1]);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[2]);
@@ -29613,7 +29617,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_f16") void vst3_lane_f16(float16_t * ptr,
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst3_lane_f32(float32_t * ptr, float32x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[1]);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[2]);
@@ -29625,7 +29629,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_f32") void vst3_lane_f32(float32_t * ptr,
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst3_lane_f64(float64_t * ptr, float64x1x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[0]);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[1]);
 	vfloat64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[2]);
@@ -29637,7 +29641,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_f64") void vst3_lane_f64(float64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_s16(int16_t * ptr, int16x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[1]);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[2]);
@@ -29649,7 +29653,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_s16") void vst3_lane_s16(int16_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_s32(int32_t * ptr, int32x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[1]);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[2]);
@@ -29661,7 +29665,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_s32") void vst3_lane_s32(int32_t * ptr, i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst3_lane_s64(int64_t * ptr, int64x1x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[0]);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[1]);
 	vint64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[2]);
@@ -29673,7 +29677,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_s64") void vst3_lane_s64(int64_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_s8(int8_t * ptr, int8x8x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[1]);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[2]);
@@ -29685,7 +29689,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_s8") void vst3_lane_s8(int8_t * ptr, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_u16(uint16_t * ptr, uint16x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[1]);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[2]);
@@ -29697,7 +29701,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_u16") void vst3_lane_u16(uint16_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_u32(uint32_t * ptr, uint32x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[1]);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[2]);
@@ -29709,7 +29713,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_u32") void vst3_lane_u32(uint32_t * ptr, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst3_lane_u64(uint64_t * ptr, uint64x1x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[0]);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[1]);
 	vuint64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[2]);
@@ -29721,7 +29725,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3_lane_u64") void vst3_lane_u64(uint64_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3_lane_u8(uint8_t * ptr, uint8x8x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[1]);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[2]);
@@ -29854,7 +29858,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_f64") void vst3q_f64(float64_t * ptr, float64
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst3q_lane_f16(float16_t * ptr, float16x8x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[1]);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[2]);
@@ -29866,7 +29870,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_f16") void vst3q_lane_f16(float16_t * pt
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst3q_lane_f32(float32_t * ptr, float32x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[1]);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[2]);
@@ -29878,7 +29882,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_f32") void vst3q_lane_f32(float32_t * pt
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst3q_lane_f64(float64_t * ptr, float64x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[1]);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[2]);
@@ -29890,7 +29894,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_f64") void vst3q_lane_f64(float64_t * pt
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_s16(int16_t * ptr, int16x8x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[1]);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[2]);
@@ -29902,7 +29906,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_s16") void vst3q_lane_s16(int16_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_s32(int32_t * ptr, int32x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[1]);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[2]);
@@ -29914,7 +29918,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_s32") void vst3q_lane_s32(int32_t * ptr,
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst3q_lane_s64(int64_t * ptr, int64x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[1]);
 	vint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[2]);
@@ -29926,7 +29930,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_s64") void vst3q_lane_s64(int64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_s8(int8_t * ptr, int8x16x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[1]);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[2]);
@@ -29938,7 +29942,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_s8") void vst3q_lane_s8(int8_t * ptr, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_u16(uint16_t * ptr, uint16x8x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[1]);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[2]);
@@ -29950,7 +29954,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_u16") void vst3q_lane_u16(uint16_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_u32(uint32_t * ptr, uint32x4x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[1]);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[2]);
@@ -29962,7 +29966,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_u32") void vst3q_lane_u32(uint32_t * ptr
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst3q_lane_u64(uint64_t * ptr, uint64x2x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[1]);
 	vuint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[2]);
@@ -29974,7 +29978,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst3q_lane_u64") void vst3q_lane_u64(uint64_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst3q_lane_u8(uint8_t * ptr, uint8x16x3_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[1]);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[2]);
@@ -30110,7 +30114,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_f64") void vst4_f64(float64_t * ptr, float64x1
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst4_lane_f16(float16_t * ptr, float16x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[0]);
 	vfloat16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[1]);
 	vfloat16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m1(((val).val)[2]);
@@ -30123,7 +30127,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_f16") void vst4_lane_f16(float16_t * ptr,
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst4_lane_f32(float32_t * ptr, float32x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[0]);
 	vfloat32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[1]);
 	vfloat32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m1(((val).val)[2]);
@@ -30136,7 +30140,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_f32") void vst4_lane_f32(float32_t * ptr,
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst4_lane_f64(float64_t * ptr, float64x1x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[0]);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[1]);
 	vfloat64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m1(((val).val)[2]);
@@ -30149,7 +30153,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_f64") void vst4_lane_f64(float64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_s16(int16_t * ptr, int16x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[0]);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[1]);
 	vint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m1(((val).val)[2]);
@@ -30162,7 +30166,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_s16") void vst4_lane_s16(int16_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_s32(int32_t * ptr, int32x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[0]);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[1]);
 	vint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m1(((val).val)[2]);
@@ -30175,7 +30179,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_s32") void vst4_lane_s32(int32_t * ptr, i
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst4_lane_s64(int64_t * ptr, int64x1x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[0]);
 	vint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[1]);
 	vint64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m1(((val).val)[2]);
@@ -30188,7 +30192,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_s64") void vst4_lane_s64(int64_t * ptr, i
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_s8(int8_t * ptr, int8x8x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[0]);
 	vint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[1]);
 	vint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m1(((val).val)[2]);
@@ -30201,7 +30205,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_s8") void vst4_lane_s8(int8_t * ptr, int8
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_u16(uint16_t * ptr, uint16x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[0]);
 	vuint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[1]);
 	vuint16m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m1(((val).val)[2]);
@@ -30214,7 +30218,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_u16") void vst4_lane_u16(uint16_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_u32(uint32_t * ptr, uint32x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[0]);
 	vuint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[1]);
 	vuint32m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m1(((val).val)[2]);
@@ -30227,7 +30231,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_u32") void vst4_lane_u32(uint32_t * ptr, 
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst4_lane_u64(uint64_t * ptr, uint64x1x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (1)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (1)));
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[0]);
 	vuint64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[1]);
 	vuint64m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m1(((val).val)[2]);
@@ -30240,7 +30244,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4_lane_u64") void vst4_lane_u64(uint64_t * ptr, 
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4_lane_u8(uint8_t * ptr, uint8x8x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint8m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[0]);
 	vuint8m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[1]);
 	vuint8m1_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m1(((val).val)[2]);
@@ -30385,7 +30389,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_f64") void vst4q_f64(float64_t * ptr, float64
 #if (32 <= __riscv_v_max_eew_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline void vst4q_lane_f16(float16_t * ptr, float16x8x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vfloat16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[0]);
 	vfloat16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[1]);
 	vfloat16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f16m2(((val).val)[2]);
@@ -30398,7 +30402,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_f16") void vst4q_lane_f16(float16_t * pt
 #if (32 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst4q_lane_f32(float32_t * ptr, float32x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vfloat32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[0]);
 	vfloat32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[1]);
 	vfloat32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f32m2(((val).val)[2]);
@@ -30411,7 +30415,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_f32") void vst4q_lane_f32(float32_t * pt
 #if (64 <= __riscv_v_max_eew_fp)
 __attribute__((always_inline)) inline void vst4q_lane_f64(float64_t * ptr, float64x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vfloat64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[0]);
 	vfloat64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[1]);
 	vfloat64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_f64m2(((val).val)[2]);
@@ -30424,7 +30428,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_f64") void vst4q_lane_f64(float64_t * pt
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_s16(int16_t * ptr, int16x8x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[0]);
 	vint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[1]);
 	vint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i16m2(((val).val)[2]);
@@ -30437,7 +30441,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_s16") void vst4q_lane_s16(int16_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_s32(int32_t * ptr, int32x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[0]);
 	vint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[1]);
 	vint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i32m2(((val).val)[2]);
@@ -30450,7 +30454,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_s32") void vst4q_lane_s32(int32_t * ptr,
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst4q_lane_s64(int64_t * ptr, int64x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[0]);
 	vint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[1]);
 	vint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i64m2(((val).val)[2]);
@@ -30463,7 +30467,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_s64") void vst4q_lane_s64(int64_t * ptr,
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_s8(int8_t * ptr, int8x16x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[0]);
 	vint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[1]);
 	vint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_i8m2(((val).val)[2]);
@@ -30476,7 +30480,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_s8") void vst4q_lane_s8(int8_t * ptr, in
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_u16(uint16_t * ptr, uint16x8x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (8)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (8)));
 	vuint16m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[0]);
 	vuint16m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[1]);
 	vuint16m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u16m2(((val).val)[2]);
@@ -30489,7 +30493,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_u16") void vst4q_lane_u16(uint16_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_u32(uint32_t * ptr, uint32x4x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (4)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (4)));
 	vuint32m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[0]);
 	vuint32m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[1]);
 	vuint32m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u32m2(((val).val)[2]);
@@ -30502,7 +30506,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_u32") void vst4q_lane_u32(uint32_t * ptr
 #if (64 <= __riscv_v_max_eew)
 __attribute__((always_inline)) inline void vst4q_lane_u64(uint64_t * ptr, uint64x2x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (2)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (2)));
 	vuint64m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[0]);
 	vuint64m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[1]);
 	vuint64m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u64m2(((val).val)[2]);
@@ -30515,7 +30519,7 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vst4q_lane_u64") void vst4q_lane_u64(uint64_t * ptr
 #if defined(__riscv_vector)
 __attribute__((always_inline)) inline void vst4q_lane_u8(uint8_t * ptr, uint8x16x4_t val, const int lane)
 {
-	assert(((0) <= (lane)) && ((lane) < (16)));
+	SIFIVE_RECODE_ASSERT(((0) <= (lane)) && ((lane) < (16)));
 	vuint8m2_t temp_0 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[0]);
 	vuint8m2_t temp_1 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[1]);
 	vuint8m2_t temp_2 = __builtin_rvv_vcast_from_fixed_64_u8m2(((val).val)[2]);
@@ -33142,4 +33146,5 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vzipq_u8") uint8x16x2_t vzipq_u8(uint8x16_t a, uint
 #endif
 #undef SIFIVE_RECODE_NOT_IMPLEMENT
 #undef FE_TONEARESTFROMZERO
+#undef SIFIVE_RECODE_ASSERT
 #endif
