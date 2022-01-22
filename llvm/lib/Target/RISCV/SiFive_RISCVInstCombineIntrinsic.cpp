@@ -145,6 +145,7 @@ static Instruction *foldBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
     return nullptr;
   Value *Result;
   switch (II.getIntrinsicID()) {
+  default: llvm_unreachable("Unexpected intrinsic");
   case Intrinsic::riscv_vadd:
     Result = IC.Builder.CreateAdd(LHSScalar, RHSScalar);
     break;
