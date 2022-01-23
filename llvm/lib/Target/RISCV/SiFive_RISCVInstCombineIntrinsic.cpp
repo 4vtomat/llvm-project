@@ -51,6 +51,22 @@ static Value *getVSplatOrScalar(Value *Op, Value *VL) {
   return getVSplat(Op, VL);
 }
 
+// Return 0 if Zvl extension is not enabled.
+static unsigned getVLMAX(const ScalableVectorType *type,
+                         const RISCVSubtarget *ST) {
+  if (!ST->hasStdExtZvl())
+    return 0;
+  // type->getPrimitiveSizeInBits().getKnownMinValue() / RISCV::RVVBitsPerBlock
+  // is LMUL. Do not use (type->getPrimitiveSizeInBits().getKnownMinValue() /
+  // RISCV::RVVBitsPerBlock), because
+  // type->getPrimitiveSizeInBits().getKnownMinValue() may be smaller than
+  // RISCV::RVVBitsPerBlock.
+  unsigned SEW = type->getScalarType()->getScalarSizeInBits();
+  return ((ST->getMinVLen() / SEW) *
+          type->getPrimitiveSizeInBits().getKnownMinValue()) /
+         RISCV::RVVBitsPerBlock;
+}
+
 // Try to match
 //   (vand (vmerge 0, -1, C), A)
 // To
@@ -1269,16 +1285,9 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
         isa<UndefValue>(II2->getArgOperand(0)) &&
         isa<ConstantInt>(II2->getArgOperand(2)) &&
         isa<ConstantInt>(II2->getArgOperand(3)) &&
-        cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue() == 1 &&
-        ST->hasStdExtZvl()) {
+        cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue() == 1) {
       Offset = cast<ConstantInt>(II2->getArgOperand(2))->getZExtValue();
-      unsigned SEW = II.getType()->getScalarSizeInBits();
-      unsigned VLMAX =
-          ((ST->getMinVLen() / SEW) *
-           II.getType()->getPrimitiveSizeInBits().getKnownMinValue()) /
-          RISCV::RVVBitsPerBlock;
-      // Offset should be smaller than VLMAX.
-      if (VLMAX <= Offset)
+      if (getVLMAX(cast<ScalableVectorType>(II2->getType()), ST) <= Offset)
         return nullptr;
       if (auto *II3 = dyn_cast<IntrinsicInst>(II2->getArgOperand(1)))
         Vle = II3;
@@ -1347,24 +1356,57 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     break;
   case Intrinsic::riscv_vse:
     if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
-      if (II2->getIntrinsicID() == Intrinsic::riscv_vcast_from_fixed &&
-          (isa<InsertElementInst>(II2->getArgOperand(0)) ||
-           isa<ConstantDataVector>(II2->getArgOperand(0))) &&
-          isa<ConstantInt>(II.getArgOperand(2))) {
-        uint64_t StoreCnt =
-            cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
-        PointerType *DesPtrTy =
-            II.getArgOperand(0)->getType()->getScalarType()->getPointerTo();
-        Value *DesPtr =
-            IC.Builder.CreatePointerCast(II.getArgOperand(1), DesPtrTy);
-        for (uint64_t i = 0; i != StoreCnt; ++i) {
-          IC.Builder.CreateStore(
-              IC.Builder.CreateExtractElement(II2->getArgOperand(0), i),
-              DesPtr);
-          DesPtr = IC.Builder.CreateConstGEP1_64(
-              DesPtrTy->getPointerElementType(), DesPtr, 1);
+      if (II2->getIntrinsicID() == Intrinsic::riscv_vcast_from_fixed) {
+        // Fold (vse (riscv_vcast_from_fixed {x, x + 1, ...}), a)
+        // to   (vse (vid), a)
+        if (auto *DataVector =
+                dyn_cast<ConstantDataVector>(II2->getArgOperand(0)))
+          if (2 < DataVector->getNumElements() &&
+              DataVector->getElementType()->isIntegerTy()) {
+            APInt FirstElement = DataVector->getElementAsAPInt(0);
+            APInt PreviousElement = FirstElement;
+            bool IsAscending = true;
+            for (unsigned i = 1; i != DataVector->getNumElements(); ++i)
+              if (++PreviousElement != DataVector->getElementAsAPInt(i)) {
+                IsAscending = false;
+                break;
+              }
+            if (IsAscending &&
+                DataVector->getNumElements() <=
+                    getVLMAX(cast<ScalableVectorType>(II2->getType()), ST)) {
+              ConstantInt *VL = IC.Builder.getIntN(
+                  ST->getXLen(), DataVector->getNumElements());
+              Value *Vid = IC.Builder.CreateIntrinsic(
+                  Intrinsic::riscv_vid, {II2->getType(), VL->getType()},
+                  {UndefValue::get(II2->getType()), VL});
+              ConstantInt *Offset = IC.Builder.getInt(FirstElement);
+              Value *Vadd = IC.Builder.CreateIntrinsic(
+                  Intrinsic::riscv_vadd,
+                  {Vid->getType(), Offset->getType(), VL->getType()},
+                  {UndefValue::get(Vid->getType()), Vid, Offset, VL});
+              return IC.replaceOperand(II, 0, Vadd);
+            }
+          }
+        // Fold (vse a, (riscv_vcast_from_fixed (y)))
+        // to   (store a + 0, y[0]), (store a + 1, y[1]), ...
+        if ((isa<InsertElementInst>(II2->getArgOperand(0)) ||
+             isa<ConstantDataVector>(II2->getArgOperand(0))) &&
+            isa<ConstantInt>(II.getArgOperand(2))) {
+          uint64_t StoreCnt =
+              cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
+          PointerType *DesPtrTy =
+              II.getArgOperand(0)->getType()->getScalarType()->getPointerTo();
+          Value *DesPtr =
+              IC.Builder.CreatePointerCast(II.getArgOperand(1), DesPtrTy);
+          for (uint64_t i = 0; i != StoreCnt; ++i) {
+            IC.Builder.CreateStore(
+                IC.Builder.CreateExtractElement(II2->getArgOperand(0), i),
+                DesPtr);
+            DesPtr = IC.Builder.CreateConstGEP1_64(
+                DesPtrTy->getPointerElementType(), DesPtr, 1);
+          }
+          return IC.eraseInstFromFunction(II);
         }
-        return IC.eraseInstFromFunction(II);
       }
     break;
   case Intrinsic::riscv_vand: {
@@ -1654,28 +1696,19 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
           II.getArgOperand(2) == II2->getArgOperand(2) &&
           isa<ConstantInt>(II.getArgOperand(2)) &&
           isa<ConstantInt>(II.getArgOperand(3)) &&
-          isa<ConstantInt>(II2->getArgOperand(3)) && ST->hasStdExtZvl()) {
+          isa<ConstantInt>(II2->getArgOperand(3))) {
         uint64_t Offset =
             cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
         uint64_t SlideupVL =
             cast<ConstantInt>(II.getArgOperand(3))->getZExtValue();
         uint64_t SlidedownVL =
             cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue();
-        // II.getType()->getPrimitiveSizeInBits().getKnownMinValue() /
-        // RISCV::RVVBitsPerBlock is LMUL. Do not use
-        // (II.getType()->getPrimitiveSizeInBits().getKnownMinValue() /
-        // RISCV::RVVBitsPerBlock), because
-        // II.getType()->getPrimitiveSizeInBits().getKnownMinValue() may be
-        // smaller than RISCV::RVVBitsPerBlock
-        unsigned VLMAX =
-            ((ST->getMinVLen() / SEW) *
-             II.getType()->getPrimitiveSizeInBits().getKnownMinValue()) /
-            RISCV::RVVBitsPerBlock;
         if ((SlideupVL <= (Offset + SlidedownVL)) &&
             // If (Offset + SlidedownVL) is greater than VLMAX, the output of
             // slidedown will contain 0, but 0 does not belong to
             // II.getArgOperand(0).
-            ((Offset + SlidedownVL) <= VLMAX))
+            ((Offset + SlidedownVL) <=
+             getVLMAX(cast<ScalableVectorType>(II.getType()), ST)))
           return IC.replaceInstUsesWith(II, II.getArgOperand(0));
       }
     // combine (vslideup A, vmv.v.x(B, 1), C, D) to A
