@@ -548,6 +548,14 @@ public:
     /// If the value is true the peeling cost model can decide to peel only
     /// some iterations and in this case it will set this to false.
     bool PeelProfiledIterations;
+    // SIFIVE
+    /// Allow peeling from the beginning iterations (set by detection)
+    bool PeelProlog;
+    /// Allow peeling from the end iterations (set by detection)
+    bool PeelEpilog;
+    /// Enable epilog peeling per target.
+    bool AllowEpilogPeeling;
+    // end SIFIVE
   };
 
   /// Get target-customized preferences for the generic loop peeling

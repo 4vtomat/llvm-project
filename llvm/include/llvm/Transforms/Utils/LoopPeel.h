@@ -23,6 +23,12 @@ bool canPeel(Loop *L);
 bool peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI, ScalarEvolution *SE,
               DominatorTree &DT, AssumptionCache *AC, bool PreserveLCSSA);
 
+#if SIFIVE_CUSTOMIZATION
+bool peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
+                    ScalarEvolution *SE, DominatorTree &DT, AssumptionCache *AC,
+                    bool PreserveLCSSA);
+#endif // SIFIVE_CUSTOMIZATION
+
 TargetTransformInfo::PeelingPreferences
 gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
                          const TargetTransformInfo &TTI,

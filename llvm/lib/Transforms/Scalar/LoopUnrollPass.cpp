@@ -975,13 +975,27 @@ bool llvm::computeUnrollCount(
     }
   }
 
-  // 5th priority is loop peeling.
+  // 5th priority is loop prolog peeling.
   computePeelCount(L, LoopSize, PP, TripCount, DT, SE, UP.Threshold);
   if (PP.PeelCount) {
     UP.Runtime = false;
     UP.Count = 1;
     return ExplicitUnroll;
   }
+
+  // SIFIVE
+  // 6th priority is loop epilog peeling (if enabled).
+  if (PP.AllowEpilogPeeling) {
+    PP.PeelProlog = false;
+    PP.PeelEpilog = PP.AllowEpilogPeeling;
+    computePeelCount(L, LoopSize, PP, MaxTripCount, DT, SE, UP.Threshold);
+    if (PP.PeelCount) {
+      UP.Runtime = false;
+      UP.Count = 1;
+      return ExplicitUnroll;
+    }
+  }
+  // end SIFIVE
 
   // Before starting partial unrolling, set up.partial to true,
   // if user explicitly asked  for unrolling
@@ -1267,6 +1281,7 @@ static LoopUnrollResult tryToUnrollLoop(
   if (!UP.Count)
     return LoopUnrollResult::Unmodified;
 
+  // SIFIVE
   if (PP.PeelCount) {
     assert(UP.Count == 1 && "Cannot perform peel and unroll in the same step");
     LLVM_DEBUG(dbgs() << "PEELING loop %" << L->getHeader()->getName()
@@ -1278,7 +1293,14 @@ static LoopUnrollResult tryToUnrollLoop(
              << " iterations";
     });
 
-    if (peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA)) {
+    bool PeeledLoop = false;
+    if (PP.PeelProlog)
+      PeeledLoop = peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
+    else if (PP.PeelEpilog)
+      PeeledLoop =
+          peelLoopEpilog(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
+
+    if (PeeledLoop) {
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI);
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
@@ -1288,6 +1310,7 @@ static LoopUnrollResult tryToUnrollLoop(
     }
     return LoopUnrollResult::Unmodified;
   }
+  // end SIFIVE
 
   // At this point, UP.Runtime indicates that run-time unrolling is allowed.
   // However, we only want to actually perform it if we don't know the trip

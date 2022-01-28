@@ -471,6 +471,9 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
 void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
                                          TTI::PeelingPreferences &PP) {
   BaseT::getPeelingPreferences(L, SE, PP);
+  // SIFIVE
+  PP.AllowEpilogPeeling = true;
+  // end SIFIVE
 }
 
 InstructionCost RISCVTTIImpl::getRegUsageForType(Type *Ty) {

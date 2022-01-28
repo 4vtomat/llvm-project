@@ -23,6 +23,9 @@
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/Function.h"
+// SIFIVE
+#include "llvm/IR/IRBuilder.h"
+// end SIFIVE
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
@@ -47,7 +50,10 @@ using namespace llvm::PatternMatch;
 
 #define DEBUG_TYPE "loop-peel"
 
-STATISTIC(NumPeeled, "Number of loops peeled");
+// SIFIVE
+STATISTIC(NumPeeledProlog, "Number of loops prolog peeled");
+STATISTIC(NumPeeledEpilog, "Number of loops epilog peeled");
+// end SIFIVE
 
 static cl::opt<unsigned> UnrollPeelCount(
     "unroll-peel-count", cl::Hidden,
@@ -62,6 +68,12 @@ static cl::opt<bool>
     UnrollAllowLoopNestsPeeling("unroll-allow-loop-nests-peeling",
                                 cl::init(false), cl::Hidden,
                                 cl::desc("Allows loop nests to be peeled."));
+
+// SIFIVE
+static cl::opt<bool> AllowEpilogPeeling(
+    "allow-epilog-peeling", cl::init(false), cl::Hidden,
+    cl::desc("Allows peeling from final iterations of loops."));
+// end SIFIVE
 
 static cl::opt<unsigned> UnrollPeelMaxCount(
     "unroll-peel-max-count", cl::init(7), cl::Hidden,
@@ -225,8 +237,11 @@ static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
 //    else
 //      ..
 //   }
+// SIFIVE
 static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
-                                         ScalarEvolution &SE) {
+                                         unsigned TripCount,
+                                         ScalarEvolution &SE, bool PeelProlog) {
+  // end SIFIVE
   assert(L.isLoopSimplifyForm() && "Loop needs to be in loop simplify form");
   unsigned DesiredPeelCount = 0;
 
@@ -276,9 +291,12 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
     // Check if extending the current DesiredPeelCount lets us evaluate Pred
     // or !Pred in the loop body statically.
     unsigned NewPeelCount = DesiredPeelCount;
+    // SIFIVE
+    unsigned RawIterToEval = (PeelProlog) ? DesiredPeelCount : TripCount - 1;
 
     const SCEV *IterVal = LeftAR->evaluateAtIteration(
-        SE.getConstant(LeftSCEV->getType(), NewPeelCount), SE);
+        SE.getConstant(LeftSCEV->getType(), RawIterToEval), SE);
+    // end SIFIVE
 
     // If the original condition is not known, get the negated predicate
     // (which holds on the else branch) and check if it is known. This allows
@@ -287,13 +305,18 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
       Pred = ICmpInst::getInversePredicate(Pred);
 
     const SCEV *Step = LeftAR->getStepRecurrence(SE);
-    const SCEV *NextIterVal = SE.getAddExpr(IterVal, Step);
+    // SIFIVE
+    // Flip the step direction when evaluating epilog peeling.
+    const SCEV *NextIterVal = (PeelProlog) ? SE.getAddExpr(IterVal, Step)
+                                           : SE.getMinusSCEV(IterVal, Step);
     auto PeelOneMoreIteration = [&IterVal, &NextIterVal, &SE, Step,
-                                 &NewPeelCount]() {
+                                 &NewPeelCount, PeelProlog]() {
       IterVal = NextIterVal;
-      NextIterVal = SE.getAddExpr(IterVal, Step);
+      NextIterVal = (PeelProlog) ? SE.getAddExpr(IterVal, Step)
+                                 : SE.getMinusSCEV(IterVal, Step);
       NewPeelCount++;
     };
+    // end SIFIVE
 
     auto CanPeelOneMoreIteration = [&NewPeelCount, &MaxPeelCount]() {
       return NewPeelCount < MaxPeelCount;
@@ -303,11 +326,20 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
            SE.isKnownPredicate(Pred, IterVal, RightSCEV))
       PeelOneMoreIteration();
 
+    // SIFIVE
     // With *that* peel count, does the predicate !Pred become known in the
-    // first iteration of the loop body after peeling?
-    if (!SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
-                             RightSCEV))
+    // first iteration of the loop body after prolog peeling?
+    if (PeelProlog && !SE.isKnownPredicate(CmpInst::getInversePredicate(Pred),
+                                           IterVal, RightSCEV))
       continue; // If not, give up.
+
+    // With *that* peel count, is the predicate Pred still known in the
+    // IterVal iteration of the loop body after epilog peeling?  This means we
+    // have reached MaxPeelCount iterations and have not found a partition
+    // point.
+    if (!PeelProlog && SE.isKnownPredicate(Pred, IterVal, RightSCEV))
+      continue; // If not, give up.
+    // end SIFIVE
 
     // However, for equality comparisons, that isn't always sufficient to
     // eliminate the comparsion in loop body, we may need to peel one more
@@ -366,6 +398,12 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   if (!canPeel(L))
     return;
 
+  // SIFIVE
+  // Must have enabled peeling in one direction, but not both.
+  assert(PP.PeelProlog != PP.PeelEpilog &&
+         "Unsupported use of computePeelCount");
+  // end SIFIVE
+
   // Only try to peel innermost loops by default.
   // The constraint can be relaxed by the target in TTI.getPeelingPreferences
   // or by the flag -unroll-allow-loop-nests-peeling.
@@ -393,6 +431,11 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   unsigned AlreadyPeeled = 0;
   if (auto Peeled = getOptionalIntLoopAttribute(L, PeeledCountMetaData))
     AlreadyPeeled = *Peeled;
+#if SIFIVE_CUSTOMIZATION
+  // Epilog peeling should only occur once per loop for code size reasons.
+  if (PP.PeelEpilog && AlreadyPeeled)
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   // Stop if we already peeled off the maximum number of iterations.
   if (AlreadyPeeled >= UnrollPeelMaxCount)
     return;
@@ -402,33 +445,40 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   // which every Phi is guaranteed to become an invariant, and try to peel the
   // maximum number of iterations among these values, thus turning all those
   // Phis into invariants.
-
-  // Store the pre-calculated values here.
-  SmallDenseMap<PHINode *, Optional<unsigned>> IterationsToInvariance;
-  // Now go through all Phis to calculate their the number of iterations they
-  // need to become invariants.
-  // Start the max computation with the PP.PeelCount value set by the target
-  // in TTI.getPeelingPreferences or by the flag -unroll-peel-count.
-  unsigned DesiredPeelCount = TargetPeelCount;
-  BasicBlock *BackEdge = L->getLoopLatch();
-  assert(BackEdge && "Loop is not in simplified form?");
-  for (auto BI = L->getHeader()->begin(); isa<PHINode>(&*BI); ++BI) {
-    PHINode *Phi = cast<PHINode>(&*BI);
-    auto ToInvariance = calculateIterationsToInvariance(Phi, L, BackEdge,
-                                                        IterationsToInvariance);
-    if (ToInvariance)
-      DesiredPeelCount = std::max(DesiredPeelCount, *ToInvariance);
+#if SIFIVE_CUSTOMIZATION
+  unsigned DesiredPeelCount = 0;
+  if (PP.PeelProlog) {
+    // Store the pre-calculated values here.
+    SmallDenseMap<PHINode *, Optional<unsigned>> IterationsToInvariance;
+    // Now go through all Phis to calculate their the number of iterations they
+    // need to become invariants.
+    // Start the max computation with the PP.PeelCount value set by the target
+    // in TTI.getPeelingPreferences or by the flag -unroll-peel-count.
+    DesiredPeelCount = TargetPeelCount;
+    BasicBlock *BackEdge = L->getLoopLatch();
+    assert(BackEdge && "Loop is not in simplified form?");
+    for (auto BI = L->getHeader()->begin(); isa<PHINode>(&*BI); ++BI) {
+      PHINode *Phi = cast<PHINode>(&*BI);
+      auto ToInvariance = calculateIterationsToInvariance(Phi, L, BackEdge,
+                                                          IterationsToInvariance);
+      if (ToInvariance)
+        DesiredPeelCount = std::max(DesiredPeelCount, *ToInvariance);
+    }
   }
+#endif // SIFIVE_CUSTOMIZATIOn
 
   // Pay respect to limitations implied by loop size and the max peel count.
   unsigned MaxPeelCount = UnrollPeelMaxCount;
   MaxPeelCount = std::min(MaxPeelCount, Threshold / LoopSize - 1);
 
-  DesiredPeelCount = std::max(DesiredPeelCount,
-                              countToEliminateCompares(*L, MaxPeelCount, SE));
+#if SIFIVE_CUSTOMIZATION
+  DesiredPeelCount = std::max(
+      DesiredPeelCount, countToEliminateCompares(*L, MaxPeelCount, TripCount,
+                                                   SE, PP.PeelProlog));
 
-  if (DesiredPeelCount == 0)
+  if (DesiredPeelCount == 0 && (PP.PeelProlog))
     DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (DesiredPeelCount > 0) {
     DesiredPeelCount = std::min(DesiredPeelCount, MaxPeelCount);
@@ -572,12 +622,15 @@ static void fixupBranchWeights(BasicBlock *Header, BranchInst *LatchBR,
 /// \param LoopBlocks A helper for DFS-traversal of the loop.
 /// \param LVMap A value-map that maps instructions from the original loop to
 /// instructions in the last peeled-off iteration.
+// SIFIVE
 static void cloneLoopBlocks(
     Loop *L, unsigned IterNumber, BasicBlock *InsertTop, BasicBlock *InsertBot,
+    bool EpilogPeeling,
     SmallVectorImpl<std::pair<BasicBlock *, BasicBlock *>> &ExitEdges,
     SmallVectorImpl<BasicBlock *> &NewBlocks, LoopBlocksDFS &LoopBlocks,
     ValueToValueMapTy &VMap, ValueToValueMapTy &LVMap, DominatorTree *DT,
     LoopInfo *LI, ArrayRef<MDNode *> LoopLocalNoAliasDeclScopes) {
+  // end SIFIVE
   BasicBlock *Header = L->getHeader();
   BasicBlock *Latch = L->getLoopLatch();
   BasicBlock *PreHeader = L->getLoopPreheader();
@@ -641,11 +694,20 @@ static void cloneLoopBlocks(
   // iteration (for every other iteration)
   BasicBlock *NewLatch = cast<BasicBlock>(VMap[Latch]);
   BranchInst *LatchBR = cast<BranchInst>(NewLatch->getTerminator());
-  for (unsigned idx = 0, e = LatchBR->getNumSuccessors(); idx < e; ++idx)
-    if (LatchBR->getSuccessor(idx) == Header) {
-      LatchBR->setSuccessor(idx, InsertBot);
-      break;
-    }
+  // SIFIVE
+  if (EpilogPeeling) {
+    // Replace LatchBR copy with an unconditional branch to InsertBot.
+    BranchInst::Create(InsertBot, NewLatch);
+    // Now remove the old LatchBR from NewLatch.
+    LatchBR->eraseFromParent();
+  } else {
+    for (unsigned idx = 0, e = LatchBR->getNumSuccessors(); idx < e; ++idx)
+      if (LatchBR->getSuccessor(idx) == Header) {
+        LatchBR->setSuccessor(idx, InsertBot);
+        break;
+      }
+  }
+  // end SIFIVE
   if (DT)
     DT->changeImmediateDominator(InsertBot, NewLatch);
 
@@ -653,14 +715,33 @@ static void cloneLoopBlocks(
   // that pick an incoming value from either the preheader, or the previous
   // loop iteration. Since this copy is no longer part of the loop, we
   // resolve this statically:
-  // For the first iteration, we use the value from the preheader directly.
+  // SIFIVE
+  // For the first iteration, we use values from the preheader directly
+  // for prolog peeling and from the loop Latch for epilog peeling.
+  // end SIFIVE
   // For any other iteration, we replace the phi with the value generated by
   // the immediately preceding clone of the loop body (which represents
   // the previous iteration).
   for (BasicBlock::iterator I = Header->begin(); isa<PHINode>(I); ++I) {
     PHINode *NewPHI = cast<PHINode>(VMap[&*I]);
     if (IterNumber == 0) {
-      VMap[&*I] = NewPHI->getIncomingValueForBlock(PreHeader);
+      // SIFIVE
+      if (EpilogPeeling) {
+        Value *LatchVal = NewPHI->getIncomingValueForBlock(Latch);
+        // Maintain LCSSA form, transfer latch values via PHINodes
+        // in InsertTop
+        Instruction *LatchInst = dyn_cast<Instruction>(LatchVal);
+        if (LatchInst && L->contains(LatchInst)) {
+          IRBuilder<> Builder(InsertTop, InsertTop->getFirstInsertionPt());
+          PHINode *LabelTopPHI =
+              Builder.CreatePHI(LatchInst->getType(), 1, "label");
+          LabelTopPHI->addIncoming(LatchVal, Latch);
+          LatchVal = LabelTopPHI;
+        }
+        VMap[&*I] = LatchVal;
+      } else
+        VMap[&*I] = NewPHI->getIncomingValueForBlock(PreHeader);
+      // end SIFIVE
     } else {
       Value *LatchVal = NewPHI->getIncomingValueForBlock(Latch);
       Instruction *LatchInst = dyn_cast<Instruction>(LatchVal);
@@ -702,9 +783,20 @@ TargetTransformInfo::PeelingPreferences llvm::gatherPeelingPreferences(
   PP.AllowPeeling = true;
   PP.AllowLoopNestsPeeling = false;
   PP.PeelProfiledIterations = true;
+  // SIFIVE
+  PP.AllowEpilogPeeling = false;
+  PP.PeelProlog = true;
+  PP.PeelEpilog = false;
+  // end SIFIVE
 
   // Get the target specifc values.
   TTI.getPeelingPreferences(L, SE, PP);
+
+  // SIFIVE
+  // check if user has disabled this feature
+  if (PP.AllowEpilogPeeling)
+    PP.AllowEpilogPeeling = AllowEpilogPeeling;
+  // end SIFIVE
 
   // User specified values using cl::opt.
   if (UnrollingSpecficValues) {
@@ -847,9 +939,11 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI,
     SmallVector<BasicBlock *, 8> NewBlocks;
     ValueToValueMapTy VMap;
 
-    cloneLoopBlocks(L, Iter, InsertTop, InsertBot, ExitEdges, NewBlocks,
-                    LoopBlocks, VMap, LVMap, &DT, LI,
+    // SIFIVE
+    cloneLoopBlocks(L, Iter, InsertTop, InsertBot, /*EpilogPeeling*/ false,
+                    ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
                     LoopLocalNoAliasDeclScopes);
+    // end SIFIVE
 
     // Remap to use values from the current iteration instead of the
     // previous one.
@@ -913,7 +1007,239 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI,
   // FIXME: Incrementally update loop-simplify
   simplifyLoop(L, &DT, LI, SE, AC, nullptr, PreserveLCSSA);
 
-  NumPeeled++;
+  // SIFIVE
+  NumPeeledProlog++;
+  // end SIFIVE
 
   return true;
 }
+
+// SIFIVE
+/// Peel off the last \p PeelCount iterations of loop \p L.
+///
+/// Note that this does peel individual iterations off as a single straight-line
+/// block. Generally this removes flow from the main loop simplifying the loop
+/// body for further optimizations.
+bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
+                          ScalarEvolution *SE, DominatorTree &DT,
+                          AssumptionCache *AC, bool PreserveLCSSA) {
+  assert(PeelCount > 0 && "Attempt to peel out zero iterations?");
+  assert(canPeel(L) && "Attempt to peel a loop which is not peelable?");
+
+  LoopBlocksDFS LoopBlocks(L);
+  LoopBlocks.perform(LI);
+
+  BasicBlock *Header = L->getHeader();
+  BasicBlock *Latch = L->getLoopLatch();
+  SmallVector<std::pair<BasicBlock *, BasicBlock *>, 4> ExitEdges;
+  L->getExitEdges(ExitEdges);
+
+  // One of the entry criteria of epilog peeling is the constraint
+  // that ExitEdges contains only one entry, we will split
+  // that block to anchor the initial epilog peel and setup
+  // subsequent peels.
+  BasicBlock *ExitBlock = L->getExitBlock();
+  // TODO: handle multiple exits for epilog peeling for now just the simple
+  // case with one exit block.
+  if (!ExitBlock)
+    return false;
+
+  // Test for qualifying cases, else return.
+  // Countable loops should have a reachable increment/decrement
+  // expression with a constant modifier.
+  auto *BI = dyn_cast<BranchInst>(Latch->getTerminator());
+  Instruction *CmpInst = nullptr;
+  Instruction *LeftInst = nullptr;
+  Value *StepVal = nullptr;
+  unsigned IncDecOpc = 0;
+  bool MatchingCaseFound = false;
+  if (BI) {
+    Value *Condition = BI->getCondition();
+    CmpInst::Predicate Pred;
+    if (match(Condition, m_ICmp(Pred, m_Instruction(LeftInst), m_Value()))) {
+      // Mine the data from LeftInst and save it for later use.
+      CmpInst = cast<Instruction>(Condition);
+      IncDecOpc = LeftInst->getOpcode();
+      if (IncDecOpc == Instruction::Add &&
+          isa<ConstantInt>(LeftInst->getOperand(1))) {
+        StepVal = LeftInst->getOperand(1);
+        MatchingCaseFound = true;
+      } else if (IncDecOpc == Instruction::Sub &&
+                 isa<ConstantInt>(LeftInst->getOperand(1))) {
+        StepVal = LeftInst->getOperand(1);
+        MatchingCaseFound = true;
+      } else {
+        // TODO: expand supported patterns
+        return false;
+      }
+    }
+  } else
+    return false;
+
+  if (!MatchingCaseFound)
+    return false;
+
+  // Remember dominators of blocks we might reach through exits to change them
+  // later. Immediate dominator of such block might change, because we add more
+  // routes which can lead to the exit: we can reach it from the peeled
+  // iterations too.
+  DenseMap<BasicBlock *, BasicBlock *> NonLoopBlocksIDom;
+  for (auto *BB : L->blocks()) {
+    auto *BBDomNode = DT.getNode(BB);
+    SmallVector<BasicBlock *, 16> ChildrenToUpdate;
+    for (auto *ChildDomNode : BBDomNode->children()) {
+      auto *ChildBB = ChildDomNode->getBlock();
+      if (!L->contains(ChildBB))
+        ChildrenToUpdate.push_back(ChildBB);
+    }
+    // The new idom of the block will be the nearest common dominator
+    // of all copies of the previous idom. This is equivalent to the
+    // nearest common dominator of the previous idom and the first latch,
+    // which dominates all copies of the previous idom.
+    BasicBlock *NewIDom = DT.findNearestCommonDominator(BB, Latch);
+    for (auto *ChildBB : ChildrenToUpdate)
+      NonLoopBlocksIDom[ChildBB] = NewIDom;
+  }
+
+  Function *F = Header->getParent();
+
+  // Set up all the necessary basic blocks. It is convenient to split the
+  // exit into 2 parts - two blocks to anchor the peeled copy of the loop
+  // body.
+
+  // Peeling the last iteration transforms.
+  //
+  // PreHeader:
+  // ...
+  // Header:
+  //   LoopBody
+  //   If (cond) goto Header
+  // Exit:
+  //
+  // into
+  //
+  // PreHeader:
+  // ...
+  // Header:
+  //   LoopBody
+  //   If (newcond) goto Header
+  // ...
+  // InsertTop.begin:
+  //   LoopBody
+  // InsertBot:
+  // Exit:
+  //
+  // Each following iteration will split the current bottom anchor in two,
+  // and put the new copy of the loop body between these two blocks. That is,
+  // after peeling another iteration from the example above, we'll split
+  // InsertBot, and get:
+  //
+  // PreHeader:
+  // ...
+  // Header:
+  //  LoopBody
+  //  If (newcond) goto Header
+  // ...
+  // InsertTop.begin:
+  //   LoopBody
+  // InsertBot:
+  //   LoopBody
+  // InsertBot.next:
+  // Exit:
+
+  BasicBlock *InsertTop = SplitEdge(Latch, ExitBlock, &DT, LI);
+  BasicBlock *InsertBot;
+  InsertTop->setName(Header->getName() + ".peel.begin");
+
+  ValueToValueMapTy LVMap;
+
+  // If we have branch weight information, we'll want to update it for the
+  // newly created branches.
+  auto *LatchBR = cast<BranchInst>(Latch->getTerminator());
+  uint64_t ExitWeight = 0, FallThroughWeight = 0;
+  initBranchWeights(Header, LatchBR, ExitWeight, FallThroughWeight);
+
+  // Identify what noalias metadata is inside the loop: if it is inside the
+  // loop, the associated metadata must be cloned for each iteration.
+  SmallVector<MDNode *, 6> LoopLocalNoAliasDeclScopes;
+  identifyNoAliasScopesToClone(L->getBlocks(), LoopLocalNoAliasDeclScopes);
+
+  // For each peeled-off iteration, make a copy of the loop.
+  for (unsigned Iter = 0; Iter < PeelCount; ++Iter) {
+    SmallVector<BasicBlock *, 8> NewBlocks;
+    ValueToValueMapTy VMap;
+
+    InsertBot = SplitBlock(InsertTop, InsertTop->getTerminator(), &DT, LI);
+    InsertBot->setName(Header->getName() + ".peel.next");
+
+    cloneLoopBlocks(L, Iter, InsertTop, InsertBot, /*EpilogPeeling*/ true,
+                    ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
+                    LoopLocalNoAliasDeclScopes);
+
+    // Remap to use values from the current iteration instead of the
+    // previous one.
+    remapInstructionsInBlocks(NewBlocks, VMap);
+
+    InsertTop = InsertBot;
+    F->getBasicBlockList().splice(InsertTop->getIterator(),
+                                  F->getBasicBlockList(),
+                                  NewBlocks[0]->getIterator(), F->end());
+  }
+
+  // Update Metadata for count of peeled off iterations.
+  unsigned AlreadyPeeled = 0;
+  if (auto Peeled = getOptionalIntLoopAttribute(L, PeeledCountMetaData))
+    AlreadyPeeled = *Peeled;
+  addStringMetadataToLoop(L, PeeledCountMetaData, AlreadyPeeled + PeelCount);
+
+  if (Loop *ParentLoop = L->getParentLoop())
+    L = ParentLoop;
+
+  // We modified the loop, update SE.
+  SE->forgetTopmostLoop(L);
+
+  // Update the Latch so that the main loop no longer iterates over
+  // the last PeelCount iterations. This will give simplifyLoop
+  // work to do.  Determine if the defining operation of LeftVal
+  // is an add or a sub and increase that operation by PeelCount * Step
+  // to adjust the latch check so that we exit early by PeelCount
+  // iterations.
+  IRBuilder<> Builder(CmpInst);
+  Value *LHS = nullptr;
+  if (IncDecOpc == Instruction::Add) {
+    // For down counted loops, the values we augment are within the loop
+    // bounds.  The mul folds to a constant and handles the sign.
+    LHS = Builder.CreateAdd(
+        LeftInst,
+        Builder.CreateMul(StepVal,
+                          ConstantInt::get(LeftInst->getType(), PeelCount)),
+        "peelcountxstep.exit");
+  } else if (IncDecOpc == Instruction::Sub) {
+    // For up counted loops, the values we augment are within the loop
+    // bounds.  The mul folds to a constant and handles the sign.
+    LHS = Builder.CreateSub(
+        LeftInst,
+        Builder.CreateMul(StepVal,
+                          ConstantInt::get(LeftInst->getType(), PeelCount)),
+        "peelcountxstep.exit");
+  } else {
+    llvm_unreachable("unsupported peel cond exit");
+  }
+  for (unsigned I = 0, E = CmpInst->getNumOperands(); I != E; ++I) {
+    if (CmpInst->getOperand(I) == LeftInst) {
+      CmpInst->setOperand(I, LHS);
+      break;
+    }
+  }
+
+  // Finally DomtTree must be correct.
+  assert(DT.verify(DominatorTree::VerificationLevel::Fast));
+
+  // FIXME: Incrementally update loop-simplify
+  simplifyLoop(L, &DT, LI, SE, AC, nullptr, PreserveLCSSA);
+
+  NumPeeledEpilog++;
+
+  return true;
+}
+// end SIFIVE
