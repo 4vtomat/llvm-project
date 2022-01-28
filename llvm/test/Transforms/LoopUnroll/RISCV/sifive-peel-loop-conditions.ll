@@ -53,8 +53,7 @@ define void @test2_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[I_05:%.*]] = phi i32 [ 0, [[FOR_BODY_LR_PH:%.*]] ], [ [[INC:%.*]], [[FOR_INC:%.*]] ]
-; CHECK-NEXT:    [[CMP1:%.*]] = icmp ult i32 [[I_05]], 2147483646
-; CHECK-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[FOR_INC]]
+; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    call void @f1()
 ; CHECK-NEXT:    br label [[FOR_INC]]
