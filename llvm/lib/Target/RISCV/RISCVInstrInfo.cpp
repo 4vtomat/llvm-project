@@ -637,6 +637,7 @@ void RISCVInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
 void RISCVInstrInfo::movImm(MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MBBI,
                             const DebugLoc &DL, Register DstReg, uint64_t Val,
@@ -676,6 +677,7 @@ void RISCVInstrInfo::movImm(MachineBasicBlock &MBB,
     SrcReg = DstReg;
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 static RISCVCC::CondCode getCondFromBranchOpc(unsigned Opc) {
   switch (Opc) {
