@@ -38,7 +38,7 @@ class RISCVSubtarget : public RISCVGenSubtargetInfo {
 public:
   enum RISCVProcFamilyEnum : uint8_t {
     Others,
-    SiFive6,
+    SiFive6, // SIFIVE
     SiFive7,
 #if SIFIVE_CUSTOMIZATION
     SiFive8,
@@ -130,10 +130,10 @@ private:
                                                   StringRef FS,
                                                   StringRef ABIName);
 
-  // SIFIVE
+#if SIFIVE_CUSTOMIZATION
   /// Initialize processor specific properties.
   void initializeProperties();
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   // Initializes the data members to match that of the specified triple.

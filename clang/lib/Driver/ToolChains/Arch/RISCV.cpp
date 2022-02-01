@@ -32,14 +32,14 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
   bool EnableExperimentalExtensions =
       Args.hasArg(options::OPT_menable_experimental_extensions);
 
-  // SIFIVE
+#if SIFIVE_CUSTOMIZATION
   // XXX: SiFive specific logic:
   //      Allow mcpu has experimental extension feature without giving
   //      -menable-experimental-extensions option.
   if (const Arg *A = Args.getLastArg(options::OPT_mcpu_EQ))
     if (llvm::RISCV::getMArchFromMcpu(A->getValue()) != "")
      EnableExperimentalExtensions = true;
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
   auto ISAInfo =
       llvm::RISCVISAInfo::parseArchString(Arch, EnableExperimentalExtensions);
@@ -323,7 +323,7 @@ void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
                                   llvm::opt::ArgStringList &CmdArgs) {
   // We need to pass target-abi option to check it is equal to module's
   // target-abi information.
-  // SIFIVE
+#if SIFIVE_CUSTOMIZATION
   const llvm::Triple &Triple = ToolChain.getTriple();
   StringRef ABIName = getRISCVABI(Args, Triple);
   CmdArgs.push_back(
@@ -357,5 +357,5 @@ void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
   if (!AttrString.empty())
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-plugin-opt=-mattr=") + AttrString));
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 }

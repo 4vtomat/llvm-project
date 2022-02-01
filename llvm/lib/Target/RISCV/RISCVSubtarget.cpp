@@ -98,7 +98,7 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
   return *this;
 }
 
-// SIFIVE
+#if SIFIVE_CUSTOMIZATION
 void RISCVSubtarget::initializeProperties() {
 
   // Override and cap the VLEN.
@@ -109,7 +109,7 @@ void RISCVSubtarget::initializeProperties() {
   if (RVVVectorBitsMax)
     VLen = std::min(VLen, static_cast<unsigned>(RVVVectorBitsMax));
 }
-// end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
 RISCVSubtarget::RISCVSubtarget(const Triple &TT, StringRef CPU,
                                StringRef TuneCPU, StringRef FS,
@@ -224,7 +224,6 @@ unsigned RISCVSubtarget::getMaxLMULForFixedLengthVectors() const {
 bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
   return hasVInstructions() && getMinRVVVectorSizeInBits() != 0;
 }
-
 
 bool RISCVSubtarget::enableSubRegLiveness() const {
   // TODO: Enable for for RVV to better handle LMUL>1 and segment load/store.
