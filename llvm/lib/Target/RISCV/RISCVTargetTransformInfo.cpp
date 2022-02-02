@@ -16,6 +16,14 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscvtti"
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned> InliningThresholdMultiplier(
+    "riscv-inlining-threshold-multiplier",
+    cl::desc(
+        "Higher numbers increase inlining."),
+    cl::init(2), cl::Hidden);
+#endif
+
 static cl::opt<unsigned> RVVRegisterWidthLMUL(
     "riscv-v-register-bit-width-lmul",
     cl::desc(
@@ -488,3 +496,9 @@ InstructionCost RISCVTTIImpl::getRegUsageForType(Type *Ty) {
 
   return BaseT::getRegUsageForType(Ty);
 }
+
+#if SIFIVE_CUSTOMIZATION
+unsigned RISCVTTIImpl::getInliningThresholdMultiplier() {
+  return InliningThresholdMultiplier;
+}
+#endif // SIFIVE_CUSTOMIZATION

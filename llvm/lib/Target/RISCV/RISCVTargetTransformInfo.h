@@ -237,7 +237,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  unsigned getInliningThresholdMultiplier() { return 2; }
+  unsigned getInliningThresholdMultiplier();
 #endif // SIFIVE_CUSTOMIZATION
 };
 
