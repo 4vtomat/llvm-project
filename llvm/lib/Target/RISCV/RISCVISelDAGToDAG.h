@@ -120,7 +120,6 @@ private:
   bool doPeepholeSExtW(SDNode *Node);
   bool doPeepholeMaskedRVV(SDNode *Node);
   bool doPeepholeLUIADDI(); // SIFIVE
-  SDNode *getGlobalBaseReg();
 };
 
 namespace RISCV {

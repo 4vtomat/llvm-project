@@ -3597,6 +3597,16 @@ static SDValue getTargetNode(ExternalSymbolSDNode *N, SDLoc DL, EVT Ty,
   return DAG.getTargetExternalSymbol(N->getSymbol(), Ty, Flags);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue getGlobalBaseReg(SelectionDAG &DAG,
+                                const RISCVSubtarget &Subtarget) {
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  MachineFunction &MF = DAG.getMachineFunction();
+  Register GlobalBaseReg = Subtarget.getInstrInfo()->getGlobalBaseReg(&MF);
+  return DAG.getRegister(GlobalBaseReg, TLI.getPointerTy(DAG.getDataLayout()));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 template <class NodeTy>
 SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
                                             unsigned FlagsHi) const {
@@ -3633,7 +3643,7 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
 
   SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, FlagsHi);
   SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, FlagsLo);
-  SDValue GPReg = DAG.getNode(RISCVISD::GlobalBaseReg, DL, Ty);
+  SDValue GPReg = getGlobalBaseReg(DAG, Subtarget);
 
   SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
   SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
@@ -11540,7 +11550,6 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(SplitF64)
   NODE_NAME_CASE(TAIL)
   NODE_NAME_CASE(MULHSU)
-  NODE_NAME_CASE(GlobalBaseReg)
   NODE_NAME_CASE(SLLW)
   NODE_NAME_CASE(SRAW)
   NODE_NAME_CASE(SRLW)

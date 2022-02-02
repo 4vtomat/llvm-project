@@ -1744,20 +1744,10 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     ReplaceNode(Node, Load);
     return;
   }
-  case RISCVISD::GlobalBaseReg: {
-    ReplaceNode(Node, getGlobalBaseReg());
-    return;
-  }
   }
 
   // Select the default instruction.
   SelectCode(Node);
-}
-
-SDNode *RISCVDAGToDAGISel::getGlobalBaseReg() {
-  Register GlobalBaseReg = Subtarget->getInstrInfo()->getGlobalBaseReg(MF);
-  auto &DL = MF->getDataLayout();
-  return CurDAG->getRegister(GlobalBaseReg, TLI->getPointerTy(DL)).getNode();
 }
 
 bool RISCVDAGToDAGISel::SelectInlineAsmMemoryOperand(
