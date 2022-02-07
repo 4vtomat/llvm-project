@@ -105,9 +105,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   static const MVT::SimpleValueType F16VecVTs[] = {
       MVT::nxv1f16, MVT::nxv2f16,  MVT::nxv4f16,
       MVT::nxv8f16, MVT::nxv16f16, MVT::nxv32f16};
+#if SIFIVE_CUSTOMIZATION
   static const MVT::SimpleValueType BF16VecVTs[] = {
       MVT::nxv1bf16, MVT::nxv2bf16,  MVT::nxv4bf16,
       MVT::nxv8bf16, MVT::nxv16bf16, MVT::nxv32bf16};
+#endif // SIFIVE_CUSTOMIZATION
   static const MVT::SimpleValueType F32VecVTs[] = {
       MVT::nxv1f32, MVT::nxv2f32, MVT::nxv4f32, MVT::nxv8f32, MVT::nxv16f32};
   static const MVT::SimpleValueType F64VecVTs[] = {
@@ -142,11 +144,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     if (Subtarget.hasVInstructionsF16())
       for (MVT VT : F16VecVTs)
         addRegClassForRVV(VT);
-
+#if SIFIVE_CUSTOMIZATION
     if (Subtarget.hasVInstructionsBF16())
       for (MVT VT : BF16VecVTs)
         addRegClassForRVV(VT);
-
+#endif // SIFIVE_CUSTOMIZATION
     if (Subtarget.hasVInstructionsF32())
       for (MVT VT : F32VecVTs)
         addRegClassForRVV(VT);
@@ -952,7 +954,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
   setMinimumJumpTableEntries(5);
 
-  setJumpIsExpensive(!Subtarget.setJumpIsCheap()); // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  setJumpIsExpensive(!Subtarget.setJumpIsCheap());
+#endif // SIFIVE_CUSTOMIZATION
 
   setTargetDAGCombine({ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::AND,
                        ISD::OR, ISD::XOR});
@@ -3592,10 +3596,12 @@ static SDValue getTargetNode(JumpTableSDNode *N, SDLoc DL, EVT Ty,
   return DAG.getTargetJumpTable(N->getIndex(), Ty, Flags);
 }
 
+#if SIFIVE_CUSTOMIZATION
 static SDValue getTargetNode(ExternalSymbolSDNode *N, SDLoc DL, EVT Ty,
                              SelectionDAG &DAG, unsigned Flags) {
   return DAG.getTargetExternalSymbol(N->getSymbol(), Ty, Flags);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 static SDValue getGlobalBaseReg(SelectionDAG &DAG,
@@ -3607,6 +3613,7 @@ static SDValue getGlobalBaseReg(SelectionDAG &DAG,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
 template <class NodeTy>
 SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
                                             unsigned FlagsHi) const {
@@ -3651,6 +3658,7 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
                                              DL, Ty, MNHi, GPReg, AddrAdd), 0);
   return SDValue(DAG.getMachineNode(Opcode, DL, Ty, MNAdd, AddrLo), 0);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 template <class NodeTy>
 SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
@@ -3700,6 +3708,7 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
     return SDValue(DAG.getMachineNode(RISCV::PseudoLLA, DL, Ty, Addr), 0);
   }
+#if SIFIVE_CUSTOMIZATION
   case CodeModel::Compact: {
     // Generate a sequence for accessing the whole 64-bit address space,
     // with the appropriate adjustment for the global pointer offset.
@@ -3707,6 +3716,7 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
     return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
   }
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -3771,11 +3781,13 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   MVT XLenVT = Subtarget.getXLenVT();
 
   if (UseGOT) {
+#if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       SDValue Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
       SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
       return SDValue(DAG.getMachineNode(RISCV::ADD, DL, Ty, Load, TPReg), 0);
     } else {
+#endif // SIFIVE_CUSTOMIZATION
       // Use PC-relative addressing to access the GOT for this TLS symbol, then
       // load the address from the GOT and add the thread pointer. This generates
       // the pattern (PseudoLA_TLS_IE sym), which expands to
@@ -3794,7 +3806,9 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
       // Add the thread pointer.
       SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
       return DAG.getNode(ISD::ADD, DL, Ty, Load, TPReg);
+#if SIFIVE_CUSTOMIZATION
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Generate a sequence for accessing the address relative to the thread
@@ -3829,11 +3843,15 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
   SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
   SDValue Load;
 
+#if SIFIVE_CUSTOMIZATION
   if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
     Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
   } else {
+#endif // SIFIVE_CUSTOMIZATION
     Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
+#if SIFIVE_CUSTOMIZATION
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Prepare argument list to generate call.
   ArgListTy Args;
@@ -11308,15 +11326,19 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
       Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, OpFlags);
     }
   } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
+#if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       Callee = getCompactAddr(S, DAG, RISCVII::MO_GOT_GPREL_HI);
     } else {
+#endif // SIFIVE_CUSTOMIZATION
       const TargetMachine &TM = getTargetMachine();
       unsigned OpFlags = RISCVII::MO_CALL;
       if (!TM.shouldAssumeDSOLocal(*MF.getFunction().getParent(), nullptr))
         OpFlags = RISCVII::MO_PLT;
       Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, OpFlags);
+#if SIFIVE_CUSTOMIZATION
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // The first call operand is the chain and the second is the target address.

@@ -94,7 +94,9 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
   TargetABI = RISCVABI::computeTargetABI(TT, getFeatureBits(), ABIName);
   RISCVFeatures::validate(TT, getFeatureBits());
 
+#if SIFIVE_CUSTOMIZATION
   initializeProperties(); // SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
   return *this;
 }
 

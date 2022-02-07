@@ -497,8 +497,10 @@ public:
                     SmallVectorImpl<SDValue> &InVals) const override;
   template <class NodeTy>
   SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true) const;
+#if SIFIVE_CUSTOMIZATION
   template <class NodeTy>
   SDValue getCompactAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool shouldConvertConstantLoadToIntImm(const APInt &Imm,
                                          Type *Ty) const override {

@@ -61,13 +61,17 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   auto *PR = PassRegistry::getPassRegistry();
   initializeGlobalISel(*PR);
   initializeRISCVGatherScatterLoweringPass(*PR);
-  initializeRISCVCodeGenPreparePass(*PR); // SIFIVE
-  initializeRISCVTypePromotionPass(*PR); // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  initializeRISCVCodeGenPreparePass(*PR);
+  initializeRISCVTypePromotionPass(*PR);
+#endif // SIFIVE_CUSTOMIZATION
   initializeRISCVMergeBaseOffsetOptPass(*PR);
   initializeRISCVSExtWRemovalPass(*PR);
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
-  initializeRISCVCleanupVXRMPass(*PR); // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  initializeRISCVCleanupVXRMPass(*PR);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 static StringRef computeDataLayout(const Triple &TT) {
@@ -159,6 +163,7 @@ public:
     return getTM<RISCVTargetMachine>();
   }
 
+#if SIFIVE_CUSTOMIZATION
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
@@ -178,6 +183,7 @@ public:
     }
     return nullptr;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   void addIRPasses() override;
 #if SIFIVE_CUSTOMIZATION
@@ -195,7 +201,9 @@ public:
   void addMachineSSAOptimization() override;
   void addPreRegAlloc() override;
   void addPostRegAlloc() override;
-  bool addILPOpts() override; // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+  bool addILPOpts() override;
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // namespace
 
@@ -210,11 +218,13 @@ void RISCVPassConfig::addIRPasses() {
 
   TargetPassConfig::addIRPasses();
 
+#if SIFIVE_CUSTOMIZATION
   if (TM->getOptLevel() == CodeGenOpt::Aggressive && EnableGEPOpt) {
     addPass(createSeparateConstOffsetFromGEPPass());
     addPass(createEarlyCSEPass());
     addPass(createLICMPass());
   }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
