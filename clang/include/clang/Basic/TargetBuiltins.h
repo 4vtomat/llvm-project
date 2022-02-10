@@ -131,7 +131,9 @@ namespace clang {
 
   namespace RISCVVector {
   enum {
-    LastTIBuiltin = clang::Builtin::FirstTSBuiltin - 1,
+#if SIFIVE_CUSTOMIZATION
+    LastTIBuiltin = NEON::FirstTSBuiltin - 1,
+#endif
 #define BUILTIN(ID, TYPE, ATTRS) BI##ID,
 #include "clang/Basic/BuiltinsRISCVVector.def"
     FirstTSBuiltin,
@@ -142,7 +144,9 @@ namespace clang {
   namespace RISCV {
   enum {
     LastTIBuiltin = clang::Builtin::FirstTSBuiltin - 1,
-    FirstRVVBuiltin = clang::Builtin::FirstTSBuiltin,
+#if SIFIVE_CUSTOMIZATION
+    FirstRVVBuiltin = NEON::FirstTSBuiltin,
+#endif
     LastRVVBuiltin = RISCVVector::FirstTSBuiltin - 1,
 #define BUILTIN(ID, TYPE, ATTRS) BI##ID,
 #include "clang/Basic/BuiltinsRISCV.def"
