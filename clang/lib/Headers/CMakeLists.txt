@@ -342,6 +342,10 @@ if(RISCV IN_LIST LLVM_TARGETS_TO_BUILD)
   list(APPEND riscv_generated_files
     "${CMAKE_CURRENT_BINARY_DIR}/riscv_vector.h"
     )
+  clang_generate_header(-gen-recode-neon arm_neon.td sifive_wrappers/arm_neon.h) # SiFive
+  list(APPEND riscv_generated_files
+    "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h"
+    )
 endif()
 
 
@@ -359,6 +363,12 @@ foreach( f ${generated_files} )
                     "distribtion target will be incorrect!")
   endif()
 endforeach( f )
+
+# SIFIVE
+list(REMOVE_ITEM generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(REMOVE_ITEM riscv_generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(APPEND sifive_wrapper_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+#end SIFIVE
 
 function(add_header_target target_name file_list)
   add_custom_target(${target_name} DEPENDS ${file_list})
