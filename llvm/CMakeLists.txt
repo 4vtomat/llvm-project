@@ -1024,6 +1024,10 @@ if (UNIX AND ${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
           add_definitions("-D_FILE_OFFSET_BITS=64")
 endif()
 
+# SIFIVE
+add_definitions("-DSIFIVE_CUSTOMIZATION=1")
+# end SIFIVE
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories( ${LLVM_INCLUDE_DIR} ${LLVM_MAIN_INCLUDE_DIR})
