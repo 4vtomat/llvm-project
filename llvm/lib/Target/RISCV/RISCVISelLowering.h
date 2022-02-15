@@ -229,6 +229,8 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
+  FRSQRT7_VL, // SIFIVE
+  FREC7_VL,   // SIFIVE
   FMA_VL,
   FCOPYSIGN_VL,
   SMIN_VL,
@@ -685,6 +687,14 @@ private:
 
   SDValue expandUnalignedRVVLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue expandUnalignedRVVStore(SDValue Op, SelectionDAG &DAG) const;
+
+#if SIFIVE_CUSTOMIZATION
+  SDValue getSqrtEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
+                          int &ExtraSteps, bool &UseOneConst,
+                          bool Reciprocal) const override;
+  SDValue getRecipEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
+                           int &ExtraSteps) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isEligibleForTailCallOptimization(
       CCState &CCInfo, CallLoweringInfo &CLI, MachineFunction &MF,

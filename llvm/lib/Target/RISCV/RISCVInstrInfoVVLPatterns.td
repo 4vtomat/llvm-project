@@ -93,6 +93,12 @@ def riscv_fdiv_vl  : SDNode<"RISCVISD::FDIV_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fneg_vl  : SDNode<"RISCVISD::FNEG_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fabs_vl  : SDNode<"RISCVISD::FABS_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fsqrt_vl : SDNode<"RISCVISD::FSQRT_VL", SDT_RISCVFPUnOp_VL>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_frsqrt7_vl : SDNode<"RISCVISD::FRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
+def riscv_frec7_vl   : SDNode<"RISCVISD::FREC7_VL",   SDT_RISCVFPUnOp_VL>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL>;
@@ -1431,6 +1437,19 @@ foreach vti = AllFloatVectors in {
                             VLOpFrag),
             (!cast<Instruction>("PseudoVFSQRT_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+  def : Pat<(riscv_frsqrt7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
+                               VLOpFrag),
+            (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
+                 vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+  // 14.10. Vector Floating-Point Reciprocal Estimate Instruction
+  def : Pat<(riscv_frec7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
+                             VLOpFrag),
+            (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
+                 vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+#endif // SIFIVE_CUSTOMIZATION
 
   // 14.12. Vector Floating-Point Sign-Injection Instructions
   def : Pat<(riscv_fabs_vl (vti.Vector vti.RegClass:$rs), (vti.Mask true_mask),

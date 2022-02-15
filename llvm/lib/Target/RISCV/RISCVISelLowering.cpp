@@ -3125,6 +3125,80 @@ SDValue RISCVTargetLowering::expandUnalignedRVVStore(SDValue Op,
                       Store->getMemOperand()->getFlags());
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Return the opcode and the default number of iterations required for a type.
+// According to "RISC-V V Vector Extension" (v1.0), sections 13.9 and 13.10.
+static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
+                           SDValue Operand, SelectionDAG &DAG, int &Steps,
+                           bool Reciprocal) {
+  EVT VT = Operand.getValueType();
+
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  if (!VT.isVector() || !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  MVT SVT = VT.getSimpleVT();
+
+  if (Steps == TargetLoweringBase::ReciprocalEstimate::Unspecified) {
+    MVT EltVT = SVT.getScalarType();
+    switch (EltVT.SimpleTy) {
+    default: return SDValue();
+    case MVT::f16: Steps = 1; break;
+    case MVT::f32: Steps = 2; break;
+    case MVT::f64: Steps = 3; break;
+    }
+  }
+
+  // Save original operand for later.
+  SDLoc DL(Operand);
+
+  MVT ContainerVT = SVT;
+  SDValue SclOperand = Operand;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(TLI, SVT, Subtarget);
+    SclOperand = convertToScalableVector(ContainerVT, Operand, DAG, Subtarget);
+  }
+
+  SDValue Mask, VL;
+  std::tie(Mask, VL) = getDefaultVLOps(SVT, ContainerVT, DL, DAG, Subtarget);
+
+  SDValue Estimate = DAG.getNode(Opcode, DL, ContainerVT, SclOperand, Mask, VL);
+
+  if (VT.isFixedLengthVector())
+    Estimate = convertFromScalableVector(VT, Estimate, DAG, Subtarget);
+
+  // If we're calculating sqrt(x) as x * rsqrt(x) and no refinement steps are
+  // enabled, we need to insert the final multiply by x. The generic
+  // Newton-Raphson code in the caller will only insert the multiply if the
+  // number of steps is non-zero.
+  if (Steps == 0 && !Reciprocal)
+    Estimate = DAG.getNode(ISD::FMUL, DL, VT, Operand, Estimate);
+
+  return Estimate;
+}
+
+SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SelectionDAG &DAG,
+                                             int Enabled, int &Steps,
+                                             bool &UseOneConst,
+                                             bool Reciprocal) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::FRSQRT7_VL, Operand, DAG, Steps,
+                     Reciprocal);
+}
+
+SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
+                                              SelectionDAG &DAG, int Enabled,
+                                              int &Steps) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::FREC7_VL, Operand, DAG, Steps,
+                     /*Reciprocal*/ true);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
                                             SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
@@ -12260,6 +12334,8 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(FNEG_VL)
   NODE_NAME_CASE(FABS_VL)
   NODE_NAME_CASE(FSQRT_VL)
+  NODE_NAME_CASE(FRSQRT7_VL) // SIFIVE
+  NODE_NAME_CASE(FREC7_VL) // SIFIVE
   NODE_NAME_CASE(FMA_VL)
   NODE_NAME_CASE(FCOPYSIGN_VL)
   NODE_NAME_CASE(SMIN_VL)
