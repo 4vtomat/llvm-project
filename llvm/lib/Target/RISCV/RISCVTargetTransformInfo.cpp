@@ -17,11 +17,15 @@ using namespace llvm;
 #define DEBUG_TYPE "riscvtti"
 
 #if SIFIVE_CUSTOMIZATION
-static cl::opt<unsigned> InliningThresholdMultiplier(
-    "riscv-inlining-threshold-multiplier",
-    cl::desc(
-        "Higher numbers increase inlining."),
-    cl::init(2), cl::Hidden);
+static cl::opt<unsigned>
+    InliningThresholdMultiplier("riscv-inlining-threshold-multiplier",
+                                cl::desc("Higher numbers increase inlining."),
+                                cl::init(2), cl::Hidden);
+
+static cl::opt<bool>
+    PreferPredicatedVectorOps("riscv-prefer-predicated-vector-ops",
+                              cl::desc("Prefer to use VP-intrinsics"),
+                              cl::init(false), cl::Hidden);
 #endif
 
 static cl::opt<unsigned> RVVRegisterWidthLMUL(
@@ -127,7 +131,8 @@ unsigned RISCVTTIImpl::getMaxElementWidth() const {
 }
 
 bool RISCVTTIImpl::preferPredicatedVectorOps() const {
-  return true; // TODO: Replace with a call like ST->isSiFiveCPU()
+  return PreferPredicatedVectorOps; // TODO: Replace with a call like
+                                    // ST->isSiFiveCPU()
 }
 #endif // SIFIVE_CUSTOMIZATION
 
