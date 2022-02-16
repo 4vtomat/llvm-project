@@ -1152,6 +1152,38 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
                               *TM.getMCAsmInfo());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // PseudoLIsimm32 breaks down to 2 instructions that can each be compressed.
+  // Calculate the size taking that into account.
+  // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
+  // have to do this manually.
+  if (Opcode == RISCV::PseudoLIsimm32) {
+    unsigned Size = 8; // Worst case is 8 bytes.
+    const auto MF = MI.getMF();
+    const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
+    const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
+    const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
+    if (MI.getOperand(1).isImm() &&
+        STI.getFeatureBits()[RISCV::FeatureStdExtC]) {
+      int64_t Val = MI.getOperand(1).getImm();
+      int64_t Hi = ((Val + 0x800) >> 12) & 0xFFFFF;
+      int64_t Lo = SignExtend64<12>(Val);
+      assert(Hi != 0 && Lo != 0 && "Unexpected immediate");
+      // Reduce by 2 bytes if we can use C.LUI.
+      if (MRI.getRegClass(RISCV::GPRNoX0X2RegClassID)
+              .contains(MI.getOperand(0).getReg()) &&
+          (isUInt<5>(Hi) || (Hi >= 0xfffe0 && Hi <= 0xfffff)))
+        Size -= 2;
+      // Reduce by 2 bytes if we can use C.ADDI(W).
+      if (MRI.getRegClass(RISCV::GPRNoX0RegClassID)
+              .contains(MI.getOperand(0).getReg()) &&
+          isInt<6>(Lo))
+        Size -= 2;
+    }
+    return Size;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   if (MI.getParent() && MI.getParent()->getParent()) {
     const auto MF = MI.getMF();
     const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
