@@ -2251,11 +2251,7 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
       InIfdef = true;
     }
 
-#if SIFIVE_CUSTOMIZATION
-    if (RecodeMode)
-      OS << "typedef __attribute__((ext_vector_type(";
-    else if (T.isPoly())
-#endif
+    if (T.isPoly())
       OS << "typedef __attribute__((neon_polyvector_type(";
     else
       OS << "typedef __attribute__((neon_vector_type(";
