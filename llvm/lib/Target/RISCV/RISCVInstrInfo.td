@@ -1267,9 +1267,10 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                   IntCCtoRISCVCC>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-// U8 can only predicate c.mv so requires the C extension.
+// U8 can only predicate c.mv so requires the C extension. This should always
+// expand to a branch+c.mv so the size is 6 or 4 if the branch is compressible.
 let Predicates = [HasCMOVBranchOpt, HasStdExtC],
-    Constraints = "$dst = $falsev", isCommutable = 1, Size = 8 in {
+    Constraints = "$dst = $falsev", isCommutable = 1, Size = 6 in {
 // This instruction moves $truev to $dst when the condition is true. It will
 // be expanded to control flow in RISCVExpandPseudoInsts.
 // U8 cannot predicate a move of x0 because it can't be encoded as c.mv.
