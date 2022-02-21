@@ -346,6 +346,10 @@ if(RISCV IN_LIST LLVM_TARGETS_TO_BUILD)
   list(APPEND riscv_generated_files
     "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h"
     )
+  clang_generate_header(-gen-recode-fp16 arm_fp16.td sifive_wrappers/arm_fp16.h) # SiFive
+  list(APPEND riscv_generated_files
+    "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h"
+    )
 endif()
 
 
@@ -368,6 +372,9 @@ endforeach( f )
 list(REMOVE_ITEM generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
 list(REMOVE_ITEM riscv_generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
 list(APPEND sifive_wrapper_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(REMOVE_ITEM generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
+list(REMOVE_ITEM riscv_generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
+list(APPEND sifive_wrapper_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
 #end SIFIVE
 
 function(add_header_target target_name file_list)

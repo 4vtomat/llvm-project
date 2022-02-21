@@ -2544,9 +2544,8 @@ void NeonEmitter::run(raw_ostream &OS) {
 #endif
 }
 
-/// run - Read the records in arm_fp16.td and output arm_fp16.h.  arm_fp16.h
-/// is comprised of type definitions and function declarations.
-void NeonEmitter::runFP16(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+static void printFP16Begin(raw_ostream &OS) {
   OS << "/*===---- arm_fp16.h - ARM FP16 intrinsics "
         "------------------------------"
         "---===\n"
@@ -2595,6 +2594,44 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
+}
+
+static void printRecodeFP16Begin(raw_ostream &OS) {
+  OS << "/*===---- arm_fp16.h - SiFive Recode for FP16 intrinsics "
+        "----------------"
+        "---===\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "---"
+        "---===\n"
+        " */\n\n";
+
+  OS << "#ifndef __ARM_RECODE_FP16_H\n";
+  OS << "#define __ARM_RECODE_FP16_H\n\n";
+
+  OS << "#include <stdint.h>\n\n";
+
+  OS << "#ifdef __riscv_zfh\n";
+  OS << "typedef _Float16 float16_t;\n";
+  OS << "#endif\n\n";
+
+  OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
+        "__nodebug__))\n\n";
+
+  OS << "#define __aarch64__\n";
+  OS << "#define __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n\n";
+}
+#endif
+
+/// run - Read the records in arm_fp16.td and output arm_fp16.h.  arm_fp16.h
+/// is comprised of type definitions and function declarations.
+void NeonEmitter::runFP16(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeFP16Begin(OS);
+  else
+    printFP16Begin(OS);
+#endif
 
   SmallVector<Intrinsic *, 128> Defs;
   std::vector<Record *> RV = Records.getAllDerivedDefinitions("Inst");
@@ -2647,8 +2684,17 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
     OS << "#endif\n";
 
   OS << "\n";
-  OS << "#undef __ai\n\n";
-  OS << "#endif /* __ARM_FP16_H */\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode) {
+    OS << "#undef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n";
+    OS << "#undef __aarch64__\n";
+    OS << "#undef __ai\n\n";
+    OS << "#endif /* __ARM_RECODE_FP16_H */\n";
+  } else {
+    OS << "#undef __ai\n\n";
+    OS << "#endif /* __ARM_FP16_H */\n";
+  }
+#endif
 }
 
 void NeonEmitter::runBF16(raw_ostream &OS) {
@@ -2742,6 +2788,12 @@ void clang::EmitRecodeNeon(RecordKeeper &Records, raw_ostream &OS) {
 void clang::EmitFP16(RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).runFP16(OS);
 }
+
+#if SIFIVE_CUSTOMIZATION
+void clang::EmitRecodeFP16(RecordKeeper &Records, raw_ostream &OS) {
+  NeonEmitter(Records, true).runFP16(OS);
+}
+#endif
 
 void clang::EmitBF16(RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).runBF16(OS);

@@ -71,6 +71,9 @@ enum ActionType {
   GenRecodeNeon,
 #endif
   GenArmFP16,
+#if SIFIVE_CUSTOMIZATION
+  GenRecodeFP16,
+#endif
   GenArmBF16,
   GenArmNeonSema,
   GenArmNeonTest,
@@ -211,6 +214,10 @@ cl::opt<ActionType> Action(
                    "Generate arm_neon.h for clang"),
 #endif
         clEnumValN(GenArmFP16, "gen-arm-fp16", "Generate arm_fp16.h for clang"),
+#if SIFIVE_CUSTOMIZATION
+        clEnumValN(GenRecodeFP16, "gen-recode-fp16",
+                   "Generate arm_fp16.h for clang"),
+#endif
         clEnumValN(GenArmBF16, "gen-arm-bf16", "Generate arm_bf16.h for clang"),
         clEnumValN(GenArmNeonSema, "gen-arm-neon-sema",
                    "Generate ARM NEON sema support for clang"),
@@ -411,6 +418,11 @@ bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
   case GenArmFP16:
     EmitFP16(Records, OS);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case GenRecodeFP16:
+    EmitRecodeFP16(Records, OS);
+    break;
+#endif
   case GenArmBF16:
     EmitBF16(Records, OS);
     break;
