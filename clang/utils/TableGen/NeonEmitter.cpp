@@ -2415,15 +2415,12 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#ifndef __ARM_RECODE_NEON_H\n";
   OS << "#define __ARM_RECODE_NEON_H\n\n";
 
-  OS << "#include <stdint.h>\n\n";
+  OS << "#include <stdint.h>\n";
+  OS << "#include <arm_fp16.h>\n\n";
 
   // Emit NEON-specific scalar typedefs.
   OS << "#if 32 <= __riscv_flen\n";
   OS << "typedef float float32_t;\n";
-  OS << "#endif\n\n";
-
-  OS << "#ifdef __riscv_zfh\n";
-  OS << "typedef _Float16 float16_t;\n";
   OS << "#endif\n\n";
 
   OS << "#if 64 <= __riscv_flen\n";
