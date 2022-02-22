@@ -4,35 +4,43 @@
 define void @test() {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br i1 true, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, i32* [[TMP1]], i32 0
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast i32* [[TMP2]] to <8 x i32>*
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i32>, <8 x i32>* [[TMP3]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast i32* [[TMP2]] to <8 x i32>*
-; CHECK-NEXT:    store <8 x i32> zeroinitializer, <8 x i32>* [[TMP4]], align 4
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <8 x i64> poison, i64 [[INDEX]], i32 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <8 x i64> [[BROADCAST_SPLATINSERT]], <8 x i64> poison, <8 x i32> zeroinitializer
+; CHECK-NEXT:    [[VEC_IV:%.*]] = add <8 x i64> [[BROADCAST_SPLAT]], <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>
+; CHECK-NEXT:    [[VEC_IV3:%.*]] = add <8 x i64> [[BROADCAST_SPLAT]], <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>
+; CHECK-NEXT:    [[TMP1:%.*]] = icmp ule <8 x i64> [[VEC_IV3]], <i64 1, i64 1, i64 1, i64 1, i64 1, i64 1, i64 1, i64 1>
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[TMP0]]
+; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 2, [[INDEX]]
+; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 2, i64 2)
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP2]], i32 0
+; CHECK-NEXT:    [[TMP7:%.*]] = bitcast i32* [[TMP6]] to <8 x i32>*
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i32>, <8 x i32>* [[TMP7]], align 4
+; CHECK-NEXT:    [[TMP8:%.*]] = bitcast i32* [[TMP6]] to <8 x i32>*
+; CHECK-NEXT:    store <8 x i32> zeroinitializer, <8 x i32>* [[TMP8]], align 4
+; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP5]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
+; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 2
+; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 0, 0
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_PREHEADER:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br i1 true, label [[FOR_COND_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; CHECK:       for.body.i:
 ; CHECK-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
 ; CHECK-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[INDVARS_IV_I]]
-; CHECK-NEXT:    [[TMP6:%.*]] = load i32, i32* [[ARRAYIDX_I]], align 4
+; CHECK-NEXT:    [[TMP11:%.*]] = load i32, i32* [[ARRAYIDX_I]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX2_I:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[INDVARS_IV_I]]
 ; CHECK-NEXT:    store i32 0, i32* [[ARRAYIDX2_I]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT_I]] = add nuw nsw i64 [[INDVARS_IV_I]], 1
-; CHECK-NEXT:    [[EXITCOND_NOT_I:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT_I]], 0
+; CHECK-NEXT:    [[EXITCOND_NOT_I:%.*]] = icmp eq i64 [[INDVARS_IV_I]], 1
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT_I]], label [[FOR_COND_PREHEADER]], label [[FOR_BODY_I]], !llvm.loop [[LOOP2:![0-9]+]]
 ; CHECK:       for.cond.preheader:
 ; CHECK-NEXT:    ret void
@@ -47,7 +55,7 @@ for.body.i:
   %arrayidx2.i = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 %indvars.iv.i
   store i32 0, i32* %arrayidx2.i, align 4
   %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %exitcond.not.i = icmp eq i64 %indvars.iv.next.i, 0
+  %exitcond.not.i = icmp eq i64 %indvars.iv.i, 1
   br i1 %exitcond.not.i, label %for.cond.preheader, label %for.body.i
 
 for.cond.preheader:
