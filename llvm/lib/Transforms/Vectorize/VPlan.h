@@ -1971,7 +1971,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  VPValue *getEVL() const { return nullptr; }
+  VPValue *getEVL() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if this recipe is a store.

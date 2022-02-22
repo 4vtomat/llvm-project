@@ -21,9 +21,9 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP2]], i32 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = bitcast i32* [[TMP6]] to <8 x i32>*
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i32>, <8 x i32>* [[TMP7]], align 4
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <8 x i32> @llvm.vp.load.v8i32.p0v8i32(<8 x i32>* [[TMP7]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = bitcast i32* [[TMP6]] to <8 x i32>*
-; CHECK-NEXT:    store <8 x i32> zeroinitializer, <8 x i32>* [[TMP8]], align 4
+; CHECK-NEXT:    call void @llvm.vp.store.v8i32.p0v8i32(<8 x i32> zeroinitializer, <8 x i32>* [[TMP8]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 2

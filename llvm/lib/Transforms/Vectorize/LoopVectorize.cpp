@@ -11226,6 +11226,15 @@ void VPPredInstPHIRecipe::execute(VPTransformState &State) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+VPValue *VPWidenMemoryInstructionRecipe::getEVL() const {
+  if (const auto *VPRec =
+          dyn_cast<VPPredicatedWidenMemoryInstructionRecipe>(this))
+    return VPRec->getEVL();
+  return nullptr;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   VPValue *StoredValue = isStore() ? getStoredValue() : nullptr;
 
