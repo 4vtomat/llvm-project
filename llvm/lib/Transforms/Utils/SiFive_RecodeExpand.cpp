@@ -90,6 +90,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld4r:
   case Intrinsic::aarch64_neon_sabd:
   case Intrinsic::aarch64_neon_saddlv:
+  case Intrinsic::aarch64_neon_saddv:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -106,6 +107,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_tbx4:
   case Intrinsic::aarch64_neon_uabd:
   case Intrinsic::aarch64_neon_uaddlv:
+  case Intrinsic::aarch64_neon_uaddv:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -282,6 +284,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateAddReduce(SExt));
         break;
       }
+      case Intrinsic::aarch64_neon_saddv: {
+        CallInst *Reduce = Builder.CreateAddReduce(II->getArgOperand(0));
+        Value *SExt = Builder.CreateSExt(Reduce, II->getType());
+        II->replaceAllUsesWith(SExt);
+        break;
+      }
       case Intrinsic::aarch64_neon_st1x2:
       case Intrinsic::aarch64_neon_st1x3:
       case Intrinsic::aarch64_neon_st1x4: {
@@ -396,6 +404,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                 II->getType(),
                 cast<FixedVectorType>(II->getArgOperand(0)->getType())));
         II->replaceAllUsesWith(Builder.CreateAddReduce(ZExt));
+        break;
+      }
+      case Intrinsic::aarch64_neon_uaddv: {
+        CallInst *Reduce = Builder.CreateAddReduce(II->getArgOperand(0));
+        Value *ZExt = Builder.CreateZExt(Reduce, II->getType());
+        II->replaceAllUsesWith(ZExt);
         break;
       }
       case Intrinsic::aarch64_neon_vcvtfp2hf: {
