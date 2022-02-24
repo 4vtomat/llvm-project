@@ -196,6 +196,7 @@ static bool isSignExtendingOpW(MachineInstr &MI, MachineRegisterInfo &MRI,
                                SmallPtrSetImpl<MachineInstr *> &FixableDef) {
   switch (MI.getOpcode()) {
   case RISCV::LUI:
+  case RISCV::PseudoLIsimm32: // SIFIVE
   case RISCV::LW:
   case RISCV::ADDW:
   case RISCV::ADDIW:
