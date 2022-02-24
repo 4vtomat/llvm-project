@@ -1718,68 +1718,6 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
           }
       }
     break;
-  case Intrinsic::riscv_vslidedown: {
-    unsigned VslidedownSEW = II.getType()->getScalarSizeInBits();
-    // combine (vslidedown (vslidedown undef, a, 2, 2), a, 1, 1)
-    // to      (vnsrl a, sew of vslidedown, 2)
-    // VslidedownSEW must be smaller than maximum ELEN.
-    if (VslidedownSEW < (ST->hasVInstructionsI64() ? 64 : 32))
-      if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(0)))
-        if (II2->getIntrinsicID() == Intrinsic::riscv_vslidedown &&
-            isa<UndefValue>(II2->getArgOperand(0)) &&
-            // same source
-            II.getArgOperand(1) == II2->getArgOperand(1) &&
-            isa<ConstantInt>(II.getArgOperand(2)) &&
-            cast<ConstantInt>(II.getArgOperand(2))->getZExtValue() == 1 &&
-            isa<ConstantInt>(II.getArgOperand(3)) &&
-            cast<ConstantInt>(II.getArgOperand(3))->getZExtValue() == 1 &&
-            isa<ConstantInt>(II2->getArgOperand(2)) &&
-            cast<ConstantInt>(II2->getArgOperand(2))->getZExtValue() == 2 &&
-            isa<ConstantInt>(II2->getArgOperand(3)) &&
-            cast<ConstantInt>(II2->getArgOperand(3))->getZExtValue() == 2) {
-          Value *Src = II.getArgOperand(1);
-          ScalableVectorType *SrcType =
-              cast<ScalableVectorType>(Src->getType());
-          if (SrcType->getElementType()->isFloatingPointTy())
-            // Cast it to integer type so that we can use vnsrl.
-            Src = IC.Builder.CreateBitCast(
-                Src,
-                ScalableVectorType::get(
-                    Type::getIntNTy(II.getContext(), VslidedownSEW), SrcType));
-          if (SrcType->getMinNumElements() * VslidedownSEW <
-              RISCV::RVVBitsPerBlock * 8) {
-            ScalableVectorType *DoubleWidthSrcType = ScalableVectorType::get(
-                Type::getIntNTy(II.getContext(), VslidedownSEW),
-                SrcType->getMinNumElements() * 2);
-            Value *WideningLMUL = IC.Builder.CreateInsertVector(
-                DoubleWidthSrcType, UndefValue::get(DoubleWidthSrcType), Src,
-                IC.Builder.getInt64(0));
-            Value *WideningSrc = IC.Builder.CreateBitCast(
-                WideningLMUL,
-                ScalableVectorType::get(
-                    Type::getIntNTy(II.getContext(), VslidedownSEW * 2),
-                    SrcType->getMinNumElements()));
-            ConstantInt *Shift =
-                IC.Builder.getIntN(ST->getXLen(), VslidedownSEW);
-            Type *VnsrlResTy = ScalableVectorType::get(
-                Type::getIntNTy(II.getContext(), VslidedownSEW),
-                SrcType->getMinNumElements());
-            CallInst *Vnsrl = IC.Builder.CreateIntrinsic(
-                Intrinsic::riscv_vnsrl,
-                {VnsrlResTy, WideningSrc->getType(), Shift->getType(),
-                 II2->getArgOperand(3)->getType()},
-                {UndefValue::get(VnsrlResTy), WideningSrc, Shift,
-                 II2->getArgOperand(3)});
-            if (SrcType->getElementType()->isFloatingPointTy())
-              // We need to cast it back to float.
-              // vnsrl cannot be used for floating point type.
-              return IC.replaceInstUsesWith(
-                  II, IC.Builder.CreateBitCast(Vnsrl, II.getType()));
-            return IC.replaceInstUsesWith(II, Vnsrl);
-          }
-        }
-    break;
-  }
   case Intrinsic::riscv_vrgather_vx:
     // Combine (vrgather a, 0, 1) to a
     if (isa<UndefValue>(II.getArgOperand(0)) &&
