@@ -863,31 +863,6 @@ static Instruction *optimizeVCastFromFixedPhi(IntrinsicInst &II, PHINode *PN,
   return RetVal;
 }
 
-// Return true if V is a widening conversion intrinsic with VL vector length.
-static bool isWcvtWithVL(IntrinsicInst *II, Value *VL) {
-  if (!II)
-    return false;
-  switch (II->getIntrinsicID()) {
-  default:
-    return false;
-  case Intrinsic::riscv_vwadd:
-  case Intrinsic::riscv_vwaddu: {
-    auto *C = dyn_cast<ConstantInt>(II->getArgOperand(2));
-    return C && C->isZero() && isa<UndefValue>(II->getArgOperand(0)) &&
-           II->getArgOperand(3) == VL;
-  }
-  case Intrinsic::riscv_vzext:
-  case Intrinsic::riscv_vsext:
-    // Only use v[sz]ext.vf2 to make up widen operations.
-    if (II->getType()->getScalarSizeInBits() !=
-        2 * II->getArgOperand(1)->getType()->getScalarSizeInBits())
-      return false;
-    return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
-  case Intrinsic::riscv_vfwcvt_f_f_v:
-    return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
-  }
-}
-
 // Return true if II is an intrinsic to widen signed elements.
 static bool isSignedWcvt(IntrinsicInst *II) {
   return II->getIntrinsicID() == Intrinsic::riscv_vwadd ||
@@ -895,8 +870,31 @@ static bool isSignedWcvt(IntrinsicInst *II) {
 }
 
 // Transform (v<bop> (wext a) (wext b)) into (vw<bop> a, b)
-static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC,
-                                           IntrinsicInst &II) {
+static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC, IntrinsicInst &II) {
+  // Return true if V is a widening conversion intrinsic with VL vector length.
+  auto isWcvtWithVL = [](IntrinsicInst *II, Value *VL) {
+    if (!II)
+      return false;
+    switch (II->getIntrinsicID()) {
+    default:
+      return false;
+    case Intrinsic::riscv_vwadd:
+    case Intrinsic::riscv_vwaddu: {
+      auto *C = dyn_cast<ConstantInt>(II->getArgOperand(2));
+      return C && C->isZero() && isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(3) == VL;
+    }
+    case Intrinsic::riscv_vzext:
+    case Intrinsic::riscv_vsext:
+      // Only use v[sz]ext.vf2 to make up widen operations.
+      if (II->getType()->getScalarSizeInBits() !=
+          2 * II->getArgOperand(1)->getType()->getScalarSizeInBits())
+        return false;
+      return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
+    case Intrinsic::riscv_vfwcvt_f_f_v:
+      return isa<UndefValue>(II->getArgOperand(0)) && II->getArgOperand(2) == VL;
+    }
+  };
+
   auto *Op0 = dyn_cast<IntrinsicInst>(II.getArgOperand(1));
   auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(2));
   Value *VL = II.getArgOperand(3);
@@ -946,58 +944,6 @@ static Instruction *foldVwcvtWithVBinaryOp(InstCombiner &IC,
                          {II.getType(), Op0->getArgOperand(1)->getType(),
                           Op1->getArgOperand(1)->getType(), VL->getType()},
                          {II.getArgOperand(0), Op0->getArgOperand(1), Op1->getArgOperand(1), VL});
-}
-
-// Transform (vmacc a (vwcvt b) (vwcvt c)) into (wmacc a, b, c)
-static Instruction *foldVwcvtWithVMultiplyAdd(InstCombiner &IC,
-                                              IntrinsicInst &II) {
-  Value *Op0 = II.getArgOperand(0);
-  auto *Op1 = dyn_cast<IntrinsicInst>(II.getArgOperand(1));
-  auto *Op2 = dyn_cast<IntrinsicInst>(II.getArgOperand(2));
-  Value *VL = II.getArgOperand(3);
-  if (!isWcvtWithVL(Op1, VL) || !isWcvtWithVL(Op2, VL))
-    return nullptr;
-
-  // Find the signedness of vmacc
-  bool Signed, MixSigned = false;
-  if (isSignedWcvt(Op1) == isSignedWcvt(Op2)) {
-    Signed = isSignedWcvt(Op1);
-  } else {
-    // vwmaccsu signed extend the first SEW operand and zero extend the second
-    // one.
-    if (isSignedWcvt(Op2))
-      std::swap(Op1, Op2);
-    MixSigned = true;
-  }
-
-  Intrinsic::ID NewOp;
-  switch (II.getIntrinsicID()) {
-  default:
-    llvm_unreachable(
-        "Unexpected instructions to transform widening mulitply-add.");
-  case Intrinsic::riscv_vmacc:
-    NewOp = MixSigned
-                ? Intrinsic::riscv_vwmaccsu
-                : (Signed ? Intrinsic::riscv_vwmacc : Intrinsic::riscv_vwmaccu);
-    break;
-  case Intrinsic::riscv_vfmacc:
-    NewOp = Intrinsic::riscv_vfwmacc;
-    break;
-  case Intrinsic::riscv_vfnmacc:
-    NewOp = Intrinsic::riscv_vfwnmacc;
-    break;
-  case Intrinsic::riscv_vfmsac:
-    NewOp = Intrinsic::riscv_vfwmsac;
-    break;
-  case Intrinsic::riscv_vfnmsac:
-    NewOp = Intrinsic::riscv_vfwnmsac;
-    break;
-  }
-  return CreateIntrinsic(&II, NewOp,
-                         {II.getType(), Op1->getArgOperand(1)->getType(),
-                          Op2->getArgOperand(1)->getType(), VL->getType()},
-                         {Op0, Op1->getArgOperand(1), Op2->getArgOperand(1), VL,
-                          II.getArgOperand(4)});
 }
 
 static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
@@ -1614,12 +1560,32 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       return V;
     break;
   case Intrinsic::riscv_vmacc:
-  case Intrinsic::riscv_vfmacc:
-  case Intrinsic::riscv_vfnmacc:
-  case Intrinsic::riscv_vfmsac:
-  case Intrinsic::riscv_vfnmsac:
-    if (Instruction *V = foldVwcvtWithVMultiplyAdd(IC, II))
-      return V;
+    // combine (vmacc a, (vwcvt b), (vwcvt c))
+    // to      (vwmacc a, b, c)
+    if (auto *II2 = dyn_cast<IntrinsicInst>(II.getArgOperand(1)))
+      if (auto *II3 = dyn_cast<IntrinsicInst>(II.getArgOperand(2))) {
+        Intrinsic::ID Vwcvt[] = {Intrinsic::riscv_vwadd,
+                                 Intrinsic::riscv_vwaddu};
+        Intrinsic::ID Vwmacc[] = {Intrinsic::riscv_vwmacc,
+                                  Intrinsic::riscv_vwmaccu};
+        Value *VL = II.getArgOperand(3);
+        for (int i = 0; i != 2; ++i)
+          if (II2->getIntrinsicID() == Vwcvt[i] &&
+              II3->getIntrinsicID() == Vwcvt[i] &&
+              isa<UndefValue>(II2->getArgOperand(0)) &&
+              isa<UndefValue>(II3->getArgOperand(0)) &&
+              isa<ConstantInt>(II2->getArgOperand(2)) &&
+              cast<ConstantInt>(II2->getArgOperand(2))->isZero() &&
+              isa<ConstantInt>(II3->getArgOperand(2)) &&
+              cast<ConstantInt>(II3->getArgOperand(2))->isZero() &&
+              VL == II2->getArgOperand(3) && VL == II3->getArgOperand(3))
+            return CreateIntrinsic(
+                &II, Vwmacc[i],
+                {II.getType(), II2->getArgOperand(1)->getType(),
+                 II3->getArgOperand(1)->getType(), VL->getType()},
+                {II.getArgOperand(0), II2->getArgOperand(1),
+                 II3->getArgOperand(1), VL, II.getArgOperand(4)});
+      }
     if (Instruction *V = foldTernaryOp(IC, II))
       return V;
     break;
@@ -1630,6 +1596,10 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   case Intrinsic::riscv_vwmacc:
   case Intrinsic::riscv_vwmaccsu:
   case Intrinsic::riscv_vwmaccus:
+  case Intrinsic::riscv_vfmacc:
+  case Intrinsic::riscv_vfnmacc:
+  case Intrinsic::riscv_vfmsac:
+  case Intrinsic::riscv_vfnmsac:
   case Intrinsic::riscv_vfmadd:
   case Intrinsic::riscv_vfnmadd:
   case Intrinsic::riscv_vfmsub:
