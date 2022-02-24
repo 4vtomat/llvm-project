@@ -53,6 +53,11 @@ static cl::opt<bool>
     EnableMachineCombinerPass("riscv-machine-combiner",
                               cl::desc("Enable the machine combiner pass"),
                               cl::init(false), cl::Hidden);
+
+static cl::opt<bool>
+    EnableSLSROpt("riscv-slsr-opt", cl::Hidden,
+                  cl::desc("Enable optimizations on SLSR"),
+                  cl::init(false));
 #endif // SIFIVE_CUSTOMIZATION
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
@@ -219,10 +224,15 @@ void RISCVPassConfig::addIRPasses() {
   TargetPassConfig::addIRPasses();
 
 #if SIFIVE_CUSTOMIZATION
-  if (TM->getOptLevel() == CodeGenOpt::Aggressive && EnableGEPOpt) {
-    addPass(createSeparateConstOffsetFromGEPPass());
-    addPass(createEarlyCSEPass());
-    addPass(createLICMPass());
+  if (TM->getOptLevel() == CodeGenOpt::Aggressive &&
+      (EnableGEPOpt || EnableSLSROpt)) {
+    if (EnableGEPOpt)
+      addPass(createSeparateConstOffsetFromGEPPass());
+    if (EnableSLSROpt)
+      addPass(createStraightLineStrengthReducePass());
+
+     addPass(createEarlyCSEPass());
+     addPass(createLICMPass());
   }
 #endif // SIFIVE_CUSTOMIZATION
 }
