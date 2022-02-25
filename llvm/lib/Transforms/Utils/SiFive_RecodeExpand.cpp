@@ -92,6 +92,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_tbl3:
   case Intrinsic::aarch64_neon_tbl4:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
+  case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
   }
   return false;
@@ -273,6 +274,18 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                     Type::getHalfTy(II->getContext()),
                     cast<FixedVectorType>(II->getArgOperand(0)->getType()))),
             II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_vcvthf2fp: {
+        II->replaceAllUsesWith(Builder.CreateFPExt(
+            Builder.CreateBitCast(
+                II->getArgOperand(0),
+                FixedVectorType::get(
+                    Type::getHalfTy(II->getContext()),
+                    cast<FixedVectorType>(II->getArgOperand(0)->getType()))),
+            FixedVectorType::get(
+                Type::getFloatTy(II->getContext()),
+                cast<FixedVectorType>(II->getArgOperand(0)->getType()))));
         break;
       }
       default:
