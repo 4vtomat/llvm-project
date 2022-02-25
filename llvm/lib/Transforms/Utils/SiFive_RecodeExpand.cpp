@@ -28,6 +28,42 @@ static CallInst *toScalableVector(const TargetTransformInfo &TTI,
       ScalableVecTy, UndefValue::get(ScalableVecTy), Vec, Builder.getInt64(0));
 }
 
+static Value *widen(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
+  VectorType *SrcTy = cast<VectorType>(V->getType());
+  PoisonValue *Des =
+      PoisonValue::get(VectorType::get(SrcTy->getElementType(), DesNumElements,
+                                       SrcTy->getElementCount().isScalable()));
+  return Builder.CreateInsertVector(Des->getType(), Des, V,
+                                    Builder.getInt64(0));
+}
+
+static Value *glue(IRBuilder<> &Builder, SmallVector<Value *, 4> Src) {
+  assert(Src.size() != 0);
+  SmallVector<Value *, 4> Temp;
+  while (Src.size() != 1) {
+    while (1 < Src.size()) {
+      unsigned Src0NumElements =
+          cast<FixedVectorType>(Src[0]->getType())->getNumElements();
+      unsigned Src1NumElements =
+          cast<FixedVectorType>(Src[1]->getType())->getNumElements();
+      if (Src0NumElements > Src1NumElements) {
+        Src[1] = widen(Builder, Src[1], Src0NumElements);
+      } else if (Src0NumElements < Src1NumElements) {
+        Src[0] = widen(Builder, Src[0], Src1NumElements);
+      }
+      std::vector<int> Mask(Src0NumElements + Src1NumElements);
+      std::iota(Mask.begin(), Mask.end(), 0);
+      Temp.push_back(Builder.CreateShuffleVector(Src[0], Src[1], Mask));
+      Src.erase(Src.begin(), Src.begin() + 2);
+    }
+    if (Src.size() != 0)
+      Temp.push_back(Src[0]);
+    Src = std::move(Temp);
+    Temp.clear();
+  }
+  return Src[0];
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_ld1x2:
@@ -36,6 +72,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld2:
   case Intrinsic::aarch64_neon_ld3:
   case Intrinsic::aarch64_neon_ld4:
+  case Intrinsic::aarch64_neon_st1x2:
+  case Intrinsic::aarch64_neon_st1x3:
+  case Intrinsic::aarch64_neon_st1x4:
   case Intrinsic::aarch64_neon_st2:
   case Intrinsic::aarch64_neon_st3:
   case Intrinsic::aarch64_neon_st4:
@@ -117,6 +156,26 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                   Builder.getInt64(0)),
               i);
         II->replaceAllUsesWith(NewDes);
+        break;
+      }
+      case Intrinsic::aarch64_neon_st1x2:
+      case Intrinsic::aarch64_neon_st1x3:
+      case Intrinsic::aarch64_neon_st1x4: {
+        unsigned StructNumElements = II->arg_size() - 1;
+        FixedVectorType *VecTy =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        Type *VecElementTy = VecTy->getElementType();
+        unsigned VecNumElements = VecTy->getNumElements();
+        FixedVectorType *ConcatenateTy = FixedVectorType::get(
+            VecElementTy, StructNumElements * VecNumElements);
+        SmallVector<Value *, 4> Arg;
+        for (unsigned i = 0; i != StructNumElements; ++i)
+          Arg.push_back(II->getArgOperand(i));
+        II->replaceAllUsesWith(Builder.CreateAlignedStore(
+            glue(Builder, Arg),
+            Builder.CreateBitCast(II->getArgOperand(StructNumElements),
+                                  ConcatenateTy->getPointerTo()),
+            DL.getABITypeAlign(VecElementTy)));
         break;
       }
       case Intrinsic::aarch64_neon_st2:
