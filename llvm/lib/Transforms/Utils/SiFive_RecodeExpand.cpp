@@ -30,6 +30,9 @@ static CallInst *toScalableVector(const TargetTransformInfo &TTI,
 
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
+  case Intrinsic::aarch64_neon_ld1x2:
+  case Intrinsic::aarch64_neon_ld1x3:
+  case Intrinsic::aarch64_neon_ld1x4:
   case Intrinsic::aarch64_neon_ld2:
   case Intrinsic::aarch64_neon_ld3:
   case Intrinsic::aarch64_neon_ld4:
@@ -47,6 +50,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
   bool MadeChange = false;
   unsigned XLEN =
       TTI.isTypeLegal(IntegerType::get(F.getContext(), 64)) ? 64 : 32;
+  const DataLayout &DL = F.getParent()->getDataLayout();
   for (Instruction &Inst : llvm::make_early_inc_range(instructions(F))) {
     IntrinsicInst *II = dyn_cast<IntrinsicInst>(&Inst);
     if (II && requireExpand(II)) {
@@ -54,6 +58,34 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       IRBuilder<> Builder(II);
 
       switch (II->getIntrinsicID()) {
+      case Intrinsic::aarch64_neon_ld1x2:
+      case Intrinsic::aarch64_neon_ld1x3:
+      case Intrinsic::aarch64_neon_ld1x4: {
+        StructType *DesTy = cast<StructType>(II->getType());
+        unsigned StructNumElements = DesTy->getNumElements();
+        FixedVectorType *StructElementType =
+            cast<FixedVectorType>(DesTy->getElementType(0));
+        unsigned VectorNumElements = StructElementType->getNumElements();
+        FixedVectorType *ConcatenateTy =
+            FixedVectorType::get(StructElementType->getElementType(),
+                                 StructNumElements * VectorNumElements);
+        LoadInst *Load = Builder.CreateAlignedLoad(
+            ConcatenateTy,
+            Builder.CreateBitCast(II->getArgOperand(0),
+                                  ConcatenateTy->getPointerTo()),
+            DL.getABITypeAlign(DesTy->getElementType(0)->getScalarType()));
+        Value *Des = PoisonValue::get(DesTy);
+        for (unsigned i = 0; i != StructNumElements; ++i) {
+          Des = Builder.CreateInsertValue(
+              Des,
+              Builder.CreateExtractVector(
+                  StructElementType, Load,
+                  Builder.getInt64(i * VectorNumElements)),
+              i);
+        }
+        II->replaceAllUsesWith(Des);
+        break;
+      }
       case Intrinsic::aarch64_neon_ld2:
       case Intrinsic::aarch64_neon_ld3:
       case Intrinsic::aarch64_neon_ld4: {
