@@ -74,6 +74,7 @@ static Value *narrow(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
 
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
+  case Intrinsic::aarch64_neon_facgt:
   case Intrinsic::aarch64_neon_ld1x2:
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
@@ -109,6 +110,17 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       IRBuilder<> Builder(II);
 
       switch (II->getIntrinsicID()) {
+      case Intrinsic::aarch64_neon_facgt: {
+        CallInst *Abs0 = Builder.CreateIntrinsic(
+            Intrinsic::fabs, {II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0)});
+        CallInst *Abs1 = Builder.CreateIntrinsic(
+            Intrinsic::fabs, {II->getArgOperand(1)->getType()},
+            {II->getArgOperand(1)});
+        II->replaceAllUsesWith(Builder.CreateSExt(
+            Builder.CreateFCmpOGT(Abs0, Abs1), II->getType()));
+        break;
+      }
       case Intrinsic::aarch64_neon_ld1x2:
       case Intrinsic::aarch64_neon_ld1x3:
       case Intrinsic::aarch64_neon_ld1x4: {
