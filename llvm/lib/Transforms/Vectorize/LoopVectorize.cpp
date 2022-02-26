@@ -10673,6 +10673,9 @@ Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
   Constant *LMULArg =
       ConstantInt::get(IntegerType::get(Builder.getContext(), 64), LMUL);
 
+  RVLArg = Builder.CreateBinaryIntrinsic(
+      Intrinsic::umin, RVLArg, getRuntimeVF(Builder, Builder.getInt64Ty(), VF),
+      nullptr, "rvl");
   Value *GVL = Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
   return Builder.CreateZExtOrTrunc(GVL, RVL->getType());
