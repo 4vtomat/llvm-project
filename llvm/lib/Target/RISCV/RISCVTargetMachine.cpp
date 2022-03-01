@@ -52,7 +52,7 @@ static cl::opt<bool>
 static cl::opt<bool>
     EnableMachineCombinerPass("riscv-machine-combiner",
                               cl::desc("Enable the machine combiner pass"),
-                              cl::init(false), cl::Hidden);
+                              cl::init(true), cl::Hidden);
 
 static cl::opt<bool>
     EnableSLSROpt("riscv-slsr-opt", cl::Hidden,
