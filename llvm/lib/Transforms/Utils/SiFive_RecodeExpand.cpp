@@ -79,8 +79,11 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
   case Intrinsic::aarch64_neon_ld2:
+  case Intrinsic::aarch64_neon_ld2r:
   case Intrinsic::aarch64_neon_ld3:
+  case Intrinsic::aarch64_neon_ld3r:
   case Intrinsic::aarch64_neon_ld4:
+  case Intrinsic::aarch64_neon_ld4r:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -156,8 +159,26 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         break;
       }
       case Intrinsic::aarch64_neon_ld2:
+      case Intrinsic::aarch64_neon_ld2r:
       case Intrinsic::aarch64_neon_ld3:
-      case Intrinsic::aarch64_neon_ld4: {
+      case Intrinsic::aarch64_neon_ld3r:
+      case Intrinsic::aarch64_neon_ld4:
+      case Intrinsic::aarch64_neon_ld4r: {
+        bool IsDup;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_ld2:
+        case Intrinsic::aarch64_neon_ld3:
+        case Intrinsic::aarch64_neon_ld4:
+          IsDup = false;
+          break;
+        case Intrinsic::aarch64_neon_ld2r:
+        case Intrinsic::aarch64_neon_ld3r:
+        case Intrinsic::aarch64_neon_ld4r:
+          IsDup = true;
+          break;
+        }
         StructType *DesTy = cast<StructType>(II->getType());
         unsigned StructNumElements = DesTy->getNumElements();
         FixedVectorType *StructElementType =
@@ -166,16 +187,22 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         static const Intrinsic::ID Vlseg[3] = {Intrinsic::riscv_vlseg2,
                                                Intrinsic::riscv_vlseg3,
                                                Intrinsic::riscv_vlseg4};
+        static const Intrinsic::ID Vlsseg[3] = {Intrinsic::riscv_vlsseg2,
+                                                Intrinsic::riscv_vlsseg3,
+                                                Intrinsic::riscv_vlsseg4};
         Type *ScalableStructElementType =
             TTI.getScalableVectorFromFixed(StructElementType);
         SmallVector<Value *, 6> Ops;
         for (unsigned i = 0; i != StructNumElements; ++i)
           Ops.push_back(PoisonValue::get(ScalableStructElementType));
         Ops.push_back(II->getArgOperand(0));
+        if (IsDup)
+          Ops.push_back(Builder.getIntN(XLEN, 0));
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
         CallInst *NewLoad = Builder.CreateIntrinsic(
-            Vlseg[StructNumElements - 2],
+            IsDup ? Vlsseg[StructNumElements - 2]
+                  : Vlseg[StructNumElements - 2],
             {ScalableStructElementType, VL->getType()}, Ops);
         Value *NewDes = PoisonValue::get(DesTy);
         for (unsigned i = 0; i != StructNumElements; ++i)
