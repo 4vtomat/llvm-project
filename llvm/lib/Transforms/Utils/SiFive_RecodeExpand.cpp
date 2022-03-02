@@ -96,8 +96,11 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
   case Intrinsic::aarch64_neon_st2:
+  case Intrinsic::aarch64_neon_st2lane:
   case Intrinsic::aarch64_neon_st3:
+  case Intrinsic::aarch64_neon_st3lane:
   case Intrinsic::aarch64_neon_st4:
+  case Intrinsic::aarch64_neon_st4lane:
   case Intrinsic::aarch64_neon_tbl1:
   case Intrinsic::aarch64_neon_tbl2:
   case Intrinsic::aarch64_neon_tbl3:
@@ -347,6 +350,25 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(
             Builder.CreateIntrinsic(Vsseg[StructNumElements - 2],
                                     {Ops[0]->getType(), VL->getType()}, Ops));
+        break;
+      }
+      case Intrinsic::aarch64_neon_st2lane:
+      case Intrinsic::aarch64_neon_st3lane:
+      case Intrinsic::aarch64_neon_st4lane: {
+        unsigned StructNumElements = II->arg_size() - 2;
+        FixedVectorType *DesTy = FixedVectorType::get(
+            II->getArgOperand(0)->getType()->getScalarType(),
+            StructNumElements);
+        Value *Lane = II->getArgOperand(StructNumElements);
+        Value *Des = PoisonValue::get(DesTy);
+        for (unsigned i = 0; i != StructNumElements; ++i)
+          Des = Builder.CreateInsertElement(
+              Des, Builder.CreateExtractElement(II->getArgOperand(i), Lane), i);
+        II->replaceAllUsesWith(Builder.CreateAlignedStore(
+            Des,
+            Builder.CreateBitCast(II->getArgOperand(StructNumElements + 1),
+                                  DesTy->getPointerTo()),
+            Align(1)));
         break;
       }
       case Intrinsic::aarch64_neon_tbl1:
