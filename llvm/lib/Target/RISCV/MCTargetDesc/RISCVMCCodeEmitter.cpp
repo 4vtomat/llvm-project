@@ -57,6 +57,7 @@ public:
                           SmallVectorImpl<MCFixup> &Fixups,
                           const MCSubtargetInfo &STI) const;
 
+#if SIFIVE_CUSTOMIZATION
   void expandAddRegRel(const MCInst &MI, raw_ostream &OS,
                        SmallVectorImpl<MCFixup> &Fixups,
                        const MCSubtargetInfo &STI) const;
@@ -64,6 +65,7 @@ public:
   void expandLongCondBr(const MCInst &MI, raw_ostream &OS,
                         SmallVectorImpl<MCFixup> &Fixups,
                         const MCSubtargetInfo &STI) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// TableGen'erated function for getting the binary encoding for an
   /// instruction.
@@ -151,6 +153,7 @@ void RISCVMCCodeEmitter::expandFunctionCall(const MCInst &MI, raw_ostream &OS,
   support::endian::write(OS, Binary, support::little);
 }
 
+#if SIFIVE_CUSTOMIZATION
 // Expand PseudoAddRegRel to a simple ADD with the correct relocation.
 void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI, raw_ostream &OS,
                                          SmallVectorImpl<MCFixup> &Fixups,
@@ -210,7 +213,9 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI, raw_ostream &OS,
   uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
   support::endian::write(OS, Binary, support::little);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
 static unsigned getInvertedBranchOp(unsigned BrOp, bool UseCompressedBr) {
   switch (BrOp) {
   default:
@@ -283,6 +288,7 @@ void RISCVMCCodeEmitter::expandLongCondBr(const MCInst &MI, raw_ostream &OS,
                                      MI.getLoc()));
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
                                            SmallVectorImpl<MCFixup> &Fixups,
@@ -298,7 +304,7 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   // RISCVInstrInfo::getInstSizeInBytes expects that the total size of the
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
-  // SIFIVE
+#if SIFIVE_CUSTOMIZATION
   if (Opcode == RISCV::PseudoCALLReg || Opcode == RISCV::PseudoCALL ||
       Opcode == RISCV::PseudoTAIL || Opcode == RISCV::PseudoJump) {
     expandFunctionCall(MI, OS, Fixups, STI);
@@ -319,7 +325,7 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     MCNumEmitted += 2;
     return;
   }
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
   switch (Size) {
   default:
@@ -397,6 +403,7 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     case RISCVMCExpr::VK_RISCV_32_PCREL:
       llvm_unreachable("Unhandled fixup kind!");
     case RISCVMCExpr::VK_RISCV_TPREL_ADD:
+#if SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_RISCV_GPREL_ADD:
     case RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
     case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
@@ -407,6 +414,7 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       // operand and so to encounter it here is an error.
       llvm_unreachable(
           "VK_RISCV_*[TPREL|GPREL]_ADD should not represent an instruction operand");
+#endif // SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_RISCV_LO:
       if (MIFrm == RISCVII::InstFormatI)
         FixupKind = RISCV::fixup_riscv_lo12_i;
@@ -457,6 +465,7 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     case RISCVMCExpr::VK_RISCV_TLS_GD_HI:
       FixupKind = RISCV::fixup_riscv_tls_gd_hi20;
       break;
+#if SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_RISCV_GPREL_HI:
       FixupKind = RISCV::fixup_riscv_gprel_hi20;
       RelaxCandidate = true;
@@ -496,6 +505,7 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
         llvm_unreachable("VK_RISCV_TLS_GD_GPREL_LO used with unexpected instruction format");
       FixupKind = RISCV::fixup_riscv_tls_gd_gprel_lo12_i;
       break;
+#endif // SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_RISCV_CALL:
       FixupKind = RISCV::fixup_riscv_call;
       RelaxCandidate = true;

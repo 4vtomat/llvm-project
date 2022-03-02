@@ -168,6 +168,7 @@ bool RISCVAsmBackend::fixupNeedsRelaxationAdvanced(const MCFixup &Fixup,
                                                    const MCRelaxableFragment *DF,
                                                    const MCAsmLayout &Layout,
                                                    const bool WasForced) const {
+#if SIFIVE_CUSTOMIZATION
   int64_t Offset = int64_t(Value);
   unsigned Kind = Fixup.getTargetKind();
 
@@ -176,6 +177,7 @@ bool RISCVAsmBackend::fixupNeedsRelaxationAdvanced(const MCFixup &Fixup,
   // [-4096, 4094].
   if (Kind == RISCV::fixup_riscv_branch)
     return Resolved && (Offset > 4094 || Offset < -4096);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Return true if the symbol is actually unresolved.
   // Resolved could be always false when shouldForceRelocation return true.
@@ -231,6 +233,7 @@ void RISCVAsmBackend::relaxInstruction(MCInst &Inst,
     Res.addOperand(MCOperand::createReg(RISCV::X1));
     Res.addOperand(Inst.getOperand(0));
     break;
+#if SIFIVE_CUSTOMIZATION
   case RISCV::BEQ:
   case RISCV::BNE:
   case RISCV::BLT:
@@ -242,6 +245,7 @@ void RISCVAsmBackend::relaxInstruction(MCInst &Inst,
     Res.addOperand(Inst.getOperand(1));
     Res.addOperand(Inst.getOperand(2));
     break;
+#endif // SIFIVE_CUSTOMIZATION
   }
   Inst = std::move(Res);
 }
@@ -388,6 +392,7 @@ unsigned RISCVAsmBackend::getRelaxedOpcode(unsigned Op) const {
   case RISCV::C_J:
   case RISCV::C_JAL: // fall through.
     return RISCV::JAL;
+#if SIFIVE_CUSTOMIZATION
   case RISCV::BEQ:
     return RISCV::PseudoLongBEQ;
   case RISCV::BNE:
@@ -400,6 +405,7 @@ unsigned RISCVAsmBackend::getRelaxedOpcode(unsigned Op) const {
     return RISCV::PseudoLongBLTU;
   case RISCV::BGEU:
     return RISCV::PseudoLongBGEU;
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
