@@ -2260,7 +2260,11 @@ public:
 static bool isExplicitVecOuterLoop(Loop *OuterLp,
                                    OptimizationRemarkEmitter *ORE) {
   assert(!OuterLp->isInnermost() && "This is not an outer loop");
-  LoopVectorizeHints Hints(OuterLp, true /*DisableInterleaving*/, *ORE);
+  LoopVectorizeHints Hints(OuterLp, true /*DisableInterleaving*/, *ORE
+#if SIFIVE_CUSTOMIZATION
+                           , true /* ReportInvalid */
+#endif // SIFIVE_CUSTOMIZATION
+  );
 
   // Only outer loops with an explicit vectorization hint are supported.
   // Unannotated outer loops are ignored.
@@ -11846,7 +11850,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                     << L->getHeader()->getParent()->getName() << "' from "
                     << DebugLocStr << "\n");
 
-  LoopVectorizeHints Hints(L, InterleaveOnlyWhenForced, *ORE, TTI);
+  LoopVectorizeHints Hints(L, InterleaveOnlyWhenForced, *ORE,
+#if SIFIVE_CUSTOMIZATION
+                           true /* ReportInvalid */,
+#endif // SIFIVE_CUSTOMIZATION
+                           TTI);
 
   LLVM_DEBUG(
       dbgs() << "LV: Loop hints:"

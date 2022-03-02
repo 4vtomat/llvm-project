@@ -99,7 +99,13 @@ static cl::opt<unsigned> MemoryCheckMergeThreshold(
     cl::init(100));
 
 /// Maximum SIMD width.
+#if SIFIVE_CUSTOMIZATION
+// Assuming X280 with VLEN = 512, LMUL = 8 and dtype = 8
+// TODO: May need to bump it up with higher VLEN
+const unsigned VectorizerParams::MaxVectorWidth = 512;
+#else
 const unsigned VectorizerParams::MaxVectorWidth = 64;
+#endif // SIFIVE_CUSTOMIZATION
 
 /// We collect dependences up to this threshold.
 static cl::opt<unsigned>

@@ -129,6 +129,9 @@ public:
 
   LoopVectorizeHints(const Loop *L, bool InterleaveOnlyWhenForced,
                      OptimizationRemarkEmitter &ORE,
+#if SIFIVE_CUSTOMIZATION
+                     const bool ReportInvalid = false,
+#endif
                      const TargetTransformInfo *TTI = nullptr);
 
   /// Mark the loop L as already vectorized by setting the width to 1.
@@ -199,11 +202,20 @@ public:
   void setPotentiallyUnsafe() { PotentiallyUnsafe = true; }
 
 private:
+#if SIFIVE_CUSTOMIZATION
+  /// Find hints specified in the loop metadata and update local values.
+  void getHintsFromMetadata(const bool ReportInvalid);
+
+  /// Checks string hint with one operand and set value if valid.
+  void setHint(StringRef Name, Metadata *Arg, const bool ReportInvalid);
+#else
   /// Find hints specified in the loop metadata and update local values.
   void getHintsFromMetadata();
 
   /// Checks string hint with one operand and set value if valid.
   void setHint(StringRef Name, Metadata *Arg);
+#endif // SIFIVE_CUSTOMIZATION
+
 
   /// The loop these hints belong to.
   const Loop *TheLoop;

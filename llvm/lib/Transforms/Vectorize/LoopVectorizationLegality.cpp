@@ -106,6 +106,9 @@ bool LoopVectorizeHints::Hint::validate(unsigned Val) {
 LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
                                        bool InterleaveOnlyWhenForced,
                                        OptimizationRemarkEmitter &ORE,
+#if SIFIVE_CUSTOMIZATION
+                                       const bool ReportInvalid,
+#endif // SIFIVE_CUSTOMIZATION
                                        const TargetTransformInfo *TTI)
     : Width("vectorize.width", VectorizerParams::VectorizationFactor, HK_WIDTH),
       Interleave("interleave.count", InterleaveOnlyWhenForced, HK_INTERLEAVE),
@@ -115,7 +118,11 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
       Scalable("vectorize.scalable.enable", SK_Unspecified, HK_SCALABLE),
       TheLoop(L), ORE(ORE) {
   // Populate values with existing loop metadata.
+#if SIFIVE_CUSTOMIZATION
+  getHintsFromMetadata(ReportInvalid);
+#else
   getHintsFromMetadata();
+#endif // SIFIVE_CUSTOMIZATION
 
   // force-vector-interleave overrides DisableInterleaving.
   if (VectorizerParams::isInterleaveForced())
@@ -262,7 +269,11 @@ bool LoopVectorizeHints::allowReordering() const {
           EC.getKnownMinValue() > 1);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void LoopVectorizeHints::getHintsFromMetadata(const bool ReportInvalid) {
+#else
 void LoopVectorizeHints::getHintsFromMetadata() {
+#endif // SIFIVE_CUSTOMIZATION
   MDNode *LoopID = TheLoop->getLoopID();
   if (!LoopID)
     return;
@@ -294,11 +305,20 @@ void LoopVectorizeHints::getHintsFromMetadata() {
     // Check if the hint starts with the loop metadata prefix.
     StringRef Name = S->getString();
     if (Args.size() == 1)
+#if SIFIVE_CUSTOMIZATION
+      setHint(Name, Args[0], ReportInvalid);
+#else
       setHint(Name, Args[0]);
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg,
+                                 const bool ReportInvalid) {
+#else
 void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
+#endif // SIFIVE_CUSTOMIZATION
   if (!Name.startswith(Prefix()))
     return;
   Name = Name.substr(Prefix().size(), StringRef::npos);
@@ -312,10 +332,32 @@ void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
                    &IsVectorized, &Predicate,  &Scalable};
   for (auto H : Hints) {
     if (Name == H->Name) {
-      if (H->validate(Val))
+      if (H->validate(Val)) {
         H->Value = Val;
-      else
+      } else {
         LLVM_DEBUG(dbgs() << "LV: ignoring invalid hint '" << Name << "'\n");
+#if SIFIVE_CUSTOMIZATION
+        if (ReportInvalid) {
+          ORE.emit([&]() {
+            StringRef HintName = "<unknown>";
+            switch (H->Kind) {
+            case HK_WIDTH:
+              HintName = "vectorize_width";
+              break;
+            case HK_INTERLEAVE:
+              HintName = "interleave_count";
+              break;
+            default:
+              break;
+            }
+            return OptimizationRemarkAnalysis(
+                       vectorizeAnalysisPassName(), "loop remark",
+                       TheLoop->getStartLoc(), TheLoop->getHeader())
+                   << "loop remark: ignoring invalid " << HintName << " value";
+          });
+#endif // SIFIVE_CUSTOMIZATION
+        }
+      }
       break;
     }
   }
