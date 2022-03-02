@@ -78,6 +78,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_fabd:
   case Intrinsic::aarch64_neon_facgt:
   case Intrinsic::aarch64_neon_faddv:
+  case Intrinsic::aarch64_neon_fcvtzs:
+  case Intrinsic::aarch64_neon_fcvtzu:
   case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_frsqrte:
   case Intrinsic::aarch64_neon_ld1x2:
@@ -174,6 +176,16 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         Value *P1 = Builder.CreateShuffleVector(Src, {1});
         II->replaceAllUsesWith(Builder.CreateExtractElement(
             Builder.CreateFAdd(P0, P1), static_cast<uint64_t>(0)));
+        break;
+      }
+      case Intrinsic::aarch64_neon_fcvtzs:
+      case Intrinsic::aarch64_neon_fcvtzu: {
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            II->getIntrinsicID() == Intrinsic::aarch64_neon_fcvtzs
+                ? Intrinsic::fptosi_sat
+                : Intrinsic::fptoui_sat,
+            {II->getType(), II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0)}));
         break;
       }
       case Intrinsic::aarch64_neon_frecpe:
