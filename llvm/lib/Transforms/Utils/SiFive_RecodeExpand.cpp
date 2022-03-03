@@ -98,7 +98,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_saddv:
   case Intrinsic::aarch64_neon_smax:
+  case Intrinsic::aarch64_neon_smaxv:
   case Intrinsic::aarch64_neon_smin:
+  case Intrinsic::aarch64_neon_sminv:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -120,7 +122,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_uaddv:
   case Intrinsic::aarch64_neon_umax:
+  case Intrinsic::aarch64_neon_umaxv:
   case Intrinsic::aarch64_neon_umin:
+  case Intrinsic::aarch64_neon_uminv:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -380,6 +384,18 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             {II->getArgOperand(0), II->getArgOperand(1)}));
         break;
       }
+      case Intrinsic::aarch64_neon_smaxv: {
+        II->replaceAllUsesWith(Builder.CreateSExt(
+            Builder.CreateIntMaxReduce(II->getArgOperand(0), true),
+            II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_sminv: {
+        II->replaceAllUsesWith(Builder.CreateSExt(
+            Builder.CreateIntMinReduce(II->getArgOperand(0), true),
+            II->getType()));
+        break;
+      }
       case Intrinsic::aarch64_neon_st1x2:
       case Intrinsic::aarch64_neon_st1x3:
       case Intrinsic::aarch64_neon_st1x4: {
@@ -519,6 +535,16 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         CallInst *Reduce = Builder.CreateAddReduce(II->getArgOperand(0));
         Value *ZExt = Builder.CreateZExt(Reduce, II->getType());
         II->replaceAllUsesWith(ZExt);
+        break;
+      }
+      case Intrinsic::aarch64_neon_umaxv: {
+        II->replaceAllUsesWith(Builder.CreateSExt(
+            Builder.CreateIntMaxReduce(II->getArgOperand(0)), II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_uminv: {
+        II->replaceAllUsesWith(Builder.CreateSExt(
+            Builder.CreateIntMinReduce(II->getArgOperand(0)), II->getType()));
         break;
       }
       case Intrinsic::aarch64_neon_vcvtfp2hf: {
