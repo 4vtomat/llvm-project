@@ -84,10 +84,13 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
   case Intrinsic::aarch64_neon_ld2:
+  case Intrinsic::aarch64_neon_ld2lane:
   case Intrinsic::aarch64_neon_ld2r:
   case Intrinsic::aarch64_neon_ld3:
+  case Intrinsic::aarch64_neon_ld3lane:
   case Intrinsic::aarch64_neon_ld3r:
   case Intrinsic::aarch64_neon_ld4:
+  case Intrinsic::aarch64_neon_ld4lane:
   case Intrinsic::aarch64_neon_ld4r:
   case Intrinsic::aarch64_neon_sabd:
   case Intrinsic::aarch64_neon_saddlv:
@@ -274,6 +277,30 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                   Builder.getInt64(0)),
               i);
         II->replaceAllUsesWith(NewDes);
+        break;
+      }
+      case Intrinsic::aarch64_neon_ld2lane:
+      case Intrinsic::aarch64_neon_ld3lane:
+      case Intrinsic::aarch64_neon_ld4lane: {
+        unsigned StructNumElements = II->arg_size() - 2;
+        FixedVectorType *ConcatenateTy = FixedVectorType::get(
+            II->getArgOperand(0)->getType()->getScalarType(),
+            StructNumElements);
+        LoadInst *Load = Builder.CreateAlignedLoad(
+            ConcatenateTy,
+            Builder.CreateBitCast(II->getArgOperand(II->arg_size() - 1),
+                                  ConcatenateTy->getPointerTo()),
+            Align(1));
+        Value *Lane = II->getArgOperand(StructNumElements);
+        Value *Des = PoisonValue::get(II->getType());
+        for (unsigned i = 0; i != StructNumElements; ++i)
+          Des = Builder.CreateInsertValue(
+              Des,
+              Builder.CreateInsertElement(II->getArgOperand(i),
+                                          Builder.CreateExtractElement(Load, i),
+                                          Lane),
+              i);
+        II->replaceAllUsesWith(Des);
         break;
       }
       case Intrinsic::aarch64_neon_sabd:
