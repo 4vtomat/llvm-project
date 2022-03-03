@@ -97,6 +97,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_sabd:
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_saddv:
+  case Intrinsic::aarch64_neon_smax:
+  case Intrinsic::aarch64_neon_smin:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -117,6 +119,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_uabd:
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_uaddv:
+  case Intrinsic::aarch64_neon_umax:
+  case Intrinsic::aarch64_neon_umin:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -348,6 +352,32 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         CallInst *Reduce = Builder.CreateAddReduce(II->getArgOperand(0));
         Value *SExt = Builder.CreateSExt(Reduce, II->getType());
         II->replaceAllUsesWith(SExt);
+        break;
+      }
+      case Intrinsic::aarch64_neon_smax:
+      case Intrinsic::aarch64_neon_smin:
+      case Intrinsic::aarch64_neon_umax:
+      case Intrinsic::aarch64_neon_umin: {
+        Intrinsic::ID Op;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_smax:
+          Op = Intrinsic::smax;
+          break;
+        case Intrinsic::aarch64_neon_smin:
+          Op = Intrinsic::smin;
+          break;
+        case Intrinsic::aarch64_neon_umax:
+          Op = Intrinsic::umax;
+          break;
+        case Intrinsic::aarch64_neon_umin:
+          Op = Intrinsic::umin;
+          break;
+        }
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            Op, {II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0), II->getArgOperand(1)}));
         break;
       }
       case Intrinsic::aarch64_neon_st1x2:
