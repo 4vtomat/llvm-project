@@ -103,6 +103,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_smaxv:
   case Intrinsic::aarch64_neon_smin:
   case Intrinsic::aarch64_neon_sminv:
+  case Intrinsic::aarch64_neon_smull:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -127,6 +128,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_umaxv:
   case Intrinsic::aarch64_neon_umin:
   case Intrinsic::aarch64_neon_uminv:
+  case Intrinsic::aarch64_neon_umull:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -419,6 +421,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             II->getType()));
         break;
       }
+      case Intrinsic::aarch64_neon_smull: {
+        II->replaceAllUsesWith(Builder.CreateMul(
+            Builder.CreateSExt(II->getArgOperand(0), II->getType()),
+            Builder.CreateSExt(II->getArgOperand(1), II->getType())));
+        break;
+      }
       case Intrinsic::aarch64_neon_st1x2:
       case Intrinsic::aarch64_neon_st1x3:
       case Intrinsic::aarch64_neon_st1x4: {
@@ -568,6 +576,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       case Intrinsic::aarch64_neon_uminv: {
         II->replaceAllUsesWith(Builder.CreateSExt(
             Builder.CreateIntMinReduce(II->getArgOperand(0)), II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_umull: {
+        II->replaceAllUsesWith(Builder.CreateMul(
+            Builder.CreateZExt(II->getArgOperand(0), II->getType()),
+            Builder.CreateZExt(II->getArgOperand(1), II->getType())));
         break;
       }
       case Intrinsic::aarch64_neon_vcvtfp2hf: {
