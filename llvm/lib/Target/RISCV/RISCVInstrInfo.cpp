@@ -1153,16 +1153,17 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   }
 
 #if SIFIVE_CUSTOMIZATION
+  const auto *MF = MI.getMF();
+  const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
+  const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
+  const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
+
   // PseudoLIsimm32 breaks down to 2 instructions that can each be compressed.
   // Calculate the size taking that into account.
   // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
   // have to do this manually.
   if (Opcode == RISCV::PseudoLIsimm32) {
     unsigned Size = 8; // Worst case is 8 bytes.
-    const auto MF = MI.getMF();
-    const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
-    const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
-    const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
     if (MI.getOperand(1).isImm() &&
         STI.getFeatureBits()[RISCV::FeatureStdExtC]) {
       int64_t Val = MI.getOperand(1).getImm();
@@ -1181,6 +1182,18 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
         Size -= 2;
     }
     return Size;
+  }
+
+  // Can CCMOVGPRNoX0 use c.beqz or c.bnez? This instruction is only used when
+  // C extension is enabled so we don't need to check that.
+  if (Opcode == RISCV::PseudoCCMOVGPRNoX0) {
+    auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
+    if ((CC == RISCVCC::COND_EQ || CC == RISCVCC::COND_NE) &&
+        MI.getOperand(2).getReg() == RISCV::X0 &&
+        MRI.getRegClass(RISCV::GPRCRegClassID)
+            .contains(MI.getOperand(1).getReg()))
+      return 4;
+    return 6;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
