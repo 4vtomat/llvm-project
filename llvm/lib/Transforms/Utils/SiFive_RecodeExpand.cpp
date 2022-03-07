@@ -135,6 +135,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_uqsub:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
+  case Intrinsic::aarch64_neon_vsli:
     return true;
   }
   return false;
@@ -639,6 +640,22 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             FixedVectorType::get(
                 Type::getFloatTy(II->getContext()),
                 cast<FixedVectorType>(II->getArgOperand(0)->getType()))));
+        break;
+      }
+      case Intrinsic::aarch64_neon_vsli: {
+        uint64_t Shift =
+            cast<ConstantInt>(II->getArgOperand(2))->getZExtValue();
+        // (II->getArgOperand(1) << Shift) |
+        //     (II->getArgOperand(0) & ((1 << Shift) - 1))
+        Value *NBit =
+            Builder.CreateAnd(II->getArgOperand(0),
+                              ConstantInt::get(II->getArgOperand(0)->getType(),
+                                               (1 << Shift) - 1));
+        II->replaceAllUsesWith(Builder.CreateOr(
+            NBit,
+            Builder.CreateShl(
+                II->getArgOperand(1),
+                ConstantInt::get(II->getArgOperand(1)->getType(), Shift))));
         break;
       }
       default:
