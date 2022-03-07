@@ -72,11 +72,20 @@ static Value *narrow(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
       V, Builder.getInt64(0));
 }
 
+static SmallVector<int, 8> increasingSequenceByN(int Init, int N, size_t Size) {
+  SmallVector<int, 8> Mask(Size);
+  for (size_t i = 0; i != Size; ++i)
+    Mask[i] = Init + i * N;
+  return Mask;
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_abs:
+  case Intrinsic::aarch64_neon_addp:
   case Intrinsic::aarch64_neon_fabd:
   case Intrinsic::aarch64_neon_facgt:
+  case Intrinsic::aarch64_neon_faddp:
   case Intrinsic::aarch64_neon_faddv:
   case Intrinsic::aarch64_neon_fcvtzs:
   case Intrinsic::aarch64_neon_fcvtzu:
@@ -159,6 +168,22 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             Intrinsic::abs, {II->getArgOperand(0)->getType()},
             {II->getArgOperand(0), Builder.getInt1(false)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_addp:
+      case Intrinsic::aarch64_neon_faddp: {
+        Value *Concatenate =
+            glue(Builder, {II->getArgOperand(0), II->getArgOperand(1)});
+        unsigned DesVecNumElements =
+            cast<FixedVectorType>(II->getType())->getNumElements();
+        Value *Input[2];
+        for (int i = 0; i != 2; ++i)
+          Input[i] = Builder.CreateShuffleVector(
+              Concatenate, increasingSequenceByN(i, 2, DesVecNumElements));
+        if (II->getIntrinsicID() == Intrinsic::aarch64_neon_addp)
+          II->replaceAllUsesWith(Builder.CreateAdd(Input[0], Input[1]));
+        else
+          II->replaceAllUsesWith(Builder.CreateFAdd(Input[0], Input[1]));
         break;
       }
       case Intrinsic::aarch64_neon_fabd: {
