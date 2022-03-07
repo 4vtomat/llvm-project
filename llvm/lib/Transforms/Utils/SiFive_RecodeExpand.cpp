@@ -106,6 +106,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld4lane:
   case Intrinsic::aarch64_neon_ld4r:
   case Intrinsic::aarch64_neon_sabd:
+  case Intrinsic::aarch64_neon_saddlp:
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_saddv:
   case Intrinsic::aarch64_neon_smax:
@@ -133,6 +134,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_tbx3:
   case Intrinsic::aarch64_neon_tbx4:
   case Intrinsic::aarch64_neon_uabd:
+  case Intrinsic::aarch64_neon_uaddlp:
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_uaddv:
   case Intrinsic::aarch64_neon_umax:
@@ -396,6 +398,25 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             MinID, {II->getArgOperand(0)->getType()},
             {II->getArgOperand(0), II->getArgOperand(1)});
         II->replaceAllUsesWith(Builder.CreateSub(Max, Min));
+        break;
+      }
+      case Intrinsic::aarch64_neon_saddlp:
+      case Intrinsic::aarch64_neon_uaddlp: {
+        unsigned DesVecNumElements =
+            cast<FixedVectorType>(II->getType())->getNumElements();
+        Value *Input[2];
+        for (int i = 0; i != 2; ++i)
+          Input[i] = Builder.CreateShuffleVector(
+              II->getArgOperand(0),
+              increasingSequenceByN(i, 2, DesVecNumElements));
+        if (II->getIntrinsicID() == Intrinsic::aarch64_neon_saddlp) {
+          Input[0] = Builder.CreateSExt(Input[0], II->getType());
+          Input[1] = Builder.CreateSExt(Input[1], II->getType());
+        } else {
+          Input[0] = Builder.CreateZExt(Input[0], II->getType());
+          Input[1] = Builder.CreateZExt(Input[1], II->getType());
+        }
+        II->replaceAllUsesWith(Builder.CreateAdd(Input[0], Input[1]));
         break;
       }
       case Intrinsic::aarch64_neon_saddlv: {
