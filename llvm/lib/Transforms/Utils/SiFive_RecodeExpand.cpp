@@ -89,7 +89,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_faddv:
   case Intrinsic::aarch64_neon_fcvtzs:
   case Intrinsic::aarch64_neon_fcvtzu:
+  case Intrinsic::aarch64_neon_fmaxp:
   case Intrinsic::aarch64_neon_fmaxv:
+  case Intrinsic::aarch64_neon_fminp:
   case Intrinsic::aarch64_neon_fminv:
   case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_frsqrte:
@@ -230,6 +232,23 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                 : Intrinsic::fptoui_sat,
             {II->getType(), II->getArgOperand(0)->getType()},
             {II->getArgOperand(0)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_fmaxp:
+      case Intrinsic::aarch64_neon_fminp: {
+        Value *Concatenate =
+            glue(Builder, {II->getArgOperand(0), II->getArgOperand(1)});
+        unsigned DesVecNumElements =
+            cast<FixedVectorType>(II->getType())->getNumElements();
+        Value *Input[2];
+        for (int i = 0; i != 2; ++i)
+          Input[i] = Builder.CreateShuffleVector(
+              Concatenate, increasingSequenceByN(i, 2, DesVecNumElements));
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            II->getIntrinsicID() == Intrinsic::aarch64_neon_fmaxp
+                ? Intrinsic::aarch64_neon_fmax
+                : Intrinsic::aarch64_neon_fmin,
+            {II->getType()}, {Input[0], Input[1]}));
         break;
       }
       case Intrinsic::aarch64_neon_fmaxv:
