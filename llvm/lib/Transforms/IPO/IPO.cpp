@@ -43,6 +43,9 @@ void llvm::initializeIPO(PassRegistry &Registry) {
   initializeInferFunctionAttrsLegacyPassPass(Registry);
   initializeInternalizeLegacyPassPass(Registry);
   initializeLoopExtractorLegacyPassPass(Registry);
+#if SIFIVE_CUSTOMIZATION
+  initializeLoopDataLayoutLegacyPassPass(Registry);
+#endif
   initializeBlockExtractorLegacyPassPass(Registry);
   initializeSingleLoopExtractorPass(Registry);
   initializeLowerTypeTestsPass(Registry);
@@ -73,6 +76,12 @@ void LLVMInitializeIPO(LLVMPassRegistryRef R) {
 void LLVMAddArgumentPromotionPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createArgumentPromotionPass());
 }
+
+#if SIFIVE_CUSTOMIZATION
+void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
+  unwrap(PM)->add(createLoopDataLayoutPass());
+}
+#endif
 
 void LLVMAddCalledValuePropagationPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createCalledValuePropagationPass());

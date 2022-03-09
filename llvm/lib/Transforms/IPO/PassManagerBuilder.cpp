@@ -834,6 +834,11 @@ void PassManagerBuilder::populateModulePassManager(
 
   addExtensionsToPM(EP_VectorizerStart, MPM);
 
+#if SIFIVE_CUSTOMIZATION
+  if (PerformThinLTO)
+    MPM.add(createLoopDataLayoutPass()); // AoS to SoA transformations
+#endif
+
   // Re-rotate loops in all our loop nests. These may have fallout out of
   // rotated form due to GVN or other transformations, and the vectorizer relies
   // on the rotated form. Disable header duplication at -Oz.
@@ -1035,6 +1040,10 @@ void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
   // Nuke dead stores.
   PM.add(createDeadStoreEliminationPass());
   PM.add(createMergedLoadStoreMotionPass()); // Merge ld/st in diamonds.
+
+#if SIFIVE_CUSTOMIZATION
+  PM.add(createLoopDataLayoutPass());
+#endif
 
   // More loops are countable; try to optimize them.
   if (EnableLoopFlatten)

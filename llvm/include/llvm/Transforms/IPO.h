@@ -158,6 +158,15 @@ ModulePass *createDeadArgHackingPass();
 ///
 Pass *createArgumentPromotionPass(unsigned maxElements = 3);
 
+#if SIFIVE_CUSTOMIZATION
+//===----------------------------------------------------------------------===//
+/// createLoopDataLayoutPass - This pass transforms Array of Struct
+/// candidates to Structure of Arrays for containing structs as direct memory
+/// accesses which have a most MaxElements data fields.
+///
+ModulePass *createLoopDataLayoutPass(unsigned MaxElements = 2);
+#endif
+
 //===----------------------------------------------------------------------===//
 /// createOpenMPOptLegacyPass - OpenMP specific optimizations.
 Pass *createOpenMPOptCGSCCLegacyPass();

@@ -98,6 +98,7 @@
 ; CHECK-O23SZ-NEXT: Running analysis: GlobalsAA on [module]
 ; CHECK-O23SZ-NEXT: Running pass: InvalidateAnalysisPass<{{.*}}AAManager
 ; CHECK-O23SZ-NEXT: Invalidating analysis: AAManager on foo
+; CHECK-O23SZ-NEXT: Running pass: LoopDataLayoutPass
 ; CHECK-O23SZ-NEXT: Running pass: OpenMPOptCGSCCPass on (foo)
 ; CHECK-O23SZ-NEXT: Running pass: LoopSimplifyPass on foo
 ; CHECK-O23SZ-NEXT: Running analysis: LoopAnalysis on foo

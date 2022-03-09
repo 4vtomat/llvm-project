@@ -30,6 +30,11 @@ LLVM_C_EXTERN_C_BEGIN
 /** See llvm::createArgumentPromotionPass function. */
 void LLVMAddArgumentPromotionPass(LLVMPassManagerRef PM);
 
+#if SIFIVE_CUSTOMIZATION
+/** See llvm::create function. */
+void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM);
+#endif
+
 /** See llvm::createConstantMergePass function. */
 void LLVMAddConstantMergePass(LLVMPassManagerRef PM);
 

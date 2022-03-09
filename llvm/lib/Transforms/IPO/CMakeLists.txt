@@ -27,6 +27,7 @@ add_llvm_component_library(LLVMipo
   Inliner.cpp
   Internalize.cpp
   LoopExtractor.cpp
+  SiFive_LoopDataLayout.cpp
   LowerTypeTests.cpp
   MergeFunctions.cpp
   ModuleInliner.cpp

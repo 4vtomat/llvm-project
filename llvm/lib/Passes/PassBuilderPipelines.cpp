@@ -54,6 +54,9 @@
 #include "llvm/Transforms/IPO/IROutliner.h"
 #include "llvm/Transforms/IPO/InferFunctionAttrs.h"
 #include "llvm/Transforms/IPO/Inliner.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
+#endif
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
 #include "llvm/Transforms/IPO/MergeFunctions.h"
 #include "llvm/Transforms/IPO/ModuleInliner.h"
@@ -1439,6 +1442,10 @@ ModulePassManager PassBuilder::buildThinLTODefaultPipeline(
   // Now add the optimization pipeline.
   MPM.addPass(buildModuleOptimizationPipeline(Level));
 
+#if SIFIVE_CUSTOMIZATION
+  MPM.addPass(LoopDataLayoutPass());
+#endif
+
   // Emit annotation remarks.
   addAnnotationRemarksPass(MPM);
 
@@ -1682,6 +1689,10 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   LPM.addPass(IndVarSimplifyPass());
   LPM.addPass(LoopDeletionPass());
   // FIXME: Add loop interchange.
+
+#if SIFIVE_CUSTOMIZATION
+  MPM.addPass(LoopDataLayoutPass());
+#endif
 
   // Unroll small loops and perform peeling.
   LPM.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
