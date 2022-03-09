@@ -37,7 +37,9 @@ for.end:
 ; chosen. The following 3 cases check different combinations of widths.
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_32'
-; CHECK: The Smallest and Widest types: 4294967295 / 32 bits
+;; SIFIVE_CUSTOMIZATION
+; CHECK: The Smallest and Widest types: 32 / 32 bits
+;; ENF OF SIFIVE_CUSTOMIZATION
 ; CHECK: Selecting VF: 4
 
 define double @no_loads_stores_32(i32 %n) {
@@ -60,7 +62,9 @@ for.end:
 }
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_16'
-; CHECK: The Smallest and Widest types: 4294967295 / 16 bits
+;; SIFIVE_CUSTOMIZATION
+; CHECK: The Smallest and Widest types: 16 / 16 bits
+;; ENF OF SIFIVE_CUSTOMIZATION
 ; CHECK: Selecting VF: 8
 
 define double @no_loads_stores_16() {
@@ -82,7 +86,9 @@ for.end:
 }
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_8'
-; CHECK: The Smallest and Widest types: 4294967295 / 8 bits
+;; SIFIVE_CUSTOMIZATION
+; CHECK: The Smallest and Widest types: 8 / 8 bits
+;; ENF OF SIFIVE_CUSTOMIZATION
 ; CHECK: Selecting VF: 16
 
 define float @no_loads_stores_8() {
