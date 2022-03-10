@@ -330,15 +330,26 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
     return BaseT::getGatherScatterOpCost(Opcode, DataTy, Ptr, VariableMask,
                                          Alignment, CostKind, I);
 
-  // FIXME: Only supporting fixed vectors for now.
-  if (!isa<FixedVectorType>(DataTy))
-    return BaseT::getGatherScatterOpCost(Opcode, DataTy, Ptr, VariableMask,
-                                         Alignment, CostKind, I);
+#if SIFIVE_CUSTOMIZATION
+  unsigned NumLoads;
+  Type *ElementType;
+  if (isa<FixedVectorType>(DataTy)) {
+    auto *VTy = cast<FixedVectorType>(DataTy);
+    NumLoads = VTy->getNumElements();
+    ElementType = VTy->getElementType();
+  } else {
+    // to be processed as the return number encodes LMUL in some way.
+    auto *VTy = cast<ScalableVectorType>(DataTy);
+    // FIXME: Implement or use some other function instead of
+    // getMinNumElements(), since current function doesn't return valid number
+    // of elements
+    NumLoads = VTy->getMinNumElements();
+    ElementType = VTy->getElementType();
+  }
 
-  auto *VTy = cast<FixedVectorType>(DataTy);
-  unsigned NumLoads = VTy->getNumElements();
   InstructionCost MemOpCost =
-      getMemoryOpCost(Opcode, VTy->getElementType(), Alignment, 0, CostKind, I);
+      getMemoryOpCost(Opcode, ElementType, Alignment, 0, CostKind, I);
+#endif // SIFIVE_CUSTOMIZATION
   return NumLoads * MemOpCost;
 }
 
