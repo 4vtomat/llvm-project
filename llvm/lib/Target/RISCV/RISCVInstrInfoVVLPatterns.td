@@ -1679,6 +1679,16 @@ foreach vti = AllIntegerVectors in {
                                               VLOpFrag)),
             (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX)
                  vti.RegClass:$rs2, vti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
+#ifdef SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
+                                              (vti.Vector vti.RegClass:$rs1),
+                                              (vti.Mask V0),
+                                              VLOpFrag)),
+            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX#"_MASK")
+                 (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, vti.RegClass:$rs1,
+                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+#endif // SIFIVE_CUSTOMIZATION
   def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, GPR:$rs1,
                                               (vti.Mask true_mask),
                                               VLOpFrag)),
@@ -1728,6 +1738,17 @@ foreach vti = AllIntegerVectors in {
                                                     VLOpFrag)),
               (!cast<Instruction>(inst)
                    vti.RegClass:$rs2, ivti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
+#ifdef SIFIVE_CUSTOMIZATION
+    // Copied from BSC
+    defvar inst_mask = "PseudoVRGATHEREI16_VV_" # vti.LMul.MX # "_" # emul_str # "_MASK";
+    def : Pat<(vti.Vector (riscv_vrgatherei16_vv_vl vti.RegClass:$rs2,
+                                                    (ivti.Vector ivti.RegClass:$rs1),
+                                                    (vti.Mask V0),
+                                                    VLOpFrag)),
+              (!cast<Instruction>(inst_mask)
+                   (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, ivti.RegClass:$rs1,
+                   (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+#endif // SIFIVE_CUSTOMIZATION
 
     def : Pat<(vti.Vector (riscv_vselect_vl (vti.Mask V0),
                                             (riscv_vrgatherei16_vv_vl
@@ -1767,6 +1788,16 @@ foreach vti = AllFloatVectors in {
                                               VLOpFrag)),
             (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX)
                  vti.RegClass:$rs2, vti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
+#ifdef SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
+                                              (ivti.Vector vti.RegClass:$rs1),
+                                              (vti.Mask V0),
+                                              VLOpFrag)),
+            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX#"_MASK")
+                 (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, vti.RegClass:$rs1,
+                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+#endif // SIFIVE_CUSTOMIZATION
   def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, GPR:$rs1,
                                               (vti.Mask true_mask),
                                               VLOpFrag)),
@@ -1861,6 +1892,14 @@ foreach vti = AllIntegerVectors in {
   def : Pat<(vti.Vector (riscv_vid_vl (vti.Mask true_mask),
                                       VLOpFrag)),
             (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX) GPR:$vl, vti.Log2SEW)>;
+#ifdef SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  def : Pat<(vti.Vector (riscv_vid_vl (vti.Mask V0),
+                                      VLOpFrag)),
+            (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX#"_MASK")
+                (vti.Vector (IMPLICIT_DEF)), (vti.Mask V0), GPR:$vl, vti.Log2SEW,
+                 TAIL_AGNOSTIC)>;
+#endif // SIFIVE_CUSTOMIZATION
 
   def : Pat<(vti.Vector (riscv_slide1up_vl (vti.Vector undef),
                                            (vti.Vector vti.RegClass:$rs1),
@@ -1920,6 +1959,41 @@ foreach vti = !listconcat(AllIntegerVectors, AllFloatVectors) in {
             (!cast<Instruction>("PseudoVSLIDEDOWN_VX_"#vti.LMul.MX)
                 vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
                 GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  def : Pat<(vti.Vector (riscv_slideup_vl (vti.Vector vti.RegClass:$rs3),
+                                          (vti.Vector vti.RegClass:$rs1),
+                                          uimm5:$rs2, (vti.Mask V0),
+                                          VLOpFrag)),
+            (!cast<Instruction>("PseudoVSLIDEUP_VI_"#vti.LMul.MX#"_MASK")
+                vti.RegClass:$rs3, vti.RegClass:$rs1, uimm5:$rs2,
+                (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+
+  def : Pat<(vti.Vector (riscv_slideup_vl (vti.Vector vti.RegClass:$rs3),
+                                          (vti.Vector vti.RegClass:$rs1),
+                                          GPR:$rs2, (vti.Mask V0),
+                                          VLOpFrag)),
+            (!cast<Instruction>("PseudoVSLIDEUP_VX_"#vti.LMul.MX#"_MASK")
+                vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
+                (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+
+  def : Pat<(vti.Vector (riscv_slidedown_vl (vti.Vector vti.RegClass:$rs3),
+                                            (vti.Vector vti.RegClass:$rs1),
+                                            uimm5:$rs2, (vti.Mask V0),
+                                            VLOpFrag)),
+            (!cast<Instruction>("PseudoVSLIDEDOWN_VI_"#vti.LMul.MX#"_MASK")
+                vti.RegClass:$rs3, vti.RegClass:$rs1, uimm5:$rs2,
+                (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+
+  def : Pat<(vti.Vector (riscv_slidedown_vl (vti.Vector vti.RegClass:$rs3),
+                                            (vti.Vector vti.RegClass:$rs1),
+                                            GPR:$rs2, (vti.Mask V0),
+                                            VLOpFrag)),
+            (!cast<Instruction>("PseudoVSLIDEDOWN_VX_"#vti.LMul.MX#"_MASK")
+                vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
+                (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 } // Predicates = [HasVInstructions]

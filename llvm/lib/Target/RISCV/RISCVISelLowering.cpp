@@ -479,6 +479,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::INTRINSIC_W_CHAIN, ISD::INTRINSIC_VOID},
                        MVT::Other, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+    // EXPERIMENTAL_VP_REVERSE copied from BSC.
     static const unsigned IntegerVPOps[] = {
         ISD::VP_ADD,         ISD::VP_SUB,         ISD::VP_MUL,
         ISD::VP_SDIV,        ISD::VP_UDIV,        ISD::VP_SREM,
@@ -489,7 +491,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_REDUCE_SMIN, ISD::VP_REDUCE_UMAX, ISD::VP_REDUCE_UMIN,
         ISD::VP_MERGE,       ISD::VP_SELECT,      ISD::VP_FPTOSI,
         ISD::VP_FPTOUI,      ISD::VP_SETCC,       ISD::VP_SIGN_EXTEND,
-        ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE};
+        ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,
+        ISD::EXPERIMENTAL_VP_REVERSE};
 
     static const unsigned FloatingPointVPOps[] = {
         ISD::VP_FADD,        ISD::VP_FSUB,
@@ -500,7 +503,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_MERGE,       ISD::VP_SELECT,
         ISD::VP_SITOFP,      ISD::VP_UITOFP,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,
-        ISD::VP_FP_EXTEND};
+        ISD::VP_FP_EXTEND,
+        ISD::EXPERIMENTAL_VP_REVERSE};
+#endif // SIFIVE_CUSTOMIZATION
 
     if (!Subtarget.is64Bit()) {
       // We must custom-lower certain vXi64 operations on RV32 due to the vector
@@ -654,6 +659,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Splice
       setOperationAction(ISD::VECTOR_SPLICE, VT, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+      // Copied from BSC
+      // VP Shuffles
+      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
       // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if we have a floating point
       // type that can represent the value exactly.
       if (VT.getVectorElementType() != MVT::i64) {
@@ -726,6 +736,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       for (unsigned VPOpc : FloatingPointVPOps)
         setOperationAction(VPOpc, VT, Custom);
+
+#if SIFIVE_CUSTOMIZATION
+      // Copied from BSC
+      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
     };
 
     // Sets common extload/truncstore actions on RVV floating-point vector
@@ -865,6 +880,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         for (unsigned VPOpc : IntegerVPOps)
           setOperationAction(VPOpc, VT, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+        // Copied from BSC.
+        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
+
         // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if we have a floating point
         // type that can represent the value exactly.
         if (VT.getVectorElementType() != MVT::i64) {
@@ -931,6 +951,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         for (unsigned VPOpc : FloatingPointVPOps)
           setOperationAction(VPOpc, VT, Custom);
+
+#if SIFIVE_CUSTOMIZATION
+        // Copied from BSC
+        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
       }
 
       // Custom-legalize bitcasts from fixed-length vectors to scalar types.
@@ -3571,6 +3596,13 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     if (Op.getOperand(0).getSimpleValueType().getVectorElementType() == MVT::i1)
       return lowerVPSetCCMaskOp(Op, DAG);
     return lowerVPOp(Op, DAG, RISCVISD::SETCC_VL);
+#if SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  case ISD::EXPERIMENTAL_VP_SPLICE:
+    return lowerVPSpliceExperimental(Op, DAG);
+  case ISD::EXPERIMENTAL_VP_REVERSE:
+    return lowerVPReverseExperimental(Op, DAG);
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -6569,6 +6601,192 @@ SDValue RISCVTargetLowering::lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
     return Result;
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue
+RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
+                                               SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+
+  // Ops indexes: 0->Op1, 1->Op2, 2->Offset, 3->Mask, 4->EVL1, 5->EVL2
+  SmallVector<SDValue, 6> Ops;
+  for (const auto &OpIdx : enumerate(Op->ops())) {
+    SDValue V = OpIdx.value();
+    assert(!isa<VTSDNode>(V) && "Unexpected VTSDNode node!");
+    // Pass through operands which aren't fixed-length vectors.
+    if (!V.getValueType().isFixedLengthVector()) {
+      Ops.push_back(V);
+      continue;
+    }
+    // "cast" fixed length vector to a scalable vector.
+    MVT OpVT = V.getSimpleValueType();
+    MVT ContainerVT = getContainerForFixedLengthVector(OpVT);
+    assert(useRVVForFixedLengthVectorVT(OpVT) &&
+           "Only fixed length vectors are supported!");
+    Ops.push_back(convertToScalableVector(ContainerVT, V, DAG, Subtarget));
+  }
+
+  const MVT XLenVT = Subtarget.getXLenVT();
+  MVT VT = Op.getSimpleValueType();
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector())
+    ContainerVT = getContainerForFixedLengthVector(VT);
+
+  MVT MaskVT = ContainerVT.changeVectorElementType(MVT::i1);
+  SDValue Undef = DAG.getUNDEF(ContainerVT);
+  if (isa<ConstantSDNode>(Ops[2])) { // Offset is an immediate
+    // If the offset value is negative, use evl1 - offset in its place
+    if (cast<ConstantSDNode>(Ops[2])->getSExtValue() < 0) {
+      SDValue Offset = DAG.getNode(ISD::ADD, DL, XLenVT, Ops[4], Ops[2]);
+      Ops[2] = Offset;
+    }
+  } else { // Offset is in a register
+    // NOTE: instead of branching, we could use Ops[2] = (evl1 + imm) % evl1
+    SDValue Select = DAG.getNode(
+        ISD::SELECT_CC, DL, XLenVT, Ops[2], DAG.getConstant(0, DL, XLenVT),
+        DAG.getNode(ISD::ADD, DL, XLenVT, Ops[4], Ops[2]), Ops[2],
+        DAG.getCondCode(ISD::SETLT));
+    Ops[2] = Select;
+  }
+
+  SDValue SLIDEDOWN = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
+                                  Undef, Ops[0], Ops[2], Ops[3], Ops[4]);
+  SDValue Diff = DAG.getNode(ISD::SUB, DL, XLenVT, Ops[4], Ops[2]);
+  SDValue SLIDEUP = DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, ContainerVT, Undef,
+                                Ops[1], Diff, Ops[3], Ops[5]);
+  SDValue SplatOne =
+      DAG.getSplatVector(MaskVT, DL, DAG.getConstant(1, DL, XLenVT));
+  SDValue VID = DAG.getNode(RISCVISD::VID_VL, DL,
+                            ContainerVT.changeVectorElementTypeToInteger(),
+                            SplatOne, Ops[5]);
+  SDValue MergeMask =
+      DAG.getNode(RISCVISD::SETCC_VL, DL, MaskVT, VID,
+                  DAG.getSplatVector(
+                      ContainerVT.changeVectorElementTypeToInteger(), DL, Diff),
+                  DAG.getCondCode(ISD::SETULT), Ops[3], Ops[5]);
+  SDValue Result = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, MergeMask,
+                               SLIDEDOWN, SLIDEUP, Ops[5]);
+
+  if (!VT.isFixedLengthVector())
+    return Result;
+  return convertFromScalableVector(VT, Result, DAG, Subtarget);
+}
+
+SDValue
+RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
+                                                SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+  MVT VT = Op.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  // Ops indexes: 0->Op1, 1->Mask, 2->EVL
+  SmallVector<SDValue, 3> Ops;
+  for (const auto &OpIdx : enumerate(Op->ops())) {
+    SDValue V = OpIdx.value();
+    assert(!isa<VTSDNode>(V) && "Unexpected VTSDNode node!");
+    // Pass through operands which aren't fixed-length vectors.
+    if (!V.getValueType().isFixedLengthVector()) {
+      Ops.push_back(V);
+      continue;
+    }
+    // "cast" fixed length vector to a scalable vector.
+    MVT OpVT = V.getSimpleValueType();
+    MVT ContainerVT = getContainerForFixedLengthVector(OpVT);
+    assert(useRVVForFixedLengthVectorVT(OpVT) &&
+           "Only fixed length vectors are supported!");
+    Ops.push_back(convertToScalableVector(ContainerVT, V, DAG, Subtarget));
+  }
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector())
+    ContainerVT = getContainerForFixedLengthVector(VT);
+
+  MVT GatherVT = ContainerVT;
+  MVT IndicesVT = ContainerVT.changeVectorElementTypeToInteger();
+
+  unsigned EltSize = GatherVT.getScalarSizeInBits();
+  unsigned MinSize = GatherVT.getSizeInBits().getKnownMinValue();
+  unsigned MaxVLMAX = 0;
+  unsigned VectorBitsMax = Subtarget.getMaxRVVVectorSizeInBits();
+  if (VectorBitsMax != 0)
+    MaxVLMAX = ((VectorBitsMax / EltSize) * MinSize) / RISCV::RVVBitsPerBlock;
+
+  unsigned GatherOpc = RISCVISD::VRGATHER_VV_VL;
+  // If this is SEW=8 and VLMAX is unknown or more than 256, we need
+  // to use vrgatherei16.vv.
+  // TODO: It's also possible to use vrgatherei16.vv for other types to
+  // decrease register width for the index calculation.
+  // NOTE: This code assumes VLMAX <= 65536 for LMUL=8 SEW=16.
+  if ((MaxVLMAX == 0 || MaxVLMAX > 256) && EltSize == 8) {
+    // If this is LMUL=8, we have to split before using vrgatherei16.vv.
+    // First, we splice the input operand in order to obtain:
+    // vd[i] = undef, when 0 <= i < VLEN - EVL
+    // vd[i] = v1[i - (VLEN - EVL)], when VLEN - EVL <= i < VLEN
+    // Then, we split the splice and reverse each half
+    // Finally, we concatenate the two halves in reverse order
+    // NOTE: It's also possible that, after splitting, VLMAX
+    // no longer requires vrgatherei16.vv.
+    if (MinSize == (8 * RISCV::RVVBitsPerBlock)) {
+      unsigned MinElts = GatherVT.getVectorMinNumElements();
+      SDValue VLMax = DAG.getNode(ISD::VSCALE, DL, XLenVT,
+                                  DAG.getConstant(MinElts, DL, XLenVT));
+      SDValue TrueMask =
+          DAG.getConstant(1, DL, GatherVT.changeVectorElementType(MVT::i1));
+
+      // FIXME: I'm skeptical of this since it passes a non-constant value to
+      // EXPERIMENTAL_VP_SPLICE's offset. It's also out of the documented range
+      // if VL is VLMAX.
+      SDValue SPLICE = DAG.getNode(
+          ISD::EXPERIMENTAL_VP_SPLICE, DL, GatherVT,
+          {DAG.getUNDEF(GatherVT), Ops[0], Ops[2], TrueMask, VLMax, VLMax});
+
+      EVT LoVT, HiVT;
+      std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(GatherVT);
+      SDValue Lo, Hi;
+      std::tie(Lo, Hi) = DAG.SplitVector(SPLICE, DL);
+      SDValue LoMask, HiMask;
+      LoMask = HiMask =
+          DAG.getConstant(1, DL, LoVT.changeVectorElementType(MVT::i1));
+
+      SDValue LoRev = DAG.getNode(ISD::EXPERIMENTAL_VP_REVERSE, DL, LoVT, Lo,
+                                  LoMask, VLMax);
+      SDValue HiRev = DAG.getNode(ISD::EXPERIMENTAL_VP_REVERSE, DL, HiVT, Hi,
+                                  HiMask, VLMax);
+
+      // Reassemble the low and high pieces reversed.
+      // NOTE: this Result is unmasked (because we do not need masks for
+      // shuffles). If in the future this has to change, we can use a SELECT_VL
+      // between Result and UNDEF using the mask originally passed to VP_REVERSE
+      SDValue Result =
+          DAG.getNode(ISD::CONCAT_VECTORS, DL, GatherVT, HiRev, LoRev);
+
+      if (!VT.isFixedLengthVector())
+        return Result;
+      return convertFromScalableVector(VT, Result, DAG, Subtarget);
+    }
+
+    // Just promote the int type to i16 which will double the LMUL.
+    IndicesVT = MVT::getVectorVT(MVT::i16, IndicesVT.getVectorElementCount());
+    GatherOpc = RISCVISD::VRGATHEREI16_VV_VL;
+  }
+
+  SDValue VID = DAG.getNode(RISCVISD::VID_VL, DL, IndicesVT, Ops[1], Ops[2]);
+  SDValue VecLen =
+      DAG.getNode(ISD::SUB, DL, XLenVT, Ops[2], DAG.getConstant(1, DL, XLenVT));
+  SDValue VecLenSplat =
+      DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT, DAG.getUNDEF(IndicesVT),
+                  VecLen, Ops[1], Ops[2]);
+  SDValue VRSUB = DAG.getNode(RISCVISD::SUB_VL, DL, IndicesVT, VecLenSplat, VID,
+                              Ops[1], Ops[2]);
+  SDValue Result =
+      DAG.getNode(GatherOpc, DL, GatherVT, Ops[0], VRSUB, Ops[1], Ops[2]);
+
+  if (!VT.isFixedLengthVector())
+    return Result;
+  return convertFromScalableVector(VT, Result, DAG, Subtarget);
+}
+
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue RISCVTargetLowering::lowerLogicVPOp(SDValue Op, SelectionDAG &DAG,
                                             unsigned MaskOpc,

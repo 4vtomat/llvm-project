@@ -665,6 +665,11 @@ private:
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
                              unsigned RISCVISDOpc) const;
+#if SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerFixedLengthVectorExtendToRVV(SDValue Op, SelectionDAG &DAG,
                                             unsigned ExtendOpc) const;
   SDValue lowerGET_ROUNDING(SDValue Op, SelectionDAG &DAG) const;
