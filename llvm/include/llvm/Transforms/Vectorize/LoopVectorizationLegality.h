@@ -144,8 +144,14 @@ public:
   void emitRemarkWithHints() const;
 
   ElementCount getWidth() const {
+#if SIFIVE_CUSTOMIZATION
+    return ElementCount::get(
+        Width.Value, ((ScalableForceKind)Scalable.Value == SK_PreferScalable ||
+                      (ScalableForceKind)Scalable.Value == SK_ScalableOnly));
+#else
     return ElementCount::get(Width.Value, (ScalableForceKind)Scalable.Value ==
                                               SK_PreferScalable);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   unsigned getInterleave() const {
