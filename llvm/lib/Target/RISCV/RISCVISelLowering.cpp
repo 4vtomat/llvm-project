@@ -571,6 +571,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(
           {ISD::VP_FPTOSI, ISD::VP_FPTOUI, ISD::VP_TRUNCATE, ISD::VP_SETCC}, VT,
           Custom);
+
+#if SIFIVE_CUSTOMIZATION
+      // Copied from BSC
+      setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     for (MVT VT : IntVecVTs) {
@@ -825,6 +830,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           setOperationAction(
               {ISD::VP_FPTOSI, ISD::VP_FPTOUI, ISD::VP_SETCC, ISD::VP_TRUNCATE},
               VT, Custom);
+
+#if SIFIVE_CUSTOMIZATION
+          // Copied from BSC
+          setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
           continue;
         }
 
@@ -6703,6 +6713,32 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
 
   MVT GatherVT = ContainerVT;
   MVT IndicesVT = ContainerVT.changeVectorElementTypeToInteger();
+  // Check if we are working with mask vectors
+  bool IsMaskVector = ContainerVT.getVectorElementType() == MVT::i1;
+  if (IsMaskVector) {
+    switch(ContainerVT.getVectorElementCount().getKnownMinValue()) {
+    default: llvm_unreachable("Invalid factor size");
+    case 1: IndicesVT = MVT::i64; break;
+    case 2: IndicesVT = MVT::i32; break;
+    case 4: IndicesVT = MVT::i16; break;
+    case 8:
+    case 16:
+    case 32:
+    case 64: IndicesVT = MVT::i8; break;
+    }
+    GatherVT = IndicesVT = ContainerVT.changeVectorElementType(IndicesVT);
+
+    // Expand input operand
+    SDValue SplatOne = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
+                                   DAG.getUNDEF(IndicesVT),
+                                   DAG.getConstant(1, DL, XLenVT), Ops[2]);
+    SDValue VMV0 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
+                               DAG.getUNDEF(IndicesVT),
+                               DAG.getConstant(0, DL, XLenVT), Ops[2]);
+    SDValue VMERGE = DAG.getNode(RISCVISD::VSELECT_VL, DL, IndicesVT, Ops[0],
+                                 SplatOne, VMV0, Ops[2]);
+    Ops[0] = VMERGE;
+  }
 
   unsigned EltSize = GatherVT.getScalarSizeInBits();
   unsigned MinSize = GatherVT.getSizeInBits().getKnownMinValue();
@@ -6760,6 +6796,13 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
       SDValue Result =
           DAG.getNode(ISD::CONCAT_VECTORS, DL, GatherVT, HiRev, LoRev);
 
+      if (IsMaskVector) {
+        // Truncate Result back to a mask vector
+        Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, Result,
+                             DAG.getConstant(0, DL, GatherVT),
+                             DAG.getCondCode(ISD::SETNE), Ops[1], Ops[2]);
+      }
+
       if (!VT.isFixedLengthVector())
         return Result;
       return convertFromScalableVector(VT, Result, DAG, Subtarget);
@@ -6780,6 +6823,13 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
                               Ops[1], Ops[2]);
   SDValue Result =
       DAG.getNode(GatherOpc, DL, GatherVT, Ops[0], VRSUB, Ops[1], Ops[2]);
+
+  if (IsMaskVector) {
+    // Truncate Result back to a mask vector
+    Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, Result,
+                         DAG.getConstant(0, DL, GatherVT),
+                         DAG.getCondCode(ISD::SETNE), Ops[1], Ops[2]);
+  }
 
   if (!VT.isFixedLengthVector())
     return Result;
