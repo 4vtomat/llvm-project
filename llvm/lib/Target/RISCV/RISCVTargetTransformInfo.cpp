@@ -498,7 +498,16 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
                                      TTI::TargetCostKind CostKind) {
   // FIXME: Only supporting fixed vectors for now.
   if (!isa<FixedVectorType>(Ty))
+#if SIFIVE_CUSTOMIZATION
+  {
+    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
+    if (!LT.first.isValid())
+      return InstructionCost::getInvalid();
+    return LT.first;
+  }
+#else  // SIFIVE_CUSTOMIZATION
     return BaseT::getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!ST->useRVVForFixedLengthVectors())
     return BaseT::getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
