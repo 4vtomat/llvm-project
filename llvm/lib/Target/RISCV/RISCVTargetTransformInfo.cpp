@@ -313,7 +313,15 @@ RISCVTTIImpl::getMaskedMemoryOpCost(unsigned Opcode, Type *Src, Align Alignment,
     return BaseT::getMaskedMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                         CostKind);
 
+#if SIFIVE_CUSTOMIZATION
+  // FIXME: copied from AARCH64, need to improve.
+  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Src);
+  if (!LT.first.isValid())
+    return InstructionCost::getInvalid();
+  return LT.first;
+#else // SIFIVE_CUSTOMIZATION
   return getMemoryOpCost(Opcode, Src, Alignment, AddressSpace, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
