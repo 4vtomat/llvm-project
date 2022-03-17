@@ -676,6 +676,10 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
 std::pair<Value *, Value *>
 RISCVGatherScatterLowering::determineScalableBaseAndStride(
     GetElementPtrInst *GEP, IRBuilder<> &Builder) {
+  auto I = StridedAddrs.find(GEP);
+  if (I != StridedAddrs.end())
+    return I->second;
+
   SmallVector<Value *, 2> Ops(GEP->operands());
 
   // Base pointer needs to be a scalar.
@@ -753,7 +757,9 @@ RISCVGatherScatterLowering::determineScalableBaseAndStride(
   if (TypeScale != 1)
     Stride = Builder.CreateMul(Stride, ConstantInt::get(IntPtrTy, TypeScale));
 
-  return std::make_pair(BasePtr, Stride);
+  auto P = std::make_pair(BasePtr, Stride);
+  StridedAddrs[GEP] = P;
+  return P;
 }
 
 bool RISCVGatherScatterLowering::tryCreateVPStridedLoadStore(IntrinsicInst *II,

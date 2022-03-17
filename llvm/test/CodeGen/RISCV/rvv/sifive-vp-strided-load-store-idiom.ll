@@ -204,38 +204,33 @@ define void @struct_gather_scatter(i32* noalias nocapture noundef readonly %A, %
 ; CHECK-ASM:       # %bb.0: # %entry
 ; CHECK-ASM-NEXT:    li a2, 0
 ; CHECK-ASM-NEXT:    li a3, 0
-; CHECK-ASM-NEXT:    li a4, 0
-; CHECK-ASM-NEXT:    csrr a5, vlenb
-; CHECK-ASM-NEXT:    srli a5, a5, 1
-; CHECK-ASM-NEXT:    li a6, 1024
-; CHECK-ASM-NEXT:    li a7, 16
+; CHECK-ASM-NEXT:    csrr a4, vlenb
+; CHECK-ASM-NEXT:    srli a4, a4, 1
+; CHECK-ASM-NEXT:    li a5, 1024
+; CHECK-ASM-NEXT:    li a6, 16
 ; CHECK-ASM-NEXT:    j .LBB2_2
 ; CHECK-ASM-NEXT:  .LBB2_1: # %vector.body
 ; CHECK-ASM-NEXT:    # in Loop: Header=BB2_2 Depth=1
-; CHECK-ASM-NEXT:    slli t1, a2, 2
-; CHECK-ASM-NEXT:    add t1, a0, t1
-; CHECK-ASM-NEXT:    vsetvli t0, t0, e32, m2, ta, mu
-; CHECK-ASM-NEXT:    vle32.v v8, (t1)
-; CHECK-ASM-NEXT:    slli t1, a3, 4
-; CHECK-ASM-NEXT:    add t1, a1, t1
-; CHECK-ASM-NEXT:    addi t1, t1, 4
-; CHECK-ASM-NEXT:    vlse32.v v10, (t1), a7
-; CHECK-ASM-NEXT:    slli t1, a4, 4
-; CHECK-ASM-NEXT:    add t1, a1, t1
-; CHECK-ASM-NEXT:    addi t1, t1, 4
+; CHECK-ASM-NEXT:    slli t0, a2, 2
+; CHECK-ASM-NEXT:    add t0, a0, t0
+; CHECK-ASM-NEXT:    vsetvli a7, a7, e32, m2, ta, mu
+; CHECK-ASM-NEXT:    vle32.v v8, (t0)
+; CHECK-ASM-NEXT:    slli t0, a3, 4
+; CHECK-ASM-NEXT:    add t0, a1, t0
+; CHECK-ASM-NEXT:    addi t0, t0, 4
+; CHECK-ASM-NEXT:    vlse32.v v10, (t0), a6
 ; CHECK-ASM-NEXT:    vadd.vv v8, v10, v8
-; CHECK-ASM-NEXT:    vsse32.v v8, (t1), a7
-; CHECK-ASM-NEXT:    add a2, a2, t0
-; CHECK-ASM-NEXT:    add a3, a3, t0
-; CHECK-ASM-NEXT:    add a4, a4, t0
-; CHECK-ASM-NEXT:    beq a2, a6, .LBB2_4
+; CHECK-ASM-NEXT:    vsse32.v v8, (t0), a6
+; CHECK-ASM-NEXT:    add a2, a2, a7
+; CHECK-ASM-NEXT:    add a3, a3, a7
+; CHECK-ASM-NEXT:    beq a2, a5, .LBB2_4
 ; CHECK-ASM-NEXT:  .LBB2_2: # %vector.body
 ; CHECK-ASM-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-ASM-NEXT:    sub t0, a6, a2
-; CHECK-ASM-NEXT:    bltu t0, a5, .LBB2_1
+; CHECK-ASM-NEXT:    sub a7, a5, a2
+; CHECK-ASM-NEXT:    bltu a7, a4, .LBB2_1
 ; CHECK-ASM-NEXT:  # %bb.3: # %vector.body
 ; CHECK-ASM-NEXT:    # in Loop: Header=BB2_2 Depth=1
-; CHECK-ASM-NEXT:    mv t0, a5
+; CHECK-ASM-NEXT:    mv a7, a4
 ; CHECK-ASM-NEXT:    j .LBB2_1
 ; CHECK-ASM-NEXT:  .LBB2_4: # %for.cond.cleanup
 ; CHECK-ASM-NEXT:    ret
@@ -247,7 +242,6 @@ define void @struct_gather_scatter(i32* noalias nocapture noundef readonly %A, %
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND_SCALAR:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[VEC_IND_NEXT_SCALAR:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND_SCALAR1:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[VEC_IND_NEXT_SCALAR2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, i32* [[A:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 1024, [[INDEX]]
 ; CHECK-NEXT:    [[RVL:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP3]], i64 [[TMP1]])
@@ -256,17 +250,16 @@ define void @struct_gather_scatter(i32* noalias nocapture noundef readonly %A, %
 ; CHECK-NEXT:    [[TMP6:%.*]] = bitcast i32* [[TMP2]] to <vscale x 4 x i32>*
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0nxv4i32(<vscale x 4 x i32>* [[TMP6]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr [[STRUCT_FOO:%.*]], %struct.foo* [[B:%.*]], i64 [[VEC_IND_SCALAR]], i32 1
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr [[STRUCT_FOO]], %struct.foo* [[B]], i64 [[VEC_IND_SCALAR1]], i32 1
 ; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vp.strided.load.nxv4i32.i64(i32* [[TMP7]], i64 16, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_GATHER]], <vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4i32.i64(<vscale x 4 x i32> [[VP_OP]], i32* [[TMP8]], i64 16, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4i32.i64(<vscale x 4 x i32> [[VP_OP]], i32* [[TMP7]], i64 16, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT_SCALAR]] = add i64 [[VEC_IND_SCALAR]], [[TMP4]]
-; CHECK-NEXT:    [[VEC_IND_NEXT_SCALAR2]] = add i64 [[VEC_IND_SCALAR1]], [[TMP4]]
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; CHECK-NEXT:    br i1 [[TMP9]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP8]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
+;
 entry:
   %0 = call <vscale x 4 x i64> @llvm.experimental.stepvector.nxv4i64()
   %1 = call i64 @llvm.vscale.i64()
