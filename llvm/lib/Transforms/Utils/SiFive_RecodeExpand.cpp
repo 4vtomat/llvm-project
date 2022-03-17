@@ -93,6 +93,14 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_facgt:
   case Intrinsic::aarch64_neon_faddp:
   case Intrinsic::aarch64_neon_faddv:
+  case Intrinsic::aarch64_neon_fcvtas:
+  case Intrinsic::aarch64_neon_fcvtau:
+  case Intrinsic::aarch64_neon_fcvtms:
+  case Intrinsic::aarch64_neon_fcvtmu:
+  case Intrinsic::aarch64_neon_fcvtns:
+  case Intrinsic::aarch64_neon_fcvtnu:
+  case Intrinsic::aarch64_neon_fcvtps:
+  case Intrinsic::aarch64_neon_fcvtpu:
   case Intrinsic::aarch64_neon_fcvtzs:
   case Intrinsic::aarch64_neon_fcvtzu:
   case Intrinsic::aarch64_neon_fmaxp:
@@ -233,6 +241,58 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         Value *P1 = Builder.CreateShuffleVector(Src, {1});
         II->replaceAllUsesWith(Builder.CreateExtractElement(
             Builder.CreateFAdd(P0, P1), static_cast<uint64_t>(0)));
+        break;
+      }
+      case Intrinsic::aarch64_neon_fcvtas:
+      case Intrinsic::aarch64_neon_fcvtau:
+      case Intrinsic::aarch64_neon_fcvtms:
+      case Intrinsic::aarch64_neon_fcvtmu:
+      case Intrinsic::aarch64_neon_fcvtns:
+      case Intrinsic::aarch64_neon_fcvtnu:
+      case Intrinsic::aarch64_neon_fcvtps:
+      case Intrinsic::aarch64_neon_fcvtpu: {
+        Intrinsic::ID RoundID;
+        Intrinsic::ID FPToI;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_fcvtas:
+          RoundID = Intrinsic::round;
+          FPToI = Intrinsic::fptosi_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtau:
+          RoundID = Intrinsic::round;
+          FPToI = Intrinsic::fptoui_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtms:
+          RoundID = Intrinsic::floor;
+          FPToI = Intrinsic::fptosi_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtmu:
+          RoundID = Intrinsic::floor;
+          FPToI = Intrinsic::fptoui_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtns:
+          RoundID = Intrinsic::roundeven;
+          FPToI = Intrinsic::fptosi_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtnu:
+          RoundID = Intrinsic::roundeven;
+          FPToI = Intrinsic::fptoui_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtps:
+          RoundID = Intrinsic::ceil;
+          FPToI = Intrinsic::fptosi_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtpu:
+          RoundID = Intrinsic::ceil;
+          FPToI = Intrinsic::fptoui_sat;
+          break;
+        }
+        CallInst *Rint = Builder.CreateIntrinsic(
+            RoundID, {II->getArgOperand(0)->getType()}, {II->getArgOperand(0)});
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            FPToI, {II->getType(), Rint->getType()}, {Rint}));
         break;
       }
       case Intrinsic::aarch64_neon_fcvtzs:
