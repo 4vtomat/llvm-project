@@ -476,6 +476,18 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::INTRINSIC_WO_CHAIN, ISD::INTRINSIC_W_CHAIN},
                          MVT::i64, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+    if (Subtarget.is64Bit()) {
+      // Copied from D121113
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, MVT::i32, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, MVT::i32, Custom);
+    } else {
+      // Copied from D121113
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, MVT::i64, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, MVT::i64, Custom);
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
     setOperationAction({ISD::INTRINSIC_W_CHAIN, ISD::INTRINSIC_VOID},
                        MVT::Other, Custom);
 
@@ -646,6 +658,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           {ISD::VP_LOAD, ISD::VP_STORE, ISD::VP_GATHER, ISD::VP_SCATTER}, VT,
           Custom);
 
+#if SIFIVE_CUSTOMIZATION
+      // Copied from D121113
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, VT, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
+
       setOperationAction(
           {ISD::CONCAT_VECTORS, ISD::INSERT_SUBVECTOR, ISD::EXTRACT_SUBVECTOR},
           VT, Custom);
@@ -729,6 +747,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(
           {ISD::VP_LOAD, ISD::VP_STORE, ISD::VP_GATHER, ISD::VP_SCATTER}, VT,
           Custom);
+
+#if SIFIVE_CUSTOMIZATION
+      // Copied from D121113
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, VT, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
 
       setOperationAction(ISD::SELECT, VT, Custom);
       setOperationAction(ISD::SELECT_CC, VT, Expand);
@@ -858,6 +882,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
             {ISD::VP_LOAD, ISD::VP_STORE, ISD::VP_GATHER, ISD::VP_SCATTER}, VT,
             Custom);
 
+#if SIFIVE_CUSTOMIZATION
+        // Copied from D121113
+        setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, VT, Custom);
+        setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
+
         setOperationAction({ISD::ADD, ISD::MUL, ISD::SUB, ISD::AND, ISD::OR,
                             ISD::XOR, ISD::SDIV, ISD::SREM, ISD::UDIV,
                             ISD::UREM, ISD::SHL, ISD::SRA, ISD::SRL},
@@ -936,6 +966,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(
             {ISD::VP_LOAD, ISD::VP_STORE, ISD::VP_GATHER, ISD::VP_SCATTER}, VT,
             Custom);
+
+#if SIFIVE_CUSTOMIZATION
+        // Copied from D121113
+        setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, VT, Custom);
+        setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, VT, Custom);
+#endif // EXPERIMENTAL_VP_STRIDED_LOAD
 
         setOperationAction({ISD::FADD, ISD::FSUB, ISD::FMUL, ISD::FDIV,
                             ISD::FNEG, ISD::FABS, ISD::FCOPYSIGN, ISD::FSQRT,
@@ -3607,7 +3643,12 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
       return lowerVPSetCCMaskOp(Op, DAG);
     return lowerVPOp(Op, DAG, RISCVISD::SETCC_VL);
 #if SIFIVE_CUSTOMIZATION
-  // Copied from BSC
+  // Copied from D121113
+  case ISD::EXPERIMENTAL_VP_STRIDED_LOAD:
+    return lowerVPStridedLoad(Op, DAG);
+  case ISD::EXPERIMENTAL_VP_STRIDED_STORE:
+    return lowerVPStridedStore(Op, DAG);
+  // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
   case ISD::EXPERIMENTAL_VP_REVERSE:
@@ -6864,6 +6905,96 @@ SDValue RISCVTargetLowering::lowerLogicVPOp(SDValue Op, SelectionDAG &DAG,
     return Val;
   return convertFromScalableVector(VT, Val, DAG, Subtarget);
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Copied from D121113
+SDValue RISCVTargetLowering::lowerVPStridedLoad(SDValue Op,
+                                                SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+  MVT XLenVT = Subtarget.getXLenVT();
+  MVT VT = Op.getSimpleValueType();
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector())
+    ContainerVT = getContainerForFixedLengthVector(VT);
+
+  SDVTList VTs = DAG.getVTList({ContainerVT, MVT::Other});
+
+  auto *VPNode = cast<VPStridedLoadSDNode>(Op);
+  // Check that the Stride type is legal
+  SDValue Stride = DAG.getSExtOrTrunc(VPNode->getStride(), DL, XLenVT);
+  // Check if the mask is known to be all ones
+  SDValue Mask = VPNode->getMask();
+  bool IsUnmasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
+
+  SDValue IntID = DAG.getTargetConstant(IsUnmasked ? Intrinsic::riscv_vlse
+                                                   : Intrinsic::riscv_vlse_mask,
+                                        DL, XLenVT);
+  SmallVector<SDValue, 8> Ops{VPNode->getChain(), IntID,
+                              DAG.getUNDEF(ContainerVT), VPNode->getBasePtr(),
+                              Stride};
+  if (!IsUnmasked) {
+    if (VT.isFixedLengthVector()) {
+      MVT MaskVT = ContainerVT.changeVectorElementType(MVT::i1);
+      Mask = convertToScalableVector(MaskVT, Mask, DAG, Subtarget);
+    }
+    Ops.push_back(Mask);
+  }
+  Ops.push_back(VPNode->getVectorLength());
+  if (!IsUnmasked) {
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    Ops.push_back(Policy);
+  }
+
+  SDValue Result =
+      DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops,
+                              VPNode->getMemoryVT(), VPNode->getMemOperand());
+  SDValue Chain = Result.getValue(1);
+
+  if (VT.isFixedLengthVector())
+    Result = convertFromScalableVector(VT, Result, DAG, Subtarget);
+
+  return DAG.getMergeValues({Result, Chain}, DL);
+}
+
+SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
+                                                 SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  auto *VPNode = cast<VPStridedStoreSDNode>(Op);
+  SDValue StoreVal = VPNode->getValue();
+  MVT VT = StoreVal.getSimpleValueType();
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    StoreVal = convertToScalableVector(ContainerVT, StoreVal, DAG, Subtarget);
+  }
+
+  // Check that the Stride type is legal
+  SDValue Stride = DAG.getSExtOrTrunc(VPNode->getStride(), DL, XLenVT);
+  // Check if the mask is known to be all ones
+  SDValue Mask = VPNode->getMask();
+  bool IsUnmasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
+
+  SDValue IntID = DAG.getTargetConstant(IsUnmasked ? Intrinsic::riscv_vsse
+                                                   : Intrinsic::riscv_vsse_mask,
+                                        DL, XLenVT);
+  SmallVector<SDValue, 8> Ops{VPNode->getChain(), IntID, StoreVal,
+                              VPNode->getBasePtr(), Stride};
+  if (!IsUnmasked) {
+    if (VT.isFixedLengthVector()) {
+      MVT MaskVT = ContainerVT.changeVectorElementType(MVT::i1);
+      Mask = convertToScalableVector(MaskVT, Mask, DAG, Subtarget);
+    }
+    Ops.push_back(Mask);
+  }
+  Ops.push_back(VPNode->getVectorLength());
+
+  return DAG.getMemIntrinsicNode(ISD::INTRINSIC_VOID, DL, VPNode->getVTList(),
+                                 Ops, VPNode->getMemoryVT(),
+                                 VPNode->getMemOperand());
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // Custom lower MGATHER/VP_GATHER to a legalized form for RVV. It will then be
 // matched to a RVV indexed load. The RVV indexed load instructions only
