@@ -937,11 +937,6 @@ def : InstAlias<"csrrc $rd, $csr, $imm", (CSRRCI GPR:$rd, csr_sysreg:$csr, uimm5
 def : InstAlias<"sfence.vma",     (SFENCE_VMA      X0, X0)>;
 def : InstAlias<"sfence.vma $rs", (SFENCE_VMA GPR:$rs, X0)>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-// FIXME: Why do we have these aliases, but upstream doesn't?
-def : InstAlias<"hfence.vvma",     (HFENCE_VVMA      X0, X0)>;
-def : InstAlias<"hfence.vvma $rs", (HFENCE_VVMA GPR:$rs, X0)>;
-#endif // SIFIVE_CUSTOMIZATION
 def : InstAlias<"hfence.gvma",     (HFENCE_GVMA      X0, X0)>;
 def : InstAlias<"hfence.gvma $rs", (HFENCE_GVMA GPR:$rs, X0)>;
 
