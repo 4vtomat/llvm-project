@@ -1,4 +1,4 @@
-// c6e486ee375ac3db0435b60600e333a056ee71f3
+// a47cb04a20db2c5ebd3f080ce5eead1e9f282688
 // ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -179,8 +179,7 @@ __attribute__((always_inline)) inline int32x4_t vabal_s16(int32x4_t a, int16x4_t
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32m1(a);
 	vint16mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i16mf2(b);
 	vint16mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_i16mf2(c);
-	vint32m1_t temp_3 = vwsub_vv(vmax(temp_1, temp_2, 4), vmin(temp_1, temp_2, 4), 4);
-	return __builtin_rvv_vcast_to_fixed_128_i32m1(vadd(temp_0, temp_3, 4));
+	return __builtin_rvv_vcast_to_fixed_128_i32m1(vadd(temp_0, vwsub_vv(vmax(temp_1, temp_2, 4), vmin(temp_1, temp_2, 4), 4), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_s16") int32x4_t vabal_s16(int32x4_t a, int16x4_t b, int16x4_t c);
@@ -191,8 +190,7 @@ __attribute__((always_inline)) inline int64x2_t vabal_s32(int64x2_t a, int32x2_t
 	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i64m1(a);
 	vint32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i32mf2(b);
 	vint32mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_i32mf2(c);
-	vint64m1_t temp_3 = vwsub_vv(vmax(temp_1, temp_2, 2), vmin(temp_1, temp_2, 2), 2);
-	return __builtin_rvv_vcast_to_fixed_128_i64m1(vadd(temp_0, temp_3, 2));
+	return __builtin_rvv_vcast_to_fixed_128_i64m1(vadd(temp_0, vwsub_vv(vmax(temp_1, temp_2, 2), vmin(temp_1, temp_2, 2), 2), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_s32") int64x2_t vabal_s32(int64x2_t a, int32x2_t b, int32x2_t c);
@@ -203,8 +201,7 @@ __attribute__((always_inline)) inline int16x8_t vabal_s8(int16x8_t a, int8x8_t b
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16m1(a);
 	vint8mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i8mf2(b);
 	vint8mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_i8mf2(c);
-	vint16m1_t temp_3 = vwsub_vv(vmax(temp_1, temp_2, 8), vmin(temp_1, temp_2, 8), 8);
-	return __builtin_rvv_vcast_to_fixed_128_i16m1(vadd(temp_0, temp_3, 8));
+	return __builtin_rvv_vcast_to_fixed_128_i16m1(vadd(temp_0, vwsub_vv(vmax(temp_1, temp_2, 8), vmin(temp_1, temp_2, 8), 8), 8));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_s8") int16x8_t vabal_s8(int16x8_t a, int8x8_t b, int8x8_t c);
@@ -215,8 +212,7 @@ __attribute__((always_inline)) inline uint32x4_t vabal_u16(uint32x4_t a, uint16x
 	vuint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_u32m1(a);
 	vuint16mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_u16mf2(b);
 	vuint16mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_u16mf2(c);
-	vuint32m1_t temp_3 = vwsubu_vv(vmaxu(temp_1, temp_2, 4), vminu(temp_1, temp_2, 4), 4);
-	return __builtin_rvv_vcast_to_fixed_128_u32m1(vadd(temp_0, temp_3, 4));
+	return __builtin_rvv_vcast_to_fixed_128_u32m1(vwaddu_wv(temp_0, vsub(vmaxu(temp_1, temp_2, 4), vminu(temp_1, temp_2, 4), 4), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_u16") uint32x4_t vabal_u16(uint32x4_t a, uint16x4_t b, uint16x4_t c);
@@ -227,8 +223,7 @@ __attribute__((always_inline)) inline uint64x2_t vabal_u32(uint64x2_t a, uint32x
 	vuint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_u64m1(a);
 	vuint32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_u32mf2(b);
 	vuint32mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_u32mf2(c);
-	vuint64m1_t temp_3 = vwsubu_vv(vmaxu(temp_1, temp_2, 2), vminu(temp_1, temp_2, 2), 2);
-	return __builtin_rvv_vcast_to_fixed_128_u64m1(vadd(temp_0, temp_3, 2));
+	return __builtin_rvv_vcast_to_fixed_128_u64m1(vwaddu_wv(temp_0, vsub(vmaxu(temp_1, temp_2, 2), vminu(temp_1, temp_2, 2), 2), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_u32") uint64x2_t vabal_u32(uint64x2_t a, uint32x2_t b, uint32x2_t c);
@@ -239,8 +234,7 @@ __attribute__((always_inline)) inline uint16x8_t vabal_u8(uint16x8_t a, uint8x8_
 	vuint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_u16m1(a);
 	vuint8mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_u8mf2(b);
 	vuint8mf2_t temp_2 = __builtin_rvv_vcast_from_fixed_128_u8mf2(c);
-	vuint16m1_t temp_3 = vwsubu_vv(vmaxu(temp_1, temp_2, 8), vminu(temp_1, temp_2, 8), 8);
-	return __builtin_rvv_vcast_to_fixed_128_u16m1(vadd(temp_0, temp_3, 8));
+	return __builtin_rvv_vcast_to_fixed_128_u16m1(vwaddu_wv(temp_0, vsub(vmaxu(temp_1, temp_2, 8), vminu(temp_1, temp_2, 8), 8), 8));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vabal_u8") uint16x8_t vabal_u8(uint16x8_t a, uint8x8_t b, uint8x8_t c);
