@@ -112,8 +112,10 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_saddv:
   case Intrinsic::aarch64_neon_smax:
+  case Intrinsic::aarch64_neon_smaxp:
   case Intrinsic::aarch64_neon_smaxv:
   case Intrinsic::aarch64_neon_smin:
+  case Intrinsic::aarch64_neon_sminp:
   case Intrinsic::aarch64_neon_sminv:
   case Intrinsic::aarch64_neon_smull:
   case Intrinsic::aarch64_neon_sqadd:
@@ -140,8 +142,10 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_uaddv:
   case Intrinsic::aarch64_neon_umax:
+  case Intrinsic::aarch64_neon_umaxp:
   case Intrinsic::aarch64_neon_umaxv:
   case Intrinsic::aarch64_neon_umin:
+  case Intrinsic::aarch64_neon_uminp:
   case Intrinsic::aarch64_neon_uminv:
   case Intrinsic::aarch64_neon_umull:
   case Intrinsic::aarch64_neon_uqadd:
@@ -235,7 +239,11 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         break;
       }
       case Intrinsic::aarch64_neon_fmaxp:
-      case Intrinsic::aarch64_neon_fminp: {
+      case Intrinsic::aarch64_neon_fminp:
+      case Intrinsic::aarch64_neon_smaxp:
+      case Intrinsic::aarch64_neon_sminp:
+      case Intrinsic::aarch64_neon_umaxp:
+      case Intrinsic::aarch64_neon_uminp: {
         Value *Concatenate =
             glue(Builder, {II->getArgOperand(0), II->getArgOperand(1)});
         unsigned DesVecNumElements =
@@ -244,11 +252,31 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         for (int i = 0; i != 2; ++i)
           Input[i] = Builder.CreateShuffleVector(
               Concatenate, increasingSequenceByN(i, 2, DesVecNumElements));
+        Intrinsic::ID Op;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_fmaxp:
+          Op = Intrinsic::aarch64_neon_fmax;
+          break;
+        case Intrinsic::aarch64_neon_fminp:
+          Op = Intrinsic::aarch64_neon_fmin;
+          break;
+        case Intrinsic::aarch64_neon_smaxp:
+          Op = Intrinsic::smax;
+          break;
+        case Intrinsic::aarch64_neon_sminp:
+          Op = Intrinsic::smin;
+          break;
+        case Intrinsic::aarch64_neon_umaxp:
+          Op = Intrinsic::umax;
+          break;
+        case Intrinsic::aarch64_neon_uminp:
+          Op = Intrinsic::umin;
+          break;
+        }
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
-            II->getIntrinsicID() == Intrinsic::aarch64_neon_fmaxp
-                ? Intrinsic::aarch64_neon_fmax
-                : Intrinsic::aarch64_neon_fmin,
-            {II->getType()}, {Input[0], Input[1]}));
+            Op, {II->getArgOperand(0)->getType()}, {Input[0], Input[1]}));
         break;
       }
       case Intrinsic::aarch64_neon_fmaxv:
