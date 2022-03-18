@@ -11392,7 +11392,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                                    BlockInMaskPart, EVLPart};
               NewSI = Builder.CreateIntrinsic(
                   Intrinsic::experimental_vp_strided_store,
-                  {StoredVal->getType(), PtrTy, SAV.Stride->getType()},
+                  {StoredVal->getType(), SAV.Stride->getType()},
                   Operands);
               EmittedStridedAccess = true;
             } else {
@@ -11514,7 +11514,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                                  EVLPart};
             NewLI =
                 Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                        {DataTy, PtrTy, SAV.Stride->getType()},
+                                        {DataTy, SAV.Stride->getType()},
                                         Operands, nullptr, "vp.strided.load");
             EmittedStridedAccess = true;
           } else {
