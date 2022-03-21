@@ -5668,6 +5668,25 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   return DAG.getNode(Op->getOpcode(), DL, Op->getVTList(), Operands);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue getFixedFclass(SDValue Op, SelectionDAG &DAG,
+                              const RISCVSubtarget &Subtarget) {
+  MVT VT = getContainerForFixedLengthVector(DAG.getTargetLoweringInfo(),
+                                            Op.getSimpleValueType(), Subtarget);
+  SDValue ScalableOp = convertToScalableVector(VT, Op, DAG, Subtarget);
+  SDLoc DL(Op);
+  SDValue Mask, VL;
+  std::tie(Mask, VL) =
+      getDefaultVLOps(Op.getSimpleValueType(), VT, DL, DAG, Subtarget);
+  return convertFromScalableVector(
+      Op.getValueType().changeVectorElementTypeToInteger(),
+      DAG.getNode(RISCVISD::FCLASS_VL, DL,
+                  ScalableOp.getValueType().changeVectorElementTypeToInteger(),
+                  ScalableOp, Mask, VL),
+      DAG, Subtarget);
+}
+#endif
+
 SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                                      SelectionDAG &DAG) const {
   unsigned IntNo = Op.getConstantOperandVal(0);
@@ -5880,6 +5899,38 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         DL, getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT), Op0,
         Op1, ISD::SETUO);
     return DAG.getSelect(DL, VT, IsNaN, TrueVal, FalseVal);
+  }
+  case Intrinsic::aarch64_neon_fmaxnm:
+  case Intrinsic::aarch64_neon_fminnm: {
+    // aarch64_neon_fmaxnm is similar to FMAXNUM, but
+    // aarch64_neon_fmaxnm requires (-0 < +0)
+    //                |         right
+    //                |----------------------
+    //                |  qnan |  snan | other
+    // ---------------+-------+-------+------
+    //        | qnan  |  NaN  |  NaN  | other
+    //   left | snan  |  NaN  |  NaN  |  NaN
+    //        | other | other |  NaN  | op(left, right)
+    SDValue Op0 = Op.getOperand(1);
+    SDValue Op1 = Op.getOperand(2);
+    EVT VT = Op.getValueType();
+    SDValue FclassOp0 = getFixedFclass(Op0, DAG, Subtarget);
+    SDValue FclassOp1 = getFixedFclass(Op1, DAG, Subtarget);
+    SDValue FclassOr = DAG.getNode(ISD::OR, DL, FclassOp0.getValueType(),
+                                   FclassOp0, FclassOp1);
+    EVT FclassOrVT = FclassOr.getValueType();
+    // 256 is signaling NaN.
+    SDValue FclassMask = DAG.getNode(ISD::AND, DL, FclassOrVT, FclassOr,
+                                     DAG.getConstant(256, DL, FclassOrVT));
+    SDValue TrueVal = DAG.getConstantFP(
+        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG,
+                                         IntNo == Intrinsic::aarch64_neon_fmaxnm
+                                             ? RISCVISD::FMAXNUM_VL
+                                             : RISCVISD::FMINNUM_VL,
+                                         true);
+    return DAG.getSelectCC(DL, FclassMask, DAG.getConstant(0, DL, FclassOrVT),
+                           TrueVal, FalseVal, ISD::SETNE);
   }
 #endif
   }
