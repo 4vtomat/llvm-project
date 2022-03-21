@@ -6,10 +6,26 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv2i32.nxv8i8.nxv4i8(
   <vscale x 2 x i32>,
   <vscale x 8 x i8>,
   <vscale x 4 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 2 x i32> @test_0_nxv2i32_nxv4i8(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_0_nxv2i32_nxv4i8:
+define <vscale x 2 x i32> @test_0_nxv2i32_nxv4i8_tu(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_0_nxv2i32_nxv4i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, tu, mu
+; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 2 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv2i32.nxv8i8.nxv4i8(
+            <vscale x 2 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 4 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 2 x i32> %a
+}
+
+define <vscale x 2 x i32> @test_0_nxv2i32_nxv4i8_ta(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_0_nxv2i32_nxv4i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v9, v10
@@ -19,7 +35,7 @@ entry:
             <vscale x 2 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 4 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 2 x i32> %a
 }
@@ -28,10 +44,26 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv4i32.nxv8i8.nxv8i8(
   <vscale x 4 x i32>,
   <vscale x 8 x i8>,
   <vscale x 8 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 4 x i32> @test_1_nxv4i32_nxv8i8(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_1_nxv4i32_nxv8i8:
+define <vscale x 4 x i32> @test_1_nxv4i32_nxv8i8_tu(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_1_nxv4i32_nxv8i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, tu, mu
+; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v10, v11
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 4 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv4i32.nxv8i8.nxv8i8(
+            <vscale x 4 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 8 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 4 x i32> %a
+}
+
+define <vscale x 4 x i32> @test_1_nxv4i32_nxv8i8_ta(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_1_nxv4i32_nxv8i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
 ; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v10, v11
@@ -41,7 +73,7 @@ entry:
             <vscale x 4 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 8 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 4 x i32> %a
 }
@@ -50,10 +82,26 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv8i32.nxv8i8.nxv16i8(
   <vscale x 8 x i32>,
   <vscale x 8 x i8>,
   <vscale x 16 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 8 x i32> @test_2_nxv8i32_nxv16i8(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_2_nxv8i32_nxv16i8:
+define <vscale x 8 x i32> @test_2_nxv8i32_nxv16i8_tu(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_2_nxv8i32_nxv16i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
+; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v12, v14
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 8 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv8i32.nxv8i8.nxv16i8(
+            <vscale x 8 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 16 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 8 x i32> %a
+}
+
+define <vscale x 8 x i32> @test_2_nxv8i32_nxv16i8_ta(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_2_nxv8i32_nxv16i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v12, v14
@@ -63,7 +111,7 @@ entry:
             <vscale x 8 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 16 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 8 x i32> %a
 }
@@ -72,10 +120,26 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv16i32.nxv8i8.nxv32i8
   <vscale x 16 x i32>,
   <vscale x 8 x i8>,
   <vscale x 32 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 16 x i32> @test_3_nxv16i32_nxv32i8(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_3_nxv16i32_nxv32i8:
+define <vscale x 16 x i32> @test_3_nxv16i32_nxv32i8_tu(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_3_nxv16i32_nxv32i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, tu, mu
+; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v16, v20
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 16 x i32> @llvm.riscv.sf.vqmaccu.4x8x4.nxv16i32.nxv8i8.nxv32i8(
+            <vscale x 16 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 32 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 16 x i32> %a
+}
+
+define <vscale x 16 x i32> @test_3_nxv16i32_nxv32i8_ta(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_3_nxv16i32_nxv32i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
 ; CHECK-NEXT:    sf.vqmaccu.4x8x4 v8, v16, v20
@@ -85,7 +149,7 @@ entry:
             <vscale x 16 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 32 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 16 x i32> %a
 }
@@ -94,10 +158,26 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv2i32.nxv8i8.nxv4i8(
   <vscale x 2 x i32>,
   <vscale x 8 x i8>,
   <vscale x 4 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 2 x i32> @test_4_nxv2i32_nxv4i8(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_4_nxv2i32_nxv4i8:
+define <vscale x 2 x i32> @test_4_nxv2i32_nxv4i8_tu(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_4_nxv2i32_nxv4i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, tu, mu
+; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 2 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv2i32.nxv8i8.nxv4i8(
+            <vscale x 2 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 4 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 2 x i32> %a
+}
+
+define <vscale x 2 x i32> @test_4_nxv2i32_nxv4i8_ta(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_4_nxv2i32_nxv4i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
 ; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v9, v10
@@ -107,7 +187,7 @@ entry:
             <vscale x 2 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 4 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 2 x i32> %a
 }
@@ -116,10 +196,26 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv4i32.nxv8i8.nxv8i8(
   <vscale x 4 x i32>,
   <vscale x 8 x i8>,
   <vscale x 8 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 4 x i32> @test_5_nxv4i32_nxv8i8(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_5_nxv4i32_nxv8i8:
+define <vscale x 4 x i32> @test_5_nxv4i32_nxv8i8_tu(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_5_nxv4i32_nxv8i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, tu, mu
+; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v10, v11
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 4 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv4i32.nxv8i8.nxv8i8(
+            <vscale x 4 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 8 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 4 x i32> %a
+}
+
+define <vscale x 4 x i32> @test_5_nxv4i32_nxv8i8_ta(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_5_nxv4i32_nxv8i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
 ; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v10, v11
@@ -129,7 +225,7 @@ entry:
             <vscale x 4 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 8 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 4 x i32> %a
 }
@@ -138,10 +234,26 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv8i32.nxv8i8.nxv16i8(
   <vscale x 8 x i32>,
   <vscale x 8 x i8>,
   <vscale x 16 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 8 x i32> @test_6_nxv8i32_nxv16i8(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_6_nxv8i32_nxv16i8:
+define <vscale x 8 x i32> @test_6_nxv8i32_nxv16i8_tu(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_6_nxv8i32_nxv16i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
+; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v12, v14
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 8 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv8i32.nxv8i8.nxv16i8(
+            <vscale x 8 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 16 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 8 x i32> %a
+}
+
+define <vscale x 8 x i32> @test_6_nxv8i32_nxv16i8_ta(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_6_nxv8i32_nxv16i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
 ; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v12, v14
@@ -151,7 +263,7 @@ entry:
             <vscale x 8 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 16 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 8 x i32> %a
 }
@@ -160,10 +272,26 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv16i32.nxv8i8.nxv32i8(
   <vscale x 16 x i32>,
   <vscale x 8 x i8>,
   <vscale x 32 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 16 x i32> @test_7_nxv16i32_nxv32i8(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_7_nxv16i32_nxv32i8:
+define <vscale x 16 x i32> @test_7_nxv16i32_nxv32i8_tu(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_7_nxv16i32_nxv32i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, tu, mu
+; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v16, v20
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 16 x i32> @llvm.riscv.sf.vqmacc.4x8x4.nxv16i32.nxv8i8.nxv32i8(
+            <vscale x 16 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 32 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 16 x i32> %a
+}
+
+define <vscale x 16 x i32> @test_7_nxv16i32_nxv32i8_ta(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_7_nxv16i32_nxv32i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
 ; CHECK-NEXT:    sf.vqmacc.4x8x4 v8, v16, v20
@@ -173,7 +301,7 @@ entry:
             <vscale x 16 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 32 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 16 x i32> %a
 }
@@ -182,10 +310,26 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv2i32.nxv8i8.nxv4i8(
   <vscale x 2 x i32>,
   <vscale x 8 x i8>,
   <vscale x 4 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 2 x i32> @test_8_nxv2i32_nxv4i8(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_8_nxv2i32_nxv4i8:
+define <vscale x 2 x i32> @test_8_nxv2i32_nxv4i8_tu(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_8_nxv2i32_nxv4i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, tu, mu
+; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 2 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv2i32.nxv8i8.nxv4i8(
+            <vscale x 2 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 4 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 2 x i32> %a
+}
+
+define <vscale x 2 x i32> @test_8_nxv2i32_nxv4i8_ta(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_8_nxv2i32_nxv4i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v9, v10
@@ -195,7 +339,7 @@ entry:
             <vscale x 2 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 4 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 2 x i32> %a
 }
@@ -204,10 +348,26 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv4i32.nxv8i8.nxv8i8(
   <vscale x 4 x i32>,
   <vscale x 8 x i8>,
   <vscale x 8 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 4 x i32> @test_9_nxv4i32_nxv8i8(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_9_nxv4i32_nxv8i8:
+define <vscale x 4 x i32> @test_9_nxv4i32_nxv8i8_tu(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_9_nxv4i32_nxv8i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, tu, mu
+; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v10, v11
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 4 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv4i32.nxv8i8.nxv8i8(
+            <vscale x 4 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 8 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 4 x i32> %a
+}
+
+define <vscale x 4 x i32> @test_9_nxv4i32_nxv8i8_ta(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_9_nxv4i32_nxv8i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
 ; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v10, v11
@@ -217,7 +377,7 @@ entry:
             <vscale x 4 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 8 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 4 x i32> %a
 }
@@ -226,10 +386,26 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv8i32.nxv8i8.nxv16i8(
   <vscale x 8 x i32>,
   <vscale x 8 x i8>,
   <vscale x 16 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 8 x i32> @test_10_nxv8i32_nxv16i8(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_10_nxv8i32_nxv16i8:
+define <vscale x 8 x i32> @test_10_nxv8i32_nxv16i8_tu(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_10_nxv8i32_nxv16i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
+; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v12, v14
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 8 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv8i32.nxv8i8.nxv16i8(
+            <vscale x 8 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 16 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 8 x i32> %a
+}
+
+define <vscale x 8 x i32> @test_10_nxv8i32_nxv16i8_ta(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_10_nxv8i32_nxv16i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v12, v14
@@ -239,7 +415,7 @@ entry:
             <vscale x 8 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 16 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 8 x i32> %a
 }
@@ -248,10 +424,26 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv16i32.nxv8i8.nxv32i
   <vscale x 16 x i32>,
   <vscale x 8 x i8>,
   <vscale x 32 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 16 x i32> @test_11_nxv16i32_nxv32i8(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_11_nxv16i32_nxv32i8:
+define <vscale x 16 x i32> @test_11_nxv16i32_nxv32i8_tu(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_11_nxv16i32_nxv32i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, tu, mu
+; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v16, v20
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 16 x i32> @llvm.riscv.sf.vqmaccus.4x8x4.nxv16i32.nxv8i8.nxv32i8(
+            <vscale x 16 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 32 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 16 x i32> %a
+}
+
+define <vscale x 16 x i32> @test_11_nxv16i32_nxv32i8_ta(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_11_nxv16i32_nxv32i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
 ; CHECK-NEXT:    sf.vqmaccus.4x8x4 v8, v16, v20
@@ -261,7 +453,7 @@ entry:
             <vscale x 16 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 32 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 16 x i32> %a
 }
@@ -270,10 +462,26 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv2i32.nxv8i8.nxv4i8(
   <vscale x 2 x i32>,
   <vscale x 8 x i8>,
   <vscale x 4 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 2 x i32> @test_12_nxv2i32_nxv4i8(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_12_nxv2i32_nxv4i8:
+define <vscale x 2 x i32> @test_12_nxv2i32_nxv4i8_tu(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_12_nxv2i32_nxv4i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, tu, mu
+; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 2 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv2i32.nxv8i8.nxv4i8(
+            <vscale x 2 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 4 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 2 x i32> %a
+}
+
+define <vscale x 2 x i32> @test_12_nxv2i32_nxv4i8_ta(<vscale x 2 x i32> %0, <vscale x 8 x i8> %1, <vscale x 4 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_12_nxv2i32_nxv4i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v9, v10
@@ -283,7 +491,7 @@ entry:
             <vscale x 2 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 4 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 2 x i32> %a
 }
@@ -292,10 +500,26 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv4i32.nxv8i8.nxv8i8(
   <vscale x 4 x i32>,
   <vscale x 8 x i8>,
   <vscale x 8 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 4 x i32> @test_13_nxv4i32_nxv8i8(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_13_nxv4i32_nxv8i8:
+define <vscale x 4 x i32> @test_13_nxv4i32_nxv8i8_tu(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_13_nxv4i32_nxv8i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, tu, mu
+; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v10, v11
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 4 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv4i32.nxv8i8.nxv8i8(
+            <vscale x 4 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 8 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 4 x i32> %a
+}
+
+define <vscale x 4 x i32> @test_13_nxv4i32_nxv8i8_ta(<vscale x 4 x i32> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_13_nxv4i32_nxv8i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
 ; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v10, v11
@@ -305,7 +529,7 @@ entry:
             <vscale x 4 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 8 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 4 x i32> %a
 }
@@ -314,10 +538,26 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv8i32.nxv8i8.nxv16i8(
   <vscale x 8 x i32>,
   <vscale x 8 x i8>,
   <vscale x 16 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 8 x i32> @test_14_nxv8i32_nxv16i8(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_14_nxv8i32_nxv16i8:
+define <vscale x 8 x i32> @test_14_nxv8i32_nxv16i8_tu(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_14_nxv8i32_nxv16i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
+; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v12, v14
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 8 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv8i32.nxv8i8.nxv16i8(
+            <vscale x 8 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 16 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 8 x i32> %a
+}
+
+define <vscale x 8 x i32> @test_14_nxv8i32_nxv16i8_t1(<vscale x 8 x i32> %0, <vscale x 8 x i8> %1, <vscale x 16 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_14_nxv8i32_nxv16i8_t1:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
 ; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v12, v14
@@ -327,7 +567,7 @@ entry:
             <vscale x 8 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 16 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 8 x i32> %a
 }
@@ -336,10 +576,26 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv16i32.nxv8i8.nxv32i
   <vscale x 16 x i32>,
   <vscale x 8 x i8>,
   <vscale x 32 x i8>,
-  i64);
+  i64, i64);
 
-define <vscale x 16 x i32> @test_15_nxv16i32_nxv32i8(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_15_nxv16i32_nxv32i8:
+define <vscale x 16 x i32> @test_15_nxv16i32_nxv32i8_tu(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_15_nxv16i32_nxv32i8_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, tu, mu
+; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v16, v20
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 16 x i32> @llvm.riscv.sf.vqmaccsu.4x8x4.nxv16i32.nxv8i8.nxv32i8(
+            <vscale x 16 x i32> %0,
+            <vscale x 8 x i8> %1,
+            <vscale x 32 x i8> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 16 x i32> %a
+}
+
+define <vscale x 16 x i32> @test_15_nxv16i32_nxv32i8_ta(<vscale x 16 x i32> %0, <vscale x 8 x i8> %1, <vscale x 32 x i8> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_15_nxv16i32_nxv32i8_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
 ; CHECK-NEXT:    sf.vqmaccsu.4x8x4 v8, v16, v20
@@ -349,7 +605,7 @@ entry:
             <vscale x 16 x i32> %0,
             <vscale x 8 x i8> %1,
             <vscale x 32 x i8> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 16 x i32> %a
 }

@@ -3398,32 +3398,6 @@ class VPatTernaryNoMaskWithPolicy<string intrinsic,
                     op2_kind:$rs2,
                     GPR:$vl, sew, (XLenVT timm:$policy))>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-// FIXME: Update intrinsic and use VPatTernaryNoMaskWithPolicy.
-class VPatTernaryNoMaskStaticPolicy<string intrinsic,
-                                    string inst,
-                                    string kind,
-                                    ValueType result_type,
-                                    ValueType op1_type,
-                                    ValueType op2_type,
-                                    int sew,
-                                    LMULInfo vlmul,
-                                    VReg result_reg_class,
-                                    RegisterClass op1_reg_class,
-                                    DAGOperand op2_kind,
-                                    int policy = TAIL_UNDISTURBED> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic)
-                    (result_type result_reg_class:$rs3),
-                    (op1_type op1_reg_class:$rs1),
-                    (op2_type op2_kind:$rs2),
-                    VLOpFrag)),
-                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
-                    result_reg_class:$rs3,
-                    (op1_type op1_reg_class:$rs1),
-                    op2_kind:$rs2,
-                    GPR:$vl, sew, policy)>;
-#endif // SIFIVE_CUSTOMIZATION
-
 class VPatTernaryMask<string intrinsic,
                       string inst,
                       string kind,
@@ -3832,11 +3806,10 @@ multiclass XPatSFVQMACC_VV<string intrinsic, string instruction,
   foreach VtiToWti = vtilist in {
     defvar Vti = VtiToWti.Vti;
     defvar Wti = VtiToWti.Wti;
-    def : VPatTernaryNoMaskStaticPolicy<intrinsic, instruction, "VV",
+    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VV",
                                         Wti.Vector, vint8m1_t, Vti.Vector,
                                         Vti.Log2SEW, Vti.LMul,
-                                        Wti.RegClass, VR, Vti.RegClass,
-                                        TAIL_AGNOSTIC>;
+                                        Wti.RegClass, VR, Vti.RegClass>;
   }
 }
 
@@ -5846,11 +5819,10 @@ let Predicates = [HasExtXsfvfwmaccqqq] in {
   foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
-    def: VPatTernaryNoMaskStaticPolicy<"int_riscv_sf_vfwmacc_4x4x4", "PseudoVFWMACC4X4X4", "VV",
+    def: VPatTernaryNoMaskWithPolicy<"int_riscv_sf_vfwmacc_4x4x4", "PseudoVFWMACC4X4X4", "VV",
                                        fwti.Vector, vbfloat16m1_t, fvti.Vector,
                                        fvti.Log2SEW, fvti.LMul,
-                                       fwti.RegClass, VR, fvti.RegClass,
-                                       TAIL_AGNOSTIC>;
+                                       fwti.RegClass, VR, fvti.RegClass>;
   }
 }
 

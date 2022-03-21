@@ -453,11 +453,12 @@ let TargetPrefix = "riscv" in {
     let VLOperand = 4;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  // Input: (vector_in, vector_in, vector_in, vl)
+  // Input: (vector_in, vector_in, vector_in, vl, policy)
   class RISCVSFCustomVQMACC: Intrinsic<[llvm_anyvector_ty],
                                        [LLVMMatchType<0>, llvm_anyvector_ty,
-                                        llvm_anyvector_ty, llvm_anyint_ty],
-                                       [IntrNoMem]>, RISCVVIntrinsic {
+                                        llvm_anyvector_ty, llvm_anyint_ty,
+                                        LLVMMatchType<3>],
+                                       [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 3;
   }
 

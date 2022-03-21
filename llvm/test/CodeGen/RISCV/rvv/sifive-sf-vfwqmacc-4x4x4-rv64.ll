@@ -6,10 +6,26 @@ declare <vscale x 1 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv1f32.nx4bf16.nx1bf1
   <vscale x 1 x float>,
   <vscale x 4 x bfloat>,
   <vscale x 1 x bfloat>,
-  i64);
+  i64, i64);
 
-define <vscale x 1 x float> @test_nxv1f32(<vscale x 1 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 1 x bfloat> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_nxv1f32:
+define <vscale x 1 x float> @test_nxv1f32_tu(<vscale x 1 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 1 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv1f32_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, tu, mu
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 1 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv1f32.nx4bf16.nx1bf1(
+            <vscale x 1 x float> %0,
+            <vscale x 4 x bfloat> %1,
+            <vscale x 1 x bfloat> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 1 x float> %a
+}
+
+define <vscale x 1 x float> @test_nxv1f32_ta(<vscale x 1 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 1 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv1f32_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v9, v10
@@ -19,7 +35,7 @@ entry:
             <vscale x 1 x float> %0,
             <vscale x 4 x bfloat> %1,
             <vscale x 1 x bfloat> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 1 x float> %a
 }
@@ -28,10 +44,26 @@ declare <vscale x 2 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv2f32(
   <vscale x 2 x float>,
   <vscale x 4 x bfloat>,
   <vscale x 2 x bfloat>,
-  i64);
+  i64, i64);
 
-define <vscale x 2 x float> @test_nxv2f32(<vscale x 2 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 2 x bfloat> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_nxv2f32:
+define <vscale x 2 x float> @test_nxv2f32_tu(<vscale x 2 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 2 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv2f32_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, tu, mu
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v9, v10
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 2 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv2f32(
+            <vscale x 2 x float> %0,
+            <vscale x 4 x bfloat> %1,
+            <vscale x 2 x bfloat> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 2 x float> %a
+}
+
+define <vscale x 2 x float> @test_nxv2f32_ta(<vscale x 2 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 2 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv2f32_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v9, v10
@@ -41,7 +73,7 @@ entry:
             <vscale x 2 x float> %0,
             <vscale x 4 x bfloat> %1,
             <vscale x 2 x bfloat> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 2 x float> %a
 }
@@ -50,10 +82,26 @@ declare <vscale x 4 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv4f32(
   <vscale x 4 x float>,
   <vscale x 4 x bfloat>,
   <vscale x 4 x bfloat>,
-  i64);
+  i64, i64);
 
-define <vscale x 4 x float> @test_nxv4f32(<vscale x 4 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 4 x bfloat> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_nxv4f32:
+define <vscale x 4 x float> @test_nxv4f32_tu(<vscale x 4 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 4 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv4f32_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, tu, mu
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v10, v11
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 4 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv4f32(
+            <vscale x 4 x float> %0,
+            <vscale x 4 x bfloat> %1,
+            <vscale x 4 x bfloat> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 4 x float> %a
+}
+
+define <vscale x 4 x float> @test_nxv4f32_ta(<vscale x 4 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 4 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv4f32_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v10, v11
@@ -63,7 +111,7 @@ entry:
             <vscale x 4 x float> %0,
             <vscale x 4 x bfloat> %1,
             <vscale x 4 x bfloat> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 4 x float> %a
 }
@@ -72,10 +120,26 @@ declare <vscale x 8 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv8f32(
   <vscale x 8 x float>,
   <vscale x 4 x bfloat>,
   <vscale x 8 x bfloat>,
-  i64);
+  i64, i64);
 
-define <vscale x 8 x float> @test_nxv8f32(<vscale x 8 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 8 x bfloat> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_nxv8f32:
+define <vscale x 8 x float> @test_nxv8f32_tu(<vscale x 8 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 8 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv8f32_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, tu, mu
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v12, v14
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 8 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv8f32(
+            <vscale x 8 x float> %0,
+            <vscale x 4 x bfloat> %1,
+            <vscale x 8 x bfloat> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 8 x float> %a
+}
+
+define <vscale x 8 x float> @test_nxv8f32_ta(<vscale x 8 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 8 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv8f32_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v12, v14
@@ -85,7 +149,7 @@ entry:
             <vscale x 8 x float> %0,
             <vscale x 4 x bfloat> %1,
             <vscale x 8 x bfloat> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 8 x float> %a
 }
@@ -94,10 +158,26 @@ declare <vscale x 16 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv16f32(
   <vscale x 16 x float>,
   <vscale x 4 x bfloat>,
   <vscale x 16 x bfloat>,
-  i64);
+  i64, i64);
 
-define <vscale x 16 x float> @test_nxv16f32(<vscale x 16 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 16 x bfloat> %2, i64 %3) nounwind {
-; CHECK-LABEL: test_nxv16f32:
+define <vscale x 16 x float> @test_nxv16f32_tu(<vscale x 16 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 16 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv16f32_tu:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v16, v20
+; CHECK-NEXT:    jalr zero, 0(ra)
+entry:
+  %a = call <vscale x 16 x float> @llvm.riscv.sf.vfwmacc.4x4x4.nxv16f32(
+            <vscale x 16 x float> %0,
+            <vscale x 4 x bfloat> %1,
+            <vscale x 16 x bfloat> %2,
+            i64 %3, i64 0)
+
+  ret <vscale x 16 x float> %a
+}
+
+define <vscale x 16 x float> @test_nxv16f32_ta(<vscale x 16 x float> %0, <vscale x 4 x bfloat> %1, <vscale x 16 x bfloat> %2, i64 %3) nounwind {
+; CHECK-LABEL: test_nxv16f32_ta:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v16, v20
@@ -107,7 +187,7 @@ entry:
             <vscale x 16 x float> %0,
             <vscale x 4 x bfloat> %1,
             <vscale x 16 x bfloat> %2,
-            i64 %3)
+            i64 %3, i64 1)
 
   ret <vscale x 16 x float> %a
 }

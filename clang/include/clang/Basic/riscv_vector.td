@@ -2329,6 +2329,7 @@ let IntrinsicTypes = [-1] in
 // Below is not for upstream
 //
 let RequiredFeatures = ["Xsfvqmaccqoq"],
+    UnMaskedPolicy = HasPolicyOperand,
     Log2LMUL = [0, 1, 2, -1],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
@@ -2343,6 +2344,7 @@ let RequiredFeatures = ["Xsfvqmaccqoq"],
 }
 
 let RequiredFeatures = ["Xsfvqmaccdod"],
+    UnMaskedPolicy = HasPolicyOperand,
     Log2LMUL = [0, 1, 2, 3],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
@@ -2373,6 +2375,7 @@ let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,
 }
 
 let RequiredFeatures = ["Xsfvfwmaccqqq"],
+    UnMaskedPolicy = HasPolicyOperand,
     Log2LMUL = [-2, -1, 0, 1, 2],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
