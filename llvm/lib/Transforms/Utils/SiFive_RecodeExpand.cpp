@@ -64,6 +64,14 @@ static Value *glue(IRBuilder<> &Builder, SmallVector<Value *, 4> Src) {
   return Src[0];
 }
 
+static Value *narrow(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
+  VectorType *SrcTy = cast<VectorType>(V->getType());
+  return Builder.CreateExtractVector(
+      VectorType::get(SrcTy->getElementType(), DesNumElements,
+                      SrcTy->getElementCount().isScalable()),
+      V, Builder.getInt64(0));
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_ld1x2:
@@ -78,6 +86,10 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_st2:
   case Intrinsic::aarch64_neon_st3:
   case Intrinsic::aarch64_neon_st4:
+  case Intrinsic::aarch64_neon_tbl1:
+  case Intrinsic::aarch64_neon_tbl2:
+  case Intrinsic::aarch64_neon_tbl3:
+  case Intrinsic::aarch64_neon_tbl4:
     return true;
   }
   return false;
@@ -197,6 +209,47 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(
             Builder.CreateIntrinsic(Vsseg[StructNumElements - 2],
                                     {Ops[0]->getType(), VL->getType()}, Ops));
+        break;
+      }
+      case Intrinsic::aarch64_neon_tbl1:
+      case Intrinsic::aarch64_neon_tbl2:
+      case Intrinsic::aarch64_neon_tbl3:
+      case Intrinsic::aarch64_neon_tbl4: {
+        const unsigned TableSize = 16;
+        size_t TableNum = II->arg_size() - 1;
+        Value *Index = II->getArgOperand(II->arg_size() - 1);
+        unsigned IndexNumElements =
+            cast<FixedVectorType>(Index->getType())->getNumElements();
+        SmallVector<Value *, 4> Arg;
+        for (size_t i = 0; i != TableNum; ++i)
+          Arg.push_back(II->getArgOperand(i));
+        Value *Concatenate = glue(Builder, Arg);
+        // TableNum may be 3. Widen Concatenate to a proper size.
+        unsigned VrgatherNumElements = TableSize * PowerOf2Ceil(TableNum);
+        Concatenate = widen(Builder, Concatenate, VrgatherNumElements);
+        // IndexNumElements may be smaller than TableSize. We need to widen
+        // Index.
+        Value *WidenIndex = widen(Builder, Index, VrgatherNumElements);
+        Type *VrgatherTy =
+            TTI.getScalableVectorFromFixed(Concatenate->getType());
+        ConstantInt *VL = Builder.getIntN(XLEN, IndexNumElements);
+        Value *Vrgather = Builder.CreateIntrinsic(
+            Intrinsic::riscv_vrgather_vv, {VrgatherTy, VL->getType()},
+            {UndefValue::get(VrgatherTy),
+             toScalableVector(TTI, Builder, Concatenate),
+             toScalableVector(TTI, Builder, WidenIndex), VL});
+        Vrgather = Builder.CreateExtractVector(Concatenate->getType(), Vrgather,
+                                               Builder.getInt64(0));
+        // Only <IndexNumElements x i8> is meaningful.
+        Vrgather = narrow(Builder, Vrgather, IndexNumElements);
+        // If Index is greater than or equal to TableSize * TableNum, return 0.
+        Value *CC = Builder.CreateICmpUGT(
+            Index,
+            Builder.CreateVectorSplat(
+                IndexNumElements, Builder.getInt8(TableSize * TableNum - 1)));
+        Value *TrueVal =
+            Builder.CreateVectorSplat(IndexNumElements, Builder.getInt8(0));
+        II->replaceAllUsesWith(Builder.CreateSelect(CC, TrueVal, Vrgather));
         break;
       }
       default:
