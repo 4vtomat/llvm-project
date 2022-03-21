@@ -91,6 +91,10 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_tbl2:
   case Intrinsic::aarch64_neon_tbl3:
   case Intrinsic::aarch64_neon_tbl4:
+  case Intrinsic::aarch64_neon_tbx1:
+  case Intrinsic::aarch64_neon_tbx2:
+  case Intrinsic::aarch64_neon_tbx3:
+  case Intrinsic::aarch64_neon_tbx4:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -228,15 +232,39 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       case Intrinsic::aarch64_neon_tbl1:
       case Intrinsic::aarch64_neon_tbl2:
       case Intrinsic::aarch64_neon_tbl3:
-      case Intrinsic::aarch64_neon_tbl4: {
+      case Intrinsic::aarch64_neon_tbl4:
+      case Intrinsic::aarch64_neon_tbx1:
+      case Intrinsic::aarch64_neon_tbx2:
+      case Intrinsic::aarch64_neon_tbx3:
+      case Intrinsic::aarch64_neon_tbx4: {
+        bool IsTbl;
+        unsigned TableOperandBegin;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_tbl1:
+        case Intrinsic::aarch64_neon_tbl2:
+        case Intrinsic::aarch64_neon_tbl3:
+        case Intrinsic::aarch64_neon_tbl4:
+          IsTbl = true;
+          TableOperandBegin = 0;
+          break;
+        case Intrinsic::aarch64_neon_tbx1:
+        case Intrinsic::aarch64_neon_tbx2:
+        case Intrinsic::aarch64_neon_tbx3:
+        case Intrinsic::aarch64_neon_tbx4:
+          IsTbl = false;
+          TableOperandBegin = 1;
+          break;
+        }
         const unsigned TableSize = 16;
-        size_t TableNum = II->arg_size() - 1;
+        size_t TableNum = II->arg_size() - (IsTbl ? 1 : 2);
         Value *Index = II->getArgOperand(II->arg_size() - 1);
         unsigned IndexNumElements =
             cast<FixedVectorType>(Index->getType())->getNumElements();
         SmallVector<Value *, 4> Arg;
         for (size_t i = 0; i != TableNum; ++i)
-          Arg.push_back(II->getArgOperand(i));
+          Arg.push_back(II->getArgOperand(i + TableOperandBegin));
         Value *Concatenate = glue(Builder, Arg);
         // TableNum may be 3. Widen Concatenate to a proper size.
         unsigned VrgatherNumElements = TableSize * PowerOf2Ceil(TableNum);
@@ -261,8 +289,9 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Index,
             Builder.CreateVectorSplat(
                 IndexNumElements, Builder.getInt8(TableSize * TableNum - 1)));
-        Value *TrueVal =
-            Builder.CreateVectorSplat(IndexNumElements, Builder.getInt8(0));
+        Value *TrueVal = IsTbl ? Builder.CreateVectorSplat(IndexNumElements,
+                                                           Builder.getInt8(0))
+                               : II->getArgOperand(0);
         II->replaceAllUsesWith(Builder.CreateSelect(CC, TrueVal, Vrgather));
         break;
       }
