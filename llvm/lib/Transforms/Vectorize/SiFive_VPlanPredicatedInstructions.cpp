@@ -210,8 +210,11 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     // Just widen unops and binops.
 
     SmallVector<Value *, 4> Ops;
-    for (VPValue *VPOp : User.operands())
+    for (unsigned I = 0, E = Instruction::isBinaryOp(Opcode) ? 2 : 1; I < E;
+         ++I) {
+      VPValue *VPOp = User.getOperand(I);
       Ops.push_back(State.get(VPOp, Part));
+    }
 
     VectorType *OpTy = cast<VectorType>(Ops[0]->getType());
     // FIXME: This is a hack because we are not being honest here.
