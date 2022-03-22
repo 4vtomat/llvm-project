@@ -103,6 +103,16 @@ def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_fclass_vl : SDNode<"RISCVISD::FCLASS_VL",
+                             SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
+                                                  SDTCisFP<1>, SDTCisVec<1>,
+                                                  SDTCisSameSizeAs<0, 1>,
+                                                  SDTCVecEltisVT<2, i1>,
+                                                  SDTCisSameNumEltsAs<0, 2>,
+                                                  SDTCisVT<3, XLenVT>]>>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SDT_RISCVVecFMA_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                               SDTCisSameAs<0, 2>,
                                               SDTCisSameAs<0, 3>,
@@ -1485,6 +1495,15 @@ foreach vti = AllFloatVectors in {
                                 VLOpFrag),
             (!cast<Instruction>("PseudoVFSGNJ_V"#vti.ScalarSuffix#"_"# vti.LMul.MX)
                  vti.RegClass:$rs1, vti.ScalarRegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // 14.14. Vector Floating-Point Classify Instruction
+  def : Pat<(riscv_fclass_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
+                             VLOpFrag),
+            (!cast<Instruction>("PseudoVFCLASS_V_"# vti.LMul.MX)
+                 vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 }
 
 foreach fvti = AllFloatVectors in {
