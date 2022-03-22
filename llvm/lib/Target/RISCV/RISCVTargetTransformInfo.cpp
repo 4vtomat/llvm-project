@@ -416,6 +416,7 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_scatter)                                                     \
   VP_INTRINSIC(vp_sdiv)                                                        \
   VP_INTRINSIC(vp_select)                                                      \
+  VP_INTRINSIC(vp_merge)                                                       \
   VP_INTRINSIC(vp_sext)                                                        \
   VP_INTRINSIC(vp_shl)                                                         \
   VP_INTRINSIC(vp_sitofp)                                                      \
