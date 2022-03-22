@@ -153,8 +153,8 @@
 #include <utility>
 
 #if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
-#include "llvm/IR/FPEnv.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/Local.h"
@@ -605,15 +605,6 @@ protected:
   /// in the new unrolled loop, where UF is the unroll factor and VF is the
   /// vectorization factor.
   using ScalarParts = SmallVector<SmallVector<Value *, 4>, 2>;
-
-#if SIFIVE_CUSTOMIZATION
-  struct VPIntrinsicAndKind {
-    unsigned Intr;
-    bool IsFP;
-  };
-
-  InnerLoopVectorizer::VPIntrinsicAndKind getVPIntrInstr(unsigned Opcode);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Set up the values of the IVs correctly when exiting the vector loop.
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
@@ -4434,257 +4425,17 @@ static bool mayDivideByZero(Instruction &I) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-InnerLoopVectorizer::VPIntrinsicAndKind
-InnerLoopVectorizer::getVPIntrInstr(unsigned Opcode) {
-  switch (Opcode) {
-  case Instruction::Add:
-    return {Intrinsic::vp_add, false};
-  case Instruction::FAdd:
-    return {Intrinsic::vp_fadd, true};
-  case Instruction::Sub:
-    return {Intrinsic::vp_sub, false};
-  case Instruction::FSub:
-    return {Intrinsic::vp_fsub, true};
-  case Instruction::Mul:
-    return {Intrinsic::vp_mul, false};
-  case Instruction::FMul:
-    return {Intrinsic::vp_fmul, true};
-  case Instruction::SDiv:
-    return {Intrinsic::vp_sdiv, false};
-  case Instruction::UDiv:
-    return {Intrinsic::vp_udiv, false};
-  case Instruction::FDiv:
-    return {Intrinsic::vp_fdiv, true};
-  case ::Instruction::SRem:
-    return {Intrinsic::vp_srem, false};
-  case Instruction::URem:
-    return {Intrinsic::vp_urem, false};
-  case Instruction::FRem:
-    return {Intrinsic::vp_frem, true};
-  case Instruction::AShr:
-    return {Intrinsic::vp_ashr, false};
-  case Instruction::LShr:
-    return {Intrinsic::vp_lshr, false};
-  case Instruction::Shl:
-    return {Intrinsic::vp_shl, false};
-  case Instruction::Or:
-    return {Intrinsic::vp_or, false};
-  case Instruction::And:
-    return {Intrinsic::vp_and, false};
-  case Instruction::Xor:
-    return {Intrinsic::vp_xor, false};
-  case Instruction::FNeg:
-    return {Intrinsic::vp_fneg, true};
-  case Intrinsic::fma:
-    return {Intrinsic::vp_fma, true};
-  case Instruction::SExt:
-    return {Intrinsic::vp_sext, false};
-  case Instruction::ZExt:
-    return {Intrinsic::vp_zext, false};
-  case Instruction::FPExt:
-    return {Intrinsic::vp_fpext, true};
-  case Instruction::Trunc:
-    return {Intrinsic::vp_trunc, false};
-  case Instruction::FPTrunc:
-    return {Intrinsic::vp_fptrunc, true};
-  case Instruction::FPToUI:
-    return {Intrinsic::vp_fptoui, true};
-  case Instruction::FPToSI:
-    return {Intrinsic::vp_fptosi, true};
-  case Instruction::UIToFP:
-    return {Intrinsic::vp_uitofp, true};
-  case Instruction::SIToFP:
-    return {Intrinsic::vp_sitofp, true};
-  case Instruction::IntToPtr:
-    return {Intrinsic::vp_inttoptr, false};
-  case Instruction::PtrToInt:
-    return {Intrinsic::vp_ptrtoint, false};
-  }
-  return {Intrinsic::not_intrinsic, false};
-}
-
 void InnerLoopVectorizer::widenPredicatedInstruction(Instruction &I,
                                                      VPValue *Def,
                                                      VPUser &User,
                                                      VPTransformState &State,
                                                      VPValue *BlockInMask,
                                                      VPValue *EVL) {
-
-  auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
-    // The outermost mask can be lowered as an all ones mask when using EVL.
-    if (auto *VPI = dyn_cast<VPInstruction>(BlockInMask))
-      if (VPI && VPI->getOpcode() == VPInstruction::ICmpULE)
-        return Builder.getTrueVector(EC);
-    return State.get(BlockInMask, Part);
-  };
-
-  auto CreateCast = [&](CastInst *CI) {
-    for (unsigned Part = 0; Part < UF; ++Part) {
-      Value *SrcVal =
-          State.get(User.getOperand(0), Part);
-      auto *SrcTy = cast<VectorType>(SrcVal->getType());
-      auto *DestTy = VectorType::get(CI->getType(), SrcTy->getElementCount());
-      SmallVector<Value *, 3> Ops;
-      Ops.push_back(SrcVal);
-      Ops.push_back(MaskValue(Part, DestTy->getElementCount()));
-      Ops.push_back(State.get(EVL, Part));
-      Value *V =
-          Builder.CreateIntrinsic(getVPIntrInstr(CI->getOpcode()).Intr,
-                                  {DestTy, SrcTy}, Ops, nullptr, "vp.cast");
-      State.set(Def, V, Part);
-      addMetadata(V, &I);
-    }
-
-  };
-
-  auto Opcode = I.getOpcode();
-
-  //===------------------- compare instructions ---------------------------===//
-  if (Opcode == Instruction::ICmp || Opcode == Instruction::FCmp) {
-    // Widen compares. Generate vector compares.
-    bool FCmp = (I.getOpcode() == Instruction::FCmp);
-    auto *Cmp = cast<CmpInst>(&I);
-    setDebugLocFromInst(Cmp, &Builder);
-    for (unsigned Part = 0; Part < UF; ++Part) {
-      Value *A = State.get(User.getOperand(0), Part);
-      Value *B = State.get(User.getOperand(1), Part);
-      Value *C = nullptr;
-
-      VectorType *OpTy = cast<VectorType>(A->getType());
-      Value *MaskArg = MaskValue(Part, OpTy->getElementCount());
-      Value *EVLArg = State.get(EVL, Part);
-      Value *PredArg = Builder.getInt8(Cmp->getPredicate());
-
-      if (FCmp) {
-        IRBuilder<>::FastMathFlagGuard FMFG(Builder);
-        Builder.setFastMathFlags(Cmp->getFastMathFlags());
-        C = Builder.CreateIntrinsic(Intrinsic::vp_fcmp, {OpTy},
-                                    {A, B, PredArg, MaskArg, EVLArg}, nullptr,
-                                    "vp.op.fcmp");
-      } else {
-        C = Builder.CreateIntrinsic(Intrinsic::vp_icmp, {OpTy},
-                                    {A, B, PredArg, MaskArg, EVLArg}, nullptr,
-                                    "vp.op.icmp");
-      }
-      // The result of vp_icmp or vp_fcmp may contain lanes that are undef due
-      // to the mask. We don't need undef boolean values.
-      // Convert undef lanes to false by inserting a vp_select.
-      // FIXME: For now we create a whole-register select to ensure correctness
-      // for other whole-register instructions that use the compare as input
-      // arg. See issue at
-      // repo.hca.bsc.es/gitlab/EPI/System-Software/llvm-mono/-/issues/124
-      // Value *V = Builder.CreateIntrinsic(
-      //    Intrinsic::vp_select, {cast<VectorType>(C->getType())},
-      //    {MaskArg, C, AllFalse, EVLArg}, nullptr, "vp.op.select");
-      Value *AllFalse = Builder.getFalseVector(OpTy->getElementCount());
-      Value *V = Builder.CreateSelect(MaskArg, C, AllFalse);
-
-      State.set(Def, V, Part);
-      addMetadata(V, &I);
-    }
-    return;
-  }
-
-  assert(getVPIntrInstr(Opcode).Intr != Intrinsic::not_intrinsic &&
-         "Opcode does not have predicated vector intrinsic support.");
-
-  //===------------------- Int-to-Int cast instructions -------------------===//
-  if (Opcode == Instruction::SExt || Opcode == Instruction::ZExt ||
-      Opcode == Instruction::Trunc) {
-    auto *CI = cast<CastInst>(&I);
-    setDebugLocFromInst(CI, &Builder);
-
-    assert(isa<IntegerType>(CI->getType()) && "Invalid destination Int type.");
-    IntegerType *DestElemTy = cast<IntegerType>(CI->getType());
-    IntegerType *SrcElemTy = cast<IntegerType>(CI->getOperand(0)->getType());
-    if (Opcode == Instruction::Trunc)
-      assert(DestElemTy->getBitWidth() < SrcElemTy->getBitWidth() &&
-             "Cannot truncate to a larger size.");
-    else
-      assert(DestElemTy->getBitWidth() > SrcElemTy->getBitWidth() &&
-             "Cannot extend to a smaller size.");
-    return CreateCast(CI);
-  }
-
-  //===------------------- Float-to-Float cast instructions ---------------===//
-  if (Opcode == Instruction::FPExt || Opcode == Instruction::FPTrunc) {
-    auto *CI = cast<CastInst>(&I);
-    setDebugLocFromInst(CI, &Builder);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(DestElemTy->isFloatingPointTy() && SrcElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float extension.");
-    if (Opcode == Instruction::FPTrunc)
-      assert(DestElemTy->getTypeID() < SrcElemTy->getTypeID() &&
-             "Cannot extend to a larger size.");
-    else
-      assert(DestElemTy->getTypeID() > SrcElemTy->getTypeID() &&
-             "Cannot extend to a smaller size.");
-    return CreateCast(CI);
-  }
-
-  //===------------------- Float-to-Int cast instructions -----------------===//
-  if (Opcode == Instruction::FPToUI || Opcode == Instruction::FPToSI) {
-    auto *CI = cast<CastInst>(&I);
-    setDebugLocFromInst(CI, &Builder);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(DestElemTy->isIntegerTy() && SrcElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float to int cast.");
-    return CreateCast(CI);
-  }
-
-  //===------------------- Int-to-Float cast instructions -----------------===//
-  if (Opcode == Instruction::UIToFP || Opcode == Instruction::SIToFP) {
-    auto *CI = cast<CastInst>(&I);
-    setDebugLocFromInst(CI, &Builder);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(SrcElemTy->isIntegerTy() && DestElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float to int cast.");
-    return CreateCast(CI);
-  }
-
-  //===------------------- Int-Ptr cast instructions ----------------------===//
-  if (Opcode == Instruction::IntToPtr || Opcode == Instruction::PtrToInt) {
-    auto *CI = cast<CastInst>(&I);
-    setDebugLocFromInst(CI, &Builder);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    if (Opcode == Instruction::IntToPtr)
-      assert(SrcElemTy->isIntegerTy() && DestElemTy->isPointerTy() &&
-             "Invalid destination/source type for int to ptr cast.");
-    else
-      assert(DestElemTy->isIntegerTy() && SrcElemTy->isPointerTy() &&
-             "Invalid destination/source type for ptr to int cast.");
-    return CreateCast(CI);
-  }
-
-  //===------------------- Other Binary and Unary Ops ---------------------===//
-  assert(((Instruction::isBinaryOp(Opcode) && I.getNumOperands() == 2) ||
-          (Instruction::isUnaryOp(Opcode) && I.getNumOperands() == 1)) &&
-         "Invalid number of operands.");
-
-  // Just widen unops and binops.
   setDebugLocFromInst(&I, &Builder);
-
   for (unsigned Part = 0; Part < UF; ++Part) {
-    SmallVector<Value *, 4> Ops;
-    for (VPValue *VPOp : User.operands())
-      Ops.push_back(State.get(VPOp, Part));
-
-    VectorType *OpTy = cast<VectorType>(Ops[0]->getType());
-    // FIXME: This is a hack because we are not being honest here.
-    Ops[Ops.size() - 2] = MaskValue(Part, OpTy->getElementCount());
-
-    Value *V = Builder.CreateIntrinsic(getVPIntrInstr(Opcode).Intr, {OpTy}, Ops,
-                                       nullptr, "vp.op");
-
-    if (auto *VecOp = dyn_cast<Instruction>(V))
-      VecOp->copyIRFlags(&I);
-
-    // Use this vector value for all users of the original instruction.
-    State.set(Def, V, Part);
+    llvm::widenPredicatedInstruction(&I, Def, User, State, BlockInMask, EVL,
+                                     Part);
+    Value *V = State.get(Def, Part);
     addMetadata(V, &I);
   }
 }

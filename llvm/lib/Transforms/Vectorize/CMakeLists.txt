@@ -11,6 +11,9 @@ add_llvm_component_library(LLVMVectorize
   VPlanSLP.cpp
   VPlanTransforms.cpp
   VPlanVerifier.cpp
+  # SIFIVE_CUSTOMIZATION
+  SiFive_VPlanPredicatedInstructions.cpp
+  # end SIFIVE_CUSTOMIZATION
 
   ADDITIONAL_HEADER_DIRS
   ${LLVM_MAIN_INCLUDE_DIR}/llvm/Transforms
