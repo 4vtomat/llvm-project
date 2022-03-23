@@ -4074,7 +4074,13 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       Value *VecLoopExitInst = State.get(LoopExitInstDef, Part);
       Value *Sel = nullptr;
       for (User *U : VecLoopExitInst->users()) {
+#if SIFIVE_CUSTOMIZATION
+        auto II = dyn_cast<IntrinsicInst>(U);
+        if (isa<SelectInst>(U) ||
+            (II && II->getIntrinsicID() == Intrinsic::vp_merge)) {
+#else
         if (isa<SelectInst>(U)) {
+#endif // SIFIVE_CUSTOMIZATION
           assert(!Sel && "Reduction exit feeding two selects");
           Sel = U;
         } else
