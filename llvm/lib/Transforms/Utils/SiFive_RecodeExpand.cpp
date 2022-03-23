@@ -125,6 +125,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_saddlp:
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_saddv:
+  case Intrinsic::aarch64_neon_sdot:
   case Intrinsic::aarch64_neon_smax:
   case Intrinsic::aarch64_neon_smaxp:
   case Intrinsic::aarch64_neon_smaxv:
@@ -156,6 +157,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_uaddlp:
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_uaddv:
+  case Intrinsic::aarch64_neon_udot:
   case Intrinsic::aarch64_neon_umax:
   case Intrinsic::aarch64_neon_umaxp:
   case Intrinsic::aarch64_neon_umaxv:
@@ -548,6 +550,48 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         CallInst *Reduce = Builder.CreateAddReduce(II->getArgOperand(0));
         Value *SExt = Builder.CreateSExt(Reduce, II->getType());
         II->replaceAllUsesWith(SExt);
+        break;
+      }
+      case Intrinsic::aarch64_neon_sdot:
+      case Intrinsic::aarch64_neon_udot: {
+        // mul[0] = Op1[0] * Op2[0]
+        // mul[1] = Op1[1] * Op2[1]
+        // ...
+        // out[0] = Op0[0] + mul[0] + mul[1] + mul[2] + mul[3]
+        // out[1] = Op0[1] + mul[4] + mul[5] + mul[6] + mul[7]
+        Instruction::CastOps ExtID =
+            II->getIntrinsicID() == Intrinsic::aarch64_neon_sdot
+                ? Instruction::SExt
+                : Instruction::ZExt;
+        unsigned VectorNumElements =
+            cast<FixedVectorType>(II->getType())->getNumElements();
+        Value *Ext0 = Builder.CreateCast(
+            ExtID, II->getArgOperand(1),
+            FixedVectorType::getExtendedElementVectorType(
+                cast<FixedVectorType>(II->getArgOperand(1)->getType())));
+        Value *Ext1 = Builder.CreateCast(
+            ExtID, II->getArgOperand(2),
+            FixedVectorType::getExtendedElementVectorType(
+                cast<FixedVectorType>(II->getArgOperand(2)->getType())));
+        Value *Mul = Builder.CreateMul(Ext0, Ext1);
+        Value *Even = Builder.CreateShuffleVector(
+            Mul, increasingSequenceByN(0, 2, VectorNumElements * 2));
+        Even = Builder.CreateCast(ExtID, Even,
+                                  FixedVectorType::getExtendedElementVectorType(
+                                      cast<FixedVectorType>(Even->getType())));
+        Value *Odd = Builder.CreateShuffleVector(
+            Mul, increasingSequenceByN(1, 2, VectorNumElements * 2));
+        Odd = Builder.CreateCast(ExtID, Odd,
+                                 FixedVectorType::getExtendedElementVectorType(
+                                     cast<FixedVectorType>(Odd->getType())));
+        Value *HalfAdd = Builder.CreateAdd(Even, Odd);
+        HalfAdd = Builder.CreateAdd(
+            Builder.CreateShuffleVector(
+                HalfAdd, increasingSequenceByN(0, 2, VectorNumElements)),
+            Builder.CreateShuffleVector(
+                HalfAdd, increasingSequenceByN(1, 2, VectorNumElements)));
+        II->replaceAllUsesWith(
+            Builder.CreateAdd(II->getArgOperand(0), HalfAdd));
         break;
       }
       case Intrinsic::aarch64_neon_smax:
