@@ -1,4 +1,4 @@
-// a47cb04a20db2c5ebd3f080ce5eead1e9f282688
+// 903c29a2c6ebfd5dd466e87e8d8c523c00ed85a4
 // ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -12758,7 +12758,7 @@ __attribute__((always_inline)) inline float16x4_t vmaxnm_f16(float16x4_t a, floa
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vfloat16mf4_t temp_1 = __builtin_rvv_vcast_from_fixed_256_f16mf4(b);
-	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfmerge(vmseq(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), vfmax(temp_0, temp_1, 4), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 4));
+	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfmerge(vmsne(vand(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), 0, 4), vfmax(temp_0, temp_1, 4), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnm_f16") float16x4_t vmaxnm_f16(float16x4_t a, float16x4_t b);
@@ -12768,7 +12768,7 @@ __attribute__((always_inline)) inline float32x2_t vmaxnm_f32(float32x2_t a, floa
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vfloat32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_f32mf2(b);
-	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfmerge(vmseq(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), vfmax(temp_0, temp_1, 2), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2));
+	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfmerge(vmsne(vand(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), 0, 2), vfmax(temp_0, temp_1, 2), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnm_f32") float32x2_t vmaxnm_f32(float32x2_t a, float32x2_t b);
@@ -12778,7 +12778,7 @@ __attribute__((always_inline)) inline float64x1_t vmaxnm_f64(float64x1_t a, floa
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmerge(vmseq(vor(vfclass(temp_0, 1), vfclass(temp_1, 1), 1), 256, 1), vfmax(temp_0, temp_1, 1), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1));
+	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmerge(vmsne(vand(vor(vfclass(temp_0, 1), vfclass(temp_1, 1), 1), 256, 1), 0, 1), vfmax(temp_0, temp_1, 1), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnm_f64") float64x1_t vmaxnm_f64(float64x1_t a, float64x1_t b);
@@ -12789,7 +12789,7 @@ __attribute__((always_inline)) inline float16x8_t vmaxnmq_f16(float16x8_t a, flo
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_512_f16mf4(a);
 	vfloat16mf4_t temp_1 = __builtin_rvv_vcast_from_fixed_512_f16mf4(b);
-	return __builtin_rvv_vcast_to_fixed_512_f16mf4(vfmerge(vmseq(vor(vfclass(temp_0, 8), vfclass(temp_1, 8), 8), 256, 8), vfmax(temp_0, temp_1, 8), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 8));
+	return __builtin_rvv_vcast_to_fixed_512_f16mf4(vfmerge(vmsne(vand(vor(vfclass(temp_0, 8), vfclass(temp_1, 8), 8), 256, 8), 0, 8), vfmax(temp_0, temp_1, 8), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 8));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnmq_f16") float16x8_t vmaxnmq_f16(float16x8_t a, float16x8_t b);
@@ -12799,7 +12799,7 @@ __attribute__((always_inline)) inline float32x4_t vmaxnmq_f32(float32x4_t a, flo
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vfloat32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_256_f32mf2(b);
-	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfmerge(vmseq(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), vfmax(temp_0, temp_1, 4), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4));
+	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfmerge(vmsne(vand(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), 0, 4), vfmax(temp_0, temp_1, 4), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnmq_f32") float32x4_t vmaxnmq_f32(float32x4_t a, float32x4_t b);
@@ -12809,7 +12809,7 @@ __attribute__((always_inline)) inline float64x2_t vmaxnmq_f64(float64x2_t a, flo
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_f64m1(b);
-	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfmerge(vmseq(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), vfmax(temp_0, temp_1, 2), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2));
+	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfmerge(vmsne(vand(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), 0, 2), vfmax(temp_0, temp_1, 2), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vmaxnmq_f64") float64x2_t vmaxnmq_f64(float64x2_t a, float64x2_t b);
@@ -13193,7 +13193,7 @@ __attribute__((always_inline)) inline float16x4_t vminnm_f16(float16x4_t a, floa
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vfloat16mf4_t temp_1 = __builtin_rvv_vcast_from_fixed_256_f16mf4(b);
-	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfmerge(vmseq(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), vfmin(temp_0, temp_1, 4), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 4));
+	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfmerge(vmsne(vand(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), 0, 4), vfmin(temp_0, temp_1, 4), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnm_f16") float16x4_t vminnm_f16(float16x4_t a, float16x4_t b);
@@ -13203,7 +13203,7 @@ __attribute__((always_inline)) inline float32x2_t vminnm_f32(float32x2_t a, floa
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vfloat32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_f32mf2(b);
-	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfmerge(vmseq(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), vfmin(temp_0, temp_1, 2), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2));
+	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfmerge(vmsne(vand(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), 0, 2), vfmin(temp_0, temp_1, 2), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnm_f32") float32x2_t vminnm_f32(float32x2_t a, float32x2_t b);
@@ -13213,7 +13213,7 @@ __attribute__((always_inline)) inline float64x1_t vminnm_f64(float64x1_t a, floa
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_64_f64m1(b);
-	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmerge(vmseq(vor(vfclass(temp_0, 1), vfclass(temp_1, 1), 1), 256, 1), vfmin(temp_0, temp_1, 1), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1));
+	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfmerge(vmsne(vand(vor(vfclass(temp_0, 1), vfclass(temp_1, 1), 1), 256, 1), 0, 1), vfmin(temp_0, temp_1, 1), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnm_f64") float64x1_t vminnm_f64(float64x1_t a, float64x1_t b);
@@ -13224,7 +13224,7 @@ __attribute__((always_inline)) inline float16x8_t vminnmq_f16(float16x8_t a, flo
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_512_f16mf4(a);
 	vfloat16mf4_t temp_1 = __builtin_rvv_vcast_from_fixed_512_f16mf4(b);
-	return __builtin_rvv_vcast_to_fixed_512_f16mf4(vfmerge(vmseq(vor(vfclass(temp_0, 8), vfclass(temp_1, 8), 8), 256, 8), vfmin(temp_0, temp_1, 8), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 8));
+	return __builtin_rvv_vcast_to_fixed_512_f16mf4(vfmerge(vmsne(vand(vor(vfclass(temp_0, 8), vfclass(temp_1, 8), 8), 256, 8), 0, 8), vfmin(temp_0, temp_1, 8), __builtin_bit_cast(float16_t, (uint16_t)(32256)), 8));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnmq_f16") float16x8_t vminnmq_f16(float16x8_t a, float16x8_t b);
@@ -13234,7 +13234,7 @@ __attribute__((always_inline)) inline float32x4_t vminnmq_f32(float32x4_t a, flo
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vfloat32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_256_f32mf2(b);
-	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfmerge(vmseq(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), vfmin(temp_0, temp_1, 4), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4));
+	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfmerge(vmsne(vand(vor(vfclass(temp_0, 4), vfclass(temp_1, 4), 4), 256, 4), 0, 4), vfmin(temp_0, temp_1, 4), __builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnmq_f32") float32x4_t vminnmq_f32(float32x4_t a, float32x4_t b);
@@ -13244,7 +13244,7 @@ __attribute__((always_inline)) inline float64x2_t vminnmq_f64(float64x2_t a, flo
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vfloat64m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_f64m1(b);
-	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfmerge(vmseq(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), vfmin(temp_0, temp_1, 2), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2));
+	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfmerge(vmsne(vand(vor(vfclass(temp_0, 2), vfclass(temp_1, 2), 2), 256, 2), 0, 2), vfmin(temp_0, temp_1, 2), __builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vminnmq_f64") float64x2_t vminnmq_f64(float64x2_t a, float64x2_t b);
