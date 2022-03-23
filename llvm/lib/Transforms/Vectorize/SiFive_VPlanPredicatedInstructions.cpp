@@ -64,10 +64,14 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Value *Cond = State.get(User.getOperand(0), Part);
     Value *Op1 = State.get(User.getOperand(1), Part);
     Value *Op2 = State.get(User.getOperand(2), Part);
-    Builder.setEVL(State.get(EVL, Part));
-
-    Value *V = Builder.createVectorInstruction(
-        Instruction::Select, Cond->getType(), {Cond, Op1, Op2}, "vp.op.select");
+    Value *EVLArg = State.get(EVL, Part);
+    // Emit vp.merge intrinsic to keep same tail policy in entire loop.
+    // Otherwise, this will lead to switching it to/from tail-agnostic, which is
+    // not performant and may break optimizations in backend. Keep name of the
+    // value as "vp.op.select" for debugging purposes
+    Value *V = BuilderIR.CreateIntrinsic(Intrinsic::vp_merge, {Op1->getType()},
+                                         {Cond, Op1, Op2, EVLArg}, nullptr,
+                                         "vp.op.select");
     State.set(Def, V, Part);
     return;
   }
@@ -121,9 +125,9 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     //    vmandn.mm       v16, v14, v0
     //    vmor.mm v0, v15, v16
     //    vsetvli zero, zero, e64, m2, ta, mu
-    Value *V = BuilderIR.CreateIntrinsic(
-        Intrinsic::vp_merge, {cast<VectorType>(C->getType())},
-        {MaskArg, C, AllFalse, EVLArg}, nullptr, "vp.op.select");
+    Value *V = BuilderIR.CreateIntrinsic(Intrinsic::vp_merge, {C->getType()},
+                                         {MaskArg, C, AllFalse, EVLArg},
+                                         nullptr, "vp.op.merge");
 
     State.set(Def, V, Part);
     return;

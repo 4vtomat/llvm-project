@@ -1903,7 +1903,12 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase, public VPValue {
     addOperand(Mask);
   }
 
+
+#if SIFIVE_CUSTOMIZATION
+  virtual bool isMasked() const {
+#else
   bool isMasked() const {
+#endif // SIFIVE_CUSTOMIZATION
     return isStore() ? getNumOperands() == 3 : getNumOperands() == 2;
   }
 
@@ -1965,7 +1970,11 @@ public:
 
   /// Return the mask used by this recipe. Note that a full mask is represented
   /// by a nullptr.
+#if SIFIVE_CUSTOMIZATION
+  virtual VPValue *getMask() const {
+#else
   VPValue *getMask() const {
+#endif // SIFIVE_CUSTOMIZATION
     // Mask is optional and therefore the last operand.
     return isMasked() ? getOperand(getNumOperands() - 1) : nullptr;
   }
@@ -2034,6 +2043,10 @@ public:
 class VPPredicatedWidenMemoryInstructionRecipe
     : public VPWidenMemoryInstructionRecipe {
 
+  virtual bool isMasked() const final {
+    return isStore() ? getNumOperands() == 4 : getNumOperands() == 3;
+  }
+
 public:
   VPPredicatedWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr,
                                            VPValue *Mask, bool Consecutive,
@@ -2074,7 +2087,7 @@ public:
 
   /// Return the mask used by this recipe. Note that a full mask is represented
   /// by a nullptr.
-  VPValue *getMask() const {
+  virtual VPValue *getMask() const final {
     // Mask is the before the last, mandatory operand.
     return getOperand(getNumOperands() - 2);
   }

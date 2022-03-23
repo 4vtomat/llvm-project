@@ -45,6 +45,7 @@
 #include <string>
 #include <vector>
 #if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/IR/Constants.h"
@@ -741,6 +742,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *Cond = State.get(getOperand(0), Part);
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.EVL && Cond->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       State.EVL, Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V = Builder.CreateSelect(Cond, Op1, Op2);
     State.set(this, V, Part);
     break;
@@ -1586,7 +1594,11 @@ void VPPredicatedWidenMemoryInstructionRecipe::print(
   O << Instruction::getOpcodeName(getIngredient().getOpcode()) << " ";
 
   printOperands(O, SlotTracker);
-  O << " (ALL-ONES-MASK)";
+  if (auto Mask = getMask()) {
+    Mask->printAsOperand(O, SlotTracker);
+  } else {
+    O << " (ALL-ONES-MASK)";
+  }
 }
 #endif // SIFIVE_CUSTOMIZATION
 #endif
