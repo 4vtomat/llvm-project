@@ -530,9 +530,18 @@ InstructionCost
 RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
                                          Optional<FastMathFlags> FMF,
                                          TTI::TargetCostKind CostKind) {
-  // FIXME: Only supporting fixed vectors for now.
   if (!isa<FixedVectorType>(VTy))
+#if SIFIVE_CUSTOMIZATION
+  {
+    // FIXME: Revisit this code when we start to tune vectorizer's cost model
+    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, VTy);
+    if (!LT.first.isValid())
+      return InstructionCost::getInvalid();
+    return LT.first;
+  }
+#else  // SIFIVE_CUSTOMIZATION
     return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
 
   // FIXME: Do not support i1 and/or reduction now.
   if (VTy->getElementType()->isIntegerTy(1))
