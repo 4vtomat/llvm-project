@@ -76,6 +76,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_facgt:
   case Intrinsic::aarch64_neon_frecpe:
+  case Intrinsic::aarch64_neon_frsqrte:
   case Intrinsic::aarch64_neon_ld1x2:
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
@@ -131,7 +132,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateFCmpOGT(Abs0, Abs1), II->getType()));
         break;
       }
-      case Intrinsic::aarch64_neon_frecpe: {
+      case Intrinsic::aarch64_neon_frecpe:
+      case Intrinsic::aarch64_neon_frsqrte: {
         FixedVectorType *VecTy =
             cast<FixedVectorType>(II->getArgOperand(0)->getType());
         unsigned VecNumElements = VecTy->getNumElements();
@@ -139,7 +141,10 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
         II->replaceAllUsesWith(Builder.CreateExtractVector(
             VecTy,
-            Builder.CreateIntrinsic(Intrinsic::riscv_vfrec7,
+            Builder.CreateIntrinsic(II->getIntrinsicID() ==
+                                            Intrinsic::aarch64_neon_frecpe
+                                        ? Intrinsic::riscv_vfrec7
+                                        : Intrinsic::riscv_vfrsqrt7,
                                     {Src->getType(), VL->getType()},
                                     {UndefValue::get(Src->getType()), Src, VL}),
             Builder.getInt64(0)));
