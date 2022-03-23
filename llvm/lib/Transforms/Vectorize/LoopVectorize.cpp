@@ -1343,10 +1343,6 @@ public:
   /// 64 bit loop indices.
   std::pair<unsigned, unsigned> getSmallestAndWidestTypes();
 
-#if SIFIVE_CUSTOMIZATION
-  std::pair<ElementCount, ElementCount> getFeasibleVFRange();
-#endif // SIFIVE_CUSTOMIZATION
-
   /// \return The desired interleave count.
   /// If interleave count has been specified by metadata it will be returned.
   /// Otherwise, the interleave count is computed and returned. VF and LoopCost
