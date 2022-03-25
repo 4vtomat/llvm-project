@@ -233,6 +233,7 @@ enum NodeType : unsigned {
   FREC7_VL,   // SIFIVE
   FCLASS_VL,  // SIFIVE
   FMA_VL,
+  FNMSAC_VL,  // SIFIVE
   FCOPYSIGN_VL,
   SMIN_VL,
   SMAX_VL,

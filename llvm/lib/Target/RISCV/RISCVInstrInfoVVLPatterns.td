@@ -122,6 +122,10 @@ def SDT_RISCVVecFMA_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                               SDTCisVT<5, XLenVT>]>;
 def riscv_fma_vl : SDNode<"RISCVISD::FMA_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_fnmsac_vl : SDNode<"RISCVISD::FNMSAC_VL", SDT_RISCVVecFMA_VL>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SDT_RISCVFPRoundOp_VL  : SDTypeProfile<1, 3, [
   SDTCisFP<0>, SDTCisFP<1>, SDTCisOpSmallerThanOp<0, 1>, SDTCisSameNumEltsAs<0, 1>,
   SDTCVecEltisVT<2, i1>, SDTCisSameNumEltsAs<1, 2>, SDTCisVT<3, XLenVT>
@@ -1422,6 +1426,16 @@ foreach vti = AllFloatVectors in {
             (!cast<Instruction>("PseudoVFNMSUB_V" # vti.ScalarSuffix # "_" # suffix # "_MASK")
                  vti.RegClass:$rd, vti.ScalarRegClass:$rs1, vti.RegClass:$rs2,
                  (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  def : Pat<(vti.Vector (riscv_fnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
+                                         vti.RegClass:$rs2, (vti.Mask V0),
+                                         VLOpFrag)),
+            (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
+                 vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
+                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_UNDISTURBED)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 }
 
 // 14.11. Vector Floating-Point MIN/MAX Instructions
