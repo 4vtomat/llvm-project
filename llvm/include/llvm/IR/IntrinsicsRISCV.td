@@ -462,13 +462,13 @@ let TargetPrefix = "riscv" in {
     let VLOperand = 3;
   }
 
-  // Input: (vector_in, scalar_in, vl)
+  // Input: (passthru, vector_in, scalar_in, vl)
   class RISCVSFCustomVFNRCLIP : Intrinsic<[llvm_anyvector_ty],
-                                          [llvm_anyfloat_ty,
+                                          [LLVMMatchType<0>, llvm_anyfloat_ty,
                                            LLVMVectorElementType<1>,
                                            llvm_anyint_ty],
                                           [IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 2;
+    let VLOperand = 3;
   }
 #endif // SIFIVE_CUSTOMIZATION
 

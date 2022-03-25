@@ -2359,6 +2359,7 @@ let RequiredFeatures = ["Xsfvqmaccdod"],
 }
 
 let RequiredFeatures = ["Xsfvfnrclipxfqf"],
+    UnMaskedPolicy = HasPassthruOperand,
     Log2LMUL = [0, 1, -1, -2, -3],
     HasMasked = false,
     IntrinsicTypes = [-1, 0] in {

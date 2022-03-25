@@ -3158,26 +3158,6 @@ class VPatBinaryM<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    GPR:$vl, sew)>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-// FIXME: Should the instructions that use this use VPatBinaryNoMaskTA?
-class VPatBinaryNoMask<string intrinsic_name,
-                       string inst,
-                       ValueType result_type,
-                       ValueType op1_type,
-                       ValueType op2_type,
-                       int sew,
-                       VReg op1_reg_class,
-                       DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag)),
-                   (!cast<Instruction>(inst)
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   GPR:$vl, sew)>;
-#endif // SIFIVE_CUSTOMIZATION
-
 class VPatBinaryNoMaskTA<string intrinsic_name,
                          string inst,
                          ValueType result_type,
@@ -3818,9 +3798,12 @@ multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
   foreach VtiToWti = vtilist in {
     defvar Vti = VtiToWti.Vti;
     defvar Wti = VtiToWti.Wti;
-    def : VPatBinaryNoMask<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                           Wti.Vector, Wti.Scalar, Vti.Log2SEW, Wti.RegClass,
-                           Wti.ScalarRegClass>;
+    def : VPatBinaryNoMaskTA<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
+                             Wti.Vector, Wti.Scalar, Vti.Log2SEW, Wti.RegClass,
+                             Wti.ScalarRegClass>;
+    def : VPatBinaryNoMaskTU<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
+                             Wti.Vector, Wti.Scalar, Vti.Log2SEW, Vti.RegClass, Wti.RegClass,
+                             Wti.ScalarRegClass>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5189,6 +5172,8 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
   let VLMul = m.value in {
     def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
   }
 }
 
