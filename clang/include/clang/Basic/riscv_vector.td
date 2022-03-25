@@ -2227,3 +2227,70 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     }
   }
 }
+
+let HeaderCode = [{
+#define VE_TAIL_UNDISTURBED 0
+#define VE_TAIL_AGNOSTIC 1
+#define VE_TONEARESTUP 0
+#define VE_TONEARESTEVEN 1
+#define VE_DOWNWARD 2
+#define VE_TOODD 3
+// Each of these macro constants expands to a nonnegative integer constant expression.
+
+// return 0 on success, non-zero otherwise.
+static inline int vesetxround(int round)
+{
+	switch(round)
+	{
+	case VE_TONEARESTUP:
+	case VE_TONEARESTEVEN:
+	case VE_DOWNWARD:
+	case VE_TOODD:
+		asm volatile("csrw vxrm,%z0"::"rJ"(round));
+		return 0;
+	default:
+		return -1;
+	}
+}
+
+// return the current rounding macro, negative value if the rounding mode cannot be determined.
+static inline int vegetxround(void)
+{
+	int vxrm;
+	asm volatile("csrr %0,vxrm":"=r"(vxrm));
+	switch(vxrm)
+	{
+	case VE_TONEARESTUP:
+	case VE_TONEARESTEVEN:
+	case VE_DOWNWARD:
+	case VE_TOODD:
+		return vxrm;
+	default:
+		return -1;
+	}
+}
+
+// return 0 on success, non-zero otherwise.
+static inline int vesetxsat(int sat)
+{
+    switch(sat)
+    {
+    case 0:
+    case 1:
+		asm volatile("csrw vxsat,%z0"::"rJ"(sat));
+        return 0;
+    default:
+        return -1;
+    }
+}
+
+// return 1 if vxsat is set, 0 otherwise.
+static inline int vegetxsat(void)
+{
+	int vxsat;
+	asm volatile("csrr %0,vxsat":"=r"(vxsat));
+	return vxsat;
+}
+
+}] in
+def vxrm : RVVHeader;
