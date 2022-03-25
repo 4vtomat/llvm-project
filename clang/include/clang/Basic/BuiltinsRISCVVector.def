@@ -511,11 +511,6 @@ TARGET_BUILTIN(__builtin_rvv_vcast_from_fixed_512_f16m8, "q32xV128x", "n", "zve3
 TARGET_BUILTIN(__builtin_rvv_vcast_from_fixed_512_f16mf2, "q2xV16x", "n", "zve32x|v")
 TARGET_BUILTIN(__builtin_rvv_vcast_from_fixed_512_f16mf4, "q1xV8x", "n", "zve32x|v")
 
-// SIFIVE
-TARGET_BUILTIN(__builtin_rvv_vsetvxrm, "vc", "n", "zve32x|v")
-TARGET_BUILTIN(__builtin_rvv_vgetvxrm, "c", "n", "zve32x|v")
-// end SIFIVE
-
 #include "clang/Basic/riscv_vector_builtins.inc"
 
 #undef BUILTIN

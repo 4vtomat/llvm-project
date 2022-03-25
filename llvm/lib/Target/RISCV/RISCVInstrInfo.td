@@ -1514,6 +1514,7 @@ def WriteFFLAGS : WriteSysReg<SysRegFFLAGS, [FFLAGS]>;
 // SIFIVE
 def ReadVXRM : ReadSysReg<SysRegVXRM, [VXRM]>;
 def WriteVXRM: WriteSysReg<SysRegVXRM, [VXRM]>;
+def WriteVXRMImm: WriteSysRegImm<SysRegVXRM, [VXRM]>;
 // end SIFIVE
 }
 

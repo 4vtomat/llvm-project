@@ -30,7 +30,8 @@ private:
 };
 
 static inline bool isWriteVXRM(MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::WriteVXRM;
+  return MI.getOpcode() == RISCV::WriteVXRM ||
+         MI.getOpcode() == RISCV::WriteVXRMImm;
 }
 
 static inline bool isReadVXRM(MachineInstr &MI) {
@@ -77,18 +78,29 @@ bool RISCVCleanupVXRM::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
         continue;
       }
 
-      if (isWriteVXRM(MI)) {
-        if (LastWrite) {
-          Register LastSrc = LastWrite->getOperand(0).getReg();
-          Register CurSrc = MI.getOperand(0).getReg();
-          if (Register::isVirtualRegister(CurSrc) && LastSrc == CurSrc) {
-            // remove the write if it is writing the same value
-            LLVM_DEBUG(dbgs() << "Remove WriteVXRM that uses the same source as previous WriteVXRM:"; MI.dump());
-            MI.eraseFromParent();
-            Updated = true;
-            continue;
-          }
+      if (LastWrite && LastWrite->getOpcode() == MI.getOpcode()) {
+        bool IsSame = false;
+        MachineOperand LastSrcOp = LastWrite->getOperand(0);
+        MachineOperand CurSrcOp = MI.getOperand(0);
+        if (MI.getOpcode() == RISCV::WriteVXRMImm &&
+            LastSrcOp.getImm() == CurSrcOp.getImm()) {
+          IsSame = true;
+        } else if (MI.getOpcode() == RISCV::WriteVXRM &&
+                   Register::isVirtualRegister(CurSrcOp.getReg()) &&
+                   LastSrcOp.getReg() == CurSrcOp.getReg()) {
+          IsSame = true;
         }
+        if (IsSame) {
+          LLVM_DEBUG(dbgs() << "Remove WriteVXRM that uses the same source as "
+                               "last WriteVXRM:";
+                     MI.dump());
+          MI.eraseFromParent();
+          Updated = true;
+          continue;
+        }
+      }
+
+      if (isWriteVXRM(MI)) {
         LastWrite = &MI;
       }
 
@@ -135,8 +147,7 @@ bool RISCVCleanupVXRM::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
       // update PrevAccess
       PrevAccess = &MI;
     }
-    if (Updated)
-      Changed = true;
+    Changed |= Updated;
   } while (Updated);
   return Changed;
 }

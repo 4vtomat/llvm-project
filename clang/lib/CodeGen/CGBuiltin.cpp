@@ -19652,14 +19652,6 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     ID = Intrinsic::riscv_vcast_to_fixed;
     IntrinsicTypes = {ResultType, Ops[0]->getType()};
     break;
-  case RISCVVector::BI__builtin_rvv_vgetvxrm:
-    ID = Intrinsic::riscv_vgetvxrm;
-    IntrinsicTypes = {ResultType};
-    break;
-  case RISCVVector::BI__builtin_rvv_vsetvxrm:
-    ID = Intrinsic::riscv_vsetvxrm;
-    IntrinsicTypes = {Ops[0]->getType()};
-    break;
 #endif // SIFIVE_CUSTOMIZATION
 #include "clang/Basic/riscv_vector_builtin_cg.inc"
   }

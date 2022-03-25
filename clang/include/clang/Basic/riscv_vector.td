@@ -2228,9 +2228,28 @@ let HasMasked = false, HasVL = false, IRName = "" in {
   }
 }
 
+// SIFIVE
 let HeaderCode = [{
 #define VE_TAIL_UNDISTURBED 0
 #define VE_TAIL_AGNOSTIC 1
+}] in
+def policy : RVVHeader;
+
+let HasBuiltinAlias = false,
+    HasVL = false,
+    HasMasked = false,
+    HasUnMaskedOverloaded = false,
+    Log2LMUL = [0] in {
+let IntrinsicTypes = [0] in
+  def vsetvxrm : RVVBuiltin<"", "0z", "i">;
+
+let IntrinsicTypes = [-1] in
+  def vgetvxrm : RVVBuiltin<"", "z", "i">;
+}
+
+let HeaderCode = [{
+#define vsetvxrm(mode) __builtin_rvv_vsetvxrm(mode)
+#define vgetvxrm() __builtin_rvv_vgetvxrm()
 #define VE_TONEARESTUP 0
 #define VE_TONEARESTEVEN 1
 #define VE_DOWNWARD 2
@@ -2294,3 +2313,4 @@ static inline int vegetxsat(void)
 
 }] in
 def vxrm : RVVHeader;
+// end SIFIVE

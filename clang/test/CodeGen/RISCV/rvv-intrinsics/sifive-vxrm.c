@@ -5,34 +5,32 @@
 // RUN: %clang_cc1 -triple riscv32 -target-feature +f -target-feature +d -target-feature +v \
 // RUN:   -target-feature +zfh -disable-O0-optnone -emit-llvm %s -o - | opt -S -mem2reg | FileCheck --check-prefix=CHECK-RV32 %s
 
+#include <riscv_vector.h>
+
 // CHECK-RV64-LABEL: @test_vgetvxrm(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call i8 @llvm.riscv.vgetvxrm.i8()
-// CHECK-RV64-NEXT:    [[CONV:%.*]] = sext i8 [[TMP0]] to i32
-// CHECK-RV64-NEXT:    ret i32 [[CONV]]
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vgetvxrm.i64()
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
 //
 // CHECK-RV32-LABEL: @test_vgetvxrm(
 // CHECK-RV32-NEXT:  entry:
-// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call i8 @llvm.riscv.vgetvxrm.i8()
-// CHECK-RV32-NEXT:    [[CONV:%.*]] = sext i8 [[TMP0]] to i32
-// CHECK-RV32-NEXT:    ret i32 [[CONV]]
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.vgetvxrm.i32()
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
 //
-int test_vgetvxrm(void) {
+long test_vgetvxrm(void) {
   return __builtin_rvv_vgetvxrm();
 }
 
 // CHECK-RV64-LABEL: @test_vsetvxrm(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[CONV:%.*]] = trunc i32 [[ROUNDMODE:%.*]] to i8
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsetvxrm.i8(i8 [[CONV]])
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsetvxrm.i64(i64 [[ROUNDMODE:%.*]])
 // CHECK-RV64-NEXT:    ret void
 //
 // CHECK-RV32-LABEL: @test_vsetvxrm(
 // CHECK-RV32-NEXT:  entry:
-// CHECK-RV32-NEXT:    [[CONV:%.*]] = trunc i32 [[ROUNDMODE:%.*]] to i8
-// CHECK-RV32-NEXT:    call void @llvm.riscv.vsetvxrm.i8(i8 [[CONV]])
+// CHECK-RV32-NEXT:    call void @llvm.riscv.vsetvxrm.i32(i32 [[ROUNDMODE:%.*]])
 // CHECK-RV32-NEXT:    ret void
 //
-void test_vsetvxrm(int roundmode) {
+void test_vsetvxrm(long roundmode) {
   __builtin_rvv_vsetvxrm(roundmode);
 }

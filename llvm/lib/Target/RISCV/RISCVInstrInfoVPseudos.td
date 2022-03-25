@@ -5573,6 +5573,14 @@ let Predicates = [HasVInstructionsAnyF] in {
   defm : VPatUnaryV_V_AnyMask<"int_riscv_vcompress", "PseudoVCOMPRESS", AllFloatVectors>;
 } // Predicates = [HasVInstructionsAnyF]
 
+def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
+
+def : Pat<(int_riscv_vsetvxrm GPR:$rm),
+          (WriteVXRM $rm)>;
+
+def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
+          (WriteVXRMImm uimm5:$rm)>;
+
 // Include the non-intrinsic ISel patterns
 include "RISCVInstrInfoVVLPatterns.td"
 include "RISCVInstrInfoVSDPatterns.td"

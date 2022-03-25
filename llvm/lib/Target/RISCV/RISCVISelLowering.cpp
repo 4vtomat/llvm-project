@@ -461,7 +461,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     // We also need to custom legalize vmv.x.s.
     setOperationAction({ISD::INTRINSIC_WO_CHAIN, ISD::INTRINSIC_W_CHAIN},
                        {MVT::i8, MVT::i16}, Custom);
-    setOperationAction(ISD::INTRINSIC_VOID, MVT::i8, Custom); // SIFIVE
     if (Subtarget.is64Bit())
       setOperationAction(ISD::INTRINSIC_W_CHAIN, MVT::i32, Custom);
     else
@@ -7460,26 +7459,6 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     }
     break;
   }
-  // SIFIVE
-  case ISD::INTRINSIC_W_CHAIN: {
-    unsigned IntNo = cast<ConstantSDNode>(N->getOperand(1))->getZExtValue();
-    switch (IntNo) {
-    default:
-      llvm_unreachable(
-          "Don't know how to custom type legalize this intrinsic!");
-    case Intrinsic::riscv_vgetvxrm:
-      MVT XLenVT = Subtarget.getXLenVT();
-      SDValue Chain = N->getOperand(0);
-      SDValue ReadVXRM =
-          SDValue(DAG.getMachineNode(RISCV::ReadVXRM, DL, XLenVT), 0);
-      SDValue Result = DAG.getNode(ISD::TRUNCATE, DL, MVT::i8, ReadVXRM);
-      Results.push_back(Result);
-      Results.push_back(Chain);
-      return;
-    }
-    break;
-  }
-  // end SIFIVE
   case ISD::VECREDUCE_ADD:
   case ISD::VECREDUCE_AND:
   case ISD::VECREDUCE_OR:
