@@ -104,6 +104,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_smin:
   case Intrinsic::aarch64_neon_sminv:
   case Intrinsic::aarch64_neon_smull:
+  case Intrinsic::aarch64_neon_sqadd:
+  case Intrinsic::aarch64_neon_sqsub:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
   case Intrinsic::aarch64_neon_st1x4:
@@ -129,6 +131,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_umin:
   case Intrinsic::aarch64_neon_uminv:
   case Intrinsic::aarch64_neon_umull:
+  case Intrinsic::aarch64_neon_uqadd:
+  case Intrinsic::aarch64_neon_uqsub:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
     return true;
@@ -425,6 +429,37 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateMul(
             Builder.CreateSExt(II->getArgOperand(0), II->getType()),
             Builder.CreateSExt(II->getArgOperand(1), II->getType())));
+        break;
+      }
+      case Intrinsic::aarch64_neon_sqadd:
+      case Intrinsic::aarch64_neon_sqsub:
+      case Intrinsic::aarch64_neon_uqadd:
+      case Intrinsic::aarch64_neon_uqsub: {
+        // Intrinsics associated with the Q-bit and their feature macro
+        // __ARM_FEATURE_QBIT are deprecated in ACLE 2.0 for A-profile. They are
+        // fully supported for M-profile and R-profile. This macro is defined
+        // for AArch32 only. Recode is targeted on AArch64. __ARM_FEATURE_QBIT
+        // will not be supported.
+        Intrinsic::ID Op;
+        switch (II->getIntrinsicID()) {
+        default:
+          llvm_unreachable("Unexpected intrinsic");
+        case Intrinsic::aarch64_neon_sqadd:
+          Op = Intrinsic::sadd_sat;
+          break;
+        case Intrinsic::aarch64_neon_sqsub:
+          Op = Intrinsic::ssub_sat;
+          break;
+        case Intrinsic::aarch64_neon_uqadd:
+          Op = Intrinsic::uadd_sat;
+          break;
+        case Intrinsic::aarch64_neon_uqsub:
+          Op = Intrinsic::usub_sat;
+          break;
+        }
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            Op, {II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0), II->getArgOperand(1)}));
         break;
       }
       case Intrinsic::aarch64_neon_st1x2:
