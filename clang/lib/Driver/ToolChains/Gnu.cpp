@@ -26,6 +26,7 @@
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Path.h"
+#include "llvm/Support/Program.h"
 #include "llvm/Support/TargetParser.h"
 #include "llvm/Support/VirtualFileSystem.h"
 #include <system_error>
@@ -1047,8 +1048,8 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
   return Arch == llvm::Triple::msp430;
 }
 
-static Multilib makeMultilib(StringRef commonSuffix) {
-  return Multilib(commonSuffix, commonSuffix, commonSuffix);
+static Multilib makeMultilib(StringRef commonSuffix, int Priority = 0) {
+  return Multilib(commonSuffix, commonSuffix, commonSuffix, Priority);
 }
 
 static bool findMipsCsMultilibs(const Multilib::flags_list &Flags,
@@ -1682,10 +1683,198 @@ static void findCSKYMultilibs(const Driver &D, const llvm::Triple &TargetTriple,
     Result.Multilibs = CSKYMultilibs;
 }
 
+static std::string findGCCPath(const Driver &D, llvm::StringRef BasePath) {
+  SmallString<128> GCCPath;
+  llvm::sys::path::append(GCCPath, BasePath, "bin",
+                          D.getTargetTriple() + "-gcc");
+
+  if (llvm::sys::fs::exists(GCCPath))
+    return GCCPath.str().str();
+
+  return "";
+}
+
+static std::string getGCCPath(const Driver &D, const ArgList &Args) {
+
+  // Find GCC from -gcc-toolchain if given.
+  if (const Arg *A =
+          Args.getLastArg(clang::driver::options::OPT_gcc_toolchain)) {
+    return findGCCPath(D, A->getValue());
+  } else {
+    // Try to find GCC from GCC_INSTALL_PREFIX if define.
+    llvm::StringRef GCCInstallPrefix = GCC_INSTALL_PREFIX;
+    std::string GCCPath;
+    if (!GCCInstallPrefix.empty())
+      GCCPath = findGCCPath(D, GCCInstallPrefix);
+    else {
+      // Try to find GCC from the same folder as driver.
+      SmallString<128> GCCBasePath;
+      llvm::sys::path::append(GCCBasePath, D.Dir, "..");
+      GCCPath = findGCCPath(D, GCCBasePath);
+    }
+    return GCCPath;
+  }
+}
+
+static bool scanRISCVGCCMultilibConfig(const Driver &D,
+                                       const llvm::Triple &TargetTriple,
+                                       StringRef Path, const ArgList &Args,
+                                       StringRef MultilibOutput,
+                                       DetectedMultilibs &Result,
+                                       std::string &MultilibVerboseMessages) {
+  bool Verbose = Args.hasArg(options::OPT_v);
+  llvm::StringSet<> AllABI;
+  llvm::StringSet<> AllArch;
+  llvm::StringSet<> AllMCmodel;
+  Multilib::flags_list Flags;
+
+  FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
+
+  // Get current ABI, Arch, and code model.
+  StringRef ABIName = tools::riscv::getRISCVABI(Args, TargetTriple);
+  StringRef MArch = tools::riscv::getRISCVArch(Args, TargetTriple);
+  StringRef CodeModel = tools::riscv::getRISCVCodeModel(Args);
+
+  // Turns it into option style, to make it able to compare
+  // to multi-lib option list.
+  std::string CurrentABIOpt = Twine("mabi=", ABIName).str();
+  std::string CurrentArchOpt = Twine("march=", MArch).str();
+  std::string CurrentMCmodelOpt = llvm::StringSwitch<const char *>(CodeModel)
+                                      .Case("medium", "mcmodel=medany")
+                                      .Default("mcmodel=medlow");
+
+  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> File =
+      D.getVFS().getBufferForFile(MultilibOutput);
+  std::vector<Multilib> Ms;
+
+  if (!File) {
+    // Ooops, some thing wrong during open file, let's fallback.
+    if (Verbose)
+      MultilibVerboseMessages += "Failed to read file in an attempt to obtain "
+                                 "the multilib configuration from GCC\n";
+    return false;
+  }
+
+  SmallVector<StringRef, 128> Lines;
+  File.get()->getBuffer().split(Lines, "\n");
+  for (StringRef Line : Lines) {
+    Line = Line.trim();
+
+    if (Line.empty())
+      continue;
+    // Format for multi-lib:
+    // <path>;@opt1@opt2
+    // For example:
+    // rv32ec/ilp32e;@march=rv32ec@mabi=ilp32e
+    // -march=rv32ec and -mabi=ilp32e using rv32ec/ilp32e.
+    auto MultilibInfo = Line.split(';');
+    StringRef Path = MultilibInfo.first;
+
+    // Skip default multi-lib path.
+    // Clang has implied a default multi-lib rule there,
+    // so we don't need to add it manually.
+    if (Path == ".")
+      continue;
+
+    StringRef Options = MultilibInfo.second.substr(1);
+    SmallVector<StringRef, 2> OptionList;
+    Options.split(OptionList, '@');
+    // multilib path rule is ${march}/${mabi}
+    auto Multilib = makeMultilib(Path, OptionList.size());
+    for (StringRef Option : OptionList) {
+      Multilib.flag(Twine("+", Option).str());
+
+      // Gather all used option from multi-lib config.
+      if (Option.startswith("march=")) {
+        if (!AllArch.contains(Option)) {
+          // Make sure every option we only process once
+          AllArch.insert(Option);
+          addMultilibFlag(CurrentArchOpt == Option, Option.str().c_str(),
+                          Flags);
+        }
+      } else if (Option.startswith("mabi=")) {
+        if (!AllABI.contains(Option)) {
+          AllABI.insert(Option);
+          addMultilibFlag(CurrentABIOpt == Option, Option.str().c_str(), Flags);
+        }
+      } else if (Option.startswith("mcmodel=")) {
+        if (!AllMCmodel.contains(Option)) {
+          AllMCmodel.insert(Option);
+          addMultilibFlag(CurrentMCmodelOpt == Option, Option.str().c_str(),
+                          Flags);
+        }
+      } else {
+        // Got unrecognized option in multi-lib config, fallback.
+        D.Diag(diag::warn_drv_multilib_fallback) << Option;
+        return false;
+      }
+    }
+    Ms.emplace_back(Multilib);
+  }
+
+  MultilibSet RISCVMultilibs =
+      MultilibSet().Either(ArrayRef<Multilib>(Ms)).FilterOut(NonExistent);
+
+  RISCVMultilibs.select(Flags, Result.SelectedMultilib);
+
+  Result.Multilibs = RISCVMultilibs;
+
+  return true;
+}
+
+static bool getRISCVMultilibFromGCC(const Driver &D,
+                                    const llvm::Triple &TargetTriple,
+                                    StringRef Path, const ArgList &Args,
+                                    DetectedMultilibs &Result,
+                                    std::string &MultilibVerboseMessages) {
+  bool Verbose = Args.hasArg(options::OPT_v);
+  // Try to find where is GCC.
+  std::string GCCPath = getGCCPath(D, Args);
+
+  // Not found? fallback to built-in multi-lib.
+  if (GCCPath.empty()) {
+    if (Verbose)
+      MultilibVerboseMessages += "Failed to find GCC in an attempt to obtain "
+                                 "the multilib configuration\n";
+    return false;
+  }
+
+  if (Verbose)
+    MultilibVerboseMessages +=
+        "Attempt to obtain the multilib configuration from '" + GCCPath + "'\n";
+
+  // Ask GCC's multi-lib config via --print-multi-lib.
+  StringRef GCCArgs[] = {{GCCPath}, {"--print-multi-lib"}};
+  std::string MultilibOutput = D.GetTemporaryPath("gcc-output-", "");
+  Optional<StringRef> Redirects[] = {None, {MultilibOutput}, {""}};
+
+  int RC = llvm::sys::ExecuteAndWait(GCCPath, GCCArgs, None, Redirects);
+
+  // Any failed happen? let fallback to built-in multi-lib.
+  if (RC != 0) {
+    if (Verbose)
+      MultilibVerboseMessages +=
+          "Failed to execute '" + GCCPath +
+          "' in an attempt to obtain the multilib configuration from GCC\n";
+    return false;
+  }
+
+  // Parsing output of --print-multi-lib, and use that info to determine
+  // which multi-lib should be used.
+  return scanRISCVGCCMultilibConfig(D, TargetTriple, Path, Args, MultilibOutput,
+                                    Result, MultilibVerboseMessages);
+}
+
 static void findRISCVBareMetalMultilibs(const Driver &D,
                                         const llvm::Triple &TargetTriple,
                                         StringRef Path, const ArgList &Args,
-                                        DetectedMultilibs &Result) {
+                                        DetectedMultilibs &Result,
+                                        std::string &MultilibVerboseMessages) {
+  // Try to get multilib from GCC first.
+  if (getRISCVMultilibFromGCC(D, TargetTriple, Path, Args, Result,
+                              MultilibVerboseMessages))
+    return;
+
   FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
   struct RiscvMultilib {
     StringRef march;
@@ -1738,9 +1927,11 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
 
 static void findRISCVMultilibs(const Driver &D,
                                const llvm::Triple &TargetTriple, StringRef Path,
-                               const ArgList &Args, DetectedMultilibs &Result) {
+                               const ArgList &Args, DetectedMultilibs &Result,
+                               std::string &MultilibVerboseMessages) {
   if (TargetTriple.getOS() == llvm::Triple::UnknownOS)
-    return findRISCVBareMetalMultilibs(D, TargetTriple, Path, Args, Result);
+    return findRISCVBareMetalMultilibs(D, TargetTriple, Path, Args, Result,
+                                       MultilibVerboseMessages);
 
   FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
   Multilib Ilp32 = makeMultilib("lib32/ilp32").flag("+m32").flag("+mabi=ilp32");
@@ -2099,6 +2290,9 @@ void Generic_GCC::GCCInstallationDetector::print(raw_ostream &OS) const {
 
   if (!GCCInstallPath.empty())
     OS << "Selected GCC installation: " << GCCInstallPath << "\n";
+
+  if (!MultilibVerboseMessages.empty())
+    OS << MultilibVerboseMessages;
 
   for (const auto &Multilib : Multilibs)
     OS << "Candidate multilib: " << Multilib << "\n";
@@ -2597,7 +2791,8 @@ bool Generic_GCC::GCCInstallationDetector::ScanGCCForMultilibs(
     if (!findMIPSMultilibs(D, TargetTriple, Path, Args, Detected))
       return false;
   } else if (TargetTriple.isRISCV()) {
-    findRISCVMultilibs(D, TargetTriple, Path, Args, Detected);
+    findRISCVMultilibs(D, TargetTriple, Path, Args, Detected,
+                       MultilibVerboseMessages);
   } else if (isMSP430(TargetArch)) {
     findMSP430Multilibs(D, TargetTriple, Path, Args, Detected);
   } else if (TargetArch == llvm::Triple::avr) {

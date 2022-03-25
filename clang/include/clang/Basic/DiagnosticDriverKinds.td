@@ -483,6 +483,13 @@ def err_drv_extract_api_wrong_kind : Error<
   "header file '%0' input '%1' does not match the type of prior input "
   "in api extraction; use '-x %2' to override">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def warn_drv_multilib_fallback : Warning<
+  "%0 option unrecognized in multi-lib configuration when parsing config "
+  "from GCC, falling back to built-in multi-lib configuration.">,
+  InGroup<MultilibFallback>;
+#endif
+
 def warn_slash_u_filename : Warning<"'/U%0' treated as the '/U' option">,
   InGroup<DiagGroup<"slash-u-filename">>;
 def note_use_dashdash : Note<

@@ -301,3 +301,14 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
       return "rv64imafdc";
   }
 }
+
+StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
+  // Default code model is 'small' (what GCC calls 'medlow').
+  StringRef CodeModel;
+  if (const Arg *A = Args.getLastArg(options::OPT_mcmodel_EQ))
+    CodeModel = A->getValue();
+  else
+    CodeModel = "small";
+
+  return CodeModel;
+}

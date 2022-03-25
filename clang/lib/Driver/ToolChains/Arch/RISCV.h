@@ -26,6 +26,7 @@ StringRef getRISCVABI(const llvm::opt::ArgList &Args,
                       const llvm::Triple &Triple);
 StringRef getRISCVArch(const llvm::opt::ArgList &Args,
                        const llvm::Triple &Triple);
+StringRef getRISCVCodeModel(const llvm::opt::ArgList &Args);
 } // end namespace riscv
 } // namespace tools
 } // end namespace driver

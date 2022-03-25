@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+print("rv32iac/ilp32;@march=rv32iac@mabi=ilp32")
+print("rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f")
+print("rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d")
