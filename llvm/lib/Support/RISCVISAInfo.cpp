@@ -95,6 +95,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zve64x", RISCVExtensionVersion{1, 0}},
     {"zve64f", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
+
+    // SIFIVE
+    {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}},
+    {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}},
+    // end SIFIVE
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {

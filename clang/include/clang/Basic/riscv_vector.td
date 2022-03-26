@@ -2247,6 +2247,38 @@ let IntrinsicTypes = [-1] in
   def vgetvxrm : RVVBuiltin<"", "z", "i">;
 }
 
+//
+// Below is not for upstream
+//
+let RequiredFeatures = ["Xsfvqmaccqoq"],
+    Log2LMUL = [0, 1, 2, -1],
+    HasMasked = false,
+    IntrinsicTypes = [-1, 1, 2] in {
+  let MangledName = "sf_vqmaccu_4x8x4" in
+    def sf_vqmaccu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvUv", "c">;
+  let MangledName = "sf_vqmacc_4x8x4" in
+    def sf_vqmacc_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvv", "c">;
+  let MangledName = "sf_vqmaccus_4x8x4" in
+    def sf_vqmaccus_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvv", "c">;
+  let MangledName = "sf_vqmaccsu_4x8x4" in
+    def sf_vqmaccsu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvUv", "c">;
+}
+
+let RequiredFeatures = ["Xsfvqmaccdod"],
+    Log2LMUL = [0, 1, 2, 3],
+    HasMasked = false,
+    IntrinsicTypes = [-1, 1, 2] in {
+  let MangledName = "sf_vqmaccu_2x8x2" in
+    def sf_vqmaccu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvUv", "c">;
+  let MangledName = "sf_vqmacc_2x8x2" in
+    def sf_vqmacc_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvv", "c">;
+  let MangledName = "sf_vqmaccus_2x8x2" in
+    def sf_vqmaccus_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvv", "c">;
+  let MangledName = "sf_vqmaccsu_2x8x2" in
+    def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
+}
+// end SIFIVE
+
 let HeaderCode = [{
 #define vsetvxrm(mode) __builtin_rvv_vsetvxrm(mode)
 #define vgetvxrm() __builtin_rvv_vgetvxrm()

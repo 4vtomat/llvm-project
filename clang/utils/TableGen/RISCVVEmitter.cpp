@@ -579,6 +579,12 @@ bool RVVEmitter::emitMacroRestrictionStr(RISCVPredefinedMacroT PredefinedMacros,
     OS << LS << "(__riscv_v_elen_fp >= 32)";
   if (PredefinedMacros & RISCVPredefinedMacro::VectorMaxELenFp64)
     OS << LS << "(__riscv_v_elen_fp >= 64)";
+#if SIFIVE_CUSTOMIZATION
+  if (PredefinedMacros & RISCVPredefinedMacro::Xsfvqmaccqoq)
+    OS << LS << "defined(__riscv_xsfvqmaccqoq)";
+  if (PredefinedMacros & RISCVPredefinedMacro::Xsfvqmaccdod)
+    OS << LS << "defined(__riscv_xsfvqmaccdod)";
+#endif // SIFIVE_CUSTOMIZATION
   OS << "\n";
   return true;
 }

@@ -73,7 +73,7 @@ LMULType &LMULType::operator*=(uint32_t RHS) {
 RVVType::RVVType(BasicType BT, int Log2LMUL, StringRef prototype)
     : BT(BT), LMUL(LMULType(Log2LMUL)) {
   applyBasicType();
-  applyModifier(prototype);
+  applyModifier(prototype, Log2LMUL);
   Valid = verifyType();
   if (Valid) {
     initBuiltinStr();
@@ -360,7 +360,7 @@ void RVVType::applyBasicType() {
   assert(ElementBitwidth != 0 && "Bad element bitwidth!");
 }
 
-void RVVType::applyModifier(StringRef Transformer) {
+void RVVType::applyModifier(StringRef Transformer, int CurLog2LMUL) {
   if (Transformer.empty())
     return;
   // Handle primitive type transformer
@@ -473,6 +473,15 @@ void RVVType::applyModifier(StringRef Transformer) {
       // New LMUL should be smaller than old
       if (!ComputeFixedLog2LMUL(ComplexTT.second, std::less<int32_t>()))
         return;
+#if SIFIVE_CUSTOMIZATION
+    } else if (ComplexTT.first == "MultipleLMUL") {
+      int32_t multiplier;
+      ComplexTT.second.getAsInteger(10, multiplier);
+      // update new LMUL
+      LMUL = LMULType(CurLog2LMUL);
+      LMUL *= multiplier;
+      UpdateAndCheckComplexProto();
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       llvm_unreachable("Illegal complex type transformers!");
     }
@@ -566,6 +575,12 @@ RVVIntrinsic::RVVIntrinsic(
     if (Feature == "FullMultiply" &&
         (RISCVPredefinedMacros & RISCVPredefinedMacro::VectorMaxELen64))
       RISCVPredefinedMacros |= RISCVPredefinedMacro::V;
+#if SIFIVE_CUSTOMIZATION
+    if (Feature == "Xsfvqmaccqoq")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccqoq;
+    if (Feature == "Xsfvqmaccdod")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccdod;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Init OutputType and InputTypes

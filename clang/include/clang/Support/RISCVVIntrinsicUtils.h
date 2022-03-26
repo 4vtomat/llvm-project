@@ -114,7 +114,7 @@ private:
 
   // Applies a prototype modifier to the current type. The result maybe an
   // invalid type.
-  void applyModifier(llvm::StringRef prototype);
+  void applyModifier(llvm::StringRef prototype, int CurLog2LMUl); // SIFIVE
 
   // Compute and record a string for legal type.
   void initBuiltinStr();
@@ -128,7 +128,7 @@ private:
 
 using RVVTypePtr = RVVType *;
 using RVVTypes = std::vector<RVVTypePtr>;
-using RISCVPredefinedMacroT = uint8_t;
+using RISCVPredefinedMacroT = uint16_t; // SIFIVE
 
 enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   Basic = 0,
@@ -138,6 +138,8 @@ enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   VectorMaxELen64 = 1 << 4,
   VectorMaxELenFp32 = 1 << 5,
   VectorMaxELenFp64 = 1 << 6,
+  Xsfvqmaccqoq = 1 << 7, // SIFIVE
+  Xsfvqmaccdod = 1 << 8, // SIFIVE
 };
 
 enum PolicyScheme : uint8_t {
