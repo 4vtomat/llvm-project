@@ -1520,16 +1520,20 @@ let HeaderCode =
 #define vsetvl_e16m4(avl) __builtin_rvv_vsetvli((size_t)(avl), 1, 2)
 #define vsetvl_e16m8(avl) __builtin_rvv_vsetvli((size_t)(avl), 1, 3)
 
+#if __riscv_v_elen >= 32
 #define vsetvl_e32mf2(avl) __builtin_rvv_vsetvli((size_t)(avl), 2, 7)
 #define vsetvl_e32m1(avl) __builtin_rvv_vsetvli((size_t)(avl), 2, 0)
 #define vsetvl_e32m2(avl) __builtin_rvv_vsetvli((size_t)(avl), 2, 1)
 #define vsetvl_e32m4(avl) __builtin_rvv_vsetvli((size_t)(avl), 2, 2)
 #define vsetvl_e32m8(avl) __builtin_rvv_vsetvli((size_t)(avl), 2, 3)
+#endif
 
+#if __riscv_v_elen >= 64
 #define vsetvl_e64m1(avl) __builtin_rvv_vsetvli((size_t)(avl), 3, 0)
 #define vsetvl_e64m2(avl) __builtin_rvv_vsetvli((size_t)(avl), 3, 1)
 #define vsetvl_e64m4(avl) __builtin_rvv_vsetvli((size_t)(avl), 3, 2)
 #define vsetvl_e64m8(avl) __builtin_rvv_vsetvli((size_t)(avl), 3, 3)
+#endif
 
 #define vsetvlmax_e8mf8() __builtin_rvv_vsetvlimax(0, 5)
 #define vsetvlmax_e8mf4() __builtin_rvv_vsetvlimax(0, 6)
@@ -1546,16 +1550,21 @@ let HeaderCode =
 #define vsetvlmax_e16m4() __builtin_rvv_vsetvlimax(1, 2)
 #define vsetvlmax_e16m8() __builtin_rvv_vsetvlimax(1, 3)
 
+#if __riscv_v_elen >= 32
 #define vsetvlmax_e32mf2() __builtin_rvv_vsetvlimax(2, 7)
 #define vsetvlmax_e32m1() __builtin_rvv_vsetvlimax(2, 0)
 #define vsetvlmax_e32m2() __builtin_rvv_vsetvlimax(2, 1)
 #define vsetvlmax_e32m4() __builtin_rvv_vsetvlimax(2, 2)
 #define vsetvlmax_e32m8() __builtin_rvv_vsetvlimax(2, 3)
+#endif
 
+#if __riscv_v_elen >= 64
 #define vsetvlmax_e64m1() __builtin_rvv_vsetvlimax(3, 0)
 #define vsetvlmax_e64m2() __builtin_rvv_vsetvlimax(3, 1)
 #define vsetvlmax_e64m4() __builtin_rvv_vsetvlimax(3, 2)
 #define vsetvlmax_e64m8() __builtin_rvv_vsetvlimax(3, 3)
+#endif
+
 }] in
 def vsetvl_macro: RVVHeader;
 
