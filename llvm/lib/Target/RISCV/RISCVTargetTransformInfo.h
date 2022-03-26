@@ -167,6 +167,17 @@ public:
     return isLegalMaskedGatherScatter(DataType, Alignment);
   }
 
+  // SIFIVE
+  bool forceScalarizeMaskedGather(VectorType *VTy, Align Alignment) {
+    // Scalarize masked gather for RV64 if EEW=64 indices aren't supported.
+    return ST->is64Bit() && !ST->hasVInstructionsI64();
+  }
+  bool forceScalarizeMaskedScatter(VectorType *VTy, Align Alignment) {
+    // Scalarize masked scatter for RV64 if EEW=64 indices aren't supported.
+    return ST->is64Bit() && !ST->hasVInstructionsI64();
+  }
+  // end SIFIVE
+
   /// \returns How the target needs this vector-predicated operation to be
   /// transformed.
   TargetTransformInfo::VPLegalization
