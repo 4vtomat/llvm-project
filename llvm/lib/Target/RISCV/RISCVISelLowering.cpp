@@ -4942,7 +4942,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                      Subtarget.getXLenVT())};
     SDValue Result =
         DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops, DestVT,
-                                MPI, SrcAlign, MachineMemOperand::MOStore);
+                                MPI, SrcAlign, MachineMemOperand::MOLoad);
     return Result;
   }
   case Intrinsic::riscv_vcast_to_fixed: {

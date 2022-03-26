@@ -568,7 +568,7 @@ bool RISCVTypePromotion::runOnFunction(Function &F) {
 
   AllVisited.clear();
 
-  return false;
+  return MadeChange;
 }
 
 INITIALIZE_PASS_BEGIN(RISCVTypePromotion, DEBUG_TYPE, PASS_NAME, false, false)
