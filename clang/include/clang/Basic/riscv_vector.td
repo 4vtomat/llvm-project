@@ -198,6 +198,12 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // undisturbed.
   Policy UnMaskedPolicy = NonePolicy;
 
+#ifdef SIFIVE_CUSTOMIZATION
+  // Is this a tail undisturbed intrinsic.
+  // FIXME: This is a quick hack until https://github.com/riscv-non-isa/rvv-intrinsic-doc/issues/120
+  bit IsTU = false;
+#endif // SIFIVE_CUSTOMIZATION
+
   // This builtin supports non-masked function overloading api.
   // All masked operations support overloading api.
   bit HasUnMaskedOverloaded = true;
@@ -255,6 +261,13 @@ class RVVOutOp1Builtin<string suffix, string prototype, string type_range>
     : RVVBuiltin<suffix, prototype, type_range> {
   let IntrinsicTypes = [-1, 1];
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+class RVVOutOp2Builtin<string suffix, string prototype, string type_range>
+    : RVVBuiltin<suffix, prototype, type_range> {
+  let IntrinsicTypes = [-1, 2];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 class RVVOutOp0Op1Builtin<string suffix, string prototype, string type_range>
     : RVVBuiltin<suffix, prototype, type_range> {
@@ -543,25 +556,63 @@ multiclass RVVWidenWOp0BuiltinSet<string intrinsic_name, string type_range,
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass RVVWidenWOp0BuiltinSetTU<string intrinsic_name, string type_range,
+                                    list<list<string>> suffixes_prototypes,
+                                    list<list<string>> suffixes_prototypes_tu> {
+  let Log2LMUL = [-3, -2, -1, 0, 1, 2], UnMaskedPolicy = HasPassthruOperand,
+      IRName = intrinsic_name, MaskedIRName = intrinsic_name # "_mask" in {
+    foreach s_p = suffixes_prototypes in {
+      let Name = NAME # "_" # s_p[0],
+          MangledName = NAME # "_" # s_p[0] in {
+        defvar suffix = s_p[1];
+        defvar prototype = s_p[2];
+        def : RVVOutOp1Builtin<suffix, prototype, type_range>;
+      }
+    }
+  }
+  let Log2LMUL = [-3, -2, -1, 0, 1, 2],
+      IRName = intrinsic_name, MaskedIRName = intrinsic_name # "_mask",
+      IsTU = true, HasMasked = false, HasUnMaskedOverloaded = false in {
+    foreach s_p = suffixes_prototypes_tu in {
+      let Name = NAME # "_" # s_p[0],
+          MangledName = NAME # "_" # s_p[0] in {
+        defvar suffix = s_p[1];
+        defvar prototype = s_p[2];
+        def : RVVOutOp2Builtin<suffix, prototype, type_range>;
+      }
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass RVVSignedWidenBinBuiltinSet
     : RVVWidenBuiltinSet<NAME, "csi",
                          [["vv", "w", "wvv"],
                           ["vx", "w", "wve"]]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass RVVSignedWidenOp0BinBuiltinSet
-    : RVVWidenWOp0BuiltinSet<NAME # "_w", "csi",
-                             [["wv", "w", "wwv"],
-                              ["wx", "w", "wwe"]]>;
+    : RVVWidenWOp0BuiltinSetTU<NAME # "_w", "csi",
+                               [["wv", "w", "wwv"],
+                                ["wx", "w", "wwe"]],
+                               [["wv", "w", "wwwv"],
+                                ["wx", "w", "wwwe"]]>;
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass RVVUnsignedWidenBinBuiltinSet
     : RVVWidenBuiltinSet<NAME, "csi",
                          [["vv", "Uw", "UwUvUv"],
                           ["vx", "Uw", "UwUvUe"]]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass RVVUnsignedWidenOp0BinBuiltinSet
-    : RVVWidenWOp0BuiltinSet<NAME # "_w", "csi",
-                             [["wv", "Uw", "UwUwUv"],
-                              ["wx", "Uw", "UwUwUe"]]>;
+    : RVVWidenWOp0BuiltinSetTU<NAME # "_w", "csi",
+                               [["wv", "Uw", "UwUwUv"],
+                                ["wx", "Uw", "UwUwUe"]],
+                               [["wv", "Uw", "UwUwUwUv"],
+                                ["wx", "Uw", "UwUwUwUe"]]>;
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass RVVFloatingWidenBinBuiltinSet
     : RVVWidenBuiltinSet<NAME, "xf",
@@ -626,6 +677,23 @@ let HasUnMaskedOverloaded = false,
         }
       }
     }
+#ifdef SIFIVE_CUSTOMIZATION
+    let Name = NAME # "_v",
+        IRName = "vle",
+        HasMasked = false,
+        IsTU = true,
+      ManualCodegen = [{
+        IntrinsicTypes = {ResultType, Ops[2]->getType()};
+        Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
+      }] in {
+      foreach type = types in {
+        def : RVVBuiltin<"v", "vvPCe", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<"Uv", "UvUvPCUe", type>;
+        }
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -1636,6 +1704,7 @@ defm vrsub : RVVOutOp1BuiltinSet<"vrsub", "csil",
 }
 defm vneg_v : RVVPseudoUnaryBuiltin<"vrsub", "csil">;
 
+#ifdef SIFIVE_CUSTOMIZATION
 // 12.2. Vector Widening Integer Add/Subtract
 // Widening unsigned integer add/subtract, 2*SEW = SEW +/- SEW
 let UnMaskedPolicy = HasPassthruOperand in {
@@ -1644,13 +1713,15 @@ defm vwsubu : RVVUnsignedWidenBinBuiltinSet;
 // Widening signed integer add/subtract, 2*SEW = SEW +/- SEW
 defm vwadd : RVVSignedWidenBinBuiltinSet;
 defm vwsub : RVVSignedWidenBinBuiltinSet;
+}
 // Widening unsigned integer add/subtract, 2*SEW = 2*SEW +/- SEW
 defm vwaddu : RVVUnsignedWidenOp0BinBuiltinSet;
 defm vwsubu : RVVUnsignedWidenOp0BinBuiltinSet;
 // Widening signed integer add/subtract, 2*SEW = 2*SEW +/- SEW
 defm vwadd : RVVSignedWidenOp0BinBuiltinSet;
 defm vwsub : RVVSignedWidenOp0BinBuiltinSet;
-}
+#endif // SIFIVE_CUSTOMIZATION
+
 defm vwcvtu_x_x_v : RVVPseudoVWCVTBuiltin<"vwaddu", "vwcvtu_x", "csi",
                                           [["Uw", "UwUv"]]>;
 defm vwcvt_x_x_v : RVVPseudoVWCVTBuiltin<"vwadd", "vwcvt_x", "csi",
@@ -2303,15 +2374,15 @@ let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,
 
 let RequiredFeatures = ["Xsfvfwmaccqqq"],
     Log2LMUL = [-2, -1, 0, 1, 2],
-    HasMask = false,
+    HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
   let MangledName = "sf_vfwmacc_4x4x4" in
     def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
 }
 
 // reinterpret for bf16 <-> uint16
-let RequiredFeatures = ["HasBfloat16"], HasMask = false, HasVL = false, IRName = "" in {
-  let Name = "vreinterpret_v", HasPolicy = false,
+let RequiredFeatures = ["HasBfloat16"], HasMasked = false, HasVL = false, IRName = "" in {
+  let Name = "vreinterpret_v", MaskedPolicy = NonePolicy,
       ManualCodegen = [{
         return Builder.CreateBitCast(Ops[0], ResultType);
       }] in {

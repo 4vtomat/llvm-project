@@ -584,7 +584,7 @@ RVVIntrinsic::RVVIntrinsic(
     bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
     bool HasUnMaskedOverloaded, bool HasBuiltinAlias, StringRef ManualCodegen,
     const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
-    const std::vector<StringRef> &RequiredFeatures, unsigned NF)
+    const std::vector<StringRef> &RequiredFeatures, unsigned NF, bool IsTU) // SIFIVE
     : IRName(IRName), IsMasked(IsMasked), HasVL(HasVL), Scheme(Scheme),
       HasUnMaskedOverloaded(HasUnMaskedOverloaded),
       HasBuiltinAlias(HasBuiltinAlias), ManualCodegen(ManualCodegen.str()),
@@ -605,6 +605,14 @@ RVVIntrinsic::RVVIntrinsic(
     BuiltinName += "_m";
     Name += "_m";
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (IsTU) {
+    Name += "_tu";
+    BuiltinName += "_tu";
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
 
   // Init RISC-V extensions
   for (const auto &T : OutInTypes) {

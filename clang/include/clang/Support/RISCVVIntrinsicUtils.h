@@ -187,7 +187,8 @@ public:
                bool HasUnMaskedOverloaded, bool HasBuiltinAlias,
                llvm::StringRef ManualCodegen, const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
-               const std::vector<llvm::StringRef> &RequiredFeatures, unsigned NF);
+               const std::vector<llvm::StringRef> &RequiredFeatures, unsigned NF, // SIFIVE
+               bool IsTU); // SIFIVE
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }

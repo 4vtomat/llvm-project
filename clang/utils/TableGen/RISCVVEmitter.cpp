@@ -335,7 +335,8 @@ void RVVEmitter::createCodeGen(raw_ostream &OS) {
   for (auto &Def : Defs) {
     StringRef CurIRName = Def->getIRName();
     if (CurIRName != PrevDef->getIRName() ||
-        (Def->getManualCodegen() != PrevDef->getManualCodegen())) {
+        (Def->getManualCodegen() != PrevDef->getManualCodegen()) || // SIFIVE
+        (Def->getPolicyScheme() != PrevDef->getPolicyScheme())) { // SIFIVE
       emitCodeGenSwitchBody(PrevDef, OS);
     }
     PrevDef = Def.get();
@@ -403,6 +404,7 @@ void RVVEmitter::createRVVIntrinsics(
     StringRef MangledSuffixProto = R->getValueAsString("MangledSuffix");
     StringRef Prototypes = R->getValueAsString("Prototype");
     StringRef TypeRange = R->getValueAsString("TypeRange");
+    bool IsTU = R->getValueAsBit("IsTU"); // SIFIVE
     bool HasMasked = R->getValueAsBit("HasMasked");
     bool HasMaskedOffOperand = R->getValueAsBit("HasMaskedOffOperand");
     bool HasVL = R->getValueAsBit("HasVL");
@@ -484,7 +486,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicy, HasUnMaskedOverloaded, HasBuiltinAlias,
             ManualCodegen, Types.getValue(), IntrinsicTypes, RequiredFeatures,
-            NF));
+            NF, IsTU));
         if (HasMasked) {
           // Create a masked intrinsic
           Optional<RVVTypes> MaskTypes =
@@ -493,7 +495,7 @@ void RVVEmitter::createRVVIntrinsics(
               Name, SuffixStr, MangledName, MangledSuffixStr, MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicy,
               HasUnMaskedOverloaded, HasBuiltinAlias, MaskedManualCodegen,
-              MaskTypes.getValue(), IntrinsicTypes, RequiredFeatures, NF));
+              MaskTypes.getValue(), IntrinsicTypes, RequiredFeatures, NF, IsTU));
         }
       } // end for Log2LMULList
     }   // end for TypeRange
