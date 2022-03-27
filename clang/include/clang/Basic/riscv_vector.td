@@ -2306,7 +2306,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
   }
 }
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 let HeaderCode = [{
 #define VE_TAIL_UNDISTURBED 0
 #define VE_TAIL_AGNOSTIC 1
@@ -2391,7 +2391,6 @@ let RequiredFeatures = ["HasBfloat16"], HasMasked = false, HasVL = false, IRName
     def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
   }
 }
-// end SIFIVE
 
 let HeaderCode = [{
 #define vsetvxrm(mode) __builtin_rvv_vsetvxrm(mode)
@@ -2459,4 +2458,4 @@ static inline int vegetxsat(void)
 
 }] in
 def vxrm : RVVHeader;
-// end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
