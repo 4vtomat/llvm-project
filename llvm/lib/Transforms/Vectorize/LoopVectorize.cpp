@@ -10673,8 +10673,8 @@ Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
   Constant *LMULArg =
       ConstantInt::get(IntegerType::get(Builder.getContext(), 64), LMUL);
 
-  Value *GVL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {},
-                                       {RVLArg, SEWArg, LMULArg});
+  Value *GVL = Builder.CreateIntrinsic(
+      Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
   return Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
 #endif // SIFIVE_CUSTOMIZATION

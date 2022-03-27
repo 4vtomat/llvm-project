@@ -125,6 +125,10 @@ unsigned RISCVTTIImpl::getMaxElementWidth() const {
   // Current EPI implementation plans this to be 64. 
   return 64;
 }
+
+bool RISCVTTIImpl::preferPredicatedVectorOps() const {
+  return true; // TODO: Replace with a call like ST->isSiFiveCPU()
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::PopcntSupportKind
@@ -268,6 +272,31 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
   if (Kind == TTI::SK_Broadcast && isa<ScalableVectorType>(Tp))
     return LT.first * 1;
 
+#if SIFIVE_CUSTOMIZATION
+  if (isa<ScalableVectorType>(Tp) &&
+      (!SubTp || isa<ScalableVectorType>(SubTp))) {
+    switch (Kind) {
+    case TTI::SK_Broadcast:
+    case TTI::SK_Splice:
+      llvm_unreachable("Handled earlier");
+    case TTI::SK_Select:
+    case TTI::SK_Reverse:
+    case TTI::SK_Transpose:
+    case TTI::SK_PermuteSingleSrc:
+    case TTI::SK_PermuteTwoSrc:
+      // This may seem strange but the more elements out there the more work is
+      // for the VPU.
+      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp));
+    case TTI::SK_ExtractSubvector:
+      return getExtractSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
+                                         cast<ScalableVectorType>(SubTp));
+    case TTI::SK_InsertSubvector:
+      return getInsertSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
+                                        cast<ScalableVectorType>(SubTp));
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   return BaseT::getShuffleCost(Kind, Tp, Mask, Index, SubTp);
 }
 
@@ -308,22 +337,89 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   return NumLoads * MemOpCost;
 }
 
+#if SIFIVE_CUSTOMIZATION
 InstructionCost
 RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                     TTI::TargetCostKind CostKind) {
+  // Taken from AArch64.
   auto *RetTy = ICA.getReturnType();
   switch (ICA.getID()) {
-  // TODO: add more intrinsic
   case Intrinsic::experimental_stepvector: {
-    unsigned Cost = 1; // vid
+    InstructionCost Cost = 1; // Cost of the `index' instruction
     auto LT = TLI->getTypeLegalizationCost(DL, RetTy);
-    return Cost + (LT.first - 1);
+    // Legalisation of illegal vectors involves an `index' instruction plus
+    // (LT.first - 1) vector adds.
+    if (LT.first > 1) {
+      Type *LegalVTy = EVT(LT.second).getTypeForEVT(RetTy->getContext());
+      InstructionCost AddCost =
+          getArithmeticInstrCost(Instruction::Add, LegalVTy, CostKind);
+      Cost += AddCost * (LT.first - 1);
+    }
+    return Cost;
   }
+  case Intrinsic::nearbyint: {
+    if (isa<ScalableVectorType>(RetTy))
+      return InstructionCost::getInvalid();
+    break;
+  }
+  // This is not ideal but untill all VP intrinsics are in upstream we can't use
+  // the IsVPIntrinsic getter, so build the list manually from
+  // IntrinsicEnums.inc.
+#define VP_INTRINSIC_LIST                                                      \
+  VP_INTRINSIC(vp_add)                                                         \
+  VP_INTRINSIC(vp_and)                                                         \
+  VP_INTRINSIC(vp_ashr)                                                        \
+  VP_INTRINSIC(vp_fadd)                                                        \
+  VP_INTRINSIC(vp_fcmp)                                                        \
+  VP_INTRINSIC(vp_fdiv)                                                        \
+  VP_INTRINSIC(vp_fma)                                                         \
+  VP_INTRINSIC(vp_fmul)                                                        \
+  VP_INTRINSIC(vp_fneg)                                                        \
+  VP_INTRINSIC(vp_fpext)                                                       \
+  VP_INTRINSIC(vp_fptosi)                                                      \
+  VP_INTRINSIC(vp_fptoui)                                                      \
+  VP_INTRINSIC(vp_fptrunc)                                                     \
+  VP_INTRINSIC(vp_frem)                                                        \
+  VP_INTRINSIC(vp_fsub)                                                        \
+  VP_INTRINSIC(vp_gather)                                                      \
+  VP_INTRINSIC(vp_icmp)                                                        \
+  VP_INTRINSIC(vp_inttoptr)                                                    \
+  VP_INTRINSIC(vp_load)                                                        \
+  VP_INTRINSIC(vp_lshr)                                                        \
+  VP_INTRINSIC(vp_mul)                                                         \
+  VP_INTRINSIC(vp_or)                                                          \
+  VP_INTRINSIC(vp_ptrtoint)                                                    \
+  VP_INTRINSIC(vp_scatter)                                                     \
+  VP_INTRINSIC(vp_sdiv)                                                        \
+  VP_INTRINSIC(vp_select)                                                      \
+  VP_INTRINSIC(vp_sext)                                                        \
+  VP_INTRINSIC(vp_shl)                                                         \
+  VP_INTRINSIC(vp_sitofp)                                                      \
+  VP_INTRINSIC(vp_srem)                                                        \
+  VP_INTRINSIC(vp_store)                                                       \
+  VP_INTRINSIC(vp_sub)                                                         \
+  VP_INTRINSIC(vp_trunc)                                                       \
+  VP_INTRINSIC(vp_udiv)                                                        \
+  VP_INTRINSIC(vp_uitofp)                                                      \
+  VP_INTRINSIC(vp_urem)                                                        \
+  VP_INTRINSIC(vp_xor)                                                         \
+  VP_INTRINSIC(vp_zext)                                                        \
+  VP_INTRINSIC(experimental_vp_strided_load)                                   \
+  VP_INTRINSIC(experimental_vp_strided_store)                                  \
+  VP_INTRINSIC(experimental_vp_splice)                                         \
+  VP_INTRINSIC(experimental_vp_reverse)
+#define VP_INTRINSIC(name) case Intrinsic::name:
+  VP_INTRINSIC_LIST
+#undef VP_INTRINSIC
+    return 1;
   default:
     break;
   }
+
   return BaseT::getIntrinsicInstrCost(ICA, CostKind);
 }
+#endif // SIFIVE_CUSTOMIZATION
+
 
 InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
                                                Type *Src,
