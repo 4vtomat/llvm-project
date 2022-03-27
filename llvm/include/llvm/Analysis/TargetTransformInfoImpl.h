@@ -412,10 +412,37 @@ public:
     return TypeSize::getFixed(32);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned getMaxElementWidth() const { return 64; }
+#endif // SIFIVE_CUSTOMIZATION
+
   unsigned getMinVectorRegisterBitWidth() const { return 128; }
 
   Optional<unsigned> getMaxVScale() const { return None; }
   Optional<unsigned> getVScaleForTuning() const { return None; }
+
+#if SIFIVE_CUSTOMIZATION
+  std::pair<ElementCount, ElementCount>
+  getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
+                        unsigned SmallestType, unsigned WidestType,
+                        unsigned MaxSafeRegisterWidth = -1U,
+                        unsigned RegWidthFactor = 1,
+                        bool IsScalable = false) const {
+    unsigned WidestRegister = std::min<unsigned>(
+        getRegisterBitWidth(K).getFixedSize(), MaxSafeRegisterWidth);
+
+    unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
+    ElementCount LowerBoundVF =
+        ElementCount::get(LowerBoundVFKnownMin, IsScalable);
+
+    unsigned UpperBoundVFKnownMin =
+        PowerOf2Floor(WidestRegister / SmallestType);
+    ElementCount UpperBoundVF =
+        ElementCount::get(UpperBoundVFKnownMin, IsScalable);
+
+    return {LowerBoundVF, UpperBoundVF};
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool shouldMaximizeVectorBandwidth() const { return false; }
 
@@ -792,6 +819,10 @@ public:
   bool shouldExpandReduction(const IntrinsicInst *II) const { return true; }
 
   unsigned getGISelRematGlobalCost() const { return 1; }
+
+#if SIFIVE_CUSTOMIZATION
+  bool preferPredicatedVectorOps() const { return false; }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool supportsScalableVectors() const { return false; }
 

@@ -44,6 +44,11 @@
 #include <cassert>
 #include <cstddef>
 #include <string>
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/ModuleSlotTracker.h"
+#include "llvm/IR/Type.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 
@@ -207,6 +212,11 @@ struct VPTransformState {
   ElementCount VF;
   unsigned UF;
 
+#if SIFIVE_CUSTOMIZATION
+  // Generate predicated vector intrinsics?
+  bool PreferPredicatedVectorOps;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Hold the indices to generate specific scalar instructions. Null indicates
   /// that all instances are to be generated, using either scalar or vector
   /// instructions.
@@ -339,6 +349,11 @@ struct VPTransformState {
 
   /// Hold the canonical scalar IV of the vector loop (start=0, step=VF*UF).
   Value *CanonicalIV = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  /// Hold a pointer to ScalarEvolution which will be used during the IR
+  /// generation.
+  ScalarEvolution *SE = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
   InnerLoopVectorizer *ILV;
@@ -352,6 +367,23 @@ struct VPTransformState {
 
   /// The loop object for the current parent region, or nullptr.
   Loop *CurrentVectorLoop = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  /// A vector of pairs of value and part that should be replaced with EVL once
+  /// the EVL is available
+  struct {
+    SmallVector<std::pair<Value *, unsigned>, 4> NextInduction;
+    Value *Step;
+    Instruction::BinaryOps MulOp;
+    ElementCount VF;
+  } NextInductionInfo;
+
+  /// Index for the next iteration.
+  Instruction *NextIndex = nullptr;
+
+  /// EVL
+  // FIXME: It is odd we need this: review.
+  VPValue *EVL = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// VPUsers instance used by VPBlockBase to manage CondBit and the block
@@ -790,6 +822,12 @@ inline bool VPUser::classof(const VPDef *Def) {
          Def->getVPDefID() == VPRecipeBase::VPReplicateSC ||
          Def->getVPDefID() == VPRecipeBase::VPReductionSC ||
          Def->getVPDefID() == VPRecipeBase::VPBranchOnMaskSC ||
+#if SIFIVE_CUSTOMIZATION
+         Def->getVPDefID() == VPRecipeBase::VPPredicatedWidenSC ||
+         Def->getVPDefID() ==
+             VPRecipeBase::VPPredicatedWidenMemoryInstructionSC ||
+         Def->getVPDefID() == VPRecipeBase::VPEVLPHISC ||
+#endif // SIFIVE_CUSTOMIZATION
          Def->getVPDefID() == VPRecipeBase::VPWidenMemoryInstructionSC;
 }
 
@@ -806,6 +844,9 @@ public:
     FirstOrderRecurrenceSplice =
         Instruction::OtherOpsEnd + 1, // Combines the incoming and previous
                                       // values of a first-order recurrence.
+#if SIFIVE_CUSTOMIZATION
+    PredicatedFirstOrderRecurrenceSplice, // Same as above but predicated
+#endif // SIFIVE_CUSTOMIZATION
     Not,
     ICmpULE,
     SLPLoad,
@@ -935,11 +976,24 @@ public:
 /// ingredient. This recipe covers most of the traditional vectorization cases
 /// where each ingredient transforms into a vectorized version of itself.
 class VPWidenRecipe : public VPRecipeBase, public VPValue {
+#if SIFIVE_CUSTOMIZATION
+protected:
+  template <typename IterT>
+  VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands,
+                const unsigned char RecipeSC, const unsigned char ValueSC)
+      : VPRecipeBase(RecipeSC, Operands), VPValue(ValueSC, &I, this) {}
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands)
+#if SIFIVE_CUSTOMIZATION
+      : VPWidenRecipe(I, Operands, VPRecipeBase::VPWidenSC,
+                      VPValue::VPVWidenSC) {}
+#else
       : VPRecipeBase(VPRecipeBase::VPWidenSC, Operands),
         VPValue(VPValue::VPVWidenSC, &I, this) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   ~VPWidenRecipe() override = default;
 
@@ -960,6 +1014,49 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 };
+
+#if SIFIVE_CUSTOMIZATION
+/// VPPredicatedWidenRecipe is a recipe for producing a copy of vector type
+/// using VP intrinsics for its ingredient. This recipe covers most of the
+/// traditional vectorization cases where each ingredient transforms into a
+/// vectorized version of itself.
+class VPPredicatedWidenRecipe : public VPWidenRecipe {
+public:
+  template <typename IterT>
+  VPPredicatedWidenRecipe(Instruction &I, iterator_range<IterT> Operands,
+                          VPValue *Mask, VPValue *EVL)
+      : VPWidenRecipe(I, Operands, VPRecipeBase::VPPredicatedWidenSC,
+                      VPValue::VPVPredicatedWidenSC) {
+    addOperand(Mask);
+    addOperand(EVL);
+  }
+
+  ~VPPredicatedWidenRecipe() override = default;
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    return D->getVPDefID() == VPRecipeBase::VPPredicatedWidenSC;
+  }
+  static inline bool classof(const VPValue *V) {
+    return V->getVPValueID() == VPValue::VPVPredicatedWidenSC;
+  }
+
+  /// Return the mask used by this recipe.
+  VPValue *getMask() const { return getOperand(getNumOperands() - 2); }
+
+  /// Return the explicit vector length used by this recipe.
+  VPValue *getEVL() const { return getOperand(getNumOperands() - 1); }
+
+  /// Generate the wide load/store.
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 /// A recipe for widening Call instructions.
 class VPWidenCallRecipe : public VPRecipeBase, public VPValue {
@@ -1050,6 +1147,11 @@ public:
 
   /// Generate the gep nodes.
   void execute(VPTransformState &State) override;
+
+#if SIFIVE_CUSTOMIZATION
+  bool getIsPtrLoopInvariant() const { return IsPtrLoopInvariant; }
+  bool getIsIndexLoopInvariantr(int Idx) const { return IsIndexLoopInvariant[Idx]; }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1158,6 +1260,10 @@ public:
   static inline bool classof(const VPRecipeBase *B) {
     return B->getVPDefID() == VPRecipeBase::VPCanonicalIVPHISC ||
            B->getVPDefID() == VPRecipeBase::VPFirstOrderRecurrencePHISC ||
+#if SIFIVE_CUSTOMIZATION
+           B->getVPDefID() ==
+               VPRecipeBase::VPPredicatedFirstOrderRecurrencePHISC ||
+#endif // SIFIVE_CUSTOMIZATION
            B->getVPDefID() == VPRecipeBase::VPReductionPHISC ||
            B->getVPDefID() == VPRecipeBase::VPWidenIntOrFpInductionSC ||
            B->getVPDefID() == VPRecipeBase::VPWidenPHISC;
@@ -1165,6 +1271,10 @@ public:
   static inline bool classof(const VPValue *V) {
     return V->getVPValueID() == VPValue::VPVCanonicalIVPHISC ||
            V->getVPValueID() == VPValue::VPVFirstOrderRecurrencePHISC ||
+#if SIFIVE_CUSTOMIZATION
+           V->getVPValueID() ==
+               VPValue::VPVPredicatedFirstOrderRecurrencePHISC ||
+#endif // SIFIVE_CUSTOMIZATION
            V->getVPValueID() == VPValue::VPVReductionPHISC ||
            V->getVPValueID() == VPValue::VPVWidenIntOrFpInductionSC ||
            V->getVPValueID() == VPValue::VPVWidenPHISC;
@@ -1319,6 +1429,72 @@ struct VPFirstOrderRecurrencePHIRecipe : public VPHeaderPHIRecipe {
              VPSlotTracker &SlotTracker) const override;
 #endif
 };
+
+#if SIFIVE_CUSTOMIZATION
+/// A recipe to create a recurrence of EVL with the previous iteration so
+/// we can handle first order recurrences.
+struct VPEVLPHIRecipe : public VPRecipeBase, public VPValue {
+  VPEVLPHIRecipe()
+      : VPRecipeBase(VPEVLPHISC, {}), VPValue(VPVEVLPHISC, nullptr, this) {}
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPRecipeBase *R) {
+    return R->getVPDefID() == VPRecipeBase::VPEVLPHISC;
+  }
+  static inline bool classof(const VPWidenPHIRecipe *D) {
+    return D->getVPDefID() == VPRecipeBase::VPEVLPHISC;
+  }
+  static inline bool classof(const VPValue *V) {
+    return V->getVPValueID() == VPValue::VPVEVLPHISC;
+  }
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+
+/// A recipe for handling first-order recurrence phis under predication. The
+/// start value is the first operand of the recipe and the incoming value from
+/// the backedge is the second operand.
+struct VPPredicatedFirstOrderRecurrencePHIRecipe : public VPHeaderPHIRecipe {
+  VPPredicatedFirstOrderRecurrencePHIRecipe(PHINode *Phi, VPValue &Start)
+      : VPHeaderPHIRecipe(VPVPredicatedFirstOrderRecurrencePHISC,
+                         VPPredicatedFirstOrderRecurrencePHISC, Phi, &Start) {}
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPRecipeBase *R) {
+    return R->getVPDefID() ==
+           VPRecipeBase::VPPredicatedFirstOrderRecurrencePHISC;
+  }
+  static inline bool classof(const VPHeaderPHIRecipe *D) {
+    return D->getVPDefID() ==
+           VPRecipeBase::VPPredicatedFirstOrderRecurrencePHISC;
+  }
+  static inline bool classof(const VPWidenPHIRecipe *D) {
+    return D->getVPDefID() ==
+           VPRecipeBase::VPPredicatedFirstOrderRecurrencePHISC;
+  }
+  static inline bool classof(const VPValue *V) {
+    return V->getVPValueID() == VPValue::VPVPredicatedFirstOrderRecurrencePHISC;
+  }
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  // When fixing the recurrences phi, we add an additional EVL phi for this one
+  // linked to the value generated by VPEVLPHIRecipe.
+  VPValue *getEVLPhi() const { return getOperand(getNumOperands() - 1); }
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 /// A recipe for handling reduction phis. The start value is the first operand
 /// of the recipe and the incoming value from the backedge is the second
@@ -1731,22 +1907,48 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase, public VPValue {
     return isStore() ? getNumOperands() == 3 : getNumOperands() == 2;
   }
 
+#if SIFIVE_CUSTOMIZATION
+// FIXME
+protected:
+  // Wheter NonConsecutive loads/stores can be strided
+  bool Strided = false;
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                                 bool Consecutive, bool Reverse)
+                                 bool Consecutive, bool Reverse,
+#if SIFIVE_CUSTOMIZATION
+                                 unsigned char RecipeSC = VPWidenMemoryInstructionSC,
+                                 unsigned char ValueSC = VPValue::VPVMemoryInstructionSC
+                                 )
+      : VPRecipeBase(RecipeSC, {Addr}),
+        VPValue(ValueSC, &Load, this), Ingredient(Load),
+#else
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}),
         VPValue(VPValue::VPVMemoryInstructionSC, &Load, this), Ingredient(Load),
+#endif // SIFIVE_CUSTOMIZATION
         Consecutive(Consecutive), Reverse(Reverse) {
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
     setMask(Mask);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  VPWidenMemoryInstructionRecipe(
+      StoreInst &Store, VPValue *Addr, VPValue *StoredValue, VPValue *Mask,
+      bool Consecutive, bool Reverse,
+      unsigned char RecipeSC = VPWidenMemoryInstructionSC,
+      unsigned char ValueSC = VPValue::VPVMemoryInstructionSC)
+      : VPRecipeBase(RecipeSC, {Addr, StoredValue}),
+        VPValue(ValueSC, &Store, this), Ingredient(Store),
+        Consecutive(Consecutive), Reverse(Reverse) {
+#else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         VPValue(VPValue::VPVMemoryInstructionSC, &Store, this),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse) {
+#endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
     setMask(Mask);
   }
@@ -1768,6 +1970,10 @@ public:
     return isMasked() ? getOperand(getNumOperands() - 1) : nullptr;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  VPValue *getEVL() const { return nullptr; }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Returns true if this recipe is a store.
   bool isStore() const { return isa<StoreInst>(Ingredient); }
 
@@ -1784,8 +1990,94 @@ public:
   // order.
   bool isReverse() const { return Reverse; }
 
+#if SIFIVE_CUSTOMIZATION
+  // Return wheter NonConsecutive loads/stores can be strided
+  bool isStrided() const { return Strided; }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Generate the wide load/store.
   void execute(VPTransformState &State) override;
+
+  /// Returns true if the recipe only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+
+    // Widened, consecutive memory operations only demand the first lane of
+    // their address, unless the same operand is also stored. That latter can
+    // happen with opaque pointers.
+    return Op == getAddr() && isConsecutive() &&
+           (!isStore() || Op != getStoredValue());
+  }
+
+#if SIFIVE_CUSTOMIZATION
+  const Instruction &getIngredient() const { return Ingredient; }
+  Instruction &getIngredient() { return Ingredient; }
+
+  bool getConsecutive() const { return Consecutive; }
+
+  bool getReverse() const { return Reverse; }
+#endif // SIFIVE_CUSTOMIZATION
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+
+#if SIFIVE_CUSTOMIZATION
+/// A Recipe for widening load/store operations to VP intrinsics.
+/// The recipe uses the following VPValues:
+/// - For load: Address, mask, EVL
+/// - For store: Address, stored value, mask, EVL
+class VPPredicatedWidenMemoryInstructionRecipe
+    : public VPWidenMemoryInstructionRecipe {
+
+public:
+  VPPredicatedWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr,
+                                           VPValue *Mask, bool Consecutive,
+                                           bool Reverse, bool Strided,
+                                           VPValue *EVL)
+      : VPWidenMemoryInstructionRecipe(
+            Load, Addr, Mask, Consecutive, Reverse,
+            VPPredicatedWidenMemoryInstructionSC,
+            VPValue::VPVPredicatedMemoryInstructionSC) {
+    this->Strided = Strided;
+    addOperand(EVL);
+  }
+
+  VPPredicatedWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
+                                           VPValue *StoredValue, VPValue *Mask,
+                                           bool Consecutive, bool Reverse,
+                                           bool Strided,
+                                           VPValue *EVL)
+      : VPWidenMemoryInstructionRecipe(
+            Store, Addr, StoredValue, Mask, Consecutive, Reverse,
+            VPPredicatedWidenMemoryInstructionSC,
+            VPValue::VPVPredicatedMemoryInstructionSC) {
+    this->Strided = Strided;
+    addOperand(EVL);
+  }
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    return D->getVPDefID() ==
+           VPRecipeBase::VPPredicatedWidenMemoryInstructionSC;
+  }
+
+  /// Return the EVL used by this recipe.
+  VPValue *getEVL() const {
+    // EVL is the last, mandatory operand.
+    return getOperand(getNumOperands() - 1);
+  }
+
+  /// Return the mask used by this recipe. Note that a full mask is represented
+  /// by a nullptr.
+  VPValue *getMask() const {
+    // Mask is the before the last, mandatory operand.
+    return getOperand(getNumOperands() - 2);
+  }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1805,6 +2097,7 @@ public:
            (!isStore() || Op != getStoredValue());
   }
 };
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Recipe to expand a SCEV expression.
 class VPExpandSCEVRecipe : public VPRecipeBase, public VPValue {
@@ -1982,6 +2275,80 @@ public:
     return true;
   }
 };
+
+#if SIFIVE_CUSTOMIZATION
+/// A recipe to generate Explicit Vector Length (EVL) value to be used with
+/// VPred intrinsics.
+class VPWidenEVLRecipe : public VPRecipeBase, public VPValue {
+
+public:
+  VPWidenEVLRecipe(VPValue *IV, VPValue *TC)
+      : VPRecipeBase(VPRecipeBase::VPWidenEVLSC, {IV, TC}),
+        VPValue(VPValue::VPVWidenEVLSC, nullptr, this) {}
+  ~VPWidenEVLRecipe() override = default;
+
+  /// Return the VPValue representing EVL.
+  const VPValue *getEVL() const { return this; }
+  VPValue *getEVL() { return this; }
+
+  /// Return VPValue representing Induction Variable.
+  VPValue *getIV() const { return getOperand(0); }
+
+  /// Return VPValue representing trip count.
+  VPValue *getTripCount() const { return getOperand(1); }
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    return D->getVPDefID() == VPRecipeBase::VPWidenEVLSC;
+  }
+
+  /// Generate the instructions to compute EVL.
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+
+/// A recipe to generate Explicit Vector Length (EVL) Mask. EVL mask represents
+/// vector comparison of StepVector < EVL. It generates a mask for each
+/// iteration with values from index 0..(EVL-1) as true and index EVL..(W-1) as
+/// false (W is the width of the register group). This is required for
+/// reductions where we need to select the result from a previous iteration for
+/// lanes beyond EVL. Normally we could use the existing block mask for this
+/// if it is guaranteed that the EVL for all non-tail iterations is equal to W,
+/// however architectures like RISC-V do not guarantee that, hence the need for
+/// per iteration mask.
+class VPWidenEVLMaskRecipe : public VPRecipeBase, public VPValue {
+public:
+  VPWidenEVLMaskRecipe(VPValue *EVL)
+      : VPRecipeBase(VPRecipeBase::VPWidenEVLMaskSC, {EVL}),
+        VPValue(VPValue::VPVWidenEVLMaskSC, nullptr, this) {}
+  ~VPWidenEVLMaskRecipe() override = default;
+
+  /// Return the VPValue representing EVL.
+  const VPValue *getEVLMask() const { return this; }
+  VPValue *getEVLMask() { return this; }
+
+  VPValue *getEVL() { return getOperand(0); }
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    return D->getVPDefID() == VPRecipeBase::VPWidenEVLMaskSC;
+  }
+
+  /// Generate the instructions to compute EVL.
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 /// VPBasicBlock serves as the leaf of the Hierarchical Control-Flow Graph. It
 /// holds a sequence of zero or more VPRecipe's each representing a sequence of
@@ -2481,6 +2848,15 @@ class VPlan {
   /// the tail. It equals TripCount - 1.
   VPValue *BackedgeTakenCount = nullptr;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Represents the runtime VF. Some recipes like Vector Predicated recipes may
+  /// use runtime VF as an operand. At the time of plan construction while it is
+  /// known that this value is a loop invariant, but the corresponding IR value
+  /// is only available at plan execution once the final VF and corresponding
+  /// plan are chosen.
+  VPValue *RuntimeVF = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Represents the vector trip count.
   VPValue VectorTripCount;
 
@@ -2519,6 +2895,10 @@ public:
       delete TripCount;
     if (BackedgeTakenCount)
       delete BackedgeTakenCount;
+#if SIFIVE_CUSTOMIZATION
+    if (RuntimeVF)
+      delete RuntimeVF;
+#endif // SIFIVE_CUSTOMIZATION
     for (auto &P : VPExternalDefs)
       delete P.second;
   }
@@ -2552,6 +2932,16 @@ public:
       BackedgeTakenCount = new VPValue();
     return BackedgeTakenCount;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// A VPValue representing the loop invariant runtime VF to be expanded at
+  /// paln execution.
+  VPValue *getOrCreateRuntimeVF() {
+    if (!RuntimeVF)
+      RuntimeVF = new VPValue();
+    return RuntimeVF;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The vector trip count.
   VPValue &getVectorTripCount() { return VectorTripCount; }
@@ -3051,6 +3441,47 @@ VPValue *getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 
 } // end namespace vputils
 
+#if SIFIVE_CUSTOMIZATION
+// Strided accesses.
+struct StrideAccessInfo {
+  bool Valid = false;
+  const SCEV *SCEVExpr = nullptr;
+
+  explicit operator bool() const { return Valid; }
+
+  const SCEV *getSCEVExpr() const { return SCEVExpr; }
+
+  void print(raw_ostream &OS) const {
+    OS << "StrideAccessInfo: ";
+    if (!Valid) {
+      OS << "<<invalid>> ";
+    }
+    OS << "SCEV: ";
+    if (SCEVExpr) {
+      OS << *SCEVExpr;
+    } else {
+      OS << "<<unknown>>";
+    }
+  }
+
+  Value *emitStride();
+  Value *emitBaseAddress();
+};
+
+raw_ostream &operator<<(raw_ostream &OS, const StrideAccessInfo &SAI);
+
+struct StridedAccessValues {
+  Value* BaseAddress;
+  Value* Stride;
+};
+
+StrideAccessInfo computeStrideAccessInfo(const VPTransformState &State,
+                                         Value *Addr);
+StridedAccessValues computeStrideAddressing(VPTransformState &State,
+                                            Type *PtrTy,
+                                            const StrideAccessInfo &SAI,
+                                            VPValue *CanonicalIV);
+#endif // SIFIVE_CUSTOMIZATION
 } // end namespace llvm
 
 #endif // LLVM_TRANSFORMS_VECTORIZE_VPLAN_H

@@ -2431,6 +2431,20 @@ public:
                                          unsigned Index, unsigned FieldIndex,
                                          MDNode *DbgInfo);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Return an all true boolean vector of size and scalability \p NumElts.
+  Value *getTrueVector(ElementCount NumElts) {
+    VectorType *VTy = VectorType::get(Type::getInt1Ty(Context), NumElts);
+    return Constant::getAllOnesValue(VTy);
+  }
+
+  /// Return an all false boolean vector of size and scalability \p NumElts.
+  Value *getFalseVector(ElementCount NumElts) {
+    VectorType *Vty = VectorType::get(Type::getInt1Ty(Context), NumElts);
+    return ConstantAggregateZero::get(Vty);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
 private:
   /// Helper function that creates an assume intrinsic call that
   /// represents an alignment assumption on the provided pointer \p PtrValue

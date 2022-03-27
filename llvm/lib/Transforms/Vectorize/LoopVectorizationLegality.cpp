@@ -73,7 +73,14 @@ static cl::opt<LoopVectorizeHints::ScalableForceKind>
             clEnumValN(
                 LoopVectorizeHints::SK_PreferScalable, "on",
                 "Scalable vectorization is available and favored when the "
-                "cost is inconclusive.")));
+                "cost is inconclusive.")
+#if SIFIVE_CUSTOMIZATION
+            ,
+            clEnumValN(LoopVectorizeHints::SK_ScalableOnly, "only",
+                       "Scalable vectorization is the only option available")));
+#else
+            ));
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Maximum vectorization interleave count.
 static const unsigned MaxInterleaveFactor = 16;
@@ -141,6 +148,12 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
   // Scalable vectorization is disabled if no preference is specified.
   if ((LoopVectorizeHints::ScalableForceKind)Scalable.Value == SK_Unspecified)
     Scalable.Value = SK_FixedWidthOnly;
+#if SIFIVE_CUSTOMIZATION
+  else if (ForceScalableVectorization == SK_ScalableOnly)
+    // If the flag is set to disable any use of fixed vectors, override the
+    // loop hint.
+    Scalable.Value = SK_ScalableOnly;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (IsVectorized.Value != 1)
     // If the vectorization width and interleaving count are both 1 then

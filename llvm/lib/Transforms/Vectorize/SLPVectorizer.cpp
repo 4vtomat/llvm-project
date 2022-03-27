@@ -9612,6 +9612,12 @@ bool SLPVectorizerPass::tryToVectorizeList(ArrayRef<Value *> VL, BoUpSLP &R,
     return false;
 
   Instruction *I0 = cast<Instruction>(S.OpValue);
+#if SIFIVE_CUSTOMIZATION
+  // Ignore scalable vectors for now.
+  if (isa<ScalableVectorType>(I0->getType()))
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
   // Make sure invalid types (including vector type) are rejected before
   // determining vectorization factor for scalar instructions.
   for (Value *V : VL) {
@@ -10749,8 +10755,13 @@ private:
 } // end anonymous namespace
 
 static Optional<unsigned> getAggregateSize(Instruction *InsertInst) {
-  if (auto *IE = dyn_cast<InsertElementInst>(InsertInst))
+  if (auto *IE = dyn_cast<InsertElementInst>(InsertInst)) {
+#if SIFIVE_CUSTOMIZATION
+    if (isa<ScalableVectorType>(IE->getType()))
+      return None;
+#endif // SIFIVE_CUSTOMIZATION
     return cast<FixedVectorType>(IE->getType())->getNumElements();
+  }
 
   unsigned AggregateSize = 1;
   auto *IV = cast<InsertValueInst>(InsertInst);

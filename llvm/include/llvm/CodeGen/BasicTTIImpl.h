@@ -694,6 +694,32 @@ public:
     return TypeSize::getFixed(32);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  std::pair<ElementCount, ElementCount>
+  getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
+                        unsigned SmallestType, unsigned WidestType,
+                        unsigned MaxSafeRegisterWidth = -1U,
+                        unsigned RegWidthFactor = 1,
+                        bool IsScalable = false) const {
+    unsigned WidestRegister =
+        static_cast<const T *>(this)->getRegisterBitWidth(K).getFixedSize();
+    WidestRegister = std::min(WidestRegister, MaxSafeRegisterWidth);
+
+    unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
+    ElementCount LowerBoundVF =
+        ElementCount::get(LowerBoundVFKnownMin, IsScalable);
+
+    unsigned UpperBoundVFKnownMin =
+        PowerOf2Floor(WidestRegister / SmallestType);
+    ElementCount UpperBoundVF =
+        ElementCount::get(UpperBoundVFKnownMin, IsScalable);
+
+    return {LowerBoundVF, UpperBoundVF};
+  }
+
+  unsigned getMaxElementWidth() const { return 64; }
+#endif // SIFIVE_CUSTOMIZATION
+
   Optional<unsigned> getMaxVScale() const { return None; }
   Optional<unsigned> getVScaleForTuning() const { return None; }
 

@@ -44,6 +44,14 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#if SIFIVE_CUSTOMIZATION
+#include "VPlanValue.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Intrinsics.h"
+#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 extern cl::opt<bool> EnableVPlanNativePath;
@@ -58,6 +66,13 @@ raw_ostream &llvm::operator<<(raw_ostream &OS, const VPValue &V) {
   V.print(OS, SlotTracker);
   return OS;
 }
+
+#if SIFIVE_CUSTOMIZATION
+raw_ostream &llvm::operator<<(raw_ostream &OS, const StrideAccessInfo &SAI) {
+  SAI.print(OS);
+  return OS;
+}
+#endif // SIFIVE_CUSTOMIZATION
 #endif
 
 Value *VPLane::getAsRuntimeExpr(IRBuilderBase &Builder,
@@ -524,7 +539,6 @@ void VPRegionBlock::execute(VPTransformState *State) {
 
   for (unsigned Part = 0, UF = State->UF; Part < UF; ++Part) {
     State->Instance->Part = Part;
-    assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
     for (unsigned Lane = 0, VF = State->VF.getKnownMinValue(); Lane < VF;
          ++Lane) {
       State->Instance->Lane = VPLane(Lane, VPLane::Kind::First);
@@ -629,6 +643,9 @@ bool VPRecipeBase::mayHaveSideEffects() const {
   case VPWidenSC:
   case VPWidenGEPSC:
   case VPReductionSC:
+#if SIFIVE_CUSTOMIZATION
+  case VPPredicatedWidenSC:
+#endif // SIFIVE_CUSTOMIZATION
   case VPWidenSelectSC:
   case VPScalarIVStepsSC: {
     const Instruction *I =
@@ -767,6 +784,34 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     break;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::PredicatedFirstOrderRecurrenceSplice: {
+    auto *V1 = State.get(getOperand(0), 0);
+    Value *PartMinus1 = Part == 0 ? V1 : State.get(getOperand(1), Part - 1);
+    if (!PartMinus1->getType()->isVectorTy()) {
+      State.set(this, PartMinus1, Part);
+    } else {
+      Value *V2 = State.get(getOperand(1), Part);
+      Value *EVL = State.get(getOperand(2), Part);
+      Value *EVLPhi = State.get(getOperand(3), Part);
+
+      auto *IdxTy = Builder.getInt32Ty();
+      Value *Vlen = Builder.CreateVScale(
+          ConstantInt::get(IdxTy, State.VF.getKnownMinValue()));
+      Value *Shift = Builder.CreateSub(Vlen, ConstantInt::get(IdxTy, 1));
+      Value *Mask =
+          Builder.CreateVectorSplat(State.VF, ConstantInt::get(Builder.getInt1Ty(), 1));
+
+      Value *Splice = Builder.CreateIntrinsic(
+          Intrinsic::experimental_vp_splice,
+          {PartMinus1->getType()}, {PartMinus1, V2, Shift, Mask, EVLPhi, EVL},
+          nullptr);
+
+      State.set(this, Splice, Part);
+    }
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::CanonicalIVIncrement:
   case VPInstruction::CanonicalIVIncrementNUW: {
     Value *Next = nullptr;
@@ -778,6 +823,9 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
       Next = Builder.CreateAdd(Phi, Step, "index.next", IsNUW, false);
+#if SIFIVE_CUSTOMIZATION
+      State.NextIndex = cast<Instruction>(Next);
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       Next = State.get(this, 0);
     }
@@ -810,6 +858,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  // TODO: This case can be removed when support for Call instruction is added
+  // to VPlan in upstream. For now it helps catch any use of VPInstruction for
+  // Call opcode that is now supported by the new VPCallInstruction recipe.
+  case Instruction::Call:
+    llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unsupported opcode for instruction");
   }
@@ -857,6 +912,11 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::FirstOrderRecurrenceSplice:
     O << "first-order splice";
     break;
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::PredicatedFirstOrderRecurrenceSplice:
+    O << "predicated-first-order splice";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::CanonicalIVIncrement:
     O << "VF * UF + ";
     break;
@@ -897,11 +957,25 @@ void VPInstruction::setFastMathFlags(FastMathFlags FMFNew) {
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State) {
+#if SIFIVE_CUSTOMIZATION
+  IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
+#endif // SIFIVE_CUSTOMIZATION
+
   // Check if the trip count is needed, and if so build it.
   if (TripCount && TripCount->getNumUsers()) {
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
       State.set(TripCount, TripCountV, Part);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Set the runtime VF if it is needed.
+  if (RuntimeVF && RuntimeVF->getNumUsers()) {
+    Value *RuntimeVFVal =
+        getRuntimeVF(Builder, Builder.getInt32Ty(), State.VF);
+    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
+      State.set(RuntimeVF, RuntimeVFVal, Part);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Check if the backedge taken count is needed, and if so build it.
   if (BackedgeTakenCount && BackedgeTakenCount->getNumUsers()) {
@@ -986,6 +1060,19 @@ void VPlan::execute(VPTransformState *State) {
   for (VPRecipeBase &R : Header->phis()) {
     // Skip phi-like recipes that generate their backedege values themselves.
     if (isa<VPWidenPHIRecipe>(&R))
+    // TODO: Model their backedge values explicitly.
+#if SIFIVE_CUSTOMIZATION
+    if (auto *EVL = dyn_cast<VPEVLPHIRecipe>(&R)) {
+      auto *VecPhi = cast<PHINode>(State->get(EVL, 0));
+
+      VPValue *PreviousDef = EVL->getOperand(0);
+      Value *Incoming = State->get(PreviousDef, State->UF - 1);
+      VecPhi->addIncoming(Incoming, VectorLatchBB);
+      continue;
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
+    if (isa<VPWidenPHIRecipe>(&R))
       continue;
 
     if (isa<VPWidenPointerInductionRecipe>(&R) ||
@@ -1016,15 +1103,17 @@ void VPlan::execute(VPTransformState *State) {
     }
 
     auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
-    // For  canonical IV, first-order recurrences and in-order reduction phis,
-    // only a single part is generated, which provides the last part from the
-    // previous iteration. For non-ordered reductions all UF parts are
-    // generated.
-    bool SinglePartNeeded = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
-                            isa<VPFirstOrderRecurrencePHIRecipe>(PhiR) ||
-                            cast<VPReductionPHIRecipe>(PhiR)->isOrdered();
+#if SIFIVE_CUSTOMIZATION
+    // For first-order recurrences and in-order reduction phis, only a single
+    // part is generated, which provides the last part from the previous
+    // iteration. Otherwise all UF parts are generated.
+    bool SinglePartNeeded =
+        isa<VPCanonicalIVPHIRecipe>(PhiR) ||
+        isa<VPFirstOrderRecurrencePHIRecipe>(PhiR) ||
+        isa<VPPredicatedFirstOrderRecurrencePHIRecipe>(&R) ||
+        cast<VPReductionPHIRecipe>(PhiR)->isOrdered();
+#endif // SIFIVE_CUSTOMIZATION
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
-
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
       Value *Phi = State->get(PhiR, Part);
       Value *Val = State->get(PhiR->getBackedgeValue(),
@@ -1141,6 +1230,18 @@ void VPlanPrinter::dump() {
     Plan.BackedgeTakenCount->print(OS, SlotTracker);
     OS << " := BackedgeTakenCount";
   }
+#if SIFIVE_CUSTOMIZATION
+  if (Plan.TripCount) {
+    OS << "\\n";
+    Plan.RuntimeVF->print(OS, SlotTracker);
+    OS << " := TripCount";
+  }
+  if (Plan.RuntimeVF) {
+    OS << "\\n";
+    Plan.RuntimeVF->print(OS, SlotTracker);
+    OS << " := RuntimeVF";
+  }
+#endif // SIFIVE_CUSTOMIZATION
   OS << "\"]\n";
   OS << "node [shape=rect, fontname=Courier, fontsize=30]\n";
   OS << "edge [fontname=Courier, fontsize=30]\n";
@@ -1292,6 +1393,16 @@ void VPWidenRecipe::print(raw_ostream &O, const Twine &Indent,
   O << " = " << getUnderlyingInstr()->getOpcodeName() << " ";
   printOperands(O, SlotTracker);
 }
+
+#if SIFIVE_CUSTOMIZATION
+void VPPredicatedWidenRecipe::print(raw_ostream &O, const Twine &Indent,
+                                    VPSlotTracker &SlotTracker) const {
+  O << Indent << "PREDICATED-WIDEN ";
+  printAsOperand(O, SlotTracker);
+  O << " = " << getUnderlyingInstr()->getOpcodeName() << " ";
+  printOperands(O, SlotTracker);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPWidenIntOrFpInductionRecipe::print(raw_ostream &O, const Twine &Indent,
                                           VPSlotTracker &SlotTracker) const {
@@ -1456,10 +1567,28 @@ void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
     printAsOperand(O, SlotTracker);
     O << " = ";
   }
-  O << Instruction::getOpcodeName(Ingredient.getOpcode()) << " ";
+#if SIFIVE_CUSTOMIZATION
+  O << Instruction::getOpcodeName(getIngredient().getOpcode()) << " ";
+#endif // SIFIVE_CUSTOMIZATION
 
   printOperands(O, SlotTracker);
 }
+
+#if SIFIVE_CUSTOMIZATION
+void VPPredicatedWidenMemoryInstructionRecipe::print(
+    raw_ostream &O, const Twine &Indent, VPSlotTracker &SlotTracker) const {
+  O << Indent << "PREDICATED-WIDEN ";
+
+  if (!isStore()) {
+    getVPValue(0)->printAsOperand(O, SlotTracker);
+    O << " = ";
+  }
+  O << Instruction::getOpcodeName(getIngredient().getOpcode()) << " ";
+
+  printOperands(O, SlotTracker);
+  O << " (ALL-ONES-MASK)";
+}
+#endif // SIFIVE_CUSTOMIZATION
 #endif
 
 void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
@@ -1531,6 +1660,23 @@ void VPWidenCanonicalIVRecipe::print(raw_ostream &O, const Twine &Indent,
   O << " = WIDEN-CANONICAL-INDUCTION ";
   printOperands(O, SlotTracker);
 }
+
+#if SIFIVE_CUSTOMIZATION
+void VPWidenEVLRecipe::print(raw_ostream &O, const Twine &Indent,
+                             VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  getEVL()->printAsOperand(O, SlotTracker);
+  O << " = GENERATE-EXPLICIT-VECTOR-LENGTH ";
+  printOperands(O, SlotTracker);
+}
+
+void VPWidenEVLMaskRecipe::print(raw_ostream &O, const Twine &Indent,
+                                 VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  getEVLMask()->printAsOperand(O, SlotTracker);
+  O << " = GENERATE-ULT-STEPVECTOR-EVL-MASK";
+}
+#endif // SIFIVE_CUSTOMIZATION
 #endif
 
 void VPFirstOrderRecurrencePHIRecipe::execute(VPTransformState &State) {
@@ -1570,6 +1716,69 @@ void VPFirstOrderRecurrencePHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 }
 #endif
+
+#if SIFIVE_CUSTOMIZATION
+void VPEVLPHIRecipe::execute(VPTransformState &State) {
+  auto &Builder = State.Builder;
+  auto *IdxTy = Builder.getInt32Ty();
+  auto *EVLEntryPart = PHINode::Create(
+      IdxTy, 2, "prev.evl", &*State.CFG.PrevBB->getFirstInsertionPt());
+  IRBuilder<>::InsertPointGuard Guard(Builder);
+  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+  Builder.SetInsertPoint(VectorPH->getTerminator());
+  auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
+  EVLEntryPart->addIncoming(RuntimeVF, VectorPH);
+
+  State.set(this, EVLEntryPart, 0);
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+void VPEVLPHIRecipe::print(
+    raw_ostream &O, const Twine &Indent, VPSlotTracker &SlotTracker) const {
+  O << Indent << "EVL-PHI ";
+  printAsOperand(O, SlotTracker);
+  O << " = evl-phi ";
+}
+#endif
+
+void VPPredicatedFirstOrderRecurrencePHIRecipe::execute(VPTransformState &State) {
+  auto &Builder = State.Builder;
+  // Create a vector from the initial value.
+  auto *VectorInit = getStartValue()->getLiveInIRValue();
+
+  Type *VecTy = State.VF.isScalar()
+                    ? VectorInit->getType()
+                    : VectorType::get(VectorInit->getType(), State.VF);
+
+  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+  if (State.VF.isVector()) {
+    auto *IdxTy = Builder.getInt32Ty();
+    auto *One = ConstantInt::get(IdxTy, 1);
+    IRBuilder<>::InsertPointGuard Guard(Builder);
+    Builder.SetInsertPoint(VectorPH->getTerminator());
+    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
+    auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
+    VectorInit = Builder.CreateInsertElement(
+        PoisonValue::get(VecTy), VectorInit, LastIdx, "vector.recur.init");
+  }
+
+  // Create a phi node for the new recurrence.
+  PHINode *EntryPart = PHINode::Create(
+      VecTy, 2, "vector.recur", &*State.CFG.PrevBB->getFirstInsertionPt());
+  EntryPart->addIncoming(VectorInit, VectorPH);
+  State.set(this, EntryPart, 0);
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+void VPPredicatedFirstOrderRecurrencePHIRecipe::print(
+    raw_ostream &O, const Twine &Indent, VPSlotTracker &SlotTracker) const {
+  O << Indent << "PREDICATED-FIRST-ORDER-RECURRENCE-PHI ";
+  printAsOperand(O, SlotTracker);
+  O << " = phi ";
+  printOperands(O, SlotTracker);
+}
+#endif
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPReductionPHIRecipe::execute(VPTransformState &State) {
   PHINode *PN = cast<PHINode>(getUnderlyingValue());
@@ -1748,6 +1957,14 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
   if (Plan.BackedgeTakenCount)
     assignSlot(Plan.BackedgeTakenCount);
 
+#if SIFIVE_CUSTOMIZATION
+  if (Plan.TripCount)
+    assignSlot(Plan.TripCount);
+
+  if (Plan.RuntimeVF)
+    assignSlot(Plan.RuntimeVF);
+#endif // SIFIVE_CUSTOMIZATION
+
   ReversePostOrderTraversal<
       VPBlockRecursiveTraversalWrapper<const VPBlockBase *>>
       RPOT(VPBlockRecursiveTraversalWrapper<const VPBlockBase *>(
@@ -1758,6 +1975,7 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
       for (VPValue *Def : Recipe.definedValues())
         assignSlot(Def);
 }
+
 
 bool vputils::onlyFirstLaneUsed(VPValue *Def) {
   return all_of(Def->users(), [Def](VPUser *U) {
@@ -1777,3 +1995,69 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
   Preheader->appendRecipe(cast<VPRecipeBase>(Step->getDef()));
   return Step;
 }
+
+#if SIFIVE_CUSTOMIZATION
+llvm::StrideAccessInfo
+llvm::computeStrideAccessInfo(const VPTransformState &State, Value *Ptr) {
+  StrideAccessInfo SAI;
+
+  const SCEV *V = isStridedAddressing(Ptr, State.SE);
+  assert(V && "The SCEV should be valid at this point");
+
+  SAI.SCEVExpr = V;
+  // Remove this.
+  SAI.Valid = true;
+
+  return SAI;
+}
+
+llvm::StridedAccessValues
+llvm::computeStrideAddressing(VPTransformState &State, Type *PtrTy,
+                              const StrideAccessInfo &SAI,
+                              VPValue *CanonicalIV) {
+  // FIXME: This does not seem to adhere to the VPlan principles but I'm unsure
+  // what part of it should. We should be using Addr but AFAIU it represents
+  // the vectorised address already, which is not useful. When doing
+  // interleaving, we should use the Part to adjust the access correctly.
+  // Perhaps we should not have received a WIDEN-GEP here in the first place
+  // and make the VP build process aware of the stride access option?
+  auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+  auto &Builder = State.Builder;
+  LLVMContext &Context = PtrTy->getContext();
+
+  SCEVExpander Exp(*(State.SE), DL, "stride");
+  const SCEVAddRecExpr *S = cast<SCEVAddRecExpr>(SAI.getSCEVExpr());
+
+  LLVM_DEBUG(llvm::dbgs() << "SCEV = " << *S << "\n";);
+
+  const SCEV *Stride = S->getStepRecurrence(*(State.SE));
+  assert(Stride);
+  LLVM_DEBUG(llvm::dbgs() << "Stride = " << *Stride << "\n";);
+
+  const SCEV *Start = S->getStart();
+  auto *PointerStart =
+      Exp.expandCodeFor(Start, Start->getType(), &*Builder.GetInsertPoint());
+  LLVM_DEBUG(llvm::dbgs() << "PointerStart = " << *PointerStart << "\n";);
+  auto *BytesStride =
+      Exp.expandCodeFor(Stride, Stride->getType(), &*Builder.GetInsertPoint());
+  LLVM_DEBUG(llvm::dbgs() << "BytesStride = " << *BytesStride << "\n";);
+
+  // FIXME: Part???
+  Value *CanonicalIVValue = State.get(CanonicalIV, 0);
+
+  auto *BytesStrideIter = Builder.CreateMul(
+      CanonicalIVValue,
+      Builder.CreateZExtOrTrunc(BytesStride, CanonicalIVValue->getType()));
+  auto *StrideBaseAddress = Builder.CreateGEP(
+      Type::getInt8Ty(Context),
+      Builder.CreatePointerCast(PointerStart, Type::getInt8PtrTy(Context)),
+      BytesStrideIter);
+  StrideBaseAddress = Builder.CreateBitCast(StrideBaseAddress, PtrTy);
+
+  StridedAccessValues Ret;
+  Ret.BaseAddress = StrideBaseAddress;
+  Ret.Stride = BytesStride;
+
+  return Ret;
+}
+#endif // SIFIVE_CUSTOMIZATION

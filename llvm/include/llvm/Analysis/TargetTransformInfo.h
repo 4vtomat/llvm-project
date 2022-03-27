@@ -929,8 +929,20 @@ public:
   /// \return The width of the largest scalar or vector register type.
   TypeSize getRegisterBitWidth(RegisterKind K) const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// \return The widest element supported by scalable vectors.
+  unsigned getMaxElementWidth() const;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// \return The width of the smallest vector register type.
   unsigned getMinVectorRegisterBitWidth() const;
+
+#if SIFIVE_CUSTOMIZATION
+  std::pair<ElementCount, ElementCount> getFeasibleMaxVFRange(
+      RegisterKind K, unsigned SmallestType, unsigned WidestType,
+      unsigned MaxSafeRegisterWidth = -1U, unsigned RegWidthFactor = 1,
+      bool IsScalable = false) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// \return The maximum value of vscale if the target specifies an
   ///  architectural maximum vector length, and None otherwise.
@@ -1426,6 +1438,12 @@ public:
   /// to a stack reload.
   unsigned getGISelRematGlobalCost() const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// \returns True if the target prefers using vector predication for all Ops
+  /// instead of just loads and stores.
+  bool preferPredicatedVectorOps() const;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// \returns True if the target supports scalable vectors.
   bool supportsScalableVectors() const;
 
@@ -1645,6 +1663,15 @@ public:
                                            Type *Ty = nullptr) const = 0;
   virtual const char *getRegisterClassName(unsigned ClassID) const = 0;
   virtual TypeSize getRegisterBitWidth(RegisterKind K) const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual unsigned getMaxElementWidth() const = 0;
+  virtual std::pair<ElementCount, ElementCount>
+  getFeasibleMaxVFRange(RegisterKind K, unsigned SmallestType,
+                        unsigned WidestType,
+                        unsigned MaxSafeRegisterWidth = -1U,
+                        unsigned RegWidthFactor = 1,
+                        bool IsScalable = false) const = 0;
+#endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getMinVectorRegisterBitWidth() const = 0;
   virtual Optional<unsigned> getMaxVScale() const = 0;
   virtual Optional<unsigned> getVScaleForTuning() const = 0;
@@ -1813,6 +1840,9 @@ public:
   virtual bool supportsScalableVectors() const = 0;
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual bool preferPredicatedVectorOps() const = 0;
+#endif // SIFIVE_CUSTOMIZATION
   virtual InstructionCost getInstructionLatency(const Instruction *I) = 0;
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
@@ -2138,9 +2168,26 @@ public:
   TypeSize getRegisterBitWidth(RegisterKind K) const override {
     return Impl.getRegisterBitWidth(K);
   }
+#if SIFIVE_CUSTOMIZATION
+  unsigned getMaxElementWidth() const override {
+    return Impl.getMaxElementWidth();
+  }
+#endif // SIFIVE_CUSTOMIZATION
   unsigned getMinVectorRegisterBitWidth() const override {
     return Impl.getMinVectorRegisterBitWidth();
   }
+#if SIFIVE_CUSTOMIZATION
+  std::pair<ElementCount, ElementCount>
+  getFeasibleMaxVFRange(RegisterKind K, unsigned SmallestType,
+                        unsigned WidestType,
+                        unsigned MaxSafeRegisterWidth = -1U,
+                        unsigned RegWidthFactor = 1,
+                        bool IsScalable = false) const override {
+    return Impl.getFeasibleMaxVFRange(K, SmallestType, WidestType,
+                                      MaxSafeRegisterWidth, RegWidthFactor,
+                                      IsScalable);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   Optional<unsigned> getMaxVScale() const override {
     return Impl.getMaxVScale();
   }
@@ -2441,6 +2488,12 @@ public:
   InstructionCost getInstructionLatency(const Instruction *I) override {
     return Impl.getInstructionLatency(I);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool preferPredicatedVectorOps() const override {
+    return Impl.preferPredicatedVectorOps();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const override {

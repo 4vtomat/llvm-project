@@ -614,9 +614,29 @@ TypeSize TargetTransformInfo::getRegisterBitWidth(
   return TTIImpl->getRegisterBitWidth(K);
 }
 
+#if SIFIVE_CUSTOMIZATION
+unsigned TargetTransformInfo::getMaxElementWidth() const {
+  return TTIImpl->getMaxElementWidth();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 unsigned TargetTransformInfo::getMinVectorRegisterBitWidth() const {
   return TTIImpl->getMinVectorRegisterBitWidth();
 }
+
+#if SIFIVE_CUSTOMIZATION
+std::pair<ElementCount, ElementCount>
+TargetTransformInfo::getFeasibleMaxVFRange(RegisterKind K,
+                                           unsigned SmallestType,
+                                           unsigned WidestType,
+                                           unsigned MaxSafeRegisterWidth,
+                                           unsigned RegWidthFactor,
+                                           bool IsScalable) const {
+  return TTIImpl->getFeasibleMaxVFRange(K, SmallestType, WidestType,
+                                        MaxSafeRegisterWidth, RegWidthFactor,
+                                        IsScalable);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 Optional<unsigned> TargetTransformInfo::getMaxVScale() const {
   return TTIImpl->getMaxVScale();
@@ -1105,6 +1125,12 @@ InstructionCost
 TargetTransformInfo::getInstructionLatency(const Instruction *I) const {
   return TTIImpl->getInstructionLatency(I);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool TargetTransformInfo::preferPredicatedVectorOps() const {
+  return TTIImpl->preferPredicatedVectorOps();
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 InstructionCost
 TargetTransformInfo::getInstructionThroughput(const Instruction *I) const {

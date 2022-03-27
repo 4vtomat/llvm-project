@@ -28,6 +28,7 @@
 
 #include "llvm/ADT/MapVector.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
+#include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
 
@@ -119,7 +120,11 @@ public:
     /// Vectorize loops using scalable vectors or fixed-width vectors, but favor
     /// scalable vectors when the cost-model is inconclusive. This is the
     /// default when the scalable.enable hint is enabled through a pragma.
-    SK_PreferScalable = 1
+    SK_PreferScalable = 1,
+#if SIFIVE_CUSTOMIZATION
+    /// Disables vectorization with fixed size vectors.
+    SK_ScalableOnly = 2,
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   LoopVectorizeHints(const Loop *L, bool InterleaveOnlyWhenForced,
@@ -162,6 +167,14 @@ public:
   bool isScalableVectorizationDisabled() const {
     return (ScalableForceKind)Scalable.Value == SK_FixedWidthOnly;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// \return true if fixed vectorization has been explicitly disabled (and only
+  /// scalable vectorization can be used).
+  bool isFixedVectorizationDisabled() const {
+    return Scalable.Value == SK_ScalableOnly;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// If hints are provided that force vectorization, use the AlwaysPrint
   /// pass name to force the frontend to print the diagnostic.
@@ -408,6 +421,14 @@ public:
   const SmallPtrSetImpl<Instruction *> &getConditionalAssumes() const {
     return ConditionalAssumes;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if TTI prefers widening vector ops using predicated vector
+  /// intrinsics.
+  bool preferPredicatedVectorOps() const {
+    return TTI->preferPredicatedVectorOps();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   /// Return true if the pre-header, exiting and latch blocks of \p Lp and all

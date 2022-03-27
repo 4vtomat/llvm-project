@@ -120,6 +120,10 @@ protected:
     Str << " declare <8 x i1> @llvm.vp.icmp.v8i16"
         << "(<8 x i16>, <8 x i16>, metadata, <8 x i1>, i32) ";
 
+#if SIFIVE_CUSTOMIZATION
+    Str << " declare <8 x i32> @llvm.experimental.vp.reverse.v8i32(<8 x i32>, <8 x i1>, i32) ";
+#endif // SIFIVE_CUSTOMIZATION
+
     return parseAssemblyString(Str.str(), Err, C);
   }
 };

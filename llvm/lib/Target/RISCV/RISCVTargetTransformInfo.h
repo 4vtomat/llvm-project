@@ -55,6 +55,13 @@ public:
                                       const APInt &Imm, Type *Ty,
                                       TTI::TargetCostKind CostKind);
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned getMaxElementWidth() const;
+  std::pair<ElementCount, ElementCount> getFeasibleMaxVFRange(
+      TargetTransformInfo::RegisterKind K, unsigned SmallestType,
+      unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
+      unsigned RegWidthFactor = 1, bool IsScalable = false) const;
+#endif // SIFIVE_CUSTOMIZATION
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
 
   bool shouldConsiderAddressTypePromotion(const Instruction &I,

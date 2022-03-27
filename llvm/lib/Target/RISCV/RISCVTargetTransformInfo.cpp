@@ -119,6 +119,14 @@ RISCVTTIImpl::getIntImmCostIntrin(Intrinsic::ID IID, unsigned Idx,
   return TTI::TCC_Free;
 }
 
+#if SIFIVE_CUSTOMIZATION
+unsigned RISCVTTIImpl::getMaxElementWidth() const {
+  // Returns ELEN. This is the value for which k-scale-factor would be one.
+  // Current EPI implementation plans this to be 64. 
+  return 64;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 TargetTransformInfo::PopcntSupportKind
 RISCVTTIImpl::getPopcntSupport(unsigned TyWidth) {
   assert(isPowerOf2_32(TyWidth) && "Ty width must be power of 2");
@@ -156,6 +164,40 @@ bool RISCVTTIImpl::shouldConsiderAddressTypePromotion(
     }
   }
   return Considerable;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+std::pair<ElementCount, ElementCount>
+RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
+                                    unsigned SmallestType, unsigned WidestType,
+                                    unsigned MaxSafeRegisterWidth,
+                                    unsigned RegWidthFactor,
+                                    bool IsScalable) const {
+  // check for SEW <= ELEN in the base ISA
+  if (WidestType > getMaxElementWidth() || SmallestType > getMaxElementWidth())
+    return {ElementCount::getNull(), ElementCount::getNull()};
+
+  // Smallest SEW supported = 8. For 1 bit wide Type, clip to 8 bit to get a
+  // valid range of VFs.
+  SmallestType = std::max<unsigned>(8, SmallestType);
+  WidestType = std::max<unsigned>(8, WidestType);
+  unsigned WidestRegister = std::min<unsigned>(
+      ST->getMinRVVVectorSizeInBits() * RegWidthFactor, MaxSafeRegisterWidth);
+  unsigned SmallestRegister =
+      std::min(ST->getMinRVVVectorSizeInBits(), MaxSafeRegisterWidth);
+
+  unsigned LowerBoundVFKnownMin =
+      std::max<unsigned>(1, PowerOf2Floor(SmallestRegister / SmallestType));
+  ElementCount LowerBoundVF =
+      ElementCount::get(LowerBoundVFKnownMin, IsScalable);
+
+  unsigned UpperBoundVFKnownMin =
+      std::min<unsigned>(64, PowerOf2Floor(WidestRegister / WidestType));
+  ElementCount UpperBoundVF =
+      ElementCount::get(UpperBoundVFKnownMin, IsScalable);
+
+  return {LowerBoundVF, UpperBoundVF};
 }
 #endif // SIFIVE_CUSTOMIZATION
 

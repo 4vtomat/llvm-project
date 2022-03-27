@@ -36,6 +36,9 @@ class VPSlotTracker;
 class VPUser;
 class VPRecipeBase;
 class VPWidenMemoryInstructionRecipe;
+#if SIFIVE_CUSTOMIZATION
+class VPPredicatedWidenMemoryInstructionRecipe;
+#endif // SIFIVE_CUSTOMIZATION
 
 // This is the base class of the VPlan Def/Use graph, used for modeling the data
 // flow into, within and out of the VPlan. VPValues can stand for live-ins
@@ -51,6 +54,9 @@ class VPValue {
   friend class VPSlotTracker;
   friend class VPRecipeBase;
   friend class VPWidenMemoryInstructionRecipe;
+#if SIFIVE_CUSTOMIZATION
+  friend class VPPredicatedWidenMemoryInstructionRecipe;
+#endif // SIFIVE_CUSTOMIZATION
 
   const unsigned char SubclassID; ///< Subclass identifier (for isa/dyn_cast).
 
@@ -99,6 +105,12 @@ public:
     VPVWidenCanonicalIVSC,
     VPVWidenGEPSC,
     VPVWidenSelectSC,
+#if SIFIVE_CUSTOMIZATION
+    VPVPredicatedMemoryInstructionSC,
+    VPVPredicatedWidenSC,
+    VPVWidenEVLSC,
+    VPVWidenEVLMaskSC,
+#endif // SIFIVE_CUSTOMIZATION
 
     // Phi-like VPValues. Need to be kept together.
     VPVBlendSC,
@@ -109,6 +121,10 @@ public:
     VPVWidenPointerInductionSC,
     VPVPredInstPHI,
     VPVReductionPHISC,
+#if SIFIVE_CUSTOMIZATION
+    VPVPredicatedFirstOrderRecurrencePHISC,
+    VPVEVLPHISC,
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   VPValue(Value *UV = nullptr, VPDef *Def = nullptr)
@@ -340,6 +356,12 @@ public:
     VPWidenMemoryInstructionSC,
     VPWidenSC,
     VPWidenSelectSC,
+#if SIFIVE_CUSTOMIZATION
+    VPPredicatedWidenMemoryInstructionSC,
+    VPPredicatedWidenSC,
+    VPWidenEVLSC,
+    VPWidenEVLMaskSC,
+#endif // SIFIVE_CUSTOMIZATION
 
     // Phi-like recipes. Need to be kept together.
     VPBlendSC,
@@ -350,6 +372,10 @@ public:
     VPWidenPointerInductionSC,
     VPPredInstPHISC,
     VPReductionPHISC,
+#if SIFIVE_CUSTOMIZATION
+    VPPredicatedFirstOrderRecurrencePHISC,
+    VPEVLPHISC,
+#endif // SIFIVE_CUSTOMIZATION
     VPFirstPHISC = VPBlendSC,
     VPLastPHISC = VPReductionPHISC,
   };
