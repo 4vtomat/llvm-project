@@ -515,27 +515,6 @@ entry:
 }
 
 declare <vscale x 1 x i16> @llvm.riscv.vor.nxv1i16.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64)
-
-define void @vwadd_vsll(i8* nocapture readonly %in, i16* nocapture %out) {
-; CHECK-LABEL: @vwadd_vsll(
-; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 1 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP0]], i64 8)
-; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP1]], i8 0, i64 8)
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP2]], <vscale x 1 x i16>* [[TMP3]], i64 8)
-; CHECK-NEXT:    ret void
-;
-entry:
-  %0 = bitcast i8* %in to <vscale x 1 x i8>*
-  %1 = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* %0, i64 8)
-  %2 = tail call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> %1, i8 0, i64 8)
-  %3 = tail call <vscale x 1 x i16> @llvm.riscv.vsll.nxv1i16.i64.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> %2, i64 0, i64 8)
-  %4 = bitcast i16* %out to <vscale x 1 x i16>*
-  tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> %3, <vscale x 1 x i16>* %4, i64 8)
-  ret void
-}
-
 declare <vscale x 1 x i16> @llvm.riscv.vsll.nxv1i16.i64.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, i64, i64)
 
 define void @vmacc_vwsll_s(i16* nocapture readonly %in_0, i8* nocapture readonly %in_1, i8* nocapture readonly %in_2, i16* nocapture %out) {
@@ -545,11 +524,15 @@ define void @vmacc_vwsll_s(i16* nocapture readonly %in_0, i8* nocapture readonly
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* [[TMP0]], i64 8)
 ; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[IN_1:%.*]] to <vscale x 1 x i8>*
 ; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP2]], i64 8)
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast i8* [[IN_2:%.*]] to <vscale x 1 x i8>*
-; CHECK-NEXT:    [[TMP5:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP4]], i64 8)
-; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vwmacc.nxv1i16.nxv1i8.nxv1i8.i64(<vscale x 1 x i16> [[TMP1]], <vscale x 1 x i8> [[TMP3]], <vscale x 1 x i8> [[TMP5]], i64 8, i64 0)
-; CHECK-NEXT:    [[TMP7:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP6]], <vscale x 1 x i16>* [[TMP7]], i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP3]], i8 0, i64 8)
+; CHECK-NEXT:    [[TMP5:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vsll.nxv1i16.i64.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> [[TMP4]], i64 0, i64 8)
+; CHECK-NEXT:    [[TMP6:%.*]] = bitcast i8* [[IN_2:%.*]] to <vscale x 1 x i8>*
+; CHECK-NEXT:    [[TMP7:%.*]] = tail call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, <vscale x 1 x i8>* [[TMP6]], i64 8)
+; CHECK-NEXT:    [[TMP8:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vwadd.nxv1i16.nxv1i8.i8.i64(<vscale x 1 x i16> undef, <vscale x 1 x i8> [[TMP7]], i8 0, i64 8)
+; CHECK-NEXT:    [[TMP9:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vsll.nxv1i16.i64.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16> [[TMP8]], i64 0, i64 8)
+; CHECK-NEXT:    [[TMP10:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vmacc.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> [[TMP1]], <vscale x 1 x i16> [[TMP5]], <vscale x 1 x i16> [[TMP9]], i64 8, i64 0)
+; CHECK-NEXT:    [[TMP11:%.*]] = bitcast i16* [[OUT:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i16.i64(<vscale x 1 x i16> [[TMP10]], <vscale x 1 x i16>* [[TMP11]], i64 8)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -576,11 +559,15 @@ define void @vmacc_vwsll_u(i32* nocapture readonly %in_0, i16* nocapture readonl
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32>* [[TMP0]], i64 4)
 ; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i16* [[IN_1:%.*]] to <vscale x 1 x i16>*
 ; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* [[TMP2]], i64 4)
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast i16* [[IN_2:%.*]] to <vscale x 1 x i16>*
-; CHECK-NEXT:    [[TMP5:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* [[TMP4]], i64 4)
-; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vwmaccu.nxv1i32.nxv1i16.nxv1i16.i64(<vscale x 1 x i32> [[TMP1]], <vscale x 1 x i16> [[TMP3]], <vscale x 1 x i16> [[TMP5]], i64 4, i64 0)
-; CHECK-NEXT:    [[TMP7:%.*]] = bitcast i32* [[OUT:%.*]] to <vscale x 1 x i32>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i32.i64(<vscale x 1 x i32> [[TMP6]], <vscale x 1 x i32>* [[TMP7]], i64 4)
+; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vwaddu.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> [[TMP3]], i16 0, i64 4)
+; CHECK-NEXT:    [[TMP5:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vsll.nxv1i32.i64.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> [[TMP4]], i64 0, i64 4)
+; CHECK-NEXT:    [[TMP6:%.*]] = bitcast i16* [[IN_2:%.*]] to <vscale x 1 x i16>*
+; CHECK-NEXT:    [[TMP7:%.*]] = tail call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, <vscale x 1 x i16>* [[TMP6]], i64 4)
+; CHECK-NEXT:    [[TMP8:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vwaddu.nxv1i32.nxv1i16.i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i16> [[TMP7]], i16 0, i64 4)
+; CHECK-NEXT:    [[TMP9:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vsll.nxv1i32.i64.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> [[TMP8]], i64 0, i64 4)
+; CHECK-NEXT:    [[TMP10:%.*]] = tail call <vscale x 1 x i32> @llvm.riscv.vmacc.nxv1i32.nxv1i32.i64(<vscale x 1 x i32> [[TMP1]], <vscale x 1 x i32> [[TMP5]], <vscale x 1 x i32> [[TMP9]], i64 4, i64 0)
+; CHECK-NEXT:    [[TMP11:%.*]] = bitcast i32* [[OUT:%.*]] to <vscale x 1 x i32>*
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i32.i64(<vscale x 1 x i32> [[TMP10]], <vscale x 1 x i32>* [[TMP11]], i64 4)
 ; CHECK-NEXT:    ret void
 ;
 entry:

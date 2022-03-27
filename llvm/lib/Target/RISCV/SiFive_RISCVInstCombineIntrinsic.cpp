@@ -1515,14 +1515,6 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       return V;
     break;
   }
-  case Intrinsic::riscv_vsll:
-    // combine (vsll a, 0) to a
-    if (isa<UndefValue>(II.getArgOperand(0)) &&
-        match(II.getArgOperand(2), PatternMatch::m_ZeroInt()))
-      return IC.replaceInstUsesWith(II, II.getArgOperand(1));
-    if (Instruction *V = foldBinaryOp(IC, II))
-      return V;
-    break;
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vfadd:
   case Intrinsic::riscv_vfsub:
@@ -1533,6 +1525,7 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     break;
   case Intrinsic::riscv_vrsub:
   case Intrinsic::riscv_vfrsub:
+  case Intrinsic::riscv_vsll:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
   case Intrinsic::riscv_vmulh:
