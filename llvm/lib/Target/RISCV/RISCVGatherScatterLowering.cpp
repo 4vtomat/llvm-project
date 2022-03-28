@@ -790,11 +790,13 @@ bool RISCVGatherScatterLowering::tryCreateVPStridedLoadStore(IntrinsicInst *II,
   CallInst *Call;
   if (II->getIntrinsicID() == Intrinsic::vp_gather)
     Call = Builder.CreateIntrinsic(
-        Intrinsic::experimental_vp_strided_load, {DataType, Stride->getType()},
+        Intrinsic::experimental_vp_strided_load,
+        {DataType, BasePtr->getType(), Stride->getType()},
         {BasePtr, Stride, II->getArgOperand(1), II->getArgOperand(2)});
   else
     Call = Builder.CreateIntrinsic(
-        Intrinsic::experimental_vp_strided_store, {DataType, Stride->getType()},
+        Intrinsic::experimental_vp_strided_store,
+        {DataType, BasePtr->getType(), Stride->getType()},
         {II->getArgOperand(0), BasePtr, Stride, II->getArgOperand(2),
          II->getArgOperand(3)});
 
