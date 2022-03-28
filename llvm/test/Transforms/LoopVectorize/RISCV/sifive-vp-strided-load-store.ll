@@ -39,12 +39,12 @@ define void @test(i64* %reg.16.val) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = bitcast i64* [[REG_16_VAL]] to i8*
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i8, i8* [[TMP18]], i64 [[TMP17]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = bitcast i8* [[TMP19]] to i64*
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.i64(i64* [[TMP20]], i64 16, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP16]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0i64.i64(i64* [[TMP20]], i64 16, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP21:%.*]] = mul i64 [[INDEX]], 16
 ; CHECK-NEXT:    [[TMP22:%.*]] = bitcast i64* [[REG_16_VAL]] to i8*
 ; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr i8, i8* [[TMP22]], i64 [[TMP21]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = bitcast i8* [[TMP23]] to i64*
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i64.i64(<vscale x 2 x i64> zeroinitializer, i64* [[TMP24]], i64 16, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP16]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i64.p0i64.i64(<vscale x 2 x i64> zeroinitializer, i64* [[TMP24]], i64 16, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP25:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP25]], 2
 ; CHECK-NEXT:    [[TMP27:%.*]] = zext i32 [[TMP16]] to i64
