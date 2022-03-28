@@ -507,6 +507,13 @@ def FeatureLUIADDIFusion
     : SubtargetFeature<"lui-addi-fusion", "HasLUIADDIFusion",
                        "true", "Enable LUI+ADDI fusion">;
 
+// P670 requires a S2V transfer buffer to move scalars into vectors.
+// FIXME: Forming .vx/.vf can reduce register pressure.
+def FeatureDontSinkSplatOperands
+    : SubtargetFeature<"dont-sink-splat-operands", "DontSinkSplatOperands",
+                       "true", "Don't sink splat operands to enable .vx or .vf "
+                       "instructions">;
+
 def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [FeatureShortForwardBranchOpt,
@@ -518,11 +525,13 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
 def TuneSiFive8 : SubtargetFeature<"sifive8", "RISCVProcFamily", "SiFive8",
                                    "SiFive 8-Series processors",
                                    [FeatureCMOVBranchOpt,
-                                    FeatureLUIADDIFusion]>;
+                                    FeatureLUIADDIFusion,
+                                    FeatureDontSinkSplatOperands]>;
 def TuneSiFive9 : SubtargetFeature<"sifive9", "RISCVProcFamily", "SiFive9",
                                    "SiFive 9-Series processors",
                                    [FeatureCMOVBranchOpt,
-                                    FeatureLUIADDIFusion]>;
+                                    FeatureLUIADDIFusion,
+                                    FeatureDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
