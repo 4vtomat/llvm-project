@@ -666,6 +666,8 @@ private:
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
                              unsigned RISCVISDOpc) const;
 #if SIFIVE_CUSTOMIZATION
+  SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
+
   // Copied from D121113
   SDValue lowerVPStridedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPStridedStore(SDValue Op, SelectionDAG &DAG) const;

@@ -550,9 +550,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          Custom);
 
       setOperationAction(ISD::SELECT, VT, Custom);
+#if SIFIVE_CUSTOMIZATION
+      // VP_MERGE is expand in upstream.
       setOperationAction(
-          {ISD::SELECT_CC, ISD::VSELECT, ISD::VP_MERGE, ISD::VP_SELECT}, VT,
+          {ISD::SELECT_CC, ISD::VSELECT, ISD::VP_SELECT}, VT,
           Expand);
+      setOperationAction(ISD::VP_MERGE, VT, Custom);
+#endif
 
       setOperationAction({ISD::VP_AND, ISD::VP_OR, ISD::VP_XOR}, VT, Custom);
 
@@ -856,6 +860,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
               VT, Custom);
 
 #if SIFIVE_CUSTOMIZATION
+          setOperationAction(ISD::VP_MERGE, VT, Custom);
+
           // Copied from BSC
           setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
@@ -3578,6 +3584,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_SELECT:
     return lowerVPOp(Op, DAG, RISCVISD::VSELECT_VL);
   case ISD::VP_MERGE:
+#if SIFIVE_CUSTOMIZATION
+    if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
+      return lowerVPMergeMask(Op, DAG);
+#endif // SIFIVE_CUSTOMIZATION
     return lowerVPOp(Op, DAG, RISCVISD::VP_MERGE_VL);
   case ISD::VP_ADD:
     return lowerVPOp(Op, DAG, RISCVISD::ADD_VL);
@@ -6654,6 +6664,55 @@ SDValue RISCVTargetLowering::lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
 }
 
 #if SIFIVE_CUSTOMIZATION
+SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+  MVT VT = Op.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  SDValue Mask = Op.getOperand(0);
+  SDValue TrueVal = Op.getOperand(1);
+  SDValue FalseVal = Op.getOperand(2);
+  SDValue VL = Op.getOperand(3);
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
+    TrueVal = convertToScalableVector(ContainerVT, TrueVal, DAG, Subtarget);
+    FalseVal = convertToScalableVector(ContainerVT, FalseVal, DAG, Subtarget);
+  }
+
+  MVT PromotedVT = ContainerVT.changeVectorElementType(MVT::i8);
+
+  // Promote TrueVal and FalseVal using VLMax.
+  // FIXME: Is there a better way to do this?
+  SDValue VLMax = DAG.getRegister(RISCV::X0, XLenVT);
+  SDValue SplatOne = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, PromotedVT,
+                                 DAG.getUNDEF(PromotedVT),
+                                 DAG.getConstant(1, DL, XLenVT), VLMax);
+  SDValue SplatZero = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, PromotedVT,
+                                  DAG.getUNDEF(PromotedVT),
+                                  DAG.getConstant(0, DL, XLenVT), VLMax);
+  TrueVal = DAG.getNode(RISCVISD::VSELECT_VL, DL, PromotedVT, TrueVal,
+                        SplatOne, SplatZero, VLMax);
+  FalseVal = DAG.getNode(RISCVISD::VSELECT_VL, DL, PromotedVT, FalseVal,
+                         SplatOne, SplatZero, VLMax);
+
+  // VP_MERGE the two promoted values.
+  SDValue VPMerge = DAG.getNode(RISCVISD::VP_MERGE_VL, DL, PromotedVT,
+                                Mask, TrueVal, FalseVal, VL);
+
+  // Convert back to mask.
+  SDValue TrueMask = DAG.getNode(RISCVISD::VMSET_VL, DL, ContainerVT, VL);
+  SDValue Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, VPMerge,
+                               DAG.getConstant(0, DL, PromotedVT),
+                               DAG.getCondCode(ISD::SETNE), TrueMask, VLMax);
+
+  if (VT.isFixedLengthVector())
+    Result = convertFromScalableVector(VT, Result, DAG, Subtarget);
+  return Result;
+}
+
 SDValue
 RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
                                                SelectionDAG &DAG) const {
