@@ -36,7 +36,7 @@ public:
   };
 
 private:
-  IRBuilderBase &Builder;
+  IRBuilderBase &Builder; // SIFIVE
   Behavior ErrorHandling;
 
   // Explicit mask parameter.
@@ -58,7 +58,7 @@ private:
   }
 
 public:
-  VectorBuilder(IRBuilderBase &Builder,
+  VectorBuilder(IRBuilderBase &Builder, // SIFIVE
                 Behavior ErrorHandling = Behavior::ReportAndAbort)
       : Builder(Builder), ErrorHandling(ErrorHandling), Mask(nullptr),
         ExplicitVectorLength(nullptr),
