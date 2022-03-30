@@ -1,4 +1,4 @@
-// 903c29a2c6ebfd5dd466e87e8d8c523c00ed85a4
+// 9650452edc99340fd7a14b009026e1085c64162d
 // ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -132,9 +132,6 @@ typedef struct{uint64x2_t val[4];} uint64x2x4_t;
 #define SIFIVE_RECODE_ASSERT(x) assert(x)
 #else
 #define SIFIVE_RECODE_ASSERT(x)
-#endif
-#ifndef FE_TONEARESTFROMZERO
-#define FE_TONEARESTFROMZERO FE_TONEAREST
 #endif
 #ifdef __clang__
 #define SIFIVE_RECODE_NOT_IMPLEMENT(message) __attribute__((diagnose_if(1, "SiFive Recode does not implement " message, "error")))
@@ -5372,120 +5369,12 @@ __attribute__((always_inline)) inline uint64x1_t vcvt_u64_f64(float64x1_t a)
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvt_u64_f64") uint64x1_t vcvt_u64_f64(float64x1_t a);
 #endif
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline int16x4_t vcvta_s16_f16(float16x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint16mf4_t temp_3 = vfcvt_x(temp_0, 4);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_i16mf4(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_s16_f16") int16x4_t vcvta_s16_f16(float16x4_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline int32x2_t vcvta_s32_f32(float32x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint32mf2_t temp_3 = vfcvt_x(temp_0, 2);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_128_i32mf2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_s32_f32") int32x2_t vcvta_s32_f32(float32x2_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline int64x1_t vcvta_s64_f64(float64x1_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint64m1_t temp_3 = vfcvt_x(temp_0, 1);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_64_i64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_s64_f64") int64x1_t vcvta_s64_f64(float64x1_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline uint16x4_t vcvta_u16_f16(float16x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint16mf4_t temp_3 = vfcvt_xu(temp_0, 4);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_u16mf4(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_u16_f16") uint16x4_t vcvta_u16_f16(float16x4_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline uint32x2_t vcvta_u32_f32(float32x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint32mf2_t temp_3 = vfcvt_xu(temp_0, 2);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_128_u32mf2(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_u32_f32") uint32x2_t vcvta_u32_f32(float32x2_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline uint64x1_t vcvta_u64_f64(float64x1_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint64m1_t temp_3 = vfcvt_xu(temp_0, 1);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmerge(vmfne(temp_0, temp_0, 1), temp_3, 0, 1));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvta_u64_f64") uint64x1_t vcvta_u64_f64(float64x1_t a);
-#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtad_s64_f64") int64_t vcvtad_s64_f64(float64_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtad_u64_f64") uint64_t vcvtad_u64_f64(float64_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtah_s16_f16") int16_t vcvtah_s16_f16(float16_t a);
@@ -5494,120 +5383,12 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vcvtah_s64_f16") int64_t vcvtah_s64_f16(float16_t a
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtah_u16_f16") uint16_t vcvtah_u16_f16(float16_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtah_u32_f16") uint32_t vcvtah_u32_f16(float16_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtah_u64_f16") uint64_t vcvtah_u64_f16(float16_t a);
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline int16x8_t vcvtaq_s16_f16(float16x8_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint16mf2_t temp_3 = vfcvt_x(temp_0, 8);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_i16mf2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_s16_f16") int16x8_t vcvtaq_s16_f16(float16x8_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline int32x4_t vcvtaq_s32_f32(float32x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint32mf2_t temp_3 = vfcvt_x(temp_0, 4);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_i32mf2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_s32_f32") int32x4_t vcvtaq_s32_f32(float32x4_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline int64x2_t vcvtaq_s64_f64(float64x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vint64m1_t temp_3 = vfcvt_x(temp_0, 2);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_128_i64m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_s64_f64") int64x2_t vcvtaq_s64_f64(float64x2_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline uint16x8_t vcvtaq_u16_f16(float16x8_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint16mf2_t temp_3 = vfcvt_xu(temp_0, 8);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_u16mf2(vmerge(vmfne(temp_0, temp_0, 8), temp_3, 0, 8));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_u16_f16") uint16x8_t vcvtaq_u16_f16(float16x8_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline uint32x4_t vcvtaq_u32_f32(float32x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint32mf2_t temp_3 = vfcvt_xu(temp_0, 4);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_256_u32mf2(vmerge(vmfne(temp_0, temp_0, 4), temp_3, 0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_u32_f32") uint32x4_t vcvtaq_u32_f32(float32x4_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline uint64x2_t vcvtaq_u64_f64(float64x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
-	int temp_1 = fegetround();
-	int temp_2 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_2) == (0));
-	vuint64m1_t temp_3 = vfcvt_xu(temp_0, 2);
-	fesetround(temp_1);
-	return __builtin_rvv_vcast_to_fixed_128_u64m1(vmerge(vmfne(temp_0, temp_0, 2), temp_3, 0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtaq_u64_f64") uint64x2_t vcvtaq_u64_f64(float64x2_t a);
-#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtas_s32_f32") int32_t vcvtas_s32_f32(float32_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtas_u32_f32") uint32_t vcvtas_u32_f32(float32_t a);
 SIFIVE_RECODE_NOT_IMPLEMENT("vcvtd_f64_s64") float64_t vcvtd_f64_s64(int64_t a);
@@ -23833,7 +23614,7 @@ __attribute__((always_inline)) inline float16x4_t vrnd_f16(float16x4_t a)
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfsgnj(temp_1, vfmv_v_f_f16mf4(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i16mf4(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -23844,7 +23625,7 @@ __attribute__((always_inline)) inline float32x2_t vrnd_f32(float32x2_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i32mf2(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -23855,146 +23636,26 @@ __attribute__((always_inline)) inline float64x1_t vrnd_f64(float64x1_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i64m1(), temp_0, 1), 1), temp_0, 1));
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrnd_f64") float64x1_t vrnd_f64(float64x1_t a);
 #endif
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline float16x4_t vrnda_f16(float16x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
-	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint16mf4_t temp_5 = vfcvt_x(temp_2, vundefined_i16mf4(), temp_0, 4);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfsgnj(temp_1, vfmv_v_f_f16mf4(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrnda_f16") float16x4_t vrnda_f16(float16x4_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline float32x2_t vrnda_f32(float32x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
-	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint32mf2_t temp_5 = vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 2);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrnda_f32") float32x2_t vrnda_f32(float32x2_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline float64x1_t vrnda_f64(float64x1_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
-	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, temp_5, 1), temp_0, 1));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrnda_f64") float64x1_t vrnda_f64(float64x1_t a);
-#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vrndah_f16") float16_t vrndah_f16(float16_t a);
-#if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
-__attribute__((always_inline)) inline float16x8_t vrndaq_f16(float16x8_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
-	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint16mf2_t temp_5 = vfcvt_x(temp_2, vundefined_i16mf2(), temp_0, 8);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_256_f16mf2(vfsgnj(temp_1, vfmv_v_f_f16mf2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, temp_5, 8), temp_0, 8));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrndaq_f16") float16x8_t vrndaq_f16(float16x8_t a);
-#endif
-#if (32 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline float32x4_t vrndaq_f32(float32x4_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
-	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint32mf2_t temp_5 = vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 4);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, temp_5, 4), temp_0, 4));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrndaq_f32") float32x4_t vrndaq_f32(float32x4_t a);
-#endif
-#if (64 <= __riscv_v_elen_fp)
-__attribute__((always_inline)) inline float64x2_t vrndaq_f64(float64x2_t a)
-{
-#ifdef __clang__
-#pragma float_control(precise, on)
-#endif
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
-	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
-	int temp_3 = fegetround();
-	int temp_4 = fesetround(FE_TONEARESTFROMZERO);
-	SIFIVE_RECODE_ASSERT((temp_4) == (0));
-	vint64m1_t temp_5 = vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 2);
-	fesetround(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, temp_5, 2), temp_0, 2));
-}
-#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vrndaq_f64") float64x2_t vrndaq_f64(float64x2_t a);
-#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vrndh_f16") float16_t vrndh_f16(float16_t a);
 #if (32 <= __riscv_v_elen_fp) && defined(__riscv_zvfh)
 __attribute__((always_inline)) inline float16x4_t vrndi_f16(float16x4_t a)
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfsgnj(temp_1, vfmv_v_f_f16mf4(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i16mf4(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -24005,7 +23666,7 @@ __attribute__((always_inline)) inline float32x2_t vrndi_f32(float32x2_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -24016,7 +23677,7 @@ __attribute__((always_inline)) inline float64x1_t vrndi_f64(float64x1_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1), 1), temp_0, 1));
 }
 #else
@@ -24028,7 +23689,7 @@ __attribute__((always_inline)) inline float16x8_t vrndiq_f16(float16x8_t a)
 {
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf2(vfsgnj(temp_1, vfmv_v_f_f16mf2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i16mf2(), temp_0, 8), 8), temp_0, 8));
 }
 #else
@@ -24039,7 +23700,7 @@ __attribute__((always_inline)) inline float32x4_t vrndiq_f32(float32x4_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -24050,7 +23711,7 @@ __attribute__((always_inline)) inline float64x2_t vrndiq_f64(float64x2_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -24066,7 +23727,7 @@ __attribute__((always_inline)) inline float16x4_t vrndm_f16(float16x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24087,7 +23748,7 @@ __attribute__((always_inline)) inline float32x2_t vrndm_f32(float32x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24108,7 +23769,7 @@ __attribute__((always_inline)) inline float64x1_t vrndm_f64(float64x1_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24130,7 +23791,7 @@ __attribute__((always_inline)) inline float16x8_t vrndmq_f16(float16x8_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24151,7 +23812,7 @@ __attribute__((always_inline)) inline float32x4_t vrndmq_f32(float32x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24172,7 +23833,7 @@ __attribute__((always_inline)) inline float64x2_t vrndmq_f64(float64x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_DOWNWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24193,7 +23854,7 @@ __attribute__((always_inline)) inline float16x4_t vrndn_f16(float16x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24214,7 +23875,7 @@ __attribute__((always_inline)) inline float32x2_t vrndn_f32(float32x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24235,7 +23896,7 @@ __attribute__((always_inline)) inline float64x1_t vrndn_f64(float64x1_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24257,7 +23918,7 @@ __attribute__((always_inline)) inline float16x8_t vrndnq_f16(float16x8_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24278,7 +23939,7 @@ __attribute__((always_inline)) inline float32x4_t vrndnq_f32(float32x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24299,7 +23960,7 @@ __attribute__((always_inline)) inline float64x2_t vrndnq_f64(float64x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_TONEAREST);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24321,7 +23982,7 @@ __attribute__((always_inline)) inline float16x4_t vrndp_f16(float16x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24342,7 +24003,7 @@ __attribute__((always_inline)) inline float32x2_t vrndp_f32(float32x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24363,7 +24024,7 @@ __attribute__((always_inline)) inline float64x1_t vrndp_f64(float64x1_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24385,7 +24046,7 @@ __attribute__((always_inline)) inline float16x8_t vrndpq_f16(float16x8_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24406,7 +24067,7 @@ __attribute__((always_inline)) inline float32x4_t vrndpq_f32(float32x4_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24427,7 +24088,7 @@ __attribute__((always_inline)) inline float64x2_t vrndpq_f64(float64x2_t a)
 #pragma STDC FP_CONTRACT OFF
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	int temp_3 = fegetround();
 	int temp_4 = fesetround(FE_UPWARD);
 	SIFIVE_RECODE_ASSERT((temp_4) == (0));
@@ -24443,7 +24104,7 @@ __attribute__((always_inline)) inline float16x8_t vrndq_f16(float16x8_t a)
 {
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf2(vfsgnj(temp_1, vfmv_v_f_f16mf2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i16mf2(), temp_0, 8), 8), temp_0, 8));
 }
 #else
@@ -24454,7 +24115,7 @@ __attribute__((always_inline)) inline float32x4_t vrndq_f32(float32x4_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i32mf2(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -24465,7 +24126,7 @@ __attribute__((always_inline)) inline float64x2_t vrndq_f64(float64x2_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, vfcvt_rtz_x(temp_2, vundefined_i64m1(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -24476,7 +24137,7 @@ __attribute__((always_inline)) inline float16x4_t vrndx_f16(float16x4_t a)
 {
 	vfloat16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf4(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 32768U, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 2048, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf4(vfsgnj(temp_1, vfmv_v_f_f16mf4(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 4), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i16mf4(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -24487,7 +24148,7 @@ __attribute__((always_inline)) inline float32x2_t vrndx_f32(float32x2_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 2147483648UL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 16777216L, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 2), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -24498,7 +24159,7 @@ __attribute__((always_inline)) inline float64x1_t vrndx_f64(float64x1_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 1);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 1), 9223372036854775808ULL, 1);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 1), 9007199254740992LL, 1);
 	return __builtin_rvv_vcast_to_fixed_64_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 1), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 1), 1), temp_0, 1));
 }
 #else
@@ -24510,7 +24171,7 @@ __attribute__((always_inline)) inline float16x8_t vrndxq_f16(float16x8_t a)
 {
 	vfloat16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f16mf2(a);
 	vbool32_t temp_1 = vmfeq(temp_0, temp_0, 8);
-	vbool32_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 8), 32768U, 8);
+	vbool32_t temp_2 = vmflt(vfabs(temp_0, 8), 2048, 8);
 	return __builtin_rvv_vcast_to_fixed_256_f16mf2(vfsgnj(temp_1, vfmv_v_f_f16mf2(__builtin_bit_cast(float16_t, (uint16_t)(32256)), 8), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i16mf2(), temp_0, 8), 8), temp_0, 8));
 }
 #else
@@ -24521,7 +24182,7 @@ __attribute__((always_inline)) inline float32x4_t vrndxq_f32(float32x4_t a)
 {
 	vfloat32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_f32mf2(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 4);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 4), 2147483648UL, 4);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 4), 16777216L, 4);
 	return __builtin_rvv_vcast_to_fixed_256_f32mf2(vfsgnj(temp_1, vfmv_v_f_f32mf2(__builtin_bit_cast(float32_t, (uint32_t)(2143289344L)), 4), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i32mf2(), temp_0, 4), 4), temp_0, 4));
 }
 #else
@@ -24532,7 +24193,7 @@ __attribute__((always_inline)) inline float64x2_t vrndxq_f64(float64x2_t a)
 {
 	vfloat64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_f64m1(a);
 	vbool64_t temp_1 = vmfeq(temp_0, temp_0, 2);
-	vbool64_t temp_2 = vmflt(temp_1, temp_1, vfabs(temp_0, 2), 9223372036854775808ULL, 2);
+	vbool64_t temp_2 = vmflt(vfabs(temp_0, 2), 9007199254740992LL, 2);
 	return __builtin_rvv_vcast_to_fixed_128_f64m1(vfsgnj(temp_1, vfmv_v_f_f64m1(__builtin_bit_cast(float64_t, (uint64_t)(9221120237041090560LL)), 2), vfcvt_f(temp_2, temp_0, vfcvt_x(temp_2, vundefined_i64m1(), temp_0, 2), 2), temp_0, 2));
 }
 #else
@@ -33139,6 +32800,5 @@ __attribute__((always_inline)) inline uint8x16x2_t vzipq_u8(uint8x16_t a, uint8x
 SIFIVE_RECODE_NOT_IMPLEMENT("vzipq_u8") uint8x16x2_t vzipq_u8(uint8x16_t a, uint8x16_t b);
 #endif
 #undef SIFIVE_RECODE_NOT_IMPLEMENT
-#undef FE_TONEARESTFROMZERO
 #undef SIFIVE_RECODE_ASSERT
 #endif
