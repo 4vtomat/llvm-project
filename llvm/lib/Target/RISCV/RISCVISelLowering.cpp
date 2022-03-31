@@ -6221,6 +6221,29 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
              Passthru, Mask, RM, VL, Policy}),
         DAG, Subtarget);
   }
+  case Intrinsic::aarch64_neon_sqxtn:
+  case Intrinsic::aarch64_neon_uqxtn: {
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src = convertToScalableVector(
+        getContainerForFixedLengthVector(Op.getOperand(1).getSimpleValueType()),
+        Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue Zero =
+        DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                    DAG.getConstant(0, DL, XLenVT), VL);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(IntNo == Intrinsic::aarch64_neon_sqxtn
+                        ? RISCVISD::VNCLIP_VL
+                        : RISCVISD::VNCLIPU_VL,
+                    DL, VecVT, {Src, Zero, Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
 #endif
   }
 
