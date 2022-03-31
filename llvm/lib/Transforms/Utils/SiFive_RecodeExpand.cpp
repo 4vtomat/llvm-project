@@ -140,6 +140,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_sqshlu:
   case Intrinsic::aarch64_neon_sqshrun:
   case Intrinsic::aarch64_neon_sqsub:
+  case Intrinsic::aarch64_neon_sqxtun:
   case Intrinsic::aarch64_neon_sshl:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
@@ -707,6 +708,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             Intrinsic::ushl_sat, {II->getType()},
             {smaxZero(Builder, II->getArgOperand(0)), II->getArgOperand(1)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_sqxtun: {
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            Intrinsic::aarch64_neon_uqxtn, {II->getType()},
+            {smaxZero(Builder, II->getArgOperand(0))}));
         break;
       }
       case Intrinsic::aarch64_neon_sshl:
