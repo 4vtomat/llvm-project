@@ -1886,7 +1886,8 @@ static SDValue lowerFP_TO_INT_SAT(SDValue Op, SelectionDAG &DAG,
 // correct.
 // TODO: Floor and ceil could be shorter by changing rounding mode, but we don't
 // have FRM dependencies modeled yet.
-static SDValue lowerFTRUNC_FCEIL_FFLOOR(SDValue Op, SelectionDAG &DAG) {
+static SDValue lowerFTRUNC_FCEIL_FFLOOR(SDValue Op, SelectionDAG &DAG,
+                                        const RISCVSubtarget &Subtarget) {
   MVT VT = Op.getSimpleValueType();
   assert(VT.isVector() && "Unexpected type");
 
@@ -1913,16 +1914,27 @@ static SDValue lowerFTRUNC_FCEIL_FFLOOR(SDValue Op, SelectionDAG &DAG) {
 
   // Truncate to integer and convert back to FP.
   MVT IntVT = VT.changeVectorElementTypeToInteger();
-  SDValue Truncated = DAG.getNode(ISD::FP_TO_SINT, DL, IntVT, Src);
-  Truncated = DAG.getNode(ISD::SINT_TO_FP, DL, VT, Truncated);
+  SDValue EVL =
+      DAG.getConstant(VT.getVectorMinNumElements(), DL, Subtarget.getXLenVT());
+  if (VT.isScalableVector())
+    EVL = DAG.getNode(ISD::VSCALE, DL, Subtarget.getXLenVT(), EVL);
+  SDValue Truncated = DAG.getSelect(
+      DL, IntVT, Setcc, DAG.getNode(ISD::VP_FPTOSI, DL, IntVT, Src, Setcc, EVL),
+      DAG.getBitcast(IntVT, Src));
+  Truncated = DAG.getSelect(
+      DL, VT, Setcc, DAG.getNode(ISD::VP_SITOFP, DL, VT, Truncated, Setcc, EVL),
+      DAG.getBitcast(VT, Truncated));
 
   if (Op.getOpcode() == ISD::FCEIL) {
     // If the truncated value is the greater than or equal to the original
     // value, we've computed the ceil. Otherwise, we went the wrong way and
     // need to increase by 1.
     // FIXME: This should use a masked operation. Handle here or in isel?
-    SDValue Adjust = DAG.getNode(ISD::FADD, DL, VT, Truncated,
-                                 DAG.getConstantFP(1.0, DL, VT));
+    SDValue Adjust =
+        DAG.getSelect(DL, VT, Setcc,
+                      DAG.getNode(ISD::VP_FADD, DL, VT, Truncated,
+                                  DAG.getConstantFP(1.0, DL, VT), Setcc, EVL),
+                      Truncated);
     SDValue NeedAdjust = DAG.getSetCC(DL, SetccVT, Truncated, Src, ISD::SETOLT);
     Truncated = DAG.getSelect(DL, VT, NeedAdjust, Adjust, Truncated);
   } else if (Op.getOpcode() == ISD::FFLOOR) {
@@ -1930,8 +1942,11 @@ static SDValue lowerFTRUNC_FCEIL_FFLOOR(SDValue Op, SelectionDAG &DAG) {
     // we've computed the floor. Otherwise, we went the wrong way and need to
     // decrease by 1.
     // FIXME: This should use a masked operation. Handle here or in isel?
-    SDValue Adjust = DAG.getNode(ISD::FSUB, DL, VT, Truncated,
-                                 DAG.getConstantFP(1.0, DL, VT));
+    SDValue Adjust =
+        DAG.getSelect(DL, VT, Setcc,
+                      DAG.getNode(ISD::VP_FSUB, DL, VT, Truncated,
+                                  DAG.getConstantFP(1.0, DL, VT), Setcc, EVL),
+                      Truncated);
     SDValue NeedAdjust = DAG.getSetCC(DL, SetccVT, Truncated, Src, ISD::SETOGT);
     Truncated = DAG.getSelect(DL, VT, NeedAdjust, Adjust, Truncated);
   }
@@ -1939,7 +1954,12 @@ static SDValue lowerFTRUNC_FCEIL_FFLOOR(SDValue Op, SelectionDAG &DAG) {
   // Restore the original sign so that -0.0 is preserved.
   Truncated = DAG.getNode(ISD::FCOPYSIGN, DL, VT, Truncated, Src);
 
-  return DAG.getSelect(DL, VT, Setcc, Truncated, Src);
+  SDValue IsNaN = DAG.getSetCC(DL, SetccVT, Src, Src, ISD::SETUO);
+
+  return DAG.getSelect(
+      DL, VT, IsNaN,
+      DAG.getConstantFP(APFloat::getQNaN(FltSem), DL, Op.getValueType()),
+      Truncated);
 }
 #endif
 
@@ -3520,7 +3540,9 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::FTRUNC:
   case ISD::FCEIL:
   case ISD::FFLOOR:
-    return lowerFTRUNC_FCEIL_FFLOOR(Op, DAG);
+#if SIFIVE_CUSTOMIZATION
+    return lowerFTRUNC_FCEIL_FFLOOR(Op, DAG, Subtarget);
+#endif
   case ISD::FROUND:
     return lowerFROUND(Op, DAG);
   case ISD::VECREDUCE_ADD:
