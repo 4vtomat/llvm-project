@@ -75,6 +75,7 @@ static Value *narrow(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_facgt:
+  case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_ld1x2:
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
@@ -128,6 +129,20 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             {II->getArgOperand(1)});
         II->replaceAllUsesWith(Builder.CreateSExt(
             Builder.CreateFCmpOGT(Abs0, Abs1), II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_frecpe: {
+        FixedVectorType *VecTy =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        unsigned VecNumElements = VecTy->getNumElements();
+        CallInst *Src = toScalableVector(TTI, Builder, II->getArgOperand(0));
+        ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
+        II->replaceAllUsesWith(Builder.CreateExtractVector(
+            VecTy,
+            Builder.CreateIntrinsic(Intrinsic::riscv_vfrec7,
+                                    {Src->getType(), VL->getType()},
+                                    {UndefValue::get(Src->getType()), Src, VL}),
+            Builder.getInt64(0)));
         break;
       }
       case Intrinsic::aarch64_neon_ld1x2:
