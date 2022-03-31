@@ -80,6 +80,8 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_faddv:
   case Intrinsic::aarch64_neon_fcvtzs:
   case Intrinsic::aarch64_neon_fcvtzu:
+  case Intrinsic::aarch64_neon_fmaxv:
+  case Intrinsic::aarch64_neon_fminv:
   case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_frsqrte:
   case Intrinsic::aarch64_neon_ld1x2:
@@ -194,6 +196,27 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                 : Intrinsic::fptoui_sat,
             {II->getType(), II->getArgOperand(0)->getType()},
             {II->getArgOperand(0)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_fmaxv:
+      case Intrinsic::aarch64_neon_fminv: {
+        Value *Src = II->getArgOperand(0);
+        FixedVectorType *VecTy = cast<FixedVectorType>(Src->getType());
+        unsigned VectorNumElements = VecTy->getNumElements();
+        assert((VectorNumElements) % 2 == 0);
+        Intrinsic::ID Op = II->getIntrinsicID() == Intrinsic::aarch64_neon_fmaxv
+                               ? Intrinsic::aarch64_neon_fmax
+                               : Intrinsic::aarch64_neon_fmin;
+        Type *DesTy = FixedVectorType::get(VecTy->getElementType(), 1);
+        Value *Des =
+            Builder.CreateExtractVector(DesTy, Src, Builder.getInt64(0));
+        for (unsigned i = 1; i != VectorNumElements; ++i)
+          Des = Builder.CreateIntrinsic(
+              Op, {Des->getType()},
+              {Des,
+               Builder.CreateExtractVector(DesTy, Src, Builder.getInt64(i))});
+        II->replaceAllUsesWith(
+            Builder.CreateExtractElement(Des, static_cast<uint64_t>(0)));
         break;
       }
       case Intrinsic::aarch64_neon_frecpe:
