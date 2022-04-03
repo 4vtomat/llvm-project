@@ -201,6 +201,11 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
 
   bit UsesMaskPolicy = 0;
   let TSFlags{18} = UsesMaskPolicy;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  bit HasRoundModeOp = 0;
+  let TSFlags{19} =  HasRoundModeOp;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // Pseudo instructions

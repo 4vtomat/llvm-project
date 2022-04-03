@@ -37,6 +37,7 @@
 ; CHECK-NEXT:       Local Stack Slot Allocation
 ; CHECK-NEXT:       RISCV Pre-RA pseudo instruction expansion pass
 ; CHECK-NEXT:       RISCV Insert VSETVLI pass
+; CHECK-NEXT:       RISCV Insert required VXRM values
 ; CHECK-NEXT:       Eliminate PHI nodes for register allocation
 ; CHECK-NEXT:       Two-Address instruction pass
 ; CHECK-NEXT:       Fast Register Allocator

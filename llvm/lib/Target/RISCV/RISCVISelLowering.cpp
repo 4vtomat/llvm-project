@@ -12306,6 +12306,22 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
+#ifdef SIFIVE_CUSTOMIZATION
+  uint64_t TSFlags = MI.getDesc().TSFlags;
+  // Add VXRM dependency to any instructions with dynamic rounding mode.
+  if (RISCVII::hasRoundModeOp(TSFlags)) {
+    unsigned Idx = RISCVII::getRoundModeOpNum(MI.getDesc());
+    const MachineOperand &RoundModeOp = MI.getOperand(Idx);
+    if (RoundModeOp.getImm() != RISCVVXRndMode::DYN)
+      return;
+    // If the instruction already reads VXRM, don't add another read.
+    if (MI.readsRegister(RISCV::VXRM))
+      return;
+    MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
+                                            /*isImp*/ true));
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Add FRM dependency to any instructions with dynamic rounding mode.
   unsigned Opc = MI.getOpcode();
   auto Idx = RISCV::getNamedOperandIdx(Opc, RISCV::OpName::frm);

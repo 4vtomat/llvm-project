@@ -39,6 +39,10 @@ def AVL : RegisterOperand<GPRNoX0> {
 //  X0 |  X0 | Value in vl | Keep current vl, just change vtype.
 def VLOp : ComplexPattern<XLenVT, 1, "selectVLOp">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def timmu2 : TImmLeaf<XLenVT, [{return isUInt<2>(Imm);}]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def DecImm : SDNodeXForm<imm, [{
   return CurDAG->getTargetConstant(N->getSExtValue() - 1, SDLoc(N),
                                    N->getValueType(0));
@@ -46,6 +50,9 @@ def DecImm : SDNodeXForm<imm, [{
 
 defvar TAIL_UNDISTURBED_MASK_UNDISTURBED = 0;
 defvar TAIL_AGNOSTIC = 1;
+#ifdef SIFIVE_CUSTOMIZATION
+defvar VXRM_DYN = 4;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Utilities.
@@ -2037,6 +2044,31 @@ multiclass VPseudoBinary<VReg RetClass,
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoBinaryRM<VReg RetClass,
+                           VReg Op1Class,
+                           DAGOperand Op2Class,
+                           LMULInfo MInfo,
+                           string Constraint = ""> {
+  let VLMul = MInfo.value, HasRoundModeOp = 1 in {
+    let InOperandList = (ins Op1Class:$rs2, Op2Class:$rs1,
+                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew) in
+    def "_" # MInfo.MX : VPseudoBinaryNoMask<RetClass, Op1Class, Op2Class,
+                                             Constraint>;
+    let InOperandList = (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
+                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew) in
+    def "_" # MInfo.MX # "_TU" : VPseudoBinaryNoMaskTU<RetClass, Op1Class, Op2Class,
+                                                       Constraint>;
+    let InOperandList = (ins GetVRegNoV0<RetClass>.R:$merge,
+                             Op1Class:$rs2, Op2Class:$rs1,
+                             VMaskOp:$vm, ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy) in
+    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class,
+                                                           Constraint>,
+                                   RISCVMaskedPseudo</*MaskOpIdx*/ 3>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPseudoBinaryM<VReg RetClass,
                           VReg Op1Class,
                           DAGOperand Op2Class,
@@ -2086,6 +2118,13 @@ multiclass VPseudoBinaryV_VV<string Constraint = ""> {
     defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoBinaryRM_V_VV<string Constraint = ""> {
+  foreach m = MxList in
+    defm _VV : VPseudoBinaryRM<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Similar to VPseudoBinaryV_VV, but uses MxListF.
 multiclass VPseudoBinaryFV_VV<string Constraint = ""> {
   foreach m = MxListF in
@@ -2112,6 +2151,13 @@ multiclass VPseudoBinaryV_VX<string Constraint = ""> {
   foreach m = MxList in
     defm "_VX" : VPseudoBinary<m.vrclass, m.vrclass, GPR, m, Constraint>;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoBinaryRM_V_VX<string Constraint = ""> {
+  foreach m = MxList in
+    defm "_VX" : VPseudoBinaryRM<m.vrclass, m.vrclass, GPR, m, Constraint>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVSLD1_VX<string Constraint = ""> {
   foreach m = MxList in
@@ -2524,6 +2570,15 @@ multiclass VPseudoVAALU_VV_VX {
   defm "" : VPseudoBinaryV_VX,
             Sched<[WriteVAALUX, ReadVAALUV, ReadVAALUX, ReadVMask]>;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVAALU_RM_VV_VX {
+  defm "" : VPseudoBinaryRM_V_VV,
+            Sched<[WriteVAALUV, ReadVAALUV, ReadVAALUV, ReadVMask]>;
+  defm "" : VPseudoBinaryRM_V_VX,
+            Sched<[WriteVAALUX, ReadVAALUV, ReadVAALUX, ReadVMask]>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVMINMAX_VV_VX {
   defm "" : VPseudoBinaryV_VV,
@@ -3344,6 +3399,37 @@ class VPatBinaryNoMaskTA<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    GPR:$vl, sew)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRMNoMaskTA<string intrinsic_name,
+                                string inst,
+                                ValueType result_type,
+                                ValueType op1_type,
+                                ValueType op2_type,
+                                int sew,
+                                VReg op1_reg_class,
+                                DAGOperand op2_kind> {
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+                   (result_type (undef)),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   VLOpFrag)),
+            (!cast<Instruction>(inst)
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (XLenVT VXRM_DYN), GPR:$vl, sew)>;
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
+                   (result_type (undef)),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   VLOpFrag,
+                   (XLenVT timmu2:$round))),
+            (!cast<Instruction>(inst)
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (XLenVT timm:$round), GPR:$vl, sew)>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 class VPatBinaryNoMaskTU<string intrinsic_name,
                          string inst,
                          ValueType result_type,
@@ -3363,6 +3449,40 @@ class VPatBinaryNoMaskTU<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    GPR:$vl, sew)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
+                                string inst,
+                                ValueType result_type,
+                                ValueType op1_type,
+                                ValueType op2_type,
+                                int sew,
+                                VReg result_reg_class,
+                                VReg op1_reg_class,
+                                DAGOperand op2_kind> {
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   VLOpFrag)),
+            (!cast<Instruction>(inst#"_TU")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (XLenVT VXRM_DYN), GPR:$vl, sew)>;
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   VLOpFrag,
+                   (XLenVT timmu2:$round))),
+            (!cast<Instruction>(inst#"_TU")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (XLenVT timm:$round), GPR:$vl, sew)>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // Same as above but source operands are swapped.
 class VPatBinaryNoMaskSwapped<string intrinsic_name,
@@ -3425,6 +3545,42 @@ class VPatBinaryMaskTA<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    (mask_type V0), GPR:$vl, sew, (XLenVT timm:$policy))>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRMMaskTA<string intrinsic_name,
+                         string inst,
+                         ValueType result_type,
+                         ValueType op1_type,
+                         ValueType op2_type,
+                         ValueType mask_type,
+                         int sew,
+                         VReg result_reg_class,
+                         VReg op1_reg_class,
+                         DAGOperand op2_kind> {
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_mask")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (mask_type V0),
+                   VLOpFrag, (XLenVT timm:$policy))),
+            (!cast<Instruction>(inst#"_MASK")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (mask_type V0), (XLenVT VXRM_DYN), GPR:$vl, sew, (XLenVT timm:$policy))>;
+  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_rm_mask")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (mask_type V0),
+                   VLOpFrag, (XLenVT timm:$policy), (XLenVT timmu2:$round))),
+            (!cast<Instruction>(inst#"_MASK")
+                   (result_type result_reg_class:$merge),
+                   (op1_type op1_reg_class:$rs1),
+                   (op2_type op2_kind:$rs2),
+                   (mask_type V0), (XLenVT timm:$round), GPR:$vl, sew, (XLenVT timm:$policy))>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // Same as above but source operands are swapped.
 class VPatBinaryMaskSwapped<string intrinsic_name,
@@ -3813,6 +3969,28 @@ multiclass VPatBinaryTA<string intrinsic,
                          op2_kind>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRMTA<string intrinsic,
+                          string inst,
+                          ValueType result_type,
+                          ValueType op1_type,
+                          ValueType op2_type,
+                          ValueType mask_type,
+                          int sew,
+                          VReg result_reg_class,
+                          VReg op1_reg_class,
+                          DAGOperand op2_kind>
+{
+  defm : VPatBinaryRMNoMaskTA<intrinsic, inst, result_type, op1_type, op2_type,
+                              sew, op1_reg_class, op2_kind>;
+  defm : VPatBinaryRMNoMaskTU<intrinsic, inst, result_type, op1_type, op2_type,
+                              sew, result_reg_class, op1_reg_class, op2_kind>;
+  defm : VPatBinaryRMMaskTA<intrinsic, inst, result_type, op1_type, op2_type,
+                            mask_type, sew, result_reg_class, op1_reg_class,
+                            op2_kind>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinarySwapped<string intrinsic,
                       string inst,
                       ValueType result_type,
@@ -3939,6 +4117,17 @@ multiclass VPatBinaryV_VV<string intrinsic, string instruction,
                         vti.RegClass, vti.RegClass>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinary_RM_V_VV<string intrinsic, string instruction,
+                              list<VTypeInfo> vtilist> {
+  foreach vti = vtilist in
+    defm : VPatBinaryRMTA<intrinsic, instruction # "_VV_" # vti.LMul.MX,
+                        vti.Vector, vti.Vector, vti.Vector,vti.Mask,
+                        vti.Log2SEW, vti.RegClass,
+                        vti.RegClass, vti.RegClass>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryV_VV_INT<string intrinsic, string instruction,
                           list<VTypeInfo> vtilist> {
   foreach vti = vtilist in {
@@ -3979,6 +4168,19 @@ multiclass VPatBinaryV_VX<string intrinsic, string instruction,
                         vti.RegClass, vti.ScalarRegClass>;
   }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinary_RM_V_VX<string intrinsic, string instruction,
+                              list<VTypeInfo> vtilist> {
+  foreach vti = vtilist in {
+    defvar kind = "V"#vti.ScalarSuffix;
+    defm : VPatBinaryRMTA<intrinsic, instruction#"_"#kind#"_"#vti.LMul.MX,
+                          vti.Vector, vti.Vector, vti.Scalar, vti.Mask,
+                          vti.Log2SEW, vti.RegClass,
+                          vti.RegClass, vti.ScalarRegClass>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryV_VX_INT<string intrinsic, string instruction,
                           list<VTypeInfo> vtilist> {
@@ -4269,6 +4471,13 @@ multiclass VPatBinaryV_VV_VX<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
     : VPatBinaryV_VV<intrinsic, instruction, vtilist>,
       VPatBinaryV_VX<intrinsic, instruction, vtilist>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_V_VV_VX<string intrinsic, string instruction,
+                             list<VTypeInfo> vtilist>
+    : VPatBinary_RM_V_VV<intrinsic, instruction, vtilist>,
+      VPatBinary_RM_V_VX<intrinsic, instruction, vtilist>;
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryV_VX_VI<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
@@ -5004,10 +5213,15 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 let Uses = [VXRM], hasSideEffects = 1 in {
   defm PseudoVAADDU : VPseudoVAALU_VV_VX;
-  defm PseudoVAADD  : VPseudoVAALU_VV_VX;
   defm PseudoVASUBU : VPseudoVAALU_VV_VX;
   defm PseudoVASUB  : VPseudoVAALU_VV_VX;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1, hasSideEffects = 1 in {
+  defm PseudoVAADD  : VPseudoVAALU_RM_VV_VX;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
@@ -5678,7 +5892,9 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vssub", "PseudoVSSUB", AllIntegerVectors>;
 // 13.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vaaddu", "PseudoVAADDU", AllIntegerVectors>;
-defm : VPatBinaryV_VV_VX<"int_riscv_vaadd", "PseudoVAADD", AllIntegerVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vaadd", "PseudoVAADD", AllIntegerVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatBinaryV_VV_VX<"int_riscv_vasubu", "PseudoVASUBU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>;
 

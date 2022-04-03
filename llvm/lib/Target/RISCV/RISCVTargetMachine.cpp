@@ -80,6 +80,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
 #if SIFIVE_CUSTOMIZATION
+  initializeRISCVInsertVXRMWritePass(*PR);
   initializeRISCVCleanupVXRMPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -350,6 +351,9 @@ void RISCVPassConfig::addPreRegAlloc() {
     addPass(createRISCVCleanupVXRMPass()); // SIFIVE
   }
   addPass(createRISCVInsertVSETVLIPass());
+#ifdef SIFIVE_CUSTOMIZATION
+  addPass(createRISCVInsertVXRMWritePass());
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void RISCVPassConfig::addPostRegAlloc() {

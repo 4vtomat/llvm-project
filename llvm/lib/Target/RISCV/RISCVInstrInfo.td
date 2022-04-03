@@ -1813,11 +1813,13 @@ let hasSideEffects = true in {
 def ReadFFLAGS : ReadSysReg<SysRegFFLAGS, [FFLAGS]>;
 def WriteFFLAGS : WriteSysReg<SysRegFFLAGS, [FFLAGS]>;
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 def ReadVXRM : ReadSysReg<SysRegVXRM, [VXRM]>;
-def WriteVXRM: WriteSysReg<SysRegVXRM, [VXRM]>;
-def WriteVXRMImm: WriteSysRegImm<SysRegVXRM, [VXRM]>;
-// end SIFIVE
+def WriteVXRM : WriteSysReg<SysRegVXRM, [VXRM]>;
+def WriteVXRMImm : WriteSysRegImm<SysRegVXRM, [VXRM]>;
+def SwapVXRMImm : SwapSysRegImm<SysRegVXRM, [VXRM]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 }
 
 /// Other pseudo-instructions

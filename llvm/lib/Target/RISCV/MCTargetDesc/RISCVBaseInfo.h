@@ -95,6 +95,11 @@ enum {
   // compiler has free to select either one.
   UsesMaskPolicyShift = IsRVVWideningReductionShift + 1,
   UsesMaskPolicyMask = 1 << UsesMaskPolicyShift,
+
+#ifdef SIFIVE_CUSTOMIZATION
+  HasRoundModeOpShift = UsesMaskPolicyShift + 1,
+  HasRoundModeOpMask = 1 << HasRoundModeOpShift,
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 // Match with the definitions in RISCVInstrFormats.td
@@ -187,6 +192,25 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
     Offset = 2;
   return Desc.getNumOperands() - Offset;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+static inline bool hasRoundModeOp(uint64_t TSFlags) {
+  return TSFlags & HasRoundModeOpMask;
+}
+
+static inline unsigned getRoundModeOpNum(const MCInstrDesc &Desc) {
+  uint64_t TSFlags = Desc.TSFlags;
+  assert(hasRoundModeOp(TSFlags) && hasSEWOp(TSFlags) && hasVLOp(TSFlags));
+  //                   ----------------------------
+  // The operand order | n-4 |   n-3  | n-2 | n-1 |
+  //                   |  rm | policy |  vl | sew |
+  //                   ----------------------------
+  unsigned Offset = 3;
+  if (hasVecPolicyOp(TSFlags))
+    Offset = 4;
+  return Desc.getNumOperands() - Offset;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 /// \returns the number of V registers grouped by LMUL.
@@ -334,6 +358,19 @@ inline static bool isValidRoundingMode(unsigned Mode) {
   }
 }
 } // namespace RISCVFPRndMode
+
+#ifdef SIFIVE_CUSTOMIZATION
+namespace RISCVVXRndMode {
+enum RoundingMode {
+  RNU = 0,
+  RNE = 1,
+  RDN = 2,
+  ROD = 3,
+  DYN = 4,
+};
+
+} // namespace RISCVVXRndMode
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace RISCVSysReg {
 struct SysReg {
