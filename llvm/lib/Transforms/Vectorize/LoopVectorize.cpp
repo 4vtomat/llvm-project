@@ -5178,7 +5178,9 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // there are no dependencies, then there's nothing to do.
   if (UserVF.isNonZero() && !IgnoreScalableUserVF) {
     if (!canVectorizeReductions(UserVF))
-      return computeFeasibleMaxVF(ConstTripCount, UserVF, FoldTailByMasking);
+      return computeFeasibleMaxVFScalableOnly(
+          ConstTripCount, ElementCount::getFixed(UserVF.getKnownMinValue()),
+          FoldTailByMasking);
 
     if (Legal->isSafeForAnyVectorWidth())
       return UserVF;
