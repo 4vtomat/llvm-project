@@ -1133,6 +1133,14 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::UDIVFIXSAT:
     SplitVecRes_FIX(N, Lo, Hi);
     break;
+
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_SIGN_EXTEND:
+  case ISD::VP_ZERO_EXTEND:
+    // FIXME: This might not be the best solution.
+    SplitVecRes_UnaryOp(N, Lo, Hi);
+    break;
+#endif
   }
 
   // If Lo/Hi is null, the sub-method took care of registering results etc.
