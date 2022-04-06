@@ -576,6 +576,11 @@ private:
   void visitVPStridedStore(const VPIntrinsic &VPIntrin,
                            SmallVectorImpl<SDValue> &OpValues);
   void visitVPCmp(const VPCmpIntrinsic &VPIntrin);
+#if SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  void visitVPPtrToInt(const VPIntrinsic &I);
+  void visitVPIntToPtr(const VPIntrinsic &I);
+#endif // SIFIVE_CUSTOMIZATION
   void visitVectorPredicationIntrinsic(const VPIntrinsic &VPIntrin);
 
   void visitVAStart(const CallInst &I);

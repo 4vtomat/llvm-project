@@ -7578,9 +7578,91 @@ void SelectionDAGBuilder::visitVPCmp(const VPCmpIntrinsic &VPIntrin) {
            DAG.getSetCCVP(DL, DestVT, Op1, Op2, Condition, MaskOp, EVL));
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Copied from BSC
+// VP version of visitPtrToInt()
+void SelectionDAGBuilder::visitVPPtrToInt(const VPIntrinsic &I) {
+  // What to do depends on the size of the integer and the size of the pointer.
+  // We can either truncate, zero extend, or no-op, accordingly.
+  SDLoc DL = getCurSDLoc();
+  auto &TLI = DAG.getTargetLoweringInfo();
+
+  SDValue N = getValue(I.getOperand(0));
+  SDValue Mask = getValue(I.getOperand(1));
+  SDValue EVL = getValue(I.getOperand(2));
+
+  MVT EVLVT = TLI.getVPExplicitVectorLengthTy();
+  assert(EVLVT.isScalarInteger() && EVLVT.bitsGE(MVT::i32) &&
+         "Unexpected target EVL type");
+  EVL = DAG.getNode(ISD::ZERO_EXTEND, DL, EVLVT, EVL);
+
+  EVT DestVT = TLI.getValueType(DAG.getDataLayout(), I.getType());
+  EVT PtrMemVT =
+      TLI.getMemValueType(DAG.getDataLayout(), I.getOperand(0)->getType());
+
+  auto GetVPZExtOrVPTrunc = [&](SDValue V, EVT VT) -> SDValue {
+    if (VT.bitsGT(V.getValueType()))
+      return DAG.getNode(ISD::VP_ZERO_EXTEND, DL, VT, V, Mask, EVL);
+    if (VT.bitsLT(V.getValueType()))
+      return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, V, Mask, EVL);
+    return V;
+  };
+
+  N = GetVPZExtOrVPTrunc(N, PtrMemVT);
+  N = GetVPZExtOrVPTrunc(N, DestVT);
+  setValue(&I, N);
+}
+
+// VP version of visitIntToPtr()
+void SelectionDAGBuilder::visitVPIntToPtr(const VPIntrinsic &I) {
+  // What to do depends on the size of the integer and the size of the pointer.
+  // We can either truncate, zero extend, or no-op, accordingly.
+  SDLoc DL = getCurSDLoc();
+  auto &TLI = DAG.getTargetLoweringInfo();
+
+  SDValue N = getValue(I.getOperand(0));
+  SDValue Mask = getValue(I.getOperand(1));
+  SDValue EVL = getValue(I.getOperand(2));
+
+  MVT EVLVT = TLI.getVPExplicitVectorLengthTy();
+  assert(EVLVT.isScalarInteger() && EVLVT.bitsGE(MVT::i32) &&
+         "Unexpected target EVL type");
+  EVL = DAG.getNode(ISD::ZERO_EXTEND, DL, EVLVT, EVL);
+
+  EVT DestVT = TLI.getValueType(DAG.getDataLayout(), I.getType());
+  EVT PtrMemVT = TLI.getMemValueType(DAG.getDataLayout(), I.getType());
+
+  auto GetVPZExtOrVPTrunc = [&](SDValue V, EVT VT) -> SDValue {
+    if (VT.bitsGT(V.getValueType()))
+      return DAG.getNode(ISD::VP_ZERO_EXTEND, DL, VT, V, Mask, EVL);
+    if (VT.bitsLT(V.getValueType()))
+      return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, V, Mask, EVL);
+    return V;
+  };
+
+  N = GetVPZExtOrVPTrunc(N, PtrMemVT);
+  N = GetVPZExtOrVPTrunc(N, DestVT);
+  setValue(&I, N);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void SelectionDAGBuilder::visitVectorPredicationIntrinsic(
     const VPIntrinsic &VPIntrin) {
   SDLoc DL = getCurSDLoc();
+#if SIFIVE_CUSTOMIZATION
+  // Copied from BSC
+  switch (VPIntrin.getIntrinsicID()) {
+  default:
+    break;
+  case Intrinsic::vp_ptrtoint:
+    visitVPPtrToInt(VPIntrin);
+    return;
+  case Intrinsic::vp_inttoptr:
+    visitVPIntToPtr(VPIntrin);
+    return;
+  }
+#endif
+
   unsigned Opcode = getISDForVPIntrinsic(VPIntrin);
 
   auto IID = VPIntrin.getIntrinsicID();
