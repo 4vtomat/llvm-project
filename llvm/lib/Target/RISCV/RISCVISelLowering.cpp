@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "RISCVISelLowering.h"
+#include "MCTargetDesc/RISCVBaseInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
@@ -6041,6 +6042,58 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                          true);
     return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
                            TrueVal, FalseVal, ISD::SETNE);
+  }
+  case Intrinsic::aarch64_neon_shadd:
+  case Intrinsic::aarch64_neon_shsub:
+  case Intrinsic::aarch64_neon_srhadd:
+  case Intrinsic::aarch64_neon_uhadd:
+  case Intrinsic::aarch64_neon_uhsub:
+  case Intrinsic::aarch64_neon_urhadd: {
+    unsigned Opc;
+    RISCVVXRndMode::RoundingMode RoundingMode;
+    switch (IntNo) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::aarch64_neon_shadd:
+      Opc = RISCVISD::VAADD_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_shsub:
+      Opc = RISCVISD::VASUB_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_srhadd:
+      Opc = RISCVISD::VAADD_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_uhadd:
+      Opc = RISCVISD::VAADDU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_uhsub:
+      Opc = RISCVISD::VASUBU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_urhadd:
+      Opc = RISCVISD::VAADDU_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    }
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Op0 =
+        convertToScalableVector(VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Op1 =
+        convertToScalableVector(VecVT, Op.getOperand(2), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
   }
 #endif
   }
