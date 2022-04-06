@@ -6174,6 +6174,53 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
              Passthru, Mask, RM, VL, Policy}),
         DAG, Subtarget);
   }
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn: {
+    unsigned Opc;
+    RISCVVXRndMode::RoundingMode RoundingMode;
+    switch (IntNo) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::aarch64_neon_sqrshrn:
+      Opc = RISCVISD::VNCLIP_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_sqshrn:
+      Opc = RISCVISD::VNCLIP_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_uqrshrn:
+      Opc = RISCVISD::VNCLIPU_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_uqshrn:
+      Opc = RISCVISD::VNCLIPU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    }
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src = convertToScalableVector(
+        getContainerForFixedLengthVector(Op.getOperand(1).getSimpleValueType()),
+        Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(
+            Opc, DL, VecVT,
+            {Src,
+             DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                         DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT),
+                         VL),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
 #endif
   }
 
