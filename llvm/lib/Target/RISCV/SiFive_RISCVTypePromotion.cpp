@@ -24,6 +24,7 @@
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/Pass.h"
 
@@ -96,9 +97,6 @@ private:
   bool isPromotableOperation(Instruction *I);
   // Should I be a root in the promotion tree?
   bool isSink(Instruction *I);
-  // Should we change the result type of V? It will result in the users of V
-  // being visited.
-  bool shouldPromote(Value *V);
   bool TryToPromote(Instruction *I, unsigned PromotedWidth);
 };
 
@@ -201,6 +199,12 @@ void IRPromoter::PromoteTree() {
       assert(!I->getType()->isVoidTy() && "Unexpected type!");
       I->mutateType(ExtTy);
       Promoted.insert(I);
+    }
+
+    if (auto *II = dyn_cast<IntrinsicInst>(I)) {
+      Function *F = Intrinsic::getDeclaration(II->getModule(),
+                                              II->getIntrinsicID(), ExtTy);
+      II->setCalledFunction(F);
     }
   }
 }
@@ -324,6 +328,22 @@ void IRPromoter::Mutate() {
   LLVM_DEBUG(dbgs() << "RISCV Promotion: Mutation complete\n");
 }
 
+static bool isMinMaxIntrinsic(Instruction *I) {
+  auto *II = dyn_cast<IntrinsicInst>(I);
+  if (!II)
+    return false;
+
+  switch (II->getIntrinsicID()) {
+  case Intrinsic::smax:
+  case Intrinsic::smin:
+  case Intrinsic::umax:
+  case Intrinsic::umin:
+    return true;
+  }
+
+  return false;
+}
+
 /// Return true if the given value is a source in the use-def chain.
 /// These values will be sext to start the promotion of the tree to i32.
 bool RISCVTypePromotion::isSource(Value *V) {
@@ -334,13 +354,14 @@ bool RISCVTypePromotion::isSource(Value *V) {
       return isa<BinaryOperator>(I) &&
              !cast<BinaryOperator>(I)->isBitwiseLogicOp();
     case Instruction::BitCast:
-    case Instruction::Call:
     case Instruction::Load:
     case Instruction::Trunc:
     case Instruction::SExt:
     case Instruction::ZExt:
       // TODO: fptosi/fptoui
       return true;
+    case Instruction::Call:
+      return !isMinMaxIntrinsic(cast<CallInst>(V));
     }
   }
 
@@ -358,9 +379,9 @@ bool RISCVTypePromotion::isPromotableOperation(Instruction *I) {
   case Instruction::ICmp:
   case Instruction::Switch:
     return true;
+  case Instruction::Call:
+    return isMinMaxIntrinsic(I);
   }
-
-  // TODO: Support intrinsics like smin/smax.
 
   return false;
 }
@@ -379,9 +400,10 @@ bool RISCVTypePromotion::isSink(Instruction *I) {
   case Instruction::Trunc:
   case Instruction::SExt:
   case Instruction::ZExt:
-  case Instruction::Call:
     // TODO: Add sitofp/uitofp.
     return true;
+  case Instruction::Call:
+    return !isMinMaxIntrinsic(I);
   }
 
   return false;
@@ -435,6 +457,9 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
       for (unsigned i = 0, e = I->getNumOperands(); i < e; ++i) {
         // Skip condition of select.
         if (isa<SelectInst>(I) && i == 0)
+          continue;
+        // Skip called operand of Calls.
+        if (isa<CallInst>(I) && i >= cast<CallInst>(I)->arg_size())
           continue;
         Value *Op = I->getOperand(i);
         // Skip BasicBlock operands of PHINode and SwitchInst.
