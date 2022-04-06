@@ -2664,6 +2664,9 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
                        "operand!\n");
 
   case ISD::SETCC:             Res = SplitVecOp_VSETCC(N); break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_SETCC:          Res = SplitVecOp_VP_SETCC(N); break;
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST:           Res = SplitVecOp_BITCAST(N); break;
   case ISD::EXTRACT_SUBVECTOR: Res = SplitVecOp_EXTRACT_SUBVECTOR(N); break;
   case ISD::INSERT_SUBVECTOR:  Res = SplitVecOp_INSERT_SUBVECTOR(N, OpNo); break;
@@ -3507,6 +3510,34 @@ SDValue DAGTypeLegalizer::SplitVecOp_VSETCC(SDNode *N) {
   return DAG.getNode(ExtendCode, DL, N->getValueType(0), Con);
 }
 
+#if SIFIVE_CUSTOMIZATION
+SDValue DAGTypeLegalizer::SplitVecOp_VP_SETCC(SDNode *N) {
+  assert(N->getValueType(0).isVector() &&
+         N->getOperand(0).getValueType().isVector() &&
+         "Operand types must be vectors");
+  // The result has a legal vector type, but the input needs splitting.
+  SDValue Lo0, Hi0, Lo1, Hi1, LoRes, HiRes;
+  SDLoc DL(N);
+  GetSplitVector(N->getOperand(0), Lo0, Hi0);
+  GetSplitVector(N->getOperand(1), Lo1, Hi1);
+  auto PartEltCnt = Lo0.getValueType().getVectorElementCount();
+
+  LLVMContext &Context = *DAG.getContext();
+  EVT PartResVT = EVT::getVectorVT(Context, MVT::i1, PartEltCnt);
+  EVT WideResVT = EVT::getVectorVT(Context, MVT::i1, PartEltCnt*2);
+
+  LoRes = DAG.getNode(ISD::VP_SETCC, DL, PartResVT, Lo0, Lo1, N->getOperand(2),
+                      N->getOperand(3), N->getOperand(4));
+  HiRes = DAG.getNode(ISD::VP_SETCC, DL, PartResVT, Hi0, Hi1, N->getOperand(2),
+                      N->getOperand(3), N->getOperand(4));
+  SDValue Con = DAG.getNode(ISD::CONCAT_VECTORS, DL, WideResVT, LoRes, HiRes);
+
+  EVT OpVT = N->getOperand(0).getValueType();
+  ISD::NodeType ExtendCode =
+      TargetLowering::getExtendForContent(TLI.getBooleanContents(OpVT));
+  return DAG.getNode(ExtendCode, DL, N->getValueType(0), Con);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGTypeLegalizer::SplitVecOp_FP_ROUND(SDNode *N) {
   // The result has a legal vector type, but the input needs splitting.

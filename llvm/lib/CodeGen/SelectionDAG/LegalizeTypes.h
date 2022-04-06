@@ -894,6 +894,9 @@ private:
   SDValue SplitVecOp_Gather(MemSDNode *MGT, unsigned OpNo);
   SDValue SplitVecOp_CONCAT_VECTORS(SDNode *N);
   SDValue SplitVecOp_VSETCC(SDNode *N);
+#if SIFIVE_CUSTOMIZATION
+  SDValue SplitVecOp_VP_SETCC(SDNode *N);
+#endif // SIFIVE_CUSTOMIZATION
   SDValue SplitVecOp_FP_ROUND(SDNode *N);
   SDValue SplitVecOp_FCOPYSIGN(SDNode *N);
   SDValue SplitVecOp_FP_TO_XINT_SAT(SDNode *N);
