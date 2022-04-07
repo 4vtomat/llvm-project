@@ -10416,17 +10416,16 @@ Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
       Builder.CreateZExtOrTrunc(RVL, Type::getInt64Ty(Builder.getContext()));
   unsigned SmallestType, WidestType;
   std::tie(SmallestType, WidestType) = Cost->getSmallestAndWidestTypes();
-  const std::map<unsigned, unsigned> SEWArgMap = {
-      {8, 0}, {16, 1}, {32, 2}, {64, 3}};
-  const std::map<unsigned, unsigned> LMULArgMap = {
-      {1, 0}, {2, 1}, {4, 2}, {8, 3}};
-  assert(SEWArgMap.find(WidestType) != SEWArgMap.end() &&
-         SEWArgMap.find(SmallestType) != SEWArgMap.end() &&
+  assert(SmallestType >= 8 && WidestType <= 64 &&
          "Cannot set vector length: Unsupported type");
-  SEW = SEW ? SEW : SEWArgMap.at(WidestType);
-  unsigned LMULVal =
-      (WidestType * VF.getKnownMinValue()) / TTI->getMaxElementWidth();
-  LMUL = LMUL ? LMUL : LMULArgMap.at(LMULVal);
+  SEW = SEW ? SEW : Log2_32(WidestType) - 3;
+  if (!LMUL) {
+    unsigned Numerator = WidestType * VF.getKnownMinValue();
+    unsigned Denominator = TTI->getMaxElementWidth();
+    LMUL = Numerator >= Denominator ? Log2_32(Numerator / Denominator)
+                                    : (8 - Log2_32(Denominator / Numerator));
+    assert(0 <= LMUL && LMUL <= 7 && "LMUL is not supported by the hardware");
+  }
   Constant *SEWArg =
       ConstantInt::get(IntegerType::get(Builder.getContext(), 64), SEW);
   Constant *LMULArg =
