@@ -127,7 +127,7 @@ RISCVTTIImpl::getIntImmCostIntrin(Intrinsic::ID IID, unsigned Idx,
 unsigned RISCVTTIImpl::getMaxElementWidth() const {
   // Returns ELEN. This is the value for which k-scale-factor would be one.
   // Current EPI implementation plans this to be 64. 
-  return 64;
+  return ST->hasVInstructionsI64() ? 64 : 32;
 }
 
 bool RISCVTTIImpl::preferPredicatedVectorOps() const {
