@@ -6117,6 +6117,37 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL, Policy}),
         DAG, Subtarget);
   }
+  case Intrinsic::aarch64_neon_sqabs: {
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src =
+        convertToScalableVector(VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    EVT SetccVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(),
+                                     Src.getValueType());
+    SDValue VsmulMask = DAG.getNode(
+        RISCVISD::SETCC_VL, DL, SetccVT,
+        {Src, DAG.getConstant(0, DL, Src.getValueType()),
+         DAG.getCondCode(ISD::SETLT), DAG.getUNDEF(SetccVT), Mask, VL});
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(
+            RISCVISD::VSMUL_VL, DL, VecVT,
+            {Src,
+             DAG.getNode(
+                 RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                 DAG.getSExtOrTrunc(
+                     DAG.getConstant(static_cast<uint64_t>(1)
+                                         << (VT.getScalarSizeInBits() - 1),
+                                     DL, VecVT.getScalarType()),
+                     DL, XLenVT),
+                 VL),
+             Src, VsmulMask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
 #endif
   }
 
