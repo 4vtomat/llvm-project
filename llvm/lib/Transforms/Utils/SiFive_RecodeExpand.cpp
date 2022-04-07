@@ -136,7 +136,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_sqadd:
   case Intrinsic::aarch64_neon_sqdmulh:
   case Intrinsic::aarch64_neon_sqrdmulh:
+  case Intrinsic::aarch64_neon_sqrshrun:
   case Intrinsic::aarch64_neon_sqshlu:
+  case Intrinsic::aarch64_neon_sqshrun:
   case Intrinsic::aarch64_neon_sqsub:
   case Intrinsic::aarch64_neon_sshl:
   case Intrinsic::aarch64_neon_st1x2:
@@ -689,6 +691,16 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             {II->getType()},
             {Smull,
              Builder.getInt32(II->getType()->getScalarSizeInBits() - 1)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_sqrshrun:
+      case Intrinsic::aarch64_neon_sqshrun: {
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            II->getIntrinsicID() == Intrinsic::aarch64_neon_sqrshrun
+                ? Intrinsic::aarch64_neon_uqrshrn
+                : Intrinsic::aarch64_neon_uqshrn,
+            {II->getType()},
+            {smaxZero(Builder, II->getArgOperand(0)), II->getArgOperand(1)}));
         break;
       }
       case Intrinsic::aarch64_neon_sqshlu: {
