@@ -191,10 +191,13 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   // valid range of VFs.
   SmallestType = std::max<unsigned>(8, SmallestType);
   WidestType = std::max<unsigned>(8, WidestType);
+  unsigned LMUL = PowerOf2Floor(
+      std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
+  unsigned MinRVVVectorSize = getRegisterBitWidth(K).getKnownMinValue() / LMUL;
+
   unsigned WidestRegister = std::min<unsigned>(
-      ST->getMinRVVVectorSizeInBits() * RegWidthFactor, MaxSafeRegisterWidth);
-  unsigned SmallestRegister =
-      std::min(ST->getMinRVVVectorSizeInBits(), MaxSafeRegisterWidth);
+      MinRVVVectorSize * RegWidthFactor, MaxSafeRegisterWidth);
+  unsigned SmallestRegister = std::min(MinRVVVectorSize, MaxSafeRegisterWidth);
 
   unsigned UpperBoundVFKnownMin =
       std::min<unsigned>(64, PowerOf2Floor(WidestRegister / WidestType));
