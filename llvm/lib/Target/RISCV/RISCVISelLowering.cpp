@@ -6043,6 +6043,28 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
                            TrueVal, FalseVal, ISD::SETNE);
   }
+  case Intrinsic::aarch64_neon_rshrn: {
+    MVT Op0VT = Op.getOperand(1).getSimpleValueType();
+    MVT Op0VecVT = getContainerForFixedLengthVector(Op0VT);
+    SDValue Op0 =
+        convertToScalableVector(Op0VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(Op0VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(Op0VT, Op0VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    SDValue Ssrl = convertFromScalableVector(
+        Op0VT,
+        DAG.getNode(
+            RISCVISD::VSSRL_VL, DL, Op0VecVT,
+            {Op0,
+             DAG.getNode(
+                 RISCVISD::VMV_V_X_VL, DL, Op0VecVT, DAG.getUNDEF(Op0VecVT),
+                 DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT), VL),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+    return DAG.getAnyExtOrTrunc(Ssrl, DL, Op.getSimpleValueType());
+  }
   case Intrinsic::aarch64_neon_shadd:
   case Intrinsic::aarch64_neon_shsub:
   case Intrinsic::aarch64_neon_srhadd:
