@@ -115,21 +115,8 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
       C = Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                           "vp.op.icmp");
     }
-    // The result of vp_icmp or vp_fcmp may contain lanes that are undef due
-    // to the mask. We don't need undef boolean values.
-    // Convert undef lanes to false by inserting a vp_merge.
-    Value *AllFalse = BuilderIR.getFalseVector(OpTy->getElementCount());
-    // FIXME: this currently is expanded to:
-    //    vsetvli zero, a2, e8, mf4, ta, mu
-    //    vmand.mm        v15, v15, v0
-    //    vmandn.mm       v16, v14, v0
-    //    vmor.mm v0, v15, v16
-    //    vsetvli zero, zero, e64, m2, ta, mu
-    Value *V = BuilderIR.CreateIntrinsic(Intrinsic::vp_merge, {C->getType()},
-                                         {MaskArg, C, AllFalse, EVLArg},
-                                         nullptr, "vp.op.merge");
 
-    State.set(Def, V, Part);
+    State.set(Def, C, Part);
     return;
   }
   case Instruction::SExt:
@@ -241,4 +228,22 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     return;
   }
   llvm_unreachable("Unexpected opcode.");
+}
+
+void VPAllTrueMaskRecipe::execute(VPTransformState &State) {
+
+  IRBuilderBase &BuilderIR = State.Builder;
+  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
+    State.set(this, BuilderIR.getTrueVector(State.VF), Part);
+  }
+}
+
+void VPAllTrueMaskRecipe::print(raw_ostream &O, const Twine &Indent,
+                                VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = ALL-TRUE-MASK  ";
+  assert(getNumOperands() == 1 &&
+         "VPAllTrueMaskRecipe should have one operand");
+  getOperand(0)->printAsOperand(O, SlotTracker);
 }

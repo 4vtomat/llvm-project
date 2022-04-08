@@ -110,6 +110,7 @@ public:
     VPVPredicatedWidenSC,
     VPVWidenEVLSC,
     VPVWidenEVLMaskSC,
+    VPVAllTrueMaskSC,
 #endif // SIFIVE_CUSTOMIZATION
 
     // Phi-like VPValues. Need to be kept together.
@@ -361,6 +362,7 @@ public:
     VPPredicatedWidenSC,
     VPWidenEVLSC,
     VPWidenEVLMaskSC,
+    VPAllTrueMaskSC,
 #endif // SIFIVE_CUSTOMIZATION
 
     // Phi-like recipes. Need to be kept together.

@@ -8781,6 +8781,12 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   VPValue *EdgeMask = Plan->getOrAddVPValue(BI->getCondition());
   assert(EdgeMask && "No Edge Mask found for condition");
 
+#if SIFIVE_CUSTOMIZATION
+  if (SrcMask && isa_and_nonnull<VPAllTrueMaskRecipe>(SrcMask->getDef())) {
+    return EdgeMaskCache[Edge] = EdgeMask;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   if (BI->getSuccessor(0) != Dst)
     EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
@@ -8849,12 +8855,20 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlanPtr &Plan) {
     VPBasicBlock *HeaderVPBB =
         Plan->getVectorLoopRegion()->getEntryBasicBlock();
     auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
-#if SIFIVE_CUSTOMIZATION
-    VPValue *IV = getOrCreateIV(Builder.getInsertBlock(), Plan);
-#endif // SIFIVE_CUSTOMIZATION
 
     VPBuilder::InsertPointGuard Guard(Builder);
     Builder.setInsertPoint(HeaderVPBB, NewInsertionPoint);
+#if SIFIVE_CUSTOMIZATION
+    // Reaching this point means user requested VLA vectorization. Since with
+    // VP-intrinsics masking by trip count introduces useless instructions that
+    // backend won't be able to cleanup, create all-ones mask instead.
+    if (Legal->preferPredicatedVectorOps()) {
+      auto *AllOnesRecipe = new VPAllTrueMaskRecipe(getOrCreateEVL(Plan));
+      Builder.getInsertBlock()->insert(AllOnesRecipe, Builder.getInsertPoint());
+      return BlockMaskCache[BB] = AllOnesRecipe;
+    }
+    VPValue *IV = getOrCreateIV(Builder.getInsertBlock(), Plan);
+#endif // SIFIVE_CUSTOMIZATION
     if (CM.TTI.emitGetActiveLaneMask()) {
       VPValue *TC = Plan->getOrCreateTripCount();
       BlockMask = Builder.createNaryOp(VPInstruction::ActiveLaneMask, {IV, TC});
