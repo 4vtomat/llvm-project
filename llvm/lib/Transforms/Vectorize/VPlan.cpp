@@ -804,11 +804,8 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       Value *EVLPhi = State.get(getOperand(3), Part);
 
       auto *IdxTy = Builder.getInt32Ty();
-      Value *Vlen = Builder.CreateVScale(
-          ConstantInt::get(IdxTy, State.VF.getKnownMinValue()));
-      Value *Shift = Builder.CreateSub(Vlen, ConstantInt::get(IdxTy, 1));
-      Value *Mask =
-          Builder.CreateVectorSplat(State.VF, ConstantInt::get(Builder.getInt1Ty(), 1));
+      Value *Shift = ConstantInt::get(IdxTy, -1);
+      Value *Mask = Builder.getTrueVector(State.VF);
 
       Value *Splice = Builder.CreateIntrinsic(
           Intrinsic::experimental_vp_splice,
@@ -1066,8 +1063,6 @@ void VPlan::execute(VPTransformState *State) {
   // phis in the vector loop.
   VPBasicBlock *Header = getVectorLoopRegion()->getEntryBasicBlock();
   for (VPRecipeBase &R : Header->phis()) {
-    // Skip phi-like recipes that generate their backedege values themselves.
-    if (isa<VPWidenPHIRecipe>(&R))
     // TODO: Model their backedge values explicitly.
 #if SIFIVE_CUSTOMIZATION
     if (auto *EVL = dyn_cast<VPEVLPHIRecipe>(&R)) {
@@ -1080,6 +1075,7 @@ void VPlan::execute(VPTransformState *State) {
     }
 #endif // SIFIVE_CUSTOMIZATION
 
+    // Skip phi-like recipes that generate their backedege values themselves.
     if (isa<VPWidenPHIRecipe>(&R))
       continue;
 

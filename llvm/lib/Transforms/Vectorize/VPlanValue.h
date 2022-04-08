@@ -371,11 +371,11 @@ public:
     VPWidenIntOrFpInductionSC,
     VPWidenPointerInductionSC,
     VPPredInstPHISC,
-    VPReductionPHISC,
 #if SIFIVE_CUSTOMIZATION
     VPPredicatedFirstOrderRecurrencePHISC,
     VPEVLPHISC,
 #endif // SIFIVE_CUSTOMIZATION
+    VPReductionPHISC,
     VPFirstPHISC = VPBlendSC,
     VPLastPHISC = VPReductionPHISC,
   };

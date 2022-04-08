@@ -9931,18 +9931,21 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
       RecurSplice->setOperand(0, RecurPhi);
     } else if (auto *RecurPhi =
                    dyn_cast<VPPredicatedFirstOrderRecurrencePHIRecipe>(&R)) {
+      VPRecipeBase *PrevRecipe = RecurPhi->getBackedgeRecipe();
+      VPBasicBlock *InsertBlock = PrevRecipe->getParent();
+      auto *Region = GetReplicateRegion(PrevRecipe);
+      if (Region)
+        InsertBlock = cast<VPBasicBlock>(Region->getSingleSuccessor());
+      if (Region || PrevRecipe->isPhi())
+        Builder.setInsertPoint(InsertBlock, InsertBlock->getFirstNonPhi());
+      else
+        Builder.setInsertPoint(InsertBlock, std::next(PrevRecipe->getIterator()));
+
       auto *RecurSplice = cast<VPInstruction>(Builder.createNaryOp(
           VPInstruction::PredicatedFirstOrderRecurrenceSplice,
           {RecurPhi, RecurPhi->getBackedgeValue(),
            RecipeBuilder.getOrCreateEVL(Plan)}));
 
-      VPRecipeBase *PrevRecipe = RecurPhi->getBackedgeRecipe();
-      if (auto *Region = GetReplicateRegion(PrevRecipe)) {
-        VPBasicBlock *Succ = cast<VPBasicBlock>(Region->getSingleSuccessor());
-        RecurSplice->moveBefore(*Succ, Succ->getFirstNonPhi());
-      } else {
-        RecurSplice->moveAfter(PrevRecipe);
-      }
       RecurPhi->replaceAllUsesWith(RecurSplice);
       // Set the first operand of RecurSplice to RecurPhi again, after replacing
       // all users.
