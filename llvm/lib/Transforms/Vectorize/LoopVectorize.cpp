@@ -10441,7 +10441,7 @@ Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
     unsigned Denominator = TTI->getMaxElementWidth();
     LMUL = Numerator >= Denominator ? Log2_32(Numerator / Denominator)
                                     : (8 - Log2_32(Denominator / Numerator));
-    assert(0 <= LMUL && LMUL <= 7 && "LMUL is not supported by the hardware");
+    assert(LMUL <= 7 && "LMUL is not supported by the hardware");
   }
   Constant *SEWArg =
       ConstantInt::get(IntegerType::get(Builder.getContext(), 64), SEW);
