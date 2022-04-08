@@ -450,6 +450,23 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
+                                                 Type *CondTy,
+                                                 CmpInst::Predicate VecPred,
+                                                 TTI::TargetCostKind CostKind,
+                                                 const Instruction *I) {
+  // FIXME: Revisit this code when we start to tune vectorizer's cost model
+  if (isa<ScalableVectorType>(ValTy)) {
+    std::pair<InstructionCost, MVT> LT =
+        TLI->getTypeLegalizationCost(DL, ValTy);
+    if (!LT.first.isValid())
+      return InstructionCost::getInvalid();
+    return LT.first;
+  }
+  return BaseT::getCmpSelInstrCost(Opcode, ValTy, CondTy, VecPred, CostKind, I);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
                                                Type *Src,

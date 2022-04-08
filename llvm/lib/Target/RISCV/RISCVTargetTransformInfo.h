@@ -173,6 +173,13 @@ public:
                                          TTI::TargetCostKind CostKind,
                                          const Instruction *I);
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
+                                     CmpInst::Predicate VecPred,
+                                     TTI::TargetCostKind CostKind,
+                                     const Instruction *I = nullptr);
+#endif // SIFIVE_CUSTOMIZATION
+
   InstructionCost getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
                                    TTI::CastContextHint CCH,
                                    TTI::TargetCostKind CostKind,
