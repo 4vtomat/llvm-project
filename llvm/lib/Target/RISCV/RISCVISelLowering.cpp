@@ -8698,6 +8698,9 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Reassociate (add X, (add Y, SImm12)) -> (add (add X, Y), SImm12) if the
+// the result is only used by scalar loads/stores. This allows the SImm12 to
+// be folded into the load/store instruction address in isel.
 static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
                                        SelectionDAG &DAG,
                                        const RISCVSubtarget &Subtarget) {
@@ -8716,7 +8719,7 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   SDValue N00 = N0.getOperand(0);
   SDValue N01 = N0.getOperand(1);
 
-  // RHS should be a Simm12.
+  // RHS should be a SImm12.
   if (!isInt<12>(cast<ConstantSDNode>(N01)->getSExtValue()))
     return SDValue();
 
