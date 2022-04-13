@@ -8697,8 +8697,60 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ADD, DL, VT, New1, DAG.getConstant(CB, DL, VT));
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
+                                       SelectionDAG &DAG,
+                                       const RISCVSubtarget &Subtarget) {
+  assert(N->getOpcode() == ISD::ADD && "Unexpected opcode");
+
+  EVT VT = N->getValueType(0);
+
+  // Skip if not pointer sized.
+  if (VT != Subtarget.getXLenVT())
+    return SDValue();
+
+  // Look for an ADD with immediate or OR that can be treated like ADD.
+  if (!DAG.isBaseWithConstantOffset(N0))
+    return SDValue();
+
+  SDValue N00 = N0.getOperand(0);
+  SDValue N01 = N0.getOperand(1);
+
+  // RHS should be a Simm12.
+  if (!isInt<12>(cast<ConstantSDNode>(N01)->getSExtValue()))
+    return SDValue();
+
+  // Users should be base pointer operand of scalar loads and stores that can
+  // fold the immediate into the addressing.
+  for (auto UI = N->use_begin(), UE = N->use_end(); UI != UE; ++UI) {
+    if (UI->getOpcode() == ISD::STORE && UI.getOperandNo() == 2 &&
+        !UI->getOperand(1).getValueType().isVector())
+      continue;
+    if (UI->getOpcode() == ISD::LOAD && UI.getOperandNo() == 1 &&
+        !UI->getValueType(0).isVector())
+      continue;
+    return SDValue();
+  }
+
+  // Do the reassociation.
+  SDLoc dl(N);
+  SDValue OpNode = DAG.getNode(ISD::ADD, dl, VT, N00, N1);
+  return DAG.getNode(ISD::ADD, dl, VT, OpNode, N01);
+}
+#endif
+
 static SDValue performADDCombine(SDNode *N, SelectionDAG &DAG,
                                  const RISCVSubtarget &Subtarget) {
+#if SIFIVE_CUSTOMIZATION
+  {
+    SDValue N0 = N->getOperand(0);
+    SDValue N1 = N->getOperand(1);
+    if (SDValue V = reassociateAddressArith(N, N0, N1, DAG, Subtarget))
+      return V;
+    if (SDValue V = reassociateAddressArith(N, N1, N0, DAG, Subtarget))
+      return V;
+  }
+#endif
   if (SDValue V = transformAddImmMulImm(N, DAG, Subtarget))
     return V;
   if (SDValue V = transformAddShlImm(N, DAG, Subtarget))
