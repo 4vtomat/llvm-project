@@ -1639,9 +1639,6 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
                         PGOOpt->ProfileRemappingFile);
   }
 
-  // Break up allocas
-  FPM.addPass(SROAPass());
-
   // LTO provides additional opportunities for tailcall elimination due to
   // link-time inlining, and visibility of nocapture attribute.
   FPM.addPass(TailCallElimPass());
@@ -1661,7 +1658,14 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   MPM.addPass(
       createModuleToFunctionPassAdaptor(InvalidateAnalysisPass<AAManager>()));
 
+#if SIFIVE_CUSTOMIZATION
+  MPM.addPass(LoopDataLayoutPass());
+#endif
+
   FunctionPassManager MainFPM;
+
+  // Break up allocas
+  MainFPM.addPass(SROAPass());
   MainFPM.addPass(createFunctionToLoopPassAdaptor(
       LICMPass(PTO.LicmMssaOptCap, PTO.LicmMssaNoAccForPromotionCap,
                /*AllowSpeculation=*/true),
@@ -1689,10 +1693,6 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   LPM.addPass(IndVarSimplifyPass());
   LPM.addPass(LoopDeletionPass());
   // FIXME: Add loop interchange.
-
-#if SIFIVE_CUSTOMIZATION
-  MPM.addPass(LoopDataLayoutPass());
-#endif
 
   // Unroll small loops and perform peeling.
   LPM.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
