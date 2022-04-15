@@ -647,9 +647,7 @@ public:
     return IsConstantImm && isUInt<N>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
   }
 
-#if SIFIVE_CUSTOMIZATION
   bool isUImm1() const { return IsUImm<1>(); }
-#endif // SIFIVE_CUSTOMIZATION
   bool isUImm2() const { return IsUImm<2>(); }
   bool isUImm3() const { return IsUImm<3>(); }
   bool isUImm4() const { return IsUImm<4>(); }
@@ -1391,10 +1389,8 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     if (isRV64())
       return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 5) - 1);
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 4) - 1);
-#if SIFIVE_CUSTOMIZATION
   case Match_InvalidUImm1:
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 1) - 1);
-#endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidUImm2:
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 2) - 1);
   case Match_InvalidUImm2Lsb0:
@@ -3413,10 +3409,8 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
   if (!(MCID.TSFlags & RISCVII::ConstraintMask))
     return false;
 
-#if SIFIVE_CUSTOMIZATION
-  unsigned VCIXOpcode = Inst.getOpcode();
-  if (VCIXOpcode == RISCV::VC_V_XVW || VCIXOpcode == RISCV::VC_V_IVW ||
-      VCIXOpcode == RISCV::VC_V_FVW || VCIXOpcode == RISCV::VC_V_VVW) {
+  if (Opcode == RISCV::VC_V_XVW || Opcode == RISCV::VC_V_IVW ||
+      Opcode == RISCV::VC_V_FVW || Opcode == RISCV::VC_V_VVW) {
     // Operands Opcode, Dst, uimm, Dst, Rs2, Rs1 for VC_V_XVW.
     unsigned VCIXDst = Inst.getOperand(0).getReg();
     SMLoc VCIXDstLoc = Operands[2]->getStartLoc();
@@ -3432,9 +3426,8 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
         return Error(VCIXDstLoc, "The destination vector register group cannot"
                                  " overlap the source vector register group.");
     }
+    return false;
   }
-  else {
-#endif // SIFIVE_CUSTOMIZATION
 
   unsigned DestReg = Inst.getOperand(0).getReg();
   // Operands[1] will be the first operand, DestReg.
@@ -3473,10 +3466,6 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
       return Error(Loc, "The destination vector register group cannot overlap"
                         " the mask register.");
   }
-
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   return false;
 }

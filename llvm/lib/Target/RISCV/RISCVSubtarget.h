@@ -214,7 +214,6 @@ public:
   bool hasVInstructionsF64() const { return HasStdExtZve64d && HasStdExtD; }
 #if SIFIVE_CUSTOMIZATION
   bool hasVInstructionsBF16() const { return HasExtXsfvfhbfmin || HasExtXsfvfwmaccqqq; }
-  bool hasXsfvcpInstructions() const { return HasExtXsfvcp; }
 #endif // SIFIVE_CUSTOMIZATION
   // F16 and F64 both require F32.
   bool hasVInstructionsAnyF() const { return hasVInstructionsF32(); }

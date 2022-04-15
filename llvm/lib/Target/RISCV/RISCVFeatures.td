@@ -877,6 +877,14 @@ def HasVendorXTHeadVdot : Predicate<"Subtarget->hasVendorXTHeadVdot()">,
                                     AssemblerPredicate<(all_of FeatureVendorXTHeadVdot),
                                     "'xtheadvdot' (T-Head Vector Extensions for Dot)">;
 
+def FeatureVendorXSfvcp
+    : SubtargetFeature<"xsfvcp", "HasVendorXSfvcp", "true",
+                       "XSfvcp (SiFive Custom Vector Coprocessor Interface Instructions)",
+                       [FeatureStdExtZve32x]>;
+def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
+                                AssemblerPredicate<(all_of FeatureVendorXSfvcp),
+                                "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
+
 //===----------------------------------------------------------------------===//
 // LLVM specific features and extensions
 //===----------------------------------------------------------------------===//
@@ -932,14 +940,6 @@ def FeatureStdExtXsfvfnrclipxfqf
 def HasExtXsfvfnrclipxfqf : Predicate<"Subtarget->hasExtXsfvfnrclipxfqf()">,
                             AssemblerPredicate<(all_of FeatureStdExtXsfvfnrclipxfqf),
                             "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
-
-def FeatureStdExtXsfvcp
-    : SubtargetFeature<"xsfvcp", "HasExtXsfvcp", "true",
-                       "Xsfvcp (Support SiFive custom vector coprocessor interface instructions)",
-                       []>; // FIXME: Need which implication?
-def HasExtXsfvcp : Predicate<"Subtarget->hasExtXsfvcp()">,
-                             AssemblerPredicate<(all_of FeatureStdExtXsfvcp),
-                             "'Xsfvcp' (SiFive custom vector coprocessor interface instructions)">;
 
 def FeatureStdExtZicclsm
     : SubtargetFeature<"zicclsm", "HasStdExtZicclsm", "true",

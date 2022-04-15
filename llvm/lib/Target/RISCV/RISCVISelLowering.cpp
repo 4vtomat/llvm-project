@@ -573,15 +573,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::INTRINSIC_W_CHAIN, ISD::INTRINSIC_VOID},
                        MVT::Other, Custom);
 
-#if SIFIVE_CUSTOMIZATION
-    if (Subtarget.hasXsfvcpInstructions()) {
-      setOperationAction(ISD::INTRINSIC_VOID, MVT::i8, Custom);
-      setOperationAction(ISD::INTRINSIC_VOID, MVT::i16, Custom);
-      if (Subtarget.is64Bit())
-        setOperationAction(ISD::INTRINSIC_VOID, MVT::i32, Custom);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-
     // EXPERIMENTAL_VP_REVERSE copied from BSC.
     static const unsigned IntegerVPOps[] = {
         ISD::VP_ADD,         ISD::VP_SUB,         ISD::VP_MUL,

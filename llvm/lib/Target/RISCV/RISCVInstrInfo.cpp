@@ -1827,6 +1827,7 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
   case RISCVOp::OPERAND_UIMM##NUM:                                             \
     Ok = isUInt<NUM>(Imm);                                                     \
     break;
+        CASE_OPERAND_UIMM(1)
         CASE_OPERAND_UIMM(2)
         CASE_OPERAND_UIMM(3)
         CASE_OPERAND_UIMM(4)
@@ -1902,11 +1903,6 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_RVKRNUM:
           Ok = Imm >= 0 && Imm <= 10;
           break;
-#if SIFIVE_CUSTOMIZATION
-        case RISCVOp::OPERAND_UIMM1:
-          Ok = isUInt<1>(Imm);
-          break;
-#endif // SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_RVKRNUM_0_7:
           Ok = Imm >= 0 && Imm <= 7;
           break;

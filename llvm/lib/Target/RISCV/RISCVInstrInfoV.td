@@ -1776,6 +1776,5 @@ let Predicates = [HasVInstructionsI64, IsRV64] in {
   }
 } // Predicates = [HasVInstructionsI64, IsRV64]
 
-include "SiFive_RISCVInstrInfoXsf.td" // SIFIVE
 include "RISCVInstrInfoZvk.td"
 include "RISCVInstrInfoVPseudos.td"
