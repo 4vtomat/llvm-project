@@ -119,6 +119,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}},
     {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}},
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}},
+    {"xsfvcp", RISCVExtensionVersion{0, 1}},
 #endif // SIFIVE_CUSTOMIZATION
 };
 

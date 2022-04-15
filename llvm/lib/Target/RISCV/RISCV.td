@@ -454,6 +454,14 @@ def FeatureStdExtXsfvfnrclipxfqf
 def HasExtXsfvfnrclipxfqf : Predicate<"Subtarget->hasExtXsfvfnrclipxfqf()">,
                             AssemblerPredicate<(all_of FeatureStdExtXsfvfnrclipxfqf),
                             "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
+
+def FeatureStdExtXsfvcp
+    : SubtargetFeature<"xsfvcp", "HasExtXsfvcp", "true",
+                       "Xsfvcp (Support SiFive custom vector coprocessor interface instructions)",
+                       []>; // FIXME: Need which implication?
+def HasExtXsfvcp : Predicate<"Subtarget->hasExtXsfvcp()">,
+                             AssemblerPredicate<(all_of FeatureStdExtXsfvcp),
+                             "'Xsfvcp' (SiFive custom vector coprocessor interface instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
