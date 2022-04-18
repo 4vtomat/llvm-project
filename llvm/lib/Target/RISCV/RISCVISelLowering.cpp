@@ -8726,6 +8726,11 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   if (VT != Subtarget.getXLenVT())
     return SDValue();
 
+  // Don't reassociate if we're just exchanging ADDIs. It can cause infinite
+  // loops.
+  if (isa<ConstantSDNode>(N1))
+    return SDValue();
+
   // Look for an ADD with immediate or OR that can be treated like ADD.
   if (!DAG.isBaseWithConstantOffset(N0))
     return SDValue();
