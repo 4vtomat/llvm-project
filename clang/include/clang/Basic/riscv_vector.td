@@ -1397,16 +1397,18 @@ multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
+#ifdef SIFIVE_CUSTOMIZATION
+      UnMaskedPolicy = HasPassthruOperand,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-        // op1, vl
-        IntrinsicTypes = {ResultType,
-                          cast<llvm::VectorType>(ResultType)->getElementType(),
-                          Ops[1]->getType()};
 #ifdef SIFIVE_CUSTOMIZATION
-        Ops.insert(Ops.begin() + 1, llvm::Constant::getNullValue(IntrinsicTypes[1]));
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
+        // passthru, op1, op2, vl
+        IntrinsicTypes = {ResultType, ElemTy, Ops[3]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1415,16 +1417,14 @@ multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
 #ifdef SIFIVE_CUSTOMIZATION
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
-        // maskedoff, op1, mask, vl
-        IntrinsicTypes = {ResultType,
-                          cast<llvm::VectorType>(ResultType)->getElementType(),
-                          Ops[3]->getType()};
-        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(IntrinsicTypes[1]));
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
+        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
+        // maskedoff, op1, op2, mask, vl, policy
+        IntrinsicTypes = {ResultType, ElemTy, Ops[4]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1437,17 +1437,21 @@ multiclass RVVPseudoVNotBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
+#ifdef SIFIVE_CUSTOMIZATION
+      UnMaskedPolicy = HasPassthruOperand,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-        // op1, vl
-        IntrinsicTypes = {ResultType,
-                          cast<llvm::VectorType>(ResultType)->getElementType(),
-                          Ops[1]->getType()};
-        Ops.insert(Ops.begin() + 1,
-                   llvm::Constant::getAllOnesValue(IntrinsicTypes[1]));
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
+        Ops.insert(Ops.begin() + 2,
+                   llvm::Constant::getAllOnesValue(ElemTy));
+        // passthru, op1, op2, vl
+        IntrinsicTypes = {ResultType,
+                          ElemTy,
+                          Ops[3]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1455,16 +1459,17 @@ multiclass RVVPseudoVNotBuiltin<string IR, string type_range> {
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), TAIL_UNDISTURBED));
-        // maskedoff, op1, mask, vl
-        IntrinsicTypes = {ResultType,
-                          cast<llvm::VectorType>(ResultType)->getElementType(),
-                          Ops[3]->getType()};
-        Ops.insert(Ops.begin() + 2,
-                   llvm::Constant::getAllOnesValue(IntrinsicTypes[1]));
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
+        Ops.insert(Ops.begin() + 2,
+                   llvm::Constant::getAllOnesValue(ElemTy));
+        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
+        // maskedoff, op1, op2, mask, vl, policy
+        IntrinsicTypes = {ResultType,
+                          ElemTy,
+                          Ops[4]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1495,15 +1500,19 @@ multiclass RVVPseudoVFUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
+#ifdef SIFIVE_CUSTOMIZATION
+      UnMaskedPolicy = HasPassthruOperand,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-        // op1, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[0]->getType(), Ops[1]->getType()};
-        Ops.insert(Ops.begin() + 1, Ops[0]);
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+
+        // op1, op2, vl
+        IntrinsicTypes = {ResultType,
+                          Ops[1]->getType(), Ops[2]->getType()};
+        Ops.insert(Ops.begin() + 2, Ops[1]);
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1511,15 +1520,16 @@ multiclass RVVPseudoVFUnaryBuiltin<string IR, string type_range> {
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), TAIL_UNDISTURBED));
-        // maskedoff, op1, mask, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[1]->getType(),
-                          Ops[3]->getType()};
-        Ops.insert(Ops.begin() + 2, Ops[1]);
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+
+        Ops.insert(Ops.begin() + 2, Ops[1]);
+        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
+        // maskedoff, op1, op2, mask, vl
+        IntrinsicTypes = {ResultType,
+                          Ops[2]->getType(),
+                          Ops.back()->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1534,17 +1544,21 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
       OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
+#ifdef SIFIVE_CUSTOMIZATION
+      UnMaskedPolicy = HasPassthruOperand,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-        // op1, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[0]->getType(),
-                          cast<llvm::VectorType>(Ops[0]->getType())->getElementType(),
-                          Ops[1]->getType()};
-        Ops.insert(Ops.begin() + 1, llvm::Constant::getNullValue(IntrinsicTypes[2]));
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
+        // passtru, op1, op2, vl
+        IntrinsicTypes = {ResultType,
+                          Ops[1]->getType(),
+                          ElemTy,
+                          Ops[3]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1552,16 +1566,17 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), TAIL_UNDISTURBED));
-        // maskedoff, op1, mask, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[1]->getType(),
-                          cast<llvm::VectorType>(Ops[1]->getType())->getElementType(),
-                          Ops[3]->getType()};
-        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(IntrinsicTypes[2]));
 #ifdef SIFIVE_CUSTOMIZATION
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
+        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
+        // maskedoff, op1, op2, mask, vl, policy
+        IntrinsicTypes = {ResultType,
+                          Ops[1]->getType(),
+                          ElemTy,
+                          Ops[4]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1578,17 +1593,20 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
       OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
+#ifdef SIFIVE_CUSTOMIZATION
+      UnMaskedPolicy = HasPassthruOperand,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-        // op1, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[0]->getType(),
-                          Ops[1]->getType(),
-                          Ops[1]->getType()};
-        Ops.insert(Ops.begin() + 1, llvm::Constant::getNullValue(IntrinsicTypes[2]));
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(Ops.back()->getType()));
+        // passthru, op1, xlen, vl
+        IntrinsicTypes = {ResultType,
+                          Ops[1]->getType(),
+                          Ops[3]->getType(),
+                          Ops[3]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
@@ -1596,16 +1614,16 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), TAIL_UNDISTURBED));
-        // maskedoff, op1, mask, vl
-        IntrinsicTypes = {ResultType,
-                          Ops[1]->getType(),
-                          Ops[3]->getType(),
-                          Ops[3]->getType()};
-        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(IntrinsicTypes[2]));
 #ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(Ops.back()->getType()));
+        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
+        // maskedoff, op1, xlen, mask, vl
+        IntrinsicTypes = {ResultType,
+                          Ops[1]->getType(),
+                          Ops[4]->getType(),
+                          Ops[4]->getType()};
 #endif // SIFIVE_CUSTOMIZATION
         break;
       }
