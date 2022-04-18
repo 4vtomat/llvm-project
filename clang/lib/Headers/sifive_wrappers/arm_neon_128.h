@@ -1,4 +1,4 @@
-// 9650452edc99340fd7a14b009026e1085c64162d
+// 520f025217d8b4fe3e73c3c6fd8d0c19899fd3a5
 // ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -17629,13 +17629,11 @@ __attribute__((always_inline)) inline int16x4_t vqdmulh_s16(int16x4_t a, int16x4
 {
 	vint16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16mf2(a);
 	vint16mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i16mf2(b);
-	vint32m1_t temp_2 = vwmul(temp_0, temp_1, 4);
-	vint32m1_t temp_3 = vsadd(temp_2, temp_2, 4);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
-	vint16mf2_t temp_5 = vnclip(temp_3, 16, 4);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_5);
+	vint16mf2_t temp_3 = vnclip(vwmul(temp_0, temp_1, 4), 15, 4);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqdmulh_s16") int16x4_t vqdmulh_s16(int16x4_t a, int16x4_t b);
@@ -17645,13 +17643,11 @@ __attribute__((always_inline)) inline int32x2_t vqdmulh_s32(int32x2_t a, int32x2
 {
 	vint32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32mf2(a);
 	vint32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i32mf2(b);
-	vint64m1_t temp_2 = vwmul(temp_0, temp_1, 2);
-	vint64m1_t temp_3 = vsadd(temp_2, temp_2, 2);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
-	vint32mf2_t temp_5 = vnclip(temp_3, 32, 2);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_5);
+	vint32mf2_t temp_3 = vnclip(vwmul(temp_0, temp_1, 2), 31, 2);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqdmulh_s32") int32x2_t vqdmulh_s32(int32x2_t a, int32x2_t b);
@@ -17670,13 +17666,11 @@ __attribute__((always_inline)) inline int16x8_t vqdmulhq_s16(int16x8_t a, int16x
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i16m1(b);
-	vint32m2_t temp_2 = vwmul(temp_0, temp_1, 8);
-	vint32m2_t temp_3 = vsadd(temp_2, temp_2, 8);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
-	vint16m1_t temp_5 = vnclip(temp_3, 16, 8);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_5);
+	vint16m1_t temp_3 = vnclip(vwmul(temp_0, temp_1, 8), 15, 8);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqdmulhq_s16") int16x8_t vqdmulhq_s16(int16x8_t a, int16x8_t b);
@@ -17686,13 +17680,11 @@ __attribute__((always_inline)) inline int32x4_t vqdmulhq_s32(int32x4_t a, int32x
 {
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i32m1(b);
-	vint64m2_t temp_2 = vwmul(temp_0, temp_1, 4);
-	vint64m2_t temp_3 = vsadd(temp_2, temp_2, 4);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_DOWNWARD);
-	vint32m1_t temp_5 = vnclip(temp_3, 32, 4);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_5);
+	vint32m1_t temp_3 = vnclip(vwmul(temp_0, temp_1, 4), 31, 4);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqdmulhq_s32") int32x4_t vqdmulhq_s32(int32x4_t a, int32x4_t b);
@@ -18069,13 +18061,11 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_laneq_s32") int32x2_t vqrdmulh_laneq_s32(i
 __attribute__((always_inline)) inline int16x4_t vqrdmulh_n_s16(int16x4_t a, int16_t b)
 {
 	vint16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16mf2(a);
-	vint32m1_t temp_1 = vwmul(temp_0, b, 4);
-	vint32m1_t temp_2 = vsadd(temp_1, temp_1, 4);
-	size_t temp_3 = __builtin_rvv_vgetvxrm();
+	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint16mf2_t temp_4 = vnclip(temp_2, 16, 4);
-	__builtin_rvv_vsetvxrm(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_4);
+	vint16mf2_t temp_2 = vnclip(vwmul(temp_0, b, 4), 15, 4);
+	__builtin_rvv_vsetvxrm(temp_1);
+	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_2);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_n_s16") int16x4_t vqrdmulh_n_s16(int16x4_t a, int16_t b);
@@ -18084,13 +18074,11 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_n_s16") int16x4_t vqrdmulh_n_s16(int16x4_t
 __attribute__((always_inline)) inline int32x2_t vqrdmulh_n_s32(int32x2_t a, int32_t b)
 {
 	vint32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32mf2(a);
-	vint64m1_t temp_1 = vwmul(temp_0, b, 2);
-	vint64m1_t temp_2 = vsadd(temp_1, temp_1, 2);
-	size_t temp_3 = __builtin_rvv_vgetvxrm();
+	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint32mf2_t temp_4 = vnclip(temp_2, 32, 2);
-	__builtin_rvv_vsetvxrm(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_4);
+	vint32mf2_t temp_2 = vnclip(vwmul(temp_0, b, 2), 31, 2);
+	__builtin_rvv_vsetvxrm(temp_1);
+	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_2);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_n_s32") int32x2_t vqrdmulh_n_s32(int32x2_t a, int32_t b);
@@ -18100,13 +18088,11 @@ __attribute__((always_inline)) inline int16x4_t vqrdmulh_s16(int16x4_t a, int16x
 {
 	vint16mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16mf2(a);
 	vint16mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i16mf2(b);
-	vint32m1_t temp_2 = vwmul(temp_0, temp_1, 4);
-	vint32m1_t temp_3 = vsadd(temp_2, temp_2, 4);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint16mf2_t temp_5 = vnclip(temp_3, 16, 4);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_5);
+	vint16mf2_t temp_3 = vnclip(vwmul(temp_0, temp_1, 4), 15, 4);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i16mf2(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_s16") int16x4_t vqrdmulh_s16(int16x4_t a, int16x4_t b);
@@ -18116,13 +18102,11 @@ __attribute__((always_inline)) inline int32x2_t vqrdmulh_s32(int32x2_t a, int32x
 {
 	vint32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32mf2(a);
 	vint32mf2_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i32mf2(b);
-	vint64m1_t temp_2 = vwmul(temp_0, temp_1, 2);
-	vint64m1_t temp_3 = vsadd(temp_2, temp_2, 2);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint32mf2_t temp_5 = vnclip(temp_3, 32, 2);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_5);
+	vint32mf2_t temp_3 = vnclip(vwmul(temp_0, temp_1, 2), 31, 2);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i32mf2(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulh_s32") int32x2_t vqrdmulh_s32(int32x2_t a, int32x2_t b);
@@ -18138,13 +18122,11 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_laneq_s32") int32x4_t vqrdmulhq_laneq_s32
 __attribute__((always_inline)) inline int16x8_t vqrdmulhq_n_s16(int16x8_t a, int16_t b)
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16m1(a);
-	vint32m2_t temp_1 = vwmul(temp_0, b, 8);
-	vint32m2_t temp_2 = vsadd(temp_1, temp_1, 8);
-	size_t temp_3 = __builtin_rvv_vgetvxrm();
+	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint16m1_t temp_4 = vnclip(temp_2, 16, 8);
-	__builtin_rvv_vsetvxrm(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_4);
+	vint16m1_t temp_2 = vnclip(vwmul(temp_0, b, 8), 15, 8);
+	__builtin_rvv_vsetvxrm(temp_1);
+	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_2);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_n_s16") int16x8_t vqrdmulhq_n_s16(int16x8_t a, int16_t b);
@@ -18153,13 +18135,11 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_n_s16") int16x8_t vqrdmulhq_n_s16(int16x8
 __attribute__((always_inline)) inline int32x4_t vqrdmulhq_n_s32(int32x4_t a, int32_t b)
 {
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32m1(a);
-	vint64m2_t temp_1 = vwmul(temp_0, b, 4);
-	vint64m2_t temp_2 = vsadd(temp_1, temp_1, 4);
-	size_t temp_3 = __builtin_rvv_vgetvxrm();
+	size_t temp_1 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint32m1_t temp_4 = vnclip(temp_2, 32, 4);
-	__builtin_rvv_vsetvxrm(temp_3);
-	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_4);
+	vint32m1_t temp_2 = vnclip(vwmul(temp_0, b, 4), 31, 4);
+	__builtin_rvv_vsetvxrm(temp_1);
+	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_2);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_n_s32") int32x4_t vqrdmulhq_n_s32(int32x4_t a, int32_t b);
@@ -18169,13 +18149,11 @@ __attribute__((always_inline)) inline int16x8_t vqrdmulhq_s16(int16x8_t a, int16
 {
 	vint16m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i16m1(a);
 	vint16m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i16m1(b);
-	vint32m2_t temp_2 = vwmul(temp_0, temp_1, 8);
-	vint32m2_t temp_3 = vsadd(temp_2, temp_2, 8);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint16m1_t temp_5 = vnclip(temp_3, 16, 8);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_5);
+	vint16m1_t temp_3 = vnclip(vwmul(temp_0, temp_1, 8), 15, 8);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i16m1(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_s16") int16x8_t vqrdmulhq_s16(int16x8_t a, int16x8_t b);
@@ -18185,13 +18163,11 @@ __attribute__((always_inline)) inline int32x4_t vqrdmulhq_s32(int32x4_t a, int32
 {
 	vint32m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32m1(a);
 	vint32m1_t temp_1 = __builtin_rvv_vcast_from_fixed_128_i32m1(b);
-	vint64m2_t temp_2 = vwmul(temp_0, temp_1, 4);
-	vint64m2_t temp_3 = vsadd(temp_2, temp_2, 4);
-	size_t temp_4 = __builtin_rvv_vgetvxrm();
+	size_t temp_2 = __builtin_rvv_vgetvxrm();
 	__builtin_rvv_vsetvxrm(VE_TONEARESTUP);
-	vint32m1_t temp_5 = vnclip(temp_3, 32, 4);
-	__builtin_rvv_vsetvxrm(temp_4);
-	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_5);
+	vint32m1_t temp_3 = vnclip(vwmul(temp_0, temp_1, 4), 31, 4);
+	__builtin_rvv_vsetvxrm(temp_2);
+	return __builtin_rvv_vcast_to_fixed_128_i32m1(temp_3);
 }
 #else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqrdmulhq_s32") int32x4_t vqrdmulhq_s32(int32x4_t a, int32x4_t b);
