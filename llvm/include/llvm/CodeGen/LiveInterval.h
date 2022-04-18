@@ -624,9 +624,12 @@ namespace llvm {
       while (Idx != EndIdx && Seg != EndSeg) {
         // if the Seg is lower find first segment that is above Idx using binary
         // search
+#if SIFIVE_CUSTOMIZATION
+        // FIXME: Temp fix before update from trunk is merge to fix a C++ bug.
         if (Seg->end <= *Idx) {
           Seg =
               std::upper_bound(++Seg, EndSeg, *Idx, [=](auto V, const auto &S) {
+#endif // SIFIVE_CUSTOMIZATION
                 return V < S.end;
               });
           if (Seg == EndSeg)
