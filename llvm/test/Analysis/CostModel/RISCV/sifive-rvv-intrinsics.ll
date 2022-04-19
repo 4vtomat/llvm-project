@@ -12,6 +12,8 @@ define void @unsupported_fp_ops(<vscale x 4 x float> %vec) {
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %log = call <vscale x 4 x float> @llvm.log.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %log2 = call <vscale x 4 x float> @llvm.log2.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %log10 = call <vscale x 4 x float> @llvm.log10.nxv4f32(<vscale x 4 x float> %vec)
+; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %rint = call <vscale x 4 x float> @llvm.rint.nxv4f32(<vscale x 4 x float> %vec)
+; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %nearbyint = call <vscale x 4 x float> @llvm.nearbyint.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
 ;
 
@@ -24,6 +26,8 @@ define void @unsupported_fp_ops(<vscale x 4 x float> %vec) {
   %log = call <vscale x 4 x float> @llvm.log.nxv4f32(<vscale x 4 x float> %vec)
   %log2 = call <vscale x 4 x float> @llvm.log2.nxv4f32(<vscale x 4 x float> %vec)
   %log10 = call <vscale x 4 x float> @llvm.log10.nxv4f32(<vscale x 4 x float> %vec)
+  %rint = call <vscale x 4 x float> @llvm.rint.nxv4f32(<vscale x 4 x float> %vec)
+  %nearbyint = call <vscale x 4 x float> @llvm.nearbyint.nxv4f32(<vscale x 4 x float> %vec)
   ret void
 }
 
@@ -36,3 +40,5 @@ declare <vscale x 4 x float> @llvm.exp2.nxv4f32(<vscale x 4 x float>)
 declare <vscale x 4 x float> @llvm.log.nxv4f32(<vscale x 4 x float>)
 declare <vscale x 4 x float> @llvm.log2.nxv4f32(<vscale x 4 x float>)
 declare <vscale x 4 x float> @llvm.log10.nxv4f32(<vscale x 4 x float>)
+declare <vscale x 4 x float> @llvm.rint.nxv4f32(<vscale x 4 x float>)
+declare <vscale x 4 x float> @llvm.nearbyint.nxv4f32(<vscale x 4 x float>)

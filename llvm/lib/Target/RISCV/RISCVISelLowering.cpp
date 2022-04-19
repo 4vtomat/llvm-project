@@ -757,6 +757,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::FLOG, VT, Expand);
       setOperationAction(ISD::FLOG2, VT, Expand);
       setOperationAction(ISD::FLOG10, VT, Expand);
+      setOperationAction(ISD::FRINT, VT, Expand);
+      setOperationAction(ISD::FNEARBYINT, VT, Expand);
 #endif // SIFIVE_CUSTOMIZATION
 
       setOperationAction({ISD::VECREDUCE_FADD, ISD::VECREDUCE_SEQ_FADD,
