@@ -8782,13 +8782,16 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   assert(EdgeMask && "No Edge Mask found for condition");
 
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: Need to emit predicated code here.
+#endif // SIFIVE_CUSTOMIZATION
+  if (BI->getSuccessor(0) != Dst)
+    EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
+
+#if SIFIVE_CUSTOMIZATION
   if (SrcMask && isa_and_nonnull<VPAllTrueMaskRecipe>(SrcMask->getDef())) {
     return EdgeMaskCache[Edge] = EdgeMask;
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-  if (BI->getSuccessor(0) != Dst)
-    EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
   if (SrcMask) { // Otherwise block in-mask is all-one, no need to AND.
     // The condition is 'SrcMask && EdgeMask', which is equivalent to
