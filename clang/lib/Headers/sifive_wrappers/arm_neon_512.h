@@ -1,4 +1,4 @@
-// 520f025217d8b4fe3e73c3c6fd8d0c19899fd3a5
+// a871247aee8bd1c80cd4073cf9c3bb833b903c16
 // ELEN=64, aarch=64, as_source=False, indent='\t', only='.*'
 /*
 Copyright (c) 2015 - 2021 SiFive, Inc.
@@ -20302,17 +20302,97 @@ SIFIVE_RECODE_NOT_IMPLEMENT("vqshls_n_s32") int32_t vqshls_n_s32(int32_t a, cons
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshls_n_u32") uint32_t vqshls_n_u32(uint32_t a, const int n);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshls_s32") int32_t vqshls_s32(int32_t a, int32_t b);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshls_u32") uint32_t vqshls_u32(uint32_t a, int32_t b);
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint16x4_t vqshlu_n_s16(int16x4_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
+	vint16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_256_i16mf4(a);
+	vuint16mf4_t temp_1 = vreinterpret_u16mf4(vmax(temp_0, 0, 4));
+	return __builtin_rvv_vcast_to_fixed_256_u16mf4(vmerge(vmsgtu(temp_1, (65535U) >> (n), 4), vsll(temp_1, n, 4), 65535U, 4));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlu_n_s16") uint16x4_t vqshlu_n_s16(int16x4_t a, const int n);
+#endif
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint32x2_t vqshlu_n_s32(int32x2_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
+	vint32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i32mf2(a);
+	vuint32mf2_t temp_1 = vreinterpret_u32mf2(vmax(temp_0, 0, 2));
+	return __builtin_rvv_vcast_to_fixed_128_u32mf2(vmerge(vmsgtu(temp_1, (4294967295UL) >> (n), 2), vsll(temp_1, n, 2), 4294967295UL, 2));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlu_n_s32") uint32x2_t vqshlu_n_s32(int32x2_t a, const int n);
+#endif
+#if (64 <= __riscv_v_elen)
+__attribute__((always_inline)) inline uint64x1_t vqshlu_n_s64(int64x1_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
+	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_64_i64m1(a);
+	vuint64m1_t temp_1 = vreinterpret_u64m1(vmax(temp_0, 0, 1));
+	return __builtin_rvv_vcast_to_fixed_64_u64m1(vmerge(vmsgtu(temp_1, (18446744073709551615ULL) >> (n), 1), vsll(temp_1, n, 1), 18446744073709551615ULL, 1));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlu_n_s64") uint64x1_t vqshlu_n_s64(int64x1_t a, const int n);
+#endif
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint8x8_t vqshlu_n_s8(int8x8_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
+	vint8mf8_t temp_0 = __builtin_rvv_vcast_from_fixed_512_i8mf8(a);
+	vuint8mf8_t temp_1 = vreinterpret_u8mf8(vmax(temp_0, 0, 8));
+	return __builtin_rvv_vcast_to_fixed_512_u8mf8(vmerge(vmsgtu(temp_1, (255) >> (n), 8), vsll(temp_1, n, 8), 255, 8));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlu_n_s8") uint8x8_t vqshlu_n_s8(int8x8_t a, const int n);
+#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlub_n_s8") uint8_t vqshlub_n_s8(int8_t a, const int n);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlud_n_s64") uint64_t vqshlud_n_s64(int64_t a, const int n);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshluh_n_s16") uint16_t vqshluh_n_s16(int16_t a, const int n);
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint16x8_t vqshluq_n_s16(int16x8_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (16)));
+	vint16mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_512_i16mf4(a);
+	vuint16mf4_t temp_1 = vreinterpret_u16mf4(vmax(temp_0, 0, 8));
+	return __builtin_rvv_vcast_to_fixed_512_u16mf4(vmerge(vmsgtu(temp_1, (65535U) >> (n), 8), vsll(temp_1, n, 8), 65535U, 8));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshluq_n_s16") uint16x8_t vqshluq_n_s16(int16x8_t a, const int n);
+#endif
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint32x4_t vqshluq_n_s32(int32x4_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (32)));
+	vint32mf2_t temp_0 = __builtin_rvv_vcast_from_fixed_256_i32mf2(a);
+	vuint32mf2_t temp_1 = vreinterpret_u32mf2(vmax(temp_0, 0, 4));
+	return __builtin_rvv_vcast_to_fixed_256_u32mf2(vmerge(vmsgtu(temp_1, (4294967295UL) >> (n), 4), vsll(temp_1, n, 4), 4294967295UL, 4));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshluq_n_s32") uint32x4_t vqshluq_n_s32(int32x4_t a, const int n);
+#endif
+#if (64 <= __riscv_v_elen)
+__attribute__((always_inline)) inline uint64x2_t vqshluq_n_s64(int64x2_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (64)));
+	vint64m1_t temp_0 = __builtin_rvv_vcast_from_fixed_128_i64m1(a);
+	vuint64m1_t temp_1 = vreinterpret_u64m1(vmax(temp_0, 0, 2));
+	return __builtin_rvv_vcast_to_fixed_128_u64m1(vmerge(vmsgtu(temp_1, (18446744073709551615ULL) >> (n), 2), vsll(temp_1, n, 2), 18446744073709551615ULL, 2));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshluq_n_s64") uint64x2_t vqshluq_n_s64(int64x2_t a, const int n);
+#endif
+#if defined(__riscv_vector)
+__attribute__((always_inline)) inline uint8x16_t vqshluq_n_s8(int8x16_t a, const int n)
+{
+	SIFIVE_RECODE_ASSERT(((0) <= (n)) && ((n) < (8)));
+	vint8mf4_t temp_0 = __builtin_rvv_vcast_from_fixed_512_i8mf4(a);
+	vuint8mf4_t temp_1 = vreinterpret_u8mf4(vmax(temp_0, 0, 16));
+	return __builtin_rvv_vcast_to_fixed_512_u8mf4(vmerge(vmsgtu(temp_1, (255) >> (n), 16), vsll(temp_1, n, 16), 255, 16));
+}
+#else
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshluq_n_s8") uint8x16_t vqshluq_n_s8(int8x16_t a, const int n);
+#endif
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshlus_n_s32") uint32_t vqshlus_n_s32(int32_t a, const int n);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_high_n_s16") int8x16_t vqshrn_high_n_s16(int8x8_t r, int16x8_t a, const int n);
 SIFIVE_RECODE_NOT_IMPLEMENT("vqshrn_high_n_s32") int16x8_t vqshrn_high_n_s32(int16x4_t r, int32x4_t a, const int n);
