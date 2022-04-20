@@ -43,6 +43,13 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-lower"
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> EnableSimplifyCFGHoistingVec(
+    "experimental-riscv-simplifycfg-hoist-vector",
+    cl::desc("Enable SimplifyCFG hoisting vectors."), cl::init(false),
+    cl::Hidden);
+#endif
+
 STATISTIC(NumTailCalls, "Number of tail calls");
 
 RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
@@ -1227,6 +1234,16 @@ bool RISCVTargetLowering::isTruncateFree(EVT SrcVT, EVT DstVT) const {
   unsigned DestBits = DstVT.getSizeInBits();
   return (SrcBits == 64 && DestBits == 32);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVTargetLowering::isProfitableToHoist(Instruction *I) const {
+  // Disable the hoisting of vectors until we have a counter example
+  if (!EnableSimplifyCFGHoistingVec && I->getType()->isVectorTy())
+    return false;
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTargetLowering::isZExtFree(SDValue Val, EVT VT2) const {
   // Zexts are free if they can be combined with a load.
