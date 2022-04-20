@@ -2245,7 +2245,14 @@ def vcpop : RVVMaskOp0Builtin<"um">;
 
 // 16.3. vfirst find-first-set mask bit
 def vfirst : RVVMaskOp0Builtin<"lm">;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+#endif // SIFIVE_CUSTOMIZATION
 
+#ifdef SIFIVE_CUSTOMIZATION
+let MaskedPolicy = HasPassthruOperand,
+    SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
+#endif // SIFIVE_CUSTOMIZATION
 // 16.4. vmsbf.m set-before-first mask bit
 def vmsbf : RVVMaskUnaryBuiltin;
 
