@@ -147,6 +147,9 @@ public:
                                         Align Alignment, unsigned AddressSpace,
                                         TTI::TargetCostKind CostKind);
 
+#if SIFIVE_CUSTOMIZATION
+  bool isLoweredToCall(const Function *F);
+#endif // SIFIVE_CUSTOMIZATION
   void getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                TTI::UnrollingPreferences &UP,
                                OptimizationRemarkEmitter *ORE);

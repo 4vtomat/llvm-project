@@ -591,6 +591,45 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// FIXME: This needs more work.
+bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
+  if (!F->isIntrinsic())
+    return BaseT::isLoweredToCall(F);
+
+  // Assume all Arm-specific intrinsics map to an instruction.
+  if (F->getName().startswith("llvm.riscv"))
+    return false;
+
+  switch (F->getIntrinsicID()) {
+  default: break;
+  case Intrinsic::powi:
+  case Intrinsic::sin:
+  case Intrinsic::cos:
+  case Intrinsic::pow:
+  case Intrinsic::log:
+  case Intrinsic::log10:
+  case Intrinsic::log2:
+  case Intrinsic::exp:
+  case Intrinsic::exp2:
+  case Intrinsic::rint:
+  case Intrinsic::nearbyint:
+  case Intrinsic::roundeven:
+    return true;
+  case Intrinsic::floor:
+  case Intrinsic::ceil:
+  case Intrinsic::trunc:
+  case Intrinsic::round:
+    // These always go to libcalls for scalars, but are inlined for vectors.
+    return F->getReturnType()->isFloatTy() ||
+           F->getReturnType()->isDoubleTy() ||
+           F->getReturnType()->isHalfTy();
+  }
+
+  return BaseT::isLoweredToCall(F);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                            TTI::UnrollingPreferences &UP,
                                            OptimizationRemarkEmitter *ORE) {
