@@ -1247,19 +1247,15 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
         isa<UndefValue>(Vle->getArgOperand(0)) &&
         isa<ConstantInt>(Vle->getArgOperand(2)) &&
         !cast<ConstantInt>(Vle->getArgOperand(2))->isZero()) {
-      PointerType *SrcPtrTy = Vle->getArgOperand(1)
-                                  ->getType()
-                                  ->getPointerElementType()
-                                  ->getScalarType()
-                                  ->getPointerTo();
+      PointerType *SrcPtrTy = Vle->getType()->getScalarType()->getPointerTo();
       IRBuilderBase::InsertPointGuard Guard(IC.Builder);
       IC.Builder.SetInsertPoint(Vle);
       Value *SrcPtr =
           IC.Builder.CreatePointerCast(Vle->getArgOperand(1), SrcPtrTy);
-      SrcPtr = IC.Builder.CreateGEP(SrcPtrTy->getPointerElementType(), SrcPtr,
+      SrcPtr = IC.Builder.CreateGEP(Vle->getType()->getScalarType(), SrcPtr,
                                     IC.Builder.getIntN(ST->getXLen(), Offset));
       return IC.replaceInstUsesWith(
-          II, IC.Builder.CreateLoad(SrcPtrTy->getPointerElementType(), SrcPtr));
+          II, IC.Builder.CreateLoad(Vle->getType()->getScalarType(), SrcPtr));
     }
   }
   return nullptr;
@@ -1340,16 +1336,15 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
             isa<ConstantInt>(II.getArgOperand(2))) {
           uint64_t StoreCnt =
               cast<ConstantInt>(II.getArgOperand(2))->getZExtValue();
-          PointerType *DesPtrTy =
-              II.getArgOperand(0)->getType()->getScalarType()->getPointerTo();
+          Type *DesScalarTy = II.getArgOperand(0)->getType()->getScalarType();
+          PointerType *DesPtrTy = DesScalarTy->getPointerTo();
           Value *DesPtr =
               IC.Builder.CreatePointerCast(II.getArgOperand(1), DesPtrTy);
           for (uint64_t i = 0; i != StoreCnt; ++i) {
             IC.Builder.CreateStore(
                 IC.Builder.CreateExtractElement(II2->getArgOperand(0), i),
                 DesPtr);
-            DesPtr = IC.Builder.CreateConstGEP1_64(
-                DesPtrTy->getPointerElementType(), DesPtr, 1);
+            DesPtr = IC.Builder.CreateConstGEP1_64(DesScalarTy, DesPtr, 1);
           }
           return IC.eraseInstFromFunction(II);
         }
