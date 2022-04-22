@@ -1170,6 +1170,15 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     else if (DefaultPolicy == Policy::TA && HasPassthruOp &&
              IsPrototypeDefaultTU)
       NewProtoSeq.erase(NewProtoSeq.begin() + 1);
+    if (DefaultScheme == PolicyScheme::HasPassthruOperandAtIdx1) {
+      if (DefaultPolicy == Policy::TU && !IsPrototypeDefaultTU) {
+        // Insert undisturbed output to index 1
+        NewProtoSeq.insert(NewProtoSeq.begin() + 2, NewProtoSeq[0]);
+      } else if (DefaultPolicy == Policy::TA && IsPrototypeDefaultTU) {
+        // Erase passthru for TA policy
+        NewProtoSeq.erase(NewProtoSeq.begin() + 2);
+      }
+    }
   }
 
   // If HasVL, append PrototypeDescriptor:VL to last operand

@@ -291,8 +291,12 @@ public:
 
 enum PolicyScheme : uint8_t {
   SchemeNone,
+  // Passthru operand is at first parameter in C builtin.
   HasPassthruOperand,
   HasPolicyOperand,
+  // Special case for vmerge, the passthru operand is second
+  // parameter in C builtin.
+  HasPassthruOperandAtIdx1,
 };
 
 enum Policy : uint16_t {
