@@ -250,6 +250,10 @@ def riscv_vwaddu_vl : SDNode<"RISCVISD::VWADDU_VL", SDT_RISCVVWBinOp_VL, [SDNPCo
 def riscv_vwsub_vl :  SDNode<"RISCVISD::VWSUB_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 def riscv_vwsubu_vl : SDNode<"RISCVISD::VWSUBU_VL", SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_vfwmul_vl  : SDNode<"RISCVISD::VFWMUL_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SDT_RISCVVWBinOpW_VL : SDTypeProfile<1, 4, [SDTCisVec<0>,
                                                 SDTCisSameAs<0, 1>,
                                                 SDTCisSameNumEltsAs<1, 2>,
@@ -468,6 +472,21 @@ multiclass VPatBinaryFPVL_R_VF<SDNode vop, string instruction_name> {
                            (fvti.Mask V0), GPR:$vl, fvti.Log2SEW, TAIL_AGNOSTIC)>;
   }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryFPWVL_VV_VF<SDNode vop, string instruction_name> {
+  foreach VtiToWti = AllWidenableFloatVectors in {
+    defvar vti = VtiToWti.Vti;
+    defvar wti = VtiToWti.Wti;
+    defm : VPatBinaryVL_V<vop, instruction_name, "VV",
+                          wti.Vector, vti.Vector, vti.Vector, vti.Mask,
+                          vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass>;
+    defm : VPatBinaryVL_VF<vop, instruction_name#"_V"#vti.ScalarSuffix,
+                           wti.Vector, vti.Vector, vti.Mask, vti.Log2SEW,
+                           vti.LMul, vti.RegClass, vti.ScalarRegClass>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatIntegerSetCCVL_VV<VTypeInfo vti, string instruction_name,
                                  CondCode cc> {
@@ -1216,6 +1235,11 @@ defm : VPatBinaryFPVL_R_VF<riscv_fdiv_vl, "PseudoVFRDIV">;
 
 // 14.5. Vector Widening Floating-Point Multiply Instructions
 defm : VPatWidenBinaryFPVL_VV_VF<riscv_fmul_vl, riscv_fpextend_vl_oneuse, "PseudoVFWMUL">;
+
+#ifdef SIFIVE_CUSTOMIZATION
+// 14.5. Vector Widening Floating-Point Multiply
+defm : VPatBinaryFPWVL_VV_VF<riscv_vfwmul_vl, "PseudoVFWMUL">;
+#endif // SIFIVE_CUSTOMIZATION
 
 // 14.6 Vector Single-Width Floating-Point Fused Multiply-Add Instructions.
 foreach vti = AllFloatVectors in {
