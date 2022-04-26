@@ -11206,9 +11206,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                 VectorPH->getModule(), Intrinsic::experimental_vp_reverse,
                 {StoredValTy});
             Value *BlockInMaskPart =
-                isMaskRequired
-                    ? MaskValue(Part, StoredValTy->getElementCount())
-                    : Builder.getTrueVector(StoredValTy->getElementCount());
+                Builder.getTrueVector(StoredValTy->getElementCount());
 
             StoredVal = Builder.CreateCall(
                 VPIntr, {StoredVal, BlockInMaskPart, EVLPart});
@@ -11357,9 +11355,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
               VectorPH->getModule(), Intrinsic::experimental_vp_reverse,
               {LoadedValTy});
           Value *BlockInMaskPart =
-              isMaskRequired
-                  ? MaskValue(Part, LoadedValTy->getElementCount())
-                  : Builder.getTrueVector(LoadedValTy->getElementCount());
+              Builder.getTrueVector(LoadedValTy->getElementCount());
 
           NewLI = Builder.CreateCall(VPIntr, {NewLI, BlockInMaskPart, EVLPart});
         } else
