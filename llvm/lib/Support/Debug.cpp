@@ -78,6 +78,81 @@ void setCurrentDebugTypes(const char **Types, unsigned Count) {
 }
 } // namespace llvm
 
+#if SIFIVE_CUSTOMIZATION
+#include <vector>
+static ManagedStatic<std::vector<std::pair<unsigned, unsigned>>> LoopVectorizationRangeMap;
+
+namespace {
+struct LoopVectorizationRangeMapOpt {
+  void operator=(const std::string &Val) const {
+    if (Val.empty()) {
+      return;
+    }
+    SmallVector<StringRef, 8> Ranges;
+    StringRef(Val).split(Ranges, ',', -1, false);
+    for (auto Range : Ranges) {
+      SmallVector<StringRef, 2> LowerAndUpperBounds;
+      StringRef(Range).split(LowerAndUpperBounds, '-', -1, false);
+      if (LowerAndUpperBounds.size() != 2)
+        continue;
+
+      uint64_t LowerBound = 0;
+      if (LowerAndUpperBounds[0].getAsInteger(10, LowerBound)) {
+        llvm::dbgs() << "Passed lower bound to the -loop-vectorization-range '"
+                     << LowerAndUpperBounds[0] << "' is not an integer\n";
+        continue;
+      }
+
+      uint64_t UpperBound = -1ULL;
+      if (LowerAndUpperBounds[1].getAsInteger(10, UpperBound)) {
+        llvm::dbgs() << "Passed upper bound to the -loop-vectorization-range '"
+                     << LowerAndUpperBounds[1] << "' is not an integer\n";
+        continue;
+      }
+
+      if (LowerBound <= UpperBound)
+        LoopVectorizationRangeMap->push_back(std::make_pair(LowerBound, UpperBound));
+    }
+  }
+};
+} // end of anonymous namespace
+
+static LoopVectorizationRangeMapOpt LoopVectorizationRangeMapOptLoc;
+
+namespace {
+struct CreateLoopVectorizationRangeMap {
+  static void *call() {
+    return new cl::opt<LoopVectorizationRangeMapOpt, true,
+                       cl::parser<std::string>>(
+        "loop-vectorization-range",
+        cl::desc("Specify range of lines in a format of "
+                 "`start0-end0,start1-end1,...`. "
+                 "All loops in the range will be vectorized."
+                 "Only works if debug information is available"),
+        cl::Hidden, cl::ZeroOrMore,
+        cl::location(LoopVectorizationRangeMapOptLoc), cl::ValueRequired);
+  }
+};
+} // end of anonymous namespace
+
+static ManagedStatic<
+    cl::opt<LoopVectorizationRangeMapOpt, true, cl::parser<std::string>>,
+    CreateLoopVectorizationRangeMap>
+    LoopVectorizationRange;
+
+namespace llvm {
+bool isLoopInVectorizationRange(const unsigned LineNumber) {
+  if (LoopVectorizationRangeMap->empty())
+    return true;
+
+  for (const auto &Range : *LoopVectorizationRangeMap)
+    if (Range.first <= LineNumber && LineNumber <= Range.second)
+      return true;
+  return false;
+}
+} // namespace llvm
+#endif // SIFIVE_CUSTOMIZATION
+
 // All Debug.h functionality is a no-op in NDEBUG mode.
 #ifndef NDEBUG
 
@@ -146,6 +221,9 @@ void llvm::initDebugOptions() {
   *Debug;
   *DebugBufferSize;
   *DebugOnly;
+#if SIFIVE_CUSTOMIZATION
+  *LoopVectorizationRange;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // Signal handlers - dump debug output on termination.
@@ -188,7 +266,11 @@ namespace llvm {
     return errs();
   }
 }
-void llvm::initDebugOptions() {}
+void llvm::initDebugOptions() {
+#if SIFIVE_CUSTOMIZATION
+  *LoopVectorizationRange;
+#endif // SIFIVE_CUSTOMIZATION
+}
 #endif
 
 /// EnableDebugBuffering - Turn on signal handler installation.

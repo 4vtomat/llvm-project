@@ -100,6 +100,10 @@ raw_ostream &dbgs();
 //
 #define LLVM_DEBUG(X) DEBUG_WITH_TYPE(DEBUG_TYPE, X)
 
+#if SIFIVE_CUSTOMIZATION
+bool isLoopInVectorizationRange(const unsigned LineNumber);
+#endif // SIFIVE_CUSTOMIZATION
+
 } // end namespace llvm
 
 #endif // LLVM_SUPPORT_DEBUG_H

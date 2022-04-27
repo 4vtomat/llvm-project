@@ -396,6 +396,13 @@ cl::opt<bool> PrintVPlansInDotFormat(
     "vplan-print-in-dot-format", cl::init(false), cl::Hidden,
     cl::desc("Use dot format instead of plain text when dumping VPlans"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<int64_t>
+    LoopVectorizationLimit("loop-vectorization-limit", cl::init(-1), cl::Hidden,
+                           cl::desc("Specify maximum number of loops in the "
+                                    "compilation unit that be vectorized"));
+#endif // SIFIVE_CUSTOMIZATION
+
 /// A helper function that returns true if the given type is irregular. The
 /// type is irregular if its allocated size doesn't equal the store size of an
 /// element of the corresponding vector type.
@@ -11866,6 +11873,32 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                       << ") in " << DebugLocStr << '\n');
     LLVM_DEBUG(dbgs() << "LV: Interleave Count is " << IC << '\n');
   }
+#if SIFIVE_CUSTOMIZATION
+  if (L->getStartLoc()) {
+    unsigned LineNumber = L->getStartLoc()->getLine();
+    if (!isLoopInVectorizationRange(LineNumber)) {
+      LLVM_DEBUG(dbgs() << "LV: Loop is located outside of the range where "
+                           "vectorization is applicable");
+      ORE->emit([&]() {
+        return OptimizationRemarkAnalysis(LV_NAME, VecDiagMsg.first,
+                                          L->getStartLoc(), L->getHeader())
+               << "Loop is out of range";
+      });
+      return false;
+    }
+  }
+  if (LoopVectorizationLimit != -1 &&
+      (unsigned)LoopVectorizationLimit <= LoopsVectorized) {
+    LLVM_DEBUG(dbgs() << "LV: Exceeded number of vectorized loops that was "
+                         "requested by the user");
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(LV_NAME, VecDiagMsg.first,
+                                        L->getStartLoc(), L->getHeader())
+             << "Exceeded number of vectorized loops";
+    });
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool DisableRuntimeUnroll = false;
   MDNode *OrigLoopID = L->getLoopID();
