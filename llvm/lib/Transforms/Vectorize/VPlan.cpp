@@ -727,6 +727,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   switch (getOpcode()) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.EVL && A->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       State.EVL, Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V = Builder.CreateNot(A);
     State.set(this, V, Part);
     break;
