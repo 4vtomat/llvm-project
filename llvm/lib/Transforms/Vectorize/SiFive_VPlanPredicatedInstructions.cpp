@@ -238,6 +238,7 @@ void VPAllTrueMaskRecipe::execute(VPTransformState &State) {
   }
 }
 
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPAllTrueMaskRecipe::print(raw_ostream &O, const Twine &Indent,
                                 VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -247,3 +248,4 @@ void VPAllTrueMaskRecipe::print(raw_ostream &O, const Twine &Indent,
          "VPAllTrueMaskRecipe should have one operand");
   getOperand(0)->printAsOperand(O, SlotTracker);
 }
+#endif
