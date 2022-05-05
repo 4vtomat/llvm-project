@@ -14,17 +14,14 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP1:%.*]] = add <vscale x 8 x i64> zeroinitializer, [[TMP0]]
 ; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 8 x i64> [[BROADCAST_SPLAT]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 0, [[INDEX]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 8
-; CHECK-NEXT:    [[RVL:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP2]], i64 [[TMP4]])
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[RVL]], i64 0, i64 0)
-; CHECK-NEXT:    [[TMP6:%.*]] = trunc i64 [[TMP5]] to i32
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 8
-; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP6]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
-; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 0, i64 0)
+; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 8
+; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP4]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[SW_EPILOG_I_LOOPEXIT71:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -36,7 +33,7 @@ define void @test() {
 ; CHECK:       lor.rhs.i:
 ; CHECK-NEXT:    br label [[LOR_END_I]]
 ; CHECK:       lor.end.i:
-; CHECK-NEXT:    [[TMP11:%.*]] = phi i1 [ false, [[FOR_BODY11_I]] ], [ false, [[LOR_RHS_I]] ]
+; CHECK-NEXT:    [[TMP9:%.*]] = phi i1 [ false, [[FOR_BODY11_I]] ], [ false, [[LOR_RHS_I]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 0
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[SW_EPILOG_I_LOOPEXIT71]], label [[FOR_BODY11_I]], !llvm.loop [[LOOP2:![0-9]+]]

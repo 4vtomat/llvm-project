@@ -27,25 +27,23 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 1 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP2]], [[INDEX]]
-; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[RVL:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP8]], i64 [[TMP9]])
-; CHECK-NEXT:    [[TMP10:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[RVL]], i64 3, i64 0)
-; CHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP10]] to i32
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], %struct.quantum_reg_node_struct* [[REG_16_VAL:%.*]], <vscale x 1 x i64> [[VEC_IND]], i32 1
-; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i64> @llvm.vp.gather.nxv1i64.nxv1p0i64(<vscale x 1 x i64*> [[TMP12]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_GATHER]], <vscale x 1 x i64> zeroinitializer, i8 32, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64> zeroinitializer, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP11]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64*> [[TMP12]], <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP11]])
-; CHECK-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP11]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP14]]
-; CHECK-NEXT:    [[TMP15:%.*]] = sext i32 [[TMP11]] to i64
-; CHECK-NEXT:    [[TMP16:%.*]] = mul i64 1, [[TMP15]]
-; CHECK-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP16]], i32 0
+; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP8]], i64 3, i64 0)
+; CHECK-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP9]] to i32
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], %struct.quantum_reg_node_struct* [[REG_16_VAL:%.*]], <vscale x 1 x i64> [[VEC_IND]], i32 1
+; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i64> @llvm.vp.gather.nxv1i64.nxv1p0i64(<vscale x 1 x i64*> [[TMP11]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_GATHER]], <vscale x 1 x i64> zeroinitializer, i8 32, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64> zeroinitializer, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP10]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64*> [[TMP11]], <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP10]])
+; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP13]]
+; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; CHECK-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP15]], i32 0
 ; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 1 x i64> [[VEC_IND]], [[DOTSPLAT2]]
-; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
-; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
+; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -54,9 +52,9 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[STATE:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT]], %struct.quantum_reg_node_struct* [[REG_16_VAL]], i64 [[INDVARS_IV]], i32 1
-; CHECK-NEXT:    [[TMP18:%.*]] = load i64, i64* [[STATE]], align 8
-; CHECK-NEXT:    [[TMP19:%.*]] = and i64 0, 1
-; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[TMP18]], 0
+; CHECK-NEXT:    [[TMP17:%.*]] = load i64, i64* [[STATE]], align 8
+; CHECK-NEXT:    [[TMP18:%.*]] = and i64 0, 1
+; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[TMP17]], 0
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[IF_THEN9:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then9:
 ; CHECK-NEXT:    [[XOR:%.*]] = xor i64 0, 0
