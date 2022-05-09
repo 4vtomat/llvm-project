@@ -104,7 +104,10 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Builder.setMask(MaskArg);
     Value *EVLArg = State.get(EVL, Part);
     Builder.setEVL(EVLArg);
-    Value *PredArg = BuilderIR.getInt8(Cmp->getPredicate());
+
+    StringRef PredicateStr = CmpInst::getPredicateName(Cmp->getPredicate());
+    auto *PredicateMDS = MDString::get(Cmp->getContext(), PredicateStr);
+    Value *PredArg = MetadataAsValue::get(Cmp->getContext(), PredicateMDS);
 
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
