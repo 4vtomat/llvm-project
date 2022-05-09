@@ -8828,7 +8828,7 @@ VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   //    IV = Plan->getOrAddVPValue(Legal->getPrimaryInduction());
   //  } else
   {
-    VPBasicBlock *HeaderVPBB = Plan->getEntry()->getEntryBasicBlock();
+    VPBasicBlock *HeaderVPBB = Plan->getVectorLoopRegion()->getEntryBasicBlock();
     auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
     auto *IVRecipe = new VPWidenCanonicalIVRecipe(Plan->getCanonicalIV());
     HeaderVPBB->insert(IVRecipe, NewInsertionPoint);
