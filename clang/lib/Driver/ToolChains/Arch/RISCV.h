@@ -28,9 +28,12 @@ StringRef getRISCVArch(const llvm::opt::ArgList &Args,
                        const llvm::Triple &Triple);
 StringRef getRISCVCodeModel(const llvm::opt::ArgList &Args);
 
-void addRISCVTargetABIArgs(const ToolChain &ToolChain,
+#if SIFIVE_CUSTOMIZATION
+void addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                            const llvm::opt::ArgList &Args,
                            llvm::opt::ArgStringList &CmdArgs);
+#endif // SIFIVE_CUSTOMIZATION
+
 } // end namespace riscv
 } // namespace tools
 } // end namespace driver

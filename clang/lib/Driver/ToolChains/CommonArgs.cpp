@@ -639,16 +639,18 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
 
   addX86AlignBranchArgs(D, Args, CmdArgs, /*IsLTO=*/true);
 
+#if SIFIVE_CUSTOMIZATION
   // pass more options in specific target
   switch (ToolChain.getArch()) {
   default:
     break;
   case llvm::Triple::riscv32:
   case llvm::Triple::riscv64: {
-    riscv::addRISCVTargetABIArgs(ToolChain, Args, CmdArgs);
+    riscv::addRISCVTargetLTOArgs(ToolChain, Args, CmdArgs);
     break;
   }
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Handle remark diagnostics on screen options: '-Rpass-*'.
   renderRpassOptions(Args, CmdArgs);

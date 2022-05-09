@@ -318,12 +318,12 @@ StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
   return CodeModel;
 }
 
-void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
+#if SIFIVE_CUSTOMIZATION
+void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                                   const llvm::opt::ArgList &Args,
                                   llvm::opt::ArgStringList &CmdArgs) {
   // We need to pass target-abi option to check it is equal to module's
   // target-abi information.
-#if SIFIVE_CUSTOMIZATION
   const llvm::Triple &Triple = ToolChain.getTriple();
   StringRef ABIName = getRISCVABI(Args, Triple);
   CmdArgs.push_back(
@@ -357,5 +357,10 @@ void riscv::addRISCVTargetABIArgs(const ToolChain &ToolChain,
   if (!AttrString.empty())
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-plugin-opt=-mattr=") + AttrString));
-#endif // SIFIVE_CUSTOMIZATION
+
+  for (const Arg *A : Args.filtered(options::OPT_mllvm)) {
+    CmdArgs.push_back(
+        Args.MakeArgString(Twine("-plugin-opt=") + A->getValue(0)));
+  }
 }
+#endif // SIFIVE_CUSTOMIZATION

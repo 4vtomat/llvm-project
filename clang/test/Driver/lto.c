@@ -106,6 +106,7 @@
 // FLTO-THIN-NOT: "-flto"
 // FLTO-THIN-NOT: -flto=full
 
+// if SIFIVE_CUSTOMIZATION
 // Need to pass -target-abi option in RISC-V target.
 // RUN: %clang -target riscv32 %s -flto \
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=RV32-DEFAULT
@@ -167,3 +168,10 @@
 // RUN: %clang -target x86_64-unknown-linux-gnu %s -flto \
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=CHECK-NO-TARGET-ABI
 // CHECK-NO-TARGET-ABI-NOT: "-plugin-opt=-target-abi
+
+// RUN: %clang -target riscv32-unknown-linux-gnu %s -fuse-ld=gold -flto \
+// RUN:   -mllvm -misched-bottomup=false \
+// RUN:   -### 2>&1 | FileCheck %s --check-prefix=RISCV-TEST-MLLVM
+//
+// RISCV-TEST-MLLVM: "-plugin-opt=-misched-bottomup=false"
+// endif SIFIVE_CUSTOMIZATION
