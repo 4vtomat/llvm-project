@@ -522,6 +522,27 @@ matchScalableStridedStart(Value *Start, IRBuilder<> &Builder) {
   return std::make_pair(Start, Stride);
 }
 
+/// Find an existing add recurrence with a phi in \p BB with \p DesiredStart and
+/// \p DesiredStep value. Returns true if found and places the phi and add in
+/// \p BasePtr and \p Inc respectively.
+static bool findExistingAddRecurrence(BasicBlock *BB, Value *DesiredStart,
+                                      Value *DesiredStep, PHINode *&BasePtr,
+                                      BinaryOperator *&Inc) {
+  for (PHINode &PN : BB->phis()) {
+    Value *Step, *Start;
+    if (!matchSimpleRecurrence(&PN, Inc, Start, Step) ||
+        Inc->getOpcode() != Instruction::Add || Step != DesiredStep ||
+        Start != DesiredStart)
+      continue;
+
+    // Found a match.
+    BasePtr = &PN;
+    return true;
+  }
+
+  return false;
+}
+
 // Recursively, walk about the use-def chain until we find a Phi with a strided
 // start value. Build and update a scalar recurrence as we unwind the recursion.
 // We also update the Stride as we unwind. Our goal is to move all of the
@@ -555,13 +576,19 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
       return false;
     assert(Stride != nullptr && "Non-null start with null stride?");
 
-    // Build scalar phi and increment.
-    BasePtr =
-        PHINode::Create(Start->getType(), 2, Phi->getName() + ".scalar", Phi);
-    Inc = BinaryOperator::CreateAdd(BasePtr, Step, Inc->getName() + ".scalar",
-                                    Inc);
-    BasePtr->addIncoming(Start, Phi->getIncomingBlock(1 - IncrementingBlock));
-    BasePtr->addIncoming(Inc, Phi->getIncomingBlock(IncrementingBlock));
+    // We found a strided recurrence, see if the scalar version of this
+    // recurrence already exists.
+
+    if (!findExistingAddRecurrence(Phi->getParent(), Start, Step, BasePtr,
+                                   Inc)) {
+      // Build scalar phi and increment.
+      BasePtr =
+          PHINode::Create(Start->getType(), 2, Phi->getName() + ".scalar", Phi);
+      Inc = BinaryOperator::CreateAdd(BasePtr, Step, Inc->getName() + ".scalar",
+                                      Inc);
+      BasePtr->addIncoming(Start, Phi->getIncomingBlock(1 - IncrementingBlock));
+      BasePtr->addIncoming(Inc, Phi->getIncomingBlock(IncrementingBlock));
+    }
 
     // Note that this Phi might be eligible for removal.
     MaybeDeadPHIs.push_back(Phi);
