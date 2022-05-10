@@ -11272,7 +11272,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         auto *PtrsTy = cast<VectorType>(VectorGep->getType());
         auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
         ElementCount NumElts = PtrsTy->getElementCount();
-        Type *DataTy = VectorType::get(PtrTy->getPointerElementType(), NumElts);
         Value *BlockInMaskPart = isMaskRequired
                                      ? MaskValue(Part, NumElts)
                                      : Builder.getTrueVector(NumElts);
@@ -11303,8 +11302,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                      << "Not consecutive stride load for " << *getAddr() << "\n");
         }
         if (!EmittedStridedAccess) {
-          Type *DataTy =
-              VectorType::get(PtrTy->getPointerElementType(), NumElts);
           Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
           NewLI =
               Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
@@ -11327,15 +11324,13 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // intrinsic.
       if (EVLPart) {
         BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-        Function *VPIntr = Intrinsic::getDeclaration(
-            VectorPH->getModule(), Intrinsic::vp_load,
-            {VecPtr->getType()->getPointerElementType(), VecPtr->getType()});
+        Function *VPIntr =
+            Intrinsic::getDeclaration(VectorPH->getModule(), Intrinsic::vp_load,
+                                      {DataTy, VecPtr->getType()});
 
-        auto *VecTy =
-            cast<VectorType>(VecPtr->getType()->getPointerElementType());
         Value *BlockInMaskPart =
-            isMaskRequired ? MaskValue(Part, VecTy->getElementCount())
-                           : Builder.getTrueVector(VecTy->getElementCount());
+            isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
+                           : Builder.getTrueVector(DataTy->getElementCount());
 
         NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, EVLPart},
                                    "vp.op.load");
