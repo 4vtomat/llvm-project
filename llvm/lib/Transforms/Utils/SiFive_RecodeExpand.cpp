@@ -21,11 +21,21 @@
 
 using namespace llvm;
 
+static CallInst *toScalableVector(const TargetTransformInfo &TTI,
+                                  IRBuilder<> &Builder, Value *Vec) {
+  Type *ScalableVecTy = TTI.getScalableVectorFromFixed(Vec->getType());
+  return Builder.CreateInsertVector(
+      ScalableVecTy, UndefValue::get(ScalableVecTy), Vec, Builder.getInt64(0));
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_ld2:
   case Intrinsic::aarch64_neon_ld3:
   case Intrinsic::aarch64_neon_ld4:
+  case Intrinsic::aarch64_neon_st2:
+  case Intrinsic::aarch64_neon_st3:
+  case Intrinsic::aarch64_neon_st4:
     return true;
   }
   return false;
@@ -75,6 +85,27 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                   Builder.getInt64(0)),
               i);
         II->replaceAllUsesWith(NewDes);
+        break;
+      }
+      case Intrinsic::aarch64_neon_st2:
+      case Intrinsic::aarch64_neon_st3:
+      case Intrinsic::aarch64_neon_st4: {
+        unsigned StructNumElements = II->arg_size() - 1;
+        unsigned VectorNumElements =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType())
+                ->getNumElements();
+        static const Intrinsic::ID Vsseg[3] = {Intrinsic::riscv_vsseg2,
+                                               Intrinsic::riscv_vsseg3,
+                                               Intrinsic::riscv_vsseg4};
+        SmallVector<Value *, 6> Ops;
+        for (unsigned i = 0; i != StructNumElements; ++i)
+          Ops.push_back(toScalableVector(TTI, Builder, II->getArgOperand(i)));
+        Ops.push_back(II->getArgOperand(StructNumElements));
+        ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
+        Ops.push_back(VL);
+        II->replaceAllUsesWith(
+            Builder.CreateIntrinsic(Vsseg[StructNumElements - 2],
+                                    {Ops[0]->getType(), VL->getType()}, Ops));
         break;
       }
       default:
