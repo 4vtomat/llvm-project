@@ -1414,6 +1414,19 @@ public:
     return !Hints->allowReordering() && RdxDesc.isOrdered();
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if the target prefer to postpone the operation of start value
+  /// into postexit.
+  bool postFixStartValue(const RecurrenceDescriptor &RdxDesc, PHINode *Phi) {
+    RecurKind RK = RdxDesc.getRecurrenceKind();
+    return !useOrderedReductions(RdxDesc) && !isInLoopReduction(Phi) &&
+           !RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) &&
+           !RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK) &&
+           TTI.preferPostFixStartValue(RdxDesc.getOpcode(),
+                                       RdxDesc.getRecurrenceType());
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// \returns The smallest bitwidth each instruction can be represented with.
   /// The vector equivalents of these instructions should be truncated to this
   /// type.
@@ -4255,6 +4268,20 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   if (VF.isVector() && !PhiR->isInLoop()) {
     ReducedPartRdx =
         createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
+#if SIFIVE_CUSTOMIZATION
+    // Adjust the final scalar result after the loop if the target prefers that.
+    // FIXME: Handle situation that the start value and identity are equal.
+    if (PhiR->postFixStartValue()) {
+      IRBuilderBase::FastMathFlagGuard FMFG(Builder);
+      Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+      Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
+      // Truncate start value if the reduction is performed in a smaller type.
+      if (PhiTy != RdxDesc.getRecurrenceType())
+        StartV = Builder.CreateTrunc(StartV, RdxDesc.getRecurrenceType());
+      ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
+                                           ReducedPartRdx);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     // If the reduction can be performed in a smaller type, we need to extend
     // the reduction to the wider type before we branch to the original loop.
     if (PhiTy != RdxDesc.getRecurrenceType())
@@ -9532,9 +9559,13 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Legal->getReductionVars().find(Phi)->second;
       assert(RdxDesc.getRecurrenceStartValue() ==
              Phi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
-      PhiRecipe = new VPReductionPHIRecipe(Phi, RdxDesc, *StartV,
-                                           CM.isInLoopReduction(Phi),
-                                           CM.useOrderedReductions(RdxDesc));
+      PhiRecipe = new VPReductionPHIRecipe(
+          Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
+          CM.useOrderedReductions(RdxDesc)
+#if SIFIVE_CUSTOMIZATION
+	  , CM.postFixStartValue(RdxDesc, Phi)
+#endif // SIFIVE_CUSTOMIZATION
+	  );
     } else {
 #if SIFIVE_CUSTOMIZATION
       if (preferPredicatedWiden()) {

@@ -26,6 +26,11 @@ static cl::opt<bool>
     PreferPredicatedVectorOps("riscv-prefer-predicated-vector-ops",
                               cl::desc("Prefer to use VP-intrinsics"),
                               cl::init(false), cl::Hidden);
+
+static cl::opt<bool> PreferPostFixStartValue(
+    "riscv-prefer-post-fix-start-value",
+    cl::desc("Prefer to postpone the computation of start value in reduction."),
+    cl::init(true), cl::Hidden);
 #endif
 
 static cl::opt<unsigned> RVVRegisterWidthLMUL(
@@ -804,4 +809,9 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   return BaseT::getVectorInstrCost(Opcode, Val, Index);
 }
 
+bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
+  // TODO: More experiments are needed to confirm whether all kinds of reduction
+  // can benefit.
+  return PreferPostFixStartValue;
+}
 #endif // SIFIVE_CUSTOMIZATION

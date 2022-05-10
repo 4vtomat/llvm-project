@@ -1862,6 +1862,9 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
   // any loop invariant values.
   VPValue *StartVPV = getStartValue();
   Value *StartV = StartVPV->getLiveInIRValue();
+#if SIFIVE_CUSTOMIZATION
+  bool PostSV = postFixStartValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   Value *Iden = nullptr;
   RecurKind RK = RdxDesc.getRecurrenceKind();
@@ -1882,10 +1885,18 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
     if (!ScalarPHI) {
       Iden = Builder.CreateVectorSplat(State.VF, Iden);
-      IRBuilderBase::InsertPointGuard IPBuilder(Builder);
-      Builder.SetInsertPoint(VectorPH->getTerminator());
-      Constant *Zero = Builder.getInt32(0);
-      StartV = Builder.CreateInsertElement(Iden, StartV, Zero);
+#if SIFIVE_CUSTOMIZATION
+      if (PostSV) {
+        StartV = Iden;
+      } else {
+#endif // SIFIVE_CUSTOMIZATION
+        IRBuilderBase::InsertPointGuard IPBuilder(Builder);
+        Builder.SetInsertPoint(VectorPH->getTerminator());
+        Constant *Zero = Builder.getInt32(0);
+        StartV = Builder.CreateInsertElement(Iden, StartV, Zero);
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 

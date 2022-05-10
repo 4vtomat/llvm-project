@@ -1132,6 +1132,11 @@ TargetTransformInfo::getInstructionLatency(const Instruction *I) const {
 bool TargetTransformInfo::preferPredicatedVectorOps() const {
   return TTIImpl->preferPredicatedVectorOps();
 }
+
+bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
+                                                  Type *Ty) const {
+  return TTIImpl->preferPostFixStartValue(Opcode, Ty);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 InstructionCost

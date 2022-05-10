@@ -1443,6 +1443,10 @@ public:
   /// \returns True if the target prefers using vector predication for all Ops
   /// instead of just loads and stores.
   bool preferPredicatedVectorOps() const;
+
+  /// \returns True if the target prefers to postpone the computation of the
+  /// start value.
+  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \returns True if the target supports scalable vectors.
@@ -1844,6 +1848,7 @@ public:
                                      Align Alignment) const = 0;
 #if SIFIVE_CUSTOMIZATION
   virtual bool preferPredicatedVectorOps() const = 0;
+  virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual InstructionCost getInstructionLatency(const Instruction *I) = 0;
   virtual VPLegalization
@@ -2495,6 +2500,10 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool preferPredicatedVectorOps() const override {
     return Impl.preferPredicatedVectorOps();
+  }
+
+  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override {
+    return Impl.preferPostFixStartValue(Opcode, Ty);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
