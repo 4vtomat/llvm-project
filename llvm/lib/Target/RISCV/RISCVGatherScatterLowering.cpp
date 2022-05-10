@@ -686,7 +686,7 @@ RISCVGatherScatterLowering::determineScalableBaseAndStride(
   if (Ops[0]->getType()->isVectorTy())
     return std::make_pair(nullptr, nullptr);
 
-  // Make sure we're in a loop and it is in loop simplify form.
+  // Make sure we're in a loop and that it has a pre-header.
   Loop *L = LI->getLoopFor(GEP->getParent());
   if (!L || !L->getLoopPreheader())
     return std::make_pair(nullptr, nullptr);
