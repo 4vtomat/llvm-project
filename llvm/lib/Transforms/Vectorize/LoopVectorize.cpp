@@ -5356,7 +5356,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
     }
   }
 
-  ElementCount MaxVF = FeasibleMaxVFLowerBound;
+  ElementCount MaxVF = FeasibleMaxVFUpperBound;
   if (TTI.shouldMaximizeVectorBandwidth() ||
       (MaximizeBandwidth && isScalarEpilogueAllowed())) {
     // Collect all viable vectorization factors larger than the default MaxVF
@@ -9508,9 +9508,16 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 
 #if SIFIVE_CUSTOMIZATION
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr)) {
-    if (preferPredicatedWiden())
+    if (preferPredicatedWiden()) {
+      // Note: VLS skips this check with CM_Scalarize
+      // We add it here for VLA
+      StoreInst *SI;
+      if ((SI = dyn_cast<StoreInst>(Instr)) &&
+          Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
+        return nullptr;
       return toVPRecipeResult(
           tryToPredicatedWidenMemory(Instr, Operands, Range, Plan));
+    }
 #endif // SIFIVE_CUSTOMIZATION
     return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
 #if SIFIVE_CUSTOMIZATION
