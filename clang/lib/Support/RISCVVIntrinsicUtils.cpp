@@ -114,7 +114,7 @@ bool RVVType::verifyType() const {
     return false;
   if (isScalar())
     return true;
-  if (!Scale.hasValue())
+  if (!Scale)
     return false;
   if (isFloat() && ElementBitwidth == 8)
     return false;
@@ -391,7 +391,7 @@ void RVVType::applyBasicType() {
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::Float;
     break;
- #if SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
  case BasicType::BFloat:
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::BFloat;
@@ -416,7 +416,9 @@ Optional<PrototypeDescriptor> PrototypeDescriptor::parsePrototypeDescriptor(
   PrototypeDescriptor PD;
   BaseTypeModifier PT = BaseTypeModifier::Invalid;
   VectorTypeModifier VTM = VectorTypeModifier::NoModifier;
+#if SIFIVE_CUSTOMIZATION
   TypeModifier TM = TypeModifier::NoModifier;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (PrototypeDescriptorStr.empty())
     return PD;
@@ -689,7 +691,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case BaseTypeModifier::SignedLong:
     ScalarType = ScalarTypeKind::SignedLong;
     break;
-  
   case BaseTypeModifier::Invalid:
     ScalarType = ScalarTypeKind::Invalid;
     return;
@@ -790,18 +791,17 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::SFixedLog2LMUL3:
     applyFixedLog2LMUL(3, FixedLMULType::SmallerThan);
     break;
+#if SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::Widening2XVectorMultipleLMUL2:
     ElementBitwidth *= 2;
     LMUL.MulLog2LMUL(1);
     Scale = LMUL.getScale(ElementBitwidth);
-#if SIFIVE_CUSTOMIZATION
     // For SiFive custom instructions regarding bfloat
     // Ex: sf_vfwmacc_4x4x4_f32mf2 (vfloat32mf2_t vd, vbfloat16m1_t vs1,
     // vbfloat16mf4_t vs2, size_t vl); Parameter needs to be converted to 32-bit
     // and bfloat don't have 32-bit.
     if (ScalarType == ScalarTypeKind::BFloat)
       ScalarType = ScalarTypeKind::Float;
-#endif // SIFIVE_CUSTOMIZATION
     break;
   case VectorTypeModifier::Widening4XVectorMultipleLMUL1:
     ElementBitwidth *= 4;
@@ -812,6 +812,7 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     LMUL.MulLog2LMUL(1);
     Scale = LMUL.getScale(ElementBitwidth);
     break;
+#endif // SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::NoModifier:
     break;
 #if SIFIVE_CUSTOMIZATION
@@ -855,9 +856,11 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
       // Update ElementBitwidth need to update Scale too.
       Scale = LMUL.getScale(ElementBitwidth);
       break;
+#if SIFIVE_CUSTOMIZATION
     case TypeModifier::Float32:
       ScalarType = ScalarTypeKind::Float32;
       break;
+#endif // SIFIVE_CUSTOMIZATION
     default:
       llvm_unreachable("Unknown type modifier mask!");
     }
@@ -915,7 +918,7 @@ RVVType::computeTypes(BasicType BT, int Log2LMUL, unsigned NF,
   RVVTypes Types;
   for (const PrototypeDescriptor &Proto : Prototype) {
     auto T = computeType(BT, Log2LMUL, Proto);
-    if (!T.hasValue())
+    if (!T)
       return llvm::None;
     // Record legal type index
     Types.push_back(T.getValue());
@@ -997,44 +1000,6 @@ RVVIntrinsic::RVVIntrinsic(
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-
-  // Init RISC-V extensions
-  for (const auto &T : OutInTypes) {
-    if (T->isFloatVector(16) || T->isFloat(16))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Zvfh;
-    if (T->isFloatVector(32))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELenFp32;
-    if (T->isFloatVector(64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELenFp64;
-    if (T->isVector(64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELen64;
-  }
-  for (auto Feature : RequiredFeatures) {
-    if (Feature == "RV64")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::RV64;
-    // Note: Full multiply instruction (mulh, mulhu, mulhsu, smul) for EEW=64
-    // require V.
-    if (Feature == "FullMultiply" &&
-        (RISCVPredefinedMacros & RISCVPredefinedMacro::VectorMaxELen64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::V;
-#if SIFIVE_CUSTOMIZATION
-    if (Feature == "Xsfvqmaccqoq")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccqoq;
-    if (Feature == "Xsfvqmaccdod")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccdod;
-    if (Feature == "Xsfvfnrclipxfqf")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfnrclipxfqf;
-    if (Feature == "Xsfvfhbfmin")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfhbfmin;
-    if (Feature == "Xsfvfwmaccqqq")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfwmaccqqq;
-    if (Feature == "HasBfloat16")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::HasBfloat16;
-    if (Feature == "Xsfvcp")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvcp;
-#endif // SIFIVE_CUSTOMIZATION
-  }
-
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
   InputTypes.assign(OutInTypes.begin() + 1, OutInTypes.end());
@@ -1071,6 +1036,49 @@ std::string RVVIntrinsic::getSuffixStr(
   return join(SuffixStrs, "_");
 }
 
+#if SIFIVE_CUSTOMIZATION
+SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
+    llvm::ArrayRef<PrototypeDescriptor> ProtoSeq, bool IsMasked,
+    bool HasMaskedOffOperand, bool HasVL, unsigned NF) {
+  SmallVector<PrototypeDescriptor> NewProtoSeq(ProtoSeq.begin(),
+                                               ProtoSeq.end());
+  if (IsMasked) {
+    // If HasMaskedOffOperand, insert result type as first input operand.
+    if (HasMaskedOffOperand) {
+      if (NF == 1) {
+        NewProtoSeq.insert(NewProtoSeq.begin() + 1, NewProtoSeq[0]);
+      } else {
+        // Convert
+        // (void, op0 address, op1 address, ...)
+        // to
+        // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+        PrototypeDescriptor MaskoffType = NewProtoSeq[1];
+        MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+        for (unsigned I = 0; I < NF; ++I)
+          NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
+      }
+    }
+    if (HasMaskedOffOperand && NF > 1) {
+      // Convert
+      // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+      // to
+      // (void, op0 address, op1 address, ..., mask, maskedoff0, maskedoff1,
+      // ...)
+      NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, PrototypeDescriptor::Mask);
+    } else {
+      // If IsMasked, insert PrototypeDescriptor:Mask as first input operand.
+      NewProtoSeq.insert(NewProtoSeq.begin() + 1, PrototypeDescriptor::Mask);
+    }
+  }
+
+  // If HasVL, append PrototypeDescriptor:VL to last operand
+  if (HasVL)
+    NewProtoSeq.push_back(PrototypeDescriptor::VL);
+  return NewProtoSeq;
+}
+
+#endif // SIFIVE_CUSTOMIZATION
+
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   SmallVector<PrototypeDescriptor> PrototypeDescriptors;
   const StringRef Primaries("evwqom0ztulfi");  // SIFIVE
@@ -1090,6 +1098,32 @@ SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
     Prototypes = Prototypes.drop_front(Idx + 1);
   }
   return PrototypeDescriptors;
+}
+
+raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
+  OS << "{";
+  OS << "\"" << Record.Name << "\",";
+  if (Record.OverloadedName == nullptr ||
+      StringRef(Record.OverloadedName).empty())
+    OS << "nullptr,";
+  else
+    OS << "\"" << Record.OverloadedName << "\",";
+  OS << "\"" << Record.ExtraSuffix << "\","; // SIFIVE
+  OS << Record.PrototypeIndex << ",";
+  OS << Record.SuffixIndex << ",";
+  OS << Record.OverloadedSuffixIndex << ",";
+  OS << (int)Record.PrototypeLength << ",";
+  OS << (int)Record.SuffixLength << ",";
+  OS << (int)Record.OverloadedSuffixSize << ",";
+  OS << (int)Record.RequiredExtensions << ",";
+  OS << (int)Record.TypeRangeMask << ",";
+  OS << (int)Record.Log2LMULMask << ",";
+  OS << (int)Record.NF << ",";
+  OS << (int)Record.HasMasked << ",";  // SIFIVE
+  OS << (int)Record.HasVL << ","; // SIFIVE
+  OS << (int)Record.HasMaskedOffOperand << ","; // SIFIVE
+  OS << "},\n";
+  return OS;
 }
 
 } // end namespace RISCV
