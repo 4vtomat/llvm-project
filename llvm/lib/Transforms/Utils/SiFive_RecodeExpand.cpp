@@ -79,6 +79,12 @@ static SmallVector<int, 8> increasingSequenceByN(int Init, int N, size_t Size) {
   return Mask;
 }
 
+static Value *smaxZero(IRBuilder<> &Builder, Value *Src) {
+  assert(isa<FixedVectorType>(Src->getType()));
+  return Builder.CreateIntrinsic(Intrinsic::smax, {Src->getType()},
+                                 {Src, ConstantInt::get(Src->getType(), 0)});
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_abs:
@@ -119,6 +125,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_sminv:
   case Intrinsic::aarch64_neon_smull:
   case Intrinsic::aarch64_neon_sqadd:
+  case Intrinsic::aarch64_neon_sqshlu:
   case Intrinsic::aarch64_neon_sqsub:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
@@ -555,6 +562,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             Op, {II->getArgOperand(0)->getType()},
             {II->getArgOperand(0), II->getArgOperand(1)}));
+        break;
+      }
+      case Intrinsic::aarch64_neon_sqshlu: {
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            Intrinsic::ushl_sat, {II->getType()},
+            {smaxZero(Builder, II->getArgOperand(0)), II->getArgOperand(1)}));
         break;
       }
       case Intrinsic::aarch64_neon_st1x2:
