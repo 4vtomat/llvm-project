@@ -8896,6 +8896,11 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   if (!isInt<12>(cast<ConstantSDNode>(N01)->getSExtValue()))
     return SDValue();
 
+  // Don't rewrite frame index offsets. The immediate would likely be folded
+  // with the stack pointer offset.
+  if (isa<FrameIndexSDNode>(N00))
+    return SDValue();
+
   // Users should be base pointer operand of scalar loads and stores that can
   // fold the immediate into the addressing.
   for (auto UI = N->use_begin(), UE = N->use_end(); UI != UE; ++UI) {
