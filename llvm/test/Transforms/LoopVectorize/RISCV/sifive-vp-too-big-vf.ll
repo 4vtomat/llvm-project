@@ -4,7 +4,9 @@
 define double @foo() {
 ; CHECK-LABEL: @foo(
 ; CHECK-NEXT:  for.body.preheader:
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP1:%.*]] = icmp ult i64 -1, [[TMP0]]
+; CHECK-NEXT:    br i1 [[TMP1]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -12,38 +14,38 @@ define double @foo() {
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 1 x double> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[INDEX]], i32 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.experimental.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP1:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP0]]
-; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 1 x i64> [[BROADCAST_SPLAT]], [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 0, [[INDEX]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 3, i64 0)
-; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
-; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0i32(<vscale x 1 x i32*> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP4]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VEC_PHI]], <vscale x 1 x double> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP4]])
-; CHECK-NEXT:    [[EVL_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i32> poison, i32 [[TMP4]], i32 0
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.experimental.stepvector.nxv1i64()
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP2]]
+; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 1 x i64> [[BROADCAST_SPLAT]], [[TMP3]]
+; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 0, [[INDEX]]
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP4]], i64 3, i64 0)
+; CHECK-NEXT:    [[TMP6:%.*]] = trunc i64 [[TMP5]] to i32
+; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0i32(<vscale x 1 x i32*> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VEC_PHI]], <vscale x 1 x double> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[EVL_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i32> poison, i32 [[TMP6]], i32 0
 ; CHECK-NEXT:    [[EVL_SPLAT:%.*]] = shufflevector <vscale x 1 x i32> [[EVL_SPLATINSERT]], <vscale x 1 x i32> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[STEP_VEC:%.*]] = call <vscale x 1 x i32> @llvm.experimental.stepvector.nxv1i32()
 ; CHECK-NEXT:    [[EVL_MASK:%.*]] = icmp ult <vscale x 1 x i32> [[STEP_VEC]], [[EVL_SPLAT]]
-; CHECK-NEXT:    [[VP_OP_SELECT]] = call <vscale x 1 x double> @llvm.vp.merge.nxv1f64(<vscale x 1 x i1> [[EVL_MASK]], <vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[VEC_PHI]], i32 [[TMP4]])
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP4]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_SELECT]] = call <vscale x 1 x double> @llvm.vp.merge.nxv1f64(<vscale x 1 x i1> [[EVL_MASK]], <vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[VEC_PHI]], i32 [[TMP6]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_SELECT]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_SELECT]])
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, [[MIDDLE_BLOCK]] ], [ 1, [[FOR_BODY_PREHEADER:%.*]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ], [ [[TMP8]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
-; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP8]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret double 0.000000e+00
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM_08:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = load i32, i32* null, align 4
+; CHECK-NEXT:    [[TMP11:%.*]] = load i32, i32* null, align 4
 ; CHECK-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 0

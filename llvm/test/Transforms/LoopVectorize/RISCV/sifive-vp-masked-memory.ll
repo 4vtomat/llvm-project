@@ -4,30 +4,33 @@
 define double @test() {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  for.body.preheader:
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; CHECK-NEXT:    [[TMP2:%.*]] = icmp ult i64 -1, [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[INDEX]], i32 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 8 x i64> @llvm.experimental.stepvector.nxv8i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 8 x i64> zeroinitializer, [[TMP1]]
-; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 8 x i64> [[BROADCAST_SPLAT]], [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 0, [[INDEX]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 3)
-; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8*, i8** undef, i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8*, i8** [[TMP6]], i32 0
-; CHECK-NEXT:    [[TMP8:%.*]] = bitcast i8** [[TMP7]] to <vscale x 8 x i8*>*
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8*> @llvm.vp.load.nxv8p0i8.p0nxv8p0i8(<vscale x 8 x i8*>* [[TMP8]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 8
-; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP5]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP11]]
-; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x i64> @llvm.experimental.stepvector.nxv8i64()
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 8 x i64> zeroinitializer, [[TMP4]]
+; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 8 x i64> [[BROADCAST_SPLAT]], [[TMP5]]
+; CHECK-NEXT:    [[TMP6:%.*]] = sub i64 0, [[INDEX]]
+; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP6]], i64 3, i64 3)
+; CHECK-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP7]] to i32
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i8*, i8** undef, i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i8*, i8** [[TMP9]], i32 0
+; CHECK-NEXT:    [[TMP11:%.*]] = bitcast i8** [[TMP10]] to <vscale x 8 x i8*>*
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8*> @llvm.vp.load.nxv8p0i8.p0nxv8p0i8(<vscale x 8 x i8*>* [[TMP11]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 8
+; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP8]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP14]]
+; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND13_PREHEADER_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -38,7 +41,7 @@ define double @test() {
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD_PTR_I:%.*]] = getelementptr inbounds i8*, i8** undef, i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i8*, i8** [[ADD_PTR_I]], align 8
+; CHECK-NEXT:    [[TMP16:%.*]] = load i8*, i8** [[ADD_PTR_I]], align 8
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 0
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND13_PREHEADER_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
