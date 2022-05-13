@@ -88,6 +88,29 @@ class VPatBinarySDNode_VV<SDNode vop,
                      op_reg_class:$rs2,
                      avl, sew)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// Pattern to merge vp.merge with an operation.
+// FIXME: Can we do this with a C++ peephole somewhere?
+class VPatBinarySDNode_VV_Merge<SDNode vop,
+                                string instruction_name,
+                                ValueType result_type,
+                                ValueType op_type,
+                                ValueType mask_type,
+                                int sew,
+                                LMULInfo vlmul,
+                                VReg result_reg_class,
+                                VReg op_reg_class> :
+    Pat<(result_type (riscv_vp_merge_vl (mask_type V0),
+                                        (vop
+                                         (op_type op_reg_class:$rs1),
+                                         (op_type op_reg_class:$rs2)),
+                                        result_reg_class:$merge,
+                                        VLOpFrag)),
+        (!cast<Instruction>(instruction_name#"_VV_"# vlmul.MX#"_MASK")
+             result_reg_class:$merge, op_reg_class:$rs1,
+             op_reg_class:$rs2, (mask_type V0), GPR:$vl, sew, TAIL_UNDISTURBED)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 class VPatBinarySDNode_XI<SDNode vop,
                           string instruction_name,
                           string suffix,
@@ -116,6 +139,12 @@ multiclass VPatBinarySDNode_VV_VX<SDNode vop, string instruction_name> {
                               vti.Vector, vti.Vector, vti.Log2SEW,
                               vti.LMul, vti.AVL, vti.RegClass,
                               SplatPat, GPR>;
+#ifdef SIFIVE_CUSTOMIZATION
+    def : VPatBinarySDNode_VV_Merge<vop, instruction_name,
+                                    vti.Vector, vti.Vector, vti.Mask,
+                                    vti.Log2SEW, vti.LMul,
+                                    vti.RegClass, vti.RegClass>;
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
