@@ -47,6 +47,11 @@ def : WriteRes<WriteJal, [SiFive6PipeB]>;
 def : WriteRes<WriteJalr, [SiFive6PipeB]>;
 def : WriteRes<WriteJmpReg, [SiFive6PipeB]>;
 
+//Short forward branch
+def : WriteRes<WriteSFB, [SiFive6PipeA, SiFive6PipeB]> {
+  let Latency = 3;
+}
+
 // Integer arithmetic and logic
 let Latency = 3 in {
 def : WriteRes<WriteIALU, [SiFive6PipeAB]>;
@@ -320,6 +325,9 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
+
+//Short forward branch
+def : ReadAdvance<ReadSFB, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
