@@ -344,6 +344,26 @@ static bool isMinMaxIntrinsic(Instruction *I) {
   return false;
 }
 
+static bool isSExtAnd(Instruction *I) {
+  // If one operand is a constant that wil sign extend with 0s, then the result
+  // is always sign extended.
+  if (auto *C = dyn_cast<ConstantInt>(I->getOperand(0)))
+    return C->getValue().isNonNegative();
+  if (auto *C = dyn_cast<ConstantInt>(I->getOperand(1)))
+    return C->getValue().isNonNegative();
+  return false;
+}
+
+static bool isSExtOr(Instruction *I) {
+  // If one operand is a constant that wil sign extend with 1s, then the result
+  // is always sign extended.
+  if (auto *C = dyn_cast<ConstantInt>(I->getOperand(0)))
+    return C->getValue().isNegative();
+  if (auto *C = dyn_cast<ConstantInt>(I->getOperand(1)))
+    return C->getValue().isNegative();
+  return false;
+}
+
 /// Return true if the given value is a source in the use-def chain.
 /// These values will be sext to start the promotion of the tree to i32.
 bool RISCVTypePromotion::isSource(Value *V) {
@@ -353,6 +373,10 @@ bool RISCVTypePromotion::isSource(Value *V) {
       // Every binary operator except and, or, xor is a source.
       return isa<BinaryOperator>(I) &&
              !cast<BinaryOperator>(I)->isBitwiseLogicOp();
+    case Instruction::And:
+      return isSExtAnd(I);
+    case Instruction::Or:
+      return isSExtOr(I);
     case Instruction::BitCast:
     case Instruction::Load:
     case Instruction::Trunc:
@@ -374,6 +398,10 @@ bool RISCVTypePromotion::isPromotableOperation(Instruction *I) {
     // Bitwise logic ops should be promoted.
     return isa<BinaryOperator>(I) &&
            cast<BinaryOperator>(I)->isBitwiseLogicOp();
+  case Instruction::And:
+    return !isSExtAnd(I);
+  case Instruction::Or:
+    return !isSExtOr(I);
   case Instruction::Select:
   case Instruction::PHI:
   case Instruction::ICmp:
@@ -395,6 +423,10 @@ bool RISCVTypePromotion::isSink(Instruction *I) {
     // Every binary operator except and, or, xor is a sink.
     return isa<BinaryOperator>(I) &&
            !cast<BinaryOperator>(I)->isBitwiseLogicOp();
+  case Instruction::And:
+    return isSExtAnd(I);
+  case Instruction::Or:
+    return isSExtOr(I);
   case Instruction::Store:
   case Instruction::Ret:
   case Instruction::Trunc:
