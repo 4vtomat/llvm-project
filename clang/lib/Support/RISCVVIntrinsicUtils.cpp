@@ -1139,17 +1139,19 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     // If HasMaskedOffOperand, insert result type as first input operand if
     // need.
     if (HasMaskedOffOperand) {
-      if (NF == 1 && DefaultPolicy != Policy::TAMA) {
-        NewProtoSeq.insert(NewProtoSeq.begin() + 1, NewProtoSeq[0]);
-      } else if (NF > 1) {
-        // Convert
-        // (void, op0 address, op1 address, ...)
-        // to
-        // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
-        PrototypeDescriptor MaskoffType = NewProtoSeq[1];
-        MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
-        for (unsigned I = 0; I < NF; ++I)
-          NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
+      if (DefaultPolicy != Policy::TAMA) {
+        if (NF == 1) {
+          NewProtoSeq.insert(NewProtoSeq.begin() + 1, NewProtoSeq[0]);
+        } else if (NF > 1) {
+          // Convert
+          // (void, op0 address, op1 address, ...)
+          // to
+          // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+          PrototypeDescriptor MaskoffType = NewProtoSeq[1];
+          MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+          for (unsigned I = 0; I < NF; ++I)
+            NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
+        }
       }
     }
     // Erase passthru operand for TAM
@@ -1168,19 +1170,32 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
       // If IsMasked, insert PrototypeDescriptor:Mask as first input operand.
       NewProtoSeq.insert(NewProtoSeq.begin() + 1, PrototypeDescriptor::Mask);
     }
-  } else if (NF == 1) {
-    if (DefaultPolicy == Policy::TU && HasPassthruOp && !IsPrototypeDefaultTU)
-      NewProtoSeq.insert(NewProtoSeq.begin(), NewProtoSeq[0]);
-    else if (DefaultPolicy == Policy::TA && HasPassthruOp &&
-             IsPrototypeDefaultTU)
-      NewProtoSeq.erase(NewProtoSeq.begin() + 1);
-    if (DefaultScheme == PolicyScheme::HasPassthruOperandAtIdx1) {
-      if (DefaultPolicy == Policy::TU && !IsPrototypeDefaultTU) {
-        // Insert undisturbed output to index 1
-        NewProtoSeq.insert(NewProtoSeq.begin() + 2, NewProtoSeq[0]);
-      } else if (DefaultPolicy == Policy::TA && IsPrototypeDefaultTU) {
-        // Erase passthru for TA policy
-        NewProtoSeq.erase(NewProtoSeq.begin() + 2);
+  } else {
+    if (NF == 1) {
+      if (DefaultPolicy == Policy::TU && HasPassthruOp && !IsPrototypeDefaultTU)
+        NewProtoSeq.insert(NewProtoSeq.begin(), NewProtoSeq[0]);
+      else if (DefaultPolicy == Policy::TA && HasPassthruOp &&
+               IsPrototypeDefaultTU)
+        NewProtoSeq.erase(NewProtoSeq.begin() + 1);
+      if (DefaultScheme == PolicyScheme::HasPassthruOperandAtIdx1) {
+        if (DefaultPolicy == Policy::TU && !IsPrototypeDefaultTU) {
+          // Insert undisturbed output to index 1
+          NewProtoSeq.insert(NewProtoSeq.begin() + 2, NewProtoSeq[0]);
+        } else if (DefaultPolicy == Policy::TA && IsPrototypeDefaultTU) {
+          // Erase passthru for TA policy
+          NewProtoSeq.erase(NewProtoSeq.begin() + 2);
+        }
+      }
+    } else {
+      if (DefaultPolicy == Policy::TU && HasPassthruOp) {
+        // Convert
+        // (void, op0 address, op1 address, ...)
+        // to
+        // (void, op0 address, op1 address, maskedoff0, maskedoff1, ...)
+        PrototypeDescriptor MaskoffType = ProtoSeq[1];
+        MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+        for (unsigned I = 0; I < NF; ++I)
+          NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
       }
     }
   }
