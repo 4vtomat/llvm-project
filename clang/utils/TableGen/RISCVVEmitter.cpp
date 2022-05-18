@@ -576,6 +576,8 @@ bool RVVEmitter::emitMacroRestrictionStr(RISCVPredefinedMacroT PredefinedMacros,
   // Giving xsfvfhbfmin or xsfvfwmaccqqq extension will enable bfloat16 support.
   if (PredefinedMacros & RISCVPredefinedMacro::HasBfloat16)
     OS << LS << "defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)";
+  if (PredefinedMacros & RISCVPredefinedMacro::Xsfvcp)
+    OS << LS << "defined(__riscv_xsfvcp)";
 #endif // SIFIVE_CUSTOMIZATION
   OS << "\n";
   return true;

@@ -59,6 +59,9 @@ enum class VectorTypeModifier : uint8_t {
   Widening2XVectorMultipleLMUL2, // (MultipleLMUL:2)w
   Widening4XVectorMultipleLMUL1, // (MultipleLMUL:1)q
   Widening4XVectorMultipleLMUL2, // (MultipleLMUL:2)q
+  // Since TypeModifier is full, so put this in VectorTypeModifier
+  // for workaround.
+  SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -152,6 +155,7 @@ enum ScalarTypeKind : uint8_t {
   UnsignedLong,
   SignedLong,
   Float32, // SIFIVE
+  SignedInteger32, // SIFIVE
   Boolean,
   SignedInteger,
   UnsignedInteger,
@@ -290,6 +294,7 @@ enum RISCVPredefinedMacro : RISCVPredefinedMacroT {
   Xsfvfhbfmin = 1 << 10,
   Xsfvfwmaccqqq = 1 << 11,
   HasBfloat16 = 1 << 12,
+  Xsfvcp = 1 << 13,
 #endif // SIFIVE_CUSTOMIZATION
 };
 

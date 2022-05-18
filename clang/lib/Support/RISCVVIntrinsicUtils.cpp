@@ -209,6 +209,9 @@ void RVVType::initBuiltinStr() {
   case ScalarTypeKind::Float32:
     BuiltinStr += "f";
     break;
+  case ScalarTypeKind::SignedInteger32:
+    BuiltinStr += "i";
+    return;
 #endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("ScalarType is invalid!");
@@ -322,6 +325,9 @@ void RVVType::initTypeStr() {
   case ScalarTypeKind::Float32:
     Str += "float";
     break;
+  case ScalarTypeKind::SignedInteger32:
+    Str += "int";
+    return;
 #endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     Str += getTypeString("int");
@@ -444,6 +450,10 @@ Optional<PrototypeDescriptor> PrototypeDescriptor::parsePrototypeDescriptor(
   case 'f':
     PT = BaseTypeModifier::Scalar;
     TM |= TypeModifier::Float32;
+    break;
+  case 'i':
+    PT = BaseTypeModifier::Vector;
+    VTM = VectorTypeModifier::SignedInteger32;
     break;
 #endif // SIFIVE_CUSTOMIZATION
   case '0':
@@ -804,6 +814,13 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     break;
   case VectorTypeModifier::NoModifier:
     break;
+#if SIFIVE_CUSTOMIZATION
+  // For SiFive VCIX intrinsic that need const integer for payloads.
+  case VectorTypeModifier::SignedInteger32:
+    ScalarType = ScalarTypeKind::SignedInteger32;
+    Scale = 0;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   for (unsigned TypeModifierMaskShift = 0;
@@ -1013,6 +1030,8 @@ RVVIntrinsic::RVVIntrinsic(
       RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfwmaccqqq;
     if (Feature == "HasBfloat16")
       RISCVPredefinedMacros |= RISCVPredefinedMacro::HasBfloat16;
+    if (Feature == "Xsfvcp")
+      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvcp;
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -1054,7 +1073,7 @@ std::string RVVIntrinsic::getSuffixStr(
 
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   SmallVector<PrototypeDescriptor> PrototypeDescriptors;
-  const StringRef Primaries("evwqom0ztulf");
+  const StringRef Primaries("evwqom0ztulfi");  // SIFIVE
   while (!Prototypes.empty()) {
     size_t Idx = 0;
     // Skip over complex prototype because it could contain primitive type
