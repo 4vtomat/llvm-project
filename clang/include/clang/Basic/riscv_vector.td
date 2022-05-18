@@ -2190,7 +2190,8 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
 // 15. Vector Reduction Operations
 // 15.1. Vector Single-Width Integer Reduction Instructions
 #ifdef SIFIVE_CUSTOMIZATION
-let MaskedPolicy = NonePolicy, IsPrototypeDefaultTU = true,
+let UnMaskedPolicy = HasPassthruOperand,
+    MaskedPolicy = HasPassthruOperand, IsPrototypeDefaultTU = true,
     SupportedMaskedPolicies = [TUMPolicy, TAMPolicy] in {
 #endif // SIFIVE_CUSTOMIZATION
 defm vredsum : RVVIntReductionBuiltinSet;

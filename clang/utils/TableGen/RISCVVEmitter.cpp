@@ -186,6 +186,9 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
       if (RVVI->hasMaskedOffOperand() &&
           RVVI->getDefaultPolicy() == Policy::TAMA)
         OS << "  Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));\n";
+      if (!RVVI->hasMaskedOffOperand() && RVVI->hasPassthruOperand() &&
+          RVVI->getDefaultPolicy() == Policy::TAMA)
+        OS << "  Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));\n";
     } else {
       OS << "  std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end());\n";
     }
