@@ -226,7 +226,7 @@ define i1 @bittest_constant_by_var_shr_i32(i32 signext %b) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a1, 301408
 ; RV64I-NEXT:    addiw a1, a1, 722
-; RV64I-NEXT:    srl a0, a1, a0
+; RV64I-NEXT:    srlw a0, a1, a0
 ; RV64I-NEXT:    andi a0, a0, 1
 ; RV64I-NEXT:    ret
 ;
