@@ -6776,22 +6776,14 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
           Op.getOpcode() == ISD::INTRINSIC_W_CHAIN) &&
          "Unexpected opcode");
 
-#if SIFIVE_CUSTOMIZATION
-#else
   if (!Subtarget.hasVInstructions())
     return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
 
   bool HasChain = Op.getOpcode() == ISD::INTRINSIC_VOID ||
                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN;
   unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
-  SDLoc DL(Op);
-
-#if SIFIVE_CUSTOMIZATION
   bool VCIX = VCIXScalarNeedLegalization(IntNo);
-  if (!VCIX && !Subtarget.hasVInstructions())
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
+  SDLoc DL(Op);
 
   const RISCVVIntrinsicsTable::RISCVVIntrinsicInfo *II =
       RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IntNo);
