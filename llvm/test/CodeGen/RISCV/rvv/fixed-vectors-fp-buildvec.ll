@@ -305,7 +305,7 @@ define dso_local void @splat_load_licm(float* %0) {
 ; RV64-NEXT:  .LBB12_1: # =>This Inner Loop Header: Depth=1
 ; RV64-NEXT:    slli a3, a1, 2
 ; RV64-NEXT:    add a3, a0, a3
-; RV64-NEXT:    addi a1, a1, 4
+; RV64-NEXT:    addiw a1, a1, 4
 ; RV64-NEXT:    vse32.v v8, (a3)
 ; RV64-NEXT:    bne a1, a2, .LBB12_1
 ; RV64-NEXT:  # %bb.2:

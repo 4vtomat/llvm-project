@@ -960,6 +960,14 @@ bool TypePromotion::runOnFunction(Function &F) {
               TargetLowering::TypePromoteInteger)
             break;
           EVT PromotedVT = TLI->getTypeToTransformTo(*Ctx, SrcVT);
+
+#if SIFIVE_CUSTOMIZATION
+          // Don't promote if sext is cheaper. RISC-V has it's own pass that
+          // already assessed the compare.
+          if (TLI->isSExtCheaperThanZExt(SrcVT, PromotedVT))
+            break;
+#endif
+
           if (RegisterBitWidth < PromotedVT.getFixedSizeInBits()) {
             LLVM_DEBUG(dbgs() << "IR Promotion: Couldn't find target register "
                               << "for promoted type\n");
