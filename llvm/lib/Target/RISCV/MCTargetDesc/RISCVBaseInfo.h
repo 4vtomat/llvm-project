@@ -256,6 +256,9 @@ enum OperandType : unsigned {
   OPERAND_UIMM20,
   OPERAND_UIMMLOG2XLEN,
   OPERAND_RVKRNUM,
+#if SIFIVE_CUSTOMIZATION
+  OPERAND_UIMM1,
+#endif // SIFIVE_CUSTOMIZATION
   OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM,
   // Operand is either a register or uimm5, this is used by V extension pseudo
   // instructions to represent a value that be passed as AVL to either vsetvli

@@ -570,6 +570,17 @@ public:
     return (isRV64() && isUInt<5>(Imm)) || isUInt<4>(Imm);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm1() const {
+    int64_t Imm;
+    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
+    if (!isImm())
+      return false;
+    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
+    return IsConstantImm && isUInt<1>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   bool isUImm2() const {
     int64_t Imm;
     RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
@@ -1188,6 +1199,10 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     if (isRV64())
       return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 5) - 1);
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 4) - 1);
+#if SIFIVE_CUSTOMIZATION
+  case Match_InvalidUImm1:
+    return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 1) - 1);
+#endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidUImm2:
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 2) - 1);
   case Match_InvalidUImm3:
@@ -2790,6 +2805,29 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
   if (Constraints == RISCVII::NoConstraint)
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned VCIXOpcode = Inst.getOpcode();
+  if (VCIXOpcode == RISCV::VC_V_XVW || VCIXOpcode == RISCV::VC_V_IVW ||
+      VCIXOpcode == RISCV::VC_V_FVW || VCIXOpcode == RISCV::VC_V_VVW) {
+    // Operands Opcode, Dst, uimm, Dst, Rs2, Rs1 for VC_V_XVW.
+    unsigned VCIXDst = Inst.getOperand(0).getReg();
+    SMLoc VCIXDstLoc = Operands[2]->getStartLoc();
+    if (Constraints & RISCVII::VS1Constraint) {
+      unsigned VCIXRs1 = Inst.getOperand(Inst.getNumOperands() - 1).getReg();
+      if (VCIXDst == VCIXRs1)
+        return Error(VCIXDstLoc, "The destination vector register group cannot"
+                                 " overlap the source vector register group.");
+    }
+    if (Constraints & RISCVII::VS2Constraint) {
+      unsigned VCIXRs2 = Inst.getOperand(Inst.getNumOperands() - 2).getReg();
+      if (VCIXDst == VCIXRs2)
+        return Error(VCIXDstLoc, "The destination vector register group cannot"
+                                 " overlap the source vector register group.");
+    }
+  }
+  else {
+#endif // SIFIVE_CUSTOMIZATION
+
   unsigned DestReg = Inst.getOperand(0).getReg();
   // Operands[1] will be the first operand, DestReg.
   SMLoc Loc = Operands[1]->getStartLoc();
@@ -2828,6 +2866,11 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
       return Error(Loc, "The destination vector register group cannot overlap"
                         " the mask register.");
   }
+
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   return false;
 }
 

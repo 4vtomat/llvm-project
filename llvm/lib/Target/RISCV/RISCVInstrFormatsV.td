@@ -163,6 +163,51 @@ class RVInstVXCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
   let Uses = [VTYPE, VL];
   let RVVConstraint = NoConstraint;
 }
+
+class RVInstVCCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
+                      string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+  bits<2> funct6_lo2;
+  bit vm;
+
+  let Inst{31-28} = funct6_hi4;
+  let Inst{27-26} = funct6_lo2;
+  let Inst{25} = vm;
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = funct3;
+  let Inst{11-7} = rd;
+  let Opcode = OPC_CUSTOM_2.Value;
+
+  let Uses = [VTYPE, VL];
+  let RVVConstraint = NoConstraint;
+}
+
+class RVInstVCFCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
+                       string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+  bit funct6_lo1;
+  bit vm;
+
+  let Inst{31-28} = funct6_hi4;
+  let Inst{27} = 1;
+  let Inst{26} = funct6_lo1;
+  let Inst{25} = vm;
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = funct3;
+  let Inst{11-7} = rd;
+  let Opcode = OPC_CUSTOM_2.Value;
+
+  let Uses = [VTYPE, VL];
+  let RVVConstraint = NoConstraint;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 class RVInstVX<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,

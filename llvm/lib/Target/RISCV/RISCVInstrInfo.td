@@ -166,6 +166,43 @@ def uimmlog2xlen : Operand<XLenVT>, ImmLeaf<XLenVT, [{
   let OperandNamespace = "RISCVOp";
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+// The payload and simm5_i32 operands are all marked as ImmArg in the IR
+// intrinsic and will be target constant, so use TImmLeaf rather than ImmLeaf.
+def payload1 : Operand<i32>, TImmLeaf<i32, [{return isUInt<1>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<1>;
+  let DecoderMethod = "decodeUImmOperand<1>";
+  let OperandType = "OPERAND_UIMM1";
+  let OperandNamespace = "RISCVOp";
+}
+
+def payload2 : Operand<i32>, TImmLeaf<i32, [{return isUInt<2>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<2>;
+  let DecoderMethod = "decodeUImmOperand<2>";
+  let OperandType = "OPERAND_UIMM2";
+  let OperandNamespace = "RISCVOp";
+}
+
+def payload5 : Operand<i32>, TImmLeaf<i32, [{return isUInt<5>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<5>;
+  let DecoderMethod = "decodeUImmOperand<5>";
+  let OperandType = "OPERAND_UIMM5";
+  let OperandNamespace = "RISCVOp";
+}
+
+def simm5_i32 : Operand<i32>, TImmLeaf<i32, [{return isInt<5>(Imm);}]> {
+  let ParserMatchClass = SImmAsmOperand<5>;
+  let EncoderMethod = "getImmOpValue";
+  let DecoderMethod = "decodeSImmOperand<5>";
+  let MCOperandPredicate = [{
+    int64_t Imm;
+    if (MCOp.evaluateAsConstantImm(Imm))
+      return isInt<5>(Imm);
+    return MCOp.isBareSymbolRef();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 def uimm2 : Operand<XLenVT> {
   let ParserMatchClass = UImmAsmOperand<2>;
   let DecoderMethod = "decodeUImmOperand<2>";
