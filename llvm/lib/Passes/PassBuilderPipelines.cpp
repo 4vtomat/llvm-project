@@ -1443,7 +1443,8 @@ ModulePassManager PassBuilder::buildThinLTODefaultPipeline(
   MPM.addPass(buildModuleOptimizationPipeline(Level));
 
 #if SIFIVE_CUSTOMIZATION
-  MPM.addPass(LoopDataLayoutPass());
+  // AoS to SoA transformations
+  MPM.addPass(LoopDataLayoutPass(/* MaxElements */ 2, /* ThinLTO */ true));
 #endif
 
   // Emit annotation remarks.
@@ -1659,6 +1660,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
       createModuleToFunctionPassAdaptor(InvalidateAnalysisPass<AAManager>()));
 
 #if SIFIVE_CUSTOMIZATION
+  // AoS to SoA transformations
   MPM.addPass(LoopDataLayoutPass());
 #endif
 

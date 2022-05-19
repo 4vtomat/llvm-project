@@ -835,8 +835,9 @@ void PassManagerBuilder::populateModulePassManager(
   addExtensionsToPM(EP_VectorizerStart, MPM);
 
 #if SIFIVE_CUSTOMIZATION
+  // AoS to SoA transformations
   if (PerformThinLTO)
-    MPM.add(createLoopDataLayoutPass()); // AoS to SoA transformations
+    MPM.add(createLoopDataLayoutPass(/* MaxElements */ 2, /* ThinLTO */ true));
 #endif
 
   // Re-rotate loops in all our loop nests. These may have fallout out of
@@ -1042,6 +1043,7 @@ void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
   PM.add(createMergedLoadStoreMotionPass()); // Merge ld/st in diamonds.
 
 #if SIFIVE_CUSTOMIZATION
+  // AoS to SoA transformations
   PM.add(createLoopDataLayoutPass());
 #endif
 

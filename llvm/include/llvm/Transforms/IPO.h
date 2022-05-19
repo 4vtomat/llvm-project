@@ -164,7 +164,8 @@ Pass *createArgumentPromotionPass(unsigned maxElements = 3);
 /// candidates to Structure of Arrays for containing structs as direct memory
 /// accesses which have a most MaxElements data fields.
 ///
-ModulePass *createLoopDataLayoutPass(unsigned MaxElements = 2);
+ModulePass *createLoopDataLayoutPass(unsigned MaxElements = 2,
+                                     bool ThinLTO = false);
 #endif
 
 //===----------------------------------------------------------------------===//

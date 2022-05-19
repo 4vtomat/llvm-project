@@ -41,13 +41,15 @@ namespace llvm {
 /// if all is sufficiently safe, replaces AoS entries with their
 /// arrays of data members.
 struct LoopDataLayoutPass : public PassInfoMixin<LoopDataLayoutPass> {
-  LoopDataLayoutPass(unsigned MaxElements = 2u) : MaxElements(MaxElements) {}
+  LoopDataLayoutPass(unsigned MaxElements = 2u, bool ThinLTO = false)
+      : MaxElements(MaxElements), IsThinLTO(ThinLTO) {}
   PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM);
   void printPipeline(raw_ostream &OS,
                      function_ref<StringRef(StringRef)> MapClassName2PassName);
 
 private:
   unsigned MaxElements;
+  bool IsThinLTO;
 };
 
 } // end namespace llvm

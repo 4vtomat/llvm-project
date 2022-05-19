@@ -36,6 +36,7 @@
 #if SIFIVE_CUSTOMIZATION
 
 #include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
+#include "llvm/ADT/SmallBitVector.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Analysis/AssumptionCache.h"
@@ -120,19 +121,44 @@ static bool isInductionPHI(PHINode *Index, Loop *L, ScalarEvolution &SE) {
       return Rec->isAffine() && !SE.containsUndefs(SE.getSCEV(P));
     return false;
   };
+  auto FindAltLatchCmp = [&](Instruction *StepInst, Loop *L) -> ICmpInst * {
+    for (User *U : StepInst->users())
+      if (auto *CurCmp = dyn_cast<ICmpInst>(U))
+        if (CurCmp->hasOneUse())
+          if (auto *BI = dyn_cast<BranchInst>(*CurCmp->user_begin()))
+            if (llvm::is_contained(BI->successors(), L->getLoopLatch()))
+              return CurCmp;
+    return nullptr;
+  };
 
   bool FoundInductionVar = false;
   if (Index->getParent() == L->getHeader()) {
+    Type *PhiTy = Index->getType();
+    // We only handle integer inductions variables.
+    if (!PhiTy->isIntegerTy())
+      return false;
+
     if (isSuitableIV(Index)) {
-      ICmpInst *CmpInst = L->getLatchCmpInst();
-      if (!CmpInst)
+      Value *StepVal = Index->getIncomingValueForBlock(L->getLoopLatch());
+      auto *StepInst = dyn_cast<Instruction>(StepVal);
+      if (!StepInst)
         return false;
+
+      // If the control that exits this loop is not canonnical, the latch cmp
+      // may be left empty as that control may not be in the latch block.
+      ICmpInst *CmpInst = L->getLatchCmpInst();
+      if (!CmpInst) {
+        // Check if one of the uses of StepInst is a cmp, validate
+        // that it is used in control flow which includes the latch
+        // block, else the control flow is complex and we return
+        // false.
+        CmpInst = FindAltLatchCmp(StepInst, L);
+        if (!CmpInst)
+          return false;
+      }
 
       Value *LatchCmpOp0 = peekThroughExtTrunc(CmpInst->getOperand(0));
       Value *LatchCmpOp1 = peekThroughExtTrunc(CmpInst->getOperand(1));
-      Value *StepVal = Index->getIncomingValueForBlock(L->getLoopLatch());
-      if (!isa<Instruction>(StepVal))
-        return false;
 
       // Must have CurP or StepVal as one of the compare operands.
       if (Index != LatchCmpOp0 && Index != LatchCmpOp1 &&
@@ -144,7 +170,6 @@ static bool isInductionPHI(PHINode *Index, Loop *L, ScalarEvolution &SE) {
       // This is a relaxed case of Simple Loop Form which does not require
       // dedicate exits and preheaders. These components may have been
       // transformed away after final loop optimizations before main LTO.
-      Instruction *StepInst = cast<Instruction>(StepVal);
       FoundInductionVar |= (any_of(StepInst->operands(), [=](const Value *Op) {
         return (Op == Index);
       }));
@@ -261,19 +286,18 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
              dbgs() << "Function: " << F->getName() << "\n");
   LLVM_DEBUG(for (auto &Candididates
                   : LocalCandidateMap) {
-    GetElementPtrInst *GEP = Candididates.first.second;
-    Value *Ptr = GEP->getPointerOperand();
-    GEP->dump();
+    GetElementPtrInst *SrcGEP = Candididates.first.second;
+    Value *Ptr = SrcGEP->getPointerOperand();
     // Discover if the containing struct is an argument to
     // the current function.
     if (isa<Argument>(Ptr))
-      dbgs() << "GEP : Param Matched with " << Candididates.second
+      dbgs() << "SrcGEP : Param Matched with " << Candididates.second
              << " instances\n";
     else if (isa<GlobalVariable>(Ptr))
-      dbgs() << "GEP : Global Matched with " << Candididates.second
+      dbgs() << "SrcGEP : Global Matched with " << Candididates.second
              << " instances\n";
     else
-      dbgs() << "GEP : Local Matched with " << Candididates.second
+      dbgs() << "SrcGEP : Local Matched with " << Candididates.second
              << " instances\n";
   });
 
@@ -411,6 +435,45 @@ static bool findRelatedCandidate(
   }));
 }
 
+static void examinePhisForReferences(
+    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+        &LocalReferenceMap,
+    Value *MemPtr, Type *ContainerTy, Module *M) {
+  // Build a list of objects from the ptr phi to examine
+  // the pointer operands for load operations that are input,
+  // if their GEPs are listed has having
+  // as i8, promote to ContainerTy as the phi ptr
+  // was used in a GEP to load the ArrayTy that paired
+  // with it.  If opaque pointers are not enabled, we
+  // will find the ContainerTy naturally as its GEP will
+  // identify it.
+  auto *CurTy = MemPtr->getType();
+  if (auto *PtrTy = dyn_cast<PointerType>(CurTy))
+    if (!PtrTy->isOpaque())
+      return;
+
+  SmallVector<const Value *, 4> Objects;
+  auto *Int8Ty = Type::getInt8Ty(M->getContext());
+
+  getUnderlyingObjects(MemPtr, Objects);
+  for (const Value *UnderlyingObj : Objects)
+    if (const auto *Ld = dyn_cast<LoadInst>(UnderlyingObj)) {
+      auto *Ptr = Ld->getPointerOperand();
+      auto *SrcGEP = dyn_cast<GetElementPtrInst>(Ptr);
+      if (!SrcGEP)
+        continue;
+
+      Type *BaseTy = SrcGEP->getSourceElementType();
+      // If this BaseTy was altered to i8, we can
+      // still associate it, as the GEP has been reminted
+      // with another way to point to ContainerTy
+      // Thought: perhaps we want to translate these
+      // GEPs back into a recognizable form.
+      if (BaseTy == Int8Ty)
+        LocalReferenceMap[{Ld, ContainerTy}]++;
+    }
+}
+
 // TODO: make this a semantic comparison
 static bool compareEqualGEPs(const GetElementPtrInst *A,
                              const GetElementPtrInst *B) {
@@ -454,6 +517,14 @@ static bool legalLoadRelationships(
             return (ContainerTy == InTy);
           }))
         return true;
+      const Value *CurMemPtr = CurGEP->getPointerOperand();
+      if (isa<Argument>(CurMemPtr)) {
+        if (any_of(LocalCandidateMap, [=](auto &Candididates) {
+              GetElementPtrInst *CandGEP = Candididates.first.second;
+              return (CandGEP->getPointerOperand() == CurMemPtr);
+            }))
+          return true;
+      }
     } else {
       // The GEPs are the same but used in different context, a variant
       // non phi based index variable would cause this, we will discover
@@ -466,8 +537,11 @@ static bool legalLoadRelationships(
 }
 
 static bool addReferencesForFunction(
-    SmallDenseMap<std::pair<Instruction *, Type *>, int> &LocalReferenceMap,
+    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+        &LocalReferenceMap,
+    SmallVectorImpl<Type *> &LocalParamMap,
     SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet, Function *F) {
+  Module *M = F->getParent();
   // Look for references by type if a member of our candidate map.
   bool ReferencesAsArguments = false;
   for (BasicBlock &BB : *F) {
@@ -476,16 +550,26 @@ static bool addReferencesForFunction(
         auto *Op = I.getOperand(k);
         if (isa<Argument>(Op) || isa<Instruction>(Op)) {
           auto *CurTy = Op->getType();
-
+          GetElementPtrInst *CurGEP = nullptr;
           if (auto *PtrTy = dyn_cast<PointerType>(CurTy)) {
-            if (PtrTy->isOpaque()) {
-              // For Opaque pointers, these will be ptr in the operand, so
-              // get the type from the GEP's result.
-              if (auto *GEP = dyn_cast<GetElementPtrInst>(Op))
-                CurTy = GEP->getSourceElementType();
-              else
+            if (auto *CurArg = dyn_cast<Argument>(Op)) {
+              // Obtain overlayed type from param map
+              CurTy = LocalParamMap[CurArg->getArgNo()];
+              if (!CurTy && !PtrTy->isOpaque())
+                CurTy = PtrTy->getNonOpaquePointerElementType();
+
+              if (!CurTy)
                 continue;
-            } else {
+
+              if (isa<PointerType>(CurTy))
+                continue;
+            } else if (auto *GEP = dyn_cast<GetElementPtrInst>(Op)) {
+              // Examine GEPs that are opaque
+              CurGEP = GEP;
+              CurTy = CurGEP->getSourceElementType();
+            } else if (auto *AI = dyn_cast<AllocaInst>(Op)) {
+              CurTy = AI->getAllocatedType();
+            } else if (!PtrTy->isOpaque()) {
               CurTy = PtrTy->getNonOpaquePointerElementType();
             }
           }
@@ -501,6 +585,12 @@ static bool addReferencesForFunction(
             if (CurTy == ArrayTy) {
               ReferencesAsArguments |= isa<Argument>(Op);
               LocalReferenceMap[{&I, CurTy}]++;
+              if (CurGEP) {
+                Value *MemPtr = CurGEP->getPointerOperand();
+                if (isa<PHINode>(MemPtr))
+                  examinePhisForReferences(LocalReferenceMap, MemPtr,
+                                           ContainerTy, M);
+              }
             } else if (CurTy == ContainerTy) {
               ReferencesAsArguments |= isa<Argument>(Op);
               LocalReferenceMap[{&I, CurTy}]++;
@@ -517,7 +607,7 @@ static bool runOnFunction(
     LoopInfo &LI, ScalarEvolution &SE, AAResults &AAR, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap,
-    Function *F, bool ThinLTO) {
+    SmallVectorImpl<Type *> &LocalParamMap, Function *F, bool ThinLTO) {
   // Look for legality issues which would block this transformation.
   // Generally the number of candidates for a given function is small.
   for (auto &Candididates : LocalCandidateMap) {
@@ -536,8 +626,8 @@ static bool runOnFunction(
         if ((Ld == &I) || (GEP == &I) || (SrcGEP == &I))
           continue;
 
-        if (auto *CurCast = dyn_cast<CastInst>(&I)) {
-          // Type Escape Analysis: No casts into or out of Ty
+        if (isa<CastInst>(&I)) {
+          // Type Based Escape Analysis: No casts into or out of Ty
           if ((I.getOperand(0)->getType() == Ty) || (I.getType() == Ty)) {
             LLVM_DEBUG(dbgs() << "cast into/out of Ty : " << *Ty << "\n");
             return false;
@@ -615,12 +705,18 @@ static bool runOnFunction(
               LLVM_DEBUG(dbgs()
                          << "Alias detected on Candidate" << *GEP << "\n");
               return false;
-            } else if (isa<Argument>(InputSrcPtr)) {
+            } else if (auto *CurArg = dyn_cast<Argument>(InputSrcPtr)) {
               // Check the type to see if this arg diverges from the candidate
               // type (Ty) and if so it does not alias because of type escape
               // analysis.
-              if (InputSrcPtr->getType() != Ty)
+              Type *ArgTy = InputSrcPtr->getType();
+              if (auto *ArgPtrTy = dyn_cast<PointerType>(ArgTy)) {
+                // Obtain overlayed type from param map
+                ArgTy = LocalParamMap[CurArg->getArgNo()];
+              }
+              if (ArgTy != Ty)
                 continue;
+
             } else {
               // If this I is a load/store we already processed the candidates
               // looking for a match, in not finding one we also have no alias
@@ -664,8 +760,13 @@ static bool runOnFunction(
           LLVM_DEBUG(dbgs()
                      << "Underlying objects for pointer " << *MemPtr << "\n");
           for (const Value *UnderlyingObj : Objects) {
-            if (isa<Argument>(UnderlyingObj)) {
-              if (UnderlyingObj->getType() != Ty)
+            if (auto *CurArg = dyn_cast<Argument>(UnderlyingObj)) {
+              Type *ArgTy = UnderlyingObj->getType();
+              if (auto *ArgPtrTy = dyn_cast<PointerType>(ArgTy)) {
+                // Obtain overlayed type from the ParamMap of F.
+                ArgTy = LocalParamMap[CurArg->getArgNo()];
+              }
+              if (ArgTy != Ty)
                 continue;
             } else if (const auto *InputLd =
                            dyn_cast<LoadInst>(UnderlyingObj)) {
@@ -679,7 +780,7 @@ static bool runOnFunction(
               // because of type based escape analysis.
               continue;
             } else if (isa<CastInst>(UnderlyingObj)) {
-              // Defer casts to type escape analysis.
+              // Defer casts to type based escape analysis.
               continue;
             }
 
@@ -720,6 +821,181 @@ static bool legalUseTree(Function *F, Instruction *I, TargetLibraryInfo &TLI) {
   return (NumInstUses == NumLegalUses);
 }
 
+static Optional<Type *> configureParamType(
+    TargetLibraryInfo &TLI, Value *Arg, Function *DCallee, Function *F,
+    DenseMap<Function *, SmallVector<Type *>> &ParamMap, unsigned i) {
+  SmallVector<Type *> &LocalParamMap = ParamMap[DCallee];
+  Type *BaseTy = nullptr;
+  if (auto *GV = dyn_cast<GlobalVariable>(Arg)) {
+    if (GV->isConstant())
+      return None;
+
+    BaseTy = GV->getValueType();
+  } else if (auto *CI = dyn_cast<CallInst>(Arg)) {
+    if (isReallocLikeFn(Arg, &TLI) || isMallocOrCallocLikeFn(Arg, &TLI)) {
+      // Look at uses of UnderlyingObj for a GEP and obtain
+      // the type there as these cases return a pointer
+      // and will be used in that context.
+      // TODO: handle complex flow cases involving phis.
+      for (const User *U : CI->users()) {
+        if (auto *GEP = dyn_cast<GetElementPtrInst>(U)) {
+          BaseTy = GEP->getSourceElementType();
+          break;
+        } else if (isa<PHINode>(U)) {
+          assert(0 && "unhandled PHI case for allocation call");
+        }
+      }
+    } else {
+      // See if this CB was already seen and params added.
+      BaseTy = LocalParamMap[i];
+    }
+  } else if (isa<Constant>(Arg)) {
+    return None;
+  } else {
+    SmallVector<const Value *, 4> Objects;
+    getUnderlyingObjects(Arg, Objects);
+    for (const Value *UnderlyingObj : Objects) {
+      if (const auto *Ld = dyn_cast<LoadInst>(UnderlyingObj)) {
+        auto *Ptr = Ld->getPointerOperand();
+        auto *SrcGEP = dyn_cast<GetElementPtrInst>(Ptr);
+        if (!SrcGEP)
+          continue;
+
+        BaseTy = SrcGEP->getSourceElementType();
+      } else if (auto *CurArg = dyn_cast<Argument>(UnderlyingObj)) {
+        // Lookup for F in overload map, since we are processing
+        // the call graph in dfs order from the CG entry node in
+        // main LTO, we should find an entry for F that matches
+        // ArgNo.
+        SmallVector<Type *> &CurParamMap = ParamMap[F];
+        // Obtain overlayed type from param map
+        BaseTy = CurParamMap[CurArg->getArgNo()];
+      } else if (auto *AI = dyn_cast<AllocaInst>(UnderlyingObj)) {
+        BaseTy = AI->getAllocatedType();
+      } else {
+        assert(0 && "Found unhandled case for obtaining BaseTy from "
+                    "UnderlyingObj");
+      }
+      if (BaseTy && BaseTy->isStructTy())
+        break;
+    }
+  }
+
+  if (!BaseTy)
+    return None;
+
+  return BaseTy;
+}
+
+static void processParameterMapping(SmallVector<Type *> &LocalParamMap,
+                                    SmallBitVector &LocalInvalidateMap,
+                                    Type *BaseTy, unsigned i) {
+  if (BaseTy && BaseTy->isStructTy()) {
+    Type *ParamTy = nullptr;
+    // Three cases exist here:
+    // * There are no entrys for Arg(i), so we add one
+    // * There is an entry and Arg(i) already has BaseTy
+    // * There is an entry and Arg(i) diverges from BaseTy
+    // Fetch whatever we have stored in i for LocalParamMap.
+    ParamTy = LocalParamMap[i];
+    // The case where BaseTy is ParamTy is already included in
+    // LocalParamMap as the undocumented else here.
+    if (ParamTy && (BaseTy != ParamTy)) {
+      // Invalidate Arg(i), we have conflicting types to overlay.
+      // We mark an invalid context to avoid a race and add an
+      // invalid entry for Arg(i).
+      LocalParamMap[i] = nullptr;
+      LocalInvalidateMap[i] = true;
+    } else if (ParamTy == nullptr) {
+      // If there LocalInvalidMap is false for this Arg(i),
+      // it is safe to add the current entry to LocalParamMap.
+      if (!LocalInvalidateMap[i])
+        LocalParamMap[i] = BaseTy;
+    }
+  }
+}
+
+static void walkCallGraphToFillParamMap(
+    CallGraph &CG, function_ref<TargetLibraryInfo &(Function &)> LookupTLI,
+    DenseMap<Function *, SmallVector<Type *>> &ParamMap,
+    DenseMap<Function *, SmallBitVector> &InvalidateMap, bool ThinLTO) {
+  // The Root of the CG is the external calling node
+  CallGraphNode *EntryNode = CG.getExternalCallingNode();
+  SmallVector<CallGraphNode *, 8> CGNStack;
+  // The CGNStack cannot use the depth_first iterator as the feature does not
+  // properly identify the root of the graph, in our case we want to enter
+  // the graph at main.  The same is true of the bfs iterator.  Are these bugs?
+  for (const auto &CI : *EntryNode) {
+    auto *CGN = CI.second;
+
+    // Ignore call graph node which does not have associated function
+    if (!CGN->getFunction() || CGN->getFunction()->isDeclaration())
+      continue;
+
+    if (ThinLTO) {
+      CGNStack.push_back(CGN);
+    } else {
+      // For full LTO, main is always visible in the CG.
+      if (CGN->getFunction()->getName() == "main") {
+        CGNStack.push_back(CGN);
+
+        break;
+      }
+    }
+  }
+  SmallPtrSet<CallGraphNode *, 8> VisitedCGNodes;
+  while (!CGNStack.empty()) {
+    auto *Node = CGNStack.pop_back_val();
+    Function *F = Node->getFunction();
+    TargetLibraryInfo &TLI = LookupTLI(*F);
+    // Vist all the Edges of F in the CG
+    for (const auto &GI : *Node) {
+      auto *CurCB = cast<CallBase>(GI.first.getValue());
+      FunctionType *FTy = CurCB->getFunctionType();
+      auto *CurCGN = GI.second;
+
+      // Ignore call graph node(s) which does not have an associated function.
+      auto *DCallee = CurCGN->getFunction();
+      if (!DCallee || DCallee->isDeclaration())
+        continue;
+
+      // Ignore recursive context.
+      if (DCallee == F)
+        continue;
+
+      // Add any unseen CG Nodes to the stack.
+      if (VisitedCGNodes.insert(CurCGN).second)
+        CGNStack.push_back(CurCGN);
+
+      // Look for args that have types of structs and add to LocalParamMap.
+      SmallVector<Type *> &LocalParamMap = ParamMap[DCallee];
+      SmallBitVector &LocalInvalidateMap = InvalidateMap[DCallee];
+      for (unsigned i = 0, e = FTy->getNumParams(); i != e; ++i) {
+        Type *ArgTy = FTy->getParamType(i);
+        if (auto *PtrTy = dyn_cast<PointerType>(ArgTy)) {
+          Type *BaseTy = nullptr;
+          Value *Arg = CurCB->getArgOperand(i);
+          Optional<Type *> OptTy =
+              configureParamType(TLI, Arg, DCallee, F, ParamMap, i);
+
+          if (OptTy != None)
+            BaseTy = *OptTy;
+
+          // Allow for maximally checking type divergence before falling back
+          // to legacy pointer type mining.
+          if (!BaseTy && !PtrTy->isOpaque())
+            BaseTy = PtrTy->getNonOpaquePointerElementType();
+
+          if (!BaseTy)
+            continue;
+
+          processParameterMapping(LocalParamMap, LocalInvalidateMap, BaseTy, i);
+        }
+      }
+    }
+  }
+}
+
 // For each cast, examine the divergent type path and reconcile if possible
 // or determine as true type escape
 static bool typeBasedEscapeAnalysis(
@@ -755,8 +1031,7 @@ static bool typeBasedEscapeAnalysis(
             if (legalUseTree(F, &I, TLI))
               break;
 
-            LLVM_DEBUG(dbgs()
-                       << "cast into/out of SrcTy : " << *SrcTy << "\n");
+            LLVM_DEBUG(dbgs() << "cast into/out of SrcTy : " << *SrcTy << "\n");
             return true;
           }
           // Now examine input objects to see if the actions are legal.
@@ -771,8 +1046,8 @@ static bool typeBasedEscapeAnalysis(
                     isMallocOrCallocLikeFn(UnderlyingObj, &TLI))
                   continue;
 
-                LLVM_DEBUG(dbgs() << "cast into/out of DstTy : "
-                                  << *DstTy << "\n");
+                LLVM_DEBUG(dbgs()
+                           << "cast into/out of DstTy : " << *DstTy << "\n");
                 return true;
               }
             }
@@ -793,15 +1068,35 @@ static LoopDataLayoutResult analyzeWholeProgram(
     DenseMap<Function *,
              SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>,
                            int>> &CandidateMap,
-    DenseMap<Function *, SmallDenseMap<std::pair<Instruction *, Type *>, int>>
-        &ReferenceMap) {
+    DenseMap<Function *,
+             SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
+        &ReferenceMap,
+    DenseMap<Function *, SmallVector<Type *>> &ParamMap,
+    DenseMap<Function *, SmallBitVector> &InvalidateMap,
+    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet, CallGraph &MCG) {
 
   LLVM_DEBUG(
       dbgs() << "Analyzing Loop collection for data layout opportunities: ");
-  bool FoundOpportunities = false;
-  SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+
+  // First initialize the parameter info for all functions.
+  for (Function &F : M) {
+    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
+    SmallBitVector &LocalInvalidateMap = InvalidateMap[&F];
+    if (F.isDeclaration())
+      continue;
+
+    // Now initialize with empty data so that each
+    // entry for a function is correctly sized.
+    // We will access both as indexed arrays.
+    LocalParamMap.assign(F.arg_size(), nullptr);
+    LocalInvalidateMap.resize(F.arg_size(), false);
+  }
+
+  walkCallGraphToFillParamMap(MCG, LookupTLI, ParamMap, InvalidateMap, ThinLTO);
+
   // During main LTO, all modules have been fused into a single module.
   // The thinLTO interface is for testing purposes only right now.
+  bool FoundOpportunities = false;
   for (Function &F : M) {
     if (F.isDeclaration())
       continue;
@@ -812,17 +1107,18 @@ static LoopDataLayoutResult analyzeWholeProgram(
     if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap)) {
       FoundOpportunities |= true;
       AAResults &AAR = AARGetter(F);
+      SmallVector<Type *> &LocalParamMap = ParamMap[&F];
       // AA and other legality analysis of candidates to transform.
-      if (!runOnFunction(LI, SE, AAR, MaxElements, LocalCandidateMap, &F,
-                         ThinLTO))
+      if (!runOnFunction(LI, SE, AAR, MaxElements, LocalCandidateMap,
+                         LocalParamMap, &F, ThinLTO))
         return LoopDataLayoutResult::TransformationIsIllegal;
 
       // For all local candidate maps, fill in a unique type map of SrcGEP/GEP
       // types to use for locating references in functions.
       for (auto &Candididates : LocalCandidateMap)
-        UniqueTypeSet.insert({
-            Candididates.first.first->getSourceElementType(),
-            Candididates.first.second->getSourceElementType()});
+        UniqueTypeSet.insert(
+            {Candididates.first.first->getSourceElementType(),
+             Candididates.first.second->getSourceElementType()});
     }
   }
 
@@ -834,16 +1130,16 @@ static LoopDataLayoutResult analyzeWholeProgram(
     if (F.isDeclaration())
       continue;
 
-    SmallDenseMap<std::pair<Instruction *, Type *>, int> &LocalReferenceMap =
-        ReferenceMap[&F];
-
+    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+        &LocalReferenceMap = ReferenceMap[&F];
+    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
     // TODO: check into GAAR related queries if we need them here on F.
     // See AliasAnalysis.h for a list of queries to detect behavior.
 
     // Add references to a local map and check if any references were
-    // arguments if we can modify the function, We do this as the loop
-    // processing list may be disjunct when we check this there.
-    if (addReferencesForFunction(LocalReferenceMap, UniqueTypeSet, &F))
+    // arguments and if so if we can modify the function.
+    if (addReferencesForFunction(LocalReferenceMap, LocalParamMap,
+                                 UniqueTypeSet, &F))
       if (!canFunctionUpdate(&F, ThinLTO)) {
         LLVM_DEBUG(dbgs() << "canFunctionUpdate() issue\n");
         return LoopDataLayoutResult::TransformationIsIllegal;
@@ -887,6 +1183,37 @@ static LoopDataLayoutResult analyzeWholeProgram(
   return LoopDataLayoutResult::HasDataLayoutOpportunities;
 }
 
+static void propagateNewTypeDefinitions(
+    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
+    SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet, Module &M) {
+  for (auto &TypePair : UniqueTypeSet) {
+    SmallVector<Type *> EltTys;
+    Type *ArrayTy = TypePair.first;
+    Type *ContainerTy = TypePair.second;
+    auto *ArrayST = cast<StructType>(ArrayTy);
+    auto *ContainerST = cast<StructType>(ContainerTy);
+    for (unsigned i = 0, e = ContainerST->getNumElements(); i != e; ++i) {
+      Type *FieldTy = ContainerST->getElementType(i);
+      EltTys.push_back(FieldTy);
+    }
+    // We will use a unified approach for both opaque
+    // pointers and the old model, ptrs to the sub fields of
+    // ArrayST are appended to the new struct layout.
+    for (unsigned i = 0, e = ArrayST->getNumElements(); i != e; ++i) {
+      Type *FieldTy = ArrayST->getElementType(i);
+      // Make a pointer to FieldTy and use that.
+      PointerType *PtrTy = PointerType::getUnqual(FieldTy);
+      EltTys.push_back(PtrTy);
+    }
+    std::string VarName((ArrayST->getName() + Twine("_soa")).str());
+    StructType *NewST =
+        StructType::create(M.getContext(), EltTys, VarName, false);
+    // Now place the translated type in a set to be referenced when
+    // we replace ContainerTy/ArrayTy instances during translation.
+    TranslatedTypeSet.insert({ContainerST, NewST});
+  }
+}
+
 PreservedAnalyses LoopDataLayoutPass::run(Module &M,
                                           ModuleAnalysisManager &AM) {
   auto &FAM = AM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
@@ -911,20 +1238,27 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
       SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>>
       CandidateMap;
 
-  DenseMap<Function *, SmallDenseMap<std::pair<Instruction *, Type *>, int>>
+  DenseMap<Function *,
+           SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
       ReferenceMap;
+
+  DenseMap<Function *, SmallVector<Type *>> ParamMap;
+  DenseMap<Function *, SmallBitVector> InvalidateMap;
+  SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+  SmallDenseSet<std::pair<Type *, Type *>, 4> TranslatedTypeSet;
 
   // Silently exit this optimization is disabled.
   if (!EnableLoopDataLayout)
     return PreservedAnalyses::all();
 
-  llvm::CallGraph MCG(M);
+  CallGraph MCG(M);
   GlobalsAAResult GAAR = GlobalsAAResult::analyzeModule(M, LookupTLI, MCG);
 
   // find data layout candidates for SoA to AoS transformation
-  auto Result = analyzeWholeProgram(LookupLoopInfo, LookupScalarEvolutionInfo,
-                                    LookupTLI, AARGetter, GAAR, M, MaxElements,
-                                    false, CandidateMap, ReferenceMap);
+  auto Result = analyzeWholeProgram(
+      LookupLoopInfo, LookupScalarEvolutionInfo, LookupTLI, AARGetter, GAAR, M,
+      MaxElements, IsThinLTO, CandidateMap, ReferenceMap, ParamMap,
+      InvalidateMap, UniqueTypeSet, MCG);
 
   // Silently exit as there are no opportunites to do the transformation.
   if (Result == LoopDataLayoutResult::HasNoOpportunities)
@@ -935,6 +1269,8 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
     LLVM_DEBUG(dbgs() << "Not Legal to do AoS to SoA Transformation\n");
     return PreservedAnalyses::all();
   }
+
+  propagateNewTypeDefinitions(UniqueTypeSet, TranslatedTypeSet, M);
 
   LazyCallGraph CG(M, LookupTLI);
   CG.buildRefSCCs();
@@ -1020,8 +1356,8 @@ class LoopDataLayoutLegacyPass : public ModulePass {
 public:
   static char ID;
 
-  LoopDataLayoutLegacyPass(unsigned MaxElements = 2)
-      : ModulePass(ID), MaxElements(MaxElements) {
+  LoopDataLayoutLegacyPass(unsigned MaxElements = 2, bool ThinLTO = false)
+      : ModulePass(ID), MaxElements(MaxElements), IsThinLTO(ThinLTO) {
     initializeLoopDataLayoutLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 
@@ -1041,6 +1377,9 @@ public:
 
   /// The maximum number of elements to map and replace AoS with.
   unsigned MaxElements;
+
+  /// ThinLTO enabled for this pass
+  bool IsThinLTO;
 };
 
 } // end anonymous namespace
@@ -1058,8 +1397,8 @@ INITIALIZE_PASS_DEPENDENCY(TargetTransformInfoWrapperPass)
 INITIALIZE_PASS_END(LoopDataLayoutLegacyPass, "loop-data-layout",
                     "Discover data layout opportunities", false, false)
 
-ModulePass *llvm::createLoopDataLayoutPass(unsigned MaxElements) {
-  return new LoopDataLayoutLegacyPass(MaxElements);
+ModulePass *llvm::createLoopDataLayoutPass(unsigned MaxElements, bool ThinLTO) {
+  return new LoopDataLayoutLegacyPass(MaxElements, ThinLTO);
 }
 
 bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
@@ -1092,17 +1431,23 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
       Function *,
       SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>>
       CandidateMap;
-  DenseMap<Function *, SmallDenseMap<std::pair<Instruction *, Type *>, int>>
+  DenseMap<Function *,
+           SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
       ReferenceMap;
+  DenseMap<Function *, SmallVector<Type *>> ParamMap;
+  DenseMap<Function *, SmallBitVector> InvalidateMap;
+  SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+  SmallDenseSet<std::pair<Type *, Type *>, 4> TranslatedTypeSet;
   LegacyAARGetter AARGetter(*this);
 
-  llvm::CallGraph MCG(M);
+  CallGraph MCG(M);
   GlobalsAAResult GAAR = GlobalsAAResult::analyzeModule(M, LookupTLI, MCG);
 
   // find data layout candidates for SoA to AoS transformation
-  auto Result = analyzeWholeProgram(LookupLoopInfo, LookupScalarEvolutionInfo,
-                                    LookupTLI, AARGetter, GAAR, M, MaxElements,
-                                    true, CandidateMap, ReferenceMap);
+  auto Result = analyzeWholeProgram(
+      LookupLoopInfo, LookupScalarEvolutionInfo, LookupTLI, AARGetter, GAAR, M,
+      MaxElements, IsThinLTO, CandidateMap, ReferenceMap, ParamMap,
+      InvalidateMap, UniqueTypeSet, MCG);
 
   // Silently exit as there are no opportunites to do the transformation.
   if (Result == LoopDataLayoutResult::HasNoOpportunities)
@@ -1113,6 +1458,8 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
     LLVM_DEBUG(dbgs() << "Not Legal to do AoS to SoA Transformation\n");
     return false;
   }
+
+  propagateNewTypeDefinitions(UniqueTypeSet, TranslatedTypeSet, M);
 
   LazyCallGraph CG(M, LookupTLI);
   CG.buildRefSCCs();
