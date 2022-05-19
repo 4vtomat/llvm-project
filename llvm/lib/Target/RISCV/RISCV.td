@@ -419,14 +419,14 @@ def FeatureStdExtZvfh
 def FeatureStdExtXsfvqmaccqoq
     : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",
                        "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl256b]>; // FIXME: Is this the right implication
+                       [FeatureStdExtZve32x, FeatureStdExtZvl256b]>;
 def HasExtXsfvqmaccqoq : Predicate<"Subtarget->hasExtXsfvqmaccqoq()">,
                          AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccqoq),
                          "'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)">;
 def FeatureStdExtXsfvqmaccdod
     : SubtargetFeature<"xsfvqmaccdod", "HasExtXsfvqmaccdod", "true",
                        "Xsfvqmaccdod (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl128b]>; // FIXME: Is this the right implication
+                       [FeatureStdExtZve32x, FeatureStdExtZvl128b]>;
 def HasExtXsfvqmaccdod : Predicate<"Subtarget->hasExtXsfvqmaccdod()">,
                          AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccdod),
                          "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
@@ -442,7 +442,7 @@ def HasExtXsfvfhbfmin : Predicate<"Subtarget->hasExtXsfvfhbfmin()">,
 def FeatureStdExtXsfvfwmaccqqq
     : SubtargetFeature<"xsfvfwmaccqqq", "HasExtXsfvfwmaccqqq", "true",
                        "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
-                       [FeatureStdExtZve32f]>;
+                       [FeatureStdExtZve32f, FeatureStdExtZvl256b]>;
 def HasExtXsfvfwmaccqqq : Predicate<"Subtarget->hasExtXsfvfwmaccqqq()">,
                           AssemblerPredicate<(all_of FeatureStdExtXsfvfwmaccqqq),
                           "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
