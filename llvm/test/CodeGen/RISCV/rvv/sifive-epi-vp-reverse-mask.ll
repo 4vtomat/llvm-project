@@ -270,8 +270,9 @@ define <vscale x 64 x i1> @test_vp_reverse_nxv64i1_masked(<vscale x 64 x i1> %sr
 ; CHECK-NEXT:    add a2, a1, a0
 ; CHECK-NEXT:  .LBB12_3:
 ; CHECK-NEXT:    sub a3, a1, a2
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v24, a3
+; CHECK-NEXT:    vsetvli zero, zero, e8, m8, ta, mu
 ; CHECK-NEXT:    vid.v v24
 ; CHECK-NEXT:    vmsltu.vx v0, v24, a3
 ; CHECK-NEXT:    vslidedown.vx v24, v8, a2
@@ -308,8 +309,9 @@ define <vscale x 64 x i1> @test_vp_reverse_nxv64i1(<vscale x 64 x i1> %src, i32 
 ; CHECK-NEXT:    add a2, a1, a0
 ; CHECK-NEXT:  .LBB13_3:
 ; CHECK-NEXT:    sub a3, a1, a2
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, mu
 ; CHECK-NEXT:    vslideup.vx v24, v16, a3
+; CHECK-NEXT:    vsetvli zero, zero, e8, m8, ta, mu
 ; CHECK-NEXT:    vid.v v16
 ; CHECK-NEXT:    vmsltu.vx v0, v16, a3
 ; CHECK-NEXT:    vslidedown.vx v16, v8, a2

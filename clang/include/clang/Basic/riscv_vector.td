@@ -2328,6 +2328,12 @@ let IntrinsicTypes = [-1] in
 //
 // Below is not for upstream
 //
+// The modifier 'MultipleLMUL' represents LMUL that will expanded but
+// doesn't follow general expansion rules. The LMUL here is represented
+// under logarithm.
+// (MultipleLMUL:1)q stands for LMUL don't multiply and SEW multiply by 4
+// (MultipleLMUL:2)w stands for LMUL multiply by 2 and SEW multiply by 2
+// (MultipleLMUL:2)q stands for LMUL multiply by 2 and SEW multiply by 4
 let RequiredFeatures = ["Xsfvqmaccqoq"],
     UnMaskedPolicy = HasPolicyOperand,
     Log2LMUL = [0, 1, 2, -1],

@@ -108,7 +108,7 @@ class VPatBinarySDNode_VV_Merge<SDNode vop,
                                         VLOpFrag)),
         (!cast<Instruction>(instruction_name#"_VV_"# vlmul.MX#"_MASK")
              result_reg_class:$merge, op_reg_class:$rs1,
-             op_reg_class:$rs2, (mask_type V0), GPR:$vl, sew, TAIL_UNDISTURBED)>;
+             op_reg_class:$rs2, (mask_type V0), GPR:$vl, sew, TAIL_UNDISTURBED_MASK_UNDISTURBED)>;
 #endif // SIFIVE_CUSTOMIZATION
 
 class VPatBinarySDNode_XI<SDNode vop,
