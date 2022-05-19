@@ -25,12 +25,19 @@
 ; commuted. The destination registers are used as source registers for the third add.
 
 define float @reassociate_adds1(float %x0, float %x1, float %x2, float %x3) {
-; CHECK-LABEL: reassociate_adds1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fadd.s ft0, fa0, fa1
-; CHECK-NEXT:    fadd.s ft1, fa2, fa3
-; CHECK-NEXT:    fadd.s fa0, ft0, ft1
-; CHECK-NEXT:    ret
+; U74-LABEL: reassociate_adds1:
+; U74:       # %bb.0:
+; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft1, fa0, fa1
+; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    ret
+;
+; P550-LABEL: reassociate_adds1:
+; P550:       # %bb.0:
+; P550-NEXT:    fadd.s ft0, fa0, fa1
+; P550-NEXT:    fadd.s ft1, fa2, fa3
+; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %t0, %x2
   %t2 = fadd reassoc nsz float %t1, %x3
@@ -38,12 +45,19 @@ define float @reassociate_adds1(float %x0, float %x1, float %x2, float %x3) {
 }
 
 define float @reassociate_adds2(float %x0, float %x1, float %x2, float %x3) {
-; CHECK-LABEL: reassociate_adds2:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fadd.s ft0, fa0, fa1
-; CHECK-NEXT:    fadd.s ft1, fa2, fa3
-; CHECK-NEXT:    fadd.s fa0, ft0, ft1
-; CHECK-NEXT:    ret
+; U74-LABEL: reassociate_adds2:
+; U74:       # %bb.0:
+; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft1, fa0, fa1
+; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    ret
+;
+; P550-LABEL: reassociate_adds2:
+; P550:       # %bb.0:
+; P550-NEXT:    fadd.s ft0, fa0, fa1
+; P550-NEXT:    fadd.s ft1, fa2, fa3
+; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %x2, %t0
   %t2 = fadd reassoc nsz float %t1, %x3
@@ -51,12 +65,19 @@ define float @reassociate_adds2(float %x0, float %x1, float %x2, float %x3) {
 }
 
 define float @reassociate_adds3(float %x0, float %x1, float %x2, float %x3) {
-; CHECK-LABEL: reassociate_adds3:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fadd.s ft0, fa0, fa1
-; CHECK-NEXT:    fadd.s ft1, fa2, fa3
-; CHECK-NEXT:    fadd.s fa0, ft0, ft1
-; CHECK-NEXT:    ret
+; U74-LABEL: reassociate_adds3:
+; U74:       # %bb.0:
+; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft1, fa0, fa1
+; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    ret
+;
+; P550-LABEL: reassociate_adds3:
+; P550:       # %bb.0:
+; P550-NEXT:    fadd.s ft0, fa0, fa1
+; P550-NEXT:    fadd.s ft1, fa2, fa3
+; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %t0, %x2
   %t2 = fadd reassoc nsz float %x3, %t1
@@ -64,12 +85,19 @@ define float @reassociate_adds3(float %x0, float %x1, float %x2, float %x3) {
 }
 
 define float @reassociate_adds4(float %x0, float %x1, float %x2, float %x3) {
-; CHECK-LABEL: reassociate_adds4:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fadd.s ft0, fa0, fa1
-; CHECK-NEXT:    fadd.s ft1, fa2, fa3
-; CHECK-NEXT:    fadd.s fa0, ft0, ft1
-; CHECK-NEXT:    ret
+; U74-LABEL: reassociate_adds4:
+; U74:       # %bb.0:
+; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft1, fa0, fa1
+; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    ret
+;
+; P550-LABEL: reassociate_adds4:
+; P550:       # %bb.0:
+; P550-NEXT:    fadd.s ft0, fa0, fa1
+; P550-NEXT:    fadd.s ft1, fa2, fa3
+; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %x2, %t0
   %t2 = fadd reassoc nsz float %x3, %t1
@@ -82,12 +110,12 @@ define float @reassociate_adds4(float %x0, float %x1, float %x2, float %x3) {
 define float @reassociate_adds5(float %x0, float %x1, float %x2, float %x3, float %x4, float %x5, float %x6, float %x7) {
 ; U74-LABEL: reassociate_adds5:
 ; U74:       # %bb.0:
-; U74-NEXT:    fadd.s ft0, fa0, fa1
+; U74-NEXT:    fadd.s ft0, fa4, fa5
 ; U74-NEXT:    fadd.s ft1, fa2, fa3
-; U74-NEXT:    fadd.s ft2, fa4, fa5
-; U74-NEXT:    fadd.s ft0, ft0, ft1
-; U74-NEXT:    fadd.s ft1, ft2, fa6
-; U74-NEXT:    fadd.s ft0, ft0, ft1
+; U74-NEXT:    fadd.s ft2, fa0, fa1
+; U74-NEXT:    fadd.s ft0, ft0, fa6
+; U74-NEXT:    fadd.s ft1, ft2, ft1
+; U74-NEXT:    fadd.s ft0, ft1, ft0
 ; U74-NEXT:    fadd.s fa0, ft0, fa7
 ; U74-NEXT:    ret
 ;

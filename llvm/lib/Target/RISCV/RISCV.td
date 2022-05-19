@@ -522,6 +522,12 @@ def FeatureDontSinkSplatOperands
                        "true", "Don't sink splat operands to enable .vx or .vf "
                        "instructions">;
 
+def FeatureDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
+                      "'DLen' (SiFive datapath length) 128">;
+
+def FeatureDLen256b : SubtargetFeature<"dlen256b", "DLen", "256",
+                      "'DLen' (SiFive datapath length) 256">;
+
 def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [FeatureShortForwardBranchOpt,
@@ -773,8 +779,9 @@ def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZfh,
                                                    FeatureStdExtZvfh,
                                                    FeatureStdExtZba,
-                                                   FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                                                   FeatureStdExtZbb,
+                                                   FeatureDLen128b],
+                     [TuneSiFive7, FeatureDLen128b]>;
 
 def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
@@ -788,7 +795,7 @@ def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtZvfh,
                                                      FeatureStdExtZba,
                                                      FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, FeatureDLen128b]>;
 
 def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
@@ -804,7 +811,7 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, FeatureDLen256b]>;
 
 def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
@@ -822,7 +829,7 @@ def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvqmaccqoq,
                                                      FeatureStdExtXsfvfnrclipxfqf,
                                                      FeatureStdExtXsfvfwmaccqqq],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, FeatureDLen256b]>;
 
 def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtM,

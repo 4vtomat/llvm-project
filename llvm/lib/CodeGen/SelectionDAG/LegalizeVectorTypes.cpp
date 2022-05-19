@@ -1137,6 +1137,7 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_SIGN_EXTEND:
   case ISD::VP_ZERO_EXTEND:
+  case ISD::VP_TRUNCATE:
     // FIXME: This might not be the best solution.
     SplitVecRes_UnaryOp(N, Lo, Hi);
     break;
@@ -2767,6 +2768,11 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMIN:
     Res = SplitVecOp_VP_REDUCE(N, OpNo);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_TRUNCATE:
+    Res = SplitVecOp_UnaryOp(N);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -2911,10 +2917,19 @@ SDValue DAGTypeLegalizer::SplitVecOp_UnaryOp(SDNode *N) {
     // of the other one.
     SDValue Ch = DAG.getNode(ISD::TokenFactor, dl, MVT::Other, Lo.getValue(1),
                              Hi.getValue(1));
-  
     // Legalize the chain result - switch anything that used the old chain to
     // use the new one.
     ReplaceValueWith(SDValue(N, 1), Ch);
+#if SIFIVE_CUSTOMIZATION
+  } else if (N->getNumOperands() != 1) {
+    assert(N->getNumOperands() == 3);
+    SDValue MaskLo, MaskHi, EVLLo, EVLHi;
+    std::tie(MaskLo, MaskHi) = SplitMask(N->getOperand(1));
+    std::tie(EVLLo, EVLHi) =
+        DAG.SplitEVL(N->getOperand(2), N->getValueType(0), dl);
+    Lo = DAG.getNode(N->getOpcode(), dl, OutVT, Lo, MaskLo, EVLLo);
+    Hi = DAG.getNode(N->getOpcode(), dl, OutVT, Hi, MaskHi, EVLHi);
+#endif // SIFIVE_CUSTOMIZATION
   } else {
     Lo = DAG.getNode(N->getOpcode(), dl, OutVT, Lo);
     Hi = DAG.getNode(N->getOpcode(), dl, OutVT, Hi);

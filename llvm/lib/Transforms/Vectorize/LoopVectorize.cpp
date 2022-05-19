@@ -9274,6 +9274,7 @@ bool VPRecipeBuilder::validateWiden(Instruction *I) const {
     case Instruction::URem:
     case Instruction::Xor:
     case Instruction::ZExt:
+    case Instruction::Freeze:
       return true;
     }
     return false;
@@ -9576,7 +9577,8 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 
 #if SIFIVE_CUSTOMIZATION
   // BitCast does not need to be predicated
-  if (preferPredicatedWiden() && Instr->getOpcode() != Instruction::BitCast)
+  if (preferPredicatedWiden() && Instr->getOpcode() != Instruction::BitCast &&
+      Instr->getOpcode() != Instruction::Freeze)
     return toVPRecipeResult(tryToPredicatedWiden(Instr, Operands, Plan));
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -10389,6 +10391,18 @@ void VPWidenRecipe::execute(VPTransformState &State) {
     }
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case Instruction::Freeze: {
+    State.ILV->setDebugLocFromInst(&I);
+
+    for (unsigned Part = 0; Part < State.UF; ++Part) {
+      Value *Op = State.get(getOperand(0), Part);
+      Value *Freeze = Builder.CreateFreeze(Op);
+      State.set(this, Freeze, Part);
+    }
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   default:
     // This instruction is not vectorized by simple widening.
     LLVM_DEBUG(dbgs() << "LV: Found an unhandled instruction: " << I);

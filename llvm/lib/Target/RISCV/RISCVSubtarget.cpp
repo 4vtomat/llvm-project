@@ -414,4 +414,10 @@ void RISCVSubtarget::adjustSchedDependency(SUnit *SrcSU, int SrcOpIdx,
     }
   }
 }
+
+void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
+                                         unsigned NumRegionInstrs) const {
+  if (getProcFamily() == RISCVSubtarget::SiFive7)
+    Policy.OnlyBottomUp = false;
+}
 #endif // SIFIVE_CUSTOMIZATION

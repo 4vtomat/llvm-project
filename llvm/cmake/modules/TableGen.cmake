@@ -82,7 +82,9 @@ function(tablegen project ofn)
     list(APPEND LLVM_TABLEGEN_FLAGS "-no-warn-on-unused-template-args")
   endif()
 
-  list(APPEND LLVM_TABLEGEN_FLAGS "-DSIFIVE_CUSTOMIZATION") # SIFIVE
+  if (NOT project STREQUAL MLIR_PDLL)
+    list(APPEND LLVM_TABLEGEN_FLAGS "-DSIFIVE_CUSTOMIZATION") # SIFIVE
+  endif()
 
   # We need both _TABLEGEN_TARGET and _TABLEGEN_EXE in the  DEPENDS list
   # (both the target and the file) to have .inc files rebuilt on
