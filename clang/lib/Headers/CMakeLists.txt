@@ -424,32 +424,61 @@ set(header_install_dir lib${LLVM_LIBDIR_SUFFIX}/clang/${CLANG_VERSION}/include)
 
 #############################################################
 # Install rules for the catch-all clang-resource-headers target
-install(
-  FILES ${files} ${generated_files}
-  DESTINATION ${header_install_dir}
-  COMPONENT clang-resource-headers)
+# SIFIVE_CUSTOMIZATION
+if (LLVM_TARGETS_TO_BUILD STREQUAL RISCV)
+  install(
+    FILES ${core_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
 
-install(
-  FILES ${cuda_wrapper_files}
-  DESTINATION ${header_install_dir}/cuda_wrappers
-  COMPONENT clang-resource-headers)
+  install(
+    FILES ${riscv_generated_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
 
-install(
-  FILES ${ppc_wrapper_files}
-  DESTINATION ${header_install_dir}/ppc_wrappers
-  COMPONENT clang-resource-headers)
+  install(
+    FILES ${opencl_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
+
+  install(
+    FILES ${utility_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
+
+  install(
+    FILES ${windows_only_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
+else()
+  install(
+    FILES ${files} ${generated_files}
+    DESTINATION ${header_install_dir}
+    COMPONENT clang-resource-headers)
+
+  install(
+    FILES ${cuda_wrapper_files}
+    DESTINATION ${header_install_dir}/cuda_wrappers
+    COMPONENT clang-resource-headers)
+
+  install(
+    FILES ${ppc_wrapper_files}
+    DESTINATION ${header_install_dir}/ppc_wrappers
+    COMPONENT clang-resource-headers)
+endif()
+# end SIFIVE_CUSTOMIZATION
 
 install(
   FILES ${openmp_wrapper_files}
   DESTINATION ${header_install_dir}/openmp_wrappers
   COMPONENT clang-resource-headers)
 
-# SIFIVE
+# SIFIVE_CUSTOMIZATION
 install(
   FILES ${sifive_wrapper_files}
   DESTINATION ${header_install_dir}/sifive_wrappers
   COMPONENT clang-resource-headers)
-#end SIFIVE
+# end SIFIVE_CUSTOMIZATION
 
 #############################################################
 # Install rules for separate header lists
