@@ -54,7 +54,7 @@ public:
 
   bool runOnFunction(Function &F) override;
 
-  static constexpr unsigned MinCopySize = 16;
+  static constexpr unsigned MinCopySize = 64;
   static constexpr unsigned MaxUnrollTimes = 8;
 
 private:
