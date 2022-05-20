@@ -31,6 +31,9 @@
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/IR/DiagnosticPrinter.h"
 #include "llvm/IR/IRBuilder.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsAArch64.h"
+#endif
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Support/Debug.h"
@@ -5852,6 +5855,31 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VSELECT_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, VL);
   }
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::aarch64_neon_fmax:
+  case Intrinsic::aarch64_neon_fmin: {
+    // aarch64_neon_fmax is FMAXIMUM
+    //                |         right
+    //                |----------------------
+    //                |  qnan |  snan | other
+    // ---------------+-------+-------+------
+    //        | qnan  |  NaN  |  NaN  |  NaN
+    //   left | snan  |  NaN  |  NaN  |  NaN
+    //        | other |  NaN  |  NaN  | op(left, right)
+    SDValue Op0 = Op.getOperand(1);
+    SDValue Op1 = Op.getOperand(2);
+    EVT VT = Op.getValueType();
+    SDValue TrueVal = DAG.getConstantFP(
+        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue FalseVal = DAG.getNode(
+        IntNo == Intrinsic::aarch64_neon_fmax ? ISD::FMAXNUM : ISD::FMINNUM, DL,
+        VT, Op0, Op1);
+    SDValue IsNaN = DAG.getSetCC(
+        DL, getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT), Op0,
+        Op1, ISD::SETUO);
+    return DAG.getSelect(DL, VT, IsNaN, TrueVal, FalseVal);
+  }
+#endif
   }
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
