@@ -2470,6 +2470,71 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::experimental_vp_reverse: {
+    Value *BO0, *BO1;
+    Value *Vec = II->getArgOperand(0);
+    Value *Mask = II->getArgOperand(1);
+    Value *VL = II->getArgOperand(2);
+
+    // Match vp.gathers that splat the same value to all VL elements.
+    auto isSplatVPGather = [](Value *Op, Value *VL) {
+      Value *Ptr, *Mask;
+      if (!match(Op, m_Intrinsic<Intrinsic::vp_gather>(
+                         m_Value(Ptr), m_Value(Mask), m_Specific(VL))))
+        return false;
+
+      if (!isSplatValue(Ptr))
+        return false;
+
+      // Mask needs to be an all ones splat otherwise we can't guarantee there
+      // aren't undef elements being reversed.
+      auto *MaskC = dyn_cast<Constant>(Mask);
+      if (!MaskC || !MaskC->isAllOnesValue())
+        return false;
+
+      return true;
+    };
+
+    // FIXME: Add all VP binops.
+    // Look for VL intrinsics with splat mask.
+    // FIXME: Could we reverse the mask or look for already reversed masks?
+    if (isSplatValue(Mask) &&
+        match(Vec, m_Intrinsic<Intrinsic::vp_add>(m_Value(BO0), m_Value(BO1),
+                                                  m_Specific(Mask),
+                                                  m_Specific(VL)))) {
+      Value *X, *Y;
+      if (match(BO0, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
+                         m_Value(X), m_Specific(Mask), m_Specific(VL)))) {
+        // rev(binop rev(X), rev(Y)) --> binop X, Y
+        if (match(BO1, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
+                           m_Value(Y), m_Specific(Mask), m_Specific(VL)))) {
+          Value *Intrin = Builder.CreateIntrinsic(
+              Intrinsic::vp_add, CI.getType(), {X, Y, Mask, VL}, nullptr,
+              Vec->getName());
+          return replaceInstUsesWith(CI, Intrin);
+        }
+        // rev(binop rev(X), BO1Splat) --> binop X, BO1Splat
+        if (isSplatValue(BO1) || isSplatVPGather(BO1, VL)) {
+          Value *Intrin = Builder.CreateIntrinsic(
+              Intrinsic::vp_add, CI.getType(), {X, BO1, Mask, VL}, nullptr,
+              Vec->getName());
+          return replaceInstUsesWith(CI, Intrin);
+        }
+      }
+      // rev(binop BO0Splat, rev(Y)) --> binop BO0Splat, Y
+      if (match(BO1, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
+                         m_Value(Y), m_Specific(Mask), m_Specific(VL))) &&
+          (isSplatValue(BO0) || isSplatVPGather(BO0, VL))) {
+        Value *Intrin = Builder.CreateIntrinsic(Intrinsic::vp_add, CI.getType(),
+                                                {BO0, Y, Mask, VL}, nullptr,
+                                                Vec->getName());
+        return replaceInstUsesWith(CI, Intrin);
+      }
+    }
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::vector_reduce_or:
   case Intrinsic::vector_reduce_and: {
     // Canonicalize logical or/and reductions:

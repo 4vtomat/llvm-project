@@ -6201,6 +6201,25 @@ static Value *simplifyIntrinsic(CallBase *Call, const SimplifyQuery &Q) {
                             FPI->getRoundingMode().getValue());
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::experimental_vp_reverse: {
+    Value *Op0 = Call->getArgOperand(0);
+    Value *VL = Call->getArgOperand(2);
+
+    // experimental.vp.reverse(xperimental.vp.reverse(X), ...) -> x
+    // if VL matches.
+    Value *X;
+    if (match(Op0, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
+                       m_Value(X), m_Value(), m_Specific(VL))))
+      return X;
+
+    // experimental.vp.reverse(splat(X), ...) -> splat(x)
+    if (isSplatValue(Op0))
+      return Op0;
+
+    return nullptr;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   default:
     return nullptr;
   }
