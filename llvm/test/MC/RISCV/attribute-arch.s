@@ -177,10 +177,10 @@
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0"
 
 .attribute arch, "rv32iv_xsfvqmaccdod_xsfvqmaccqoq"
-# CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl512b1p0_zvl64b1p0_xsfvqmaccdod0p1_xsfvqmaccqoq0p1"
+# CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl64b1p0_xsfvqmaccdod0p1_xsfvqmaccqoq0p1"
 
 .attribute arch, "rv32ifv_xsfvfnrclipxfqf_xsfvfwmaccqqq"
-# CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0_xsfvfnrclipxfqf0p1_xsfvfwmaccqqq0p1"
+# CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl64b1p0_xsfvfnrclipxfqf0p1_xsfvfwmaccqqq0p1"
 
 .attribute arch, "rv64i_xsfvcp"
 # CHECK: attribute      5, "rv64i2p1_xsfvcp0p1"
