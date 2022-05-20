@@ -558,7 +558,12 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
     std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
-    return LT.first;
+    // IR Reduction is composed by two vmv and one rvv reduction instruction.
+    InstructionCost BaseCost = 2;
+    unsigned VL =
+        (ST->getRealMinVLen() * Ty->getElementCount().getKnownMinValue()) /
+        RISCV::RVVBitsPerBlock;
+    return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
 #else  // SIFIVE_CUSTOMIZATION
     return BaseT::getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
@@ -589,7 +594,12 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
     std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, VTy);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
-    return LT.first;
+    // IR Reduction is composed by two vmv and one rvv reduction instruction.
+    InstructionCost BaseCost = 2;
+    unsigned VL =
+        (ST->getRealMinVLen() * VTy->getElementCount().getKnownMinValue()) /
+        RISCV::RVVBitsPerBlock;
+    return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
 #else  // SIFIVE_CUSTOMIZATION
     return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
@@ -765,4 +775,33 @@ unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) {
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() {
   return InliningThresholdMultiplier;
 }
+
+InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
+                                                 unsigned Index) {
+  if (Opcode == Instruction::ExtractElement) {
+    std::pair<InstructionCost, MVT> LT =
+        getTLI()->getTypeLegalizationCost(DL, Val->getScalarType());
+    if (!LT.first.isValid())
+      return InstructionCost::getInvalid();
+    if (Index == 0)
+      return 1;
+    unsigned MinNumElements =
+        LT.second.isVector() ? LT.second.getVectorMinNumElements() : 1;
+    Type *LegalVTy = EVT(LT.second).getTypeForEVT(Val->getContext());
+    if ((LT.first == 1 || Index < MinNumElements) && LT.second.isVector())
+      return 2; // shift + mv
+    Type *ScalarTy =
+        EVT(LT.second.getScalarType()).getTypeForEVT(Val->getContext());
+    const DataLayout &DL = getDataLayout();
+    return LT.first * getMemoryOpCost(Instruction::Store, LegalVTy,
+                                      DL.getABITypeAlign(LegalVTy),
+                                      /*AddressSpace=*/0,
+                                      TTI::TCK_RecipThroughput) +
+           getMemoryOpCost(Instruction::Load, ScalarTy,
+                           DL.getABITypeAlign(ScalarTy),
+                           /*AddressSpace=*/0, TTI::TCK_RecipThroughput);
+  }
+  return BaseT::getVectorInstrCost(Opcode, Val, Index);
+}
+
 #endif // SIFIVE_CUSTOMIZATION

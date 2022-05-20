@@ -5,24 +5,28 @@
 define i32 @reduce_i1(i32 %arg) {
 ; RISCV32-LABEL: 'reduce_i1'
 ; RISCV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call i1 @llvm.vector.reduce.and.v1i1(<1 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %V2 = call i1 @llvm.vector.reduce.and.v2i1(<2 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %V4 = call i1 @llvm.vector.reduce.and.v4i1(<4 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %V8 = call i1 @llvm.vector.reduce.and.v8i1(<8 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %V16 = call i1 @llvm.vector.reduce.and.v16i1(<16 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %V32 = call i1 @llvm.vector.reduce.and.v32i1(<32 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %V64 = call i1 @llvm.vector.reduce.and.v64i1(<64 x i1> undef)
-; RISCV32-NEXT:  Cost Model: Found an estimated cost of 132 for instruction: %V128 = call i1 @llvm.vector.reduce.and.v128i1(<128 x i1> undef)
+; SIFIVE_CUSTOMIZATION
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %V2 = call i1 @llvm.vector.reduce.and.v2i1(<2 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %V4 = call i1 @llvm.vector.reduce.and.v4i1(<4 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %V8 = call i1 @llvm.vector.reduce.and.v8i1(<8 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %V16 = call i1 @llvm.vector.reduce.and.v16i1(<16 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 64 for instruction: %V32 = call i1 @llvm.vector.reduce.and.v32i1(<32 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 129 for instruction: %V64 = call i1 @llvm.vector.reduce.and.v64i1(<64 x i1> undef)
+; RISCV32-NEXT:  Cost Model: Found an estimated cost of 259 for instruction: %V128 = call i1 @llvm.vector.reduce.and.v128i1(<128 x i1> undef)
+; END OF SIFIVE_CUSTOMIZATION
 ; RISCV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
 ;
 ; RISCV64-LABEL: 'reduce_i1'
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call i1 @llvm.vector.reduce.and.v1i1(<1 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %V2 = call i1 @llvm.vector.reduce.and.v2i1(<2 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %V4 = call i1 @llvm.vector.reduce.and.v4i1(<4 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %V8 = call i1 @llvm.vector.reduce.and.v8i1(<8 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %V16 = call i1 @llvm.vector.reduce.and.v16i1(<16 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %V32 = call i1 @llvm.vector.reduce.and.v32i1(<32 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 65 for instruction: %V64 = call i1 @llvm.vector.reduce.and.v64i1(<64 x i1> undef)
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 130 for instruction: %V128 = call i1 @llvm.vector.reduce.and.v128i1(<128 x i1> undef)
+; SIFIVE_CUSTOMIZATION
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %V2 = call i1 @llvm.vector.reduce.and.v2i1(<2 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %V4 = call i1 @llvm.vector.reduce.and.v4i1(<4 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %V8 = call i1 @llvm.vector.reduce.and.v8i1(<8 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %V16 = call i1 @llvm.vector.reduce.and.v16i1(<16 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 64 for instruction: %V32 = call i1 @llvm.vector.reduce.and.v32i1(<32 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 128 for instruction: %V64 = call i1 @llvm.vector.reduce.and.v64i1(<64 x i1> undef)
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 257 for instruction: %V128 = call i1 @llvm.vector.reduce.and.v128i1(<128 x i1> undef)
+; END OF SIFIVE_CUSTOMIZATION
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
 ;
   %V1   = call i1 @llvm.vector.reduce.and.v1i1(<1 x i1> undef)

@@ -321,6 +321,9 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
+
+  InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
+                                     unsigned Index);
 #endif // SIFIVE_CUSTOMIZATION
 };
 
