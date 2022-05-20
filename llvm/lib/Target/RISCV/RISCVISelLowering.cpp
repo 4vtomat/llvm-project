@@ -1161,6 +1161,9 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: Add indexed loads.
+  // TODO: Add stores?
+  // TODO: We should upstream all of this.
   case Intrinsic::riscv_vle:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
@@ -1169,6 +1172,55 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
+  case Intrinsic::riscv_vlse:
+    Info.opc = ISD::INTRINSIC_W_CHAIN;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getType()->getScalarType());
+    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOLoad;
+    return true;
+  case Intrinsic::riscv_vlseg2:
+  case Intrinsic::riscv_vlseg3:
+  case Intrinsic::riscv_vlseg4:
+  case Intrinsic::riscv_vlseg5:
+  case Intrinsic::riscv_vlseg6:
+  case Intrinsic::riscv_vlseg7:
+  case Intrinsic::riscv_vlseg8:
+  case Intrinsic::riscv_vlsseg2:
+  case Intrinsic::riscv_vlsseg3:
+  case Intrinsic::riscv_vlsseg4:
+  case Intrinsic::riscv_vlsseg5:
+  case Intrinsic::riscv_vlsseg6:
+  case Intrinsic::riscv_vlsseg7:
+  case Intrinsic::riscv_vlsseg8: {
+    unsigned NF;
+    switch (Intrinsic) {
+    default: llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::riscv_vlseg2: NF = 2; break;
+    case Intrinsic::riscv_vlseg3: NF = 3; break;
+    case Intrinsic::riscv_vlseg4: NF = 4; break;
+    case Intrinsic::riscv_vlseg5: NF = 5; break;
+    case Intrinsic::riscv_vlseg6: NF = 6; break;
+    case Intrinsic::riscv_vlseg7: NF = 7; break;
+    case Intrinsic::riscv_vlseg8: NF = 8; break;
+    case Intrinsic::riscv_vlsseg2: NF = 2; break;
+    case Intrinsic::riscv_vlsseg3: NF = 3; break;
+    case Intrinsic::riscv_vlsseg4: NF = 4; break;
+    case Intrinsic::riscv_vlsseg5: NF = 5; break;
+    case Intrinsic::riscv_vlsseg6: NF = 6; break;
+    case Intrinsic::riscv_vlsseg7: NF = 7; break;
+    case Intrinsic::riscv_vlsseg8: NF = 8; break;
+    }
+    Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
+    Info.opc = ISD::INTRINSIC_W_CHAIN;
+    Info.ptrVal = I.getArgOperand(NF);
+    Info.memVT = MVT::getVT(EltTy);
+    Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOLoad;
+    return true;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   }
 }
