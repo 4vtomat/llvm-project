@@ -2,6 +2,15 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-min=128 < %s \
 ; RUN:   | FileCheck %s
 
+; (SIFIVE) Upstream compiler generates rvv code for this test case. 
+; However, while RVV allows misaligned access, we want to prevent circumstances
+; where vector length is not aligned with DLEN. Therefore in downstream, code
+; emit here gives us scalar load/store instead of vector ones because we prevent
+; parts of the scalar load/store-s to be merged into vector ones. Please refer
+; to 7052ab0f193dfbf331c1907dca7fbab11042899e for exact change that leads to this
+; result. Follow up commit 79b8a51f4f9a6523ae46862918dd28d4bd0d1d02 adds the
+; missing SIFIVE_CUSTOMIZATION marker.
+
 @c = global [7 x i64] [i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7], align 8
 
 define void @do.memmove() nounwind {
