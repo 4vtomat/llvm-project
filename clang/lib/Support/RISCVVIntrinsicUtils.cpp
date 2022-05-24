@@ -1112,7 +1112,6 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
     OS << "nullptr,";
   else
     OS << "\"" << Record.OverloadedName << "\",";
-  OS << "\"" << Record.ExtraSuffix << "\","; // SIFIVE
   OS << Record.PrototypeIndex << ",";
   OS << Record.SuffixIndex << ",";
   OS << Record.OverloadedSuffixIndex << ",";

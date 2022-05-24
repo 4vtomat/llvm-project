@@ -394,9 +394,6 @@ struct RVVIntrinsicRecord {
   // e.g. vadd
   const char *OverloadedName;
 
-  // Extra suffix for intrinsic name, e.g. _tu
-  const char *ExtraSuffix;
-
   // Prototype for this intrinsic, index of RVVSignatureTable.
   uint16_t PrototypeIndex;
 

@@ -38,9 +38,6 @@ struct SemaRecord {
   // e.g. vadd
   std::string OverloadedName;
 
-  // Extra suffix for intrinsic name, e.g. _tu
-  std::string ExtraSuffix;
-
   // Supported type, mask of BasicType.
   unsigned TypeRangeMask;
 
@@ -614,9 +611,6 @@ void RVVEmitter::createRVVIntrinsics(
     SR.Suffix = parsePrototypes(SuffixProto);
     SR.OverloadedSuffix = parsePrototypes(OverloadedSuffixProto);
 
-    if (IsTU)
-      SR.ExtraSuffix = "_tu";
-
     SemaRecords->push_back(SR);
   }
 }
@@ -650,6 +644,10 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
     R.TypeRangeMask = SR.TypeRangeMask;
     R.Log2LMULMask = SR.Log2LMULMask;
     R.NF = SR.NF;
+
+    R.HasMasked = SR.HasMasked;
+    R.HasVL = SR.HasVL;
+    R.HasMaskedOffOperand = SR.HasMaskedOffOperand;
 
     assert(R.PrototypeIndex != SemaSignatureTable::INVALID_INDEX);
     assert(R.SuffixIndex != SemaSignatureTable::INVALID_INDEX);

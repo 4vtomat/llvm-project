@@ -324,10 +324,6 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
   if (IsMask)
     BuiltinName += "_m";
 
-  BuiltinName += Record.ExtraSuffix;
-  Name += Record.ExtraSuffix;
-  OverloadedName += Record.ExtraSuffix;
-
   // Put into IntrinsicList.
   size_t Index = IntrinsicList.size();
   IntrinsicList.push_back({Name, OverloadedName, BuiltinName, Signature});
