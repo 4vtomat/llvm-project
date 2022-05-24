@@ -1025,6 +1025,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                             ISD::MGATHER, ISD::MSCATTER},
                            VT, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+        setOperationAction(ISD::SETCC, VT, Custom);
+#endif
+
         setOperationAction({ISD::VP_LOAD, ISD::VP_STORE,
                             ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
                             ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
