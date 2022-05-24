@@ -1165,14 +1165,18 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   // TODO: Add stores?
   // TODO: We should upstream all of this.
   case Intrinsic::riscv_vle:
+  case Intrinsic::riscv_vleff:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getType());
-    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
   case Intrinsic::riscv_vlse:
+  case Intrinsic::riscv_vloxei:
+  case Intrinsic::riscv_vluxei:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
     Info.memVT = MVT::getVT(I.getType()->getScalarType());
@@ -1187,30 +1191,86 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg6:
   case Intrinsic::riscv_vlseg7:
   case Intrinsic::riscv_vlseg8:
+  case Intrinsic::riscv_vlseg2ff:
+  case Intrinsic::riscv_vlseg3ff:
+  case Intrinsic::riscv_vlseg4ff:
+  case Intrinsic::riscv_vlseg5ff:
+  case Intrinsic::riscv_vlseg6ff:
+  case Intrinsic::riscv_vlseg7ff:
+  case Intrinsic::riscv_vlseg8ff:
   case Intrinsic::riscv_vlsseg2:
   case Intrinsic::riscv_vlsseg3:
   case Intrinsic::riscv_vlsseg4:
   case Intrinsic::riscv_vlsseg5:
   case Intrinsic::riscv_vlsseg6:
   case Intrinsic::riscv_vlsseg7:
-  case Intrinsic::riscv_vlsseg8: {
+  case Intrinsic::riscv_vlsseg8:
+  case Intrinsic::riscv_vloxseg2:
+  case Intrinsic::riscv_vloxseg3:
+  case Intrinsic::riscv_vloxseg4:
+  case Intrinsic::riscv_vloxseg5:
+  case Intrinsic::riscv_vloxseg6:
+  case Intrinsic::riscv_vloxseg7:
+  case Intrinsic::riscv_vloxseg8:
+  case Intrinsic::riscv_vluxseg2:
+  case Intrinsic::riscv_vluxseg3:
+  case Intrinsic::riscv_vluxseg4:
+  case Intrinsic::riscv_vluxseg5:
+  case Intrinsic::riscv_vluxseg6:
+  case Intrinsic::riscv_vluxseg7:
+  case Intrinsic::riscv_vluxseg8: {
     unsigned NF;
     switch (Intrinsic) {
     default: llvm_unreachable("Unexpected intrinsic");
-    case Intrinsic::riscv_vlseg2: NF = 2; break;
-    case Intrinsic::riscv_vlseg3: NF = 3; break;
-    case Intrinsic::riscv_vlseg4: NF = 4; break;
-    case Intrinsic::riscv_vlseg5: NF = 5; break;
-    case Intrinsic::riscv_vlseg6: NF = 6; break;
-    case Intrinsic::riscv_vlseg7: NF = 7; break;
-    case Intrinsic::riscv_vlseg8: NF = 8; break;
-    case Intrinsic::riscv_vlsseg2: NF = 2; break;
-    case Intrinsic::riscv_vlsseg3: NF = 3; break;
-    case Intrinsic::riscv_vlsseg4: NF = 4; break;
-    case Intrinsic::riscv_vlsseg5: NF = 5; break;
-    case Intrinsic::riscv_vlsseg6: NF = 6; break;
-    case Intrinsic::riscv_vlsseg7: NF = 7; break;
-    case Intrinsic::riscv_vlsseg8: NF = 8; break;
+    case Intrinsic::riscv_vlseg2:
+    case Intrinsic::riscv_vlseg2ff:
+    case Intrinsic::riscv_vlsseg2:
+    case Intrinsic::riscv_vloxseg2:
+    case Intrinsic::riscv_vluxseg2:
+      NF = 2;
+      break;
+    case Intrinsic::riscv_vlseg3:
+    case Intrinsic::riscv_vlseg3ff:
+    case Intrinsic::riscv_vlsseg3:
+    case Intrinsic::riscv_vloxseg3:
+    case Intrinsic::riscv_vluxseg3:
+      NF = 3;
+      break;
+    case Intrinsic::riscv_vlseg4:
+    case Intrinsic::riscv_vlseg4ff:
+    case Intrinsic::riscv_vlsseg4:
+    case Intrinsic::riscv_vloxseg4:
+    case Intrinsic::riscv_vluxseg4:
+      NF = 4;
+      break;
+    case Intrinsic::riscv_vlseg5:
+    case Intrinsic::riscv_vlseg5ff:
+    case Intrinsic::riscv_vlsseg5:
+    case Intrinsic::riscv_vloxseg5:
+    case Intrinsic::riscv_vluxseg5:
+      NF = 5;
+      break;
+    case Intrinsic::riscv_vlseg6:
+    case Intrinsic::riscv_vlseg6ff:
+    case Intrinsic::riscv_vlsseg6:
+    case Intrinsic::riscv_vloxseg6:
+    case Intrinsic::riscv_vluxseg6:
+      NF = 6;
+      break;
+    case Intrinsic::riscv_vlseg7:
+    case Intrinsic::riscv_vlseg7ff:
+    case Intrinsic::riscv_vlsseg7:
+    case Intrinsic::riscv_vloxseg7:
+    case Intrinsic::riscv_vluxseg7:
+      NF = 7;
+      break;
+    case Intrinsic::riscv_vlseg8:
+    case Intrinsic::riscv_vlseg8ff:
+    case Intrinsic::riscv_vlsseg8:
+    case Intrinsic::riscv_vloxseg8:
+    case Intrinsic::riscv_vluxseg8:
+      NF = 8;
+      break;
     }
     Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
     Info.opc = ISD::INTRINSIC_W_CHAIN;
