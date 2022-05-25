@@ -57,6 +57,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/IVDescriptors.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/ADT/APInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -10458,6 +10461,79 @@ Optional<bool> ScalarEvolution::evaluatePredicateAt(ICmpInst::Predicate Pred,
     return false;
   return None;
 }
+
+#if SIFIVE_CUSTOMIZATION
+Optional<bool> ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred,
+                                                    const Value *LHS,
+                                                    const Value *RHS,
+                                                    const Instruction *CtxI,
+                                                    ICmpInst *ICmp) {
+  auto *BB = CtxI->getParent();
+
+  if (VerifyIR)
+    assert(!verifyFunction(*BB->getParent(), &dbgs()) &&
+           "This cannot be done on broken IR!");
+
+  const Loop *ContainingLoop = LI.getLoopFor(BB);
+  if (!ContainingLoop)
+    return None;
+
+  // Now check for trivial equivalence cases with the latch cmp
+  ICmpInst *CmpInst = ContainingLoop->getLatchCmpInst();
+  if (!CmpInst)
+    return None;
+
+  // Skip identity comparisons
+  if (CmpInst == ICmp)
+    return None;
+
+  // Only check normalized loops
+  if (!ContainingLoop->isLoopSimplifyForm())
+    return None;
+
+  for (PHINode &IndVar : ContainingLoop->getHeader()->phis()) {
+    InductionDescriptor IndDesc;
+    if (InductionDescriptor::isInductionPHI(&IndVar, ContainingLoop, this,
+                                            IndDesc)) {
+      BasicBlock *Latch = ContainingLoop->getLoopLatch();
+      Value *StepVal = IndVar.getIncomingValueForBlock(Latch);
+      // Currently only upcounting single step loops qualify
+      // Question: will this work for any constant inc/dec value?
+      if (match(StepVal, m_Add(m_Value(), m_One()))) {
+        CmpInst::Predicate Pred2;
+        Value *LatchLHS, *LatchRHS;
+        // The notion here is that IV compares that fit the pattern
+        // for isImpliedTrueByMatchingCmp, that have a single step loop
+        // and share the RHS comparator are the same as the loop latch
+        // comparison and therefore true for the full execution of the
+        // loop.
+        // example:
+        //   if (i < n) ...
+        // is the same as the latch if the latch is of the form of
+        //   if (i != n), where the StepVal as the next iteration
+        // hold for (i < n) as ICMP::SLT is equivalent to ICMP::NE
+        // under these constraints.  The lower bound is also true
+        // even if we only execute one iteration as we will exit
+        // on the latch condition.
+        if (match(CmpInst,
+                  m_ICmp(Pred2, m_Value(LatchLHS), m_Value(LatchRHS))) &&
+            ((StepVal == LatchLHS) && (LHS == &IndVar))) {
+          Value *X, *Y;
+          if (match(LatchRHS, m_ZExt(m_Value(X)))) {
+            if (match(RHS, m_SExt(m_Value(Y))) && (X == Y))
+              if (CmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+                return true;
+          } else if (match(LatchRHS, m_Sub(m_Value(X), m_One())) && X == RHS) {
+            if (CmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+              return true;
+          }
+        }
+      }
+    }
+  }
+  return None;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool ScalarEvolution::isKnownOnEveryIteration(ICmpInst::Predicate Pred,
                                               const SCEVAddRecExpr *LHS,

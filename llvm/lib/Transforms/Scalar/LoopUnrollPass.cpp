@@ -1296,9 +1296,11 @@ static LoopUnrollResult tryToUnrollLoop(
     bool PeeledLoop = false;
     if (PP.PeelProlog)
       PeeledLoop = peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
+#if SIFIVE_CUSTOMIZATION
     else if (PP.PeelEpilog)
       PeeledLoop =
           peelLoopEpilog(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
+#endif // SIFIVE_CUSTOMIZATION
 
     if (PeeledLoop) {
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI);

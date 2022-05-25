@@ -1050,6 +1050,15 @@ public:
   Optional<bool> evaluatePredicateAt(ICmpInst::Predicate Pred, const SCEV *LHS,
                                      const SCEV *RHS, const Instruction *CtxI);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Check whether the condition described by Pred, LHS, and RHS is true or
+  /// false in the given \p Context, the contents of the latch cmp and
+  /// if predicates are compared to be equivalent.
+  Optional<bool> evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
+                                     const Value *RHS, const Instruction *CtxI,
+                                     ICmpInst *ICmp);
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Test if the condition described by Pred, LHS, RHS is known to be true on
   /// every iteration of the loop of the recurrency LHS.
   bool isKnownOnEveryIteration(ICmpInst::Predicate Pred,

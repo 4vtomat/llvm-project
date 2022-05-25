@@ -59,21 +59,21 @@ define void @test2_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 1
-; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = add nuw nsw i32 [[INC]], 1
-; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[PEELCOUNTXSTEP_EXIT]], [[K:%.*]]
+; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 1
+; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
 ; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_BODY_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       for.body.peel.begin:
 ; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
 ; CHECK:       for.body.peel:
-; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], 2147483646
+; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], [[K]]
 ; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_PEEL:%.*]]
 ; CHECK:       if.then.peel:
 ; CHECK-NEXT:    call void @f1()
 ; CHECK-NEXT:    br label [[FOR_INC_PEEL]]
 ; CHECK:       for.inc.peel:
 ; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 1
-; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp slt i32 [[INC_PEEL]], [[K]]
+; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp ne i32 [[INC_PEEL]], [[K]]
 ; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
 ; CHECK:       for.body.peel.next:
 ; CHECK-NEXT:    br label [[FOR_END:%.*]]
@@ -85,7 +85,7 @@ for.body.lr.ph:
 
 for.body:
   %i.05 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
-  %cmp1 = icmp ult i32 %i.05, 2147483646
+  %cmp1 = icmp ult i32 %i.05, %k
   br i1 %cmp1, label %if.then, label %for.inc
 
 if.then:
@@ -94,7 +94,7 @@ if.then:
 
 for.inc:
   %inc = add nsw i32 %i.05, 1
-  %cmp = icmp slt i32 %inc, %k
+  %cmp = icmp ne i32 %inc, %k
   br i1 %cmp, label %for.body, label %for.end
 
 for.end:
@@ -180,5 +180,103 @@ for.inc:
   br i1 %cmp, label %for.body, label %for.end
 
 for.end:
+  ret void
+}
+
+; Test epilog peeling for a condition that will simplify the loop by
+; peeling iterations within MaxPeelCount iterations of the exit condition while
+; implementing folds for the bounds in an inner loop.
+define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr noundef %M, ptr noundef %tsc) {
+; CHECK-LABEL: @test5_epilog_peeling(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[BOUNDS:%.*]] = load i32, ptr [[M:%.*]], align 8
+; CHECK-NEXT:    [[I24:%.*]] = load ptr, ptr [[TSC:%.*]], align 8
+; CHECK-NEXT:    br label [[FOR_OUTER:%.*]]
+; CHECK:       for.outer:
+; CHECK-NEXT:    [[IV_OUTER:%.*]] = phi i32 [ 1, [[ENTRY:%.*]] ], [ [[IV_OUTER_NEXT:%.*]], [[FOR_INC_OUTER:%.*]] ]
+; CHECK-NEXT:    [[SEXT:%.*]] = sext i32 [[BOUNDS]] to i64
+; CHECK-NEXT:    [[BOUNDS_INC:%.*]] = add i32 [[BOUNDS]], 1
+; CHECK-NEXT:    [[CMP1:%.*]] = icmp slt i32 [[BOUNDS]], 1
+; CHECK-NEXT:    br i1 [[CMP1]], label [[FOR_INC_OUTER]], label [[FOR_INNER_PREHEADER:%.*]]
+; CHECK:       for.inner.preheader:
+; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[BOUNDS_INC]] to i64
+; CHECK-NEXT:    br label [[FOR_INNER:%.*]]
+; CHECK:       for.inner:
+; CHECK-NEXT:    [[IV_INNER:%.*]] = phi i64 [ 1, [[FOR_INNER_PREHEADER]] ], [ [[IV_INNER_NEXT:%.*]], [[FOR_INC_INNER:%.*]] ]
+; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC_INNER]]
+; CHECK:       if.then:
+; CHECK-NEXT:    [[ARRAYIDX174:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[IV_INNER]]
+; CHECK-NEXT:    store i32 1, ptr [[ARRAYIDX174]], align 4
+; CHECK-NEXT:    br label [[FOR_INC_INNER]]
+; CHECK:       for.inc.inner:
+; CHECK-NEXT:    [[IV_INNER_NEXT]] = add nuw nsw i64 [[IV_INNER]], 1
+; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[BOUNDS]] to i64
+; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_INNER_NEXT]], [[TMP0]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK:       for.inner.peel.begin:
+; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[IV_INNER_NEXT]], [[FOR_INC_INNER]] ]
+; CHECK-NEXT:    br label [[FOR_INNER_PEEL:%.*]]
+; CHECK:       for.inner.peel:
+; CHECK-NEXT:    [[CMP2_PEEL:%.*]] = icmp slt i64 [[LABEL]], [[SEXT]]
+; CHECK-NEXT:    br i1 [[CMP2_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_INNER_PEEL:%.*]]
+; CHECK:       if.then.peel:
+; CHECK-NEXT:    [[ARRAYIDX174_PEEL:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[LABEL]]
+; CHECK-NEXT:    store i32 1, ptr [[ARRAYIDX174_PEEL]], align 4
+; CHECK-NEXT:    br label [[FOR_INC_INNER_PEEL]]
+; CHECK:       for.inc.inner.peel:
+; CHECK-NEXT:    [[IV_INNER_NEXT_PEEL:%.*]] = add nuw nsw i64 [[LABEL]], 1
+; CHECK-NEXT:    [[EXITCOND_PEEL:%.*]] = icmp ne i64 [[IV_INNER_NEXT_PEEL]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br label [[FOR_INNER_PEEL_NEXT:%.*]]
+; CHECK:       for.inner.peel.next:
+; CHECK-NEXT:    br label [[FOR_INNER_LOOPEXIT:%.*]]
+; CHECK:       for.inner.loopexit:
+; CHECK-NEXT:    br label [[FOR_INC_OUTER]]
+; CHECK:       for.inc.outer:
+; CHECK-NEXT:    [[IV_OUTER_NEXT]] = add nuw nsw i32 [[IV_OUTER]], 1
+; CHECK-NEXT:    [[CMP37_NOT_NOT:%.*]] = icmp slt i32 [[IV_OUTER]], [[L:%.*]]
+; CHECK-NEXT:    br i1 [[CMP37_NOT_NOT]], label [[FOR_OUTER]], label [[EXIT_OUTER:%.*]]
+; CHECK:       exit.outer:
+; CHECK-NEXT:    ret void
+;
+entry:
+  %bounds = load i32, ptr %M, align 8
+  %i24 = load ptr, ptr %tsc, align 8
+  br label %for.outer
+
+for.outer:
+  %iv.outer = phi i32 [ 1, %entry ], [ %iv.outer.next, %for.inc.outer ]
+  %sext = sext i32 %bounds to i64
+  %bounds.inc = add i32 %bounds, 1
+  %cmp1 = icmp slt i32 %bounds, 1
+  br i1 %cmp1, label %for.inc.outer, label %for.inner.preheader
+
+for.inner.preheader:
+  %wide.trip.count = zext i32 %bounds.inc to i64
+  br label %for.inner
+
+for.inner:
+  %iv.inner = phi i64 [ 1, %for.inner.preheader ], [ %iv.inner.next, %for.inc.inner ]
+  %cmp2 = icmp slt i64 %iv.inner, %sext
+  br i1 %cmp2, label %if.then, label %for.inc.inner
+
+if.then:
+  %arrayidx174 = getelementptr inbounds i32, ptr %i24, i64 %iv.inner
+  store i32 1, ptr %arrayidx174, align 4
+  br label %for.inc.inner
+
+for.inc.inner:
+  %iv.inner.next = add nuw nsw i64 %iv.inner, 1
+  %exitcond = icmp ne i64 %iv.inner.next, %wide.trip.count
+  br i1 %exitcond, label %for.inner, label %for.inner.loopexit
+
+for.inner.loopexit:
+  br label %for.inc.outer
+
+for.inc.outer:
+  %iv.outer.next = add nuw nsw i32 %iv.outer, 1
+  %cmp37.not.not = icmp slt i32 %iv.outer, %L
+  br i1 %cmp37.not.not, label %for.outer, label %exit.outer
+
+exit.outer:
   ret void
 }

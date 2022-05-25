@@ -471,14 +471,14 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   unsigned MaxPeelCount = UnrollPeelMaxCount;
   MaxPeelCount = std::min(MaxPeelCount, Threshold / LoopSize - 1);
 
-#if SIFIVE_CUSTOMIZATION
+  // SIFIVE
   DesiredPeelCount = std::max(
       DesiredPeelCount, countToEliminateCompares(*L, MaxPeelCount, TripCount,
                                                    SE, PP.PeelProlog));
 
   if (DesiredPeelCount == 0 && (PP.PeelProlog))
     DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT);
-#endif // SIFIVE_CUSTOMIZATION
+  // end SIFIVE
 
   if (DesiredPeelCount > 0) {
     DesiredPeelCount = std::min(DesiredPeelCount, MaxPeelCount);
@@ -1014,7 +1014,17 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI,
   return true;
 }
 
-// SIFIVE
+#if SIFIVE_CUSTOMIZATION
+static bool isSameSignedValue(const APInt &I1, const APInt &I2) {
+  if (I1.getBitWidth() == I2.getBitWidth())
+    return I1 == I2;
+
+  if (I1.getBitWidth() > I2.getBitWidth())
+    return I1 == I2.sext(I1.getBitWidth());
+
+  return I1.sext(I2.getBitWidth()) == I2;
+}
+
 /// Peel off the last \p PeelCount iterations of loop \p L.
 ///
 /// Note that this does peel individual iterations off as a single straight-line
@@ -1050,13 +1060,15 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
   auto *BI = dyn_cast<BranchInst>(Latch->getTerminator());
   Instruction *CmpInst = nullptr;
   Instruction *LeftInst = nullptr;
+  Value *RightVal = nullptr;
   Value *StepVal = nullptr;
   unsigned IncDecOpc = 0;
   bool MatchingCaseFound = false;
   if (BI) {
     Value *Condition = BI->getCondition();
     CmpInst::Predicate Pred;
-    if (match(Condition, m_ICmp(Pred, m_Instruction(LeftInst), m_Value()))) {
+    if (match(Condition, m_ICmp(Pred, m_Instruction(LeftInst),
+                                m_Value(RightVal)))) {
       // Mine the data from LeftInst and save it for later use.
       CmpInst = cast<Instruction>(Condition);
       IncDecOpc = LeftInst->getOpcode();
@@ -1205,29 +1217,71 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
   // to adjust the latch check so that we exit early by PeelCount
   // iterations.
   IRBuilder<> Builder(CmpInst);
-  Value *LHS = nullptr;
+  Value *RHS = nullptr;
   if (IncDecOpc == Instruction::Add) {
-    // For down counted loops, the values we augment are within the loop
-    // bounds.  The mul folds to a constant and handles the sign.
-    LHS = Builder.CreateAdd(
-        LeftInst,
-        Builder.CreateMul(StepVal,
-                          ConstantInt::get(LeftInst->getType(), PeelCount)),
-        "peelcountxstep.exit");
+    // First check for fold opportunities
+    Value *X;
+    const APInt *C1;
+    bool CanUseFold = false;
+    if (RightVal && match(RightVal, m_ZExt(m_Add(m_Value(X), m_APInt(C1))))) {
+      // If C1 and StepVal are equal, we can just carry the ZExt
+      auto *StepValC = cast<ConstantInt>(StepVal);
+      const APInt &C2 = StepValC->getValue();
+      if (APInt::isSameValue(*C1, C2) && LeftInst->hasNoUnsignedWrap()) {
+        RHS = Builder.CreateZExt(X, RightVal->getType());
+        CanUseFold = true;
+      }
+    } else if (RightVal &&
+               match(RightVal, m_SExt(m_Add(m_Value(X), m_APInt(C1))))) {
+      // If C1 and StepVal are equal, we can just carry the SExt
+      auto *StepValC = cast<ConstantInt>(StepVal);
+      const APInt &C2 = StepValC->getValue();
+      if (isSameSignedValue(*C1, C2) && C2.isNegative() &&
+          LeftInst->hasNoSignedWrap()) {
+        RHS = Builder.CreateSExt(X, RightVal->getType());
+        CanUseFold = true;
+      }
+    }
+
+    if (!CanUseFold) {
+      // For down counted loops, the values we augment are within the loop
+      // bounds.  The mul folds to a constant and handles the sign.
+      RHS = Builder.CreateSub(
+          RightVal,
+          Builder.CreateMul(StepVal,
+                            ConstantInt::get(RightVal->getType(), PeelCount)),
+          "peelcountxstep.exit");
+    }
   } else if (IncDecOpc == Instruction::Sub) {
-    // For up counted loops, the values we augment are within the loop
-    // bounds.  The mul folds to a constant and handles the sign.
-    LHS = Builder.CreateSub(
-        LeftInst,
-        Builder.CreateMul(StepVal,
-                          ConstantInt::get(LeftInst->getType(), PeelCount)),
-        "peelcountxstep.exit");
+    // First check for fold opportunity
+    Value *X;
+    const APInt *C1;
+    bool CanUseFold = false;
+    if (RightVal && match(RightVal, m_SExt(m_Sub(m_Value(X), m_APInt(C1))))) {
+      // If C1 and StepVal are equal, we can just carry the SExt
+      auto *StepValC = cast<ConstantInt>(StepVal);
+      APInt C2 = StepValC->getValue();
+      if (isSameSignedValue(*C1, C2) && LeftInst->hasNoSignedWrap()) {
+        RHS = Builder.CreateSExt(X, RightVal->getType());
+        CanUseFold = true;
+      }
+    }
+
+    if (!CanUseFold) {
+      // For up counted loops, the values we augment are within the loop
+      // bounds.  The mul folds to a constant and handles the sign.
+      RHS = Builder.CreateAdd(
+          RightVal,
+          Builder.CreateMul(StepVal,
+                            ConstantInt::get(RightVal->getType(), PeelCount)),
+          "peelcountxstep.exit");
+    }
   } else {
     llvm_unreachable("unsupported peel cond exit");
   }
   for (unsigned I = 0, E = CmpInst->getNumOperands(); I != E; ++I) {
-    if (CmpInst->getOperand(I) == LeftInst) {
-      CmpInst->setOperand(I, LHS);
+    if (CmpInst->getOperand(I) == RightVal) {
+      CmpInst->setOperand(I, RHS);
       break;
     }
   }
@@ -1242,4 +1296,4 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
 
   return true;
 }
-// end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION

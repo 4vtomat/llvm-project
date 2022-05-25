@@ -274,6 +274,10 @@ void SimplifyIndvar::eliminateIVComparison(ICmpInst *ICmp, Value *IVOperand) {
 
   // Get the SCEVs for the ICmp operands (in the specific context of the
   // current loop)
+#if SIFIVE_CUSTOMIZATION
+  const Value *ValS = ICmp->getOperand(IVOperIdx);
+  const Value *ValX = ICmp->getOperand(1 - IVOperIdx);
+#endif // SIFIVE_CUSTOMIZATION
   const Loop *ICmpLoop = LI->getLoopFor(ICmp->getParent());
   const SCEV *S = SE->getSCEVAtScope(ICmp->getOperand(IVOperIdx), ICmpLoop);
   const SCEV *X = SE->getSCEVAtScope(ICmp->getOperand(1 - IVOperIdx), ICmpLoop);
@@ -288,6 +292,12 @@ void SimplifyIndvar::eliminateIVComparison(ICmpInst *ICmp, Value *IVOperand) {
     ICmp->replaceAllUsesWith(ConstantInt::getBool(ICmp->getContext(), *Ev));
     DeadInsts.emplace_back(ICmp);
     LLVM_DEBUG(dbgs() << "INDVARS: Eliminated comparison: " << *ICmp << '\n');
+#if SIFIVE_CUSTOMIZATION
+  } else if (auto Ev = SE->evaluateAsLikeLatch(Pred, ValS, ValX, CtxI, ICmp)) {
+    ICmp->replaceAllUsesWith(ConstantInt::getBool(ICmp->getContext(), *Ev));
+    DeadInsts.emplace_back(ICmp);
+    LLVM_DEBUG(dbgs() << "INDVARS: Eliminated comparison: " << *ICmp << '\n');
+#endif // SIFIVE_CUSTOMIZATION
   } else if (makeIVComparisonInvariant(ICmp, IVOperand)) {
     // fallthrough to end of function
   } else if (ICmpInst::isSigned(OriginalPred) &&
