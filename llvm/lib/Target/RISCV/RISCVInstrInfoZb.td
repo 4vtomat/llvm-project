@@ -1113,12 +1113,15 @@ def : Pat<(add (mul_oneuse GPR:$rs1, (XLenVT 40)), GPR:$rs2),
 def : Pat<(add (mul_oneuse GPR:$rs1, (XLenVT 72)), GPR:$rs2),
           (SH3ADD (SH3ADD GPR:$rs1, GPR:$rs1), GPR:$rs2)>;
 
-def : Pat<(add GPR:$r, CSImm12MulBy4:$i),
-          (SH2ADD (ADDI X0, (SimmShiftRightBy2XForm CSImm12MulBy4:$i)),
-                  GPR:$r)>;
-def : Pat<(add GPR:$r, CSImm12MulBy8:$i),
-          (SH3ADD (ADDI X0, (SimmShiftRightBy3XForm CSImm12MulBy8:$i)),
-                  GPR:$r)>;
+#ifdef SIFIVE_CUSTOMIZATION
+// This is harmful to load/store address optimizations.
+//def : Pat<(add GPR:$r, CSImm12MulBy4:$i),
+//          (SH2ADD (ADDI X0, (SimmShiftRightBy2XForm CSImm12MulBy4:$i)),
+//                  GPR:$r)>;
+//def : Pat<(add GPR:$r, CSImm12MulBy8:$i),
+//          (SH3ADD (ADDI X0, (SimmShiftRightBy3XForm CSImm12MulBy8:$i)),
+//                  GPR:$r)>;
+#endif // SIFIVE_CUSTOMIZATION
 
 def : Pat<(mul GPR:$r, C3LeftShift:$i),
           (SLLI (SH1ADD GPR:$r, GPR:$r),
