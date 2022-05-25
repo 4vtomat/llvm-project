@@ -483,7 +483,6 @@ void RVVEmitter::createRVVIntrinsics(
     StringRef OverloadedSuffixProto = R->getValueAsString("OverloadedSuffix");
     StringRef Prototypes = R->getValueAsString("Prototype");
     StringRef TypeRange = R->getValueAsString("TypeRange");
-    bool IsTU = R->getValueAsBit("IsTU"); // SIFIVE
     bool HasMasked = R->getValueAsBit("HasMasked");
     bool HasMaskedOffOperand = R->getValueAsBit("HasMaskedOffOperand");
     bool HasVL = R->getValueAsBit("HasVL");
@@ -542,7 +541,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicy, HasUnMaskedOverloaded, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures,
-            NF, IsTU));
+            NF));
         if (HasMasked) {
           // Create a masked intrinsic
           Optional<RVVTypes> MaskTypes =
@@ -552,8 +551,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicy,
               HasUnMaskedOverloaded, HasBuiltinAlias, MaskedManualCodegen,
-              *MaskTypes, IntrinsicTypes, RequiredFeatures, NF,
-              IsTU));
+              *MaskTypes, IntrinsicTypes, RequiredFeatures, NF));
         }
       } // end for Log2LMULList
     }   // end for TypeRange

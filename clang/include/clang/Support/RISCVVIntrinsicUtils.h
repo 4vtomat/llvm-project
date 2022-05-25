@@ -325,8 +325,8 @@ public:
                bool HasBuiltinAlias, llvm::StringRef ManualCodegen,
                const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
-               const std::vector<llvm::StringRef> &RequiredFeatures, unsigned NF, // SIFIVE
-               bool IsTU); // SIFIVE
+               const std::vector<llvm::StringRef> &RequiredFeatures,
+               unsigned NF);
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }
