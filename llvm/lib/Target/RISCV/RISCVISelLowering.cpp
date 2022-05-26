@@ -7552,6 +7552,77 @@ SDValue RISCVTargetLowering::lowerMaskedGather(SDValue Op,
   return DAG.getMergeValues({Result, Chain}, DL);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Look for VP scatter where all elements use the same pointer. Lower to a
+// slidedown of the last active element followed by a VL=1 vse. This is only
+// possible if the mask is all ones.
+static SDValue lowerSplatPtrVPScatter(SDValue Op, SelectionDAG &DAG,
+                                      const RISCVSubtarget &Subtarget) {
+  auto *VPSN = dyn_cast<VPScatterSDNode>(Op);
+  if (!VPSN)
+    return SDValue();
+
+  // Mask should be all ones.
+  SDValue Mask = VPSN->getMask();
+  if (!ISD::isConstantSplatVectorAllOnes(Mask.getNode()))
+    return SDValue();
+
+  // The splat could already be in the base pointer or it could be hidden in
+  // the index.
+  auto findSplatPointer = [&DAG](SDValue BasePtr, SDValue Index) {
+    if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
+      return BasePtr;
+
+    // Try to extract from index.
+    if (!isNullConstant(BasePtr))
+      return SDValue();
+
+    SDValue SplatVal = DAG.getSplatValue(Index);
+    if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
+      return SDValue();
+
+    return SplatVal;
+  };
+
+  SDValue BasePtr = findSplatPointer(VPSN->getBasePtr(), VPSN->getIndex());
+  if (!BasePtr)
+    return SDValue();
+
+  SDValue Val = VPSN->getValue();
+
+  MVT VT = Val.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(DAG, VT, Subtarget);
+    Val = convertToScalableVector(ContainerVT, Val, DAG, Subtarget);
+  }
+
+  SDLoc DL(Op);
+  SDValue VL = VPSN->getVectorLength();
+  SDValue SlideAmt = DAG.getNode(ISD::SUB, DL, VL.getValueType(), VL,
+                                 DAG.getConstant(1, DL, VL.getValueType()));
+
+  // The VL could already be 0 so we need to min with 1.
+  VL = DAG.getNode(ISD::UMIN, DL, VL.getValueType(), VL,
+                   DAG.getConstant(1, DL, VL.getValueType()));
+
+  Mask = getAllOnesMask(ContainerVT, VL, DL, DAG);
+
+  Val = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
+                    DAG.getUNDEF(ContainerVT), Val, SlideAmt, Mask, VL);
+
+  SDValue Ops[] = {VPSN->getChain(),
+                   DAG.getTargetConstant(Intrinsic::riscv_vse, DL, XLenVT), Val,
+                   BasePtr, VL};
+
+  return DAG.getMemIntrinsicNode(ISD::INTRINSIC_VOID, DL,
+                                 DAG.getVTList(MVT::Other), Ops,
+                                 VPSN->getMemoryVT(), VPSN->getMemOperand());
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Custom lower MSCATTER/VP_SCATTER to a legalized form for RVV. It will then be
 // matched to a RVV indexed store. The RVV indexed store instructions only
 // support the "unsigned unscaled" addressing mode; indices are implicitly
@@ -7560,6 +7631,11 @@ SDValue RISCVTargetLowering::lowerMaskedGather(SDValue Op,
 // accordingly.
 SDValue RISCVTargetLowering::lowerMaskedScatter(SDValue Op,
                                                 SelectionDAG &DAG) const {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerSplatPtrVPScatter(Op, DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
+
   SDLoc DL(Op);
   const auto *MemSD = cast<MemSDNode>(Op.getNode());
   EVT MemVT = MemSD->getMemoryVT();
