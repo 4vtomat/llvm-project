@@ -1179,8 +1179,9 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vluxei:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getType()->getScalarType());
-    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
@@ -1279,6 +1280,110 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
+    return true;
+  }
+  case Intrinsic::riscv_vse:
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
+    return true;
+  case Intrinsic::riscv_vsse:
+  case Intrinsic::riscv_vsoxei:
+  case Intrinsic::riscv_vsuxei:
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
+    return true;
+  case Intrinsic::riscv_vsseg2:
+  case Intrinsic::riscv_vsseg3:
+  case Intrinsic::riscv_vsseg4:
+  case Intrinsic::riscv_vsseg5:
+  case Intrinsic::riscv_vsseg6:
+  case Intrinsic::riscv_vsseg7:
+  case Intrinsic::riscv_vsseg8:
+  case Intrinsic::riscv_vssseg2:
+  case Intrinsic::riscv_vssseg3:
+  case Intrinsic::riscv_vssseg4:
+  case Intrinsic::riscv_vssseg5:
+  case Intrinsic::riscv_vssseg6:
+  case Intrinsic::riscv_vssseg7:
+  case Intrinsic::riscv_vssseg8:
+  case Intrinsic::riscv_vsoxseg2:
+  case Intrinsic::riscv_vsoxseg3:
+  case Intrinsic::riscv_vsoxseg4:
+  case Intrinsic::riscv_vsoxseg5:
+  case Intrinsic::riscv_vsoxseg6:
+  case Intrinsic::riscv_vsoxseg7:
+  case Intrinsic::riscv_vsoxseg8:
+  case Intrinsic::riscv_vsuxseg2:
+  case Intrinsic::riscv_vsuxseg3:
+  case Intrinsic::riscv_vsuxseg4:
+  case Intrinsic::riscv_vsuxseg5:
+  case Intrinsic::riscv_vsuxseg6:
+  case Intrinsic::riscv_vsuxseg7:
+  case Intrinsic::riscv_vsuxseg8: {
+    unsigned NF;
+    switch (Intrinsic) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::riscv_vsseg2:
+    case Intrinsic::riscv_vssseg2:
+    case Intrinsic::riscv_vsoxseg2:
+    case Intrinsic::riscv_vsuxseg2:
+      NF = 2;
+      break;
+    case Intrinsic::riscv_vsseg3:
+    case Intrinsic::riscv_vssseg3:
+    case Intrinsic::riscv_vsoxseg3:
+    case Intrinsic::riscv_vsuxseg3:
+      NF = 3;
+      break;
+    case Intrinsic::riscv_vsseg4:
+    case Intrinsic::riscv_vssseg4:
+    case Intrinsic::riscv_vsoxseg4:
+    case Intrinsic::riscv_vsuxseg4:
+      NF = 4;
+      break;
+    case Intrinsic::riscv_vsseg5:
+    case Intrinsic::riscv_vssseg5:
+    case Intrinsic::riscv_vsoxseg5:
+    case Intrinsic::riscv_vsuxseg5:
+      NF = 5;
+      break;
+    case Intrinsic::riscv_vsseg6:
+    case Intrinsic::riscv_vssseg6:
+    case Intrinsic::riscv_vsoxseg6:
+    case Intrinsic::riscv_vsuxseg6:
+      NF = 6;
+      break;
+    case Intrinsic::riscv_vsseg7:
+    case Intrinsic::riscv_vssseg7:
+    case Intrinsic::riscv_vsoxseg7:
+    case Intrinsic::riscv_vsuxseg7:
+      NF = 7;
+      break;
+    case Intrinsic::riscv_vsseg8:
+    case Intrinsic::riscv_vssseg8:
+    case Intrinsic::riscv_vsoxseg8:
+    case Intrinsic::riscv_vsuxseg8:
+      NF = 8;
+      break;
+    }
+    Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(NF);
+    Info.memVT = MVT::getVT(EltTy);
+    Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
     return true;
   }
 #endif // SIFIVE_CUSTOMIZATION
