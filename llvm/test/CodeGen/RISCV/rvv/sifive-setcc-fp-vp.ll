@@ -12,38 +12,43 @@ define <vscale x 16 x i1> @fcmp_oeq_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB0_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB0_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vv v2, v16, v24, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB0_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB0_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vv v1, v8, v24, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vv v25, v16, v8, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmfeq.vv v16, v24, v8, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -55,14 +60,29 @@ define <vscale x 16 x i1> @fcmp_oeq_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_oeq_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_oeq_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB1_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB1_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB1_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB1_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfeq.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfeq.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -74,14 +94,29 @@ define <vscale x 16 x i1> @fcmp_oeq_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_oeq_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_oeq_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB2_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB2_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB2_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB2_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfeq.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfeq.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -96,38 +131,43 @@ define <vscale x 16 x i1> @fcmp_ogt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB3_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB3_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v2, v24, v16, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB3_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB3_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v1, v24, v8, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v25, v8, v16, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmflt.vv v16, v8, v24, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -139,14 +179,29 @@ define <vscale x 16 x i1> @fcmp_ogt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ogt_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ogt_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB4_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB4_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB4_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB4_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfgt.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -158,14 +213,29 @@ define <vscale x 16 x i1> @fcmp_ogt_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ogt_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ogt_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB5_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB5_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB5_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB5_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmflt.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -180,38 +250,43 @@ define <vscale x 16 x i1> @fcmp_oge_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB6_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB6_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vv v2, v24, v16, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB6_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB6_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v1, v24, v8, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v25, v8, v16, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmfle.vv v16, v8, v24, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -223,14 +298,29 @@ define <vscale x 16 x i1> @fcmp_oge_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_oge_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_oge_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB7_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB7_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB7_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB7_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfge.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -242,14 +332,29 @@ define <vscale x 16 x i1> @fcmp_oge_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_oge_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_oge_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB8_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB8_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB8_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB8_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfle.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -264,38 +369,43 @@ define <vscale x 16 x i1> @fcmp_olt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB9_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB9_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v2, v16, v24, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB9_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB9_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v1, v8, v24, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v25, v16, v8, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmflt.vv v16, v24, v8, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -307,14 +417,29 @@ define <vscale x 16 x i1> @fcmp_olt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_olt_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_olt_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB10_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB10_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB10_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB10_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmflt.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -326,14 +451,29 @@ define <vscale x 16 x i1> @fcmp_olt_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_olt_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_olt_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB11_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB11_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB11_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB11_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfgt.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -348,38 +488,43 @@ define <vscale x 16 x i1> @fcmp_ole_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB12_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB12_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vv v2, v16, v24, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB12_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB12_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v1, v8, v24, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v25, v16, v8, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmfle.vv v16, v24, v8, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -391,14 +536,29 @@ define <vscale x 16 x i1> @fcmp_ole_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ole_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ole_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB13_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB13_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB13_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB13_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfle.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -410,14 +570,29 @@ define <vscale x 16 x i1> @fcmp_ole_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ole_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ole_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB14_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB14_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB14_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB14_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfge.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -437,25 +612,37 @@ define <vscale x 16 x i1> @fcmp_one_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmv8r.v v16, v8
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v8, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB15_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB15_2:
+; CHECK-NEXT:    li a4, 0
 ; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vv v1, v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vv v2, v8, v16, v0.t
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v1, v8, v16, v0.t
+; CHECK-NEXT:    vmflt.vv v2, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmor.mm v8, v2, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB15_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB15_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmflt.vv v9, v16, v24, v0.t
 ; CHECK-NEXT:    vmflt.vv v10, v24, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmor.mm v9, v10, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -473,21 +660,35 @@ define <vscale x 16 x i1> @fcmp_one_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_one_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_one_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfgt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB16_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB16_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v24, v8, fa0, v0.t
+; CHECK-NEXT:    vmfgt.vf v25, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v16, v25, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v17, v8, fa0, v0.t
-; CHECK-NEXT:    vmfgt.vf v18, v8, fa0, v0.t
+; CHECK-NEXT:    vmor.mm v8, v25, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB16_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB16_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v9, v16, fa0, v0.t
+; CHECK-NEXT:    vmfgt.vf v10, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v0, v18, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmor.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -498,21 +699,35 @@ define <vscale x 16 x i1> @fcmp_one_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_one_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_one_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmflt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB17_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB17_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v24, v8, fa0, v0.t
+; CHECK-NEXT:    vmflt.vf v25, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v16, v25, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v17, v8, fa0, v0.t
-; CHECK-NEXT:    vmflt.vf v18, v8, fa0, v0.t
+; CHECK-NEXT:    vmor.mm v8, v25, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB17_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB17_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v9, v16, fa0, v0.t
+; CHECK-NEXT:    vmflt.vf v10, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v0, v18, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmor.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -531,25 +746,37 @@ define <vscale x 16 x i1> @fcmp_ord_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmv8r.v v16, v8
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v8, (a0)
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    add a0, a0, a3
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB18_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB18_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfeq.vv v1, v16, v16, v0.t
 ; CHECK-NEXT:    vmfeq.vv v16, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v8, v1, v16
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vv v9, v16, v16, v0.t
-; CHECK-NEXT:    vmfeq.vv v10, v24, v24, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v9, v9, v10
+; CHECK-NEXT:    vmand.mm v8, v16, v1
 ; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB18_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB18_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vv v9, v24, v24, v0.t
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmfeq.vv v10, v16, v16, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
+; CHECK-NEXT:    vmand.mm v9, v10, v9
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -568,21 +795,36 @@ define <vscale x 16 x i1> @fcmp_ord_vf_nxv16f64(<vscale x 16 x double> %va, doub
 ; CHECK-LABEL: fcmp_ord_vf_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, mu
+; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vfmv.v.f v24, fa0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB19_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB19_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfeq.vf v1, v24, fa0, v0.t
-; CHECK-NEXT:    vmfeq.vv v24, v16, v16, v0.t
+; CHECK-NEXT:    vmfeq.vv v2, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v16, v24, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfeq.vv v17, v8, v8, v0.t
+; CHECK-NEXT:    vmand.mm v8, v2, v1
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB19_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB19_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vf v9, v24, fa0, v0.t
+; CHECK-NEXT:    vmfeq.vv v10, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v0, v17, v1
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmand.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -594,21 +836,36 @@ define <vscale x 16 x i1> @fcmp_ord_vf_swap_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-LABEL: fcmp_ord_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, mu
+; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vfmv.v.f v24, fa0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB20_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB20_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfeq.vf v1, v24, fa0, v0.t
-; CHECK-NEXT:    vmfeq.vv v24, v16, v16, v0.t
+; CHECK-NEXT:    vmfeq.vv v2, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v16, v1, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfeq.vv v17, v8, v8, v0.t
+; CHECK-NEXT:    vmand.mm v8, v1, v2
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB20_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB20_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfeq.vf v9, v24, fa0, v0.t
+; CHECK-NEXT:    vmfeq.vv v10, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmand.mm v0, v1, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmand.mm v9, v9, v10
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -627,25 +884,37 @@ define <vscale x 16 x i1> @fcmp_ueq_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmv8r.v v16, v8
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v8, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB21_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB21_2:
+; CHECK-NEXT:    li a4, 0
 ; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vv v1, v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vv v2, v8, v16, v0.t
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v1, v8, v16, v0.t
+; CHECK-NEXT:    vmflt.vv v2, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnor.mm v8, v2, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB21_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB21_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmflt.vv v9, v16, v24, v0.t
 ; CHECK-NEXT:    vmflt.vv v10, v24, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnor.mm v9, v10, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -663,21 +932,35 @@ define <vscale x 16 x i1> @fcmp_ueq_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ueq_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ueq_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfgt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB22_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB22_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v24, v8, fa0, v0.t
+; CHECK-NEXT:    vmfgt.vf v25, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnor.mm v16, v25, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v17, v8, fa0, v0.t
-; CHECK-NEXT:    vmfgt.vf v18, v8, fa0, v0.t
+; CHECK-NEXT:    vmnor.mm v8, v25, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB22_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB22_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v9, v16, fa0, v0.t
+; CHECK-NEXT:    vmfgt.vf v10, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnor.mm v0, v18, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnor.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -688,21 +971,35 @@ define <vscale x 16 x i1> @fcmp_ueq_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ueq_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ueq_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmflt.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB23_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB23_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v24, v8, fa0, v0.t
+; CHECK-NEXT:    vmflt.vf v25, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnor.mm v16, v25, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v17, v8, fa0, v0.t
-; CHECK-NEXT:    vmflt.vf v18, v8, fa0, v0.t
+; CHECK-NEXT:    vmnor.mm v8, v25, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB23_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB23_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v9, v16, fa0, v0.t
+; CHECK-NEXT:    vmflt.vf v10, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnor.mm v0, v18, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnor.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -721,22 +1018,35 @@ define <vscale x 16 x i1> @fcmp_ugt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    vl8re64.v v16, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vv v1, v8, v24, v0.t
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB24_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB24_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vv v1, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v8, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v9, v24, v16, v0.t
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB24_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB24_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmfle.vv v9, v16, v24, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v9, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -754,19 +1064,33 @@ define <vscale x 16 x i1> @fcmp_ugt_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ugt_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ugt_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB25_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB25_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB25_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB25_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -777,19 +1101,33 @@ define <vscale x 16 x i1> @fcmp_ugt_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ugt_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ugt_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB26_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB26_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB26_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB26_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -808,22 +1146,35 @@ define <vscale x 16 x i1> @fcmp_uge_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    vl8re64.v v16, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vv v1, v8, v24, v0.t
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB27_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB27_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v1, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v8, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v9, v24, v16, v0.t
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB27_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB27_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmflt.vv v9, v16, v24, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v9, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -841,19 +1192,33 @@ define <vscale x 16 x i1> @fcmp_uge_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_uge_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_uge_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB28_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB28_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB28_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB28_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -864,19 +1229,33 @@ define <vscale x 16 x i1> @fcmp_uge_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_uge_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_uge_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB29_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB29_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB29_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB29_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -895,22 +1274,35 @@ define <vscale x 16 x i1> @fcmp_ult_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    vl8re64.v v16, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vv v1, v24, v8, v0.t
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB30_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB30_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vv v1, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v8, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfle.vv v9, v16, v24, v0.t
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB30_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB30_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmfle.vv v9, v24, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v9, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -928,19 +1320,33 @@ define <vscale x 16 x i1> @fcmp_ult_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ult_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ult_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB31_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB31_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfge.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB31_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB31_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfge.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -951,19 +1357,33 @@ define <vscale x 16 x i1> @fcmp_ult_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ult_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ult_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB32_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB32_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfle.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB32_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB32_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfle.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -982,22 +1402,35 @@ define <vscale x 16 x i1> @fcmp_ule_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    vl8re64.v v16, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vv v1, v24, v8, v0.t
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB33_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB33_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vv v1, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v8, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vv v9, v16, v24, v0.t
+; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB33_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB33_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmflt.vv v9, v24, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmnot.m v9, v9
-; CHECK-NEXT:    srli a0, a1, 3
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -1015,19 +1448,33 @@ define <vscale x 16 x i1> @fcmp_ule_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_ule_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ule_vf_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB34_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB34_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfgt.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB34_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB34_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfgt.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -1038,19 +1485,33 @@ define <vscale x 16 x i1> @fcmp_ule_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_ule_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_ule_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB35_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB35_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v24, v8, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v16, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmflt.vf v17, v8, fa0, v0.t
+; CHECK-NEXT:    vmnot.m v8, v24
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB35_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB35_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmflt.vf v9, v16, fa0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmnot.m v0, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmnot.m v9, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -1064,38 +1525,43 @@ define <vscale x 16 x i1> @fcmp_une_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    vmv1r.v v1, v0
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a1, a3, 3
+; CHECK-NEXT:    add a1, a0, a1
+; CHECK-NEXT:    vl8re64.v v24, (a1)
+; CHECK-NEXT:    srli a1, a3, 3
+; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a5, a2, a3
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a2, a5, .LBB36_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a4, a5
+; CHECK-NEXT:  .LBB36_2:
+; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vv v2, v16, v24, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB36_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a2, a3
+; CHECK-NEXT:  .LBB36_4:
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfne.vv v1, v8, v24, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfne.vv v25, v16, v8, v0.t
-; CHECK-NEXT:    srli a0, a1, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v1, v25, a0
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmfne.vv v16, v24, v8, v0.t
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v2, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
+; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    add sp, sp, t0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
@@ -1107,14 +1573,29 @@ define <vscale x 16 x i1> @fcmp_une_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 define <vscale x 16 x i1> @fcmp_une_vf_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_une_vf_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB37_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB37_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB37_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB37_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfne.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfne.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -1126,14 +1607,29 @@ define <vscale x 16 x i1> @fcmp_une_vf_nxv16f64(<vscale x 16 x double> %va, doub
 define <vscale x 16 x i1> @fcmp_une_vf_swap_nxv16f64(<vscale x 16 x double> %va, double %b, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: fcmp_une_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    srli a1, a2, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a4, a0, a2
+; CHECK-NEXT:    vslidedown.vx v0, v0, a1
+; CHECK-NEXT:    bltu a0, a4, .LBB38_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB38_2:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vf v25, v16, fa0, v0.t
+; CHECK-NEXT:    bltu a0, a2, .LBB38_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a0, a2
+; CHECK-NEXT:  .LBB38_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmfne.vf v24, v16, fa0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vmfne.vf v16, v8, fa0, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v24, a0
+; CHECK-NEXT:    add a0, a1, a1
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v16, v25, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
@@ -1153,25 +1649,37 @@ define <vscale x 16 x i1> @fcmp_uno_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmv8r.v v16, v8
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    vl8re64.v v8, (a0)
-; CHECK-NEXT:    vl8re64.v v24, (a3)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    add a0, a0, a3
+; CHECK-NEXT:    mv a3, a2
+; CHECK-NEXT:    bltu a2, a1, .LBB39_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB39_2:
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfne.vv v1, v16, v16, v0.t
 ; CHECK-NEXT:    vmfne.vv v16, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v8, v1, v16
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfne.vv v9, v16, v16, v0.t
-; CHECK-NEXT:    vmfne.vv v10, v24, v24, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v9, v9, v10
+; CHECK-NEXT:    vmor.mm v8, v16, v1
 ; CHECK-NEXT:    srli a0, a1, 3
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a2, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a0
+; CHECK-NEXT:    bltu a2, a1, .LBB39_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a1
+; CHECK-NEXT:  .LBB39_4:
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vv v9, v24, v24, v0.t
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vl8re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmfne.vv v10, v16, v16, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
+; CHECK-NEXT:    vmor.mm v9, v10, v9
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
@@ -1190,21 +1698,36 @@ define <vscale x 16 x i1> @fcmp_uno_vf_nxv16f64(<vscale x 16 x double> %va, doub
 ; CHECK-LABEL: fcmp_uno_vf_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, mu
+; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vfmv.v.f v24, fa0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB40_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB40_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfne.vf v1, v24, fa0, v0.t
-; CHECK-NEXT:    vmfne.vv v24, v16, v16, v0.t
+; CHECK-NEXT:    vmfne.vv v2, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v16, v24, v1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfne.vv v17, v8, v8, v0.t
+; CHECK-NEXT:    vmor.mm v8, v2, v1
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB40_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB40_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vf v9, v24, fa0, v0.t
+; CHECK-NEXT:    vmfne.vv v10, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v0, v17, v1
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmor.mm v9, v10, v9
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
@@ -1216,21 +1739,36 @@ define <vscale x 16 x i1> @fcmp_uno_vf_swap_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-LABEL: fcmp_uno_vf_swap_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, mu
+; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vfmv.v.f v24, fa0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB41_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB41_2:
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmfne.vf v1, v24, fa0, v0.t
-; CHECK-NEXT:    vmfne.vv v24, v16, v16, v0.t
+; CHECK-NEXT:    vmfne.vv v2, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v16, v1, v24
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmfne.vv v17, v8, v8, v0.t
+; CHECK-NEXT:    vmor.mm v8, v1, v2
+; CHECK-NEXT:    srli a2, a1, 3
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vslidedown.vx v0, v0, a2
+; CHECK-NEXT:    bltu a0, a1, .LBB41_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a3, a1
+; CHECK-NEXT:  .LBB41_4:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vmfne.vf v9, v24, fa0, v0.t
+; CHECK-NEXT:    vmfne.vv v10, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vmor.mm v0, v1, v17
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
+; CHECK-NEXT:    vmor.mm v9, v9, v10
+; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
+; CHECK-NEXT:    vslideup.vx v8, v9, a2
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 16 x double> %elt.head, <vscale x 16 x double> poison, <vscale x 16 x i32> zeroinitializer
