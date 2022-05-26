@@ -237,6 +237,28 @@ private:
 };
 } // namespace
 
+namespace {
+struct BufferizationBufferizePass
+    : public BufferizationBufferizeBase<BufferizationBufferizePass> {
+  void runOnOperation() override {
+    BufferizationOptions options = getPartialBufferizationOptions();
+    options.allowDialectInFilter<BufferizationDialect>();
+
+    if (failed(bufferizeOp(getOperation(), options)))
+      signalPassFailure();
+  }
+
+  void getDependentDialects(DialectRegistry &registry) const override {
+    registry
+        .insert<bufferization::BufferizationDialect, memref::MemRefDialect>();
+  }
+};
+} // namespace
+
+std::unique_ptr<Pass> mlir::bufferization::createBufferizationBufferizePass() {
+  return std::make_unique<BufferizationBufferizePass>();
+}
+
 std::unique_ptr<Pass> mlir::bufferization::createOneShotBufferizePass() {
   return std::make_unique<OneShotBufferizePass>();
 }
@@ -285,19 +307,18 @@ bufferization::finalizeBuffers(Operation *op,
                                    &hasLeakingAllocs)))
     return failure();
 
-  if (hasLeakingAllocs) {
-    // Promote returned buffers to "out" parameters.
-    // TODO: Pass options to support custom dealloc ops.
-    if (options.promoteBufferResultsToOutParams && isa<ModuleOp>(op) &&
-        failed(promoteBufferResultsToOutParams(cast<ModuleOp>(op))))
-      return failure();
+  // Promote returned buffers to "out" parameters.
+  // TODO: Pass options to support custom dealloc ops.
+  if (options.promoteBufferResultsToOutParams && isa<ModuleOp>(op) &&
+      failed(promoteBufferResultsToOutParams(cast<ModuleOp>(op))))
+    return failure();
 
-    // Create deallocation ops for all "leaking buffers" and all buffer
-    // allocations that were added during the above promotion process.
-    // TODO: Pass options to support custom dealloc ops.
-    if (options.createDeallocs && failed(deallocateBuffers(op)))
-      return failure();
-  }
+  // Create deallocation ops for all "leaking buffers" and all buffer
+  // allocations that were added during the above promotion process.
+  // TODO: Pass options to support custom dealloc ops.
+  if (hasLeakingAllocs && options.createDeallocs &&
+      failed(deallocateBuffers(op)))
+    return failure();
 
   // Deallocate all remaining buffers at the end of their parent blocks.
   if (failed(createAllocDeallocOps(op, options)))
@@ -367,6 +388,8 @@ private:
   DenseSet<Operation *> &toMemrefOps;
 
   /// The bufferization options.
+  /// Used for debug modes.
+  LLVM_ATTRIBUTE_UNUSED
   const BufferizationOptions &options;
 };
 } // namespace

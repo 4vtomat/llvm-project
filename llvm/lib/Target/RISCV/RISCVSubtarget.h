@@ -105,6 +105,7 @@ private:
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
   bool EnableRVCHintInstrs = true;
+  bool EnableDefaultUnroll = true;
   bool EnableSaveRestore = false;
   bool HasCMOVBranchOpt = false; // SIFIVE
   bool HasShortForwardBranchOpt = false; // SIFIVE
@@ -216,6 +217,7 @@ public:
   bool isRV32E() const { return IsRV32E; }
   bool enableLinkerRelax() const { return EnableLinkerRelax; }
   bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
+  bool enableDefaultUnroll() const { return EnableDefaultUnroll; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
 #if SIFIVE_CUSTOMIZATION
   bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }

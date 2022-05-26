@@ -34,8 +34,9 @@ define <vscale x 1 x i64> @access_fixed_and_vector_objects(i64 *%val) {
 ; RV64IV-NEXT:    addi sp, sp, -544
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 544
 ; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
 ; RV64IV-NEXT:    sub sp, sp, t0
-; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xa0, 0x04, 0x22, 0x11, 0x01, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 544 + 1 * VLEB
+; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xa0, 0x04, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 544 + 2 * VLEB
 ; RV64IV-NEXT:    addi a0, sp, 24
 ; RV64IV-NEXT:    vl1re64.v v8, (a0)
 ; RV64IV-NEXT:    ld a0, 536(sp)
@@ -44,6 +45,7 @@ define <vscale x 1 x i64> @access_fixed_and_vector_objects(i64 *%val) {
 ; RV64IV-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
 ; RV64IV-NEXT:    vadd.vv v8, v8, v9
 ; RV64IV-NEXT:    csrr t0, vlenb
+; RV64IV-NEXT:    slli t0, t0, 1
 ; RV64IV-NEXT:    add sp, sp, t0
 ; RV64IV-NEXT:    .cfi_def_cfa_offset 544
 ; RV64IV-NEXT:    addi sp, sp, 544
