@@ -9703,6 +9703,47 @@ static SDValue performBITREVERSECombine(SDNode *N, SelectionDAG &DAG,
                      DAG.getConstant(7, DL, VT));
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue combineSTORE_BUILD_VECTOR_LOAD(SDNode *N, SelectionDAG &DAG,
+                                              const RISCVSubtarget &Subtarget) {
+  StoreSDNode *Store = cast<StoreSDNode>(N);
+  if (!Store->isSimple())
+    return SDValue();
+  BuildVectorSDNode *BuildVector =
+      dyn_cast<BuildVectorSDNode>(N->getOperand(1));
+  if (!BuildVector)
+    return SDValue();
+  for (unsigned i = 0; i != BuildVector->getNumOperands(); ++i)
+    if (!isa<LoadSDNode>(BuildVector->getOperand(i)))
+      return SDValue();
+  EVT BuildVectorEVT = BuildVector->getValueType(0);
+  EVT BuildVectorEltEVT = BuildVectorEVT.getVectorElementType();
+  if (!BuildVectorEltEVT.isByteSized())
+    return SDValue();
+  SDLoc DL(N);
+  SmallVector<SDValue, 16> MemOps;
+  for (unsigned i = 0; i != BuildVector->getNumOperands(); ++i) {
+    // BuildVectorEltEVT may be smaller than
+    // BuildVector->getOperand(i).getValueType().
+    // e.g.,
+    // t38: i64,ch = load<(load (s8) from %ir.arrayidx), zext from i8> t0, t6,
+    // undef:i64
+    // t36: v4i32 = BUILD_VECTOR t38, t39, t40, t41
+    unsigned PtrOff = BuildVectorEVT.getScalarSizeInBits() * i / 8;
+    MachinePointerInfo MPI = Store->getPointerInfo().getWithOffset(PtrOff);
+    Align Alignment = commonAlignment(Store->getAlign(), PtrOff);
+    SDValue NewPtr = DAG.getTargetLoweringInfo().getVectorElementPointer(
+        DAG, Store->getBasePtr(), BuildVectorEVT,
+        DAG.getConstant(i, DL, Subtarget.getXLenVT()));
+    MemOps.push_back(DAG.getTruncStore(
+        Store->getChain(), DL, BuildVector->getOperand(i), NewPtr, MPI,
+        BuildVectorEltEVT, Alignment, Store->getMemOperand()->getFlags(),
+        Store->getAAInfo()));
+  }
+  return DAG.getNode(ISD::TokenFactor, DL, MVT::Other, MemOps);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
   SelectionDAG &DAG = DCI.DAG;
@@ -10230,7 +10271,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
             Store->isTruncatingStore(), /*IsCompress*/ false);
       }
     }
-
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = combineSTORE_BUILD_VECTOR_LOAD(N, DAG, Subtarget))
+      return V;
+#endif
     break;
   }
   case ISD::SPLAT_VECTOR: {
