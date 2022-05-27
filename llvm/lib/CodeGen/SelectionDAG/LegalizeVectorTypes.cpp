@@ -3555,9 +3555,19 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_SETCC(SDNode *N) {
          "Operand types must be vectors");
   // The result has a legal vector type, but the input needs splitting.
   SDValue Lo0, Hi0, Lo1, Hi1, LoRes, HiRes;
+  SDValue MaskLo, MaskHi;
+  SDValue EVLLo, EVLHi;
   SDLoc DL(N);
   GetSplitVector(N->getOperand(0), Lo0, Hi0);
   GetSplitVector(N->getOperand(1), Lo1, Hi1);
+  if (getTypeAction(N->getOperand(3).getValueType()) == TargetLowering::TypeSplitVector)
+    GetSplitVector(N->getOperand(3), MaskLo, MaskHi);
+  else
+    std::tie(MaskLo, MaskHi) = DAG.SplitVectorOperand(N, 3);
+
+  std::tie(EVLLo, EVLHi) =
+      DAG.SplitEVL(N->getOperand(4), N->getValueType(0), DL);
+
   auto PartEltCnt = Lo0.getValueType().getVectorElementCount();
 
   LLVMContext &Context = *DAG.getContext();
@@ -3565,9 +3575,9 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_SETCC(SDNode *N) {
   EVT WideResVT = EVT::getVectorVT(Context, MVT::i1, PartEltCnt*2);
 
   LoRes = DAG.getNode(ISD::VP_SETCC, DL, PartResVT, Lo0, Lo1, N->getOperand(2),
-                      N->getOperand(3), N->getOperand(4));
+                      MaskLo, EVLLo);
   HiRes = DAG.getNode(ISD::VP_SETCC, DL, PartResVT, Hi0, Hi1, N->getOperand(2),
-                      N->getOperand(3), N->getOperand(4));
+                      MaskHi, EVLHi);
   SDValue Con = DAG.getNode(ISD::CONCAT_VECTORS, DL, WideResVT, LoRes, HiRes);
 
   EVT OpVT = N->getOperand(0).getValueType();

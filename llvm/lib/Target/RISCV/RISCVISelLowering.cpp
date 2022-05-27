@@ -1165,18 +1165,23 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   // TODO: Add stores?
   // TODO: We should upstream all of this.
   case Intrinsic::riscv_vle:
+  case Intrinsic::riscv_vleff:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getType());
-    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
   case Intrinsic::riscv_vlse:
+  case Intrinsic::riscv_vloxei:
+  case Intrinsic::riscv_vluxei:
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getType()->getScalarType());
-    Info.align = Align(I.getType()->getScalarSizeInBits() / 8);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
@@ -1187,30 +1192,86 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg6:
   case Intrinsic::riscv_vlseg7:
   case Intrinsic::riscv_vlseg8:
+  case Intrinsic::riscv_vlseg2ff:
+  case Intrinsic::riscv_vlseg3ff:
+  case Intrinsic::riscv_vlseg4ff:
+  case Intrinsic::riscv_vlseg5ff:
+  case Intrinsic::riscv_vlseg6ff:
+  case Intrinsic::riscv_vlseg7ff:
+  case Intrinsic::riscv_vlseg8ff:
   case Intrinsic::riscv_vlsseg2:
   case Intrinsic::riscv_vlsseg3:
   case Intrinsic::riscv_vlsseg4:
   case Intrinsic::riscv_vlsseg5:
   case Intrinsic::riscv_vlsseg6:
   case Intrinsic::riscv_vlsseg7:
-  case Intrinsic::riscv_vlsseg8: {
+  case Intrinsic::riscv_vlsseg8:
+  case Intrinsic::riscv_vloxseg2:
+  case Intrinsic::riscv_vloxseg3:
+  case Intrinsic::riscv_vloxseg4:
+  case Intrinsic::riscv_vloxseg5:
+  case Intrinsic::riscv_vloxseg6:
+  case Intrinsic::riscv_vloxseg7:
+  case Intrinsic::riscv_vloxseg8:
+  case Intrinsic::riscv_vluxseg2:
+  case Intrinsic::riscv_vluxseg3:
+  case Intrinsic::riscv_vluxseg4:
+  case Intrinsic::riscv_vluxseg5:
+  case Intrinsic::riscv_vluxseg6:
+  case Intrinsic::riscv_vluxseg7:
+  case Intrinsic::riscv_vluxseg8: {
     unsigned NF;
     switch (Intrinsic) {
     default: llvm_unreachable("Unexpected intrinsic");
-    case Intrinsic::riscv_vlseg2: NF = 2; break;
-    case Intrinsic::riscv_vlseg3: NF = 3; break;
-    case Intrinsic::riscv_vlseg4: NF = 4; break;
-    case Intrinsic::riscv_vlseg5: NF = 5; break;
-    case Intrinsic::riscv_vlseg6: NF = 6; break;
-    case Intrinsic::riscv_vlseg7: NF = 7; break;
-    case Intrinsic::riscv_vlseg8: NF = 8; break;
-    case Intrinsic::riscv_vlsseg2: NF = 2; break;
-    case Intrinsic::riscv_vlsseg3: NF = 3; break;
-    case Intrinsic::riscv_vlsseg4: NF = 4; break;
-    case Intrinsic::riscv_vlsseg5: NF = 5; break;
-    case Intrinsic::riscv_vlsseg6: NF = 6; break;
-    case Intrinsic::riscv_vlsseg7: NF = 7; break;
-    case Intrinsic::riscv_vlsseg8: NF = 8; break;
+    case Intrinsic::riscv_vlseg2:
+    case Intrinsic::riscv_vlseg2ff:
+    case Intrinsic::riscv_vlsseg2:
+    case Intrinsic::riscv_vloxseg2:
+    case Intrinsic::riscv_vluxseg2:
+      NF = 2;
+      break;
+    case Intrinsic::riscv_vlseg3:
+    case Intrinsic::riscv_vlseg3ff:
+    case Intrinsic::riscv_vlsseg3:
+    case Intrinsic::riscv_vloxseg3:
+    case Intrinsic::riscv_vluxseg3:
+      NF = 3;
+      break;
+    case Intrinsic::riscv_vlseg4:
+    case Intrinsic::riscv_vlseg4ff:
+    case Intrinsic::riscv_vlsseg4:
+    case Intrinsic::riscv_vloxseg4:
+    case Intrinsic::riscv_vluxseg4:
+      NF = 4;
+      break;
+    case Intrinsic::riscv_vlseg5:
+    case Intrinsic::riscv_vlseg5ff:
+    case Intrinsic::riscv_vlsseg5:
+    case Intrinsic::riscv_vloxseg5:
+    case Intrinsic::riscv_vluxseg5:
+      NF = 5;
+      break;
+    case Intrinsic::riscv_vlseg6:
+    case Intrinsic::riscv_vlseg6ff:
+    case Intrinsic::riscv_vlsseg6:
+    case Intrinsic::riscv_vloxseg6:
+    case Intrinsic::riscv_vluxseg6:
+      NF = 6;
+      break;
+    case Intrinsic::riscv_vlseg7:
+    case Intrinsic::riscv_vlseg7ff:
+    case Intrinsic::riscv_vlsseg7:
+    case Intrinsic::riscv_vloxseg7:
+    case Intrinsic::riscv_vluxseg7:
+      NF = 7;
+      break;
+    case Intrinsic::riscv_vlseg8:
+    case Intrinsic::riscv_vlseg8ff:
+    case Intrinsic::riscv_vlsseg8:
+    case Intrinsic::riscv_vloxseg8:
+    case Intrinsic::riscv_vluxseg8:
+      NF = 8;
+      break;
     }
     Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
     Info.opc = ISD::INTRINSIC_W_CHAIN;
@@ -1219,6 +1280,110 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
+    return true;
+  }
+  case Intrinsic::riscv_vse:
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
+    return true;
+  case Intrinsic::riscv_vsse:
+  case Intrinsic::riscv_vsoxei:
+  case Intrinsic::riscv_vsuxei:
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(1);
+    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
+    return true;
+  case Intrinsic::riscv_vsseg2:
+  case Intrinsic::riscv_vsseg3:
+  case Intrinsic::riscv_vsseg4:
+  case Intrinsic::riscv_vsseg5:
+  case Intrinsic::riscv_vsseg6:
+  case Intrinsic::riscv_vsseg7:
+  case Intrinsic::riscv_vsseg8:
+  case Intrinsic::riscv_vssseg2:
+  case Intrinsic::riscv_vssseg3:
+  case Intrinsic::riscv_vssseg4:
+  case Intrinsic::riscv_vssseg5:
+  case Intrinsic::riscv_vssseg6:
+  case Intrinsic::riscv_vssseg7:
+  case Intrinsic::riscv_vssseg8:
+  case Intrinsic::riscv_vsoxseg2:
+  case Intrinsic::riscv_vsoxseg3:
+  case Intrinsic::riscv_vsoxseg4:
+  case Intrinsic::riscv_vsoxseg5:
+  case Intrinsic::riscv_vsoxseg6:
+  case Intrinsic::riscv_vsoxseg7:
+  case Intrinsic::riscv_vsoxseg8:
+  case Intrinsic::riscv_vsuxseg2:
+  case Intrinsic::riscv_vsuxseg3:
+  case Intrinsic::riscv_vsuxseg4:
+  case Intrinsic::riscv_vsuxseg5:
+  case Intrinsic::riscv_vsuxseg6:
+  case Intrinsic::riscv_vsuxseg7:
+  case Intrinsic::riscv_vsuxseg8: {
+    unsigned NF;
+    switch (Intrinsic) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::riscv_vsseg2:
+    case Intrinsic::riscv_vssseg2:
+    case Intrinsic::riscv_vsoxseg2:
+    case Intrinsic::riscv_vsuxseg2:
+      NF = 2;
+      break;
+    case Intrinsic::riscv_vsseg3:
+    case Intrinsic::riscv_vssseg3:
+    case Intrinsic::riscv_vsoxseg3:
+    case Intrinsic::riscv_vsuxseg3:
+      NF = 3;
+      break;
+    case Intrinsic::riscv_vsseg4:
+    case Intrinsic::riscv_vssseg4:
+    case Intrinsic::riscv_vsoxseg4:
+    case Intrinsic::riscv_vsuxseg4:
+      NF = 4;
+      break;
+    case Intrinsic::riscv_vsseg5:
+    case Intrinsic::riscv_vssseg5:
+    case Intrinsic::riscv_vsoxseg5:
+    case Intrinsic::riscv_vsuxseg5:
+      NF = 5;
+      break;
+    case Intrinsic::riscv_vsseg6:
+    case Intrinsic::riscv_vssseg6:
+    case Intrinsic::riscv_vsoxseg6:
+    case Intrinsic::riscv_vsuxseg6:
+      NF = 6;
+      break;
+    case Intrinsic::riscv_vsseg7:
+    case Intrinsic::riscv_vssseg7:
+    case Intrinsic::riscv_vsoxseg7:
+    case Intrinsic::riscv_vsuxseg7:
+      NF = 7;
+      break;
+    case Intrinsic::riscv_vsseg8:
+    case Intrinsic::riscv_vssseg8:
+    case Intrinsic::riscv_vsoxseg8:
+    case Intrinsic::riscv_vsuxseg8:
+      NF = 8;
+      break;
+    }
+    Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
+    Info.opc = ISD::INTRINSIC_VOID;
+    Info.ptrVal = I.getArgOperand(NF);
+    Info.memVT = MVT::getVT(EltTy);
+    Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |= MachineMemOperand::MOStore;
     return true;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -7387,6 +7552,77 @@ SDValue RISCVTargetLowering::lowerMaskedGather(SDValue Op,
   return DAG.getMergeValues({Result, Chain}, DL);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Look for VP scatter where all elements use the same pointer. Lower to a
+// slidedown of the last active element followed by a VL=1 vse. This is only
+// possible if the mask is all ones.
+static SDValue lowerSplatPtrVPScatter(SDValue Op, SelectionDAG &DAG,
+                                      const RISCVSubtarget &Subtarget) {
+  auto *VPSN = dyn_cast<VPScatterSDNode>(Op);
+  if (!VPSN)
+    return SDValue();
+
+  // Mask should be all ones.
+  SDValue Mask = VPSN->getMask();
+  if (!ISD::isConstantSplatVectorAllOnes(Mask.getNode()))
+    return SDValue();
+
+  // The splat could already be in the base pointer or it could be hidden in
+  // the index.
+  auto findSplatPointer = [&DAG](SDValue BasePtr, SDValue Index) {
+    if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
+      return BasePtr;
+
+    // Try to extract from index.
+    if (!isNullConstant(BasePtr))
+      return SDValue();
+
+    SDValue SplatVal = DAG.getSplatValue(Index);
+    if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
+      return SDValue();
+
+    return SplatVal;
+  };
+
+  SDValue BasePtr = findSplatPointer(VPSN->getBasePtr(), VPSN->getIndex());
+  if (!BasePtr)
+    return SDValue();
+
+  SDValue Val = VPSN->getValue();
+
+  MVT VT = Val.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(DAG, VT, Subtarget);
+    Val = convertToScalableVector(ContainerVT, Val, DAG, Subtarget);
+  }
+
+  SDLoc DL(Op);
+  SDValue VL = VPSN->getVectorLength();
+  SDValue SlideAmt = DAG.getNode(ISD::SUB, DL, VL.getValueType(), VL,
+                                 DAG.getConstant(1, DL, VL.getValueType()));
+
+  // The VL could already be 0 so we need to min with 1.
+  VL = DAG.getNode(ISD::UMIN, DL, VL.getValueType(), VL,
+                   DAG.getConstant(1, DL, VL.getValueType()));
+
+  Mask = getAllOnesMask(ContainerVT, VL, DL, DAG);
+
+  Val = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
+                    DAG.getUNDEF(ContainerVT), Val, SlideAmt, Mask, VL);
+
+  SDValue Ops[] = {VPSN->getChain(),
+                   DAG.getTargetConstant(Intrinsic::riscv_vse, DL, XLenVT), Val,
+                   BasePtr, VL};
+
+  return DAG.getMemIntrinsicNode(ISD::INTRINSIC_VOID, DL,
+                                 DAG.getVTList(MVT::Other), Ops,
+                                 VPSN->getMemoryVT(), VPSN->getMemOperand());
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Custom lower MSCATTER/VP_SCATTER to a legalized form for RVV. It will then be
 // matched to a RVV indexed store. The RVV indexed store instructions only
 // support the "unsigned unscaled" addressing mode; indices are implicitly
@@ -7395,6 +7631,11 @@ SDValue RISCVTargetLowering::lowerMaskedGather(SDValue Op,
 // accordingly.
 SDValue RISCVTargetLowering::lowerMaskedScatter(SDValue Op,
                                                 SelectionDAG &DAG) const {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerSplatPtrVPScatter(Op, DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
+
   SDLoc DL(Op);
   const auto *MemSD = cast<MemSDNode>(Op.getNode());
   EVT MemVT = MemSD->getMemoryVT();
