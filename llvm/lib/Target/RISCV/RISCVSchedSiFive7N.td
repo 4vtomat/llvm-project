@@ -55,6 +55,7 @@ def : WriteRes<WriteJmpReg, [SiFive7NPipeB]>;
 //Short forward branch
 def : WriteRes<WriteSFB, [SiFive7NPipeA, SiFive7NPipeB]> {
   let Latency = 3;
+  let NumMicroOps = 2;
 }
 
 // Integer arithmetic and logic
