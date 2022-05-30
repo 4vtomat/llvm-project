@@ -20,6 +20,7 @@
 #include "llvm/CodeGen/LivePhysRegs.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
+#include "llvm/Support/CodeGen.h" // SIFIVE
 
 using namespace llvm;
 
@@ -73,8 +74,10 @@ private:
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
   bool expandVSPILL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVRELOAD(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+#if SIFIVE_CUSTOMIZATION
   bool removeRedundantVMV(MachineBasicBlock &MBB,
                           MachineBasicBlock::iterator MBBI);
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 char RISCVExpandPseudo::ID = 0;
@@ -217,6 +220,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVRELOAD7_M1:
   case RISCV::PseudoVRELOAD8_M1:
     return expandVRELOAD(MBB, MBBI);
+#if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVMV_V_V_MF8:
   case RISCV::PseudoVMV_V_V_MF4:
   case RISCV::PseudoVMV_V_V_MF2:
@@ -224,7 +228,10 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVMV_V_V_M2:
   case RISCV::PseudoVMV_V_V_M4:
   case RISCV::PseudoVMV_V_V_M8:
-    return removeRedundantVMV(MBB, MBBI);
+    if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOpt::None) {
+      return removeRedundantVMV(MBB, MBBI);
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return false;
@@ -602,6 +609,7 @@ bool RISCVExpandPseudo::expandVRELOAD(MachineBasicBlock &MBB,
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
                                            MachineBasicBlock::iterator MBBI) {
   if (MBBI->getOperand(0).getReg() == MBBI->getOperand(1).getReg()) {
@@ -610,6 +618,7 @@ bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
   }
   return false;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 } // end of anonymous namespace
 
