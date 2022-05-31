@@ -94,11 +94,8 @@ define i8* @big_offset_neg_addi() nounwind {
 ;
 ; RV64I-LABEL: big_offset_neg_addi:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    lui a0, %hi(g)
-; RV64I-NEXT:    addi a0, a0, %lo(g)
-; RV64I-NEXT:    lui a1, 18
-; RV64I-NEXT:    addiw a1, a1, -160
-; RV64I-NEXT:    add a0, a0, a1
+; RV64I-NEXT:    lui a0, %hi(g+73568)
+; RV64I-NEXT:    addi a0, a0, %lo(g+73568)
 ; RV64I-NEXT:    ret
   ret i8* getelementptr inbounds ([1048576 x i8], [1048576 x i8]* @g, i32 0, i32 73568)
 }
@@ -112,11 +109,8 @@ define i32* @big_offset_one_use() local_unnamed_addr nounwind {
 ;
 ; RV64I-LABEL: big_offset_one_use:
 ; RV64I:       # %bb.0: # %entry
-; RV64I-NEXT:    lui a0, %hi(s)
-; RV64I-NEXT:    addi a0, a0, %lo(s)
-; RV64I-NEXT:    lui a1, 4
-; RV64I-NEXT:    addiw a1, a1, 188
-; RV64I-NEXT:    add a0, a0, a1
+; RV64I-NEXT:    lui a0, %hi(s+16572)
+; RV64I-NEXT:    addi a0, a0, %lo(s+16572)
 ; RV64I-NEXT:    ret
 entry:
   ret i32* getelementptr inbounds (%struct.S, %struct.S* @s, i32 0, i32 5)

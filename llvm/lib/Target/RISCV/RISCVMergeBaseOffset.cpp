@@ -191,12 +191,11 @@ bool RISCVMergeBaseOffsetOpt::matchLargeOffset(MachineInstr &TailAdd,
     Offset = OffsetTail.getOperand(1).getImm() << 12;
     DeadInstrs.insert(&OffsetTail);
     return true;
-  } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32 &&
-             !MF->getSubtarget<RISCVSubtarget>().is64Bit()) {
-    // The offset value has all zero bits in the lower 12 bits. Only LUI
-    // exists.
+  } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32) {
+    // The offset value is a simm32. We can always fold it.
     LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
     Offset = OffsetTail.getOperand(1).getImm();
+    assert(isInt<32>(Offset) && "Unexpected offset");
     DeadInstrs.insert(&OffsetTail);
     return true;
   }
