@@ -5589,10 +5589,12 @@ def warn_strict_prototypes : Extension<
   "a %select{function|block}0 declaration without a prototype is deprecated "
   "%select{in all versions of C|}0">, InGroup<StrictPrototypes>;
 def warn_non_prototype_changes_behavior : Warning<
-  "a function declaration without a prototype is deprecated in all versions of "
-  "C and is not supported in C2x">, InGroup<DeprecatedNonPrototype>;
-def note_func_decl_changes_behavior : Note<
-  "a function declaration without a prototype is not supported in C2x">;
+  "a function %select{declaration|definition}0 without a prototype is "
+  "deprecated in all versions of C %select{and is not supported in C2x|and is "
+  "treated as a zero-parameter prototype in C2x, conflicting with a "
+  "%select{previous|subsequent}2 %select{declaration|definition}3}1">,
+  InGroup<DeprecatedNonPrototype>;
+def note_conflicting_prototype : Note<"conflicting prototype is here">;
 def warn_missing_variable_declarations : Warning<
   "no previous extern declaration for non-static variable %0">,
   InGroup<DiagGroup<"missing-variable-declarations">>, DefaultIgnore;
@@ -10633,10 +10635,6 @@ def note_omp_atomic_compare: Note<
   "expect binary operator in conditional expression|expect '<', '>' or '==' as order operator|expect comparison in a form of 'x == e', 'e == x', 'x ordop expr', or 'expr ordop x'|"
   "expect lvalue for result value|expect scalar value|expect integer value|unexpected 'else' statement|expect '==' operator|expect an assignment statement 'v = x'|"
   "expect a 'if' statement|expect no more than two statements|expect a compound statement|expect 'else' statement|expect a form 'r = x == e; if (r) ...'}0">;
-def err_omp_atomic_fail_wrong_or_no_clauses : Error<"expected a memory order clause">;
-def err_omp_atomic_fail_extra_mem_order_clauses : Error<"directive '#pragma omp atomic compare fail' cannot contain more than one memory order clause">;
-def err_omp_atomic_fail_extra_clauses : Error<"directive '#pragma omp atomic compare' cannot contain more than one fail clause">;
-def err_omp_atomic_fail_no_compare : Error<"expected 'compare' clause with the 'fail' modifier">;
 def err_omp_atomic_several_clauses : Error<
   "directive '#pragma omp atomic' cannot contain more than one 'read', 'write', 'update', 'capture', or 'compare' clause">;
 def err_omp_several_mem_order_clauses : Error<
@@ -11001,6 +10999,9 @@ def err_omp_append_args_with_varargs : Error<
   "'append_args' is not allowed with varargs functions">;
 def err_openmp_vla_in_task_untied : Error<
   "variable length arrays are not supported in OpenMP tasking regions with 'untied' clause">;
+def warn_omp_unterminated_declare_target : Warning<
+  "expected '#pragma omp end declare target' at end of file to match '#pragma omp %0'">,
+  InGroup<SourceUsesOpenMP>;
 } // end of OpenMP category
 
 let CategoryName = "Related Result Type Issue" in {
