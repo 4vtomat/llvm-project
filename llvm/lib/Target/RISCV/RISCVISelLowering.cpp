@@ -9264,6 +9264,66 @@ static SDValue performANDCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ true);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// combine or (zext a) (shl (anyext b) c) to shufflevector
+static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
+                                      const RISCVSubtarget &Subtarget) {
+  EVT ResultVT = N->getValueType(0);
+  if (!ResultVT.isVector())
+    return SDValue();
+  EVT ResultEltEVT = ResultVT.getVectorElementType();
+  // The minimum SEW for vmaccu.vx and vwaddu.vx is 8.
+  if (!ResultEltEVT.isRound() || !ResultEltEVT.bitsGT(MVT::i8))
+    return SDValue();
+  for (unsigned i = 0; i != 2; ++i) {
+    SDValue Zext = N->getOperand(i);
+    SDValue Shl = N->getOperand(1 - i);
+    if (Zext.getOpcode() != ISD::ZERO_EXTEND || Shl.getOpcode() != ISD::SHL)
+      continue;
+    SDValue Lo = Zext.getOperand(0);
+    if (Lo.getValueType().widenIntegerVectorElementType(*DAG.getContext()) !=
+        ResultVT)
+      continue;
+    EVT SrcEVT = Lo.getValueType();
+    BuildVectorSDNode *BuildVector =
+        dyn_cast<BuildVectorSDNode>(Shl.getOperand(1));
+    if (!BuildVector)
+      continue;
+    ConstantSDNode *ShlAmount = BuildVector->getConstantSplatNode();
+    if (!ShlAmount ||
+        (ShlAmount->getZExtValue() * 2) != ResultVT.getScalarSizeInBits())
+      continue;
+    SDValue Ext = Shl.getOperand(0);
+    if (!(Ext.getOpcode() == ISD::SIGN_EXTEND ||
+          Ext.getOpcode() == ISD::ZERO_EXTEND ||
+          Ext.getOpcode() == ISD::ANY_EXTEND))
+      continue;
+    SDValue Hi = Ext.getOperand(0);
+    if (Hi.getValueType().widenIntegerVectorElementType(*DAG.getContext()) !=
+        ResultVT)
+      continue;
+    SDLoc DL(N);
+    unsigned NumElements = SrcEVT.getVectorNumElements();
+    // Use ISD::CONCAT_VECTORS for Lo and Hi and ISD::VECTOR_SHUFFLE with undef
+    // as operand will stop isInterleaveShuffle recognize the pattern
+    // (vmaccu.vx + vwaddu.vx).
+    SmallVector<int, 32> Mask;
+    for (unsigned j = 0; j != NumElements; ++j) {
+      Mask.push_back(j);
+      Mask.push_back(j + NumElements * 2);
+    }
+    EVT ConcatEVT = SrcEVT.getDoubleNumVectorElementsVT(*DAG.getContext());
+    SDValue WidenLo = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatEVT, Lo,
+                                  DAG.getUNDEF(SrcEVT));
+    SDValue WidenHi = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatEVT, Hi,
+                                  DAG.getUNDEF(SrcEVT));
+    return DAG.getBitcast(
+        ResultVT, DAG.getVectorShuffle(ConcatEVT, DL, WidenLo, WidenHi, Mask));
+  }
+  return SDValue();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue performORCombine(SDNode *N, SelectionDAG &DAG,
                                 const RISCVSubtarget &Subtarget) {
   if (Subtarget.hasStdExtZbp()) {
@@ -9277,6 +9337,12 @@ static SDValue performORCombine(SDNode *N, SelectionDAG &DAG,
 
   if (SDValue V = combineBinOpToReduce(N, DAG))
     return V;
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineOrZextShlAnyext(N, DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
+
   // fold (or (select cond, 0, y), x) ->
   //      (select cond, x, (or x, y))
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false);
