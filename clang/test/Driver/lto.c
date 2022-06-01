@@ -174,4 +174,10 @@
 // RUN:   -### 2>&1 | FileCheck %s --check-prefix=RISCV-TEST-MLLVM
 //
 // RISCV-TEST-MLLVM: "-plugin-opt=-misched-bottomup=false"
+
+// RUN: %clang -target riscv32-unknown-linux-gnu %S/Inputs/dummy-elf.o \
+// RUN:   -fuse-ld=gold -flto -mllvm -misched-bottomup=false -### 2>&1 \
+// RUN:   | FileCheck %s --check-prefix=RISCV-TEST-MLLVM-UNUSED-WARNING
+//
+// RISCV-TEST-MLLVM-UNUSED-WARNING-NOT: warning: argument unused during compilation: '-mllvm -misched-bottomup=false'
 // endif SIFIVE_CUSTOMIZATION

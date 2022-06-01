@@ -359,6 +359,7 @@ void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
         Args.MakeArgString(Twine("-plugin-opt=-mattr=") + AttrString));
 
   for (const Arg *A : Args.filtered(options::OPT_mllvm)) {
+    A->claim();
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-plugin-opt=") + A->getValue(0)));
   }
