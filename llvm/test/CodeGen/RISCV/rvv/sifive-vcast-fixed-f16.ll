@@ -16,26 +16,11 @@ define i64 @test_vcast_to_fixed_64_f16m1(<vscale x 4 x half> %x) {
 ; CHECK-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 20(sp)
-; CHECK-NEXT:    flh ft1, 22(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    lui a1, 16
-; CHECK-NEXT:    fmv.x.h a2, ft1
-; CHECK-NEXT:    flh ft0, 16(sp)
-; CHECK-NEXT:    addiw a1, a1, -1
-; CHECK-NEXT:    and a0, a0, a1
-; CHECK-NEXT:    slli a2, a2, 16
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    or a0, a0, a2
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    and a1, a3, a1
-; CHECK-NEXT:    fmv.x.h a2, ft0
-; CHECK-NEXT:    slli a2, a2, 16
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    srli a1, a1, 32
-; CHECK-NEXT:    or a0, a1, a0
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 entry:
@@ -54,44 +39,13 @@ define i128 @test_vcast_to_fixed_64_f16m2(<vscale x 8 x half> %x) {
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 20(sp)
-; CHECK-NEXT:    flh ft1, 22(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    flh ft0, 16(sp)
-; CHECK-NEXT:    fmv.x.h a1, ft1
-; CHECK-NEXT:    lui a2, 16
-; CHECK-NEXT:    addiw a2, a2, -1
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    and a0, a0, a2
-; CHECK-NEXT:    slli a1, a1, 16
-; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    fmv.x.h a1, ft0
-; CHECK-NEXT:    flh ft0, 28(sp)
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    and a3, a3, a2
-; CHECK-NEXT:    slli a1, a1, 16
-; CHECK-NEXT:    fmv.x.h a4, ft0
-; CHECK-NEXT:    flh ft0, 30(sp)
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    srli a1, a1, 32
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 24(sp)
-; CHECK-NEXT:    or a0, a1, a0
-; CHECK-NEXT:    and a1, a4, a2
-; CHECK-NEXT:    slli a3, a3, 16
-; CHECK-NEXT:    fmv.x.h a4, ft0
-; CHECK-NEXT:    flh ft0, 26(sp)
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    and a2, a4, a2
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    slli a3, a3, 16
-; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:    or a1, a2, a1
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vmv.x.s a1, v9
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 entry:
@@ -110,14 +64,10 @@ define void @test_vcast_to_fixed_64_f16m4(<16 x half>* noalias nocapture sret(<1
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m4, ta, mu
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    ld a1, 40(sp)
-; CHECK-NEXT:    ld a2, 32(sp)
-; CHECK-NEXT:    ld a3, 24(sp)
-; CHECK-NEXT:    ld a4, 16(sp)
-; CHECK-NEXT:    sd a1, 24(a0)
-; CHECK-NEXT:    sd a2, 16(a0)
-; CHECK-NEXT:    sd a3, 8(a0)
-; CHECK-NEXT:    sd a4, 0(a0)
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vle16.v v8, (a1)
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    addi sp, sp, 48
 ; CHECK-NEXT:    ret
 entry:
@@ -135,24 +85,12 @@ define void @test_vcast_to_fixed_64_f16m8(<32 x half>* noalias nocapture sret(<3
 ; CHECK-NEXT:    .cfi_def_cfa_offset 80
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
+; CHECK-NEXT:    addi a2, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
 ; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    ld a1, 16(sp)
-; CHECK-NEXT:    ld a2, 24(sp)
-; CHECK-NEXT:    ld a3, 32(sp)
-; CHECK-NEXT:    ld a4, 40(sp)
-; CHECK-NEXT:    ld a5, 72(sp)
-; CHECK-NEXT:    ld a6, 64(sp)
-; CHECK-NEXT:    ld a7, 56(sp)
-; CHECK-NEXT:    ld t0, 48(sp)
-; CHECK-NEXT:    sd a5, 56(a0)
-; CHECK-NEXT:    sd a6, 48(a0)
-; CHECK-NEXT:    sd a7, 40(a0)
-; CHECK-NEXT:    sd t0, 32(a0)
-; CHECK-NEXT:    sd a4, 24(a0)
-; CHECK-NEXT:    sd a3, 16(a0)
-; CHECK-NEXT:    sd a2, 8(a0)
-; CHECK-NEXT:    sd a1, 0(a0)
+; CHECK-NEXT:    vle16.v v8, (a1)
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    addi sp, sp, 80
 ; CHECK-NEXT:    ret
 entry:
@@ -171,14 +109,11 @@ define i64 @test_vcast_to_fixed_64_f16mf2(<vscale x 2 x half> %x) {
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    flh ft1, 16(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    slli a0, a0, 16
-; CHECK-NEXT:    fmv.x.h a1, ft1
-; CHECK-NEXT:    slli a1, a1, 48
-; CHECK-NEXT:    srli a1, a1, 48
-; CHECK-NEXT:    or a0, a1, a0
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:    addi sp, sp, 32
@@ -197,17 +132,11 @@ define <vscale x 4 x half> @test_vcast_from_fixed_64_f16m1(i64 %x.coerce) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srli a1, a0, 48
-; CHECK-NEXT:    srli a2, a0, 32
-; CHECK-NEXT:    srliw a3, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a3
-; CHECK-NEXT:    fmv.h.x ft1, a2
-; CHECK-NEXT:    fmv.h.x ft2, a1
-; CHECK-NEXT:    fmv.h.x ft3, a0
-; CHECK-NEXT:    fsh ft3, 16(sp)
-; CHECK-NEXT:    fsh ft2, 22(sp)
-; CHECK-NEXT:    fsh ft1, 20(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -226,28 +155,13 @@ define <vscale x 8 x half> @test_vcast_from_fixed_64_f16m2(i128 %x.coerce) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srli a2, a1, 48
-; CHECK-NEXT:    srli a3, a1, 32
-; CHECK-NEXT:    srliw a4, a1, 16
-; CHECK-NEXT:    srli a5, a0, 48
-; CHECK-NEXT:    srli a6, a0, 32
-; CHECK-NEXT:    srliw a7, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a7
-; CHECK-NEXT:    fmv.h.x ft1, a6
-; CHECK-NEXT:    fmv.h.x ft2, a5
-; CHECK-NEXT:    fmv.h.x ft3, a4
-; CHECK-NEXT:    fmv.h.x ft4, a3
-; CHECK-NEXT:    fmv.h.x ft5, a2
-; CHECK-NEXT:    fmv.h.x ft6, a0
-; CHECK-NEXT:    fmv.h.x ft7, a1
-; CHECK-NEXT:    fsh ft7, 24(sp)
-; CHECK-NEXT:    fsh ft6, 16(sp)
-; CHECK-NEXT:    fsh ft5, 30(sp)
-; CHECK-NEXT:    fsh ft4, 28(sp)
-; CHECK-NEXT:    fsh ft3, 26(sp)
-; CHECK-NEXT:    fsh ft2, 22(sp)
-; CHECK-NEXT:    fsh ft1, 20(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
+; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -266,14 +180,10 @@ define <vscale x 16 x half> @test_vcast_from_fixed_64_f16m4(<16 x half>* nocaptu
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -48
 ; CHECK-NEXT:    .cfi_def_cfa_offset 48
-; CHECK-NEXT:    ld a1, 24(a0)
-; CHECK-NEXT:    ld a2, 16(a0)
-; CHECK-NEXT:    ld a3, 8(a0)
-; CHECK-NEXT:    ld a0, 0(a0)
-; CHECK-NEXT:    sd a1, 40(sp)
-; CHECK-NEXT:    sd a2, 32(sp)
-; CHECK-NEXT:    sd a3, 24(sp)
-; CHECK-NEXT:    sd a0, 16(sp)
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m4, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -292,24 +202,12 @@ define <vscale x 32 x half> @test_vcast_from_fixed_64_f16m8(<32 x half>* nocaptu
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -80
 ; CHECK-NEXT:    .cfi_def_cfa_offset 80
-; CHECK-NEXT:    ld a1, 0(a0)
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a3, 16(a0)
-; CHECK-NEXT:    ld a4, 24(a0)
-; CHECK-NEXT:    ld a5, 56(a0)
-; CHECK-NEXT:    ld a6, 48(a0)
-; CHECK-NEXT:    ld a7, 40(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a5, 72(sp)
-; CHECK-NEXT:    sd a6, 64(sp)
-; CHECK-NEXT:    sd a7, 56(sp)
-; CHECK-NEXT:    sd a0, 48(sp)
-; CHECK-NEXT:    sd a4, 40(sp)
-; CHECK-NEXT:    sd a3, 32(sp)
-; CHECK-NEXT:    sd a2, 24(sp)
-; CHECK-NEXT:    sd a1, 16(sp)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    addi sp, sp, 80
@@ -327,11 +225,11 @@ define <vscale x 2 x half> @test_vcast_from_fixed_64_f16mf2(i64 %x.coerce) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srliw a1, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    fmv.h.x ft1, a0
-; CHECK-NEXT:    fsh ft1, 16(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -349,32 +247,8 @@ declare <vscale x 2 x half> @llvm.riscv.vcast.from.fixed.nxv2f16.v2f16(<2 x half
 define i64 @test_vcast_to_fixed_128_f16mf2(<vscale x 2 x half> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 20(sp)
-; CHECK-NEXT:    flh ft1, 22(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    lui a1, 16
-; CHECK-NEXT:    fmv.x.h a2, ft1
-; CHECK-NEXT:    flh ft0, 16(sp)
-; CHECK-NEXT:    addiw a1, a1, -1
-; CHECK-NEXT:    and a0, a0, a1
-; CHECK-NEXT:    slli a2, a2, 16
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    or a0, a0, a2
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    and a1, a3, a1
-; CHECK-NEXT:    fmv.x.h a2, ft0
-; CHECK-NEXT:    slli a2, a2, 16
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    srli a1, a1, 32
-; CHECK-NEXT:    or a0, a1, a0
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <4 x half> @llvm.riscv.vcast.to.fixed.v4f16.nxv2f16(<vscale x 2 x half> %x)
@@ -387,50 +261,10 @@ declare <4 x half> @llvm.riscv.vcast.to.fixed.v4f16.nxv2f16(<vscale x 2 x half>)
 define i128 @test_vcast_to_fixed_128_f16m1(<vscale x 4 x half> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 20(sp)
-; CHECK-NEXT:    flh ft1, 22(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    flh ft0, 16(sp)
-; CHECK-NEXT:    fmv.x.h a1, ft1
-; CHECK-NEXT:    lui a2, 16
-; CHECK-NEXT:    addiw a2, a2, -1
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    and a0, a0, a2
-; CHECK-NEXT:    slli a1, a1, 16
-; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    fmv.x.h a1, ft0
-; CHECK-NEXT:    flh ft0, 28(sp)
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    and a3, a3, a2
-; CHECK-NEXT:    slli a1, a1, 16
-; CHECK-NEXT:    fmv.x.h a4, ft0
-; CHECK-NEXT:    flh ft0, 30(sp)
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    srli a1, a1, 32
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    flh ft0, 24(sp)
-; CHECK-NEXT:    or a0, a1, a0
-; CHECK-NEXT:    and a1, a4, a2
-; CHECK-NEXT:    slli a3, a3, 16
-; CHECK-NEXT:    fmv.x.h a4, ft0
-; CHECK-NEXT:    flh ft0, 26(sp)
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    and a2, a4, a2
-; CHECK-NEXT:    fmv.x.h a3, ft0
-; CHECK-NEXT:    slli a3, a3, 16
-; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:    or a1, a2, a1
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vmv.x.s a1, v9
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <8 x half> @llvm.riscv.vcast.to.fixed.v8f16.nxv4f16(<vscale x 4 x half> %x)
@@ -443,20 +277,8 @@ declare <8 x half> @llvm.riscv.vcast.to.fixed.v8f16.nxv4f16(<vscale x 4 x half>)
 define void @test_vcast_to_fixed_128_f16m2(<16 x half>* noalias nocapture sret(<16 x half>) align 32 %agg.result, <vscale x 8 x half> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -48
-; CHECK-NEXT:    .cfi_def_cfa_offset 48
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    ld a1, 40(sp)
-; CHECK-NEXT:    ld a2, 32(sp)
-; CHECK-NEXT:    ld a3, 24(sp)
-; CHECK-NEXT:    ld a4, 16(sp)
-; CHECK-NEXT:    sd a1, 24(a0)
-; CHECK-NEXT:    sd a2, 16(a0)
-; CHECK-NEXT:    sd a3, 8(a0)
-; CHECK-NEXT:    sd a4, 0(a0)
-; CHECK-NEXT:    addi sp, sp, 48
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <16 x half> @llvm.riscv.vcast.to.fixed.v16f16.nxv8f16(<vscale x 8 x half> %x)
@@ -469,29 +291,9 @@ declare <16 x half> @llvm.riscv.vcast.to.fixed.v16f16.nxv8f16(<vscale x 8 x half
 define void @test_vcast_to_fixed_128_f16m4(<32 x half>* noalias nocapture sret(<32 x half>) align 64 %agg.result, <vscale x 16 x half> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    ld a1, 16(sp)
-; CHECK-NEXT:    ld a2, 24(sp)
-; CHECK-NEXT:    ld a3, 32(sp)
-; CHECK-NEXT:    ld a4, 40(sp)
-; CHECK-NEXT:    ld a5, 72(sp)
-; CHECK-NEXT:    ld a6, 64(sp)
-; CHECK-NEXT:    ld a7, 56(sp)
-; CHECK-NEXT:    ld t0, 48(sp)
-; CHECK-NEXT:    sd a5, 56(a0)
-; CHECK-NEXT:    sd a6, 48(a0)
-; CHECK-NEXT:    sd a7, 40(a0)
-; CHECK-NEXT:    sd t0, 32(a0)
-; CHECK-NEXT:    sd a4, 24(a0)
-; CHECK-NEXT:    sd a3, 16(a0)
-; CHECK-NEXT:    sd a2, 8(a0)
-; CHECK-NEXT:    sd a1, 0(a0)
-; CHECK-NEXT:    addi sp, sp, 80
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <32 x half> @llvm.riscv.vcast.to.fixed.v32f16.nxv16f16(<vscale x 16 x half> %x)
@@ -504,22 +306,10 @@ declare <32 x half> @llvm.riscv.vcast.to.fixed.v32f16.nxv16f16(<vscale x 16 x ha
 define i64 @test_vcast_to_fixed_128_f16mf4(<vscale x 1 x half> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    flh ft0, 18(sp)
-; CHECK-NEXT:    flh ft1, 16(sp)
-; CHECK-NEXT:    fmv.x.h a0, ft0
-; CHECK-NEXT:    slli a0, a0, 16
-; CHECK-NEXT:    fmv.x.h a1, ft1
-; CHECK-NEXT:    slli a1, a1, 48
-; CHECK-NEXT:    srli a1, a1, 48
-; CHECK-NEXT:    or a0, a1, a0
+; CHECK-NEXT:    vsetivli zero, 0, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <2 x half> @llvm.riscv.vcast.to.fixed.v2f16.nxv1f16(<vscale x 1 x half> %x)
@@ -533,23 +323,8 @@ declare <2 x half> @llvm.riscv.vcast.to.fixed.v2f16.nxv1f16(<vscale x 1 x half>)
 define <vscale x 2 x half> @test_vcast_from_fixed_128_f16mf2(i64 %x.coerce) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srli a1, a0, 48
-; CHECK-NEXT:    srli a2, a0, 32
-; CHECK-NEXT:    srliw a3, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a3
-; CHECK-NEXT:    fmv.h.x ft1, a2
-; CHECK-NEXT:    fmv.h.x ft2, a1
-; CHECK-NEXT:    fmv.h.x ft3, a0
-; CHECK-NEXT:    fsh ft3, 16(sp)
-; CHECK-NEXT:    fsh ft2, 22(sp)
-; CHECK-NEXT:    fsh ft1, 20(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = bitcast i64 %x.coerce to <4 x half>
@@ -562,34 +337,10 @@ declare <vscale x 2 x half> @llvm.riscv.vcast.from.fixed.nxv2f16.v4f16(<4 x half
 define <vscale x 4 x half> @test_vcast_from_fixed_128_f16m1(i128 %x.coerce) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srli a2, a1, 48
-; CHECK-NEXT:    srli a3, a1, 32
-; CHECK-NEXT:    srliw a4, a1, 16
-; CHECK-NEXT:    srli a5, a0, 48
-; CHECK-NEXT:    srli a6, a0, 32
-; CHECK-NEXT:    srliw a7, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a7
-; CHECK-NEXT:    fmv.h.x ft1, a6
-; CHECK-NEXT:    fmv.h.x ft2, a5
-; CHECK-NEXT:    fmv.h.x ft3, a4
-; CHECK-NEXT:    fmv.h.x ft4, a3
-; CHECK-NEXT:    fmv.h.x ft5, a2
-; CHECK-NEXT:    fmv.h.x ft6, a0
-; CHECK-NEXT:    fmv.h.x ft7, a1
-; CHECK-NEXT:    fsh ft7, 24(sp)
-; CHECK-NEXT:    fsh ft6, 16(sp)
-; CHECK-NEXT:    fsh ft5, 30(sp)
-; CHECK-NEXT:    fsh ft4, 28(sp)
-; CHECK-NEXT:    fsh ft3, 26(sp)
-; CHECK-NEXT:    fsh ft2, 22(sp)
-; CHECK-NEXT:    fsh ft1, 20(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
+; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = bitcast i128 %x.coerce to <8 x half>
@@ -602,20 +353,8 @@ declare <vscale x 4 x half> @llvm.riscv.vcast.from.fixed.nxv4f16.v8f16(<8 x half
 define <vscale x 8 x half> @test_vcast_from_fixed_128_f16m2(<16 x half>* nocapture readonly %0) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -48
-; CHECK-NEXT:    .cfi_def_cfa_offset 48
-; CHECK-NEXT:    ld a1, 24(a0)
-; CHECK-NEXT:    ld a2, 16(a0)
-; CHECK-NEXT:    ld a3, 8(a0)
-; CHECK-NEXT:    ld a0, 0(a0)
-; CHECK-NEXT:    sd a1, 40(sp)
-; CHECK-NEXT:    sd a2, 32(sp)
-; CHECK-NEXT:    sd a3, 24(sp)
-; CHECK-NEXT:    sd a0, 16(sp)
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 48
 ; CHECK-NEXT:    ret
 entry:
   %x = load <16 x half>, <16 x half>* %0, align 32
@@ -628,29 +367,9 @@ declare <vscale x 8 x half> @llvm.riscv.vcast.from.fixed.nxv8f16.v16f16(<16 x ha
 define <vscale x 16 x half> @test_vcast_from_fixed_128_f16m4(<32 x half>* nocapture readonly %0) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
-; CHECK-NEXT:    ld a1, 0(a0)
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a3, 16(a0)
-; CHECK-NEXT:    ld a4, 24(a0)
-; CHECK-NEXT:    ld a5, 56(a0)
-; CHECK-NEXT:    ld a6, 48(a0)
-; CHECK-NEXT:    ld a7, 40(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a5, 72(sp)
-; CHECK-NEXT:    sd a6, 64(sp)
-; CHECK-NEXT:    sd a7, 56(sp)
-; CHECK-NEXT:    sd a0, 48(sp)
-; CHECK-NEXT:    sd a4, 40(sp)
-; CHECK-NEXT:    sd a3, 32(sp)
-; CHECK-NEXT:    sd a2, 24(sp)
-; CHECK-NEXT:    sd a1, 16(sp)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 80
 ; CHECK-NEXT:    ret
 entry:
   %x = load <32 x half>, <32 x half>* %0, align 64
@@ -663,17 +382,8 @@ declare <vscale x 16 x half> @llvm.riscv.vcast.from.fixed.nxv16f16.v32f16(<32 x 
 define <vscale x 1 x half> @test_vcast_from_fixed_128_f16mf4(i64 %x.coerce) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
-; CHECK-NEXT:    srliw a1, a0, 16
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    fmv.h.x ft1, a0
-; CHECK-NEXT:    fsh ft1, 16(sp)
-; CHECK-NEXT:    fsh ft0, 18(sp)
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a0
 ; CHECK-NEXT:    ret
 entry:
   %tmp.coerce.0.extract.trunc = trunc i64 %x.coerce to i32

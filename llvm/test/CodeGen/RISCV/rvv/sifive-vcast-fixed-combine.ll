@@ -35,44 +35,11 @@ entry:
 define void @bar(i8* %x, i8* readonly %y, i8* %z) nounwind {
 ; CHECK-LABEL: bar:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    sd s0, 8(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s1, 0(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    lb a3, 7(a0)
-; CHECK-NEXT:    lb a4, 6(a0)
-; CHECK-NEXT:    lb a5, 5(a0)
-; CHECK-NEXT:    lb a6, 4(a0)
-; CHECK-NEXT:    lb a7, 3(a0)
-; CHECK-NEXT:    lb t0, 2(a0)
-; CHECK-NEXT:    lb t1, 1(a0)
-; CHECK-NEXT:    lb a0, 0(a0)
-; CHECK-NEXT:    lb t2, 7(a1)
-; CHECK-NEXT:    lb t3, 6(a1)
-; CHECK-NEXT:    lb t4, 5(a1)
-; CHECK-NEXT:    lb t5, 4(a1)
-; CHECK-NEXT:    lb t6, 0(a1)
-; CHECK-NEXT:    lb s0, 1(a1)
-; CHECK-NEXT:    lb s1, 2(a1)
-; CHECK-NEXT:    lb a1, 3(a1)
-; CHECK-NEXT:    addw a0, a0, t6
-; CHECK-NEXT:    addw t1, t1, s0
-; CHECK-NEXT:    addw t0, t0, s1
-; CHECK-NEXT:    addw a1, a7, a1
-; CHECK-NEXT:    addw a6, a6, t5
-; CHECK-NEXT:    addw a5, a5, t4
-; CHECK-NEXT:    addw a4, a4, t3
-; CHECK-NEXT:    addw a3, a3, t2
-; CHECK-NEXT:    sb a3, 7(a2)
-; CHECK-NEXT:    sb a4, 6(a2)
-; CHECK-NEXT:    sb a5, 5(a2)
-; CHECK-NEXT:    sb a6, 4(a2)
-; CHECK-NEXT:    sb a1, 3(a2)
-; CHECK-NEXT:    sb t0, 2(a2)
-; CHECK-NEXT:    sb t1, 1(a2)
-; CHECK-NEXT:    sb a0, 0(a2)
-; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %i2 = bitcast i8* %x to <8 x i8>*
