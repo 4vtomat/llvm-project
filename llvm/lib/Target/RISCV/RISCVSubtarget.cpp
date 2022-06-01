@@ -106,8 +106,10 @@ void RISCVSubtarget::initializeProperties() {
   // Override and cap the VLEN.
   if (RVVVectorBits)
     VLen = RVVVectorBits;
-  if (RVVVectorBitsMin)
-    VLen = std::max(VLen, static_cast<unsigned>(RVVVectorBitsMin));
+  if (RVVVectorBitsMin) {
+    unsigned Bits = RVVVectorBitsMin == -1 ? ZvlLen : RVVVectorBitsMin;
+    VLen = std::max(VLen, Bits);
+  }
   if (RVVVectorBitsMax)
     VLen = std::min(VLen, static_cast<unsigned>(RVVVectorBitsMax));
 }
