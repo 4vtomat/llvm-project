@@ -2223,6 +2223,12 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
       CmdArgs.push_back(Args.MakeArgString(P));
     }
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (Args.hasFlag(options::OPT_fuse_vla_vectorizer,
+                   options::OPT_fno_use_vla_vectorizer, true))
+    CmdArgs.append({"-mllvm", "-use-vla-vectorizer"});
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void Clang::AddSparcTargetArgs(const ArgList &Args,

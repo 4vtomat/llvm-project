@@ -3414,6 +3414,10 @@ def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_riscv_Features_Gr
   Flags<[CC1Option]>, Alias<mcmodel_EQ>, AliasArgs<["medium"]>,
   HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
 // SIFIVE
+def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
+  HelpText<"Turn on VLA vectorization">, Flags<[CoreOption, NoXarchOption]>;
+def fno_use_vla_vectorizer : Flag<["-"], "fno-use-vla-vectorizer">, Group<f_Group>,
+  HelpText<"Turn off VLA vectorization">, Flags<[CoreOption, NoXarchOption]>;
 def msifive_recode_EQ : Joined<["-"], "msifive-recode=">, Group<m_Group>,
   HelpText<"Set the target of SiFive Recode.">,
   Values<"off,neon">,

@@ -160,6 +160,9 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     // If the flag is set to disable any use of fixed vectors, override the
     // loop hint.
     Scalable.Value = SK_ScalableOnly;
+
+  if (UseVLAVectorizer)
+    Scalable.Value = SK_ScalableOnly;
 #endif // SIFIVE_CUSTOMIZATION
 
   if (IsVectorized.Value != 1)

@@ -328,6 +328,11 @@ void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
   StringRef ABIName = getRISCVABI(Args, Triple);
   CmdArgs.push_back(
       Args.MakeArgString(Twine("-plugin-opt=-target-abi=") + ABIName));
+
+  if (Args.hasFlag(options::OPT_fuse_vla_vectorizer,
+                   options::OPT_fno_use_vla_vectorizer, true))
+    CmdArgs.push_back("-plugin-opt=-use-vla-vectorizer");
+
   std::vector<StringRef> Features;
   // Pass -mattr from driver to LTO code generator
   // In two steps compilation, for example:

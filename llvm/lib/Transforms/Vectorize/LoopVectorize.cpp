@@ -242,6 +242,10 @@ static cl::opt<PreferPredicateTy::Option> PreferPredicateOverEpilogue(
                          "tail-folding fails.")));
 
 #if SIFIVE_CUSTOMIZATION
+cl::opt<bool>
+    UseVLAVectorizer("use-vla-vectorizer", cl::init(false), cl::Hidden,
+                     cl::desc("Use vla vectorizer and fine-tuned parameter."));
+
 static cl::opt<bool> UseStridedAccesses(
     "vectorizer-use-vp-strided-load-store",
     cl::init(false),
@@ -2647,7 +2651,8 @@ void InnerLoopVectorizer::packScalarIntoVectorValue(VPValue *Def,
 
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::preferPredicatedVectorOps() const {
-  return Cost->foldTailByMasking() && TTI->preferPredicatedVectorOps();
+  return Cost->foldTailByMasking() &&
+         (UseVLAVectorizer || TTI->preferPredicatedVectorOps());
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11395,6 +11400,11 @@ static ScalarEpilogueLowering getScalarEpilogueLowering(
     return CM_ScalarEpilogueNotAllowedOptSize;
 
   // 2) If set, obey the directives
+#if SIFIVE_CUSTOMIZATION
+  if (UseVLAVectorizer)
+    return CM_ScalarEpilogueNotAllowedUsePredicate;
+#endif // SIFIVE_CUSTOMIZATION
+
   if (PreferPredicateOverEpilogue.getNumOccurrences()) {
     switch (PreferPredicateOverEpilogue) {
     case PreferPredicateTy::ScalarEpilogue:
