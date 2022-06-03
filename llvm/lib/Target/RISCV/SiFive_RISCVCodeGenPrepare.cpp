@@ -60,6 +60,8 @@ public:
 private:
   bool optimizeZExt(ZExtInst *I);
   bool optimizeZExtWUses(ZExtInst *I);
+  bool optimizeAndExt(BinaryOperator *BO);
+  bool optimizeAndUses(BinaryOperator *BO);
   bool optimizeBinaryOperator(BinaryOperator *BO);
   bool optimizeICmp(ICmpInst *ICmp);
   bool expandMemIntrinsic(MemIntrinsic *MI);
@@ -117,7 +119,7 @@ bool RISCVCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
 
     BasicBlock *UserBB = User->getParent();
 
-    // If this user is in the same block as the zext, don't change the zext.
+    // If this user is in the same block as the zext, don't create a new zext.
     if (UserBB == DefBB)
       continue;
 
@@ -179,16 +181,7 @@ bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
 // but bits 63:32 are zero. If we can prove that bit 31 of X is 0, we can fill
 // the upper 32 bits with ones. A separate transform will turn (zext X) into
 // (sext X) for the same condition.
-bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
-  if (!ST->is64Bit())
-    return false;
-
-  if (BO->getOpcode() != Instruction::And)
-    return false;
-
-  if (!BO->getType()->isIntegerTy(64))
-    return false;
-
+bool RISCVCodeGenPrepare::optimizeAndExt(BinaryOperator *BO) {
   // Left hand side should be sext or zext.
   Instruction *LHS = dyn_cast<Instruction>(BO->getOperand(0));
   if (!LHS || (LHS->getOpcode() != Instruction::SExt &&
@@ -212,7 +205,7 @@ bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
 
   // Look for constants that fit in 32 bits but not simm12, and can be made
   // into simm12 by sign extending bit 31.
-  if (!isUInt<32>(C) || isInt<12>(C) || !isInt<12>(SignExtend64(C, 32)))
+  if (!isUInt<32>(C) || isInt<12>(C) || !isInt<12>(SignExtend64<32>(C)))
     return false;
 
   // If we can determine the sign bit of the input is 0, we can replace the
@@ -224,7 +217,7 @@ bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
     return false;
 
   // Sign extend the constant and create a new And.
-  C = SignExtend64(C, 32);
+  C = SignExtend64<32>(C);
   IRBuilder<> Builder(BO);
   Value *NewBO = Builder.CreateAnd(LHS, ConstantInt::get(LHS->getType(), C));
   NewBO->takeName(BO);
@@ -239,6 +232,98 @@ bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
       RHSI->eraseFromParent();
 
   return true;
+}
+
+// If the result of a and with 0xffffffff is used by a GEP in another basic
+// block, duplicate the and to enable add.uw or shXadd.uw.
+bool RISCVCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
+  if (!ST->hasStdExtZba())
+    return false;
+
+  // We're looking for AND with 0xffffffffff.
+  auto *CI = dyn_cast<ConstantInt>(BO->getOperand(1));
+  if (!CI || CI->getZExtValue() != UINT64_C(0xffffffff))
+    return false;
+
+  BasicBlock *DefBB = BO->getParent();
+
+  // Make sure all users are GEPs or left shifts by constant.
+  // NOTE: This isn't strictly necessary, but it ensures we don't extend the
+  // live range of Src without removing all non-local users of I.
+  bool HasNonLocalUser = false;
+  for (auto *U : BO->users()) {
+    auto *UserI = cast<Instruction>(U);
+
+    if (!isa<GetElementPtrInst>(UserI) &&
+        !(UserI->getOpcode() == Instruction::Shl &&
+          isa<ConstantInt>(UserI->getOperand(1))))
+      return false;
+
+    if (UserI->getParent() != DefBB)
+      HasNonLocalUser = true;
+  }
+
+  // If all users are local we don't need to do anything.
+  if (!HasNonLocalUser)
+    return false;
+
+  DenseMap<BasicBlock *, BinaryOperator *> InsertedAnds;
+
+  bool MadeChange = false;
+  for (auto UI = BO->user_begin(), E = BO->user_end(); UI != E; ) {
+    Use &TheUse = UI.getUse();
+    Instruction *User = cast<Instruction>(*UI);
+
+    // Preincrement use iterator so we don't invalidate it.
+    ++UI;
+
+    BasicBlock *UserBB = User->getParent();
+
+    // If this user is in the same block as the and, don't create a new and.
+    if (UserBB == DefBB)
+      continue;
+
+    // If we have already inserted an and into this block, use it.
+    BinaryOperator *&InsertedAnd = InsertedAnds[UserBB];
+
+    if (!InsertedAnd) {
+      BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
+      assert(InsertPt != UserBB->end());
+      InsertedAnd = BinaryOperator::CreateAnd(BO->getOperand(0),
+                                               BO->getOperand(1),
+                                               "", &*InsertPt);
+      // Propagate the debug info.
+      InsertedAnd->setDebugLoc(BO->getDebugLoc());
+    }
+
+    // Replace a use of the and with a use of the new and.
+    TheUse = InsertedAnd;
+    MadeChange = true;
+  }
+
+  // If the original and has become dead, remove it.
+  if (BO->use_empty()) {
+    BO->eraseFromParent();
+    MadeChange = true;
+  }
+
+  return MadeChange;
+}
+
+bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
+  if (!ST->is64Bit())
+    return false;
+
+  if (BO->getOpcode() != Instruction::And)
+    return false;
+
+  if (!BO->getType()->isIntegerTy(64))
+    return false;
+
+  if (optimizeAndExt(BO))
+    return true;
+
+  return optimizeAndUses(BO);
 }
 
 bool RISCVCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
