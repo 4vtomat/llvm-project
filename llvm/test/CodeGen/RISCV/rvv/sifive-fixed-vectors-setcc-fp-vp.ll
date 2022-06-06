@@ -15,7 +15,7 @@ define <32 x i1> @fcmp_oeq_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -150,7 +150,7 @@ define <32 x i1> @fcmp_ogt_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -285,7 +285,7 @@ define <32 x i1> @fcmp_oge_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -420,7 +420,7 @@ define <32 x i1> @fcmp_olt_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -555,7 +555,7 @@ define <32 x i1> @fcmp_ole_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -689,7 +689,7 @@ define <32 x i1> @fcmp_one_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -818,7 +818,7 @@ define <32 x i1> @fcmp_ord_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -893,7 +893,7 @@ define <32 x i1> @fcmp_ord_vf_v32f64(<32 x double> %va, double %b, <32 x i1> %m,
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -947,7 +947,7 @@ define <32 x i1> @fcmp_ord_vf_swap_v32f64(<32 x double> %va, double %b, <32 x i1
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -1001,7 +1001,7 @@ define <32 x i1> @fcmp_ueq_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1129,7 +1129,7 @@ define <32 x i1> @fcmp_ugt_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1251,7 +1251,7 @@ define <32 x i1> @fcmp_uge_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1373,7 +1373,7 @@ define <32 x i1> @fcmp_ult_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1495,7 +1495,7 @@ define <32 x i1> @fcmp_ule_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1618,7 +1618,7 @@ define <32 x i1> @fcmp_une_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1753,7 +1753,7 @@ define <32 x i1> @fcmp_uno_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    li t1, 24
 ; CHECK-NEXT:    mul t0, t0, t1
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -1828,7 +1828,7 @@ define <32 x i1> @fcmp_uno_vf_v32f64(<32 x double> %va, double %b, <32 x i1> %m,
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -1882,7 +1882,7 @@ define <32 x i1> @fcmp_uno_vf_swap_v32f64(<32 x double> %va, double %b, <32 x i1
 ; CHECK-NEXT:    csrr t0, vlenb
 ; CHECK-NEXT:    slli t0, t0, 3
 ; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLEB
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill

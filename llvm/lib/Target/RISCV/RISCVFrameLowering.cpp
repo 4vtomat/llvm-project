@@ -375,7 +375,7 @@ static MCCFIInstruction createDefCfaExpression(unsigned DwarfReg,
   OffsetExpr.push_back(0);
   OffsetExpr.push_back((uint8_t)dwarf::DW_OP_mul);
   OffsetExpr.push_back((uint8_t)dwarf::DW_OP_plus);
-  Comment << (NumVRegs < 0 ? " - " : " + ") << std::abs(NumVRegs) << " * VLEB";
+  Comment << (NumVRegs < 0 ? " - " : " + ") << std::abs(NumVRegs) << " * VLENB";
 
   // 2. Wrap this into DW_CFA_def_cfa
   CfaExpr.push_back(dwarf::DW_CFA_def_cfa_expression);
