@@ -263,16 +263,6 @@ set(openmp_wrapper_files
   openmp_wrappers/new
 )
 
-# SIFIVE
-set(sifive_wrapper_files
-  sifive_wrappers/arm_neon.h
-  sifive_wrappers/arm_neon_64.h
-  sifive_wrappers/arm_neon_128.h
-  sifive_wrappers/arm_neon_256.h
-  sifive_wrappers/arm_neon_512.h
-)
-#end SIFIVE
-
 set(output_dir ${LLVM_LIBRARY_OUTPUT_INTDIR}/clang/${CLANG_VERSION}/include)
 set(out_files)
 set(generated_files)
@@ -306,7 +296,7 @@ endfunction(clang_generate_header)
 
 
 # Copy header files from the source directory to the build directory
-foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${sifive_wrapper_files}) # SIFIVE
+foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files})
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
