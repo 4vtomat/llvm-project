@@ -3833,7 +3833,7 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
   // Forget the original basic block.
   PSE.getSE()->forgetLoop(OrigLoop);
 
-  VPBasicBlock *LatchVPBB = Plan.getVectorLoopRegion()->getExitBasicBlock();
+  VPBasicBlock *LatchVPBB = Plan.getVectorLoopRegion()->getExitingBasicBlock();
   Loop *VectorLoop = LI->getLoopFor(State.CFG.VPBB2IRBB[LatchVPBB]);
   if (Cost->requiresScalarEpilogue(VF)) {
     // No edge from the middle block to the unique exit block has been inserted
@@ -4098,7 +4098,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   Type *PhiTy = OrigPhi->getType();
 
   VPBasicBlock *LatchVPBB =
-      PhiR->getParent()->getEnclosingLoopRegion()->getExitBasicBlock();
+      PhiR->getParent()->getEnclosingLoopRegion()->getExitingBasicBlock();
   BasicBlock *VectorLoopLatch = State.CFG.VPBB2IRBB[LatchVPBB];
   // If tail is folded by masking, the vector value to leave the loop should be
   // a Select choosing between the vectorized LoopExitInst and vectorized Phi,
@@ -8934,8 +8934,6 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
          "Must be called with either a load or store");
 
   auto willWiden = [&](ElementCount VF) -> bool {
-    if (VF.isScalar())
-      return false;
     LoopVectorizationCostModel::InstWidening Decision =
         CM.getWideningDecision(I, VF);
     assert(Decision != LoopVectorizationCostModel::CM_Unknown &&
@@ -9161,8 +9159,6 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
     return nullptr;
 
   auto willWiden = [&](ElementCount VF) -> bool {
-    if (VF.isScalar())
-       return false;
     Intrinsic::ID ID = getVectorIntrinsicIDForCall(CI, TLI);
     // The following case may be scalarized depending on the VF.
     // The flag shows whether we use Intrinsic or a usual Call for vectorized
@@ -9492,6 +9488,8 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+  // First, check for specific widening recipes that deal with inductions, Phi
+  // nodes, calls and memory operations.
   VPRecipeBase *Recipe;
   if (auto Phi = dyn_cast<PHINode>(Instr)) {
     if (Phi->getParent() != OrigLoop->getHeader())
@@ -9523,18 +9521,29 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 #endif // SIFIVE_CUSTOMIZATION
     }
 
-      // Record the incoming value from the backedge, so we can add the incoming
-      // value from the backedge after all recipes have been created.
-      recordRecipeOf(cast<Instruction>(
-          Phi->getIncomingValueForBlock(OrigLoop->getLoopLatch())));
-      PhisToFix.push_back(PhiRecipe);
-      return toVPRecipeResult(PhiRecipe);
+    // Record the incoming value from the backedge, so we can add the incoming
+    // value from the backedge after all recipes have been created.
+    recordRecipeOf(cast<Instruction>(
+        Phi->getIncomingValueForBlock(OrigLoop->getLoopLatch())));
+    PhisToFix.push_back(PhiRecipe);
+    return toVPRecipeResult(PhiRecipe);
   }
 
   if (isa<TruncInst>(Instr) &&
       (Recipe = tryToOptimizeInductionTruncate(cast<TruncInst>(Instr), Operands,
                                                Range, *Plan)))
     return toVPRecipeResult(Recipe);
+
+  // All widen recipes below deal only with VF > 1.
+  if (LoopVectorizationPlanner::getDecisionAndClampRange(
+          [&](ElementCount VF) { return VF.isScalar(); }, Range))
+    return nullptr;
+
+  if (auto *CI = dyn_cast<CallInst>(Instr))
+    return toVPRecipeResult(tryToWidenCall(CI, Operands, Range));
+
+  if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
+    return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
 
   if (!shouldWiden(Instr, Range))
     return nullptr;
@@ -9631,7 +9640,7 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
                         {CanonicalIVPHI}, DL);
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
-  VPBasicBlock *EB = TopRegion->getExitBasicBlock();
+  VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
   if (IsVPlanNative)
     EB->setCondBit(nullptr);
   EB->appendRecipe(CanonicalIVIncrement);
@@ -9776,6 +9785,14 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
         auto OpRange = Plan->mapToVPValues(Instr->operands());
         Operands = {OpRange.begin(), OpRange.end()};
       }
+
+      // Invariant stores inside loop will be deleted and a single store
+      // with the final reduction value will be added to the exit block
+      StoreInst *SI;
+      if ((SI = dyn_cast<StoreInst>(&I)) &&
+          Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
+        continue;
+
       if (auto RecipeOrValue = RecipeBuilder.tryToCreateWidenRecipe(
               Instr, Operands, Range, Plan)) {
         // If Instr can be simplified to an existing VPValue, use it.
@@ -9810,13 +9827,6 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
         VPBB->appendRecipe(Recipe);
         continue;
       }
-
-      // Invariant stores inside loop will be deleted and a single store
-      // with the final reduction value will be added to the exit block
-      StoreInst *SI;
-      if ((SI = dyn_cast<StoreInst>(&I)) &&
-          Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
-        continue;
 
       // Otherwise, if all widening options failed, Instruction is to be
       // replicated. This may create a successor for VPBB.
@@ -9929,7 +9939,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
     Ind->moveBefore(*HeaderVPBB, HeaderVPBB->getFirstNonPhi());
 
   // Adjust the recipes for any inloop reductions.
-  adjustRecipesForReductions(cast<VPBasicBlock>(TopRegion->getExit()), Plan,
+  adjustRecipesForReductions(cast<VPBasicBlock>(TopRegion->getExiting()), Plan,
                              RecipeBuilder, Range.Start);
 
   // Introduce a recipe to combine the incoming and previous values of a
@@ -10041,7 +10051,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // Fold Exit block into its predecessor if possible.
   // TODO: Fold block earlier once all VPlan transforms properly maintain a
   // VPBasicBlock as exit.
-  VPBlockUtils::tryToMergeBlockIntoPredecessor(TopRegion->getExit());
+  VPBlockUtils::tryToMergeBlockIntoPredecessor(TopRegion->getExiting());
 
   assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
   return Plan;
@@ -10085,8 +10095,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   // code-generation.
   VPRegionBlock *LoopRegion = Plan->getVectorLoopRegion();
   VPBasicBlock *Preheader = LoopRegion->getEntryBasicBlock();
-  VPBasicBlock *Exit = LoopRegion->getExitBasicBlock();
-  VPBlockBase *Latch = Exit->getSinglePredecessor();
+  VPBasicBlock *Exiting = LoopRegion->getExitingBasicBlock();
+  VPBlockBase *Latch = Exiting->getSinglePredecessor();
   VPBlockBase *Header = Preheader->getSingleSuccessor();
 
   // 1. Move preheader block out of main vector loop.
@@ -10095,16 +10105,16 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   VPBlockUtils::connectBlocks(Preheader, LoopRegion);
   Plan->setEntry(Preheader);
 
-  // 2. Disconnect backedge and exit block.
+  // 2. Disconnect backedge and exiting block.
   VPBlockUtils::disconnectBlocks(Latch, Header);
-  VPBlockUtils::disconnectBlocks(Latch, Exit);
+  VPBlockUtils::disconnectBlocks(Latch, Exiting);
 
-  // 3. Update entry and exit of main vector loop region.
+  // 3. Update entry and exiting of main vector loop region.
   LoopRegion->setEntry(Header);
-  LoopRegion->setExit(Latch);
+  LoopRegion->setExiting(Latch);
 
-  // 4. Remove exit block.
-  delete Exit;
+  // 4. Remove exiting block.
+  delete Exiting;
 
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
                         true, true);

@@ -1049,6 +1049,7 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FTRUNC:
   case ISD::SINT_TO_FP:
   case ISD::TRUNCATE:
+  case ISD::VP_TRUNCATE:
   case ISD::UINT_TO_FP:
   case ISD::FCANONICALIZE:
     SplitVecRes_UnaryOp(N, Lo, Hi);
@@ -1138,7 +1139,6 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_SIGN_EXTEND:
   case ISD::VP_ZERO_EXTEND:
-  case ISD::VP_TRUNCATE:
     // FIXME: This might not be the best solution.
     SplitVecRes_UnaryOp(N, Lo, Hi);
     break;
@@ -3836,6 +3836,7 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FP_TO_UINT:
   case ISD::SIGN_EXTEND:
   case ISD::SINT_TO_FP:
+  case ISD::VP_TRUNCATE:
   case ISD::TRUNCATE:
   case ISD::UINT_TO_FP:
   case ISD::ZERO_EXTEND:
@@ -4306,6 +4307,12 @@ SDValue DAGTypeLegalizer::WidenVecRes_Convert(SDNode *N) {
     if (InVTEC == WidenEC) {
       if (N->getNumOperands() == 1)
         return DAG.getNode(Opcode, DL, WidenVT, InOp);
+      if (N->getNumOperands() == 3) {
+        assert(N->isVPOpcode() && "Expected VP opcode");
+        SDValue Mask =
+            GetWidenedMask(N->getOperand(1), WidenVT.getVectorElementCount());
+        return DAG.getNode(Opcode, DL, WidenVT, InOp, Mask, N->getOperand(2));
+      }
       return DAG.getNode(Opcode, DL, WidenVT, InOp, N->getOperand(1), Flags);
     }
     if (WidenVT.getSizeInBits() == InVT.getSizeInBits()) {

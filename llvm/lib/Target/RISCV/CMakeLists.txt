@@ -22,6 +22,7 @@ add_llvm_target(RISCVCodeGen
   RISCVAsmPrinter.cpp
   RISCVCallLowering.cpp
   SiFive_RISCVCodeGenPrepare.cpp
+  RISCVMakeCompressible.cpp
   RISCVExpandAtomicPseudoInsts.cpp
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
