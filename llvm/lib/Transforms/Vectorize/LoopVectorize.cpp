@@ -182,6 +182,20 @@ STATISTIC(LoopsVectorized, "Number of loops vectorized");
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
+    "vectorizer-disable-profitable-trip-count-rt-check", cl::init(false),
+    cl::Hidden,
+    cl::desc("Disable generation of runtime check of a profitable vector trip "
+             "count."));
+/// TODO: Switch default to 0 with a more generic fix for SCT-1402.
+/// Right now forces it to '3' to address SCT-1343
+static cl::opt<uint64_t> VectorizerProfitableVectorTripCount(
+    "vectorizer-profitable-vector-trip-count", cl::init(3), cl::Hidden,
+    cl::desc("Number of vector iterations for which executing vector code is "
+             "profitable."));
+#endif // SIFIVE_CUSTOMIZATION
+
 static cl::opt<bool> EnableEpilogueVectorization(
     "enable-epilogue-vectorization", cl::init(true), cl::Hidden,
     cl::desc("Enable vectorization of epilogue loops."));
@@ -598,6 +612,9 @@ public:
   /// SEW and LMUL.
   // FIXME: Move this to VPlan
   Value *getSetVL(Value *RVL, unsigned SEW = 0, unsigned LMUL = 0);
+
+  // FIXME: Move this to VPlan
+  Value *getSetVL(IRBuilder<> &B, Value *RVL, unsigned SEW, unsigned LMUL);
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
@@ -1738,6 +1755,16 @@ public:
     Uniforms.clear();
     Scalars.clear();
   }
+#if SIFIVE_CUSTOMIZATION
+  /// Return minimum number of vector iterations required to make execution of
+  /// the vector loop profitable.
+  Optional<uint64_t> getProfitableVectorTripCount(void) const {
+    // Use user-given value if it's given and is not 0
+    if (VectorizerProfitableVectorTripCount != 0)
+      return VectorizerProfitableVectorTripCount.getValue();
+    return None;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   unsigned NumPredStores = 0;
@@ -3134,6 +3161,27 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     // Don't execute the vector loop if (UMax - n) < (VF * UF).
     CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULT, LHS, Step);
   }
+#if SIFIVE_CUSTOMIZATION
+  if (!VectorizerDisableProfitableTripCountRTCheck &&
+      Cost->foldTailByMasking() && preferPredicatedVectorOps() &&
+      !Legal->getReductionVars().empty()) {
+    if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
+      // FIXME: That should be done during VPlan construction and be aligned
+      // with vsetvli that is emitted in the loop. Right now it's aligned, but
+      // there's no verification of this.
+      // NOTE: In this code we assume that RVV 6.3.2 for our SiFive's HW always
+      // returns VLMAX
+      auto VL = getSetVL(Builder, Count, 0 /* aligned with VPWidenEVLRecipe */,
+                         0 /* aligned with VPWidenEVLRecipe */);
+      Value *RHS = Builder.CreateMul(
+          VL,
+          ConstantInt::get(Count->getType(), *ProfitableVectorTripCount * UF));
+      Value *ProfitableCheck = Builder.CreateICmp(ICmpInst::ICMP_ULE, Count, RHS,
+                                                "prof.min.iters.check");
+      CheckMinIters = Builder.CreateOr(CheckMinIters, ProfitableCheck);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // Create new preheader for vector loop.
   LoopVectorPreHeader =
       SplitBlock(TCCheckBlock, TCCheckBlock->getTerminator(), DT, LI, nullptr,
@@ -10452,11 +10500,11 @@ void VPWidenEVLMaskRecipe::execute(VPTransformState &State) {
   }
 }
 
-Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
+Value *InnerLoopVectorizer::getSetVL(IRBuilder<> &B, Value *RVL,
+                                     unsigned SEW, unsigned LMUL) {
   assert(RVL->getType()->isIntegerTy() &&
          "Requested vector length should be an integer.");
-  Value *RVLArg =
-      Builder.CreateZExtOrTrunc(RVL, Type::getInt64Ty(Builder.getContext()));
+  Value *RVLArg = B.CreateZExtOrTrunc(RVL, Type::getInt64Ty(B.getContext()));
   unsigned SmallestType, WidestType;
   std::tie(SmallestType, WidestType) = Cost->getSmallestAndWidestTypes();
   assert(SmallestType >= 8 && WidestType <= 64 &&
@@ -10470,13 +10518,17 @@ Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
     assert(LMUL <= 7 && "LMUL is not supported by the hardware");
   }
   Constant *SEWArg =
-      ConstantInt::get(IntegerType::get(Builder.getContext(), 64), SEW);
+      ConstantInt::get(IntegerType::get(B.getContext(), 64), SEW);
   Constant *LMULArg =
-      ConstantInt::get(IntegerType::get(Builder.getContext(), 64), LMUL);
+      ConstantInt::get(IntegerType::get(B.getContext(), 64), LMUL);
 
-  Value *GVL = Builder.CreateIntrinsic(
-      Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
-  return Builder.CreateZExtOrTrunc(GVL, RVL->getType());
+  Value *GVL = B.CreateIntrinsic(Intrinsic::riscv_vsetvli, {RVLArg->getType()},
+                                 {RVLArg, SEWArg, LMULArg});
+  return B.CreateZExtOrTrunc(GVL, RVL->getType());
+}
+
+Value *InnerLoopVectorizer::getSetVL(Value *RVL, unsigned SEW, unsigned LMUL) {
+  return getSetVL(Builder, RVL, SEW, LMUL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
