@@ -10,17 +10,9 @@
 ; RUN:   -riscv-v-vector-bits-min=128 -S < %s 2>&1 | FileCheck %s
 
 ; CHECK-LABEL: vector_reverse_i64
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 1 For instruction: %{{.*}} = load i32, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 1 For instruction: store i32 %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 2 For instruction: %{{.*}} = load i32, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 2 For instruction: store i32 %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 4 For instruction: %{{.*}} = load i32, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 4 For instruction: store i32 %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): load   %1 = load i32, ptr %arrayidx, align 4
-; CHECK: remark: <unknown>:0:0: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): load
-; CHECK: LV: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): store   store i32 %add9, ptr %arrayidx3, align 4
-; CHECK: remark: <unknown>:0:0: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): store
-; CHECK: LV: Selecting VF: 4.
+; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: %{{.*}} = load i32, ptr %{{.*}}, align 4
+; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: store i32 %{{.*}}, ptr %{{.*}}, align 4
+; CHECK: LV: Using user VF vscale x 4.
 define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 entry:
   %cmp7 = icmp sgt i32 %n, 0
@@ -49,17 +41,9 @@ for.body:                                         ; preds = %for.body.preheader,
 }
 
 ; CHECK-LABEL: vector_reverse_f32
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 1 For instruction: %{{.*}} = load float, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 1 For instruction: store float %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 2 For instruction: %{{.*}} = load float, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 2 For instruction: store float %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 4 For instruction: %{{.*}} = load float, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of Invalid for VF vscale x 4 For instruction: store float %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): load   %1 = load float, ptr %arrayidx, align 4
-; CHECK: remark: <unknown>:0:0: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): load
-; CHECK: LV: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): store   store float %conv1, ptr %arrayidx3, align 4
-; CHECK: remark: <unknown>:0:0: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): store
-; CHECK: LV: Selecting VF: 4.
+; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: %{{.*}} = load float, ptr %{{.*}}, align 4
+; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: store float %{{.*}}, ptr %{{.*}}, align 4
+; CHECK: LV: Using user VF vscale x 4.
 define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 entry:
   %cmp7 = icmp sgt i32 %n, 0
