@@ -2708,10 +2708,10 @@ define float @fmuladd_scalar_vf(float* %a, float* %b, i64 %n) {
 ; CHECK-UNORDERED-NEXT:    [[TMP13:%.*]] = load float, float* [[TMP9]], align 4
 ; CHECK-UNORDERED-NEXT:    [[TMP14:%.*]] = load float, float* [[TMP10]], align 4
 ; CHECK-UNORDERED-NEXT:    [[TMP15:%.*]] = load float, float* [[TMP11]], align 4
-; CHECK-UNORDERED-NEXT:    [[TMP16]] = call float @llvm.fmuladd.f32(float [[TMP4]], float [[TMP12]], float [[VEC_PHI]])
-; CHECK-UNORDERED-NEXT:    [[TMP17]] = call float @llvm.fmuladd.f32(float [[TMP5]], float [[TMP13]], float [[VEC_PHI1]])
-; CHECK-UNORDERED-NEXT:    [[TMP18]] = call float @llvm.fmuladd.f32(float [[TMP6]], float [[TMP14]], float [[VEC_PHI2]])
-; CHECK-UNORDERED-NEXT:    [[TMP19]] = call float @llvm.fmuladd.f32(float [[TMP7]], float [[TMP15]], float [[VEC_PHI3]])
+; CHECK-UNORDERED-NEXT:    [[TMP16]] = tail call float @llvm.fmuladd.f32(float [[TMP4]], float [[TMP12]], float [[VEC_PHI]])
+; CHECK-UNORDERED-NEXT:    [[TMP17]] = tail call float @llvm.fmuladd.f32(float [[TMP5]], float [[TMP13]], float [[VEC_PHI1]])
+; CHECK-UNORDERED-NEXT:    [[TMP18]] = tail call float @llvm.fmuladd.f32(float [[TMP6]], float [[TMP14]], float [[VEC_PHI2]])
+; CHECK-UNORDERED-NEXT:    [[TMP19]] = tail call float @llvm.fmuladd.f32(float [[TMP7]], float [[TMP15]], float [[VEC_PHI3]])
 ; CHECK-UNORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-UNORDERED-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-UNORDERED-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP32:![0-9]+]]

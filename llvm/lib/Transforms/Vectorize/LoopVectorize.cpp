@@ -9465,29 +9465,6 @@ VPRecipeOrVPValueTy
 VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
                                         ArrayRef<VPValue *> Operands,
                                         VFRange &Range, VPlanPtr &Plan) {
-  // First, check for specific widening recipes that deal with calls, memory
-  // operations, inductions and Phi nodes.
-  if (auto *CI = dyn_cast<CallInst>(Instr))
-    return toVPRecipeResult(tryToWidenCall(CI, Operands, Range));
-
-#if SIFIVE_CUSTOMIZATION
-  if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr)) {
-    if (preferPredicatedWiden()) {
-      // Note: VLS skips this check with CM_Scalarize
-      // We add it here for VLA
-      StoreInst *SI;
-      if ((SI = dyn_cast<StoreInst>(Instr)) &&
-          Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
-        return nullptr;
-      return toVPRecipeResult(
-          tryToPredicatedWidenMemory(Instr, Operands, Range, Plan));
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // First, check for specific widening recipes that deal with inductions, Phi
   // nodes, calls and memory operations.
   VPRecipeBase *Recipe;
@@ -9542,8 +9519,23 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
   if (auto *CI = dyn_cast<CallInst>(Instr))
     return toVPRecipeResult(tryToWidenCall(CI, Operands, Range));
 
-  if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
+#if SIFIVE_CUSTOMIZATION
+  if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr)) {
+    if (preferPredicatedWiden()) {
+      // Note: VLS skips this check with CM_Scalarize
+      // We add it here for VLA
+      StoreInst *SI;
+      if ((SI = dyn_cast<StoreInst>(Instr)) &&
+          Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
+        return nullptr;
+      return toVPRecipeResult(
+          tryToPredicatedWidenMemory(Instr, Operands, Range, Plan));
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!shouldWiden(Instr, Range))
     return nullptr;
