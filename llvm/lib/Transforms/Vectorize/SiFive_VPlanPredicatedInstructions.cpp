@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "SiFive_VPlanPredicatedInstructions.h"
+#include "VPlan.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
@@ -20,11 +21,13 @@
 using namespace llvm;
 void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
                                       VPUser &User, VPTransformState &State,
-                                      VPValue *BlockInMask, VPValue *EVL,
-                                      unsigned Part) {
+                                      VPValue *BlockInMask, unsigned Part) {
+  VPValue *EVL = State.Plan->getEVL();
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
+    if (!BlockInMask)
+      return BuilderIR.getTrueVector(State.VF);
     // The outermost mask can be lowered as an all ones mask when using EVL.
     if (auto *VPI = dyn_cast<VPInstruction>(BlockInMask))
       if (VPI && VPI->getOpcode() == VPInstruction::ActiveLaneMask)
@@ -52,7 +55,7 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Value *A = State.get(User.getOperand(0), Part);
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(State.EVL, Part);
+    Value *EVLArg = State.get(EVL, Part);
     Builder.setMask(MaskArg).setEVL(EVLArg);
     Value *V = Builder.createVectorInstruction(Instruction::Xor, PredTy,
                                                {A, MaskArg}, "pred.not");
@@ -60,7 +63,8 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     return;
   }
   case Instruction::Select: {
-    assert(!Op && "Expected with no-op only.");
+    assert((!Op || isa<VPWidenSelectRecipe>(Def->getDef())) &&
+           "Expected with no-op only or VPWidenSelectRecipe.");
     Value *Cond = State.get(User.getOperand(0), Part);
     Value *Op1 = State.get(User.getOperand(1), Part);
     Value *Op2 = State.get(User.getOperand(2), Part);
@@ -79,9 +83,12 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     assert(!Op && "Expected with no-op only.");
     Value *IV = State.get(User.getOperand(0), Part);
     Value *TC = State.get(User.getOperand(1), Part);
-    Value *PredArg = BuilderIR.getInt8(CmpInst::ICMP_ULE);
+    StringRef PredicateStr = CmpInst::getPredicateName(CmpInst::ICMP_ULE);
+    auto *PredicateMDS = MDString::get(IV->getContext(), PredicateStr);
+    Value *PredArg = MetadataAsValue::get(IV->getContext(), PredicateMDS);
+
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(State.EVL, Part);
+    Value *EVLArg = State.get(EVL, Part);
     Builder.setMask(MaskArg).setEVL(EVLArg);
     Value *V =
         Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
@@ -232,23 +239,3 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
   }
   llvm_unreachable("Unexpected opcode.");
 }
-
-void VPAllTrueMaskRecipe::execute(VPTransformState &State) {
-
-  IRBuilderBase &BuilderIR = State.Builder;
-  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
-    State.set(this, BuilderIR.getTrueVector(State.VF), Part);
-  }
-}
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-void VPAllTrueMaskRecipe::print(raw_ostream &O, const Twine &Indent,
-                                VPSlotTracker &SlotTracker) const {
-  O << Indent << "EMIT ";
-  printAsOperand(O, SlotTracker);
-  O << " = ALL-TRUE-MASK  ";
-  assert(getNumOperands() == 1 &&
-         "VPAllTrueMaskRecipe should have one operand");
-  getOperand(0)->printAsOperand(O, SlotTracker);
-}
-#endif
