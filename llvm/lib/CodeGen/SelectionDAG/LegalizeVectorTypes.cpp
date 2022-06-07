@@ -2747,6 +2747,10 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
     break;
   case ISD::FP_TO_SINT:
   case ISD::FP_TO_UINT:
+#ifdef SIFIVE_CUSTOMIZATION
+  case ISD::VP_FPTOSI:
+  case ISD::VP_FPTOUI:
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::STRICT_FP_TO_SINT:
   case ISD::STRICT_FP_TO_UINT:
   case ISD::STRICT_FP_EXTEND:
