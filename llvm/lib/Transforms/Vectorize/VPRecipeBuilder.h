@@ -45,12 +45,6 @@ class VPRecipeBuilder {
 
   VPBuilder &Builder;
 
-#if SIFIVE_CUSTOMIZATION
-  VPValue *EVL = nullptr;
-
-  VPValue *EVLMask = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-
   /// When we if-convert we need to create edge masks. We have to cache values
   /// so that we don't end up with exponential recursion/IR. Note that
   /// if-conversion currently takes place during VPlan-construction, so these
@@ -89,18 +83,6 @@ class VPRecipeBuilder {
   VPRecipeBase *tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
                                  VFRange &Range, VPlanPtr &Plan);
 
-#if SIFIVE_CUSTOMIZATION
-  /// Similar to tryToWidenMemory, but create a predicated recipe. The
-  /// predicated recipe takes mandatory mask and EVL VPInstructions.
-  VPRecipeBase *tryToPredicatedWidenMemory(Instruction *I,
-                                           ArrayRef<VPValue *> Operands,
-                                           VFRange &Range, VPlanPtr &Plan);
-
-  /// Helper method used by tryToWidenMemory and tryToPredicatedWidenMemory to
-  /// validate if a memory instructions can be widened.
-  bool validateWidenMemory(Instruction *I, VFRange &Range) const;
-#endif // SIFIVE_CUSTOMIZATION
-
   /// Check if an induction recipe should be constructed for \p Phi. If so build
   /// and return it. If not, return null.
   VPRecipeBase *tryToOptimizeInductionPHI(PHINode *Phi,
@@ -130,17 +112,6 @@ class VPRecipeBuilder {
   /// if it can. The function should only be called if the cost-model indicates
   /// that widening should be performed.
   VPWidenRecipe *tryToWiden(Instruction *I, ArrayRef<VPValue *> Operands) const;
-
-#if SIFIVE_CUSTOMIZATION
-  /// Similar to tryToWiden, but widen to VP intrinsics.
-  VPPredicatedWidenRecipe *tryToPredicatedWiden(Instruction *I,
-                                                ArrayRef<VPValue *> Operands,
-                                                VPlanPtr &Plan);
-
-  /// Helper method used by tryToWiden and tryToPredicatedWiden to validate if
-  /// an instruction can be widened.
-  bool validateWiden(Instruction *I) const;
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Return a VPRecipeOrValueTy with VPRecipeBase * being set. This can be used to force the use as VPRecipeBase* for recipe sub-types that also inherit from VPValue.
   VPRecipeOrVPValueTy toVPRecipeResult(VPRecipeBase *R) const { return R; }
@@ -188,16 +159,6 @@ public:
   /// and DST.
   VPValue *createEdgeMask(BasicBlock *Src, BasicBlock *Dst, VPlanPtr &Plan);
 
-#if SIFIVE_CUSTOMIZATION
-  /// A helper function that computes the Explicit(Active) Vector Length for the
-  /// current vector iteration.
-  VPValue *getOrCreateEVL(VPlanPtr &Plan);
-
-  /// A helper function to compute runtime EVL mask per vector iteration by
-  /// current EVL and step vector.
-  VPValue *getOrCreateEVLMask(VPBasicBlock *VPBB, VPlanPtr &Plan);
-#endif // SIFIVE_CUSTOMIZATION
-
   /// Mark given ingredient for recording its recipe once one is created for
   /// it.
   void recordRecipeOf(Instruction *I) {
@@ -232,11 +193,7 @@ public:
 
   /// Add the incoming values from the backedge to reduction & first-order
   /// recurrence cross-iteration phis.
-#if SIFIVE_CUSTOMIZATION
-  void fixHeaderPhis(VPlanPtr &Plan);
-#else
   void fixHeaderPhis();
-#endif // SIFIVE_CUSTOMIZATION
 };
 } // end namespace llvm
 

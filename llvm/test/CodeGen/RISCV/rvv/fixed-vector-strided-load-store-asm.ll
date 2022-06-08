@@ -708,18 +708,18 @@ define void @scatter_of_pointers(i32** noalias nocapture %0, i32** noalias nocap
 ; ZVE32F-NEXT:    li a4, 1024
 ; ZVE32F-NEXT:    li a5, 40
 ; ZVE32F-NEXT:  .LBB11_1: # =>This Inner Loop Header: Depth=1
-; ZVE32F-NEXT:    ld a6, 8(a1)
-; ZVE32F-NEXT:    ld a7, 0(a1)
-; ZVE32F-NEXT:    ld t0, 24(a1)
-; ZVE32F-NEXT:    ld t1, 16(a1)
-; ZVE32F-NEXT:    mul t2, a3, a5
-; ZVE32F-NEXT:    add t2, a0, t2
-; ZVE32F-NEXT:    mul t3, a2, a5
-; ZVE32F-NEXT:    add t3, a0, t3
-; ZVE32F-NEXT:    sd a7, 0(t3)
-; ZVE32F-NEXT:    sd a6, 0(t2)
-; ZVE32F-NEXT:    sd t1, 80(t3)
-; ZVE32F-NEXT:    sd t0, 80(t2)
+; ZVE32F-NEXT:    mul a6, a3, a5
+; ZVE32F-NEXT:    add a6, a0, a6
+; ZVE32F-NEXT:    mul a7, a2, a5
+; ZVE32F-NEXT:    add a7, a0, a7
+; ZVE32F-NEXT:    ld t0, 0(a1)
+; ZVE32F-NEXT:    ld t1, 8(a1)
+; ZVE32F-NEXT:    ld t2, 16(a1)
+; ZVE32F-NEXT:    ld t3, 24(a1)
+; ZVE32F-NEXT:    sd t0, 0(a7)
+; ZVE32F-NEXT:    sd t1, 0(a6)
+; ZVE32F-NEXT:    sd t2, 80(a7)
+; ZVE32F-NEXT:    sd t3, 80(a6)
 ; ZVE32F-NEXT:    addi a2, a2, 4
 ; ZVE32F-NEXT:    addi a3, a3, 4
 ; ZVE32F-NEXT:    addi a4, a4, -4

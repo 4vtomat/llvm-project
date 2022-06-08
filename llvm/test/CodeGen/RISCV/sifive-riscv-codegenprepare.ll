@@ -347,3 +347,158 @@ for.body:                                         ; preds = %for.body, %for.body
   %niter.ncmp.1 = icmp eq i64 %niter.nsub.1, 0
   br i1 %niter.ncmp.1, label %for.cond.cleanup.loopexit.unr-lcssa, label %for.body
 }
+
+; This tests cloning and sinking of and X, 0xffffffff to enable add.uw/shXadd.uw for
+; address computations.
+
+; Simple case one use in another block.
+define signext i32 @test8(i32 signext %0, i32* %1, i32* %2, i64 %3) {
+; CHECK-LABEL: @test8(
+; CHECK-NEXT:    [[TMP5:%.*]] = and i64 [[TMP3:%.*]], 4294967295
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP14:%.*]], label [[TMP9:%.*]]
+; CHECK:       9:
+; CHECK-NEXT:    [[TMP10:%.*]] = and i64 [[TMP3]], 4294967295
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP12:%.*]] = load i32, i32* [[TMP11]], align 4
+; CHECK-NEXT:    [[TMP13:%.*]] = add nsw i32 [[TMP12]], [[TMP7]]
+; CHECK-NEXT:    br label [[TMP14]]
+; CHECK:       14:
+; CHECK-NEXT:    [[TMP15:%.*]] = phi i32 [ [[TMP13]], [[TMP9]] ], [ [[TMP7]], [[TMP4:%.*]] ]
+; CHECK-NEXT:    ret i32 [[TMP15]]
+;
+  %5 = and i64 %3, 4294967295
+  %6 = getelementptr inbounds i32, i32* %1, i64 %5
+  %7 = load i32, i32* %6, align 4
+  %8 = icmp eq i32 %0, 0
+  br i1 %8, label %13, label %9
+
+9:                                                ; preds = %4
+  %10 = getelementptr inbounds i32, i32* %2, i64 %5
+  %11 = load i32, i32* %10, align 4
+  %12 = add nsw i32 %11, %7
+  br label %13
+
+13:                                               ; preds = %9, %4
+  %14 = phi i32 [ %12, %9 ], [ %7, %4 ]
+  ret i32 %14
+}
+
+; All users of the and are non-local. We should copy it and remove the
+; original which becomes dead.
+define void @test9(i32 signext %0, i32* %1, i32* %2, i64 %3, i32 signext %4) {
+; CHECK-LABEL: @test9(
+; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP10:%.*]], label [[TMP7:%.*]]
+; CHECK:       7:
+; CHECK-NEXT:    [[TMP8:%.*]] = and i64 [[TMP3:%.*]], 4294967295
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP8]]
+; CHECK-NEXT:    store i32 [[TMP4:%.*]], i32* [[TMP9]], align 4
+; CHECK-NEXT:    br label [[TMP14:%.*]]
+; CHECK:       10:
+; CHECK-NEXT:    [[TMP11:%.*]] = and i64 [[TMP3]], 4294967295
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    tail call void @foo(i32 signext [[TMP13]])
+; CHECK-NEXT:    br label [[TMP14]]
+; CHECK:       14:
+; CHECK-NEXT:    ret void
+;
+  %6 = icmp eq i32 %0, 0
+  %7 = and i64 %3, 4294967295
+  br i1 %6, label %10, label %8
+
+8:                                                ; preds = %5
+  %9 = getelementptr inbounds i32, i32* %2, i64 %7
+  store i32 %4, i32* %9, align 4
+  br label %13
+
+10:                                               ; preds = %5
+  %11 = getelementptr inbounds i32, i32* %1, i64 %7
+  %12 = load i32, i32* %11, align 4
+  tail call void @foo(i32 signext %12) #3
+  br label %13
+
+13:                                               ; preds = %10, %8
+  ret void
+}
+
+; Test multiple users in the other block. We should only make one and copy.
+define signext i32 @test10(i32 signext %0, i32* %1, i32* %2, i32* %3, i64 %4) {
+; CHECK-LABEL: @test10(
+; CHECK-NEXT:    [[TMP6:%.*]] = and i64 [[TMP4:%.*]], 4294967295
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load i32, i32* [[TMP7]], align 4
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP18:%.*]], label [[TMP10:%.*]]
+; CHECK:       10:
+; CHECK-NEXT:    [[TMP11:%.*]] = and i64 [[TMP4]], 4294967295
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, i32* [[TMP3:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP15:%.*]] = load i32, i32* [[TMP14]], align 4
+; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[TMP13]], [[TMP8]]
+; CHECK-NEXT:    [[TMP17:%.*]] = add i32 [[TMP16]], [[TMP15]]
+; CHECK-NEXT:    br label [[TMP18]]
+; CHECK:       18:
+; CHECK-NEXT:    [[TMP19:%.*]] = phi i32 [ [[TMP17]], [[TMP10]] ], [ [[TMP8]], [[TMP5:%.*]] ]
+; CHECK-NEXT:    ret i32 [[TMP19]]
+;
+  %6 = and i64 %4, 4294967295
+  %7 = getelementptr inbounds i32, i32* %1, i64 %6
+  %8 = load i32, i32* %7, align 4
+  %9 = icmp eq i32 %0, 0
+  br i1 %9, label %17, label %10
+
+10:                                               ; preds = %5
+  %11 = getelementptr inbounds i32, i32* %2, i64 %6
+  %12 = load i32, i32* %11, align 4
+  %13 = getelementptr inbounds i32, i32* %3, i64 %6
+  %14 = load i32, i32* %13, align 4
+  %15 = add i32 %12, %8
+  %16 = add i32 %15, %14
+  br label %17
+
+17:                                               ; preds = %10, %5
+  %18 = phi i32 [ %16, %10 ], [ %8, %5 ]
+  ret i32 %18
+}
+
+; Similar to test8, but now the other user is a shl instead of gep.
+define signext i32 @test11(i32 signext %0, i32* %1, i32* %2, i64 %3) {
+; CHECK-LABEL: @test11(
+; CHECK-NEXT:    [[TMP5:%.*]] = and i64 [[TMP3:%.*]], 4294967295
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP15:%.*]], label [[TMP9:%.*]]
+; CHECK:       9:
+; CHECK-NEXT:    [[TMP10:%.*]] = and i64 [[TMP3]], 4294967295
+; CHECK-NEXT:    [[TMP11:%.*]] = shl i64 [[TMP10]], 1
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = add nsw i32 [[TMP13]], [[TMP7]]
+; CHECK-NEXT:    br label [[TMP15]]
+; CHECK:       15:
+; CHECK-NEXT:    [[TMP16:%.*]] = phi i32 [ [[TMP14]], [[TMP9]] ], [ [[TMP7]], [[TMP4:%.*]] ]
+; CHECK-NEXT:    ret i32 [[TMP16]]
+;
+  %5 = and i64 %3, 4294967295
+  %6 = getelementptr inbounds i32, i32* %1, i64 %5
+  %7 = load i32, i32* %6, align 4
+  %8 = icmp eq i32 %0, 0
+  br i1 %8, label %14, label %9
+
+9:                                                ; preds = %4
+  %10 = shl i64 %5, 1
+  %11 = getelementptr inbounds i32, i32* %2, i64 %10
+  %12 = load i32, i32* %11, align 4
+  %13 = add nsw i32 %12, %7
+  br label %14
+
+14:                                               ; preds = %9, %4
+  %15 = phi i32 [ %13, %9 ], [ %7, %4 ]
+  ret i32 %15
+}

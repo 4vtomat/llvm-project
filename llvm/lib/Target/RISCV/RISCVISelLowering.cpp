@@ -1056,6 +1056,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setTargetDAGCombine({ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::AND,
                        ISD::OR, ISD::XOR});
 
+#if SIFIVE_CUSTOMIZATION
+  setTargetDAGCombine(ISD::EXTRACT_VECTOR_ELT);
+#endif
+
   if (Subtarget.hasStdExtF())
     setTargetDAGCombine({ISD::FADD, ISD::FMAXNUM, ISD::FMINNUM});
 
@@ -9789,6 +9793,69 @@ static SDValue combineSTORE_BUILD_VECTOR_LOAD(SDNode *N, SelectionDAG &DAG,
   }
   return DAG.getNode(ISD::TokenFactor, DL, MVT::Other, MemOps);
 }
+
+static SDValue
+performEXTRACT_VECTOR_ELTCombine(SDNode *N, SelectionDAG &DAG,
+                                 const RISCVSubtarget &Subtarget) {
+  // The idea is from DAGCombiner::scalarizeExtractedVectorLoad.
+  SDValue Extend = N->getOperand(0);
+  LoadSDNode *OriginalLoad;
+  if (Extend.getOpcode() == ISD::SIGN_EXTEND ||
+      Extend.getOpcode() == ISD::ZERO_EXTEND) {
+    OriginalLoad = dyn_cast<LoadSDNode>(Extend->getOperand(0));
+  } else {
+    OriginalLoad = dyn_cast<LoadSDNode>(Extend);
+    Extend = SDValue();
+  }
+  if (!OriginalLoad || !OriginalLoad->isSimple())
+    return SDValue();
+  EVT InVecVT = OriginalLoad->getValueType(0);
+  EVT ResultVT = N->getValueType(0);
+  EVT VecEltVT = InVecVT.getVectorElementType();
+  if (!VecEltVT.isByteSized())
+    return SDValue();
+  Align Alignment = OriginalLoad->getAlign();
+  MachinePointerInfo MPI;
+  SDValue EltNo = N->getOperand(1);
+  if (auto *ConstEltNo = dyn_cast<ConstantSDNode>(EltNo)) {
+    int Elt = ConstEltNo->getZExtValue();
+    unsigned PtrOff = VecEltVT.getSizeInBits() * Elt / 8;
+    MPI = OriginalLoad->getPointerInfo().getWithOffset(PtrOff);
+    Alignment = commonAlignment(Alignment, PtrOff);
+  } else {
+    // Discard the pointer info except the address space because the memory
+    // operand can't represent this new access since the offset is variable.
+    MPI = MachinePointerInfo(OriginalLoad->getPointerInfo().getAddrSpace());
+    Alignment = commonAlignment(Alignment, VecEltVT.getSizeInBits() / 8);
+  }
+  SDValue NewPtr = DAG.getTargetLoweringInfo().getVectorElementPointer(
+      DAG, OriginalLoad->getBasePtr(), InVecVT, EltNo);
+  SDLoc DL(N);
+  SDValue Load;
+  // example
+  // t5: v2i8,ch = load<(load (s16) from %ir.in, align 1)> t0, t2, undef:i64
+  // a) t7: i8 = extract_vector_elt t5, Constant:i64<1>
+  // b) t12: i64 = extract_vector_elt t5, Constant:i64<1>
+  // c) t6: v2i16 = sign_extend t5
+  //    t8: i16 = extract_vector_elt t6, Constant:i64<1>
+  // d) t13: i64 = extract_vector_elt t6, Constant:i64<1>
+  if (ResultVT.bitsGT(VecEltVT)) {
+    ISD::LoadExtType ExtType = ISD::EXTLOAD;
+    if (Extend)
+      ExtType = Extend.getOpcode() == ISD::SIGN_EXTEND ? ISD::SEXTLOAD
+                                                       : ISD::ZEXTLOAD;
+    Load = DAG.getExtLoad(ExtType, DL, ResultVT, OriginalLoad->getChain(),
+                          NewPtr, MPI, VecEltVT, Alignment,
+                          OriginalLoad->getMemOperand()->getFlags(),
+                          OriginalLoad->getAAInfo());
+  } else {
+    Load = DAG.getLoad(VecEltVT, DL, OriginalLoad->getChain(), NewPtr, MPI,
+                       Alignment, OriginalLoad->getMemOperand()->getFlags(),
+                       OriginalLoad->getAAInfo());
+  }
+  DAG.makeEquivalentMemoryOrdering(OriginalLoad, Load);
+  return Load;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
@@ -10565,6 +10632,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
     break;
   }
+  case ISD::EXTRACT_VECTOR_ELT:
+    return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
   }
 

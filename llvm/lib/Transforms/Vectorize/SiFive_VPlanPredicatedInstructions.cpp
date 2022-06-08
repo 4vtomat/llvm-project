@@ -12,19 +12,50 @@
 //===----------------------------------------------------------------------===//
 
 #include "SiFive_VPlanPredicatedInstructions.h"
+#include "VPlan.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/VectorBuilder.h"
 
 using namespace llvm;
-void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
-                                      VPUser &User, VPTransformState &State,
-                                      VPValue *BlockInMask, VPValue *EVL,
-                                      unsigned Part) {
+
+/// Return true if instruction can stay unmasked regardless to a mask on its
+/// basic block.
+/// For now only assume that all integer operations, except for division and
+/// remain, can be unmasked.
+/// On RISC-V integer division and remain don't raise exception, so they
+/// technically could be unmasked, but generating unmasked instruction may
+/// violate LLVM's principles
+/// TODO: Whether instruction should be masked or unmasked has to be decided
+/// during VPlan construction by looking at the target and exceptions that
+/// are enabled.
+static bool canUnaryOrBinaryOpBeUnmasked(const unsigned Opcode, Type *ElementType) {
+  assert((Instruction::isUnaryOp(Opcode) || Instruction::isBinaryOp(Opcode)) &&
+         "Unary or Binary operation is expected.");
+  if (!ElementType->isIntegerTy() && !ElementType->isFloatingPointTy()) {
+    return false;
+  }
+  switch (Opcode) {
+  case Instruction::UDiv:
+  case Instruction::SDiv:
+  case Instruction::URem:
+  case Instruction::SRem:
+    return false;
+  }
+  return true;
+}
+
+namespace llvm {
+void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
+                                VPTransformState &State, VPValue *BlockInMask,
+                                unsigned Part) {
+  VPValue *EVL = State.Plan->getEVL();
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
+    if (!BlockInMask)
+      return BuilderIR.getTrueVector(State.VF);
     // The outermost mask can be lowered as an all ones mask when using EVL.
     if (auto *VPI = dyn_cast<VPInstruction>(BlockInMask))
       if (VPI && VPI->getOpcode() == VPInstruction::ActiveLaneMask)
@@ -39,7 +70,11 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Value *SrcVal = State.get(User.getOperand(0), Part);
     auto *SrcTy = cast<VectorType>(SrcVal->getType());
     auto *DestTy = VectorType::get(CI->getType(), SrcTy->getElementCount());
-    Builder.setMask(MaskValue(Part, DestTy->getElementCount()));
+    // TODO: Whether instruction should be masked or unmasked has to be decided
+    // during VPlan construction by looking at the target and exceptions that
+    // are enabled.
+    // Since LV is targeting RVV, use all-true mask for conversions.
+    Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
     Builder.setEVL(State.get(EVL, Part));
     Value *V = Builder.createVectorInstruction(CI->getOpcode(), DestTy,
                                                {SrcVal}, "vp.cast");
@@ -52,7 +87,7 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Value *A = State.get(User.getOperand(0), Part);
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(State.EVL, Part);
+    Value *EVLArg = State.get(EVL, Part);
     Builder.setMask(MaskArg).setEVL(EVLArg);
     Value *V = Builder.createVectorInstruction(Instruction::Xor, PredTy,
                                                {A, MaskArg}, "pred.not");
@@ -60,7 +95,8 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     return;
   }
   case Instruction::Select: {
-    assert(!Op && "Expected with no-op only.");
+    assert((!Op || isa<VPWidenSelectRecipe>(Def->getDef())) &&
+           "Expected with no-op only or VPWidenSelectRecipe.");
     Value *Cond = State.get(User.getOperand(0), Part);
     Value *Op1 = State.get(User.getOperand(1), Part);
     Value *Op2 = State.get(User.getOperand(2), Part);
@@ -79,9 +115,12 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     assert(!Op && "Expected with no-op only.");
     Value *IV = State.get(User.getOperand(0), Part);
     Value *TC = State.get(User.getOperand(1), Part);
-    Value *PredArg = BuilderIR.getInt8(CmpInst::ICMP_ULE);
+    StringRef PredicateStr = CmpInst::getPredicateName(CmpInst::ICMP_ULE);
+    auto *PredicateMDS = MDString::get(IV->getContext(), PredicateStr);
+    Value *PredArg = MetadataAsValue::get(IV->getContext(), PredicateMDS);
+
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(State.EVL, Part);
+    Value *EVLArg = State.get(EVL, Part);
     Builder.setMask(MaskArg).setEVL(EVLArg);
     Value *V =
         Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
@@ -211,9 +250,8 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     }
 
     VectorType *OpTy = cast<VectorType>(Ops[0]->getType());
-    // FIXME: This is a hack because we are not being honest here.
     Value *MaskArg;
-    if (Op)
+    if (Op && !canUnaryOrBinaryOpBeUnmasked(Opcode, OpTy->getElementType()))
       MaskArg = MaskValue(Part, OpTy->getElementCount());
     else
       MaskArg = BuilderIR.getTrueVector(OpTy->getElementCount());
@@ -233,22 +271,4 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
   llvm_unreachable("Unexpected opcode.");
 }
 
-void VPAllTrueMaskRecipe::execute(VPTransformState &State) {
-
-  IRBuilderBase &BuilderIR = State.Builder;
-  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
-    State.set(this, BuilderIR.getTrueVector(State.VF), Part);
-  }
-}
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-void VPAllTrueMaskRecipe::print(raw_ostream &O, const Twine &Indent,
-                                VPSlotTracker &SlotTracker) const {
-  O << Indent << "EMIT ";
-  printAsOperand(O, SlotTracker);
-  O << " = ALL-TRUE-MASK  ";
-  assert(getNumOperands() == 1 &&
-         "VPAllTrueMaskRecipe should have one operand");
-  getOperand(0)->printAsOperand(O, SlotTracker);
-}
-#endif
+} // namespace llvm

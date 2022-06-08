@@ -825,6 +825,10 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   bool preferPredicatedVectorOps() const { return false; }
+
+  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
+    return false;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool supportsScalableVectors() const { return false; }

@@ -6,39 +6,32 @@ define void @test() {
 ; CHECK-NEXT:  while.body380.preheader:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 8
-; CHECK-NEXT:    [[TMP2:%.*]] = icmp ult i32 -1, [[TMP1]]
+; CHECK-NEXT:    [[TMP2:%.*]] = icmp ult i32 -101, [[TMP1]]
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[INDEX]], i32 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i32> @llvm.experimental.stepvector.nxv8i32()
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
-; CHECK-NEXT:    [[VEC_IV:%.*]] = add <vscale x 8 x i32> [[BROADCAST_SPLAT]], [[TMP4]]
-; CHECK-NEXT:    [[TMP5:%.*]] = sub i32 0, [[INDEX]]
-; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP6]], i64 0, i64 0)
-; CHECK-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP7]] to i32
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i32 [[TMP9]], 8
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i32 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP3:%.*]] = sub i32 100, [[INDEX]]
+; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP3]] to i64
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP4]], i64 0, i64 0)
+; CHECK-NEXT:    [[TMP6:%.*]] = trunc i64 [[TMP5]] to i32
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], [[TMP6]]
+; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i32 [[INDEX_NEXT]], 100
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FINISH_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[WHILE_BODY380_PREHEADER:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 100, [[MIDDLE_BLOCK]] ], [ 0, [[WHILE_BODY380_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY380:%.*]]
 ; CHECK:       while.body380:
 ; CHECK-NEXT:    [[LEN_4735:%.*]] = phi i32 [ [[DEC378:%.*]], [[WHILE_BODY380]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[DEC378]] = add nsw i32 [[LEN_4735]], 1
 ; CHECK-NEXT:    [[AND385681:%.*]] = and i8 0, 0
 ; CHECK-NEXT:    store i8 [[AND385681]], i8* null, align 1
-; CHECK-NEXT:    [[TOBOOL379_NOT:%.*]] = icmp eq i32 [[DEC378]], 0
+; CHECK-NEXT:    [[TOBOOL379_NOT:%.*]] = icmp eq i32 [[DEC378]], 100
 ; CHECK-NEXT:    br i1 [[TOBOOL379_NOT]], label [[FINISH_LOOPEXIT]], label [[WHILE_BODY380]], !llvm.loop [[LOOP2:![0-9]+]]
 ; CHECK:       finish.loopexit:
 ; CHECK-NEXT:    ret void
@@ -51,7 +44,7 @@ while.body380:
   %dec378 = add nsw i32 %len.4735, 1
   %and385681 = and i8 0, 0
   store i8 %and385681, i8* null, align 1
-  %tobool379.not = icmp eq i32 %dec378, 0
+  %tobool379.not = icmp eq i32 %dec378, 100
   br i1 %tobool379.not, label %finish.loopexit, label %while.body380
 
 finish.loopexit:

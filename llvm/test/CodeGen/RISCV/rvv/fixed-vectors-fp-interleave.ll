@@ -271,7 +271,7 @@ define <64 x float> @interleave_v32f32(<32 x float> %x, <32 x float> %y) {
 ; RV32-V128-NEXT:    csrr t0, vlenb
 ; RV32-V128-NEXT:    slli t0, t0, 4
 ; RV32-V128-NEXT:    sub sp, sp, t0
-; RV32-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
+; RV32-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV32-V128-NEXT:    lui a0, %hi(.LCPI10_0)
 ; RV32-V128-NEXT:    addi a0, a0, %lo(.LCPI10_0)
 ; RV32-V128-NEXT:    li a1, 32
@@ -323,7 +323,7 @@ define <64 x float> @interleave_v32f32(<32 x float> %x, <32 x float> %y) {
 ; RV64-V128-NEXT:    csrr t0, vlenb
 ; RV64-V128-NEXT:    slli t0, t0, 4
 ; RV64-V128-NEXT:    sub sp, sp, t0
-; RV64-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLEB
+; RV64-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV64-V128-NEXT:    lui a0, %hi(.LCPI10_0)
 ; RV64-V128-NEXT:    addi a0, a0, %lo(.LCPI10_0)
 ; RV64-V128-NEXT:    li a1, 32

@@ -710,7 +710,7 @@ static bool runOnFunction(
               // type (Ty) and if so it does not alias because of type escape
               // analysis.
               Type *ArgTy = InputSrcPtr->getType();
-              if (auto *ArgPtrTy = dyn_cast<PointerType>(ArgTy)) {
+              if (isa<PointerType>(ArgTy)) {
                 // Obtain overlayed type from param map
                 ArgTy = LocalParamMap[CurArg->getArgNo()];
               }
@@ -762,7 +762,7 @@ static bool runOnFunction(
           for (const Value *UnderlyingObj : Objects) {
             if (auto *CurArg = dyn_cast<Argument>(UnderlyingObj)) {
               Type *ArgTy = UnderlyingObj->getType();
-              if (auto *ArgPtrTy = dyn_cast<PointerType>(ArgTy)) {
+              if (isa<PointerType>(ArgTy)) {
                 // Obtain overlayed type from the ParamMap of F.
                 ArgTy = LocalParamMap[CurArg->getArgNo()];
               }

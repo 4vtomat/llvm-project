@@ -485,10 +485,8 @@ define double @extractelt_nxv8f64_idx(<vscale x 8 x double> %v, i32 signext %idx
 define void @store_extractelt_nxv8f64(<vscale x 8 x double>* %x, double* %p) {
 ; CHECK-LABEL: store_extractelt_nxv8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vl8re64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e64, m8, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vse64.v v8, (a1)
+; CHECK-NEXT:    fld ft0, 8(a0)
+; CHECK-NEXT:    fsd ft0, 0(a1)
 ; CHECK-NEXT:    ret
   %a = load <vscale x 8 x double>, <vscale x 8 x double>* %x
   %b = extractelement <vscale x 8 x double> %a, i64 1
