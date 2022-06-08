@@ -112,7 +112,6 @@ private:
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasLUIADDIFusion = false; // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
-  unsigned VLen = 128; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
   unsigned XLen = 32;
@@ -134,11 +133,6 @@ private:
                                                   StringRef TuneCPU,
                                                   StringRef FS,
                                                   StringRef ABIName);
-
-#if SIFIVE_CUSTOMIZATION
-  /// Initialize processor specific properties.
-  void initializeProperties();
-#endif // SIFIVE_CUSTOMIZATION
 
 public:
   // Initializes the data members to match that of the specified triple.
@@ -261,7 +255,6 @@ public:
     unsigned VLen = getMaxRVVVectorSizeInBits();
     return VLen == 0 ? getMaxVLen() : VLen;
   }
-  unsigned getVLen() const { return VLen; } // SIFIVE
   RISCVABI::ABI getTargetABI() const { return TargetABI; }
   bool isRegisterReservedByUser(Register i) const {
     assert(i < RISCV::NUM_TARGET_REGS && "Register out of range");

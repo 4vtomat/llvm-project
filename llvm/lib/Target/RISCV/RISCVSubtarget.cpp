@@ -33,14 +33,6 @@ using namespace llvm;
 static cl::opt<bool> EnableSubRegLiveness("riscv-enable-subreg-liveness",
                                           cl::init(false), cl::Hidden);
 
-#if SIFIVE_CUSTOMIZATION
-static cl::opt<unsigned> RVVVectorBits(
-    "riscv-v-vector-bits",
-    cl::desc("Length of the V extension vector registers, "
-             "with zero meaning the processor default."),
-    cl::init(0), cl::Hidden);
-#endif // SIFIVE_CUSTOMIZATION
-
 static cl::opt<int> RVVVectorBitsMax(
     "riscv-v-vector-bits-max",
     cl::desc("Assume V extension vector registers are at most this big, "
@@ -93,27 +85,8 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
 
   TargetABI = RISCVABI::computeTargetABI(TT, getFeatureBits(), ABIName);
   RISCVFeatures::validate(TT, getFeatureBits());
-
-#if SIFIVE_CUSTOMIZATION
-  initializeProperties(); // SIFIVE
-#endif // SIFIVE_CUSTOMIZATION
   return *this;
 }
-
-#if SIFIVE_CUSTOMIZATION
-void RISCVSubtarget::initializeProperties() {
-
-  // Override and cap the VLEN.
-  if (RVVVectorBits)
-    VLen = RVVVectorBits;
-  if (RVVVectorBitsMin) {
-    unsigned Bits = RVVVectorBitsMin == -1 ? ZvlLen : RVVVectorBitsMin;
-    VLen = std::max(VLen, Bits);
-  }
-  if (RVVVectorBitsMax)
-    VLen = std::min(VLen, static_cast<unsigned>(RVVVectorBitsMax));
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 RISCVSubtarget::RISCVSubtarget(const Triple &TT, StringRef CPU,
                                StringRef TuneCPU, StringRef FS,
@@ -282,7 +255,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VRGATHEREI16_VV:
       // VCOMPRESS latency is proportional to the number of elements.
       case RISCV::VCOMPRESS_VM:
-        return RISCVII::getLMULGroups(LMul) * ST->getVLen() / SEW;
+        return RISCVII::getLMULGroups(LMul) * ST->getRealMinVLen() / SEW;
       // Reduction latency is complex.
       case RISCV::VREDAND_VS:
       case RISCV::VREDMAX_VS:
@@ -300,10 +273,10 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VWREDSUM_VS:
       case RISCV::VWREDSUMU_VS:
         return RISCVII::getLMULGroups(LMul) *
-            7 * (4 + Log2_32(ST->getVLen()) - 1 - Log2_32(SEW));
+            7 * (4 + Log2_32(ST->getRealMinVLen()) - 1 - Log2_32(SEW));
       case RISCV::VFREDOSUM_VS:
       case RISCV::VFWREDOSUM_VS:
-        return RISCVII::getLMULGroups(LMul) * 5 * ST->getVLen() / SEW ;
+        return RISCVII::getLMULGroups(LMul) * 5 * ST->getRealMinVLen() / SEW ;
       // Narrowing latency:
       case RISCV::VNCLIP_WV:
       case RISCV::VNCLIP_WX:
