@@ -202,6 +202,7 @@ bool RISCVMergeBaseOffsetOpt::matchLargeOffset(MachineInstr &TailAdd,
     Offset = SignExtend64<32>(OffsetTail.getOperand(1).getImm() << 12);
     DeadInstrs.insert(&OffsetTail);
     return true;
+#if SIFIVE_CUSTOMIZATION
   } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32) {
     // The offset value is a simm32. We can always fold it.
     LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
@@ -209,6 +210,7 @@ bool RISCVMergeBaseOffsetOpt::matchLargeOffset(MachineInstr &TailAdd,
     assert(isInt<32>(Offset) && "Unexpected offset");
     DeadInstrs.insert(&OffsetTail);
     return true;
+#endif // SIFIVE_CUSTOMIZATION
   }
   return false;
 }
