@@ -19,9 +19,37 @@
 #include "llvm/IR/VectorBuilder.h"
 
 using namespace llvm;
-void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
-                                      VPUser &User, VPTransformState &State,
-                                      VPValue *BlockInMask, unsigned Part) {
+
+/// Return true if instruction can stay unmasked regardless to a mask on its
+/// basic block.
+/// For now only assume that all integer operations, except for division and
+/// remain, can be unmasked.
+/// On RISC-V integer division and remain don't raise exception, so they
+/// technically could be unmasked, but generating unmasked instruction may
+/// violate LLVM's principles
+/// TODO: Whether instruction should be masked or unmasked has to be decided
+/// during VPlan construction by looking at the target and exceptions that
+/// are enabled.
+static bool canUnaryOrBinaryOpBeUnmasked(const unsigned Opcode, Type *ElementType) {
+  assert((Instruction::isUnaryOp(Opcode) || Instruction::isBinaryOp(Opcode)) &&
+         "Unary or Binary operation is expected.");
+  if (!ElementType->isIntegerTy() && !ElementType->isFloatingPointTy()) {
+    return false;
+  }
+  switch (Opcode) {
+  case Instruction::UDiv:
+  case Instruction::SDiv:
+  case Instruction::URem:
+  case Instruction::SRem:
+    return false;
+  }
+  return true;
+}
+
+namespace llvm {
+void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
+                                VPTransformState &State, VPValue *BlockInMask,
+                                unsigned Part) {
   VPValue *EVL = State.Plan->getEVL();
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
@@ -42,7 +70,11 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     Value *SrcVal = State.get(User.getOperand(0), Part);
     auto *SrcTy = cast<VectorType>(SrcVal->getType());
     auto *DestTy = VectorType::get(CI->getType(), SrcTy->getElementCount());
-    Builder.setMask(MaskValue(Part, DestTy->getElementCount()));
+    // TODO: Whether instruction should be masked or unmasked has to be decided
+    // during VPlan construction by looking at the target and exceptions that
+    // are enabled.
+    // Since LV is targeting RVV, use all-true mask for conversions.
+    Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
     Builder.setEVL(State.get(EVL, Part));
     Value *V = Builder.createVectorInstruction(CI->getOpcode(), DestTy,
                                                {SrcVal}, "vp.cast");
@@ -218,9 +250,8 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
     }
 
     VectorType *OpTy = cast<VectorType>(Ops[0]->getType());
-    // FIXME: This is a hack because we are not being honest here.
     Value *MaskArg;
-    if (Op)
+    if (Op && !canUnaryOrBinaryOpBeUnmasked(Opcode, OpTy->getElementType()))
       MaskArg = MaskValue(Part, OpTy->getElementCount());
     else
       MaskArg = BuilderIR.getTrueVector(OpTy->getElementCount());
@@ -239,3 +270,5 @@ void llvm::widenPredicatedInstruction(Instruction *Op, VPValue *Def,
   }
   llvm_unreachable("Unexpected opcode.");
 }
+
+} // namespace llvm
