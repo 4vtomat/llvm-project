@@ -993,6 +993,28 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State) {
+
+  VPBasicBlock *ExitingVPBB = getVectorLoopRegion()->getExitingBasicBlock();
+  auto *Term = dyn_cast<VPInstruction>(&ExitingVPBB->back());
+  // Try to simplify BranchOnCount to 'BranchOnCond true' if TC <= VF * UF when
+  // preparing to execute the plan for the main vector loop.
+  if (!CanonicalIVStartValue && Term &&
+      Term->getOpcode() == VPInstruction::BranchOnCount &&
+      isa<ConstantInt>(TripCountV)) {
+    ConstantInt *C = cast<ConstantInt>(TripCountV);
+    uint64_t TCVal = C->getZExtValue();
+    if (TCVal && TCVal <= State.VF.getKnownMinValue() * State.UF) {
+      auto *BOC =
+          new VPInstruction(VPInstruction::BranchOnCond,
+                            {getOrAddExternalDef(State.Builder.getTrue())});
+      Term->eraseFromParent();
+      ExitingVPBB->appendRecipe(BOC);
+      // TODO: Further simplifications are possible
+      //      1. Replace inductions with constants.
+      //      2. Replace vector loop region with VPBasicBlock.
+    }
+  }
+
   // Check if the trip count is needed, and if so build it.
   if (TripCount && TripCount->getNumUsers()) {
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
