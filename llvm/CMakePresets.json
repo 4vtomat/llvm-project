@@ -1,0 +1,143 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "x64_riscv_debug_default",
+            "displayName": "",
+            "description": "Config the x64 hosted riscv debug compiler",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "LLVM_OPTIMIZED_TABLEGEN": "True",
+                "LLVM_PARALLEL_LINK_JOBS": "2",
+                "LLVM_ENABLE_ASSERTIONS": "ON",
+                "LLVM_TARGETS_TO_BUILD": "RISCV",
+                "LLVM_ENABLE_PROJECTS": "clang",
+                "LLVM_DEFAULT_TARGET_TRIPLE": "riscv64-unknown-linux-gnu",
+                "LLVM_INSTALL_TOOLCHAIN_ONLY": "ON",
+                "DEFAULT_SYSROOT": "${sourceDir}/install/${presetName}/sysroot",
+                "LLVM_BINUTILS_INCDIR": "${sourceDir}/install/${presetName}/lib/gcc/riscv64-unknown-linux-gnu/11.2.0/plugin/include"
+            }
+        },
+        {
+            "name": "x64_riscv_release_default",
+            "displayName": "",
+            "description": "Config the x64 hosted riscv release compiler",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Release",
+                "LLVM_PARALLEL_LINK_JOBS": "2",
+                "LLVM_ENABLE_ASSERTIONS": "ON",
+                "LLVM_TARGETS_TO_BUILD": "RISCV",
+                "LLVM_ENABLE_PROJECTS": "clang",
+                "LLVM_DEFAULT_TARGET_TRIPLE": "riscv64-unknown-linux-gnu",
+                "LLVM_INSTALL_TOOLCHAIN_ONLY": "ON",
+                "DEFAULT_SYSROOT": "${sourceDir}/install/${presetName}/sysroot",
+                "LLVM_BINUTILS_INCDIR": "${sourceDir}/install/${presetName}/lib/gcc/riscv64-unknown-linux-gnu/11.2.0/plugin/include"
+            }
+        },
+        {
+            "name": "check-clang_default",
+            "displayName": "",
+            "description": "Config the compiler to run check-clang",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Release",
+                "LLVM_PARALLEL_LINK_JOBS": "2",
+                "LLVM_ENABLE_ASSERTIONS": "ON",
+                "LLVM_TARGETS_TO_BUILD": "all",
+                "LLVM_ENABLE_PROJECTS": "clang"
+            }
+        },
+        {
+            "name": "x64_riscv_baremetal_debug_default",
+            "displayName": "",
+            "description": "Config the x64 hosted baremetal compiler",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "LLVM_OPTIMIZED_TABLEGEN": "True",
+                "LLVM_PARALLEL_LINK_JOBS": "2",
+                "LLVM_TARGETS_TO_BUILD": "RISCV",
+                "LLVM_ENABLE_PROJECTS": "clang",
+                "LLVM_DEFAULT_TARGET_TRIPLE": "riscv64-unknown-elf",
+                "LLVM_INSTALL_TOOLCHAIN_ONLY": "ON"
+            }
+        },
+        {
+            "name": "x64_riscv_baremetal_release_default",
+            "displayName": "",
+            "description": "Config the x64 hosted baremetal compiler",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Release",
+                "LLVM_PARALLEL_LINK_JOBS": "2",
+                "LLVM_TARGETS_TO_BUILD": "RISCV",
+                "LLVM_ENABLE_PROJECTS": "clang",
+                "LLVM_DEFAULT_TARGET_TRIPLE": "riscv64-unknown-elf",
+                "LLVM_INSTALL_TOOLCHAIN_ONLY": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x64_riscv_debug_default",
+            "description": "Build the x64 hosted riscv debug compiler",
+            "displayName": "",
+            "configurePreset": "x64_riscv_debug_default",
+            "targets": ["all", "install", "check-llvm"]
+        },
+        {
+            "name": "x64_riscv_release_default",
+            "description": "Build the x64 hosted riscv release compiler",
+            "displayName": "",
+            "configurePreset": "x64_riscv_release_default",
+            "targets": ["all", "install", "check-llvm"]
+        },
+        {
+            "name": "check-clang_default",
+            "description": "Build the compiler to run check-clang",
+            "displayName": "",
+            "configurePreset": "check-clang_default",
+            "targets": ["all", "check-llvm", "check-clang"]
+        },
+        {
+            "name": "x64_riscv_baremetal_debug_default",
+            "description": "Build the x64 hosted baremetal debug compiler",
+            "displayName": "",
+            "configurePreset": "x64_riscv_baremetal_debug_default",
+            "targets": ["all", "install", "check-llvm"]
+        },
+        {
+            "name": "x64_riscv_baremetal_release_default",
+            "description": "Build the x64 hosted baremetal release compiler",
+            "displayName": "",
+            "configurePreset": "x64_riscv_baremetal_release_default",
+            "targets": ["all", "install", "check-llvm"]
+        }
+    ]
+}
