@@ -307,12 +307,21 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
                                              VectorType *Tp, ArrayRef<int> Mask,
                                              int Index, VectorType *SubTp,
                                              ArrayRef<const Value *> Args) {
-  if (Kind == TTI::SK_Splice && isa<ScalableVectorType>(Tp))
-    return getSpliceCost(Tp, Index);
-
-  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Tp);
-  if (Kind == TTI::SK_Broadcast && isa<ScalableVectorType>(Tp))
-    return LT.first * 1;
+  if (isa<ScalableVectorType>(Tp)) {
+    switch (Kind) {
+    default:
+      // Fallthrough to generic handling.
+      // TODO: Most of these cases will return getInvalid in generic code, and
+      // must be implemented here.
+      break;
+    case TTI::SK_Broadcast: {
+      std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Tp);
+      return LT.first * 1;
+    }
+    case TTI::SK_Splice:
+      return getSpliceCost(Tp, Index);
+    }
+  }
 
 #if SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(Tp) &&

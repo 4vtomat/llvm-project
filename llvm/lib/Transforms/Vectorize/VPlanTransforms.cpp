@@ -24,17 +24,15 @@ void VPlanTransforms::VPInstructionsToVPRecipes(
         GetIntOrFpInductionDescriptor,
     SmallPtrSetImpl<Instruction *> &DeadInstructions, ScalarEvolution &SE) {
 
-  auto *TopRegion = cast<VPRegionBlock>(Plan->getEntry());
-  ReversePostOrderTraversal<VPBlockBase *> RPOT(TopRegion->getEntry());
-
-  for (VPBlockBase *Base : RPOT) {
-    // Do not widen instructions in pre-header and exit blocks.
-    if (Base->getNumPredecessors() == 0 || Base->getNumSuccessors() == 0)
-      continue;
-
-    VPBasicBlock *VPBB = Base->getEntryBasicBlock();
+  ReversePostOrderTraversal<VPBlockRecursiveTraversalWrapper<VPBlockBase *>>
+      RPOT(Plan->getEntry());
+  for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
+    VPRecipeBase *Term = VPBB->getTerminator();
+    auto EndIter = Term ? Term->getIterator() : VPBB->end();
     // Introduce each ingredient into VPlan.
-    for (VPRecipeBase &Ingredient : llvm::make_early_inc_range(*VPBB)) {
+    for (VPRecipeBase &Ingredient :
+         make_early_inc_range(make_range(VPBB->begin(), EndIter))) {
+
       VPValue *VPV = Ingredient.getVPSingleValue();
       Instruction *Inst = cast<Instruction>(VPV->getUnderlyingValue());
       if (DeadInstructions.count(Inst)) {

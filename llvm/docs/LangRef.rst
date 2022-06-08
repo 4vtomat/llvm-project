@@ -1584,6 +1584,29 @@ example:
     "_ZnwmSt11align_val_t" for aligned ``::operator::new`` and
     ``::operator::delete``. Matching malloc/realloc/free calls within a family
     can be optimized, but mismatched ones will be left alone.
+``allockind("KIND")``
+    Describes the behavior of an allocation function. The KIND string contains comma
+    separated entries from the following options:
+
+    * "alloc": the function returns a new block of memory or null.
+    * "realloc": the function returns a new block of memory or null. If the
+      result is non-null the memory contents from the start of the block up to
+      the smaller of the original allocation size and the new allocation size
+      will match that of the ``allocptr`` argument and the ``allocptr``
+      argument is invalidated, even if the function returns the same address.
+    * "free": the function frees the block of memory specified by ``allocptr``.
+    * "uninitialized": Any newly-allocated memory (either a new block from 
+      a "alloc" function or the enlarged capacity from a "realloc" function)
+      will be uninitialized.
+    * "zeroed": Any newly-allocated memory (either a new block from a "alloc"
+      function or the enlarged capacity from a "realloc" function) will be
+      zeroed.
+    * "aligned": the function returns memory aligned according to the 
+      ``allocalign`` parameter.
+
+    The first three options are mutually exclusive, and the remaining options
+    describe more details of how the function behaves. The remaining options
+    are invalid for "free"-type functions.
 ``allocsize(<EltSizeParam>[, <NumEltsParam>])``
     This attribute indicates that the annotated function will always return at
     least a given number of bytes (or null). Its arguments are zero-indexed
@@ -12662,7 +12685,7 @@ the entry of the current function calling this intrinsic.
 Semantics:
 """"""""""
 
-Note this intrinsic is only verified on AArch64.
+Note this intrinsic is only verified on AArch64 and ARM.
 
 '``llvm.frameaddress``' Intrinsic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -13841,8 +13864,8 @@ the argument.
 If ``<len>`` is 0, it is no-op modulo the behavior of attributes attached to
 the arguments.
 If ``<len>`` is not a well-defined value, the behavior is undefined.
-If ``<len>`` is not zero, both ``<dest>`` and ``<src>`` should be well-defined,
-otherwise the behavior is undefined.
+If ``<len>`` is not zero, ``<dest>`` should be well-defined, otherwise the
+behavior is undefined.
 
 '``llvm.sqrt.*``' Intrinsic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

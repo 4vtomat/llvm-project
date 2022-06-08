@@ -3500,13 +3500,16 @@ static void RenderOpenCLOptions(const ArgList &Args, ArgStringList &CmdArgs,
 
 static void RenderHLSLOptions(const ArgList &Args, ArgStringList &CmdArgs,
                               types::ID InputType) {
-  const unsigned ForwardedArguments[] = {options::OPT_dxil_validator_version,
-                                         options::OPT_S, options::OPT_emit_llvm,
-                                         options::OPT_disable_llvm_passes};
+  const unsigned ForwardedArguments[] = {
+      options::OPT_dxil_validator_version, options::OPT_D, options::OPT_S,
+      options::OPT_emit_llvm, options::OPT_disable_llvm_passes};
 
   for (const auto &Arg : ForwardedArguments)
     if (const auto *A = Args.getLastArg(Arg))
       A->renderAsInput(Args, CmdArgs);
+  // Add the default headers if dxc_no_stdinc is not set.
+  if (!Args.hasArg(options::OPT_dxc_no_stdinc))
+    CmdArgs.push_back("-finclude-default-header");
 }
 
 static void RenderARCMigrateToolOptions(const Driver &D, const ArgList &Args,
@@ -3647,12 +3650,6 @@ static void RenderModulesOptions(Compilation &C, const Driver &D,
   HaveModules |= HaveClangModules;
   if (Args.hasArg(options::OPT_fmodules_ts)) {
     CmdArgs.push_back("-fmodules-ts");
-    HaveModules = true;
-  }
-
-  if (Args.hasFlag(options::OPT_fcxx_modules, options::OPT_fno_cxx_modules,
-                   false)) {
-    CmdArgs.push_back("-fcxx-modules");
     HaveModules = true;
   }
 

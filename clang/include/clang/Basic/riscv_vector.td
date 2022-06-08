@@ -141,7 +141,7 @@ def HasPassthruOperand : Policy<1>;
 def HasPolicyOperand : Policy<2>;
 
 class RVVBuiltin<string suffix, string prototype, string type_range,
-                 string mangled_suffix = ""> {
+                 string overloaded_suffix = ""> {
   // Base name that will be prepended in __builtin_rvv_ and appended the
   // computed Suffix.
   string Name = NAME;
@@ -150,14 +150,14 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // underscore (_). It is instantiated like Prototype.
   string Suffix = suffix;
 
-  // If empty, default MangledName is sub string of `Name` which end of first
-  // '_'. For example, the default mangled name  is `vadd` for Name `vadd_vv`.
+  // If empty, default OverloadedName is sub string of `Name` which end of first
+  // '_'. For example, the default overloaded name  is `vadd` for Name `vadd_vv`.
   // It's used for describe some special naming cases.
-  string MangledName = "";
+  string OverloadedName = "";
 
-  // If not empty, each MangledName will have this appended after an
+  // If not empty, each OverloadedName will have this appended after an
   // underscore (_). It is instantiated like Prototype.
-  string MangledSuffix = mangled_suffix;
+  string OverloadedSuffix = overloaded_suffix;
 
   // The different variants of the builtin, parameterised with a type.
   string TypeRange = type_range;
@@ -393,7 +393,7 @@ class RVVIntExt<string intrinsic_name, string suffix, string prototype,
     : RVVBuiltin<suffix, prototype, type_range> {
   let IRName = intrinsic_name;
   let MaskedIRName = intrinsic_name # "_mask";
-  let MangledName = NAME;
+  let OverloadedName = NAME;
   let IntrinsicTypes = [-1, 0];
 }
 
@@ -477,29 +477,29 @@ class RVVFloatingUnaryBuiltin<string builtin_suffix, string ir_suffix,
 class RVVFloatingUnaryVVBuiltin : RVVFloatingUnaryBuiltin<"v", "v", "vv">;
 
 class RVVConvBuiltin<string suffix, string prototype, string type_range,
-                     string mangled_name>
+                     string overloaded_name>
     : RVVBuiltin<suffix, prototype, type_range> {
   let IntrinsicTypes = [-1, 0];
-  let MangledName = mangled_name;
+  let OverloadedName = overloaded_name;
 }
 
-class RVVConvToSignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Iv", "Ivv", "xfd", mangled_name>;
+class RVVConvToSignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Iv", "Ivv", "xfd", overloaded_name>;
 
-class RVVConvToUnsignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Uv", "Uvv", "xfd", mangled_name>;
+class RVVConvToUnsignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Uv", "Uvv", "xfd", overloaded_name>;
 
-class RVVConvToWidenSignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Iw", "Iwv", "xf", mangled_name>;
+class RVVConvToWidenSignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Iw", "Iwv", "xf", overloaded_name>;
 
-class RVVConvToWidenUnsignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Uw", "Uwv", "xf", mangled_name>;
+class RVVConvToWidenUnsignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Uw", "Uwv", "xf", overloaded_name>;
 
-class RVVConvToNarrowingSignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Iv", "IvFw", "csi", mangled_name>;
+class RVVConvToNarrowingSignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Iv", "IvFw", "csi", overloaded_name>;
 
-class RVVConvToNarrowingUnsignedBuiltin<string mangled_name>
-    : RVVConvBuiltin<"Uv", "UvFw", "csi", mangled_name>;
+class RVVConvToNarrowingUnsignedBuiltin<string overloaded_name>
+    : RVVConvBuiltin<"Uv", "UvFw", "csi", overloaded_name>;
 
 let HasMaskedOffOperand = false in {
   multiclass RVVSignedReductionBuiltin {
@@ -531,7 +531,7 @@ multiclass RVVWidenBuiltinSet<string intrinsic_name, string type_range,
       IRName = intrinsic_name, MaskedIRName = intrinsic_name # "_mask" in {
     foreach s_p = suffixes_prototypes in {
       let Name = NAME # "_" # s_p[0],
-          MangledName = NAME # "_" # s_p[0] in {
+          OverloadedName = NAME # "_" # s_p[0] in {
         defvar suffix = s_p[1];
         defvar prototype = s_p[2];
         def : RVVOutOp0Op1Builtin<suffix, prototype, type_range>;
@@ -547,7 +547,7 @@ multiclass RVVWidenWOp0BuiltinSet<string intrinsic_name, string type_range,
       IRName = intrinsic_name, MaskedIRName = intrinsic_name # "_mask" in {
     foreach s_p = suffixes_prototypes in {
       let Name = NAME # "_" # s_p[0],
-          MangledName = NAME # "_" # s_p[0] in {
+          OverloadedName = NAME # "_" # s_p[0] in {
         defvar suffix = s_p[1];
         defvar prototype = s_p[2];
         def : RVVOutOp1Builtin<suffix, prototype, type_range>;
@@ -564,7 +564,7 @@ multiclass RVVWidenWOp0BuiltinSetTU<string intrinsic_name, string type_range,
       IRName = intrinsic_name, MaskedIRName = intrinsic_name # "_mask" in {
     foreach s_p = suffixes_prototypes in {
       let Name = NAME # "_" # s_p[0],
-          MangledName = NAME # "_" # s_p[0] in {
+          OverloadedName = NAME # "_" # s_p[0] in {
         defvar suffix = s_p[1];
         defvar prototype = s_p[2];
         def : RVVOutOp1Builtin<suffix, prototype, type_range>;
@@ -576,7 +576,7 @@ multiclass RVVWidenWOp0BuiltinSetTU<string intrinsic_name, string type_range,
       IsTU = true, HasMasked = false, HasUnMaskedOverloaded = false in {
     foreach s_p = suffixes_prototypes_tu in {
       let Name = NAME # "_" # s_p[0],
-          MangledName = NAME # "_" # s_p[0] in {
+          OverloadedName = NAME # "_" # s_p[0] in {
         defvar suffix = s_p[1];
         defvar prototype = s_p[2];
         def : RVVOutOp2Builtin<suffix, prototype, type_range>;
@@ -1494,7 +1494,7 @@ multiclass RVVPseudoVFUnaryBuiltin<string IR, string type_range> {
 multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
                                  list<list<string>> suffixes_prototypes> {
   let Name = NAME,
-      MangledName = MName,
+      OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
       ManualCodegen = [{
@@ -1532,7 +1532,7 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
 multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
                                  list<list<string>> suffixes_prototypes> {
   let Name = NAME,
-      MangledName = MName,
+      OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
       ManualCodegen = [{
@@ -1870,7 +1870,7 @@ let HasMasked = false, MaskedPolicy = NonePolicy,
 
 // 12.16. Vector Integer Move Instructions
 let HasMasked = false, UnMaskedPolicy = HasPassthruOperand, MaskedPolicy = NonePolicy in {
-  let MangledName = "vmv_v" in {
+  let OverloadedName = "vmv_v" in {
     defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "csil",
                                    [["v", "Uv", "UvUv"]]>;
     defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "csilxfd",
@@ -2121,11 +2121,11 @@ let UnMaskedPolicy = HasPassthruOperand, HasUnMaskedOverloaded = false in {
 // 17. Vector Permutation Instructions
 // 17.1. Integer Scalar Move Instructions
 let HasMasked = false, MaskedPolicy = NonePolicy in {
-  let HasVL = false, MangledName = "vmv_x" in
+  let HasVL = false, OverloadedName = "vmv_x" in
     defm vmv_x : RVVOp0BuiltinSet<"vmv_x_s", "csil",
                                    [["s", "ve", "ev"],
                                     ["s", "UvUe", "UeUv"]]>;
-  let MangledName = "vmv_s" in
+  let OverloadedName = "vmv_s" in
     defm vmv_s : RVVOutBuiltinSet<"vmv_s_x", "csil",
                                    [["x", "v", "vve"],
                                     ["x", "Uv", "UvUvUe"]]>;
@@ -2133,10 +2133,10 @@ let HasMasked = false, MaskedPolicy = NonePolicy in {
 
 // 17.2. Floating-Point Scalar Move Instructions
 let HasMasked = false, MaskedPolicy = NonePolicy in {
-  let HasVL = false, MangledName = "vfmv_f" in
+  let HasVL = false, OverloadedName = "vfmv_f" in
     defm vfmv_f : RVVOp0BuiltinSet<"vfmv_f_s", "xfd",
                                      [["s", "ve", "ev"]]>;
-  let MangledName = "vfmv_s" in
+  let OverloadedName = "vfmv_s" in
     defm vfmv_s : RVVOutBuiltinSet<"vfmv_s_f", "xfd",
                                      [["f", "v", "vve"],
                                       ["x", "Uv", "UvUvUe"]]>;
@@ -2222,7 +2222,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
 
   // LMUL truncation
   // C/C++ Operand: VecTy, IR Operand: VecTy, Index
-  let Name = "vlmul_trunc_v", MangledName = "vlmul_trunc", MaskedPolicy = NonePolicy,
+  let Name = "vlmul_trunc_v", OverloadedName = "vlmul_trunc", MaskedPolicy = NonePolicy,
       ManualCodegen = [{ {
         ID = Intrinsic::experimental_vector_extract;
         IntrinsicTypes = {ResultType, Ops[0]->getType()};
@@ -2240,7 +2240,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
 
   // LMUL extension
   // C/C++ Operand: SubVecTy, IR Operand: VecTy, SubVecTy, Index
-  let Name = "vlmul_ext_v", MangledName = "vlmul_ext", MaskedPolicy = NonePolicy,
+  let Name = "vlmul_ext_v", OverloadedName = "vlmul_ext", MaskedPolicy = NonePolicy,
       ManualCodegen = [{
         ID = Intrinsic::experimental_vector_insert;
         IntrinsicTypes = {ResultType, Ops[0]->getType()};
@@ -2339,13 +2339,13 @@ let RequiredFeatures = ["Xsfvqmaccqoq"],
     Log2LMUL = [0, 1, 2, -1],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
-  let MangledName = "sf_vqmaccu_4x8x4" in
+  let OverloadedName = "sf_vqmaccu_4x8x4" in
     def sf_vqmaccu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvUv", "c">;
-  let MangledName = "sf_vqmacc_4x8x4" in
+  let OverloadedName = "sf_vqmacc_4x8x4" in
     def sf_vqmacc_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvv", "c">;
-  let MangledName = "sf_vqmaccus_4x8x4" in
+  let OverloadedName = "sf_vqmaccus_4x8x4" in
     def sf_vqmaccus_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvv", "c">;
-  let MangledName = "sf_vqmaccsu_4x8x4" in
+  let OverloadedName = "sf_vqmaccsu_4x8x4" in
     def sf_vqmaccsu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvUv", "c">;
 }
 
@@ -2354,13 +2354,13 @@ let RequiredFeatures = ["Xsfvqmaccdod"],
     Log2LMUL = [0, 1, 2, 3],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
-  let MangledName = "sf_vqmaccu_2x8x2" in
+  let OverloadedName = "sf_vqmaccu_2x8x2" in
     def sf_vqmaccu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvUv", "c">;
-  let MangledName = "sf_vqmacc_2x8x2" in
+  let OverloadedName = "sf_vqmacc_2x8x2" in
     def sf_vqmacc_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvv", "c">;
-  let MangledName = "sf_vqmaccus_2x8x2" in
+  let OverloadedName = "sf_vqmaccus_2x8x2" in
     def sf_vqmaccus_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvv", "c">;
-  let MangledName = "sf_vqmaccsu_2x8x2" in
+  let OverloadedName = "sf_vqmaccsu_2x8x2" in
     def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
 }
 
@@ -2369,9 +2369,9 @@ let RequiredFeatures = ["Xsfvfnrclipxfqf"],
     Log2LMUL = [0, 1, -1, -2, -3],
     HasMasked = false,
     IntrinsicTypes = [-1, 0] in {
-  let MangledName = "sf_vfnrclip_xu_f_qf", Name = "sf_vfnrclip_xu_f_qf" in
+  let OverloadedName = "sf_vfnrclip_xu_f_qf", Name = "sf_vfnrclip_xu_f_qf" in
     def sf_vfnrclip_xu : RVVBuiltin<"Uv", "UvFqf", "c">;
-  let MangledName = "sf_vfnrclip_x_f_qf", Name = "sf_vfnrclip_x_f_qf"  in
+  let OverloadedName = "sf_vfnrclip_x_f_qf", Name = "sf_vfnrclip_x_f_qf"  in
     def sf_vfnrclip_x : RVVBuiltin<"v", "vFqf", "c">;
 }
 
@@ -2386,7 +2386,7 @@ let RequiredFeatures = ["Xsfvfwmaccqqq"],
     Log2LMUL = [-2, -1, 0, 1, 2],
     HasMasked = false,
     IntrinsicTypes = [-1, 1, 2] in {
-  let MangledName = "sf_vfwmacc_4x4x4" in
+  let OverloadedName = "sf_vfwmacc_4x4x4" in
     def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
 }
 

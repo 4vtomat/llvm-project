@@ -268,7 +268,7 @@ public:
   /// have illegal RVVType.
   static llvm::Optional<RVVTypes>
   computeTypes(BasicType BT, int Log2LMUL, unsigned NF,
-               llvm::ArrayRef<PrototypeDescriptor> PrototypeSeq);
+               llvm::ArrayRef<PrototypeDescriptor> Prototype);
   static llvm::Optional<RVVTypePtr> computeType(BasicType BT, int Log2LMUL,
                                                 PrototypeDescriptor Proto);
 };
@@ -307,7 +307,7 @@ class RVVIntrinsic {
 private:
   std::string BuiltinName; // Builtin name
   std::string Name;        // C intrinsic name.
-  std::string MangledName;
+  std::string OverloadedName;
   std::string IRName;
   bool IsMasked;
   bool HasVL;
@@ -324,11 +324,12 @@ private:
   unsigned NF = 1;
 
 public:
-  RVVIntrinsic(llvm::StringRef Name, llvm::StringRef Suffix, llvm::StringRef MangledName,
-               llvm::StringRef MangledSuffix, llvm::StringRef IRName, bool IsMasked,
-               bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
-               bool HasUnMaskedOverloaded, bool HasBuiltinAlias,
-               llvm::StringRef ManualCodegen, const RVVTypes &Types,
+  RVVIntrinsic(llvm::StringRef Name, llvm::StringRef Suffix,
+               llvm::StringRef OverloadedName, llvm::StringRef OverloadedSuffix,
+               llvm::StringRef IRName, bool IsMasked, bool HasMaskedOffOperand,
+               bool HasVL, PolicyScheme Scheme, bool HasUnMaskedOverloaded,
+               bool HasBuiltinAlias, llvm::StringRef ManualCodegen,
+               const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
                const std::vector<llvm::StringRef> &RequiredFeatures, unsigned NF, // SIFIVE
                bool IsTU); // SIFIVE
@@ -338,7 +339,7 @@ public:
   const RVVTypes &getInputTypes() const { return InputTypes; }
   llvm::StringRef getBuiltinName() const { return BuiltinName; }
   llvm::StringRef getName() const { return Name; }
-  llvm::StringRef getMangledName() const { return MangledName; }
+  llvm::StringRef getOverloadedName() const { return OverloadedName; }
   bool hasVL() const { return HasVL; }
   bool hasPolicy() const { return Scheme != SchemeNone; }
   bool hasPassthruOperand() const { return Scheme == HasPassthruOperand; }
