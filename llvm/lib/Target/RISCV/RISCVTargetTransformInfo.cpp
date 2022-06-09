@@ -40,17 +40,19 @@ static cl::opt<unsigned> RVVRegisterWidthLMUL(
         "by autovectorized code. Fractional LMULs are not supported."),
     cl::init(1), cl::Hidden);
 
-static cl::opt<unsigned>
-    VectorLMULMin("vector-lmul-min",
-                  cl::desc("Limit the minimum LMUL used by autovectorized code."
-                           "Fractional LMULs are not supported."),
-                  cl::init(1), cl::Hidden);
+static cl::opt<unsigned> VectorLMULMinExp(
+    "vector-lmul-min",
+    cl::desc("Limit the exponent of minimum LMUL used by autovectorized code."
+             "The default value is 0, it means LMUL=pow(2, 0)=1."
+             "Fractional LMULs are not supported."),
+    cl::init(0), cl::Hidden);
 
-static cl::opt<unsigned>
-    VectorLMULMax("vector-lmul-max",
-                  cl::desc("Limit the maximum LMUL used by autovectorized code."
-                           "Fractional LMULs are not supported."),
-                  cl::init(1), cl::Hidden);
+static cl::opt<unsigned> VectorLMULMaxExp(
+    "vector-lmul-max",
+    cl::desc("Limit the exponent of maximum LMUL used by autovectorized code."
+             "The default value is 0, it means LMUL=pow(2, 0)=1."
+             "Fractional LMULs are not supported."),
+    cl::init(0), cl::Hidden);
 
 InstructionCost RISCVTTIImpl::getIntImmCost(const APInt &Imm, Type *Ty,
                                             TTI::TargetCostKind CostKind) {
@@ -210,10 +212,8 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   WidestType = std::max<unsigned>(8, WidestType);
   unsigned LMUL = PowerOf2Floor(
       std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
-  unsigned LMULMin = PowerOf2Floor(
-      std::max<unsigned>(std::min<unsigned>(VectorLMULMin, 8), 1));
-  unsigned LMULMax = PowerOf2Floor(
-      std::max<unsigned>(std::min<unsigned>(VectorLMULMax, 8), 1));
+  unsigned LMULMin = 1 << std::min<unsigned>(VectorLMULMinExp, 3);
+  unsigned LMULMax = 1 << std::min<unsigned>(VectorLMULMaxExp, 3);
   assert(LMULMax >= LMULMin && "LMULMax must be greater than or equal to LMUL");
   unsigned MinRVVVectorSize = getRegisterBitWidth(K).getKnownMinValue() / LMUL;
   unsigned MaxRVVVectorSize = MinRVVVectorSize * LMULMax;
