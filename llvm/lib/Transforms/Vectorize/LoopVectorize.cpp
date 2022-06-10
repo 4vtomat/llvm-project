@@ -1394,7 +1394,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if the target prefer to postpone the operation of start value
   /// into postexit.
-  bool postFixStartValue(const RecurrenceDescriptor &RdxDesc, PHINode *Phi) {
+  bool postFixStartValue(const RecurrenceDescriptor &RdxDesc, PHINode *Phi) const {
     RecurKind RK = RdxDesc.getRecurrenceKind();
     return !useOrderedReductions(RdxDesc) && !isInLoopReduction(Phi) &&
            !RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) &&
