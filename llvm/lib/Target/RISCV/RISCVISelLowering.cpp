@@ -1106,6 +1106,24 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              const CallInst &I,
                                              MachineFunction &MF,
                                              unsigned Intrinsic) const {
+#if SIFIVE_CUSTOMIZATION
+  auto SetRVVLoadStoreInfo = [](IntrinsicInfo &Info, const CallInst &I,
+                                bool IsStore, bool IsUnitStrided,
+                                unsigned NF = 1) {
+    Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
+    Info.ptrVal = I.getArgOperand(NF);
+    Type *MemTy = I.getArgOperand(0)->getType();
+    if (!IsUnitStrided)
+      MemTy = MemTy->getScalarType();
+    Info.memVT = MVT::getVT(MemTy);
+    Info.align =
+        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.size = MemoryLocation::UnknownSize;
+    Info.flags |=
+        IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
+  };
+#endif // SIFIVE_CUSTOMIZATION
+
   auto &DL = I.getModule()->getDataLayout();
   switch (Intrinsic) {
   default:
@@ -1169,227 +1187,168 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   // TODO: Add stores?
   // TODO: We should upstream all of this.
   case Intrinsic::riscv_vle:
+  case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vleff:
-    Info.opc = ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
-    Info.align =
-        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOLoad;
+  case Intrinsic::riscv_vleff_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ true);
     return true;
   case Intrinsic::riscv_vlse:
+  case Intrinsic::riscv_vlse_mask:
   case Intrinsic::riscv_vloxei:
+  case Intrinsic::riscv_vloxei_mask:
   case Intrinsic::riscv_vluxei:
-    Info.opc = ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
-    Info.align =
-        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOLoad;
+  case Intrinsic::riscv_vluxei_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false,
+                        /* IsUnitStrided */ false);
     return true;
   case Intrinsic::riscv_vlseg2:
-  case Intrinsic::riscv_vlseg3:
-  case Intrinsic::riscv_vlseg4:
-  case Intrinsic::riscv_vlseg5:
-  case Intrinsic::riscv_vlseg6:
-  case Intrinsic::riscv_vlseg7:
-  case Intrinsic::riscv_vlseg8:
   case Intrinsic::riscv_vlseg2ff:
-  case Intrinsic::riscv_vlseg3ff:
-  case Intrinsic::riscv_vlseg4ff:
-  case Intrinsic::riscv_vlseg5ff:
-  case Intrinsic::riscv_vlseg6ff:
-  case Intrinsic::riscv_vlseg7ff:
-  case Intrinsic::riscv_vlseg8ff:
-  case Intrinsic::riscv_vlsseg2:
-  case Intrinsic::riscv_vlsseg3:
-  case Intrinsic::riscv_vlsseg4:
-  case Intrinsic::riscv_vlsseg5:
-  case Intrinsic::riscv_vlsseg6:
-  case Intrinsic::riscv_vlsseg7:
-  case Intrinsic::riscv_vlsseg8:
+  case Intrinsic::riscv_vlseg2_mask:
+  case Intrinsic::riscv_vlseg2ff_mask:
   case Intrinsic::riscv_vloxseg2:
-  case Intrinsic::riscv_vloxseg3:
-  case Intrinsic::riscv_vloxseg4:
-  case Intrinsic::riscv_vloxseg5:
-  case Intrinsic::riscv_vloxseg6:
-  case Intrinsic::riscv_vloxseg7:
-  case Intrinsic::riscv_vloxseg8:
+  case Intrinsic::riscv_vloxseg2_mask:
   case Intrinsic::riscv_vluxseg2:
-  case Intrinsic::riscv_vluxseg3:
-  case Intrinsic::riscv_vluxseg4:
-  case Intrinsic::riscv_vluxseg5:
-  case Intrinsic::riscv_vluxseg6:
-  case Intrinsic::riscv_vluxseg7:
-  case Intrinsic::riscv_vluxseg8: {
-    unsigned NF;
-    switch (Intrinsic) {
-    default: llvm_unreachable("Unexpected intrinsic");
-    case Intrinsic::riscv_vlseg2:
-    case Intrinsic::riscv_vlseg2ff:
-    case Intrinsic::riscv_vlsseg2:
-    case Intrinsic::riscv_vloxseg2:
-    case Intrinsic::riscv_vluxseg2:
-      NF = 2;
-      break;
-    case Intrinsic::riscv_vlseg3:
-    case Intrinsic::riscv_vlseg3ff:
-    case Intrinsic::riscv_vlsseg3:
-    case Intrinsic::riscv_vloxseg3:
-    case Intrinsic::riscv_vluxseg3:
-      NF = 3;
-      break;
-    case Intrinsic::riscv_vlseg4:
-    case Intrinsic::riscv_vlseg4ff:
-    case Intrinsic::riscv_vlsseg4:
-    case Intrinsic::riscv_vloxseg4:
-    case Intrinsic::riscv_vluxseg4:
-      NF = 4;
-      break;
-    case Intrinsic::riscv_vlseg5:
-    case Intrinsic::riscv_vlseg5ff:
-    case Intrinsic::riscv_vlsseg5:
-    case Intrinsic::riscv_vloxseg5:
-    case Intrinsic::riscv_vluxseg5:
-      NF = 5;
-      break;
-    case Intrinsic::riscv_vlseg6:
-    case Intrinsic::riscv_vlseg6ff:
-    case Intrinsic::riscv_vlsseg6:
-    case Intrinsic::riscv_vloxseg6:
-    case Intrinsic::riscv_vluxseg6:
-      NF = 6;
-      break;
-    case Intrinsic::riscv_vlseg7:
-    case Intrinsic::riscv_vlseg7ff:
-    case Intrinsic::riscv_vlsseg7:
-    case Intrinsic::riscv_vloxseg7:
-    case Intrinsic::riscv_vluxseg7:
-      NF = 7;
-      break;
-    case Intrinsic::riscv_vlseg8:
-    case Intrinsic::riscv_vlseg8ff:
-    case Intrinsic::riscv_vlsseg8:
-    case Intrinsic::riscv_vloxseg8:
-    case Intrinsic::riscv_vluxseg8:
-      NF = 8;
-      break;
-    }
-    Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
-    Info.opc = ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(NF);
-    Info.memVT = MVT::getVT(EltTy);
-    Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOLoad;
+  case Intrinsic::riscv_vluxseg2_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 2);
     return true;
-  }
+  case Intrinsic::riscv_vlseg3:
+  case Intrinsic::riscv_vlseg3ff:
+  case Intrinsic::riscv_vlseg3_mask:
+  case Intrinsic::riscv_vlseg3ff_mask:
+  case Intrinsic::riscv_vloxseg3:
+  case Intrinsic::riscv_vloxseg3_mask:
+  case Intrinsic::riscv_vluxseg3:
+  case Intrinsic::riscv_vluxseg3_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 3);
+    return true;
+  case Intrinsic::riscv_vlseg4:
+  case Intrinsic::riscv_vlseg4ff:
+  case Intrinsic::riscv_vlseg4_mask:
+  case Intrinsic::riscv_vlseg4ff_mask:
+  case Intrinsic::riscv_vloxseg4:
+  case Intrinsic::riscv_vloxseg4_mask:
+  case Intrinsic::riscv_vluxseg4:
+  case Intrinsic::riscv_vluxseg4_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 4);
+    return true;
+  case Intrinsic::riscv_vlseg5:
+  case Intrinsic::riscv_vlseg5ff:
+  case Intrinsic::riscv_vlseg5_mask:
+  case Intrinsic::riscv_vlseg5ff_mask:
+  case Intrinsic::riscv_vloxseg5:
+  case Intrinsic::riscv_vloxseg5_mask:
+  case Intrinsic::riscv_vluxseg5:
+  case Intrinsic::riscv_vluxseg5_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 5);
+    return true;
+  case Intrinsic::riscv_vlseg6:
+  case Intrinsic::riscv_vlseg6ff:
+  case Intrinsic::riscv_vlseg6_mask:
+  case Intrinsic::riscv_vlseg6ff_mask:
+  case Intrinsic::riscv_vloxseg6:
+  case Intrinsic::riscv_vloxseg6_mask:
+  case Intrinsic::riscv_vluxseg6:
+  case Intrinsic::riscv_vluxseg6_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 6);
+    return true;
+  case Intrinsic::riscv_vlseg7:
+  case Intrinsic::riscv_vlseg7ff:
+  case Intrinsic::riscv_vlseg7_mask:
+  case Intrinsic::riscv_vlseg7ff_mask:
+  case Intrinsic::riscv_vloxseg7:
+  case Intrinsic::riscv_vloxseg7_mask:
+  case Intrinsic::riscv_vluxseg7:
+  case Intrinsic::riscv_vluxseg7_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 7);
+    return true;
+  case Intrinsic::riscv_vlseg8:
+  case Intrinsic::riscv_vlseg8ff:
+  case Intrinsic::riscv_vlseg8_mask:
+  case Intrinsic::riscv_vlseg8ff_mask:
+  case Intrinsic::riscv_vloxseg8:
+  case Intrinsic::riscv_vloxseg8_mask:
+  case Intrinsic::riscv_vluxseg8:
+  case Intrinsic::riscv_vluxseg8_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+                        /* NF */ 8);
+    return true;
   case Intrinsic::riscv_vse:
-    Info.opc = ISD::INTRINSIC_VOID;
-    Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType());
-    Info.align =
-        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOStore;
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ true);
     return true;
   case Intrinsic::riscv_vsse:
   case Intrinsic::riscv_vsoxei:
   case Intrinsic::riscv_vsuxei:
-    Info.opc = ISD::INTRINSIC_VOID;
-    Info.ptrVal = I.getArgOperand(1);
-    Info.memVT = MVT::getVT(I.getArgOperand(0)->getType()->getScalarType());
-    Info.align =
-        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOStore;
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false);
     return true;
   case Intrinsic::riscv_vsseg2:
-  case Intrinsic::riscv_vsseg3:
-  case Intrinsic::riscv_vsseg4:
-  case Intrinsic::riscv_vsseg5:
-  case Intrinsic::riscv_vsseg6:
-  case Intrinsic::riscv_vsseg7:
-  case Intrinsic::riscv_vsseg8:
-  case Intrinsic::riscv_vssseg2:
-  case Intrinsic::riscv_vssseg3:
-  case Intrinsic::riscv_vssseg4:
-  case Intrinsic::riscv_vssseg5:
-  case Intrinsic::riscv_vssseg6:
-  case Intrinsic::riscv_vssseg7:
-  case Intrinsic::riscv_vssseg8:
+  case Intrinsic::riscv_vsseg2_mask:
   case Intrinsic::riscv_vsoxseg2:
-  case Intrinsic::riscv_vsoxseg3:
-  case Intrinsic::riscv_vsoxseg4:
-  case Intrinsic::riscv_vsoxseg5:
-  case Intrinsic::riscv_vsoxseg6:
-  case Intrinsic::riscv_vsoxseg7:
-  case Intrinsic::riscv_vsoxseg8:
+  case Intrinsic::riscv_vsoxseg2_mask:
   case Intrinsic::riscv_vsuxseg2:
-  case Intrinsic::riscv_vsuxseg3:
-  case Intrinsic::riscv_vsuxseg4:
-  case Intrinsic::riscv_vsuxseg5:
-  case Intrinsic::riscv_vsuxseg6:
-  case Intrinsic::riscv_vsuxseg7:
-  case Intrinsic::riscv_vsuxseg8: {
-    unsigned NF;
-    switch (Intrinsic) {
-    default:
-      llvm_unreachable("Unexpected intrinsic");
-    case Intrinsic::riscv_vsseg2:
-    case Intrinsic::riscv_vssseg2:
-    case Intrinsic::riscv_vsoxseg2:
-    case Intrinsic::riscv_vsuxseg2:
-      NF = 2;
-      break;
-    case Intrinsic::riscv_vsseg3:
-    case Intrinsic::riscv_vssseg3:
-    case Intrinsic::riscv_vsoxseg3:
-    case Intrinsic::riscv_vsuxseg3:
-      NF = 3;
-      break;
-    case Intrinsic::riscv_vsseg4:
-    case Intrinsic::riscv_vssseg4:
-    case Intrinsic::riscv_vsoxseg4:
-    case Intrinsic::riscv_vsuxseg4:
-      NF = 4;
-      break;
-    case Intrinsic::riscv_vsseg5:
-    case Intrinsic::riscv_vssseg5:
-    case Intrinsic::riscv_vsoxseg5:
-    case Intrinsic::riscv_vsuxseg5:
-      NF = 5;
-      break;
-    case Intrinsic::riscv_vsseg6:
-    case Intrinsic::riscv_vssseg6:
-    case Intrinsic::riscv_vsoxseg6:
-    case Intrinsic::riscv_vsuxseg6:
-      NF = 6;
-      break;
-    case Intrinsic::riscv_vsseg7:
-    case Intrinsic::riscv_vssseg7:
-    case Intrinsic::riscv_vsoxseg7:
-    case Intrinsic::riscv_vsuxseg7:
-      NF = 7;
-      break;
-    case Intrinsic::riscv_vsseg8:
-    case Intrinsic::riscv_vssseg8:
-    case Intrinsic::riscv_vsoxseg8:
-    case Intrinsic::riscv_vsuxseg8:
-      NF = 8;
-      break;
-    }
-    Type *EltTy = I.getArgOperand(0)->getType()->getScalarType();
-    Info.opc = ISD::INTRINSIC_VOID;
-    Info.ptrVal = I.getArgOperand(NF);
-    Info.memVT = MVT::getVT(EltTy);
-    Info.align = Align(EltTy->getPrimitiveSizeInBits() / 8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOStore;
+  case Intrinsic::riscv_vsuxseg2_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 2);
     return true;
-  }
+  case Intrinsic::riscv_vsseg3:
+  case Intrinsic::riscv_vsseg3_mask:
+  case Intrinsic::riscv_vsoxseg3:
+  case Intrinsic::riscv_vsoxseg3_mask:
+  case Intrinsic::riscv_vsuxseg3:
+  case Intrinsic::riscv_vsuxseg3_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 3);
+    return true;
+  case Intrinsic::riscv_vsseg4:
+  case Intrinsic::riscv_vsseg4_mask:
+  case Intrinsic::riscv_vsoxseg4:
+  case Intrinsic::riscv_vsoxseg4_mask:
+  case Intrinsic::riscv_vsuxseg4:
+  case Intrinsic::riscv_vsuxseg4_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 4);
+    return true;
+  case Intrinsic::riscv_vsseg5:
+  case Intrinsic::riscv_vsseg5_mask:
+  case Intrinsic::riscv_vsoxseg5:
+  case Intrinsic::riscv_vsoxseg5_mask:
+  case Intrinsic::riscv_vsuxseg5:
+  case Intrinsic::riscv_vsuxseg5_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 5);
+    return true;
+  case Intrinsic::riscv_vsseg6:
+  case Intrinsic::riscv_vsseg6_mask:
+  case Intrinsic::riscv_vsoxseg6:
+  case Intrinsic::riscv_vsoxseg6_mask:
+  case Intrinsic::riscv_vsuxseg6:
+  case Intrinsic::riscv_vsuxseg6_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 6);
+    return true;
+  case Intrinsic::riscv_vsseg7:
+  case Intrinsic::riscv_vsseg7_mask:
+  case Intrinsic::riscv_vsoxseg7:
+  case Intrinsic::riscv_vsoxseg7_mask:
+  case Intrinsic::riscv_vsuxseg7:
+  case Intrinsic::riscv_vsuxseg7_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 7);
+    return true;
+  case Intrinsic::riscv_vsseg8:
+  case Intrinsic::riscv_vsseg8_mask:
+  case Intrinsic::riscv_vsoxseg8:
+  case Intrinsic::riscv_vsoxseg8_mask:
+  case Intrinsic::riscv_vsuxseg8:
+  case Intrinsic::riscv_vsuxseg8_mask:
+    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+                        /* NF */ 8);
+    return true;
 #endif // SIFIVE_CUSTOMIZATION
   }
 }
