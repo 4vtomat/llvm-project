@@ -2307,7 +2307,12 @@ static SDValue matchSplatAsGather(SDValue SplatVal, MVT VT, const SDLoc &DL,
     return SDValue();
   SDValue Vec = SplatVal.getOperand(0);
   // Only perform this optimization on vectors of the same size for simplicity.
-  if (Vec.getValueType() != VT)
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE: Cherry-picked from upstream.
+  // Don't perform this optimization for i1 vectors.
+  // FIXME: Support i1 vectors, maybe by promoting to i8?
+  if (Vec.getValueType() != VT || VT.getVectorElementType() == MVT::i1)
+#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
   SDValue Idx = SplatVal.getOperand(1);
   // The index must be a legal type.
