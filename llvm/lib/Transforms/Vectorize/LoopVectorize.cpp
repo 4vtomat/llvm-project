@@ -5394,46 +5394,46 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   }
 
   ElementCount MaxVF = FeasibleMaxVFUpperBound;
-  TargetTransformInfo::RegisterKind RegKind = MaxVF ?
-      TargetTransformInfo::RGK_ScalableVector :
-      TargetTransformInfo::RGK_FixedWidthVector;
-  if (TTI.shouldMaximizeVectorBandwidth(RegKind) ||
-      (MaximizeBandwidth && isScalarEpilogueAllowed())) {
-    // Collect all viable vectorization factors larger than the default MaxVF
-    // (i.e. FeasibleMaxVFUpperBound).
-    SmallVector<ElementCount, 8> VFs;
-    unsigned MaxVFKnownMinUpperBound =
-        FeasibleMaxVFUpperBound.getKnownMinValue();
-    for (unsigned VS = MaxVFKnownMinLowerBound * 2;
-         VS <= MaxVFKnownMinUpperBound; VS *= 2)
-      VFs.push_back(ElementCount::getScalable(VS));
 
-    // For each VF calculate its register usage.
-    auto RUs = calculateRegisterUsage(VFs);
-    // FIXME: calculateRegisterUsage takes decisions because it calls
-    // collectUniformsAndScalars.
-    invalidateCostModelingDecisions();
+  // Because TTI.getFeasibleMaxVFRange does not consider register usage
+  // here is to select best MaxVF that is not running out of registers
 
-    // Select the largest VF which doesn't require more registers than existing
-    // ones.
-    for (int I = RUs.size() - 1; I >= 0; --I) {
-      const auto &MLU = RUs[I].MaxLocalUsers;
-      if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
-            return LU.second <= TTI.getNumberOfRegisters(LU.first);
-          })) {
-        MaxVF = VFs[I];
-        break;
-      }
-    }
-    if (ElementCount MinVF =
-            TTI.getMinimumVF(SmallestType, /* Scalable */ true)) {
-      if (ElementCount::isKnownLT(MaxVF, MinVF)) {
-        LLVM_DEBUG(dbgs() << "LV: Overriding calculated MaxVF(" << MaxVF
-                          << ") with target's minimum: " << MinVF << '\n');
-        MaxVF = MinVF;
-      }
+  SmallVector<ElementCount, 8> VFs;
+  unsigned MaxVFKnownMinUpperBound = FeasibleMaxVFUpperBound.getKnownMinValue();
+  for (unsigned VS = MaxVFKnownMinLowerBound; VS <= MaxVFKnownMinUpperBound;
+       VS *= 2)
+    VFs.push_back(ElementCount::getScalable(VS));
+
+  // For each VF calculate its register usage.
+  auto RUs = calculateRegisterUsage(VFs);
+  // FIXME: calculateRegisterUsage takes decisions because it calls
+  // collectUniformsAndScalars.
+  invalidateCostModelingDecisions();
+  // Select the largest VF which doesn't require more registers than existing
+  // ones.
+  for (int I = RUs.size() - 1; I >= 0; --I) {
+    const auto &MLU = RUs[I].MaxLocalUsers;
+    if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
+          return LU.second <= TTI.getNumberOfRegisters(LU.first);
+        })) {
+      MaxVF = VFs[I];
+      break;
     }
   }
+  if (ElementCount MinVF =
+          TTI.getMinimumVF(SmallestType, /* Scalable */ true)) {
+    if (ElementCount::isKnownLT(MaxVF, MinVF)) {
+      LLVM_DEBUG(dbgs() << "LV: Overriding calculated MaxVF(" << MaxVF
+                        << ") with target's minimum: " << MinVF << '\n');
+      MaxVF = MinVF;
+    }
+  }
+  // Invalidate any widening decisions we might have made, in case the loop
+  // requires prediction (decided later), but we have already made some
+  // load/store widening decisions.
+  invalidateCostModelingDecisions();
+  LLVM_DEBUG(dbgs() << "LV: calculated MaxVF(" << MaxVF << "), MaxVFUpperBound("
+                    << FeasibleMaxVFUpperBound << ")\n");
   return MaxVF;
 }
 #endif // SIFIVE_CUSTOMIZATION
