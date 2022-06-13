@@ -96,97 +96,87 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ;
 ; CHECK-SCALABLE-LABEL: @fadd_fmf_reduction(
 ; CHECK-SCALABLE-NEXT:  entry:
-; CHECK-SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-SCALABLE-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 1
-; CHECK-SCALABLE-NEXT:    [[TMP2:%.*]] = xor i64 [[N:%.*]], -1
-; CHECK-SCALABLE-NEXT:    [[TMP3:%.*]] = icmp ugt i64 [[TMP1]], [[TMP2]]
-; CHECK-SCALABLE-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N]], i64 2, i64 0)
-; CHECK-SCALABLE-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[TMP4]], 3
-; CHECK-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp uge i64 [[TMP5]], [[N]]
-; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = or i1 [[TMP3]], [[PROF_MIN_ITERS_CHECK]]
-; CHECK-SCALABLE-NEXT:    br i1 [[TMP6]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 0)
+; CHECK-SCALABLE-NEXT:    [[TMP1:%.*]] = mul nuw nsw i64 [[TMP0]], 3
+; CHECK-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK_NOT:%.*]] = icmp ult i64 [[TMP1]], [[N]]
+; CHECK-SCALABLE-NEXT:    br i1 [[PROF_MIN_ITERS_CHECK_NOT]], label [[VECTOR_PH:%.*]], label [[SCALAR_PH:%.*]]
 ; CHECK-SCALABLE:       vector.ph:
 ; CHECK-SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE:       vector.body:
 ; CHECK-SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-SCALABLE-NEXT:    [[TMP7:%.*]] = sub i64 [[N]], [[INDEX]]
-; CHECK-SCALABLE-NEXT:    [[TMP8:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP7]], i64 2, i64 0)
-; CHECK-SCALABLE-NEXT:    [[TMP9:%.*]] = trunc i64 [[TMP8]] to i32
-; CHECK-SCALABLE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
-; CHECK-SCALABLE-NEXT:    [[TMP11:%.*]] = bitcast float* [[TMP10]] to <vscale x 2 x float>*
-; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP11]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
-; CHECK-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; CHECK-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-SCALABLE-NEXT:    [[TMP2:%.*]] = sub i64 [[N]], [[INDEX]]
+; CHECK-SCALABLE-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 2, i64 0)
+; CHECK-SCALABLE-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
+; CHECK-SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
+; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = bitcast float* [[TMP5]] to <vscale x 2 x float>*
+; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-SCALABLE-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-SCALABLE-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP4]])
+; CHECK-SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
+; CHECK-SCALABLE-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; CHECK-SCALABLE-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE:       middle.block:
-; CHECK-SCALABLE-NEXT:    [[TMP13:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float [[START:%.*]], <vscale x 2 x float> [[VP_OP_SELECT]])
+; CHECK-SCALABLE-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float [[START:%.*]], <vscale x 2 x float> [[VP_OP_SELECT]])
 ; CHECK-SCALABLE-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK-SCALABLE:       scalar.ph:
 ; CHECK-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; CHECK-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP13]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+; CHECK-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP8]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-SCALABLE:       for.body:
 ; CHECK-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NEXT:    [[SUM_07:%.*]] = phi float [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, float* [[A]], i64 [[IV]]
-; CHECK-SCALABLE-NEXT:    [[TMP14:%.*]] = load float, float* [[ARRAYIDX]], align 4
-; CHECK-SCALABLE-NEXT:    [[ADD]] = fadd fast float [[TMP14]], [[SUM_07]]
+; CHECK-SCALABLE-NEXT:    [[TMP9:%.*]] = load float, float* [[ARRAYIDX]], align 4
+; CHECK-SCALABLE-NEXT:    [[ADD]] = fadd fast float [[TMP9]], [[SUM_07]]
 ; CHECK-SCALABLE-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
 ; CHECK-SCALABLE:       for.end:
-; CHECK-SCALABLE-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP13]], [[MIDDLE_BLOCK]] ]
+; CHECK-SCALABLE-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP8]], [[MIDDLE_BLOCK]] ]
 ; CHECK-SCALABLE-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-SCALABLE-NO-POSTSV-LABEL: @fadd_fmf_reduction(
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:  entry:
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 1
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP2:%.*]] = xor i64 [[N:%.*]], -1
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP3:%.*]] = icmp ugt i64 [[TMP1]], [[TMP2]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N]], i64 2, i64 0)
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[TMP4]], 3
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp uge i64 [[TMP5]], [[N]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP6:%.*]] = or i1 [[TMP3]], [[PROF_MIN_ITERS_CHECK]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP6]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 0)
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP1:%.*]] = mul nuw nsw i64 [[TMP0]], 3
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[PROF_MIN_ITERS_CHECK_NOT:%.*]] = icmp ult i64 [[TMP1]], [[N]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[PROF_MIN_ITERS_CHECK_NOT]], label [[VECTOR_PH:%.*]], label [[SCALAR_PH:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       vector.ph:
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP7:%.*]] = insertelement <vscale x 2 x float> zeroinitializer, float [[START:%.*]], i64 0
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP2:%.*]] = insertelement <vscale x 2 x float> zeroinitializer, float [[START:%.*]], i64 0
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       vector.body:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ [[TMP7]], [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[INDEX]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP8]], i64 2, i64 0)
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP9]] to i32
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP11:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP12:%.*]] = bitcast float* [[TMP11]] to <vscale x 2 x float>*
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP12]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ [[TMP2]], [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[INDEX]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 2, i64 0)
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP7:%.*]] = bitcast float* [[TMP6]] to <vscale x 2 x float>*
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP5]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE-NO-POSTSV:       middle.block:
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP14:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_SELECT]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_SELECT]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK-SCALABLE-NO-POSTSV:       scalar.ph:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       for.body:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[SUM_07:%.*]] = phi float [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, float* [[A]], i64 [[IV]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP15:%.*]] = load float, float* [[ARRAYIDX]], align 4
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD]] = fadd fast float [[TMP15]], [[SUM_07]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP10:%.*]] = load float, float* [[ARRAYIDX]], align 4
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD]] = fadd fast float [[TMP10]], [[SUM_07]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
 ; CHECK-SCALABLE-NO-POSTSV:       for.end:
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    ret float [[ADD_LCSSA]]
 ;
 entry:
