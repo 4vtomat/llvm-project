@@ -4090,17 +4090,21 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   if (Cost->foldTailByMasking() && !PhiR->isInLoop()) {
     for (unsigned Part = 0; Part < UF; ++Part) {
       Value *VecLoopExitInst = State.get(LoopExitInstDef, Part);
-      SelectInst *Sel = nullptr;
-      for (User *U : VecLoopExitInst->users()) {
 #if SIFIVE_CUSTOMIZATION
+      Value *Sel = nullptr;
+      for (User *U : VecLoopExitInst->users()) {
         auto *II = dyn_cast<IntrinsicInst>(U);
         if (isa<SelectInst>(U) ||
             (II && II->getIntrinsicID() == Intrinsic::vp_merge)) {
+          assert(!Sel && "Reduction exit feeding two selects");
+          Sel = U;
 #else
+      SelectInst *Sel = nullptr;
+      for (User *U : VecLoopExitInst->users()) {
         if (isa<SelectInst>(U)) {
-#endif // SIFIVE_CUSTOMIZATION
           assert(!Sel && "Reduction exit feeding two selects");
           Sel = cast<SelectInst>(U);
+#endif // SIFIVE_CUSTOMIZATION
         } else
           assert(isa<PHINode>(U) && "Reduction exit must feed Phi's or select");
       }
@@ -4108,7 +4112,11 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       State.reset(LoopExitInstDef, Sel, Part);
 
       if (isa<FPMathOperator>(Sel))
+#if SIFIVE_CUSTOMIZATION
+        cast<Instruction>(Sel)->setFastMathFlags(RdxDesc.getFastMathFlags());
+#else
         Sel->setFastMathFlags(RdxDesc.getFastMathFlags());
+#endif // SIFIVE_CUSTOMIZATION
 
       // If the target can create a predicated operator for the reduction at no
       // extra cost in the loop (for example a predicated vadd), it can be
