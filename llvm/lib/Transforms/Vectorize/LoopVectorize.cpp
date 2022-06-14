@@ -8326,7 +8326,8 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     State.LMUL = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
                      : (8 - Log2_32(Denominator / Numerator));
-    assert(State.LMUL <= 7 && "LMUL is not supported by the hardware");
+    assert(State.LMUL != 4 && State.LMUL <= 7 &&
+           "LMUL is not supported by the hardware");
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));
