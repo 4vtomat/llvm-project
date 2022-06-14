@@ -9345,10 +9345,16 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
           CM.useOrderedReductions(RdxDesc)
 #if SIFIVE_CUSTOMIZATION
-	  , CM.postFixStartValue(RdxDesc, Phi)
+          , CM.postFixStartValue(RdxDesc, Phi)
 #endif // SIFIVE_CUSTOMIZATION
-	  );
+      );
     } else {
+#if SIFIVE_CUSTOMIZATION
+      // Create the node for previous EVL value, required for the splice
+      // intrinsic.
+      if (Plan->getEVL())
+        Plan->createPrevEVL();
+#endif // SIFIVE_CUSTOMIZATION
       PhiRecipe = new VPFirstOrderRecurrencePHIRecipe(Phi, *StartV);
     }
 

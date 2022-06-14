@@ -2539,6 +2539,9 @@ class VPlan {
   /// Represent EVL for the predicated loop vectorizer.
   VPValue *EVL = nullptr;
 
+  // EVL on the previous iteration. Represented as a PHI.
+  VPValue *PrevEVL = nullptr;
+
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2586,6 +2589,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
     if (EVL)
       delete EVL;
+    if (PrevEVL)
+      delete PrevEVL;
     if (AllTrueMask)
       delete AllTrueMask;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2624,7 +2629,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// Creates (if it was not created yet) and returns VPValue for EVL.
+  /// Returns VPValue for EVL.
   VPValue *getEVL() const { return EVL; }
 
   /// Creates EVL VPValue;
@@ -2635,6 +2640,15 @@ public:
 
   /// Generate vsetvli call.
   Value *getSetVL(VPTransformState &State, Value *RVL);
+
+  /// Returns VPValue for PrevEVL.
+  VPValue *getPrevEVL() const { return PrevEVL; }
+
+  /// Creates PrevEVL VPValue;
+  void createPrevEVL() {
+    if (!PrevEVL)
+      PrevEVL = new VPValue();
+  }
 
   /// Gets or creates a constant all-true mask VPValue.
   VPValue *getOrCreateAllTrueMask() {

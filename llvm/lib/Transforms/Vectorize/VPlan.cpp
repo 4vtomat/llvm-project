@@ -787,8 +787,8 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->getEVL()) {
         Value *V2 = State.get(getOperand(1), Part);
+        Value *PrevEVL = State.get(State.Plan->getPrevEVL(), Part);
         Value *EVL = State.get(State.Plan->getEVL(), Part);
-        auto *RuntimeVF = getRuntimeVF(Builder, EVL->getType(), State.VF);
 
         auto *IdxTy = Builder.getInt32Ty();
         Value *Shift = ConstantInt::get(IdxTy, -1);
@@ -796,7 +796,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 
         Value *Splice = Builder.CreateIntrinsic(
             Intrinsic::experimental_vp_splice, {PartMinus1->getType()},
-            {PartMinus1, V2, Shift, Mask, RuntimeVF, EVL}, nullptr);
+            {PartMinus1, V2, Shift, Mask, PrevEVL, EVL}, nullptr);
 
         State.set(this, Splice, Part);
         break;
@@ -1140,6 +1140,13 @@ void VPlan::execute(VPTransformState *State) {
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (VPValue *PrevEVL = State->Plan->getPrevEVL()) {
+    Value *Phi = State->get(PrevEVL, 0);
+    Value *Val = State->get(State->Plan->getEVL(), State->UF - 1);
+    cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // We do not attempt to preserve DT for outer loop vectorization currently.
   if (!EnableVPlanNativePath) {
     BasicBlock *VectorHeaderBB = State->CFG.VPBB2IRBB[Header];
@@ -1274,6 +1281,11 @@ void VPlanPrinter::dump() {
     OS << "\\n";
     Plan.EVL->print(OS, SlotTracker);
     OS << " := EVL";
+  }
+  if (Plan.PrevEVL) {
+    OS << "\\n";
+    Plan.PrevEVL->print(OS, SlotTracker);
+    OS << " := PREV-EVL";
   }
   if (Plan.AllTrueMask) {
     OS << "\\n";
@@ -1627,6 +1639,7 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   if (!State.Plan->getEVL())
     return;
   Value *TripCount = State.get(&State.Plan->getVectorTripCount(), 0);
+  Value *PrevEVLVal = nullptr;
   for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
     State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
     // Compute TC - IV as the RVL(requested vector length).
@@ -1636,6 +1649,21 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
     Value *SetVL = State.Plan->getSetVL(State, RVL);
     Value *EVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
     State.set(State.Plan->getEVL(), EVL, Part);
+    if (State.Plan->getPrevEVL()) {
+      if (Part == 0) {
+        auto *PrevEVL =
+            PHINode::Create(EVL->getType(), 2, "prev.evl",
+                            &*State.CFG.PrevBB->getFirstInsertionPt());
+        IRBuilder<>::InsertPointGuard Guard(State.Builder);
+        State.Builder.SetInsertPoint(VectorPH->getTerminator());
+        auto *RuntimeVF = getRuntimeVF(State.Builder, EVL->getType(), State.VF);
+        PrevEVL->addIncoming(RuntimeVF, VectorPH);
+        State.set(State.Plan->getPrevEVL(), PrevEVL, Part);
+      } else {
+        State.set(State.Plan->getPrevEVL(), PrevEVLVal, Part);
+      }
+    }
+    PrevEVLVal = EVL;
   }
 #endif // SIFIVE_CUSTOMIZATION
 }

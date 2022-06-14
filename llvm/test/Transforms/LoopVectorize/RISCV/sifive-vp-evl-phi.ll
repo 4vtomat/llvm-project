@@ -10,20 +10,21 @@ define void @test() {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul i32 [[TMP2]], 8
-; CHECK-NEXT:    [[TMP4:%.*]] = sub i32 [[TMP3]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 8 x i16> poison, i16 0, i32 [[TMP4]]
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP5:%.*]] = mul i32 [[TMP4]], 8
+; CHECK-NEXT:    [[TMP6:%.*]] = sub i32 [[TMP5]], 1
+; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 8 x i16> poison, i16 0, i32 [[TMP6]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[PREV_EVL:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 8 x i16> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[VP_GATHER:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 100, [[INDEX]]
-; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP5]], i64 1, i64 1)
-; CHECK-NEXT:    [[TMP7:%.*]] = trunc i64 [[TMP6]] to i32
-; CHECK-NEXT:    [[VP_GATHER]] = call <vscale x 8 x i16> @llvm.vp.gather.nxv8i16.nxv8p0i16(<vscale x 8 x i16*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP9:%.*]] = mul i32 [[TMP8]], 8
-; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i16> @llvm.experimental.vp.splice.nxv8i16(<vscale x 8 x i16> [[VECTOR_RECUR]], <vscale x 8 x i16> [[VP_GATHER]], i32 -1, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]], i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP7]] to i64
+; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 100, [[INDEX]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP7]], i64 1, i64 1)
+; CHECK-NEXT:    [[TMP9]] = trunc i64 [[TMP8]] to i32
+; CHECK-NEXT:    [[VP_GATHER]] = call <vscale x 8 x i16> @llvm.vp.gather.nxv8i16.nxv8p0i16(<vscale x 8 x i16*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i16> @llvm.experimental.vp.splice.nxv8i16(<vscale x 8 x i16> [[VECTOR_RECUR]], <vscale x 8 x i16> [[VP_GATHER]], i32 -1, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[PREV_EVL]], i32 [[TMP9]])
+; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP9]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP11]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
