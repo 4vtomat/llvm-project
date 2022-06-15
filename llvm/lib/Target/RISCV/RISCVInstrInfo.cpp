@@ -2355,4 +2355,59 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
   }
   MI.eraseFromParent();
 }
+
+bool RISCVInstrInfo::getMemOperandsWithOffsetWidth(
+    const MachineInstr &LdSt, SmallVectorImpl<const MachineOperand *> &BaseOps,
+    int64_t &Offset, bool &OffsetIsScalable, unsigned &Width,
+    const TargetRegisterInfo *TRI) const {
+  const MachineOperand *BaseOp;
+  OffsetIsScalable = false;
+  if (!getMemOperandWithOffsetWidth(LdSt, BaseOp, Offset, Width, TRI))
+    return false;
+  BaseOps.push_back(BaseOp);
+  return true;
+}
+
+static bool isPartialStore(const MachineInstr &MI) {
+  switch (MI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SB:
+  case RISCV::SH:
+  case RISCV::FSH:
+    return true;
+  }
+}
+
+// Only called for LdSt for which getMemOperandsWithOffsetWidth returns true.
+bool RISCVInstrInfo::shouldClusterMemOps(
+    ArrayRef<const MachineOperand *> BaseOps1,
+    ArrayRef<const MachineOperand *> BaseOps2, unsigned NumLoads,
+    unsigned NumBytes) const {
+  assert(BaseOps1.size() == 1 && BaseOps2.size() == 1);
+  const MachineOperand &BaseOp1 = *BaseOps1.front();
+  const MachineOperand &BaseOp2 = *BaseOps2.front();
+  const MachineInstr &FirstLdSt = *BaseOp1.getParent();
+  const MachineInstr &SecondLdSt = *BaseOp2.getParent();
+
+  // Checking BaseOps1 and BaseOps2 have the same base register.
+  if (BaseOp1.isReg() && BaseOp1.getReg() != BaseOp2.getReg())
+    return false;
+
+  // If this is a volatile store, don't mess with it.
+  if (FirstLdSt.hasOrderedMemoryRef() || SecondLdSt.hasOrderedMemoryRef())
+    return false;
+
+  // For Sifive7, we hopy partial store instruction put together.
+  if (!isPartialStore(FirstLdSt) || !isPartialStore(SecondLdSt))
+    return false;
+
+  int64_t Offset1 = FirstLdSt.getOperand(2).getImm();
+  int64_t Offset2 = SecondLdSt.getOperand(2).getImm();
+  int LowOffset = std::min(Offset1, Offset2);
+  int HighOffset = std::max(Offset1, Offset2);
+  // SiFive7 access memory 4 bytes at least,
+  // so checking if they are within 4 bytes.
+  return (LowOffset <= HighOffset) && (HighOffset <= LowOffset + 4);
+}
 #endif // SIFIVE_CUSTOMIZATION

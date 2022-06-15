@@ -175,6 +175,8 @@ public:
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     ScheduleDAGMILive *DAG = createGenericSchedLive(C);
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     if (ST.hasFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
@@ -183,12 +185,12 @@ public:
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (ST.hasFusion()) {
-      ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
+    ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+    if (ST.hasFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
-      return DAG;
-    }
-    return nullptr;
+    return DAG;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
