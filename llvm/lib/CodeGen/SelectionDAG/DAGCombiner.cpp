@@ -517,6 +517,10 @@ namespace {
     SDValue visitFSUBForFMACombine(SDNode *N);
     SDValue visitFMULForFMADistributiveCombine(SDNode *N);
 
+#if SIFIVE_CUSTOMIZATION
+    SDValue visitVPFADDForVPFMACombine(SDNode *N);
+#endif // SIFIVE_CUSTOMIZATION
+
     SDValue XformToShuffleWithZero(SDNode *N);
     bool reassociationCanBreakAddressingModePattern(unsigned Opc,
                                                     const SDLoc &DL,
@@ -23034,6 +23038,55 @@ SDValue DAGCombiner::visitVECREDUCE(SDNode *N) {
   return SDValue();
 }
 
+#if SIFIVE_CUSTOMIZATION
+/// Try to perform VP_FMA combining on a given VP_FADD node.
+SDValue DAGCombiner::visitVPFADDForVPFMACombine(SDNode *N) {
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  SDValue Mask = N->getOperand(2);
+  SDValue VL = N->getOperand(3);
+  EVT VT = N->getValueType(0);
+  SDLoc SL(N);
+
+  const TargetOptions &Options = DAG.getTarget().Options;
+
+  bool HasFMA =
+      TLI.isFMAFasterThanFMulAndFAdd(DAG.getMachineFunction(), VT) &&
+      (!LegalOperations || TLI.isOperationLegalOrCustom(ISD::VP_FMA, VT));
+
+  if (!HasFMA)
+    return SDValue();
+
+  bool AllowFusionGlobally =
+      (Options.AllowFPOpFusion == FPOpFusion::Fast || Options.UnsafeFPMath);
+
+  // If the addition is not contractable, do not combine.
+  if (!AllowFusionGlobally && !N->getFlags().hasAllowContract())
+    return SDValue();
+
+  // Is the node an VP_FMUL and contractable either due to global flags or
+  // SDNodeFlags.
+  auto isContractableVPFMUL = [AllowFusionGlobally](SDValue N) {
+    if (N.getOpcode() != ISD::VP_FMUL)
+      return false;
+    return AllowFusionGlobally || N->getFlags().hasAllowContract();
+  };
+
+  // fold (vp_fadd (vp_fmul x, y), z) -> (vp_fma x, y, z)
+  if (isContractableVPFMUL(N0) && N0->hasOneUse())
+    return DAG.getNode(ISD::VP_FMA, SL, VT, N0.getOperand(0), N0.getOperand(1),
+                       N1, Mask, VL);
+
+  // fold (vp_fadd x, (vp_fmul y, z)) -> (vp_fma y, z, x)
+  // Note: Commutes VP_FADD operands.
+  if (isContractableVPFMUL(N1) && N1->hasOneUse())
+    return DAG.getNode(ISD::VP_FMA, SL, VT, N1.getOperand(0), N1.getOperand(1),
+                       N0, Mask, VL);
+
+  return SDValue();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
   // VP operations in which all vector elements are disabled - either by
   // determining that the mask is all false or that the EVL is 0 - can be
@@ -23046,8 +23099,15 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
         ISD::isConstantSplatVectorAllZeros(N->getOperand(*MaskIdx).getNode());
 
   // This is the only generic VP combine we support for now.
-  if (!AreAllEltsDisabled)
+  if (!AreAllEltsDisabled) {
+#if SIFIVE_CUSTOMIZATION
+    switch (N->getOpcode()) {
+    case ISD::VP_FADD:
+      return visitVPFADDForVPFMACombine(N);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
+  }
 
   // Binary operations can be replaced by UNDEF.
   if (ISD::isVPBinaryOp(N->getOpcode()))
