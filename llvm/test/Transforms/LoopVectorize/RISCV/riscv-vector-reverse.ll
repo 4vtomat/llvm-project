@@ -10,13 +10,6 @@
 ; RUN:   -mattr=+v -debug-only=loop-vectorize -scalable-vectorization=on \
 ; RUN:   -riscv-v-vector-bits-min=128 -disable-output < %s 2>&1 | FileCheck %s
 
-<<<<<<< HEAD
-; CHECK-LABEL: vector_reverse_i64
-; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: %{{.*}} = load i32, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: store i32 %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Using user VF vscale x 4.
-=======
->>>>>>> main
 define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 ; CHECK-LABEL: 'vector_reverse_i64'
 ; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0
@@ -145,13 +138,6 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %cmp, label %for.body, label %for.cond.cleanup, !llvm.loop !0
 }
 
-<<<<<<< HEAD
-; CHECK-LABEL: vector_reverse_f32
-; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: %{{.*}} = load float, ptr %{{.*}}, align 4
-; CHECK: LV: Found an estimated cost of 12 for VF vscale x 4 For instruction: store float %{{.*}}, ptr %{{.*}}, align 4
-; CHECK: LV: Using user VF vscale x 4.
-=======
->>>>>>> main
 define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 ; CHECK-LABEL: 'vector_reverse_f32'
 ; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0

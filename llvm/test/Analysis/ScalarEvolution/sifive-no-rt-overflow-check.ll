@@ -107,7 +107,7 @@ define dso_local float @no_rt_overflow_check_9(i32 signext %zero) local_unnamed_
 ; CHECK:       pred.load.continue2:
 ; CHECK-NEXT:    [[TMP14:%.*]] = phi <2 x float> [ [[TMP8]], [[PRED_LOAD_CONTINUE]] ], [ [[TMP13]], [[PRED_LOAD_IF1]] ]
 ; CHECK-NEXT:    [[TMP15]] = fadd fast <2 x float> [[TMP14]], [[VEC_PHI]]
-; CHECK-NEXT:    [[TMP16:%.*]] = select <2 x i1> [[TMP0]], <2 x float> [[TMP15]], <2 x float> [[VEC_PHI]]
+; CHECK-NEXT:    [[TMP16:%.*]] = select fast <2 x i1> [[TMP0]], <2 x float> [[TMP15]], <2 x float> [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], 2
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i32> [[VEC_IND]], <i32 2, i32 2>
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i32 [[INDEX_NEXT]], 10

@@ -71,15 +71,13 @@ private:
 public:
   RISCVMachineFunctionInfo(const MachineFunction &MF) {}
 
-<<<<<<< HEAD
-  Register getGlobalBaseReg() const { return GlobalBaseReg; }
-  void setGlobalBaseReg(Register Reg) { GlobalBaseReg = Reg; }
-=======
   MachineFunctionInfo *
   clone(BumpPtrAllocator &Allocator, MachineFunction &DestMF,
         const DenseMap<MachineBasicBlock *, MachineBasicBlock *> &Src2DstMBB)
       const override;
->>>>>>> main
+
+  Register getGlobalBaseReg() const { return GlobalBaseReg; }
+  void setGlobalBaseReg(Register Reg) { GlobalBaseReg = Reg; }
 
   int getVarArgsFrameIndex() const { return VarArgsFrameIndex; }
   void setVarArgsFrameIndex(int Index) { VarArgsFrameIndex = Index; }

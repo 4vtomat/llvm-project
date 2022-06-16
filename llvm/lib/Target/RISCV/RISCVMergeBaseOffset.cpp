@@ -59,13 +59,10 @@ public:
   void foldOffset(MachineInstr &HiLUI, MachineInstr &LoADDI, MachineInstr &Tail,
                   int64_t Offset);
   bool matchLargeOffset(MachineInstr &TailAdd, Register GSReg, int64_t &Offset);
-<<<<<<< HEAD
-
-  bool foldPseudoLLA(MachineFunction &MF, MachineInstr &MI);
-=======
   bool matchShiftedOffset(MachineInstr &TailShXAdd, Register GSReg,
                           int64_t &Offset);
->>>>>>> main
+
+  bool foldPseudoLLA(MachineFunction &MF, MachineInstr &MI);
 
   RISCVMergeBaseOffsetOpt() : MachineFunctionPass(ID) {}
 

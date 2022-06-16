@@ -256,10 +256,6 @@ public:
     return isLegalMaskedGatherScatter(DataType, Alignment);
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> main
   bool forceScalarizeMaskedGather(VectorType *VTy, Align Alignment) {
     // Scalarize masked gather for RV64 if EEW=64 indices aren't supported.
     return ST->is64Bit() && !ST->hasVInstructionsI64();
@@ -269,10 +265,6 @@ public:
     // Scalarize masked scatter for RV64 if EEW=64 indices aren't supported.
     return ST->is64Bit() && !ST->hasVInstructionsI64();
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> main
 
   /// \returns How the target needs this vector-predicated operation to be
   /// transformed.

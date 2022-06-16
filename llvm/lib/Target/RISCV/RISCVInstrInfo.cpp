@@ -2187,7 +2187,11 @@ RISCV::isRVVSpillForZvlsseg(unsigned Opcode) {
   }
 }
 
-<<<<<<< HEAD
+bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
+  return MI.getNumExplicitDefs() == 2 && MI.modifiesRegister(RISCV::VL) &&
+         !MI.isInlineAsm();
+}
+
 Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
   Register GlobalBaseReg = RVFI->getGlobalBaseReg();
@@ -2285,9 +2289,3 @@ void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
   NewMI2.clearFlag(MachineInstr::MIFlag::IsExact);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
-  return MI.getNumExplicitDefs() == 2 && MI.modifiesRegister(RISCV::VL) &&
-         !MI.isInlineAsm();
-}
->>>>>>> main

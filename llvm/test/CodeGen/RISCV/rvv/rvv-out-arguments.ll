@@ -29,13 +29,7 @@ define dso_local void @lots_args(i32 signext %x0, i32 signext %x1, <vscale x 16 
 ; CHECK-NEXT:    sw a7, -64(s0)
 ; CHECK-NEXT:    sw t1, -68(s0)
 ; CHECK-NEXT:    sw t0, -72(s0)
-<<<<<<< HEAD
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
-=======
 ; CHECK-NEXT:    addi sp, s0, -80
->>>>>>> main
 ; CHECK-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 80
@@ -142,13 +136,7 @@ define dso_local signext i32 @main() #0 {
 ; CHECK-NEXT:    call lots_args
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    li a0, 0
-<<<<<<< HEAD
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
-=======
 ; CHECK-NEXT:    addi sp, s0, -112
->>>>>>> main
 ; CHECK-NEXT:    ld ra, 104(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 96(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 112

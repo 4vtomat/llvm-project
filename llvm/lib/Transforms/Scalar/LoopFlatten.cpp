@@ -211,19 +211,9 @@ struct FlattenInfo {
     if (!MatchedItCount)
       return false;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // Look through extends if the IV has been widened, but only if we didn't
-    // look through a truncate already.
-    // NOTE: For pulldown, this has been upstreamed independently. We should
-    // keep the upstream version.
-    if (Widened && IsAdd &&
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // Look through extends if the IV has been widened. Don't look through
     // extends if we already looked through a trunc.
     if (Widened && IsAdd &&
->>>>>>> main
         (isa<SExtInst>(MatchedItCount) || isa<ZExtInst>(MatchedItCount))) {
       assert(MatchedItCount->getType() == InnerInductionPHI->getType() &&
              "Unexpected type mismatch in types after widening");
