@@ -105,19 +105,6 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE:       vector.body:
 ; CHECK-SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
-; CHECK-SCALABLE-NEXT:    [[TMP7:%.*]] = sub i64 [[N]], [[INDEX]]
-; CHECK-SCALABLE-NEXT:    [[TMP8:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP7]], i64 2, i64 0)
-; CHECK-SCALABLE-NEXT:    [[TMP9:%.*]] = trunc i64 [[TMP8]] to i32
-; CHECK-SCALABLE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
-; CHECK-SCALABLE-NEXT:    [[TMP11:%.*]] = bitcast float* [[TMP10]] to <vscale x 2 x float>*
-; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP11]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP9]])
-; CHECK-SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
-; CHECK-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; CHECK-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-=======
 ; CHECK-SCALABLE-NEXT:    [[TMP2:%.*]] = sub i64 [[N]], [[INDEX]]
 ; CHECK-SCALABLE-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 2, i64 0)
 ; CHECK-SCALABLE-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
@@ -125,11 +112,10 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = bitcast float* [[TMP5]] to <vscale x 2 x float>*
 ; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
 ; CHECK-SCALABLE-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
-; CHECK-SCALABLE-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP4]])
+; CHECK-SCALABLE-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP4]])
 ; CHECK-SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
 ; CHECK-SCALABLE-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-SCALABLE-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
->>>>>>> origin/sifive-dev
 ; CHECK-SCALABLE:       middle.block:
 ; CHECK-SCALABLE-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float [[START:%.*]], <vscale x 2 x float> [[VP_OP_SELECT]])
 ; CHECK-SCALABLE-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
@@ -161,20 +147,6 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       vector.body:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ [[TMP7]], [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[INDEX]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP8]], i64 2, i64 0)
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP9]] to i32
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP11:%.*]] = getelementptr inbounds float, float* [[A:%.*]], i64 [[INDEX]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP12:%.*]] = bitcast float* [[TMP11]] to <vscale x 2 x float>*
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP12]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP10]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-=======
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x float> [ [[TMP2]], [[VECTOR_PH]] ], [ [[VP_OP_SELECT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[INDEX]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 2, i64 0)
@@ -183,11 +155,10 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP7:%.*]] = bitcast float* [[TMP6]] to <vscale x 2 x float>*
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0nxv2f32(<vscale x 2 x float>* [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP5]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP5]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
->>>>>>> origin/sifive-dev
 ; CHECK-SCALABLE-NO-POSTSV:       middle.block:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_SELECT]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
