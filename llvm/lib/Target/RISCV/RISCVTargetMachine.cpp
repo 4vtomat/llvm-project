@@ -164,8 +164,12 @@ namespace {
 class RISCVPassConfig : public TargetPassConfig {
 public:
   RISCVPassConfig(RISCVTargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {}
-
+      : TargetPassConfig(TM, PM) {
+#if SIFIVE_CUSTOMIZATION
+    if (TM.getOptLevel() != CodeGenOpt::None)
+      substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
+#endif // SIFIVE_CUSTOMIZATION
+  }
   RISCVTargetMachine &getRISCVTargetMachine() const {
     return getTM<RISCVTargetMachine>();
   }
