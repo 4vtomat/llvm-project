@@ -10,29 +10,27 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 2
-; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 -1, [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[TMP2]], [[TMP1]]
-; CHECK-NEXT:    br i1 [[TMP3]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[INDEX]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP4]], i64 2, i64 0)
-; CHECK-NEXT:    [[TMP6:%.*]] = trunc i64 [[TMP5]] to i32
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP7]]
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[TMP8]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr [[TMP9]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]]), !tbaa [[TBAA0:![0-9]+]]
-; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> shufflevector (<vscale x 2 x float> insertelement (<vscale x 2 x float> poison, float 1.000000e+00, i32 0), <vscale x 2 x float> poison, <vscale x 2 x i32> zeroinitializer), metadata !"ogt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fneg.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr float, ptr [[OUT:%.*]], i64 [[TMP7]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[TMP10]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_OP]], ptr [[TMP11]], <vscale x 2 x i1> [[VP_OP_FCMP]], i32 [[TMP6]]), !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP6]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP12]]
-; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[INDEX]]
+; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 2, i64 0)
+; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
+; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[INDEX]], 0
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]]), !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> shufflevector (<vscale x 2 x float> insertelement (<vscale x 2 x float> poison, float 1.000000e+00, i32 0), <vscale x 2 x float> poison, <vscale x 2 x i32> zeroinitializer), metadata !"ogt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fneg.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[OUT:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr float, ptr [[TMP8]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_OP]], ptr [[TMP9]], <vscale x 2 x i1> [[VP_OP_FCMP]], i32 [[TMP4]]), !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP4]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP10]]
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -45,11 +43,11 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP14:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[CMP1:%.*]] = fcmp fast ogt float [[TMP14]], 1.000000e+00
+; CHECK-NEXT:    [[TMP12:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[CMP1:%.*]] = fcmp fast ogt float [[TMP12]], 1.000000e+00
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[FNEG:%.*]] = fneg fast float [[TMP14]]
+; CHECK-NEXT:    [[FNEG:%.*]] = fneg fast float [[TMP12]]
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    store float [[FNEG]], ptr [[ARRAYIDX5]], align 4, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    br label [[FOR_INC]]

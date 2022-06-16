@@ -3138,7 +3138,13 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   Value *Step = createStepForVF(Builder, CountTy, VF, UF);
   if (!Cost->foldTailByMasking())
     CheckMinIters = Builder.CreateICmp(P, Count, Step, "min.iters.check");
-  else if (VF.isScalable()) {
+  else if (VF.isScalable()
+#if SIFIVE_CUSTOMIZATION
+      // Don't require this overflow check as with VP-intrinsics we don't mask
+      // the loop body.
+      && !preferPredicatedVectorOps()
+#endif // SIFIVE_CUSTOMIZATION
+    ) {
     // vscale is not necessarily a power-of-2, which means we cannot guarantee
     // an overflow to zero when updating induction variables and so an
     // additional overflow check is required before entering the vector loop.
@@ -8331,7 +8337,8 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     State.LMUL = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
                      : (8 - Log2_32(Denominator / Numerator));
-    assert(State.LMUL <= 7 && "LMUL is not supported by the hardware");
+    assert(State.LMUL != 4 && State.LMUL <= 7 &&
+           "LMUL is not supported by the hardware");
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));

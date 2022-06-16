@@ -11,30 +11,28 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    br i1 [[CMP_NOT5]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
 ; V:       for.body.preheader:
 ; V-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP1:%.*]] = sub i64 -1, [[N]]
-; V-NEXT:    [[TMP2:%.*]] = icmp ult i64 [[TMP1]], [[TMP0]]
-; V-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; V-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; V:       vector.ph:
 ; V-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i32 0
 ; V-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; V-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; V:       vector.body:
 ; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[INDEX]]
-; V-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 0)
-; V-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; V-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
-; V-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i64, i64* [[X:%.*]], i64 [[TMP6]]
-; V-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, i64* [[TMP7]], i32 0
-; V-NEXT:    [[TMP9:%.*]] = bitcast i64* [[TMP8]] to <vscale x 1 x i64>*
-; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0nxv1i64(<vscale x 1 x i64>* [[TMP9]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
-; V-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
-; V-NEXT:    [[TMP10:%.*]] = bitcast i64* [[TMP8]] to <vscale x 1 x i64>*
-; V-NEXT:    call void @llvm.vp.store.nxv1i64.p0nxv1i64(<vscale x 1 x i64> [[VP_OP]], <vscale x 1 x i64>* [[TMP10]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
-; V-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP5]] to i64
-; V-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP11]]
-; V-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; V-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; V-NEXT:    [[TMP1:%.*]] = sub i64 [[N]], [[INDEX]]
+; V-NEXT:    [[TMP2:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP1]], i64 3, i64 0)
+; V-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
+; V-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX]], 0
+; V-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, i64* [[X:%.*]], i64 [[TMP4]]
+; V-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, i64* [[TMP5]], i32 0
+; V-NEXT:    [[TMP7:%.*]] = bitcast i64* [[TMP6]] to <vscale x 1 x i64>*
+; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0nxv1i64(<vscale x 1 x i64>* [[TMP7]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
+; V-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
+; V-NEXT:    [[TMP8:%.*]] = bitcast i64* [[TMP6]] to <vscale x 1 x i64>*
+; V-NEXT:    call void @llvm.vp.store.nxv1i64.p0nxv1i64(<vscale x 1 x i64> [[VP_OP]], <vscale x 1 x i64>* [[TMP8]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
+; V-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
+; V-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
+; V-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; V-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; V:       middle.block:
 ; V-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; V:       scalar.ph:
@@ -47,8 +45,8 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V:       for.body:
 ; V-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; V-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, i64* [[X]], i64 [[INDVARS_IV]]
-; V-NEXT:    [[TMP13:%.*]] = load i64, i64* [[ARRAYIDX]], align 8
-; V-NEXT:    [[ADD:%.*]] = add nsw i64 [[TMP13]], [[Y]]
+; V-NEXT:    [[TMP11:%.*]] = load i64, i64* [[ARRAYIDX]], align 8
+; V-NEXT:    [[ADD:%.*]] = add nsw i64 [[TMP11]], [[Y]]
 ; V-NEXT:    store i64 [[ADD]], i64* [[ARRAYIDX]], align 8
 ; V-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; V-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
