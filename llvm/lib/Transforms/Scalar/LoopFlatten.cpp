@@ -211,6 +211,7 @@ struct FlattenInfo {
     if (!MatchedItCount)
       return false;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Look through extends if the IV has been widened, but only if we didn't
     // look through a truncate already.
@@ -218,6 +219,11 @@ struct FlattenInfo {
     // keep the upstream version.
     if (Widened && IsAdd &&
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    // Look through extends if the IV has been widened. Don't look through
+    // extends if we already looked through a trunc.
+    if (Widened && IsAdd &&
+>>>>>>> main
         (isa<SExtInst>(MatchedItCount) || isa<ZExtInst>(MatchedItCount))) {
       assert(MatchedItCount->getType() == InnerInductionPHI->getType() &&
              "Unexpected type mismatch in types after widening");
@@ -416,7 +422,7 @@ static bool findLoopComponents(
   // pre-header and one from the latch. The incoming latch value is the
   // increment variable.
   Increment =
-      dyn_cast<BinaryOperator>(InductionPHI->getIncomingValueForBlock(Latch));
+      cast<BinaryOperator>(InductionPHI->getIncomingValueForBlock(Latch));
   if (Increment->hasNUsesOrMore(3)) {
     LLVM_DEBUG(dbgs() << "Could not find valid increment\n");
     return false;

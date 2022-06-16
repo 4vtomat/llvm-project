@@ -93,14 +93,6 @@ enum_targets_gen(
     targets = llvm_target_mcas,
 )
 
-# TODO: Need to replace this with something that actually extracts the git
-# commit from the LLVM source (submodule or http_archive).
-genrule(
-    name = "version_info_gen",
-    outs = ["include/llvm/Config/VersionInfo.h"],
-    cmd = "echo '#define LLVM_VERSION_INFO \"git\"' > $@",
-)
-
 template_rule(
     name = "abi_breaking_h_gen",
     src = "include/llvm/Config/abi-breaking.h.cmake",
@@ -124,7 +116,6 @@ exports_files([
 cc_library(
     name = "config",
     hdrs = [
-        "include/llvm/Config/VersionInfo.h",
         "include/llvm/Config/abi-breaking.h",
         "include/llvm/Config/llvm-config.h",
     ],
@@ -2596,7 +2587,7 @@ gentbl(
 
 template_rule(
     name = "dsymutil_main",
-    src = "cmake/driver-template.cpp.in",
+    src = "cmake/modules/llvm-driver-template.cpp.in",
     out = "dsymutil_main.cpp",
     substitutions = {
         "@TOOL_NAME@": "dsymutil"
@@ -2700,7 +2691,7 @@ cc_binary(
 
 template_rule(
     name = "ar_main",
-    src = "cmake/driver-template.cpp.in",
+    src = "cmake/modules/llvm-driver-template.cpp.in",
     out = "ar_main.cpp",
     substitutions = {
         "@TOOL_NAME@": "llvm_ar"
@@ -2902,7 +2893,7 @@ gentbl(
 
 template_rule(
     name = "cxxfilt_main",
-    src = "cmake/driver-template.cpp.in",
+    src = "cmake/modules/llvm-driver-template.cpp.in",
     out = "cxxfilt_main.cpp",
     substitutions = {
         "@TOOL_NAME@": "llvm_cxxfilt"
@@ -3445,7 +3436,7 @@ cc_binary(
 
 template_rule(
     name = "objcopy_main",
-    src = "cmake/driver-template.cpp.in",
+    src = "cmake/modules/llvm-driver-template.cpp.in",
     out = "objcopy_main.cpp",
     substitutions = {
         "@TOOL_NAME@": "llvm_objcopy"

@@ -90,8 +90,8 @@ constexpr bool all_the_algorithms()
     int count = 1;
 
     int copies = 0;
-    //(void)std::ranges::adjacent_find(first, last, Equal(&copies)); assert(copies == 0);
-    //(void)std::ranges::adjacent_find(a, Equal(&copies)); assert(copies == 0);
+    (void)std::ranges::adjacent_find(first, last, Equal(&copies)); assert(copies == 0);
+    (void)std::ranges::adjacent_find(a, Equal(&copies)); assert(copies == 0);
     (void)std::ranges::all_of(first, last, UnaryTrue(&copies)); assert(copies == 0);
     (void)std::ranges::all_of(a, UnaryTrue(&copies)); assert(copies == 0);
     (void)std::ranges::any_of(first, last, UnaryTrue(&copies)); assert(copies == 0);
@@ -112,8 +112,8 @@ constexpr bool all_the_algorithms()
     //(void)std::ranges::equal_range(a, value, Less(&copies)); assert(copies == 0);
     //(void)std::ranges::find_end(first, last, first2, mid2, Equal(&copies)); assert(copies == 0);
     //(void)std::ranges::find_end(a, b, Equal(&copies)); assert(copies == 0);
-    //(void)std::ranges::find_first_of(first, last, first2, last2, Equal(&copies)); assert(copies == 0);
-    //(void)std::ranges::find_first_of(a, b, Equal(&copies)); assert(copies == 0);
+    (void)std::ranges::find_first_of(first, last, first2, last2, Equal(&copies)); assert(copies == 0);
+    (void)std::ranges::find_first_of(a, b, Equal(&copies)); assert(copies == 0);
     (void)std::ranges::find_if(first, last, UnaryTrue(&copies)); assert(copies == 0);
     (void)std::ranges::find_if(a, UnaryTrue(&copies)); assert(copies == 0);
     (void)std::ranges::find_if_not(first, last, UnaryTrue(&copies)); assert(copies == 0);
@@ -193,8 +193,8 @@ constexpr bool all_the_algorithms()
     //(void)std::ranges::remove_if(a, UnaryTrue(&copies)); assert(copies == 0);
     //(void)std::ranges::replace_copy_if(first, last, first2, UnaryTrue(&copies), value); assert(copies == 0);
     //(void)std::ranges::replace_copy_if(a, first2, UnaryTrue(&copies), value); assert(copies == 0);
-    //(void)std::ranges::replace_if(first, last, UnaryTrue(&copies), value); assert(copies == 0);
-    //(void)std::ranges::replace_if(a, UnaryTrue(&copies), value); assert(copies == 0);
+    (void)std::ranges::replace_if(first, last, UnaryTrue(&copies), value); assert(copies == 0);
+    (void)std::ranges::replace_if(a, UnaryTrue(&copies), value); assert(copies == 0);
     //(void)std::ranges::search(first, last, first2, mid2, Equal(&copies)); assert(copies == 0);
     //(void)std::ranges::search(a, b, Equal(&copies)); assert(copies == 0);
     //(void)std::ranges::search_n(first, last, count, value, Equal(&copies)); assert(copies == 0);

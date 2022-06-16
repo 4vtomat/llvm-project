@@ -60,7 +60,7 @@ auto triple = [](int x) { return 3*x; };
 
 // [algorithm.syn]
 
-//static_assert(test(std::ranges::adjacent_find, a));
+static_assert(test(std::ranges::adjacent_find, a));
 static_assert(test(std::ranges::all_of, a, odd));
 static_assert(test(std::ranges::any_of, a, odd));
 static_assert(test(std::ranges::binary_search, a, 42));
@@ -121,10 +121,10 @@ static_assert(test(std::ranges::none_of, a, odd));
 //static_assert(test(std::ranges::remove_copy, a, a, 42));
 //static_assert(test(std::ranges::remove_copy_if, a, a, odd));
 //static_assert(test(std::ranges::remove_if, a, odd));
-//static_assert(test(std::ranges::replace, a, 42, 43));
+static_assert(test(std::ranges::replace, a, 42, 43));
 //static_assert(test(std::ranges::replace_copy, a, a, 42, 43));
 //static_assert(test(std::ranges::replace_copy_if, a, a, odd, 43));
-//static_assert(test(std::ranges::replace_if, a, odd, 43));
+static_assert(test(std::ranges::replace_if, a, odd, 43));
 static_assert(test(std::ranges::reverse, a));
 //static_assert(test(std::ranges::reverse_copy, a, a));
 //static_assert(test(std::ranges::rotate, a, a+5));

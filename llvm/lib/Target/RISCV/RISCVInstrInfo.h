@@ -190,6 +190,7 @@ public:
       MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
   // Returns true if the given MI is an RVV instruction opcode for which we may
   // expect to see a FrameIndex operand. When CheckFIs is true, the instruction
   // must contain at least one FrameIndex operand.
@@ -214,11 +215,22 @@ public:
                              MachineInstr &NewMI2) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> main
 protected:
   const RISCVSubtarget &STI;
 };
 
 namespace RISCV {
+
+// Returns true if the given MI is an RVV instruction opcode for which we may
+// expect to see a FrameIndex operand. When CheckFIs is true, the instruction
+// must contain at least one FrameIndex operand.
+bool isRVVSpill(const MachineInstr &MI, bool CheckFIs);
+
+Optional<std::pair<unsigned, unsigned>> isRVVSpillForZvlsseg(unsigned Opcode);
+
+bool isFaultFirstLoad(const MachineInstr &MI);
 
 // Implemented in RISCVGenInstrInfo.inc
 int16_t getNamedOperandIdx(uint16_t Opcode, uint16_t NamedIndex);

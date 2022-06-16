@@ -4090,7 +4090,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   if (Cost->foldTailByMasking() && !PhiR->isInLoop()) {
     for (unsigned Part = 0; Part < UF; ++Part) {
       Value *VecLoopExitInst = State.get(LoopExitInstDef, Part);
-      Value *Sel = nullptr;
+      SelectInst *Sel = nullptr;
       for (User *U : VecLoopExitInst->users()) {
 #if SIFIVE_CUSTOMIZATION
         auto *II = dyn_cast<IntrinsicInst>(U);
@@ -4100,12 +4100,15 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
         if (isa<SelectInst>(U)) {
 #endif // SIFIVE_CUSTOMIZATION
           assert(!Sel && "Reduction exit feeding two selects");
-          Sel = U;
+          Sel = cast<SelectInst>(U);
         } else
           assert(isa<PHINode>(U) && "Reduction exit must feed Phi's or select");
       }
       assert(Sel && "Reduction exit feeds no select");
       State.reset(LoopExitInstDef, Sel, Part);
+
+      if (isa<FPMathOperator>(Sel))
+        Sel->setFastMathFlags(RdxDesc.getFastMathFlags());
 
       // If the target can create a predicated operator for the reduction at no
       // extra cost in the loop (for example a predicated vadd), it can be
@@ -8947,18 +8950,6 @@ static VPWidenIntOrFpInductionRecipe *createWidenInductionRecipes(
            CM.isProfitableToScalarize(I, VF);
   };
 
-  bool NeedsScalarIV = LoopVectorizationPlanner::getDecisionAndClampRange(
-      [&](ElementCount VF) {
-        // Returns true if we should generate a scalar version of \p IV.
-        if (ShouldScalarizeInstruction(PhiOrTrunc, VF))
-          return true;
-        auto isScalarInst = [&](User *U) -> bool {
-          auto *I = cast<Instruction>(U);
-          return OrigLoop.contains(I) && ShouldScalarizeInstruction(I, VF);
-        };
-        return any_of(PhiOrTrunc->users(), isScalarInst);
-      },
-      Range);
   bool NeedsScalarIVOnly = LoopVectorizationPlanner::getDecisionAndClampRange(
       [&](ElementCount VF) {
         return ShouldScalarizeInstruction(PhiOrTrunc, VF);
@@ -8973,11 +8964,11 @@ static VPWidenIntOrFpInductionRecipe *createWidenInductionRecipes(
       vputils::getOrCreateVPValueForSCEVExpr(Plan, IndDesc.getStep(), SE);
   if (auto *TruncI = dyn_cast<TruncInst>(PhiOrTrunc)) {
     return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI,
-                                             NeedsScalarIV, !NeedsScalarIVOnly);
+                                             !NeedsScalarIVOnly);
   }
   assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
   return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc,
-                                           NeedsScalarIV, !NeedsScalarIVOnly);
+                                           !NeedsScalarIVOnly);
 }
 
 VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
@@ -9848,7 +9839,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::sinkScalarOperands(*Plan);
   VPlanTransforms::mergeReplicateRegions(*Plan);
-  VPlanTransforms::removeDeadRecipes(*Plan, *OrigLoop);
+  VPlanTransforms::removeDeadRecipes(*Plan);
   VPlanTransforms::removeRedundantExpandSCEVRecipes(*Plan);
 
   std::string PlanName;

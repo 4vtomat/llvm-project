@@ -1581,6 +1581,15 @@ bool SITargetLowering::shouldConvertConstantLoadToIntImm(const APInt &Imm,
   return true;
 }
 
+bool SITargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
+                                               unsigned Index) const {
+  if (!isOperationLegalOrCustom(ISD::EXTRACT_SUBVECTOR, ResVT))
+    return false;
+
+  // TODO: Add more cases that are cheap.
+  return Index == 0;
+}
+
 bool SITargetLowering::isTypeDesirableForOp(unsigned Op, EVT VT) const {
   if (Subtarget->has16BitInsts() && VT == MVT::i16) {
     switch (Op) {
@@ -8362,7 +8371,7 @@ static SDValue getLoadExtOrTrunc(SelectionDAG &DAG,
 
 SDValue SITargetLowering::widenLoad(LoadSDNode *Ld, DAGCombinerInfo &DCI) const {
   SelectionDAG &DAG = DCI.DAG;
-  if (Ld->getAlignment() < 4 || Ld->isDivergent())
+  if (Ld->getAlign() < Align(4) || Ld->isDivergent())
     return SDValue();
 
   // FIXME: Constant loads should all be marked invariant.
@@ -8387,14 +8396,11 @@ SDValue SITargetLowering::widenLoad(LoadSDNode *Ld, DAGCombinerInfo &DCI) const 
 
   // TODO: Drop only high part of range.
   SDValue Ptr = Ld->getBasePtr();
-  SDValue NewLoad = DAG.getLoad(ISD::UNINDEXED, ISD::NON_EXTLOAD,
-                                MVT::i32, SL, Ld->getChain(), Ptr,
-                                Ld->getOffset(),
-                                Ld->getPointerInfo(), MVT::i32,
-                                Ld->getAlignment(),
-                                Ld->getMemOperand()->getFlags(),
-                                Ld->getAAInfo(),
-                                nullptr); // Drop ranges
+  SDValue NewLoad = DAG.getLoad(
+      ISD::UNINDEXED, ISD::NON_EXTLOAD, MVT::i32, SL, Ld->getChain(), Ptr,
+      Ld->getOffset(), Ld->getPointerInfo(), MVT::i32, Ld->getAlign(),
+      Ld->getMemOperand()->getFlags(), Ld->getAAInfo(),
+      nullptr); // Drop ranges
 
   EVT TruncVT = EVT::getIntegerVT(*DAG.getContext(), MemVT.getSizeInBits());
   if (MemVT.isFloatingPoint()) {
@@ -8483,11 +8489,10 @@ SDValue SITargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
   assert(Op.getValueType().getVectorElementType() == MVT::i32 &&
          "Custom lowering for non-i32 vectors hasn't been implemented.");
 
-  unsigned Alignment = Load->getAlignment();
+  Align Alignment = Load->getAlign();
   unsigned AS = Load->getAddressSpace();
-  if (Subtarget->hasLDSMisalignedBug() &&
-      AS == AMDGPUAS::FLAT_ADDRESS &&
-      Alignment < MemVT.getStoreSize() && MemVT.getSizeInBits() > 32) {
+  if (Subtarget->hasLDSMisalignedBug() && AS == AMDGPUAS::FLAT_ADDRESS &&
+      Alignment.value() < MemVT.getStoreSize() && MemVT.getSizeInBits() > 32) {
     return SplitVectorLoad(Op, DAG);
   }
 
@@ -8504,7 +8509,7 @@ SDValue SITargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
 
   if (AS == AMDGPUAS::CONSTANT_ADDRESS ||
       AS == AMDGPUAS::CONSTANT_ADDRESS_32BIT) {
-    if (!Op->isDivergent() && Alignment >= 4 && NumElements < 32) {
+    if (!Op->isDivergent() && Alignment >= Align(4) && NumElements < 32) {
       if (MemVT.isPow2VectorType())
         return SDValue();
       return WidenOrSplitVectorLoad(Op, DAG);
@@ -8520,7 +8525,7 @@ SDValue SITargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
       AS == AMDGPUAS::GLOBAL_ADDRESS) {
     if (Subtarget->getScalarizeGlobalBehavior() && !Op->isDivergent() &&
         Load->isSimple() && isMemOpHasNoClobberedMemOperand(Load) &&
-        Alignment >= 4 && NumElements < 32) {
+        Alignment >= Align(4) && NumElements < 32) {
       if (MemVT.isPow2VectorType())
         return SDValue();
       return WidenOrSplitVectorLoad(Op, DAG);
@@ -9025,7 +9030,7 @@ SDValue SITargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
   unsigned AS = Store->getAddressSpace();
   if (Subtarget->hasLDSMisalignedBug() &&
       AS == AMDGPUAS::FLAT_ADDRESS &&
-      Store->getAlignment() < VT.getStoreSize() && VT.getSizeInBits() > 32) {
+      Store->getAlign().value() < VT.getStoreSize() && VT.getSizeInBits() > 32) {
     return SplitVectorStore(Op, DAG);
   }
 

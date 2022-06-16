@@ -2925,7 +2925,8 @@ void RewriteInstance::disassembleFunctions() {
       continue;
 
     if (!Function.isSimple()) {
-      assert((!BC->HasRelocations || Function.getSize() == 0) &&
+      assert((!BC->HasRelocations || Function.getSize() == 0 ||
+              Function.hasSplitJumpTable()) &&
              "unexpected non-simple function in relocation mode");
       continue;
     }
@@ -3116,7 +3117,7 @@ void RewriteInstance::emitAndLink() {
 
   emitBinaryContext(*Streamer, *BC, getOrgSecPrefix());
 
-  Streamer->Finish();
+  Streamer->finish();
   if (Streamer->getContext().hadError()) {
     errs() << "BOLT-ERROR: Emission failed.\n";
     exit(1);

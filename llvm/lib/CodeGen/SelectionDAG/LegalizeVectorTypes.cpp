@@ -5770,11 +5770,12 @@ SDValue DAGTypeLegalizer::WidenVecOp_BITCAST(SDNode *N) {
   SDLoc dl(N);
 
   // Check if we can convert between two legal vector types and extract.
-  unsigned InWidenSize = InWidenVT.getSizeInBits();
-  unsigned Size = VT.getSizeInBits();
+  TypeSize InWidenSize = InWidenVT.getSizeInBits();
+  TypeSize Size = VT.getSizeInBits();
   // x86mmx is not an acceptable vector element type, so don't try.
-  if (InWidenSize % Size == 0 && !VT.isVector() && VT != MVT::x86mmx) {
-    unsigned NewNumElts = InWidenSize / Size;
+  if (!VT.isVector() && VT != MVT::x86mmx &&
+      InWidenSize.hasKnownScalarFactor(Size)) {
+    unsigned NewNumElts = InWidenSize.getKnownScalarFactor(Size);
     EVT NewVT = EVT::getVectorVT(*DAG.getContext(), VT, NewNumElts);
     if (TLI.isTypeLegal(NewVT)) {
       SDValue BitOp = DAG.getNode(ISD::BITCAST, dl, NewVT, InOp);
@@ -5789,9 +5790,11 @@ SDValue DAGTypeLegalizer::WidenVecOp_BITCAST(SDNode *N) {
   // having to copy via memory.
   if (VT.isVector()) {
     EVT EltVT = VT.getVectorElementType();
-    unsigned EltSize = EltVT.getSizeInBits();
-    if (InWidenSize % EltSize == 0) {
-      unsigned NewNumElts = InWidenSize / EltSize;
+    unsigned EltSize = EltVT.getFixedSizeInBits();
+    if (InWidenSize.isKnownMultipleOf(EltSize)) {
+      ElementCount NewNumElts =
+          (InWidenVT.getVectorElementCount() * InWidenVT.getScalarSizeInBits())
+              .divideCoefficientBy(EltSize);
       EVT NewVT = EVT::getVectorVT(*DAG.getContext(), EltVT, NewNumElts);
       if (TLI.isTypeLegal(NewVT)) {
         SDValue BitOp = DAG.getNode(ISD::BITCAST, dl, NewVT, InOp);
@@ -6373,7 +6376,7 @@ SDValue DAGTypeLegalizer::GenWidenVectorLoads(SmallVectorImpl<SDValue> &LdChain,
   // Allow wider loads if they are sufficiently aligned to avoid memory faults
   // and if the original load is simple.
   unsigned LdAlign =
-      (!LD->isSimple() || LdVT.isScalableVector()) ? 0 : LD->getAlignment();
+      (!LD->isSimple() || LdVT.isScalableVector()) ? 0 : LD->getAlign().value();
 
   // Find the vector type that can load from.
   Optional<EVT> FirstVT =

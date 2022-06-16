@@ -514,7 +514,7 @@ void SwingSchedulerDAG::schedule() {
   // Don't pipeline large loops.
   if (SwpMaxMii != -1 && (int)MII > SwpMaxMii) {
     LLVM_DEBUG(dbgs() << "MII > " << SwpMaxMii
-                      << ", we don't pipleline large loops\n");
+                      << ", we don't pipeline large loops\n");
     NumFailLargeMaxMII++;
     Pass.ORE->emit([&]() {
       return MachineOptimizationRemarkAnalysis(
@@ -1668,7 +1668,7 @@ void SwingSchedulerDAG::registerPressureFilter(NodeSetType &NodeSets) {
         LLVM_DEBUG(
             dbgs() << "Excess register pressure: SU(" << SU->NodeNum << ") "
                    << TRI->getRegPressureSetName(RPDelta.Excess.getPSet())
-                   << ":" << RPDelta.Excess.getUnitInc());
+                   << ":" << RPDelta.Excess.getUnitInc() << "\n");
         NS.setExceedPressure(SU);
         break;
       }
@@ -2757,7 +2757,7 @@ bool SMSchedule::normalizeNonPipelinedInstructions(
     if (OldCycle != NewCycle) {
       InstrToCycle[&SU] = NewCycle;
       auto &OldS = getInstructions(OldCycle);
-      OldS.erase(std::remove(OldS.begin(), OldS.end(), &SU), OldS.end());
+      llvm::erase_value(OldS, &SU);
       getInstructions(NewCycle).emplace_back(&SU);
       LLVM_DEBUG(dbgs() << "SU(" << SU.NodeNum
                         << ") is not pipelined; moving from cycle " << OldCycle
