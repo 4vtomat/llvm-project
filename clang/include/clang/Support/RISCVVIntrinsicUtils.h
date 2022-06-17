@@ -243,12 +243,14 @@ public:
   bool isFloat(unsigned Width) const {
     return isFloat() && ElementBitwidth == Width;
   }
+#if SIFIVE_CUSTOMIZATION
   bool isConstant() const { return IsConstant; }
   bool isPointer() const { return IsPointer; }
   unsigned getElementBitwidth() const { return ElementBitwidth; }
 
   ScalarTypeKind getScalarType() const { return ScalarType; }
   VScaleVal getScale() const { return Scale; }
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   // Verify RVV vector type and set Valid.
@@ -333,10 +335,12 @@ public:
   llvm::StringRef getName() const { return Name; }
   llvm::StringRef getOverloadedName() const { return OverloadedName; }
   bool hasVL() const { return HasVL; }
+#if SIFIVE_CUSTOMIZATION
   bool hasPolicy() const { return Scheme != SchemeNone; }
   bool hasPassthruOperand() const { return Scheme == HasPassthruOperand; }
   bool hasPolicyOperand() const { return Scheme == HasPolicyOperand; }
   bool hasUnMaskedOverloaded() const { return HasUnMaskedOverloaded; }
+#endif // SIFIVE_CUSTOMIZATION
   bool hasBuiltinAlias() const { return HasBuiltinAlias; }
   bool hasManualCodegen() const { return !ManualCodegen.empty(); }
   bool isMasked() const { return IsMasked; }
@@ -355,11 +359,14 @@ public:
   getSuffixStr(BasicType Type, int Log2LMUL,
                llvm::ArrayRef<PrototypeDescriptor> PrototypeDescriptors);
   static llvm::SmallVector<PrototypeDescriptor>
+#if SIFIVE_CUSTOMIZATION
   computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> ProtoSeq,
                       bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
                       unsigned NF);
+#endif // SIFIVE_CUSTOMIZATION
 };
 
+#if SIFIVE_CUSTOMIZATION
 // RVVRequire should be sync with target features, but only
 // required features used in riscv_vector.td.
 enum RVVRequire : uint16_t {
@@ -429,6 +436,7 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
                               const RVVIntrinsicRecord &RVVInstrRecord);
 
 LLVM_ENABLE_BITMASK_ENUMS_IN_NAMESPACE();
+#endif // SIFIVE_CUSTOMIZATION
 } // end namespace RISCV
 
 } // end namespace clang

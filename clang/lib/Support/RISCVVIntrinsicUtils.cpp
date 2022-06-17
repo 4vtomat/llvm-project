@@ -965,6 +965,7 @@ Optional<RVVTypePtr> RVVType::computeType(BasicType BT, int Log2LMUL,
 //===----------------------------------------------------------------------===//
 // RVVIntrinsic implementation
 //===----------------------------------------------------------------------===//
+#if SIFIVE_CUSTOMIZATION
 RVVIntrinsic::RVVIntrinsic(
     StringRef NewName, StringRef Suffix, StringRef NewOverloadedName,
     StringRef OverloadedSuffix, StringRef IRName, bool IsMasked,
@@ -992,6 +993,7 @@ RVVIntrinsic::RVVIntrinsic(
     BuiltinName += "_m";
     Name += "_m";
   }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
   if (IsTU) {
@@ -1076,6 +1078,7 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     NewProtoSeq.push_back(PrototypeDescriptor::VL);
   return NewProtoSeq;
 }
+#endif
 
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1100,6 +1103,7 @@ SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   return PrototypeDescriptors;
 }
 
+#if SIFIVE_CUSTOMIZATION
 raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "{";
   OS << "\"" << Record.Name << "\",";
@@ -1125,6 +1129,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "},\n";
   return OS;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 } // end namespace RISCV
 } // end namespace clang

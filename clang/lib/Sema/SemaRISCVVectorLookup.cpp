@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if SIFIVE_CUSTOMIZATION
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/Basic/Builtins.h"
@@ -437,3 +438,4 @@ CreateRISCVIntrinsicManager(Sema &S) {
   return std::make_unique<RISCVIntrinsicManagerImpl>(S);
 }
 } // namespace clang
+#endif // SIFIVE_CUSTOMIZATION

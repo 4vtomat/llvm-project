@@ -134,12 +134,14 @@
 // There are a number of attributes that are used to constraint the number and
 // shape of the builtins generated. Refer to the comments below for them.
 
+#ifdef SIFIVE_CUSTOMIZATION
 class Policy<int val>{
   int Value = val;
 }
 def NonePolicy : Policy<0>;
 def HasPassthruOperand : Policy<1>;
 def HasPolicyOperand : Policy<2>;
+#endif // SIFIVE_CUSTOMIZATION
 
 class RVVBuiltin<string suffix, string prototype, string type_range,
                  string overloaded_suffix = ""> {
@@ -189,7 +191,9 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // HasPolicyOperand: Has a policy operand. 0 is tail and mask undisturbed, 1 is
   // tail agnostic, 2 is mask undisturbed, and 3 is tail and mask agnostic. The
   // policy operand is located at the last position.
+#ifdef SIFIVE_CUSTOMIZATION
   Policy MaskedPolicy = HasPolicyOperand;
+#endif // SIFIVE_CUSTOMIZATION
 
   // The policy scheme for unmasked intrinsic IR.
   // It could be NonePolicy, HasPassthruOperand or HasPolicyOperand.
@@ -451,7 +455,9 @@ class RVVMaskUnaryBuiltin : RVVOutBuiltin<"m", "mm", "c"> {
 class RVVMaskNullaryBuiltin : RVVOutBuiltin<"m", "m", "c"> {
   let Name = NAME # "_m";
   let HasMasked = false;
+#ifdef SIFIVE_CUSTOMIZATION
   let HasUnMaskedOverloaded = false;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 class RVVMaskOp0Builtin<string prototype> : RVVOp0Builtin<"m", prototype, "c"> {

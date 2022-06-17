@@ -356,6 +356,7 @@ struct PragmaMaxTokensTotalHandler : public PragmaHandler {
                     Token &FirstToken) override;
 };
 
+#if SIFIVE_CUSTOMIZATION
 struct PragmaRISCVHandler : public PragmaHandler {
   PragmaRISCVHandler(Sema &Actions)
       : PragmaHandler("riscv"), Actions(Actions) {}
@@ -365,6 +366,7 @@ struct PragmaRISCVHandler : public PragmaHandler {
 private:
   Sema &Actions;
 };
+#endif // SIFIVE_CUSTOMIZATION
 
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
@@ -510,10 +512,12 @@ void Parser::initializePragmaHandlers() {
   MaxTokensTotalPragmaHandler = std::make_unique<PragmaMaxTokensTotalHandler>();
   PP.AddPragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
 
+#if SIFIVE_CUSTOMIZATION
   if (getTargetInfo().getTriple().isRISCV()) {
     RISCVPragmaHandler = std::make_unique<PragmaRISCVHandler>(Actions);
     PP.AddPragmaHandler("clang", RISCVPragmaHandler.get());
   }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void Parser::resetPragmaHandlers() {
@@ -639,10 +643,12 @@ void Parser::resetPragmaHandlers() {
   PP.RemovePragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
   MaxTokensTotalPragmaHandler.reset();
 
+#if SIFIVE_CUSTOMIZATION
   if (getTargetInfo().getTriple().isRISCV()) {
     PP.RemovePragmaHandler("clang", RISCVPragmaHandler.get());
     RISCVPragmaHandler.reset();
   }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// Handle the annotation token produced for #pragma unused(...)
@@ -3948,6 +3954,7 @@ void PragmaMaxTokensTotalHandler::HandlePragma(Preprocessor &PP,
   PP.overrideMaxTokens(MaxTokens, Loc);
 }
 
+#if SIFIVE_CUSTOMIZATION
 // Handle '#pragma clang riscv intrinsic vector'.
 void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
                                       PragmaIntroducer Introducer,
@@ -3979,3 +3986,4 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
 
   Actions.DeclareRISCVVBuiltins = true;
 }
+#endif // SIFIVE_CUSTOMIZATION
