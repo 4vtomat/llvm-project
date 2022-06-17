@@ -6037,6 +6037,18 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
           PowerOf2Ceil(OffsetEnd - OffsetBeg + 1),
           ((OffsetEnd - OffsetBeg + VecScalarsSz) / VecScalarsSz) *
               VecScalarsSz);
+#if SIFIVE_CUSTOMIZATION
+      bool IsWholeSubvector =
+          OffsetBeg == Offset && ((OffsetEnd + 1) % VecScalarsSz == 0);
+      // Check if we can safely insert a subvector. If it is not possible, just
+      // generate a whole-sized vector and shuffle the source vector and the new
+      // subvector.
+      if (OffsetBeg + InsertVecSz > VecSz) {
+        // Align OffsetBeg to generate correct mask.
+        OffsetBeg = alignDown(OffsetBeg, VecSz, Offset);
+        InsertVecSz = VecSz;
+      }
+#endif // SIFIVE_CUSTOMIZATION
 
       APInt DemandedElts = APInt::getZero(NumElts);
       // TODO: Add support for Instruction::InsertValue.
@@ -6080,7 +6092,7 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
       // TODO: Implement the analysis of the FirstInsert->getOperand(0)
       // subvector of ActualVecTy.
       if (!isUndefVector(FirstInsert->getOperand(0)) && NumScalars != NumElts &&
-          (Offset != OffsetBeg || (OffsetEnd + 1) % VecScalarsSz != 0)) {
+          !IsWholeSubvector) { // SIFIVE
         if (InsertVecSz != VecSz) {
           auto *ActualVecTy =
               FixedVectorType::get(SrcVecTy->getElementType(), VecSz);
