@@ -592,12 +592,13 @@ void RVVEmitter::createRVVIntrinsics(
           StringSwitch<RVVRequire>(RequiredFeature)
               .Case("RV64", RVV_REQ_RV64)
               .Case("FullMultiply", RVV_REQ_FullMultiply)
-              .Case("Xsfvqmaccqoq", RVV_REQ_Xsfvqmaccqoq)
-              .Case("Xsfvqmaccdod", RVV_REQ_Xsfvqmaccdod)
-              .Case("Xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf)
-              .Case("Xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin)
-              .Case("Xsfvfwmaccqqq", RVV_REQ_Xsfvfwmaccqqq)
+              .Case("Xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq)
+              .Case("Xsfvqmaccdod", RVV_REQ_xsfvqmaccdod)
+              .Case("Xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf)
+              .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
+              .Case("Xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq)
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
+              .Case("Xsfvcp", RVV_REQ_xsfvcp)
               .Default(RVV_REQ_None);
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
       SR.RequiredExtensions |= RequireExt;

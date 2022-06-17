@@ -1112,10 +1112,10 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << Record.PrototypeIndex << ",";
   OS << Record.SuffixIndex << ",";
   OS << Record.OverloadedSuffixIndex << ",";
+  OS << Record.RequiredExtensions << ",";
   OS << (int)Record.PrototypeLength << ",";
   OS << (int)Record.SuffixLength << ",";
   OS << (int)Record.OverloadedSuffixSize << ",";
-  OS << (int)Record.RequiredExtensions << ",";
   OS << (int)Record.TypeRangeMask << ",";
   OS << (int)Record.Log2LMULMask << ",";
   OS << (int)Record.NF << ",";

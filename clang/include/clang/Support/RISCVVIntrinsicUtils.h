@@ -362,18 +362,19 @@ public:
 
 // RVVRequire should be sync with target features, but only
 // required features used in riscv_vector.td.
-enum RVVRequire : uint8_t {
+enum RVVRequire : uint16_t {
   RVV_REQ_None = 0,
   RVV_REQ_RV64 = 1 << 0,
   RVV_REQ_FullMultiply = 1 << 1,
-  RVV_REQ_Xsfvqmaccqoq = 1 << 2,
-  RVV_REQ_Xsfvqmaccdod = 1 << 3,
-  RVV_REQ_Xsfvfnrclipxfqf = 1 << 4,
-  RVV_REQ_Xsfvfhbfmin = 1 << 5,
-  RVV_REQ_Xsfvfwmaccqqq = 1 << 6,
+  RVV_REQ_xsfvqmaccqoq = 1 << 2,
+  RVV_REQ_xsfvqmaccdod = 1 << 3,
+  RVV_REQ_xsfvfnrclipxfqf = 1 << 4,
+  RVV_REQ_xsfvfhbfmin = 1 << 5,
+  RVV_REQ_xsfvfwmaccqqq = 1 << 6,
   RVV_REQ_HasBfloat16 = 1 << 7,
+  RVV_REQ_xsfvcp = 1 << 8,
 
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_xsfvcp)
 };
 
 // Raw RVV intrinsic info, used to expand later.
@@ -398,6 +399,9 @@ struct RVVIntrinsicRecord {
   // Suffix of overloaded intrinsic name, index of RVVSignatureTable.
   uint16_t OverloadedSuffixIndex;
 
+  // Required target features for this intrinsic.
+  uint16_t RequiredExtensions;
+
   // Length of the prototype.
   uint8_t PrototypeLength;
 
@@ -406,9 +410,6 @@ struct RVVIntrinsicRecord {
 
   // Length of overloaded intrinsic suffix.
   uint8_t OverloadedSuffixSize;
-
-  // Required target features for this intrinsic.
-  uint8_t RequiredExtensions;
 
   // Supported type, mask of BasicType.
   uint8_t TypeRangeMask;

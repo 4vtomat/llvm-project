@@ -93,6 +93,9 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   case ScalarTypeKind::SignedInteger:
     QT = Context.getIntTypeForBitwidth(Type->getElementBitwidth(), true);
     break;
+  case ScalarTypeKind::SignedInteger32:
+    QT = Context.getIntTypeForBitwidth(32, true);
+    break;
   case ScalarTypeKind::UnsignedInteger:
     QT = Context.getIntTypeForBitwidth(Type->getElementBitwidth(), false);
     break;
@@ -178,6 +181,33 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   bool HasZvfh = TI.hasFeature("experimental-zvfh");
   bool HasRV64 = TI.hasFeature("64bit");
   bool HasFullMultiply = TI.hasFeature("v");
+  bool HasBfloat16 =
+      TI.hasFeature("xsfvfwmaccqqq") || TI.hasFeature("xsfvfhbfmin");
+
+  struct FeatureCheckInfo {
+    bool HasFeature;
+    unsigned RequireFeatureMask;
+    bool Check(const RVVIntrinsicRecord &Record) const {
+      if ((Record.RequiredExtensions & RequireFeatureMask) == RequireFeatureMask)
+        return HasFeature;
+
+      return true;
+    }
+  };
+
+#define FEATURE_CHECK_ENTRY(EXT_NAME)                                         \
+  { TI.hasFeature(#EXT_NAME), RVV_REQ_##EXT_NAME }
+
+  const FeatureCheckInfo FeatureCheckList[] = {
+      {HasRV64, RVV_REQ_RV64},
+      FEATURE_CHECK_ENTRY(xsfvqmaccqoq),
+      FEATURE_CHECK_ENTRY(xsfvqmaccdod),
+      FEATURE_CHECK_ENTRY(xsfvfnrclipxfqf),
+      FEATURE_CHECK_ENTRY(xsfvfhbfmin),
+      FEATURE_CHECK_ENTRY(xsfvfwmaccqqq),
+      FEATURE_CHECK_ENTRY(xsfvcp),
+  };
+#undef FEATURE_CHECK_ENTRY
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
@@ -204,6 +234,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
          ++TypeRangeMaskShift) {
       unsigned int BaseTypeI = 1 << TypeRangeMaskShift;
       BaseType = static_cast<BasicType>(BaseTypeI);
+      bool Unsupported = false;
 
       if ((BaseTypeI & Record.TypeRangeMask) != BaseTypeI)
         continue;
@@ -212,14 +243,19 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (BaseType == BasicType::Float16 && !HasZvfh)
         continue;
 
+      if (BaseType == BasicType::BFloat && !HasBfloat16)
+        continue;
+
       if (BaseType == BasicType::Float32 && !HasVectorFloat32)
         continue;
 
       if (BaseType == BasicType::Float64 && !HasVectorFloat64)
         continue;
 
-      if (((Record.RequiredExtensions & RVV_REQ_RV64) == RVV_REQ_RV64) &&
-          !HasRV64)
+      Unsupported = llvm::any_of(FeatureCheckList,
+                                 [&](auto &FC) { return !FC.Check(Record); });
+
+      if (Unsupported)
         continue;
 
       if ((BaseType == BasicType::Int64) &&
