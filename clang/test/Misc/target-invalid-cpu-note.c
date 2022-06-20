@@ -90,7 +90,7 @@
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-6-rv64,
 // RISCV64: sifive-7-rv64, sifive-7m-rv64, sifive-7n-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s66, sifive-s76,
 // RISCV64: sifive-s76m, sifive-s76n, sifive-u54, sifive-u64, sifive-u74, sifive-u74m, sifive-u74n
-// RISCV64: sifive-x280, sifive-x280n,
+// RISCV64: sifive-x280, sifive-x280n, sifive-x280o,
 // RISCV64: sifive-8-rv64, sifive-p270, sifive-p270n, sifive-p550, sifive-p650{{$}}
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
@@ -106,7 +106,7 @@
 // TUNE-RISCV64: note: valid target CPU values are:  generic-rv64, rocket-rv64, sifive-6-rv64,
 // TUNE-RISCV64: sifive-7-rv64, sifive-7m-rv64, sifive-7n-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s66, sifive-s76
 // TUNE-RISCV64: sifive-s76m, sifive-s76n, sifive-u54, sifive-u64, sifive-u74, sifive-u74m, sifive-u74n,
-// TUNE-RISCV64: sifive-x280, sifive-x280n,
+// TUNE-RISCV64: sifive-x280, sifive-x280n, sifive-x280o,
 // TUNE-RISCV64: sifive-8-rv64, sifive-p270, sifive-p270n, sifive-p550, sifive-p650, generic, rocket,
 // TUNE-RISCV64: sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-8-series, sifive-9-series,
 // TUNE-RISCV64: sifive-p500-series, sifive-p600-series{{$}}
