@@ -1,4 +1,4 @@
-//===-- SiFive_RISCVPostRAExpandPseudoInsts.cpp - Expand pseudo instructions -----------===//
+//===-- SiFive_RISCVPostRAExpandPseudoInsts.cpp - Expand pseudo instrs ----===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains a pass that expands the pseudo instruction pseudolisimm32 into 
-// target instructions. This pass should be run during the post-regalloc passes, 
-// before assembly emission. It is used when the TunePseudoLISimm32 subfeature
-// is on.
+// This file contains a pass that expands the pseudo instruction pseudolisimm32
+// into target instructions. This pass should be run during the post-regalloc
+// passes, before assembly emission. It is used when the TunePseudoLISimm32
+// subfeature is on.
 //
 //===----------------------------------------------------------------------===//
 
@@ -24,7 +24,8 @@
 
 using namespace llvm;
 
-#define RISCV_POST_RA_EXPAND_PSEUDO_NAME "RISCV post-regalloc pseudo instruction expansion pass"
+#define RISCV_POST_RA_EXPAND_PSEUDO_NAME                                       \
+  "RISCV post-regalloc pseudo instruction expansion pass"
 
 namespace {
 
@@ -39,7 +40,9 @@ public:
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
-  StringRef getPassName() const override { return RISCV_POST_RA_EXPAND_PSEUDO_NAME; }
+  StringRef getPassName() const override {
+    return RISCV_POST_RA_EXPAND_PSEUDO_NAME;
+  }
 
 private:
   bool expandMBB(MachineBasicBlock &MBB);
@@ -89,55 +92,13 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
 
 bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
                                        MachineBasicBlock::iterator MBBI) {
-  const RISCVSubtarget &Subtarget = MBB.getParent()->getSubtarget<RISCVSubtarget>();
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MBBI->getDebugLoc();
+  const RISCVSubtarget &Subtarget =
+      MBB.getParent()->getSubtarget<RISCVSubtarget>();
 
   if (!Subtarget.usePseudoLIsimm32() || Subtarget.hasLUIADDIFusion())
     return false;
 
-  int64_t Val = MI.getOperand(1).getImm();
-  assert(isInt<32>(Val) && "Unexpected immediate");
-
-  RISCVMatInt::InstSeq Seq =
-      RISCVMatInt::generateInstSeq(Val, 
-        MBB.getParent()->getSubtarget().getFeatureBits());
-  assert(!Seq.empty());
-
-  Register SrcReg = RISCV::X0;
-  Register DstReg = MI.getOperand(0).getReg();
-  bool DstIsDead = MI.getOperand(0).isDead();
-  uint64_t RenamableState =
-      MI.getOperand(0).isRenamable() ? RegState::Renamable : 0;
-  unsigned Num = 0;
-
-  for (RISCVMatInt::Inst &Inst : Seq) {
-    bool LastItem = ++Num == Seq.size();
-    if (Inst.Opc == RISCV::LUI) {
-      BuildMI(MBB, MBBI, DL, TII->get(RISCV::LUI))
-          .addReg(DstReg, RegState::Define |
-                  getDeadRegState(DstIsDead && LastItem) |
-                  RenamableState)
-          .addImm(Inst.Imm);
-    } else if (Inst.Opc == RISCV::ADD_UW) {
-      BuildMI(MBB, MBBI, DL, TII->get(RISCV::ADD_UW))
-          .addReg(DstReg, RegState::Define |
-                  getDeadRegState(DstIsDead && LastItem) |
-                  RenamableState)
-          .addReg(SrcReg, RegState::Kill)
-          .addReg(RISCV::X0);
-    } else {
-      BuildMI(MBB, MBBI, DL, TII->get(Inst.Opc))
-          .addReg(DstReg, RegState::Define |
-                  getDeadRegState(DstIsDead && LastItem) |
-                  RenamableState)
-          .addReg(SrcReg, RegState::Kill)
-          .addImm(Inst.Imm);
-    }
-    // Only the first instruction has X0 as its source.
-    SrcReg = DstReg;
-  }
-  MI.eraseFromParent();
+  TII->expandLIsimm32(MBB, MBBI);
   return true;
 }
 
@@ -147,6 +108,8 @@ INITIALIZE_PASS(RISCVPostRAExpandPseudo, "riscv-expand-pseudolisimm32",
                 RISCV_POST_RA_EXPAND_PSEUDO_NAME, false, false)
 namespace llvm {
 
-FunctionPass *createRISCVPostRAExpandPseudoPass() { return new RISCVPostRAExpandPseudo(); }
+FunctionPass *createRISCVPostRAExpandPseudoPass() {
+  return new RISCVPostRAExpandPseudo();
+}
 
 } // end of namespace llvm

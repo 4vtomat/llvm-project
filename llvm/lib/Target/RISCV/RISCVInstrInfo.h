@@ -204,6 +204,9 @@ public:
   void setSpecialOperandAttr(MachineInstr &OldMI1, MachineInstr &OldMI2,
                              MachineInstr &NewMI1,
                              MachineInstr &NewMI2) const override;
+
+  void expandLIsimm32(MachineBasicBlock &MBB,
+                      MachineBasicBlock::iterator MBBI) const;
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:
