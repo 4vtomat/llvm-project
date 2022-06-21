@@ -550,6 +550,10 @@ def TuneDontSinkSplatOperands
                        "true", "Don't sink splat operands to enable .vx or .vf "
                        "instructions">;
 
+def TunePseudoLIsimm32
+    : SubtargetFeature<"pseudo-li-simm32", "UsePseudoLIsimm32",
+                       "true", "Enable treating LUI+ADDI(W) as a single macro instruction in some passes">;
+
 def TuneDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
                                     "'DLen' (SiFive datapath length) 128">;
 

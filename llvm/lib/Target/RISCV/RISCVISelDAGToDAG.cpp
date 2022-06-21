@@ -2462,7 +2462,7 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(SDNode *N) {
 
 #if SIFIVE_CUSTOMIZATION
 bool RISCVDAGToDAGISel::doPeepholeLUIADDI() {
-  if (!Subtarget->hasLUIADDIFusion())
+  if (!Subtarget->hasLUIADDIFusion() && !Subtarget->usePseudoLIsimm32())
     return false;
 
   SelectionDAG::allnodes_iterator Position = CurDAG->allnodes_end();

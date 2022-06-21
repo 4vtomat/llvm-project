@@ -115,6 +115,8 @@ private:
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasLUIADDIFusion = false; // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
+  bool UsePseudoLIsimm32 = false; // SIFIVE
+  unsigned VLen = 128; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
   unsigned XLen = 32;
@@ -229,6 +231,7 @@ public:
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasFusion() const { return hasLUIADDIFusion(); }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
+  bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
   unsigned getDLen() const {
     assert(hasKnownDLen() && "The Datapath length not set");
