@@ -203,10 +203,15 @@ def nxv1bf16 : ValueType<16,  162>;  // n x  1 x bf16 vector value
 def nxv2bf16 : ValueType<32,  163>;  // n x  2 x bf16 vector value
 def nxv4bf16 : ValueType<64,  164>;  // n x  4 x bf16 vector value
 def nxv8bf16 : ValueType<128, 165>;  // n x  8 x bf16 vector value
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def nxv16bf16 : ValueType<256, 166>;  // n x 16 x bf16 vector value
 def nxv32bf16 : ValueType<512, 167>;  // n x 32 x bf16 vector value
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def nxv16bf16 : ValueType<256, 166>;  // n x 16 x bf16 vector value
+def nxv32bf16 : ValueType<512, 167>;  // n x 32 x bf16 vector value
+>>>>>>> upstream/main
 
 def nxv1f32  : ValueType<32,  168>;  // n x  1 x  f32 vector value
 def nxv2f32  : ValueType<64,  169>;  // n x  2 x  f32 vector value

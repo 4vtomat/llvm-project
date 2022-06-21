@@ -2429,7 +2429,8 @@ void Clang::DumpCompilationDatabase(Compilation &C, StringRef Filename,
   if (!CompilationDatabase) {
     std::error_code EC;
     auto File = std::make_unique<llvm::raw_fd_ostream>(
-        Filename, EC, llvm::sys::fs::OF_TextWithCRLF);
+        Filename, EC,
+        llvm::sys::fs::OF_TextWithCRLF | llvm::sys::fs::OF_Append);
     if (EC) {
       D.Diag(clang::diag::err_drv_compilationdatabase) << Filename
                                                        << EC.message();
@@ -2455,6 +2456,7 @@ void Clang::DumpCompilationDatabase(Compilation &C, StringRef Filename,
     CDB << ", \"" << escape(Buf) << "\"";
   }
   CDB << ", \"" << escape(Input.getFilename()) << "\"";
+  CDB << ", \"-o\", \"" << escape(Output.getFilename()) << "\"";
   for (auto &A: Args) {
     auto &O = A->getOption();
     // Skip language selection, which is positional.
@@ -2467,6 +2469,9 @@ void Clang::DumpCompilationDatabase(Compilation &C, StringRef Filename,
       continue;
     // Skip inputs.
     if (O.getKind() == Option::InputClass)
+      continue;
+    // Skip output.
+    if (O.getID() == options::OPT_o)
       continue;
     // All other arguments are quoted and appended.
     ArgStringList ASL;
@@ -3183,12 +3188,6 @@ static void RenderFloatingPointOptions(const ToolChain &TC, const Driver &D,
 static void RenderAnalyzerOptions(const ArgList &Args, ArgStringList &CmdArgs,
                                   const llvm::Triple &Triple,
                                   const InputInfo &Input) {
-  // Enable region store model by default.
-  CmdArgs.push_back("-analyzer-store=region");
-
-  // Treat blocks as analysis entry points.
-  CmdArgs.push_back("-analyzer-opt-analyze-nested-blocks");
-
   // Add default argument set.
   if (!Args.hasArg(options::OPT__analyzer_no_default_checks)) {
     CmdArgs.push_back("-analyzer-checker=core");
@@ -3601,20 +3600,13 @@ static void RenderBuiltinOptions(const ToolChain &TC, const llvm::Triple &T,
     UseBuiltins = false;
 
   // Process the -fno-builtin-* options.
-  for (const auto &Arg : Args) {
-    const Option &O = Arg->getOption();
-    if (!O.matches(options::OPT_fno_builtin_))
-      continue;
-
-    Arg->claim();
+  for (const Arg *A : Args.filtered(options::OPT_fno_builtin_)) {
+    A->claim();
 
     // If -fno-builtin is specified, then there's no need to pass the option to
     // the frontend.
-    if (!UseBuiltins)
-      continue;
-
-    StringRef FuncName = Arg->getValue();
-    CmdArgs.push_back(Args.MakeArgString("-fno-builtin-" + FuncName));
+    if (UseBuiltins)
+      A->render(Args, CmdArgs);
   }
 
   // le32-specific flags:
@@ -5874,7 +5866,7 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
       "standalone", "objc", "swift", "swift-5.0", "swift-4.2", "swift-4.1",
     };
 
-    if (find(kCFABIs, StringRef(A->getValue())) == std::end(kCFABIs))
+    if (!llvm::is_contained(kCFABIs, StringRef(A->getValue())))
       D.Diag(diag::err_drv_invalid_cf_runtime_abi) << A->getValue();
     else
       A->render(Args, CmdArgs);
@@ -6000,6 +5992,14 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
           << A->getAsString(Args) << TripleStr;
   }
 
+  if (const Arg *A =
+          Args.getLastArg(options::OPT_mdefault_visibility_export_mapping_EQ)) {
+    if (Triple.isOSAIX())
+      A->render(Args, CmdArgs);
+    else
+      D.Diag(diag::err_drv_unsupported_opt_for_target)
+          << A->getAsString(Args) << TripleStr;
+  }
 
   if (Args.hasFlag(options::OPT_fvisibility_inlines_hidden,
                     options::OPT_fno_visibility_inlines_hidden, false))
@@ -6458,8 +6458,8 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
     StringRef Val = A->getValue();
     Val = Val.empty() ? "0" : Val; // Treat "" as 0 or disable.
     bool Invalid = GNUCVer.tryParse(Val);
-    unsigned Minor = GNUCVer.getMinor().getValueOr(0);
-    unsigned Patch = GNUCVer.getSubminor().getValueOr(0);
+    unsigned Minor = GNUCVer.getMinor().value_or(0);
+    unsigned Patch = GNUCVer.getSubminor().value_or(0);
     if (Invalid || GNUCVer.getBuild() || Minor >= 100 || Patch >= 100) {
       D.Diag(diag::err_drv_invalid_value)
           << A->getAsString(Args) << A->getValue();

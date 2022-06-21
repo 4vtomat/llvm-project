@@ -118,4 +118,30 @@ def TestBranchingTransformOpTerminator
   let cppNamespace = "::mlir::test";
 }
 
+def TestEmitRemarkAndEraseOperandOp
+  : Op<Transform_Dialect, "test_emit_remark_and_erase_operand",
+    [DeclareOpInterfaceMethods<TransformOpInterface>,
+     MemoryEffectsOpInterface, FunctionalStyleTransformOpTrait]> {
+  let arguments = (ins PDL_Operation:$target, StrAttr:$remark,
+                   UnitAttr:$fail_after_erase);
+  let assemblyFormat = "$target `,` $remark attr-dict";
+  let cppNamespace = "::mlir::test";
+}
+
+def TestWrongNumberOfResultsOp
+  : Op<Transform_Dialect, "test_wrong_number_of_results",
+    [FunctionalStyleTransformOpTrait, MemoryEffectsOpInterface, 
+     TransformEachOpTrait, TransformOpInterface]> {
+  let arguments = (ins PDL_Operation:$target);
+  let results = (outs PDL_Operation:$a,
+                      PDL_Operation:$b,
+                      PDL_Operation:$c);
+  let assemblyFormat = "$target attr-dict";
+  let cppNamespace = "::mlir::test";
+  let extraClassDeclaration = [{
+    ::mlir::FailureOr<::llvm::SmallVector<::mlir::Operation *>> applyToOne(
+        ::mlir::Operation *target);
+  }];
+}
+
 #endif // MLIR_TESTTRANSFORMDIALECTEXTENSION_TD

@@ -660,7 +660,10 @@ void MachineCopyPropagation::ForwardCopyPropagateBlock(MachineBasicBlock &MBB) {
       Register RegSrc = CopyOperands->Source->getReg();
       Register RegDef = CopyOperands->Destination->getReg();
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
       if (!TRI->regsOverlap(RegDef, RegSrc)) {
         assert(RegDef.isPhysical() && RegSrc.isPhysical() &&
               "MachineCopyPropagation should be run after register allocation!");
@@ -928,7 +931,10 @@ void MachineCopyPropagation::BackwardCopyPropagateBlock(
   for (MachineInstr &MI : llvm::make_early_inc_range(llvm::reverse(MBB))) {
     // Ignore non-trivial COPYs.
     Optional<DestSourcePair> CopyOperands = isCopyInstr(MI, *TII, UseCopyInstr);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
     if (CopyOperands && MI.getNumOperands() == 2) {
       Register DefReg = CopyOperands->Destination->getReg();
       Register SrcReg = CopyOperands->Source->getReg();

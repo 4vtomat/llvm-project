@@ -164,6 +164,7 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   } else {
     CmdArgs.push_back("elf32lriscv");
   }
+  CmdArgs.push_back("-X");
 
   if (D.isUsingLTO()) {
     assert(!Inputs.empty() && "Must have at least one input.");

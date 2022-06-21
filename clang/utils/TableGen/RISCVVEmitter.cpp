@@ -483,7 +483,7 @@ void RVVEmitter::createRVVIntrinsics(
         Optional<RVVTypes> Types =
             RVVType::computeTypes(BT, Log2LMUL, NF, Prototype);
         // Ignored to create new intrinsic if there are any illegal types.
-        if (!Types.hasValue())
+        if (!Types)
           continue;
 
         auto SuffixStr = RVVIntrinsic::getSuffixStr(BT, Log2LMUL, SuffixDesc);
@@ -494,8 +494,12 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicy, HasUnMaskedOverloaded, HasBuiltinAlias,
+<<<<<<< HEAD
             ManualCodegen, Types.getValue(), IntrinsicTypes, RequiredFeatures,
             NF, IsTU));
+=======
+            ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF));
+>>>>>>> upstream/main
         if (HasMasked) {
           // Create a masked intrinsic
           Optional<RVVTypes> MaskTypes =
@@ -505,7 +509,11 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicy,
               HasUnMaskedOverloaded, HasBuiltinAlias, MaskedManualCodegen,
+<<<<<<< HEAD
               MaskTypes.getValue(), IntrinsicTypes, RequiredFeatures, NF, IsTU));
+=======
+              *MaskTypes, IntrinsicTypes, RequiredFeatures, NF));
+>>>>>>> upstream/main
         }
       } // end for Log2LMULList
     }   // end for TypeRange

@@ -242,10 +242,15 @@ namespace llvm {
       nxv2bf16       = 163,  // n x  2 x bf16
       nxv4bf16       = 164,  // n x  4 x bf16
       nxv8bf16       = 165,  // n x  8 x bf16
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       nxv16bf16      = 166,  // n x 16 x bf16
       nxv32bf16      = 167,  // n x 32 x bf16
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      nxv16bf16      = 166,  // n x 16 x bf16
+      nxv32bf16      = 167,  // n x 32 x bf16
+>>>>>>> upstream/main
 
       nxv1f32        = 168,  // n x  1 x f32
       nxv2f32        = 169,  // n x  2 x f32

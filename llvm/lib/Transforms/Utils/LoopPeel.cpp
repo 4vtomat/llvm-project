@@ -629,8 +629,13 @@ static void cloneLoopBlocks(
     SmallVectorImpl<std::pair<BasicBlock *, BasicBlock *>> &ExitEdges,
     SmallVectorImpl<BasicBlock *> &NewBlocks, LoopBlocksDFS &LoopBlocks,
     ValueToValueMapTy &VMap, ValueToValueMapTy &LVMap, DominatorTree *DT,
+<<<<<<< HEAD
     LoopInfo *LI, ArrayRef<MDNode *> LoopLocalNoAliasDeclScopes) {
   // end SIFIVE
+=======
+    LoopInfo *LI, ArrayRef<MDNode *> LoopLocalNoAliasDeclScopes,
+    ScalarEvolution &SE) {
+>>>>>>> upstream/main
   BasicBlock *Header = L->getHeader();
   BasicBlock *Latch = L->getLoopLatch();
   BasicBlock *PreHeader = L->getLoopPreheader();
@@ -764,6 +769,7 @@ static void cloneLoopBlocks(
       if (LatchInst && L->contains(LatchInst))
         LatchVal = VMap[LatchVal];
       PHI.addIncoming(LatchVal, cast<BasicBlock>(VMap[Edge.first]));
+      SE.forgetValue(&PHI);
     }
 
   // LastValueMap is updated with the values for the current loop
@@ -939,11 +945,17 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI,
     SmallVector<BasicBlock *, 8> NewBlocks;
     ValueToValueMapTy VMap;
 
+<<<<<<< HEAD
     // SIFIVE
     cloneLoopBlocks(L, Iter, InsertTop, InsertBot, /*EpilogPeeling*/ false,
                     ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
                     LoopLocalNoAliasDeclScopes);
     // end SIFIVE
+=======
+    cloneLoopBlocks(L, Iter, InsertTop, InsertBot, ExitEdges, NewBlocks,
+                    LoopBlocks, VMap, LVMap, &DT, LI,
+                    LoopLocalNoAliasDeclScopes, *SE);
+>>>>>>> upstream/main
 
     // Remap to use values from the current iteration instead of the
     // previous one.

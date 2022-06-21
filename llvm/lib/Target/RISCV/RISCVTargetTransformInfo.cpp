@@ -400,6 +400,7 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
     return BaseT::getGatherScatterOpCost(Opcode, DataTy, Ptr, VariableMask,
                                          Alignment, CostKind, I);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned NumLoads;
   Type *ElementType;
@@ -420,6 +421,23 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   InstructionCost MemOpCost =
       getMemoryOpCost(Opcode, ElementType, Alignment, 0, CostKind, I);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Cost is proportional to the number of memory operations implied.  For
+  // scalable vectors, we use an upper bound on that number since we don't
+  // know exactly what VL will be.
+  auto &VTy = *cast<VectorType>(DataTy);
+  InstructionCost MemOpCost = getMemoryOpCost(Opcode, VTy.getElementType(),
+                                              Alignment, 0, CostKind, I);
+  if (isa<ScalableVectorType>(VTy)) {
+    const unsigned EltSize = DL.getTypeSizeInBits(VTy.getElementType());
+    const unsigned MinSize = DL.getTypeSizeInBits(&VTy).getKnownMinValue();
+    const unsigned VectorBitsMax = ST->getRealMaxVLen();
+    const unsigned MaxVLMAX =
+      RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
+    return MaxVLMAX * MemOpCost;
+  }
+  unsigned NumLoads = cast<FixedVectorType>(VTy).getNumElements();
+>>>>>>> upstream/main
   return NumLoads * MemOpCost;
 }
 
@@ -614,9 +632,10 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
 }
 
 InstructionCost
-RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
+RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                                          Optional<FastMathFlags> FMF,
                                          TTI::TargetCostKind CostKind) {
+<<<<<<< HEAD
   if (!isa<FixedVectorType>(VTy))
 #if SIFIVE_CUSTOMIZATION
   {
@@ -634,29 +653,34 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *VTy,
 #else  // SIFIVE_CUSTOMIZATION
     return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // FIXME: Only supporting fixed vectors for now.
+  if (!isa<FixedVectorType>(Ty))
+    return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
+>>>>>>> upstream/main
 
   if (!ST->useRVVForFixedLengthVectors())
-    return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
+    return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 
-  // Skip if scalar size of VTy is bigger than ELEN.
-  if (VTy->getScalarSizeInBits() > ST->getELEN())
-    return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
+  // Skip if scalar size of Ty is bigger than ELEN.
+  if (Ty->getScalarSizeInBits() > ST->getELEN())
+    return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
   if (ISD != ISD::ADD && ISD != ISD::OR && ISD != ISD::XOR && ISD != ISD::AND &&
       ISD != ISD::FADD)
-    return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
+    return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 
-  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, VTy);
-  if (VTy->getElementType()->isIntegerTy(1))
+  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
+  if (Ty->getElementType()->isIntegerTy(1))
     // vcpop sequences, see vreduction-mask.ll
     return (LT.first - 1) + (ISD == ISD::AND ? 3 : 2);
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
   InstructionCost BaseCost = 2;
-  unsigned VL = cast<FixedVectorType>(VTy)->getNumElements();
+  unsigned VL = cast<FixedVectorType>(Ty)->getNumElements();
   if (TTI::requiresOrderedReduction(FMF))
     return (LT.first - 1) + BaseCost + VL;
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);

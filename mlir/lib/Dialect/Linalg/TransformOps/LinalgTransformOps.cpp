@@ -13,10 +13,8 @@
 #include "mlir/Dialect/PDL/IR/PDL.h"
 #include "mlir/Dialect/PDL/IR/PDLTypes.h"
 #include "mlir/Dialect/Transform/IR/TransformDialect.h"
-#include "mlir/Interfaces/SideEffectInterfaces.h"
 #include "mlir/Parser/Parser.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
-#include "llvm/Support/FormatVariadic.h"
 
 using namespace mlir;
 using namespace mlir::linalg;
@@ -166,14 +164,14 @@ static ParseResult parseTileLikeOp(OpAsmParser &parser, OperationState &result,
   return success();
 }
 
-LogicalResult
+DiagnosedSilenceableFailure
 transform::FuseOp::apply(mlir::transform::TransformResults &transformResults,
                          mlir::transform::TransformState &state) {
   LinalgTilingAndFusionOptions fusionOptions;
   fusionOptions.tileSizes = extractI64Array(getTileSizes());
   fusionOptions.tileInterchange = extractI64Array(getTileInterchange());
 
-  return applyTilingToAll(
+  LogicalResult result = applyTilingToAll(
       getOperation(), getTarget(), fusionOptions.tileSizes, transformResults,
       state, [&](LinalgOp linalgOp) -> FailureOr<TiledLinalgOp> {
         LinalgTileAndFuseTensorOpsPattern pattern(getContext(), fusionOptions);
@@ -190,6 +188,8 @@ transform::FuseOp::apply(mlir::transform::TransformResults &transformResults,
                                tileLoopNest->getLoopOps().end()};
         return tiledLinalgOp;
       });
+  return failed(result) ? DiagnosedSilenceableFailure::definiteFailure()
+                        : DiagnosedSilenceableFailure::success();
 }
 
 ParseResult transform::FuseOp::parse(OpAsmParser &parser,
@@ -395,11 +395,33 @@ FailureOr<LinalgOp> transform::ScalarizeOp::applyToOne(LinalgOp target) {
 }
 
 //===----------------------------------------------------------------------===//
+// SplitReductionOp
+//===----------------------------------------------------------------------===//
+
+FailureOr<SmallVector<Operation *>>
+transform::SplitReductionOp::applyToOne(LinalgOp target) {
+  ControlSplitReductionFn splitFn = [&](LinalgOp) {
+    return std::pair<int64_t, unsigned>(getSplitFactor(),
+                                        getInsertSplitDimension());
+  };
+  SimpleRewriter rewriter(getContext());
+  rewriter.setInsertionPoint(target);
+  FailureOr<SplitReductionResult> splitResult =
+      splitReduction(rewriter, target, splitFn);
+  if (failed(splitResult))
+    return getOperation()->emitError("failed to apply");
+  return SmallVector<Operation *>{splitResult->fillOp,
+                                  splitResult->splitLinalgOp,
+                                  splitResult->resultCombiningLinalgOp};
+}
+
+//===----------------------------------------------------------------------===//
 // TileOp
 //===----------------------------------------------------------------------===//
 
-LogicalResult transform::TileOp::apply(TransformResults &transformResults,
-                                       TransformState &state) {
+DiagnosedSilenceableFailure
+transform::TileOp::apply(TransformResults &transformResults,
+                         TransformState &state) {
   LinalgTilingOptions tilingOptions;
   SmallVector<int64_t> tileSizes = extractI64Array(getSizes());
 
@@ -408,12 +430,13 @@ LogicalResult transform::TileOp::apply(TransformResults &transformResults,
   tilingOptions.setInterchange(extractUIntArray(getInterchange()));
   LinalgTilingPattern pattern(getContext(), tilingOptions);
 
-  return applyTilingToAll(getOperation(), getTarget(), tileSizes,
-                          transformResults, state, [&](LinalgOp linalgOp) {
-                            SimpleRewriter rewriter(linalgOp.getContext());
-                            return pattern.returningMatchAndRewrite(linalgOp,
-                                                                    rewriter);
-                          });
+  LogicalResult result = applyTilingToAll(
+      getOperation(), getTarget(), tileSizes, transformResults, state,
+      [&](LinalgOp linalgOp) {
+        SimpleRewriter rewriter(linalgOp.getContext());
+        return pattern.returningMatchAndRewrite(linalgOp, rewriter);
+      });
+  return DiagnosedSilenceableFailure(result);
 }
 
 ParseResult transform::TileOp::parse(OpAsmParser &parser,
