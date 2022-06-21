@@ -114,6 +114,9 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zve64d", RISCVExtensionVersion{1, 0}},
 
 #if SIFIVE_CUSTOMIZATION
+    {"zicbom", RISCVExtensionVersion{1, 0}},
+    {"zicboz", RISCVExtensionVersion{1, 0}},
+
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}},
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}},
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}},

@@ -101,6 +101,8 @@ private:
   bool HasStdExtZks = false;
   bool HasStdExtZkt = false;
   bool HasStdExtZk = false;
+  bool HasStdExtZicbom = false; // SIFIVE
+  bool HasStdExtZicboz = false; // SIFIVE
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
@@ -208,6 +210,8 @@ public:
   bool hasStdExtZksed() const { return HasStdExtZksed; }
   bool hasStdExtZksh() const { return HasStdExtZksh; }
   bool hasStdExtZkr() const { return HasStdExtZkr; }
+  bool hasStdExtZicbom() const { return HasStdExtZicbom; } // SIFIVE
+  bool hasStdExtZicboz() const { return HasStdExtZicboz; } // SIFIVE
   bool is64Bit() const { return HasRV64; }
   bool isRV32E() const { return IsRV32E; }
   bool enableLinkerRelax() const { return EnableLinkerRelax; }

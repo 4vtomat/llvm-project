@@ -84,6 +84,14 @@
 .attribute arch, "rv32ifdzve64d"
 # CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
 
+## SIFIVE_CUSTOMIZATION
+.attribute arch, "rv32izicbom"
+# CHECK: attribute      5, "rv32i2p1_zicbom1p0"
+
+.attribute arch, "rv32izicboz"
+# CHECK: attribute      5, "rv32i2p1_zicboz1p0"
+## end SIFIVE_CUSTOMIZATION
+
 ## Experimental extensions require version string to be explicitly specified
 
 .attribute arch, "rv32izba1p0"

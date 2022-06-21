@@ -1858,3 +1858,4 @@ include "RISCVInstrInfoZk.td"
 include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZfh.td"
 include "RISCVInstrInfoCompactPseudos.td"
+include "RISCVInstrInfoZicbo.td" // SIFIVE
