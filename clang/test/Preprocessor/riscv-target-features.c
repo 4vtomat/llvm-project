@@ -45,6 +45,7 @@
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicbom
 // CHECK-NOT: __riscv_zicboz
+// CHECK-NOT: __riscv_zicbop
 // end SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __sifive_recode_neon
 
@@ -451,6 +452,12 @@
 // RUN: %clang -target riscv64 -march=rv64izicboz -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOZ-EXT %s
 // CHECK-ZICBOZ-EXT: __riscv_zicboz 1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32izicbop -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOP-EXT %s
+// RUN: %clang -target riscv64 -march=rv64izicbop -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOP-EXT %s
+// CHECK-ZICBOP-EXT: __riscv_zicbop 1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \

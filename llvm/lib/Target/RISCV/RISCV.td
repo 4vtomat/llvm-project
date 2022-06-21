@@ -428,6 +428,12 @@ def FeatureStdExtZicboz
 def HasStdExtZicboz : Predicate<"Subtarget->hasStdExtZicboz()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicboz),
                                 "'Zicboz' (Cache-Block Zero Instructions)">;
+def FeatureStdExtZicbop
+    : SubtargetFeature<"zicbop", "HasStdExtZicbop", "true",
+                       "'Zicbop' (Cache-Block Prefetch Instructions)">;
+def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZicbop),
+                                "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
 def FeatureStdExtXsfvqmaccqoq
     : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",

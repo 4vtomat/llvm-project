@@ -1295,6 +1295,11 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_SIMM12:
           Ok = isInt<12>(Imm);
           break;
+#if SIFIVE_CUSTOMIZATION
+        case RISCVOp::OPERAND_SIMM12_LSB00000:
+          Ok = isShiftedInt<7, 5>(Imm);
+          break;
+#endif // SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_UIMM20:
           Ok = isUInt<20>(Imm);
           break;

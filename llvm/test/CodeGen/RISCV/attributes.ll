@@ -39,6 +39,7 @@
 ; SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv32 -mattr=+zicbom %s -o - | FileCheck --check-prefix=RV32ZICBOM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zicboz %s -o - | FileCheck --check-prefix=RV32ZICBOZ %s
+; RUN: llc -mtriple=riscv32 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV32ZICBOP %s
 ; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv64 -mattr=+m %s -o - | FileCheck --check-prefix=RV64M %s
 ; RUN: llc -mtriple=riscv64 -mattr=+a %s -o - | FileCheck --check-prefix=RV64A %s
@@ -82,6 +83,7 @@
 ; SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbom %s -o - | FileCheck --check-prefix=RV64ZICBOM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicboz %s -o - | FileCheck --check-prefix=RV64ZICBOZ %s
+; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
 ; end SIFIVE_CUSTOMIZATION
 
 ; RV32COMBINEINTOZK: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
@@ -123,6 +125,7 @@
 ; SIFIVE_CUSTOMIZATION
 ; RV32ZICBOM: .attribute 5, "rv32i2p1_zicbom1p0"
 ; RV32ZICBOZ: .attribute 5, "rv32i2p1_zicboz1p0"
+; RV32ZICBOP: .attribute 5, "rv32i2p1_zicbop1p0"
 ; end SIFIVE_CUSTOMIZATION
 
 ; RV64COMBINEINTOZK: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
@@ -165,6 +168,7 @@
 ; SIFIVE_CUSTOMIZATION
 ; RV64ZICBOM: .attribute 5, "rv64i2p1_zicbom1p0"
 ; RV64ZICBOZ: .attribute 5, "rv64i2p1_zicboz1p0"
+; RV64ZICBOP: .attribute 5, "rv64i2p1_zicbop1p0"
 ; end SIFIVE_CUSTOMIZATION
 
 define i32 @addi(i32 %a) {
