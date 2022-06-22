@@ -39,10 +39,16 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
   if (!SecondMI.getOperand(1).isReg())
     return false;
 
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
   // Destination of LUI should be the ADDI(W) source register.
-  // ADDI(W) source and destination should be the same register.
-  return FirstMI->getOperand(0).getReg() == SecondMI.getOperand(0).getReg() &&
-         SecondMI.getOperand(0).getReg() == SecondMI.getOperand(1).getReg();
+  if (SecondMI.getOperand(1).getReg() != FirstDest)
+    return false;
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return FirstDest.isVirtual() ||
+         SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
 // \brief Check if the instr pair, FirstMI and SecondMI, should be fused
