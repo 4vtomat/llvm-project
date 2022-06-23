@@ -82,7 +82,7 @@ static BasicType ParseBasicType(char c) {
   case 'x':
     return BasicType::Float16;
     break;
- #if SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   case 'y':
     return BasicType::BFloat;
     break;
@@ -364,7 +364,7 @@ void RVVEmitter::createCodeGen(raw_ostream &OS) {
     StringRef CurIRName = Def->getIRName();
     if (CurIRName != PrevDef->getIRName() ||
         (Def->getManualCodegen() != PrevDef->getManualCodegen()) || // SIFIVE
-        (Def->getPolicyScheme() != PrevDef->getPolicyScheme())) { // SIFIVE
+        (Def->getPolicyScheme() != PrevDef->getPolicyScheme())) {   // SIFIVE
       emitCodeGenSwitchBody(PrevDef, OS);
     }
     PrevDef = Def.get();
@@ -494,12 +494,8 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicy, HasUnMaskedOverloaded, HasBuiltinAlias,
-<<<<<<< HEAD
             ManualCodegen, Types.getValue(), IntrinsicTypes, RequiredFeatures,
             NF, IsTU));
-=======
-            ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF));
->>>>>>> upstream/main
         if (HasMasked) {
           // Create a masked intrinsic
           Optional<RVVTypes> MaskTypes =
@@ -509,11 +505,8 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicy,
               HasUnMaskedOverloaded, HasBuiltinAlias, MaskedManualCodegen,
-<<<<<<< HEAD
-              MaskTypes.getValue(), IntrinsicTypes, RequiredFeatures, NF, IsTU));
-=======
-              *MaskTypes, IntrinsicTypes, RequiredFeatures, NF));
->>>>>>> upstream/main
+              MaskTypes.getValue(), IntrinsicTypes, RequiredFeatures, NF,
+              IsTU));
         }
       } // end for Log2LMULList
     }   // end for TypeRange
