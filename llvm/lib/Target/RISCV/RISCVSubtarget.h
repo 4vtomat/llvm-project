@@ -115,6 +115,8 @@ private:
   bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasLUIADDIFusion = false; // SIFIVE
+  bool HasFuseIndexedLoad = false;    // SIFIVE
+  bool HasFuseZbaLoad = false;        // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
   bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
@@ -231,7 +233,9 @@ public:
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
-  bool hasFusion() const { return hasLUIADDIFusion(); }
+  bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
+  bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
+  bool hasFusion() const { return hasLUIADDIFusion() || hasFuseIndexedLoad(); }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
   bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }

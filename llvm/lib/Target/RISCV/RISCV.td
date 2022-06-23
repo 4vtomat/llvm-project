@@ -550,6 +550,14 @@ def TuneLUIADDIFusion
     : SubtargetFeature<"lui-addi-fusion", "HasLUIADDIFusion",
                        "true", "Enable LUI+ADDI fusion">;
 
+def TuneFuseIndexedLoad
+    : SubtargetFeature<"fuse-indexed-load", "HasFuseIndexedLoad",
+                       "true", "CPU fuses indexed load">;
+def TuneFuseZbaLoad
+    : SubtargetFeature<"fuse-zba-load", "HasFuseZbaLoad",
+                       "true", "CPU fuses Zba instructions with load",
+                       [TuneFuseIndexedLoad]>;
+
 // P670 requires a S2V transfer buffer to move scalars into vectors.
 // FIXME: Forming .vx/.vf can reduce register pressure.
 def TuneDontSinkSplatOperands
