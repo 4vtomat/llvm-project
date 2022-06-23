@@ -622,20 +622,16 @@ static void fixupBranchWeights(BasicBlock *Header, BranchInst *LatchBR,
 /// \param LoopBlocks A helper for DFS-traversal of the loop.
 /// \param LVMap A value-map that maps instructions from the original loop to
 /// instructions in the last peeled-off iteration.
-// SIFIVE
+#if SIFIVE_CUSTOMIZATION
 static void cloneLoopBlocks(
     Loop *L, unsigned IterNumber, BasicBlock *InsertTop, BasicBlock *InsertBot,
     bool EpilogPeeling,
     SmallVectorImpl<std::pair<BasicBlock *, BasicBlock *>> &ExitEdges,
     SmallVectorImpl<BasicBlock *> &NewBlocks, LoopBlocksDFS &LoopBlocks,
     ValueToValueMapTy &VMap, ValueToValueMapTy &LVMap, DominatorTree *DT,
-<<<<<<< HEAD
-    LoopInfo *LI, ArrayRef<MDNode *> LoopLocalNoAliasDeclScopes) {
-  // end SIFIVE
-=======
     LoopInfo *LI, ArrayRef<MDNode *> LoopLocalNoAliasDeclScopes,
     ScalarEvolution &SE) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   BasicBlock *Header = L->getHeader();
   BasicBlock *Latch = L->getLoopLatch();
   BasicBlock *PreHeader = L->getLoopPreheader();
@@ -945,17 +941,11 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI,
     SmallVector<BasicBlock *, 8> NewBlocks;
     ValueToValueMapTy VMap;
 
-<<<<<<< HEAD
     // SIFIVE
     cloneLoopBlocks(L, Iter, InsertTop, InsertBot, /*EpilogPeeling*/ false,
                     ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
-                    LoopLocalNoAliasDeclScopes);
-    // end SIFIVE
-=======
-    cloneLoopBlocks(L, Iter, InsertTop, InsertBot, ExitEdges, NewBlocks,
-                    LoopBlocks, VMap, LVMap, &DT, LI,
                     LoopLocalNoAliasDeclScopes, *SE);
->>>>>>> upstream/main
+    // end SIFIVE
 
     // Remap to use values from the current iteration instead of the
     // previous one.
@@ -1198,7 +1188,7 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
 
     cloneLoopBlocks(L, Iter, InsertTop, InsertBot, /*EpilogPeeling*/ true,
                     ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
-                    LoopLocalNoAliasDeclScopes);
+                    LoopLocalNoAliasDeclScopes, *SE);
 
     // Remap to use values from the current iteration instead of the
     // previous one.
