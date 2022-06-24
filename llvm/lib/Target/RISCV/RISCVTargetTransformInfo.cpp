@@ -143,7 +143,7 @@ RISCVTTIImpl::getIntImmCostIntrin(Intrinsic::ID IID, unsigned Idx,
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getMaxElementWidth() const {
   // Returns ELEN. This is the value for which k-scale-factor would be one.
-  // Current EPI implementation plans this to be 64. 
+  // Current EPI implementation plans this to be 64.
   return ST->hasVInstructionsI64() ? 64 : 32;
 }
 
@@ -400,28 +400,6 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
     return BaseT::getGatherScatterOpCost(Opcode, DataTy, Ptr, VariableMask,
                                          Alignment, CostKind, I);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  unsigned NumLoads;
-  Type *ElementType;
-  if (isa<FixedVectorType>(DataTy)) {
-    auto *VTy = cast<FixedVectorType>(DataTy);
-    NumLoads = VTy->getNumElements();
-    ElementType = VTy->getElementType();
-  } else {
-    // to be processed as the return number encodes LMUL in some way.
-    auto *VTy = cast<ScalableVectorType>(DataTy);
-    // FIXME: Implement or use some other function instead of
-    // getMinNumElements(), since current function doesn't return valid number
-    // of elements
-    NumLoads = VTy->getMinNumElements();
-    ElementType = VTy->getElementType();
-  }
-
-  InstructionCost MemOpCost =
-      getMemoryOpCost(Opcode, ElementType, Alignment, 0, CostKind, I);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Cost is proportional to the number of memory operations implied.  For
   // scalable vectors, we use an upper bound on that number since we don't
   // know exactly what VL will be.
@@ -429,15 +407,19 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   InstructionCost MemOpCost = getMemoryOpCost(Opcode, VTy.getElementType(),
                                               Alignment, 0, CostKind, I);
   if (isa<ScalableVectorType>(VTy)) {
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Re-sync with upstream?
+    const unsigned MaxVLMAX = cast<ScalableVectorType>(VTy).getMinNumElements();
+#else
     const unsigned EltSize = DL.getTypeSizeInBits(VTy.getElementType());
     const unsigned MinSize = DL.getTypeSizeInBits(&VTy).getKnownMinValue();
     const unsigned VectorBitsMax = ST->getRealMaxVLen();
     const unsigned MaxVLMAX =
       RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
+#endif // SIFIVE_CUSTOMIZATION
     return MaxVLMAX * MemOpCost;
   }
   unsigned NumLoads = cast<FixedVectorType>(VTy).getNumElements();
->>>>>>> upstream/main
   return NumLoads * MemOpCost;
 }
 
@@ -635,29 +617,23 @@ InstructionCost
 RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                                          Optional<FastMathFlags> FMF,
                                          TTI::TargetCostKind CostKind) {
-<<<<<<< HEAD
-  if (!isa<FixedVectorType>(VTy))
+  if (!isa<FixedVectorType>(Ty))
 #if SIFIVE_CUSTOMIZATION
   {
     // FIXME: Revisit this code when we start to tune vectorizer's cost model
-    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, VTy);
+    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
     // IR Reduction is composed by two vmv and one rvv reduction instruction.
     InstructionCost BaseCost = 2;
     unsigned VL =
-        (ST->getRealMinVLen() * VTy->getElementCount().getKnownMinValue()) /
+        (ST->getRealMinVLen() * Ty->getElementCount().getKnownMinValue()) /
         RISCV::RVVBitsPerBlock;
     return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
 #else  // SIFIVE_CUSTOMIZATION
-    return BaseT::getArithmeticReductionCost(Opcode, VTy, FMF, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  // FIXME: Only supporting fixed vectors for now.
-  if (!isa<FixedVectorType>(Ty))
     return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!ST->useRVVForFixedLengthVectors())
     return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
