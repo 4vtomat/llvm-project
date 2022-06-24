@@ -1283,7 +1283,7 @@ def : Pat<(riscv_add_lo GPR:$hi, tconstpool:$lo),
 
 def : Pat<(riscv_hi tglobaltlsaddr:$in), (LUI tglobaltlsaddr:$in)>;
 def : Pat<(riscv_add_tprel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src),
-          (PseudoAddTPRel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src)>;
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src)>; // SIFIVE
 def : Pat<(riscv_add_lo GPR:$src, tglobaltlsaddr:$lo),
           (ADDI GPR:$src, tglobaltlsaddr:$lo)>;
 

@@ -1116,15 +1116,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasVInstructions())
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
-<<<<<<< HEAD
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR, // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,                 // SIFIVE
                          ISD::INTRINSIC_W_CHAIN});                // SIFIVE
-=======
-                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR});
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
->>>>>>> upstream/main
 
   setLibcallName(RTLIB::FPEXT_F16_F32, "__extendhfsf2");
   setLibcallName(RTLIB::FPROUND_F32_F16, "__truncsfhf2");
@@ -2350,18 +2346,9 @@ static SDValue matchSplatAsGather(SDValue SplatVal, MVT VT, const SDLoc &DL,
     return SDValue();
   SDValue Vec = SplatVal.getOperand(0);
   // Only perform this optimization on vectors of the same size for simplicity.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE: Cherry-picked from upstream.
   // Don't perform this optimization for i1 vectors.
   // FIXME: Support i1 vectors, maybe by promoting to i8?
   if (Vec.getValueType() != VT || VT.getVectorElementType() == MVT::i1)
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  // Don't perform this optimization for i1 vectors.
-  // FIXME: Support i1 vectors, maybe by promoting to i8?
-  if (Vec.getValueType() != VT || VT.getVectorElementType() == MVT::i1)
->>>>>>> upstream/main
     return SDValue();
   SDValue Idx = SplatVal.getOperand(1);
   // The index must be a legal type.
@@ -3384,7 +3371,6 @@ SDValue RISCVTargetLowering::expandUnalignedRVVStore(SDValue Op,
                       Store->getMemOperand()->getFlags());
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Return the opcode and the default number of iterations required for a type.
 // According to "RISC-V V Vector Extension" (v1.0), sections 13.9 and 13.10.
@@ -3458,7 +3444,7 @@ SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
                      /*Reciprocal*/ true);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static SDValue lowerConstant(SDValue Op, SelectionDAG &DAG,
                              const RISCVSubtarget &Subtarget) {
   assert(Op.getValueType() == MVT::i64 && "Unexpected VT");
@@ -3484,7 +3470,6 @@ static SDValue lowerConstant(SDValue Op, SelectionDAG &DAG,
   // Expand to a constant pool using the default expansion code.
   return SDValue();
 }
->>>>>>> upstream/main
 
 SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
                                             SelectionDAG &DAG) const {
@@ -4319,16 +4304,9 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
 
   SDValue MNHi = DAG.getNode(RISCVISD::HI, DL, Ty, AddrHi);
   SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
-<<<<<<< HEAD
-  SDValue MNAdd = SDValue(
-      DAG.getMachineNode(RISCV::PseudoAddRegRel, DL, Ty, MNHi, TPReg, AddrAdd),
-      0);
-  return SDValue(DAG.getMachineNode(RISCV::ADDI, DL, Ty, MNAdd, AddrLo), 0);
-=======
   SDValue MNAdd =
       DAG.getNode(RISCVISD::ADD_TPREL, DL, Ty, MNHi, TPReg, AddrAdd);
   return DAG.getNode(RISCVISD::ADD_LO, DL, Ty, MNAdd, AddrLo);
->>>>>>> upstream/main
 }
 
 SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
@@ -10762,11 +10740,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
     break;
   }
-<<<<<<< HEAD
   case ISD::EXTRACT_VECTOR_ELT:
     return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
     SDValue N0 = N->getOperand(0);
@@ -10787,7 +10763,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     return SDValue();
   }
->>>>>>> upstream/main
   }
 
   return SDValue();
