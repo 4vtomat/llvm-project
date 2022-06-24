@@ -4425,7 +4425,7 @@ void InnerLoopVectorizer::widenPredicatedInstruction(Instruction &I,
                                                      VPUser &User,
                                                      VPTransformState &State,
                                                      VPValue *BlockInMask) {
-  setDebugLocFromInst(&I, &Builder);
+  setDebugLocFromInst(&I);
   for (unsigned Part = 0; Part < UF; ++Part) {
     llvm::widenPredicatedInstruction(&I, Def, User, State, BlockInMask, Part);
     Value *V = State.get(Def, Part);
