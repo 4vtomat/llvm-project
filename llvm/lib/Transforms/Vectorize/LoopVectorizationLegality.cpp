@@ -55,6 +55,13 @@ static cl::opt<unsigned> PragmaVectorizeSCEVCheckThreshold(
     cl::desc("The maximum number of SCEV checks allowed with a "
              "vectorize(enable) pragma"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    ForceVectorization("force-vectorization", cl::init(false), cl::Hidden,
+                       cl::desc("Force vectorization regardless if "
+                                "vectorization is profitable or not"));
+#endif // SIFIVE_CUSTOMIZATION
+
 static cl::opt<LoopVectorizeHints::ScalableForceKind>
     ForceScalableVectorization(
         "scalable-vectorization", cl::init(LoopVectorizeHints::SK_Unspecified),
@@ -125,6 +132,13 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
   // force-vector-interleave overrides DisableInterleaving.
   if (VectorizerParams::isInterleaveForced())
     Interleave.Value = VectorizerParams::VectorizationInterleave;
+
+#if SIFIVE_CUSTOMIZATION
+  // Set undefined force hint to enabled if force-vectorization is true.
+  if (ForceVectorization &&
+      ((LoopVectorizeHints::ForceKind)Force.Value == FK_Undefined))
+    Force.Value = FK_Enabled;
+#endif // SIFIVE_CUSTOMIZATION
 
   // If the metadata doesn't explicitly specify whether to enable scalable
   // vectorization, then decide based on the following criteria (increasing
