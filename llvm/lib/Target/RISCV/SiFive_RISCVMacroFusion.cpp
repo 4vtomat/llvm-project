@@ -104,6 +104,67 @@ static bool isIndexedLoad(const MachineInstr *FirstMI,
   return FirstDest.isVirtual() || SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
+static bool isArithEqZ(const MachineInstr *FirstMI,
+                       const MachineInstr &SecondMI) {
+  unsigned SrcOpIdx;
+  switch (SecondMI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SLTIU:
+    if (SecondMI.getOperand(2).getImm() != 1)
+      return false;
+    SrcOpIdx = 1;
+    break;
+  case RISCV::SLTU:
+    if (SecondMI.getOperand(1).getReg() != RISCV::X0)
+      return false;
+    SrcOpIdx = 2;
+    break;
+  }
+
+  // Assume the 1st instr to be a wildcard if it is unspecified.
+  if (!FirstMI)
+    return true;
+
+  bool PreRA = false;
+  switch (FirstMI->getOpcode()) {
+  default:
+    return false;
+  case RISCV::ADDI:
+  case RISCV::XOR:
+    // Allow these pre-RA because they are the idioms we use for equality
+    // comparisons.
+    PreRA = true;
+    break;
+  case RISCV::ADD:
+  case RISCV::ADDW:
+  case RISCV::ADDIW:
+  case RISCV::SUB:
+  case RISCV::SUBW:
+  case RISCV::AND:
+  case RISCV::ANDI:
+  case RISCV::OR:
+  case RISCV::ORI:
+  case RISCV::XORI:
+    // Do not allow these pre-RA because we can't ensure that SecondMI is the
+    // only user pre-RA.
+    // FIXME: We probably need some pseudoinstructions and an earlier fusion
+    // peephole.
+    break;
+  }
+
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
+  // The SecondMI source operand should match the FirstMI destination.
+  if (SecondMI.getOperand(SrcOpIdx).getReg() != FirstDest)
+    return false;
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return (FirstDest.isVirtual() && PreRA) ||
+         SecondMI.getOperand(0).getReg() == FirstDest;
+}
+
 // \brief Check if the instr pair, FirstMI and SecondMI, should be fused
 // together. Given SecondMI, when FirstMI is unspecified, then check if
 // SecondMI may be part of a fused pair at all.
@@ -117,6 +178,8 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
     return true;
   if (ST.hasFuseIndexedLoad() &&
       isIndexedLoad(FirstMI, SecondMI, ST.hasFuseZbaLoad()))
+    return true;
+  if (ST.hasFuseArithEqZ() && isArithEqZ(FirstMI, SecondMI))
     return true;
   return false;
 }

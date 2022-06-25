@@ -558,6 +558,10 @@ def TuneFuseZbaLoad
                        "true", "CPU fuses Zba instructions with load",
                        [TuneFuseIndexedLoad]>;
 
+def TuneFuseArithEqZ
+    : SubtargetFeature<"fuse-arith-eqz", "HasFuseArithEqZ",
+                       "true", "CPU fuses arithmetic with seqz/snez">;
+
 // P670 requires a S2V transfer buffer to move scalars into vectors.
 // FIXME: Forming .vx/.vf can reduce register pressure.
 def TuneDontSinkSplatOperands

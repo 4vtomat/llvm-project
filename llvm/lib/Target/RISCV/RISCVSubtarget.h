@@ -117,6 +117,7 @@ private:
   bool HasLUIADDIFusion = false; // SIFIVE
   bool HasFuseIndexedLoad = false;    // SIFIVE
   bool HasFuseZbaLoad = false;        // SIFIVE
+  bool HasFuseArithEqZ = false;       // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
   bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned VLen = 128; // SIFIVE
@@ -235,7 +236,10 @@ public:
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
   bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
-  bool hasFusion() const { return hasLUIADDIFusion() || hasFuseIndexedLoad(); }
+  bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
+  bool hasFusion() const {
+    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ();
+  }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
   bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
