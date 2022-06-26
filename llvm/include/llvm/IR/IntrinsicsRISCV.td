@@ -472,12 +472,22 @@ let TargetPrefix = "riscv" in {
   }
 
   // Input: (passthru, vector_in, scalar_in, vl)
-  class RISCVSFCustomVFNRCLIP : Intrinsic<[llvm_anyvector_ty],
-                                          [LLVMMatchType<0>, llvm_anyfloat_ty,
-                                           LLVMVectorElementType<1>,
-                                           llvm_anyint_ty],
-                                          [IntrNoMem]>, RISCVVIntrinsic {
+  class RISCVSFCustomVFNRCLIPUnMasked
+       : Intrinsic<[llvm_anyvector_ty],
+                   [LLVMMatchType<0>, llvm_anyfloat_ty, LLVMVectorElementType<1>,
+                    llvm_anyint_ty],
+                   [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 3;
+  }
+
+  // Input: (passthru, vector_in, scalar_in, mask, vl, policy)
+  class RISCVSFCustomVFNRCLIPMasked
+       : Intrinsic<[llvm_anyvector_ty],
+                   [LLVMMatchType<0>, llvm_anyfloat_ty, LLVMVectorElementType<1>,
+                    LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>, llvm_anyint_ty,
+                    LLVMMatchType<2>],
+                   [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 4;
   }
 
   // Output: (vector_out) or ()
@@ -1281,6 +1291,12 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RISCVISegStore<nf>;
     def "int_riscv_" # NAME # "_mask" : RISCVISegStoreMasked<nf>;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  multiclass RISCVSFCustomVFNRCLIP {
+    def "int_riscv_" # NAME : RISCVSFCustomVFNRCLIPUnMasked;
+    def "int_riscv_" # NAME # "_mask" : RISCVSFCustomVFNRCLIPMasked;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   defm vle : RISCVUSLoad;
   defm vleff : RISCVUSLoadFF;
@@ -1650,8 +1666,8 @@ let TargetPrefix = "riscv" in {
   def int_riscv_sf_vqmaccus_2x8x2 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccsu_2x8x2 : RISCVSFCustomVQMACC;
 
-  def int_riscv_sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
-  def int_riscv_sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
+  defm sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
+  defm sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
 
   defm sf_vfwcvt_f_bf16_v : RISCVConversion;
   defm sf_vfncvt_bf16_f_w : RISCVConversion;
