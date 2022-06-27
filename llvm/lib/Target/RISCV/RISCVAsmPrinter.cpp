@@ -219,7 +219,7 @@ void RISCVAsmPrinter::emitCompactStub() {
       Twine(".text.") + LabelName, ELF::SHT_PROGBITS,
       ELF::SHF_ALLOC | ELF::SHF_MERGE | ELF::SHF_GROUP,
       8, LabelName, /*IsComdat=*/true);
-  OutStreamer->SwitchSection((MCSection *)CompactSec);
+  OutStreamer->switchSection((MCSection *)CompactSec);
 
   emitAlignment(Align(8));
 
@@ -241,7 +241,7 @@ void RISCVAsmPrinter::emitCompactStub() {
   PCRelExpr = MCBinaryExpr::createSub(PCRelExpr, DotExpr, OutContext);
   OutStreamer->emitValue(PCRelExpr, 8);
 
-  OutStreamer->SwitchSection(Current);
+  OutStreamer->switchSection(Current);
 }
 
 // Force static initialization.

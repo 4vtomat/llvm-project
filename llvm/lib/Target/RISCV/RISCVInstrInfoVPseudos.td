@@ -69,10 +69,17 @@ class PseudoToVInst<string PseudoInst> {
                  !subst("_MASK", "",
                  !subst("_TIED", "",
                  !subst("_TU", "",
-                 !subst("F16", "F",
-                 !subst("F32", "F",
-                 !subst("F64", "F",
-                 !subst("Pseudo", "", PseudoInst)))))))))))))))))))));
+                 !subst("_F16", "_F",
+                 !subst("_F32", "_F",
+                 !subst("_F64", "_F",
+                 !subst("VF16", "VF",
+                 !subst("VF32", "VF",
+                 !subst("VF64", "VF",
+                 !subst("WF16", "WF",
+                 !subst("WF32", "WF",
+                 !subst("WF64", "WF",
+                 !subst("_SE", "", // SIFIVE
+                 !subst("Pseudo", "", PseudoInst)))))))))))))))))))))))))))); // SIFIVE
 }
 
 // This class describes information associated to the LMUL.
@@ -668,40 +675,6 @@ def RISCVVSXSEGTable : GenericTable {
 // Helpers to define the different pseudo instructions.
 //===----------------------------------------------------------------------===//
 
-<<<<<<< HEAD
-class PseudoToVInst<string PseudoInst> {
-  string VInst = !subst("_M8", "",
-                 !subst("_M4", "",
-                 !subst("_M2", "",
-                 !subst("_M1", "",
-                 !subst("_MF2", "",
-                 !subst("_MF4", "",
-                 !subst("_MF8", "",
-                 !subst("_B1", "",
-                 !subst("_B2", "",
-                 !subst("_B4", "",
-                 !subst("_B8", "",
-                 !subst("_B16", "",
-                 !subst("_B32", "",
-                 !subst("_B64", "",
-                 !subst("_MASK", "",
-                 !subst("_TIED", "",
-                 !subst("_TU", "",
-                 !subst("_F16", "_F",
-                 !subst("_F32", "_F",
-                 !subst("_F64", "_F",
-                 !subst("VF16", "VF",
-                 !subst("VF32", "VF",
-                 !subst("VF64", "VF",
-                 !subst("WF16", "WF",
-                 !subst("WF32", "WF",
-                 !subst("WF64", "WF",
-                 !subst("_SE", "", // SIFIVE
-                 !subst("Pseudo", "", PseudoInst)))))))))))))))))))))))))))); // SIFIVE
-}
-
-=======
->>>>>>> upstream/main
 // The destination vector register group for a masked vector instruction cannot
 // overlap the source mask register (v0), unless the destination vector register
 // is being written with a mask value (e.g., comparisons) or the scalar result

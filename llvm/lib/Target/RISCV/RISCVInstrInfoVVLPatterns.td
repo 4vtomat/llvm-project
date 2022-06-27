@@ -1914,35 +1914,6 @@ foreach vti = AllIntegerVectors in {
             (!cast<Instruction>("PseudoVMV_S_X_"#vti.LMul.MX)
                 vti.RegClass:$merge,
                 (vti.Scalar vti.ScalarRegClass:$rs1), GPR:$vl, vti.Log2SEW)>;
-<<<<<<< HEAD
-  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
-                                              (vti.Vector vti.RegClass:$rs1),
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, vti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
-#ifdef SIFIVE_CUSTOMIZATION
-  // Copied from BSC
-  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
-                                              (vti.Vector vti.RegClass:$rs1),
-                                              (vti.Mask V0),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX#"_MASK")
-                 (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, vti.RegClass:$rs1,
-                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
-#endif // SIFIVE_CUSTOMIZATION
-  def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, GPR:$rs1,
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VX_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, GPR:$rs1, GPR:$vl, vti.Log2SEW)>;
-  def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, uimm5:$imm,
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VI_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, uimm5:$imm, GPR:$vl, vti.Log2SEW)>;
-=======
->>>>>>> upstream/main
 
   def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$merge,
                                               vti.RegClass:$rs2,
@@ -1976,34 +1947,6 @@ foreach vti = AllIntegerVectors in {
     defvar emul_str = octuple_to_str<octuple_emul>.ret;
     defvar ivti = !cast<VTypeInfo>("VI16" # emul_str);
     defvar inst = "PseudoVRGATHEREI16_VV_" # vti.LMul.MX # "_" # emul_str;
-<<<<<<< HEAD
-    def : Pat<(vti.Vector (riscv_vrgatherei16_vv_vl vti.RegClass:$rs2,
-                                                    (ivti.Vector ivti.RegClass:$rs1),
-                                                    (vti.Mask true_mask),
-                                                    VLOpFrag)),
-              (!cast<Instruction>(inst)
-                   vti.RegClass:$rs2, ivti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
-#ifdef SIFIVE_CUSTOMIZATION
-    // Copied from BSC
-    defvar inst_mask = "PseudoVRGATHEREI16_VV_" # vti.LMul.MX # "_" # emul_str # "_MASK";
-    def : Pat<(vti.Vector (riscv_vrgatherei16_vv_vl vti.RegClass:$rs2,
-                                                    (ivti.Vector ivti.RegClass:$rs1),
-                                                    (vti.Mask V0),
-                                                    VLOpFrag)),
-              (!cast<Instruction>(inst_mask)
-                   (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, ivti.RegClass:$rs1,
-                   (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
-#endif // SIFIVE_CUSTOMIZATION
-
-    def : Pat<(vti.Vector (riscv_vselect_vl (vti.Mask V0),
-                                            (riscv_vrgatherei16_vv_vl
-                                              vti.RegClass:$rs2,
-                                              (ivti.Vector ivti.RegClass:$rs1),
-                                              (vti.Mask true_mask),
-                                              VLOpFrag),
-                                            vti.RegClass:$merge,
-                                            VLOpFrag)),
-=======
 
     def : Pat<(vti.Vector
                (riscv_vrgatherei16_vv_vl vti.RegClass:$merge,
@@ -2011,7 +1954,6 @@ foreach vti = AllIntegerVectors in {
                                          (ivti.Vector ivti.RegClass:$rs1),
                                          (vti.Mask V0),
                                          VLOpFrag)),
->>>>>>> upstream/main
               (!cast<Instruction>(inst#"_MASK")
                    vti.RegClass:$merge, vti.RegClass:$rs2, ivti.RegClass:$rs1,
                    (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
@@ -2036,35 +1978,6 @@ foreach vti = AllFloatVectors in {
                 vti.RegClass:$merge,
                 (vti.Scalar vti.ScalarRegClass:$rs1), GPR:$vl, vti.Log2SEW)>;
   defvar ivti = GetIntVTypeInfo<vti>.Vti;
-<<<<<<< HEAD
-  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
-                                              (ivti.Vector vti.RegClass:$rs1),
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, vti.RegClass:$rs1, GPR:$vl, vti.Log2SEW)>;
-#ifdef SIFIVE_CUSTOMIZATION
-  // Copied from BSC
-  def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
-                                              (ivti.Vector vti.RegClass:$rs1),
-                                              (vti.Mask V0),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VV_"# vti.LMul.MX#"_MASK")
-                 (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2, vti.RegClass:$rs1,
-                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
-#endif // SIFIVE_CUSTOMIZATION
-  def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, GPR:$rs1,
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VX_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, GPR:$rs1, GPR:$vl, vti.Log2SEW)>;
-  def : Pat<(vti.Vector (riscv_vrgather_vx_vl vti.RegClass:$rs2, uimm5:$imm,
-                                              (vti.Mask true_mask),
-                                              VLOpFrag)),
-            (!cast<Instruction>("PseudoVRGATHER_VI_"# vti.LMul.MX)
-                 vti.RegClass:$rs2, uimm5:$imm, GPR:$vl, vti.Log2SEW)>;
-=======
->>>>>>> upstream/main
 
   def : Pat<(vti.Vector
              (riscv_vrgather_vv_vl vti.RegClass:$merge,
