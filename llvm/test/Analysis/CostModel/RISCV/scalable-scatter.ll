@@ -4,8 +4,6 @@
 ; RUN: opt -passes='print<cost-model>' 2>&1 -disable-output -mtriple=riscv64 < %s | FileCheck %s --check-prefixes=CHECK,UNSUPPORTED
 
 define void @masked_scatter_aligned() {
-<<<<<<< HEAD
-=======
 ; GENERIC-LABEL: 'masked_scatter_aligned'
 ; GENERIC-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: call void @llvm.masked.scatter.nxv8f64.nxv8p0f64(<vscale x 8 x double> undef, <vscale x 8 x double*> undef, i32 8, <vscale x 8 x i1> undef)
 ; GENERIC-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: call void @llvm.masked.scatter.nxv4f64.nxv4p0f64(<vscale x 4 x double> undef, <vscale x 4 x double*> undef, i32 8, <vscale x 4 x i1> undef)
@@ -138,7 +136,6 @@ define void @masked_scatter_aligned() {
 ; UNSUPPORTED-NEXT:  Cost Model: Invalid cost for instruction: call void @llvm.masked.scatter.nxv1p0i8.nxv1p0p0i8(<vscale x 1 x i8*> undef, <vscale x 1 x i8**> undef, i32 8, <vscale x 1 x i1> undef)
 ; UNSUPPORTED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
 ;
->>>>>>> upstream/main
   call void @llvm.masked.scatter.nxv8f64.nxv8p0f64(<vscale x 8 x double> undef, <vscale x 8 x double*> undef, i32 8, <vscale x 8 x i1> undef)
   call void @llvm.masked.scatter.nxv4f64.nxv4p0f64(<vscale x 4 x double> undef, <vscale x 4 x double*> undef, i32 8, <vscale x 4 x i1> undef)
   call void @llvm.masked.scatter.nxv2f64.nxv2p0f64(<vscale x 2 x double> undef, <vscale x 2 x double*> undef, i32 8, <vscale x 2 x i1> undef)

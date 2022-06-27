@@ -4,8 +4,6 @@
 ; RUN: opt -passes='print<cost-model>' 2>&1 -disable-output -mtriple=riscv64 < %s | FileCheck %s --check-prefixes=CHECK,UNSUPPORTED
 
 define void @masked_gather_aligned() {
-<<<<<<< HEAD
-=======
 ; GENERIC-LABEL: 'masked_gather_aligned'
 ; GENERIC-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %V8F64 = call <vscale x 8 x double> @llvm.masked.gather.nxv8f64.nxv8p0f64(<vscale x 8 x double*> undef, i32 8, <vscale x 8 x i1> undef, <vscale x 8 x double> undef)
 ; GENERIC-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %V4F64 = call <vscale x 4 x double> @llvm.masked.gather.nxv4f64.nxv4p0f64(<vscale x 4 x double*> undef, i32 8, <vscale x 4 x i1> undef, <vscale x 4 x double> undef)
@@ -138,7 +136,6 @@ define void @masked_gather_aligned() {
 ; UNSUPPORTED-NEXT:  Cost Model: Invalid cost for instruction: %V1PTR = call <vscale x 1 x i8*> @llvm.masked.gather.nxv1p0i8.nxv1p0p0i8(<vscale x 1 x i8**> undef, i32 8, <vscale x 1 x i1> undef, <vscale x 1 x i8*> undef)
 ; UNSUPPORTED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
 ;
->>>>>>> upstream/main
   %V8F64 = call <vscale x 8 x double> @llvm.masked.gather.nxv8f64.nxv8p0f64(<vscale x 8 x double*> undef, i32 8, <vscale x 8 x i1> undef, <vscale x 8 x double> undef)
   %V4F64 = call <vscale x 4 x double> @llvm.masked.gather.nxv4f64.nxv4p0f64(<vscale x 4 x double*> undef, i32 8, <vscale x 4 x i1> undef, <vscale x 4 x double> undef)
   %V2F64 = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0f64(<vscale x 2 x double*> undef, i32 8, <vscale x 2 x i1> undef, <vscale x 2 x double> undef)
