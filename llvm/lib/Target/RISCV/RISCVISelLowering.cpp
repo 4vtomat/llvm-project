@@ -7405,8 +7405,8 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
                   VecLen, Ops[1], Ops[2]);
   SDValue VRSUB = DAG.getNode(RISCVISD::SUB_VL, DL, IndicesVT, VecLenSplat, VID,
                               Ops[1], Ops[2]);
-  SDValue Result =
-      DAG.getNode(GatherOpc, DL, GatherVT, Ops[0], VRSUB, Ops[1], Ops[2]);
+  SDValue Result = DAG.getNode(GatherOpc, DL, GatherVT, DAG.getUNDEF(GatherVT),
+                               Ops[0], VRSUB, Ops[1], Ops[2]);
 
   if (IsMaskVector) {
     // Truncate Result back to a mask vector
