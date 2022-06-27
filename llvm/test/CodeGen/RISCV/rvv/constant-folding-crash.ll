@@ -20,7 +20,6 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV32:       # %bb.0: # %entry
 ; RV32-NEXT:    lw a0, 8(a0)
 ; RV32-NEXT:    andi a0, a0, 1
-<<<<<<< HEAD
 ; RV32-NEXT:    beqz a0, .LBB0_2
 ; RV32-NEXT:  # %bb.1: # %entry
 ; RV32-NEXT:    vmv1r.v v8, v9
@@ -30,19 +29,6 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
 ; RV32-NEXT:    vmv.v.i v8, 0
 ; RV32-NEXT:    vmerge.vim v8, v8, 1, v0
-=======
-; RV32-NEXT:    seqz a0, a0
-; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
-; RV32-NEXT:    vmv.v.x v11, a0
-; RV32-NEXT:    vmsne.vi v0, v11, 0
-; RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; RV32-NEXT:    vmerge.vvm v8, v9, v8, v0
-; RV32-NEXT:    vmv.v.i v9, 0
-; RV32-NEXT:    vmv.x.s a0, v8
-; RV32-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; RV32-NEXT:    vmv1r.v v0, v10
-; RV32-NEXT:    vmerge.vim v8, v9, 1, v0
->>>>>>> upstream/main
 ; RV32-NEXT:    vmv.x.s a1, v8
 ; RV32-NEXT:    andi a1, a1, 1
 ; RV32-NEXT:    vmv.v.x v8, a1
@@ -56,7 +42,6 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    ld a0, 8(a0)
 ; RV64-NEXT:    andi a0, a0, 1
-<<<<<<< HEAD
 ; RV64-NEXT:    beqz a0, .LBB0_2
 ; RV64-NEXT:  # %bb.1: # %entry
 ; RV64-NEXT:    vmv2r.v v8, v10
@@ -66,19 +51,6 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
 ; RV64-NEXT:    vmv.v.i v8, 0
 ; RV64-NEXT:    vmerge.vim v8, v8, 1, v0
-=======
-; RV64-NEXT:    seqz a0, a0
-; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
-; RV64-NEXT:    vmv.v.x v13, a0
-; RV64-NEXT:    vmsne.vi v0, v13, 0
-; RV64-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
-; RV64-NEXT:    vmerge.vvm v8, v10, v8, v0
-; RV64-NEXT:    vmv.v.i v10, 0
-; RV64-NEXT:    vmv.x.s a0, v8
-; RV64-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; RV64-NEXT:    vmv1r.v v0, v12
-; RV64-NEXT:    vmerge.vim v8, v10, 1, v0
->>>>>>> upstream/main
 ; RV64-NEXT:    vmv.x.s a1, v8
 ; RV64-NEXT:    andi a1, a1, 1
 ; RV64-NEXT:    vmv.v.x v8, a1

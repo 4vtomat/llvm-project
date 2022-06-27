@@ -94,15 +94,6 @@ declare <vscale x 16 x float> @llvm.vp.fptrunc.nxv16f64.nxv16f32(<vscale x 16 x 
 define <vscale x 16 x float> @vfptrunc_nxv16f32_nxv16f64(<vscale x 16 x double> %a, <vscale x 16 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: vfptrunc_nxv16f32_nxv16f64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
-=======
->>>>>>> upstream/main
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    li a2, 0
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -122,19 +113,8 @@ define <vscale x 16 x float> @vfptrunc_nxv16f32_nxv16f64(<vscale x 16 x double> 
 ; CHECK-NEXT:  .LBB7_4:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfncvt.f.f.w v8, v16, v0.t
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    vfncvt.f.f.w v24, v8, v0.t
 ; CHECK-NEXT:    vmv8r.v v8, v24
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %v = call <vscale x 16 x float> @llvm.vp.fptrunc.nxv16f64.nxv16f32(<vscale x 16 x double> %a, <vscale x 16 x i1> %m, i32 %vl)
   ret <vscale x 16 x float> %v

@@ -131,8 +131,8 @@ define <16 x i1> @test_vp_reverse_v16i1_masked(<16 x i1> %src, <16 x i1> %mask, 
 ; CHECK-NEXT:    vid.v v10, v0.t
 ; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vrsub.vx v10, v10, a0, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v9, v12, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
@@ -151,8 +151,8 @@ define <16 x i1> @test_vp_reverse_v16i1(<16 x i1> %src, i32 zeroext %evl) {
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vrsub.vx v8, v8, a1
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.i v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vmerge.vim v10, v10, 1, v0
 ; CHECK-NEXT:    vrgatherei16.vv v11, v10, v8
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0

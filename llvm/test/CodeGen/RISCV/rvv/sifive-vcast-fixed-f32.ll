@@ -24,10 +24,9 @@ define i64 @test_vcast_to_fixed_64_f32m1(<vscale x 2 x float> %x) {
 ; VLS64-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vse32.v v8, (a0)
-; VLS64-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; VLS64-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vle32.v v8, (a0)
-; VLS64-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; VLS64-NEXT:    vmv.x.s a0, v8
 ; VLS64-NEXT:    addi sp, sp, 32
 ; VLS64-NEXT:    ret

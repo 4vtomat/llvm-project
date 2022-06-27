@@ -93,10 +93,9 @@ define i64 @test_vcast_to_fixed_64_i32m1(<vscale x 2 x i32> %x) {
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
@@ -108,10 +107,9 @@ define i64 @test_vcast_to_fixed_64_i32m1(<vscale x 2 x i32> %x) {
 ; VLS-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vse32.v v8, (a0)
-; VLS-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; VLS-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; VLS-NEXT:    vmv.x.s a0, v8
 ; VLS-NEXT:    addi sp, sp, 32
 ; VLS-NEXT:    ret
@@ -656,10 +654,9 @@ define i64 @test_vcast_to_fixed_64_i16mf2(<vscale x 2 x i16> %x) {
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    srli a0, a0, 32
@@ -673,10 +670,9 @@ define i64 @test_vcast_to_fixed_64_i16mf2(<vscale x 2 x i16> %x) {
 ; VLS-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vse16.v v8, (a0)
-; VLS-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; VLS-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle16.v v8, (a0)
-; VLS-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; VLS-NEXT:    vmv.x.s a0, v8
 ; VLS-NEXT:    slli a0, a0, 32
 ; VLS-NEXT:    srli a0, a0, 32
@@ -724,10 +720,9 @@ define i64 @test_vcast_to_fixed_64_i8mf4(<vscale x 2 x i8> %x) {
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf4, ta, mu
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    slli a0, a0, 48
 ; CHECK-NEXT:    srli a0, a0, 48
@@ -741,10 +736,9 @@ define i64 @test_vcast_to_fixed_64_i8mf4(<vscale x 2 x i8> %x) {
 ; VLS-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vse8.v v8, (a0)
-; VLS-NEXT:    vsetivli zero, 2, e8, mf8, ta, mu
+; VLS-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle8.v v8, (a0)
-; VLS-NEXT:    vsetvli zero, zero, e16, mf4, ta, mu
 ; VLS-NEXT:    vmv.x.s a0, v8
 ; VLS-NEXT:    slli a0, a0, 48
 ; VLS-NEXT:    srli a0, a0, 48
@@ -1589,10 +1583,9 @@ define i64 @test_vcast_to_fixed_64_f32m1(<vscale x 2 x float> %x) {
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
@@ -1604,10 +1597,9 @@ define i64 @test_vcast_to_fixed_64_f32m1(<vscale x 2 x float> %x) {
 ; VLS-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vse32.v v8, (a0)
-; VLS-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; VLS-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; VLS-NEXT:    vmv.x.s a0, v8
 ; VLS-NEXT:    addi sp, sp, 32
 ; VLS-NEXT:    ret
