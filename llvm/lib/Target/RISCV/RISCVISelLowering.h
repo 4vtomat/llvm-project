@@ -50,8 +50,10 @@ enum NodeType : unsigned {
   // Represents an AUIPC+ADDI pair. Selected to PseudoLLA.
   LLA,
 
-  // Selected as PseudoAddTPRel. Used to emit a TP-relative relocation.
-  ADD_TPREL,
+#if SIFIVE_CUSTOMIZATION
+  // Selected as PseudoAddRegRel. Used to emit a TP-relative relocation.
+  ADD_REGREL,
+#endif // SIFIVE_CUSTOMIZATION
 
   // Multiply high for signedxunsigned.
   MULHSU,

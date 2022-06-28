@@ -86,11 +86,13 @@ def riscv_read_cycle_wide : SDNode<"RISCVISD::READ_CYCLE_WIDE",
 def riscv_add_lo : SDNode<"RISCVISD::ADD_LO", SDTIntBinOp>;
 def riscv_hi : SDNode<"RISCVISD::HI", SDTIntUnaryOp>;
 def riscv_lla : SDNode<"RISCVISD::LLA", SDTIntUnaryOp>;
-def riscv_add_tprel : SDNode<"RISCVISD::ADD_TPREL",
-                             SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
-                                                  SDTCisSameAs<0, 2>,
-                                                  SDTCisSameAs<0, 3>,
-                                                  SDTCisInt<0>]>>;
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
+                              SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
+                                                   SDTCisSameAs<0, 2>,
+                                                   SDTCisSameAs<0, 3>,
+                                                   SDTCisInt<0>]>>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Operand and SDNode transformation definitions.
@@ -1282,8 +1284,10 @@ def : Pat<(riscv_add_lo GPR:$hi, tconstpool:$lo),
 /// TLS address nodes.
 
 def : Pat<(riscv_hi tglobaltlsaddr:$in), (LUI tglobaltlsaddr:$in)>;
-def : Pat<(riscv_add_tprel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src),
-          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src)>; // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src)>;
+#endif // SIFIVE_CUSTOMIZATION
 def : Pat<(riscv_add_lo GPR:$src, tglobaltlsaddr:$lo),
           (ADDI GPR:$src, tglobaltlsaddr:$lo)>;
 
