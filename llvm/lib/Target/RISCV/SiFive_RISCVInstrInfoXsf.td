@@ -47,13 +47,14 @@ let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasExtXsfvfwmaccqqq] in
 
 class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   : RVInstVXCustom2<funct6, opv, (outs VR:$vd),
-                    (ins VR:$vs2, FPR32:$rs1), opcodestr, "$vd, $vs2, $rs1"> {
+                    (ins VR:$vs2, FPR32:$rs1, VMaskOp:$vm), opcodestr,
+                    "$vd, $vs2, $rs1$vm"> {
   let hasSideEffects = 0;
   let mayLoad = 0;
   let mayStore = 0;
 }
 
-let vm = 1, Predicates = [HasExtXsfvfnrclipxfqf] in {
+let Predicates = [HasExtXsfvfnrclipxfqf] in {
   def VFNRCLIP_XU_F_QF : CustomSiFiveVF<"sf.vfnrclip.xu.f.qf", OPFVF, 0b100010>, Sched<[]> ;
   def VFNRCLIP_X_F_QF : CustomSiFiveVF<"sf.vfnrclip.x.f.qf", OPFVF, 0b100011>, Sched<[]> ;
 } // Predicates = [HasExtXsfvfnrclipxfqf]

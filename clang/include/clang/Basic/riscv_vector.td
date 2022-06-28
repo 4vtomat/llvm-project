@@ -2415,15 +2415,12 @@ let RequiredFeatures = ["Xsfvqmaccdod"],
     def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
 }
 
-let RequiredFeatures = ["Xsfvfnrclipxfqf"],
-    UnMaskedPolicy = HasPassthruOperand,
-    Log2LMUL = [0, 1, -1, -2, -3],
-    HasMasked = false,
-    IntrinsicTypes = [-1, 0] in {
-  let OverloadedName = "sf_vfnrclip_xu_f_qf", Name = "sf_vfnrclip_xu_f_qf" in
-    def sf_vfnrclip_xu : RVVBuiltin<"Uv", "UvFqf", "c">;
-  let OverloadedName = "sf_vfnrclip_x_f_qf", Name = "sf_vfnrclip_x_f_qf"  in
-    def sf_vfnrclip_x : RVVBuiltin<"v", "vFqf", "c">;
+let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicy = HasPassthruOperand,
+    Log2LMUL = [0, 1, -1, -2, -3] in {
+  let Name = "sf_vfnrclip_x_f_qf" in
+    def sf_vfnrclip_x : RVVConvBuiltin<"v", "vFqf", "c", "sf_vfnrclip_x_f_qf">;
+  let Name = "sf_vfnrclip_xu_f_qf" in
+    def sf_vfnrclip_xu : RVVConvBuiltin<"Uv", "UvFqf", "c", "sf_vfnrclip_xu_f_qf">;
 }
 
 let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,

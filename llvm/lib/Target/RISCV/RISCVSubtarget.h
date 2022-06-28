@@ -104,6 +104,7 @@ private:
   bool HasStdExtZicbom = false; // SIFIVE
   bool HasStdExtZicboz = false; // SIFIVE
   bool HasStdExtZicbop = false; // SIFIVE
+  bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
@@ -114,7 +115,12 @@ private:
   bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasLUIADDIFusion = false; // SIFIVE
+  bool HasFuseIndexedLoad = false;    // SIFIVE
+  bool HasFuseZbaLoad = false;        // SIFIVE
+  bool HasFuseArithEqZ = false;       // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
+  bool UsePseudoLIsimm32 = false; // SIFIVE
+  unsigned VLen = 128; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
   unsigned XLen = 32;
@@ -214,6 +220,7 @@ public:
   bool hasStdExtZicbom() const { return HasStdExtZicbom; } // SIFIVE
   bool hasStdExtZicboz() const { return HasStdExtZicboz; } // SIFIVE
   bool hasStdExtZicbop() const { return HasStdExtZicbop; } // SIFIVE
+  bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
   bool is64Bit() const { return HasRV64; }
   bool isRV32E() const { return IsRV32E; }
   bool enableLinkerRelax() const { return EnableLinkerRelax; }
@@ -227,8 +234,14 @@ public:
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
-  bool hasFusion() const { return hasLUIADDIFusion(); }
+  bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
+  bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
+  bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
+  bool hasFusion() const {
+    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ();
+  }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
+  bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
   unsigned getDLen() const {
     assert(hasKnownDLen() && "The Datapath length not set");

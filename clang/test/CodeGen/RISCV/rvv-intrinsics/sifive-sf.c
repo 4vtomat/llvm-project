@@ -468,6 +468,20 @@ vuint8mf8_t test_sf_vfnrclip_xu_f_qf_u8mf8 (vfloat32mf2_t vs2, float rs1, size_t
   return sf_vfnrclip_xu_f_qf_u8mf8(vs2, rs1, vl);
 }
 
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf8_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv1i8.nxv1f32.i32(<vscale x 1 x i8> [[MASKEDOFF:%.*]], <vscale x 1 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf8_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv1i8.nxv1f32.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], <vscale x 1 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
+//
+vuint8mf8_t test_sf_vfnrclip_xu_f_qf_u8mf8_m(vbool64_t mask, vuint8mf8_t maskedoff, vfloat32mf2_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_xu_f_qf_u8mf8_m(mask, maskedoff, vs2, rs1, vl);
+}
+
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf4(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.xu.nxv2i8.nxv2f32.i32(<vscale x 2 x i8> undef, <vscale x 2 x float> [[VS2:%.*]], float [[RS1:%.*]], i32 [[VL:%.*]])
@@ -480,6 +494,20 @@ vuint8mf8_t test_sf_vfnrclip_xu_f_qf_u8mf8 (vfloat32mf2_t vs2, float rs1, size_t
 //
 vuint8mf4_t test_sf_vfnrclip_xu_f_qf_u8mf4 (vfloat32m1_t vs2, float rs1, size_t vl) {
   return sf_vfnrclip_xu_f_qf_u8mf4(vs2, rs1, vl);
+}
+
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf4_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv2i8.nxv2f32.i32(<vscale x 2 x i8> [[MASKEDOFF:%.*]], <vscale x 2 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf4_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv2i8.nxv2f32.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], <vscale x 2 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
+//
+vuint8mf4_t test_sf_vfnrclip_xu_f_qf_u8mf4_m(vbool32_t mask, vuint8mf4_t maskedoff, vfloat32m1_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_xu_f_qf_u8mf4_m(mask, maskedoff, vs2, rs1, vl);
 }
 
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf2(
@@ -496,6 +524,20 @@ vuint8mf2_t test_sf_vfnrclip_xu_f_qf_u8mf2 (vfloat32m2_t vs2, float rs1, size_t 
   return sf_vfnrclip_xu_f_qf_u8mf2(vs2, rs1, vl);
 }
 
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf2_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv4i8.nxv4f32.i32(<vscale x 4 x i8> [[MASKEDOFF:%.*]], <vscale x 4 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_xu_f_qf_u8mf2_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv4i8.nxv4f32.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], <vscale x 4 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
+//
+vuint8mf2_t test_sf_vfnrclip_xu_f_qf_u8mf2_m(vbool16_t mask, vuint8mf2_t maskedoff, vfloat32m2_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_xu_f_qf_u8mf2_m(mask, maskedoff, vs2, rs1, vl);
+}
+
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m1(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.xu.nxv8i8.nxv8f32.i32(<vscale x 8 x i8> undef, <vscale x 8 x float> [[VS2:%.*]], float [[RS1:%.*]], i32 [[VL:%.*]])
@@ -508,6 +550,20 @@ vuint8mf2_t test_sf_vfnrclip_xu_f_qf_u8mf2 (vfloat32m2_t vs2, float rs1, size_t 
 //
 vuint8m1_t test_sf_vfnrclip_xu_f_qf_u8m1 (vfloat32m4_t vs2, float rs1, size_t vl) {
   return sf_vfnrclip_xu_f_qf_u8m1(vs2, rs1, vl);
+}
+
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m1_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv8i8.nxv8f32.i32(<vscale x 8 x i8> [[MASKEDOFF:%.*]], <vscale x 8 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m1_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv8i8.nxv8f32.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], <vscale x 8 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
+//
+vuint8m1_t test_sf_vfnrclip_xu_f_qf_u8m1_m(vbool8_t mask, vuint8m1_t maskedoff, vfloat32m4_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_xu_f_qf_u8m1_m(mask, maskedoff, vs2, rs1, vl);
 }
 
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m2(
@@ -524,6 +580,20 @@ vuint8m2_t test_sf_vfnrclip_xu_f_qf_u8m2 (vfloat32m8_t vs2, float rs1, size_t vl
   return sf_vfnrclip_xu_f_qf_u8m2(vs2, rs1, vl);
 }
 
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m2_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv16i8.nxv16f32.i32(<vscale x 16 x i8> [[MASKEDOFF:%.*]], <vscale x 16 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_xu_f_qf_u8m2_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.xu.mask.nxv16i8.nxv16f32.i64(<vscale x 16 x i8> [[MASKEDOFF:%.*]], <vscale x 16 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
+//
+vuint8m2_t test_sf_vfnrclip_xu_f_qf_u8m2_m(vbool4_t mask, vuint8m2_t maskedoff, vfloat32m8_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_xu_f_qf_u8m2_m(mask, maskedoff, vs2, rs1, vl);
+}
+
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf8(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.x.nxv1i8.nxv1f32.i32(<vscale x 1 x i8> undef, <vscale x 1 x float> [[VS2:%.*]], float [[RS1:%.*]], i32 [[VL:%.*]])
@@ -536,6 +606,20 @@ vuint8m2_t test_sf_vfnrclip_xu_f_qf_u8m2 (vfloat32m8_t vs2, float rs1, size_t vl
 //
 vint8mf8_t test_sf_vfnrclip_x_f_qf_i8mf8 (vfloat32mf2_t vs2, float rs1, size_t vl) {
   return sf_vfnrclip_x_f_qf_i8mf8(vs2, rs1, vl);
+}
+
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf8_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv1i8.nxv1f32.i32(<vscale x 1 x i8> [[MASKEDOFF:%.*]], <vscale x 1 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf8_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv1i8.nxv1f32.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], <vscale x 1 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
+//
+vint8mf8_t test_sf_vfnrclip_x_f_qf_i8mf8_m(vbool64_t mask, vint8mf8_t maskedoff, vfloat32mf2_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_x_f_qf_i8mf8_m(mask, maskedoff, vs2, rs1, vl);
 }
 
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf4(
@@ -552,6 +636,20 @@ vint8mf4_t test_sf_vfnrclip_x_f_qf_i8mf4 (vfloat32m1_t vs2, float rs1, size_t vl
   return sf_vfnrclip_x_f_qf_i8mf4(vs2, rs1, vl);
 }
 
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf4_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv2i8.nxv2f32.i32(<vscale x 2 x i8> [[MASKEDOFF:%.*]], <vscale x 2 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf4_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv2i8.nxv2f32.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], <vscale x 2 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
+//
+vint8mf4_t test_sf_vfnrclip_x_f_qf_i8mf4_m(vbool32_t mask, vint8mf4_t maskedoff, vfloat32m1_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_x_f_qf_i8mf4_m(mask, maskedoff, vs2, rs1, vl);
+}
+
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf2(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.x.nxv4i8.nxv4f32.i32(<vscale x 4 x i8> undef, <vscale x 4 x float> [[VS2:%.*]], float [[RS1:%.*]], i32 [[VL:%.*]])
@@ -564,6 +662,20 @@ vint8mf4_t test_sf_vfnrclip_x_f_qf_i8mf4 (vfloat32m1_t vs2, float rs1, size_t vl
 //
 vint8mf2_t test_sf_vfnrclip_x_f_qf_i8mf2 (vfloat32m2_t vs2, float rs1, size_t vl) {
   return sf_vfnrclip_x_f_qf_i8mf2(vs2, rs1, vl);
+}
+
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf2_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv4i8.nxv4f32.i32(<vscale x 4 x i8> [[MASKEDOFF:%.*]], <vscale x 4 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_x_f_qf_i8mf2_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv4i8.nxv4f32.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], <vscale x 4 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
+//
+vint8mf2_t test_sf_vfnrclip_x_f_qf_i8mf2_m(vbool16_t mask, vint8mf2_t maskedoff, vfloat32m2_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_x_f_qf_i8mf2_m(mask, maskedoff, vs2, rs1, vl);
 }
 
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8m1(
@@ -580,6 +692,20 @@ vint8m1_t test_sf_vfnrclip_x_f_qf_i8m1 (vfloat32m4_t vs2, float rs1, size_t vl) 
   return sf_vfnrclip_x_f_qf_i8m1(vs2, rs1, vl);
 }
 
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8m1_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv8i8.nxv8f32.i32(<vscale x 8 x i8> [[MASKEDOFF:%.*]], <vscale x 8 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_x_f_qf_i8m1_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv8i8.nxv8f32.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], <vscale x 8 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
+//
+vint8m1_t test_sf_vfnrclip_x_f_qf_i8m1_m(vbool8_t mask, vint8m1_t maskedoff, vfloat32m4_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_x_f_qf_i8m1_m(mask, maskedoff, vs2, rs1, vl);
+}
+
 // CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8m2(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.x.nxv16i8.nxv16f32.i32(<vscale x 16 x i8> undef, <vscale x 16 x float> [[VS2:%.*]], float [[RS1:%.*]], i32 [[VL:%.*]])
@@ -592,6 +718,20 @@ vint8m1_t test_sf_vfnrclip_x_f_qf_i8m1 (vfloat32m4_t vs2, float rs1, size_t vl) 
 //
 vint8m2_t test_sf_vfnrclip_x_f_qf_i8m2 (vfloat32m8_t vs2, float rs1, size_t vl) {
   return sf_vfnrclip_x_f_qf_i8m2(vs2, rs1, vl);
+}
+
+// CHECK-RV32-LABEL: @test_sf_vfnrclip_x_f_qf_i8m2_m(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv16i8.nxv16f32.i32(<vscale x 16 x i8> [[MASKEDOFF:%.*]], <vscale x 16 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i32 [[VL:%.*]], i32 0)
+// CHECK-RV32-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
+//
+// CHECK-RV64-LABEL: @test_sf_vfnrclip_x_f_qf_i8m2_m(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.x.mask.nxv16i8.nxv16f32.i64(<vscale x 16 x i8> [[MASKEDOFF:%.*]], <vscale x 16 x float> [[VS2:%.*]], float [[RS1:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0)
+// CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
+//
+vint8m2_t test_sf_vfnrclip_x_f_qf_i8m2_m(vbool4_t mask, vint8m2_t maskedoff, vfloat32m8_t vs2, float rs1, size_t vl) {
+  return sf_vfnrclip_x_f_qf_i8m2_m(mask, maskedoff, vs2, rs1, vl);
 }
 
 // CHECK-RV32-LABEL: @test_sf_vfwcvt_f_bf16_v_f32mf2(

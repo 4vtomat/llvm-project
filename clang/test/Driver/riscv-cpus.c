@@ -218,6 +218,22 @@
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+xsfvqmaccqoq" "-target-feature" "+64bit"
 // MCPU-SIFIVE-X280N-SAME: "-target-abi" "lp64d"
 
+// mcpu with default march include experimental extensions
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280o | FileCheck -check-prefix=MCPU-SIFIVE-X280O %s
+// MCPU-SIFIVE-X280O: "-nostdsysteminc" "-target-cpu" "sifive-x280o"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+c" "-target-feature" "+v"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zfh"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+experimental-zvfh"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zvl128b"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zvl256b" "-target-feature" "+zvl32b"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zvl512b" "-target-feature" "+zvl64b"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvfhbfmin"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvfnrclipxfqf" "-target-feature" "+xsfvfwmaccqqq"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvqmaccqoq" "-target-feature" "+64bit"
+// MCPU-SIFIVE-X280O-SAME: "-target-abi" "lp64d"
+
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p270 | FileCheck -check-prefix=MCPU-SIFIVE-P270 %s
 // MCPU-SIFIVE-P270: "-target-cpu" "sifive-p270"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"

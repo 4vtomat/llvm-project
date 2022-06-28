@@ -4035,12 +4035,9 @@ multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
   foreach VtiToWti = vtilist in {
     defvar Vti = VtiToWti.Vti;
     defvar Wti = VtiToWti.Wti;
-    def : VPatBinaryNoMaskTA<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                             Wti.Vector, Wti.Scalar, Vti.Log2SEW, Wti.RegClass,
-                             Wti.ScalarRegClass>;
-    def : VPatBinaryNoMaskTU<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                             Wti.Vector, Wti.Scalar, Vti.Log2SEW, Vti.RegClass, Wti.RegClass,
-                             Wti.ScalarRegClass>;
+    defm : VPatBinaryTA<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
+                        Wti.Vector, Wti.Scalar, Vti.Mask, Vti.Log2SEW,
+                        Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5412,6 +5409,8 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
   }
 }
 

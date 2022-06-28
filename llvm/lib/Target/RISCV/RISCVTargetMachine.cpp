@@ -70,6 +70,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVCodeGenPreparePass(*PR);
   initializeRISCVTypePromotionPass(*PR);
+  initializeRISCVPostRAExpandPseudoPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVMergeBaseOffsetOptPass(*PR);
   initializeRISCVSExtWRemovalPass(*PR);
@@ -161,8 +162,12 @@ namespace {
 class RISCVPassConfig : public TargetPassConfig {
 public:
   RISCVPassConfig(RISCVTargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {}
-
+      : TargetPassConfig(TM, PM) {
+#if SIFIVE_CUSTOMIZATION
+    if (TM.getOptLevel() != CodeGenOpt::None)
+      substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
+#endif // SIFIVE_CUSTOMIZATION
+  }
   RISCVTargetMachine &getRISCVTargetMachine() const {
     return getTM<RISCVTargetMachine>();
   }
@@ -172,6 +177,8 @@ public:
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     ScheduleDAGMILive *DAG = createGenericSchedLive(C);
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     if (ST.hasFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
@@ -180,12 +187,12 @@ public:
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (ST.hasFusion()) {
-      ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
+    ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+    if (ST.hasFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
-      return DAG;
-    }
-    return nullptr;
+    return DAG;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -289,9 +296,9 @@ bool RISCVPassConfig::addILPOpts() {
     addPass(&MachineCombinerID);
   return true;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-void RISCVPassConfig::addPreSched2() {}
+void RISCVPassConfig::addPreSched2() { addPass(createRISCVPostRAExpandPseudoPass()); }
+#endif // SIFIVE_CUSTOMIZATION
 
 void RISCVPassConfig::addPreEmitPass() {
   addPass(&BranchRelaxationPassID);

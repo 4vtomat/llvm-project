@@ -435,6 +435,13 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
+def FeatureStdExtSscofpmf
+    : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
+                       "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
+def HasStdExtSscofpmf : Predicate<"Subtarget->hasStdExtSscofpmf()">,
+                                  AssemblerPredicate<(all_of FeatureStdExtSscofpmf),
+                                  "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
+
 def FeatureStdExtXsfvqmaccqoq
     : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",
                        "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
@@ -543,12 +550,28 @@ def TuneLUIADDIFusion
     : SubtargetFeature<"lui-addi-fusion", "HasLUIADDIFusion",
                        "true", "Enable LUI+ADDI fusion">;
 
+def TuneFuseIndexedLoad
+    : SubtargetFeature<"fuse-indexed-load", "HasFuseIndexedLoad",
+                       "true", "CPU fuses indexed load">;
+def TuneFuseZbaLoad
+    : SubtargetFeature<"fuse-zba-load", "HasFuseZbaLoad",
+                       "true", "CPU fuses Zba instructions with load",
+                       [TuneFuseIndexedLoad]>;
+
+def TuneFuseArithEqZ
+    : SubtargetFeature<"fuse-arith-eqz", "HasFuseArithEqZ",
+                       "true", "CPU fuses arithmetic with seqz/snez">;
+
 // P670 requires a S2V transfer buffer to move scalars into vectors.
 // FIXME: Forming .vx/.vf can reduce register pressure.
 def TuneDontSinkSplatOperands
     : SubtargetFeature<"dont-sink-splat-operands", "DontSinkSplatOperands",
                        "true", "Don't sink splat operands to enable .vx or .vf "
                        "instructions">;
+
+def TunePseudoLIsimm32
+    : SubtargetFeature<"pseudo-li-simm32", "UsePseudoLIsimm32",
+                       "true", "Enable treating LUI+ADDI(W) as a single macro instruction in some passes">;
 
 def TuneDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
                                     "'DLen' (SiFive datapath length) 128">;
@@ -633,9 +656,9 @@ def : ProcessorModel<"sifive-7m-rv64", SiFive7Model, [Feature64Bit],
                      [TuneSiFive7]>;
 
 def : ProcessorModel<"sifive-7n-rv32", SiFive7NModel, [],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
 def : ProcessorModel<"sifive-7n-rv64", SiFive7NModel, [Feature64Bit],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
 def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
                      [TuneSiFive8]>;
 def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
@@ -697,7 +720,7 @@ def : ProcessorModel<"sifive-e76n", SiFive7NModel, [FeatureStdExtM,
                                                     FeatureStdExtC,
                                                     FeatureStdExtZba,
                                                     FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def : ProcessorModel<"sifive-s21", RocketModel, [Feature64Bit,
@@ -755,7 +778,7 @@ def : ProcessorModel<"sifive-s76n", SiFive7NModel, [Feature64Bit,
                                                     FeatureStdExtC,
                                                     FeatureStdExtZba,
                                                     FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def : ProcessorModel<"sifive-u54", RocketModel, [Feature64Bit,
@@ -802,7 +825,7 @@ def : ProcessorModel<"sifive-u74n", SiFive7NModel, [Feature64Bit,
                                                     FeatureStdExtC,
                                                     FeatureStdExtZba,
                                                     FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
 
 def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
@@ -830,7 +853,7 @@ def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtZvfh,
                                                      FeatureStdExtZba,
                                                      FeatureStdExtZbb],
-                     [TuneSiFive7, TuneDLen128b]>;
+                     [TuneSiFive7, TuneDLen128b, TunePseudoLIsimm32]>;
 
 def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
@@ -864,7 +887,25 @@ def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvqmaccqoq,
                                                      FeatureStdExtXsfvfnrclipxfqf,
                                                      FeatureStdExtXsfvfwmaccqqq],
-                     [TuneSiFive7, TuneDLen256b]>;
+                     [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
+
+def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
+                                                     FeatureStdExtM,
+                                                     FeatureStdExtA,
+                                                     FeatureStdExtF,
+                                                     FeatureStdExtD,
+                                                     FeatureStdExtC,
+                                                     FeatureStdExtV,
+                                                     FeatureStdExtZvl512b,
+                                                     FeatureStdExtZfh,
+                                                     FeatureStdExtZvfh,
+                                                     FeatureStdExtZba,
+                                                     FeatureStdExtZbb,
+                                                     FeatureStdExtXsfvfhbfmin,
+                                                     FeatureStdExtXsfvqmaccqoq,
+                                                     FeatureStdExtXsfvfnrclipxfqf,
+                                                     FeatureStdExtXsfvfwmaccqqq],
+                     [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
 def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
                                                    FeatureStdExtM,

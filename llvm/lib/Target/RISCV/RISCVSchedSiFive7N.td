@@ -17,6 +17,7 @@ def SiFive7NModel : SchedMachineModel {
   let LoadLatency = 3;
   let MispredictPenalty = 3;
   let CompleteModel = 0;
+  let PostRAScheduler = true;
   let UnsupportedFeatures = [HasStdExtZbkb, HasStdExtZbkc, HasStdExtZbkx,
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
@@ -37,6 +38,7 @@ def SiFive7NPipeV       : ProcResource<1>;
 }
 
 let BufferSize = 1 in {
+def SiFive7NMem         : ProcResource<1> { let Super = SiFive7NPipeA; } // Memory
 def SiFive7NIDiv        : ProcResource<1> { let Super = SiFive7NPipeB; } // Int Division
 def SiFive7NFDiv        : ProcResource<1> { let Super = SiFive7NPipeB; } // FP Division/Sqrt
 def SiFive7NVA          : ProcResource<1> { let Super = SiFive7NPipeV; } // Arithmetic sequencer
@@ -114,37 +116,44 @@ def : WriteRes<WriteSHXADD32, [SiFive7NPipeB]>;
 }
 
 // Memory
-def : WriteRes<WriteSTB, [SiFive7NPipeA]>;
-def : WriteRes<WriteSTH, [SiFive7NPipeA]>;
-def : WriteRes<WriteSTW, [SiFive7NPipeA]>;
-def : WriteRes<WriteSTD, [SiFive7NPipeA]>;
-def : WriteRes<WriteFST16, [SiFive7NPipeA]>;
-def : WriteRes<WriteFST32, [SiFive7NPipeA]>;
-def : WriteRes<WriteFST64, [SiFive7NPipeA]>;
-
-let Latency = 3 in {
-def : WriteRes<WriteLDB, [SiFive7NPipeA]>;
-def : WriteRes<WriteLDH, [SiFive7NPipeA]>;
-def : WriteRes<WriteLDW, [SiFive7NPipeA]>;
-def : WriteRes<WriteLDWU, [SiFive7NPipeA]>;
-def : WriteRes<WriteLDD, [SiFive7NPipeA]>;
+let ResourceCycles = [0, 3] in {
+def : WriteRes<WriteSTB, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteSTH, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteFST16, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
-let Latency = 2 in {
-def : WriteRes<WriteFLD16, [SiFive7NPipeA]>;
-def : WriteRes<WriteFLD32, [SiFive7NPipeA]>;
-def : WriteRes<WriteFLD64, [SiFive7NPipeA]>;
+let ResourceCycles = [0, 1] in {
+def : WriteRes<WriteSTW, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteSTD, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteFST32, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteFST64, [SiFive7NPipeA, SiFive7NMem]>;
+}
+
+let Latency = 3, ResourceCycles = [0, 1] in {
+def : WriteRes<WriteLDB, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteLDH, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteLDW, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteLDWU, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteLDD, [SiFive7NPipeA, SiFive7NMem]>;
+}
+
+let Latency = 2, ResourceCycles = [0, 1] in {
+def : WriteRes<WriteFLD16, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteFLD32, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteFLD64, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
 // Atomic memory
-def : WriteRes<WriteAtomicSTW, [SiFive7NPipeA]>;
-def : WriteRes<WriteAtomicSTD, [SiFive7NPipeA]>;
+let ResourceCycles = [0, 1] in {
+def : WriteRes<WriteAtomicSTW, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteAtomicSTD, [SiFive7NPipeA, SiFive7NMem]>;
+}
 
-let Latency = 3 in {
-def : WriteRes<WriteAtomicW, [SiFive7NPipeA]>;
-def : WriteRes<WriteAtomicD, [SiFive7NPipeA]>;
-def : WriteRes<WriteAtomicLDW, [SiFive7NPipeA]>;
-def : WriteRes<WriteAtomicLDD, [SiFive7NPipeA]>;
+let Latency = 3, ResourceCycles = [0, 1] in {
+def : WriteRes<WriteAtomicW, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteAtomicD, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteAtomicLDW, [SiFive7NPipeA, SiFive7NMem]>;
+def : WriteRes<WriteAtomicLDD, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
 // Half precision.
