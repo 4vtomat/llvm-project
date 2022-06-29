@@ -120,7 +120,6 @@ private:
   bool HasFuseArithEqZ = false;       // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
   bool UsePseudoLIsimm32 = false; // SIFIVE
-  unsigned VLen = 128; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
   unsigned XLen = 32;
