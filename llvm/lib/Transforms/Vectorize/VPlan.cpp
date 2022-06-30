@@ -23,7 +23,6 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
@@ -35,7 +34,6 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
-#include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/GenericDomTreeConstruction.h"
 #include "llvm/Support/GraphWriter.h"
 #include "llvm/Support/raw_ostream.h"
@@ -541,6 +539,7 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+<<<<<<< HEAD
 bool VPRecipeBase::mayWriteToMemory() const {
   switch (getVPDefID()) {
   case VPWidenMemoryInstructionSC: {
@@ -991,6 +990,8 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State) {
@@ -1247,6 +1248,7 @@ void VPlan::updateDominatorTree(DominatorTree *DT, BasicBlock *LoopHeaderBB,
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+
 Twine VPlanPrinter::getUID(const VPBlockBase *Block) {
   return (isa<VPRegionBlock>(Block) ? "cluster_N" : "N") +
          Twine(getOrCreateBID(Block));
@@ -1407,6 +1409,7 @@ void VPlanIngredient::print(raw_ostream &O) const {
     V->printAsOperand(O, false);
 }
 
+<<<<<<< HEAD
 void VPWidenCallRecipe::print(raw_ostream &O, const Twine &Indent,
                               VPSlotTracker &SlotTracker) const {
   O << Indent << "WIDEN-CALL ";
@@ -1884,6 +1887,10 @@ void VPWidenPHIRecipe::execute(VPTransformState &State) {
   State.set(this, VecPhi, 0);
 }
 
+=======
+#endif
+
+>>>>>>> upstream/main
 template void DomTreeBuilder::Calculate<VPDominatorTree>(VPDominatorTree &DT);
 
 void VPValue::replaceAllUsesWith(VPValue *New) {

@@ -2977,7 +2977,7 @@ class OffloadingActionBuilder final {
                                                              << "--offload";
       }
 
-      // Collect all cuda_gpu_arch parameters, removing duplicates.
+      // Collect all offload arch parameters, removing duplicates.
       std::set<StringRef> GpuArchs;
       bool Error = false;
       for (Arg *A : Args) {
@@ -2986,21 +2986,22 @@ class OffloadingActionBuilder final {
           continue;
         A->claim();
 
-        StringRef ArchStr = A->getValue();
-        if (A->getOption().matches(options::OPT_no_offload_arch_EQ) &&
-            ArchStr == "all") {
-          GpuArchs.clear();
-          continue;
+        for (StringRef ArchStr : llvm::split(A->getValue(), ",")) {
+          if (A->getOption().matches(options::OPT_no_offload_arch_EQ) &&
+              ArchStr == "all") {
+            GpuArchs.clear();
+          } else {
+            ArchStr = getCanonicalOffloadArch(ArchStr);
+            if (ArchStr.empty()) {
+              Error = true;
+            } else if (A->getOption().matches(options::OPT_offload_arch_EQ))
+              GpuArchs.insert(ArchStr);
+            else if (A->getOption().matches(options::OPT_no_offload_arch_EQ))
+              GpuArchs.erase(ArchStr);
+            else
+              llvm_unreachable("Unexpected option.");
+          }
         }
-        ArchStr = getCanonicalOffloadArch(ArchStr);
-        if (ArchStr.empty()) {
-          Error = true;
-        } else if (A->getOption().matches(options::OPT_offload_arch_EQ))
-          GpuArchs.insert(ArchStr);
-        else if (A->getOption().matches(options::OPT_no_offload_arch_EQ))
-          GpuArchs.erase(ArchStr);
-        else
-          llvm_unreachable("Unexpected option.");
       }
 
       auto &&ConflictingArchs = getConflictOffloadArchCombination(GpuArchs);
@@ -3324,8 +3325,8 @@ class OffloadingActionBuilder final {
         A = C.getDriver().ConstructPhaseAction(C, Args, CurPhase, A,
                                                AssociatedOffloadKind);
 
-      if (CompileDeviceOnly && CurPhase == FinalPhase &&
-          BundleOutput.hasValue() && BundleOutput.getValue()) {
+      if (CompileDeviceOnly && CurPhase == FinalPhase && BundleOutput &&
+          BundleOutput.getValue()) {
         for (unsigned I = 0, E = GpuArchList.size(); I != E; ++I) {
           OffloadAction::DeviceDependences DDep;
           DDep.add(*CudaDeviceActions[I], *ToolChains.front(), GpuArchList[I],
@@ -4356,14 +4357,15 @@ Driver::getOffloadArchs(Compilation &C, const llvm::opt::DerivedArgList &Args,
   llvm::DenseSet<StringRef> Archs;
   for (auto &Arg : Args) {
     if (Arg->getOption().matches(options::OPT_offload_arch_EQ)) {
-      Archs.insert(
-          getCanonicalArchString(C, Args, Arg->getValue(), TC->getTriple()));
+      for (StringRef Arch : llvm::split(Arg->getValue(), ","))
+        Archs.insert(getCanonicalArchString(C, Args, Arch, TC->getTriple()));
     } else if (Arg->getOption().matches(options::OPT_no_offload_arch_EQ)) {
-      if (Arg->getValue() == StringRef("all"))
-        Archs.clear();
-      else
-        Archs.erase(
-            getCanonicalArchString(C, Args, Arg->getValue(), TC->getTriple()));
+      for (StringRef Arch : llvm::split(Arg->getValue(), ",")) {
+        if (Arch == StringRef("all"))
+          Archs.clear();
+        else
+          Archs.erase(getCanonicalArchString(C, Args, Arch, TC->getTriple()));
+      }
     }
   }
 
@@ -4457,17 +4459,6 @@ Action *Driver::BuildOffloadingActions(Compilation &C,
           OffloadAction::DeviceDependences DDep;
           DDep.add(*A, *TCAndArch->first, TCAndArch->second.data(), Kind);
           A = C.MakeAction<OffloadAction>(HDep, DDep);
-        } else if (isa<AssembleJobAction>(A) && Kind == Action::OFK_Cuda) {
-          // The Cuda toolchain uses fatbinary as the linker phase to bundle the
-          // PTX and Cubin output.
-          ActionList FatbinActions;
-          for (Action *A : {A, A->getInputs()[0]}) {
-            OffloadAction::DeviceDependences DDep;
-            DDep.add(*A, *TCAndArch->first, TCAndArch->second.data(), Kind);
-            FatbinActions.emplace_back(
-                C.MakeAction<OffloadAction>(DDep, A->getType()));
-          }
-          A = C.MakeAction<LinkJobAction>(FatbinActions, types::TY_CUDA_FATBIN);
         }
         ++TCAndArch;
       }
@@ -5670,6 +5661,14 @@ const char *Driver::GetNamedOutputPath(Compilation &C, const JobAction &JA,
     }
   } else if (JA.getType() == types::TY_PCH && IsCLMode()) {
     NamedOutput = C.getArgs().MakeArgString(GetClPchPath(C, BaseName));
+  } else if ((JA.getType() == types::TY_Plist || JA.getType() == types::TY_AST) &&
+             C.getArgs().hasArg(options::OPT__SLASH_o)) {
+    StringRef Val =
+        C.getArgs()
+            .getLastArg(options::OPT__SLASH_o)
+            ->getValue();
+    NamedOutput =
+        MakeCLOutputFilename(C.getArgs(), Val, BaseName, types::TY_Object);
   } else {
     const char *Suffix = types::getTypeTempSuffix(JA.getType(), IsCLMode());
     assert(Suffix && "All types used for output should have a suffix.");

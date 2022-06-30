@@ -15,7 +15,11 @@
 #include "RISCVCallLowering.h"
 #include "RISCVFrameLowering.h"
 #include "RISCVLegalizerInfo.h"
+<<<<<<< HEAD
 #include "SiFive_RISCVMacroFusion.h"
+=======
+#include "RISCVMacroFusion.h"
+>>>>>>> upstream/main
 #include "RISCVRegisterBankInfo.h"
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/ScheduleDAG.h"
@@ -210,6 +214,7 @@ bool RISCVSubtarget::enableSubRegLiveness() const {
   return hasVInstructions();
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static unsigned factorLMul(unsigned Lat, RISCVII::VLMUL LMul) {
   // Every DLEN chunk is processed every VLEN / DLEN cycles, or, virtually
@@ -363,10 +368,13 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
   llvm_unreachable("Unexpected processor model!");
 }
 
+=======
+>>>>>>> upstream/main
 void RISCVSubtarget::getPostRAMutations(
     std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
   Mutations.push_back(createRISCVMacroFusionDAGMutation());
 }
+<<<<<<< HEAD
 
 // Perform adjustments to the latency of a schedule dependency.
 // TODO: Consider the impact on the throughput.
@@ -399,3 +407,5 @@ void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
     Policy.OnlyBottomUp = false;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main

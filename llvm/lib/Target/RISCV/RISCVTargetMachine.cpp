@@ -14,6 +14,7 @@
 #include "MCTargetDesc/RISCVBaseInfo.h"
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
+#include "RISCVMacroFusion.h"
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
 #include "SiFive_RISCVMacroFusion.h"
@@ -172,6 +173,7 @@ public:
     return getTM<RISCVTargetMachine>();
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
@@ -182,11 +184,23 @@ public:
     if (ST.hasFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
+=======
+  ScheduleDAGInstrs *
+  createMachineScheduler(MachineSchedContext *C) const override {
+    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+    if (ST.hasMacroFusion()) {
+      ScheduleDAGMILive *DAG = createGenericSchedLive(C);
+      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+      return DAG;
+    }
+    return nullptr;
+>>>>>>> upstream/main
   }
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+<<<<<<< HEAD
     ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
@@ -195,6 +209,15 @@ public:
     return DAG;
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    if (ST.hasMacroFusion()) {
+      ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
+      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+      return DAG;
+    }
+    return nullptr;
+  }
+>>>>>>> upstream/main
 
   void addIRPasses() override;
 #if SIFIVE_CUSTOMIZATION

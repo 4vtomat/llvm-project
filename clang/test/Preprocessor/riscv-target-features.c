@@ -42,12 +42,17 @@
 // CHECK-NOT: __riscv_zkr
 // CHECK-NOT: __riscv_zkt
 // CHECK-NOT: __riscv_zk
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicbom
 // CHECK-NOT: __riscv_zicboz
 // CHECK-NOT: __riscv_zicbop
 // end SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __sifive_recode_neon
+=======
+// CHECK-NOT: __riscv_zicbom
+// CHECK-NOT: __riscv_zicboz
+>>>>>>> upstream/main
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-M-EXT %s
@@ -440,7 +445,10 @@
 // RUN: | FileCheck --check-prefix=CHECK-COMBINE-INTO-ZKS %s
 // CHECK-COMBINE-INTO-ZKS: __riscv_zks 1
 
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 // RUN: %clang -target riscv32 -march=rv32izicbom -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOM-EXT %s
 // RUN: %clang -target riscv64 -march=rv64izicbom -x c -E -dM %s \
@@ -458,6 +466,7 @@
 // RUN: %clang -target riscv64 -march=rv64izicbop -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOP-EXT %s
 // CHECK-ZICBOP-EXT: __riscv_zicbop 1000000{{$}}
+<<<<<<< HEAD
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
@@ -468,3 +477,5 @@
 // RUN:   -msifive-recode=off -o - \
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
 // CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
+=======
+>>>>>>> upstream/main

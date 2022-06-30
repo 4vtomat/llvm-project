@@ -672,7 +672,7 @@ public:
     if (!isValid())
       OS << "Uninitialized";
     if (isUnknown())
-      OS << "unknown";;
+      OS << "unknown";
     if (hasAVLReg())
       OS << "AVLReg=" << (unsigned)AVLReg;
     if (hasAVLImm())
@@ -963,11 +963,16 @@ bool RISCVInsertVSETVLI::needVSETVLI(const MachineInstr &MI,
   if (CurInfo.isCompatible(MI, Require))
     return false;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream for 2021.08 release
   if (!CurInfo.isValid() || CurInfo.isUnknown() || CurInfo.hasSEWLMULRatioOnly())
     return true;
 #endif
+=======
+  if (!CurInfo.isValid() || CurInfo.isUnknown() || CurInfo.hasSEWLMULRatioOnly())
+    return true;
+>>>>>>> upstream/main
 
   // For vmv.s.x and vfmv.s.f, there is only two behaviors, VL = 0 and VL > 0.
   // VL=0 is uninteresting (as it should have been deleted already), so it is
@@ -988,8 +993,11 @@ bool RISCVInsertVSETVLI::needVSETVLI(const MachineInstr &MI,
   // it might be defined by a VSET(I)VLI. If it has the same VLMAX we need
   // and the last VL/VTYPE we observed is the same, we don't need a
   // VSETVLI here.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream for 2021.08 release
+=======
+>>>>>>> upstream/main
   if (Require.hasAVLReg() && Require.getAVLReg().isVirtual() &&
       CurInfo.hasCompatibleVTYPE(MI, Require)) {
 #endif // SIFIVE_CUSTOMIZATION

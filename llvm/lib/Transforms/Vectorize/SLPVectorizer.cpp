@@ -2636,7 +2636,7 @@ private:
     // First check if the result is already in the cache.
     AliasCacheKey key = std::make_pair(Inst1, Inst2);
     Optional<bool> &result = AliasCache[key];
-    if (result.hasValue()) {
+    if (result) {
       return result.getValue();
     }
     bool aliased = true;
@@ -3558,7 +3558,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       Align CommonAlignment = cast<LoadInst>(VL0)->getAlign();
       for (Value *V : VL)
         CommonAlignment =
-            commonAlignment(CommonAlignment, cast<LoadInst>(V)->getAlign());
+            std::min(CommonAlignment, cast<LoadInst>(V)->getAlign());
       auto *VecTy = FixedVectorType::get(ScalarTy, VL.size());
       if (TTI.isLegalMaskedGather(VecTy, CommonAlignment) &&
           !TTI.forceScalarizeMaskedGather(VecTy, CommonAlignment))
@@ -3710,14 +3710,21 @@ void BoUpSLP::reorderTopToBottom() {
   // their ordering.
   DenseMap<const TreeEntry *, OrdersType> GathersToOrders;
 
+  // AltShuffles can also have a preferred ordering that leads to fewer
+  // instructions, e.g., the addsub instruction in x86.
+  DenseMap<const TreeEntry *, OrdersType> AltShufflesToOrders;
+
   // Maps a TreeEntry to the reorder indices of external users.
   DenseMap<const TreeEntry *, SmallVector<OrdersType, 1>>
       ExternalUserReorderMap;
+  // FIXME: Workaround for syntax error reported by MSVC buildbots.
+  TargetTransformInfo &TTIRef = *TTI;
   // Find all reorderable nodes with the given VF.
   // Currently the are vectorized stores,loads,extracts + some gathering of
   // extracts.
-  for_each(VectorizableTree, [this, &VFToOrderedEntries, &GathersToOrders,
-                              &ExternalUserReorderMap](
+  for_each(VectorizableTree, [this, &TTIRef, &VFToOrderedEntries,
+                              &GathersToOrders, &ExternalUserReorderMap,
+                              &AltShufflesToOrders](
                                  const std::unique_ptr<TreeEntry> &TE) {
     // Look for external users that will probably be vectorized.
     SmallVector<OrdersType, 1> ExternalUserReorderIndices =
@@ -3726,6 +3733,27 @@ void BoUpSLP::reorderTopToBottom() {
       VFToOrderedEntries[TE->Scalars.size()].insert(TE.get());
       ExternalUserReorderMap.try_emplace(TE.get(),
                                          std::move(ExternalUserReorderIndices));
+    }
+
+    // Patterns like [fadd,fsub] can be combined into a single instruction in
+    // x86. Reordering them into [fsub,fadd] blocks this pattern. So we need
+    // to take into account their order when looking for the most used order.
+    if (TE->isAltShuffle()) {
+      VectorType *VecTy =
+          FixedVectorType::get(TE->Scalars[0]->getType(), TE->Scalars.size());
+      unsigned Opcode0 = TE->getOpcode();
+      unsigned Opcode1 = TE->getAltOpcode();
+      // The opcode mask selects between the two opcodes.
+      SmallBitVector OpcodeMask(TE->Scalars.size(), 0);
+      for (unsigned Lane : seq<unsigned>(0, TE->Scalars.size()))
+        if (cast<Instruction>(TE->Scalars[Lane])->getOpcode() == Opcode1)
+          OpcodeMask.set(Lane);
+      // If this pattern is supported by the target then we consider the order.
+      if (TTIRef.isLegalAltInstr(VecTy, Opcode0, Opcode1, OpcodeMask)) {
+        VFToOrderedEntries[TE->Scalars.size()].insert(TE.get());
+        AltShufflesToOrders.try_emplace(TE.get(), OrdersType());
+      }
+      // TODO: Check the reverse order too.
     }
 
     if (Optional<OrdersType> CurrentOrder =
@@ -3778,10 +3806,16 @@ void BoUpSLP::reorderTopToBottom() {
       if (!OpTE->ReuseShuffleIndices.empty())
         continue;
       // Count number of orders uses.
-      const auto &Order = [OpTE, &GathersToOrders]() -> const OrdersType & {
+      const auto &Order = [OpTE, &GathersToOrders,
+                           &AltShufflesToOrders]() -> const OrdersType & {
         if (OpTE->State == TreeEntry::NeedToGather) {
           auto It = GathersToOrders.find(OpTE);
           if (It != GathersToOrders.end())
+            return It->second;
+        }
+        if (OpTE->isAltShuffle()) {
+          auto It = AltShufflesToOrders.find(OpTE);
+          if (It != AltShufflesToOrders.end())
             return It->second;
         }
         return OpTE->ReorderIndices;
@@ -3906,23 +3940,29 @@ bool BoUpSLP::canReorderOperands(
       // Add ScatterVectorize nodes to the list of operands, where just
       // reordering of the scalars is required. Similar to the gathers, so
       // simply add to the list of gathered ops.
-      if (TE->State != TreeEntry::Vectorize)
+      // If there are reused scalars, process this node as a regular vectorize
+      // node, just reorder reuses mask.
+      if (TE->State != TreeEntry::Vectorize && TE->ReuseShuffleIndices.empty())
         GatherOps.push_back(TE);
       continue;
     }
-    ArrayRef<Value *> VL = UserTE->getOperand(I);
     TreeEntry *Gather = nullptr;
     if (count_if(ReorderableGathers,
-                 [VL, &Gather](TreeEntry *TE) {
+                 [&Gather, UserTE, I](TreeEntry *TE) {
                    assert(TE->State != TreeEntry::Vectorize &&
                           "Only non-vectorized nodes are expected.");
-                   if (TE->isSame(VL)) {
+                   if (any_of(TE->UserTreeIndices,
+                              [UserTE, I](const EdgeInfo &EI) {
+                                return EI.UserTE == UserTE && EI.EdgeIdx == I;
+                              })) {
+                     assert(TE->isSame(UserTE->getOperand(I)) &&
+                            "Operand entry does not match operands.");
                      Gather = TE;
                      return true;
                    }
                    return false;
                  }) > 1 &&
-        !all_of(VL, isConstant))
+        !all_of(UserTE->getOperand(I), isConstant))
       return false;
     if (Gather)
       GatherOps.push_back(Gather);
@@ -4017,8 +4057,7 @@ void BoUpSLP::reorderBottomToTop(bool IgnoreReorder) {
         TreeEntry *OpTE = Op.second;
         if (!VisitedOps.insert(OpTE).second)
           continue;
-        if (!OpTE->ReuseShuffleIndices.empty() ||
-            (IgnoreReorder && OpTE == VectorizableTree.front().get()))
+        if (!OpTE->ReuseShuffleIndices.empty())
           continue;
         const auto &Order = [OpTE, &GathersToOrders]() -> const OrdersType & {
           if (OpTE->State == TreeEntry::NeedToGather)
@@ -4138,6 +4177,8 @@ void BoUpSLP::reorderBottomToTop(bool IgnoreReorder) {
                 TE->ReorderIndices.empty()) &&
                "Non-matching sizes of user/operand entries.");
         reorderOrder(TE->ReorderIndices, Mask);
+        if (IgnoreReorder && TE == VectorizableTree.front().get())
+          IgnoreReorder = false;
       }
       // For gathers just need to reorder its scalars.
       for (TreeEntry *Gather : GatherOps) {
@@ -6404,7 +6445,7 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
         Align CommonAlignment = Alignment;
         for (Value *V : VL)
           CommonAlignment =
-              commonAlignment(CommonAlignment, cast<LoadInst>(V)->getAlign());
+              std::min(CommonAlignment, cast<LoadInst>(V)->getAlign());
         VecLdCost = TTI->getGatherScatterOpCost(
             Instruction::Load, VecTy, cast<LoadInst>(VL0)->getPointerOperand(),
             /*VariableMask=*/false, CommonAlignment, CostKind, VL0);
@@ -7701,6 +7742,11 @@ Value *BoUpSLP::vectorizeTree(ArrayRef<Value *> VL) {
   return createBuildVector(VL);
 }
 Value *BoUpSLP::createBuildVector(ArrayRef<Value *> VL) {
+  assert(any_of(VectorizableTree,
+                [VL](const std::unique_ptr<TreeEntry> &TE) {
+                  return TE->State == TreeEntry::NeedToGather && TE->isSame(VL);
+                }) &&
+         "Non-matching gather node.");
   unsigned VF = VL.size();
   // Exploit possible reuse of values across lanes.
   SmallVector<int> ReuseShuffleIndicies;
@@ -7812,9 +7858,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
   auto *VecTy = FixedVectorType::get(ScalarTy, E->Scalars.size());
   switch (ShuffleOrOp) {
     case Instruction::PHI: {
-      assert(
-          (E->ReorderIndices.empty() || E != VectorizableTree.front().get()) &&
-          "PHI reordering is free.");
+      assert((E->ReorderIndices.empty() ||
+              E != VectorizableTree.front().get() ||
+              !E->UserTreeIndices.empty()) &&
+             "PHI reordering is free.");
       auto *PH = cast<PHINode>(VL0);
       Builder.SetInsertPoint(PH->getParent()->getFirstNonPHI());
       Builder.SetCurrentDebugLocation(PH->getDebugLoc());
@@ -8116,7 +8163,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
         Align CommonAlignment = LI->getAlign();
         for (Value *V : E->Scalars)
           CommonAlignment =
-              commonAlignment(CommonAlignment, cast<LoadInst>(V)->getAlign());
+              std::min(CommonAlignment, cast<LoadInst>(V)->getAlign());
         NewLI = Builder.CreateMaskedGather(VecTy, VecPtr, CommonAlignment);
       }
       Value *V = propagateMetadata(NewLI, E->Scalars);

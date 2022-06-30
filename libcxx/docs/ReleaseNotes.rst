@@ -43,8 +43,9 @@ Implemented Papers
 - P0674R1 (Support arrays in ``make_shared`` and ``allocate_shared``)
 - P0980R1 (Making ``std::string`` constexpr)
 - P2216R3 (std::format improvements)
-
-- Implemented P0174R2 (Deprecating Vestigial Library Parts in C++17)
+- P0174R2 (Deprecating Vestigial Library Parts in C++17)
+- N4190 (Removing auto_ptr, random_shuffle(), And Old <functional> Stuff)
+- P0154R1 (Hardware inference size)
 
 - Marked the following papers as "Complete" (note that some of those might have
   been implemented in a previous release but not marked as such):
@@ -96,19 +97,15 @@ API Changes
   ``<filesystem>`` header. The associated macro
   ``_LIBCPP_DEPRECATED_EXPERIMENTAL_FILESYSTEM`` has also been removed.
 
-- Some libc++ headers no longer transitively include all of:
-    - ``<algorithm>``
-    - ``<chrono>``
-    - ``<exception>``
-    - ``<functional>``
-    - ``<iterator>``
-    - ``<new>``
-    - ``<typeinfo>``
-    - ``<utility>``
+- Libc++ is getting ready to remove unnecessary transitive inclusions. This may
+  break your code in the future. To future-proof your code to these removals,
+  please compile your code with ``_LIBCPP_REMOVE_TRANSITIVE_INCLUDES`` defined
+  and fix any compilation error resulting from missing includes.
 
-  If, after updating libc++, you see compiler errors related to missing declarations
-  in namespace ``std``, it might be because one of your source files now needs to
-  include one or more of the headers listed above.
+- The ``<algorithm>``, ``<array>``, ``<optional>``, ``<unordered_map>`` and ``<vector>``
+  headers no longer transitively include the ``<functional>`` header. If you see compiler
+  errors related to missing declarations in namespace ``std``, make sure you have the
+  necessary includes.
 
 - The integer distributions ``binomial_distribution``, ``discrete_distribution``,
   ``geometric_distribution``, ``negative_binomial_distribution``, ``poisson_distribution``,
@@ -147,6 +144,16 @@ API Changes
 - The experimental versions of ``boyer_moore_searcher`` and ``boyer_moore_horspool_searcher``
   will be removed in LLVM 17. You can disable the deprecation warnings by defining
   ``_LIBCPP_NO_EXPERIMENTAL_DEPRECATION_WARNING_SEARCHERS``.
+
+- ``std::function`` has been removed in C++03. If you are using it, please remove usages
+  or upgrade to C++11 or later. It is possible to re-enable ``std::function`` in C++03 by defining
+  ``_LIBCPP_ENABLE_CXX03_FUNCTION``. This option will be removed in LLVM 16.
+
+- ``unary_function`` and ``binary_function`` are no longer available in C++17 and C++20.
+  They can be re-enabled by defining ``_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION``.
+  They are also marked as ``[[deprecated]]`` in C++11 and later. To disable deprecation warnings
+  you have to define ``_LIBCPP_DISABLE_DEPRECATION_WARNINGS``. Note that this disables
+  all deprecation warnings.
 
 ABI Changes
 -----------

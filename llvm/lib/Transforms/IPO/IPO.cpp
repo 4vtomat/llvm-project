@@ -24,7 +24,6 @@ using namespace llvm;
 
 void llvm::initializeIPO(PassRegistry &Registry) {
   initializeOpenMPOptCGSCCLegacyPassPass(Registry);
-  initializeArgPromotionPass(Registry);
   initializeAnnotation2MetadataLegacyPass(Registry);
   initializeCalledValuePropagationLegacyPassPass(Registry);
   initializeConstantMergeLegacyPassPass(Registry);
@@ -73,6 +72,7 @@ void LLVMInitializeIPO(LLVMPassRegistryRef R) {
   initializeIPO(*unwrap(R));
 }
 
+<<<<<<< HEAD
 void LLVMAddArgumentPromotionPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createArgumentPromotionPass());
 }
@@ -83,6 +83,8 @@ void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
 }
 #endif
 
+=======
+>>>>>>> upstream/main
 void LLVMAddCalledValuePropagationPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createCalledValuePropagationPass());
 }

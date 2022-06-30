@@ -2469,23 +2469,9 @@ SDValue SelectionDAG::GetDemandedBits(SDValue V, const APInt &DemandedBits) {
   if (VT.isScalableVector())
     return SDValue();
 
-  APInt DemandedElts = VT.isVector()
-                           ? APInt::getAllOnes(VT.getVectorNumElements())
-                           : APInt(1, 1);
-  return GetDemandedBits(V, DemandedBits, DemandedElts);
-}
-
-/// See if the specified operand can be simplified with the knowledge that only
-/// the bits specified by DemandedBits are used in the elements specified by
-/// DemandedElts.
-/// TODO: really we should be making this into the DAG equivalent of
-/// SimplifyMultipleUseDemandedBits and not generate any new nodes.
-SDValue SelectionDAG::GetDemandedBits(SDValue V, const APInt &DemandedBits,
-                                      const APInt &DemandedElts) {
   switch (V.getOpcode()) {
   default:
-    return TLI->SimplifyMultipleUseDemandedBits(V, DemandedBits, DemandedElts,
-                                                *this);
+    return TLI->SimplifyMultipleUseDemandedBits(V, DemandedBits, *this);
   case ISD::Constant: {
     const APInt &CVal = cast<ConstantSDNode>(V)->getAPIntValue();
     APInt NewVal = CVal & DemandedBits;
@@ -2505,8 +2491,8 @@ SDValue SelectionDAG::GetDemandedBits(SDValue V, const APInt &DemandedBits,
       if (Amt >= DemandedBits.getBitWidth())
         break;
       APInt SrcDemandedBits = DemandedBits << Amt;
-      if (SDValue SimplifyLHS =
-              GetDemandedBits(V.getOperand(0), SrcDemandedBits))
+      if (SDValue SimplifyLHS = TLI->SimplifyMultipleUseDemandedBits(
+              V.getOperand(0), SrcDemandedBits, *this))
         return getNode(ISD::SRL, SDLoc(V), V.getValueType(), SimplifyLHS,
                        V.getOperand(1));
     }
@@ -6163,6 +6149,10 @@ SDValue SelectionDAG::getNode(unsigned Opcode, const SDLoc &DL, EVT VT,
         if (N1Op2C->getZExtValue() == N2C->getZExtValue()) {
           if (VT == N1.getOperand(1).getValueType())
             return N1.getOperand(1);
+          if (VT.isFloatingPoint()) {
+            assert(VT.getSizeInBits() > N1.getOperand(1).getValueType().getSizeInBits());
+            return getFPExtendOrRound(N1.getOperand(1), DL, VT);
+          }
           return getSExtOrTrunc(N1.getOperand(1), DL, VT);
         }
         return getNode(ISD::EXTRACT_VECTOR_ELT, DL, VT, N1.getOperand(0), N2);
