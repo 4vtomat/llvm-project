@@ -2979,8 +2979,10 @@ static bool BlockIsSimpleEnoughToThreadThrough(BasicBlock *BB) {
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
 static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
                                         BasicBlock *To) {
+#endif
   // Don't look past the block defining the value, we might get the value from
   // a previous loop iteration.
   auto *I = dyn_cast<Instruction>(V);
@@ -2994,7 +2996,9 @@ static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
     return BI->getSuccessor(0) == To ? ConstantInt::getTrue(BI->getContext())
                                      : ConstantInt::getFalse(BI->getContext());
 
+#if SIFIVE_CUSTOMIZATION
   return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// If we have a conditional branch on something for which we know the constant
@@ -3019,10 +3023,12 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
       if (auto *CB = dyn_cast<ConstantInt>(U))
         KnownValues.insert({PN->getIncomingBlock(U), CB});
   } else {
+#if SIFIVE_CUSTOMIZATION
     for (BasicBlock *Pred : predecessors(BB)) {
       if (ConstantInt *CB = getKnownValueOnEdge(Cond, Pred, BB))
         KnownValues.insert({Pred, CB});
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (KnownValues.empty())
