@@ -1917,9 +1917,5 @@ include "RISCVInstrInfoZb.td"
 include "RISCVInstrInfoZk.td"
 include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZfh.td"
-<<<<<<< HEAD
-include "RISCVInstrInfoCompactPseudos.td"
-include "RISCVInstrInfoZicbo.td" // SIFIVE
-=======
 include "RISCVInstrInfoZicbo.td"
->>>>>>> upstream/main
+include "RISCVInstrInfoCompactPseudos.td" // SIFIVE

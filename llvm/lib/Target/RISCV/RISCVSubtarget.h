@@ -101,16 +101,10 @@ private:
   bool HasStdExtZks = false;
   bool HasStdExtZkt = false;
   bool HasStdExtZk = false;
-<<<<<<< HEAD
-  bool HasStdExtZicbom = false; // SIFIVE
-  bool HasStdExtZicboz = false; // SIFIVE
-  bool HasStdExtZicbop = false; // SIFIVE
-  bool HasStdExtSscofpmf = false; // SIFIVE
-=======
   bool HasStdExtZicbom = false;
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
->>>>>>> upstream/main
+  bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
@@ -223,16 +217,10 @@ public:
   bool hasStdExtZksed() const { return HasStdExtZksed; }
   bool hasStdExtZksh() const { return HasStdExtZksh; }
   bool hasStdExtZkr() const { return HasStdExtZkr; }
-<<<<<<< HEAD
-  bool hasStdExtZicbom() const { return HasStdExtZicbom; } // SIFIVE
-  bool hasStdExtZicboz() const { return HasStdExtZicboz; } // SIFIVE
-  bool hasStdExtZicbop() const { return HasStdExtZicbop; } // SIFIVE
-  bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
-=======
   bool hasStdExtZicbom() const { return HasStdExtZicbom; }
   bool hasStdExtZicboz() const { return HasStdExtZicboz; }
   bool hasStdExtZicbop() const { return HasStdExtZicbop; }
->>>>>>> upstream/main
+  bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
   bool is64Bit() const { return HasRV64; }
   bool isRV32E() const { return IsRV32E; }
   bool enableLinkerRelax() const { return EnableLinkerRelax; }

@@ -1291,18 +1291,8 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_SIMM12:
           Ok = isInt<12>(Imm);
           break;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_SIMM12_LSB00000:
           Ok = isShiftedInt<7, 5>(Imm);
-          break;
-#endif // SIFIVE_CUSTOMIZATION
-        case RISCVOp::OPERAND_UIMM20:
-          Ok = isUInt<20>(Imm);
-=======
-        case RISCVOp::OPERAND_SIMM12_LSB00000:
-          Ok = isShiftedInt<7, 5>(Imm);
->>>>>>> upstream/main
           break;
         case RISCVOp::OPERAND_UIMMLOG2XLEN:
           if (STI.getTargetTriple().isArch64Bit())

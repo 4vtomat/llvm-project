@@ -723,10 +723,6 @@ public:
 
   bool isSImm12Lsb0() const { return isBareSimmNLsb0<12>(); }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   bool isSImm12Lsb00000() const {
     if (!isImm())
       return false;
@@ -736,10 +732,6 @@ public:
     return IsConstantImm && isShiftedInt<7, 5>(Imm) &&
            VK == RISCVMCExpr::VK_RISCV_None;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   bool isSImm13Lsb0() const { return isBareSimmNLsb0<13>(); }
 
@@ -1262,18 +1254,10 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, -(1 << 11), (1 << 11) - 2,
         "immediate must be a multiple of 2 bytes in the range");
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case Match_InvalidSImm12Lsb00000:
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, -(1 << 11), (1 << 11) - 32,
         "immediate must be a multiple of 32 bytes in the range");
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case Match_InvalidSImm13Lsb0:
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, -(1 << 12), (1 << 12) - 2,

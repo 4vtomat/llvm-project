@@ -415,30 +415,20 @@ def FeatureStdExtZvfh
                        "'Zvfh' (Vector Half-Precision Floating-Point)",
                        [FeatureStdExtZve32f]>;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 def FeatureStdExtZicbom
     : SubtargetFeature<"zicbom", "HasStdExtZicbom", "true",
                        "'Zicbom' (Cache-Block Management Instructions)">;
 def HasStdExtZicbom : Predicate<"Subtarget->hasStdExtZicbom()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbom),
                                 "'Zicbom' (Cache-Block Management Instructions)">;
-<<<<<<< HEAD
-=======
 
->>>>>>> upstream/main
 def FeatureStdExtZicboz
     : SubtargetFeature<"zicboz", "HasStdExtZicboz", "true",
                        "'Zicboz' (Cache-Block Zero Instructions)">;
 def HasStdExtZicboz : Predicate<"Subtarget->hasStdExtZicboz()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicboz),
                                 "'Zicboz' (Cache-Block Zero Instructions)">;
-<<<<<<< HEAD
-=======
 
->>>>>>> upstream/main
 def FeatureStdExtZicbop
     : SubtargetFeature<"zicbop", "HasStdExtZicbop", "true",
                        "'Zicbop' (Cache-Block Prefetch Instructions)">;
@@ -446,7 +436,7 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSscofpmf
     : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
                        "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
@@ -502,8 +492,6 @@ def HasExtXsfvcp : Predicate<"Subtarget->hasExtXsfvcp()">,
                              "'Xsfvcp' (SiFive custom vector coprocessor interface instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 def Feature64Bit
     : SubtargetFeature<"64bit", "HasRV64", "true", "Implements RV64">;
 def IsRV64 : Predicate<"Subtarget->is64Bit()">,

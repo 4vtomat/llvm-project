@@ -113,12 +113,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zve64f", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     {"zicbom", RISCVExtensionVersion{1, 0}},
     {"zicboz", RISCVExtensionVersion{1, 0}},
     {"zicbop", RISCVExtensionVersion{1, 0}},
 
+#if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}},
@@ -128,11 +127,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}},
     {"xsfvcp", RISCVExtensionVersion{0, 1}},
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    {"zicbom", RISCVExtensionVersion{1, 0}},
-    {"zicboz", RISCVExtensionVersion{1, 0}},
-    {"zicbop", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
