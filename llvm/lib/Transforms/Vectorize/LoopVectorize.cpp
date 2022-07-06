@@ -7461,10 +7461,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         // relying on instcombine to remove them.
         // Load: Scalar load + broadcast
         // Store: Scalar store + isLoopInvariantStoreValue ? 0 : extract
+        InstructionCost Cost;
         if (isa<StoreInst>(&I) && VF.isScalable() &&
             isLegalGatherOrScatter(&I, VF)) {
 #if SIFIVE_CUSTOMIZATION
-          InstructionCost Cost = getGatherScatterCost(&I, VF);
+          Cost = getGatherScatterCost(&I, VF);
           if (UseStridedAccesses && canUseStridedAccess(&I)) {
             setWideningDecision(&I, VF, CM_Strided, Cost);
             LLVM_DEBUG(llvm::dbgs() << "Can use strided access " << I << "\n");
@@ -7477,15 +7478,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
           }
 #endif // SIFIVE_CUSTOMIZATION
         } else {
-<<<<<<< HEAD
-          assert((isa<LoadInst>(&I) || !VF.isScalable()) &&
-                 "Cannot yet scalarize uniform stores");
-#if SIFIVE_CUSTOMIZATION
-          InstructionCost Cost = getUniformMemOpCost(&I, VF);
-#endif // SIFIVE_CUSTOMIZATION
-=======
           Cost = getUniformMemOpCost(&I, VF);
->>>>>>> upstream/main
           setWideningDecision(&I, VF, CM_Scalarize, Cost);
         }
         continue;
