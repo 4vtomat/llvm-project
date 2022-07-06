@@ -9907,7 +9907,6 @@ static SDValue performBITREVERSECombine(SDNode *N, SelectionDAG &DAG,
                      DAG.getConstant(7, DL, VT));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue combineSTORE_BUILD_VECTOR_LOAD(SDNode *N, SelectionDAG &DAG,
                                               const RISCVSubtarget &Subtarget) {
@@ -10012,7 +10011,6 @@ performEXTRACT_VECTOR_ELTCombine(SDNode *N, SelectionDAG &DAG,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 // Convert from one FMA opcode to another based on whether we are negating the
 // multiply result and/or the accumulator.
 // NOTE: Only supports RVV operations with VL.
@@ -10047,7 +10045,6 @@ static unsigned negateFMAOpcode(unsigned Opcode, bool NegMul, bool NegAcc) {
 
   return Opcode;
 }
->>>>>>> upstream/main
 SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
   SelectionDAG &DAG = DCI.DAG;
@@ -13224,18 +13221,14 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(FNEG_VL)
   NODE_NAME_CASE(FABS_VL)
   NODE_NAME_CASE(FSQRT_VL)
-<<<<<<< HEAD
   NODE_NAME_CASE(FRSQRT7_VL) // SIFIVE
   NODE_NAME_CASE(FREC7_VL) // SIFIVE
   NODE_NAME_CASE(FCLASS_VL) // SIFIVE
-  NODE_NAME_CASE(FMA_VL)
-  NODE_NAME_CASE(FNMSAC_VL) // SIFIVE
-=======
   NODE_NAME_CASE(VFMADD_VL)
   NODE_NAME_CASE(VFNMADD_VL)
   NODE_NAME_CASE(VFMSUB_VL)
   NODE_NAME_CASE(VFNMSUB_VL)
->>>>>>> upstream/main
+  NODE_NAME_CASE(FNMSAC_VL) // SIFIVE
   NODE_NAME_CASE(FCOPYSIGN_VL)
   NODE_NAME_CASE(SMIN_VL)
   NODE_NAME_CASE(SMAX_VL)

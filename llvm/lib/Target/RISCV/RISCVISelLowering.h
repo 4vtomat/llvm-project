@@ -246,18 +246,14 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
-<<<<<<< HEAD
   FRSQRT7_VL, // SIFIVE
   FREC7_VL,   // SIFIVE
   FCLASS_VL,  // SIFIVE
-  FMA_VL,
-  FNMSAC_VL,  // SIFIVE
-=======
   VFMADD_VL,
   VFNMADD_VL,
   VFMSUB_VL,
   VFNMSUB_VL,
->>>>>>> upstream/main
+  FNMSAC_VL, // SIFIVE
   FCOPYSIGN_VL,
   SMIN_VL,
   SMAX_VL,
