@@ -5832,7 +5832,6 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     // scalar loop.
 #endif // SIFIVE_CUSTOMIZATION
     VectorizationCostTy C = expectedCost(i, &InvalidCosts);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (!C.first.isValid()) {
       LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << i
@@ -5840,10 +5839,7 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
       continue;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    VectorizationFactor Candidate(i, C.first);
-=======
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
->>>>>>> upstream/main
 
 #ifndef NDEBUG
     unsigned AssumedMinimumVscale = 1;
