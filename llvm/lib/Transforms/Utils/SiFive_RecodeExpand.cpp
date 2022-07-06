@@ -77,6 +77,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_abs:
   case Intrinsic::aarch64_neon_fabd:
   case Intrinsic::aarch64_neon_facgt:
+  case Intrinsic::aarch64_neon_faddv:
   case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_frsqrte:
   case Intrinsic::aarch64_neon_ld1x2:
@@ -150,6 +151,23 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             {II->getArgOperand(1)});
         II->replaceAllUsesWith(Builder.CreateSExt(
             Builder.CreateFCmpOGT(Abs0, Abs1), II->getType()));
+        break;
+      }
+      case Intrinsic::aarch64_neon_faddv: {
+        Value *Src = II->getArgOperand(0);
+        unsigned VecNumElements =
+            cast<FixedVectorType>(Src->getType())->getNumElements();
+        if (VecNumElements == 4) {
+          Value *P0 = Builder.CreateShuffleVector(Src, {0, 2});
+          Value *P1 = Builder.CreateShuffleVector(Src, {1, 3});
+          Src = Builder.CreateFAdd(P0, P1);
+          VecNumElements /= 2;
+        }
+        assert(VecNumElements == 2);
+        Value *P0 = Builder.CreateShuffleVector(Src, {0});
+        Value *P1 = Builder.CreateShuffleVector(Src, {1});
+        II->replaceAllUsesWith(Builder.CreateExtractElement(
+            Builder.CreateFAdd(P0, P1), static_cast<uint64_t>(0)));
         break;
       }
       case Intrinsic::aarch64_neon_frecpe:
