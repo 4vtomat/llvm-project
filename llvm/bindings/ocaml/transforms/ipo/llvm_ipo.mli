@@ -11,12 +11,6 @@
     This interface provides an OCaml API for LLVM interprocedural optimizations, the
     classes in the [LLVMIPO] library. *)
 
-<<<<<<< HEAD
-(** See the [llvm::createAddArgumentPromotionPass] function. *)
-external add_argument_promotion
-  : [ `Module ] Llvm.PassManager.t -> unit
-  = "llvm_add_argument_promotion"
-
 (*----- SIFIVE_CUSTOMIZATION START -------------------------------------------*)
 
   (** See the [llvm::createLoopDataLayoutPass] function. *)
@@ -26,8 +20,6 @@ external add_loop_data_layout
 
 (*----- SIFIVE_CUSTOMIZATION END ---------------------------------------------*)
 
-=======
->>>>>>> upstream/main
 (** See the [llvm::createConstantMergePass] function. *)
 external add_constant_merge
   : [ `Module ] Llvm.PassManager.t -> unit
