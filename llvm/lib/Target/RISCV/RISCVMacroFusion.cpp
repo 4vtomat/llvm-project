@@ -50,6 +50,125 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
   return FirstDest.isVirtual() || SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool isIndexedLoad(const MachineInstr *FirstMI,
+                          const MachineInstr &SecondMI, bool FuseZba) {
+  switch (SecondMI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::LB:
+  case RISCV::LBU:
+  case RISCV::LH:
+  case RISCV::LHU:
+  case RISCV::LW:
+  case RISCV::LWU:
+  case RISCV::LD:
+  case RISCV::FLH:
+  case RISCV::FLW:
+  case RISCV::FLD:
+    break;
+  }
+
+  // Assume the 1st instr to be a wildcard if it is unspecified
+  if (!FirstMI)
+    return true;
+
+  switch (FirstMI->getOpcode()) {
+  default:
+    return false;
+  case RISCV::ADD:
+    break;
+  case RISCV::SH1ADD:
+  case RISCV::SH2ADD:
+  case RISCV::SH3ADD:
+  case RISCV::SH1ADD_UW:
+  case RISCV::SH2ADD_UW:
+  case RISCV::SH3ADD_UW:
+  case RISCV::ADD_UW:
+    if (!FuseZba)
+      return false;
+    break;
+  }
+
+  // The first operand might be frame index.
+  if (!SecondMI.getOperand(1).isReg())
+    return false;
+
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
+  if (SecondMI.getOperand(1).getReg() != FirstDest)
+    return false;
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return FirstDest.isVirtual() || SecondMI.getOperand(0).getReg() == FirstDest;
+}
+
+static bool isArithEqZ(const MachineInstr *FirstMI,
+                       const MachineInstr &SecondMI) {
+  unsigned SrcOpIdx;
+  switch (SecondMI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SLTIU:
+    if (SecondMI.getOperand(2).getImm() != 1)
+      return false;
+    SrcOpIdx = 1;
+    break;
+  case RISCV::SLTU:
+    if (SecondMI.getOperand(1).getReg() != RISCV::X0)
+      return false;
+    SrcOpIdx = 2;
+    break;
+  }
+
+  // Assume the 1st instr to be a wildcard if it is unspecified.
+  if (!FirstMI)
+    return true;
+
+  bool PreRA = false;
+  switch (FirstMI->getOpcode()) {
+  default:
+    return false;
+  case RISCV::ADDI:
+  case RISCV::XOR:
+    // Allow these pre-RA because they are the idioms we use for equality
+    // comparisons.
+    PreRA = true;
+    break;
+  case RISCV::ADD:
+  case RISCV::ADDW:
+  case RISCV::ADDIW:
+  case RISCV::SUB:
+  case RISCV::SUBW:
+  case RISCV::AND:
+  case RISCV::ANDI:
+  case RISCV::OR:
+  case RISCV::ORI:
+  case RISCV::XORI:
+    // Do not allow these pre-RA because we can't ensure that SecondMI is the
+    // only user pre-RA.
+    // FIXME: We probably need some pseudoinstructions and an earlier fusion
+    // peephole.
+    break;
+  }
+
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
+  // The SecondMI source operand should match the FirstMI destination.
+  if (SecondMI.getOperand(SrcOpIdx).getReg() != FirstDest)
+    return false;
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return (FirstDest.isVirtual() && PreRA) ||
+         SecondMI.getOperand(0).getReg() == FirstDest;
+}
+
+// \brief Check if the instr pair, FirstMI and SecondMI, should be fused
+// together. Given SecondMI, when FirstMI is unspecified, then check if
+// SecondMI may be part of a fused pair at all.
+#endif // SIFIVE_CUSTOMIZATION
 static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
                                    const TargetSubtargetInfo &TSI,
                                    const MachineInstr *FirstMI,
@@ -58,7 +177,13 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
 
   if (ST.hasLUIADDIFusion() && isLUIADDI(FirstMI, SecondMI))
     return true;
-
+#if SIFIVE_CUSTOMIZATION
+  if (ST.hasFuseIndexedLoad() &&
+      isIndexedLoad(FirstMI, SecondMI, ST.hasFuseZbaLoad()))
+    return true;
+  if (ST.hasFuseArithEqZ() && isArithEqZ(FirstMI, SecondMI))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   return false;
 }
 

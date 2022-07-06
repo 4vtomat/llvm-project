@@ -114,7 +114,6 @@ private:
   bool HasCMOVBranchOpt = false; // SIFIVE
   bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
-  bool HasLUIADDIFusion = false; // SIFIVE
   bool HasFuseIndexedLoad = false;    // SIFIVE
   bool HasFuseZbaLoad = false;        // SIFIVE
   bool HasFuseArithEqZ = false;       // SIFIVE
@@ -233,13 +232,9 @@ public:
     return HasCMOVBranchOpt && !HasShortForwardBranchOpt;
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
-  bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
   bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
   bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
-  bool hasFusion() const {
-    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ();
-  }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
   bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
@@ -279,7 +274,11 @@ public:
     return UserReservedRegister[i];
   }
 
-  bool hasMacroFusion() const { return hasLUIADDIFusion(); }
+  bool hasMacroFusion() const {
+#if SIFIVE_CUSTOMIZATION
+    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ();
+#endif // SIFIVE_CUSTOMIZATION
+  }
 
   // Vector codegen related methods.
   bool hasVInstructions() const { return HasStdExtZve32x; }
@@ -335,20 +334,15 @@ public:
 
   bool enableSubRegLiveness() const override;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
                               &Mutations) const override;
 
+#if SIFIVE_CUSTOMIZATION
   void adjustSchedDependency(SUnit *Def, int DefOpIdx, SUnit *Use, int UseOpIdx,
                              SDep &Dep) const override;
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
-                              &Mutations) const override;
->>>>>>> upstream/main
 };
 } // End llvm namespace
 

@@ -17,7 +17,7 @@
 #include "RISCVMacroFusion.h"
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
-#include "SiFive_RISCVMacroFusion.h"
+#include "RISCVMacroFusion.h"
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
@@ -173,51 +173,45 @@ public:
     return getTM<RISCVTargetMachine>();
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+#if SIFIVE_CUSTOMIZATION
     ScheduleDAGMILive *DAG = createGenericSchedLive(C);
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    if (ST.hasFusion())
+    if (ST.hasMacroFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
-=======
-  ScheduleDAGInstrs *
-  createMachineScheduler(MachineSchedContext *C) const override {
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+#else
     if (ST.hasMacroFusion()) {
       ScheduleDAGMILive *DAG = createGenericSchedLive(C);
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
       return DAG;
     }
     return nullptr;
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
     ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    if (ST.hasFusion())
+    if (ST.hasMacroFusion())
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
     if (ST.hasMacroFusion()) {
       ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
       return DAG;
     }
     return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   }
->>>>>>> upstream/main
 
   void addIRPasses() override;
 #if SIFIVE_CUSTOMIZATION

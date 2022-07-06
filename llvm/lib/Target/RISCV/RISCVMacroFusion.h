@@ -11,6 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if SIFIVE_CUSTOMIZATION
+#include "RISCVInstrInfo.h"
+#endif // SIFIVE_CUSTOMIZATION
+
 #ifndef LLVM_LIB_TARGET_RISCV_RISCVMACROFUSION_H
 #define LLVM_LIB_TARGET_RISCV_RISCVMACROFUSION_H
 
