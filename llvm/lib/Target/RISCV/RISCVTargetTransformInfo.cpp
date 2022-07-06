@@ -404,24 +404,7 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   auto &VTy = *cast<VectorType>(DataTy);
   InstructionCost MemOpCost = getMemoryOpCost(Opcode, VTy.getElementType(),
                                               Alignment, 0, CostKind, I);
-<<<<<<< HEAD
-  if (isa<ScalableVectorType>(VTy)) {
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: Re-sync with upstream?
-    const unsigned MaxVLMAX = cast<ScalableVectorType>(VTy).getMinNumElements();
-#else
-    const unsigned EltSize = DL.getTypeSizeInBits(VTy.getElementType());
-    const unsigned MinSize = DL.getTypeSizeInBits(&VTy).getKnownMinValue();
-    const unsigned VectorBitsMax = ST->getRealMaxVLen();
-    const unsigned MaxVLMAX =
-      RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
-#endif // SIFIVE_CUSTOMIZATION
-    return MaxVLMAX * MemOpCost;
-  }
-  unsigned NumLoads = cast<FixedVectorType>(VTy).getNumElements();
-=======
   unsigned NumLoads = getMaxVLFor(&VTy);
->>>>>>> upstream/main
   return NumLoads * MemOpCost;
 }
 
@@ -576,10 +559,15 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
 
 unsigned RISCVTTIImpl::getMaxVLFor(VectorType *Ty) {
   if (isa<ScalableVectorType>(Ty)) {
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Re-sync with upstream?
+    return cast<ScalableVectorType>(Ty)->getMinNumElements();
+#else
     const unsigned EltSize = DL.getTypeSizeInBits(Ty->getElementType());
     const unsigned MinSize = DL.getTypeSizeInBits(Ty).getKnownMinValue();
     const unsigned VectorBitsMax = ST->getRealMaxVLen();
     return RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
+#endif // SIFIVE_CUSTOMIZATION
   }
   return cast<FixedVectorType>(Ty)->getNumElements();
 }
@@ -588,11 +576,8 @@ InstructionCost
 RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
                                      bool IsUnsigned,
                                      TTI::TargetCostKind CostKind) {
-<<<<<<< HEAD
-  // FIXME: Only supporting fixed vectors for now.
-  if (!isa<FixedVectorType>(Ty))
 #if SIFIVE_CUSTOMIZATION
-  {
+  if (!isa<FixedVectorType>(Ty)) {
     std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
@@ -603,14 +588,9 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
         RISCV::RVVBitsPerBlock;
     return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
-#else  // SIFIVE_CUSTOMIZATION
-    return BaseT::getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!ST->useRVVForFixedLengthVectors())
-=======
   if (isa<FixedVectorType>(Ty) && !ST->useRVVForFixedLengthVectors())
->>>>>>> upstream/main
     return BaseT::getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
 
   // Skip if scalar size of Ty is bigger than ELEN.
@@ -633,10 +613,8 @@ InstructionCost
 RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                                          Optional<FastMathFlags> FMF,
                                          TTI::TargetCostKind CostKind) {
-<<<<<<< HEAD
-  if (!isa<FixedVectorType>(Ty))
 #if SIFIVE_CUSTOMIZATION
-  {
+  if (!isa<FixedVectorType>(Ty)) {
     // FIXME: Revisit this code when we start to tune vectorizer's cost model
     std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
     if (!LT.first.isValid())
@@ -648,14 +626,9 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
         RISCV::RVVBitsPerBlock;
     return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
-#else  // SIFIVE_CUSTOMIZATION
-    return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!ST->useRVVForFixedLengthVectors())
-=======
   if (isa<FixedVectorType>(Ty) && !ST->useRVVForFixedLengthVectors())
->>>>>>> upstream/main
     return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 
   // Skip if scalar size of Ty is bigger than ELEN.
