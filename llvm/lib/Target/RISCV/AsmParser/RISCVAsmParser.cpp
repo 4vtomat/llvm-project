@@ -570,22 +570,7 @@ public:
     return (isRV64() && isUInt<5>(Imm)) || isUInt<4>(Imm);
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool isUImm1() const {
-    int64_t Imm;
-    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
-    if (!isImm())
-      return false;
-    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
-    return IsConstantImm && isUInt<1>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  bool isUImm2() const {
-=======
   template <unsigned N> bool IsUImm() const {
->>>>>>> upstream/main
     int64_t Imm;
     RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
     if (!isImm())
@@ -594,6 +579,9 @@ public:
     return IsConstantImm && isUInt<N>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm1() { return IsUImm<1>(); }
+#endif // SIFIVE_CUSTOMIZATION
   bool isUImm2() { return IsUImm<2>(); }
   bool isUImm3() { return IsUImm<3>(); }
   bool isUImm5() { return IsUImm<5>(); }
