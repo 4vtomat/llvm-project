@@ -305,6 +305,9 @@ protected:
   std::unique_ptr<LegalizerInfo> Legalizer;
   std::unique_ptr<RegisterBankInfo> RegBankInfo;
 
+#if SIFIVE_CUSTOMIZATION
+public:
+#endif // SIFIVE_CUSTOMIZATION
   // Return the known range for the bit length of RVV data registers as set
   // at the command line. A value of 0 means nothing is known about that particular
   // limit beyond what's implied by the architecture.
