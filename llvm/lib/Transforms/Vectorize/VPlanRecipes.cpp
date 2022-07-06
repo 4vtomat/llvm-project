@@ -28,6 +28,9 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanPredicatedInstructions.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
@@ -186,6 +189,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   if (Instruction::isBinaryOp(getOpcode())) {
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V = Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B);
     State.set(this, V, Part);
     return;
@@ -194,12 +204,26 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   switch (getOpcode()) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V = Builder.CreateNot(A);
     State.set(this, V, Part);
     break;
   }
   case VPInstruction::ICmpULE: {
     Value *IV = State.get(getOperand(0), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->getEVL() && IV->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *TC = State.get(getOperand(1), Part);
     Value *V = Builder.CreateICmpULE(IV, TC);
     State.set(this, V, Part);
@@ -209,6 +233,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *Cond = State.get(getOperand(0), Part);
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
+      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
+                                       Part);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V = Builder.CreateSelect(Cond, Op1, Op2);
     State.set(this, V, Part);
     break;
@@ -246,6 +277,24 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     if (!PartMinus1->getType()->isVectorTy()) {
       State.set(this, PartMinus1, Part);
     } else {
+#if SIFIVE_CUSTOMIZATION
+      if (State.Plan->getEVL()) {
+        Value *V2 = State.get(getOperand(1), Part);
+        Value *PrevEVL = State.get(State.Plan->getPrevEVL(), Part);
+        Value *EVL = State.get(State.Plan->getEVL(), Part);
+
+        auto *IdxTy = Builder.getInt32Ty();
+        Value *Shift = ConstantInt::get(IdxTy, -1);
+        Value *Mask = Builder.getTrueVector(State.VF);
+
+        Value *Splice = Builder.CreateIntrinsic(
+            Intrinsic::experimental_vp_splice, {PartMinus1->getType()},
+            {PartMinus1, V2, Shift, Mask, PrevEVL, EVL}, nullptr);
+
+        State.set(this, Splice, Part);
+        break;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       Value *V2 = State.get(getOperand(1), Part);
       State.set(this, Builder.CreateVectorSplice(PartMinus1, V2, -1), Part);
     }
@@ -259,8 +308,16 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       auto *Phi = State.get(getOperand(0), 0);
       // The loop step is equal to the vectorization factor (num of SIMD
       // elements) times the unroll factor (num of SIMD instructions).
+#if SIFIVE_CUSTOMIZATION
+      Value *Step;
+      if (VPValue *EVL = State.Plan->getEVL())
+        Step = Builder.CreateZExtOrTrunc(State.get(EVL, 0), Phi->getType());
+      else
+        Step = createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
+#else
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
+#endif // SIFIVE_CUSTOMIZATION
       Next = Builder.CreateAdd(Phi, Step, "index.next", IsNUW, false);
     } else {
       Next = State.get(this, 0);
@@ -314,6 +371,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  // TODO: This case can be removed when support for Call instruction is added
+  // to VPlan in upstream. For now it helps catch any use of VPInstruction for
+  // Call opcode that is now supported by the new VPCallInstruction recipe.
+  case Instruction::Call:
+    llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unsupported opcode for instruction");
   }
@@ -583,7 +647,11 @@ void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
     getVPSingleValue()->printAsOperand(O, SlotTracker);
     O << " = ";
   }
+#if SIFIVE_CUSTOMIZATION
+  O << Instruction::getOpcodeName(getIngredient().getOpcode()) << " ";
+#else
   O << Instruction::getOpcodeName(Ingredient.getOpcode()) << " ";
+#endif // SIFIVE_CUSTOMIZATION
 
   printOperands(O, SlotTracker);
 }
@@ -599,6 +667,37 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   EntryPart->setDebugLoc(DL);
   for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
     State.set(this, EntryPart, Part);
+#if SIFIVE_CUSTOMIZATION
+  if (!State.Plan->getEVL())
+    return;
+  Value *TripCount = State.get(&State.Plan->getVectorTripCount(), 0);
+  Value *PrevEVLVal = nullptr;
+  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
+    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+    // Compute TC - IV as the RVL(requested vector length).
+    Value *IV = State.get(this, Part);
+    Value *RVL = State.Builder.CreateSub(TripCount, IV);
+    // Set EVL
+    Value *SetVL = State.Plan->getSetVL(State, RVL);
+    Value *EVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
+    State.set(State.Plan->getEVL(), EVL, Part);
+    if (State.Plan->getPrevEVL()) {
+      if (Part == 0) {
+        auto *PrevEVL =
+            PHINode::Create(EVL->getType(), 2, "prev.evl",
+                            &*State.CFG.PrevBB->getFirstInsertionPt());
+        IRBuilder<>::InsertPointGuard Guard(State.Builder);
+        State.Builder.SetInsertPoint(VectorPH->getTerminator());
+        auto *RuntimeVF = getRuntimeVF(State.Builder, EVL->getType(), State.VF);
+        PrevEVL->addIncoming(RuntimeVF, VectorPH);
+        State.set(State.Plan->getPrevEVL(), PrevEVL, Part);
+      } else {
+        State.set(State.Plan->getPrevEVL(), PrevEVLVal, Part);
+      }
+    }
+    PrevEVLVal = EVL;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -745,6 +844,9 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
   // any loop invariant values.
   VPValue *StartVPV = getStartValue();
   Value *StartV = StartVPV->getLiveInIRValue();
+#if SIFIVE_CUSTOMIZATION
+  bool PostSV = postFixStartValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   Value *Iden = nullptr;
   RecurKind RK = RdxDesc.getRecurrenceKind();
@@ -765,10 +867,18 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
     if (!ScalarPHI) {
       Iden = Builder.CreateVectorSplat(State.VF, Iden);
-      IRBuilderBase::InsertPointGuard IPBuilder(Builder);
-      Builder.SetInsertPoint(VectorPH->getTerminator());
-      Constant *Zero = Builder.getInt32(0);
-      StartV = Builder.CreateInsertElement(Iden, StartV, Zero);
+#if SIFIVE_CUSTOMIZATION
+      if (PostSV) {
+        StartV = Iden;
+      } else {
+#endif // SIFIVE_CUSTOMIZATION
+        IRBuilderBase::InsertPointGuard IPBuilder(Builder);
+        Builder.SetInsertPoint(VectorPH->getTerminator());
+        Constant *Zero = Builder.getInt32(0);
+        StartV = Builder.CreateInsertElement(Iden, StartV, Zero);
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
