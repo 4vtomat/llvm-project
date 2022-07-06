@@ -24,6 +24,11 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscvtti"
 
+static cl::opt<bool>
+    DisableVectorOpt("riscv-disable-vector-instcombine",
+                     cl::desc("Disable InstCombine for vector intrinsics"),
+                     cl::init(false), cl::Hidden);
+
 static CallInst *CreateIntrinsic(IntrinsicInst *II, Intrinsic::ID IID,
                                  ArrayRef<Type *> Types,
                                  ArrayRef<Value *> Args) {
@@ -1263,6 +1268,9 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
 
 Optional<Instruction *>
 RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
+  if (DisableVectorOpt)
+    return None;
+
   Intrinsic::ID IID = II.getIntrinsicID();
   switch (IID) {
   default:
