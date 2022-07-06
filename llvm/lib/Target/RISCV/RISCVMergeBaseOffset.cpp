@@ -501,21 +501,19 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
     LLVM_DEBUG(dbgs() << "MBB: " << MBB.getName() << "\n");
     for (MachineInstr &MI : MBB) {
       MachineInstr *LoADDI = nullptr;
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
       if (detectLuiAddiGlobal(MI, LoADDI)) {
-        LLVM_DEBUG(dbgs() << "  Found lowered global address with one use: "
-                          << *LoADDI->getOperand(2).getGlobal() << "\n");
-        // If the use count is only one, merge the offset
-        MadeChange |= detectAndFoldOffset(MI, *LoADDI);
-      }
-      MadeChange |= foldPseudoLLA(Fn, MI);
-=======
+#else
       if (!detectLuiAddiGlobal(HiLUI, LoADDI))
         continue;
-      LLVM_DEBUG(dbgs() << "  Found lowered global address: "
-                        << *LoADDI->getOperand(2).getGlobal() << "\n");
-      MadeChange |= detectAndFoldOffset(HiLUI, *LoADDI);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
+        LLVM_DEBUG(dbgs() << "  Found lowered global address: "
+                          << *LoADDI->getOperand(2).getGlobal() << "\n");
+        MadeChange |= detectAndFoldOffset(MI, *LoADDI);
+#if SIFIVE_CUSTOMIZATION
+      }
+      MadeChange |= foldPseudoLLA(Fn, MI);
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
   // Delete dead instructions.
