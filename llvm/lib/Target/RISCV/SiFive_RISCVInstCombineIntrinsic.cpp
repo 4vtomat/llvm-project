@@ -62,7 +62,7 @@ static unsigned getVLMAX(const ScalableVectorType *type,
   // type->getPrimitiveSizeInBits().getKnownMinValue() may be smaller than
   // RISCV::RVVBitsPerBlock.
   unsigned SEW = type->getScalarType()->getScalarSizeInBits();
-  return ((ST->getMinVLen() / SEW) *
+  return ((ST->getArchMinVLen() / SEW) *
           type->getPrimitiveSizeInBits().getKnownMinValue()) /
          RISCV::RVVBitsPerBlock;
 }
