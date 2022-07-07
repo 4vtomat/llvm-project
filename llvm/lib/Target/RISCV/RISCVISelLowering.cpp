@@ -4333,7 +4333,9 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   // Generate a sequence for accessing the address relative to the thread
   // pointer, with the appropriate adjustment for the thread pointer offset.
   // This generates the pattern
+#if SIFIVE_CUSTOMIZATION
   // (add (add_regrel (lui %tprel_hi(sym)) tp %tprel_add(sym)) %tprel_lo(sym))
+#endif // SIFIVE_CUSTOMIZATION
   SDValue AddrHi =
       DAG.getTargetGlobalAddress(GV, DL, Ty, 0, RISCVII::MO_TPREL_HI);
   SDValue AddrAdd =
@@ -4344,7 +4346,9 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   SDValue MNHi = DAG.getNode(RISCVISD::HI, DL, Ty, AddrHi);
   SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
   SDValue MNAdd =
+#if SIFIVE_CUSTOMIZATION
       DAG.getNode(RISCVISD::ADD_REGREL, DL, Ty, MNHi, TPReg, AddrAdd);
+#endif // SIFIVE_CUSTOMIZATION
   return DAG.getNode(RISCVISD::ADD_LO, DL, Ty, MNAdd, AddrLo);
 }
 
@@ -13121,14 +13125,10 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(ADD_LO)
   NODE_NAME_CASE(HI)
   NODE_NAME_CASE(LLA)
-<<<<<<< HEAD
   NODE_NAME_CASE(ADD_REGREL) // SIFIVE
-=======
-  NODE_NAME_CASE(ADD_TPREL)
   NODE_NAME_CASE(LA)
   NODE_NAME_CASE(LA_TLS_IE)
   NODE_NAME_CASE(LA_TLS_GD)
->>>>>>> upstream/main
   NODE_NAME_CASE(MULHSU)
   NODE_NAME_CASE(SLLW)
   NODE_NAME_CASE(SRAW)
