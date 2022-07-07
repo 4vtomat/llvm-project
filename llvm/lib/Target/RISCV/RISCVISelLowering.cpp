@@ -4279,7 +4279,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   MVT XLenVT = Subtarget.getXLenVT();
 
   if (UseGOT) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       SDValue Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
@@ -4292,15 +4291,15 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
       // the pattern (PseudoLA_TLS_IE sym), which expands to
       // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
       SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-      SDValue Load =
-          SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_IE, DL, Ty, Addr), 0);
       MachineFunction &MF = DAG.getMachineFunction();
       MachineMemOperand *MemOp = MF.getMachineMemOperand(
           MachinePointerInfo::getGOT(MF),
           MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
               MachineMemOperand::MOInvariant,
           LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
-      DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+      SDValue Load = DAG.getMemIntrinsicNode(
+          RISCVISD::LA_TLS_IE, DL, DAG.getVTList(Ty, MVT::Other),
+          {DAG.getEntryNode(), Addr}, Ty, MemOp);
 
       // Add the thread pointer.
       SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
@@ -4308,26 +4307,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
 #if SIFIVE_CUSTOMIZATION
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // Use PC-relative addressing to access the GOT for this TLS symbol, then
-    // load the address from the GOT and add the thread pointer. This generates
-    // the pattern (PseudoLA_TLS_IE sym), which expands to
-    // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
-    SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-    MachineFunction &MF = DAG.getMachineFunction();
-    MachineMemOperand *MemOp = MF.getMachineMemOperand(
-        MachinePointerInfo::getGOT(MF),
-        MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
-            MachineMemOperand::MOInvariant,
-        LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
-    SDValue Load = DAG.getMemIntrinsicNode(
-        RISCVISD::LA_TLS_IE, DL, DAG.getVTList(Ty, MVT::Other),
-        {DAG.getEntryNode(), Addr}, Ty, MemOp);
-
-    // Add the thread pointer.
-    SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
-    return DAG.getNode(ISD::ADD, DL, Ty, Load, TPReg);
->>>>>>> upstream/main
   }
 
   // Generate a sequence for accessing the address relative to the thread
@@ -4363,7 +4342,6 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
   // This generates the pattern (PseudoLA_TLS_GD sym), which expands to
   // (addi (auipc %tls_gd_pcrel_hi(sym)) %pcrel_lo(auipc)).
   SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-<<<<<<< HEAD
   SDValue Load;
 
 #if SIFIVE_CUSTOMIZATION
@@ -4371,13 +4349,10 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
     Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
   } else {
 #endif // SIFIVE_CUSTOMIZATION
-    Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
+    Load = DAG.getNode(RISCVISD::LA_TLS_GD, DL, Ty, Addr);
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  SDValue Load = DAG.getNode(RISCVISD::LA_TLS_GD, DL, Ty, Addr);
->>>>>>> upstream/main
 
   // Prepare argument list to generate call.
   ArgListTy Args;
