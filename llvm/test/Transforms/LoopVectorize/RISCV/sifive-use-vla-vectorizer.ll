@@ -40,7 +40,6 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], %struct.quantum_reg_node_struct* [[REG_16_VAL:%.*]], <vscale x 1 x i64> [[VEC_IND]], i32 1
 ; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i64> @llvm.vp.gather.nxv1i64.nxv1p0i64(<vscale x 1 x i64*> [[TMP14]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_GATHER]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64*> [[TMP14]], <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP11]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP15]]
