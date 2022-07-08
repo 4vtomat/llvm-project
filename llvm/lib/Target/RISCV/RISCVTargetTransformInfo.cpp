@@ -655,7 +655,10 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return (LT.first - 1) + (ISD == ISD::AND ? 3 : 2);
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
-  InstructionCost BaseCost = 2;
+#if SIFIVE_CUSTOMIZATION
+  // The vector to scalar move is expensive on x280, give it more cost.
+  InstructionCost BaseCost = 4;
+#endif // SIFIVE_CUSTOMIZATION
   unsigned VL = cast<FixedVectorType>(Ty)->getNumElements();
   if (TTI::requiresOrderedReduction(FMF))
     return (LT.first - 1) + BaseCost + VL;
