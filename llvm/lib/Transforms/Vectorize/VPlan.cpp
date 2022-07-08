@@ -545,12 +545,12 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
          "Requested vector length should be an integer.");
   Value *RVLArg = State.Builder.CreateZExtOrTrunc(
       RVL, Type::getInt64Ty(State.Builder.getContext()));
-  assert(State.LMUL != 4 && State.LMUL <= 7 &&
+  assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
          "LMUL is not supported by the hardware");
   Constant *SEWArg = ConstantInt::get(
       IntegerType::get(State.Builder.getContext(), 64), State.SEW);
   Constant *LMULArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.LMUL);
+      IntegerType::get(State.Builder.getContext(), 64), State.LMULExp);
 
   Value *GVL = State.Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});

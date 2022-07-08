@@ -164,11 +164,13 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::VP_SUB:
   case ISD::VP_MUL:      Res = PromoteIntRes_SimpleIntBinOp(N); break;
 
+  case ISD::VP_SMIN: case ISD::VP_SMAX: // SIFIVE
   case ISD::SDIV:
   case ISD::SREM:
   case ISD::VP_SDIV:
   case ISD::VP_SREM:     Res = PromoteIntRes_SExtIntBinOp(N); break;
 
+  case ISD::VP_UMIN: case ISD::VP_UMAX: // SIFIVE
   case ISD::UDIV:
   case ISD::UREM:
   case ISD::VP_UDIV:

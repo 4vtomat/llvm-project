@@ -219,7 +219,7 @@ struct VPTransformState {
 
   unsigned SEW = 0;
 
-  unsigned LMUL = 0;
+  unsigned LMULExp = 0;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold the indices to generate specific scalar instructions. Null indicates
@@ -2544,6 +2544,9 @@ class VPlan {
 
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
+
+  /// Pair of LMUL and Type's size applicable for this VPlan.
+  SmallVector<std::pair<unsigned, Type *>, 1> LMULTypePairs;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Represents the vector trip count.
@@ -2655,6 +2658,14 @@ public:
     if (!AllTrueMask)
       AllTrueMask = new VPValue;
     return AllTrueMask;
+  }
+
+  void addLMULTypePair(const unsigned LMUL, Type *DType) {
+    LMULTypePairs.emplace_back(LMUL, DType);
+  }
+
+  const decltype(LMULTypePairs) &getLMULTypePairs() const {
+    return LMULTypePairs;
   }
 #endif // SIFIVE_CUSTOMIZATION
 

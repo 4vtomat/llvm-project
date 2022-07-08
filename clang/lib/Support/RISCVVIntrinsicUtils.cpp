@@ -387,7 +387,7 @@ void RVVType::applyBasicType() {
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::Float;
     break;
- #if SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
  case BasicType::BFloat:
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::BFloat;
@@ -412,7 +412,9 @@ Optional<PrototypeDescriptor> PrototypeDescriptor::parsePrototypeDescriptor(
   PrototypeDescriptor PD;
   BaseTypeModifier PT = BaseTypeModifier::Invalid;
   VectorTypeModifier VTM = VectorTypeModifier::NoModifier;
+#if SIFIVE_CUSTOMIZATION
   TypeModifier TM = TypeModifier::NoModifier;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (PrototypeDescriptorStr.empty())
     return PD;
@@ -685,7 +687,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case BaseTypeModifier::SignedLong:
     ScalarType = ScalarTypeKind::SignedLong;
     break;
-  
   case BaseTypeModifier::Invalid:
     ScalarType = ScalarTypeKind::Invalid;
     return;
@@ -786,18 +787,17 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::SFixedLog2LMUL3:
     applyFixedLog2LMUL(3, FixedLMULType::SmallerThan);
     break;
+#if SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::Widening2XVectorMultipleLMUL2:
     ElementBitwidth *= 2;
     LMUL.MulLog2LMUL(1);
     Scale = LMUL.getScale(ElementBitwidth);
-#if SIFIVE_CUSTOMIZATION
     // For SiFive custom instructions regarding bfloat
     // Ex: sf_vfwmacc_4x4x4_f32mf2 (vfloat32mf2_t vd, vbfloat16m1_t vs1,
     // vbfloat16mf4_t vs2, size_t vl); Parameter needs to be converted to 32-bit
     // and bfloat don't have 32-bit.
     if (ScalarType == ScalarTypeKind::BFloat)
       ScalarType = ScalarTypeKind::Float;
-#endif // SIFIVE_CUSTOMIZATION
     break;
   case VectorTypeModifier::Widening4XVectorMultipleLMUL1:
     ElementBitwidth *= 4;
@@ -808,6 +808,7 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     LMUL.MulLog2LMUL(1);
     Scale = LMUL.getScale(ElementBitwidth);
     break;
+#endif // SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::NoModifier:
     break;
 #if SIFIVE_CUSTOMIZATION
@@ -851,9 +852,11 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
       // Update ElementBitwidth need to update Scale too.
       Scale = LMUL.getScale(ElementBitwidth);
       break;
+#if SIFIVE_CUSTOMIZATION
     case TypeModifier::Float32:
       ScalarType = ScalarTypeKind::Float32;
       break;
+#endif // SIFIVE_CUSTOMIZATION
     default:
       llvm_unreachable("Unknown type modifier mask!");
     }
@@ -961,17 +964,20 @@ Optional<RVVTypePtr> RVVType::computeType(BasicType BT, int Log2LMUL,
 //===----------------------------------------------------------------------===//
 // RVVIntrinsic implementation
 //===----------------------------------------------------------------------===//
+#if SIFIVE_CUSTOMIZATION
 RVVIntrinsic::RVVIntrinsic(
     StringRef NewName, StringRef Suffix, StringRef NewOverloadedName,
     StringRef OverloadedSuffix, StringRef IRName, bool IsMasked,
     bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
-    bool HasUnMaskedOverloaded, bool HasBuiltinAlias, StringRef ManualCodegen,
+    bool SupportOverloading, bool HasBuiltinAlias, StringRef ManualCodegen,
     const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
-    const std::vector<StringRef> &RequiredFeatures, unsigned NF, bool IsTU) // SIFIVE
-    : IRName(IRName), IsMasked(IsMasked), HasVL(HasVL), Scheme(Scheme),
-      HasUnMaskedOverloaded(HasUnMaskedOverloaded),
-      HasBuiltinAlias(HasBuiltinAlias), ManualCodegen(ManualCodegen.str()),
-      NF(NF) {
+    const std::vector<StringRef> &RequiredFeatures, unsigned NF,
+    Policy NewDefaultPolicy, bool IsPrototypeDefaultTU)
+    : IRName(IRName), IsMasked(IsMasked),
+      HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
+      SupportOverloading(SupportOverloading), HasBuiltinAlias(HasBuiltinAlias),
+      ManualCodegen(ManualCodegen.str()), NF(NF),
+      DefaultPolicy(NewDefaultPolicy) {
 
   // Init BuiltinName, Name and OverloadedName
   BuiltinName = NewName.str();
@@ -984,55 +990,79 @@ RVVIntrinsic::RVVIntrinsic(
     Name += "_" + Suffix.str();
   if (!OverloadedSuffix.empty())
     OverloadedName += "_" + OverloadedSuffix.str();
-  if (IsMasked) {
-    BuiltinName += "_m";
-    Name += "_m";
-  }
 
-#if SIFIVE_CUSTOMIZATION
-  if (IsTU) {
-    Name += "_tu";
-    BuiltinName += "_tu";
+  auto appendPolicySuffix = [&](std::string suffix) {
+    Name += suffix;
+    BuiltinName += suffix;
+    OverloadedName += suffix;
+  };
+
+  switch (DefaultPolicy) {
+  case Policy::TU:
+    assert(!IsMasked);
+    appendPolicySuffix("_tu");
+    break;
+  case Policy::TA:
+    assert(!IsMasked);
+    appendPolicySuffix("_ta");
+    break;
+  case Policy::MU:
+    assert(IsMasked);
+    appendPolicySuffix("_mu");
+    DefaultPolicy = Policy::TAMU;
+    break;
+  case Policy::MA:
+    assert(IsMasked);
+    appendPolicySuffix("_ma");
+    DefaultPolicy = Policy::TAMA;
+    break;
+  case Policy::TUM:
+    assert(IsMasked);
+    appendPolicySuffix("_tum");
+    DefaultPolicy = Policy::TUMA;
+    break;
+  case Policy::TAM:
+    assert(IsMasked);
+    appendPolicySuffix("_tam");
+    DefaultPolicy = Policy::TAMA;
+    break;
+  case Policy::TUMU:
+    assert(IsMasked);
+    appendPolicySuffix("_tumu");
+    break;
+  case Policy::TAMU:
+    assert(IsMasked);
+    appendPolicySuffix("_tamu");
+    break;
+  case Policy::TUMA:
+    assert(IsMasked);
+    appendPolicySuffix("_tuma");
+    break;
+  case Policy::TAMA:
+    assert(IsMasked);
+    appendPolicySuffix("_tama");
+    break;
+  default:
+    if (IsMasked) {
+      Name += "_m";
+      DefaultPolicy = Policy::TUMU;
+      if (hasPolicy())
+        BuiltinName += "_tumu";
+      else
+        BuiltinName += "_m";
+    } else {
+      if (IsPrototypeDefaultTU) {
+        DefaultPolicy = Policy::TU;
+        if (hasPolicy())
+          BuiltinName += "_tu";
+      } else {
+        DefaultPolicy = Policy::TA;
+        if (hasPolicy())
+          BuiltinName += "_ta";
+      }
+    }
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-
-  // Init RISC-V extensions
-  for (const auto &T : OutInTypes) {
-    if (T->isFloatVector(16) || T->isFloat(16))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Zvfh;
-    if (T->isFloatVector(32))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELenFp32;
-    if (T->isFloatVector(64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELenFp64;
-    if (T->isVector(64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::VectorMaxELen64;
-  }
-  for (auto Feature : RequiredFeatures) {
-    if (Feature == "RV64")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::RV64;
-    // Note: Full multiply instruction (mulh, mulhu, mulhsu, smul) for EEW=64
-    // require V.
-    if (Feature == "FullMultiply" &&
-        (RISCVPredefinedMacros & RISCVPredefinedMacro::VectorMaxELen64))
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::V;
-#if SIFIVE_CUSTOMIZATION
-    if (Feature == "Xsfvqmaccqoq")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccqoq;
-    if (Feature == "Xsfvqmaccdod")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvqmaccdod;
-    if (Feature == "Xsfvfnrclipxfqf")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfnrclipxfqf;
-    if (Feature == "Xsfvfhbfmin")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfhbfmin;
-    if (Feature == "Xsfvfwmaccqqq")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvfwmaccqqq;
-    if (Feature == "HasBfloat16")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::HasBfloat16;
-    if (Feature == "Xsfvcp")
-      RISCVPredefinedMacros |= RISCVPredefinedMacro::Xsfvcp;
-#endif // SIFIVE_CUSTOMIZATION
-  }
 
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
@@ -1041,8 +1071,8 @@ RVVIntrinsic::RVVIntrinsic(
   // IntrinsicTypes is unmasked TA version index. Need to update it
   // if there is merge operand (It is always in first operand).
   IntrinsicTypes = NewIntrinsicTypes;
-  if ((IsMasked && HasMaskedOffOperand) ||
-      (!IsMasked && hasPassthruOperand())) {
+  if ((IsMasked && hasMaskedOffOperand()) ||
+      (!IsMasked && hasPassthruOperand() && !IsPrototypeDefaultTU)) {
     for (auto &I : IntrinsicTypes) {
       if (I >= 0)
         I += NF;
@@ -1070,6 +1100,155 @@ std::string RVVIntrinsic::getSuffixStr(
   return join(SuffixStrs, "_");
 }
 
+#if SIFIVE_CUSTOMIZATION
+SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
+    llvm::ArrayRef<PrototypeDescriptor> ProtoSeq, bool IsMasked,
+    bool HasMaskedOffOperand, bool HasVL, unsigned NF,
+    bool IsPrototypeDefaultTU, PolicyScheme DefaultScheme,
+    Policy DefaultPolicy) {
+  SmallVector<PrototypeDescriptor> NewProtoSeq(ProtoSeq.begin(),
+                                               ProtoSeq.end());
+  switch (DefaultPolicy) {
+  case Policy::MU:
+    DefaultPolicy = Policy::TAMU;
+    break;
+  case Policy::MA:
+    DefaultPolicy = Policy::TAMA;
+    break;
+  case Policy::TUM:
+    DefaultPolicy = Policy::TUMA;
+    break;
+  case Policy::TAM:
+    DefaultPolicy = Policy::TAMA;
+    break;
+  case Policy::PolicyNone:
+    if (IsMasked)
+      DefaultPolicy = Policy::TUMU;
+    else if (IsPrototypeDefaultTU)
+      DefaultPolicy = Policy::TU;
+    else
+      DefaultPolicy = Policy::TA;
+    break;
+  default:
+    break;
+  }
+
+  bool HasPassthruOp = DefaultScheme == PolicyScheme::HasPassthruOperand;
+  if (IsMasked) {
+    // If HasMaskedOffOperand, insert result type as first input operand if
+    // need.
+    if (HasMaskedOffOperand) {
+      if (DefaultPolicy != Policy::TAMA) {
+        if (NF == 1) {
+          NewProtoSeq.insert(NewProtoSeq.begin() + 1, NewProtoSeq[0]);
+        } else if (NF > 1) {
+          // Convert
+          // (void, op0 address, op1 address, ...)
+          // to
+          // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+          PrototypeDescriptor MaskoffType = NewProtoSeq[1];
+          MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+          for (unsigned I = 0; I < NF; ++I)
+            NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
+        }
+      }
+    }
+    // Erase passthru operand for TAM
+    if (NF == 1 && IsPrototypeDefaultTU && DefaultPolicy == Policy::TAMA &&
+        HasPassthruOp && !HasMaskedOffOperand)
+      NewProtoSeq.erase(NewProtoSeq.begin() + 1);
+    if (HasMaskedOffOperand && NF > 1) {
+      // Convert
+      // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+      // to
+      // (void, op0 address, op1 address, ..., mask, maskedoff0, maskedoff1,
+      // ...)
+      NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1,
+                         PrototypeDescriptor::Mask);
+    } else {
+      // If IsMasked, insert PrototypeDescriptor:Mask as first input operand.
+      NewProtoSeq.insert(NewProtoSeq.begin() + 1, PrototypeDescriptor::Mask);
+    }
+  } else {
+    if (NF == 1) {
+      if (DefaultPolicy == Policy::TU && HasPassthruOp && !IsPrototypeDefaultTU)
+        NewProtoSeq.insert(NewProtoSeq.begin(), NewProtoSeq[0]);
+      else if (DefaultPolicy == Policy::TA && HasPassthruOp &&
+               IsPrototypeDefaultTU)
+        NewProtoSeq.erase(NewProtoSeq.begin() + 1);
+      if (DefaultScheme == PolicyScheme::HasPassthruOperandAtIdx1) {
+        if (DefaultPolicy == Policy::TU && !IsPrototypeDefaultTU) {
+          // Insert undisturbed output to index 1
+          NewProtoSeq.insert(NewProtoSeq.begin() + 2, NewProtoSeq[0]);
+        } else if (DefaultPolicy == Policy::TA && IsPrototypeDefaultTU) {
+          // Erase passthru for TA policy
+          NewProtoSeq.erase(NewProtoSeq.begin() + 2);
+        }
+      }
+    } else {
+      if (DefaultPolicy == Policy::TU && HasPassthruOp) {
+        // Convert
+        // (void, op0 address, op1 address, ...)
+        // to
+        // (void, op0 address, op1 address, maskedoff0, maskedoff1, ...)
+        PrototypeDescriptor MaskoffType = ProtoSeq[1];
+        MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+        for (unsigned I = 0; I < NF; ++I)
+          NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
+      }
+    }
+  }
+
+  // If HasVL, append PrototypeDescriptor:VL to last operand
+  if (HasVL)
+    NewProtoSeq.push_back(PrototypeDescriptor::VL);
+  return NewProtoSeq;
+}
+
+uint16_t RVVIntrinsic::serializeSupportedPolicies(
+    llvm::ArrayRef<RISCV::Policy> SupportedPolicies) {
+  uint16_t PolicyBitMask = 0;
+  for (auto P : SupportedPolicies) {
+    assert(P != RISCV::Policy::PolicyNone);
+    PolicyBitMask |= static_cast<uint16_t>(P);
+  }
+  return PolicyBitMask;
+}
+
+// TODO make this better
+llvm::SmallVector<RISCV::Policy>
+RVVIntrinsic::deSerializeSupportedPolicies(uint16_t PolicyBitMask,
+                                           bool IsMasked) {
+  llvm::SmallVector<RISCV::Policy> SupportedPolicies;
+  if (IsMasked) {
+    if (PolicyBitMask & RISCV::Policy::TUMU)
+      SupportedPolicies.push_back(RISCV::Policy::TUMU);
+    if (PolicyBitMask & RISCV::Policy::TAMU)
+      SupportedPolicies.push_back(RISCV::Policy::TAMU);
+    if (PolicyBitMask & RISCV::Policy::TUMA)
+      SupportedPolicies.push_back(RISCV::Policy::TUMA);
+    if (PolicyBitMask & RISCV::Policy::TAMA)
+      SupportedPolicies.push_back(RISCV::Policy::TAMA);
+    if (PolicyBitMask & RISCV::Policy::MU)
+      SupportedPolicies.push_back(RISCV::Policy::MU);
+    if (PolicyBitMask & RISCV::Policy::MA)
+      SupportedPolicies.push_back(RISCV::Policy::MA);
+    if (PolicyBitMask & RISCV::Policy::TUM)
+      SupportedPolicies.push_back(RISCV::Policy::TUM);
+    if (PolicyBitMask & RISCV::Policy::TAM)
+      SupportedPolicies.push_back(RISCV::Policy::TAM);
+  } else {
+    if (PolicyBitMask & RISCV::Policy::TU)
+      SupportedPolicies.push_back(RISCV::Policy::TU);
+    if (PolicyBitMask & RISCV::Policy::TA)
+      SupportedPolicies.push_back(RISCV::Policy::TA);
+  }
+  assert(!SupportedPolicies.empty());
+  return SupportedPolicies;
+}
+
+#endif // SIFIVE_CUSTOMIZATION
+
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   SmallVector<PrototypeDescriptor> PrototypeDescriptors;
   const StringRef Primaries("evwqom0ztulfi");  // SIFIVE
@@ -1090,6 +1269,37 @@ SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   }
   return PrototypeDescriptors;
 }
+
+#if SIFIVE_CUSTOMIZATION
+raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
+  OS << "{";
+  OS << "\"" << Record.Name << "\",";
+  if (Record.OverloadedName == nullptr ||
+      StringRef(Record.OverloadedName).empty())
+    OS << "nullptr,";
+  else
+    OS << "\"" << Record.OverloadedName << "\",";
+  OS << Record.PrototypeIndex << ",";
+  OS << Record.SuffixIndex << ",";
+  OS << Record.OverloadedSuffixIndex << ",";
+  OS << (int)Record.PolicyBitMask << ",";
+  OS << Record.RequiredExtensions << ",";
+  OS << (int)Record.PrototypeLength << ",";
+  OS << (int)Record.SuffixLength << ",";
+  OS << (int)Record.OverloadedSuffixSize << ",";
+  OS << (int)Record.TypeRangeMask << ",";
+  OS << (int)Record.Log2LMULMask << ",";
+  OS << (int)Record.NF << ",";
+  OS << (int)Record.HasMasked << ",";  // SIFIVE
+  OS << (int)Record.HasVL << ","; // SIFIVE
+  OS << (int)Record.HasMaskedOffOperand << ","; // SIFIVE
+  OS << (int)Record.IsPrototypeDefaultTU << ","; // SIFIVE
+  OS << (int)Record.UnMaskedPolicyScheme << ","; // SIFIVE
+  OS << (int)Record.MaskedPolicyScheme << ","; // SIFIVE
+  OS << "},\n";
+  return OS;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 } // end namespace RISCV
 } // end namespace clang

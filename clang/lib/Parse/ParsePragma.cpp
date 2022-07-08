@@ -350,6 +350,18 @@ struct PragmaMaxTokensTotalHandler : public PragmaHandler {
                     Token &FirstToken) override;
 };
 
+#if SIFIVE_CUSTOMIZATION
+struct PragmaRISCVHandler : public PragmaHandler {
+  PragmaRISCVHandler(Sema &Actions)
+      : PragmaHandler("riscv"), Actions(Actions) {}
+  void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
+                    Token &FirstToken) override;
+
+private:
+  Sema &Actions;
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
     T.setFlag(clang::Token::IsReinjected);
@@ -493,6 +505,13 @@ void Parser::initializePragmaHandlers() {
 
   MaxTokensTotalPragmaHandler = std::make_unique<PragmaMaxTokensTotalHandler>();
   PP.AddPragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
+
+#if SIFIVE_CUSTOMIZATION
+  if (getTargetInfo().getTriple().isRISCV()) {
+    RISCVPragmaHandler = std::make_unique<PragmaRISCVHandler>(Actions);
+    PP.AddPragmaHandler("clang", RISCVPragmaHandler.get());
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void Parser::resetPragmaHandlers() {
@@ -617,6 +636,13 @@ void Parser::resetPragmaHandlers() {
 
   PP.RemovePragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
   MaxTokensTotalPragmaHandler.reset();
+
+#if SIFIVE_CUSTOMIZATION
+  if (getTargetInfo().getTriple().isRISCV()) {
+    PP.RemovePragmaHandler("clang", RISCVPragmaHandler.get());
+    RISCVPragmaHandler.reset();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// Handle the annotation token produced for #pragma unused(...)
@@ -3929,3 +3955,37 @@ void PragmaMaxTokensTotalHandler::HandlePragma(Preprocessor &PP,
 
   PP.overrideMaxTokens(MaxTokens, Loc);
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Handle '#pragma clang riscv intrinsic vector'.
+void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
+                                      PragmaIntroducer Introducer,
+                                      Token &FirstToken) {
+  Token Tok;
+  PP.Lex(Tok);
+  IdentifierInfo *II = Tok.getIdentifierInfo();
+
+  if (!II || !II->isStr("intrinsic")) {
+    PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
+        << PP.getSpelling(Tok) << "riscv" << /*Expected=*/true << "'intrinsic'";
+    return;
+  }
+
+  PP.Lex(Tok);
+  II = Tok.getIdentifierInfo();
+  if (!II || !II->isStr("vector")) {
+    PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
+        << PP.getSpelling(Tok) << "riscv" << /*Expected=*/true << "'vector'";
+    return;
+  }
+
+  PP.Lex(Tok);
+  if (Tok.isNot(tok::eod)) {
+    PP.Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
+        << "clang riscv intrinsic";
+    return;
+  }
+
+  Actions.DeclareRISCVVBuiltins = true;
+}
+#endif // SIFIVE_CUSTOMIZATION

@@ -154,6 +154,7 @@
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
+#include "llvm/ADT/Triple.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/Local.h"
@@ -1329,7 +1330,14 @@ public:
   /// \return The size (in bits) of the smallest and widest types in the code
   /// that needs to be vectorized. We ignore values that remain scalar such as
   /// 64 bit loop indices.
+#if SIFIVE_CUSTOMIZATION
+  /// Additionally return smallest and widest types
+  std::pair<unsigned, unsigned>
+  getSmallestAndWidestTypes(Type **SmallestTypePtr = nullptr,
+                            Type **WidestTypePtr = nullptr);
+#else
   std::pair<unsigned, unsigned> getSmallestAndWidestTypes();
+#endif // SIFIVE_CUSTOMIZATION
 
   /// \return The desired interleave count.
   /// If interleave count has been specified by metadata it will be returned.
@@ -2388,6 +2396,56 @@ struct LoopVectorize : public FunctionPass {
 };
 
 } // end anonymous namespace
+#if SIFIVE_CUSTOMIZATION
+namespace {
+
+/// The class represents LMUL concept in RVV. It allows to store integer and
+/// fractional LMULs.
+class LMULType {
+private:
+  unsigned LMUL = 0;
+  bool IsFractional = false;
+
+public:
+  explicit LMULType(const unsigned LMUL, const bool IsFractional)
+      : LMUL(LMUL), IsFractional(IsFractional) {}
+
+  /// Construct LMULType from LMUL's exponent which is 3-bit 2's complement integer value:
+  /// LMULExp     LMUL
+  /// 0b000         1
+  /// 0b001         2
+  /// 0b010         4
+  /// 0b011         8
+  /// ---- fractional ----
+  /// 0b101         1/2
+  /// 0b110         1/4
+  /// 0b111         1/8
+  static LMULType getWithExponent(const unsigned LMULExp) {
+    assert(LMULExp != 4 && LMULExp <= 7 &&
+           "LMUL exponent is not a valid or not supported.");
+    return LMULType(1u << (LMULExp & 0x3), (LMULExp & 0x4) != 0);
+  }
+
+  /// Print methods
+  void print(raw_ostream &O) const {
+    if (IsFractional) {
+      O << "1/";
+    }
+    O << LMUL;
+  }
+
+  void dump(void) const { print(dbgs()); }
+};
+
+} // end anonymous namespace
+
+namespace llvm {
+inline raw_ostream &operator<<(raw_ostream &OS, const LMULType &LMUL) {
+  LMUL.print(OS);
+  return OS;
+}
+} // namespace llvm
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Implementation of LoopVectorizationLegality, InnerLoopVectorizer and
@@ -6089,9 +6147,18 @@ LoopVectorizationCostModel::selectEpilogueVectorizationFactor(
 }
 
 std::pair<unsigned, unsigned>
+#if SIFIVE_CUSTOMIZATION
+LoopVectorizationCostModel::getSmallestAndWidestTypes(Type **SmallestTypePtr,
+                                                      Type **WidestTypePtr) {
+#else
 LoopVectorizationCostModel::getSmallestAndWidestTypes() {
+#endif // SIFIVE_CUSTOMIZATION
   unsigned MinWidth = -1U;
   unsigned MaxWidth = 8;
+#if SIFIVE_CUSTOMIZATION
+  Type *SmallestType = nullptr;
+  Type *WidestType = Type::getInt8Ty(TheFunction->getContext());
+#endif // SIFIVE_CUSTOMIZATION
   const DataLayout &DL = TheFunction->getParent()->getDataLayout();
   // For in-loop reductions, no element types are added to ElementTypesInLoop
   // if there are no loads/stores in the loop. In this case, check through the
@@ -6104,23 +6171,81 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
       const RecurrenceDescriptor &RdxDesc = PhiDescriptorPair.second;
       // When finding the min width used by the recurrence we need to account
       // for casts on the input operands of the recurrence.
+#if SIFIVE_CUSTOMIZATION
+      if (MaxWidth > RdxDesc.getMinWidthCastToRecurrenceTypeInBits()) {
+        MaxWidth = RdxDesc.getMinWidthCastToRecurrenceTypeInBits();
+        Type *ReductionType = RdxDesc.getRecurrenceType();
+        if (MaxWidth == ReductionType->getScalarSizeInBits()) {
+          WidestType = ReductionType;
+        } else {
+          if (ReductionType->isIntegerTy()) {
+            WidestType = ReductionType->getWithNewBitWidth(MaxWidth);
+          } else if (ReductionType->isFloatingPointTy()) {
+            switch (MaxWidth) {
+            case 32:
+              WidestType = Type::getFloatTy(TheFunction->getContext());
+              break;
+            case 64:
+              WidestType = Type::getDoubleTy(TheFunction->getContext());
+              break;
+            default:
+              // FIXME: This should be proper set of cases to generate correct
+              // FP type, but now just use integer type for a sake of
+              // simplicity.
+              WidestType = Type::getIntNTy(TheFunction->getContext(), MaxWidth);
+              break;
+            }
+          } else {
+            assert(0 && "Unexpected type is used in the reduction");
+            // For the release, use integer type with the same size
+            WidestType = Type::getIntNTy(TheFunction->getContext(), MaxWidth);
+          }
+        }
+      } else if (MaxWidth >
+                 RdxDesc.getRecurrenceType()->getScalarSizeInBits()) {
+        WidestType = RdxDesc.getRecurrenceType();
+        MaxWidth = WidestType->getScalarSizeInBits();
+      }
+#else
       MaxWidth = std::min<unsigned>(
           MaxWidth, std::min<unsigned>(
                         RdxDesc.getMinWidthCastToRecurrenceTypeInBits(),
                         RdxDesc.getRecurrenceType()->getScalarSizeInBits()));
+#endif // SIFIVE_CUSTOMIZATION
     }
   } else {
+#if SIFIVE_CUSTOMIZATION
+    for (Type *T : ElementTypesInLoop) {
+      if (MinWidth > DL.getTypeSizeInBits(T->getScalarType()).getFixedSize()) {
+        SmallestType = T;
+        MinWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedSize();
+      }
+      if (MaxWidth < DL.getTypeSizeInBits(T->getScalarType()).getFixedSize()) {
+        WidestType = T;
+        MaxWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedSize();
+      }
+    }
+#else
     for (Type *T : ElementTypesInLoop) {
       MinWidth = std::min<unsigned>(
           MinWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedSize());
       MaxWidth = std::max<unsigned>(
           MaxWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedSize());
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
 #if SIFIVE_CUSTOMIZATION
   // Adjust MinWidth in degenerated cases.
-  if (MinWidth == -1U)
+  if (MinWidth == -1U) {
     MinWidth = MaxWidth;
+    SmallestType = WidestType;
+  }
+  if (WidestTypePtr) {
+    *WidestTypePtr = WidestType;
+  }
+  if (SmallestTypePtr) {
+    *SmallestTypePtr = SmallestType;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   return {MinWidth, MaxWidth};
 }
@@ -8309,17 +8434,19 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.preferPredicatedVectorOps();
   if (State.Plan->getEVL()) {
-    unsigned SmallestType, WidestType;
-    std::tie(SmallestType, WidestType) = ILV.Cost->getSmallestAndWidestTypes();
-    assert(SmallestType >= 8 && WidestType <= 64 &&
+    unsigned SmallestTypeSize, WidestTypeSize;
+    Type *WidestType;
+    std::tie(SmallestTypeSize, WidestTypeSize) =
+        ILV.Cost->getSmallestAndWidestTypes(nullptr, &WidestType);
+    assert(SmallestTypeSize >= 8 && WidestTypeSize <= 64 &&
            "Cannot set vector length: Unsupported type");
-    State.SEW = Log2_32(WidestType) - 3;
-    unsigned Numerator = WidestType * State.VF.getKnownMinValue();
+    State.SEW = Log2_32(WidestTypeSize) - 3;
+    unsigned Numerator = WidestTypeSize * State.VF.getKnownMinValue();
     unsigned Denominator = TTI->getMaxElementWidth();
-    State.LMUL = Numerator >= Denominator
+    State.LMULExp = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
                      : (8 - Log2_32(Denominator / Numerator));
-    assert(State.LMUL != 4 && State.LMUL <= 7 &&
+    assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
            "LMUL is not supported by the hardware");
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
@@ -8330,6 +8457,11 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
       cast<Instruction>(ILV.InitVL)->eraseFromParent();
       ILV.InitVL = V;
     }
+
+    // FIXME: The list of pairs should be filled outside of this function and
+    // needs to be cleared along with all but one VFs removal.
+    // FIXME: Change 'WidestType' to whatever is used for LMUL selection.
+    State.Plan->addLMULTypePair(State.LMULExp, WidestType);
   }
 #endif // SIFIVE_CUSTOMIZATION
   ILV.collectPoisonGeneratingRecipes(State);
@@ -11782,6 +11914,34 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       }
       // Report the vectorization decision.
       ORE->emit([&]() {
+#if SIFIVE_CUSTOMIZATION
+        const Module &M = *L->getHeader()->getModule();
+        Triple TargetTriple(M.getTargetTriple());
+        Triple::ArchType Arch = TargetTriple.getArch();
+        if ((Arch == Triple::riscv32 || Arch == Triple::riscv64) &&
+            VF.Width.isScalable() && LVL.preferPredicatedVectorOps()) {
+          auto VFToLMULTypeSizePair = [&LVP](const ElementCount &VF) {
+            assert(VF.isVector() && "Cannot convert scalar type to LMUL");
+            assert(VF.isScalable() && "Cannot convert fixed vector type to LMUL");
+            const VPlan &BestPlan = LVP.getBestPlanFor(VF);
+            unsigned LMULExp;
+            Type *DType;
+            std::tie(LMULExp, DType) = BestPlan.getLMULTypePairs()[0];
+            // Since we don't keep proper type that was used to do
+            // vectorization, use integer type as it's more generic.
+            std::string LMULTypeString;
+            raw_string_ostream RSO(LMULTypeString);
+            auto LMUL = LMULType::getWithExponent(LMULExp);
+            RSO << '(' << LMUL << ", " << *DType << ')';
+            return LMULTypeString;
+          };
+          return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),
+                                    L->getHeader())
+                 << "vectorized loop ((lmul, type): "
+                 << NV("VectorizationFactor", VFToLMULTypeSizePair(VF.Width))
+                 << ")";
+        }
+#endif // SIFIVE_CUSTOMIZATION
         return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),
                                   L->getHeader())
                << "vectorized loop (vectorization width: "

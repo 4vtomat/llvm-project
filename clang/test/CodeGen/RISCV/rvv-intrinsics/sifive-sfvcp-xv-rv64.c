@@ -4,8 +4,8 @@
 
 #include <riscv_vector.h>
 
-const int p27_26 = 3;
-const int p11_7 = 0x1f;
+#define p27_26 (0b11)
+#define p11_7  (0b11111)
 
 // CHECK-RV64-LABEL: @test_sf_vc_xv_se_u64m1(
 // CHECK-RV64-NEXT:  entry:

@@ -215,6 +215,9 @@ class Parser : public CodeCompletionHandler {
   std::unique_ptr<PragmaHandler> AttributePragmaHandler;
   std::unique_ptr<PragmaHandler> MaxTokensHerePragmaHandler;
   std::unique_ptr<PragmaHandler> MaxTokensTotalPragmaHandler;
+#if SIFIVE_CUSTOMIZATION
+  std::unique_ptr<PragmaHandler> RISCVPragmaHandler;
+#endif // SIFIVE_CUSTOMIZATION
 
   std::unique_ptr<CommentHandler> CommentSemaHandler;
 
