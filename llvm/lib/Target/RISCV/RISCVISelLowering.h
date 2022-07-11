@@ -284,6 +284,8 @@ enum NodeType : unsigned {
   VWSUBU_W_VL,
   VFWMUL_VL, // SIFIVE
 
+  VNSRL_VL, // SIFIVE
+
   // Vector compare producing a mask. Fourth operand is input mask. Fifth
   // operand is VL.
   SETCC_VL,
