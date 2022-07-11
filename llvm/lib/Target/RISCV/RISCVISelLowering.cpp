@@ -1133,12 +1133,16 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasStdExtF())
     setTargetDAGCombine({ISD::ZERO_EXTEND, ISD::FP_TO_SINT, ISD::FP_TO_UINT,
                          ISD::FP_TO_SINT_SAT, ISD::FP_TO_UINT_SAT});
+#if SIFIVE_CUSTOMIZATION
   if (Subtarget.hasVInstructions())
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
-                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR, // SIFIVE
-                         ISD::INTRINSIC_WO_CHAIN,                 // SIFIVE
-                         ISD::INTRINSIC_W_CHAIN});                // SIFIVE
+                         ISD::SHL, ISD::STORE,
+                         ISD::SPLAT_VECTOR,        // SIFIVE
+                         ISD::INTRINSIC_WO_CHAIN,  // SIFIVE
+                         ISD::VECTOR_SHUFFLE,      // SIFIVE
+                         ISD::INTRINSIC_W_CHAIN}); // SIFIVE
+#endif
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
 
@@ -10085,6 +10089,82 @@ performEXTRACT_VECTOR_ELTCombine(SDNode *N, SelectionDAG &DAG,
   DAG.makeEquivalentMemoryOrdering(OriginalLoad, Load);
   return Load;
 }
+
+static SDValue combineVECTOR_SHUFFLEToVnsrl(SDNode *N, SelectionDAG &DAG,
+                                            const RISCVSubtarget &Subtarget) {
+  // t34: v8i8 = extract_subvector t11, Constant:i64<0>
+  // t33: v8i8 = extract_subvector t11, Constant:i64<8>
+  // a) t35: v8i8 = vector_shuffle<0,2,4,6,8,10,12,14> t34, t33
+  // b) t35: v8i8 = vector_shuffle<1,3,5,7,9,11,13,15> t34, t33
+  EVT ResultEVT = N->getValueType(0);
+  if (!DAG.getTargetLoweringInfo().isTypeLegal(ResultEVT) ||
+      !ResultEVT.isFixedLengthVector())
+    return SDValue();
+  EVT ResultEltEVT = ResultEVT.getVectorElementType();
+  // The maximum SEW for vnsrl is 32.
+  if (!ResultEltEVT.isRound() || ResultEltEVT.bitsGT(MVT::i32))
+    return SDValue();
+  SDValue Op0 = N->getOperand(0);
+  if (Op0.getOpcode() != ISD::EXTRACT_SUBVECTOR)
+    return SDValue();
+  if (Op0.getConstantOperandVal(1) != 0)
+    return SDValue();
+  SDValue Op1 = N->getOperand(1);
+  if (Op1.getOpcode() != ISD::EXTRACT_SUBVECTOR)
+    return SDValue();
+  // From the same source.
+  SDValue Src = Op0.getOperand(0);
+  if (Src != Op1.getOperand(0))
+    return SDValue();
+  // Is continuous.
+  unsigned NumElts = ResultEVT.getVectorNumElements();
+  if (NumElts != Op1.getConstantOperandVal(1))
+    return SDValue();
+  ShuffleVectorSDNode *SVN = cast<ShuffleVectorSDNode>(N);
+  uint64_t Shift;
+  switch (SVN->getMaskElt(0)) {
+  case 0:
+    Shift = 0;
+    break;
+  case 1:
+    Shift = ResultEltEVT.getFixedSizeInBits();
+    break;
+  default:
+    return SDValue();
+  }
+  for (unsigned i = 1; i != NumElts; ++i)
+    if (SVN->getMaskElt(i - 1) + 2 != SVN->getMaskElt(i))
+      return SDValue();
+  SDLoc DL(N);
+  MVT ResultMVT = N->getSimpleValueType(0);
+  MVT ContainerMVT =
+      getContainerForFixedLengthVector(DAG, ResultMVT, Subtarget);
+  SDValue ReinterpretSrc =
+      DAG.getBitcast(Src.getValueType()
+                         .widenIntegerVectorElementType(*DAG.getContext())
+                         .getHalfNumVectorElementsVT(*DAG.getContext()),
+                     Src);
+  SDValue Vec = convertToScalableVector(
+      getContainerForFixedLengthVector(DAG, ReinterpretSrc.getSimpleValueType(),
+                                       Subtarget),
+      ReinterpretSrc, DAG, Subtarget);
+  SDValue Mask, VL;
+  std::tie(Mask, VL) =
+      getDefaultVLOps(ResultMVT, ContainerMVT, DL, DAG, Subtarget);
+  SDValue SplatShift = DAG.getNode(
+      RISCVISD::VMV_V_X_VL, DL, ContainerMVT, DAG.getUNDEF(ContainerMVT),
+      DAG.getConstant(Shift, DL, Subtarget.getXLenVT()), VL);
+  SDValue Res = DAG.getNode(RISCVISD::VNSRL_VL, DL, ContainerMVT, Vec,
+                            SplatShift, Mask, VL);
+  return convertFromScalableVector(ResultMVT, Res, DAG, Subtarget);
+}
+
+static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
+                                            const RISCVSubtarget &Subtarget) {
+  if (SDValue V = combineVECTOR_SHUFFLEToVnsrl(N, DAG, Subtarget))
+    return V;
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Convert from one FMA opcode to another based on whether we are negating the
@@ -10688,6 +10768,13 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 #endif
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VECTOR_SHUFFLE: {
+    if (SDValue V = performVECTOR_SHUFFLECombine(N, DAG, Subtarget))
+      return V;
+    break;
+  }
+#endif
   case ISD::SPLAT_VECTOR: {
     EVT VT = N->getValueType(0);
     // Only perform this combine on legal MVT types.
