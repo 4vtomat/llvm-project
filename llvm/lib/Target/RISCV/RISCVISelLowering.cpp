@@ -1686,6 +1686,24 @@ bool RISCVTargetLowering::isFPImmLegal(const APFloat &Imm, EVT VT,
   return Imm.isZero();
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const
+{
+  if (!isOperationLegalOrCustom(ISD::EXTRACT_SUBVECTOR, ResVT))
+    return false;
+
+  if (Index == 0)
+    return true;
+
+  // The smallest type we can slide is i8.
+  if (ResVT.getVectorElementType() == MVT::i1)
+    return false;
+
+  // Slide can support arbitrary index. But we only treat vslidedown.vi cheap.
+  return Index < 32;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVTargetLowering::hasBitPreservingFPLogic(EVT VT) const {
   return (VT == MVT::f16 && Subtarget.hasStdExtZfh()) ||
          (VT == MVT::f32 && Subtarget.hasStdExtF()) ||

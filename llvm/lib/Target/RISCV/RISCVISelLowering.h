@@ -391,6 +391,9 @@ public:
   bool isOffsetFoldingLegal(const GlobalAddressSDNode *GA) const override;
   bool isFPImmLegal(const APFloat &Imm, EVT VT,
                     bool ForCodeSize) const override;
+#if SIFIVE_CUSTOMIZATION
+  bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool softPromoteHalfType() const override { return true; }
 
