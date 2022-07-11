@@ -7385,7 +7385,8 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   unsigned MaxVLMAX = 0;
   unsigned VectorBitsMax = Subtarget.getMaxRVVVectorSizeInBits();
   if (VectorBitsMax != 0)
-    MaxVLMAX = ((VectorBitsMax / EltSize) * MinSize) / RISCV::RVVBitsPerBlock;
+    MaxVLMAX =
+        RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
 
   unsigned GatherOpc = RISCVISD::VRGATHER_VV_VL;
   // If this is SEW=8 and VLMAX is unknown or more than 256, we need
