@@ -7266,38 +7266,25 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
                       VMV0Op2, EVL2);
   }
 
-  SDValue Undef = DAG.getUNDEF(ContainerVT);
-  if (isa<ConstantSDNode>(Offset)) { // Offset is an immediate
-    // If the offset value is negative, use evl1 - offset in its place
-    if (cast<ConstantSDNode>(Offset)->getSExtValue() < 0)
-      Offset = DAG.getNode(ISD::ADD, DL, XLenVT, EVL1, Offset);
-  } else { // Offset is in a register
-    // NOTE: instead of branching, we could use Ops[2] = (evl1 + imm) % evl1
-    SDValue Select = DAG.getNode(
-        ISD::SELECT_CC, DL, XLenVT, Offset, DAG.getConstant(0, DL, XLenVT),
-        DAG.getNode(ISD::ADD, DL, XLenVT, EVL1, Offset), Offset,
-        DAG.getCondCode(ISD::SETLT));
-    Offset = Select;
+  int64_t ImmValue = cast<ConstantSDNode>(Offset)->getSExtValue();
+  SDValue DownOffset, UpOffset;
+  if (ImmValue >= 0) {
+    // The operand is a TargetConstant, we need to rebuild it as a regular
+    // constant.
+    DownOffset = DAG.getConstant(ImmValue, DL, XLenVT);
+    UpOffset = DAG.getNode(ISD::SUB, DL, XLenVT, EVL1, DownOffset);
+  } else {
+    // The operand is a TargetConstant, we need to rebuild it as a regular
+    // constant rather than negating the original operand.
+    UpOffset = DAG.getConstant(-ImmValue, DL, XLenVT);
+    DownOffset = DAG.getNode(ISD::SUB, DL, XLenVT, EVL1, UpOffset);
   }
 
-  SDValue SLIDEDOWN = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
-                                  Undef, Op1, Offset, Mask, EVL1);
-  SDValue Diff = DAG.getNode(ISD::SUB, DL, XLenVT, EVL1, Offset);
-  SDValue SLIDEUP = DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, ContainerVT, Undef,
-                                Op2, Diff, Mask, EVL2);
-  MVT MaskVT = getMaskTypeFor(ContainerVT);
-  SDValue SplatOne =
-      DAG.getSplatVector(MaskVT, DL, DAG.getConstant(1, DL, XLenVT));
-  SDValue VID = DAG.getNode(RISCVISD::VID_VL, DL,
-                            ContainerVT.changeVectorElementTypeToInteger(),
-                            SplatOne, EVL2);
-  SDValue MergeMask =
-      DAG.getNode(RISCVISD::SETCC_VL, DL, MaskVT, VID,
-                  DAG.getSplatVector(
-                      ContainerVT.changeVectorElementTypeToInteger(), DL, Diff),
-                  DAG.getCondCode(ISD::SETULT), Mask, EVL2);
-  SDValue Result = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, MergeMask,
-                               SLIDEDOWN, SLIDEUP, EVL2);
+  SDValue SlideDown =
+      DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
+                  DAG.getUNDEF(ContainerVT), Op1, DownOffset, Mask, UpOffset);
+  SDValue Result = DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, ContainerVT,
+                               SlideDown, Op2, UpOffset, Mask, EVL2);
 
   if (IsMaskVector) {
     // Truncate Result back to a mask vector (Result has same EVL as Op2)
