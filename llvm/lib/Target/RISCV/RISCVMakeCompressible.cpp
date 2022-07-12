@@ -295,14 +295,9 @@ static void updateOperands(MachineInstr &MI, RegImmPair OldRegImm,
 
   int SkipN = 0;
 
-<<<<<<< HEAD
-  // Skip first operand for store instruction, it's operand for store value,
-  // it's unsafe to rename if offset is non-zero.
-=======
   // Skip the first (value) operand to a store instruction (except if the store
   // offset is zero) in order to avoid an incorrect transformation.
   // e.g. sd a0, 808(a0) to addi a2, a0, 768; sd a2, 40(a2)
->>>>>>> upstream/main
   if (isCompressibleStore(MI) && OldRegImm.Imm != 0)
     SkipN = 1;
 
