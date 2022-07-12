@@ -402,14 +402,11 @@ private:
   SDValue PromoteIntOp_VECREDUCE(SDNode *N);
   SDValue PromoteIntOp_VP_REDUCE(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_SET_ROUNDING(SDNode *N);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Copied from BSC
   SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue PromoteIntOp_STACKMAP(SDNode *N, unsigned OpNo);
->>>>>>> upstream/main
 
   void PromoteSetCCOperands(SDValue &LHS,SDValue &RHS, ISD::CondCode Code);
 

@@ -1726,18 +1726,15 @@ bool DAGTypeLegalizer::PromoteIntegerOperand(SDNode *N, unsigned OpNo) {
     break;
 
   case ISD::SET_ROUNDING: Res = PromoteIntOp_SET_ROUNDING(N); break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
     Res = PromoteIntOp_VP_SPLICE(N, OpNo);
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::STACKMAP:
     Res = PromoteIntOp_STACKMAP(N, OpNo);
     break;
->>>>>>> upstream/main
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -2343,7 +2340,6 @@ SDValue DAGTypeLegalizer::PromoteIntOp_SET_ROUNDING(SDNode *N) {
   return SDValue(DAG.UpdateNodeOperands(N, N->getOperand(0), Op), 0);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Copied from BSC
 SDValue DAGTypeLegalizer::PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo) {
@@ -2360,7 +2356,7 @@ SDValue DAGTypeLegalizer::PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo) {
   return SDValue(DAG.UpdateNodeOperands(N, NewOps), 0);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 SDValue DAGTypeLegalizer::PromoteIntOp_STACKMAP(SDNode *N, unsigned OpNo) {
   assert(OpNo > 1); // Because the first two arguments are guaranteed legal.
   SmallVector<SDValue> NewOps(N->ops().begin(), N->ops().end());
@@ -2369,7 +2365,6 @@ SDValue DAGTypeLegalizer::PromoteIntOp_STACKMAP(SDNode *N, unsigned OpNo) {
   NewOps[OpNo] = DAG.getNode(ISD::ANY_EXTEND, SDLoc(N), NVT, Operand);
   return SDValue(DAG.UpdateNodeOperands(N, NewOps), 0);
 }
->>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 //  Integer Result Expansion
