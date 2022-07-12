@@ -2966,15 +2966,8 @@ static bool BlockIsSimpleEnoughToThreadThrough(BasicBlock *BB) {
   return true;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
                                         BasicBlock *To) {
-#endif
-=======
-static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
-                                        BasicBlock *To) {
->>>>>>> upstream/main
   // Don't look past the block defining the value, we might get the value from
   // a previous loop iteration.
   auto *I = dyn_cast<Instruction>(V);
@@ -2988,13 +2981,7 @@ static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
     return BI->getSuccessor(0) == To ? ConstantInt::getTrue(BI->getContext())
                                      : ConstantInt::getFalse(BI->getContext());
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   return nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  return nullptr;
->>>>>>> upstream/main
 }
 
 /// If we have a conditional branch on something for which we know the constant
