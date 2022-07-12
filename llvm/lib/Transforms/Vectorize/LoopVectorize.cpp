@@ -3177,8 +3177,8 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   };
 
   if (!Cost->foldTailByMasking())
-<<<<<<< HEAD
-    CheckMinIters = Builder.CreateICmp(P, Count, Step, "min.iters.check");
+    CheckMinIters =
+        Builder.CreateICmp(P, Count, CreateStep(), "min.iters.check");
   else if (VF.isScalable()
 #if SIFIVE_CUSTOMIZATION
       // Don't require this overflow check as with VP-intrinsics we don't mask
@@ -3186,11 +3186,6 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
       && !preferPredicatedVectorOps()
 #endif // SIFIVE_CUSTOMIZATION
     ) {
-=======
-    CheckMinIters =
-        Builder.CreateICmp(P, Count, CreateStep(), "min.iters.check");
-  else if (VF.isScalable()) {
->>>>>>> upstream/main
     // vscale is not necessarily a power-of-2, which means we cannot guarantee
     // an overflow to zero when updating induction variables and so an
     // additional overflow check is required before entering the vector loop.
@@ -3203,7 +3198,6 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     // Don't execute the vector loop if (UMax - n) < (VF * UF).
     CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULT, LHS, CreateStep());
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!VectorizerDisableProfitableTripCountRTCheck &&
       Cost->foldTailByMasking() && preferPredicatedVectorOps() &&
@@ -3225,9 +3219,6 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
->>>>>>> upstream/main
   // Create new preheader for vector loop.
   LoopVectorPreHeader =
       SplitBlock(TCCheckBlock, TCCheckBlock->getTerminator(), DT, LI, nullptr,
