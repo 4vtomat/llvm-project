@@ -621,17 +621,15 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           Custom);
       setOperationAction(ISD::VECTOR_REVERSE, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
       setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
       setOperationPromotedToType(
           ISD::VECTOR_SPLICE, VT,
           MVT::getVectorVT(MVT::i8, VT.getVectorElementCount()));
->>>>>>> upstream/main
     }
 
     for (MVT VT : IntVecVTs) {
