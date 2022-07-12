@@ -194,7 +194,6 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   if (Instruction::isBinaryOp(getOpcode())) {
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -202,11 +201,8 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V = Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B);
-=======
     Value *V =
         Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
->>>>>>> upstream/main
     State.set(this, V, Part);
     return;
   }
@@ -214,7 +210,6 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   switch (getOpcode()) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -222,10 +217,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V = Builder.CreateNot(A);
-=======
     Value *V = Builder.CreateNot(A, Name);
->>>>>>> upstream/main
     State.set(this, V, Part);
     break;
   }
@@ -247,7 +239,6 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *Cond = State.get(getOperand(0), Part);
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -255,10 +246,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V = Builder.CreateSelect(Cond, Op1, Op2);
-=======
     Value *V = Builder.CreateSelect(Cond, Op1, Op2, Name);
->>>>>>> upstream/main
     State.set(this, V, Part);
     break;
   }
@@ -336,12 +324,8 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 #else
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      Next = Builder.CreateAdd(Phi, Step, "index.next", IsNUW, false);
-=======
       Next = Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
->>>>>>> upstream/main
     } else {
       Next = State.get(this, 0);
     }
