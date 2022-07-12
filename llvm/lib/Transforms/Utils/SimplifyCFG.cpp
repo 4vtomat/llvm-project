@@ -377,16 +377,10 @@ static void AddPredecessorToBlock(BasicBlock *Succ, BasicBlock *NewPred,
 /// expensive.
 static InstructionCost computeSpeculationCost(const User *I,
                                               const TargetTransformInfo &TTI) {
-  assert(isSafeToSpeculativelyExecute(I) &&
+  assert((!isa<Instruction>(I) ||
+          isSafeToSpeculativelyExecute(cast<Instruction>(I))) &&
          "Instruction is not safe to speculatively execute!");
   return TTI.getUserCost(I, TargetTransformInfo::TCK_SizeAndLatency);
-}
-
-/// Check whether this is a potentially trapping constant.
-static bool canTrap(const Value *V) {
-  if (auto *C = dyn_cast<Constant>(V))
-    return C->canTrap();
-  return false;
 }
 
 /// If we have a merge point of an "if condition" as accepted above,
@@ -421,9 +415,9 @@ static bool dominatesMergePoint(Value *V, BasicBlock *BB,
 
   Instruction *I = dyn_cast<Instruction>(V);
   if (!I) {
-    // Non-instructions all dominate instructions, but not all constantexprs
-    // can be executed unconditionally.
-    return !canTrap(V);
+    // Non-instructions dominate all instructions and can be executed
+    // unconditionally.
+    return true;
   }
   BasicBlock *PBB = I->getParent();
 
@@ -1473,10 +1467,7 @@ bool SimplifyCFGOpt::HoistThenElseCodeToIf(BranchInst *BI,
     while (isa<DbgInfoIntrinsic>(I2))
       I2 = &*BB2_Itr++;
   }
-  // FIXME: Can we define a safety predicate for CallBr?
-  if (isa<PHINode>(I1) || !I1->isIdenticalToWhenDefined(I2) ||
-      (isa<InvokeInst>(I1) && !isSafeToHoistInvoke(BB1, BB2, I1, I2)) ||
-      isa<CallBrInst>(I1))
+  if (isa<PHINode>(I1) || !I1->isIdenticalToWhenDefined(I2))
     return false;
 
   BasicBlock *BIParent = BI->getParent();
@@ -1507,6 +1498,10 @@ bool SimplifyCFGOpt::HoistThenElseCodeToIf(BranchInst *BI,
     // broken BB), instead clone it, and remove BI.
     if (I1->isTerminator())
       goto HoistTerminator;
+
+    // Hoisting token-returning instructions would obscure the origin.
+    if (I1->getType()->isTokenTy())
+      return Changed;
 
     // If we're going to hoist a call, make sure that the two instructions we're
     // commoning/hoisting are both marked with musttail, or neither of them is
@@ -1608,11 +1603,6 @@ HoistTerminator:
       // eliminate undefined control flow then converting it to a select.
       if (passingValueIsAlwaysUndefined(BB1V, &PN) ||
           passingValueIsAlwaysUndefined(BB2V, &PN))
-        return Changed;
-
-      if (isa<ConstantExpr>(BB1V) && !isSafeToSpeculativelyExecute(BB1V))
-        return Changed;
-      if (isa<ConstantExpr>(BB2V) && !isSafeToSpeculativelyExecute(BB2V))
         return Changed;
     }
   }
@@ -2679,9 +2669,6 @@ static bool validateAndCostRequiredSelects(BasicBlock *BB, BasicBlock *ThenBB,
         passingValueIsAlwaysUndefined(ThenV, &PN))
       return false;
 
-    if (canTrap(OrigV) || canTrap(ThenV))
-      return false;
-
     HaveRewritablePHIs = true;
     ConstantExpr *OrigCE = dyn_cast<ConstantExpr>(OrigV);
     ConstantExpr *ThenCE = dyn_cast<ConstantExpr>(ThenV);
@@ -2979,10 +2966,15 @@ static bool BlockIsSimpleEnoughToThreadThrough(BasicBlock *BB) {
   return true;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
                                         BasicBlock *To) {
 #endif
+=======
+static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
+                                        BasicBlock *To) {
+>>>>>>> upstream/main
   // Don't look past the block defining the value, we might get the value from
   // a previous loop iteration.
   auto *I = dyn_cast<Instruction>(V);
@@ -2996,9 +2988,13 @@ static ConstantInt *getKnownValueOnEdge(Value *V, BasicBlock *From,
     return BI->getSuccessor(0) == To ? ConstantInt::getTrue(BI->getContext())
                                      : ConstantInt::getFalse(BI->getContext());
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   return nullptr;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  return nullptr;
+>>>>>>> upstream/main
 }
 
 /// If we have a conditional branch on something for which we know the constant
@@ -3008,7 +3004,7 @@ static Optional<bool>
 FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
                                             const DataLayout &DL,
                                             AssumptionCache *AC) {
-  SmallMapVector<BasicBlock *, ConstantInt *, 8> KnownValues;
+  SmallMapVector<ConstantInt *, SmallSetVector<BasicBlock *, 2>, 2> KnownValues;
   BasicBlock *BB = BI->getParent();
   Value *Cond = BI->getCondition();
   PHINode *PN = dyn_cast<PHINode>(Cond);
@@ -3021,12 +3017,18 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
 
     for (Use &U : PN->incoming_values())
       if (auto *CB = dyn_cast<ConstantInt>(U))
-        KnownValues.insert({PN->getIncomingBlock(U), CB});
+        KnownValues[CB].insert(PN->getIncomingBlock(U));
   } else {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     for (BasicBlock *Pred : predecessors(BB)) {
       if (ConstantInt *CB = getKnownValueOnEdge(Cond, Pred, BB))
         KnownValues.insert({Pred, CB});
+=======
+    for (BasicBlock *Pred : predecessors(BB)) {
+      if (ConstantInt *CB = getKnownValueOnEdge(Cond, Pred, BB))
+        KnownValues[CB].insert(Pred);
+>>>>>>> upstream/main
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -3043,29 +3045,34 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
   for (const auto &Pair : KnownValues) {
     // Okay, we now know that all edges from PredBB should be revectored to
     // branch to RealDest.
-    ConstantInt *CB = Pair.second;
-    BasicBlock *PredBB = Pair.first;
+    ConstantInt *CB = Pair.first;
+    ArrayRef<BasicBlock *> PredBBs = Pair.second.getArrayRef();
     BasicBlock *RealDest = BI->getSuccessor(!CB->getZExtValue());
 
     if (RealDest == BB)
       continue; // Skip self loops.
+
     // Skip if the predecessor's terminator is an indirect branch.
-    if (isa<IndirectBrInst>(PredBB->getTerminator()))
+    if (any_of(PredBBs, [](BasicBlock *PredBB) {
+          return isa<IndirectBrInst>(PredBB->getTerminator());
+        }))
       continue;
 
-    SmallVector<DominatorTree::UpdateType, 3> Updates;
+    LLVM_DEBUG({
+      dbgs() << "Condition " << *Cond << " in " << BB->getName()
+             << " has value " << *Pair.first << " in predecessors:\n";
+      for (const BasicBlock *PredBB : Pair.second)
+        dbgs() << "  " << PredBB->getName() << "\n";
+      dbgs() << "Threading to destination " << RealDest->getName() << ".\n";
+    });
 
-    // The dest block might have PHI nodes, other predecessors and other
-    // difficult cases.  Instead of being smart about this, just insert a new
-    // block that jumps to the destination block, effectively splitting
-    // the edge we are about to create.
-    BasicBlock *EdgeBB =
-        BasicBlock::Create(BB->getContext(), RealDest->getName() + ".critedge",
-                           RealDest->getParent(), RealDest);
-    BranchInst *CritEdgeBranch = BranchInst::Create(RealDest, EdgeBB);
-    if (DTU)
-      Updates.push_back({DominatorTree::Insert, EdgeBB, RealDest});
-    CritEdgeBranch->setDebugLoc(BI->getDebugLoc());
+    // Split the predecessors we are threading into a new edge block. We'll
+    // clone the instructions into this block, and then redirect it to RealDest.
+    BasicBlock *EdgeBB = SplitBlockPredecessors(BB, PredBBs, ".critedge", DTU);
+
+    // TODO: These just exist to reduce test diff, we can drop them if we like.
+    EdgeBB->setName(RealDest->getName() + ".critedge");
+    EdgeBB->moveBefore(RealDest);
 
     // Update PHI nodes.
     AddPredecessorToBlock(RealDest, EdgeBB, BB);
@@ -3073,12 +3080,12 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
     // BB may have instructions that are being threaded over.  Clone these
     // instructions into EdgeBB.  We know that there will be no uses of the
     // cloned instructions outside of EdgeBB.
-    BasicBlock::iterator InsertPt = EdgeBB->begin();
+    BasicBlock::iterator InsertPt = EdgeBB->getFirstInsertionPt();
     DenseMap<Value *, Value *> TranslateMap; // Track translated values.
-    TranslateMap[Cond] = Pair.second;
+    TranslateMap[Cond] = CB;
     for (BasicBlock::iterator BBI = BB->begin(); &*BBI != BI; ++BBI) {
       if (PHINode *PN = dyn_cast<PHINode>(BBI)) {
-        TranslateMap[PN] = PN->getIncomingValueForBlock(PredBB);
+        TranslateMap[PN] = PN->getIncomingValueForBlock(EdgeBB);
         continue;
       }
       // Clone the instruction.
@@ -3116,19 +3123,15 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
       }
     }
 
-    // Loop over all of the edges from PredBB to BB, changing them to branch
-    // to EdgeBB instead.
-    Instruction *PredBBTI = PredBB->getTerminator();
-    for (unsigned i = 0, e = PredBBTI->getNumSuccessors(); i != e; ++i)
-      if (PredBBTI->getSuccessor(i) == BB) {
-        BB->removePredecessor(PredBB);
-        PredBBTI->setSuccessor(i, EdgeBB);
-      }
+    BB->removePredecessor(EdgeBB);
+    BranchInst *EdgeBI = cast<BranchInst>(EdgeBB->getTerminator());
+    EdgeBI->setSuccessor(0, RealDest);
+    EdgeBI->setDebugLoc(BI->getDebugLoc());
 
     if (DTU) {
-      Updates.push_back({DominatorTree::Insert, PredBB, EdgeBB});
-      Updates.push_back({DominatorTree::Delete, PredBB, BB});
-
+      SmallVector<DominatorTree::UpdateType, 2> Updates;
+      Updates.push_back({DominatorTree::Delete, EdgeBB, BB});
+      Updates.push_back({DominatorTree::Insert, EdgeBB, RealDest});
       DTU->applyUpdates(Updates);
     }
 
@@ -3584,13 +3587,6 @@ bool llvm::FoldBranchToCommonDest(BranchInst *BI, DomTreeUpdater *DTU,
       (!isa<CmpInst>(Cond) && !isa<BinaryOperator>(Cond) &&
        !isa<SelectInst>(Cond)) ||
       Cond->getParent() != BB || !Cond->hasOneUse())
-    return false;
-
-  // Cond is known to be a compare or binary operator.  Check to make sure that
-  // neither operand is a potentially-trapping constant expression.
-  if (canTrap(Cond->getOperand(0)))
-    return false;
-  if (canTrap(Cond->getOperand(1)))
     return false;
 
   // Finally, don't infinitely unroll conditional loops.
@@ -4100,9 +4096,6 @@ static bool SimplifyCondBranchToCondBranch(BranchInst *PBI, BranchInst *BI,
   if (tryWidenCondBranchToCondBranch(PBI, BI, DTU))
     return true;
 
-  if (canTrap(BI->getCondition()))
-    return false;
-
   // If both branches are conditional and both contain stores to the same
   // address, remove the stores from the conditionals and create a conditional
   // merged store at the end.
@@ -4144,26 +4137,12 @@ static bool SimplifyCondBranchToCondBranch(BranchInst *PBI, BranchInst *BI,
   // insertion of a large number of select instructions. For targets
   // without predication/cmovs, this is a big pessimization.
 
-  // Also do not perform this transformation if any phi node in the common
-  // destination block can trap when reached by BB or PBB (PR17073). In that
-  // case, it would be unsafe to hoist the operation into a select instruction.
-
   BasicBlock *CommonDest = PBI->getSuccessor(PBIOp);
   BasicBlock *RemovedDest = PBI->getSuccessor(PBIOp ^ 1);
   unsigned NumPhis = 0;
   for (BasicBlock::iterator II = CommonDest->begin(); isa<PHINode>(II);
        ++II, ++NumPhis) {
     if (NumPhis > 2) // Disable this xform.
-      return false;
-
-    PHINode *PN = cast<PHINode>(II);
-    Value *BIV = PN->getIncomingValueForBlock(BB);
-    if (canTrap(BIV))
-      return false;
-
-    unsigned PBBIdx = PN->getBasicBlockIndex(PBI->getParent());
-    Value *PBIV = PN->getIncomingValue(PBBIdx);
-    if (canTrap(PBIV))
       return false;
   }
 
@@ -5535,11 +5514,6 @@ ConstantFold(Instruction *I, const DataLayout &DL,
       COps.push_back(A);
     else
       return nullptr;
-  }
-
-  if (CmpInst *Cmp = dyn_cast<CmpInst>(I)) {
-    return ConstantFoldCompareInstOperands(Cmp->getPredicate(), COps[0],
-                                           COps[1], DL);
   }
 
   return ConstantFoldInstOperands(I, COps, DL);

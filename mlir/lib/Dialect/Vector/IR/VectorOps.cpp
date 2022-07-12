@@ -334,34 +334,14 @@ ArrayAttr vector::getVectorSubscriptAttr(Builder &builder,
 
 void vector::MultiDimReductionOp::build(OpBuilder &builder,
                                         OperationState &result, Value source,
-                                        ArrayRef<bool> reductionMask,
+                                        Value acc, ArrayRef<bool> reductionMask,
                                         CombiningKind kind) {
   SmallVector<int64_t> reductionDims;
   for (const auto &en : llvm::enumerate(reductionMask))
     if (en.value())
       reductionDims.push_back(en.index());
-  build(builder, result, kind, source, builder.getI64ArrayAttr(reductionDims));
-}
-
-LogicalResult MultiDimReductionOp::inferReturnTypes(
-    MLIRContext *, Optional<Location>, ValueRange operands,
-    DictionaryAttr attributes, RegionRange,
-    SmallVectorImpl<Type> &inferredReturnTypes) {
-  MultiDimReductionOp::Adaptor op(operands, attributes);
-  auto vectorType = op.getSource().getType().cast<VectorType>();
-  SmallVector<int64_t> targetShape;
-  for (auto it : llvm::enumerate(vectorType.getShape()))
-    if (!llvm::any_of(op.getReductionDims().getValue(), [&](Attribute attr) {
-          return attr.cast<IntegerAttr>().getValue() == it.index();
-        }))
-      targetShape.push_back(it.value());
-  // TODO: update to also allow 0-d vectors when available.
-  if (targetShape.empty())
-    inferredReturnTypes.push_back(vectorType.getElementType());
-  else
-    inferredReturnTypes.push_back(
-        VectorType::get(targetShape, vectorType.getElementType()));
-  return success();
+  build(builder, result, kind, source, acc,
+        builder.getI64ArrayAttr(reductionDims));
 }
 
 OpFoldResult MultiDimReductionOp::fold(ArrayRef<Attribute> operands) {
@@ -373,6 +353,28 @@ OpFoldResult MultiDimReductionOp::fold(ArrayRef<Attribute> operands) {
 
 Optional<SmallVector<int64_t, 4>> MultiDimReductionOp::getShapeForUnroll() {
   return llvm::to_vector<4>(getSourceVectorType().getShape());
+}
+
+LogicalResult MultiDimReductionOp::verify() {
+  SmallVector<int64_t> targetShape;
+  Type inferredReturnType;
+  for (auto it : llvm::enumerate(getSourceVectorType().getShape()))
+    if (!llvm::any_of(getReductionDims().getValue(), [&](Attribute attr) {
+          return attr.cast<IntegerAttr>().getValue() == it.index();
+        }))
+      targetShape.push_back(it.value());
+  // TODO: update to also allow 0-d vectors when available.
+  if (targetShape.empty())
+    inferredReturnType = getSourceVectorType().getElementType();
+  else
+    inferredReturnType =
+        VectorType::get(targetShape, getSourceVectorType().getElementType());
+  if (getType() != inferredReturnType)
+    return emitOpError() << "destination type " << getType()
+                         << " is incompatible with source type "
+                         << getSourceVectorType();
+
+  return success();
 }
 
 //===----------------------------------------------------------------------===//
@@ -687,6 +689,9 @@ static LogicalResult verifyOutputShape(
     MLIRContext *ctx = op.getContext();
     AffineMap lhsMap = op.getIndexingMaps()[0];
     AffineMap rhsMap = op.getIndexingMaps()[1];
+    if (getUnusedDimsBitVector({lhsMap, rhsMap}).any())
+      return op.emitOpError(
+          "expected all dimensions to be either a LHS or a RHS dimension");
     SmallVector<AffineExpr, 4> extents(lhsMap.getNumInputs());
     for (auto pair :
          {std::make_pair(lhsType, lhsMap), std::make_pair(rhsType, rhsMap)}) {
@@ -698,8 +703,9 @@ static LogicalResult verifyOutputShape(
           extents[pos] = getAffineConstantExpr(v.getShape()[idx], ctx);
       }
     }
-    assert(llvm::all_of(extents, [](AffineExpr e) { return e; }) &&
-           "expected extent along all dimensions.");
+    if (!llvm::all_of(extents, [](AffineExpr e) { return e; }))
+      return op.emitOpError("expected all dimensions to get an extent as "
+                            "either a LHS or a RHS dimension");
 
     AffineMap resMap = op.getIndexingMaps()[2];
     auto extentsMap = AffineMap::get(/*dimCount=*/extents.size(),
@@ -1881,6 +1887,36 @@ OpFoldResult vector::ShuffleOp::fold(ArrayRef<Attribute> operands) {
   return DenseElementsAttr::get(getVectorType(), results);
 }
 
+namespace {
+
+/// Pattern to rewrite a ShuffleOp(SplatOp, SplatOp) to SplatOp.
+class ShuffleSplat final : public OpRewritePattern<ShuffleOp> {
+public:
+  using OpRewritePattern<ShuffleOp>::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(ShuffleOp op,
+                                PatternRewriter &rewriter) const override {
+    auto v1Splat = op.getV1().getDefiningOp<SplatOp>();
+    auto v2Splat = op.getV2().getDefiningOp<SplatOp>();
+
+    if (!v1Splat || !v2Splat)
+      return failure();
+
+    if (v1Splat.getInput() != v2Splat.getInput())
+      return failure();
+
+    rewriter.replaceOpWithNewOp<SplatOp>(op, op.getType(), v1Splat.getInput());
+    return success();
+  }
+};
+
+} // namespace
+
+void ShuffleOp::getCanonicalizationPatterns(RewritePatternSet &results,
+                                            MLIRContext *context) {
+  results.add<ShuffleSplat>(context);
+}
+
 //===----------------------------------------------------------------------===//
 // InsertElementOp
 //===----------------------------------------------------------------------===//
@@ -1997,11 +2033,32 @@ public:
   }
 };
 
+/// Pattern to rewrite a InsertOp(SplatOp, SplatOp) to SplatOp.
+class InsertSplatToSplat final : public OpRewritePattern<InsertOp> {
+public:
+  using OpRewritePattern<InsertOp>::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(InsertOp op,
+                                PatternRewriter &rewriter) const override {
+    auto srcSplat = op.getSource().getDefiningOp<SplatOp>();
+    auto dstSplat = op.getDest().getDefiningOp<SplatOp>();
+
+    if (!srcSplat || !dstSplat)
+      return failure();
+
+    if (srcSplat.getInput() != dstSplat.getInput())
+      return failure();
+
+    rewriter.replaceOpWithNewOp<SplatOp>(op, op.getType(), srcSplat.getInput());
+    return success();
+  }
+};
+
 } // namespace
 
 void InsertOp::getCanonicalizationPatterns(RewritePatternSet &results,
                                            MLIRContext *context) {
-  results.add<InsertToBroadcast, BroadcastFolder>(context);
+  results.add<InsertToBroadcast, BroadcastFolder, InsertSplatToSplat>(context);
 }
 
 // Eliminates insert operations that produce values identical to their source
@@ -2177,6 +2234,70 @@ LogicalResult InsertStridedSliceOp::verify() {
     return failure();
 
   return success();
+}
+
+namespace {
+/// Pattern to rewrite an InsertStridedSliceOp(SplatOp(X):src_type,
+/// SplatOp(X):dst_type) to SplatOp(X):dst_type.
+class FoldInsertStridedSliceSplat final
+    : public OpRewritePattern<InsertStridedSliceOp> {
+public:
+  using OpRewritePattern<InsertStridedSliceOp>::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(InsertStridedSliceOp insertStridedSliceOp,
+                                PatternRewriter &rewriter) const override {
+    auto srcSplatOp =
+        insertStridedSliceOp.getSource().getDefiningOp<vector::SplatOp>();
+    auto destSplatOp =
+        insertStridedSliceOp.getDest().getDefiningOp<vector::SplatOp>();
+
+    if (!srcSplatOp || !destSplatOp)
+      return failure();
+
+    if (srcSplatOp.getInput() != destSplatOp.getInput())
+      return failure();
+
+    rewriter.replaceOp(insertStridedSliceOp, insertStridedSliceOp.getDest());
+    return success();
+  }
+};
+
+/// Pattern to rewrite an InsertStridedSliceOp(ExtractStridedSliceOp(dst), dst)
+/// to dst.
+class FoldInsertStridedSliceOfExtract final
+    : public OpRewritePattern<InsertStridedSliceOp> {
+public:
+  using OpRewritePattern<InsertStridedSliceOp>::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(InsertStridedSliceOp insertStridedSliceOp,
+                                PatternRewriter &rewriter) const override {
+    auto extractStridedSliceOp =
+        insertStridedSliceOp.getSource()
+            .getDefiningOp<vector::ExtractStridedSliceOp>();
+
+    if (!extractStridedSliceOp)
+      return failure();
+
+    if (extractStridedSliceOp.getOperand() != insertStridedSliceOp.getDest())
+      return failure();
+
+    // Check if have the same strides and offsets.
+    if (extractStridedSliceOp.getStrides() !=
+            insertStridedSliceOp.getStrides() ||
+        extractStridedSliceOp.getOffsets() != insertStridedSliceOp.getOffsets())
+      return failure();
+
+    rewriter.replaceOp(insertStridedSliceOp, insertStridedSliceOp.getDest());
+    return success();
+  }
+};
+
+} // namespace
+
+void vector::InsertStridedSliceOp::getCanonicalizationPatterns(
+    RewritePatternSet &results, MLIRContext *context) {
+  results.add<FoldInsertStridedSliceSplat, FoldInsertStridedSliceOfExtract>(
+      context);
 }
 
 OpFoldResult InsertStridedSliceOp::fold(ArrayRef<Attribute> operands) {

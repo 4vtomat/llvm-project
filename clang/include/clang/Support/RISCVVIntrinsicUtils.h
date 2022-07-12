@@ -253,6 +253,8 @@ public:
   VScaleVal getScale() const { return Scale; }
 #endif // SIFIVE_CUSTOMIZATION
 
+  bool isPointer() const { return IsPointer; }
+
 private:
   // Verify RVV vector type and set Valid.
   bool verifyType() const;

@@ -124,8 +124,7 @@ BinaryContext::createBinaryContext(const ObjectFile *File, bool IsPIC,
     break;
   case llvm::Triple::aarch64:
     ArchName = "aarch64";
-    FeaturesStr = "+fp-armv8,+neon,+crypto,+dotprod,+crc,+lse,+ras,+rdm,"
-                  "+fullfp16,+spe,+fuse-aes,+rcpc";
+    FeaturesStr = "+all";
     break;
   default:
     return createStringError(std::errc::not_supported,
@@ -1483,10 +1482,6 @@ void BinaryContext::preprocessDebugInfo() {
     ContainsDwarf5 |= CU->getVersion() >= 5;
     ContainsDwarfLegacy |= CU->getVersion() < 5;
   }
-
-  if (ContainsDwarf5 && ContainsDwarfLegacy)
-    llvm::errs() << "BOLT-WARNING: BOLT does not support mix mode binary with "
-                    "DWARF5 and DWARF{2,3,4}.\n";
 
   llvm::sort(AllRanges);
   for (auto &KV : BinaryFunctions) {

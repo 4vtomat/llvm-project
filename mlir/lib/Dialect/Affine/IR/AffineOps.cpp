@@ -14,6 +14,7 @@
 #include "mlir/IR/BlockAndValueMapping.h"
 #include "mlir/IR/IntegerSet.h"
 #include "mlir/IR/Matchers.h"
+#include "mlir/IR/OpDefinition.h"
 #include "mlir/IR/PatternMatch.h"
 #include "mlir/Transforms/InliningUtils.h"
 #include "llvm/ADT/SmallBitVector.h"
@@ -299,7 +300,7 @@ bool mlir::isValidDim(Value value, Region *region) {
   // The dim op is okay if its operand memref/tensor is defined at the top
   // level.
   if (auto dimOp = dyn_cast<memref::DimOp>(op))
-    return isTopLevelValue(dimOp.source());
+    return isTopLevelValue(dimOp.getSource());
   if (auto dimOp = dyn_cast<tensor::DimOp>(op))
     return isTopLevelValue(dimOp.getSource());
   return false;
@@ -588,7 +589,7 @@ OpFoldResult AffineApplyOp::fold(ArrayRef<Attribute> operands) {
 /// AffineSymbolExpr@[pos - dims.size()] is replaced.
 /// Mutate `map`,`dims` and `syms` in place as follows:
 ///   1. `dims` and `syms` are only appended to.
-///   2. `map` dim and symbols are gradually shifted to higer positions.
+///   2. `map` dim and symbols are gradually shifted to higher positions.
 ///   3. Old `dim` and `sym` entries are replaced by nullptr
 /// This avoids the need for any bookkeeping.
 static LogicalResult replaceDimOrSym(AffineMap *map,
@@ -705,6 +706,68 @@ void mlir::fullyComposeAffineMapAndOperands(AffineMap *map,
   }
 }
 
+/// Given a list of `OpFoldResult`, build the necessary operations to populate
+/// `actualValues` with values produced by operations. In particular, for any
+/// attribute-typed element in `values`, call the constant materializer
+/// associated with the Affine dialect to produce an operation.
+static void materializeConstants(OpBuilder &b, Location loc,
+                                 ArrayRef<OpFoldResult> values,
+                                 SmallVectorImpl<Operation *> &constants,
+                                 SmallVectorImpl<Value> &actualValues) {
+  actualValues.reserve(values.size());
+  auto *dialect = b.getContext()->getLoadedDialect<AffineDialect>();
+  for (OpFoldResult ofr : values) {
+    if (auto value = ofr.dyn_cast<Value>()) {
+      actualValues.push_back(value);
+      continue;
+    }
+    constants.push_back(dialect->materializeConstant(b, ofr.get<Attribute>(),
+                                                     b.getIndexType(), loc));
+    actualValues.push_back(constants.back()->getResult(0));
+  }
+}
+
+/// Create an operation of the type provided as template argument and attempt to
+/// fold it immediately. The operation is expected to have a builder taking
+/// arbitrary `leadingArguments`, followed by a list of Value-typed `operands`.
+/// The operation is also expected to always produce a single result. Return an
+/// `OpFoldResult` containing the Attribute representing the folded constant if
+/// complete folding was possible and a Value produced by the created operation
+/// otherwise.
+template <typename OpTy, typename... Args>
+static std::enable_if_t<OpTy::template hasTrait<OpTrait::OneResult>(),
+                        OpFoldResult>
+createOrFold(RewriterBase &b, Location loc, ValueRange operands,
+             Args &&...leadingArguments) {
+  // Identify the constant operands and extract their values as attributes.
+  // Note that we cannot use the original values directly because the list of
+  // operands may have changed due to canonicalization and composition.
+  SmallVector<Attribute> constantOperands;
+  constantOperands.reserve(operands.size());
+  for (Value operand : operands) {
+    IntegerAttr attr;
+    if (matchPattern(operand, m_Constant(&attr)))
+      constantOperands.push_back(attr);
+    else
+      constantOperands.push_back(nullptr);
+  }
+
+  // Create the operation and immediately attempt to fold it. On success,
+  // delete the operation and prepare the (unmaterialized) value for being
+  // returned. On failure, return the operation result value.
+  // TODO: arguably, the main folder (createOrFold) API should support this use
+  // case instead of indiscriminately materializing constants.
+  OpTy op =
+      b.create<OpTy>(loc, std::forward<Args>(leadingArguments)..., operands);
+  SmallVector<OpFoldResult, 1> foldResults;
+  if (succeeded(op->fold(constantOperands, foldResults)) &&
+      !foldResults.empty()) {
+    b.eraseOp(op);
+    return foldResults.front();
+  }
+  return op->getResult(0);
+}
+
 AffineApplyOp mlir::makeComposedAffineApply(OpBuilder &b, Location loc,
                                             AffineMap map,
                                             ValueRange operands) {
@@ -720,6 +783,86 @@ AffineApplyOp mlir::makeComposedAffineApply(OpBuilder &b, Location loc,
   return makeComposedAffineApply(
       b, loc, AffineMap::inferFromExprList(ArrayRef<AffineExpr>{e}).front(),
       values);
+}
+
+OpFoldResult
+mlir::makeComposedFoldedAffineApply(RewriterBase &b, Location loc,
+                                    AffineMap map,
+                                    ArrayRef<OpFoldResult> operands) {
+  assert(map.getNumResults() == 1 && "building affine.apply with !=1 result");
+
+  SmallVector<Operation *> constants;
+  SmallVector<Value> actualValues;
+  materializeConstants(b, loc, operands, constants, actualValues);
+  composeAffineMapAndOperands(&map, &actualValues);
+  OpFoldResult result = createOrFold<AffineApplyOp>(b, loc, actualValues, map);
+  if (result.is<Attribute>()) {
+    for (Operation *op : constants)
+      b.eraseOp(op);
+  }
+  return result;
+}
+
+OpFoldResult
+mlir::makeComposedFoldedAffineApply(RewriterBase &b, Location loc,
+                                    AffineExpr expr,
+                                    ArrayRef<OpFoldResult> operands) {
+  return makeComposedFoldedAffineApply(
+      b, loc, AffineMap::inferFromExprList(ArrayRef<AffineExpr>{expr}).front(),
+      operands);
+}
+
+/// Composes the given affine map with the given list of operands, pulling in
+/// the maps from any affine.apply operations that supply the operands.
+static void composeMultiResultAffineMap(AffineMap &map,
+                                        SmallVectorImpl<Value> &operands) {
+  // Compose and canonicalize each expression in the map individually because
+  // composition only applies to single-result maps, collecting potentially
+  // duplicate operands in a single list with shifted dimensions and symbols.
+  SmallVector<Value> dims, symbols;
+  SmallVector<AffineExpr> exprs;
+  for (unsigned i : llvm::seq<unsigned>(0, map.getNumResults())) {
+    SmallVector<Value> submapOperands(operands.begin(), operands.end());
+    AffineMap submap = map.getSubMap({i});
+    fullyComposeAffineMapAndOperands(&submap, &submapOperands);
+    canonicalizeMapAndOperands(&submap, &submapOperands);
+    unsigned numNewDims = submap.getNumDims();
+    submap = submap.shiftDims(dims.size()).shiftSymbols(symbols.size());
+    llvm::append_range(dims,
+                       ArrayRef<Value>(submapOperands).take_front(numNewDims));
+    llvm::append_range(symbols,
+                       ArrayRef<Value>(submapOperands).drop_front(numNewDims));
+    exprs.push_back(submap.getResult(0));
+  }
+
+  // Canonicalize the map created from composed expressions to deduplicate the
+  // dimension and symbol operands.
+  operands = llvm::to_vector(llvm::concat<Value>(dims, symbols));
+  map = AffineMap::get(dims.size(), symbols.size(), exprs, map.getContext());
+  canonicalizeMapAndOperands(&map, &operands);
+}
+
+Value mlir::makeComposedAffineMin(OpBuilder &b, Location loc, AffineMap map,
+                                  ValueRange operands) {
+  SmallVector<Value> allOperands = llvm::to_vector(operands);
+  composeMultiResultAffineMap(map, allOperands);
+  return b.createOrFold<AffineMinOp>(loc, b.getIndexType(), map, allOperands);
+}
+
+OpFoldResult
+mlir::makeComposedFoldedAffineMin(RewriterBase &b, Location loc, AffineMap map,
+                                  ArrayRef<OpFoldResult> operands) {
+  SmallVector<Operation *> constants;
+  SmallVector<Value> actualValues;
+  materializeConstants(b, loc, operands, constants, actualValues);
+  composeMultiResultAffineMap(map, actualValues);
+  OpFoldResult result =
+      createOrFold<AffineMinOp>(b, loc, actualValues, b.getIndexType(), map);
+  if (result.is<Attribute>()) {
+    for (Operation *op : constants)
+      b.eraseOp(op);
+  }
+  return result;
 }
 
 /// Fully compose map with operands and canonicalize the result.
@@ -746,6 +889,40 @@ SmallVector<Value, 4> mlir::applyMapToValues(OpBuilder &b, Location loc,
     res.push_back(createFoldedComposedAffineApply(b, loc, map, values));
   }
   return res;
+}
+
+SmallVector<OpFoldResult>
+mlir::applyMapToValues(RewriterBase &b, Location loc, AffineMap map,
+                       ArrayRef<OpFoldResult> values) {
+  // Materialize constants and keep track of produced operations so we can clean
+  // them up later.
+  SmallVector<Operation *> constants;
+  SmallVector<Value> actualValues;
+  materializeConstants(b, loc, values, constants, actualValues);
+
+  // Compose, fold and construct maps for each result independently because they
+  // may simplify more effectively.
+  SmallVector<OpFoldResult> results;
+  results.reserve(map.getNumResults());
+  bool foldedAll = true;
+  for (auto i : llvm::seq<unsigned>(0, map.getNumResults())) {
+    AffineMap submap = map.getSubMap({i});
+    SmallVector<Value> operands = actualValues;
+    fullyComposeAffineMapAndOperands(&submap, &operands);
+    canonicalizeMapAndOperands(&submap, &operands);
+    results.push_back(createOrFold<AffineApplyOp>(b, loc, operands, submap));
+    if (!results.back().is<Attribute>())
+      foldedAll = false;
+  }
+
+  // If the entire map could be folded, remove the constants that were used in
+  // the initial ops.
+  if (foldedAll) {
+    for (Operation *constant : constants)
+      b.eraseOp(constant);
+  }
+
+  return results;
 }
 
 // A symbol may appear as a dim in affine.apply operations. This function
@@ -1738,7 +1915,7 @@ void AffineForOp::getCanonicalizationPatterns(RewritePatternSet &results,
 /// induction variable. AffineForOp only has one region, so zero is the only
 /// valid value for `index`.
 OperandRange AffineForOp::getSuccessorEntryOperands(Optional<unsigned> index) {
-  assert(!index || *index == 0 && "invalid region index");
+  assert((!index || *index == 0) && "invalid region index");
 
   // The initial operands map to the loop arguments after the induction
   // variable or are forwarded to the results when the trip count is zero.
@@ -2464,7 +2641,7 @@ OpFoldResult AffineLoadOp::fold(ArrayRef<Attribute> cstOperands) {
   if (!symbolTableOp)
     return {};
   auto global = dyn_cast_or_null<memref::GlobalOp>(
-      SymbolTable::lookupSymbolIn(symbolTableOp, getGlobalOp.nameAttr()));
+      SymbolTable::lookupSymbolIn(symbolTableOp, getGlobalOp.getNameAttr()));
   if (!global)
     return {};
 

@@ -445,7 +445,7 @@ getNonDefaultLowerBounds(fir::FirOpBuilder &builder, mlir::Location loc,
 /// available without having to read any fir.box values). Empty if \p exv has no
 /// LEN parameters or if they are all deferred.
 llvm::SmallVector<mlir::Value>
-getNonDeferredLengthParams(const fir::ExtendedValue &exv);
+getNonDeferredLenParams(const fir::ExtendedValue &exv);
 
 //===----------------------------------------------------------------------===//
 // String literal helper helpers
@@ -542,6 +542,10 @@ mlir::Value createZeroValue(fir::FirOpBuilder &builder, mlir::Location loc,
 
 /// Unwrap integer constant from an mlir::Value.
 llvm::Optional<std::int64_t> getIntIfConstant(mlir::Value value);
+
+/// Get the integer constants of triplet and compute the extent.
+llvm::Optional<std::int64_t>
+getExtentFromTriplet(mlir::Value lb, mlir::Value ub, mlir::Value stride);
 
 /// Generate max(\p value, 0) where \p value is a scalar integer.
 mlir::Value genMaxWithZero(fir::FirOpBuilder &builder, mlir::Location loc,

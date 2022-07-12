@@ -38,6 +38,7 @@
 #include "llvm/Support/GraphWriter.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
+#include "llvm/Transforms/Utils/LoopVersioning.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
 #include <string>
@@ -241,6 +242,50 @@ Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
 BasicBlock *VPTransformState::CFGState::getPreheaderBBFor(VPRecipeBase *R) {
   VPRegionBlock *LoopRegion = R->getParent()->getEnclosingLoopRegion();
   return VPBB2IRBB[LoopRegion->getPreheaderVPBB()];
+}
+
+void VPTransformState::addNewMetadata(Instruction *To,
+                                      const Instruction *Orig) {
+  // If the loop was versioned with memchecks, add the corresponding no-alias
+  // metadata.
+  if (LVer && (isa<LoadInst>(Orig) || isa<StoreInst>(Orig)))
+    LVer->annotateInstWithNoAlias(To, Orig);
+}
+
+void VPTransformState::addMetadata(Instruction *To, Instruction *From) {
+  propagateMetadata(To, From);
+  addNewMetadata(To, From);
+}
+
+void VPTransformState::addMetadata(ArrayRef<Value *> To, Instruction *From) {
+  for (Value *V : To) {
+    if (Instruction *I = dyn_cast<Instruction>(V))
+      addMetadata(I, From);
+  }
+}
+
+void VPTransformState::setDebugLocFromInst(const Value *V) {
+  const Instruction *Inst = dyn_cast<Instruction>(V);
+  if (!Inst) {
+    Builder.SetCurrentDebugLocation(DebugLoc());
+    return;
+  }
+
+  const DILocation *DIL = Inst->getDebugLoc();
+  // When a FSDiscriminator is enabled, we don't need to add the multiply
+  // factors to the discriminators.
+  if (DIL && Inst->getFunction()->isDebugInfoForProfiling() &&
+      !isa<DbgInfoIntrinsic>(Inst) && !EnableFSDiscriminator) {
+    // FIXME: For scalable vectors, assume vscale=1.
+    auto NewDIL =
+        DIL->cloneByMultiplyingDuplicationFactor(UF * VF.getKnownMinValue());
+    if (NewDIL)
+      Builder.SetCurrentDebugLocation(*NewDIL);
+    else
+      LLVM_DEBUG(dbgs() << "Failed to create new discriminator: "
+                        << DIL->getFilename() << " Line: " << DIL->getLine());
+  } else
+    Builder.SetCurrentDebugLocation(DIL);
 }
 
 BasicBlock *
@@ -539,6 +584,7 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   assert(RVL->getType()->isIntegerTy() &&
@@ -557,18 +603,42 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {
+  VPBasicBlock *Header = getVectorLoopRegion()->getEntryBasicBlock();
+  for (VPRecipeBase &R : Header->phis()) {
+    if (isa<VPActiveLaneMaskPHIRecipe>(&R))
+      return cast<VPActiveLaneMaskPHIRecipe>(&R);
+  }
+  return nullptr;
+}
+
+static bool canSimplifyBranchOnCond(VPInstruction *Term) {
+  VPInstruction *Not = dyn_cast<VPInstruction>(Term->getOperand(0));
+  if (!Not || Not->getOpcode() != VPInstruction::Not)
+    return false;
+
+  VPInstruction *ALM = dyn_cast<VPInstruction>(Not->getOperand(0));
+  return ALM && ALM->getOpcode() == VPInstruction::ActiveLaneMask;
+}
+>>>>>>> upstream/main
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
-                             VPTransformState &State) {
+                             VPTransformState &State,
+                             bool IsEpilogueVectorization) {
 
   VPBasicBlock *ExitingVPBB = getVectorLoopRegion()->getExitingBasicBlock();
   auto *Term = dyn_cast<VPInstruction>(&ExitingVPBB->back());
-  // Try to simplify BranchOnCount to 'BranchOnCond true' if TC <= VF * UF when
-  // preparing to execute the plan for the main vector loop.
-  if (!CanonicalIVStartValue && Term &&
-      Term->getOpcode() == VPInstruction::BranchOnCount &&
-      isa<ConstantInt>(TripCountV)) {
+  // Try to simplify the branch condition if TC <= VF * UF when preparing to
+  // execute the plan for the main vector loop. We only do this if the
+  // terminator is:
+  //  1. BranchOnCount, or
+  //  2. BranchOnCond where the input is Not(ActiveLaneMask).
+  if (!IsEpilogueVectorization && Term && isa<ConstantInt>(TripCountV) &&
+      (Term->getOpcode() == VPInstruction::BranchOnCount ||
+       (Term->getOpcode() == VPInstruction::BranchOnCond &&
+        canSimplifyBranchOnCond(Term)))) {
     ConstantInt *C = cast<ConstantInt>(TripCountV);
     uint64_t TCVal = C->getZExtValue();
     if (TCVal && TCVal <= State.VF.getKnownMinValue() * State.UF) {
@@ -697,7 +767,8 @@ void VPlan::execute(VPTransformState *State) {
     // iteration. Otherwise all UF parts are generated.
     bool SinglePartNeeded = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
                             isa<VPFirstOrderRecurrencePHIRecipe>(PhiR) ||
-                            cast<VPReductionPHIRecipe>(PhiR)->isOrdered();
+                            (isa<VPReductionPHIRecipe>(PhiR) &&
+                             cast<VPReductionPHIRecipe>(PhiR)->isOrdered());
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
       Value *Phi = State->get(PhiR, Part);

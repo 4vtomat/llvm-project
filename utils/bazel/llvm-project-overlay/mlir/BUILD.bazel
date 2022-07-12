@@ -1033,6 +1033,13 @@ td_library(
 )
 
 td_library(
+    name = "ParallelCombiningOpInterfaceTdFiles",
+    srcs = ["include/mlir/Interfaces/ParallelCombiningOpInterface.td"],
+    includes = ["include"],
+    deps = [":OpBaseTdFiles"],
+)
+
+td_library(
     name = "SideEffectInterfacesTdFiles",
     srcs = [
         "include/mlir/Interfaces/SideEffectInterfaceBase.td",
@@ -1808,6 +1815,7 @@ td_library(
     deps = [
         ":ControlFlowInterfacesTdFiles",
         ":LoopLikeInterfaceTdFiles",
+        ":ParallelCombiningOpInterfaceTdFiles",
         ":SideEffectInterfacesTdFiles",
         ":ViewLikeInterfaceTdFiles",
     ],
@@ -2606,7 +2614,6 @@ cc_library(
         ":TosaToTensor",
         ":VectorToGPU",
         ":VectorToLLVM",
-        ":VectorToROCDL",
         ":VectorToSCF",
         ":VectorToSPIRV",
     ],
@@ -2705,6 +2712,7 @@ cc_library(
         ":IR",
         ":LoopLikeInterface",
         ":MemRefDialect",
+        ":ParallelCombiningOpInterface",
         ":Pass",
         ":SCFIncGen",
         ":SCFPassIncGen",
@@ -2763,6 +2771,18 @@ cc_library(
     deps = [
         ":IR",
         ":LoopLikeInterfaceIncGen",
+        "//llvm:Support",
+    ],
+)
+
+cc_library(
+    name = "ParallelCombiningOpInterface",
+    srcs = ["lib/Interfaces/ParallelCombiningOpInterface.cpp"],
+    hdrs = ["include/mlir/Interfaces/ParallelCombiningOpInterface.h"],
+    includes = ["include"],
+    deps = [
+        ":IR",
+        ":ParallelCombiningOpInterfaceIncGen",
         "//llvm:Support",
     ],
 )
@@ -3403,6 +3423,7 @@ cc_library(
     ),
     includes = ["include"],
     deps = [
+        ":CallOpInterfaces",
         ":ControlFlowInterfaces",
         ":DataLayoutInterfaces",
         ":IR",
@@ -3469,6 +3490,7 @@ td_library(
         ":DLTIDialectTdFiles",
         ":DataLayoutInterfacesTdFiles",
         ":FunctionInterfacesTdFiles",
+        ":InferIntRangeInterfaceTdFiles",
         ":LLVMOpsTdFiles",
         ":OpBaseTdFiles",
         ":SideEffectInterfacesTdFiles",
@@ -3560,6 +3582,7 @@ cc_library(
         ":GPUBaseIncGen",
         ":GPUOpsIncGen",
         ":IR",
+        ":InferIntRangeInterface",
         ":InferTypeOpInterface",
         ":LLVMDialect",
         ":MemRefDialect",
@@ -3653,6 +3676,7 @@ td_library(
     ],
     includes = ["include"],
     deps = [
+        ":CallInterfacesTdFiles",
         ":ControlFlowInterfacesTdFiles",
         ":FunctionInterfacesTdFiles",
         ":InferTypeOpInterfaceTdFiles",
@@ -3750,6 +3774,7 @@ cc_library(
         ":LLVMCommonConversion",
         ":Pass",
         ":ROCDLDialect",
+        ":Support",
         ":Transforms",
         "//llvm:Support",
     ],
@@ -3775,30 +3800,6 @@ cc_library(
         ":Pass",
         ":Transforms",
         "//llvm:Support",
-    ],
-)
-
-cc_library(
-    name = "VectorToROCDL",
-    srcs = [
-        "lib/Conversion/VectorToROCDL/VectorToROCDL.cpp",
-        ":ConversionPassDetail",
-    ],
-    hdrs = ["include/mlir/Conversion/VectorToROCDL/VectorToROCDL.h"],
-    includes = ["include"],
-    deps = [
-        ":ConversionPassIncGen",
-        ":FuncDialect",
-        ":FuncToLLVM",
-        ":GPUDialect",
-        ":IR",
-        ":LLVMCommonConversion",
-        ":LLVMDialect",
-        ":MemRefToLLVM",
-        ":Pass",
-        ":ROCDLDialect",
-        ":Transforms",
-        ":VectorDialect",
     ],
 )
 
@@ -3869,7 +3870,6 @@ cc_library(
         ":Transforms",
         ":VectorDialect",
         ":VectorToLLVM",
-        ":VectorToROCDL",
         ":VectorToSCF",
         "//llvm:Support",
     ],
@@ -4888,6 +4888,7 @@ td_library(
         ":ControlFlowInterfacesTdFiles",
         ":InferTypeOpInterfaceTdFiles",
         ":OpBaseTdFiles",
+        ":ParallelCombiningOpInterfaceTdFiles",
         ":SideEffectInterfacesTdFiles",
         ":TilingInterfaceTdFiles",
         ":ViewLikeInterfaceTdFiles",
@@ -4944,6 +4945,7 @@ cc_library(
         ":DialectUtils",
         ":IR",
         ":InferTypeOpInterface",
+        ":ParallelCombiningOpInterface",
         ":SideEffectInterfaces",
         ":TensorOpsIncGen",
         ":TilingInterface",
@@ -5206,6 +5208,24 @@ gentbl_cc_library(
     tblgen = ":mlir-tblgen",
     td_file = "include/mlir/Interfaces/LoopLikeInterface.td",
     deps = [":LoopLikeInterfaceTdFiles"],
+)
+
+gentbl_cc_library(
+    name = "ParallelCombiningOpInterfaceIncGen",
+    strip_include_prefix = "include",
+    tbl_outs = [
+        (
+            ["-gen-op-interface-decls"],
+            "include/mlir/Interfaces/ParallelCombiningOpInterface.h.inc",
+        ),
+        (
+            ["-gen-op-interface-defs"],
+            "include/mlir/Interfaces/ParallelCombiningOpInterface.cpp.inc",
+        ),
+    ],
+    tblgen = ":mlir-tblgen",
+    td_file = "include/mlir/Interfaces/ParallelCombiningOpInterface.td",
+    deps = [":ParallelCombiningOpInterfaceTdFiles"],
 )
 
 gentbl_cc_library(
@@ -6302,7 +6322,6 @@ cc_library(
         ":TransformsPassIncGen",
         ":VectorDialect",
         ":VectorToLLVM",
-        ":VectorToROCDL",
         ":VectorToSCF",
         ":VectorToSPIRV",
         ":VectorTransforms",
@@ -6766,6 +6785,7 @@ td_library(
         "include/mlir/Dialect/OpenMP/OmpCommon.td",
         "include/mlir/Dialect/OpenMP/OpenMPOps.td",
         "include/mlir/Dialect/OpenMP/OpenMPOpsInterfaces.td",
+        "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.td",
     ],
     deps = [
         ":LLVMOpsTdFiles",
@@ -6808,14 +6828,6 @@ gentbl_cc_library(
             "include/mlir/Dialect/OpenMP/OpenMPOpsDialect.cpp.inc",
         ),
         (
-            ["-gen-type-interface-decls"],
-            "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.h.inc",
-        ),
-        (
-            ["-gen-type-interface-defs"],
-            "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.cpp.inc",
-        ),
-        (
             [
                 "-gen-attrdef-decls",
                 "-attrdefs-dialect=omp",
@@ -6836,6 +6848,24 @@ gentbl_cc_library(
     ],
     tblgen = ":mlir-tblgen",
     td_file = "include/mlir/Dialect/OpenMP/OpenMPOps.td",
+    deps = [":OpenMPOpsTdFiles"],
+)
+
+gentbl_cc_library(
+    name = "OpenMPTypeInterfacesIncGen",
+    strip_include_prefix = "include",
+    tbl_outs = [
+        (
+            ["-gen-type-interface-decls"],
+            "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.h.inc",
+        ),
+        (
+            ["-gen-type-interface-defs"],
+            "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.cpp.inc",
+        ),
+    ],
+    tblgen = ":mlir-tblgen",
+    td_file = "include/mlir/Dialect/OpenMP/OpenMPTypeInterfaces.td",
     deps = [":OpenMPOpsTdFiles"],
 )
 
@@ -6875,6 +6905,7 @@ cc_library(
         ":LLVMDialect",
         ":OpenMPInterfacesIncGen",
         ":OpenMPOpsIncGen",
+        ":OpenMPTypeInterfacesIncGen",
         "//llvm:Support",
     ],
 )
@@ -7403,6 +7434,9 @@ cc_library(
     ],
     includes = ["include"],
     deps = [
+        ":AffineDialect",
+        ":ArithmeticDialect",
+        ":ControlFlowDialect",
         ":IR",
         ":LinalgDialect",
         ":LinalgTransformOpsIncGen",

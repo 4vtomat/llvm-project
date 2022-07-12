@@ -904,6 +904,7 @@ void PassManagerBuilder::populateModulePassManager(
   MPM.add(createAnnotationRemarksLegacyPass());
 }
 
+<<<<<<< HEAD
 void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
   // Load sample profile before running the LTO optimization pipeline.
   if (!PGOSampleUse.empty()) {
@@ -1086,6 +1087,8 @@ void PassManagerBuilder::addLateLTOOptimizationPasses(
     PM.add(createMergeFunctionsPass());
 }
 
+=======
+>>>>>>> upstream/main
 LLVMPassManagerBuilderRef LLVMPassManagerBuilderCreate() {
   PassManagerBuilder *PMB = new PassManagerBuilder();
   return wrap(PMB);

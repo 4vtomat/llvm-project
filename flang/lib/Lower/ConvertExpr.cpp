@@ -81,6 +81,20 @@ static llvm::cl::opt<unsigned> clInitialBufferSize(
         "set the incremental array construction buffer size (default=32)"),
     llvm::cl::init(32u));
 
+// Lower TRANSPOSE as an "elemental" function that swaps the array
+// expression's iteration space, so that no runtime call is needed.
+// This lowering may help get rid of unnecessary creation of temporary
+// arrays. Note that the runtime TRANSPOSE implementation may be different
+// from the "inline" FIR, e.g. it may diagnose out-of-memory conditions
+// during the temporary allocation whereas the inline implementation
+// relies on AllocMemOp that will silently return null in case
+// there is not enough memory. So it may be a good idea to set
+// this option to false for -O0.
+static llvm::cl::opt<bool> optimizeTranspose(
+    "opt-transpose",
+    llvm::cl::desc("lower transpose without using a runtime call"),
+    llvm::cl::init(true));
+
 /// The various semantics of a program constituent (or a part thereof) as it may
 /// appear in an expression.
 ///
@@ -387,8 +401,7 @@ static fir::ExtendedValue genLoad(fir::FirOpBuilder &builder,
       [&](const fir::BoxValue &box) -> fir::ExtendedValue {
         if (box.isUnlimitedPolymorphic())
           fir::emitFatalError(
-              loc,
-              "lowering attempting to load an unlimited polymorphic entity");
+              loc, "attempting to load an unlimited polymorphic entity");
         return genLoad(builder, loc,
                        fir::factory::readBoxValue(builder, loc, box));
       },
@@ -578,7 +591,40 @@ isIntrinsicModuleProcRef(const Fortran::evaluate::ProcedureRef &procRef) {
     return false;
   const Fortran::semantics::Symbol *module =
       symbol->GetUltimate().owner().GetSymbol();
-  return module && module->attrs().test(Fortran::semantics::Attr::INTRINSIC);
+  return module && module->attrs().test(Fortran::semantics::Attr::INTRINSIC) &&
+         module->name().ToString().find("omp_lib") == std::string::npos;
+}
+
+// A set of visitors to detect if the given expression
+// is a TRANSPOSE call that should be lowered without using
+// runtime TRANSPOSE implementation.
+template <typename T>
+static bool isOptimizableTranspose(const T &) {
+  return false;
+}
+
+static bool
+isOptimizableTranspose(const Fortran::evaluate::ProcedureRef &procRef) {
+  const Fortran::evaluate::SpecificIntrinsic *intrin =
+      procRef.proc().GetSpecificIntrinsic();
+  return optimizeTranspose && intrin && intrin->name == "transpose";
+}
+
+template <typename T>
+static bool
+isOptimizableTranspose(const Fortran::evaluate::FunctionRef<T> &funcRef) {
+  return isOptimizableTranspose(
+      static_cast<const Fortran::evaluate::ProcedureRef &>(funcRef));
+}
+
+template <typename T>
+static bool isOptimizableTranspose(Fortran::evaluate::Expr<T> expr) {
+  // If optimizeTranspose is not enabled, return false right away.
+  if (!optimizeTranspose)
+    return false;
+
+  return std::visit([&](const auto &e) { return isOptimizableTranspose(e); },
+                    expr.u);
 }
 
 namespace {
@@ -892,7 +938,7 @@ public:
   }
 
   static bool
-  isDerivedTypeWithLengthParameters(const Fortran::semantics::Symbol &sym) {
+  isDerivedTypeWithLenParameters(const Fortran::semantics::Symbol &sym) {
     if (const Fortran::semantics::DeclTypeSpec *declTy = sym.GetType())
       if (const Fortran::semantics::DerivedTypeSpec *derived =
               declTy->AsDerived())
@@ -943,7 +989,7 @@ public:
         continue;
       }
 
-      if (isDerivedTypeWithLengthParameters(sym))
+      if (isDerivedTypeWithLenParameters(sym))
         TODO(loc, "component with length parameters in structure constructor");
 
       if (isBuiltinCPtr(sym)) {
@@ -1013,7 +1059,7 @@ public:
       if (sym.test(Fortran::semantics::Symbol::Flag::ParentComp))
         TODO(loc, "parent component in structure constructor");
 
-      if (isDerivedTypeWithLengthParameters(sym))
+      if (isDerivedTypeWithLenParameters(sym))
         TODO(loc, "component with length parameters in structure constructor");
 
       llvm::StringRef name = toStringRef(sym.name());
@@ -1398,23 +1444,24 @@ public:
     } else if constexpr (TC == Fortran::common::TypeCategory::Real) {
       std::string str = value.DumpHexadecimal();
       if constexpr (KIND == 2) {
-        llvm::APFloat floatVal{llvm::APFloatBase::IEEEhalf(), str};
+        auto floatVal = consAPFloat(llvm::APFloatBase::IEEEhalf(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       } else if constexpr (KIND == 3) {
-        llvm::APFloat floatVal{llvm::APFloatBase::BFloat(), str};
+        auto floatVal = consAPFloat(llvm::APFloatBase::BFloat(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       } else if constexpr (KIND == 4) {
-        llvm::APFloat floatVal{llvm::APFloatBase::IEEEsingle(), str};
+        auto floatVal = consAPFloat(llvm::APFloatBase::IEEEsingle(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       } else if constexpr (KIND == 10) {
-        llvm::APFloat floatVal{llvm::APFloatBase::x87DoubleExtended(), str};
+        auto floatVal =
+            consAPFloat(llvm::APFloatBase::x87DoubleExtended(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       } else if constexpr (KIND == 16) {
-        llvm::APFloat floatVal{llvm::APFloatBase::IEEEquad(), str};
+        auto floatVal = consAPFloat(llvm::APFloatBase::IEEEquad(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       } else {
         // convert everything else to double
-        llvm::APFloat floatVal{llvm::APFloatBase::IEEEdouble(), str};
+        auto floatVal = consAPFloat(llvm::APFloatBase::IEEEdouble(), str);
         return genRealConstant<KIND>(builder.getContext(), floatVal);
       }
     } else if constexpr (TC == Fortran::common::TypeCategory::Complex) {
@@ -1429,6 +1476,23 @@ public:
     } else /*constexpr*/ {
       llvm_unreachable("unhandled constant");
     }
+  }
+
+  /// Convert string, \p s, to an APFloat value. Recognize and handle Inf and
+  /// NaN strings as well. \p s is assumed to not contain any spaces.
+  static llvm::APFloat consAPFloat(const llvm::fltSemantics &fsem,
+                                   llvm::StringRef s) {
+    assert(s.find(' ') == llvm::StringRef::npos);
+    if (s.compare_insensitive("-inf") == 0)
+      return llvm::APFloat::getInf(fsem, /*negative=*/true);
+    if (s.compare_insensitive("inf") == 0 || s.compare_insensitive("+inf") == 0)
+      return llvm::APFloat::getInf(fsem);
+    // TODO: Add support for quiet and signaling NaNs.
+    if (s.compare_insensitive("-nan") == 0)
+      return llvm::APFloat::getNaN(fsem, /*negative=*/true);
+    if (s.compare_insensitive("nan") == 0 || s.compare_insensitive("+nan") == 0)
+      return llvm::APFloat::getNaN(fsem);
+    return {fsem, s};
   }
 
   /// Generate a raw literal value and store it in the rawVals vector.
@@ -1448,18 +1512,19 @@ public:
     } else if constexpr (TC == Fortran::common::TypeCategory::Real) {
       std::string str = value.DumpHexadecimal();
       inInitializer->rawType = converter.genType(TC, KIND);
-      llvm::APFloat floatVal{builder.getKindMap().getFloatSemantics(KIND), str};
+      auto floatVal =
+          consAPFloat(builder.getKindMap().getFloatSemantics(KIND), str);
       val = builder.getFloatAttr(inInitializer->rawType, floatVal);
     } else if constexpr (TC == Fortran::common::TypeCategory::Complex) {
       std::string strReal = value.REAL().DumpHexadecimal();
       std::string strImg = value.AIMAG().DumpHexadecimal();
       inInitializer->rawType = converter.genType(TC, KIND);
-      llvm::APFloat realVal{builder.getKindMap().getFloatSemantics(KIND),
-                            strReal};
+      auto realVal =
+          consAPFloat(builder.getKindMap().getFloatSemantics(KIND), strReal);
       val = builder.getFloatAttr(inInitializer->rawType, realVal);
       inInitializer->rawVals.push_back(val);
-      llvm::APFloat imgVal{builder.getKindMap().getFloatSemantics(KIND),
-                           strImg};
+      auto imgVal =
+          consAPFloat(builder.getKindMap().getFloatSemantics(KIND), strImg);
       val = builder.getFloatAttr(inInitializer->rawType, imgVal);
     }
     inInitializer->rawVals.push_back(val);
@@ -1513,8 +1578,10 @@ public:
     // Otherwise, the string is in a plain old expression so "outline" the value
     // by hashconsing it to a constant literal object.
 
-    std::string globalName =
-        fir::factory::uniqueCGIdent("cl", (const char *)value.c_str());
+    auto size =
+        converter.getKindMap().getCharacterBitsize(KIND) / 8 * value.size();
+    llvm::StringRef strVal(reinterpret_cast<const char *>(value.c_str()), size);
+    std::string globalName = fir::factory::uniqueCGIdent("cl", strVal);
     fir::GlobalOp global = builder.getNamedGlobal(globalName);
     if (!global)
       global = builder.createGlobalConstant(
@@ -1683,8 +1750,7 @@ public:
 
   template <typename A>
   ExtValue genval(const Fortran::evaluate::ArrayConstructor<A> &) {
-    fir::emitFatalError(getLoc(),
-                        "array constructor: lowering should not reach here");
+    fir::emitFatalError(getLoc(), "array constructor: should not reach here");
   }
 
   ExtValue gen(const Fortran::evaluate::ComplexPart &x) {
@@ -1865,7 +1931,7 @@ public:
         return genval(*sub);
       return genIntegerConstant<8>(builder.getContext(), 1);
     }
-    TODO(getLoc(), "non explicit semantics::Bound lowering");
+    TODO(getLoc(), "non explicit semantics::Bound implementation");
   }
 
   static bool isSlice(const Fortran::evaluate::ArrayRef &aref) {
@@ -1995,7 +2061,7 @@ public:
               loc, "internal: BoxValue in dim-collapsed fir.coordinate_of");
         },
         [&](const auto &) -> ExtValue {
-          fir::emitFatalError(loc, "internal: array lowering failed");
+          fir::emitFatalError(loc, "internal: array processing failed");
         });
   }
 
@@ -2116,7 +2182,7 @@ public:
     mlir::Value box = builder.createBox(loc, exv);
     return fir::BoxValue(
         box, fir::factory::getNonDefaultLowerBounds(builder, loc, exv),
-        fir::factory::getNonDeferredLengthParams(exv));
+        fir::factory::getNonDeferredLenParams(exv));
   }
 
   /// Generate a call to a Fortran intrinsic or intrinsic module procedure.
@@ -2577,9 +2643,9 @@ public:
     bool callingImplicitInterface = caller.canBeCalledViaImplicitInterface();
     for (auto [fst, snd] :
          llvm::zip(caller.getInputs(), funcType.getInputs())) {
-      // When passing arguments to a procedure that can be called an implicit
-      // interface, allow character actual arguments to be passed to dummy
-      // arguments of any type and vice versa
+      // When passing arguments to a procedure that can be called by implicit
+      // interface, allow any character actual arguments to be passed to dummy
+      // arguments of any type and vice versa.
       mlir::Value cast;
       auto *context = builder.getContext();
       if (snd.isa<fir::BoxProcType>() &&
@@ -2992,7 +3058,7 @@ public:
       }
       const auto *expr = actual->UnwrapExpr();
       if (!expr)
-        TODO(loc, "assumed type actual argument lowering");
+        TODO(loc, "assumed type actual argument");
 
       if (arg.passBy == PassBy::Value) {
         ExtValue argVal = genval(*expr);
@@ -3223,7 +3289,7 @@ public:
     // is used to not create a new temporary storage.
     if (isScalar(x) ||
         Fortran::evaluate::UnwrapWholeSymbolOrComponentDataRef(x) ||
-        isTransformationalRef(x))
+        (isTransformationalRef(x) && !isOptimizableTranspose(x)))
       return std::visit([&](const auto &e) { return genref(e); }, x.u);
     if (useBoxArg)
       return asArrayArg(x);
@@ -3613,6 +3679,38 @@ public:
     ael.lowerAllocatableArrayAssignment(lhs, rhs);
   }
 
+  /// Lower an assignment to allocatable array, where the LHS array
+  /// is represented with \p lhs extended value produced in different
+  /// branches created in genReallocIfNeeded(). The RHS lowering
+  /// is provided via \p rhsCC continuation.
+  void lowerAllocatableArrayAssignment(ExtValue lhs, CC rhsCC) {
+    mlir::Location loc = getLoc();
+    // Check if the initial destShape is null, which means
+    // it has not been computed from rhs (e.g. rhs is scalar).
+    bool destShapeIsEmpty = destShape.empty();
+    // Create ArrayLoad for the mutable box and save it into `destination`.
+    PushSemantics(ConstituentSemantics::ProjectedCopyInCopyOut);
+    ccStoreToDest = genarr(lhs);
+    // destShape is either non-null on entry to this function,
+    // or has been just set by lhs lowering.
+    assert(!destShape.empty() && "destShape must have been set.");
+    // Finish lowering the loop nest.
+    assert(destination && "destination must have been set");
+    ExtValue exv = lowerArrayExpression(rhsCC, destination.getType());
+    if (!explicitSpaceIsActive())
+      builder.create<fir::ArrayMergeStoreOp>(
+          loc, destination, fir::getBase(exv), destination.getMemref(),
+          destination.getSlice(), destination.getTypeparams());
+    // destShape may originally be null, if rhs did not define a shape.
+    // In this case the destShape is computed from lhs, and we may have
+    // multiple different lhs values for different branches created
+    // in genReallocIfNeeded(). We cannot reuse destShape computed
+    // in different branches, so we have to reset it,
+    // so that it is recomputed for the next branch FIR generation.
+    if (destShapeIsEmpty)
+      destShape.clear();
+  }
+
   /// Assignment to allocatable array.
   ///
   /// The semantics are reverse that of a "regular" array assignment. The rhs
@@ -3628,7 +3726,6 @@ public:
     // array.
     fir::MutableBoxValue mutableBox =
         Fortran::lower::createMutableBox(loc, converter, lhs, symMap);
-    mlir::Type resultTy = converter.genType(rhs);
     if (rhs.Rank() > 0)
       determineShapeOfDest(rhs);
     auto rhsCC = [&]() {
@@ -3642,7 +3739,7 @@ public:
     // changed by concatenations).
     if ((mutableBox.isCharacter() && !mutableBox.hasNonDeferredLenParams()) ||
         mutableBox.isDerivedWithLenParameters())
-      TODO(loc, "gather rhs length parameters in assignment to allocatable");
+      TODO(loc, "gather rhs LEN parameters in assignment to allocatable");
 
     // The allocatable must take lower bounds from the expr if it is
     // reallocated and the right hand side is not a scalar.
@@ -3659,25 +3756,16 @@ public:
       auto lbs = fir::factory::getOrigins(arrayOperands[0].shape);
       lbounds.append(lbs.begin(), lbs.end());
     }
+    auto assignToStorage = [&](fir::ExtendedValue newLhs) {
+      // The lambda will be called repeatedly by genReallocIfNeeded().
+      lowerAllocatableArrayAssignment(newLhs, rhsCC);
+    };
     fir::factory::MutableBoxReallocation realloc =
         fir::factory::genReallocIfNeeded(builder, loc, mutableBox, destShape,
-                                         lengthParams);
-    // Create ArrayLoad for the mutable box and save it into `destination`.
-    PushSemantics(ConstituentSemantics::ProjectedCopyInCopyOut);
-    ccStoreToDest = genarr(realloc.newValue);
-    // If the rhs is scalar, get shape from the allocatable ArrayLoad.
-    if (destShape.empty())
-      destShape = getShape(destination);
-    // Finish lowering the loop nest.
-    assert(destination && "destination must have been set");
-    ExtValue exv = lowerArrayExpression(rhsCC, resultTy);
+                                         lengthParams, assignToStorage);
     if (explicitSpaceIsActive()) {
       explicitSpace->finalizeContext();
-      builder.create<fir::ResultOp>(loc, fir::getBase(exv));
-    } else {
-      builder.create<fir::ArrayMergeStoreOp>(
-          loc, destination, fir::getBase(exv), destination.getMemref(),
-          destination.getSlice(), destination.getTypeparams());
+      builder.create<fir::ResultOp>(loc, fir::getBase(realloc.newValue));
     }
     fir::factory::finalizeRealloc(builder, loc, mutableBox, lbounds,
                                   takeLboundsIfRealloc, realloc);
@@ -3813,7 +3901,7 @@ public:
     // be needed afterwards.
     stmtCtx.pushScope();
     [[maybe_unused]] ExtValue loopRes = lowerArrayExpression(expr);
-    stmtCtx.finalize(/*popScope=*/true);
+    stmtCtx.finalizeAndPop();
     assert(fir::getBase(loopRes));
   }
 
@@ -4224,7 +4312,7 @@ private:
     auto [iterSpace, insPt] = genIterSpace(resultTy);
     auto exv = f(iterSpace);
     iterSpace.setElement(std::move(exv));
-    auto lambda = ccStoreToDest.hasValue()
+    auto lambda = ccStoreToDest
                       ? ccStoreToDest.getValue()
                       : defaultStoreToDestination(/*substring=*/nullptr);
     mlir::Value updVal = fir::getBase(lambda(iterSpace));
@@ -4561,7 +4649,7 @@ private:
     }
 
     // Generate the lazy mask allocation, if one was given.
-    if (ccPrelude.hasValue())
+    if (ccPrelude)
       ccPrelude.getValue()(shape);
 
     // Now handle the implicit loops.
@@ -4621,7 +4709,7 @@ private:
   fir::ArrayLoadOp
   createAndLoadSomeArrayTemp(mlir::Type type,
                              llvm::ArrayRef<mlir::Value> shape) {
-    if (ccLoadDest.hasValue())
+    if (ccLoadDest)
       return ccLoadDest.getValue()(shape);
     auto seqTy = type.dyn_cast<fir::SequenceType>();
     assert(seqTy && "must be an array");
@@ -4719,7 +4807,7 @@ private:
   /// fir::ResultOp at the end of the innermost loop.
   void finalizeElementCtx() {
     if (elementCtx) {
-      stmtCtx.finalize(/*popScope=*/true);
+      stmtCtx.finalizeAndPop();
       elementCtx = false;
     }
   }
@@ -4830,7 +4918,7 @@ private:
           // a potentially absent argument to something else than a value (apart
           // from character MAX/MIN that are handled elsewhere.)
           if (argRules.lowerAs != Fortran::lower::LowerIntrinsicArgAs::Value)
-            TODO(loc, "lowering non trivial optional elemental intrinsic array "
+            TODO(loc, "non trivial optional elemental intrinsic array "
                       "argument");
           PushSemantics(ConstituentSemantics::RefTransparent);
           operands.emplace_back(genarrForwardOptionalArgumentToCall(*expr));
@@ -4903,7 +4991,7 @@ private:
       }
       const auto *expr = actual->UnwrapExpr();
       if (!expr)
-        TODO(loc, "assumed type actual argument lowering");
+        TODO(loc, "assumed type actual argument");
 
       LLVM_DEBUG(expr->AsFortran(llvm::dbgs()
                                  << "argument: " << arg.firArgument << " = [")
@@ -5005,11 +5093,55 @@ private:
         };
   }
 
+  /// Lower TRANSPOSE call without using runtime TRANSPOSE.
+  /// Return continuation for generating the TRANSPOSE result.
+  /// The continuation just swaps the iteration space before
+  /// invoking continuation for the argument.
+  CC genTransposeProcRef(const Fortran::evaluate::ProcedureRef &procRef) {
+    assert(procRef.arguments().size() == 1 &&
+           "TRANSPOSE must have one argument.");
+    const auto *argExpr = procRef.arguments()[0].value().UnwrapExpr();
+    assert(argExpr);
+
+    llvm::SmallVector<mlir::Value> savedDestShape = destShape;
+    assert((destShape.empty() || destShape.size() == 2) &&
+           "TRANSPOSE destination must have rank 2.");
+
+    if (!savedDestShape.empty())
+      std::swap(destShape[0], destShape[1]);
+
+    PushSemantics(ConstituentSemantics::RefTransparent);
+    llvm::SmallVector<CC> operands{genElementalArgument(*argExpr)};
+
+    if (!savedDestShape.empty()) {
+      // If destShape was set before transpose lowering, then
+      // restore it. Otherwise, ...
+      destShape = savedDestShape;
+    } else if (!destShape.empty()) {
+      // ... if destShape has been set from the argument lowering,
+      // then reverse it.
+      assert(destShape.size() == 2 &&
+             "TRANSPOSE destination must have rank 2.");
+      std::swap(destShape[0], destShape[1]);
+    }
+
+    return [=](IterSpace iters) {
+      assert(iters.iterVec().size() == 2 &&
+             "TRANSPOSE expects 2D iterations space.");
+      IterationSpace newIters(iters, {iters.iterValue(1), iters.iterValue(0)});
+      return operands.front()(newIters);
+    };
+  }
+
   /// Generate a procedure reference. This code is shared for both functions and
   /// subroutines, the difference being reflected by `retTy`.
   CC genProcRef(const Fortran::evaluate::ProcedureRef &procRef,
                 llvm::Optional<mlir::Type> retTy) {
     mlir::Location loc = getLoc();
+
+    if (isOptimizableTranspose(procRef))
+      return genTransposeProcRef(procRef);
+
     if (procRef.IsElemental()) {
       if (const Fortran::evaluate::SpecificIntrinsic *intrin =
               procRef.proc().GetSpecificIntrinsic()) {
@@ -5892,7 +6024,7 @@ private:
       // always loaded at the beginning of the statement and merged at the
       // end.
       destination = arrLoad;
-      auto lambda = ccStoreToDest.hasValue()
+      auto lambda = ccStoreToDest
                         ? ccStoreToDest.getValue()
                         : defaultStoreToDestination(components.substring);
       return [=](IterSpace iters) -> ExtValue { return lambda(iters); };
@@ -6088,9 +6220,14 @@ private:
       mlir::Operation::operand_range triples = slOp.getTriples();
       fir::SequenceType::Shape shape;
       // reduce the rank for each invariant dimension
-      for (unsigned i = 1, end = triples.size(); i < end; i += 3)
-        if (!mlir::isa_and_nonnull<fir::UndefOp>(triples[i].getDefiningOp()))
+      for (unsigned i = 1, end = triples.size(); i < end; i += 3) {
+        if (auto extent = fir::factory::getExtentFromTriplet(
+                triples[i - 1], triples[i], triples[i + 1]))
+          shape.push_back(*extent);
+        else if (!mlir::isa_and_nonnull<fir::UndefOp>(
+                     triples[i].getDefiningOp()))
           shape.push_back(fir::SequenceType::getUnknownExtent());
+      }
       return fir::SequenceType::get(shape, seqTy.getEleTy());
     }
     // not sliced, so no change in rank
@@ -6433,7 +6570,7 @@ private:
         builder.create<fir::StoreOp>(loc, castLen, charLen.value());
       }
     }
-    stmtCtx.finalize(/*popScope=*/true);
+    stmtCtx.finalizeAndPop();
 
     builder.create<fir::ResultOp>(loc, mem);
     builder.restoreInsertionPoint(insPt);
@@ -6526,7 +6663,7 @@ private:
 
     // Return the continuation.
     if (fir::isa_char(seqTy.getEleTy())) {
-      if (charLen.hasValue()) {
+      if (charLen) {
         auto len = builder.create<fir::LoadOp>(loc, charLen.getValue());
         return genarr(fir::CharArrayBoxValue{mem, len, extents});
       }
@@ -7189,8 +7326,9 @@ private:
                              Fortran::lower::ImplicitIterSpace *impSpace)
       : converter{converter}, builder{converter.getFirOpBuilder()},
         stmtCtx{stmtCtx}, symMap{symMap},
-        explicitSpace(expSpace->isActive() ? expSpace : nullptr),
-        implicitSpace(impSpace->empty() ? nullptr : impSpace), semant{sem} {
+        explicitSpace((expSpace && expSpace->isActive()) ? expSpace : nullptr),
+        implicitSpace((impSpace && !impSpace->empty()) ? impSpace : nullptr),
+        semant{sem} {
     // Generate any mask expressions, as necessary. This is the compute step
     // that creates the effective masks. See 10.2.3.2 in particular.
     genMasks();
@@ -7243,14 +7381,14 @@ private:
 
   void setUnordered(bool b) { unordered = b; }
 
-  inline bool isPointerAssignment() const { return lbounds.hasValue(); }
+  inline bool isPointerAssignment() const { return lbounds.has_value(); }
 
   inline bool isBoundsSpec() const {
-    return isPointerAssignment() && !ubounds.hasValue();
+    return isPointerAssignment() && !ubounds.has_value();
   }
 
   inline bool isBoundsRemap() const {
-    return isPointerAssignment() && ubounds.hasValue();
+    return isPointerAssignment() && ubounds.has_value();
   }
 
   void setPointerAssignmentBounds(
@@ -7577,7 +7715,7 @@ void Fortran::lower::createArrayLoads(
   auto genLoad = [&](const auto *x) -> fir::ArrayLoadOp {
     return genArrayLoad(loc, converter, builder, x, symMap, stmtCtx);
   };
-  if (esp.lhsBases[counter].hasValue()) {
+  if (esp.lhsBases[counter]) {
     auto &base = esp.lhsBases[counter].getValue();
     auto load = std::visit(genLoad, base);
     esp.initialArgs.push_back(load);
@@ -7602,7 +7740,7 @@ void Fortran::lower::createArrayMergeStores(
                                              load.getMemref(), load.getSlice(),
                                              load.getTypeparams());
     }
-  if (esp.loopCleanup.hasValue()) {
+  if (esp.loopCleanup) {
     esp.loopCleanup.getValue()(builder);
     esp.loopCleanup = llvm::None;
   }

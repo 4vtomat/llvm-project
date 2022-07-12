@@ -81,7 +81,15 @@ AttrOrTypeDef::AttrOrTypeDef(const llvm::Record *def) : def(def) {
                     "'assemblyFormat' or 'hasCustomAssemblyFormat' can only be "
                     "used when 'mnemonic' is set");
   }
-  // Assembly format requires accessors to be generated.
+  // Assembly format parser requires builders with the same prototype
+  // as the default-builders.
+  // TODO: attempt to detect when a custom builder matches the prototype.
+  if (hasDeclarativeFormat && skipDefaultBuilders()) {
+    PrintWarning(getLoc(),
+                 "using 'assemblyFormat' with 'skipDefaultBuilders=1' may "
+                 "result in C++ compilation errors");
+  }
+  // Assembly format printer requires accessors to be generated.
   if (hasDeclarativeFormat && !genAccessors()) {
     PrintFatalError(getLoc(),
                     "'assemblyFormat' requires 'genAccessors' to be true");

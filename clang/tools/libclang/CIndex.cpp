@@ -2185,8 +2185,12 @@ public:
       const OMPMaskedTaskLoopSimdDirective *D);
   void VisitOMPParallelMasterTaskLoopDirective(
       const OMPParallelMasterTaskLoopDirective *D);
+  void VisitOMPParallelMaskedTaskLoopDirective(
+      const OMPParallelMaskedTaskLoopDirective *D);
   void VisitOMPParallelMasterTaskLoopSimdDirective(
       const OMPParallelMasterTaskLoopSimdDirective *D);
+  void VisitOMPParallelMaskedTaskLoopSimdDirective(
+      const OMPParallelMaskedTaskLoopSimdDirective *D);
   void VisitOMPDistributeDirective(const OMPDistributeDirective *D);
   void VisitOMPDistributeParallelForDirective(
       const OMPDistributeParallelForDirective *D);
@@ -3207,8 +3211,18 @@ void EnqueueVisitor::VisitOMPParallelMasterTaskLoopDirective(
   VisitOMPLoopDirective(D);
 }
 
+void EnqueueVisitor::VisitOMPParallelMaskedTaskLoopDirective(
+    const OMPParallelMaskedTaskLoopDirective *D) {
+  VisitOMPLoopDirective(D);
+}
+
 void EnqueueVisitor::VisitOMPParallelMasterTaskLoopSimdDirective(
     const OMPParallelMasterTaskLoopSimdDirective *D) {
+  VisitOMPLoopDirective(D);
+}
+
+void EnqueueVisitor::VisitOMPParallelMaskedTaskLoopSimdDirective(
+    const OMPParallelMaskedTaskLoopSimdDirective *D) {
   VisitOMPLoopDirective(D);
 }
 
@@ -5843,8 +5857,12 @@ CXString clang_getCursorKindSpelling(enum CXCursorKind Kind) {
     return cxstring::createRef("OMPMaskedTaskLoopSimdDirective");
   case CXCursor_OMPParallelMasterTaskLoopDirective:
     return cxstring::createRef("OMPParallelMasterTaskLoopDirective");
+  case CXCursor_OMPParallelMaskedTaskLoopDirective:
+    return cxstring::createRef("OMPParallelMaskedTaskLoopDirective");
   case CXCursor_OMPParallelMasterTaskLoopSimdDirective:
     return cxstring::createRef("OMPParallelMasterTaskLoopSimdDirective");
+  case CXCursor_OMPParallelMaskedTaskLoopSimdDirective:
+    return cxstring::createRef("OMPParallelMaskedTaskLoopSimdDirective");
   case CXCursor_OMPDistributeDirective:
     return cxstring::createRef("OMPDistributeDirective");
   case CXCursor_OMPDistributeParallelForDirective:
