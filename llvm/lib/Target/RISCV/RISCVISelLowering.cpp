@@ -7573,6 +7573,71 @@ SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+// Look for VP gather where all elements use the same pointer. Lower to a
+// strided load with rs2=x0. This is only possible if the mask is all ones.
+static SDValue lowerSplatPtrVPGather(SDValue Op, SelectionDAG &DAG,
+                                     const RISCVSubtarget &Subtarget) {
+  auto *VPGN = dyn_cast<VPGatherSDNode>(Op);
+  if (!VPGN)
+    return SDValue();
+
+  // Mask should be all ones.
+  SDValue Mask = VPGN->getMask();
+  if (!ISD::isConstantSplatVectorAllOnes(Mask.getNode()))
+    return SDValue();
+
+  // The splat could already be in the base pointer or it could be hidden in
+  // the index.
+  auto findSplatPointer = [&DAG](SDValue BasePtr, SDValue Index) {
+    if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
+      return BasePtr;
+
+    // Try to extract from index.
+    if (!isNullConstant(BasePtr))
+      return SDValue();
+
+    SDValue SplatVal = DAG.getSplatValue(Index);
+    if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
+      return SDValue();
+
+    return SplatVal;
+  };
+
+  SDValue BasePtr = findSplatPointer(VPGN->getBasePtr(), VPGN->getIndex());
+  if (!BasePtr)
+    return SDValue();
+
+  MVT VT = Op.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(DAG, VT, Subtarget);
+  }
+
+  SDLoc DL(Op);
+  SDVTList VTs = DAG.getVTList({ContainerVT, MVT::Other});
+  SDValue IntID = DAG.getTargetConstant(Intrinsic::riscv_vlse, DL, XLenVT);
+  SDValue VL = VPGN->getVectorLength();
+  SDValue Ops[] = {VPGN->getChain(),
+                   IntID,
+                   DAG.getUNDEF(ContainerVT),
+                   BasePtr,
+                   DAG.getRegister(RISCV::X0, XLenVT),
+                   VL};
+  SDValue NewLoad =
+      DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops,
+                              VPGN->getMemoryVT(), VPGN->getMemOperand());
+  SDValue Chain = NewLoad.getValue(1);
+
+  if (VT.isFixedLengthVector())
+    NewLoad = convertFromScalableVector(VT, NewLoad, DAG, Subtarget);
+
+  return DAG.getMergeValues({NewLoad, Chain}, DL);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Custom lower MGATHER/VP_GATHER to a legalized form for RVV. It will then be
 // matched to a RVV indexed load. The RVV indexed load instructions only
 // support the "unsigned unscaled" addressing mode; indices are implicitly
@@ -7581,6 +7646,11 @@ SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
 // accordingly.
 SDValue RISCVTargetLowering::lowerMaskedGather(SDValue Op,
                                                SelectionDAG &DAG) const {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerSplatPtrVPGather(Op, DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
+
   SDLoc DL(Op);
   MVT VT = Op.getSimpleValueType();
 
