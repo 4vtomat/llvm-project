@@ -3019,18 +3019,10 @@ FoldCondBranchOnValueKnownInPredecessorImpl(BranchInst *BI, DomTreeUpdater *DTU,
       if (auto *CB = dyn_cast<ConstantInt>(U))
         KnownValues[CB].insert(PN->getIncomingBlock(U));
   } else {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    for (BasicBlock *Pred : predecessors(BB)) {
-      if (ConstantInt *CB = getKnownValueOnEdge(Cond, Pred, BB))
-        KnownValues.insert({Pred, CB});
-=======
     for (BasicBlock *Pred : predecessors(BB)) {
       if (ConstantInt *CB = getKnownValueOnEdge(Cond, Pred, BB))
         KnownValues[CB].insert(Pred);
->>>>>>> upstream/main
     }
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (KnownValues.empty())
