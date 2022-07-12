@@ -476,26 +476,18 @@ define <vscale x 64 x i8> @test_vp_reverse_nxv64i8_masked(<vscale x 64 x i8> %sr
 ; CHECK-LABEL: test_vp_reverse_nxv64i8_masked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    bgez a0, .LBB30_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:  .LBB30_2:
-; CHECK-NEXT:    sub a2, a1, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e8, m8, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vmsltu.vx v0, v8, a2
-; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vmerge.vvm v16, v16, v8, v0
-; CHECK-NEXT:    addiw a0, a1, -1
-; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vrsub.vx v24, v8, a0
+; CHECK-NEXT:    slliw a2, a1, 2
+; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    vsetvli a3, zero, e16, m8, ta, mu
+; CHECK-NEXT:    vid.v v16
+; CHECK-NEXT:    vrsub.vx v16, v16, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m4, ta, mu
-; CHECK-NEXT:    vrgatherei16.vv v12, v16, v24
-; CHECK-NEXT:    vrgatherei16.vv v8, v20, v24
+; CHECK-NEXT:    vrgatherei16.vv v28, v8, v16
+; CHECK-NEXT:    vrgatherei16.vv v24, v12, v16
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub a1, a1, a0
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vslidedown.vx v8, v24, a1
 ; CHECK-NEXT:    ret
   %dst = call <vscale x 64 x i8> @llvm.experimental.vp.reverse.nxv64i8(<vscale x 64 x i8> %src, <vscale x 64 x i1> %mask, i32 %evl)
   ret <vscale x 64 x i8> %dst
@@ -505,26 +497,18 @@ define <vscale x 64 x i8> @test_vp_reverse_nxv64i8(<vscale x 64 x i8> %src, i32 
 ; CHECK-LABEL: test_vp_reverse_nxv64i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    bgez a0, .LBB31_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:  .LBB31_2:
-; CHECK-NEXT:    sub a2, a1, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, mu
-; CHECK-NEXT:    vslideup.vx v16, v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e8, m8, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vmsltu.vx v0, v8, a2
-; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vmerge.vvm v16, v16, v8, v0
-; CHECK-NEXT:    addiw a0, a1, -1
-; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vrsub.vx v24, v8, a0
+; CHECK-NEXT:    slliw a2, a1, 2
+; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    vsetvli a3, zero, e16, m8, ta, mu
+; CHECK-NEXT:    vid.v v16
+; CHECK-NEXT:    vrsub.vx v16, v16, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m4, ta, mu
-; CHECK-NEXT:    vrgatherei16.vv v12, v16, v24
-; CHECK-NEXT:    vrgatherei16.vv v8, v20, v24
+; CHECK-NEXT:    vrgatherei16.vv v28, v8, v16
+; CHECK-NEXT:    vrgatherei16.vv v24, v12, v16
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub a1, a1, a0
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vslidedown.vx v8, v24, a1
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 64 x i1> undef, i1 1, i32 0
   %allones = shufflevector <vscale x 64 x i1> %head, <vscale x 64 x i1> undef, <vscale x 64 x i32> zeroinitializer

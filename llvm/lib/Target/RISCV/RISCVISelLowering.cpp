@@ -7375,39 +7375,18 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   // NOTE: This code assumes VLMAX <= 65536 for LMUL=8 SEW=16.
   if ((MaxVLMAX == 0 || MaxVLMAX > 256) && EltSize == 8) {
     // If this is LMUL=8, we have to split before using vrgatherei16.vv.
-    // First, we splice the input operand in order to obtain:
-    // vd[i] = undef, when 0 <= i < VLEN - EVL
-    // vd[i] = v1[i - (VLEN - EVL)], when VLEN - EVL <= i < VLEN
-    // Then, we split the splice and reverse each half
-    // Finally, we concatenate the two halves in reverse order
-    // NOTE: It's also possible that, after splitting, VLMAX
-    // no longer requires vrgatherei16.vv.
+    // Split the vector in half and reverse each half using a full register
+    // reverse.
+    // Swap the halves and concatenate them.
+    // Slide the concatenated result by (VLMax - VL).
     if (MinSize == (8 * RISCV::RVVBitsPerBlock)) {
-      unsigned MinElts = GatherVT.getVectorMinNumElements();
-      SDValue VLMax = DAG.getNode(ISD::VSCALE, DL, XLenVT,
-                                  DAG.getConstant(MinElts, DL, XLenVT));
-      SDValue TrueMask =
-          DAG.getConstant(1, DL, GatherVT.changeVectorElementType(MVT::i1));
-
-      // FIXME: I'm skeptical of this since it passes a non-constant value to
-      // EXPERIMENTAL_VP_SPLICE's offset. It's also out of the documented range
-      // if VL is VLMAX.
-      SDValue SPLICE = DAG.getNode(
-          ISD::EXPERIMENTAL_VP_SPLICE, DL, GatherVT,
-          {DAG.getUNDEF(GatherVT), Op1, EVL, TrueMask, VLMax, VLMax});
-
       EVT LoVT, HiVT;
       std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(GatherVT);
       SDValue Lo, Hi;
-      std::tie(Lo, Hi) = DAG.SplitVector(SPLICE, DL);
-      SDValue LoMask, HiMask;
-      LoMask = HiMask =
-          DAG.getConstant(1, DL, LoVT.changeVectorElementType(MVT::i1));
+      std::tie(Lo, Hi) = DAG.SplitVector(Op1, DL);
 
-      SDValue LoRev = DAG.getNode(ISD::EXPERIMENTAL_VP_REVERSE, DL, LoVT, Lo,
-                                  LoMask, VLMax);
-      SDValue HiRev = DAG.getNode(ISD::EXPERIMENTAL_VP_REVERSE, DL, HiVT, Hi,
-                                  HiMask, VLMax);
+      SDValue LoRev = DAG.getNode(ISD::VECTOR_REVERSE, DL, LoVT, Lo);
+      SDValue HiRev = DAG.getNode(ISD::VECTOR_REVERSE, DL, HiVT, Hi);
 
       // Reassemble the low and high pieces reversed.
       // NOTE: this Result is unmasked (because we do not need masks for
@@ -7415,6 +7394,17 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
       // between Result and UNDEF using the mask originally passed to VP_REVERSE
       SDValue Result =
           DAG.getNode(ISD::CONCAT_VECTORS, DL, GatherVT, HiRev, LoRev);
+
+      // Slide off any elements from past EVL that were reversed into the low
+      // elements.
+      unsigned MinElts = GatherVT.getVectorMinNumElements();
+      SDValue VLMax = DAG.getNode(ISD::VSCALE, DL, XLenVT,
+                                  DAG.getConstant(MinElts, DL, XLenVT));
+      SDValue Diff = DAG.getNode(ISD::SUB, DL, XLenVT, VLMax, EVL);
+
+      SDValue TrueMask = getAllOnesMask(ContainerVT, EVL, DL, DAG);
+      Result = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, GatherVT,
+                           DAG.getUNDEF(GatherVT), Result, Diff, TrueMask, EVL);
 
       if (IsMaskVector) {
         // Truncate Result back to a mask vector
