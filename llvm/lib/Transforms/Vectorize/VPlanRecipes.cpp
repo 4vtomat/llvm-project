@@ -853,6 +853,14 @@ void VPBlendRecipe::execute(VPTransformState &State) {
         // Select between the current value and the previous incoming edge
         // based on the incoming mask.
         Value *Cond = State.get(getMask(In), Part);
+#if SIFIVE_CUSTOMIZATION
+        if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
+          Value *EVLArg = State.get(State.Plan->getEVL(), Part);
+          Entry[Part] = State.Builder.CreateIntrinsic(
+              Intrinsic::vp_merge, {In0->getType()},
+              {Cond, In0, Entry[Part], EVLArg}, nullptr, "predphi");
+        } else
+#endif // SIFIVE_CUSTOMIZATION
         Entry[Part] =
             State.Builder.CreateSelect(Cond, In0, Entry[Part], "predphi");
       }
