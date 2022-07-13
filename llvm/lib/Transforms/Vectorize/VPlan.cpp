@@ -584,7 +584,6 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   assert(RVL->getType()->isIntegerTy() &&
@@ -603,7 +602,7 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {
   VPBasicBlock *Header = getVectorLoopRegion()->getEntryBasicBlock();
   for (VPRecipeBase &R : Header->phis()) {
@@ -621,7 +620,6 @@ static bool canSimplifyBranchOnCond(VPInstruction *Term) {
   VPInstruction *ALM = dyn_cast<VPInstruction>(Not->getOperand(0));
   return ALM && ALM->getOpcode() == VPInstruction::ActiveLaneMask;
 }
->>>>>>> upstream/main
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
