@@ -11102,6 +11102,24 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performVP_REVERSECombine(N, DAG, Subtarget);
   case ISD::VP_STORE:
     return performVP_STORECombine(N, DAG, Subtarget);
+  case RISCVISD::VP_MERGE_VL: {
+    SDValue Mask = N->getOperand(0);
+    SDValue VL = N->getOperand(3);
+    // Fold (vp_merge_vl (vmnot_vl X, VL), Y, Z, VL) ->
+    //      (vmerge_vl Z, X, Z, Y, VL)
+    if (Mask.getOpcode() == RISCVISD::VMXOR_VL &&
+        Mask.getOperand(2) == VL) {
+      if (ISD::isConstantSplatVectorAllOnes(Mask.getOperand(1).getNode())) {
+        // We need to freeze the false value so we can use it twice.
+        SDValue Freeze = DAG.getFreeze(N->getOperand(2));
+        return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
+                           Freeze, Mask.getOperand(0), Freeze, N->getOperand(1),
+                           VL);
+      }
+    }
+
+    break;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
@@ -13503,6 +13521,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(SETCC_VL)
   NODE_NAME_CASE(VSELECT_VL)
   NODE_NAME_CASE(VP_MERGE_VL)
+  NODE_NAME_CASE(VMERGE_VL) // SIFIVE
   NODE_NAME_CASE(VMAND_VL)
   NODE_NAME_CASE(VMOR_VL)
   NODE_NAME_CASE(VMXOR_VL)

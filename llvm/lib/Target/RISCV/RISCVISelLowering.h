@@ -296,6 +296,11 @@ enum NodeType : unsigned {
   // to the destination and an additional VL operand. This operation is
   // unmasked.
   VP_MERGE_VL,
+#if SIFIVE_CUSTOMIZATION
+  // General vmerge node with passthru, mask, true, false, and vl operands.
+  // The two nodes above are special cases of this.
+  VMERGE_VL,
+#endif // SIFIVE_CUSTOMIZATION
 
   // Mask binary operators.
   VMAND_VL,
