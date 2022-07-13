@@ -626,55 +626,17 @@ class IsFloat<string type> {
   bit val = !or(!eq(type, "x"), !eq(type, "f"), !eq(type, "d"));
 }
 
-<<<<<<< HEAD
 let SupportOverloading = false,
-    MaskedPolicy = NonePolicy,
-    ManualCodegen = [{
-      IntrinsicTypes = {ResultType, Ops[1]->getType()};
-      Ops[0] = Builder.CreateBitCast(Ops[0], ResultType->getPointerTo());
-    }],
-    MaskedManualCodegen= [{
-      // Move mask to right before vl.
-      std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-      IntrinsicTypes = {ResultType, Ops[3]->getType()};
-      Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-    }] in {
-  class RVVVLEMaskBuiltin : RVVBuiltin<"m", "mPCUe", "c"> {
-=======
-let HasUnMaskedOverloaded = false,
     MaskedPolicy = NonePolicy in {
   class RVVVLEMaskBuiltin : RVVOutBuiltin<"m", "mPCUe", "c"> {
->>>>>>> upstream/main
     let Name = "vlm_v";
     let IRName = "vlm";
     let HasMasked = false;
   }
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 let SupportOverloading = false,
-    UnMaskedPolicy = HasPassthruOperand,
-    ManualCodegen = [{
-      if (DefaultPolicy == TAIL_AGNOSTIC)
-        Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-      IntrinsicTypes = {ResultType, Ops.back()->getType()};
-      Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-    }],
-    MaskedManualCodegen= [{
-      // Move mask to right before vl.
-      std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-      if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
-        Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-      IntrinsicTypes = {ResultType, Ops.back()->getType()};
-      Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-      Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-    }] in {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-let HasUnMaskedOverloaded = false,
     UnMaskedPolicy = HasPassthruOperand in {
->>>>>>> upstream/main
   multiclass RVVVLEBuiltin<list<string> types> {
     let Name = NAME # "_v",
         IRName = "vle",
@@ -756,36 +718,10 @@ multiclass RVVVLSEBuiltin<list<string> types> {
   let Name = NAME # "_v",
       IRName = "vlse",
       MaskedIRName ="vlse_mask",
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
       SupportOverloading = false,
-      UnMaskedPolicy = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
-      ManualCodegen = [{
-#ifdef SIFIVE_CUSTOMIZATION
-        if (DefaultPolicy == TAIL_AGNOSTIC)
-          Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-#endif // SIFIVE_CUSTOMIZATION
-        IntrinsicTypes = {ResultType, Ops[2]->getType()};
-#ifdef SIFIVE_CUSTOMIZATION
-        Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-#endif // SIFIVE_CUSTOMIZATION
-      }],
-      MaskedManualCodegen= [{
-        // Move mask to right before vl.
-        std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
-        if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
-          Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
-        IntrinsicTypes = {ResultType, Ops[4]->getType()};
-        Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-      }] in {
-=======
-      HasUnMaskedOverloaded = false,
       UnMaskedPolicy = HasPassthruOperand in {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     foreach type = types in {
       def : RVVOutBuiltin<"v", "vPCet", type>;
       if !not(IsFloat<type>.val) then {
@@ -796,40 +732,6 @@ multiclass RVVVLSEBuiltin<list<string> types> {
 }
 
 multiclass RVVIndexedLoad<string op> {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  let UnMaskedPolicy = HasPassthruOperand,
-      ManualCodegen = [{
-        if (DefaultPolicy == TAIL_AGNOSTIC)
-          Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-        // passthru, pointer, index, vl
-        IntrinsicTypes = {ResultType, Ops[2]->getType(), Ops[3]->getType()};
-        Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-      }],
-#endif // SIFIVE_CUSTOMIZATION
-      MaskedManualCodegen = [{
-        // Move mask to right before vl.
-        std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
-        if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
-          Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-        Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-        // maskedoff, pointer, index, mask, vl, policy
-#endif // SIFIVE_CUSTOMIZATION
-        IntrinsicTypes = {ResultType, Ops[2]->getType(), Ops[4]->getType()};
-        Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
-      }] in {
-      foreach type = TypeList in {
-        foreach eew_list = EEWList[0-2] in {
-          defvar eew = eew_list[0];
-          defvar eew_type = eew_list[1];
-          let Name = op # eew # "_v", IRName = op, MaskedIRName = op # "_mask" in {
-            def: RVVBuiltin<"v", "vPCe" # eew_type # "Uv", type>;
-              if !not(IsFloat<type>.val) then {
-                def: RVVBuiltin<"Uv", "UvPCUe" # eew_type # "Uv", type>;
-              }
-          }
-=======
   let UnMaskedPolicy = HasPassthruOperand in {
     foreach type = TypeList in {
       foreach eew_list = EEWList[0-2] in {
@@ -840,7 +742,6 @@ multiclass RVVIndexedLoad<string op> {
             if !not(IsFloat<type>.val) then {
               def: RVVOutOp1Builtin<"Uv", "UvPCUe" # eew_type # "Uv", type>;
             }
->>>>>>> upstream/main
         }
       }
       defvar eew64 = "64";
