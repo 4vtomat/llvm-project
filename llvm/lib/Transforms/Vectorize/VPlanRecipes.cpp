@@ -562,6 +562,20 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
 
 void VPWidenRecipe::execute(VPTransformState &State) {
   auto &I = *cast<Instruction>(getUnderlyingValue());
+#if SIFIVE_CUSTOMIZATION
+  if (State.Plan->getEVL() &&
+      State.get(getOperand(0), 0)->getType()->isVectorTy() &&
+      !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
+    // Bitcasts are not supported.
+    State.setDebugLocFromInst(&I);
+    for (unsigned Part = 0; Part < State.UF; ++Part) {
+      llvm::widenPredicatedInstruction(&I, this, *this, State, nullptr, Part);
+      Value *V = State.get(this, Part);
+      State.addMetadata(V, &I);
+    }
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   auto &Builder = State.Builder;
   switch (I.getOpcode()) {
   case Instruction::Call:
