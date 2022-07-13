@@ -11171,7 +11171,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         State.Plan->getEVL() ? State.get(State.Plan->getEVL(), Part) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
     if (CreateGatherScatter) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (EVLPart) {
         bool EmittedStridedAccess = false;
@@ -11220,16 +11219,9 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         NewLI =
             Builder.CreateMaskedGather(DataTy, VectorGep, Alignment, MaskPart,
                                        nullptr, "wide.masked.gather");
-        State.ILV->addMetadata(NewLI, LI);
+        State.addMetadata(NewLI, LI);
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      Value *MaskPart = isMaskRequired ? BlockInMaskParts[Part] : nullptr;
-      Value *VectorGep = State.get(getAddr(), Part);
-      NewLI = Builder.CreateMaskedGather(DataTy, VectorGep, Alignment, MaskPart,
-                                         nullptr, "wide.masked.gather");
-      State.addMetadata(NewLI, LI);
->>>>>>> upstream/main
     } else {
       auto *VecPtr =
           CreateVecPtr(Part, State.get(getAddr(), VPIteration(0, 0)));
@@ -11258,8 +11250,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
             Builder.CreateAlignedLoad(DataTy, VecPtr, Alignment, "wide.load");
 
       // Add metadata to the load, but setVectorValue to the reverse shuffle.
-<<<<<<< HEAD
-      State.ILV->addMetadata(NewLI, LI);
+      State.addMetadata(NewLI, LI);
       if (Reverse) {
 #if SIFIVE_CUSTOMIZATION
         if (EVLPart) {
@@ -11276,11 +11267,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 #endif // SIFIVE_CUSTOMIZATION
           NewLI = Builder.CreateVectorReverse(NewLI, "reverse");
       }
-=======
-      State.addMetadata(NewLI, LI);
-      if (Reverse)
-        NewLI = Builder.CreateVectorReverse(NewLI, "reverse");
->>>>>>> upstream/main
     }
 
     State.set(getVPSingleValue(), NewLI, Part);
