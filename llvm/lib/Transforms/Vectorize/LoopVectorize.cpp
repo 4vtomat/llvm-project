@@ -8939,14 +8939,11 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlanPtr &Plan) {
     // This is used instead of IV < TC because TC may wrap, unlike BTC. Start by
     // constructing the desired canonical IV in the header block as its first
     // non-phi instructions.
-<<<<<<< HEAD
-    assert(CM.foldTailByMasking() && "must fold the tail");
+
 #if SIFIVE_CUSTOMIZATION
     if (Legal->preferPredicatedVectorOps())
       return BlockMaskCache[BB] = BlockMask;
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
     VPBasicBlock *HeaderVPBB =
         Plan->getVectorLoopRegion()->getEntryBasicBlock();
@@ -9542,25 +9539,17 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
   }
 }
 
-<<<<<<< HEAD
-// Add a VPCanonicalIVPHIRecipe starting at 0 to the header, a
-// CanonicalIVIncrement{NUW} VPInstruction to increment it by VF * UF and a
-// BranchOnCount VPInstruction to the latch.
+// Add the necessary canonical IV and branch recipes required to control the
+// loop.
 #if SIFIVE_CUSTOMIZATION
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
                                   bool HasNUW, bool IsVPlanNative,
                                   bool NeedEVL) {
 #else
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
-                                  bool HasNUW, bool IsVPlanNative) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-// Add the necessary canonical IV and branch recipes required to control the
-// loop.
-static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
                                   bool HasNUW,
                                   bool UseLaneMaskForLoopControlFlow) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
   auto *StartV = Plan.getOrAddVPValue(StartIdx);
 
@@ -9751,14 +9740,10 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
-<<<<<<< HEAD
-                        !CM.foldTailByMasking(), false);
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
                         !CM.foldTailByMasking(),
                         CM.useActiveLaneMaskForControlFlow());
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
+
 
   // Scan the body of the loop in a topological order to visit each basic block
   // after having visited its predecessor basic blocks.
@@ -10078,12 +10063,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
       CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
-<<<<<<< HEAD
-                        true, true);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                         true, CM.useActiveLaneMaskForControlFlow());
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   return Plan;
 }
 
