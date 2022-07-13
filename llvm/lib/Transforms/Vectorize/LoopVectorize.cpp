@@ -9547,7 +9547,6 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
   EB->appendRecipe(CanonicalIVIncrement);
 
-<<<<<<< HEAD
   auto *BranchOnCount =
       new VPInstruction(VPInstruction::BranchOnCount,
                         {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
@@ -9555,8 +9554,7 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
 #if SIFIVE_CUSTOMIZATION
   if (NeedEVL)
     Plan.createEVL();
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
   if (UseLaneMaskForLoopControlFlow) {
     // Create the active lane mask instruction in the vplan preheader.
     VPBasicBlock *Preheader = Plan.getEntry()->getEntryBasicBlock();
@@ -9610,7 +9608,7 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
         {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
     EB->appendRecipe(BranchBack);
   }
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
