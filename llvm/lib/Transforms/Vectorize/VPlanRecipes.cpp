@@ -542,7 +542,19 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
     Value *Cond = InvarCond ? InvarCond : State.get(getOperand(0), Part);
     Value *Op0 = State.get(getOperand(1), Part);
     Value *Op1 = State.get(getOperand(2), Part);
+#if SIFIVE_CUSTOMIZATION
+    Value *Sel;
+    if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
+      Value *EVLArg = State.get(State.Plan->getEVL(), Part);
+      Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_merge, {Op0->getType()},
+                                          {Cond, Op0, Op1, EVLArg}, nullptr,
+                                          "vp.widen.select");
+    } else {
+      Sel = State.Builder.CreateSelect(Cond, Op0, Op1);
+    }
+#else
     Value *Sel = State.Builder.CreateSelect(Cond, Op0, Op1);
+#endif // SIFIVE_CUSTOMIZATION
     State.set(this, Sel, Part);
     State.addMetadata(Sel, &I);
   }

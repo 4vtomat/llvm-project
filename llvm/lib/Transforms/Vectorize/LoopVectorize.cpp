@@ -10214,39 +10214,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
 }
 
 <<<<<<< HEAD
-void VPWidenSelectRecipe::execute(VPTransformState &State) {
-  auto &I = *cast<SelectInst>(getUnderlyingInstr());
-  State.ILV->setDebugLocFromInst(&I);
-
-  // The condition can be loop invariant  but still defined inside the
-  // loop. This means that we can't just use the original 'cond' value.
-  // We have to take the 'vectorized' value and pick the first lane.
-  // Instcombine will make this a no-op.
-  auto *InvarCond =
-      InvariantCond ? State.get(getOperand(0), VPIteration(0, 0)) : nullptr;
-
-  for (unsigned Part = 0; Part < State.UF; ++Part) {
-    Value *Cond = InvarCond ? InvarCond : State.get(getOperand(0), Part);
-    Value *Op0 = State.get(getOperand(1), Part);
-    Value *Op1 = State.get(getOperand(2), Part);
-#if SIFIVE_CUSTOMIZATION
-    Value *Sel;
-    if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
-      Value *EVLArg = State.get(State.Plan->getEVL(), Part);
-      Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_merge, {Op0->getType()},
-                                          {Cond, Op0, Op1, EVLArg}, nullptr,
-                                          "vp.widen.select");
-    } else {
-      Sel = State.Builder.CreateSelect(Cond, Op0, Op1);
-    }
-#else
-    Value *Sel = State.Builder.CreateSelect(Cond, Op0, Op1);
-#endif // SIFIVE_CUSTOMIZATION
-    State.set(this, Sel, Part);
-    State.ILV->addMetadata(Sel, &I);
-  }
-}
-
 void VPWidenRecipe::execute(VPTransformState &State) {
   auto &I = *cast<Instruction>(getUnderlyingValue());
 #if SIFIVE_CUSTOMIZATION
