@@ -133,16 +133,8 @@ static bool isArithEqZ(const MachineInstr *FirstMI,
     // comparisons.
     PreRA = true;
     break;
-  case RISCV::ADD:
-  case RISCV::ADDW:
-  case RISCV::ADDIW:
   case RISCV::SUB:
-  case RISCV::SUBW:
-  case RISCV::AND:
-  case RISCV::ANDI:
   case RISCV::OR:
-  case RISCV::ORI:
-  case RISCV::XORI:
     // Do not allow these pre-RA because we can't ensure that SecondMI is the
     // only user pre-RA.
     // FIXME: We probably need some pseudoinstructions and an earlier fusion
