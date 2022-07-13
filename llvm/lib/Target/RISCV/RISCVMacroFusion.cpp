@@ -87,6 +87,10 @@ static bool isIndexedLoad(const MachineInstr *FirstMI,
     break;
   }
 
+  // Immediate offset must be 0.
+  if (SecondMI.getOperand(2).getImm() != 0)
+    return false;
+
   // The first operand might be frame index.
   if (!SecondMI.getOperand(1).isReg())
     return false;
