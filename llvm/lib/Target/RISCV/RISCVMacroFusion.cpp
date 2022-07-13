@@ -63,9 +63,6 @@ static bool isIndexedLoad(const MachineInstr *FirstMI,
   case RISCV::LW:
   case RISCV::LWU:
   case RISCV::LD:
-  case RISCV::FLH:
-  case RISCV::FLW:
-  case RISCV::FLD:
     break;
   }
 
