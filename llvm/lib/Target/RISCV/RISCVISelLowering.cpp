@@ -1139,6 +1139,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE,
                          ISD::EXPERIMENTAL_VP_REVERSE, //SIFIVE
+                         ISD::VP_STORE,            // SIFIVE
                          ISD::SPLAT_VECTOR,        // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,  // SIFIVE
                          ISD::VECTOR_SHUFFLE,      // SIFIVE
@@ -10103,6 +10104,58 @@ static SDValue performVP_REVERSECombine(SDNode *N, SelectionDAG &DAG,
   return SDValue();
 }
 
+static SDValue performVP_STORECombine(SDNode *N, SelectionDAG &DAG,
+                                        const RISCVSubtarget &Subtarget) {
+  // Fold:
+  //    vp.store(vp.reverse(VAL), ADDR, MASK) -> vp.strided.store(VAL, NEW_ADDR, -1, MASK)
+  auto *VPStore = cast<VPStoreSDNode>(N);
+
+  if (VPStore->getValue().getOpcode() == ISD::EXPERIMENTAL_VP_REVERSE) {
+    SDValue VPReverse = VPStore->getValue();
+    EVT ReverseVT = VPReverse->getValueType(0);
+
+    // We do not have a strided_store version for masks, and the evl of vp.reverse
+    // and vp.store should always be the same.
+    if (!ReverseVT.getVectorElementType().isByteSized() ||
+        VPStore->getVectorLength() != VPReverse.getOperand(2) ||
+        !VPReverse.hasOneUse())
+      return SDValue();
+
+    SDValue StoreMask = VPStore->getMask();
+    // If Mask is not all 1's, try to replace the mask if it's opcode
+    // is EXPERIMENTAL_VP_REVERSE and it's operand can be directly extracted.
+    if (!isOneOrOneSplat(StoreMask)) {
+      // Check if the mask of vp.reverse in vp.store are all 1's and
+      // the length of mask is same as evl.
+      if (StoreMask.getOpcode() != ISD::EXPERIMENTAL_VP_REVERSE ||
+          !isOneOrOneSplat(StoreMask.getOperand(1)) ||
+          StoreMask.getOperand(2) != VPStore->getVectorLength())
+        return SDValue();
+      StoreMask = StoreMask.getOperand(0);
+    }
+
+    // Base = StoreAddr + (NumElem - 1) * ElemWidthByte
+    SDLoc DL(N);
+    MVT XLenVT = Subtarget.getXLenVT();
+    SDValue NumElem = VPStore->getVectorLength();
+    uint64_t ElemWidthByte = VPReverse.getValueType().getScalarSizeInBits() / 8;
+
+    SDValue Temp1 = DAG.getNode(ISD::SUB, DL, XLenVT, NumElem,
+                                DAG.getConstant(1, DL, XLenVT));
+    SDValue Temp2 = DAG.getNode(ISD::MUL, DL, XLenVT, Temp1,
+                                DAG.getConstant(ElemWidthByte, DL, XLenVT));
+    SDValue Base = DAG.getNode(ISD::ADD, DL, XLenVT, VPStore->getBasePtr(), Temp2);
+    SDValue Stride = DAG.getConstant(0 - ElemWidthByte, DL, XLenVT);
+    return DAG.getStridedStoreVP(VPStore->getChain(), DL, VPReverse.getOperand(0),
+                                 Base, VPStore->getOffset(), Stride, StoreMask,
+                                 VPStore->getVectorLength(), VPStore->getMemoryVT(),
+                                 VPStore->getMemOperand(), VPStore->getAddressingMode(),
+                                 VPStore->isTruncatingStore(), VPStore->isCompressingStore());
+  }
+
+  return SDValue();
+}
+
 static SDValue combineVECTOR_SHUFFLEToVnsrl(SDNode *N, SelectionDAG &DAG,
                                             const RISCVSubtarget &Subtarget) {
   // t34: v8i8 = extract_subvector t11, Constant:i64<0>
@@ -11033,6 +11086,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);
   case ISD::EXPERIMENTAL_VP_REVERSE:
     return performVP_REVERSECombine(N, DAG, Subtarget);
+  case ISD::VP_STORE:
+    return performVP_STORECombine(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
