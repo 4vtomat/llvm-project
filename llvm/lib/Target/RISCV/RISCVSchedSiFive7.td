@@ -316,6 +316,29 @@ def : WriteRes<WriteVST4R, [SiFive7VS]>;
 def : WriteRes<WriteVST8R, [SiFive7VS]>;
 }
 
+let Latency = 4 in {
+foreach nf=2-8 in {
+  foreach eew = [8, 16, 32, 64] in {
+    def : WriteRes <!cast<SchedWrite>("WriteVLSEG" # nf # "e" # eew), [SiFive7VL]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVLSEGFF" # nf # "e" # eew), [SiFive7VL]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVLSSEG" # nf # "e" # eew), [SiFive7VL]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVLUXSEG" # nf # "e" # eew), [SiFive7VL]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVLOXSEG" # nf # "e" # eew), [SiFive7VL]>;
+  }
+}
+}
+
+let Latency = 1, ResourceCycles = [4] in {
+foreach nf=2-8 in {
+  foreach eew = [8, 16, 32, 64] in {
+    def : WriteRes <!cast<SchedWrite>("WriteVSSEG" # nf # "e" # eew), [SiFive7VS]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVSSSEG" # nf # "e" # eew), [SiFive7VS]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVSUXSEG" # nf # "e" # eew), [SiFive7VS]>;
+    def : WriteRes <!cast<SchedWrite>("WriteVSOXSEG" # nf # "e" # eew), [SiFive7VS]>;
+  }
+}
+}
+
 // 12. Vector Integer Arithmetic Instructions
 let Latency = 4 in {
 def : WriteRes<WriteVIALUV, [SiFive7VA]>;

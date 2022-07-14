@@ -21,6 +21,7 @@
 #include "llvm/CodeGen/ScheduleDAG.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/MathExtras.h"
 
 using namespace llvm;
 
@@ -220,6 +221,20 @@ static unsigned factorLMul(unsigned Lat, RISCVII::VLMUL LMul) {
   return Lat + (RISCVII::getLMULGroups(LMul) - 1) * 2;
 }
 
+static unsigned factorSegmentLMul(unsigned Lat, RISCVII::VLMUL LMul,
+                                  unsigned NF) {
+  switch (LMul) {
+  default:
+    return Lat + (RISCVII::getLMULGroups(LMul) * NF - 1) * 2;
+  case RISCVII::LMUL_F8:
+    return Lat + (divideCeil(NF, 8) - 1) * 2;
+  case RISCVII::LMUL_F4:
+    return Lat + (divideCeil(NF, 4) - 1) * 2;
+  case RISCVII::LMUL_F2:
+    return Lat + (divideCeil(NF, 2) - 1) * 2;
+  }
+}
+
 static unsigned
 calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
                  RISCVSubtarget::RISCVProcFamilyEnum ProcModel) {
@@ -359,6 +374,266 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VWSUBU_WX:
         // FIXME: It may be more complex than this.
         return factorLMul(Lat, LMul);
+      case RISCV::VLSEG2E8_V:
+      case RISCV::VLSEG2E16_V:
+      case RISCV::VLSEG2E32_V:
+      case RISCV::VLSEG2E64_V:
+      case RISCV::VLSEG2E8FF_V:
+      case RISCV::VLSEG2E16FF_V:
+      case RISCV::VLSEG2E32FF_V:
+      case RISCV::VLSEG2E64FF_V:
+      case RISCV::VLSSEG2E8_V:
+      case RISCV::VLSSEG2E16_V:
+      case RISCV::VLSSEG2E32_V:
+      case RISCV::VLSSEG2E64_V:
+      case RISCV::VLOXSEG2EI8_V:
+      case RISCV::VLOXSEG2EI16_V:
+      case RISCV::VLOXSEG2EI32_V:
+      case RISCV::VLOXSEG2EI64_V:
+      case RISCV::VLUXSEG2EI8_V:
+      case RISCV::VLUXSEG2EI16_V:
+      case RISCV::VLUXSEG2EI32_V:
+      case RISCV::VLUXSEG2EI64_V:
+        return factorSegmentLMul(Lat, LMul, 2);
+      case RISCV::VLSEG3E8_V:
+      case RISCV::VLSEG3E16_V:
+      case RISCV::VLSEG3E32_V:
+      case RISCV::VLSEG3E64_V:
+      case RISCV::VLSEG3E8FF_V:
+      case RISCV::VLSEG3E16FF_V:
+      case RISCV::VLSEG3E32FF_V:
+      case RISCV::VLSEG3E64FF_V:
+      case RISCV::VLSSEG3E8_V:
+      case RISCV::VLSSEG3E16_V:
+      case RISCV::VLSSEG3E32_V:
+      case RISCV::VLSSEG3E64_V:
+      case RISCV::VLOXSEG3EI8_V:
+      case RISCV::VLOXSEG3EI16_V:
+      case RISCV::VLOXSEG3EI32_V:
+      case RISCV::VLOXSEG3EI64_V:
+      case RISCV::VLUXSEG3EI8_V:
+      case RISCV::VLUXSEG3EI16_V:
+      case RISCV::VLUXSEG3EI32_V:
+      case RISCV::VLUXSEG3EI64_V:
+        return factorSegmentLMul(Lat, LMul, 3);
+      case RISCV::VLSEG4E8_V:
+      case RISCV::VLSEG4E16_V:
+      case RISCV::VLSEG4E32_V:
+      case RISCV::VLSEG4E64_V:
+      case RISCV::VLSEG4E8FF_V:
+      case RISCV::VLSEG4E16FF_V:
+      case RISCV::VLSEG4E32FF_V:
+      case RISCV::VLSEG4E64FF_V:
+      case RISCV::VLSSEG4E8_V:
+      case RISCV::VLSSEG4E16_V:
+      case RISCV::VLSSEG4E32_V:
+      case RISCV::VLSSEG4E64_V:
+      case RISCV::VLOXSEG4EI8_V:
+      case RISCV::VLOXSEG4EI16_V:
+      case RISCV::VLOXSEG4EI32_V:
+      case RISCV::VLOXSEG4EI64_V:
+      case RISCV::VLUXSEG4EI8_V:
+      case RISCV::VLUXSEG4EI16_V:
+      case RISCV::VLUXSEG4EI32_V:
+      case RISCV::VLUXSEG4EI64_V:
+        return factorSegmentLMul(Lat, LMul, 4);
+      case RISCV::VLSEG5E8_V:
+      case RISCV::VLSEG5E16_V:
+      case RISCV::VLSEG5E32_V:
+      case RISCV::VLSEG5E64_V:
+      case RISCV::VLSEG5E8FF_V:
+      case RISCV::VLSEG5E16FF_V:
+      case RISCV::VLSEG5E32FF_V:
+      case RISCV::VLSEG5E64FF_V:
+      case RISCV::VLSSEG5E8_V:
+      case RISCV::VLSSEG5E16_V:
+      case RISCV::VLSSEG5E32_V:
+      case RISCV::VLSSEG5E64_V:
+      case RISCV::VLOXSEG5EI8_V:
+      case RISCV::VLOXSEG5EI16_V:
+      case RISCV::VLOXSEG5EI32_V:
+      case RISCV::VLOXSEG5EI64_V:
+      case RISCV::VLUXSEG5EI8_V:
+      case RISCV::VLUXSEG5EI16_V:
+      case RISCV::VLUXSEG5EI32_V:
+      case RISCV::VLUXSEG5EI64_V:
+        return factorSegmentLMul(Lat, LMul, 5);
+      case RISCV::VLSEG6E8_V:
+      case RISCV::VLSEG6E16_V:
+      case RISCV::VLSEG6E32_V:
+      case RISCV::VLSEG6E64_V:
+      case RISCV::VLSEG6E8FF_V:
+      case RISCV::VLSEG6E16FF_V:
+      case RISCV::VLSEG6E32FF_V:
+      case RISCV::VLSEG6E64FF_V:
+      case RISCV::VLSSEG6E8_V:
+      case RISCV::VLSSEG6E16_V:
+      case RISCV::VLSSEG6E32_V:
+      case RISCV::VLSSEG6E64_V:
+      case RISCV::VLOXSEG6EI8_V:
+      case RISCV::VLOXSEG6EI16_V:
+      case RISCV::VLOXSEG6EI32_V:
+      case RISCV::VLOXSEG6EI64_V:
+      case RISCV::VLUXSEG6EI8_V:
+      case RISCV::VLUXSEG6EI16_V:
+      case RISCV::VLUXSEG6EI32_V:
+      case RISCV::VLUXSEG6EI64_V:
+        return factorSegmentLMul(Lat, LMul, 6);
+      case RISCV::VLSEG7E8_V:
+      case RISCV::VLSEG7E16_V:
+      case RISCV::VLSEG7E32_V:
+      case RISCV::VLSEG7E64_V:
+      case RISCV::VLSEG7E8FF_V:
+      case RISCV::VLSEG7E16FF_V:
+      case RISCV::VLSEG7E32FF_V:
+      case RISCV::VLSEG7E64FF_V:
+      case RISCV::VLSSEG7E8_V:
+      case RISCV::VLSSEG7E16_V:
+      case RISCV::VLSSEG7E32_V:
+      case RISCV::VLSSEG7E64_V:
+      case RISCV::VLOXSEG7EI8_V:
+      case RISCV::VLOXSEG7EI16_V:
+      case RISCV::VLOXSEG7EI32_V:
+      case RISCV::VLOXSEG7EI64_V:
+      case RISCV::VLUXSEG7EI8_V:
+      case RISCV::VLUXSEG7EI16_V:
+      case RISCV::VLUXSEG7EI32_V:
+      case RISCV::VLUXSEG7EI64_V:
+        return factorSegmentLMul(Lat, LMul, 7);
+      case RISCV::VLSEG8E8_V:
+      case RISCV::VLSEG8E16_V:
+      case RISCV::VLSEG8E32_V:
+      case RISCV::VLSEG8E64_V:
+      case RISCV::VLSEG8E8FF_V:
+      case RISCV::VLSEG8E16FF_V:
+      case RISCV::VLSEG8E32FF_V:
+      case RISCV::VLSEG8E64FF_V:
+      case RISCV::VLSSEG8E8_V:
+      case RISCV::VLSSEG8E16_V:
+      case RISCV::VLSSEG8E32_V:
+      case RISCV::VLSSEG8E64_V:
+      case RISCV::VLOXSEG8EI8_V:
+      case RISCV::VLOXSEG8EI16_V:
+      case RISCV::VLOXSEG8EI32_V:
+      case RISCV::VLOXSEG8EI64_V:
+      case RISCV::VLUXSEG8EI8_V:
+      case RISCV::VLUXSEG8EI16_V:
+      case RISCV::VLUXSEG8EI32_V:
+      case RISCV::VLUXSEG8EI64_V:
+        return factorSegmentLMul(Lat, LMul, 8);
+      case RISCV::VSSEG2E8_V:
+      case RISCV::VSSEG2E16_V:
+      case RISCV::VSSEG2E32_V:
+      case RISCV::VSSEG2E64_V:
+      case RISCV::VSSSEG2E8_V:
+      case RISCV::VSSSEG2E16_V:
+      case RISCV::VSSSEG2E32_V:
+      case RISCV::VSSSEG2E64_V:
+      case RISCV::VSOXSEG2EI8_V:
+      case RISCV::VSOXSEG2EI16_V:
+      case RISCV::VSOXSEG2EI32_V:
+      case RISCV::VSOXSEG2EI64_V:
+      case RISCV::VSUXSEG2EI8_V:
+      case RISCV::VSUXSEG2EI16_V:
+      case RISCV::VSUXSEG2EI32_V:
+      case RISCV::VSUXSEG2EI64_V:
+      case RISCV::VSSEG3E8_V:
+      case RISCV::VSSEG3E16_V:
+      case RISCV::VSSEG3E32_V:
+      case RISCV::VSSEG3E64_V:
+      case RISCV::VSSSEG3E8_V:
+      case RISCV::VSSSEG3E16_V:
+      case RISCV::VSSSEG3E32_V:
+      case RISCV::VSSSEG3E64_V:
+      case RISCV::VSOXSEG3EI8_V:
+      case RISCV::VSOXSEG3EI16_V:
+      case RISCV::VSOXSEG3EI32_V:
+      case RISCV::VSOXSEG3EI64_V:
+      case RISCV::VSUXSEG3EI8_V:
+      case RISCV::VSUXSEG3EI16_V:
+      case RISCV::VSUXSEG3EI32_V:
+      case RISCV::VSUXSEG3EI64_V:
+      case RISCV::VSSEG4E8_V:
+      case RISCV::VSSEG4E16_V:
+      case RISCV::VSSEG4E32_V:
+      case RISCV::VSSEG4E64_V:
+      case RISCV::VSSSEG4E8_V:
+      case RISCV::VSSSEG4E16_V:
+      case RISCV::VSSSEG4E32_V:
+      case RISCV::VSSSEG4E64_V:
+      case RISCV::VSOXSEG4EI8_V:
+      case RISCV::VSOXSEG4EI16_V:
+      case RISCV::VSOXSEG4EI32_V:
+      case RISCV::VSOXSEG4EI64_V:
+      case RISCV::VSUXSEG4EI8_V:
+      case RISCV::VSUXSEG4EI16_V:
+      case RISCV::VSUXSEG4EI32_V:
+      case RISCV::VSUXSEG4EI64_V:
+      case RISCV::VSSEG5E8_V:
+      case RISCV::VSSEG5E16_V:
+      case RISCV::VSSEG5E32_V:
+      case RISCV::VSSEG5E64_V:
+      case RISCV::VSSSEG5E8_V:
+      case RISCV::VSSSEG5E16_V:
+      case RISCV::VSSSEG5E32_V:
+      case RISCV::VSSSEG5E64_V:
+      case RISCV::VSOXSEG5EI8_V:
+      case RISCV::VSOXSEG5EI16_V:
+      case RISCV::VSOXSEG5EI32_V:
+      case RISCV::VSOXSEG5EI64_V:
+      case RISCV::VSUXSEG5EI8_V:
+      case RISCV::VSUXSEG5EI16_V:
+      case RISCV::VSUXSEG5EI32_V:
+      case RISCV::VSUXSEG5EI64_V:
+      case RISCV::VSSEG6E8_V:
+      case RISCV::VSSEG6E16_V:
+      case RISCV::VSSEG6E32_V:
+      case RISCV::VSSEG6E64_V:
+      case RISCV::VSSSEG6E8_V:
+      case RISCV::VSSSEG6E16_V:
+      case RISCV::VSSSEG6E32_V:
+      case RISCV::VSSSEG6E64_V:
+      case RISCV::VSOXSEG6EI8_V:
+      case RISCV::VSOXSEG6EI16_V:
+      case RISCV::VSOXSEG6EI32_V:
+      case RISCV::VSOXSEG6EI64_V:
+      case RISCV::VSUXSEG6EI8_V:
+      case RISCV::VSUXSEG6EI16_V:
+      case RISCV::VSUXSEG6EI32_V:
+      case RISCV::VSUXSEG6EI64_V:
+      case RISCV::VSSEG7E8_V:
+      case RISCV::VSSEG7E16_V:
+      case RISCV::VSSEG7E32_V:
+      case RISCV::VSSEG7E64_V:
+      case RISCV::VSSSEG7E8_V:
+      case RISCV::VSSSEG7E16_V:
+      case RISCV::VSSSEG7E32_V:
+      case RISCV::VSSSEG7E64_V:
+      case RISCV::VSOXSEG7EI8_V:
+      case RISCV::VSOXSEG7EI16_V:
+      case RISCV::VSOXSEG7EI32_V:
+      case RISCV::VSOXSEG7EI64_V:
+      case RISCV::VSUXSEG7EI8_V:
+      case RISCV::VSUXSEG7EI16_V:
+      case RISCV::VSUXSEG7EI32_V:
+      case RISCV::VSUXSEG7EI64_V:
+      case RISCV::VSSEG8E8_V:
+      case RISCV::VSSEG8E16_V:
+      case RISCV::VSSEG8E32_V:
+      case RISCV::VSSEG8E64_V:
+      case RISCV::VSSSEG8E8_V:
+      case RISCV::VSSSEG8E16_V:
+      case RISCV::VSSSEG8E32_V:
+      case RISCV::VSSSEG8E64_V:
+      case RISCV::VSOXSEG8EI8_V:
+      case RISCV::VSOXSEG8EI16_V:
+      case RISCV::VSOXSEG8EI32_V:
+      case RISCV::VSOXSEG8EI64_V:
+      case RISCV::VSUXSEG8EI8_V:
+      case RISCV::VSUXSEG8EI16_V:
+      case RISCV::VSUXSEG8EI32_V:
+      case RISCV::VSUXSEG8EI64_V:
+        return Lat;
       }
     }
   }
