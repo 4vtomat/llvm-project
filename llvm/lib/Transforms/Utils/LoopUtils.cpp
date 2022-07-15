@@ -403,11 +403,14 @@ TransformationMode llvm::hasVectorizeTransformation(const Loop *L) {
   Optional<int> InterleaveCount =
       getOptionalIntLoopAttribute(L, "llvm.loop.interleave.count");
 
+#if SIFIVE_CUSTOMIZATION
+#else
   // 'Forcing' vector width and interleave count to one effectively disables
   // this tranformation.
   if (Enable == true && VectorizeWidth && VectorizeWidth->isScalar() &&
       InterleaveCount == 1)
     return TM_SuppressedByUser;
+#endif // !SIFIVE_CUSTOMIZATION
 
   if (getBooleanLoopAttribute(L, "llvm.loop.isvectorized"))
     return TM_Disable;

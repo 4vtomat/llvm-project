@@ -113,12 +113,22 @@ void test9(int *List, int Length) {
 
 // CHECK-NEXT: ![[LOOP3]] = distinct !{![[LOOP3]], [[MP]], [[GEN6]], [[GEN3]]}
 
-// CHECK-NEXT: ![[LOOP4]] = distinct !{![[LOOP4]], [[MP]], [[GEN10:![0-9]+]]}
+// CHECK-NEXT: ![[LOOP4]] = distinct !{![[LOOP4]], [[MP]], [[VEC_DISABLE:![0-9]+]]}
+// SIFIVE_CUSTOMIZATION
+// CHECK-NEXT: [[VEC_DISABLE]] = !{!"llvm.loop.vectorize.enable", i1 false}
+// CHECK-NEXT: ![[LOOP5]] = distinct !{![[LOOP5]], [[MP]], [[VEC_DISABLE]]}
+// else
+// COM: [[GEN10]] = !{!"llvm.loop.vectorize.width", i32 1}
+
+// COM: ![[LOOP5]] = distinct !{![[LOOP5]], [[MP]], [[GEN6]], [[GEN10]]}
+// end of SIFIVE_CUSTOMIZATION
+
+// SIFIVE_CUSTOMIZATION
+// CHECK-NEXT: ![[LOOP6]] = distinct !{![[LOOP6]], [[MP]], [[GEN8]], [[GEN10:![0-9]+]], [[GEN11:![0-9]+]]}
 // CHECK-NEXT: [[GEN10]] = !{!"llvm.loop.vectorize.width", i32 1}
-
-// CHECK-NEXT: ![[LOOP5]] = distinct !{![[LOOP5]], [[MP]], [[GEN6]], [[GEN10]]}
-
-// CHECK-NEXT: ![[LOOP6]] = distinct !{![[LOOP6]], [[MP]], [[GEN8]], [[GEN10]], [[GEN11:![0-9]+]]}
+// else
+// COM: ![[LOOP6]] = distinct !{![[LOOP6]], [[MP]], [[GEN8]], [[GEN10]], [[GEN11:![0-9]+]]}
+// end of SIFIVE_CUSTOMIZATION
 // CHECK-NEXT: [[GEN11]] = !{!"llvm.loop.vectorize.scalable.enable", i1 false}
 
 // CHECK-NEXT: ![[LOOP7]] = distinct !{![[LOOP7]], [[MP]], [[GEN8]], [[GEN12:![0-9]+]], [[GEN11]], [[GEN3]]}

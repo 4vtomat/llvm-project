@@ -639,8 +639,12 @@ void LoopInfoStack::push(BasicBlock *Header, clang::ASTContext &Ctx,
     case LoopHintAttr::Disable:
       switch (Option) {
       case LoopHintAttr::Vectorize:
+#if SIFIVE_CUSTOMIZATION
+        setVectorizeEnable(false);
+#else
         // Disable vectorization by specifying a width of 1.
         setVectorizeWidth(1);
+#endif // SIFIVE_CUSTOMIZATION
         setVectorizeScalable(LoopAttributes::Unspecified);
         break;
       case LoopHintAttr::Interleave:

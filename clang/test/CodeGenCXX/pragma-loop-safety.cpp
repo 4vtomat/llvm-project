@@ -51,8 +51,18 @@ void interleave_test(int *List, int Length) {
 // CHECK: ![[PARALLEL_ACCESSES_7]] = !{!"llvm.loop.parallel_accesses", ![[ACCESS_GROUP_2]]}
 // CHECK: ![[UNROLL_DISABLE]] = !{!"llvm.loop.unroll.disable"}
 // CHECK: ![[INTERLEAVE_1]] = !{!"llvm.loop.interleave.count", i32 1}
-// CHECK: ![[INTENABLE_1]] = !{!"llvm.loop.vectorize.enable", i1 true}
+// SIFIVE_CUSTOMIZATION
+// COM: ![[INTENABLE_1]] = !{!"llvm.loop.vectorize.enable", i1 true}
+// end of SIFIVE_CUSTOMIZATION
 // CHECK: ![[ACCESS_GROUP_8]] = distinct !{}
-// CHECK: ![[LOOP2_HINTS]] = distinct !{![[LOOP2_HINTS]], [[MP]], ![[PARALLEL_ACCESSES_11:[0-9]+]], ![[UNROLL_DISABLE]], ![[WIDTH_1:[0-9]+]], ![[INTENABLE_1]]}
+// SIFIVE_CUSTOMIZATION
+// CHECK: ![[LOOP2_HINTS]] = distinct !{![[LOOP2_HINTS]], [[MP]], ![[PARALLEL_ACCESSES_11:[0-9]+]], ![[UNROLL_DISABLE]], ![[WIDTH_1:[0-9]+]]}
+// else
+// COM: ![[LOOP2_HINTS]] = distinct !{![[LOOP2_HINTS]], [[MP]], ![[PARALLEL_ACCESSES_11:[0-9]+]], ![[UNROLL_DISABLE]], ![[WIDTH_1:[0-9]+]], ![[INTENABLE_1]]}
+// end of SIFIVE_CUSTOMIZATION
 // CHECK: ![[PARALLEL_ACCESSES_11]] = !{!"llvm.loop.parallel_accesses", ![[ACCESS_GROUP_8]]}
-// CHECK: ![[WIDTH_1]] = !{!"llvm.loop.vectorize.width", i32 1}
+// SIFIVE_CUSTOMIZATION
+// CHECK: ![[WIDTH_1]] = !{!"llvm.loop.vectorize.enable", i1 false}
+// else
+// COM: ![[WIDTH_1]] = !{!"llvm.loop.vectorize.width", i32 1}
+// end of SIFIVE_CUSTOMIZATION
