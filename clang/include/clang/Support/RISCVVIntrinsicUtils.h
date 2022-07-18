@@ -246,7 +246,6 @@ public:
   }
 #if SIFIVE_CUSTOMIZATION
   bool isConstant() const { return IsConstant; }
-  bool isPointer() const { return IsPointer; }
   unsigned getElementBitwidth() const { return ElementBitwidth; }
 
   ScalarTypeKind getScalarType() const { return ScalarType; }
