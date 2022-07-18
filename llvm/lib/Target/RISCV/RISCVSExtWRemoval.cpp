@@ -397,6 +397,7 @@ static bool isSignExtendedW(MachineInstr &OrigMI, MachineRegisterInfo &MRI,
 
       break;
     }
+#if SIFIVE_CUSTOMIZATION
     case RISCV::PseudoCCADDW:
     case RISCV::PseudoCCSUBW:
     case RISCV::PseudoCCSLLW:
@@ -420,6 +421,7 @@ static bool isSignExtendedW(MachineInstr &OrigMI, MachineRegisterInfo &MRI,
       Worklist.push_back(SrcMI);
       break;
     }
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
