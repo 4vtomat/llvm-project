@@ -1,4 +1,4 @@
-//===----- SiFive_RISCVCodeGenPrepare.cpp ---------------------------------===//
+//===----- SiFive_RISCVLateCodeGenPrepare.cpp -----------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -24,8 +24,8 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/MathExtras.h"
 
-#define DEBUG_TYPE "riscv-codegenprepare"
-#define PASS_NAME "RISCV CodeGenPrepare"
+#define DEBUG_TYPE "riscv-late-codegenprepare"
+#define PASS_NAME "RISCV Late CodeGenPrepare"
 
 using namespace llvm;
 using namespace llvm::PatternMatch;
@@ -41,14 +41,14 @@ static cl::opt<bool>
 
 namespace {
 
-class RISCVCodeGenPrepare : public FunctionPass {
+class RISCVLateCodeGenPrepare : public FunctionPass {
   const DataLayout *DL;
   const RISCVSubtarget *ST;
 
 public:
   static char ID;
 
-  RISCVCodeGenPrepare() : FunctionPass(ID) {}
+  RISCVLateCodeGenPrepare() : FunctionPass(ID) {}
 
   StringRef getPassName() const override { return PASS_NAME; }
 
@@ -74,7 +74,7 @@ private:
 
 // If the result of a zext.w is used by a GEP in another basic block, duplicate
 // the zext to enable add.uw or shXadd.uw.
-bool RISCVCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
+bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
   if (!ST->hasStdExtZba())
     return false;
 
@@ -148,7 +148,7 @@ bool RISCVCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
   return MadeChange;
 }
 
-bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
+bool RISCVLateCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
   if (!ST->is64Bit())
     return false;
 
@@ -181,7 +181,7 @@ bool RISCVCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
 // but bits 63:32 are zero. If we can prove that bit 31 of X is 0, we can fill
 // the upper 32 bits with ones. A separate transform will turn (zext X) into
 // (sext X) for the same condition.
-bool RISCVCodeGenPrepare::optimizeAndExt(BinaryOperator *BO) {
+bool RISCVLateCodeGenPrepare::optimizeAndExt(BinaryOperator *BO) {
   // Left hand side should be sext or zext.
   Instruction *LHS = dyn_cast<Instruction>(BO->getOperand(0));
   if (!LHS || (LHS->getOpcode() != Instruction::SExt &&
@@ -236,7 +236,7 @@ bool RISCVCodeGenPrepare::optimizeAndExt(BinaryOperator *BO) {
 
 // If the result of a and with 0xffffffff is used by a GEP in another basic
 // block, duplicate the and to enable add.uw or shXadd.uw.
-bool RISCVCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
+bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
   if (!ST->hasStdExtZba())
     return false;
 
@@ -310,7 +310,7 @@ bool RISCVCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
   return MadeChange;
 }
 
-bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
+bool RISCVLateCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
   if (!ST->is64Bit())
     return false;
 
@@ -326,7 +326,7 @@ bool RISCVCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
   return optimizeAndUses(BO);
 }
 
-bool RISCVCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
+bool RISCVLateCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
   if (ST->hasStdExtZbb())
     return false;
 
@@ -352,7 +352,7 @@ bool RISCVCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
   return false;
 }
 
-void RISCVCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
+void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
@@ -431,7 +431,8 @@ void RISCVCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
   M->eraseFromParent();
 }
 
-void RISCVCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M, unsigned AVL) {
+void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M,
+                                                    unsigned AVL) {
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
@@ -491,7 +492,7 @@ void RISCVCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M, unsigned AVL) {
   M->eraseFromParent();
 }
 
-void RISCVCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
+void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
@@ -600,7 +601,7 @@ void RISCVCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   M->eraseFromParent();
 }
 
-bool RISCVCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
+bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
 
   switch (MI->getIntrinsicID()) {
   case Intrinsic::memcpy: {
@@ -633,7 +634,7 @@ bool RISCVCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   return true;
 }
 
-bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
+bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
 
@@ -671,11 +672,13 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   return MadeChange;
 }
 
-INITIALIZE_PASS_BEGIN(RISCVCodeGenPrepare, DEBUG_TYPE, PASS_NAME, false, false)
-INITIALIZE_PASS_END(RISCVCodeGenPrepare, DEBUG_TYPE, PASS_NAME, false, false)
+INITIALIZE_PASS_BEGIN(RISCVLateCodeGenPrepare, DEBUG_TYPE, PASS_NAME, false,
+                      false)
+INITIALIZE_PASS_END(RISCVLateCodeGenPrepare, DEBUG_TYPE, PASS_NAME, false,
+                    false)
 
-char RISCVCodeGenPrepare::ID = 0;
+char RISCVLateCodeGenPrepare::ID = 0;
 
-FunctionPass *llvm::createRISCVCodeGenPreparePass() {
-  return new RISCVCodeGenPrepare();
+FunctionPass *llvm::createRISCVLateCodeGenPreparePass() {
+  return new RISCVLateCodeGenPrepare();
 }

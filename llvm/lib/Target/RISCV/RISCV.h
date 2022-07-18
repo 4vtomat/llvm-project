@@ -31,8 +31,8 @@ class MachineOperand;
 class PassRegistry;
 
 #if SIFIVE_CUSTOMIZATION
-FunctionPass *createRISCVCodeGenPreparePass();
-void initializeRISCVCodeGenPreparePass(PassRegistry &);
+FunctionPass *createRISCVLateCodeGenPreparePass();
+void initializeRISCVLateCodeGenPreparePass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVTypePromotionPass(); // SIFIVE

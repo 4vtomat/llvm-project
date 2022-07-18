@@ -21,7 +21,6 @@ add_public_tablegen_target(RISCVCommonTableGen)
 add_llvm_target(RISCVCodeGen
   RISCVAsmPrinter.cpp
   RISCVCallLowering.cpp
-  SiFive_RISCVCodeGenPrepare.cpp
   RISCVMakeCompressible.cpp
   RISCVExpandAtomicPseudoInsts.cpp
   RISCVExpandPseudoInsts.cpp
@@ -34,6 +33,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
   RISCVISelLowering.cpp
+  SiFive_RISCVLateCodeGenPrepare.cpp
   RISCVLegalizerInfo.cpp
   RISCVMachineFunctionInfo.cpp
   RISCVMacroFusion.cpp
