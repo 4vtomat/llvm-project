@@ -8392,7 +8392,6 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
   Value *CanonicalIVStartValue;
   std::tie(State.CFG.PrevBB, CanonicalIVStartValue) =
       ILV.createVectorizedLoopSkeleton();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.preferPredicatedVectorOps();
@@ -8427,7 +8426,6 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     State.Plan->addLMULTypePair(State.LMULExp, WidestType);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   // Only use noalias metadata when using memory checks guaranteeing no overlap
   // across all iterations.
@@ -8445,7 +8443,6 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     State.LVer->prepareNoAliasMetadata();
   }
 
->>>>>>> upstream/main
   ILV.collectPoisonGeneratingRecipes(State);
 
   ILV.printDebugTracesAtStart();
