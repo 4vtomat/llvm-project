@@ -114,8 +114,8 @@ define <vscale x 1 x i64> @intrinsic_vmv.v.x_x_tu_nxv1i64(<vscale x 1 x i64> %0,
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    sw a1, 12(sp)
 ; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m1, tu, mu
 ; CHECK-NEXT:    addi a0, sp, 8
+; CHECK-NEXT:    vsetvli zero, a2, e64, m1, tu, mu
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

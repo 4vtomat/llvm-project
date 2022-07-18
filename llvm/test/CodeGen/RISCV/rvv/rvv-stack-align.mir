@@ -122,23 +122,13 @@
   ;
   ; RV64-LABEL: rvv_stack_align32:
   ; RV64:       # %bb.0:
-<<<<<<< HEAD
-  ; RV64-NEXT:    addi sp, sp, -48
-  ; RV64-NEXT:    sd ra, 40(sp) # 8-byte Folded Spill
-  ; RV64-NEXT:    sd s0, 32(sp) # 8-byte Folded Spill
-  ; RV64-NEXT:    addi s0, sp, 48
-  ; RV64-NEXT:    csrr t0, vlenb
-  ; RV64-NEXT:    slli t0, t0, 2
-  ; RV64-NEXT:    sub sp, sp, t0
-=======
   ; RV64-NEXT:    addi sp, sp, -80
   ; RV64-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
   ; RV64-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
   ; RV64-NEXT:    addi s0, sp, 80
-  ; RV64-NEXT:    csrr a0, vlenb
-  ; RV64-NEXT:    slli a0, a0, 2
-  ; RV64-NEXT:    sub sp, sp, a0
->>>>>>> upstream/main
+  ; RV64-NEXT:    csrr t0, vlenb
+  ; RV64-NEXT:    slli t0, t0, 2
+  ; RV64-NEXT:    sub sp, sp, t0
   ; RV64-NEXT:    andi sp, sp, -32
   ; RV64-NEXT:    addi a0, sp, 64
   ; RV64-NEXT:    addi a1, sp, 40

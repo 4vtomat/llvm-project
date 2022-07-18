@@ -48,17 +48,16 @@ declare <1 x float> @llvm.riscv.vcast.to.fixed.v1f32.nxv1f32(<vscale x 1 x float
 define i64 @test_vcast_to_fixed_128_f32mf2(<vscale x 1 x float> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.x.s a0, v8
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_to_fixed_128_f32mf2:
@@ -92,17 +91,16 @@ declare <2 x float> @llvm.riscv.vcast.to.fixed.v2f32.nxv1f32(<vscale x 1 x float
 define <vscale x 1 x float> @test_vcast_from_fixed_128_f32mf2(i64 %x.coerce) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_from_fixed_128_f32mf2:

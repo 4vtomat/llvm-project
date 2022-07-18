@@ -19,24 +19,23 @@ define i64 @test_vcast_to_fixed_64_f32m1(<vscale x 2 x float> %x) {
 ;
 ; VLS64-LABEL: test_vcast_to_fixed_64_f32m1:
 ; VLS64:       # %bb.0: # %entry
-; VLS64-NEXT:    addi sp, sp, -32
-; VLS64-NEXT:    .cfi_def_cfa_offset 32
+; VLS64-NEXT:    addi sp, sp, -16
+; VLS64-NEXT:    .cfi_def_cfa_offset 16
+; VLS64-NEXT:    mv a0, sp
 ; VLS64-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vse32.v v8, (a0)
 ; VLS64-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vle32.v v8, (a0)
 ; VLS64-NEXT:    vmv.x.s a0, v8
-; VLS64-NEXT:    addi sp, sp, 32
+; VLS64-NEXT:    addi sp, sp, 16
 ; VLS64-NEXT:    ret
 ;
 ; VLS32-LABEL: test_vcast_to_fixed_64_f32m1:
 ; VLS32:       # %bb.0: # %entry
 ; VLS32-NEXT:    addi sp, sp, -16
 ; VLS32-NEXT:    .cfi_def_cfa_offset 16
-; VLS32-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS32-NEXT:    addi a0, sp, 8
+; VLS32-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS32-NEXT:    vse32.v v8, (a0)
 ; VLS32-NEXT:    ld a0, 8(sp)
 ; VLS32-NEXT:    addi sp, sp, 16
@@ -60,30 +59,28 @@ define i128 @test_vcast_to_fixed_64_f32m2(<vscale x 4 x float> %x) {
 ;
 ; VLS64-LABEL: test_vcast_to_fixed_64_f32m2:
 ; VLS64:       # %bb.0: # %entry
-; VLS64-NEXT:    addi sp, sp, -32
-; VLS64-NEXT:    .cfi_def_cfa_offset 32
+; VLS64-NEXT:    addi sp, sp, -16
+; VLS64-NEXT:    .cfi_def_cfa_offset 16
+; VLS64-NEXT:    mv a0, sp
 ; VLS64-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vse32.v v8, (a0)
 ; VLS64-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vle32.v v8, (a0)
 ; VLS64-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; VLS64-NEXT:    vslidedown.vi v9, v8, 1
 ; VLS64-NEXT:    vmv.x.s a1, v9
 ; VLS64-NEXT:    vmv.x.s a0, v8
-; VLS64-NEXT:    addi sp, sp, 32
+; VLS64-NEXT:    addi sp, sp, 16
 ; VLS64-NEXT:    ret
 ;
 ; VLS32-LABEL: test_vcast_to_fixed_64_f32m2:
 ; VLS32:       # %bb.0: # %entry
-; VLS32-NEXT:    addi sp, sp, -32
-; VLS32-NEXT:    .cfi_def_cfa_offset 32
+; VLS32-NEXT:    addi sp, sp, -16
+; VLS32-NEXT:    .cfi_def_cfa_offset 16
+; VLS32-NEXT:    mv a0, sp
 ; VLS32-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; VLS32-NEXT:    addi a0, sp, 16
 ; VLS32-NEXT:    vse32.v v8, (a0)
 ; VLS32-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; VLS32-NEXT:    addi a0, sp, 16
 ; VLS32-NEXT:    vle32.v v8, (a0)
 ; VLS32-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
 ; VLS32-NEXT:    vslidedown.vi v9, v8, 3
@@ -101,7 +98,7 @@ define i128 @test_vcast_to_fixed_64_f32m2(<vscale x 4 x float> %x) {
 ; VLS32-NEXT:    slli a2, a2, 32
 ; VLS32-NEXT:    srli a2, a2, 32
 ; VLS32-NEXT:    or a0, a2, a0
-; VLS32-NEXT:    addi sp, sp, 32
+; VLS32-NEXT:    addi sp, sp, 16
 ; VLS32-NEXT:    ret
 entry:
   %0 = tail call <4 x float> @llvm.riscv.vcast.to.fixed.v4f32.nxv4f32(<vscale x 4 x float> %x)
@@ -120,16 +117,15 @@ define void @test_vcast_to_fixed_64_f32m4(<8 x float>* noalias nocapture sret(<8
 ;
 ; VLS-LABEL: test_vcast_to_fixed_64_f32m4:
 ; VLS:       # %bb.0: # %entry
-; VLS-NEXT:    addi sp, sp, -48
-; VLS-NEXT:    .cfi_def_cfa_offset 48
+; VLS-NEXT:    addi sp, sp, -32
+; VLS-NEXT:    .cfi_def_cfa_offset 32
+; VLS-NEXT:    mv a1, sp
 ; VLS-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
-; VLS-NEXT:    addi a1, sp, 16
 ; VLS-NEXT:    vse32.v v8, (a1)
 ; VLS-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; VLS-NEXT:    addi a1, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a1)
 ; VLS-NEXT:    vse32.v v8, (a0)
-; VLS-NEXT:    addi sp, sp, 48
+; VLS-NEXT:    addi sp, sp, 32
 ; VLS-NEXT:    ret
 entry:
   %0 = tail call <8 x float> @llvm.riscv.vcast.to.fixed.v8f32.nxv8f32(<vscale x 8 x float> %x)
@@ -148,16 +144,15 @@ define void @test_vcast_to_fixed_64_f32m8(<16 x float>* noalias nocapture sret(<
 ;
 ; VLS-LABEL: test_vcast_to_fixed_64_f32m8:
 ; VLS:       # %bb.0: # %entry
-; VLS-NEXT:    addi sp, sp, -80
-; VLS-NEXT:    .cfi_def_cfa_offset 80
+; VLS-NEXT:    addi sp, sp, -64
+; VLS-NEXT:    .cfi_def_cfa_offset 64
+; VLS-NEXT:    mv a1, sp
 ; VLS-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
-; VLS-NEXT:    addi a1, sp, 16
 ; VLS-NEXT:    vse32.v v8, (a1)
 ; VLS-NEXT:    vsetivli zero, 16, e32, m4, ta, mu
-; VLS-NEXT:    addi a1, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a1)
 ; VLS-NEXT:    vse32.v v8, (a0)
-; VLS-NEXT:    addi sp, sp, 80
+; VLS-NEXT:    addi sp, sp, 64
 ; VLS-NEXT:    ret
 entry:
   %0 = tail call <16 x float> @llvm.riscv.vcast.to.fixed.v16f32.nxv16f32(<vscale x 16 x float> %x)
@@ -176,17 +171,16 @@ define <vscale x 2 x float> @test_vcast_from_fixed_64_f32m1(i64 %x.coerce) {
 ;
 ; VLS64-LABEL: test_vcast_from_fixed_64_f32m1:
 ; VLS64:       # %bb.0: # %entry
-; VLS64-NEXT:    addi sp, sp, -32
-; VLS64-NEXT:    .cfi_def_cfa_offset 32
+; VLS64-NEXT:    addi sp, sp, -16
+; VLS64-NEXT:    .cfi_def_cfa_offset 16
 ; VLS64-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; VLS64-NEXT:    vmv.s.x v8, a0
+; VLS64-NEXT:    mv a0, sp
 ; VLS64-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vse32.v v8, (a0)
 ; VLS64-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vle32.v v8, (a0)
-; VLS64-NEXT:    addi sp, sp, 32
+; VLS64-NEXT:    addi sp, sp, 16
 ; VLS64-NEXT:    ret
 ;
 ; VLS32-LABEL: test_vcast_from_fixed_64_f32m1:
@@ -194,8 +188,8 @@ define <vscale x 2 x float> @test_vcast_from_fixed_64_f32m1(i64 %x.coerce) {
 ; VLS32-NEXT:    addi sp, sp, -16
 ; VLS32-NEXT:    .cfi_def_cfa_offset 16
 ; VLS32-NEXT:    sd a0, 8(sp)
-; VLS32-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS32-NEXT:    addi a0, sp, 8
+; VLS32-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
 ; VLS32-NEXT:    vle32.v v8, (a0)
 ; VLS32-NEXT:    addi sp, sp, 16
 ; VLS32-NEXT:    ret
@@ -218,44 +212,42 @@ define <vscale x 4 x float> @test_vcast_from_fixed_64_f32m2(i128 %x.coerce) {
 ;
 ; VLS64-LABEL: test_vcast_from_fixed_64_f32m2:
 ; VLS64:       # %bb.0: # %entry
-; VLS64-NEXT:    addi sp, sp, -32
-; VLS64-NEXT:    .cfi_def_cfa_offset 32
+; VLS64-NEXT:    addi sp, sp, -16
+; VLS64-NEXT:    .cfi_def_cfa_offset 16
 ; VLS64-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; VLS64-NEXT:    vmv.v.x v8, a1
 ; VLS64-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
 ; VLS64-NEXT:    vmv.s.x v8, a0
+; VLS64-NEXT:    mv a0, sp
 ; VLS64-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vse32.v v8, (a0)
 ; VLS64-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; VLS64-NEXT:    addi a0, sp, 16
 ; VLS64-NEXT:    vle32.v v8, (a0)
-; VLS64-NEXT:    addi sp, sp, 32
+; VLS64-NEXT:    addi sp, sp, 16
 ; VLS64-NEXT:    ret
 ;
 ; VLS32-LABEL: test_vcast_from_fixed_64_f32m2:
 ; VLS32:       # %bb.0: # %entry
-; VLS32-NEXT:    addi sp, sp, -48
-; VLS32-NEXT:    .cfi_def_cfa_offset 48
+; VLS32-NEXT:    addi sp, sp, -32
+; VLS32-NEXT:    .cfi_def_cfa_offset 32
 ; VLS32-NEXT:    srli a2, a0, 32
 ; VLS32-NEXT:    fmv.w.x ft0, a2
 ; VLS32-NEXT:    srli a2, a1, 32
 ; VLS32-NEXT:    fmv.w.x ft1, a2
 ; VLS32-NEXT:    fmv.w.x ft2, a0
 ; VLS32-NEXT:    fmv.w.x ft3, a1
-; VLS32-NEXT:    fsw ft3, 24(sp)
-; VLS32-NEXT:    fsw ft2, 16(sp)
-; VLS32-NEXT:    fsw ft1, 28(sp)
-; VLS32-NEXT:    fsw ft0, 20(sp)
+; VLS32-NEXT:    fsw ft3, 8(sp)
+; VLS32-NEXT:    fsw ft2, 0(sp)
+; VLS32-NEXT:    fsw ft1, 12(sp)
+; VLS32-NEXT:    fsw ft0, 4(sp)
+; VLS32-NEXT:    mv a0, sp
 ; VLS32-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; VLS32-NEXT:    addi a0, sp, 16
 ; VLS32-NEXT:    vle32.v v8, (a0)
-; VLS32-NEXT:    addi a0, sp, 32
+; VLS32-NEXT:    addi a0, sp, 16
 ; VLS32-NEXT:    vse32.v v8, (a0)
 ; VLS32-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; VLS32-NEXT:    addi a0, sp, 32
 ; VLS32-NEXT:    vle32.v v8, (a0)
-; VLS32-NEXT:    addi sp, sp, 48
+; VLS32-NEXT:    addi sp, sp, 32
 ; VLS32-NEXT:    ret
 entry:
   %0 = bitcast i128 %x.coerce to <4 x float>
@@ -274,16 +266,15 @@ define <vscale x 8 x float> @test_vcast_from_fixed_64_f32m4(<8 x float>* nocaptu
 ;
 ; VLS-LABEL: test_vcast_from_fixed_64_f32m4:
 ; VLS:       # %bb.0: # %entry
-; VLS-NEXT:    addi sp, sp, -48
-; VLS-NEXT:    .cfi_def_cfa_offset 48
+; VLS-NEXT:    addi sp, sp, -32
+; VLS-NEXT:    .cfi_def_cfa_offset 32
 ; VLS-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    addi a0, sp, 16
+; VLS-NEXT:    mv a0, sp
 ; VLS-NEXT:    vse32.v v8, (a0)
 ; VLS-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
-; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    addi sp, sp, 48
+; VLS-NEXT:    addi sp, sp, 32
 ; VLS-NEXT:    ret
 entry:
   %x = load <8 x float>, <8 x float>* %0, align 32
@@ -302,16 +293,15 @@ define <vscale x 16 x float> @test_vcast_from_fixed_64_f32m8(<16 x float>* nocap
 ;
 ; VLS-LABEL: test_vcast_from_fixed_64_f32m8:
 ; VLS:       # %bb.0: # %entry
-; VLS-NEXT:    addi sp, sp, -80
-; VLS-NEXT:    .cfi_def_cfa_offset 80
+; VLS-NEXT:    addi sp, sp, -64
+; VLS-NEXT:    .cfi_def_cfa_offset 64
 ; VLS-NEXT:    vsetivli zero, 16, e32, m4, ta, mu
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    addi a0, sp, 16
+; VLS-NEXT:    mv a0, sp
 ; VLS-NEXT:    vse32.v v8, (a0)
 ; VLS-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
-; VLS-NEXT:    addi a0, sp, 16
 ; VLS-NEXT:    vle32.v v8, (a0)
-; VLS-NEXT:    addi sp, sp, 80
+; VLS-NEXT:    addi sp, sp, 64
 ; VLS-NEXT:    ret
 entry:
   %x = load <16 x float>, <16 x float>* %0, align 64
@@ -324,19 +314,18 @@ declare <vscale x 16 x float> @llvm.riscv.vcast.from.fixed.nxv16f32.v16f32(<16 x
 define i128 @test_vcast_to_fixed_128_f32m1(<vscale x 2 x float> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v10, v8, 1
 ; CHECK-NEXT:    vmv.x.s a1, v10
 ; CHECK-NEXT:    vmv.x.s a0, v8
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 ;
 ; VLS64-LABEL: test_vcast_to_fixed_128_f32m1:
@@ -377,16 +366,15 @@ declare <4 x float> @llvm.riscv.vcast.to.fixed.v4f32.nxv2f32(<vscale x 2 x float
 define void @test_vcast_to_fixed_128_f32m2(<8 x float>* noalias nocapture sret(<8 x float>) align 32 %agg.result, <vscale x 4 x float> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -48
-; CHECK-NEXT:    .cfi_def_cfa_offset 48
+; CHECK-NEXT:    addi sp, sp, -32
+; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    mv a1, sp
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 48
+; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_to_fixed_128_f32m2:
@@ -405,16 +393,15 @@ declare <8 x float> @llvm.riscv.vcast.to.fixed.v8f32.nxv4f32(<vscale x 4 x float
 define void @test_vcast_to_fixed_128_f32m4(<16 x float>* noalias nocapture sret(<16 x float>) align 64 %agg.result, <vscale x 8 x float> %x) {
 ; CHECK-LABEL: test_vcast_to_fixed_128_f32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
+; CHECK-NEXT:    addi sp, sp, -64
+; CHECK-NEXT:    .cfi_def_cfa_offset 64
+; CHECK-NEXT:    mv a1, sp
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
-; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 80
+; CHECK-NEXT:    addi sp, sp, 64
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_to_fixed_128_f32m4:
@@ -434,19 +421,18 @@ declare <16 x float> @llvm.riscv.vcast.to.fixed.v16f32.nxv8f32(<vscale x 8 x flo
 define <vscale x 2 x float> @test_vcast_from_fixed_128_f32m1(i128 %x.coerce) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -32
-; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, tu, mu
 ; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 32
+; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 ;
 ; VLS64-LABEL: test_vcast_from_fixed_128_f32m1:
@@ -459,22 +445,22 @@ define <vscale x 2 x float> @test_vcast_from_fixed_128_f32m1(i128 %x.coerce) {
 ;
 ; VLS32-LABEL: test_vcast_from_fixed_128_f32m1:
 ; VLS32:       # %bb.0: # %entry
-; VLS32-NEXT:    addi sp, sp, -32
-; VLS32-NEXT:    .cfi_def_cfa_offset 32
+; VLS32-NEXT:    addi sp, sp, -16
+; VLS32-NEXT:    .cfi_def_cfa_offset 16
 ; VLS32-NEXT:    srli a2, a0, 32
 ; VLS32-NEXT:    fmv.w.x ft0, a2
 ; VLS32-NEXT:    srli a2, a1, 32
 ; VLS32-NEXT:    fmv.w.x ft1, a2
 ; VLS32-NEXT:    fmv.w.x ft2, a0
 ; VLS32-NEXT:    fmv.w.x ft3, a1
-; VLS32-NEXT:    fsw ft3, 24(sp)
-; VLS32-NEXT:    fsw ft2, 16(sp)
-; VLS32-NEXT:    fsw ft1, 28(sp)
-; VLS32-NEXT:    fsw ft0, 20(sp)
+; VLS32-NEXT:    fsw ft3, 8(sp)
+; VLS32-NEXT:    fsw ft2, 0(sp)
+; VLS32-NEXT:    fsw ft1, 12(sp)
+; VLS32-NEXT:    fsw ft0, 4(sp)
+; VLS32-NEXT:    mv a0, sp
 ; VLS32-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; VLS32-NEXT:    addi a0, sp, 16
 ; VLS32-NEXT:    vle32.v v8, (a0)
-; VLS32-NEXT:    addi sp, sp, 32
+; VLS32-NEXT:    addi sp, sp, 16
 ; VLS32-NEXT:    ret
 entry:
   %0 = bitcast i128 %x.coerce to <4 x float>
@@ -487,16 +473,15 @@ declare <vscale x 2 x float> @llvm.riscv.vcast.from.fixed.nxv2f32.v4f32(<4 x flo
 define <vscale x 4 x float> @test_vcast_from_fixed_128_f32m2(<8 x float>* nocapture readonly %0) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -48
-; CHECK-NEXT:    .cfi_def_cfa_offset 48
+; CHECK-NEXT:    addi sp, sp, -32
+; CHECK-NEXT:    .cfi_def_cfa_offset 32
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 48
+; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_from_fixed_128_f32m2:
@@ -515,16 +500,15 @@ declare <vscale x 4 x float> @llvm.riscv.vcast.from.fixed.nxv4f32.v8f32(<8 x flo
 define <vscale x 8 x float> @test_vcast_from_fixed_128_f32m4(<16 x float>* nocapture readonly %0) {
 ; CHECK-LABEL: test_vcast_from_fixed_128_f32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
+; CHECK-NEXT:    addi sp, sp, -64
+; CHECK-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, mu
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi sp, sp, 80
+; CHECK-NEXT:    addi sp, sp, 64
 ; CHECK-NEXT:    ret
 ;
 ; VLS-LABEL: test_vcast_from_fixed_128_f32m4:
