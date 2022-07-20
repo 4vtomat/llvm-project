@@ -343,9 +343,21 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   } else {
     setOperationAction({ISD::CTTZ, ISD::CTLZ, ISD::CTPOP}, XLenVT, Expand);
 
+#if SIFIVE_CUSTOMIZATION
+    // We could use PseudoCCSUBW to implement (SEXT_INREG (ABS (X)), i32)), if X
+    // has more than 32 sign bits.
+    if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
+#else
     if (Subtarget.is64Bit())
+#endif // SIFIVE_CUSTOMIZATION
       setOperationAction(ISD::ABS, MVT::i32, Custom);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // We could use PseudoCCSUB to implement ABS.
+  if (Subtarget.hasShortForwardBranchOpt())
+    setOperationAction(ISD::ABS, XLenVT, Legal);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (Subtarget.hasStdExtZbt()) {
     setOperationAction({ISD::FSHL, ISD::FSHR}, XLenVT, Custom);
@@ -9570,9 +9582,11 @@ performSIGN_EXTEND_INREGCombine(SDNode *N, SelectionDAG &DAG,
   // NOTE: (i64 (sext_inreg (abs X), i32)) can also be created for
   // (i64 (ashr (shl (abs X), 32), 32)) without any type legalization so
   // we can't assume that X has 33 sign bits. We must check.
-  if (Subtarget.hasStdExtZbb() && Subtarget.is64Bit() &&
-      Src.getOpcode() == ISD::ABS && Src.hasOneUse() && VT == MVT::i64 &&
-      cast<VTSDNode>(N->getOperand(1))->getVT() == MVT::i32 &&
+#if SIFIVE_CUSTOMIZATION
+  if (!Subtarget.hasShortForwardBranchOpt() && Subtarget.hasStdExtZbb() &&
+      Subtarget.is64Bit() && Src.getOpcode() == ISD::ABS && Src.hasOneUse() &&
+      VT == MVT::i64 && cast<VTSDNode>(N->getOperand(1))->getVT() == MVT::i32 &&
+#endif // SIFIVE_CUSTOMIZATION
       DAG.ComputeNumSignBits(Src.getOperand(0)) > 32) {
     SDLoc DL(N);
     SDValue Freeze = DAG.getFreeze(Src.getOperand(0));

@@ -1217,6 +1217,9 @@ def anyext_oneuse : unop_oneuse<anyext>;
 def fpext_oneuse  : unop_oneuse<any_fpextend>;
 
 // SIFIVE
+def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
+  return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32;
+}]>;
 def nonnegative_33signbits_node : PatLeaf<(i64 GPR:$src), [{
   return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32 &&
          CurDAG->computeKnownBits(SDValue(N, 0)).isNonNegative();
@@ -1904,6 +1907,12 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+def : Pat<(XLenVT (abs GPR:$rs1)),
+          (PseudoCCSUB GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
+          (PseudoCCSUBW GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+#endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // Standard extensions
 //===----------------------------------------------------------------------===//
