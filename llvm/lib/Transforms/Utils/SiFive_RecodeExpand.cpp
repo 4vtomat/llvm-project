@@ -168,6 +168,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
   case Intrinsic::aarch64_neon_vsli:
+  case Intrinsic::aarch64_neon_vsri:
     return true;
   }
   return false;
@@ -824,6 +825,27 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateShl(
                 II->getArgOperand(1),
                 ConstantInt::get(II->getArgOperand(1)->getType(), Shift))));
+        break;
+      }
+      case Intrinsic::aarch64_neon_vsri: {
+        FixedVectorType *VecTy =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        uint64_t ShiftAmount =
+            cast<ConstantInt>(II->getArgOperand(2))->getZExtValue();
+        unsigned ScalarSizeInBits = VecTy->getScalarSizeInBits();
+        // (II->getArgOperand(0) & (-1 << (ScalarSizeInBits - ShiftAmount))) |
+        //     (II->getArgOperand(1) >> ShiftAmount)
+        if (ShiftAmount == ScalarSizeInBits) {
+          II->replaceAllUsesWith(II->getArgOperand(0));
+          break;
+        }
+        Value *RShift = Builder.CreateLShr(
+            II->getArgOperand(1), ConstantInt::get(VecTy, ShiftAmount));
+        Value *Left = Builder.CreateAnd(
+            II->getArgOperand(0),
+            ConstantInt::get(VecTy, static_cast<uint64_t>(-1)
+                                        << (ScalarSizeInBits - ShiftAmount)));
+        II->replaceAllUsesWith(Builder.CreateOr(Left, RShift));
         break;
       }
       default:
