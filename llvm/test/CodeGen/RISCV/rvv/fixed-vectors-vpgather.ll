@@ -2495,12 +2495,6 @@ define <32 x double> @vpgather_baseidx_sext_v32i32_v32f64(double* %base, <32 x i
 ;
 ; RV64-LABEL: vpgather_baseidx_sext_v32i32_v32f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vmv1r.v v24, v0
 ; RV64-NEXT:    li a2, 0
 ; RV64-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
@@ -2512,6 +2506,12 @@ define <32 x double> @vpgather_baseidx_sext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:  # %bb.1:
 ; RV64-NEXT:    mv a2, a3
 ; RV64-NEXT:  .LBB94_2:
+; RV64-NEXT:    addi sp, sp, -16
+; RV64-NEXT:    .cfi_def_cfa_offset 16
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vsext.vf2 v0, v8
 ; RV64-NEXT:    addi a3, sp, 16
 ; RV64-NEXT:    vs8r.v v0, (a3) # Unknown-size Folded Spill
@@ -2583,12 +2583,6 @@ define <32 x double> @vpgather_baseidx_zext_v32i32_v32f64(double* %base, <32 x i
 ;
 ; RV64-LABEL: vpgather_baseidx_zext_v32i32_v32f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vmv1r.v v24, v0
 ; RV64-NEXT:    li a2, 0
 ; RV64-NEXT:    vsetivli zero, 16, e32, m8, ta, mu
@@ -2600,6 +2594,12 @@ define <32 x double> @vpgather_baseidx_zext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:  # %bb.1:
 ; RV64-NEXT:    mv a2, a3
 ; RV64-NEXT:  .LBB95_2:
+; RV64-NEXT:    addi sp, sp, -16
+; RV64-NEXT:    .cfi_def_cfa_offset 16
+; RV64-NEXT:    csrr t0, vlenb
+; RV64-NEXT:    slli t0, t0, 3
+; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vzext.vf2 v0, v8
 ; RV64-NEXT:    addi a3, sp, 16
 ; RV64-NEXT:    vs8r.v v0, (a3) # Unknown-size Folded Spill
