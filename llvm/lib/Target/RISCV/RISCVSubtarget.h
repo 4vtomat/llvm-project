@@ -117,6 +117,7 @@ private:
   bool HasFuseIndexedLoad = false;    // SIFIVE
   bool HasFuseZbaLoad = false;        // SIFIVE
   bool HasFuseArithEqZ = false;       // SIFIVE
+  bool HasFuseBFX = false;            // SIFIVE
   bool DontSinkSplatOperands = false; // SIFIVE
   bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned DLen = 0; // SIFIVE
@@ -235,6 +236,7 @@ public:
   bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
   bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
   bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
+  bool hasFuseBFX() const { return HasFuseBFX; }
   bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
   bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
@@ -276,7 +278,8 @@ public:
 
   bool hasMacroFusion() const {
 #if SIFIVE_CUSTOMIZATION
-    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ();
+    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
+           hasFuseBFX();
 #endif // SIFIVE_CUSTOMIZATION
   }
 

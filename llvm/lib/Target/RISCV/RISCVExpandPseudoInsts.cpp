@@ -68,6 +68,9 @@ private:
   bool expandCCOp(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                   MachineBasicBlock::iterator &NextMBBI);
   bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool expandBitfieldExtract(MachineBasicBlock &MBB,
+                             MachineBasicBlock::iterator MBBI,
+                             unsigned ShOpc);
 #endif // SIFIVE_CUSTOMIZATION
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
@@ -173,6 +176,10 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandCCOp(MBB, MBBI, NextMBBI);
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
+  case RISCV::PseudoUBFX:
+    return expandBitfieldExtract(MBB, MBBI, RISCV::SRLI);
+  case RISCV::PseudoSBFX:
+    return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
@@ -467,6 +474,29 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
 bool RISCVExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
                                        MachineBasicBlock::iterator MBBI) {
   TII->expandLIsimm32(MBB, MBBI);
+  return true;
+}
+
+bool RISCVExpandPseudo::expandBitfieldExtract(
+    MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI, unsigned ShOpc) {
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  Register DestReg = MI.getOperand(0).getReg();
+  bool DstIsDead = MI.getOperand(0).isDead();
+  bool Renamable = MI.getOperand(0).isRenamable();
+
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::SLLI))
+      .addReg(DestReg, RegState::Define | getRenamableRegState(Renamable))
+      .add(MI.getOperand(1))
+      .add(MI.getOperand(2));
+  BuildMI(MBB, MBBI, DL, TII->get(ShOpc))
+      .addReg(DestReg, RegState::Define | getDeadRegState(DstIsDead) |
+                           getRenamableRegState(Renamable))
+      .addReg(DestReg, RegState::Kill | getRenamableRegState(Renamable))
+      .add(MI.getOperand(3));
+
+  MI.eraseFromParent();
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION

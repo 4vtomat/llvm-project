@@ -765,6 +765,18 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     if (TrailingOnes == 32 || ShAmt >= TrailingOnes)
       break;
     unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
+#if SIFIVE_CUSTOMIZATION
+    if (Subtarget->hasFuseBFX()) {
+      // Emit as a UBFX pseudoinstruction which will be expanded to a
+      // shift pair later.
+      SDNode *UBFX = CurDAG->getMachineNode(
+          RISCV::PseudoUBFX, DL, XLenVT, N0->getOperand(0),
+          CurDAG->getTargetConstant(LShAmt, DL, XLenVT),
+          CurDAG->getTargetConstant(LShAmt + ShAmt, DL, XLenVT));
+      ReplaceNode(Node, UBFX);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     SDNode *SLLI =
         CurDAG->getMachineNode(RISCV::SLLI, DL, VT, N0->getOperand(0),
                                CurDAG->getTargetConstant(LShAmt, DL, VT));
@@ -787,15 +799,70 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     if (!N1C)
       break;
     SDValue N0 = Node->getOperand(0);
+
+#if SIFIVE_CUSTOMIZATION
+    if (Subtarget->hasFuseBFX() && N0.getOpcode() == ISD::SHL &&
+        N0.hasOneUse() && isa<ConstantSDNode>(N0.getOperand(1))) {
+      unsigned RShAmt = N1C->getZExtValue();
+      unsigned LShAmt = N0.getConstantOperandVal(1);
+      // LShAmt of 32 is SRAIW.
+      if (RShAmt >= LShAmt && LShAmt != 32) {
+        // Emit as a SBFX pseudoinstruction which will be expanded to a
+        // shift pair later.
+        SDNode *SBFX = CurDAG->getMachineNode(
+            RISCV::PseudoSBFX, DL, VT, N0.getOperand(0),
+            CurDAG->getTargetConstant(LShAmt, DL, VT),
+            CurDAG->getTargetConstant(RShAmt, DL, VT));
+        ReplaceNode(Node, SBFX);
+        return;
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
+
     if (N0.getOpcode() != ISD::SIGN_EXTEND_INREG || !N0.hasOneUse())
       break;
     unsigned ShAmt = N1C->getZExtValue();
     unsigned ExtSize =
         cast<VTSDNode>(N0.getOperand(1))->getVT().getSizeInBits();
+#if SIFIVE_CUSTOMIZATION
+    // Look for (sraiw (slliw X, C1), C2) where C1 > C2. We can convert to
+    // SBFX by increasing both shift amounts by 32.
+    // FIXME: Maybe a missing canonicalization in DAGCombine.
+    if (ExtSize == 32 && ShAmt < 32 && Subtarget->hasFuseBFX() &&
+        N0.getOperand(0).getOpcode() == ISD::SHL &&
+        N0.getOperand(0).hasOneUse() &&
+        isa<ConstantSDNode>(N0.getOperand(0).getOperand(1))) {
+      unsigned LShAmt = N0.getOperand(0).getConstantOperandVal(1);
+      if (LShAmt < 32 && ShAmt >= LShAmt) {
+        // Emit as a SBFX pseudoinstruction which will be expanded to a
+        // shift pair later.
+        SDNode *SBFX = CurDAG->getMachineNode(
+            RISCV::PseudoSBFX, DL, VT, N0.getOperand(0).getOperand(0),
+            CurDAG->getTargetConstant(LShAmt + 32, DL, VT),
+            CurDAG->getTargetConstant(ShAmt + 32, DL, VT));
+        ReplaceNode(Node, SBFX);
+        return;
+      }
+    }
+#endif
+
     // ExtSize of 32 should use sraiw via tablegen pattern.
     if (ExtSize >= 32 || ShAmt >= ExtSize)
       break;
     unsigned LShAmt = Subtarget->getXLen() - ExtSize;
+#if SIFIVE_CUSTOMIZATION
+    if (Subtarget->hasFuseBFX()) {
+      // Emit as a SBFX pseudoinstruction which will be expanded to a
+      // shift pair later.
+      SDNode *SBFX = CurDAG->getMachineNode(
+          RISCV::PseudoSBFX, DL, VT, N0.getOperand(0),
+          CurDAG->getTargetConstant(LShAmt, DL, VT),
+          CurDAG->getTargetConstant(LShAmt + ShAmt, DL, VT));
+      ReplaceNode(Node, SBFX);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     SDNode *SLLI =
         CurDAG->getMachineNode(RISCV::SLLI, DL, VT, N0->getOperand(0),
                                CurDAG->getTargetConstant(LShAmt, DL, VT));
@@ -885,6 +952,18 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
         // Also Skip if we can use bexti.
         Skip |= Subtarget->hasStdExtZbs() && C3 == XLen - 1;
         if (OneUseOrZExtW && !Skip) {
+#if SIFIVE_CUSTOMIZATION
+          if (Subtarget->hasFuseBFX()) {
+            // Emit as a UBFX pseudoinstruction which will be expanded to a
+            // shift pair later.
+            SDNode *UBFX = CurDAG->getMachineNode(
+                RISCV::PseudoUBFX, DL, XLenVT, X,
+                CurDAG->getTargetConstant(C3 - C2, DL, XLenVT),
+                CurDAG->getTargetConstant(C3, DL, XLenVT));
+            ReplaceNode(Node, UBFX);
+            return;
+          }
+#endif // SIFIVE_CUSTOMIZATION
           SDNode *SLLI = CurDAG->getMachineNode(
               RISCV::SLLI, DL, XLenVT, X,
               CurDAG->getTargetConstant(C3 - C2, DL, XLenVT));
