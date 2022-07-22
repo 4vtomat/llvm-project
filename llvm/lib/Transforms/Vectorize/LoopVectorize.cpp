@@ -9517,7 +9517,8 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 // loop.
 #if SIFIVE_CUSTOMIZATION
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
-                                  bool HasNUW, bool IsVPlanNative,
+                                  bool HasNUW,
+                                  bool UseLaneMaskForLoopControlFlow,
                                   bool NeedEVL) {
 #else
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
@@ -9544,15 +9545,11 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
   EB->appendRecipe(CanonicalIVIncrement);
 
-  auto *BranchOnCount =
-      new VPInstruction(VPInstruction::BranchOnCount,
-                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
-  EB->appendRecipe(BranchOnCount);
 #if SIFIVE_CUSTOMIZATION
-  if (NeedEVL)
-    Plan.createEVL();
+  if (!NeedEVL && UseLaneMaskForLoopControlFlow) {
 #else
   if (UseLaneMaskForLoopControlFlow) {
+#endif // SIFIVE_CUSTOMIZATION
     // Create the active lane mask instruction in the vplan preheader.
     VPBasicBlock *Preheader = Plan.getEntry()->getEntryBasicBlock();
 
@@ -9605,6 +9602,10 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
         {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
     EB->appendRecipe(BranchBack);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (NeedEVL)
+    Plan.createEVL();
 #endif // SIFIVE_CUSTOMIZATION
 }
 
@@ -9708,7 +9709,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(),
       DLInst ? DLInst->getDebugLoc() : DebugLoc(), !CM.foldTailByMasking(),
-      false, CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
+      CM.useActiveLaneMaskForControlFlow(),
+      CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
@@ -10031,7 +10033,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
 
 #if SIFIVE_CUSTOMIZATION
   addCanonicalIVRecipes(
-      *Plan, Legal->getWidestInductionType(), DebugLoc(), true, true,
+      *Plan, Legal->getWidestInductionType(), DebugLoc(), true,
+      CM.useActiveLaneMaskForControlFlow(),
       CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
