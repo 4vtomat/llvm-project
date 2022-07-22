@@ -23246,8 +23246,11 @@ SDValue DAGCombiner::visitVPFADDForVPFMACombine(SDNode *N) {
 
   // Is the node an VP_FMUL and contractable either due to global flags or
   // SDNodeFlags.
-  auto isContractableVPFMUL = [AllowFusionGlobally](SDValue N) {
+  auto isContractableVPFMUL = [=](SDValue N) {
     if (N.getOpcode() != ISD::VP_FMUL)
+      return false;
+    // Check using same mask and vl with VP_ADD node.
+    if (N.getOperand(2) != Mask || N.getOperand(3) != VL)
       return false;
     return AllowFusionGlobally || N->getFlags().hasAllowContract();
   };

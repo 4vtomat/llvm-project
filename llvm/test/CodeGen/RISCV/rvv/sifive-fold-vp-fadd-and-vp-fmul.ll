@@ -31,3 +31,35 @@ define <vscale x 1 x double> @test2(<vscale x 1 x double> %x, <vscale x 1 x doub
   %2 = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> %z, <vscale x 1 x double> %1, <vscale x 1 x i1> %m, i32 %vl)
   ret <vscale x 1 x double> %2
 }
+
+define <vscale x 1 x double> @test3(<vscale x 1 x double> %x, <vscale x 1 x double> %y, <vscale x 1 x double> %z, <vscale x 1 x i1> %m1, <vscale x 1 x i1> %m2, i32 %vl) {
+; CHECK-LABEL: test3:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v11
+; CHECK-NEXT:    vfadd.vv v8, v10, v8, v0.t
+; CHECK-NEXT:    ret
+  %1 = call fast <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> %x, <vscale x 1 x double> %y, <vscale x 1 x i1> %m1, i32 %vl)
+  %2 = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> %z, <vscale x 1 x double> %1, <vscale x 1 x i1> %m2, i32 %vl)
+  ret <vscale x 1 x double> %2
+}
+
+define <vscale x 1 x double> @test4(<vscale x 1 x double> %x, <vscale x 1 x double> %y, <vscale x 1 x double> %z, <vscale x 1 x i1> %m, i32 %vl1, i32 %vl2) {
+; CHECK-LABEL: test4:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    slli a0, a1, 32
+; CHECK-NEXT:    srli a0, a0, 32
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vfadd.vv v8, v10, v8, v0.t
+; CHECK-NEXT:    ret
+  %1 = call fast <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> %x, <vscale x 1 x double> %y, <vscale x 1 x i1> %m, i32 %vl1)
+  %2 = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> %z, <vscale x 1 x double> %1, <vscale x 1 x i1> %m, i32 %vl2)
+  ret <vscale x 1 x double> %2
+}
