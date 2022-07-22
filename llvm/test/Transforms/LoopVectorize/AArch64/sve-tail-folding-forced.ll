@@ -11,22 +11,22 @@ target triple = "aarch64-unknown-linux-gnu"
 ; VPLANS-LABEL: Checking a loop in 'simple_memset'
 ; VPLANS:      VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF>=1' {
 ; VPLANS-NEXT: vector.ph:
-; VPLANS-NEXT:     EMIT vp<%2> = VF * Part +  ir<0>
-; VPLANS-NEXT:     EMIT vp<%3> = active lane mask vp<%2> <badref>
+; VPLANS-NEXT:     EMIT vp<%3> = VF * Part +  ir<0>
+; VPLANS-NEXT:     EMIT vp<%4> = active lane mask vp<%3> vp<%2>
 ; VPLANS-NEXT: Successor(s): vector loop
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
-; VPLANS-NEXT:     EMIT vp<%4> = CANONICAL-INDUCTION
-; VPLANS-NEXT:     ACTIVE-LANE-MASK-PHI vp<%5> = phi vp<%3>, vp<%10>
-; VPLANS-NEXT:     vp<%6>    = SCALAR-STEPS vp<%4>, ir<0>, ir<1>
-; VPLANS-NEXT:     CLONE ir<%gep> = getelementptr ir<%ptr>, vp<%6>
-; VPLANS-NEXT:     WIDEN store ir<%gep>, ir<%val>, vp<%5>
-; VPLANS-NEXT:     EMIT vp<%8> = VF * UF +  vp<%4>
-; VPLANS-NEXT:     EMIT vp<%9> = VF * Part +  vp<%8>
-; VPLANS-NEXT:     EMIT vp<%10> = active lane mask vp<%9> <badref>
-; VPLANS-NEXT:     EMIT vp<%11> = not vp<%10>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%11>
+; VPLANS-NEXT:     EMIT vp<%5> = CANONICAL-INDUCTION
+; VPLANS-NEXT:     ACTIVE-LANE-MASK-PHI vp<%6> = phi vp<%4>, vp<%11>
+; VPLANS-NEXT:     vp<%7>    = SCALAR-STEPS vp<%5>, ir<0>, ir<1>
+; VPLANS-NEXT:     CLONE ir<%gep> = getelementptr ir<%ptr>, vp<%7>
+; VPLANS-NEXT:     WIDEN store ir<%gep>, ir<%val>, vp<%6>
+; VPLANS-NEXT:     EMIT vp<%9> = VF * UF +  vp<%5>
+; VPLANS-NEXT:     EMIT vp<%10> = VF * Part +  vp<%9>
+; VPLANS-NEXT:     EMIT vp<%11> = active lane mask vp<%10> vp<%2>
+; VPLANS-NEXT:     EMIT vp<%12> = not vp<%11>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<%12>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 
