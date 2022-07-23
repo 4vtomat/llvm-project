@@ -892,8 +892,8 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
             // shift pair later.
             SDNode *UBFX = CurDAG->getMachineNode(
                 RISCV::PseudoUBFX, DL, XLenVT, X,
-                CurDAG->getTargetConstant(C3 - C2, DL, XLenVT),
-                CurDAG->getTargetConstant(C3, DL, XLenVT));
+                CurDAG->getTargetConstant(Leading - C2, DL, XLenVT),
+                CurDAG->getTargetConstant(Leading, DL, XLenVT));
             ReplaceNode(Node, UBFX);
             return;
           }
