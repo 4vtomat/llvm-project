@@ -901,14 +901,14 @@ define <16 x i64> @sextload_v16i16_v16i64(<16 x i16>* %x) {
 ; LMULMAX1-NEXT:    vslidedown.vi v8, v12, 4
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; LMULMAX1-NEXT:    vsext.vf4 v10, v8
-; LMULMAX1-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
-; LMULMAX1-NEXT:    vslidedown.vi v15, v16, 4
-; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; LMULMAX1-NEXT:    vsext.vf4 v14, v15
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; LMULMAX1-NEXT:    vslidedown.vi v11, v12, 2
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; LMULMAX1-NEXT:    vsext.vf4 v9, v11
+; LMULMAX1-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
+; LMULMAX1-NEXT:    vslidedown.vi v15, v16, 4
+; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; LMULMAX1-NEXT:    vsext.vf4 v14, v15
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; LMULMAX1-NEXT:    vslidedown.vi v8, v8, 2
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
@@ -951,14 +951,14 @@ define <16 x i64> @zextload_v16i16_v16i64(<16 x i16>* %x) {
 ; LMULMAX1-NEXT:    vslidedown.vi v8, v12, 4
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; LMULMAX1-NEXT:    vzext.vf4 v10, v8
-; LMULMAX1-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
-; LMULMAX1-NEXT:    vslidedown.vi v15, v16, 4
-; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; LMULMAX1-NEXT:    vzext.vf4 v14, v15
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; LMULMAX1-NEXT:    vslidedown.vi v11, v12, 2
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; LMULMAX1-NEXT:    vzext.vf4 v9, v11
+; LMULMAX1-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
+; LMULMAX1-NEXT:    vslidedown.vi v15, v16, 4
+; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; LMULMAX1-NEXT:    vzext.vf4 v14, v15
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
 ; LMULMAX1-NEXT:    vslidedown.vi v8, v8, 2
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e64, m1, ta, mu

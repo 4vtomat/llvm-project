@@ -1216,6 +1216,9 @@ def anyext_oneuse : unop_oneuse<anyext>;
 def fpext_oneuse  : unop_oneuse<any_fpextend>;
 
 // SIFIVE
+def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
+  return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32;
+}]>;
 def nonnegative_33signbits_node : PatLeaf<(i64 GPR:$src), [{
   return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32 &&
          CurDAG->computeKnownBits(SDValue(N, 0)).isNonNegative();
@@ -1481,6 +1484,22 @@ def PseudoCCSRAIW : Pseudo<(outs GPR:$dst),
                     Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
 }
 } // Constraints = "$dst = $falsev"
+
+// Macrofusion pseudo for (srli (slli X, $shamt1), $shamt2)
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
+    isPseudo = 1 in {
+def PseudoUBFX : Pseudo<(outs GPR:$dst),
+                        (ins GPR:$src, uimmlog2xlen:$shamt1, uimmlog2xlen:$shamt2), []>,
+                 Sched<[WriteIALU, ReadIALU]>;
+// Macrofusion pseudo for (srai (slli X, $shamt1), $shamt2)
+def PseudoSBFX : Pseudo<(outs GPR:$dst),
+                        (ins GPR:$src, uimmlog2xlen:$shamt1, uimmlog2xlen:$shamt2), []>,
+                 Sched<[WriteIALU, ReadIALU]>;
+}
+
+let Predicates = [HasFuseBFX] in
+def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
+          (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
 
 let usesCustomInserter = 1 in
@@ -1903,6 +1922,12 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+def : Pat<(XLenVT (abs GPR:$rs1)),
+          (PseudoCCSUB GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
+          (PseudoCCSUBW GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+#endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // Standard extensions
 //===----------------------------------------------------------------------===//

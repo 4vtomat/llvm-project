@@ -253,13 +253,13 @@ define void @fp2si_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
 ; LMULMAX1-NEXT:    vfwcvt.rtz.x.f.v v12, v10
 ; LMULMAX1-NEXT:    vfwcvt.rtz.x.f.v v10, v8
 ; LMULMAX1-NEXT:    vfwcvt.rtz.x.f.v v8, v9
-; LMULMAX1-NEXT:    addi a0, a1, 16
-; LMULMAX1-NEXT:    vse64.v v12, (a0)
 ; LMULMAX1-NEXT:    vse64.v v8, (a1)
-; LMULMAX1-NEXT:    addi a0, a1, 48
-; LMULMAX1-NEXT:    vse64.v v11, (a0)
 ; LMULMAX1-NEXT:    addi a0, a1, 32
 ; LMULMAX1-NEXT:    vse64.v v10, (a0)
+; LMULMAX1-NEXT:    addi a0, a1, 16
+; LMULMAX1-NEXT:    vse64.v v12, (a0)
+; LMULMAX1-NEXT:    addi a0, a1, 48
+; LMULMAX1-NEXT:    vse64.v v11, (a0)
 ; LMULMAX1-NEXT:    ret
   %a = load <8 x float>, <8 x float>* %x
   %d = fptosi <8 x float> %a to <8 x i64>
@@ -292,13 +292,13 @@ define void @fp2ui_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
 ; LMULMAX1-NEXT:    vfwcvt.rtz.xu.f.v v12, v10
 ; LMULMAX1-NEXT:    vfwcvt.rtz.xu.f.v v10, v8
 ; LMULMAX1-NEXT:    vfwcvt.rtz.xu.f.v v8, v9
-; LMULMAX1-NEXT:    addi a0, a1, 16
-; LMULMAX1-NEXT:    vse64.v v12, (a0)
 ; LMULMAX1-NEXT:    vse64.v v8, (a1)
-; LMULMAX1-NEXT:    addi a0, a1, 48
-; LMULMAX1-NEXT:    vse64.v v11, (a0)
 ; LMULMAX1-NEXT:    addi a0, a1, 32
 ; LMULMAX1-NEXT:    vse64.v v10, (a0)
+; LMULMAX1-NEXT:    addi a0, a1, 16
+; LMULMAX1-NEXT:    vse64.v v12, (a0)
+; LMULMAX1-NEXT:    addi a0, a1, 48
+; LMULMAX1-NEXT:    vse64.v v11, (a0)
 ; LMULMAX1-NEXT:    ret
   %a = load <8 x float>, <8 x float>* %x
   %d = fptoui <8 x float> %a to <8 x i64>

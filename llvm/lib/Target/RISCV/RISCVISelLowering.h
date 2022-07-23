@@ -284,6 +284,8 @@ enum NodeType : unsigned {
   VWSUBU_W_VL,
   VFWMUL_VL, // SIFIVE
 
+  VNSRL_VL, // SIFIVE
+
   // Vector compare producing a mask. Fourth operand is input mask. Fifth
   // operand is VL.
   SETCC_VL,
@@ -294,6 +296,11 @@ enum NodeType : unsigned {
   // to the destination and an additional VL operand. This operation is
   // unmasked.
   VP_MERGE_VL,
+#if SIFIVE_CUSTOMIZATION
+  // General vmerge node with passthru, mask, true, false, and vl operands.
+  // The two nodes above are special cases of this.
+  VMERGE_VL,
+#endif // SIFIVE_CUSTOMIZATION
 
   // Mask binary operators.
   VMAND_VL,
@@ -391,6 +398,9 @@ public:
   bool isOffsetFoldingLegal(const GlobalAddressSDNode *GA) const override;
   bool isFPImmLegal(const APFloat &Imm, EVT VT,
                     bool ForCodeSize) const override;
+#if SIFIVE_CUSTOMIZATION
+  bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool softPromoteHalfType() const override { return true; }
 

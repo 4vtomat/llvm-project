@@ -57,7 +57,7 @@
 ; CHECK-NEXT:       Expand reduction intrinsics
 ; CHECK-NEXT:       Natural Loop Information
 ; CHECK-NEXT:       TLS Variable Hoist
-; CHECK-NEXT:       RISCV CodeGenPrepare
+; CHECK-NEXT:       RISCV Late CodeGenPrepare
 ; CHECK-NEXT:       RISCV Type Promotion
 ; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction

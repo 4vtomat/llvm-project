@@ -105,6 +105,7 @@ def : WriteRes<WriteCPOP32, [SiFive9IntArith]>;
 }
 
 // Memory
+let Latency = 11 in {
 def : WriteRes<WriteSTB, [SiFive9LDST]>;
 def : WriteRes<WriteSTH, [SiFive9LDST]>;
 def : WriteRes<WriteSTW, [SiFive9LDST]>;
@@ -112,7 +113,7 @@ def : WriteRes<WriteSTD, [SiFive9LDST]>;
 def : WriteRes<WriteFST16, [SiFive9LDST]>;
 def : WriteRes<WriteFST32, [SiFive9LDST]>;
 def : WriteRes<WriteFST64, [SiFive9LDST]>;
-
+}
 let Latency = 12 in {
 def : WriteRes<WriteLDB, [SiFive9LDST]>;
 def : WriteRes<WriteLDH, [SiFive9LDST]>;
@@ -130,10 +131,9 @@ def : WriteRes<WriteFLD64, [SiFive9LDST]>;
 }
 
 // Atomic memory
+let Latency = 11 in {
 def : WriteRes<WriteAtomicSTW, [SiFive9LDST]>;
 def : WriteRes<WriteAtomicSTD, [SiFive9LDST]>;
-
-let Latency = 11 in {
 def : WriteRes<WriteAtomicW, [SiFive9LDST]>;
 def : WriteRes<WriteAtomicD, [SiFive9LDST]>;
 def : WriteRes<WriteAtomicLDW, [SiFive9LDST]>;

@@ -105,12 +105,6 @@ public:
   bool useFP16ConversionIntrinsics() const override {
     return false;
   }
-
-#if SIFIVE_CUSTOMIZATION
-  bool hasBFloat16Type() const override {
-    return true;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 };
 class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
 public:

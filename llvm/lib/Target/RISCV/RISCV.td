@@ -564,6 +564,12 @@ def TuneFuseArithEqZ
     : SubtargetFeature<"fuse-arith-eqz", "HasFuseArithEqZ",
                        "true", "CPU fuses arithmetic with seqz/snez">;
 
+def TuneFuseBFX
+    : SubtargetFeature<"fuse-bitfield-extract", "HasFuseBFX",
+                       "true", "CPU fuses SLLI with SRLI/SRAI to extract "
+                       "bitfield">;
+def HasFuseBFX : Predicate<"Subtarget->hasFuseBFX()">;
+
 // P670 requires a S2V transfer buffer to move scalars into vectors.
 // FIXME: Forming .vx/.vf can reduce register pressure.
 def TuneDontSinkSplatOperands

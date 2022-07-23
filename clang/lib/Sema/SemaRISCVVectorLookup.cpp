@@ -94,17 +94,8 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   case ScalarTypeKind::SignedInteger:
     QT = Context.getIntTypeForBitwidth(Type->getElementBitwidth(), true);
     break;
-  case ScalarTypeKind::SignedInteger32:
-    QT = Context.getIntTypeForBitwidth(32, true);
-    break;
   case ScalarTypeKind::UnsignedInteger:
     QT = Context.getIntTypeForBitwidth(Type->getElementBitwidth(), false);
-    break;
-  case ScalarTypeKind::Float32:
-    QT = Context.FloatTy;
-    break;
-  case ScalarTypeKind::BFloat:
-    QT = Context.BFloat16Ty;
     break;
   case ScalarTypeKind::Float:
     switch (Type->getElementBitwidth()) {
@@ -121,11 +112,56 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
       llvm_unreachable("Unsupported floating point width.");
     }
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::SignedInteger32:
+    QT = Context.getIntTypeForBitwidth(32, true);
+    break;
+  case ScalarTypeKind::Float32:
+    QT = Context.FloatTy;
+    break;
+  case ScalarTypeKind::BFloat:
+    QT = Context.BFloat16Ty;
+    break;
+#endif
   case Invalid:
     llvm_unreachable("Unhandled type.");
   }
+#if SIFIVE_CUSTOMIZATION
+  if (Type->isVector()) {
+    if (Type->getScalarType() == ScalarTypeKind::BFloat) {
+      // Context.getScalableVectorType isn't work for bfloat16 since we didn't
+      // support scalar bfloat16, so bfloat16 can't get correct type
+      // info like alignment and size, and then can't query right result.
+      switch (Type->getScale().getValue()) {
+      case 1:
+        QT = Context.RvvBFloat16mf4Ty;
+        break;
+      case 2:
+        QT = Context.RvvBFloat16mf2Ty;
+        break;
+      case 4:
+        QT = Context.RvvBFloat16m1Ty;
+        break;
+      case 8:
+        QT = Context.RvvBFloat16m2Ty;
+        break;
+      case 16:
+        QT = Context.RvvBFloat16m4Ty;
+        break;
+      case 32:
+        QT = Context.RvvBFloat16m8Ty;
+        break;
+      default:
+        llvm_unreachable("Unknown scale value!");
+      }
+    } else {
+      QT = Context.getScalableVectorType(QT, Type->getScale().getValue());
+    }
+  }
+#else
   if (Type->isVector())
     QT = Context.getScalableVectorType(QT, Type->getScale().getValue());
+#endif
 
   if (Type->isConstant())
     QT = Context.getConstType(QT);
@@ -183,6 +219,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   bool HasZvfh = TI.hasFeature("experimental-zvfh");
   bool HasRV64 = TI.hasFeature("64bit");
   bool HasFullMultiply = TI.hasFeature("v");
+#if SIFIVE_CUSTOMIZATION
   bool HasBfloat16 =
       TI.hasFeature("xsfvfwmaccqqq") || TI.hasFeature("xsfvfhbfmin");
 
@@ -210,6 +247,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       FEATURE_CHECK_ENTRY(xsfvcp),
   };
 #undef FEATURE_CHECK_ENTRY
+#endif
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
@@ -264,8 +302,10 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (BaseType == BasicType::Float16 && !HasZvfh)
         continue;
 
+#if SIFIVE_CUSTOMIZATION
       if (BaseType == BasicType::BFloat && !HasBfloat16)
         continue;
+#endif
 
       if (BaseType == BasicType::Float32 && !HasVectorFloat32)
         continue;
@@ -273,11 +313,13 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (BaseType == BasicType::Float64 && !HasVectorFloat64)
         continue;
 
+#if SIFIVE_CUSTOMIZATION
       Unsupported = llvm::any_of(FeatureCheckList,
                                  [&](auto &FC) { return !FC.Check(Record); });
 
       if (Unsupported)
         continue;
+#endif
 
       if ((BaseType == BasicType::Int64) &&
           ((Record.RequiredExtensions & RVV_REQ_FullMultiply) ==

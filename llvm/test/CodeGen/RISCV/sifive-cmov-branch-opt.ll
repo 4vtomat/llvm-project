@@ -156,3 +156,57 @@ define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
   %a = select i1 %c, i32 3, i32 0
   ret i32 %a
 }
+
+declare i32 @llvm.abs.i32(i32, i1)
+define signext i32 @test5(i32 signext %x) {
+; NOCMOV-LABEL: test5:
+; NOCMOV:       # %bb.0:
+; NOCMOV-NEXT:    sraiw a1, a0, 31
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    subw a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: test5:
+; CMOV:       # %bb.0:
+; CMOV-NEXT:    sraiw a1, a0, 31
+; CMOV-NEXT:    xor a0, a0, a1
+; CMOV-NEXT:    subw a0, a0, a1
+; CMOV-NEXT:    ret
+;
+; SHORT_FORWARD-LABEL: test5:
+; SHORT_FORWARD:       # %bb.0:
+; SHORT_FORWARD-NEXT:    bgez a0, .LBB4_2
+; SHORT_FORWARD-NEXT:  # %bb.1:
+; SHORT_FORWARD-NEXT:    negw a0, a0
+; SHORT_FORWARD-NEXT:  .LBB4_2:
+; SHORT_FORWARD-NEXT:    ret
+  %a = call i32 @llvm.abs.i32(i32 %x, i1 false)
+  ret i32 %a
+}
+
+declare i64 @llvm.abs.i64(i64, i1)
+define i64 @test6(i64 %x) {
+; NOCMOV-LABEL: test6:
+; NOCMOV:       # %bb.0:
+; NOCMOV-NEXT:    srai a1, a0, 63
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    sub a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: test6:
+; CMOV:       # %bb.0:
+; CMOV-NEXT:    srai a1, a0, 63
+; CMOV-NEXT:    xor a0, a0, a1
+; CMOV-NEXT:    sub a0, a0, a1
+; CMOV-NEXT:    ret
+;
+; SHORT_FORWARD-LABEL: test6:
+; SHORT_FORWARD:       # %bb.0:
+; SHORT_FORWARD-NEXT:    bgez a0, .LBB5_2
+; SHORT_FORWARD-NEXT:  # %bb.1:
+; SHORT_FORWARD-NEXT:    neg a0, a0
+; SHORT_FORWARD-NEXT:  .LBB5_2:
+; SHORT_FORWARD-NEXT:    ret
+  %a = call i64 @llvm.abs.i64(i64 %x, i1 false)
+  ret i64 %a
+}

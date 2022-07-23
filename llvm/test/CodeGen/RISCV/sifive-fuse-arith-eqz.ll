@@ -5,6 +5,7 @@
 ; RUN:   | FileCheck %s --check-prefix=FUSION
 
 declare void @bar(i1 zeroext, i32 signext)
+declare void @baz(i1 zeroext, i64)
 
 define void @xor_snez(i32 signext %0, i32 signext %1) {
 ; NOFUSION-LABEL: xor_snez:
@@ -88,26 +89,26 @@ define void @addi_snez(i32 signext %0, i32 signext %1) {
   ret void
 }
 
-define void @and_snez(i32 signext %0, i32 signext %1, i32 signext %2, i32 signext %3) {
-; NOFUSION-LABEL: and_snez:
+define void @sub_snez(i64 %0, i64 %1, i64 %2, i64 %3) {
+; NOFUSION-LABEL: sub_snez:
 ; NOFUSION:       # %bb.0:
-; NOFUSION-NEXT:    and a0, a0, a3
-; NOFUSION-NEXT:    mulw a2, a1, a2
+; NOFUSION-NEXT:    sub a0, a3, a0
+; NOFUSION-NEXT:    mul a2, a1, a2
 ; NOFUSION-NEXT:    snez a0, a0
-; NOFUSION-NEXT:    mulw a1, a2, a1
-; NOFUSION-NEXT:    tail bar@plt
+; NOFUSION-NEXT:    mul a1, a2, a1
+; NOFUSION-NEXT:    tail baz@plt
 ;
-; FUSION-LABEL: and_snez:
+; FUSION-LABEL: sub_snez:
 ; FUSION:       # %bb.0:
-; FUSION-NEXT:    mulw a2, a1, a2
-; FUSION-NEXT:    and a0, a0, a3
+; FUSION-NEXT:    mul a2, a1, a2
+; FUSION-NEXT:    sub a0, a3, a0
 ; FUSION-NEXT:    snez a0, a0
-; FUSION-NEXT:    mulw a1, a2, a1
-; FUSION-NEXT:    tail bar@plt
-  %5 = and i32 %3, %0
-  %6 = mul i32 %1, %2
-  %7 = icmp ne i32 %5, 0
-  %8 = mul i32 %6, %1
-  tail call void @bar(i1 zeroext %7, i32 signext %8)
+; FUSION-NEXT:    mul a1, a2, a1
+; FUSION-NEXT:    tail baz@plt
+  %5 = sub i64 %3, %0
+  %6 = mul i64 %1, %2
+  %7 = icmp ne i64 %5, 0
+  %8 = mul i64 %6, %1
+  tail call void @baz(i1 zeroext %7, i64 %8)
   ret void
 }

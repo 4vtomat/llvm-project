@@ -198,6 +198,9 @@ public:
   /// Returns the def's extra class declaration code.
   Optional<StringRef> getExtraDecls() const;
 
+  /// Returns the def's extra class definition code.
+  Optional<StringRef> getExtraDefs() const;
+
   /// Get the code location (for error printing).
   ArrayRef<SMLoc> getLoc() const;
 

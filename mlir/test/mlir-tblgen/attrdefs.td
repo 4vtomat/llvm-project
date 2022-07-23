@@ -148,3 +148,26 @@ def F_ParamWithAccessorTypeAttr : TestAttr<"ParamWithAccessorType"> {
 // DEF: ParamWithAccessorTypeAttrStorage
 // DEF: ParamWithAccessorTypeAttrStorage(std::string param)
 // DEF: StringRef ParamWithAccessorTypeAttr::getParam()
+
+// SIFIVE_CUSTOMIZATION BEGIN
+def H_TestExtraClassAttr : TestAttr<"TestExtraClass"> {
+  let extraClassDeclaration = [{
+    /// Test Method
+    static int getFoo(int i);
+  }];
+  let extraClassDefinition = [{
+    int $cppClass::getFoo(int i) {
+      return i+1;
+    }
+  }];
+}
+
+// DECL-LABEL: TestExtraClassAttr : public ::mlir::Attribute
+// DECL: /// Test Method
+// DECL-NEXT: static int getFoo(int i);
+
+// DEF-LABEL: int TestExtraClassAttr::getFoo(int i) {
+// DEF: return i+1;
+// DEF-NEXT: }
+
+// SIFIVE_CUSTOMIZATION END

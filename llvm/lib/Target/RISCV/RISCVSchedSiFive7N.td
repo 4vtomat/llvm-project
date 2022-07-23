@@ -487,37 +487,6 @@ def : WriteRes<WriteNop, []>;
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
-//===----------------------------------------------------------------------===//
-// ALU, ALU_B, IMUL, LOAD, F2I, SFB bypass to ALU, ALU_B, Branch
-multiclass AnyToGPRBypass<SchedRead read, int cycles> {
-  def : ReadAdvance<read, cycles, [WriteIALU, WriteIALU32,
-                                   WriteShiftImm, WriteShiftImm32,
-                                   WriteShiftReg, WriteShiftReg32,
-                                   WriteSHXADD, WriteSHXADD32,
-                                   WriteRotateImm, WriteRotateImm32,
-                                   WriteRotateReg, WriteRotateReg32,
-                                   WriteCLZ, WriteCLZ32, WriteCTZ,
-                                   WriteCTZ32, WriteCPOP, WriteCPOP32,
-                                   WriteREV8, WriteORCB, WriteSFB,
-                                   WriteIMul, WriteIMul32, WriteLDB,
-                                   WriteLDH, WriteLDW, WriteLDWU, WriteLDD,
-                                   WriteFMovF16ToI16, WriteFMovF32ToI32,
-                                   WriteFMovF64ToI64, WriteFCvtF16ToI32,
-                                   WriteFCvtF16ToI64, WriteFCvtF32ToI32,
-                                   WriteFCvtF32ToI64, WriteFCvtF64ToI32,
-                                   WriteFCvtF64ToI64]>;
-}
-// F2F, I2F to FMA, FALU, FDIV, F2F
-multiclass AnytoFPRBypass<SchedRead read, int cycles> {
-  def : ReadAdvance<read, cycles, [WriteFCvtI32ToF16, WriteFCvtI32ToF32,
-                                   WriteFCvtI32ToF64, WriteFCvtI64ToF16,
-                                   WriteFCvtI64ToF32, WriteFCvtI64ToF64,
-                                   WriteFCvtF16ToF32, WriteFCvtF16ToF64,
-                                   WriteFCvtF32ToF16, WriteFCvtF32ToF64,
-                                   WriteFCvtF64ToF16, WriteFCvtF64ToF32,
-                                   WriteFMovI16ToF16, WriteFMovI32ToF32,
-                                   WriteFMovI64ToF64]>;
-}
 // Bypass and advance
 defm : AnyToGPRBypass<ReadJmp, 2>;
 def : ReadAdvance<ReadJalr, 0>;
