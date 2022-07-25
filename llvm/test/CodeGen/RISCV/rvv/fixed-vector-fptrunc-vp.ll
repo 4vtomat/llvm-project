@@ -96,9 +96,9 @@ define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -127,9 +127,9 @@ define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v8, 16
 ; CHECK-NEXT:    vmv8r.v v8, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

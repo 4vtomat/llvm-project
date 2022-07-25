@@ -68,9 +68,9 @@ define dso_local signext i32 @main() #0 {
 ; CHECK-NEXT:    sd s0, 96(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    sd s1, 88(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    addi s0, sp, 112
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    sw zero, -36(s0)
 ; CHECK-NEXT:    sd zero, -48(s0)
 ; CHECK-NEXT:    sd zero, -56(s0)

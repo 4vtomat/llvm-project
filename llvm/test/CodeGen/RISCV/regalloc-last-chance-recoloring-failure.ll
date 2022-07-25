@@ -19,10 +19,10 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    .cfi_offset ra, -8
 ; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 24 * VLENB
 ; CHECK-NEXT:    li a0, 55
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
@@ -80,10 +80,10 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
@@ -98,9 +98,9 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
 ; SUBREGLIVENESS-NEXT:    .cfi_offset ra, -8
 ; SUBREGLIVENESS-NEXT:    .cfi_offset s0, -16
-; SUBREGLIVENESS-NEXT:    csrr t0, vlenb
-; SUBREGLIVENESS-NEXT:    slli t0, t0, 4
-; SUBREGLIVENESS-NEXT:    sub sp, sp, t0
+; SUBREGLIVENESS-NEXT:    csrr a0, vlenb
+; SUBREGLIVENESS-NEXT:    slli a0, a0, 4
+; SUBREGLIVENESS-NEXT:    sub sp, sp, a0
 ; SUBREGLIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * VLENB
 ; SUBREGLIVENESS-NEXT:    li a0, 55
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
@@ -143,9 +143,9 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, s0, e32, m8, tu, mu
 ; SUBREGLIVENESS-NEXT:    vfdiv.vv v8, v24, v8, v0.t
 ; SUBREGLIVENESS-NEXT:    vse32.v v8, (a0)
-; SUBREGLIVENESS-NEXT:    csrr t0, vlenb
-; SUBREGLIVENESS-NEXT:    slli t0, t0, 4
-; SUBREGLIVENESS-NEXT:    add sp, sp, t0
+; SUBREGLIVENESS-NEXT:    csrr a0, vlenb
+; SUBREGLIVENESS-NEXT:    slli a0, a0, 4
+; SUBREGLIVENESS-NEXT:    add sp, sp, a0
 ; SUBREGLIVENESS-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
 ; SUBREGLIVENESS-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
 ; SUBREGLIVENESS-NEXT:    .cfi_def_cfa_offset 32

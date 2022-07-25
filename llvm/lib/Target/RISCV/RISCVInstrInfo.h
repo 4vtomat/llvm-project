@@ -182,13 +182,10 @@ public:
                           unsigned OpIdx,
                           const TargetRegisterInfo *TRI) const override;
 
-#if SIFIVE_CUSTOMIZATION
   Register getVLENFactoredAmount(
       MachineFunction &MF, MachineBasicBlock &MBB,
       MachineBasicBlock::iterator II, const DebugLoc &DL, int64_t Amount,
-      bool IsPrologue = false,
       MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Return a virtual register initialized with the global base
   /// register value. Output instructions required to initialize

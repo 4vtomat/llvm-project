@@ -2508,9 +2508,9 @@ define <32 x double> @vpgather_baseidx_sext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:  .LBB94_2:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    csrr a3, vlenb
+; RV64-NEXT:    slli a3, a3, 3
+; RV64-NEXT:    sub sp, sp, a3
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vsext.vf2 v0, v8
 ; RV64-NEXT:    addi a3, sp, 16
@@ -2533,9 +2533,9 @@ define <32 x double> @vpgather_baseidx_sext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, mu
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vluxei64.v v8, (a0), v8, v0.t
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    add sp, sp, a0
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
@@ -2596,9 +2596,9 @@ define <32 x double> @vpgather_baseidx_zext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:  .LBB95_2:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    csrr a3, vlenb
+; RV64-NEXT:    slli a3, a3, 3
+; RV64-NEXT:    sub sp, sp, a3
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vzext.vf2 v0, v8
 ; RV64-NEXT:    addi a3, sp, 16
@@ -2621,9 +2621,9 @@ define <32 x double> @vpgather_baseidx_zext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, mu
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vluxei64.v v8, (a0), v8, v0.t
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    add sp, sp, a0
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret

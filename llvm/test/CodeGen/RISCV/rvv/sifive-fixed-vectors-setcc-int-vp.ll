@@ -11,10 +11,10 @@ define <32 x i1> @icmp_eq_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %m
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -66,10 +66,10 @@ define <32 x i1> @icmp_eq_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %m
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -282,10 +282,10 @@ define <32 x i1> @icmp_ne_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %m
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -337,10 +337,10 @@ define <32 x i1> @icmp_ne_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %m
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -553,10 +553,10 @@ define <32 x i1> @icmp_ugt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -608,10 +608,10 @@ define <32 x i1> @icmp_ugt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -824,10 +824,10 @@ define <32 x i1> @icmp_uge_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -879,10 +879,10 @@ define <32 x i1> @icmp_uge_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1097,10 +1097,10 @@ define <32 x i1> @icmp_ult_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -1152,10 +1152,10 @@ define <32 x i1> @icmp_ult_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1368,10 +1368,10 @@ define <32 x i1> @icmp_sgt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -1423,10 +1423,10 @@ define <32 x i1> @icmp_sgt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1639,10 +1639,10 @@ define <32 x i1> @icmp_sge_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -1694,10 +1694,10 @@ define <32 x i1> @icmp_sge_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1912,10 +1912,10 @@ define <32 x i1> @icmp_slt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -1967,10 +1967,10 @@ define <32 x i1> @icmp_slt_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -2183,10 +2183,10 @@ define <32 x i1> @icmp_sle_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    li a3, 24
+; CHECK-NEXT:    mul a1, a1, a3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    vmv1r.v v2, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
@@ -2238,10 +2238,10 @@ define <32 x i1> @icmp_sle_vv_v32i64(<32 x i64> %va, <32 x i64> %vb, <32 x i1> %
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v1, 2
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 24
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

@@ -55,9 +55,9 @@ define <128 x i7> @vtrunc_nxv128i7_nxv128i16(<128 x i16> %a, <128 x i1> %m, i32 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -86,9 +86,9 @@ define <128 x i7> @vtrunc_nxv128i7_nxv128i16(<128 x i16> %a, <128 x i1> %m, i32 
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v8, a1
 ; CHECK-NEXT:    vmv8r.v v8, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -243,10 +243,10 @@ define <128 x i32> @vtrunc_nxv128i32_nxv128i64(<128 x i64> %a, <128 x i1> %m, i3
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 56
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    li a3, 56
+; CHECK-NEXT:    mul a2, a2, a3
+; CHECK-NEXT:    sub sp, sp, a2
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x38, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 56 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    csrr a2, vlenb
@@ -487,10 +487,10 @@ define <128 x i32> @vtrunc_nxv128i32_nxv128i64(<128 x i64> %a, <128 x i1> %m, i3
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 56
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 56
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -505,9 +505,9 @@ define <32 x i32> @vtrunc_nxv32i32_nxv32i64(<32 x i64> %a, <32 x i1> %m, i32 zer
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -536,9 +536,9 @@ define <32 x i32> @vtrunc_nxv32i32_nxv32i64(<32 x i64> %a, <32 x i1> %m, i32 zer
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
 ; CHECK-NEXT:    vslideup.vi v16, v8, 16
 ; CHECK-NEXT:    vmv8r.v v8, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

@@ -563,9 +563,9 @@ define void @insert_v2i64_nxv16i64_hi(<2 x i64>* %psv, <vscale x 16 x i64>* %out
 ; CHECK-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-NEXT:    addi s0, sp, 64
 ; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 4
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    slli a2, a2, 4
+; CHECK-NEXT:    sub sp, sp, a2
 ; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v8, (a0)

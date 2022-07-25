@@ -1841,9 +1841,9 @@ define void @mscatter_nxv16f64(<vscale x 8 x double> %val0, <vscale x 8 x double
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    csrr a2, vlenb
+; RV64-NEXT:    slli a2, a2, 3
+; RV64-NEXT:    sub sp, sp, a2
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    vl8re64.v v24, (a0)
 ; RV64-NEXT:    addi a0, sp, 16
@@ -1859,9 +1859,9 @@ define void @mscatter_nxv16f64(<vscale x 8 x double> %val0, <vscale x 8 x double
 ; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v16, v0.t
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    add sp, sp, a0
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret

@@ -1550,9 +1550,9 @@ define i64 @vwreduce_add_v64i64(<64 x i32>* %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 3
-; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    csrr a1, vlenb
+; RV32-NEXT:    slli a1, a1, 3
+; RV32-NEXT:    sub sp, sp, a1
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV32-NEXT:    addi a1, a0, 128
 ; RV32-NEXT:    li a2, 32
@@ -1577,9 +1577,9 @@ define i64 @vwreduce_add_v64i64(<64 x i32>* %x) {
 ; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; RV32-NEXT:    vsrl.vx v8, v8, a2
 ; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 3
-; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    csrr a2, vlenb
+; RV32-NEXT:    slli a2, a2, 3
+; RV32-NEXT:    add sp, sp, a2
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
@@ -1588,9 +1588,9 @@ define i64 @vwreduce_add_v64i64(<64 x i32>* %x) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    csrr a1, vlenb
+; RV64-NEXT:    slli a1, a1, 3
+; RV64-NEXT:    sub sp, sp, a1
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    addi a1, a0, 128
 ; RV64-NEXT:    li a2, 32
@@ -1612,9 +1612,9 @@ define i64 @vwreduce_add_v64i64(<64 x i32>* %x) {
 ; RV64-NEXT:    vmv.s.x v16, zero
 ; RV64-NEXT:    vredsum.vs v8, v8, v16
 ; RV64-NEXT:    vmv.x.s a0, v8
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    csrr a1, vlenb
+; RV64-NEXT:    slli a1, a1, 3
+; RV64-NEXT:    add sp, sp, a1
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
@@ -1629,9 +1629,9 @@ define i64 @vwreduce_uadd_v64i64(<64 x i32>* %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 3
-; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    csrr a1, vlenb
+; RV32-NEXT:    slli a1, a1, 3
+; RV32-NEXT:    sub sp, sp, a1
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV32-NEXT:    addi a1, a0, 128
 ; RV32-NEXT:    li a2, 32
@@ -1656,9 +1656,9 @@ define i64 @vwreduce_uadd_v64i64(<64 x i32>* %x) {
 ; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; RV32-NEXT:    vsrl.vx v8, v8, a2
 ; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 3
-; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    csrr a2, vlenb
+; RV32-NEXT:    slli a2, a2, 3
+; RV32-NEXT:    add sp, sp, a2
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
@@ -1667,9 +1667,9 @@ define i64 @vwreduce_uadd_v64i64(<64 x i32>* %x) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    sub sp, sp, t0
+; RV64-NEXT:    csrr a1, vlenb
+; RV64-NEXT:    slli a1, a1, 3
+; RV64-NEXT:    sub sp, sp, a1
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    addi a1, a0, 128
 ; RV64-NEXT:    li a2, 32
@@ -1691,9 +1691,9 @@ define i64 @vwreduce_uadd_v64i64(<64 x i32>* %x) {
 ; RV64-NEXT:    vmv.s.x v16, zero
 ; RV64-NEXT:    vredsum.vs v8, v8, v16
 ; RV64-NEXT:    vmv.x.s a0, v8
-; RV64-NEXT:    csrr t0, vlenb
-; RV64-NEXT:    slli t0, t0, 3
-; RV64-NEXT:    add sp, sp, t0
+; RV64-NEXT:    csrr a1, vlenb
+; RV64-NEXT:    slli a1, a1, 3
+; RV64-NEXT:    add sp, sp, a1
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret

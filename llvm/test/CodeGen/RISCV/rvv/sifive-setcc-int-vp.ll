@@ -11,9 +11,9 @@ define <vscale x 16 x i1> @icmp_eq_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -47,9 +47,9 @@ define <vscale x 16 x i1> @icmp_eq_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -270,9 +270,9 @@ define <vscale x 16 x i1> @icmp_ne_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -306,9 +306,9 @@ define <vscale x 16 x i1> @icmp_ne_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -529,9 +529,9 @@ define <vscale x 16 x i1> @icmp_ugt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -565,9 +565,9 @@ define <vscale x 16 x i1> @icmp_ugt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -788,9 +788,9 @@ define <vscale x 16 x i1> @icmp_uge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -824,9 +824,9 @@ define <vscale x 16 x i1> @icmp_uge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1049,9 +1049,9 @@ define <vscale x 16 x i1> @icmp_ult_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -1085,9 +1085,9 @@ define <vscale x 16 x i1> @icmp_ult_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1308,9 +1308,9 @@ define <vscale x 16 x i1> @icmp_sgt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -1344,9 +1344,9 @@ define <vscale x 16 x i1> @icmp_sgt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1567,9 +1567,9 @@ define <vscale x 16 x i1> @icmp_sge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -1603,9 +1603,9 @@ define <vscale x 16 x i1> @icmp_sge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -1828,9 +1828,9 @@ define <vscale x 16 x i1> @icmp_slt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -1864,9 +1864,9 @@ define <vscale x 16 x i1> @icmp_slt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
@@ -2087,9 +2087,9 @@ define <vscale x 16 x i1> @icmp_sle_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    vmv1r.v v1, v0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -2123,9 +2123,9 @@ define <vscale x 16 x i1> @icmp_sle_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, tu, mu
 ; CHECK-NEXT:    vslideup.vx v16, v2, a1
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    slli t0, t0, 3
-; CHECK-NEXT:    add sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

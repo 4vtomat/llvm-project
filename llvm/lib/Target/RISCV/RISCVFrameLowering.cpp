@@ -297,6 +297,7 @@ void RISCVFrameLowering::adjustReg(MachineBasicBlock &MBB,
                                    const DebugLoc &DL, Register DestReg,
                                    Register SrcReg, int64_t Val,
                                    MachineInstr::MIFlag Flag) const {
+  MachineRegisterInfo &MRI = MBB.getParent()->getRegInfo();
   const RISCVInstrInfo *TII = STI.getInstrInfo();
 
   if (DestReg == SrcReg && Val == 0)
@@ -338,10 +339,11 @@ void RISCVFrameLowering::adjustReg(MachineBasicBlock &MBB,
     Opc = RISCV::SUB;
   }
 
-  TII->movImm(MBB, MBBI, DL, RISCV::X6, Val, Flag);
+  Register ScratchReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+  TII->movImm(MBB, MBBI, DL, ScratchReg, Val, Flag);
   BuildMI(MBB, MBBI, DL, TII->get(Opc), DestReg)
       .addReg(SrcReg)
-      .addReg(RISCV::X6, RegState::Kill)
+      .addReg(ScratchReg, RegState::Kill)
       .setMIFlag(Flag);
 }
 
@@ -425,8 +427,8 @@ void RISCVFrameLowering::adjustStackForRVV(MachineFunction &MF,
     Opc = RISCV::SUB;
   }
   // 1. Multiply the number of v-slots to the length of registers
-  Register FactorRegister = TII->getVLENFactoredAmount(
-      MF, MBB, MBBI, DL, Amount, /*IsPrologue=*/true, Flag);
+  Register FactorRegister =
+      TII->getVLENFactoredAmount(MF, MBB, MBBI, DL, Amount, Flag);
   // 2. SP = SP - RVV stack size
   BuildMI(MBB, MBBI, DL, TII->get(Opc), SPReg)
       .addReg(SPReg)
@@ -627,12 +629,14 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
             .setMIFlag(MachineInstr::FrameSetup);
       } else {
         unsigned ShiftAmount = Log2(MaxAlignment);
-        BuildMI(MBB, MBBI, DL, TII->get(RISCV::SRLI), RISCV::X6)
+        Register VR =
+            MF.getRegInfo().createVirtualRegister(&RISCV::GPRRegClass);
+        BuildMI(MBB, MBBI, DL, TII->get(RISCV::SRLI), VR)
             .addReg(SPReg)
             .addImm(ShiftAmount)
             .setMIFlag(MachineInstr::FrameSetup);
         BuildMI(MBB, MBBI, DL, TII->get(RISCV::SLLI), SPReg)
-            .addReg(RISCV::X6)
+            .addReg(VR)
             .addImm(ShiftAmount)
             .setMIFlag(MachineInstr::FrameSetup);
       }

@@ -12,10 +12,10 @@ define void @main() {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr t0, vlenb
-; CHECK-NEXT:    li t1, 28
-; CHECK-NEXT:    mul t0, t0, t1
-; CHECK-NEXT:    sub sp, sp, t0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 28
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x1c, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 28 * VLENB
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
 ; CHECK-NEXT:    vle64.v v12, (zero)
@@ -154,9 +154,9 @@ define void @main() {
 ; SUBREG_LIVENESS:       # %bb.0: # %entry
 ; SUBREG_LIVENESS-NEXT:    addi sp, sp, -16
 ; SUBREG_LIVENESS-NEXT:    .cfi_def_cfa_offset 16
-; SUBREG_LIVENESS-NEXT:    csrr t0, vlenb
-; SUBREG_LIVENESS-NEXT:    slli t0, t0, 2
-; SUBREG_LIVENESS-NEXT:    sub sp, sp, t0
+; SUBREG_LIVENESS-NEXT:    csrr a0, vlenb
+; SUBREG_LIVENESS-NEXT:    slli a0, a0, 2
+; SUBREG_LIVENESS-NEXT:    sub sp, sp, a0
 ; SUBREG_LIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * VLENB
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
 ; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)

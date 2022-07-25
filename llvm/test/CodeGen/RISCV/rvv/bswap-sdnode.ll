@@ -544,9 +544,9 @@ define <vscale x 8 x i64> @bswap_nxv8i64(<vscale x 8 x i64> %va) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 4
-; RV32-NEXT:    sub sp, sp, t0
+; RV32-NEXT:    csrr a0, vlenb
+; RV32-NEXT:    slli a0, a0, 4
+; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV32-NEXT:    sw zero, 12(sp)
 ; RV32-NEXT:    lui a0, 1044480
@@ -612,9 +612,9 @@ define <vscale x 8 x i64> @bswap_nxv8i64(<vscale x 8 x i64> %va) {
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vor.vv v8, v8, v16
-; RV32-NEXT:    csrr t0, vlenb
-; RV32-NEXT:    slli t0, t0, 4
-; RV32-NEXT:    add sp, sp, t0
+; RV32-NEXT:    csrr a0, vlenb
+; RV32-NEXT:    slli a0, a0, 4
+; RV32-NEXT:    add sp, sp, a0
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
