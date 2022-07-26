@@ -5842,6 +5842,11 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     // Initialize cost to max so that VF = 2 is, at least, chosen during cost
     // evaluation.
     ChosenFactor.Cost = InstructionCost::getMax();
+#if SIFIVE_CUSTOMIZATION
+    LLVM_DEBUG(
+        dbgs()
+        << "LV: Changed scalar cost to Inf as user forced vectorization.\n");
+#endif
   }
 
   SmallVector<InstructionVFPair> InvalidCosts;
@@ -5975,12 +5980,17 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
         << "LV: Scalable vectorization could not select a viable factor\n");
     return VectorizationFactor::Disabled();
   }
-#endif // SIFIVE_CUSTOMIZATION
 
+  LLVM_DEBUG(if (ForceVectorization && !ChosenFactor.Width.isScalar() &&
+                 !isMoreProfitable(ChosenFactor, ScalarCost)) dbgs()
+             << "LV: Vectorization seems to be not beneficial, "
+             << "but was forced by a user.\n");
+#else
   LLVM_DEBUG(if (ForceVectorization && !ChosenFactor.Width.isScalar() &&
                  ChosenFactor.Cost >= ScalarCost.Cost) dbgs()
              << "LV: Vectorization seems to be not beneficial, "
              << "but was forced by a user.\n");
+#endif // SIFIVE_CUSTOMIZATION
   LLVM_DEBUG(dbgs() << "LV: Selecting VF: " << ChosenFactor.Width << ".\n");
   return ChosenFactor;
 }
