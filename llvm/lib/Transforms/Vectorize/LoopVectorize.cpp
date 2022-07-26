@@ -5830,7 +5830,14 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
   VectorizationFactor ChosenFactor = ScalarCost;
 
   bool ForceVectorization = Hints->getForce() == LoopVectorizeHints::FK_Enabled;
+#if SIFIVE_CUSTOMIZATION
+  if (ForceVectorization &&
+      (VFCandidates.size() > 1 || Hints->isFixedVectorizationDisabled())) {
+    // If fixed vectorization is disabled, the VFCandidates will not contain VF
+    // = 1.
+#else
   if (ForceVectorization && VFCandidates.size() > 1) {
+#endif // SIFIVE_CUSTOMIZATION
     // Ignore scalar width, because the user explicitly wants vectorization.
     // Initialize cost to max so that VF = 2 is, at least, chosen during cost
     // evaluation.
