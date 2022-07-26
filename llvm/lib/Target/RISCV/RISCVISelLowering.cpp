@@ -1156,12 +1156,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE,
-                         ISD::EXPERIMENTAL_VP_REVERSE, //SIFIVE
-                         ISD::VP_STORE,            // SIFIVE
-                         ISD::SPLAT_VECTOR,        // SIFIVE
-                         ISD::INTRINSIC_WO_CHAIN,  // SIFIVE
-                         ISD::VECTOR_SHUFFLE,      // SIFIVE
-                         ISD::INTRINSIC_W_CHAIN}); // SIFIVE
+                         ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
+                         ISD::VP_STORE,                // SIFIVE
+                         ISD::SPLAT_VECTOR,            // SIFIVE
+                         ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
+                         ISD::INTRINSIC_W_CHAIN});     // SIFIVE
 #endif
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
@@ -2998,6 +2997,87 @@ static int isElementRotate(int &LoSrc, int &HiSrc, ArrayRef<int> Mask) {
   return Rotation;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Lower the following shuffles to vnsrl.
+// t34: v8i8 = extract_subvector t11, Constant:i64<0>
+// t33: v8i8 = extract_subvector t11, Constant:i64<8>
+// a) t35: v8i8 = vector_shuffle<0,2,4,6,8,10,12,14> t34, t33
+// b) t35: v8i8 = vector_shuffle<1,3,5,7,9,11,13,15> t34, t33
+static SDValue lowerVECTOR_SHUFFLEAsVNSRL(const SDLoc &DL, MVT VT,
+                                          MVT ContainerVT, SDValue V1,
+                                          SDValue V2, SDValue TrueMask,
+                                          SDValue VL, ArrayRef<int> Mask,
+                                          const RISCVSubtarget &Subtarget,
+                                          SelectionDAG &DAG) {
+  // Need to be able to widen the vector.
+  if (VT.getScalarSizeInBits() >= Subtarget.getELEN())
+    return SDValue();
+
+  // Both input must be extracts.
+  if (V1.getOpcode() != ISD::EXTRACT_SUBVECTOR ||
+      V2.getOpcode() != ISD::EXTRACT_SUBVECTOR)
+    return SDValue();
+
+  // Extracting from the same source.
+  SDValue Src = V1.getOperand(0);
+  if (Src != V2.getOperand(0))
+    return SDValue();
+
+  // Src needs to have twice the number of elements.
+  if (Src.getValueType().getVectorNumElements() != (Mask.size() * 2))
+    return SDValue();
+
+  // The extracts must extract the two halves of the source.
+  if (V1.getConstantOperandVal(1) != 0 ||
+      V2.getConstantOperandVal(1) != Mask.size())
+    return SDValue();
+
+  // First index must be the first even or odd element from V1.
+  if (Mask[0] != 0 && Mask[0] != 1)
+    return SDValue();
+
+  // The others must increase by 2 each time.
+  // TODO: Support undef elements?
+  for (unsigned i = 1; i != Mask.size(); ++i)
+    if (Mask[i] != Mask[i - 1] + 2)
+      return SDValue();
+
+  // Convert the source using a container type with twice the elements. Since
+  // source VT is legal and twice this VT, we know VT isn't LMUL=8 so it is
+  // safe to double.
+  MVT DoubleContainerVT =
+      MVT::getVectorVT(ContainerVT.getVectorElementType(),
+                       ContainerVT.getVectorElementCount() * 2);
+  Src = convertToScalableVector(DoubleContainerVT, Src, DAG, Subtarget);
+
+  // Convert the vector to a wider integer type with the original element
+  // count. This also converts FP to int.
+  unsigned EltBits = ContainerVT.getScalarSizeInBits();
+  MVT WideIntEltVT = MVT::getIntegerVT(EltBits * 2);
+  MVT WideIntContainerVT =
+      MVT::getVectorVT(WideIntEltVT, ContainerVT.getVectorElementCount());
+  Src = DAG.getBitcast(WideIntContainerVT, Src);
+
+  // Convert to the integer version of the container type.
+  MVT IntEltVT = MVT::getIntegerVT(EltBits);
+  MVT IntContainerVT =
+      MVT::getVectorVT(IntEltVT, ContainerVT.getVectorElementCount());
+
+  // If we want even elements, then the shift amount is 0. Otherwise, shift by
+  // the original element size.
+  unsigned Shift = Mask[0] == 0 ? 0 : EltBits;
+  SDValue SplatShift = DAG.getNode(
+      RISCVISD::VMV_V_X_VL, DL, IntContainerVT, DAG.getUNDEF(ContainerVT),
+      DAG.getConstant(Shift, DL, Subtarget.getXLenVT()), VL);
+  SDValue Res = DAG.getNode(RISCVISD::VNSRL_VL, DL, IntContainerVT, Src,
+                            SplatShift, TrueMask, VL);
+  // Cast back to FP if needed.
+  Res = DAG.getBitcast(ContainerVT, Res);
+
+  return convertFromScalableVector(VT, Res, DAG, Subtarget);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
                                    const RISCVSubtarget &Subtarget) {
   SDValue V1 = Op.getOperand(0);
@@ -3128,6 +3208,12 @@ static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
 
     return convertFromScalableVector(VT, Res, DAG, Subtarget);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerVECTOR_SHUFFLEAsVNSRL(
+          DL, VT, ContainerVT, V1, V2, TrueMask, VL, Mask, Subtarget, DAG))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Detect an interleave shuffle and lower to
   // (vmaccu.vx (vwaddu.vx lohalf(V1), lohalf(V2)), lohalf(V2), (2^eltbits - 1))
@@ -10205,82 +10291,6 @@ static SDValue performVP_STORECombine(SDNode *N, SelectionDAG &DAG,
 
   return SDValue();
 }
-
-static SDValue combineVECTOR_SHUFFLEToVnsrl(SDNode *N, SelectionDAG &DAG,
-                                            const RISCVSubtarget &Subtarget) {
-  // t34: v8i8 = extract_subvector t11, Constant:i64<0>
-  // t33: v8i8 = extract_subvector t11, Constant:i64<8>
-  // a) t35: v8i8 = vector_shuffle<0,2,4,6,8,10,12,14> t34, t33
-  // b) t35: v8i8 = vector_shuffle<1,3,5,7,9,11,13,15> t34, t33
-  EVT ResultEVT = N->getValueType(0);
-  if (!DAG.getTargetLoweringInfo().isTypeLegal(ResultEVT) ||
-      !ResultEVT.isFixedLengthVector())
-    return SDValue();
-  EVT ResultEltEVT = ResultEVT.getVectorElementType();
-  // The maximum SEW for vnsrl is 32.
-  if (!ResultEltEVT.isRound() || ResultEltEVT.bitsGT(MVT::i32))
-    return SDValue();
-  SDValue Op0 = N->getOperand(0);
-  if (Op0.getOpcode() != ISD::EXTRACT_SUBVECTOR)
-    return SDValue();
-  if (Op0.getConstantOperandVal(1) != 0)
-    return SDValue();
-  SDValue Op1 = N->getOperand(1);
-  if (Op1.getOpcode() != ISD::EXTRACT_SUBVECTOR)
-    return SDValue();
-  // From the same source.
-  SDValue Src = Op0.getOperand(0);
-  if (Src != Op1.getOperand(0))
-    return SDValue();
-  // Is continuous.
-  unsigned NumElts = ResultEVT.getVectorNumElements();
-  if (NumElts != Op1.getConstantOperandVal(1))
-    return SDValue();
-  ShuffleVectorSDNode *SVN = cast<ShuffleVectorSDNode>(N);
-  uint64_t Shift;
-  switch (SVN->getMaskElt(0)) {
-  case 0:
-    Shift = 0;
-    break;
-  case 1:
-    Shift = ResultEltEVT.getFixedSizeInBits();
-    break;
-  default:
-    return SDValue();
-  }
-  for (unsigned i = 1; i != NumElts; ++i)
-    if (SVN->getMaskElt(i - 1) + 2 != SVN->getMaskElt(i))
-      return SDValue();
-  SDLoc DL(N);
-  MVT ResultMVT = N->getSimpleValueType(0);
-  MVT ContainerMVT =
-      getContainerForFixedLengthVector(DAG, ResultMVT, Subtarget);
-  SDValue ReinterpretSrc =
-      DAG.getBitcast(Src.getValueType()
-                         .widenIntegerVectorElementType(*DAG.getContext())
-                         .getHalfNumVectorElementsVT(*DAG.getContext()),
-                     Src);
-  SDValue Vec = convertToScalableVector(
-      getContainerForFixedLengthVector(DAG, ReinterpretSrc.getSimpleValueType(),
-                                       Subtarget),
-      ReinterpretSrc, DAG, Subtarget);
-  SDValue Mask, VL;
-  std::tie(Mask, VL) =
-      getDefaultVLOps(ResultMVT, ContainerMVT, DL, DAG, Subtarget);
-  SDValue SplatShift = DAG.getNode(
-      RISCVISD::VMV_V_X_VL, DL, ContainerMVT, DAG.getUNDEF(ContainerMVT),
-      DAG.getConstant(Shift, DL, Subtarget.getXLenVT()), VL);
-  SDValue Res = DAG.getNode(RISCVISD::VNSRL_VL, DL, ContainerMVT, Vec,
-                            SplatShift, Mask, VL);
-  return convertFromScalableVector(ResultMVT, Res, DAG, Subtarget);
-}
-
-static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
-                                            const RISCVSubtarget &Subtarget) {
-  if (SDValue V = combineVECTOR_SHUFFLEToVnsrl(N, DAG, Subtarget))
-    return V;
-  return SDValue();
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Convert from one FMA opcode to another based on whether we are negating the
@@ -10960,13 +10970,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 #endif
     break;
   }
-#if SIFIVE_CUSTOMIZATION
-  case ISD::VECTOR_SHUFFLE: {
-    if (SDValue V = performVECTOR_SHUFFLECombine(N, DAG, Subtarget))
-      return V;
-    break;
-  }
-#endif
   case ISD::SPLAT_VECTOR: {
     EVT VT = N->getValueType(0);
     // Only perform this combine on legal MVT types.
