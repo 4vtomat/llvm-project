@@ -33,6 +33,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <atomic>
+#include <type_traits>
 #if SIFIVE_CUSTOMIZATION
 
 #include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
@@ -63,11 +65,14 @@
 #include "llvm/Transforms/Utils/LoopUtils.h"
 
 using namespace llvm;
+using namespace llvm::PatternMatch;
 
 #define DEBUG_TYPE "loop-data-layout"
 
 STATISTIC(NumLoopsAnalyzed,
           "Number of loops examined for AoS to SoA opportunities");
+STATISTIC(NumTransformed,
+          "Number of AoS to SoA references transformed");
 
 static cl::opt<bool> EnableLoopDataLayout(
     "loop-data-layout-enable", cl::Hidden, cl::init(false),
@@ -178,6 +183,11 @@ static bool isInductionPHI(PHINode *Index, Loop *L, ScalarEvolution &SE) {
   return FoundInductionVar;
 }
 
+static bool compareEqualGEPs(const GetElementPtrInst *A,
+                             const GetElementPtrInst *B) {
+  return ::equal(A->operands(), B->operands());
+}
+
 static LoopDataLayoutResult detectArrayOfStructDataAccess(
     Loop *L, LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
@@ -253,6 +263,7 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
             continue;
 
           unsigned NumQualifyingFields = 0;
+          unsigned NumComplexFields = 0;
           auto *ST = cast<StructType>(Ty);
           for (unsigned k = 0, e = ST->getNumElements(); k != e; ++k) {
             Type *FieldType = ST->getElementType(k);
@@ -263,6 +274,7 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
               // If struct, match a complex pair.
               if (areInternalTypesComplexPairs(FieldType)) {
                 NumQualifyingFields++;
+                NumComplexFields++;
                 continue;
               }
             }
@@ -272,6 +284,7 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
             break;
           }
           if ((NumQualifyingFields > 0) &&
+              (NumComplexFields <= MaxElements) &&
               (NumQualifyingFields <= MaxElements)) {
             FoundArrayOfStructDataAccessor |= true;
             // Store the address of the array of structs
@@ -308,18 +321,953 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
              : LoopDataLayoutResult::HasNoOpportunities;
 }
 
-/// updateArguments - Update AoS to SoA structs, member parameters,
+static bool updateParamTypeAttributes(
+    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    AttributeList &Attrs, LLVMContext &C) {
+  bool UpdatedAttrs = false;
+  for (unsigned i = 0; i < Attrs.getNumAttrSets(); ++i)
+    for (int AttrIdx = Attribute::FirstTypeAttr;
+         AttrIdx <= Attribute::LastTypeAttr; AttrIdx++) {
+      Attribute::AttrKind TypedAttr = (Attribute::AttrKind)AttrIdx;
+      if (Type *ParamTy =
+              Attrs.getAttributeAtIndex(i, TypedAttr).getValueAsType())
+        for (auto &TypePair : TranslatedTypeSet) {
+          Type *OrigTy = TypePair.first;
+          Type *ReplacementTy = TypePair.second;
+          if (ParamTy == OrigTy) {
+            // now replace ParamTy with the ReplacementTy.
+            Attrs = Attrs.replaceAttributeTypeAtIndex(C, i, TypedAttr,
+                                                      ReplacementTy);
+            UpdatedAttrs = true;
+            break;
+          }
+        }
+    }
+
+  return UpdatedAttrs;
+}
+
+static bool updateDereferenceableAttributes(Instruction *Call, unsigned Bytes) {
+  Function *F = Call->getParent()->getParent();
+  LLVMContext &C = F->getContext();
+  auto *CB = cast<CallBase>(Call);
+  AttributeList CallerPAL = CB->getAttributes();
+  auto AI = CB->arg_begin();
+  bool UpdatedAttrs = false;
+  for (unsigned i = 0, e = CB->arg_size(); i != e; ++i, ++AI) {
+    AttributeSet PAS = CallerPAL.getParamAttrs(i);
+    if (PAS.hasAttribute(Attribute::DereferenceableOrNull)) {
+      CallerPAL = CallerPAL.removeParamAttribute(C, i, Attribute::DereferenceableOrNull);
+      CallerPAL = CallerPAL.addDereferenceableOrNullParamAttr(C, i, Bytes);
+      UpdatedAttrs = true;
+    } else if (PAS.hasAttribute(Attribute::Dereferenceable)) {
+      CallerPAL = CallerPAL.removeParamAttribute(C, i, Attribute::Dereferenceable);
+      CallerPAL = CallerPAL.addDereferenceableParamAttr(C, i, Bytes);
+      UpdatedAttrs = true;
+    }
+  }
+  AttributeSet RAS = CallerPAL.getRetAttrs();
+  if (RAS.hasAttribute(Attribute::DereferenceableOrNull)) {
+    CallerPAL = CallerPAL.removeRetAttribute(C, Attribute::DereferenceableOrNull);
+    // We take the long route as support for addDereferenceableOrNullRetAttr
+    // does not exist yet.
+    AttrBuilder B(C);
+    B.addDereferenceableOrNullAttr(Bytes);
+    CallerPAL = CallerPAL.addRetAttributes(C, B);
+    UpdatedAttrs = true;
+  } else if (RAS.hasAttribute(Attribute::Dereferenceable)) {
+    CallerPAL = CallerPAL.removeRetAttribute(C, Attribute::Dereferenceable);
+    CallerPAL = CallerPAL.addDereferenceableRetAttr(C, Bytes);
+    UpdatedAttrs = true;
+  }
+  if (UpdatedAttrs)
+    CB->setAttributes(CallerPAL);
+
+  return UpdatedAttrs;
+}
+
+static bool updateFunctionAttributes(
+    Function *F,
+    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet) {
+  // Walk all the Attrs of this function and look for type updates.
+  LLVMContext &C = F->getContext();
+  AttributeList Attrs = F->getAttributes();
+  bool UpdatedAttrs = updateParamTypeAttributes(TranslatedTypeSet, Attrs, C);
+  F->setAttributes(Attrs);
+  return UpdatedAttrs;
+}
+
+static uint64_t gatherIndicesForArrayAddress(SmallVectorImpl<Value *> &Indices,
+                                             IRBuilder<> &IRB,
+                                             StructType *ArrayST, Type *AltTy,
+                                             bool &UpdateSrcGEP,
+                                             bool &HasIV,
+                                             uint64_t &ArrayTyIdx,
+                                             const GetElementPtrInst *CurGEP) {
+  bool FirstTime = true;
+  UpdateSrcGEP = false;
+  ArrayTyIdx = 0;
+  unsigned CurIdx = 0;
+  unsigned NumIdx = CurGEP->getNumIndices();
+  auto *ContainerST = cast<StructType>(AltTy);
+  uint64_t NumContainerTypeElements = ContainerST->getNumElements();
+  uint64_t NumArrayTypeElements = ArrayST->getNumElements();
+  uint64_t StartingOffset = NumContainerTypeElements - NumArrayTypeElements;
+  for (Value *Index : CurGEP->indices()) {
+    CurIdx++;
+    ConstantInt *Offset = dyn_cast<ConstantInt>(Index);
+    if (Offset && FirstTime) {
+      bool IsLastIndex = (CurIdx == NumIdx);
+      ArrayTyIdx = Offset->getZExtValue();
+      if (!IsLastIndex) {
+        // We need to update the SrcGEP to reference the new
+        // field indices and the correct type of those fields
+        // in the container type, but only if an IV is present.
+        if (HasIV) {
+          UpdateSrcGEP = true;
+        } else {
+          assert(CurGEP->hasAllConstantIndices() && "Unsupported GEP form");
+          Indices.push_back(Index);
+          continue;
+        }
+      } else {
+        Value *NewIndex = IRB.CreateAdd(
+            Offset, ConstantInt::get(Index->getType(), StartingOffset));
+        Indices.push_back(NewIndex);
+      }
+      FirstTime = false;
+      continue;
+    } else {
+      HasIV = true;
+    }
+    Indices.push_back(Index);
+  }
+
+  // no constant index was found, imply zero
+  if (FirstTime)
+    Indices.push_back(ConstantInt::get(IRB.getInt32Ty(), StartingOffset));
+
+  return StartingOffset;
+}
+
+static unsigned calculateStructSizeInBytes(StructType *InputST,
+                                           const DataLayout &DL) {
+  return TypeSize::Fixed(DL.getStructLayout(InputST)->getSizeInBits()) >> 3;
+}
+
+static void updateAllocationSize(IRBuilder<> &IRB, LibFunc TLIFn,
+                                 Instruction *I, Value *SizeVal,
+                                 const unsigned SizeInBytes,
+                                 const unsigned SizeArg,
+                                 const unsigned SizeOfArg) {
+  if (TLIFn == LibFunc_malloc) {
+    I->setOperand(SizeArg, SizeVal);
+  } else if (TLIFn == LibFunc_realloc) {
+    I->setOperand(SizeArg, SizeVal);
+  } else if (TLIFn == LibFunc_calloc) {
+    Type *Ty = I->getOperand(SizeOfArg)->getType();
+    I->setOperand(SizeOfArg, ConstantInt::get(Ty, SizeInBytes));
+  }
+}
+
+static Value *createNewSizeArg(StructType *ArrayST, Value *SrcPtr,
+                               Instruction *I, LibFunc TLIFn,
+                               const DataLayout &DL, Value *SizeVal,
+                               const unsigned SizeInBytes) {
+  if ((TLIFn == LibFunc_malloc) || (TLIFn == LibFunc_realloc)) {
+    IRBuilder<> IRB(I);
+    Type *DivTy = DL.getIntPtrType(SrcPtr->getType());
+    uint64_t C;
+    if (match(SizeVal, m_Shl(m_Value(), m_ConstantInt(C)))) {
+      // We check size of ArrayST in bytes against the shift value as a power of
+      // 2 value.  If both are equal we can clone this operation and replace the
+      // OldSizeInBytes with SizeInBytes, converted to the exp component, provided
+      // it too is a power of 2 value.
+      unsigned OldSizeInBytes = calculateStructSizeInBytes(ArrayST, DL);
+      unsigned SizeInBase10 = 1 << C;
+      bool CanReplaceSize = (SizeInBase10 == OldSizeInBytes);
+      APInt NewSize(64, SizeInBytes, false);
+      if (NewSize.isPowerOf2() && CanReplaceSize) {
+        unsigned ShiftAmt = 0;
+        unsigned Seed = SizeInBytes;
+        while (Seed != 1) {
+          Seed = Seed >> 1;
+          ShiftAmt++;
+        }
+        Instruction *OrigI = cast<Instruction>(SizeVal);
+        Instruction *NewI = OrigI->clone();
+        // Place the cloned call near the old one.
+        NewI->insertAfter(OrigI);
+        NewI->setOperand(1, ConstantInt::get(DivTy, ShiftAmt));
+        return NewI;
+      }
+    }
+
+    return IRB.CreateMul(
+        IRB.CreateSDiv(
+            SizeVal,
+            ConstantInt::get(DivTy, calculateStructSizeInBytes(ArrayST, DL))),
+        ConstantInt::get(DivTy, SizeInBytes));
+  }
+
+  return SizeVal;
+}
+
+static void updateAddressWithGlossary(
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
+    GetElementPtrInst *CurGEP, Type *CurTy, Type *AltTy) {
+  // Match the CurTy to a glossary entry and use its
+  // GEP to update CurGEP if they have the same indices.
+  IRBuilder<> Builder(CurGEP);
+  assert(CurGEP->hasAllConstantIndices() && "must be constant indexed CurGEP");
+  const SmallVector<Value *> &Indices = GEPTypeToIndices[CurTy];
+  // If we have already modified CurGEP, the indices will be empty.
+  if (Indices.empty())
+    return;
+
+  bool AllIndicesMatch = true;
+  unsigned NumCurIdx = CurGEP->getNumIndices();
+  unsigned NumSrcIdx = Indices.size();
+  if (NumCurIdx == NumSrcIdx) {
+    unsigned StartIdx = CurGEP->getNumOperands() - NumCurIdx;
+    for (unsigned i = StartIdx; i < NumCurIdx + StartIdx; i++)
+      if (CurGEP->getOperand(i) != Indices[i - 1]) {
+        AllIndicesMatch = false;
+        break;
+      }
+
+  }
+  if (AllIndicesMatch) {
+    auto *CurST = cast<StructType>(CurTy);
+    uint64_t StartingOffset = CurST->getNumElements();
+    unsigned Idx = CurGEP->getNumOperands();
+    CurGEP->setOperand(Idx - 1,
+                       ConstantInt::get(Builder.getInt32Ty(), StartingOffset));
+  }
+  // Replace the base type with AltTy as all translated and original
+  // references are based off of it.
+  CurGEP->setSourceElementType(AltTy);
+
+  // Check the allocation type and update as we just updated the CurGEP
+  // to AltTy, we also need the allocation type to refect that also.
+  Value *SrcPtr = CurGEP->getPointerOperand();
+  if (auto *AI = dyn_cast<AllocaInst>(SrcPtr)) {
+    Type *AllocationTy = AI->getAllocatedType();
+    // If the allocation type was already updated, we will not match here.
+    if (AllocationTy == CurTy)
+      AI->setAllocatedType(AltTy);
+  }
+}
+
+static bool updateInputPtrForRealloc(
+    Value *SrcPtr, Type *AltTy, GetElementPtrInst *SrcGEP,
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
+  bool IsSameGEP = false;
+  if (auto *CurCB = dyn_cast<CallBase>(SrcPtr)) {
+    Type *SrcTy = SrcGEP->getSourceElementType();
+    updateAddressWithGlossary(GEPTypeToIndices, SrcGEP, SrcTy, AltTy);
+    Value *InputPtr = CurCB->getArgOperand(0);
+    SmallVector<const Value *, 4> Objects;
+    getUnderlyingObjects(InputPtr, Objects);
+    for (const Value *UnderlyingObj : Objects)
+      if (const auto *LdBase = dyn_cast<LoadInst>(UnderlyingObj)) {
+        Value *LdBasePtr = const_cast<Value *>(LdBase->getPointerOperand());
+        if (auto *CurGEP = dyn_cast<GetElementPtrInst>(LdBasePtr)) {
+          Type *CurTy = CurGEP->getSourceElementType();
+          updateAddressWithGlossary(GEPTypeToIndices, CurGEP, CurTy, AltTy);
+          IsSameGEP = compareEqualGEPs(CurGEP, SrcGEP);
+        }
+      }
+
+    // Now walk all the uses of SrcPtr and assert on any loads for
+    // missing functionality on split processing as we need to know
+    // if the realloc memory is used in this context.
+    for (User *U : SrcPtr->users())
+      if (auto *Ld = dyn_cast<LoadInst>(U))
+        assert(0 && "Unsupported context that requires address splitting");
+  }
+  return IsSameGEP;
+}
+
+static GetElementPtrInst *
+updateAddressForAllocations(IRBuilder<> &IRB, SmallVectorImpl<Value *> &Indices,
+                            GetElementPtrInst *CurGEP,
+                            const uint64_t ArrayTyIdx, Value *SrcPtr,
+                            Type *AltTy, StructType *ArrayST) {
+  // Update the address to the specified field.
+  Value *NewAddr = nullptr;
+  unsigned N = ArrayST->getNumElements();
+  if ((ArrayTyIdx >= 0) && (ArrayTyIdx < N)) {
+    NewAddr = IRB.CreateInBoundsGEP(AltTy, SrcPtr, Indices);
+    CurGEP->replaceAllUsesWith(NewAddr);
+    CurGEP->eraseFromParent();
+  }
+  return dyn_cast<GetElementPtrInst>(NewAddr);
+}
+
+static void
+splitAddressStoresForFree(Value *SrcPtr, Type *AltTy, StructType *ArrayST,
+                          const TargetLibraryInfo &TLI, const DataLayout &DL,
+                          SmallPtrSetImpl<StoreInst *> &VisitedStores,
+                          SmallPtrSetImpl<StoreInst *> &AddedStores,
+                          const uint64_t StartingOffset,
+                          GetElementPtrInst *CurGEP) {
+  Function *F = CurGEP->getParent()->getParent();
+  auto *CurCB = dyn_cast<CallBase>(SrcPtr);
+  if (!CurCB)
+    return;
+
+  // We process this free if it has a null store
+  StoreInst *SI = nullptr;
+  Value *NullVal = nullptr;
+  for (User *U : CurGEP->users()) {
+    SI = dyn_cast<StoreInst>(U);
+    if (SI) {
+      NullVal = SI->getValueOperand();
+      auto *ConstOp = dyn_cast<Constant>(NullVal);
+      if (ConstOp && ConstOp->isNullValue())
+        break;
+
+      SI = nullptr;
+    }
+  }
+
+  // Nothing to do.
+  if (!SI)
+    return;
+
+  // Ignore stores we added.
+  if (AddedStores.contains(SI))
+    return;
+
+  SmallVector<StoreInst *, 10> Worklist;
+  if (VisitedStores.insert(SI).second)
+    Worklist.push_back(SI);
+
+  // Now process all the stores we found
+  while (!Worklist.empty()) {
+    StoreInst *SI = Worklist.pop_back_val();
+    Value *BasePtr = CurGEP->getPointerOperand();
+    Instruction *OrigI = cast<Instruction>(SrcPtr);
+    AddedStores.insert(SI);
+    IRBuilder<> IRB(CurGEP);
+    for (unsigned k = 0, e = ArrayST->getNumElements(); k != e; ++k) {
+      SmallVector<Value *, 10> Indices;
+      // The first offset is zero indicating the start of this EltTy's array.
+      Type *FirstTy = DL.getIntPtrType(CurGEP->getType());
+      Indices.push_back(ConstantInt::get(FirstTy, 0));
+      // The second offset is StartingOffset+k which is a 32bit int
+      Indices.push_back(ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
+      Instruction *NewI = OrigI;
+      if (k > 0) {
+        // Clone the allocation call and provide its value to the store.
+        NewI = OrigI->clone();
+        // Place the cloned call near the old one.
+        NewI->insertAfter(CurCB);
+        // Create New address/store pairs for all but the first field, see
+        // below for details about k == 0 (the first and original call).
+        Value *NewAddr = IRB.CreateInBoundsGEP(AltTy, BasePtr, Indices);
+        Value *LoadPtr = IRB.CreateLoad(NewAddr->getType(), NewAddr);
+        NewI->setOperand(0, LoadPtr);
+        IRB.SetInsertPoint(SI);
+        auto *Store = IRB.CreateStore(NullVal, NewAddr);
+        AddedStores.insert(Store);
+      } else {
+        // Check if we have an orthogonal formed CurGEP and replace it if
+        // we do, else just use the one we have.  The orthogonal formed GEPs
+        // are never candidates.  These will only have type i8 and are
+        // produced in places like argument promotion.  Since we already know
+        // that this GEP is used in store ptr context and is connected to one
+        // our candidates by ArrayTy association ergo this action is always
+        // safe.
+        Type *DerivedTy = CurGEP->getSourceElementType();
+        if (DerivedTy == Type::getInt8Ty(F->getContext()))
+          updateAddressForAllocations(IRB, Indices, CurGEP, k, BasePtr,
+                                      AltTy, ArrayST);
+      }
+    }
+  }
+}
+
+static unsigned configureBytes(const LibFunc TLIFn, Value *SizeVal, unsigned SizeInBytes) {
+  if (TLIFn == LibFunc_calloc) {
+    if (auto *SizeValC = dyn_cast<ConstantInt>(SizeVal)) {
+      APInt ValA = SizeValC->getValue();
+      return (ValA.getZExtValue() * SizeInBytes);
+    }
+  } else if (auto *SizeValC = dyn_cast<ConstantInt>(SizeVal)) {
+    APInt ValA = SizeValC->getValue();
+    return ValA.getZExtValue();
+  }
+  return SizeInBytes;
+}
+
+static void splitAddressStoresForAllocations(
+    Value *SrcPtr, Type *AltTy, StructType *ArrayST,
+    const TargetLibraryInfo &TLI, const DataLayout &DL,
+    SmallPtrSetImpl<StoreInst *> &VisitedStores,
+    SmallPtrSetImpl<StoreInst *> &AddedStores, const uint64_t StartingOffset,
+    Instruction *RefInst, bool ReallocReuseGEPs) {
+  Function *F = RefInst->getParent()->getParent();
+  auto *CurCB = dyn_cast<CallBase>(SrcPtr);
+  if (!CurCB)
+    return;
+
+  LibFunc TLIFn;
+  TLI.getLibFunc(*CurCB->getCalledFunction(), TLIFn);
+  // Only process ptr stores of allocations
+  unsigned SizeArg;
+  unsigned SizeOfArg;
+  switch (TLIFn) {
+  case LibFunc_malloc:
+    SizeArg = SizeOfArg = 0;
+    break;
+  case LibFunc_calloc:
+    SizeArg = 0;
+    SizeOfArg = 1;
+    break;
+  case LibFunc_realloc:
+    SizeArg = SizeOfArg = 1;
+    break;
+  default:
+    return;
+  }
+
+  // Since we are going to add users to SrcPtr,
+  // we need to build a Worklist to process
+  // all the relevant uses we find.
+  SmallVector<StoreInst *, 10> Worklist;
+  for (User *U : SrcPtr->users()) {
+    if (auto *SI = dyn_cast<StoreInst>(U)) {
+      // Ignore stores we added.
+      if (AddedStores.contains(SI))
+        continue;
+
+      // We operate on stores of ptr values
+      if (SI->getValueOperand() != SrcPtr)
+        continue;
+
+      // Only related stores with GEPs are processed.
+      Value *Ptr = SI->getPointerOperand();
+      if (auto *CurGEP = dyn_cast<GetElementPtrInst>(Ptr)) {
+        if (VisitedStores.insert(SI).second) {
+          Worklist.push_back(SI);
+        }
+      }
+    }
+  }
+
+  // Now process all the stores we found
+  while (!Worklist.empty()) {
+    StoreInst *SI = Worklist.pop_back_val();
+    IRBuilder<> IRB(SI);
+    Value *Ptr = SI->getPointerOperand();
+    auto *DerivedGEP = cast<GetElementPtrInst>(Ptr);
+    Value *BasePtr = DerivedGEP->getPointerOperand();
+    Instruction *OrigI = cast<Instruction>(SrcPtr);
+    Value *SizeVal = OrigI->getOperand(SizeArg);
+    AddedStores.insert(SI);
+    for (unsigned k = 0, e = ArrayST->getNumElements(); k != e; ++k) {
+      // Now obtain the size of the array from the call:
+      // * For calloc: The array size is the first arg
+      // * For malloc: We divide the first arg by SizeInBytes to obtain
+      //               size.
+      SmallVector<Value *, 10> Indices;
+      // The first offset is zero indicating the start of this EltTy's array.
+      Type *FirstTy = DL.getIntPtrType(SrcPtr->getType());
+      Indices.push_back(ConstantInt::get(FirstTy, 0));
+      // The second offset is StartingOffset+k which is a 32bit int
+      Indices.push_back(ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
+      // The address we create is the stored value, the GEP is where
+      // we write that memory at since this store is writing a ptr value.
+      Type *EltTy = ArrayST->getElementType(k);
+      unsigned SizeInBytes = DL.getTypeSizeInBits(EltTy).getFixedSize() >> 3;
+      Value *NewSizeArg = createNewSizeArg(ArrayST, SrcPtr, OrigI, TLIFn, DL,
+                                           SizeVal, SizeInBytes);
+
+      Instruction *NewI = OrigI;
+      // Update allocation call attributes as needed.
+      unsigned Bytes = configureBytes(TLIFn, NewSizeArg, SizeInBytes);
+      updateDereferenceableAttributes(NewI, Bytes);
+      if (k > 0) {
+        // Clone the allocation call and provide its value to the store.
+        NewI = OrigI->clone();
+        // Place the cloned call near the old one.
+        NewI->insertAfter(CurCB);
+        // Create New address/store pairs for all but the first field, see
+        // below for details about k == 0 (the first and original call).
+        IRB.SetInsertPoint(DerivedGEP);
+        auto *NewAddr = IRB.CreateInBoundsGEP(AltTy, BasePtr, Indices);
+        // Can realloc use the same address as the store?
+        if (ReallocReuseGEPs) {
+          // First stage a load off of NewAddr, then use the result as a ptr
+          auto *NewPtr = IRB.CreateLoad(NewAddr->getType(), NewAddr);
+          NewI->setOperand(0, NewPtr);
+        }
+        IRB.SetInsertPoint(SI);
+        auto *Store = IRB.CreateStore(NewI, NewAddr);
+        AddedStores.insert(Store);
+        // Now process all the GEP uses of the original allocation function and
+        // replace its ptr via type matching so that its usage model is correct.
+        SmallVector<GetElementPtrInst *, 4> GEPWorklist;
+        for (User *U : OrigI->users()) {
+          if (auto *UserGEP = dyn_cast<GetElementPtrInst>(U))
+            if (EltTy == UserGEP->getResultElementType())
+              if (UserGEP->getPointerOperand() != NewI)
+                UserGEP->setOperand(0, NewI);
+        }
+      } else {
+        // Check if we have an orthogonal formed DerivedGEP and replace it if
+        // we do, else just use the one we have.  The orthogonal formed GEPs
+        // are never candidates.  These will only have type i8 and are
+        // produced in places like argument promotion.  Since we already know
+        // that this GEP is used in store ptr context and is connected to one
+        // our candidates by ArrayTy association ergo this action is always
+        // safe.
+        Type *DerivedTy = DerivedGEP->getSourceElementType();
+        if (DerivedTy == Type::getInt8Ty(F->getContext()))
+          DerivedGEP = updateAddressForAllocations(IRB, Indices, DerivedGEP, k,
+                                                   BasePtr, AltTy, ArrayST);
+      }
+      // Update the allocation size to reflect this fields EltTy size.
+      updateAllocationSize(IRB, TLIFn, NewI, NewSizeArg, SizeInBytes, SizeArg,
+                           SizeOfArg);
+    }
+  }
+}
+
+static void
+updateMemSetCall(Instruction *RefInst, Type *RefTy, Type *AltTy, bool IsBaseTy,
+                 SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses,
+                 DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
+                 const DataLayout &DL) {
+  auto *CurCB = cast<CallBase>(RefInst);
+  // The first argument is a pointer to the destination to fill
+  Value *InputPtr = CurCB->getArgOperand(0);
+  auto *CurGEP = dyn_cast<GetElementPtrInst>(InputPtr);
+  if (!CurGEP)
+    return;
+
+  if (IsBaseTy)
+    return;
+
+  Type *CurTy = CurGEP->getSourceElementType();
+  if (CurTy != RefTy)
+    return;
+
+  // Memset will only be processed on ArrayTy fields wrt references,
+  // so discover the necessary info to replace CurGEP.
+  GetElementPtrInst *SrcGEP = nullptr;
+  // Find a base pointer for this ArrayTy reference
+  SmallVector<const Value *, 4> Objects;
+  Value *Ptr = CurGEP->getPointerOperand();
+  getUnderlyingObjects(Ptr, Objects);
+  for (const Value *UnderlyingObj : Objects) {
+    if (const auto *Ld = dyn_cast<LoadInst>(UnderlyingObj)) {
+      auto *LdPtr = Ld->getPointerOperand();
+      if (const auto *BaseGEP = dyn_cast<GetElementPtrInst>(LdPtr)) {
+        SrcGEP = const_cast<GetElementPtrInst *>(BaseGEP);
+        break;
+      }
+    }
+  }
+  if (!SrcGEP)
+    return;
+
+  if (VisitedAddresses.insert(CurGEP).second) {
+    Value *BasePtr = SrcGEP->getPointerOperand();
+    IRBuilder<> IRB(CurGEP);
+    auto *ArrayST = cast<StructType>(RefTy);
+    Value *SizeArg = RefInst->getOperand(2);
+    Instruction *NewI = RefInst;
+    SmallVector<Value *, 10> Indices;
+    bool UpdateSrcGEP;
+    bool HasIV = false;
+    uint64_t ArrayTyIdx;
+    uint64_t StartingOffset = gatherIndicesForArrayAddress(
+        Indices, IRB, ArrayST, AltTy, UpdateSrcGEP, HasIV, ArrayTyIdx,
+        CurGEP);
+    // First we update the SrcGEP to use as a base pointer for which we
+    // will indirect off of via indexing.
+    Type *SrcTy = SrcGEP->getSourceElementType();
+    updateAddressWithGlossary(GEPTypeToIndices, SrcGEP, SrcTy, AltTy);
+    // Now iterate over the subfields of ArrayST, using the first
+    // call and updating its ptr and length, then cloning the rest
+    // with an appropriate ptr and length.
+    for (unsigned k = 0, e = ArrayST->getNumElements(); k != e; ++k) {
+      SmallVector<Value *, 10> BaseIndices;
+      // The first offset is zero indicating the start of this EltTy's
+      // array.
+      Type *FirstTy = DL.getIntPtrType(CurGEP->getType());
+      Value *Addr = nullptr;
+      Type *EltTy = ArrayST->getElementType(k);
+      unsigned SizeInBytes =
+          DL.getTypeSizeInBits(EltTy).getFixedSize() >> 3;
+      if (k > 0) {
+        BaseIndices.push_back(ConstantInt::get(FirstTy, 0));
+        // The second offset is StartingOffset+k which is a 32bit int
+        BaseIndices.push_back(
+            ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
+        // Clone the memset and provide its value to the store.
+        NewI = RefInst->clone();
+        // Place the cloned call near the old one.
+        NewI->insertAfter(CurCB);
+        Addr = IRB.CreateInBoundsGEP(
+            EltTy,
+            IRB.CreateLoad(
+                Ptr->getType(),
+                IRB.CreateInBoundsGEP(AltTy, BasePtr, BaseIndices)),
+            Indices[0]);
+      } else {
+        Addr = IRB.CreateInBoundsGEP(EltTy, Ptr, Indices[0]);
+      }
+      NewI->setOperand(0, Addr);
+      NewI->setOperand(2,
+                       ConstantInt::get(SizeArg->getType(), SizeInBytes));
+      updateDereferenceableAttributes(NewI, SizeInBytes);
+    }
+  }
+}
+
+static void updateCalledFunction(
+    CallInst *CI, Instruction *RefInst, Type *RefTy, Type *AltTy,
+    const TargetLibraryInfo &TLI, bool IsBaseTy,
+    SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses,
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
+    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    LLVMContext &C, const DataLayout &DL) {
+  bool AllowUserFunctionUpdate = true;
+  // We can ignore some calls - really what we want to process is user calls
+  if (isAllocationFn(RefInst, &TLI) || RefInst->isLifetimeStartOrEnd() ||
+      isFreeCall(RefInst, &TLI)) {
+    AllowUserFunctionUpdate = false;
+  } else if (isa<MemSetInst>(RefInst)) {
+    updateMemSetCall(RefInst, RefTy, AltTy, IsBaseTy, VisitedAddresses,
+                     GEPTypeToIndices, DL);
+    AllowUserFunctionUpdate = false;
+  } else if (isa<MemCpyInst>(RefInst)) {
+    // Here we only update the size arg(3rd arg) in llvm.memcpy.
+    Value *SizeArg = RefInst->getOperand(2);
+    auto *AltST = cast<StructType>(AltTy);
+    unsigned SizeInBytes = calculateStructSizeInBytes(AltST, DL);
+    RefInst->setOperand(
+        2, ConstantInt::get(SizeArg->getType(), SizeInBytes));
+    updateDereferenceableAttributes(RefInst, SizeInBytes);
+    AllowUserFunctionUpdate = false;
+  }
+  // look for side effects and update as needed.
+  for (Use &Op : RefInst->operands()) {
+    if (auto *AI = dyn_cast<AllocaInst>(Op)) {
+      Type *CurTy = AI->getAllocatedType();
+      if (CurTy == RefTy)
+        AI->setAllocatedType(AltTy);
+    }
+  }
+  if (AllowUserFunctionUpdate) {
+    AttributeList Attrs = CI->getAttributes();
+    // Update this calls attributes if any reference types match
+    updateParamTypeAttributes(TranslatedTypeSet, Attrs, C);
+    // TODO: consider adding support for updating dereferenceable attributes for
+    // user calls.
+    CI->setAttributes(Attrs);
+  }
+}
+
+static void handleArrayOfStructuresAddressTranslation(IRBuilder<> &IRB,
+    SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses, StructType *ArrayST,
+    SmallVectorImpl<Value *> &Indices, GetElementPtrInst *CurGEP, Value *SrcPtr,
+    const DataLayout &DL, Type *AltTy, const TargetLibraryInfo &TLI,
+    bool UpdateSrcGEP, uint64_t ArrayTyIdx, uint64_t StartingOffset) {
+  if (VisitedAddresses.insert(CurGEP).second) {
+    Type *ArrayTy = ArrayST->getElementType(ArrayTyIdx);
+    Value *Addr = nullptr;
+    if (ArrayTyIdx == 0) {
+      if (UpdateSrcGEP)
+        Addr = IRB.CreateInBoundsGEP(ArrayTy, SrcPtr, Indices);
+      else
+        Addr = IRB.CreateInBoundsGEP(ArrayTy, SrcPtr, Indices[0]);
+    } else if (isAllocationFn(SrcPtr, &TLI)) {
+      Addr = IRB.CreateInBoundsGEP(ArrayTy, SrcPtr, Indices[0]);
+    } else {
+      SmallVector<Value *, 4> BaseIndices;
+      Type *FirstTy = DL.getIntPtrType(SrcPtr->getType());
+      BaseIndices.push_back(ConstantInt::get(FirstTy, 0));
+      // The second offset is StartingOffset+k which is a 32bit inta
+      BaseIndices.push_back(
+          ConstantInt::get(IRB.getInt32Ty(), StartingOffset + ArrayTyIdx));
+      Addr = IRB.CreateInBoundsGEP(
+          ArrayTy,
+          IRB.CreateLoad(SrcPtr->getType(),
+                         IRB.CreateInBoundsGEP(AltTy, SrcPtr, BaseIndices)),
+          Indices[0]);
+    }
+    CurGEP->replaceAllUsesWith(Addr);
+  }
+}
+
+static void processAddressForFreeCalls(
+    Type *AltTy, StructType *ArrayST, Type *RefTy, const TargetLibraryInfo &TLI,
+    const DataLayout &DL, SmallPtrSetImpl<StoreInst *> &VisitedStores,
+    SmallPtrSetImpl<StoreInst *> &AddedStores, GetElementPtrInst *CurGEP) {
+  // Look for canonical GEPs
+  uint64_t StartingOffset = cast<StructType>(RefTy)->getNumElements();
+  unsigned Idx = CurGEP->getNumOperands();
+  Value *LastIdx = CurGEP->getOperand(Idx - 1);
+  ConstantInt *Offset = dyn_cast<ConstantInt>(LastIdx);
+  if (!Offset)
+    return;
+
+  // Only process replaced GEPs
+  if (Offset->getZExtValue() != StartingOffset)
+    return;
+
+  // Now find all the load ptrs of this GEP,
+  // regardless of how we got here.
+  SmallVector<LoadInst *, 10> Worklist;
+  for (User *U : CurGEP->users()) {
+    if (auto *CurLd = dyn_cast<LoadInst>(U))
+      Worklist.push_back(CurLd);
+  }
+
+  while (!Worklist.empty()) {
+    LoadInst *CurLd = Worklist.pop_back_val();
+    for (User *U : CurLd->users())
+      if (isFreeCall(U, &TLI)) {
+        // We will split addresses as needed in the new container
+        // type field access for address stores. Use the free input
+        // ptr and update its GEP so that we have the correct
+        // address.
+        splitAddressStoresForFree(U, AltTy, ArrayST, TLI, DL, VisitedStores,
+                                  AddedStores, StartingOffset, CurGEP);
+      }
+  }
+}
+
+static void doActionsForMatchedType(
+    Instruction *RefInst, Type *RefTy, Type *AltTy, StructType *ArrayST,
+    bool IsBaseTy,
+    SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
+        &LocalCandidateMap,
+    const DataLayout &DL, const TargetLibraryInfo &TLI,
+    SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses,
+    SmallPtrSetImpl<StoreInst *> &VisitedStores,
+    SmallPtrSetImpl<StoreInst *> &AddedStores,
+    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
+  auto *Ld = dyn_cast<LoadInst>(RefInst);
+  auto *St = dyn_cast<StoreInst>(RefInst);
+  if (Ld || St) {
+    auto *Ptr = (Ld) ? Ld->getPointerOperand() : St->getPointerOperand();
+    if (auto *CurGEP = dyn_cast<GetElementPtrInst>(Ptr)) {
+      Type *CurTy = CurGEP->getSourceElementType();
+      if (IsBaseTy && (CurTy == RefTy)) {
+        updateAddressWithGlossary(GEPTypeToIndices, CurGEP, CurTy, AltTy);
+        processAddressForFreeCalls(AltTy, ArrayST, RefTy, TLI, DL,
+                                   VisitedStores, AddedStores, CurGEP);
+      } else if (!IsBaseTy && (CurTy == RefTy)) {
+        SmallVector<Value *, 4> Indices;
+        bool UpdateSrcGEP = false;
+        bool HasIV = false;
+        uint64_t ArrayTyIdx;
+        IRBuilder<> Builder(CurGEP);
+        uint64_t StartingOffset = gatherIndicesForArrayAddress(
+            Indices, Builder, ArrayST, AltTy, UpdateSrcGEP, HasIV, ArrayTyIdx,
+            CurGEP);
+
+        // Find the matching candidate to obtain its SrcGEP info.
+        GetElementPtrInst *SrcGEP = nullptr;
+        for (auto &Candididates : LocalCandidateMap) {
+          GetElementPtrInst *GEP = Candididates.first.first;
+          if (GEP == CurGEP) {
+            SrcGEP = Candididates.first.second;
+            break;
+          }
+        }
+        // Find our base pointer, which could be a GEP or an allocation.
+        if (!SrcGEP) {
+          Value *SrcPtr = CurGEP->getPointerOperand();
+          if (auto *LdBase = dyn_cast<LoadInst>(SrcPtr)) {
+            Value *LdBasePtr = LdBase->getPointerOperand();
+            SrcGEP = dyn_cast<GetElementPtrInst>(LdBasePtr);
+          } else if (St && isMallocOrCallocLikeFn(SrcPtr, &TLI)) {
+            // We split allocation calls as needed for
+            // the new field arrays.
+            splitAddressStoresForAllocations(
+                SrcPtr, AltTy, ArrayST, TLI, DL, VisitedStores, AddedStores,
+                StartingOffset, RefInst, /* ReallocReuseGEPs */ false);
+            // We may have updated this GEP, so re-fetch its ptr.
+            SrcPtr = CurGEP->getPointerOperand();
+            handleArrayOfStructuresAddressTranslation(
+                Builder, VisitedAddresses, ArrayST, Indices, CurGEP, SrcPtr, DL,
+                AltTy, TLI, UpdateSrcGEP, ArrayTyIdx, StartingOffset);
+            return;
+          } else if (auto *PhiNode = dyn_cast<PHINode>(SrcPtr)) {
+            SmallVector<const Value *, 4> Objects;
+            // To find a PHI base ptr, we need to converge
+            // on the same or similar GEPs.
+            getUnderlyingObjects(SrcPtr, Objects);
+            for (const Value *UnderlyingObj : Objects) {
+              if (const auto *LdBase = dyn_cast<LoadInst>(UnderlyingObj)) {
+                Value *LdBasePtr =
+                    const_cast<Value *>(LdBase->getPointerOperand());
+                auto *LdBaseGEP = dyn_cast<GetElementPtrInst>(LdBasePtr);
+                if (!LdBaseGEP)
+                  continue;
+                if (SrcGEP == nullptr)
+                  SrcGEP = LdBaseGEP;
+                else if ((SrcGEP == LdBaseGEP) ||
+                         (compareEqualGEPs(SrcGEP, LdBaseGEP)))
+                  continue;
+                else
+                  assert(0 && "non matching src pointers for address mapping");
+              }
+            }
+          } else {
+            assert(0 && "unsupported case of SoA translation of GEP");
+          }
+        }
+
+        if (!SrcGEP)
+          return;
+
+        // First walk the uses SrcGEP looking for Stores, checking the value
+        // operand to see if a realloc defined it.
+        for (User *U : SrcGEP->users())
+          if (auto *SI = dyn_cast<StoreInst>(U)) {
+            // Skip stores we added for allocations
+            if (AddedStores.contains(SI))
+              continue;
+
+            Value *V = SI->getValueOperand();
+            if (isReallocLikeFn(V, &TLI)) {
+              bool ReallocReuseGEPs =
+                  updateInputPtrForRealloc(V, AltTy, SrcGEP, GEPTypeToIndices);
+              // We will split addresses as needed in the new container type
+              // field access for address stores. Use the realloc input ptr and
+              // update its GEP so that we have the correct address for each field.
+              splitAddressStoresForAllocations(
+                  V, AltTy, ArrayST, TLI, DL, VisitedStores, AddedStores,
+                  StartingOffset, RefInst, ReallocReuseGEPs);
+            }
+          }
+
+        // Update non standard SrcGEPs that cannot be matched.
+        Value *BasePtr = SrcGEP->getPointerOperand();
+        if (UpdateSrcGEP) {
+          BasePtr = CurGEP->getPointerOperand();
+          // Check and update the SrcGEP with AltTy blanketly.
+          SrcGEP->setSourceElementType(AltTy);
+          // Then update the last index with StartingOffset, the index we
+          // ignored before indicates we are writing to the base of the array.
+          unsigned Idx = SrcGEP->getNumOperands();
+          SrcGEP->setOperand(
+              Idx - 1, ConstantInt::get(Builder.getInt32Ty(), StartingOffset));
+          // Now fetch the interior type to use with CurGEPs replacement.
+          AltTy = ArrayST->getElementType(ArrayTyIdx);
+        }
+        if (ArrayTyIdx == 0)
+          BasePtr = CurGEP->getPointerOperand();
+
+        handleArrayOfStructuresAddressTranslation(
+            Builder, VisitedAddresses, ArrayST, Indices, CurGEP, BasePtr, DL,
+            AltTy, TLI, UpdateSrcGEP, ArrayTyIdx, StartingOffset);
+      }
+    }
+  } else if (auto *CI = dyn_cast<CallInst>(RefInst)) {
+    Function *F = RefInst->getParent()->getParent();
+    updateCalledFunction(CI, RefInst, RefTy, AltTy, TLI, IsBaseTy,
+                         VisitedAddresses, GEPTypeToIndices, TranslatedTypeSet,
+                         F->getContext(), DL);
+  }
+}
+
+/// translateReferences - Update AoS to SoA structs, member parameters,
 /// and/or data member uses as transformations to SoA instances.
-static Function *
-updateArguments(Function *F, function_ref<AAResults &(Function &F)> AARGetter,
-                unsigned MaxElements,
-                Optional<function_ref<void(CallBase &OldCS, CallBase &NewCS)>>
-                    ReplaceCallSite,
-                const TargetTransformInfo &TTI) {
-  // TODO: here is where we replace the AoS candidates with SoA tranformations.
-  // TODO: Add STATISTIC to record NumTransformed seen here.
-  // TODO: add return type modification here as well.
-  return nullptr;
+static bool translateReferences(
+    Function *F, function_ref<AAResults &(Function &F)> AARGetter,
+    unsigned MaxElements,
+    Optional<function_ref<void(CallBase &OldCS, CallBase &NewCS)>>
+        ReplaceCallSite,
+    const TargetTransformInfo &TTI, const TargetLibraryInfo &TLI,
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+        &LocalReferenceMap,
+    const SmallVector<Type *> &LocalParamMap,
+    SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
+        &LocalCandidateMap,
+    const SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
+    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
+  // With opaque pointers, all the input args we want to replace are ptr args,
+  // ergo we should be able to re-interpret these pointers and replace their
+  // context at each usage without creating a replacement function. We also
+  // need to replace type usage for each call graph edge out of F as well.
+  // Processing order does not matter now as we have all the information
+  // needed to replace AoS references and SoA and its support code.
+  if (updateFunctionAttributes(F, TranslatedTypeSet)) {
+    LLVM_DEBUG(dbgs() << "Function: " << F->getName()
+                      << "has argument side effects\n");
+  }
+  SmallPtrSet<GetElementPtrInst *, 8> VisitedAddresses;
+  SmallPtrSet<StoreInst *, 8> VisitedStores;
+  SmallPtrSet<StoreInst *, 8> AddedStores;
+  DataLayout DL = F->getParent()->getDataLayout();
+  bool HaveTransformations = false;
+  // For each Local Reference there is an entry in UniqueTypeSet and
+  // in the TranslatedTypeSet, use these to translate each
+  // reference into its new usage.
+  for (auto &References : LocalReferenceMap) {
+    Instruction *RefInst = References.first.first;
+    Type *RefTy = References.first.second;
+    // Foreach unique type pair
+    for (auto &TypePair : UniqueTypeSet) {
+      Type *ArrayTy = TypePair.first;
+      auto *ArrayST = cast<StructType>(ArrayTy);
+      Type *ContainerTy = TypePair.second;
+      // Find the matching replacement type
+      for (auto &TypePair : TranslatedTypeSet) {
+        Type *OrigTy = TypePair.first;
+        Type *ReplacmentTy = TypePair.second;
+        // Recall, we appended the elements
+        // of ArrayTy into ReplacmentTy as arrays
+        // of each local type. The ReplacmentTy looks
+        // just like OrigTy up to the point where
+        // the new fields are added and is used
+        // identically except for the reference to
+        // ArrayTy, which will become unused.
+        if (OrigTy == ContainerTy) {
+          if (RefTy == ContainerTy) {
+            ++NumTransformed;
+            HaveTransformations = true;
+            doActionsForMatchedType(RefInst, ContainerTy, ReplacmentTy, ArrayST,
+                                    /* IsBaseTy */ true, LocalCandidateMap, DL,
+                                    TLI, VisitedAddresses, VisitedStores,
+                                    AddedStores, TranslatedTypeSet,
+                                    GEPTypeToIndices);
+            break;
+          } else if (RefTy == ArrayTy) {
+            ++NumTransformed;
+            HaveTransformations = true;
+            doActionsForMatchedType(RefInst, ArrayTy, ReplacmentTy, ArrayST,
+                                    /*IsBaseTy */ false, LocalCandidateMap, DL,
+                                    TLI, VisitedAddresses, VisitedStores,
+                                    AddedStores, TranslatedTypeSet,
+                                    GEPTypeToIndices);
+            break;
+          }
+        }
+      }
+    }
+  }
+  // Now cleanup GEPs we processed and orphaned
+  for (auto *CurGEP : VisitedAddresses) {
+    if (CurGEP->getNumUses() == 0) {
+      CurGEP->eraseFromParent();
+    } else {
+      assert(0 && "CurGEP marked for cleanup still present");
+    }
+  }
+
+  return HaveTransformations;
 }
 
 static bool runOnLoops(
@@ -436,7 +1384,7 @@ static bool findRelatedCandidate(
 }
 
 static void examinePhisForReferences(
-    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
         &LocalReferenceMap,
     Value *MemPtr, Type *ContainerTy, Module *M) {
   // Build a list of objects from the ptr phi to examine
@@ -470,14 +1418,8 @@ static void examinePhisForReferences(
       // Thought: perhaps we want to translate these
       // GEPs back into a recognizable form.
       if (BaseTy == Int8Ty)
-        LocalReferenceMap[{Ld, ContainerTy}]++;
+        LocalReferenceMap[{const_cast<LoadInst*>(Ld), ContainerTy}]++;
     }
-}
-
-// TODO: make this a semantic comparison
-static bool compareEqualGEPs(const GetElementPtrInst *A,
-                             const GetElementPtrInst *B) {
-  return ::equal(A->operands(), B->operands());
 }
 
 // Check to see if a given load is aliased, if so check to see if it is
@@ -537,7 +1479,7 @@ static bool legalLoadRelationships(
 }
 
 static bool addReferencesForFunction(
-    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
         &LocalReferenceMap,
     SmallVectorImpl<Type *> &LocalParamMap,
     SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet, Function *F) {
@@ -546,8 +1488,7 @@ static bool addReferencesForFunction(
   bool ReferencesAsArguments = false;
   for (BasicBlock &BB : *F) {
     for (Instruction &I : BB) {
-      for (unsigned k = 0; k < I.getNumOperands(); ++k) {
-        auto *Op = I.getOperand(k);
+      for (Use &Op : I.operands()) {
         if (isa<Argument>(Op) || isa<Instruction>(Op)) {
           auto *CurTy = Op->getType();
           GetElementPtrInst *CurGEP = nullptr;
@@ -842,8 +1783,17 @@ static Optional<Type *> configureParamType(
         if (auto *GEP = dyn_cast<GetElementPtrInst>(U)) {
           BaseTy = GEP->getSourceElementType();
           break;
-        } else if (isa<PHINode>(U)) {
-          assert(0 && "unhandled PHI case for allocation call");
+        } else if (auto *PhiPtr = dyn_cast<PHINode>(U)) {
+          for (const User *PhiUse : PhiPtr->users()) {
+            if (auto *GEP = dyn_cast<GetElementPtrInst>(PhiUse)) {
+              BaseTy = GEP->getSourceElementType();
+              break;
+            }
+          }
+          // It is sufficient to stop here as detection will
+          // search for type matches from AoS context.
+          if (BaseTy)
+            break;
         }
       }
     } else {
@@ -873,9 +1823,27 @@ static Optional<Type *> configureParamType(
         BaseTy = CurParamMap[CurArg->getArgNo()];
       } else if (auto *AI = dyn_cast<AllocaInst>(UnderlyingObj)) {
         BaseTy = AI->getAllocatedType();
+      } else if (isa<CallInst>(UnderlyingObj)) {
+        // Call returns a ptr, insufficient information to determine type.
+        continue;
+      } else if (auto *GV = dyn_cast<GlobalVariable>(UnderlyingObj)) {
+        if (GV->isConstant())
+          continue;
+
+        BaseTy = GV->getValueType();
+      } else if (auto *ConstOp = dyn_cast<Constant>(UnderlyingObj)) {
+        if (ConstOp->isNullValue())
+          continue;
+      } else if (isa<CastInst>(UnderlyingObj)) {
+        continue;
+      } else if (isa<ExtractElementInst>(UnderlyingObj)) {
+        continue;
+      } else if (isa<ExtractValueInst>(UnderlyingObj)) {
+        continue;
+      } else if (isa<InvokeInst>(UnderlyingObj)) {
+        continue;
       } else {
-        assert(0 && "Found unhandled case for obtaining BaseTy from "
-                    "UnderlyingObj");
+        llvm_unreachable("Support needed for unhandled cases!");
       }
       if (BaseTy && BaseTy->isStructTy())
         break;
@@ -1071,7 +2039,7 @@ static LoopDataLayoutResult analyzeWholeProgram(
              SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>,
                            int>> &CandidateMap,
     DenseMap<Function *,
-             SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
+             SmallDenseMap<std::pair<Instruction *, Type *>, int>>
         &ReferenceMap,
     DenseMap<Function *, SmallVector<Type *>> &ParamMap,
     DenseMap<Function *, SmallBitVector> &InvalidateMap,
@@ -1082,11 +2050,11 @@ static LoopDataLayoutResult analyzeWholeProgram(
 
   // First initialize the parameter info for all functions.
   for (Function &F : M) {
-    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
-    SmallBitVector &LocalInvalidateMap = InvalidateMap[&F];
     if (F.isDeclaration())
       continue;
 
+    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
+    SmallBitVector &LocalInvalidateMap = InvalidateMap[&F];
     // Now initialize with empty data so that each
     // entry for a function is correctly sized.
     // We will access both as indexed arrays.
@@ -1102,6 +2070,7 @@ static LoopDataLayoutResult analyzeWholeProgram(
   for (Function &F : M) {
     if (F.isDeclaration())
       continue;
+
     LoopInfo &LI = LookupLoopInfo(F);
     ScalarEvolution &SE = LookupScalarEvolutionInfo(F);
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
@@ -1132,11 +2101,9 @@ static LoopDataLayoutResult analyzeWholeProgram(
     if (F.isDeclaration())
       continue;
 
-    SmallDenseMap<std::pair<const Instruction *, Type *>, int>
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
         &LocalReferenceMap = ReferenceMap[&F];
     SmallVector<Type *> &LocalParamMap = ParamMap[&F];
-    // TODO: check into GAAR related queries if we need them here on F.
-    // See AliasAnalysis.h for a list of queries to detect behavior.
 
     // Add references to a local map and check if any references were
     // arguments and if so if we can modify the function.
@@ -1216,17 +2183,61 @@ static void propagateNewTypeDefinitions(
   }
 }
 
+static void mapContainerAccessToGlossary(
+    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
+    DenseMap<Function *,
+             SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>,
+                           int>> &CandidateMap,
+    Module &M) {
+  for (auto &TypePair : UniqueTypeSet) {
+    bool FoundEntry = false;
+    Type *ContainerTy = TypePair.second;
+    for (Function &F : M) {
+      if (F.isDeclaration())
+        continue;
+
+      SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
+          &LocalCandidateMap = CandidateMap[&F];
+
+      // We construct an access glossary with a candidate connected GEP
+      // that matches a reference in the UniqueTypeSet for each ContainerTy.
+      // We need this as some of the references we collect are not directly
+      // mapped to a candidate and we need to compare the indices to make
+      // valid updates when replacing the type and access.  The first reference
+      // we find is sufficient to construct a glossary entry for lookup later.
+      for (auto &Candididates : LocalCandidateMap) {
+        GetElementPtrInst *SrcGEP = Candididates.first.second;
+        Type *RefTy = SrcGEP->getSourceElementType();
+        if (RefTy == ContainerTy) {
+          FoundEntry = true;
+          // Now create a copy of the Indices which will not be modified
+          // when the GEP is.
+          SmallVector<Value *> &Indices = GEPTypeToIndices[RefTy];
+          assert(Indices.empty() &&
+                 "There should only be one map from RefTy to indices");
+          for (const Use &Op : SrcGEP->indices())
+            Indices.emplace_back(Op);
+
+          break;
+        }
+      }
+      // Move on to the next unique type entry
+      if (FoundEntry)
+        break;
+    }
+  }
+}
+
 PreservedAnalyses LoopDataLayoutPass::run(Module &M,
                                           ModuleAnalysisManager &AM) {
+  bool Changed = false;
   auto &FAM = AM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
   auto LookupScalarEvolutionInfo = [&FAM](Function &F) -> ScalarEvolution & {
     return FAM.getResult<ScalarEvolutionAnalysis>(F);
   };
   auto LookupLoopInfo = [&FAM](Function &F) -> LoopInfo & {
     return FAM.getResult<LoopAnalysis>(F);
-  };
-  auto LookupAssumptionCache = [&FAM](Function &F) -> AssumptionCache * {
-    return FAM.getCachedResult<AssumptionAnalysis>(F);
   };
   auto AARGetter = [&](Function &F) -> AAResults & {
     return FAM.getResult<AAManager>(F);
@@ -1241,12 +2252,13 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
       CandidateMap;
 
   DenseMap<Function *,
-           SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
+           SmallDenseMap<std::pair<Instruction *, Type *>, int>>
       ReferenceMap;
 
   DenseMap<Function *, SmallVector<Type *>> ParamMap;
   DenseMap<Function *, SmallBitVector> InvalidateMap;
   SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+  DenseMap<Type *, SmallVector<Value *>> GEPTypeToIndices;
   SmallDenseSet<std::pair<Type *, Type *>, 4> TranslatedTypeSet;
 
   // Silently exit this optimization is disabled.
@@ -1274,74 +2286,31 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
 
   propagateNewTypeDefinitions(UniqueTypeSet, TranslatedTypeSet, M);
 
-  LazyCallGraph CG(M, LookupTLI);
-  CG.buildRefSCCs();
+  mapContainerAccessToGlossary(UniqueTypeSet, GEPTypeToIndices, CandidateMap,
+                               M);
 
-  bool LocalChange, Changed = false;
-  do {
-    LocalChange = false;
+  // Once we have the candidates, walk all functions updating the
+  // candidates with updated SoA references and data member array uses.
+  for (Function &F : M) {
+    if (F.isDeclaration())
+      continue;
 
-    // Once we have the candidates, walk all functions updating the
-    // candidates with updated SoA references and data member array uses.
-    SmallVector<Function *, 100> Worklist;
-    for (Function &OldF : M) {
-      const TargetTransformInfo &TTI = FAM.getResult<TargetIRAnalysis>(OldF);
-      // TODO: updateArguments is a stub for now until we fill it in. This
-      //       will be the place where we update params and uses in the
-      //       function with the updated SoA equivalents as we will be
-      //       replacing the old function with a modified call signature
-      //       and so have to replace it. We will also address return types
-      //       as needed.
-      Function *NewF =
-          updateArguments(&OldF, AARGetter, MaxElements, None, TTI);
-      if (!NewF)
-        continue;
-      LocalChange = true;
-
-      LazyCallGraph::Node &N = CG.get(OldF);
-
-      // Remove @llvm.assume calls that will be moved to the new function
-      // from the old function's assumption cache.
-      AssumptionCache *AC = LookupAssumptionCache(OldF);
-      for (BasicBlock &Block : OldF) {
-        for (Instruction &I : llvm::make_early_inc_range(Block)) {
-          if (auto *AI = dyn_cast<AssumeInst>(&I)) {
-            if (AC)
-              AC->unregisterAssumption(AI);
-            AI->eraseFromParent();
-          }
-        }
-      }
-
-      // Directly substitute the functions in the call graph. Note that this
-      // requires the old function to be completely dead and completely
-      // replaced by the new function. It does no call graph updates, it
-      // merely swaps out the particular function mapped to a particular node
-      // in the graph.  We do this as we are altering the function definition
-      // of OldF's parameters in these cases.  We will map as many as
-      // MaxElements parameters to replace the AoS instance, member usage as
-      // parameters will be the same where the call site will reference an array
-      // indexed field.
-      CG.lookupSCC(N)->getOuterRefSCC().replaceNodeFunction(N, *NewF);
-      FAM.clear(OldF, OldF.getName());
-      Worklist.push_back(&OldF);
-
-      PreservedAnalyses FuncPA;
-      FuncPA.preserveSet<CFGAnalyses>();
-      for (auto *U : NewF->users()) {
-        auto *UserF = cast<CallBase>(U)->getFunction();
-        // TODO: visit all the callers of OldF since we modify the call
-        // signature, there may be side effect code to inject at each site.
-        FAM.invalidate(*UserF, FuncPA);
-      }
-    }
-    // Now remove all worklist Functions from this Module.
-    while (!Worklist.empty()) {
-      Function *F = Worklist.pop_back_val();
-      F->eraseFromParent();
-    }
-    Changed |= LocalChange;
-  } while (LocalChange);
+    const TargetTransformInfo &TTI = FAM.getResult<TargetIRAnalysis>(F);
+    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+        &LocalReferenceMap = ReferenceMap[&F];
+    SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
+        &LocalCandidateMap = CandidateMap[&F];
+    TargetLibraryInfo &TLI = LookupTLI(F);
+    // This is the place where we update params and uses in the
+    // function with the updated SoA equivalents as we will be
+    // replacing the old function with a modified call signature
+    // when necessary.
+    Changed =
+        translateReferences(&F, AARGetter, MaxElements, None, TTI, TLI,
+                            LocalReferenceMap, LocalParamMap, LocalCandidateMap,
+                            UniqueTypeSet, TranslatedTypeSet, GEPTypeToIndices);
+  }
 
   if (!Changed)
     return PreservedAnalyses::all();
@@ -1366,7 +2335,6 @@ public:
   bool runOnModule(Module &M) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addRequired<AssumptionCacheTracker>();
     AU.addRequired<AAResultsWrapperPass>();
     AU.addRequired<LoopInfoWrapperPass>();
     AU.addPreserved<LoopInfoWrapperPass>();
@@ -1390,7 +2358,6 @@ char LoopDataLayoutLegacyPass::ID = 0;
 
 INITIALIZE_PASS_BEGIN(LoopDataLayoutLegacyPass, "loop-data-layout",
                       "Discover data layout opportunities", false, false)
-INITIALIZE_PASS_DEPENDENCY(AssumptionCacheTracker)
 INITIALIZE_PASS_DEPENDENCY(AAResultsWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(LoopInfoWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(ScalarEvolutionWrapperPass)
@@ -1411,19 +2378,13 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
   if (!EnableLoopDataLayout)
     return false;
 
-  bool LocalChange, Changed = false;
-
+  bool Changed = false;
   auto LookupScalarEvolutionInfo =
       [this, &Changed](Function &F) -> ScalarEvolution & {
     return this->getAnalysis<ScalarEvolutionWrapperPass>(F, &Changed).getSE();
   };
   auto LookupLoopInfo = [this, &Changed](Function &F) -> LoopInfo & {
     return this->getAnalysis<LoopInfoWrapperPass>(F, &Changed).getLoopInfo();
-  };
-  auto LookupACT = [this](Function &F) -> AssumptionCache * {
-    if (auto *ACT = this->getAnalysisIfAvailable<AssumptionCacheTracker>())
-      return ACT->lookupAssumptionCache(F);
-    return nullptr;
   };
   auto LookupTLI = [this](Function &F) -> TargetLibraryInfo & {
     return this->getAnalysis<TargetLibraryInfoWrapperPass>().getTLI(F);
@@ -1434,11 +2395,12 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
       SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>>
       CandidateMap;
   DenseMap<Function *,
-           SmallDenseMap<std::pair<const Instruction *, Type *>, int>>
+           SmallDenseMap<std::pair<Instruction *, Type *>, int>>
       ReferenceMap;
   DenseMap<Function *, SmallVector<Type *>> ParamMap;
   DenseMap<Function *, SmallBitVector> InvalidateMap;
   SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+  DenseMap<Type *, SmallVector<Value *>> GEPTypeToIndices;
   SmallDenseSet<std::pair<Type *, Type *>, 4> TranslatedTypeSet;
   LegacyAARGetter AARGetter(*this);
 
@@ -1463,67 +2425,33 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
 
   propagateNewTypeDefinitions(UniqueTypeSet, TranslatedTypeSet, M);
 
-  LazyCallGraph CG(M, LookupTLI);
-  CG.buildRefSCCs();
+  mapContainerAccessToGlossary(UniqueTypeSet, GEPTypeToIndices, CandidateMap,
+                               M);
 
-  do {
-    LocalChange = false;
+  // Once we have the candidates, walk all functions looking for
+  // container type parameters, data member parameters and local
+  // instance of variables of these types to update.
+  for (Function &F : M) {
+    if (F.isDeclaration())
+      continue;
 
-    // Once we have the candidates, walk all functions looking for
-    // container type parameters, data member parameters and local
-    // instance of variables of these types to update.
-    SmallVector<Function *, 100> Worklist;
-    for (Function &OldF : M) {
-      const TargetTransformInfo &TTI =
-          getAnalysis<TargetTransformInfoWrapperPass>().getTTI(OldF);
-
-      // TODO: updateArguments is a stub for now until we fill it in. This
-      //       will be the place where we update params and uses in the
-      //       function with the updated SoA equivalents as we will be
-      //       replacing the old function with a modified call signature
-      //       and so have to replace it.
-      Function *NewF =
-          updateArguments(&OldF, AARGetter, MaxElements, None, TTI);
-      if (!NewF)
-        continue;
-
-      // TODO: add local instance processing here
-      LocalChange = true;
-
-      LazyCallGraph::Node &N = CG.get(OldF);
-
-      // Remove @llvm.assume calls that will be moved to the new function
-      // from the old function's assumption cache.
-      AssumptionCache *AC = LookupACT(OldF);
-      for (BasicBlock &Block : OldF) {
-        for (Instruction &I : llvm::make_early_inc_range(Block)) {
-          if (auto *AI = dyn_cast<AssumeInst>(&I)) {
-            if (AC)
-              AC->unregisterAssumption(AI);
-            AI->eraseFromParent();
-          }
-        }
-      }
-
-      // Directly substitute the functions in the call graph. Note that this
-      // requires the old function to be completely dead and completely
-      // replaced by the new function. It does no call graph updates, it
-      // merely swaps out the particular function mapped to a particular node
-      // in the graph.  We do this as we are altering the function definition
-      // of OldF's parameters in these cases.  We will map as many as
-      // MaxElements parameters to replace the AoS instance, member usage as
-      // parameters will be the same where the call site will reference an array
-      // indexed field.
-      CG.lookupSCC(N)->getOuterRefSCC().replaceNodeFunction(N, *NewF);
-      Worklist.push_back(&OldF);
-    }
-    // Now remove all worklist Functions from this Module.
-    while (!Worklist.empty()) {
-      Function *F = Worklist.pop_back_val();
-      F->eraseFromParent();
-    }
-    Changed |= LocalChange;
-  } while (LocalChange);
+    const TargetTransformInfo &TTI =
+        getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
+    SmallVector<Type *> &LocalParamMap = ParamMap[&F];
+    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+        &LocalReferenceMap = ReferenceMap[&F];
+    SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
+        &LocalCandidateMap = CandidateMap[&F];
+    TargetLibraryInfo &TLI = LookupTLI(F);
+    // This is the place where we update params and uses in the
+    // function with the updated SoA equivalents as we will be
+    // replacing the old function with a modified call signature
+    // when necessary.
+    Changed =
+        translateReferences(&F, AARGetter, MaxElements, None, TTI, TLI,
+                            LocalReferenceMap, LocalParamMap, LocalCandidateMap,
+                            UniqueTypeSet, TranslatedTypeSet, GEPTypeToIndices);
+  }
 
   return Changed;
 }
