@@ -11233,6 +11233,24 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       }
     }
 
+    // Fold vp_merge_vl (M2, vp_merge_vl (M1, T1, F1, VL), F2, VL) ->
+    //      vmerge_vl (F2, M1, T1, F2, VL)
+    //      when M2 is all 1s.
+    SDValue MergedWhenTrue = N->getOperand(1);
+    if (MergedWhenTrue.getOpcode() == RISCVISD::VP_MERGE_VL &&
+        MergedWhenTrue.getOperand(3) == VL) {
+      // Now we know the operand we will merge when true is a vp_merge_vl
+      // with the same VL length as it's parent vp_merge_vl N.
+      if (ISD::isConstantSplatVectorAllOnes(Mask.getNode())) {
+        return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
+                           N->getOperand(2),             // F2
+                           MergedWhenTrue.getOperand(0), // M1
+                           MergedWhenTrue.getOperand(1), // T1
+                           MergedWhenTrue.getOperand(2), // T2
+                           VL);
+      }
+    }
+
     break;
   }
 #endif // SIFIVE_CUSTOMIZATION
