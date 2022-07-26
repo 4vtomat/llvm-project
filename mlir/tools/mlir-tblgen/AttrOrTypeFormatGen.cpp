@@ -60,7 +60,11 @@ public:
   MethodBody &genPrintGuard(FmtContext &ctx, MethodBody &os) const {
     std::string self = param.getAccessorName() + "()";
     ctx.withSelf(self);
+#ifdef SIFIVE_CUSTOMIZATION
+    os << tgfmt("(!!$_self", &ctx);
+#else
     os << tgfmt("($_self", &ctx);
+#endif // SIFIVE_CUSTOMIZATION
     if (llvm::Optional<StringRef> defaultValue = getParam().getDefaultValue()) {
       // Use the `comparator` field if it exists, else the equality operator.
       std::string valueStr = tgfmt(*defaultValue, &ctx).str();
@@ -413,8 +417,13 @@ void DefFormat::genParamsParser(ParamsDirective *el, FmtContext &ctx,
     ParameterElement *el = *std::prev(it);
     // Parse a comma if the last optional parameter had a value.
     if (el->isOptional()) {
+#ifdef SIFIVE_CUSTOMIZATION
+      os << formatv("if (::mlir::succeeded(_result_{0}) && !!*_result_{0}) {{\n",
+                    el->getName());
+#else
       os << formatv("if (::mlir::succeeded(_result_{0}) && *_result_{0}) {{\n",
                     el->getName());
+#endif // SIFIVE_CUSTOMIZATION
       os.indent();
     }
     if (it <= lastReqIt) {
