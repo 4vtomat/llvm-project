@@ -30,18 +30,16 @@ class MachineInstr;
 class MachineOperand;
 class PassRegistry;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVLateCodeGenPreparePass();
 void initializeRISCVLateCodeGenPreparePass(PassRegistry &);
+
+FunctionPass *createRISCVTypePromotionPass();
+void initializeRISCVTypePromotionPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
-FunctionPass *createRISCVTypePromotionPass(); // SIFIVE
-void initializeRISCVTypePromotionPass(PassRegistry &); // SIFIVE
-=======
 FunctionPass *createRISCVCodeGenPreparePass();
 void initializeRISCVCodeGenPreparePass(PassRegistry &);
->>>>>>> llvm/main
 
 bool lowerRISCVMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
                                     AsmPrinter &AP);
