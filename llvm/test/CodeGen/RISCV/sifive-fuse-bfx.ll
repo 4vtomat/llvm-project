@@ -111,10 +111,10 @@ define i32 @test_ubfx_i16(i16 %x, i16 %y) {
 define i32 @test_sbfx_i32(i32 %x, i32 %y) {
 ; NOFUSION-LABEL: test_sbfx_i32:
 ; NOFUSION:       # %bb.0:
-; NOFUSION-NEXT:    slliw a0, a0, 23
-; NOFUSION-NEXT:    slliw a1, a1, 9
-; NOFUSION-NEXT:    sraiw a0, a0, 28
-; NOFUSION-NEXT:    sraiw a1, a1, 22
+; NOFUSION-NEXT:    slli a0, a0, 55
+; NOFUSION-NEXT:    slli a1, a1, 41
+; NOFUSION-NEXT:    srai a0, a0, 60
+; NOFUSION-NEXT:    srai a1, a1, 54
 ; NOFUSION-NEXT:    mul a0, a0, a1
 ; NOFUSION-NEXT:    ret
 ;

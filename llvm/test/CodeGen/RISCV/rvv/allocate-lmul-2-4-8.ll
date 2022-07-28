@@ -73,27 +73,6 @@ define void @lmul8() nounwind {
 }
 
 define void @lmul1_and_2() nounwind {
-; NOZBA-LABEL: lmul1_and_2:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    add sp, sp, t0
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: lmul1_and_2:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    add sp, sp, t0
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: lmul1_and_2:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a0, vlenb
@@ -130,38 +109,6 @@ define void @lmul2_and_4() nounwind {
 }
 
 define void @lmul1_and_4() nounwind {
-; NOZBA-LABEL: lmul1_and_4:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    addi sp, sp, -32
-; NOZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    addi s0, sp, 32
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 2
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    andi sp, sp, -32
-; NOZBA-NEXT:    addi sp, s0, -32
-; NOZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    addi sp, sp, 32
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: lmul1_and_4:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    addi sp, sp, -32
-; ZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    addi s0, sp, 32
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh2add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    andi sp, sp, -32
-; ZBA-NEXT:    addi sp, s0, -32
-; ZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    addi sp, sp, 32
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: lmul1_and_4:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -48
@@ -183,27 +130,6 @@ define void @lmul1_and_4() nounwind {
 }
 
 define void @lmul2_and_1() nounwind {
-; NOZBA-LABEL: lmul2_and_1:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    add sp, sp, t0
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: lmul2_and_1:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    add sp, sp, t0
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: lmul2_and_1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a0, vlenb
@@ -219,38 +145,6 @@ define void @lmul2_and_1() nounwind {
 }
 
 define void @lmul4_and_1() nounwind {
-; NOZBA-LABEL: lmul4_and_1:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    addi sp, sp, -32
-; NOZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    addi s0, sp, 32
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 2
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    andi sp, sp, -32
-; NOZBA-NEXT:    addi sp, s0, -32
-; NOZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    addi sp, sp, 32
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: lmul4_and_1:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    addi sp, sp, -32
-; ZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    addi s0, sp, 32
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh2add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    andi sp, sp, -32
-; ZBA-NEXT:    addi sp, s0, -32
-; ZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    addi sp, sp, 32
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: lmul4_and_1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -48
@@ -358,35 +252,6 @@ define void @lmul4_and_2_x2_1() nounwind {
 
 
 define void @gpr_and_lmul1_and_2() nounwind {
-; NOZBA-LABEL: gpr_and_lmul1_and_2:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    addi sp, sp, -16
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    li a0, 3
-; NOZBA-NEXT:    sd a0, 8(sp)
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 1
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    add sp, sp, t0
-; NOZBA-NEXT:    addi sp, sp, 16
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: gpr_and_lmul1_and_2:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    addi sp, sp, -16
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    li a0, 3
-; ZBA-NEXT:    sd a0, 8(sp)
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh1add t0, t0, t0
-; ZBA-NEXT:    add sp, sp, t0
-; ZBA-NEXT:    addi sp, sp, 16
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: gpr_and_lmul1_and_2:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
@@ -408,42 +273,6 @@ define void @gpr_and_lmul1_and_2() nounwind {
 }
 
 define void @gpr_and_lmul1_and_4() nounwind {
-; NOZBA-LABEL: gpr_and_lmul1_and_4:
-; NOZBA:       # %bb.0:
-; NOZBA-NEXT:    addi sp, sp, -32
-; NOZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; NOZBA-NEXT:    addi s0, sp, 32
-; NOZBA-NEXT:    csrr t0, vlenb
-; NOZBA-NEXT:    slli t1, t0, 2
-; NOZBA-NEXT:    add t0, t1, t0
-; NOZBA-NEXT:    sub sp, sp, t0
-; NOZBA-NEXT:    andi sp, sp, -32
-; NOZBA-NEXT:    li a0, 3
-; NOZBA-NEXT:    sd a0, 8(sp)
-; NOZBA-NEXT:    addi sp, s0, -32
-; NOZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; NOZBA-NEXT:    addi sp, sp, 32
-; NOZBA-NEXT:    ret
-;
-; ZBA-LABEL: gpr_and_lmul1_and_4:
-; ZBA:       # %bb.0:
-; ZBA-NEXT:    addi sp, sp, -32
-; ZBA-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
-; ZBA-NEXT:    addi s0, sp, 32
-; ZBA-NEXT:    csrr t0, vlenb
-; ZBA-NEXT:    sh2add t0, t0, t0
-; ZBA-NEXT:    sub sp, sp, t0
-; ZBA-NEXT:    andi sp, sp, -32
-; ZBA-NEXT:    li a0, 3
-; ZBA-NEXT:    sd a0, 8(sp)
-; ZBA-NEXT:    addi sp, s0, -32
-; ZBA-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    ld s0, 16(sp) # 8-byte Folded Reload
-; ZBA-NEXT:    addi sp, sp, 32
-; ZBA-NEXT:    ret
 ; CHECK-LABEL: gpr_and_lmul1_and_4:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -48

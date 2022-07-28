@@ -88,32 +88,22 @@ define void @sext_v32i8_v32i32(<32 x i8>* %x, <32 x i32>* %z) {
 ; LMULMAX2-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
 ; LMULMAX2-NEXT:    vslidedown.vi v10, v8, 16
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; LMULMAX2-NEXT:    vslidedown.vi v14, v10, 8
+; LMULMAX2-NEXT:    vslidedown.vi v12, v10, 8
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-<<<<<<< HEAD
-; LMULMAX2-NEXT:    vsext.vf4 v12, v9
+; LMULMAX2-NEXT:    vsext.vf4 v14, v12
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; LMULMAX2-NEXT:    vslidedown.vi v9, v8, 8
+; LMULMAX2-NEXT:    vslidedown.vi v12, v8, 8
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; LMULMAX2-NEXT:    vsext.vf4 v14, v9
-; LMULMAX2-NEXT:    vsext.vf4 v16, v10
+; LMULMAX2-NEXT:    vsext.vf4 v16, v12
+; LMULMAX2-NEXT:    vsext.vf4 v12, v10
 ; LMULMAX2-NEXT:    vsext.vf4 v10, v8
 ; LMULMAX2-NEXT:    vse32.v v10, (a1)
 ; LMULMAX2-NEXT:    addi a0, a1, 64
-=======
-; LMULMAX2-NEXT:    vsext.vf4 v16, v14
-; LMULMAX2-NEXT:    vsext.vf4 v14, v8
-; LMULMAX2-NEXT:    vsext.vf4 v8, v10
-; LMULMAX2-NEXT:    addi a0, a1, 64
-; LMULMAX2-NEXT:    vse32.v v8, (a0)
-; LMULMAX2-NEXT:    vse32.v v14, (a1)
-; LMULMAX2-NEXT:    addi a0, a1, 96
->>>>>>> llvm/main
-; LMULMAX2-NEXT:    vse32.v v16, (a0)
-; LMULMAX2-NEXT:    addi a0, a1, 32
-; LMULMAX2-NEXT:    vse32.v v14, (a0)
-; LMULMAX2-NEXT:    addi a0, a1, 96
 ; LMULMAX2-NEXT:    vse32.v v12, (a0)
+; LMULMAX2-NEXT:    addi a0, a1, 32
+; LMULMAX2-NEXT:    vse32.v v16, (a0)
+; LMULMAX2-NEXT:    addi a0, a1, 96
+; LMULMAX2-NEXT:    vse32.v v14, (a0)
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-LABEL: sext_v32i8_v32i32:

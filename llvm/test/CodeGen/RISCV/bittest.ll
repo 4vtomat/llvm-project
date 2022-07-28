@@ -1252,11 +1252,11 @@ define void @bit_31_z_branch_i32(i32 signext %0) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, 524288
 ; RV64-NEXT:    and a0, a0, a1
-; RV64-NEXT:    bnez a0, .LBB43_2
+; RV64-NEXT:    beqz a0, .LBB43_2
 ; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    tail bar@plt
-; RV64-NEXT:  .LBB43_2:
 ; RV64-NEXT:    ret
+; RV64-NEXT:  .LBB43_2:
+; RV64-NEXT:    tail bar@plt
   %2 = and i32 %0, 2147483648
   %3 = icmp eq i32 %2, 0
   br i1 %3, label %4, label %5
