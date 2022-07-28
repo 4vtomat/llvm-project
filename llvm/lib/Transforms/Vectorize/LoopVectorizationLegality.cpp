@@ -140,6 +140,21 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     Force.Value = FK_Enabled;
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  // force-vector-width should be ignored if VLA is enabled
+  if (UseVLAVectorizer && Width.Value) {
+      auto VectorizationFactor = Width.Value;
+      Width.Value = VectorizerParams::DefaultVectorizationFactor;
+      ORE.emit([&]() {
+        return OptimizationRemarkMissed(DEBUG_TYPE, "IgnoreUserVF",
+                                        L->getStartLoc(),
+                                        L->getHeader())
+               << "Ignoring UserVF=" << ore::NV("UserVF", VectorizationFactor)
+               << " because VLA was enabled.";
+       });
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // If the metadata doesn't explicitly specify whether to enable scalable
   // vectorization, then decide based on the following criteria (increasing
   // level of priority):

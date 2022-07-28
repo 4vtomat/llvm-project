@@ -39,6 +39,10 @@ struct VectorizerParams {
 
   /// VF as overridden by the user.
   static unsigned VectorizationFactor;
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Default VF
+  static const unsigned DefaultVectorizationFactor;
+#endif // SIFIVE_CUSTOMIZATION
   /// Interleave factor as overridden by the user.
   static unsigned VectorizationInterleave;
   /// True if force-vector-interleave was specified by the user.
