@@ -149,9 +149,6 @@ def F_ParamWithAccessorTypeAttr : TestAttr<"ParamWithAccessorType"> {
 // DEF: ParamWithAccessorTypeAttrStorage(std::string param)
 // DEF: StringRef ParamWithAccessorTypeAttr::getParam()
 
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION BEGIN
-=======
 def G_BuilderWithReturnTypeAttr : TestAttr<"BuilderWithReturnType"> {
   let parameters = (ins "int":$a);
   let genVerifyDecl = 1;
@@ -162,7 +159,6 @@ def G_BuilderWithReturnTypeAttr : TestAttr<"BuilderWithReturnType"> {
 // DECL: ::mlir::Attribute get(
 // DECL: ::mlir::Attribute getChecked(
 
->>>>>>> llvm/main
 def H_TestExtraClassAttr : TestAttr<"TestExtraClass"> {
   let extraClassDeclaration = [{
     /// Test Method
@@ -182,8 +178,3 @@ def H_TestExtraClassAttr : TestAttr<"TestExtraClass"> {
 // DEF-LABEL: int TestExtraClassAttr::getFoo(int i) {
 // DEF: return i+1;
 // DEF-NEXT: }
-<<<<<<< HEAD
-
-// SIFIVE_CUSTOMIZATION END
-=======
->>>>>>> llvm/main
