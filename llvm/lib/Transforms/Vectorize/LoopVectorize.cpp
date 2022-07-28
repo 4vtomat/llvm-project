@@ -4459,17 +4459,11 @@ void InnerLoopVectorizer::widenCallInstruction(CallInst &CI, VPValue *Def,
   // version of the instruction.
   // Is it beneficial to perform intrinsic call compared to lib call?
   bool NeedToScalarize = false;
-<<<<<<< HEAD
-  InstructionCost CallCost = Cost->getVectorCallCost(CI, VF, NeedToScalarize);
-#if SIFIVE_CUSTOMIZATION
-  InstructionCost IntrinsicCost =
-      ID ? Cost->getVectorIntrinsicCost(CI, VF) : InstructionCost::getInvalid();
-#endif // SIFIVE_CUSTOMIZATION
-=======
   InstructionCost CallCost = Cost->getVectorCallCost(&CI, VF, NeedToScalarize);
-  InstructionCost IntrinsicCost =
-      ID ? Cost->getVectorIntrinsicCost(&CI, VF) : 0;
->>>>>>> llvm/main
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost IntrinsicCost = ID ? Cost->getVectorIntrinsicCost(&CI, VF)
+                                     : InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
   bool UseVectorIntrinsic = ID && IntrinsicCost <= CallCost;
   assert((UseVectorIntrinsic || !NeedToScalarize) &&
          "Instruction should be scalarized elsewhere.");
@@ -4736,17 +4730,13 @@ bool LoopVectorizationCostModel::isScalarWithPredication(
   case Instruction::SDiv:
   case Instruction::SRem:
   case Instruction::URem:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Legal->preferPredicatedVectorOps())
       return false;
 #endif // SIFIVE_CUSTOMIZATION
-    return mayDivideByZero(*I);
-=======
     // TODO: We can use the loop-preheader as context point here and get
     // context sensitive reasoning
     return !isSafeToSpeculativelyExecute(I);
->>>>>>> llvm/main
   }
   return false;
 }
@@ -7558,36 +7548,9 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       if (isa<StoreInst>(&I) && isScalarWithPredication(&I, VF))
         NumPredStores++;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (Legal->isUniformMemOp(I) && !Hints->isFixedVectorizationDisabled()) {
 #endif // SIFIVE_CUSTOMIZATION
-        // TODO: Avoid replicating loads and stores instead of
-        // relying on instcombine to remove them.
-        // Load: Scalar load + broadcast
-        // Store: Scalar store + isLoopInvariantStoreValue ? 0 : extract
-        InstructionCost Cost;
-        if (isa<StoreInst>(&I) && VF.isScalable() &&
-            isLegalGatherOrScatter(&I, VF)) {
-#if SIFIVE_CUSTOMIZATION
-          Cost = getGatherScatterCost(&I, VF);
-          if (UseStridedAccesses && canUseStridedAccess(&I)) {
-            setWideningDecision(&I, VF, CM_Strided, Cost);
-            LLVM_DEBUG(llvm::dbgs() << "Can use strided access " << I << "\n");
-          } else {
-            if (UseStridedAccesses) {
-              LLVM_DEBUG(llvm::dbgs()
-                         << "Cannot use strided access " << I << "\n");
-            }
-            setWideningDecision(&I, VF, CM_GatherScatter, Cost);
-          }
-#endif // SIFIVE_CUSTOMIZATION
-        } else {
-          Cost = getUniformMemOpCost(&I, VF);
-          setWideningDecision(&I, VF, CM_Scalarize, Cost);
-        }
-=======
-      if (Legal->isUniformMemOp(I)) {
         // Lowering story for uniform memory ops is currently a bit complicated.
         // Scalarization works for everything which isn't a store with scalable
         // VF.  Fixed len VFs just scalarize and then DCE later; scalarization
@@ -7596,10 +7559,22 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         // scalable stores, we use a scatter if legal.  If not, we have no way
         // to lower (currently) and thus have to abort vectorization.
         if (isa<StoreInst>(&I) && VF.isScalable()) {
-          if (isLegalGatherOrScatter(&I, VF))
-            setWideningDecision(&I, VF, CM_GatherScatter,
-                                getGatherScatterCost(&I, VF));
-          else
+#if SIFIVE_CUSTOMIZATION
+          if (isLegalGatherOrScatter(&I, VF)) {
+            InstructionCost Cost = getGatherScatterCost(&I, VF);
+            if (UseStridedAccesses && canUseStridedAccess(&I)) {
+              setWideningDecision(&I, VF, CM_Strided, Cost);
+              LLVM_DEBUG(llvm::dbgs()
+                         << "Can use strided access " << I << "\n");
+            } else {
+              if (UseStridedAccesses) {
+                LLVM_DEBUG(llvm::dbgs()
+                           << "Cannot use strided access " << I << "\n");
+              }
+              setWideningDecision(&I, VF, CM_GatherScatter, Cost);
+            }
+          } else
+#endif // SIFIVE_CUSTOMIZATION
             // Error case, abort vectorization
             setWideningDecision(&I, VF, CM_Scalarize,
                                 InstructionCost::getInvalid());
@@ -7611,7 +7586,6 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         // instcombine to remove them.
         setWideningDecision(&I, VF, CM_Scalarize,
                             getUniformMemOpCost(&I, VF));
->>>>>>> llvm/main
         continue;
       }
 
