@@ -743,12 +743,6 @@ void PassManagerBuilder::populateModulePassManager(
 
   addExtensionsToPM(EP_VectorizerStart, MPM);
 
-#if SIFIVE_CUSTOMIZATION
-  // AoS to SoA transformations
-  if (PerformThinLTO)
-    MPM.add(createLoopDataLayoutPass(/* MaxElements */ 2, /* ThinLTO */ true));
-#endif
-
   // Re-rotate loops in all our loop nests. These may have fallout out of
   // rotated form due to GVN or other transformations, and the vectorizer relies
   // on the rotated form. Disable header duplication at -Oz.
