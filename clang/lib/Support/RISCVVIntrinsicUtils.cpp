@@ -114,7 +114,7 @@ bool RVVType::verifyType() const {
     return false;
   if (isFloat() && ElementBitwidth == 8)
     return false;
-  unsigned V = Scale.getValue();
+  unsigned V = Scale.value();
   switch (ElementBitwidth) {
   case 1:
   case 8:
@@ -917,7 +917,7 @@ RVVType::computeTypes(BasicType BT, int Log2LMUL, unsigned NF,
     if (!T)
       return llvm::None;
     // Record legal type index
-    Types.push_back(T.getValue());
+    Types.push_back(T.value());
   }
   return Types;
 }
@@ -991,6 +991,7 @@ RVVIntrinsic::RVVIntrinsic(
   if (!OverloadedSuffix.empty())
     OverloadedName += "_" + OverloadedSuffix.str();
 
+<<<<<<< HEAD
   auto appendPolicySuffix = [&](std::string suffix) {
     Name += suffix;
     BuiltinName += suffix;
@@ -1064,6 +1065,8 @@ RVVIntrinsic::RVVIntrinsic(
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> llvm/main
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
   InputTypes.assign(OutInTypes.begin() + 1, OutInTypes.end());
@@ -1100,6 +1103,7 @@ std::string RVVIntrinsic::getSuffixStr(
   return join(SuffixStrs, "_");
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     llvm::ArrayRef<PrototypeDescriptor> ProtoSeq, bool IsMasked,
@@ -1157,12 +1161,37 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     if (NF == 1 && IsPrototypeDefaultTU && DefaultPolicy == Policy::TAMA &&
         HasPassthruOp && !HasMaskedOffOperand)
       NewProtoSeq.erase(NewProtoSeq.begin() + 1);
+=======
+llvm::SmallVector<PrototypeDescriptor>
+RVVIntrinsic::computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> Prototype,
+                                  bool IsMasked, bool HasMaskedOffOperand,
+                                  bool HasVL, unsigned NF) {
+  SmallVector<PrototypeDescriptor> NewPrototype(Prototype.begin(),
+                                                Prototype.end());
+  if (IsMasked) {
+    // If HasMaskedOffOperand, insert result type as first input operand.
+    if (HasMaskedOffOperand) {
+      if (NF == 1) {
+        NewPrototype.insert(NewPrototype.begin() + 1, NewPrototype[0]);
+      } else {
+        // Convert
+        // (void, op0 address, op1 address, ...)
+        // to
+        // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
+        PrototypeDescriptor MaskoffType = NewPrototype[1];
+        MaskoffType.TM &= ~static_cast<uint8_t>(TypeModifier::Pointer);
+        for (unsigned I = 0; I < NF; ++I)
+          NewPrototype.insert(NewPrototype.begin() + NF + 1, MaskoffType);
+      }
+    }
+>>>>>>> llvm/main
     if (HasMaskedOffOperand && NF > 1) {
       // Convert
       // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
       // to
       // (void, op0 address, op1 address, ..., mask, maskedoff0, maskedoff1,
       // ...)
+<<<<<<< HEAD
       NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1,
                          PrototypeDescriptor::Mask);
     } else {
@@ -1196,11 +1225,19 @@ SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
         for (unsigned I = 0; I < NF; ++I)
           NewProtoSeq.insert(NewProtoSeq.begin() + NF + 1, MaskoffType);
       }
+=======
+      NewPrototype.insert(NewPrototype.begin() + NF + 1,
+                          PrototypeDescriptor::Mask);
+    } else {
+      // If IsMasked, insert PrototypeDescriptor:Mask as first input operand.
+      NewPrototype.insert(NewPrototype.begin() + 1, PrototypeDescriptor::Mask);
+>>>>>>> llvm/main
     }
   }
 
   // If HasVL, append PrototypeDescriptor:VL to last operand
   if (HasVL)
+<<<<<<< HEAD
     NewProtoSeq.push_back(PrototypeDescriptor::VL);
   return NewProtoSeq;
 }
@@ -1249,6 +1286,12 @@ RVVIntrinsic::deSerializeSupportedPolicies(uint16_t PolicyBitMask,
 
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+    NewPrototype.push_back(PrototypeDescriptor::VL);
+  return NewPrototype;
+}
+
+>>>>>>> llvm/main
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   SmallVector<PrototypeDescriptor> PrototypeDescriptors;
   const StringRef Primaries("evwqom0ztulfi");  // SIFIVE
@@ -1270,7 +1313,10 @@ SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   return PrototypeDescriptors;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> llvm/main
 raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "{";
   OS << "\"" << Record.Name << "\",";
@@ -1282,6 +1328,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << Record.PrototypeIndex << ",";
   OS << Record.SuffixIndex << ",";
   OS << Record.OverloadedSuffixIndex << ",";
+<<<<<<< HEAD
   OS << (int)Record.PolicyBitMask << ",";
   OS << Record.RequiredExtensions << ",";
   OS << (int)Record.PrototypeLength << ",";
@@ -1300,6 +1347,21 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   return OS;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  OS << (int)Record.PrototypeLength << ",";
+  OS << (int)Record.SuffixLength << ",";
+  OS << (int)Record.OverloadedSuffixSize << ",";
+  OS << (int)Record.RequiredExtensions << ",";
+  OS << (int)Record.TypeRangeMask << ",";
+  OS << (int)Record.Log2LMULMask << ",";
+  OS << (int)Record.NF << ",";
+  OS << (int)Record.HasMasked << ",";
+  OS << (int)Record.HasVL << ",";
+  OS << (int)Record.HasMaskedOffOperand << ",";
+  OS << "},\n";
+  return OS;
+}
+>>>>>>> llvm/main
 
 } // end namespace RISCV
 } // end namespace clang

@@ -589,6 +589,84 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
   ReplaceNode(Node, CurDAG->getMachineNode(Opcode, DL, VTs, Ops));
 }
 
+bool RISCVDAGToDAGISel::tryShrinkShlLogicImm(SDNode *Node) {
+  MVT VT = Node->getSimpleValueType(0);
+  unsigned Opcode = Node->getOpcode();
+  assert((Opcode == ISD::AND || Opcode == ISD::OR || Opcode == ISD::XOR) &&
+         "Unexpected opcode");
+  SDLoc DL(Node);
+
+  // For operations of the form (x << C1) op C2, check if we can use
+  // ANDI/ORI/XORI by transforming it into (x op (C2>>C1)) << C1.
+  SDValue N0 = Node->getOperand(0);
+  SDValue N1 = Node->getOperand(1);
+
+  ConstantSDNode *Cst = dyn_cast<ConstantSDNode>(N1);
+  if (!Cst)
+    return false;
+
+  int64_t Val = Cst->getSExtValue();
+
+  // Check if immediate can already use ANDI/ORI/XORI.
+  if (isInt<12>(Val))
+    return false;
+
+  SDValue Shift = N0;
+
+  // If Val is simm32 and we have a sext_inreg from i32, then the binop
+  // produces at least 33 sign bits. We can peek through the sext_inreg and use
+  // a SLLIW at the end.
+  bool SignExt = false;
+  if (isInt<32>(Val) && N0.getOpcode() == ISD::SIGN_EXTEND_INREG &&
+      N0.hasOneUse() && cast<VTSDNode>(N0.getOperand(1))->getVT() == MVT::i32) {
+    SignExt = true;
+    Shift = N0.getOperand(0);
+  }
+
+  if (Shift.getOpcode() != ISD::SHL || !Shift.hasOneUse())
+    return false;
+
+  ConstantSDNode *ShlCst = dyn_cast<ConstantSDNode>(Shift.getOperand(1));
+  if (!ShlCst)
+    return false;
+
+  uint64_t ShAmt = ShlCst->getZExtValue();
+
+  // Make sure that we don't change the operation by removing bits.
+  // This only matters for OR and XOR, AND is unaffected.
+  uint64_t RemovedBitsMask = maskTrailingOnes<uint64_t>(ShAmt);
+  if (Opcode != ISD::AND && (Val & RemovedBitsMask) != 0)
+    return false;
+
+  int64_t ShiftedVal = Val >> ShAmt;
+  if (!isInt<12>(ShiftedVal))
+    return false;
+
+  // If we peeked through a sext_inreg, make sure the shift is valid for SLLIW.
+  if (SignExt && ShAmt >= 32)
+    return false;
+
+  // Ok, we can reorder to get a smaller immediate.
+  unsigned BinOpc;
+  switch (Opcode) {
+  default: llvm_unreachable("Unexpected opcode");
+  case ISD::AND: BinOpc = RISCV::ANDI; break;
+  case ISD::OR:  BinOpc = RISCV::ORI;  break;
+  case ISD::XOR: BinOpc = RISCV::XORI; break;
+  }
+
+  unsigned ShOpc = SignExt ? RISCV::SLLIW : RISCV::SLLI;
+
+  SDNode *BinOp =
+      CurDAG->getMachineNode(BinOpc, DL, VT, Shift.getOperand(0),
+                             CurDAG->getTargetConstant(ShiftedVal, DL, VT));
+  SDNode *SLLI =
+      CurDAG->getMachineNode(ShOpc, DL, VT, SDValue(BinOp, 0),
+                             CurDAG->getTargetConstant(ShAmt, DL, VT));
+  ReplaceNode(Node, SLLI);
+  return true;
+}
+
 void RISCVDAGToDAGISel::Select(SDNode *Node) {
   // If we have a custom node, we have already selected.
   if (Node->isMachineOpcode()) {
@@ -700,6 +778,14 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     // 32 trailing ones should use srliw via tablegen pattern.
     if (TrailingOnes == 32 || ShAmt >= TrailingOnes)
       break;
+    // If C2 is (1 << ShAmt) use bexti if possible.
+    if (Subtarget->hasStdExtZbs() && ShAmt + 1 == TrailingOnes) {
+      SDNode *BEXTI =
+          CurDAG->getMachineNode(RISCV::BEXTI, DL, VT, N0->getOperand(0),
+                                 CurDAG->getTargetConstant(ShAmt, DL, VT));
+      ReplaceNode(Node, BEXTI);
+      return;
+    }
     unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
 #if SIFIVE_CUSTOMIZATION
     if (Subtarget->hasFuseBFX()) {
@@ -808,6 +894,12 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     ReplaceNode(Node, SRAI);
     return;
   }
+  case ISD::OR:
+  case ISD::XOR:
+    if (tryShrinkShlLogicImm(Node))
+      return;
+
+    break;
   case ISD::AND: {
     auto *N1C = dyn_cast<ConstantSDNode>(Node->getOperand(1));
     if (!N1C)
@@ -1003,6 +1095,9 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       }
     }
 
+    if (tryShrinkShlLogicImm(Node))
+      return;
+
     break;
   }
   case ISD::MUL: {
@@ -1028,18 +1123,17 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     if (!isMask_64(C2))
       break;
 
-    // This should be the only use of the AND unless we will use
-    // (SRLI (SLLI X, 32), 32). We don't use a shift pair for other AND
-    // constants.
-    if (!N0.hasOneUse() && C2 != UINT64_C(0xFFFFFFFF))
-      break;
-
-    // If this can be an ANDI, ZEXT.H or ZEXT.W we don't need to do this
-    // optimization.
-    if (isInt<12>(C2) ||
+    // If this can be an ANDI, ZEXT.H or ZEXT.W, don't do this if the ANDI/ZEXT
+    // has multiple users or the constant is a simm12. This prevents inserting
+    // a shift and still have uses of the AND/ZEXT. Shifting a simm12 will
+    // likely make it more costly to materialize. Otherwise, using a SLLI
+    // might allow it to be compressed.
+    bool IsANDIOrZExt =
+        isInt<12>(C2) ||
         (C2 == UINT64_C(0xFFFF) &&
          (Subtarget->hasStdExtZbb() || Subtarget->hasStdExtZbp())) ||
-        (C2 == UINT64_C(0xFFFFFFFF) && Subtarget->hasStdExtZba()))
+        (C2 == UINT64_C(0xFFFFFFFF) && Subtarget->hasStdExtZba());
+    if (IsANDIOrZExt && (isInt<12>(N1C->getSExtValue()) || !N0.hasOneUse()))
       break;
 
     // We need to shift left the AND input and C1 by a total of XLen bits.

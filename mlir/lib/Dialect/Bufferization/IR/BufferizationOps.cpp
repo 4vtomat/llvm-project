@@ -172,12 +172,12 @@ LogicalResult AllocTensorOp::bufferize(RewriterBase &rewriter,
 
   // Compute memory space of this allocation.
   unsigned memorySpace;
-  if (getMemorySpace().hasValue()) {
+  if (getMemorySpace().has_value()) {
     memorySpace = *getMemorySpace();
   } else if (getCopy()) {
     memorySpace =
         copyBuffer.getType().cast<BaseMemRefType>().getMemorySpaceAsInt();
-  } else if (options.defaultMemorySpace.hasValue()) {
+  } else if (options.defaultMemorySpace.has_value()) {
     memorySpace = *options.defaultMemorySpace;
   } else {
     return op->emitError("could not infer memory space");
@@ -204,22 +204,8 @@ LogicalResult AllocTensorOp::bufferize(RewriterBase &rewriter,
   }
 
   // Should the buffer be deallocated?
-  AnalysisState analysisState(options);
-  bool dealloc;
-  if (op->hasAttr(BufferizationDialect::kEscapeAttrName)) {
-    // AllocTensorOp has one result.
-    ArrayAttr escapeAttr =
-        op->getAttr(BufferizationDialect::kEscapeAttrName).cast<ArrayAttr>();
-    dealloc = !escapeAttr[0].cast<BoolAttr>().getValue();
-  } else {
-    // No "escape" annotation found.
-    if (options.createDeallocs) {
-      // Perform an ad-hoc analysis.
-      dealloc = !analysisState.isTensorYielded(getResult());
-    } else {
-      dealloc = false;
-    }
-  }
+  bool dealloc =
+      shouldDeallocateOpResult(getResult().cast<OpResult>(), options);
 
   // Replace op.
   replaceOpWithBufferizedValues(rewriter, getOperation(), *alloc);
@@ -470,11 +456,11 @@ struct SimplifyClones : public OpRewritePattern<CloneOp> {
     llvm::Optional<Operation *> maybeCloneDeallocOp =
         memref::findDealloc(cloneOp.getOutput());
     // Skip if either of them has > 1 deallocate operations.
-    if (!maybeCloneDeallocOp.hasValue())
+    if (!maybeCloneDeallocOp.has_value())
       return failure();
     llvm::Optional<Operation *> maybeSourceDeallocOp =
         memref::findDealloc(source);
-    if (!maybeSourceDeallocOp.hasValue())
+    if (!maybeSourceDeallocOp.has_value())
       return failure();
     Operation *cloneDeallocOp = *maybeCloneDeallocOp;
     Operation *sourceDeallocOp = *maybeSourceDeallocOp;
@@ -522,6 +508,21 @@ struct SimplifyClones : public OpRewritePattern<CloneOp> {
 void CloneOp::getCanonicalizationPatterns(RewritePatternSet &results,
                                           MLIRContext *context) {
   results.add<SimplifyClones>(context);
+}
+
+//===----------------------------------------------------------------------===//
+// DeallocTensorOp
+//===----------------------------------------------------------------------===//
+
+LogicalResult DeallocTensorOp::bufferize(RewriterBase &rewriter,
+                                         const BufferizationOptions &options) {
+  FailureOr<Value> buffer = getBuffer(rewriter, getTensor(), options);
+  if (failed(buffer))
+    return failure();
+  if (failed(options.createDealloc(rewriter, getLoc(), *buffer)))
+    return failure();
+  rewriter.eraseOp(getOperation());
+  return success();
 }
 
 //===----------------------------------------------------------------------===//

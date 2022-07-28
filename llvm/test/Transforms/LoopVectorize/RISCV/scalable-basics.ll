@@ -719,6 +719,7 @@ for.end:
   ret void
 }
 
+<<<<<<< HEAD
 define void @uniform_store(ptr noalias nocapture %a, ptr noalias nocapture %b, i64 %v, i64 %n) {
 ; VLENUNK-LABEL: @uniform_store(
 ; VLENUNK-NEXT:  entry:
@@ -1120,3 +1121,5 @@ for.body:
 for.end:
   ret i64 %v
 }
+=======
+>>>>>>> llvm/main

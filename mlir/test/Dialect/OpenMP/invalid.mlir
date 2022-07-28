@@ -705,17 +705,6 @@ func.func @omp_atomic_update8(%x: memref<i32>, %expr: i32) {
 
 // -----
 
-func.func @omp_atomic_update9(%x: memref<i32>, %expr: i32) {
-  // expected-error @below {{the update region must have at least two operations (binop and terminator)}}
-  omp.atomic.update %x : memref<i32> {
-  ^bb0(%xval: i32):
-    omp.yield (%xval : i32)
-  }
-  return
-}
-
-// -----
-
 func.func @omp_atomic_update(%x: memref<i32>, %expr: i32) {
   // expected-error @below {{the hints omp_sync_hint_uncontended and omp_sync_hint_contended cannot be combined}}
   omp.atomic.update hint(uncontended, contended) %x : memref<i32> {
@@ -1419,3 +1408,14 @@ func.func @taskloop(%lb: i32, %ub: i32, %step: i32) {
   }
   return
 }
+
+// -----
+
+func.func @omp_threadprivate() {
+  %1 = llvm.mlir.addressof @_QFsubEx : !llvm.ptr<i32>
+  // expected-error @below {{op failed to verify that all of {sym_addr, tls_addr} have same type}}
+  %2 = omp.threadprivate %1 : !llvm.ptr<i32> -> memref<i32>
+  return
+}
+
+llvm.mlir.global internal @_QFsubEx() : i32

@@ -47,7 +47,6 @@ void llvm::initializeIPO(PassRegistry &Registry) {
 #endif
   initializeBlockExtractorLegacyPassPass(Registry);
   initializeSingleLoopExtractorPass(Registry);
-  initializeLowerTypeTestsPass(Registry);
   initializeMergeFunctionsLegacyPassPass(Registry);
   initializePartialInlinerLegacyPassPass(Registry);
   initializeAttributorLegacyPassPass(Registry);
@@ -63,9 +62,6 @@ void llvm::initializeIPO(PassRegistry &Registry) {
   initializeStripNonDebugSymbolsPass(Registry);
   initializeBarrierNoopPass(Registry);
   initializeEliminateAvailableExternallyLegacyPassPass(Registry);
-  initializeSampleProfileLoaderLegacyPassPass(Registry);
-  initializeFunctionImportLegacyPassPass(Registry);
-  initializeWholeProgramDevirtPass(Registry);
 }
 
 void LLVMInitializeIPO(LLVMPassRegistryRef R) {

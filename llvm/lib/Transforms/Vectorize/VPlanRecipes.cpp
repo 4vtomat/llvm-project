@@ -26,6 +26,7 @@
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
 #if SIFIVE_CUSTOMIZATION
@@ -105,6 +106,8 @@ bool VPRecipeBase::mayReadFromMemory() const {
 
 bool VPRecipeBase::mayHaveSideEffects() const {
   switch (getVPDefID()) {
+  case VPPredInstPHISC:
+    return false;
   case VPWidenIntOrFpInductionSC:
   case VPWidenPointerInductionSC:
   case VPWidenCanonicalIVSC:
@@ -961,7 +964,81 @@ void VPReplicateRecipe::print(raw_ostream &O, const Twine &Indent,
   if (AlsoPack)
     O << " (S->V)";
 }
+#endif
 
+void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
+  assert(State.Instance && "Branch on Mask works only on single instance.");
+
+  unsigned Part = State.Instance->Part;
+  unsigned Lane = State.Instance->Lane.getKnownLane();
+
+  Value *ConditionBit = nullptr;
+  VPValue *BlockInMask = getMask();
+  if (BlockInMask) {
+    ConditionBit = State.get(BlockInMask, Part);
+    if (ConditionBit->getType()->isVectorTy())
+      ConditionBit = State.Builder.CreateExtractElement(
+          ConditionBit, State.Builder.getInt32(Lane));
+  } else // Block in mask is all-one.
+    ConditionBit = State.Builder.getTrue();
+
+  // Replace the temporary unreachable terminator with a new conditional branch,
+  // whose two destinations will be set later when they are created.
+  auto *CurrentTerminator = State.CFG.PrevBB->getTerminator();
+  assert(isa<UnreachableInst>(CurrentTerminator) &&
+         "Expected to replace unreachable terminator with conditional branch.");
+  auto *CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
+  CondBr->setSuccessor(0, nullptr);
+  ReplaceInstWithInst(CurrentTerminator, CondBr);
+}
+
+void VPPredInstPHIRecipe::execute(VPTransformState &State) {
+  assert(State.Instance && "Predicated instruction PHI works per instance.");
+  Instruction *ScalarPredInst =
+      cast<Instruction>(State.get(getOperand(0), *State.Instance));
+  BasicBlock *PredicatedBB = ScalarPredInst->getParent();
+  BasicBlock *PredicatingBB = PredicatedBB->getSinglePredecessor();
+  assert(PredicatingBB && "Predicated block has no single predecessor.");
+  assert(isa<VPReplicateRecipe>(getOperand(0)) &&
+         "operand must be VPReplicateRecipe");
+
+  // By current pack/unpack logic we need to generate only a single phi node: if
+  // a vector value for the predicated instruction exists at this point it means
+  // the instruction has vector users only, and a phi for the vector value is
+  // needed. In this case the recipe of the predicated instruction is marked to
+  // also do that packing, thereby "hoisting" the insert-element sequence.
+  // Otherwise, a phi node for the scalar value is needed.
+  unsigned Part = State.Instance->Part;
+  if (State.hasVectorValue(getOperand(0), Part)) {
+    Value *VectorValue = State.get(getOperand(0), Part);
+    InsertElementInst *IEI = cast<InsertElementInst>(VectorValue);
+    PHINode *VPhi = State.Builder.CreatePHI(IEI->getType(), 2);
+    VPhi->addIncoming(IEI->getOperand(0), PredicatingBB); // Unmodified vector.
+    VPhi->addIncoming(IEI, PredicatedBB); // New vector with inserted element.
+    if (State.hasVectorValue(this, Part))
+      State.reset(this, VPhi, Part);
+    else
+      State.set(this, VPhi, Part);
+    // NOTE: Currently we need to update the value of the operand, so the next
+    // predicated iteration inserts its generated value in the correct vector.
+    State.reset(getOperand(0), VPhi, Part);
+  } else {
+    Type *PredInstType = getOperand(0)->getUnderlyingValue()->getType();
+    PHINode *Phi = State.Builder.CreatePHI(PredInstType, 2);
+    Phi->addIncoming(PoisonValue::get(ScalarPredInst->getType()),
+                     PredicatingBB);
+    Phi->addIncoming(ScalarPredInst, PredicatedBB);
+    if (State.hasScalarValue(this, *State.Instance))
+      State.reset(this, Phi, *State.Instance);
+    else
+      State.set(this, Phi, *State.Instance);
+    // NOTE: Currently we need to update the value of the operand, so the next
+    // predicated iteration inserts its generated value in the correct vector.
+    State.reset(getOperand(0), Phi, *State.Instance);
+  }
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPPredInstPHIRecipe::print(raw_ostream &O, const Twine &Indent,
                                 VPSlotTracker &SlotTracker) const {
   O << Indent << "PHI-PREDICATED-INSTRUCTION ";

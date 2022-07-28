@@ -395,12 +395,15 @@ public:
       SelectionDAG &DAG) const override;
   bool shouldSinkOperands(Instruction *I,
                           SmallVectorImpl<Use *> &Ops) const override;
+  bool shouldScalarizeBinop(SDValue VecOp) const override;
   bool isOffsetFoldingLegal(const GlobalAddressSDNode *GA) const override;
   bool isFPImmLegal(const APFloat &Imm, EVT VT,
                     bool ForCodeSize) const override;
 #if SIFIVE_CUSTOMIZATION
   bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const override;
 #endif // SIFIVE_CUSTOMIZATION
+
+  bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 
   bool softPromoteHalfType() const override { return true; }
 
@@ -618,6 +621,8 @@ public:
                                           const MachineBasicBlock *MBB,
                                           unsigned uid,
                                           MCContext &Ctx) const override;
+
+  bool isVScaleKnownToBeAPowerOfTwo() const override;
 
 private:
   /// RISCVCCAssignFn - This target-specific function extends the default

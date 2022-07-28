@@ -284,6 +284,7 @@ void Target::Destroy() {
   m_breakpoint_list.RemoveAll(notify);
   m_internal_breakpoint_list.RemoveAll(notify);
   m_last_created_breakpoint.reset();
+  m_watchpoint_list.RemoveAll(notify);
   m_last_created_watchpoint.reset();
   m_search_filter_sp.reset();
   m_image_search_paths.Clear(notify);
@@ -776,7 +777,7 @@ void Target::GetBreakpointNames(std::vector<std::string> &names) {
   for (auto bp_name : m_breakpoint_names) {
     names.push_back(bp_name.first.AsCString());
   }
-  llvm::sort(names.begin(), names.end());
+  llvm::sort(names);
 }
 
 bool Target::ProcessIsValid() {

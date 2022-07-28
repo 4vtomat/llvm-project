@@ -104,7 +104,11 @@ private:
   bool HasStdExtZicbom = false;
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
+<<<<<<< HEAD
   bool HasStdExtSscofpmf = false; // SIFIVE
+=======
+  bool HasStdExtZmmul = false;
+>>>>>>> llvm/main
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
@@ -220,7 +224,11 @@ public:
   bool hasStdExtZicbom() const { return HasStdExtZicbom; }
   bool hasStdExtZicboz() const { return HasStdExtZicboz; }
   bool hasStdExtZicbop() const { return HasStdExtZicbop; }
+<<<<<<< HEAD
   bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
+=======
+  bool hasStdExtZmmul() const { return HasStdExtZmmul; }
+>>>>>>> llvm/main
   bool is64Bit() const { return HasRV64; }
   bool isRV32E() const { return IsRV32E; }
   bool enableLinkerRelax() const { return EnableLinkerRelax; }

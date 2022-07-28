@@ -328,7 +328,8 @@ void DefGen::emitDefaultBuilder() {
       getBuilderParams({{"::mlir::MLIRContext *", "context"}}));
   MethodBody &body = m->body().indent();
   auto scope = body.scope("return Base::get(context", ");");
-  llvm::for_each(params, [&](auto &param) { body << ", " << param.getName(); });
+  for (const auto &param : params)
+    body << ", " << param.getName();
 }
 
 void DefGen::emitCheckedBuilder() {
@@ -339,7 +340,8 @@ void DefGen::emitCheckedBuilder() {
            {"::mlir::MLIRContext *", "context"}}));
   MethodBody &body = m->body().indent();
   auto scope = body.scope("return Base::getChecked(emitError, context", ");");
-  llvm::for_each(params, [&](auto &param) { body << ", " << param.getName(); });
+  for (const auto &param : params)
+    body << ", " << param.getName();
 }
 
 static SmallVector<MethodParameter>
@@ -360,7 +362,10 @@ getCustomBuilderParams(std::initializer_list<MethodParameter> prefix,
 void DefGen::emitCustomBuilder(const AttrOrTypeBuilder &builder) {
   // Don't emit a body if there isn't one.
   auto props = builder.getBody() ? Method::Static : Method::StaticDeclaration;
-  Method *m = defCls.addMethod(def.getCppClassName(), "get", props,
+  StringRef returnType = def.getCppClassName();
+  if (Optional<StringRef> builderReturnType = builder.getReturnType())
+    returnType = *builderReturnType;
+  Method *m = defCls.addMethod(returnType, "get", props,
                                getCustomBuilderParams({}, builder));
   if (!builder.getBody())
     return;
@@ -385,8 +390,11 @@ static std::string replaceInStr(std::string str, StringRef from, StringRef to) {
 void DefGen::emitCheckedCustomBuilder(const AttrOrTypeBuilder &builder) {
   // Don't emit a body if there isn't one.
   auto props = builder.getBody() ? Method::Static : Method::StaticDeclaration;
+  StringRef returnType = def.getCppClassName();
+  if (Optional<StringRef> builderReturnType = builder.getReturnType())
+    returnType = *builderReturnType;
   Method *m = defCls.addMethod(
-      def.getCppClassName(), "getChecked", props,
+      returnType, "getChecked", props,
       getCustomBuilderParams(
           {{"::llvm::function_ref<::mlir::InFlightDiagnostic()>", "emitError"}},
           builder));

@@ -10,7 +10,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> llvm/main
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/Basic/Builtins.h"
@@ -30,7 +33,11 @@ using namespace clang::RISCV;
 
 namespace {
 
+<<<<<<< HEAD
 // Function definition of a RVV intrinsic
+=======
+// Function definition of a RVV intrinsic.
+>>>>>>> llvm/main
 struct RVVIntrinsicDef {
   /// Full function name with suffix, e.g. vadd_vv_i32m1.
   std::string Name;
@@ -38,7 +45,11 @@ struct RVVIntrinsicDef {
   /// Overloaded function name, e.g. vadd.
   std::string OverloadName;
 
+<<<<<<< HEAD
   /// Mapping to which clang built-in function, e.g. __builtin_rvv_vadd
+=======
+  /// Mapping to which clang built-in function, e.g. __builtin_rvv_vadd.
+>>>>>>> llvm/main
   std::string BuiltinName;
 
   /// Function signature, first element is return type.
@@ -112,6 +123,7 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
       llvm_unreachable("Unsupported floating point width.");
     }
     break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger32:
     QT = Context.getIntTypeForBitwidth(32, true);
@@ -162,6 +174,13 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   if (Type->isVector())
     QT = Context.getScalableVectorType(QT, Type->getScale().getValue());
 #endif
+=======
+  case Invalid:
+    llvm_unreachable("Unhandled type.");
+  }
+  if (Type->isVector())
+    QT = Context.getScalableVectorType(QT, Type->getScale().getValue());
+>>>>>>> llvm/main
 
   if (Type->isConstant())
     QT = Context.getConstType(QT);
@@ -174,7 +193,11 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
 }
 
 namespace {
+<<<<<<< HEAD
 class RISCVIntrinsicManagerImpl : public clang::sema::RISCVIntrinsicManager {
+=======
+class RISCVIntrinsicManagerImpl : public sema::RISCVIntrinsicManager {
+>>>>>>> llvm/main
 private:
   Sema &S;
   ASTContext &Context;
@@ -192,8 +215,12 @@ private:
   // Create RVVIntrinsicDef.
   void InitRVVIntrinsic(const RVVIntrinsicRecord &Record, StringRef SuffixStr,
                         StringRef OverloadedSuffixStr, bool IsMask,
+<<<<<<< HEAD
                         RVVTypes &Types, bool HasPolicy, Policy DefaultPolicy,
                         bool IsPrototypeDefaultTU);
+=======
+                        RVVTypes &Types);
+>>>>>>> llvm/main
 
   // Create FunctionDecl for a vector intrinsic.
   void CreateRVVIntrinsicDecl(LookupResult &LR, IdentifierInfo *II,
@@ -219,6 +246,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   bool HasZvfh = TI.hasFeature("experimental-zvfh");
   bool HasRV64 = TI.hasFeature("64bit");
   bool HasFullMultiply = TI.hasFeature("v");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool HasBfloat16 =
       TI.hasFeature("xsfvfwmaccqqq") || TI.hasFeature("xsfvfhbfmin");
@@ -248,12 +276,15 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   };
 #undef FEATURE_CHECK_ENTRY
 #endif
+=======
+>>>>>>> llvm/main
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
   for (auto &Record : RVVIntrinsicRecords) {
     // Create Intrinsics for each type and LMUL.
     BasicType BaseType = BasicType::Unknown;
+<<<<<<< HEAD
     auto BasicProtoSeq =
         ProtoSeq2ArrayRef(Record.PrototypeIndex, Record.PrototypeLength);
 
@@ -287,13 +318,34 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
     if (MaskedPolicyScheme != PolicyScheme::SchemeNone)
       SupportedMaskedPolicies = RVVIntrinsic::deSerializeSupportedPolicies(
           Record.PolicyBitMask, /*IsMasked=*/true);
+=======
+    ArrayRef<PrototypeDescriptor> BasicProtoSeq =
+        ProtoSeq2ArrayRef(Record.PrototypeIndex, Record.PrototypeLength);
+    ArrayRef<PrototypeDescriptor> SuffixProto =
+        ProtoSeq2ArrayRef(Record.SuffixIndex, Record.SuffixLength);
+    ArrayRef<PrototypeDescriptor> OverloadedSuffixProto = ProtoSeq2ArrayRef(
+        Record.OverloadedSuffixIndex, Record.OverloadedSuffixSize);
+
+    llvm::SmallVector<PrototypeDescriptor> ProtoSeq =
+        RVVIntrinsic::computeBuiltinTypes(BasicProtoSeq, /*IsMasked=*/false,
+                                          /*HasMaskedOffOperand=*/false,
+                                          Record.HasVL, Record.NF);
+
+    llvm::SmallVector<PrototypeDescriptor> ProtoMaskSeq =
+        RVVIntrinsic::computeBuiltinTypes(BasicProtoSeq, /*IsMasked=*/true,
+                                          Record.HasMaskedOffOperand,
+                                          Record.HasVL, Record.NF);
+>>>>>>> llvm/main
 
     for (unsigned int TypeRangeMaskShift = 0;
          TypeRangeMaskShift <= static_cast<unsigned int>(BasicType::MaxOffset);
          ++TypeRangeMaskShift) {
       unsigned int BaseTypeI = 1 << TypeRangeMaskShift;
       BaseType = static_cast<BasicType>(BaseTypeI);
+<<<<<<< HEAD
       bool Unsupported = false;
+=======
+>>>>>>> llvm/main
 
       if ((BaseTypeI & Record.TypeRangeMask) != BaseTypeI)
         continue;
@@ -302,17 +354,21 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (BaseType == BasicType::Float16 && !HasZvfh)
         continue;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (BaseType == BasicType::BFloat && !HasBfloat16)
         continue;
 #endif
 
+=======
+>>>>>>> llvm/main
       if (BaseType == BasicType::Float32 && !HasVectorFloat32)
         continue;
 
       if (BaseType == BasicType::Float64 && !HasVectorFloat64)
         continue;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       Unsupported = llvm::any_of(FeatureCheckList,
                                  [&](auto &FC) { return !FC.Check(Record); });
@@ -320,6 +376,11 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (Unsupported)
         continue;
 #endif
+=======
+      if (((Record.RequiredExtensions & RVV_REQ_RV64) == RVV_REQ_RV64) &&
+          !HasRV64)
+        continue;
+>>>>>>> llvm/main
 
       if ((BaseType == BasicType::Int64) &&
           ((Record.RequiredExtensions & RVV_REQ_FullMultiply) ==
@@ -345,6 +406,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
             BaseType, Log2LMUL, OverloadedSuffixProto);
 
         // Create non-masked intrinsic.
+<<<<<<< HEAD
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false, *Types,
                          UnMaskedHasPolicy, Policy::PolicyNone,
                          Record.IsPrototypeDefaultTU);
@@ -363,6 +425,9 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
                              P, Record.IsPrototypeDefaultTU);
           }
         }
+=======
+        InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false, *Types);
+>>>>>>> llvm/main
 
         if (Record.HasMasked) {
           // Create masked intrinsic.
@@ -370,6 +435,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
               BaseType, Log2LMUL, Record.NF, ProtoMaskSeq);
 
           InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
+<<<<<<< HEAD
                            *MaskTypes, MaskedHasPolicy, Policy::PolicyNone,
                            Record.IsPrototypeDefaultTU);
 
@@ -387,6 +453,9 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
                                P, Record.IsPrototypeDefaultTU);
             }
           }
+=======
+                           *MaskTypes);
+>>>>>>> llvm/main
         }
       }
     }
@@ -394,17 +463,29 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
 }
 
 // Compute name and signatures for intrinsic with practical types.
+<<<<<<< HEAD
 void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(const RVVIntrinsicRecord &Record,
                                                  StringRef SuffixStr,
                                                  StringRef OverloadedSuffixStr,
                                                  bool IsMasked, RVVTypes &Signature,
                                                  bool HasPolicy, Policy DefaultPolicy,
                                                  bool IsPrototypeDefaultTU) {
+=======
+void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
+    const RVVIntrinsicRecord &Record, StringRef SuffixStr,
+    StringRef OverloadedSuffixStr, bool IsMask, RVVTypes &Signature) {
+>>>>>>> llvm/main
   // Function name, e.g. vadd_vv_i32m1.
   std::string Name = Record.Name;
   if (!SuffixStr.empty())
     Name += "_" + SuffixStr.str();
 
+<<<<<<< HEAD
+=======
+  if (IsMask)
+    Name += "_m";
+
+>>>>>>> llvm/main
   // Overloaded function name, e.g. vadd.
   std::string OverloadedName;
   if (!Record.OverloadedName)
@@ -416,6 +497,7 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(const RVVIntrinsicRecord &Recor
 
   // clang built-in function name, e.g. __builtin_rvv_vadd.
   std::string BuiltinName = "__builtin_rvv_" + std::string(Record.Name);
+<<<<<<< HEAD
 
   auto appendPolicySuffix = [&](std::string suffix) {
     Name += suffix;
@@ -478,6 +560,10 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(const RVVIntrinsicRecord &Recor
       }
     }
   }
+=======
+  if (IsMask)
+    BuiltinName += "_m";
+>>>>>>> llvm/main
 
   // Put into IntrinsicList.
   size_t Index = IntrinsicList.size();
@@ -589,4 +675,7 @@ CreateRISCVIntrinsicManager(Sema &S) {
   return std::make_unique<RISCVIntrinsicManagerImpl>(S);
 }
 } // namespace clang
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> llvm/main
