@@ -786,29 +786,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::FTRUNC, ISD::FCEIL, ISD::FFLOOR, ISD::FROUND},
                          VT, Custom);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // Expand FP operations that need libcalls.
-      setOperationAction(ISD::FREM, VT, Expand);
-      setOperationAction(ISD::FPOW, VT, Expand);
-      setOperationAction(ISD::FCOS, VT, Expand);
-      setOperationAction(ISD::FSIN, VT, Expand);
-      setOperationAction(ISD::FSINCOS, VT, Expand);
-      setOperationAction(ISD::FEXP, VT, Expand);
-      setOperationAction(ISD::FEXP2, VT, Expand);
-      setOperationAction(ISD::FLOG, VT, Expand);
-      setOperationAction(ISD::FLOG2, VT, Expand);
-      setOperationAction(ISD::FLOG10, VT, Expand);
-      setOperationAction(ISD::FRINT, VT, Expand);
-      setOperationAction(ISD::FNEARBYINT, VT, Expand);
-#endif // SIFIVE_CUSTOMIZATION
-
-      setOperationAction({ISD::VECREDUCE_FADD, ISD::VECREDUCE_SEQ_FADD,
-                          ISD::VECREDUCE_FMIN, ISD::VECREDUCE_FMAX},
-                         VT, Custom);
-=======
       setOperationAction(FloatingPointVecReduceOps, VT, Custom);
->>>>>>> llvm/main
 
       // Expand FP operations that need libcalls.
       setOperationAction(ISD::FREM, VT, Expand);

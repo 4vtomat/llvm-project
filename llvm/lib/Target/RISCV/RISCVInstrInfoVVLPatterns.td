@@ -101,17 +101,13 @@ def riscv_fdiv_vl  : SDNode<"RISCVISD::FDIV_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fneg_vl  : SDNode<"RISCVISD::FNEG_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fabs_vl  : SDNode<"RISCVISD::FABS_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fsqrt_vl : SDNode<"RISCVISD::FSQRT_VL", SDT_RISCVFPUnOp_VL>;
-<<<<<<< HEAD
 
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_frsqrt7_vl : SDNode<"RISCVISD::FRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
 def riscv_frec7_vl   : SDNode<"RISCVISD::FREC7_VL",   SDT_RISCVFPUnOp_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
-def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL",  SDT_RISCVFPBinOp_VL>;
-=======
 def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL", SDT_RISCVCopySign_VL>;
->>>>>>> llvm/main
 def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 
@@ -1493,9 +1489,10 @@ foreach vti = AllFloatVectors in {
                                 (vti.Mask V0),
                                 vti.RegClass:$merge,
                                 VLOpFrag),
-<<<<<<< HEAD
-            (!cast<Instruction>("PseudoVFSGNJ_V"#vti.ScalarSuffix#"_"# vti.LMul.MX)
-                 vti.RegClass:$rs1, vti.ScalarRegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+            (!cast<Instruction>("PseudoVFSGNJ_V"#vti.ScalarSuffix#"_"# vti.LMul.MX#"_MASK")
+                 vti.RegClass:$merge, vti.RegClass:$rs1,
+                 vti.ScalarRegClass:$rs2, (vti.Mask V0), GPR:$vl, vti.Log2SEW,
+                 TAIL_AGNOSTIC)>;
 
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.14. Vector Floating-Point Classify Instruction
@@ -1505,12 +1502,6 @@ foreach vti = AllFloatVectors in {
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-            (!cast<Instruction>("PseudoVFSGNJ_V"#vti.ScalarSuffix#"_"# vti.LMul.MX#"_MASK")
-                 vti.RegClass:$merge, vti.RegClass:$rs1,
-                 vti.ScalarRegClass:$rs2, (vti.Mask V0), GPR:$vl, vti.Log2SEW,
-                 TAIL_AGNOSTIC)>;
->>>>>>> llvm/main
 }
 
 foreach fvti = AllFloatVectors in {
