@@ -808,8 +808,8 @@ static bool legalUseTree(Function *F, Instruction *I, TargetLibraryInfo &TLI) {
     if (auto *Inst = dyn_cast<Instruction>(U)) {
       NumInstUses++;
       if (isa<CallInst>(Inst))
-        if (isReallocLikeFn(Inst, &TLI) || Inst->isLifetimeStartOrEnd() ||
-            isa<MemCpyInst>(Inst)) {
+        if (getReallocatedOperand(cast<CallInst>(Inst), &TLI) == U ||
+            Inst->isLifetimeStartOrEnd() || isa<MemCpyInst>(Inst)) {
           NumLegalUses++;
           continue;
         }
@@ -832,7 +832,8 @@ static Optional<Type *> configureParamType(
 
     BaseTy = GV->getValueType();
   } else if (auto *CI = dyn_cast<CallInst>(Arg)) {
-    if (isReallocLikeFn(Arg, &TLI) || isMallocOrCallocLikeFn(Arg, &TLI)) {
+    if (getReallocatedOperand(CI, &TLI) != nullptr ||
+        isMallocOrCallocLikeFn(Arg, &TLI)) {
       // Look at uses of UnderlyingObj for a GEP and obtain
       // the type there as these cases return a pointer
       // and will be used in that context.
@@ -1042,7 +1043,8 @@ static bool typeBasedEscapeAnalysis(
             getUnderlyingObjects(CurCast->getOperand(0), Objects);
             for (const Value *UnderlyingObj : Objects) {
               if (isa<CallInst>(UnderlyingObj)) {
-                if (isReallocLikeFn(UnderlyingObj, &TLI) ||
+                if (getReallocatedOperand(cast<CallInst>(UnderlyingObj),
+                                          &TLI) != nullptr ||
                     isMallocOrCallocLikeFn(UnderlyingObj, &TLI))
                   continue;
 
