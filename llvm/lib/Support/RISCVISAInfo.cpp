@@ -93,14 +93,10 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zkt", RISCVExtensionVersion{1, 0}},
     {"zk", RISCVExtensionVersion{1, 0}},
 
-<<<<<<< HEAD
-    {"v", RISCVExtensionVersion{1, 0}}, // default // SIFIVE
-    {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
-=======
     {"zmmul", RISCVExtensionVersion{1, 0}},
 
-    {"v", RISCVExtensionVersion{1, 0}},
->>>>>>> llvm/main
+    {"v", RISCVExtensionVersion{1, 0}}, // default // SIFIVE
+    {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
     {"zvl32b", RISCVExtensionVersion{1, 0}},
     {"zvl64b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
