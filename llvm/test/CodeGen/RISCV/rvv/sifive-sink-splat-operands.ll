@@ -60,9 +60,9 @@ define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-NEXT:    remu a4, a3, a2
 ; CHECK-NEXT:    li a6, 0
 ; CHECK-NEXT:    vsetvli a7, zero, e32, m2, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    slli a5, a5, 1
 ; CHECK-NEXT:    mv a7, a0
-; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    sub a3, a3, a4
 ; CHECK-NEXT:  .LBB1_3: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -183,9 +183,9 @@ for.cond.cleanup:                                 ; preds = %vector.body
 define void @sink_splat_fadd(float* nocapture %a, float %x) {
 ; CHECK-LABEL: sink_splat_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a1, 1024
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
+; CHECK-NEXT:    li a1, 1024
 ; CHECK-NEXT:  .LBB3_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v9, (a0)
@@ -231,8 +231,8 @@ define void @sink_splat_fadd_scalable(float* nocapture %a, float %x) {
 ; CHECK-NEXT:    remu a4, a3, a2
 ; CHECK-NEXT:    li a5, 0
 ; CHECK-NEXT:    vsetvli a6, zero, e32, m1, ta, mu
-; CHECK-NEXT:    mv a6, a0
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
+; CHECK-NEXT:    mv a6, a0
 ; CHECK-NEXT:    sub a3, a3, a4
 ; CHECK-NEXT:  .LBB4_3: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -314,9 +314,9 @@ declare <4 x float> @llvm.vp.fadd.v4i32(<4 x float>, <4 x float>, <4 x i1>, i32)
 define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 1024
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
+; CHECK-NEXT:    li a2, 1024
 ; CHECK-NEXT:  .LBB5_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v9, (a0)
