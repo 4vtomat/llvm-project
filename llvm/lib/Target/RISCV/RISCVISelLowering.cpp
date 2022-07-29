@@ -3133,12 +3133,22 @@ static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
       // with undef.
       // FIXME: Peek through INSERT_SUBVECTOR, EXTRACT_SUBVECTOR, bitcasts?
       int Offset = Lane;
-      if (V.getOpcode() == ISD::CONCAT_VECTORS) {
+#if SIFIVE_CUSTOMIZATION
+      switch (V.getOpcode()) {
+      case ISD::CONCAT_VECTORS: {
         int OpElements =
             V.getOperand(0).getSimpleValueType().getVectorNumElements();
         V = V.getOperand(Offset / OpElements);
         Offset %= OpElements;
+        break;
       }
+      case ISD::EXTRACT_SUBVECTOR: {
+        Offset += V.getConstantOperandVal(1);
+        V = V.getOperand(0);
+        break;
+      }
+      }
+#endif
 
       // We need to ensure the load isn't atomic or volatile.
       if (ISD::isNormalLoad(V.getNode()) && cast<LoadSDNode>(V)->isSimple()) {
