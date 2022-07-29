@@ -209,13 +209,9 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // HasPolicyOperand: Has a policy operand. 0 is tail and mask undisturbed, 1 is
   // tail agnostic, 2 is mask undisturbed, and 3 is tail and mask agnostic. The
   // policy operand is located at the last position.
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-  PolicyScheme MaskedPolicy = HasPolicyOperand;
+  PolicyScheme MaskedPolicyScheme = HasPolicyOperand;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Policy MaskedPolicyScheme = HasPolicyOperand;
->>>>>>> llvm/main
 
   // The policy scheme for unmasked intrinsic IR.
   // It could be NonePolicy, HasPassthruOperand or HasPolicyOperand.
@@ -223,17 +219,13 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // undef, tail policy is tail agnostic, otherwise policy is tail undisturbed.
   // HasPolicyOperand: Has a policy operand. 1 is tail agnostic and 0 is tail
   // undisturbed.
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-  PolicyScheme UnMaskedPolicy = NonePolicy;
+  PolicyScheme UnMaskedPolicyScheme = NonePolicy;
 
   // This builtin prototype is tail undisturbed policy. It also means the
   // default policy without suffix is tail undisturbed.
   bit IsPrototypeDefaultTU = false;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Policy UnMaskedPolicyScheme = NonePolicy;
->>>>>>> llvm/main
 
   // This builtin prototype with TA or TAMA policy could not support overloading
   // API. Other policy intrinsic functions would support overloading API with
@@ -270,10 +262,10 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   int NF = 1;
 
 #ifdef SIFIVE_CUSTOMIZATION
-  // If UnMaskedPolicy != NonePolicy, list supported policies.
+  // If UnMaskedPolicyScheme != NonePolicy, list supported policies.
   list<Policy> SupportedUnMaskedPolicies = [TUPolicy, TAPolicy];
 
-  // If MaskedPolicy != NonePolicy, list supported policies.
+  // If MaskedPolicyScheme != NonePolicy, list supported policies.
   list<Policy> SupportedMaskedPolicies = [TUMUPolicy, TAMUPolicy, TUMAPolicy, TAMAPolicy];
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -493,16 +485,11 @@ class RVVMaskOp0Builtin<string prototype> : RVVOp0Builtin<"m", prototype, "c"> {
   let HasMaskedOffOperand = false;
 }
 
-<<<<<<< HEAD
-let UnMaskedPolicy = HasPolicyOperand,
+let UnMaskedPolicyScheme = HasPolicyOperand,
 #ifdef SIFIVE_CUSTOMIZATION
     HasMaskedOffOperand = false,
     IsPrototypeDefaultTU = true in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let UnMaskedPolicyScheme = HasPolicyOperand,
-    HasMaskedOffOperand = false in {
->>>>>>> llvm/main
   multiclass RVVSlideBuiltinSet {
     defm "" : RVVOutBuiltinSet<NAME, "csilxfd",
                                [["vx","v", "vvvz"]]>;
@@ -639,13 +626,10 @@ class IsFloat<string type> {
   bit val = !or(!eq(type, "x"), !eq(type, "f"), !eq(type, "d"));
 }
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 let SupportOverloading = false,
-    MaskedPolicy = NonePolicy in {
-=======
-let HasUnMaskedOverloaded = false,
     MaskedPolicyScheme = NonePolicy in {
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
   class RVVVLEMaskBuiltin : RVVOutBuiltin<"m", "mPCUe", "c"> {
     let Name = "vlm_v";
     let IRName = "vlm";
@@ -653,13 +637,10 @@ let HasUnMaskedOverloaded = false,
   }
 }
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 let SupportOverloading = false,
-    UnMaskedPolicy = HasPassthruOperand in {
-=======
-let HasUnMaskedOverloaded = false,
     UnMaskedPolicyScheme = HasPassthruOperand in {
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
   multiclass RVVVLEBuiltin<list<string> types> {
     let Name = NAME # "_v",
         IRName = "vle",
@@ -680,7 +661,7 @@ multiclass RVVVLEFFBuiltin<list<string> types> {
       MaskedIRName = "vleff_mask",
 #ifdef SIFIVE_CUSTOMIZATION
       SupportOverloading = false,
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -741,15 +722,10 @@ multiclass RVVVLSEBuiltin<list<string> types> {
   let Name = NAME # "_v",
       IRName = "vlse",
       MaskedIRName ="vlse_mask",
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
       SupportOverloading = false,
-      UnMaskedPolicy = HasPassthruOperand in {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      HasUnMaskedOverloaded = false,
       UnMaskedPolicyScheme = HasPassthruOperand in {
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
     foreach type = types in {
       def : RVVOutBuiltin<"v", "vPCet", type>;
       if !not(IsFloat<type>.val) then {
@@ -1483,7 +1459,7 @@ multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
       IRName = IR,
       MaskedIRName = IR # "_mask",
 #ifdef SIFIVE_CUSTOMIZATION
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -1523,7 +1499,7 @@ multiclass RVVPseudoVNotBuiltin<string IR, string type_range> {
       IRName = IR,
       MaskedIRName = IR # "_mask",
 #ifdef SIFIVE_CUSTOMIZATION
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -1586,7 +1562,7 @@ multiclass RVVPseudoVFUnaryBuiltin<string IR, string type_range> {
       IRName = IR,
       MaskedIRName = IR # "_mask",
 #ifdef SIFIVE_CUSTOMIZATION
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -1630,7 +1606,7 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
       IRName = IR,
       MaskedIRName = IR # "_mask",
 #ifdef SIFIVE_CUSTOMIZATION
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -1679,7 +1655,7 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
       IRName = IR,
       MaskedIRName = IR # "_mask",
 #ifdef SIFIVE_CUSTOMIZATION
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
 #endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
@@ -1887,7 +1863,7 @@ defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 // 7.8 Vector Load/Store Segment Instructions
 #ifdef SIFIVE_CUSTOMIZATION
 // TODO: Support policy function for segment load.
-let UnMaskedPolicy = HasPassthruOperand in {
+let UnMaskedPolicyScheme = HasPassthruOperand in {
 #endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegLoad<"vlseg">;
 defm : RVVUnitStridedSegLoadFF<"vlseg">;
@@ -1895,7 +1871,7 @@ defm : RVVStridedSegLoad<"vlsseg">;
 defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
-let UnMaskedPolicy = NonePolicy, MaskedPolicy = NonePolicy in {
+let UnMaskedPolicyScheme = NonePolicy, MaskedPolicyScheme = NonePolicy in {
 defm : RVVUnitStridedSegStore<"vsseg">;
 defm : RVVStridedSegStore<"vssseg">;
 defm : RVVIndexedSegStore<"vsuxseg">;
@@ -1987,14 +1963,10 @@ defm vncvt_x_x_w : RVVPseudoVNCVTBuiltin<"vnsrl", "vncvt_x", "csi",
                                           ["Uv", "UvUw"]]>;
 
 // 12.8. Vector Integer Comparison Instructions
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let MaskedPolicy = HasPassthruOperand,
+let MaskedPolicyScheme = HasPassthruOperand,
     SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let MaskedPolicyScheme = NonePolicy in {
->>>>>>> llvm/main
 defm vmseq : RVVIntMaskOutBuiltinSet;
 defm vmsne : RVVIntMaskOutBuiltinSet;
 defm vmsltu : RVVUnsignedMaskOutBuiltinSet;
@@ -2045,14 +2017,10 @@ defm vwmulsu : RVVOutOp0Op1BuiltinSet<"vwmulsu", "csi",
 }
 
 // 12.13. Vector Single-Width Integer Multiply-Add Instructions
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let UnMaskedPolicy = HasPolicyOperand,
+let UnMaskedPolicyScheme = HasPolicyOperand,
     IsPrototypeDefaultTU = true in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let UnMaskedPolicyScheme = HasPolicyOperand in {
->>>>>>> llvm/main
 defm vmacc  : RVVIntTerBuiltinSet;
 defm vnmsac : RVVIntTerBuiltinSet;
 defm vmadd  : RVVIntTerBuiltinSet;
@@ -2077,15 +2045,10 @@ defm vwmaccus : RVVOutOp1Op2BuiltinSet<"vwmaccus", "csi",
 
 #ifdef SIFIVE_CUSTOMIZATION
 // 12.15. Vector Integer Merge Instructions
-<<<<<<< HEAD
 // C/C++ Operand: (mask, op1, op2, vl), Intrinsic: (passthru, op1, op2, mask, vl)
 let HasMasked = false,
-    UnMaskedPolicy = HasPassthruOperandAtIdx1,
-    MaskedPolicy = NonePolicy,
-=======
-// C/C++ Operand: (mask, op1, op2, vl), Intrinsic: (op1, op2, mask, vl)
-let HasMasked = false, MaskedPolicyScheme = NonePolicy,
->>>>>>> llvm/main
+    UnMaskedPolicyScheme = HasPassthruOperandAtIdx1,
+    MaskedPolicyScheme = NonePolicy,
     ManualCodegen = [{
       std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
       // insert undef passthru
@@ -2175,13 +2138,9 @@ let Log2LMUL = [-2, -1, 0, 1, 2] in {
 }
 
 // 14.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let UnMaskedPolicy = HasPolicyOperand, IsPrototypeDefaultTU = true in {
+let UnMaskedPolicyScheme = HasPolicyOperand, IsPrototypeDefaultTU = true in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let UnMaskedPolicyScheme = HasPolicyOperand in {
->>>>>>> llvm/main
 defm vfmacc  : RVVFloatingTerBuiltinSet;
 defm vfnmacc : RVVFloatingTerBuiltinSet;
 defm vfmsac  : RVVFloatingTerBuiltinSet;
@@ -2221,14 +2180,10 @@ defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "xfd">;
 defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "xfd">;
 
 // 14.13. Vector Floating-Point Compare Instructions
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let MaskedPolicy = HasPassthruOperand,
+let MaskedPolicyScheme = HasPassthruOperand,
     SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let MaskedPolicyScheme = NonePolicy in {
->>>>>>> llvm/main
 defm vmfeq : RVVFloatingMaskOutBuiltinSet;
 defm vmfne : RVVFloatingMaskOutBuiltinSet;
 defm vmflt : RVVFloatingMaskOutBuiltinSet;
@@ -2243,13 +2198,11 @@ let Name = "vfclass_v", UnMaskedPolicyScheme = HasPassthruOperand in
 
 // 14.15. Vector Floating-Point Merge Instructio
 // C/C++ Operand: (mask, op1, op2, vl), Builtin: (op1, op2, mask, vl)
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 let HasMasked = false,
-    UnMaskedPolicy = HasPassthruOperandAtIdx1,
-    MaskedPolicy = NonePolicy,
-=======
-let HasMasked = false, MaskedPolicyScheme = NonePolicy,
->>>>>>> llvm/main
+    UnMaskedPolicyScheme = HasPassthruOperandAtIdx1,
+    MaskedPolicyScheme = NonePolicy,
+#endif // SIFIVE_CUSTOMIZATION
     ManualCodegen = [{
       std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
       // insert undef passthru
@@ -2264,16 +2217,11 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy,
 }
 
 // 14.16. Vector Floating-Point Move Instruction
-<<<<<<< HEAD
-let HasMasked = false, UnMaskedPolicy = HasPassthruOperand,
+let HasMasked = false, UnMaskedPolicyScheme = HasPassthruOperand,
 #ifdef SIFIVE_CUSTOMIZATION
-    SupportOverloading = false, MaskedPolicy = NonePolicy,
+    SupportOverloading = false, MaskedPolicyScheme = NonePolicy,
     OverloadedName = "vfmv_v" in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let HasMasked = false, UnMaskedPolicyScheme = HasPassthruOperand,
-    HasUnMaskedOverloaded = false, MaskedPolicyScheme = NonePolicy in
->>>>>>> llvm/main
   defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "xfd",
                                   [["f", "v", "ve"]]>;
 
@@ -2312,15 +2260,11 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
 
 // 15. Vector Reduction Operations
 // 15.1. Vector Single-Width Integer Reduction Instructions
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let UnMaskedPolicy = HasPassthruOperand,
-    MaskedPolicy = HasPassthruOperand, IsPrototypeDefaultTU = true,
+let UnMaskedPolicyScheme = HasPassthruOperand,
+    MaskedPolicyScheme = HasPassthruOperand, IsPrototypeDefaultTU = true,
     SupportedMaskedPolicies = [TUMPolicy, TAMPolicy] in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let MaskedPolicyScheme = NonePolicy in {
->>>>>>> llvm/main
 defm vredsum : RVVIntReductionBuiltinSet;
 defm vredmaxu : RVVUnsignedReductionBuiltin;
 defm vredmax : RVVSignedReductionBuiltin;
@@ -2377,7 +2321,7 @@ def vfirst : RVVMaskOp0Builtin<"lm">;
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-let MaskedPolicy = HasPassthruOperand,
+let MaskedPolicyScheme = HasPassthruOperand,
     SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
 #endif // SIFIVE_CUSTOMIZATION
 // 16.4. vmsbf.m set-before-first mask bit
@@ -2390,13 +2334,9 @@ def vmsif : RVVMaskUnaryBuiltin;
 def vmsof : RVVMaskUnaryBuiltin;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let UnMaskedPolicy = HasPassthruOperand, SupportOverloading = false in {
+let UnMaskedPolicyScheme = HasPassthruOperand, SupportOverloading = false in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let UnMaskedPolicyScheme = HasPassthruOperand, HasUnMaskedOverloaded = false in {
->>>>>>> llvm/main
   // 16.8. Vector Iota Instruction
   defm viota : RVVOutBuiltinSet<"viota", "csil", [["m", "Uv", "Uvm"]]>;
 
@@ -2414,7 +2354,7 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
                                     ["s", "UvUe", "UeUv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
   let OverloadedName = "vmv_s", IsPrototypeDefaultTU = true,
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
       SupportOverloading = false in
 #endif // SIFIVE_CUSTOMIZATION
     defm vmv_s : RVVOutBuiltinSet<"vmv_s_x", "csil",
@@ -2428,7 +2368,7 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
     defm vfmv_f : RVVOp0BuiltinSet<"vfmv_f_s", "xfd",
                                      [["s", "ve", "ev"]]>;
   let OverloadedName = "vfmv_s", IsPrototypeDefaultTU = true,
-      UnMaskedPolicy = HasPassthruOperand,
+      UnMaskedPolicyScheme = HasPassthruOperand,
       SupportOverloading = false in
     defm vfmv_s : RVVOutBuiltinSet<"vfmv_s_f", "xfd",
                                      [["f", "v", "vve"],
@@ -2468,15 +2408,11 @@ defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "csil",
 }
 
 // 17.5. Vector Compress Instruction
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let IsPrototypeDefaultTU = true,
     HasMasked = false,
-    UnMaskedPolicy = HasPassthruOperandAtIdx1,
-    MaskedPolicy = NonePolicy,
-=======
-let HasMasked = false, MaskedPolicyScheme = NonePolicy,
->>>>>>> llvm/main
+    UnMaskedPolicyScheme = HasPassthruOperandAtIdx1,
+    MaskedPolicyScheme = NonePolicy,
     ManualCodegen = [{
       std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
       // insert undef passthru
@@ -2517,14 +2453,10 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     }
   }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-  let Name = "vundefined", SupportOverloading = false, MaskedPolicy = NonePolicy,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  let Name = "vundefined", HasUnMaskedOverloaded = false,
+  let Name = "vundefined", SupportOverloading = false,
       MaskedPolicyScheme = NonePolicy,
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
         return llvm::UndefValue::get(ResultType);
       }] in {
@@ -2651,7 +2583,7 @@ let IntrinsicTypes = [-1] in
 // (MultipleLMUL:2)w stands for LMUL multiply by 2 and SEW multiply by 2
 // (MultipleLMUL:2)q stands for LMUL multiply by 2 and SEW multiply by 4
 let RequiredFeatures = ["Xsfvqmaccqoq"],
-    UnMaskedPolicy = HasPolicyOperand,
+    UnMaskedPolicyScheme = HasPolicyOperand,
     IsPrototypeDefaultTU = true,
     Log2LMUL = [0, 1, 2, -1],
     HasMasked = false,
@@ -2667,7 +2599,7 @@ let RequiredFeatures = ["Xsfvqmaccqoq"],
 }
 
 let RequiredFeatures = ["Xsfvqmaccdod"],
-    UnMaskedPolicy = HasPolicyOperand,
+    UnMaskedPolicyScheme = HasPolicyOperand,
     IsPrototypeDefaultTU = true,
     Log2LMUL = [0, 1, 2, 3],
     HasMasked = false,
@@ -2682,7 +2614,7 @@ let RequiredFeatures = ["Xsfvqmaccdod"],
     def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
 }
 
-let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicy = HasPassthruOperand,
+let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [0, 1, -1, -2, -3] in {
   let Name = "sf_vfnrclip_x_f_qf" in
     def sf_vfnrclip_x : RVVConvBuiltin<"v", "vFqf", "c", "sf_vfnrclip_x_f_qf">;
@@ -2690,14 +2622,14 @@ let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicy = HasPassthruOperand,
     def sf_vfnrclip_xu : RVVConvBuiltin<"Uv", "UvFqf", "c", "sf_vfnrclip_xu_f_qf">;
 }
 
-let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicy = HasPassthruOperand,
+let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
   def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
   def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;
 }
 
 let RequiredFeatures = ["Xsfvfwmaccqqq"],
-    UnMaskedPolicy = HasPolicyOperand,
+    UnMaskedPolicyScheme = HasPolicyOperand,
     IsPrototypeDefaultTU = true,
     Log2LMUL = [-2, -1, 0, 1, 2],
     HasMasked = false,
@@ -2708,7 +2640,7 @@ let RequiredFeatures = ["Xsfvfwmaccqqq"],
 
 // reinterpret for bf16 <-> uint16
 let RequiredFeatures = ["HasBfloat16"], HasMasked = false, HasVL = false, IRName = "" in {
-  let Name = "vreinterpret_v", MaskedPolicy = NonePolicy,
+  let Name = "vreinterpret_v", MaskedPolicyScheme = NonePolicy,
       ManualCodegen = [{
         return Builder.CreateBitCast(Ops[0], ResultType);
       }] in {

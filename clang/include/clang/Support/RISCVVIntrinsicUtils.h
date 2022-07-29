@@ -14,8 +14,7 @@
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/Support/MathExtras.h"
-#include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/MathExtras.h" // SIFIVE
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -248,18 +247,7 @@ public:
   bool isFloat(unsigned Width) const {
     return isFloat() && ElementBitwidth == Width;
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool isConstant() const { return IsConstant; }
-  unsigned getElementBitwidth() const { return ElementBitwidth; }
-
-  ScalarTypeKind getScalarType() const { return ScalarType; }
-  VScaleVal getScale() const { return Scale; }
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
-  bool isConstant() const { return IsConstant; }
->>>>>>> llvm/main
   bool isPointer() const { return IsPointer; }
   unsigned getElementBitwidth() const { return ElementBitwidth; }
 
@@ -302,6 +290,7 @@ public:
                                                 PrototypeDescriptor Proto);
 };
 
+#if SIFIVE_CUSTOMIZATION
 enum PolicyScheme : uint8_t {
   SchemeNone,
   // Passthru operand is at first parameter in C builtin.
@@ -325,6 +314,7 @@ enum Policy : uint16_t {
   TUM = 1 << 10, // TUMA
   TAM = 1 << 11, // TAMA
 };
+#endif // SIFIVE_CUSTOMIZATION
 
 // TODO refactor RVVIntrinsic class design after support all intrinsic
 // combination. This represents an instantiation of an intrinsic with a
@@ -337,10 +327,10 @@ private:
   std::string OverloadedName;
   std::string IRName;
   bool IsMasked;
-  bool HasMaskedOffOperand;
+  bool HasMaskedOffOperand; // SIFIVE
   bool HasVL;
   PolicyScheme Scheme;
-  bool SupportOverloading;
+  bool SupportOverloading; // SIFIVE
   bool HasBuiltinAlias;
   std::string ManualCodegen;
   RVVTypePtr OutputType; // Builtin output type
@@ -349,18 +339,18 @@ private:
   // InputTypes. -1 means the return type.
   std::vector<int64_t> IntrinsicTypes;
   unsigned NF = 1;
-  Policy DefaultPolicy = Policy::PolicyNone;
+  Policy DefaultPolicy = Policy::PolicyNone; // SIFIVE
 
 public:
   RVVIntrinsic(llvm::StringRef Name, llvm::StringRef Suffix,
                llvm::StringRef OverloadedName, llvm::StringRef OverloadedSuffix,
                llvm::StringRef IRName, bool IsMasked, bool HasMaskedOffOperand,
-               bool HasVL, PolicyScheme Scheme, bool SupportOverloading,
+               bool HasVL, PolicyScheme Scheme, bool SupportOverloading, // SIFIVE
                bool HasBuiltinAlias, llvm::StringRef ManualCodegen,
                const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
                const std::vector<llvm::StringRef> &RequiredFeatures,
-               unsigned NF, Policy DefaultPolicy, bool IsPrototypeDefaultTU);
+               unsigned NF, Policy DefaultPolicy, bool IsPrototypeDefaultTU); // SIFIVE
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }
@@ -368,7 +358,7 @@ public:
   llvm::StringRef getBuiltinName() const { return BuiltinName; }
   llvm::StringRef getName() const { return Name; }
   llvm::StringRef getOverloadedName() const { return OverloadedName; }
-  bool hasMaskedOffOperand() const { return HasMaskedOffOperand; }
+  bool hasMaskedOffOperand() const { return HasMaskedOffOperand; } // SIFIVE
   bool hasVL() const { return HasVL; }
 
 #if SIFIVE_CUSTOMIZATION
@@ -408,14 +398,14 @@ public:
   static std::string
   getSuffixStr(BasicType Type, int Log2LMUL,
                llvm::ArrayRef<PrototypeDescriptor> PrototypeDescriptors);
-<<<<<<< HEAD
+
   static llvm::SmallVector<PrototypeDescriptor>
 #if SIFIVE_CUSTOMIZATION
-  computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> ProtoSeq,
-                      bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
-                      unsigned NF, bool IsPrototypeDefaultTU,
-                      PolicyScheme DefaultScheme,
-                      Policy DefaultPolicy = Policy::PolicyNone);
+      computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> Prototype,
+                          bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
+                          unsigned NF, bool IsPrototypeDefaultTU,
+                          PolicyScheme DefaultScheme,
+                          Policy DefaultPolicy = Policy::PolicyNone);
   static uint16_t
   serializeSupportedPolicies(llvm::ArrayRef<Policy> SupportedPolicies);
   static llvm::SmallVector<Policy>
@@ -447,7 +437,7 @@ struct RVVIntrinsicRecord {
   // Intrinsic name, e.g. vadd_vv
   const char *Name;
 
-  // Overloaded intrinsic name, could be empty if can be computed from Name
+  // Overloaded intrinsic name, could be empty if it can be computed from Name.
   // e.g. vadd
   const char *OverloadedName;
 
@@ -492,78 +482,11 @@ struct RVVIntrinsicRecord {
   uint8_t MaskedPolicyScheme : 2;
 };
 
-=======
-
-  static llvm::SmallVector<PrototypeDescriptor>
-      computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> Prototype,
-                          bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
-                          unsigned NF);
-};
-
-// RVVRequire should be sync'ed with target features, but only
-// required features used in riscv_vector.td.
-enum RVVRequire : uint8_t {
-  RVV_REQ_None = 0,
-  RVV_REQ_RV64 = 1 << 0,
-  RVV_REQ_FullMultiply = 1 << 1,
-
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_FullMultiply)
-};
-
-// Raw RVV intrinsic info, used to expand later.
-// This struct is highly compact for minimized code size.
-struct RVVIntrinsicRecord {
-  // Intrinsic name, e.g. vadd_vv
-  const char *Name;
-
-  // Overloaded intrinsic name, could be empty if it can be computed from Name.
-  // e.g. vadd
-  const char *OverloadedName;
-
-  // Prototype for this intrinsic, index of RVVSignatureTable.
-  uint16_t PrototypeIndex;
-
-  // Suffix of intrinsic name, index of RVVSignatureTable.
-  uint16_t SuffixIndex;
-
-  // Suffix of overloaded intrinsic name, index of RVVSignatureTable.
-  uint16_t OverloadedSuffixIndex;
-
-  // Length of the prototype.
-  uint8_t PrototypeLength;
-
-  // Length of intrinsic name suffix.
-  uint8_t SuffixLength;
-
-  // Length of overloaded intrinsic suffix.
-  uint8_t OverloadedSuffixSize;
-
-  // Required target features for this intrinsic.
-  uint8_t RequiredExtensions;
-
-  // Supported type, mask of BasicType.
-  uint8_t TypeRangeMask;
-
-  // Supported LMUL.
-  uint8_t Log2LMULMask;
-
-  // Number of fields, greater than 1 if it's segment load/store.
-  uint8_t NF;
-
-  bool HasMasked : 1;
-  bool HasVL : 1;
-  bool HasMaskedOffOperand : 1;
-};
-
->>>>>>> llvm/main
 llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
                               const RVVIntrinsicRecord &RVVInstrRecord);
 
 LLVM_ENABLE_BITMASK_ENUMS_IN_NAMESPACE();
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 } // end namespace RISCV
 
 } // end namespace clang

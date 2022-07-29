@@ -929,10 +929,6 @@ bool Sema::LookupBuiltin(LookupResult &R) {
         }
       }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
       if (DeclareRISCVVBuiltins) {
         if (!RVIntrinsicManager)
           RVIntrinsicManager = CreateRISCVIntrinsicManager(*this);
@@ -940,10 +936,6 @@ bool Sema::LookupBuiltin(LookupResult &R) {
         if (RVIntrinsicManager->CreateIntrinsicIfFound(R, II, PP))
           return true;
       }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 
       // If this is a builtin on this (or all) targets, create the decl.
       if (unsigned BuiltinID = II->getBuiltinID()) {

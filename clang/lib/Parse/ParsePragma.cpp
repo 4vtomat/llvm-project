@@ -350,10 +350,6 @@ struct PragmaMaxTokensTotalHandler : public PragmaHandler {
                     Token &FirstToken) override;
 };
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 struct PragmaRISCVHandler : public PragmaHandler {
   PragmaRISCVHandler(Sema &Actions)
       : PragmaHandler("riscv"), Actions(Actions) {}
@@ -363,10 +359,6 @@ struct PragmaRISCVHandler : public PragmaHandler {
 private:
   Sema &Actions;
 };
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
@@ -512,18 +504,10 @@ void Parser::initializePragmaHandlers() {
   MaxTokensTotalPragmaHandler = std::make_unique<PragmaMaxTokensTotalHandler>();
   PP.AddPragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   if (getTargetInfo().getTriple().isRISCV()) {
     RISCVPragmaHandler = std::make_unique<PragmaRISCVHandler>(Actions);
     PP.AddPragmaHandler("clang", RISCVPragmaHandler.get());
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 }
 
 void Parser::resetPragmaHandlers() {
@@ -649,18 +633,10 @@ void Parser::resetPragmaHandlers() {
   PP.RemovePragmaHandler("clang", MaxTokensTotalPragmaHandler.get());
   MaxTokensTotalPragmaHandler.reset();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   if (getTargetInfo().getTriple().isRISCV()) {
     PP.RemovePragmaHandler("clang", RISCVPragmaHandler.get());
     RISCVPragmaHandler.reset();
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 }
 
 /// Handle the annotation token produced for #pragma unused(...)
@@ -3974,10 +3950,6 @@ void PragmaMaxTokensTotalHandler::HandlePragma(Preprocessor &PP,
   PP.overrideMaxTokens(MaxTokens, Loc);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 // Handle '#pragma clang riscv intrinsic vector'.
 void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
                                       PragmaIntroducer Introducer,
@@ -4009,7 +3981,3 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
 
   Actions.DeclareRISCVVBuiltins = true;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
