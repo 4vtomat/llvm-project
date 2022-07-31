@@ -77,11 +77,12 @@ private:
                                    Value *Ptr);
 
   std::pair<Value *, Value *>
-  determineScalableBaseAndStride(GetElementPtrInst *GEP,
+  determineScalableBaseAndStride(GetElementPtrInst *GEP, Value *EVL,
                                  IRBuilder<> &Builder);
 
-  bool matchScalableStridedRecurrence(Value *Index, Loop *L, Value *&Stride,
-                                      PHINode *&BasePtr, BinaryOperator *&Inc,
+  bool matchScalableStridedRecurrence(Value *Index, Loop *L, Value *EVL,
+                                      Value *&Stride, PHINode *&BasePtr,
+                                      BinaryOperator *&Inc,
                                       IRBuilder<> &Builder);
 #endif // SIFIVE_CUSTOMIZATION
 };
@@ -548,7 +549,7 @@ static bool findExistingAddRecurrence(BasicBlock *BB, Value *DesiredStart,
 // We also update the Stride as we unwind. Our goal is to move all of the
 // arithmetic out of the loop.
 bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
-    Value *Index, Loop *L, Value *&Stride, PHINode *&BasePtr,
+    Value *Index, Loop *L, Value *EVL, Value *&Stride, PHINode *&BasePtr,
     BinaryOperator *&Inc, IRBuilder<> &Builder) {
   // Our base case is a Phi.
   if (auto *Phi = dyn_cast<PHINode>(Index)) {
@@ -596,22 +597,37 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
   }
 
   // Otherwise look for binary operator.
-  auto *BO = dyn_cast<BinaryOperator>(Index);
+  auto *BO = dyn_cast<Instruction>(Index);
   if (!BO)
     return false;
 
-  if (BO->getOpcode() != Instruction::Add &&
-      BO->getOpcode() != Instruction::Or &&
-      BO->getOpcode() != Instruction::Mul &&
-      BO->getOpcode() != Instruction::Shl)
+  unsigned BinOpc = BO->getOpcode();
+  if (auto VP = dyn_cast<VPIntrinsic>(BO)) {
+    const auto *Mask = dyn_cast<Constant>(VP->getMaskParam());
+    if (!Mask || !Mask->isAllOnesValue())
+      return false;
+
+    if (VP->getVectorLengthParam() != EVL)
+      return false;
+
+    if (Optional<unsigned> Opt = VP->getFunctionalOpcode())
+      BinOpc = Opt.getValue();
+    else
+      return false;
+  }
+
+  if (BinOpc != Instruction::Add &&
+      BinOpc != Instruction::Or &&
+      BinOpc != Instruction::Mul &&
+      BinOpc != Instruction::Shl)
     return false;
 
   // Only support shift by constant.
-  if (BO->getOpcode() == Instruction::Shl && !isa<Constant>(BO->getOperand(1)))
+  if (BinOpc == Instruction::Shl && !isa<Constant>(BO->getOperand(1)))
     return false;
 
   // We need to be able to treat Or as Add.
-  if (BO->getOpcode() == Instruction::Or &&
+  if (BinOpc == Instruction::Or &&
       !haveNoCommonBitsSet(BO->getOperand(0), BO->getOperand(1), *DL))
     return false;
 
@@ -639,7 +655,7 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     return false;
 
   // Recurse up the use-def chain.
-  if (!matchScalableStridedRecurrence(Index, L, Stride, BasePtr, Inc, Builder))
+  if (!matchScalableStridedRecurrence(Index, L, EVL, Stride, BasePtr, Inc, Builder))
     return false;
 
   // Locate the Step and Start values from the recurrence.
@@ -653,7 +669,10 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
       BasePtr->getIncomingBlock(StartBlock)->getTerminator());
   Builder.SetCurrentDebugLocation(DebugLoc());
 
-  switch (BO->getOpcode()) {
+  auto *StepI = dyn_cast<Instruction>(Step);
+  bool StepInLoop = StepI && L->contains(cast<Instruction>(Step));
+
+  switch (BinOpc) {
   default:
     llvm_unreachable("Unexpected opcode!");
   case Instruction::Add:
@@ -674,13 +693,15 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     if (!isa<ConstantInt>(Start) || !cast<ConstantInt>(Start)->isZero())
       Start = Builder.CreateMul(Start, SplatOp, "start");
 
-    Step = Builder.CreateMul(Step, SplatOp, "step");
-
     // If the Stride is 1 just take the SplatOpt.
     if (isa<ConstantInt>(Stride) && cast<ConstantInt>(Stride)->isOne())
       Stride = SplatOp;
     else
       Stride = Builder.CreateMul(Stride, SplatOp, "stride");
+
+    if (StepInLoop)
+      Builder.SetInsertPoint(StepI->getNextNonDebugInstruction());
+    Step = Builder.CreateMul(Step, SplatOp, "step");
     Inc->setOperand(StepIndex, Step);
     BasePtr->setIncomingValue(StartBlock, Start);
     break;
@@ -689,8 +710,11 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     // If the start is zero we don't need to shift.
     if (!isa<ConstantInt>(Start) || !cast<ConstantInt>(Start)->isZero())
       Start = Builder.CreateShl(Start, SplatOp, "start");
-    Step = Builder.CreateShl(Step, SplatOp, "step");
     Stride = Builder.CreateShl(Stride, SplatOp, "stride");
+
+    if (StepInLoop)
+      Builder.SetInsertPoint(StepI->getNextNonDebugInstruction());
+    Step = Builder.CreateShl(Step, SplatOp, "step");
     Inc->setOperand(StepIndex, Step);
     BasePtr->setIncomingValue(StartBlock, Start);
     break;
@@ -702,7 +726,7 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
 
 std::pair<Value *, Value *>
 RISCVGatherScatterLowering::determineScalableBaseAndStride(
-    GetElementPtrInst *GEP, IRBuilder<> &Builder) {
+    GetElementPtrInst *GEP, Value *EVL, IRBuilder<> &Builder) {
   auto I = StridedAddrs.find(GEP);
   if (I != StridedAddrs.end())
     return I->second;
@@ -755,7 +779,7 @@ RISCVGatherScatterLowering::determineScalableBaseAndStride(
   Value *Stride;
   BinaryOperator *Inc;
   PHINode *BasePhi;
-  if (!matchScalableStridedRecurrence(VecIndex, L, Stride, BasePhi, Inc,
+  if (!matchScalableStridedRecurrence(VecIndex, L, EVL, Stride, BasePhi, Inc,
                                       Builder))
     return std::make_pair(nullptr, nullptr);
 
@@ -804,10 +828,13 @@ bool RISCVGatherScatterLowering::tryCreateVPStridedLoadStore(IntrinsicInst *II,
   if (!GEP)
     return false;
 
+  assert(isa<VPIntrinsic>(II) && "II should be vp intrinisc.");
+  Value *EVL = cast<VPIntrinsic>(II)->getVectorLengthParam();
+
   IRBuilder<> Builder(GEP);
 
   Value *BasePtr, *Stride;
-  std::tie(BasePtr, Stride) = determineScalableBaseAndStride(GEP, Builder);
+  std::tie(BasePtr, Stride) = determineScalableBaseAndStride(GEP, EVL, Builder);
   if (!BasePtr)
     return false;
   assert(Stride != nullptr);
