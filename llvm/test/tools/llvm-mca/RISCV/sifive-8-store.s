@@ -11,12 +11,11 @@ fsd    fa0, 0(a2)
 # LLVM-MCA-END
 
 # CHECK:      Timeline view:
-# CHECK-NEXT:                     012345678
-# CHECK-NEXT: Index     0123456789
+# CHECK-NEXT: Index     012345678
 
-# CHECK:      [0,0]     DeeeeeeeeeeeER .  .   sb	a0, 0(a2)
-# CHECK-NEXT: [0,1]     D=eeeeeeeeeeeER.  .   sh	a0, 0(a2)
-# CHECK-NEXT: [0,2]     D==eeeeeeeeeeeER  .   sw	a0, 0(a2)
-# CHECK-NEXT: [0,3]     .D==eeeeeeeeeeeER .   sd	a0, 0(a2)
-# CHECK-NEXT: [0,4]     .D===eeeeeeeeeeeER.   fsw	fa0, 0(a2)
-# CHECK-NEXT: [0,5]     .D====eeeeeeeeeeeER   fsd	fa0, 0(a2)
+# CHECK:      [0,0]     DeER .  .   sb	a0, 0(a2)
+# CHECK-NEXT: [0,1]     D=eER.  .   sh	a0, 0(a2)
+# CHECK-NEXT: [0,2]     D==eER  .   sw	a0, 0(a2)
+# CHECK-NEXT: [0,3]     .D==eER .   sd	a0, 0(a2)
+# CHECK-NEXT: [0,4]     .D===eER.   fsw	fa0, 0(a2)
+# CHECK-NEXT: [0,5]     .D====eER   fsd	fa0, 0(a2)
