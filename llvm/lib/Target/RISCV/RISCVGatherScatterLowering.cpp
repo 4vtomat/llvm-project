@@ -602,8 +602,8 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     return false;
 
   unsigned BinOpc = BO->getOpcode();
-  if (auto VP = dyn_cast<VPIntrinsic>(BO)) {
-    const auto *Mask = dyn_cast<Constant>(VP->getMaskParam());
+  if (auto *VP = dyn_cast<VPIntrinsic>(BO)) {
+    const auto *Mask = dyn_cast_or_null<Constant>(VP->getMaskParam());
     if (!Mask || !Mask->isAllOnesValue())
       return false;
 
