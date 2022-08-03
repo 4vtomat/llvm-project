@@ -582,10 +582,8 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     // recurrence already exists. Unless we were told not reuse. We should
     // only reuse if the start value is 0. If we looked through a shift or mul
     // we may need scale the start value if it is non-zero.
-    if (!CanReusePhi ||
-        !(isa<ConstantInt>(Start) && cast<ConstantInt>(Start)->isZero()) ||
-        !findExistingAddRecurrence(Phi->getParent(), Start, Step, BasePtr,
-                                   Inc)) {
+    if (!CanReusePhi || !findExistingAddRecurrence(Phi->getParent(), Start,
+                                                   Step, BasePtr, Inc)) {
       // Build scalar phi and increment.
       BasePtr =
           PHINode::Create(Start->getType(), 2, Phi->getName() + ".scalar", Phi);
@@ -626,11 +624,6 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
       BinOpc != Instruction::Shl)
     return false;
 
-  // If this operation is an Add, we will need to change the start value.
-  // We should disable reuse of existing scalar phi.
-  if (BinOpc == Instruction::Add || BinOpc == Instruction::Or)
-    CanReusePhi = false;
-
   // Only support shift by constant.
   if (BinOpc == Instruction::Shl && !isa<Constant>(BO->getOperand(1)))
     return false;
@@ -665,7 +658,7 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
 
   // Recurse up the use-def chain.
   if (!matchScalableStridedRecurrence(Index, L, EVL, Stride, BasePtr, Inc,
-                                      Builder, CanReusePhi))
+                                      Builder, /*CanReusePhi*/ false))
     return false;
 
   // Locate the Step and Start values from the recurrence.
