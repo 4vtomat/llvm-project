@@ -441,7 +441,8 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   // Expand Memcpy() to RVV instructions.
   // The RVV instructions like below:
   // preloop:
-  //   andi Dlenelement, SrcAddr, Dlen
+  //   andi AndRem, SrcAddr, Dlen - 1
+  //   sub  DLenelement, Dlen, AndRem
   //   minu AlignLen, CopyLen, Dlenelement
   //   vsetvli VL, AlignLen, e8, m8, tu, mu
   //   vle8.v vData, (Src)
@@ -463,8 +464,11 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   Value *Addr = Builder.CreatePtrToInt(SrcAddr, ILengthType);
-  Value *DLenElement =
+  Value *And =
       Builder.CreateAnd(Addr, ConstantInt::get(ILengthType, AlignBytes - 1));
+
+  Value *DLenElement =
+      Builder.CreateSub(ConstantInt::get(ILengthType, AlignBytes), And);
 
   Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
   Value *AlignLen =
