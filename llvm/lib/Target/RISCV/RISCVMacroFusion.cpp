@@ -32,7 +32,10 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
   if (!FirstMI)
     return true;
 
-  if (FirstMI->getOpcode() != RISCV::LUI)
+#if SIFIVE_CUSTOMIZATION
+  if (FirstMI->getOpcode() != RISCV::LUI &&
+      FirstMI->getOpcode() != RISCV::AUIPC)
+#endif // SIFIVE_CUSTOMIZATION
     return false;
 
   // The first operand of ADDI might be a frame index.
