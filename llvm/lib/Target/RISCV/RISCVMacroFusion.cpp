@@ -51,6 +51,49 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
 }
 
 #if SIFIVE_CUSTOMIZATION
+static bool isLUILoad(const MachineInstr *FirstMI,
+                      const MachineInstr &SecondMI) {
+  switch (SecondMI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::LB:
+  case RISCV::LBU:
+  case RISCV::LH:
+  case RISCV::LHU:
+  case RISCV::LW:
+  case RISCV::LWU:
+  case RISCV::LD:
+    break;
+  }
+
+  // Assume the 1st instr to be a wildcard if it is unspecified
+  if (!FirstMI)
+    return true;
+
+  if (FirstMI->getOpcode() != RISCV::LUI &&
+      FirstMI->getOpcode() != RISCV::AUIPC)
+    return false;
+
+  // The first operand might be frame index.
+  if (!SecondMI.getOperand(1).isReg())
+    return false;
+
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
+  if (SecondMI.getOperand(1).getReg() != FirstDest)
+    return false;
+
+  // If the input is virtual make sure this is the only user.
+  if (FirstDest.isVirtual()) {
+    auto &MRI = SecondMI.getMF()->getRegInfo();
+    return MRI.hasOneNonDBGUse(FirstDest);
+  }
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return SecondMI.getOperand(0).getReg() == FirstDest;
+}
+
 static bool isIndexedLoad(const MachineInstr *FirstMI,
                           const MachineInstr &SecondMI, bool FuseZba) {
   switch (SecondMI.getOpcode()) {
@@ -171,6 +214,8 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
   if (ST.hasLUIADDIFusion() && isLUIADDI(FirstMI, SecondMI))
     return true;
 #if SIFIVE_CUSTOMIZATION
+  if (ST.hasFuseLUILoad() && isLUILoad(FirstMI, SecondMI))
+    return true;
   if (ST.hasFuseIndexedLoad() &&
       isIndexedLoad(FirstMI, SecondMI, ST.hasFuseZbaLoad()))
     return true;
