@@ -613,17 +613,19 @@ define void @test_vpmul(i64 %N, i32 * noundef %A, <vscale x 4 x i32>* %p) {
 ; CHECK-ASM-LABEL: test_vpmul:
 ; CHECK-ASM:       # %bb.0: # %entry
 ; CHECK-ASM-NEXT:    li a3, 0
-; CHECK-ASM-NEXT:    li a4, 8
+; CHECK-ASM-NEXT:    li a4, 0
+; CHECK-ASM-NEXT:    li a5, 8
 ; CHECK-ASM-NEXT:  .LBB7_1: # %vector.body
 ; CHECK-ASM-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-ASM-NEXT:    sub a5, a0, a3
-; CHECK-ASM-NEXT:    vsetvli a5, a5, e32, m2, ta, mu
-; CHECK-ASM-NEXT:    slli a6, a3, 2
-; CHECK-ASM-NEXT:    add a6, a1, a6
-; CHECK-ASM-NEXT:    vlse32.v v8, (a6), a4
-; CHECK-ASM-NEXT:    slli a5, a5, 1
-; CHECK-ASM-NEXT:    add a3, a3, a5
+; CHECK-ASM-NEXT:    sub a6, a0, a3
+; CHECK-ASM-NEXT:    vsetvli a6, a6, e32, m2, ta, mu
+; CHECK-ASM-NEXT:    slli a7, a4, 2
+; CHECK-ASM-NEXT:    add a7, a1, a7
+; CHECK-ASM-NEXT:    vlse32.v v8, (a7), a5
+; CHECK-ASM-NEXT:    slli a7, a6, 1
 ; CHECK-ASM-NEXT:    vs2r.v v8, (a2)
+; CHECK-ASM-NEXT:    add a3, a3, a6
+; CHECK-ASM-NEXT:    add a4, a4, a7
 ; CHECK-ASM-NEXT:    bne a3, a0, .LBB7_1
 ; CHECK-ASM-NEXT:  # %bb.2: # %cleanup
 ; CHECK-ASM-NEXT:    ret
@@ -634,14 +636,16 @@ define void @test_vpmul(i64 %N, i32 * noundef %A, <vscale x 4 x i32>* %p) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_IND_SCALAR:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[VEC_IND_NEXT_SCALAR:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[N:%.*]], [[INDEX]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 2, i64 1)
 ; CHECK-NEXT:    [[STEP:%.*]] = mul i64 [[TMP3]], 2
 ; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[A:%.*]], i64 [[INDEX]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[A:%.*]], i64 [[VEC_IND_SCALAR]]
 ; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vp.strided.load.nxv4i32.p0i32.i64(i32* [[TMP5]], i64 8, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP4]])
 ; CHECK-NEXT:    store volatile <vscale x 4 x i32> [[VP_GATHER]], <vscale x 4 x i32>* [[P:%.*]], align 16
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[STEP]]
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
+; CHECK-NEXT:    [[VEC_IND_NEXT_SCALAR]] = add i64 [[VEC_IND_SCALAR]], [[STEP]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       cleanup:
@@ -679,17 +683,19 @@ define void @test_vpshl(i64 %N, i32 * noundef %A, <vscale x 4 x i32>* %p) {
 ; CHECK-ASM-LABEL: test_vpshl:
 ; CHECK-ASM:       # %bb.0: # %entry
 ; CHECK-ASM-NEXT:    li a3, 0
-; CHECK-ASM-NEXT:    li a4, 8
+; CHECK-ASM-NEXT:    li a4, 0
+; CHECK-ASM-NEXT:    li a5, 8
 ; CHECK-ASM-NEXT:  .LBB8_1: # %vector.body
 ; CHECK-ASM-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-ASM-NEXT:    sub a5, a0, a3
-; CHECK-ASM-NEXT:    vsetvli a5, a5, e32, m2, ta, mu
-; CHECK-ASM-NEXT:    slli a6, a3, 2
-; CHECK-ASM-NEXT:    add a6, a1, a6
-; CHECK-ASM-NEXT:    vlse32.v v8, (a6), a4
-; CHECK-ASM-NEXT:    slli a5, a5, 1
-; CHECK-ASM-NEXT:    add a3, a3, a5
+; CHECK-ASM-NEXT:    sub a6, a0, a3
+; CHECK-ASM-NEXT:    vsetvli a6, a6, e32, m2, ta, mu
+; CHECK-ASM-NEXT:    slli a7, a4, 2
+; CHECK-ASM-NEXT:    add a7, a1, a7
+; CHECK-ASM-NEXT:    vlse32.v v8, (a7), a5
+; CHECK-ASM-NEXT:    slli a7, a6, 1
 ; CHECK-ASM-NEXT:    vs2r.v v8, (a2)
+; CHECK-ASM-NEXT:    add a3, a3, a6
+; CHECK-ASM-NEXT:    add a4, a4, a7
 ; CHECK-ASM-NEXT:    bne a3, a0, .LBB8_1
 ; CHECK-ASM-NEXT:  # %bb.2: # %cleanup
 ; CHECK-ASM-NEXT:    ret
@@ -700,14 +706,16 @@ define void @test_vpshl(i64 %N, i32 * noundef %A, <vscale x 4 x i32>* %p) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_IND_SCALAR:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[VEC_IND_NEXT_SCALAR:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[N:%.*]], [[INDEX]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP2]], i64 2, i64 1)
 ; CHECK-NEXT:    [[STEP:%.*]] = shl i64 [[TMP3]], 1
 ; CHECK-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[A:%.*]], i64 [[INDEX]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[A:%.*]], i64 [[VEC_IND_SCALAR]]
 ; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vp.strided.load.nxv4i32.p0i32.i64(i32* [[TMP5]], i64 8, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP4]])
 ; CHECK-NEXT:    store volatile <vscale x 4 x i32> [[VP_GATHER]], <vscale x 4 x i32>* [[P:%.*]], align 16
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[STEP]]
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
+; CHECK-NEXT:    [[VEC_IND_NEXT_SCALAR]] = add i64 [[VEC_IND_SCALAR]], [[STEP]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       cleanup:
