@@ -115,6 +115,7 @@ private:
   bool HasCMOVBranchOpt = false; // SIFIVE
   bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
+  bool HasFuseLUILoad = false;        // SIFIVE
   bool HasFuseIndexedLoad = false;    // SIFIVE
   bool HasFuseZbaLoad = false;        // SIFIVE
   bool HasFuseArithEqZ = false;       // SIFIVE
@@ -235,6 +236,7 @@ public:
     return HasCMOVBranchOpt && !HasShortForwardBranchOpt;
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
+  bool hasFuseLUILoad() const { return HasFuseLUILoad; }
   bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
   bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
   bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
@@ -280,8 +282,8 @@ public:
 
   bool hasMacroFusion() const {
 #if SIFIVE_CUSTOMIZATION
-    return hasLUIADDIFusion() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
-           hasFuseBFX();
+    return hasLUIADDIFusion() || hasFuseLUILoad() || hasFuseIndexedLoad() ||
+           hasFuseArithEqZ() || hasFuseBFX();
 #endif // SIFIVE_CUSTOMIZATION
   }
 

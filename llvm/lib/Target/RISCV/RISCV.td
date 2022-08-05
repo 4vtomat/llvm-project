@@ -565,6 +565,10 @@ def TuneJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
                        "true", "Set jump is cheap.">;
 
+def TuneFuseLUILoad
+    : SubtargetFeature<"fuse-lui-load", "HasFuseLUILoad",
+                       "true", "CPU fuses LUI/AUIPC with load">;
+
 def TuneFuseIndexedLoad
     : SubtargetFeature<"fuse-indexed-load", "HasFuseIndexedLoad",
                        "true", "CPU fuses indexed load">;
