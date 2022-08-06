@@ -60,7 +60,6 @@ public:
 private:
   bool optimizeZExt(ZExtInst *I);
   bool optimizeZExtWUses(ZExtInst *I);
-  bool optimizeAndExt(BinaryOperator *BO);
   bool optimizeAndUses(BinaryOperator *BO);
   bool optimizeBinaryOperator(BinaryOperator *BO);
   bool optimizeICmp(ICmpInst *ICmp);
@@ -152,86 +151,7 @@ bool RISCVLateCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
   if (!ST->is64Bit())
     return false;
 
-  Value *Src = ZExt->getOperand(0);
-
-  // We only care about ZExt from i32 to i64.
-  if (!ZExt->getType()->isIntegerTy(64) || !Src->getType()->isIntegerTy(32))
-    return false;
-
-  // Look for an opportunity to replace (i64 (zext (i32 X))) with a sext if we
-  // can determine that bit 31 of X is zero via a dominating condition. This
-  // often occurs with widened induction variables.
-  const DataLayout &DL = ZExt->getModule()->getDataLayout();
-  if (isImpliedByDomCondition(ICmpInst::ICMP_SGE, Src,
-                              Constant::getNullValue(Src->getType()), ZExt,
-                              DL)) {
-    IRBuilder<> Builder(ZExt);
-    Value *SExt = Builder.CreateSExt(Src, ZExt->getType());
-    SExt->takeName(ZExt);
-
-    ZExt->replaceAllUsesWith(SExt);
-    ZExt->eraseFromParent();
-    return true;
-  }
-
   return optimizeZExtWUses(ZExt);
-}
-
-// Try to optimize (i64 and (zext/sext (i32 X), C1)) if C1 has bit 31 is one,
-// but bits 63:32 are zero. If we can prove that bit 31 of X is 0, we can fill
-// the upper 32 bits with ones. A separate transform will turn (zext X) into
-// (sext X) for the same condition.
-bool RISCVLateCodeGenPrepare::optimizeAndExt(BinaryOperator *BO) {
-  // Left hand side should be sext or zext.
-  Instruction *LHS = dyn_cast<Instruction>(BO->getOperand(0));
-  if (!LHS || (LHS->getOpcode() != Instruction::SExt &&
-               LHS->getOpcode() != Instruction::ZExt))
-    return false;
-
-  Value *LHSSrc = LHS->getOperand(0);
-  if (!LHSSrc->getType()->isIntegerTy(32))
-    return false;
-
-  // Right hand side should be a constant.
-  Value *RHS = BO->getOperand(1);
-
-  auto *CI = dyn_cast<ConstantInt>(RHS);
-  // Handle the case where constant hoisting may have hidden the constant.
-  if (!CI && isa<BitCastInst>(RHS))
-    CI = dyn_cast<ConstantInt>(cast<BitCastInst>(RHS)->getOperand(0));
-  if (!CI)
-    return false;
-  uint64_t C = CI->getZExtValue();
-
-  // Look for constants that fit in 32 bits but not simm12, and can be made
-  // into simm12 by sign extending bit 31.
-  if (!isUInt<32>(C) || isInt<12>(C) || !isInt<12>(SignExtend64<32>(C)))
-    return false;
-
-  // If we can determine the sign bit of the input is 0, we can replace the
-  // And mask constant.
-  const DataLayout &DL = BO->getModule()->getDataLayout();
-  if (!isImpliedByDomCondition(ICmpInst::ICMP_SGE, LHSSrc,
-                               Constant::getNullValue(LHSSrc->getType()), LHS,
-                               DL))
-    return false;
-
-  // Sign extend the constant and create a new And.
-  C = SignExtend64<32>(C);
-  IRBuilder<> Builder(BO);
-  Value *NewBO = Builder.CreateAnd(LHS, ConstantInt::get(LHS->getType(), C));
-  NewBO->takeName(BO);
-
-  // Remove the old And.
-  BO->replaceAllUsesWith(NewBO);
-  BO->eraseFromParent();
-
-  // Erase any bitcasts of constants we made dead.
-  if (auto *RHSI = dyn_cast<Instruction>(RHS))
-    if (RHSI->use_empty())
-      RHSI->eraseFromParent();
-
-  return true;
 }
 
 // If the result of a and with 0xffffffff is used by a GEP in another basic
@@ -319,9 +239,6 @@ bool RISCVLateCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
 
   if (!BO->getType()->isIntegerTy(64))
     return false;
-
-  if (optimizeAndExt(BO))
-    return true;
 
   return optimizeAndUses(BO);
 }
