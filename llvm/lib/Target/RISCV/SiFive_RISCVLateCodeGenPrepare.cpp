@@ -19,6 +19,7 @@
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Pass.h"
@@ -41,9 +42,13 @@ static cl::opt<bool>
 
 namespace {
 
-class RISCVLateCodeGenPrepare : public FunctionPass {
+class RISCVLateCodeGenPrepare
+    : public FunctionPass,
+      public InstVisitor<RISCVLateCodeGenPrepare, bool> {
   const DataLayout *DL;
   const RISCVSubtarget *ST;
+
+  SmallVector<MemIntrinsic *, 4> MemCalls;
 
 public:
   static char ID;
@@ -57,12 +62,13 @@ public:
   static constexpr unsigned MinCopySize = 64;
   static constexpr unsigned MaxUnrollTimes = 8;
 
-private:
-  bool optimizeZExt(ZExtInst *I);
-  bool optimizeZExtWUses(ZExtInst *I);
-  bool optimizeAndUses(BinaryOperator *BO);
-  bool optimizeBinaryOperator(BinaryOperator *BO);
-  bool optimizeICmp(ICmpInst *ICmp);
+  bool visitInstruction(Instruction &I) { return false; }
+  bool visitZExtInst(ZExtInst &I);
+  bool optimizeZExtWUses(ZExtInst &I);
+  bool visitAnd(BinaryOperator &BO);
+  bool optimizeAndUses(BinaryOperator &BO);
+  bool visitICmp(ICmpInst &ICmp);
+  bool visitMemIntrinsic(MemIntrinsic &MI);
   bool expandMemIntrinsic(MemIntrinsic *MI);
   void expandMemCpyUnknownSize(MemCpyInst *MCI);
   void expandMemCpyUnknownSizewithAlign(MemCpyInst *MCI);
@@ -73,24 +79,23 @@ private:
 
 // If the result of a zext.w is used by a GEP in another basic block, duplicate
 // the zext to enable add.uw or shXadd.uw.
-bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
+bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst &I) {
   if (!ST->hasStdExtZba())
     return false;
 
-  BasicBlock *DefBB = I->getParent();
+  BasicBlock *DefBB = I.getParent();
 
-  Value *Src = I->getOperand(0);
+  Value *Src = I.getOperand(0);
 
   // Needs to be a zext.w.
-  if (!Src->getType()->isIntegerTy(32) ||
-      !I->getType()->isIntegerTy(64))
+  if (!Src->getType()->isIntegerTy(32) || !I.getType()->isIntegerTy(64))
     return false;
 
   // Make sure all users are GEPs or left shifts by constant.
   // NOTE: This isn't strictly necessary, but it ensures we don't extend the
   // live range of Src without removing all non-local users of I.
   bool HasNonLocalUser = false;
-  for (auto *U : I->users()) {
+  for (auto *U : I.users()) {
     auto *UserI = cast<Instruction>(U);
 
     if (!isa<GetElementPtrInst>(UserI) &&
@@ -109,7 +114,7 @@ bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
   DenseMap<BasicBlock *, ZExtInst *> InsertedZExts;
 
   bool MadeChange = false;
-  for (auto UI = I->user_begin(), E = I->user_end(); UI != E; ) {
+  for (auto UI = I.user_begin(), E = I.user_end(); UI != E;) {
     Use &TheUse = UI.getUse();
     Instruction *User = cast<Instruction>(*UI);
 
@@ -128,9 +133,9 @@ bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
     if (!InsertedZExt) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedZExt = new ZExtInst(Src, I->getType(), "", &*InsertPt);
+      InsertedZExt = new ZExtInst(Src, I.getType(), "", &*InsertPt);
       // Propagate the debug info.
-      InsertedZExt->setDebugLoc(I->getDebugLoc());
+      InsertedZExt->setDebugLoc(I.getDebugLoc());
     }
 
     // Replace a use of the zext with a use of the new zext.
@@ -139,15 +144,15 @@ bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst *I) {
   }
 
   // If the original zext has become dead, remove it.
-  if (I->use_empty()) {
-    I->eraseFromParent();
+  if (I.use_empty()) {
+    I.eraseFromParent();
     MadeChange = true;
   }
 
   return MadeChange;
 }
 
-bool RISCVLateCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
+bool RISCVLateCodeGenPrepare::visitZExtInst(ZExtInst &ZExt) {
   if (!ST->is64Bit())
     return false;
 
@@ -156,22 +161,24 @@ bool RISCVLateCodeGenPrepare::optimizeZExt(ZExtInst *ZExt) {
 
 // If the result of a and with 0xffffffff is used by a GEP in another basic
 // block, duplicate the and to enable add.uw or shXadd.uw.
-bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
+bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator &BO) {
+  assert(BO.getOpcode() == Instruction::And);
+
   if (!ST->hasStdExtZba())
     return false;
 
   // We're looking for AND with 0xffffffffff.
-  auto *CI = dyn_cast<ConstantInt>(BO->getOperand(1));
+  auto *CI = dyn_cast<ConstantInt>(BO.getOperand(1));
   if (!CI || CI->getZExtValue() != UINT64_C(0xffffffff))
     return false;
 
-  BasicBlock *DefBB = BO->getParent();
+  BasicBlock *DefBB = BO.getParent();
 
   // Make sure all users are GEPs or left shifts by constant.
   // NOTE: This isn't strictly necessary, but it ensures we don't extend the
   // live range of Src without removing all non-local users of I.
   bool HasNonLocalUser = false;
-  for (auto *U : BO->users()) {
+  for (auto *U : BO.users()) {
     auto *UserI = cast<Instruction>(U);
 
     if (!isa<GetElementPtrInst>(UserI) &&
@@ -190,7 +197,7 @@ bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
   DenseMap<BasicBlock *, BinaryOperator *> InsertedAnds;
 
   bool MadeChange = false;
-  for (auto UI = BO->user_begin(), E = BO->user_end(); UI != E; ) {
+  for (auto UI = BO.user_begin(), E = BO.user_end(); UI != E;) {
     Use &TheUse = UI.getUse();
     Instruction *User = cast<Instruction>(*UI);
 
@@ -209,11 +216,10 @@ bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
     if (!InsertedAnd) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedAnd = BinaryOperator::CreateAnd(BO->getOperand(0),
-                                               BO->getOperand(1),
-                                               "", &*InsertPt);
+      InsertedAnd = BinaryOperator::CreateAnd(BO.getOperand(0),
+                                              BO.getOperand(1), "", &*InsertPt);
       // Propagate the debug info.
-      InsertedAnd->setDebugLoc(BO->getDebugLoc());
+      InsertedAnd->setDebugLoc(BO.getDebugLoc());
     }
 
     // Replace a use of the and with a use of the new and.
@@ -222,32 +228,29 @@ bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator *BO) {
   }
 
   // If the original and has become dead, remove it.
-  if (BO->use_empty()) {
-    BO->eraseFromParent();
+  if (BO.use_empty()) {
+    BO.eraseFromParent();
     MadeChange = true;
   }
 
   return MadeChange;
 }
 
-bool RISCVLateCodeGenPrepare::optimizeBinaryOperator(BinaryOperator *BO) {
+bool RISCVLateCodeGenPrepare::visitAnd(BinaryOperator &BO) {
   if (!ST->is64Bit())
     return false;
 
-  if (BO->getOpcode() != Instruction::And)
-    return false;
-
-  if (!BO->getType()->isIntegerTy(64))
+  if (!BO.getType()->isIntegerTy(64))
     return false;
 
   return optimizeAndUses(BO);
 }
 
-bool RISCVLateCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
+bool RISCVLateCodeGenPrepare::visitICmp(ICmpInst &ICmp) {
   if (ST->hasStdExtZbb())
     return false;
 
-  auto *BO = dyn_cast<BinaryOperator>(ICmp->getOperand(0));
+  auto *BO = dyn_cast<BinaryOperator>(ICmp.getOperand(0));
   if (!BO)
     return false;
 
@@ -255,14 +258,15 @@ bool RISCVLateCodeGenPrepare::optimizeICmp(ICmpInst *ICmp) {
   // InstCombine normally does this, but it is disabled if the add is part of a
   // min pattern. Without Zbb, the min will be turned into control flow so it
   // is better to separate the add from the cmp so we can sink it.
-  if (ICmp->getPredicate() == ICmpInst::ICMP_SGT &&
+  if (ICmp.getPredicate() == ICmpInst::ICMP_SGT &&
       BO->getOpcode() == Instruction::Add && BO->hasNoSignedWrap() &&
       match(BO->getOperand(1), m_One())) {
-    IRBuilder<> Builder(ICmp);
-    Value *NewICmp = Builder.CreateICmpSGE(BO->getOperand(0), ICmp->getOperand(1));
-    NewICmp->takeName(ICmp);
-    ICmp->replaceAllUsesWith(NewICmp);
-    ICmp->eraseFromParent();
+    IRBuilder<> Builder(&ICmp);
+    Value *NewICmp =
+        Builder.CreateICmpSGE(BO->getOperand(0), ICmp.getOperand(1));
+    NewICmp->takeName(&ICmp);
+    ICmp.replaceAllUsesWith(NewICmp);
+    ICmp.eraseFromParent();
     return true;
   }
 
@@ -551,6 +555,15 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   return true;
 }
 
+bool RISCVLateCodeGenPrepare::visitMemIntrinsic(MemIntrinsic &MI) {
+  Function &F = *MI.getFunction();
+  if (!F.hasFnAttribute(Attribute::NoImplicitFloat) && !F.hasOptSize() &&
+      ST->hasVInstructions() && MemToRVVOpt)
+    MemCalls.push_back(&MI);
+
+  return false;
+}
+
 bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
@@ -560,28 +573,17 @@ bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
     return false;
 
   auto &TM = TPC->getTM<RISCVTargetMachine>();
-  SmallVector<MemIntrinsic *, 4> MemCalls;
 
   ST = TM.getSubtargetImpl(F);
 
   DL = &F.getParent()->getDataLayout();
 
+  MemCalls.clear();
+
   bool MadeChange = false;
-  for (auto &BB : F) {
-    for (auto II = BB.begin(), IE = BB.end(); II != IE; ) {
-      Instruction *I = &*II++;
-      if (auto *ZExt = dyn_cast<ZExtInst>(I))
-        MadeChange |= optimizeZExt(ZExt);
-      else if (auto *BO = dyn_cast<BinaryOperator>(I))
-        MadeChange |= optimizeBinaryOperator(BO);
-      else if (auto *ICmp = dyn_cast<ICmpInst>(I))
-        MadeChange |= optimizeICmp(ICmp);
-      else if (MemIntrinsic *IntrCall = dyn_cast<MemIntrinsic>(I))
-        if (!F.hasFnAttribute(Attribute::NoImplicitFloat) && !F.hasOptSize() &&
-            ST->hasVInstructions() && MemToRVVOpt)
-          MemCalls.push_back(IntrCall);
-    }
-  }
+  for (auto &BB : F)
+    for (Instruction &I : llvm::make_early_inc_range(BB))
+      MadeChange |= visit(I);
 
   for (MemIntrinsic *MemCall : MemCalls)
     MadeChange |= expandMemIntrinsic(MemCall);
