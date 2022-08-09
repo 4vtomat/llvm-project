@@ -76,6 +76,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVMergeBaseOffsetOptPass(*PR);
   initializeRISCVSExtWRemovalPass(*PR);
+  initializeRISCVPreRAExpandPseudoPass(*PR);
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
 #if SIFIVE_CUSTOMIZATION
@@ -343,7 +344,12 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 }
 
 void RISCVPassConfig::addPreRegAlloc() {
+<<<<<<< HEAD
   if (TM->getOptLevel() != CodeGenOpt::None) {
+=======
+  addPass(createRISCVPreRAExpandPseudoPass());
+  if (TM->getOptLevel() != CodeGenOpt::None)
+>>>>>>> pub/main
     addPass(createRISCVMergeBaseOffsetOptPass());
     addPass(createRISCVCleanupVXRMPass()); // SIFIVE
   }

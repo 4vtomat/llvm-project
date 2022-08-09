@@ -100,7 +100,7 @@ InstructionCost RISCVTTIImpl::getIntImmCostInst(unsigned Opcode, unsigned Idx,
     // zext.w
     if (Imm == UINT64_C(0xffffffff) && ST->hasStdExtZba())
       return TTI::TCC_Free;
-    LLVM_FALLTHROUGH;
+    [[fallthrough]];
   case Instruction::Add:
   case Instruction::Or:
   case Instruction::Xor:
@@ -669,6 +669,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // FIXME: This needs more work.
 bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
@@ -707,6 +708,33 @@ bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
   return BaseT::isLoweredToCall(F);
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+InstructionCost RISCVTTIImpl::getExtendedReductionCost(
+    unsigned Opcode, bool IsUnsigned, Type *ResTy, VectorType *ValTy,
+    Optional<FastMathFlags> FMF, TTI::TargetCostKind CostKind) {
+  if (isa<FixedVectorType>(ValTy) && !ST->useRVVForFixedLengthVectors())
+    return BaseT::getExtendedReductionCost(Opcode, IsUnsigned, ResTy, ValTy,
+                                           FMF, CostKind);
+
+  // Skip if scalar size of ResTy is bigger than ELEN.
+  if (ResTy->getScalarSizeInBits() > ST->getELEN())
+    return BaseT::getExtendedReductionCost(Opcode, IsUnsigned, ResTy, ValTy,
+                                           FMF, CostKind);
+
+  if (Opcode != Instruction::Add && Opcode != Instruction::FAdd)
+    return BaseT::getExtendedReductionCost(Opcode, IsUnsigned, ResTy, ValTy,
+                                           FMF, CostKind);
+
+  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, ValTy);
+
+  if (ResTy->getScalarSizeInBits() != 2 * LT.second.getScalarSizeInBits())
+    return BaseT::getExtendedReductionCost(Opcode, IsUnsigned, ResTy, ValTy,
+                                           FMF, CostKind);
+
+  return (LT.first - 1) +
+         getArithmeticReductionCost(Opcode, ValTy, FMF, CostKind);
+}
+>>>>>>> pub/main
 
 void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                            TTI::UnrollingPreferences &UP,

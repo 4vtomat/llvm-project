@@ -853,6 +853,11 @@ parseStackLifetimeOptions(StringRef Params) {
   return Result;
 }
 
+Expected<bool> parseDependenceAnalysisPrinterOptions(StringRef Params) {
+  return parseSinglePassOption(Params, "normalized-results",
+                               "DependenceAnalysisPrinter");
+}
+
 } // namespace
 
 /// Tests whether a pass name starts with a valid prefix for a default pipeline
@@ -1397,8 +1402,10 @@ Error PassBuilder::parseFunctionPass(FunctionPassManager &FPM,
         return Err;
       // Add the nested pass manager with the appropriate adaptor.
       bool UseMemorySSA = (Name == "loop-mssa");
-      bool UseBFI = llvm::any_of(
-          InnerPipeline, [](auto Pipeline) { return Pipeline.Name == "licm"; });
+      bool UseBFI = llvm::any_of(InnerPipeline, [](auto Pipeline) {
+        return Pipeline.Name.contains("licm") ||
+               Pipeline.Name.contains("simple-loop-unswitch");
+      });
       bool UseBPI = llvm::any_of(InnerPipeline, [](auto Pipeline) {
         return Pipeline.Name == "loop-predication";
       });
