@@ -35,6 +35,15 @@
       BasicBlock::Create(PreLoopBB->getContext(), NAME "-forward-loop",        \
                          PreLoopBB->getParent(), PostLoopBB);
 
+#define CREATE_BASIC_BLOCKS(NAME)                                              \
+  CREATE_BASIC_BLOCKS_WO_BACKWARD(NAME)                                        \
+  BasicBlock *BWPreLoopBB =                                                    \
+      BasicBlock::Create(PreLoopBB->getContext(), NAME "-backward-pre-loop",   \
+                         PreLoopBB->getParent(), PostLoopBB);                  \
+  BasicBlock *BackwardLoopBB =                                                 \
+      BasicBlock::Create(PreLoopBB->getContext(), NAME "-backward-loop",       \
+                         PreLoopBB->getParent(), PostLoopBB);
+
 using namespace llvm;
 using namespace llvm::PatternMatch;
 
@@ -86,6 +95,13 @@ public:
   void createMemsetLoopBody(BasicBlock *LoopBody, BasicBlock *PreLoopBB,
                             BasicBlock *PostLoopBB, Value *Val, Value *DstAddr,
                             Value *CopyLen, uint64_t UnrollCount = 1);
+  void expandMemmoveUnknownSize(MemMoveInst *MCI);
+  void expandMemmoveUnknownSizeAligned(MemMoveInst *MCI);
+  void expandMemmoveKnownSize(MemMoveInst *MCI);
+  void createMemcpyLoopBody(BasicBlock *LoopBody, BasicBlock *PreLoopBB,
+                            BasicBlock *PostLoopBB, Value *SrcAddr,
+                            Value *DstAddr, Value *CopyLen,
+                            bool IsBackward = false, uint64_t UnrollCount = 1);
 };
 
 } // end anonymous namespace
@@ -377,6 +393,437 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSize(MemSetInst *M) {
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
+}
+
+void RISCVLateCodeGenPrepare::expandMemmoveUnknownSize(MemMoveInst *M) {
+  CREATE_BASIC_BLOCKS("memmove")
+
+  Value *SrcAddr = M->getRawSource();
+  Value *DstAddr = M->getRawDest();
+  Value *CopyLen = M->getLength();
+  Type *Int8Type = Type::getInt8Ty(M->getParent()->getContext());
+
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
+
+  // Expand memmove to RVV instructions.
+  // preloop:
+  //   sub Diff, Dst, Src
+  //   blt Diff, CopyLen, backward-pre-loop
+  //
+  // forward-loop:
+  //   perform forward mem copy
+  //
+  // backward-pre-loop
+  //   perform last copy element calculation
+  //
+  // backward-loop:
+  //   perform backward mem copy
+  //
+  // postloop:
+  //   return
+  Value *DstAddrInt = Builder.CreatePtrToInt(DstAddr, Builder.getIntPtrTy(*DL));
+  Value *SrcAddrInt = Builder.CreatePtrToInt(SrcAddr, Builder.getIntPtrTy(*DL));
+  Value *Diff = Builder.CreateSub(DstAddrInt, SrcAddrInt);
+  Value *ULT = Builder.CreateICmpULT(Diff, CopyLen);
+  Builder.CreateCondBr(ULT, BWPreLoopBB, ForwardLoopBB);
+
+  Builder.SetInsertPoint(BWPreLoopBB);
+  Value *SrcEndAddr = Builder.CreateGEP(Int8Type, SrcAddr, CopyLen);
+  Value *DstEndAddr = Builder.CreateGEP(Int8Type, DstAddr, CopyLen);
+  Builder.CreateBr(BackwardLoopBB);
+
+  createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcEndAddr,
+                       DstEndAddr, CopyLen, true);
+  createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
+                       CopyLen, false);
+
+  PreLoopBB->getTerminator()->eraseFromParent();
+  M->eraseFromParent();
+}
+
+// If the address is not aligned, we may need one more vle and one more vse per
+// iteration. Thus the precalculation of the elements that are not aligned to
+// DLEN is beneficial in some cases.
+void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
+  CREATE_BASIC_BLOCKS("memmove")
+
+  Value *SrcAddr = M->getRawSource();
+  Value *DstAddr = M->getRawDest();
+  Value *CopyLen = M->getLength();
+  Type *Int8Type = Type::getInt8Ty(M->getParent()->getContext());
+
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
+
+  // Expand memmove to RVV instructions.
+  // preloop:
+  //   sub Diff, Dst, Src
+  //   blt Diff, CopyLen, backward-pre-loop
+  //
+  // forward-preloop:
+  //   andi Dlenelement, SrcAddr, Dlen - 1
+  //   sub DlenElement, AlignBytes, DlenElement
+  //   minu AlignLen, CopyLen, Dlenelement
+  //   vsetvli VL, AlignLen, e8, m8, tu, mu
+  //   vle8.v vData, (Src)
+  //   vse8.v vData, (Dst)
+  //   add Src, Src, VL
+  //   add Dst, Dst, VL
+  //   sub NewCopyLen, CopyLen, VL
+  //   beqz NewCopyLen, postloop
+  //
+  // forwardloop:
+  //   perform forward mem copy
+  //
+  // backward-preloop:
+  //   add SrcEndAddr, SrcAddr, CopyLen
+  //   andi Dlenelement, SrcEndAddr, Dlen - 1
+  //   minu AlignLen, CopyLen, Dlenelement
+  //   vsetvli VL, AlignLen, e8, m8, tu, mu
+  //   sub NewCopyLen, CopyLen, VL
+  //   add SrcLastElemAddr, SrcAddr, NewCopyLen
+  //   add DstLastElemAddr, DstAddr, NewCopyLen
+  //   vle8.v vData, (SrcLastElemAddr)
+  //   vse8.v vData, (DstLastElemAddr)
+  //   sub SrcLastElemAddr, SrcLastElemAddr, VL
+  //   sub DstLastElemAddr, DstLastElemAddr, VL
+  //   beqz NewCopyLen, postloop
+  //
+  // backwardloop:
+  //   perform backward mem copy
+  //
+  // postloop:
+  //   return
+  BasicBlock *FWPreLoopBB =
+      BasicBlock::Create(PreLoopBB->getContext(), "memmove-forward-pre-loop",
+                         PreLoopBB->getParent(), PostLoopBB);
+  Value *DstAddrInt = Builder.CreatePtrToInt(DstAddr, Builder.getIntPtrTy(*DL));
+  Value *SrcAddrInt = Builder.CreatePtrToInt(SrcAddr, Builder.getIntPtrTy(*DL));
+  Value *Diff = Builder.CreateSub(DstAddrInt, SrcAddrInt);
+  Value *ULT = Builder.CreateICmpULT(Diff, CopyLen);
+  Builder.CreateCondBr(ULT, BWPreLoopBB, FWPreLoopBB);
+
+  ScalableVectorType *VTy =
+      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
+  Type *CopyLenType = CopyLen->getType();
+  IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
+
+  Value *Sew8 = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
+  Value *LmulM8 =
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
+  ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
+
+  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
+  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
+  unsigned AlignBytes = ST->getDLen() / 8;
+
+  Builder.SetInsertPoint(BWPreLoopBB);
+  Value *NewCopyLen, *SrcLastElemAddr, *DstLastElemAddr;
+  // Backward pre-loop
+  {
+    Value *SrcEndAddr = Builder.CreateGEP(Int8Type, SrcAddr, CopyLen);
+    Value *DLenElement =
+        Builder.CreateAnd(Builder.CreatePtrToInt(SrcEndAddr, ILengthType),
+                          ConstantInt::get(ILengthType, AlignBytes - 1));
+
+    Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
+    Value *AlignLen =
+        Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+    Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                        {AlignLen, Sew8, LmulM8});
+    NewCopyLen = Builder.CreateSub(CopyLen, VL);
+
+    SrcLastElemAddr = Builder.CreateGEP(Int8Type, SrcAddr, NewCopyLen);
+    Value *SrcCast = Builder.CreatePointerCast(SrcLastElemAddr,
+                                               PointerType::get(VTy, SrcAS));
+    Value *Load =
+        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
+                                {UndefValue::get(VTy), SrcCast, VL});
+
+    DstLastElemAddr = Builder.CreateGEP(Int8Type, DstAddr, NewCopyLen);
+    Value *DstCast = Builder.CreatePointerCast(DstLastElemAddr,
+                                               PointerType::get(VTy, DstAS));
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+                            {Load, DstCast, VL});
+
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewCopyLen, Zero), BackwardLoopBB,
+                         PostLoopBB);
+  }
+
+  // Backward loop
+  createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcLastElemAddr,
+                       DstLastElemAddr, NewCopyLen, true);
+
+  Builder.SetInsertPoint(FWPreLoopBB);
+  Value *SrcFirstElemAddr, *DstFirstElemAddr;
+  // Forward pre-loop
+  {
+    Value *DLenElement = Builder.CreateSub(
+        ConstantInt::get(ILengthType, AlignBytes),
+        Builder.CreateAnd(Builder.CreatePtrToInt(SrcAddr, ILengthType),
+                          ConstantInt::get(ILengthType, AlignBytes - 1)));
+
+    Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
+    Value *AlignLen =
+        Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+    Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                        {AlignLen, Sew8, LmulM8});
+    NewCopyLen = Builder.CreateSub(CopyLen, VL);
+
+    Value *SrcCast =
+        Builder.CreatePointerCast(SrcAddr, PointerType::get(VTy, SrcAS));
+    Value *Load =
+        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
+                                {UndefValue::get(VTy), SrcCast, VL});
+
+    Value *DstCast =
+        Builder.CreatePointerCast(DstAddr, PointerType::get(VTy, DstAS));
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+                            {Load, DstCast, VL});
+
+    SrcFirstElemAddr = Builder.CreateGEP(Int8Type, SrcAddr, VL);
+    DstFirstElemAddr = Builder.CreateGEP(Int8Type, DstAddr, VL);
+
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewCopyLen, Zero), ForwardLoopBB,
+                         PostLoopBB);
+  }
+
+  // Forward loop
+  createMemcpyLoopBody(ForwardLoopBB, FWPreLoopBB, PostLoopBB, SrcFirstElemAddr,
+                       DstFirstElemAddr, NewCopyLen);
+
+  PreLoopBB->getTerminator()->eraseFromParent();
+  M->eraseFromParent();
+}
+
+void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
+  CREATE_BASIC_BLOCKS_WO_BACKWARD("memmove")
+
+  Value *SrcAddr = M->getRawSource();
+  Value *DstAddr = M->getRawDest();
+  Value *CopyLen = M->getLength();
+  Type *Int8Type = Type::getInt8Ty(M->getParent()->getContext());
+
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
+
+  // Expand memmove to RVV instructions.
+  // preloop:
+  //   sub Diff, Dst, Src
+  //   blt Diff, CopyLen, backward-pre-loop
+  //
+  // forward-loop:
+  //   perform forward mem copy
+  //
+  // backward-pre-loop
+  //   perform last copy element calculation
+  //
+  // backward-loop:
+  //   perform backward mem copy
+  //
+  // postloop:
+  //   return
+
+  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  unsigned UnrollCount = divideCeil(CI->getZExtValue(), ST->getRealMinVLen());
+
+  if (UnrollCount > 1) {
+    BasicBlock *BWPreLoopBB =
+        BasicBlock::Create(PreLoopBB->getContext(), "backward-pre-loop",
+                           PreLoopBB->getParent(), PostLoopBB);
+    BasicBlock *BackwardLoopBB =
+        BasicBlock::Create(PreLoopBB->getContext(), "backward-loop",
+                           PreLoopBB->getParent(), PostLoopBB);
+    Value *DstAddrInt =
+        Builder.CreatePtrToInt(DstAddr, Builder.getIntPtrTy(*DL));
+    Value *SrcAddrInt =
+        Builder.CreatePtrToInt(SrcAddr, Builder.getIntPtrTy(*DL));
+    Value *Diff = Builder.CreateSub(DstAddrInt, SrcAddrInt);
+    Value *ULT = Builder.CreateICmpULT(Diff, CopyLen);
+    Builder.CreateCondBr(ULT, BWPreLoopBB, ForwardLoopBB);
+
+    Builder.SetInsertPoint(BWPreLoopBB);
+    Value *SrcEndAddr = Builder.CreateGEP(Int8Type, SrcAddr, CopyLen);
+    Value *DstEndAddr = Builder.CreateGEP(Int8Type, DstAddr, CopyLen);
+    Builder.CreateBr(BackwardLoopBB);
+
+    createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcEndAddr,
+                         DstEndAddr, CopyLen, true, UnrollCount);
+  } else
+    Builder.CreateBr(ForwardLoopBB);
+
+  createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
+                       CopyLen, false, UnrollCount);
+
+  PreLoopBB->getTerminator()->eraseFromParent();
+  M->eraseFromParent();
+}
+
+void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
+    BasicBlock *LoopBody, BasicBlock *PreLoopBB, BasicBlock *PostLoopBB,
+    Value *SrcAddr, Value *DstAddr, Value *CopyLen, bool IsBackward,
+    uint64_t UnrollCount) {
+  BasicBlock *EpilogBB;
+
+  // We only deal with 8-bits width of memory at a time.
+  Type *Int8Type = Type::getInt8Ty(LoopBody->getContext());
+  // Initial vector type for <vscale x 64 x i8>, LMUL=8, SEW=8.
+  ScalableVectorType *VTy =
+      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
+  Type *CopyLenType = CopyLen->getType();
+
+  // Set SEW to 8 bits.
+  Value *Sew8 = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
+  // Set LMUL to 8 registers.
+  Value *LmulM8 =
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
+
+  bool FullyUnrolled = false;
+  Value *EpilogLen = nullptr;
+  // Max copy size we can deal with each round: DataVLen * LMUL
+  int64_t MaxCopySize = (ST->getRealMinVLen() / 8) * 8;
+  int64_t KnownCurrentLen = -MaxCopySize;
+  if (auto *CI = dyn_cast<ConstantInt>(CopyLen)) {
+    KnownCurrentLen = CI->getZExtValue();
+    uint64_t TotalCopiesNeeded = divideCeil(CI->getZExtValue(), MaxCopySize);
+
+    // UnrollCount must be smaller or equal to CopyLen / MaxCopySize,
+    // otherwise there would be redundant instuctions generated.
+    if (UnrollCount == TotalCopiesNeeded)
+      FullyUnrolled = true;
+    else if (UnrollCount > TotalCopiesNeeded) {
+      createMemcpyLoopBody(LoopBody, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
+                           CopyLen, IsBackward, UnrollCount - 1);
+      return;
+    } else if (TotalCopiesNeeded % UnrollCount) {
+      uint64_t EpilogCnt = CI->getZExtValue() % (UnrollCount * MaxCopySize);
+      if (EpilogCnt) {
+        CopyLen = ConstantInt::get(CopyLenType, CI->getZExtValue() - EpilogCnt);
+        EpilogLen = ConstantInt::get(CopyLenType, EpilogCnt);
+        EpilogBB =
+            BasicBlock::Create(PreLoopBB->getContext(), "epilog-basic-block",
+                               PreLoopBB->getParent(), PostLoopBB);
+      }
+    }
+  } else
+    // We only deal with unroll with constant CopyLen so we are able to
+    // calculate epilog
+    assert(UnrollCount == 1);
+
+  IRBuilder<> Builder(LoopBody);
+
+  Builder.SetInsertPoint(LoopBody);
+  Value *LoopCount = CopyLen;
+  Value *SrcIndex = SrcAddr;
+  Value *DstIndex = DstAddr;
+  if (!FullyUnrolled) {
+    LoopCount = Builder.CreatePHI(CopyLenType, 2, "loop-cnt");
+    cast<PHINode>(LoopCount)->addIncoming(CopyLen, PreLoopBB);
+    SrcIndex = Builder.CreatePHI(SrcAddr->getType(), 2, "src-addr");
+    cast<PHINode>(SrcIndex)->addIncoming(SrcAddr, PreLoopBB);
+    DstIndex = Builder.CreatePHI(DstAddr->getType(), 2, "dst-addr");
+    cast<PHINode>(DstIndex)->addIncoming(DstAddr, PreLoopBB);
+  }
+
+  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
+  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
+
+  Value *NewLoopCount = LoopCount;
+  Value *SrcIndexTmp = SrcIndex;
+  Value *DstIndexTmp = DstIndex;
+  Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                      {NewLoopCount, Sew8, LmulM8});
+  while (UnrollCount--) {
+    if (IsBackward) {
+      Value *NegVL = Builder.CreateNeg(VL);
+      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, NegVL);
+      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
+    }
+
+    if (KnownCurrentLen != -MaxCopySize) {
+      KnownCurrentLen -= MaxCopySize;
+      if (KnownCurrentLen < 0)
+        VL = Builder.CreateIntrinsic(
+            Intrinsic::riscv_vsetvli, {CopyLenType},
+            {ConstantInt::get(CopyLenType, KnownCurrentLen + MaxCopySize), Sew8,
+             LmulM8});
+    }
+
+    Value *SrcCast =
+        Builder.CreatePointerCast(SrcIndexTmp, PointerType::get(VTy, SrcAS));
+    Value *Load =
+        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
+                                {UndefValue::get(VTy), SrcCast, VL});
+
+    Value *DstCast =
+        Builder.CreatePointerCast(DstIndexTmp, PointerType::get(VTy, DstAS));
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+                            {Load, DstCast, VL});
+
+    if (FullyUnrolled && !UnrollCount)
+      break;
+
+    NewLoopCount = Builder.CreateSub(NewLoopCount, VL);
+
+    if (!IsBackward) {
+      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, VL);
+      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, VL);
+    }
+  }
+
+  if (!FullyUnrolled) {
+    cast<PHINode>(SrcIndex)->addIncoming(SrcIndexTmp, LoopBody);
+    cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, LoopBody);
+    cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, LoopBody);
+  }
+
+  IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
+  ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
+
+  if (FullyUnrolled)
+    Builder.CreateBr(PostLoopBB);
+  else
+    Builder.CreateCondBr(Builder.CreateICmpSGT(NewLoopCount, Zero), LoopBody,
+                         EpilogLen ? EpilogBB : PostLoopBB);
+
+  // Create epilog
+  if (EpilogLen) {
+    Builder.SetInsertPoint(EpilogBB);
+
+    LoopCount = Builder.CreatePHI(CopyLenType, 2, "loop-cnt");
+    cast<PHINode>(LoopCount)->addIncoming(EpilogLen, LoopBody);
+    SrcIndex = Builder.CreatePHI(SrcAddr->getType(), 2, "src-addr");
+    cast<PHINode>(SrcIndex)->addIncoming(SrcIndexTmp, LoopBody);
+    DstIndex = Builder.CreatePHI(DstAddr->getType(), 2, "dst-addr");
+    cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, LoopBody);
+
+    Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                        {LoopCount, Sew8, LmulM8});
+
+    Value *SrcCast =
+        Builder.CreatePointerCast(SrcIndexTmp, PointerType::get(VTy, SrcAS));
+    Value *Load =
+        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
+                                {UndefValue::get(VTy), SrcCast, VL});
+
+    Value *DstCast =
+        Builder.CreatePointerCast(DstIndexTmp, PointerType::get(VTy, DstAS));
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+                            {Load, DstCast, VL});
+
+    NewLoopCount = Builder.CreateSub(LoopCount, VL);
+
+    if (IsBackward)
+      VL = Builder.CreateNeg(VL);
+
+    SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, VL);
+    DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, VL);
+
+    cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, EpilogBB);
+    cast<PHINode>(SrcIndex)->addIncoming(SrcIndexTmp, EpilogBB);
+    cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, EpilogBB);
+
+    Builder.CreateCondBr(Builder.CreateICmpUGT(NewLoopCount, Zero), EpilogBB,
+                         PostLoopBB);
+  }
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M,
@@ -814,7 +1261,27 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
 
     break;
   }
-  case Intrinsic::memmove:
+  case Intrinsic::memmove: {
+    if (auto *CI = dyn_cast<ConstantInt>(MI->getLength())) {
+      unsigned MinVLenInBytes = ST->getRealMinVLen() / 8;
+
+      // If Copy length within MinCopySize, then use scalar load and store.
+      if (CI->getZExtValue() < MinCopySize)
+        return false;
+      // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
+      if (CI->getZExtValue() < (MinVLenInBytes * 8 * MaxUnrollTimes)) {
+        expandMemmoveKnownSize(cast<MemMoveInst>(MI));
+        return true;
+      }
+    }
+
+    if (MemAlignOpt && ST->hasKnownDLen())
+      expandMemmoveUnknownSizeAligned(cast<MemMoveInst>(MI));
+    else
+      expandMemmoveUnknownSize(cast<MemMoveInst>(MI));
+
+    break;
+  }
   default:
     return false;
   }
