@@ -215,23 +215,23 @@ void RISCVSubtarget::getPostRAMutations(
 }
 
 #if SIFIVE_CUSTOMIZATION
-static unsigned factorLMul(unsigned Lat, RISCVII::VLMUL LMul) {
-  // Every DLEN chunk is processed every VLEN / DLEN cycles, or, virtually
-  // always, every 2 cycles,
-  return Lat + (RISCVII::getLMULGroups(LMul) - 1) * 2;
+static unsigned factorLMul(unsigned Lat, RISCVII::VLMUL LMul,
+                           unsigned DLenFactor) {
+  // Every DLEN chunk is processed every VLEN / DLEN cycles.
+  return Lat + (RISCVII::getLMULGroups(LMul) - 1) * DLenFactor;
 }
 
 static unsigned factorSegmentLMul(unsigned Lat, RISCVII::VLMUL LMul,
-                                  unsigned NF) {
+                                  unsigned NF, unsigned DLenFactor) {
   switch (LMul) {
   default:
-    return Lat + (RISCVII::getLMULGroups(LMul) * NF - 1) * 2;
+    return Lat + (RISCVII::getLMULGroups(LMul) * NF - 1) * DLenFactor;
   case RISCVII::LMUL_F8:
-    return Lat + (divideCeil(NF, 8) - 1) * 2;
+    return Lat + (divideCeil(NF, 8) - 1) * DLenFactor;
   case RISCVII::LMUL_F4:
-    return Lat + (divideCeil(NF, 4) - 1) * 2;
+    return Lat + (divideCeil(NF, 4) - 1) * DLenFactor;
   case RISCVII::LMUL_F2:
-    return Lat + (divideCeil(NF, 2) - 1) * 2;
+    return Lat + (divideCeil(NF, 2) - 1) * DLenFactor;
   }
 }
 
@@ -258,16 +258,21 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
 
       RISCVII::VLMUL LMul = RISCVII::getLMul(Desc.TSFlags);
 
+      // Assume VLEN same as DLEN, when we can't get DLEN information.
+      unsigned DLenFactor = 1;
+      if (ST->hasKnownDLen())
+        DLenFactor = divideCeil(ST->getRealMinVLen(), ST->getDLen());
+
       // Instructions without SEW, if any.
       if (!RISCVII::hasSEWOp(Desc.TSFlags))
-        return factorLMul(Lat, LMul);
+        return factorLMul(Lat, LMul, DLenFactor);
 
       unsigned SEW =
           1 << MI->getOperand(MI->getNumExplicitOperands() - 1).getImm();
 
       switch(Opcode) {
       default:
-        return factorLMul(Lat, LMul);
+        return factorLMul(Lat, LMul, DLenFactor);
       // VRGATHER latency is proportional to the number of elements.
       case RISCV::VRGATHER_VV:
       case RISCV::VRGATHER_VI:
@@ -320,7 +325,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VNSRL_WX:
       case RISCV::VNSRL_WI:
         // FIXME: It may be more complex than this.
-        return factorLMul(Lat, LMul);
+        return factorLMul(Lat, LMul, DLenFactor);
       // Widening latency.
       case RISCV::VFWADD_VV:
       case RISCV::VFWADD_VF:
@@ -373,7 +378,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VWSUBU_WV:
       case RISCV::VWSUBU_WX:
         // FIXME: It may be more complex than this.
-        return factorLMul(Lat, LMul);
+        return factorLMul(Lat, LMul, DLenFactor);
       case RISCV::VLSEG2E8_V:
       case RISCV::VLSEG2E16_V:
       case RISCV::VLSEG2E32_V:
@@ -394,7 +399,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG2EI16_V:
       case RISCV::VLUXSEG2EI32_V:
       case RISCV::VLUXSEG2EI64_V:
-        return factorSegmentLMul(Lat, LMul, 2);
+        return factorSegmentLMul(Lat, LMul, 2, DLenFactor);
       case RISCV::VLSEG3E8_V:
       case RISCV::VLSEG3E16_V:
       case RISCV::VLSEG3E32_V:
@@ -415,7 +420,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG3EI16_V:
       case RISCV::VLUXSEG3EI32_V:
       case RISCV::VLUXSEG3EI64_V:
-        return factorSegmentLMul(Lat, LMul, 3);
+        return factorSegmentLMul(Lat, LMul, 3, DLenFactor);
       case RISCV::VLSEG4E8_V:
       case RISCV::VLSEG4E16_V:
       case RISCV::VLSEG4E32_V:
@@ -436,7 +441,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG4EI16_V:
       case RISCV::VLUXSEG4EI32_V:
       case RISCV::VLUXSEG4EI64_V:
-        return factorSegmentLMul(Lat, LMul, 4);
+        return factorSegmentLMul(Lat, LMul, 4, DLenFactor);
       case RISCV::VLSEG5E8_V:
       case RISCV::VLSEG5E16_V:
       case RISCV::VLSEG5E32_V:
@@ -457,7 +462,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG5EI16_V:
       case RISCV::VLUXSEG5EI32_V:
       case RISCV::VLUXSEG5EI64_V:
-        return factorSegmentLMul(Lat, LMul, 5);
+        return factorSegmentLMul(Lat, LMul, 5, DLenFactor);
       case RISCV::VLSEG6E8_V:
       case RISCV::VLSEG6E16_V:
       case RISCV::VLSEG6E32_V:
@@ -478,7 +483,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG6EI16_V:
       case RISCV::VLUXSEG6EI32_V:
       case RISCV::VLUXSEG6EI64_V:
-        return factorSegmentLMul(Lat, LMul, 6);
+        return factorSegmentLMul(Lat, LMul, 6, DLenFactor);
       case RISCV::VLSEG7E8_V:
       case RISCV::VLSEG7E16_V:
       case RISCV::VLSEG7E32_V:
@@ -499,7 +504,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG7EI16_V:
       case RISCV::VLUXSEG7EI32_V:
       case RISCV::VLUXSEG7EI64_V:
-        return factorSegmentLMul(Lat, LMul, 7);
+        return factorSegmentLMul(Lat, LMul, 7, DLenFactor);
       case RISCV::VLSEG8E8_V:
       case RISCV::VLSEG8E16_V:
       case RISCV::VLSEG8E32_V:
@@ -520,7 +525,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
       case RISCV::VLUXSEG8EI16_V:
       case RISCV::VLUXSEG8EI32_V:
       case RISCV::VLUXSEG8EI64_V:
-        return factorSegmentLMul(Lat, LMul, 8);
+        return factorSegmentLMul(Lat, LMul, 8, DLenFactor);
       case RISCV::VSSEG2E8_V:
       case RISCV::VSSEG2E16_V:
       case RISCV::VSSEG2E32_V:
