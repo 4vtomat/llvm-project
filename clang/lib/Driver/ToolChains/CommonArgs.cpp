@@ -12,11 +12,10 @@
 #include "Arch/M68k.h"
 #include "Arch/Mips.h"
 #include "Arch/PPC.h"
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 #include "Arch/RISCV.h"
-=======
+#endif // SIFIVE_CUSTOMIZATION
 #include "Arch/Sparc.h"
->>>>>>> pub/main
 #include "Arch/SystemZ.h"
 #include "Arch/VE.h"
 #include "Arch/X86.h"
