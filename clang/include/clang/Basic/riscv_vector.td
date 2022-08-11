@@ -143,23 +143,6 @@ def HasPolicyOperand : PolicyScheme<2>;
 // Specail case for passthru operand which is not a first opeand.
 def HasPassthruOperandAtIdx1 : PolicyScheme<3>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-class Policy<int N> {
-  int Value = !shl(1, N);
-}
-
-def TUMUPolicy : Policy<0>;
-def TAMUPolicy : Policy<1>;
-def TUMAPolicy : Policy<2>;
-def TAMAPolicy : Policy<3>;
-def TUPolicy : Policy<4>; // For unmasked TU, last two bit is TUMU
-def TAPolicy : Policy<5>; // For unmasked TA, last two bit is TAMU
-def MUPolicy : Policy<6>; // For masked MU, last two bit is TAMU
-def MAPolicy : Policy<7>; // For masked MA, last two bit is TAMA
-def TUMPolicy : Policy<10>; // For masked TU, last two bit is TUMA
-def TAMPolicy : Policy<11>; // For masked TA, last two bit is TAMA
-#endif // SIFIVE_CUSTOMIZATION
-
 class RVVBuiltin<string suffix, string prototype, string type_range,
                  string overloaded_suffix = ""> {
   // Base name that will be prepended in __builtin_rvv_ and appended the
@@ -260,14 +243,6 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
 
   // Number of fields for Load/Store Segment instructions.
   int NF = 1;
-
-#ifdef SIFIVE_CUSTOMIZATION
-  // If UnMaskedPolicyScheme != NonePolicy, list supported policies.
-  list<Policy> SupportedUnMaskedPolicies = [TUPolicy, TAPolicy];
-
-  // If MaskedPolicyScheme != NonePolicy, list supported policies.
-  list<Policy> SupportedMaskedPolicies = [TUMUPolicy, TAMUPolicy, TUMAPolicy, TAMAPolicy];
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 // This is the code emitted in the header.
@@ -1864,9 +1839,6 @@ defm vncvt_x_x_w : RVVPseudoVNCVTBuiltin<"vnsrl", "vncvt_x", "csi",
 
 // 12.8. Vector Integer Comparison Instructions
 let MaskedPolicyScheme = HasPassthruOperand,
-#ifdef SIFIVE_CUSTOMIZATION
-    SupportedMaskedPolicies = [MUPolicy, MAPolicy],
-#endif // SIFIVE_CUSTOMIZATION
     HasTailPolicy = false in {
 defm vmseq : RVVIntMaskOutBuiltinSet;
 defm vmsne : RVVIntMaskOutBuiltinSet;
@@ -2073,9 +2045,6 @@ defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "xfd">;
 
 // 14.13. Vector Floating-Point Compare Instructions
 let MaskedPolicyScheme = HasPassthruOperand,
-#ifdef SIFIVE_CUSTOMIZATION
-    SupportedMaskedPolicies = [MUPolicy, MAPolicy],
-#endif // SIFIVE_CUSTOMIZATION
     HasTailPolicy = false in {
 defm vmfeq : RVVFloatingMaskOutBuiltinSet;
 defm vmfne : RVVFloatingMaskOutBuiltinSet;
@@ -2152,9 +2121,6 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
 // 15. Vector Reduction Operations
 // 15.1. Vector Single-Width Integer Reduction Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand,
-#ifdef SIFIVE_CUSTOMIZATION
-    SupportedMaskedPolicies = [TUMPolicy, TAMPolicy],
-#endif // SIFIVE_CUSTOMIZATION
     MaskedPolicyScheme = HasPassthruOperand,
     IsPrototypeDefaultTU = true,
     HasMaskPolicy = false in {
