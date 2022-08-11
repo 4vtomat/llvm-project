@@ -2749,15 +2749,8 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
     break;
   case ISD::FP_TO_SINT:
   case ISD::FP_TO_UINT:
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  case ISD::VP_FPTOSI:
-  case ISD::VP_FPTOUI:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::VP_FP_TO_SINT:
   case ISD::VP_FP_TO_UINT:
->>>>>>> pub/main
   case ISD::STRICT_FP_TO_SINT:
   case ISD::STRICT_FP_TO_UINT:
   case ISD::STRICT_FP_EXTEND:
@@ -2963,16 +2956,14 @@ SDValue DAGTypeLegalizer::SplitVecOp_UnaryOp(SDNode *N) {
     // Legalize the chain result - switch anything that used the old chain to
     // use the new one.
     ReplaceValueWith(SDValue(N, 1), Ch);
-#if SIFIVE_CUSTOMIZATION
-  } else if (N->getNumOperands() != 1) {
-    assert(N->getNumOperands() == 3);
+  } else if (N->getNumOperands() == 3) {
+    assert(N->isVPOpcode() && "Expected VP opcode");
     SDValue MaskLo, MaskHi, EVLLo, EVLHi;
     std::tie(MaskLo, MaskHi) = SplitMask(N->getOperand(1));
     std::tie(EVLLo, EVLHi) =
         DAG.SplitEVL(N->getOperand(2), N->getValueType(0), dl);
     Lo = DAG.getNode(N->getOpcode(), dl, OutVT, Lo, MaskLo, EVLLo);
     Hi = DAG.getNode(N->getOpcode(), dl, OutVT, Hi, MaskHi, EVLHi);
-#endif // SIFIVE_CUSTOMIZATION
   } else {
     Lo = DAG.getNode(N->getOpcode(), dl, OutVT, Lo);
     Hi = DAG.getNode(N->getOpcode(), dl, OutVT, Hi);
