@@ -846,9 +846,6 @@ multiclass RVVUnitStridedSegLoad<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
@@ -940,9 +937,6 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
       // TA builtin: (val0 address, val1 address, ..., ptr, new_vl, vl)
@@ -1042,9 +1036,6 @@ multiclass RVVStridedSegLoad<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
       // TA builtin: (val0 address, val1 address, ..., ptr, stride, vl)
