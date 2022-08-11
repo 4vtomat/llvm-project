@@ -13535,8 +13535,7 @@ bool IntExprEvaluator::VisitCastExpr(const CastExpr *E) {
     }
 
 #if SIFIVE_CUSTOMIZATION
-    if (Info.Ctx.getLangOpts().CPlusPlus &&
-        Info.EvalMode == EvalInfo::EM_ConstantExpression &&
+    if (Info.Ctx.getLangOpts().CPlusPlus && Info.InConstantContext &&
         DestType->isEnumeralType()) {
 #endif // SIFIVE_CUSTOMIZATION
       const EnumType *ET = dyn_cast<EnumType>(DestType.getCanonicalType());
