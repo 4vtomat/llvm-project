@@ -1356,7 +1356,6 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // U8 can only predicate c.mv so requires the C extension. This should always
 // expand to a branch+c.mv so the size is 6 or 4 if the branch is compressible.
@@ -1514,15 +1513,6 @@ def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-let usesCustomInserter = 1 in
-class SelectCC_rrirr<RegisterClass valty, RegisterClass cmpty>
-    : Pseudo<(outs valty:$dst),
-             (ins cmpty:$lhs, cmpty:$rhs, ixlenimm:$imm,
-              valty:$truev, valty:$falsev),
-             [(set valty:$dst,
-               (riscv_selectcc_frag:$imm cmpty:$lhs, cmpty:$rhs, cond,
-                                         valty:$truev, valty:$falsev))]>;
-=======
 multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
   let usesCustomInserter = 1 in
   def _Using_CC_GPR : Pseudo<(outs valty:$dst),
@@ -1538,7 +1528,6 @@ multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
             (!cast<Instruction>(NAME#"_Using_CC_GPR") GPR:$lhs, X0,
              (IntCCtoRISCVCC $cc), valty:$truev, valty:$falsev)>;
 }
->>>>>>> pub/main
 
 defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
