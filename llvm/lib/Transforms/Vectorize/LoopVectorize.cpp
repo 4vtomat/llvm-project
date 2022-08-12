@@ -4918,18 +4918,14 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
     assert(WideningDecision != CM_Unknown &&
            "Widening decision should be ready at this moment");
 
-<<<<<<< HEAD
-    // A uniform memory op is itself uniform.  We exclude uniform stores
-    // here as they demand the last lane, not the first one.
 #if SIFIVE_CUSTOMIZATION
-    if (isa<LoadInst>(I) && Legal->isUniformMemOp(*I) &&
-        !Hints->isFixedVectorizationDisabled()) {
-#endif // SIFIVE_CUSTOMIZATION
-      assert(WideningDecision == CM_Scalarize);
-=======
-    if (isUniformMemOpUse(I))
->>>>>>> pub/main
+    if (isUniformMemOpUse(I) && !Hints->isFixedVectorizationDisabled())
       return true;
+#else
+    if (isUniformMemOpUse(I))
+      return true;
+#endif // SIFIVE_CUSTOMIZATION
+
 
     return (WideningDecision == CM_Widen ||
             WideningDecision == CM_Widen_Reverse ||
@@ -4983,16 +4979,11 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       if (!Ptr)
         continue;
 
-<<<<<<< HEAD
-      // A uniform memory op is itself uniform.  We exclude uniform stores
-      // here as they demand the last lane, not the first one.
 #if SIFIVE_CUSTOMIZATION
-      if (isa<LoadInst>(I) && Legal->isUniformMemOp(I) &&
-          !Hints->isFixedVectorizationDisabled())
-#endif // SIFIVE_CUSTOMIZATION
-=======
+      if (isUniformMemOpUse(&I) && !Hints->isFixedVectorizationDisabled())
+#else
       if (isUniformMemOpUse(&I))
->>>>>>> pub/main
+#endif // SIFIVE_CUSTOMIZATION
         addToWorklistIfAllowed(&I);
 
       if (isUniformDecision(&I, VF)) {
@@ -7574,41 +7565,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       if (isa<StoreInst>(&I) && isScalarWithPredication(&I, VF))
         NumPredStores++;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (Legal->isUniformMemOp(I) && !Hints->isFixedVectorizationDisabled()) {
-#endif // SIFIVE_CUSTOMIZATION
-        // Lowering story for uniform memory ops is currently a bit complicated.
-        // Scalarization works for everything which isn't a store with scalable
-        // VF.  Fixed len VFs just scalarize and then DCE later; scalarization
-        // knows how to handle uniform-per-part values (i.e. the first lane
-        // in each unrolled VF) and can thus handle scalable loads too.  For
-        // scalable stores, we use a scatter if legal.  If not, we have no way
-        // to lower (currently) and thus have to abort vectorization.
-        if (isa<StoreInst>(&I) && VF.isScalable()) {
-#if SIFIVE_CUSTOMIZATION
-          if (isLegalGatherOrScatter(&I, VF)) {
-            InstructionCost Cost = getGatherScatterCost(&I, VF);
-            if (UseStridedAccesses && canUseStridedAccess(&I)) {
-              setWideningDecision(&I, VF, CM_Strided, Cost);
-              LLVM_DEBUG(llvm::dbgs()
-                         << "Can use strided access " << I << "\n");
-            } else {
-              if (UseStridedAccesses) {
-                LLVM_DEBUG(llvm::dbgs()
-                           << "Cannot use strided access " << I << "\n");
-              }
-              setWideningDecision(&I, VF, CM_GatherScatter, Cost);
-            }
-          } else
-#endif // SIFIVE_CUSTOMIZATION
-            // Error case, abort vectorization
-            setWideningDecision(&I, VF, CM_Scalarize,
-                                InstructionCost::getInvalid());
-          continue;
-        }
-=======
+#else
       if (Legal->isUniformMemOp(I)) {
+#endif // SIFIVE_CUSTOMIZATION
         auto isLegalToScalarize = [&]() {
           if (!VF.isScalable())
             // Scalarization of fixed length vectors "just works".
@@ -7629,7 +7590,6 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
           isLegalGatherOrScatter(&I, VF) ?
           getGatherScatterCost(&I, VF) : InstructionCost::getInvalid();
 
->>>>>>> pub/main
         // Load: Scalar load + broadcast
         // Store: Scalar store + isLoopInvariantStoreValue ? 0 : extract
         // TODO: Avoid replicating loads and stores instead of relying on
@@ -7641,10 +7601,27 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         // Choose better solution for the current VF,  Note that Invalid
         // costs compare as maximumal large.  If both are invalid, we get
         // scalable invalid which signals a failure and a vectorization abort.
+#if SIFIVE_CUSTOMIZATION
+        if (GatherScatterCost < ScalarizationCost) {
+          if (UseStridedAccesses && canUseStridedAccess(&I)) {
+            setWideningDecision(&I, VF, CM_Strided, GatherScatterCost);
+            LLVM_DEBUG(llvm::dbgs()
+                       << "Can use strided access " << I << "\n");
+          } else {
+            if (UseStridedAccesses) {
+              LLVM_DEBUG(llvm::dbgs()
+                         << "Cannot use strided access " << I << "\n");
+            }
+            setWideningDecision(&I, VF, CM_GatherScatter, GatherScatterCost);
+          }
+        } else
+          setWideningDecision(&I, VF, CM_Scalarize, ScalarizationCost);
+#else
         if (GatherScatterCost < ScalarizationCost)
           setWideningDecision(&I, VF, CM_GatherScatter, GatherScatterCost);
         else
           setWideningDecision(&I, VF, CM_Scalarize, ScalarizationCost);
+#endif // SIFIVE_CUSTOMIZATION
         continue;
       }
 
