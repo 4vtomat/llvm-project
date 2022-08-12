@@ -75,6 +75,7 @@ public:
 private:
   MachineLoopInfo *MLI;
   MachineRegisterInfo *MRI;
+  std::set<MachineInstr *> DeadInstrs;
 };
 } // end anonymous namespace
 
@@ -221,9 +222,10 @@ bool RISCVMergeBaseOffsetOpt::foldLargeOffset(MachineInstr &Hi,
   } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32) {
     // The offset value is a simm32. We can always fold it.
     LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
-    Offset = OffsetTail.getOperand(1).getImm();
+    int64_t Offset = OffsetTail.getOperand(1).getImm();
     assert(isInt<32>(Offset) && "Unexpected offset");
-    DeadInstrs.insert(&OffsetTail);
+    foldOffset(Hi, Lo, TailAdd, Offset);
+    OffsetTail.eraseFromParent();
     return true;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -504,7 +506,7 @@ bool RISCVMergeBaseOffsetOpt::foldPseudoLLA(MachineFunction &MF,
         .add(MI.getOperand(1));
     }
 
-    DeadInstrs.insert(UseI);
+    UseI->eraseFromParent();
     MadeChange = true;
   }
 
@@ -524,28 +526,12 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   ST = &Fn.getSubtarget<RISCVSubtarget>();
 
   bool MadeChange = false;
+  DeadInstrs.clear();
   MRI = &Fn.getRegInfo();
   MLI = &getAnalysis<MachineLoopInfo>();
   MF = &Fn;
   for (MachineBasicBlock &MBB : Fn) {
     LLVM_DEBUG(dbgs() << "MBB: " << MBB.getName() << "\n");
-<<<<<<< HEAD
-    for (MachineInstr &MI : MBB) {
-      MachineInstr *LoADDI = nullptr;
-#if SIFIVE_CUSTOMIZATION
-      if (detectLuiAddiGlobal(MI, LoADDI)) {
-#else
-      if (!detectLuiAddiGlobal(HiLUI, LoADDI))
-        continue;
-#endif // SIFIVE_CUSTOMIZATION
-        LLVM_DEBUG(dbgs() << "  Found lowered global address: "
-                          << *LoADDI->getOperand(2).getGlobal() << "\n");
-        MadeChange |= detectAndFoldOffset(MI, *LoADDI);
-#if SIFIVE_CUSTOMIZATION
-      }
-      MadeChange |= foldPseudoLLA(Fn, MI);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     for (MachineInstr &Hi : MBB) {
       MachineInstr *Lo = nullptr;
       if (!detectFoldable(Hi, Lo))
@@ -554,10 +540,14 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
                         << *Hi.getOperand(1).getGlobal() << "\n");
       MadeChange |= detectAndFoldOffset(Hi, *Lo);
       MadeChange |= foldIntoMemoryOps(Hi, *Lo);
->>>>>>> pub/main
+#if SIFIVE_CUSTOMIZATION
+      MadeChange |= foldPseudoLLA(Fn, Hi);
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
-
+  // Delete dead instructions.
+  for (auto *MI : DeadInstrs)
+    MI->eraseFromParent();
   return MadeChange;
 }
 
