@@ -344,12 +344,8 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 }
 
 void RISCVPassConfig::addPreRegAlloc() {
-<<<<<<< HEAD
-  if (TM->getOptLevel() != CodeGenOpt::None) {
-=======
   addPass(createRISCVPreRAExpandPseudoPass());
-  if (TM->getOptLevel() != CodeGenOpt::None)
->>>>>>> pub/main
+  if (TM->getOptLevel() != CodeGenOpt::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
     addPass(createRISCVCleanupVXRMPass()); // SIFIVE
   }
