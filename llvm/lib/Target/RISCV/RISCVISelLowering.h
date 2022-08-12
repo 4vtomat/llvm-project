@@ -255,27 +255,11 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
-<<<<<<< HEAD
   FRSQRT7_VL, // SIFIVE
   FREC7_VL,   // SIFIVE
   FCLASS_VL,  // SIFIVE
-  VFMADD_VL,
-  VFNMADD_VL,
-  VFMSUB_VL,
-  VFNMSUB_VL,
   FNMSAC_VL, // SIFIVE
-  FCOPYSIGN_VL,
-  SMIN_VL,
-  SMAX_VL,
-  UMIN_VL,
-  UMAX_VL,
-  FMINNUM_VL,
-  FMAXNUM_VL,
-  MULHS_VL,
-  MULHU_VL,
-=======
   FCOPYSIGN_VL, // Has a merge operand
->>>>>>> pub/main
   FP_TO_SINT_VL,
   FP_TO_UINT_VL,
   SINT_TO_FP_VL,
@@ -734,21 +718,15 @@ private:
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
                              unsigned RISCVISDOpc) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
 
-  // Copied from D121113
-  SDValue lowerVPStridedLoad(SDValue Op, SelectionDAG &DAG) const;
-  SDValue lowerVPStridedStore(SDValue Op, SelectionDAG &DAG) const;
   // Copied from BSC
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue lowerVPStridedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPStridedStore(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> pub/main
   SDValue lowerFixedLengthVectorExtendToRVV(SDValue Op, SelectionDAG &DAG,
                                             unsigned ExtendOpc) const;
   SDValue lowerGET_ROUNDING(SDValue Op, SelectionDAG &DAG) const;
