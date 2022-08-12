@@ -669,7 +669,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // FIXME: This needs more work.
 bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
@@ -708,7 +707,7 @@ bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
   return BaseT::isLoweredToCall(F);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 InstructionCost RISCVTTIImpl::getExtendedReductionCost(
     unsigned Opcode, bool IsUnsigned, Type *ResTy, VectorType *ValTy,
     Optional<FastMathFlags> FMF, TTI::TargetCostKind CostKind) {
@@ -734,7 +733,6 @@ InstructionCost RISCVTTIImpl::getExtendedReductionCost(
   return (LT.first - 1) +
          getArithmeticReductionCost(Opcode, ValTy, FMF, CostKind);
 }
->>>>>>> pub/main
 
 void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                            TTI::UnrollingPreferences &UP,
