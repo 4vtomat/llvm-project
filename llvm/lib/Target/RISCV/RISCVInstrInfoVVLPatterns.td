@@ -276,24 +276,21 @@ def riscv_vwaddu_vl : SDNode<"RISCVISD::VWADDU_VL", SDT_RISCVVWBinOp_VL, [SDNPCo
 def riscv_vwsub_vl :  SDNode<"RISCVISD::VWSUB_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 def riscv_vwsubu_vl : SDNode<"RISCVISD::VWSUBU_VL", SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfwmul_vl  : SDNode<"RISCVISD::VFWMUL_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 
-def SDT_RISCVVNBinOp_VL : SDTypeProfile<1, 4, [SDTCisVec<0>,
+def SDT_RISCVVNBinOp_VL : SDTypeProfile<1, 5, [SDTCisVec<0>,
                                                SDTCisSameNumEltsAs<0, 1>,
                                                SDTCisOpSmallerThanOp<0, 1>,
                                                SDTCisSameAs<0, 2>,
-                                               SDTCisSameNumEltsAs<0, 3>,
-                                               SDTCVecEltisVT<3, i1>,
-                                               SDTCisVT<4, XLenVT>]>;
+                                               SDTCisSameAs<0, 3>,
+                                               SDTCisSameNumEltsAs<0, 4>,
+                                               SDTCVecEltisVT<4, i1>,
+                                               SDTCisVT<5, XLenVT>]>;
 def riscv_vnsrl_vl : SDNode<"RISCVISD::VNSRL_VL", SDT_RISCVVNBinOp_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
-def SDT_RISCVVWBinOpW_VL : SDTypeProfile<1, 4, [SDTCisVec<0>,
-=======
 def SDT_RISCVVWBinOpW_VL : SDTypeProfile<1, 5, [SDTCisVec<0>,
->>>>>>> pub/main
                                                 SDTCisSameAs<0, 1>,
                                                 SDTCisSameNumEltsAs<1, 2>,
                                                 SDTCisOpSmallerThanOp<2, 1>,
@@ -490,13 +487,13 @@ multiclass VPatBinaryNVL_WV_WX_WI<SDNode vop, string instruction_name> {
     defvar wti = VtiToWti.Wti;
     defm : VPatBinaryVL_V<vop, instruction_name, "WV",
                            vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                           vti.Log2SEW, vti.LMul, wti.RegClass, vti.RegClass>;
+                           vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass, vti.RegClass>;
     defm : VPatBinaryVL_XI<vop, instruction_name, "WX",
                            vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                           vti.Log2SEW, vti.LMul, wti.RegClass, SplatPat, GPR>;
+                           vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass, SplatPat, GPR>;
     defm : VPatBinaryVL_XI<vop, instruction_name, "WI",
                            vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                           vti.Log2SEW, vti.LMul, wti.RegClass,
+                           vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
                            !cast<ComplexPattern>(SplatPat#_#uimm5),
                            uimm5>;
   }
@@ -559,10 +556,10 @@ multiclass VPatBinaryFPWVL_VV_VF<SDNode vop, string instruction_name> {
     defvar wti = VtiToWti.Wti;
     defm : VPatBinaryVL_V<vop, instruction_name, "VV",
                           wti.Vector, vti.Vector, vti.Vector, vti.Mask,
-                          vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass>;
+                          vti.Log2SEW, vti.LMul, wti.RegClass, vti.RegClass, vti.RegClass>;
     defm : VPatBinaryVL_VF<vop, instruction_name#"_V"#vti.ScalarSuffix,
                            wti.Vector, vti.Vector, vti.Mask, vti.Log2SEW,
-                           vti.LMul, vti.RegClass, vti.ScalarRegClass>;
+                           vti.LMul, wti.RegClass, vti.RegClass, vti.ScalarRegClass>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
