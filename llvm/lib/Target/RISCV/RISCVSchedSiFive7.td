@@ -505,6 +505,9 @@ def : WriteRes<WriteVMov8V, [SiFive7VA]>;
 // Others
 def : WriteRes<WriteCSR, [SiFive7PipeB]>;
 def : WriteRes<WriteNop, []>;
+let Latency = 3 in {
+def : WriteRes<WriteRdVLENB, [SiFive7PipeB]>;
+}
 
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;

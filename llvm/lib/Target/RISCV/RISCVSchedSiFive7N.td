@@ -506,6 +506,9 @@ def : WriteRes<WriteVMov8V, [SiFive7NVA]>;
 // Others
 def : WriteRes<WriteCSR, [SiFive7NPipeB]>;
 def : WriteRes<WriteNop, []>;
+let Latency = 3 in {
+def : WriteRes<WriteRdVLENB, [SiFive7NPipeB]>;
+}
 
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
@@ -536,6 +539,7 @@ def : ReadAdvance<ReadAtomicLDW, 0>;
 def : ReadAdvance<ReadAtomicLDD, 0>;
 def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
+def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
 defm : AnytoFPRBypass<ReadFALU16, 1>;
 defm : AnytoFPRBypass<ReadFALU32, 1>;
