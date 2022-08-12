@@ -110,11 +110,8 @@
 ; CHECK-O-NEXT: Running pass: LoopRotatePass
 ; CHECK-O-NEXT: Running pass: LICM
 ; CHECK-O-NEXT: Running pass: SimpleLoopUnswitchPass
-<<<<<<< HEAD
-; CHECK-O-NEXT: Running pass: LoopFlattenPass
-=======
 ; CHECK-O-NEXT: Running analysis: OuterAnalysisManagerProxy
->>>>>>> pub/main
+; CHECK-O-NEXT: Running pass: LoopFlattenPass
 ; CHECK-O-NEXT: Running pass: SimplifyCFGPass
 ; CHECK-O-NEXT: Running pass: InstCombinePass
 ; CHECK-O-NEXT: Running pass: LoopSimplifyPass
