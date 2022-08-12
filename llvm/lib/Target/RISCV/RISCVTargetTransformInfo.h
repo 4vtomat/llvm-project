@@ -371,6 +371,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
 
+  using BaseT::getVectorInstrCost;
   InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
                                      unsigned Index);
 
