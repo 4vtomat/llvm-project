@@ -231,12 +231,12 @@ def : WriteRes<WriteFClass64, [SiFive7NPipeB]>;
 def : WriteRes<WriteFCmp16, [SiFive7NPipeB]>;
 def : WriteRes<WriteFCmp32, [SiFive7NPipeB]>;
 def : WriteRes<WriteFCmp64, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovI16ToF16, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovF16ToI16, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovI32ToF32, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovF32ToI32, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovI64ToF64, [SiFive7NPipeB]>;
-def : WriteRes<WriteFMovF64ToI64, [SiFive7NPipeB]>;
+def : WriteRes<WriteFMovI16ToF16, [SiFive7NPipeA]>;
+def : WriteRes<WriteFMovF16ToI16, [SiFive7NPipeA]>;
+def : WriteRes<WriteFMovI32ToF32, [SiFive7NPipeA]>;
+def : WriteRes<WriteFMovF32ToI32, [SiFive7NPipeA]>;
+def : WriteRes<WriteFMovI64ToF64, [SiFive7NPipeA]>;
+def : WriteRes<WriteFMovF64ToI64, [SiFive7NPipeA]>;
 }
 
 // 7. Vector Loads and Stores
