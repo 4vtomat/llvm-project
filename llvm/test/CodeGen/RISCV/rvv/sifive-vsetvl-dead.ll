@@ -27,10 +27,10 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 ; CHECK-NEXT:    add a3, a3, a7
 ; CHECK-NEXT:    bnez a5, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3:
-; CHECK-NEXT:    vsetvli a1, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli a0, a0, e32, m8, ta, mu
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vsetvli zero, a1, e32, m8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
 ; CHECK-NEXT:    vfredusum.vs v16, v8, v16
 ; CHECK-NEXT:    vfmv.f.s fa0, v16
 ; CHECK-NEXT:    ret

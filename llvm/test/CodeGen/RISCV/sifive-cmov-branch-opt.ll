@@ -24,10 +24,9 @@ define signext i32 @test1(i32 signext %x, i32 signext %y, i32 signext %z) {
 ;
 ; CMOV-LABEL: test1:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    xor a1, a1, a0
 ; CMOV-NEXT:    bnez a2, .LBB0_2
 ; CMOV-NEXT:  # %bb.1:
-; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:    xor a0, a0, a1
 ; CMOV-NEXT:  .LBB0_2:
 ; CMOV-NEXT:    ret
 ;
@@ -55,10 +54,9 @@ define signext i32 @test2(i32 signext %x, i32 signext %y, i32 signext %z) {
 ;
 ; CMOV-LABEL: test2:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    xor a1, a1, a0
 ; CMOV-NEXT:    beqz a2, .LBB1_2
 ; CMOV-NEXT:  # %bb.1:
-; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:    xor a0, a0, a1
 ; CMOV-NEXT:  .LBB1_2:
 ; CMOV-NEXT:    ret
 ;
@@ -90,17 +88,12 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ;
 ; CMOV-LABEL: test3:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    xor a1, a1, a0
-; CMOV-NEXT:    bnez a4, .LBB2_2
+; CMOV-NEXT:    beqz a4, .LBB2_2
 ; CMOV-NEXT:  # %bb.1:
-; CMOV-NEXT:    mv a1, a0
+; CMOV-NEXT:    xor a0, a0, a1
+; CMOV-NEXT:    xor a2, a2, a3
 ; CMOV-NEXT:  .LBB2_2:
-; CMOV-NEXT:    xor a0, a2, a3
-; CMOV-NEXT:    bnez a4, .LBB2_4
-; CMOV-NEXT:  # %bb.3:
-; CMOV-NEXT:    mv a0, a2
-; CMOV-NEXT:  .LBB2_4:
-; CMOV-NEXT:    addw a0, a0, a1
+; CMOV-NEXT:    addw a0, a0, a2
 ; CMOV-NEXT:    ret
 ;
 ; SHORT_FORWARD-LABEL: test3:
@@ -108,11 +101,8 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ; SHORT_FORWARD-NEXT:    beqz a4, .LBB2_2
 ; SHORT_FORWARD-NEXT:  # %bb.1:
 ; SHORT_FORWARD-NEXT:    xor a0, a0, a1
-; SHORT_FORWARD-NEXT:  .LBB2_2:
-; SHORT_FORWARD-NEXT:    beqz a4, .LBB2_4
-; SHORT_FORWARD-NEXT:  # %bb.3:
 ; SHORT_FORWARD-NEXT:    xor a2, a2, a3
-; SHORT_FORWARD-NEXT:  .LBB2_4:
+; SHORT_FORWARD-NEXT:  .LBB2_2:
 ; SHORT_FORWARD-NEXT:    addw a0, a0, a2
 ; SHORT_FORWARD-NEXT:    ret
   %c = icmp eq i32 %z, 0
@@ -136,11 +126,10 @@ define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
 ;
 ; CMOV-LABEL: test4:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    li a1, 0
 ; CMOV-NEXT:    li a0, 3
 ; CMOV-NEXT:    beqz a2, .LBB3_2
 ; CMOV-NEXT:  # %bb.1:
-; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:    li a0, 0
 ; CMOV-NEXT:  .LBB3_2:
 ; CMOV-NEXT:    ret
 ;

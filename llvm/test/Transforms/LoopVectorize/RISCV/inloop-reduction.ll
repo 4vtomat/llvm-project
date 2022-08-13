@@ -54,24 +54,25 @@ define i32 @add_i16_i32(i16* nocapture readonly %x, i32 %n) {
 ; OUTLOOP:       middle.block:
 ; OUTLOOP-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 2 x i32> [[TMP21]], [[TMP20]]
 ; OUTLOOP-NEXT:    [[TMP25:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[BIN_RDX]])
+; OUTLOOP-NEXT:    [[TMP26:%.*]] = add i32 0, [[TMP25]]
 ; OUTLOOP-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[N]], [[N_VEC]]
 ; OUTLOOP-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; OUTLOOP:       scalar.ph:
 ; OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ]
+; OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ]
 ; OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; OUTLOOP:       for.body:
 ; OUTLOOP-NEXT:    [[I_08:%.*]] = phi i32 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; OUTLOOP-NEXT:    [[R_07:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
 ; OUTLOOP-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, i16* [[X]], i32 [[I_08]]
-; OUTLOOP-NEXT:    [[TMP26:%.*]] = load i16, i16* [[ARRAYIDX]], align 2
-; OUTLOOP-NEXT:    [[CONV:%.*]] = sext i16 [[TMP26]] to i32
+; OUTLOOP-NEXT:    [[TMP27:%.*]] = load i16, i16* [[ARRAYIDX]], align 2
+; OUTLOOP-NEXT:    [[CONV:%.*]] = sext i16 [[TMP27]] to i32
 ; OUTLOOP-NEXT:    [[ADD]] = add nsw i32 [[R_07]], [[CONV]]
 ; OUTLOOP-NEXT:    [[INC]] = add nuw nsw i32 [[I_08]], 1
 ; OUTLOOP-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[INC]], [[N]]
 ; OUTLOOP-NEXT:    br i1 [[EXITCOND]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
 ; OUTLOOP:       for.cond.cleanup.loopexit:
-; OUTLOOP-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ]
+; OUTLOOP-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ]
 ; OUTLOOP-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; OUTLOOP:       for.cond.cleanup:
 ; OUTLOOP-NEXT:    [[R_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
