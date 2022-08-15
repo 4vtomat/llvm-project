@@ -1357,9 +1357,9 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                   IntCCtoRISCVCC>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-// U8 can only predicate c.mv so requires the C extension. This should always
-// expand to a branch+c.mv so the size is 6 or 4 if the branch is compressible.
-let Predicates = [HasCMOVBranchOpt, HasStdExtC],
+// This should always expand to a branch+c.mv so the size is 6 or 4 if the
+// branch is compressible.
+let Predicates = [HasCMOVBranchOpt, NoShortForwardBranchOpt],
     Constraints = "$dst = $falsev", isCommutable = 1, Size = 6 in {
 // This instruction moves $truev to $dst when the condition is true. It will
 // be expanded to control flow in RISCVExpandPseudoInsts.
@@ -1529,6 +1529,7 @@ multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
              (IntCCtoRISCVCC $cc), valty:$truev, valty:$falsev)>;
 }
 
+let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in // SIFIVE
 defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
 /// Branches and jumps
