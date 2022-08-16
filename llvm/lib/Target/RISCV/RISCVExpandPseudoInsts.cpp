@@ -20,8 +20,8 @@
 #include "llvm/CodeGen/LivePhysRegs.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
-#include "llvm/Support/CodeGen.h" // SIFIVE
 #include "llvm/MC/MCContext.h"
+#include "llvm/Support/CodeGen.h" // SIFIVE
 
 using namespace llvm;
 
