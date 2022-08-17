@@ -370,6 +370,7 @@ public:
                                      unsigned Index);
 
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
+  Type *getScalableVectorFromFixed(Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 
