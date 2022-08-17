@@ -10423,6 +10423,95 @@ static SDValue performVP_STORECombine(SDNode *N, SelectionDAG &DAG,
 
   return SDValue();
 }
+
+// (vselect_vl (setcc_vl X, Y, lt), X, Y) -> (vfmin_vl X, Y)
+// (vselect_vl (setcc_vl X, Y, gt), X, Y) -> (vfmax_vl X, Y)
+static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
+  SDValue Cond = N->getOperand(0);
+  if (Cond.getOpcode() != RISCVISD::SETCC_VL || !Cond.hasOneUse())
+    return SDValue();
+
+  // Only handle unmasked SETCC_VL.
+  assert(Cond.getNumOperands() == 5);
+  if (Cond.getOperand(3).getOpcode() != RISCVISD::VMSET_VL)
+    return SDValue();
+
+  EVT VT = N->getValueType(0);
+  if (!VT.isFloatingPoint())
+    return SDValue();
+
+  // VL should match.
+  SDValue VL = N->getOperand(3);
+  if (VL != Cond.getOperand(4))
+    return SDValue();
+
+  SDValue TrueVal = N->getOperand(1);
+  SDValue FalseVal = N->getOperand(2);
+
+  // We require no signed zeros, and non nans. We can't rely on fast math flags
+  // so use the global settings.
+  const TargetOptions &Options = DAG.getTarget().Options;
+  if (!Options.NoSignedZerosFPMath || !DAG.isKnownNeverNaN(TrueVal) ||
+      !DAG.isKnownNeverNaN(FalseVal))
+    return SDValue();
+
+  SDValue CondLHS = Cond.getOperand(0);
+  SDValue CondRHS = Cond.getOperand(1);
+
+  // True/False values must match the condition LHS/RHS.
+  if (!(CondLHS == TrueVal && CondRHS == FalseVal) &&
+      !(CondLHS == FalseVal && CondRHS == TrueVal))
+    return SDValue();
+
+  ISD::CondCode CC = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
+  SDLoc DL(N);
+
+  SDValue Res;
+
+  // Because we check no-nans, we can ignore the ordered/unordered distinction.
+  switch (CC) {
+  default:
+    return SDValue();
+  case ISD::SETOLT:
+  case ISD::SETOLE:
+  case ISD::SETLT:
+  case ISD::SETLE:
+  case ISD::SETULT:
+  case ISD::SETULE: {
+    unsigned Opcode =
+        CondLHS == TrueVal ? RISCVISD::FMINNUM_VL : RISCVISD::FMAXNUM_VL;
+    SDValue TrueMask =
+        DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
+    Res = DAG.getNode(Opcode, DL, VT, TrueVal, FalseVal, DAG.getUNDEF(VT),
+                      TrueMask, VL);
+    break;
+  }
+  case ISD::SETOGT:
+  case ISD::SETOGE:
+  case ISD::SETGT:
+  case ISD::SETGE:
+  case ISD::SETUGT:
+  case ISD::SETUGE: {
+    unsigned Opcode =
+        CondLHS == TrueVal ? RISCVISD::FMAXNUM_VL : RISCVISD::FMINNUM_VL;
+    SDValue TrueMask =
+        DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
+    Res = DAG.getNode(Opcode, DL, VT, TrueVal, FalseVal, DAG.getUNDEF(VT),
+                      TrueMask, VL);
+    break;
+  }
+  }
+
+  if (N->getOpcode() == RISCVISD::VSELECT_VL)
+    return Res;
+
+  // If we started with vp_merge_vl, we still need to preserve the tail
+  // elements. Use an unmasked vp_merge_vl.
+  SDValue TrueMask =
+      DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
+  return DAG.getNode(RISCVISD::VP_MERGE_VL, DL, VT, TrueMask, Res, FalseVal,
+                     VL);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Convert from one FMA opcode to another based on whether we are negating the
@@ -11378,7 +11467,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performVP_REVERSECombine(N, DAG, Subtarget);
   case ISD::VP_STORE:
     return performVP_STORECombine(N, DAG, Subtarget);
+  case RISCVISD::VSELECT_VL:
+    return combineToVFMAX_VFMIN(N, DAG);
   case RISCVISD::VP_MERGE_VL: {
+    if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
+      return V;
+
     SDValue Mask = N->getOperand(0);
     SDValue VL = N->getOperand(3);
     // Fold (vp_merge_vl (vmnot_vl X, VL), Y, Z, VL) ->
