@@ -17,10 +17,9 @@
 define void @test1() {
 ; PIC-LABEL: test1:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .LBB0_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi0:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB0_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi0)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(src)
@@ -53,10 +52,9 @@ entry:
 define void @test2() {
 ; PIC-LABEL: test2:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .LBB1_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi1:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB1_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi1)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
@@ -86,10 +84,9 @@ entry:
 define void @test3() {
 ; PIC-LABEL: test3:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .LBB2_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi2:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB2_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi2)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
@@ -119,10 +116,9 @@ entry:
 define void @test4() {
 ; PIC-LABEL: test4:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .LBB3_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi3:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB3_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi3)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(foo)
@@ -146,10 +142,9 @@ define i32* @test5() nounwind {
 ; PIC:       # %bb.0: # %entry
 ; PIC-NEXT:    addi sp, sp, -16
 ; PIC-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; PIC-NEXT:  .LBB4_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi4:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB4_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi4)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(__tls_get_addr)
@@ -179,10 +174,9 @@ define i32* @test6() nounwind {
 ; PIC:       # %bb.0: # %entry
 ; PIC-NEXT:    addi sp, sp, -16
 ; PIC-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; PIC-NEXT:  .LBB5_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi5:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB5_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi5)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(__tls_get_addr)
@@ -210,10 +204,9 @@ entry:
 define i32* @test7() nounwind {
 ; PIC-LABEL: test7:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .LBB6_1: # %entry
-; PIC-NEXT:    # Label of block must be emitted
+; PIC-NEXT:  .Lpcrel_hi6:
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.LBB6_1)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %tls_ie_gprel_hi(ie)
