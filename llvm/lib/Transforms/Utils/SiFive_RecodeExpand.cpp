@@ -86,6 +86,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_ld3r:
   case Intrinsic::aarch64_neon_ld4:
   case Intrinsic::aarch64_neon_ld4r:
+  case Intrinsic::aarch64_neon_sabd:
   case Intrinsic::aarch64_neon_saddlv:
   case Intrinsic::aarch64_neon_st1x2:
   case Intrinsic::aarch64_neon_st1x3:
@@ -101,6 +102,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_tbx2:
   case Intrinsic::aarch64_neon_tbx3:
   case Intrinsic::aarch64_neon_tbx4:
+  case Intrinsic::aarch64_neon_uabd:
   case Intrinsic::aarch64_neon_uaddlv:
   case Intrinsic::aarch64_neon_vcvtfp2hf:
   case Intrinsic::aarch64_neon_vcvthf2fp:
@@ -235,6 +237,26 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                   Builder.getInt64(0)),
               i);
         II->replaceAllUsesWith(NewDes);
+        break;
+      }
+      case Intrinsic::aarch64_neon_sabd:
+      case Intrinsic::aarch64_neon_uabd: {
+        Intrinsic::ID MaxID;
+        Intrinsic::ID MinID;
+        if (II->getIntrinsicID() == Intrinsic::aarch64_neon_sabd) {
+          MaxID = Intrinsic::smax;
+          MinID = Intrinsic::smin;
+        } else {
+          MaxID = Intrinsic::umax;
+          MinID = Intrinsic::umin;
+        }
+        CallInst *Max = Builder.CreateIntrinsic(
+            MaxID, {II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0), II->getArgOperand(1)});
+        CallInst *Min = Builder.CreateIntrinsic(
+            MinID, {II->getArgOperand(0)->getType()},
+            {II->getArgOperand(0), II->getArgOperand(1)});
+        II->replaceAllUsesWith(Builder.CreateSub(Max, Min));
         break;
       }
       case Intrinsic::aarch64_neon_saddlv: {
