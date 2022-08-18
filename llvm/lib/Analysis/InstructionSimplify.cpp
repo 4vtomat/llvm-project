@@ -6148,6 +6148,38 @@ static Value *simplifyIntrinsic(CallBase *Call, const SimplifyQuery &Q) {
 
     return nullptr;
   }
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_xor: {
+    Value *Op1 = Call->getArgOperand(0);
+    Value *Op2 = Call->getArgOperand(1);
+    Value *Mask = Call->getArgOperand(2);
+    Value *Len = Call->getArgOperand(3);
+
+    // Check if the xor instruction has any of the following forms, and reduce
+    // them.
+    // ((X XOR Op2) XOR Op2) --> X
+    // ((Op2 XOR X) XOR Op2) --> X
+    // (Op1 XOR (X XOR Op1)) --> X
+    // (Op1 XOR (Op1 XOR X)) --> X
+    // These reductions are possible because xor is self-inverse.
+    Value *X;
+    if (match(Op1, m_Intrinsic<Intrinsic::vp_xor>(m_Value(X), m_Specific(Op2),
+                                                  m_Specific(Mask),
+                                                  m_Specific(Len))) ||
+        match(Op1, m_Intrinsic<Intrinsic::vp_xor>(m_Specific(Op2), m_Value(X),
+                                                  m_Specific(Mask),
+                                                  m_Specific(Len))) ||
+        match(Op2, m_Intrinsic<Intrinsic::vp_xor>(m_Value(X), m_Specific(Op1),
+                                                  m_Specific(Mask),
+                                                  m_Specific(Len))) ||
+        match(Op2, m_Intrinsic<Intrinsic::vp_xor>(m_Specific(Op1), m_Value(X),
+                                                  m_Specific(Mask),
+                                                  m_Specific(Len))))
+      return X;
+
+    return nullptr;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_constrained_fadd: {
     auto *FPI = cast<ConstrainedFPIntrinsic>(Call);
     return simplifyFAddInst(
