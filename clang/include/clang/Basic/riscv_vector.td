@@ -134,32 +134,14 @@
 // There are a number of attributes that are used to constraint the number and
 // shape of the builtins generated. Refer to the comments below for them.
 
-#ifdef SIFIVE_CUSTOMIZATION
 class PolicyScheme<int val>{
   int Value = val;
 }
-
-class Policy<int N> {
-  int Value = !shl(1, N);
-}
-
 def NonePolicy : PolicyScheme<0>;
 def HasPassthruOperand : PolicyScheme<1>;
 def HasPolicyOperand : PolicyScheme<2>;
 // Specail case for passthru operand which is not a first opeand.
 def HasPassthruOperandAtIdx1 : PolicyScheme<3>;
-
-def TUMUPolicy : Policy<0>;
-def TAMUPolicy : Policy<1>;
-def TUMAPolicy : Policy<2>;
-def TAMAPolicy : Policy<3>;
-def TUPolicy : Policy<4>; // For unmasked TU, last two bit is TUMU
-def TAPolicy : Policy<5>; // For unmasked TA, last two bit is TAMU
-def MUPolicy : Policy<6>; // For masked MU, last two bit is TAMU
-def MAPolicy : Policy<7>; // For masked MA, last two bit is TAMA
-def TUMPolicy : Policy<10>; // For masked TU, last two bit is TUMA
-def TAMPolicy : Policy<11>; // For masked TA, last two bit is TAMA
-#endif // SIFIVE_CUSTOMIZATION
 
 class RVVBuiltin<string suffix, string prototype, string type_range,
                  string overloaded_suffix = ""> {
@@ -209,9 +191,7 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // HasPolicyOperand: Has a policy operand. 0 is tail and mask undisturbed, 1 is
   // tail agnostic, 2 is mask undisturbed, and 3 is tail and mask agnostic. The
   // policy operand is located at the last position.
-#ifdef SIFIVE_CUSTOMIZATION
   PolicyScheme MaskedPolicyScheme = HasPolicyOperand;
-#endif // SIFIVE_CUSTOMIZATION
 
   // The policy scheme for unmasked intrinsic IR.
   // It could be NonePolicy, HasPassthruOperand or HasPolicyOperand.
@@ -219,13 +199,16 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // undef, tail policy is tail agnostic, otherwise policy is tail undisturbed.
   // HasPolicyOperand: Has a policy operand. 1 is tail agnostic and 0 is tail
   // undisturbed.
-#ifdef SIFIVE_CUSTOMIZATION
   PolicyScheme UnMaskedPolicyScheme = NonePolicy;
 
+  // This builtin support tail agnostic and undisturbed policy.
+  bit HasTailPolicy = true;
+  // This builtin support mask agnostic and undisturbed policy.
+  bit HasMaskPolicy = true;
+
   // This builtin prototype is tail undisturbed policy. It also means the
-  // default policy without suffix is tail undisturbed.
+  // default polcy without suffix is tail undisturbed.
   bit IsPrototypeDefaultTU = false;
-#endif // SIFIVE_CUSTOMIZATION
 
   // This builtin prototype with TA or TAMA policy could not support overloading
   // API. Other policy intrinsic functions would support overloading API with
@@ -260,14 +243,6 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
 
   // Number of fields for Load/Store Segment instructions.
   int NF = 1;
-
-#ifdef SIFIVE_CUSTOMIZATION
-  // If UnMaskedPolicyScheme != NonePolicy, list supported policies.
-  list<Policy> SupportedUnMaskedPolicies = [TUPolicy, TAPolicy];
-
-  // If MaskedPolicyScheme != NonePolicy, list supported policies.
-  list<Policy> SupportedMaskedPolicies = [TUMUPolicy, TAMUPolicy, TUMAPolicy, TAMAPolicy];
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 // This is the code emitted in the header.
@@ -475,9 +450,7 @@ class RVVMaskUnaryBuiltin : RVVOutBuiltin<"m", "mm", "c"> {
 class RVVMaskNullaryBuiltin : RVVOutBuiltin<"m", "m", "c"> {
   let Name = NAME # "_m";
   let HasMasked = false;
-#ifdef SIFIVE_CUSTOMIZATION
   let SupportOverloading = false;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 class RVVMaskOp0Builtin<string prototype> : RVVOp0Builtin<"m", prototype, "c"> {
@@ -486,10 +459,8 @@ class RVVMaskOp0Builtin<string prototype> : RVVOp0Builtin<"m", prototype, "c"> {
 }
 
 let UnMaskedPolicyScheme = HasPolicyOperand,
-#ifdef SIFIVE_CUSTOMIZATION
     HasMaskedOffOperand = false,
     IsPrototypeDefaultTU = true in {
-#endif // SIFIVE_CUSTOMIZATION
   multiclass RVVSlideBuiltinSet {
     defm "" : RVVOutBuiltinSet<NAME, "csilxfd",
                                [["vx","v", "vvvz"]]>;
@@ -626,10 +597,8 @@ class IsFloat<string type> {
   bit val = !or(!eq(type, "x"), !eq(type, "f"), !eq(type, "d"));
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 let SupportOverloading = false,
     MaskedPolicyScheme = NonePolicy in {
-#endif // SIFIVE_CUSTOMIZATION
   class RVVVLEMaskBuiltin : RVVOutBuiltin<"m", "mPCUe", "c"> {
     let Name = "vlm_v";
     let IRName = "vlm";
@@ -637,10 +606,8 @@ let SupportOverloading = false,
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 let SupportOverloading = false,
     UnMaskedPolicyScheme = HasPassthruOperand in {
-#endif // SIFIVE_CUSTOMIZATION
   multiclass RVVVLEBuiltin<list<string> types> {
     let Name = NAME # "_v",
         IRName = "vle",
@@ -659,20 +626,16 @@ multiclass RVVVLEFFBuiltin<list<string> types> {
   let Name = NAME # "_v",
       IRName = "vleff",
       MaskedIRName = "vleff_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       SupportOverloading = false,
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         IntrinsicTypes = {ResultType, Ops[3]->getType()};
         Ops[1] = Builder.CreateBitCast(Ops[1], ResultType->getPointerTo());
         Value *NewVL = Ops[2];
         Ops.erase(Ops.begin() + 2);
-#endif // SIFIVE_CUSTOMIZATION
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue = Builder.CreateCall(F, Ops, "");
         llvm::Value *V = Builder.CreateExtractValue(LoadValue, {0});
@@ -699,10 +662,8 @@ multiclass RVVVLEFFBuiltin<list<string> types> {
         llvm::Value *LoadValue = Builder.CreateCall(F, Ops, "");
         llvm::Value *V = Builder.CreateExtractValue(LoadValue, {0});
         // Store new_vl.
-#ifdef SIFIVE_CUSTOMIZATION
         clang::CharUnits Align = CGM.getNaturalPointeeTypeAlignment(
             E->getArg(E->getNumArgs()-2)->getType());
-#endif // SIFIVE_CUSTOMIZATION
         llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {1});
         Builder.CreateStore(Val, Address(NewVL, Val->getType(), Align));
         return V;
@@ -722,10 +683,8 @@ multiclass RVVVLSEBuiltin<list<string> types> {
   let Name = NAME # "_v",
       IRName = "vlse",
       MaskedIRName ="vlse_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       SupportOverloading = false,
       UnMaskedPolicyScheme = HasPassthruOperand in {
-#endif // SIFIVE_CUSTOMIZATION
     foreach type = types in {
       def : RVVOutBuiltin<"v", "vPCet", type>;
       if !not(IsFloat<type>.val) then {
@@ -887,22 +846,14 @@ multiclass RVVUnitStridedSegLoad<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // ta builtin: (val0 address, val1 address, ..., ptr, vl)
-      // tu builtin: (val0 address, ..., passthru0, ..., ptr, vl)
-#endif // SIFIVE_CUSTOMIZATION
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-#ifdef SIFIVE_CUSTOMIZATION
+      // TA builtin: (val0 address, val1 address, ..., ptr, vl)
+      // TU builtin: (val0 address, ..., passthru0, ..., ptr, vl)
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       // intrinsic: (passthru0, passthru1, ..., ptr, vl)
       SmallVector<llvm::Value*, 10> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -914,13 +865,10 @@ multiclass RVVUnitStridedSegLoad<string op> {
         Operands.push_back(Ops[2 * NF]);
         Operands.push_back(Ops[2 * NF + 1]);
       }
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
       clang::CharUnits Align =
-#ifdef SIFIVE_CUSTOMIZATION
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Value *V;
       for (unsigned I = 0; I < NF; ++I) {
         llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
@@ -931,17 +879,12 @@ multiclass RVVUnitStridedSegLoad<string op> {
             }],
             MaskedManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // tama builtin: (val0 address, ..., mask, ptr, vl)
-#endif // SIFIVE_CUSTOMIZATION
+      // TAMA builtin: (val0 address, ..., mask, ptr, vl)
       // builtin: (val0 address, ..., mask, maskedoff0, ..., ptr, vl)
       // intrinsic: (maskedoff0, ..., ptr, mask, vl)
-#ifdef SIFIVE_CUSTOMIZATION
       ResultType =  ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -956,7 +899,6 @@ multiclass RVVUnitStridedSegLoad<string op> {
         Operands.push_back(Ops[2 * NF + 2]);
       }
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
       assert(Operands.size() == NF + 4);
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
@@ -995,22 +937,14 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // ta builtin: (val0 address, val1 address, ..., ptr, new_vl, vl)
-      // tu builtin: (val0 address, ..., passthru0, ..., ptr, new_vl, vl)
-#endif // SIFIVE_CUSTOMIZATION
+      // TA builtin: (val0 address, val1 address, ..., ptr, new_vl, vl)
+      // TU builtin: (val0 address, ..., passthru0, ..., ptr, new_vl, vl)
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-#ifdef SIFIVE_CUSTOMIZATION
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       // intrinsic: (passthru0, passthru1, ..., ptr, vl)
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       Value *NewVL;
       if (DefaultPolicy == TAIL_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
@@ -1025,7 +959,6 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
         Operands.push_back(Ops[2 * NF + 2]);
         NewVL = Ops[2 * NF + 1];
       }
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
       clang::CharUnits Align =
@@ -1041,17 +974,12 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
             }],
             MaskedManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // tama builtin: (val0 address, ..., mask, ptr, new_vl, vl)
-#endif // SIFIVE_CUSTOMIZATION
+      // TAMA builtin: (val0 address, ..., mask, ptr, new_vl, vl)
       // builtin: (val0 address, ..., mask, maskedoff0, ..., ptr, new_vl, vl)
       // intrinsic: (maskedoff0, ..., ptr, mask, vl)
-#ifdef SIFIVE_CUSTOMIZATION
       ResultType =  ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       Value *NewVL;
       if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
@@ -1069,7 +997,6 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
         NewVL = Ops[2 * NF + 2];
       }
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
       assert(Operands.size() == NF + 4);
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
@@ -1109,20 +1036,14 @@ multiclass RVVStridedSegLoad<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-#ifdef SIFIVE_CUSTOMIZATION
-            SupportOverloading = false,
-#endif // SIFIVE_CUSTOMIZATION
             ManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // ta builtin: (val0 address, val1 address, ..., ptr, stride, vl)
-      // tu builtin: (val0 address, ..., passthru0, ..., ptr, stride, vl)
+      // TA builtin: (val0 address, val1 address, ..., ptr, stride, vl)
+      // TU builtin: (val0 address, ..., passthru0, ..., ptr, stride, vl)
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       // intrinsic: (passthru0, passthru1, ..., ptr, stride, vl)
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -1136,13 +1057,10 @@ multiclass RVVStridedSegLoad<string op> {
         Operands.push_back(Ops[2 * NF + 1]);
         Operands.push_back(Ops[2 * NF + 2]);
       }
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
       clang::CharUnits Align =
-#ifdef SIFIVE_CUSTOMIZATION
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Value *V;
       for (unsigned I = 0; I < NF; ++I) {
         llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
@@ -1153,17 +1071,12 @@ multiclass RVVStridedSegLoad<string op> {
             }],
             MaskedManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // tama builtin: (val0 address, ..., mask, ptr, stride, vl)
-#endif // SIFIVE_CUSTOMIZATION
+      //TAMA builtin: (val0 address, ..., mask, ptr, stride, vl)
       // builtin: (val0 address, ..., mask, maskedoff0, ..., ptr, stride, vl)
       // intrinsic: (maskedoff0, ..., ptr, stride, mask, vl)
-#ifdef SIFIVE_CUSTOMIZATION
       ResultType =  ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -1180,7 +1093,6 @@ multiclass RVVStridedSegLoad<string op> {
         Operands.push_back(Ops[2 * NF + 3]);
       }
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
       assert(Operands.size() == NF + 5);
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
@@ -1217,14 +1129,11 @@ multiclass RVVIndexedSegLoad<string op> {
             NF = nf,
             ManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // ta builtin: (val0 address, val1 address, ..., ptr, index, vl)
-      // tu builtin: (val0 address, ..., passthru0, ..., ptr, index, vl)
+      // TA builtin: (val0 address, val1 address, ..., ptr, index, vl)
+      // TU builtin: (val0 address, ..., passthru0, ..., ptr, index, vl)
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-#endif // SIFIVE_CUSTOMIZATION
       // intrinsic: (passthru0, passthru1, ..., ptr, index, vl)
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -1240,7 +1149,6 @@ multiclass RVVIndexedSegLoad<string op> {
         Operands.push_back(Ops[2 * NF + 2]);
         IntrinsicTypes = {ResultType, Ops[2 * NF + 1]->getType(), Ops.back()->getType()};
       }
-#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
       clang::CharUnits Align =
@@ -1255,14 +1163,11 @@ multiclass RVVIndexedSegLoad<string op> {
             }],
             MaskedManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
-      // tama builtin: (val0 address, ..., mask, ptr, index, vl)
-#endif // SIFIVE_CUSTOMIZATION
+      // TAMA builtin: (val0 address, ..., mask, ptr, index, vl)
       // builtin: (val0 address, ..., mask, maskedoff0, ..., ptr, index, vl)
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       // intrinsic: (maskedoff0, ..., ptr, index, mask, vl)
       SmallVector<llvm::Value*, 12> Operands;
-#ifdef SIFIVE_CUSTOMIZATION
       if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC) {
         for (unsigned I = 0; I < NF; ++I)
           Operands.push_back(llvm::UndefValue::get(ResultType));
@@ -1281,7 +1186,6 @@ multiclass RVVIndexedSegLoad<string op> {
         IntrinsicTypes = {ResultType, Ops[2 * NF + 2]->getType(), Ops.back()->getType()};
       }
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-#endif // SIFIVE_CUSTOMIZATION
       assert(Operands.size() == NF + 5);
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
@@ -1458,35 +1362,28 @@ multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
         // passthru, op1, op2, vl
         IntrinsicTypes = {ResultType, ElemTy, Ops[3]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }],
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-
         auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
         Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
         // maskedoff, op1, op2, mask, vl, policy
         IntrinsicTypes = {ResultType, ElemTy, Ops[4]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }] in {
@@ -1498,12 +1395,9 @@ multiclass RVVPseudoVNotBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
@@ -1513,25 +1407,22 @@ multiclass RVVPseudoVNotBuiltin<string IR, string type_range> {
         IntrinsicTypes = {ResultType,
                           ElemTy,
                           Ops[3]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }],
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         Ops.insert(Ops.begin() + 2,
                    llvm::Constant::getAllOnesValue(ElemTy));
         Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
-        // maskedoff, op1, op2, mask, vl, policy
+        // maskedoff, op1, po2, mask, vl, policy
         IntrinsicTypes = {ResultType,
                           ElemTy,
                           Ops[4]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }] in {
@@ -1561,37 +1452,29 @@ multiclass RVVPseudoVFUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
       MaskedIRName = IR # "_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-
-        // op1, op2, vl
+        // op1, po2, vl
         IntrinsicTypes = {ResultType,
                           Ops[1]->getType(), Ops[2]->getType()};
         Ops.insert(Ops.begin() + 2, Ops[1]);
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }],
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
-
         Ops.insert(Ops.begin() + 2, Ops[1]);
         Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
         // maskedoff, op1, op2, mask, vl
         IntrinsicTypes = {ResultType,
                           Ops[2]->getType(),
                           Ops.back()->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }] in {
@@ -1605,12 +1488,9 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
       OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
@@ -1620,17 +1500,15 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
                           Ops[1]->getType(),
                           ElemTy,
                           Ops[3]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }],
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
-        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
+        auto ElemTy = cast<llvm::VectorType>(ResultType)->getElementType();
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
         Ops.push_back(ConstantInt::get(Ops.back()->getType(), DefaultPolicy));
         // maskedoff, op1, op2, mask, vl, policy
@@ -1638,7 +1516,6 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
                           Ops[1]->getType(),
                           ElemTy,
                           Ops[4]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }] in {
@@ -1654,12 +1531,9 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
       OverloadedName = MName,
       IRName = IR,
       MaskedIRName = IR # "_mask",
-#ifdef SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(Ops.back()->getType()));
@@ -1668,14 +1542,12 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
                           Ops[1]->getType(),
                           Ops[3]->getType(),
                           Ops[3]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }],
       MaskedManualCodegen = [{
       {
         std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-#ifdef SIFIVE_CUSTOMIZATION
         if (DefaultPolicy == TAIL_AGNOSTIC_MASK_AGNOSTIC)
           Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(Ops.back()->getType()));
@@ -1685,7 +1557,6 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
                           Ops[1]->getType(),
                           Ops[4]->getType(),
                           Ops[4]->getType()};
-#endif // SIFIVE_CUSTOMIZATION
         break;
       }
       }] in {
@@ -1861,24 +1732,20 @@ defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
 // 7.8 Vector Load/Store Segment Instructions
-#ifdef SIFIVE_CUSTOMIZATION
-// TODO: Support policy function for segment load.
 let UnMaskedPolicyScheme = HasPassthruOperand in {
-#endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegLoad<"vlseg">;
 defm : RVVUnitStridedSegLoadFF<"vlseg">;
 defm : RVVStridedSegLoad<"vlsseg">;
 defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
-let UnMaskedPolicyScheme = NonePolicy, MaskedPolicyScheme = NonePolicy in {
+let UnMaskedPolicyScheme = NonePolicy,
+    MaskedPolicyScheme = NonePolicy in {
 defm : RVVUnitStridedSegStore<"vsseg">;
 defm : RVVStridedSegStore<"vssseg">;
 defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
-#ifdef SIFIVE_CUSTOMIZATION
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 // 12. Vector Integer Arithmetic Instructions
 // 12.1. Vector Single-Width Integer Add and Subtract
@@ -1906,7 +1773,6 @@ defm vwsubu : RVVUnsignedWidenOp0BinBuiltinSet;
 defm vwadd : RVVSignedWidenOp0BinBuiltinSet;
 defm vwsub : RVVSignedWidenOp0BinBuiltinSet;
 }
-
 defm vwcvtu_x_x_v : RVVPseudoVWCVTBuiltin<"vwaddu", "vwcvtu_x", "csi",
                                           [["Uw", "UwUv"]]>;
 defm vwcvt_x_x_v : RVVPseudoVWCVTBuiltin<"vwadd", "vwcvt_x", "csi",
@@ -1963,10 +1829,8 @@ defm vncvt_x_x_w : RVVPseudoVNCVTBuiltin<"vnsrl", "vncvt_x", "csi",
                                           ["Uv", "UvUw"]]>;
 
 // 12.8. Vector Integer Comparison Instructions
-#ifdef SIFIVE_CUSTOMIZATION
 let MaskedPolicyScheme = HasPassthruOperand,
-    SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
-#endif // SIFIVE_CUSTOMIZATION
+    HasTailPolicy = false in {
 defm vmseq : RVVIntMaskOutBuiltinSet;
 defm vmsne : RVVIntMaskOutBuiltinSet;
 defm vmsltu : RVVUnsignedMaskOutBuiltinSet;
@@ -2017,10 +1881,8 @@ defm vwmulsu : RVVOutOp0Op1BuiltinSet<"vwmulsu", "csi",
 }
 
 // 12.13. Vector Single-Width Integer Multiply-Add Instructions
-#ifdef SIFIVE_CUSTOMIZATION
 let UnMaskedPolicyScheme = HasPolicyOperand,
     IsPrototypeDefaultTU = true in {
-#endif // SIFIVE_CUSTOMIZATION
 defm vmacc  : RVVIntTerBuiltinSet;
 defm vnmsac : RVVIntTerBuiltinSet;
 defm vmadd  : RVVIntTerBuiltinSet;
@@ -2043,7 +1905,6 @@ defm vwmaccus : RVVOutOp1Op2BuiltinSet<"vwmaccus", "csi",
 }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 // 12.15. Vector Integer Merge Instructions
 // C/C++ Operand: (mask, op1, op2, vl), Intrinsic: (passthru, op1, op2, mask, vl)
 let HasMasked = false,
@@ -2056,7 +1917,6 @@ let HasMasked = false,
         Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
       IntrinsicTypes = {ResultType, Ops[2]->getType(), Ops.back()->getType()};
     }] in {
-#endif // SIFIVE_CUSTOMIZATION
   defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "csil",
                                     [["vvm", "v", "vmvv"],
                                      ["vxm", "v", "vmve"],
@@ -2067,20 +1927,16 @@ let HasMasked = false,
 // 12.16. Vector Integer Move Instructions
 let HasMasked = false,
     UnMaskedPolicyScheme = HasPassthruOperand,
-    MaskedPolicyScheme = NonePolicy in {
-  let OverloadedName = "vmv_v" in {
+    MaskedPolicyScheme = NonePolicy,
+    OverloadedName = "vmv_v" in {
     defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "csil",
                                    [["v", "Uv", "UvUv"]]>;
     defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "csilxfd",
                                    [["v", "v", "vv"]]>;
-
-#ifdef SIFIVE_CUSTOMIZATION
   let SupportOverloading = false in
     defm vmv_v : RVVOutBuiltinSet<"vmv_v_x", "csil",
                                    [["x", "v", "ve"],
                                     ["x", "Uv", "UvUe"]]>;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 // 13. Vector Fixed-Point Arithmetic Instructions
@@ -2138,9 +1994,8 @@ let Log2LMUL = [-2, -1, 0, 1, 2] in {
 }
 
 // 14.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
-#ifdef SIFIVE_CUSTOMIZATION
-let UnMaskedPolicyScheme = HasPolicyOperand, IsPrototypeDefaultTU = true in {
-#endif // SIFIVE_CUSTOMIZATION
+let UnMaskedPolicyScheme = HasPolicyOperand,
+    IsPrototypeDefaultTU = true in {
 defm vfmacc  : RVVFloatingTerBuiltinSet;
 defm vfnmacc : RVVFloatingTerBuiltinSet;
 defm vfmsac  : RVVFloatingTerBuiltinSet;
@@ -2180,10 +2035,8 @@ defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "xfd">;
 defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "xfd">;
 
 // 14.13. Vector Floating-Point Compare Instructions
-#ifdef SIFIVE_CUSTOMIZATION
 let MaskedPolicyScheme = HasPassthruOperand,
-    SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
-#endif // SIFIVE_CUSTOMIZATION
+    HasTailPolicy = false in {
 defm vmfeq : RVVFloatingMaskOutBuiltinSet;
 defm vmfne : RVVFloatingMaskOutBuiltinSet;
 defm vmflt : RVVFloatingMaskOutBuiltinSet;
@@ -2198,11 +2051,9 @@ let Name = "vfclass_v", UnMaskedPolicyScheme = HasPassthruOperand in
 
 // 14.15. Vector Floating-Point Merge Instructio
 // C/C++ Operand: (mask, op1, op2, vl), Builtin: (op1, op2, mask, vl)
-#ifdef SIFIVE_CUSTOMIZATION
 let HasMasked = false,
     UnMaskedPolicyScheme = HasPassthruOperandAtIdx1,
     MaskedPolicyScheme = NonePolicy,
-#endif // SIFIVE_CUSTOMIZATION
     ManualCodegen = [{
       std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
       // insert undef passthru
@@ -2217,11 +2068,11 @@ let HasMasked = false,
 }
 
 // 14.16. Vector Floating-Point Move Instruction
-let HasMasked = false, UnMaskedPolicyScheme = HasPassthruOperand,
-#ifdef SIFIVE_CUSTOMIZATION
-    SupportOverloading = false, MaskedPolicyScheme = NonePolicy,
+let HasMasked = false,
+    UnMaskedPolicyScheme = HasPassthruOperand,
+    SupportOverloading = false,
+    MaskedPolicyScheme = NonePolicy,
     OverloadedName = "vfmv_v" in
-#endif // SIFIVE_CUSTOMIZATION
   defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "xfd",
                                   [["f", "v", "ve"]]>;
 
@@ -2260,11 +2111,10 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
 
 // 15. Vector Reduction Operations
 // 15.1. Vector Single-Width Integer Reduction Instructions
-#ifdef SIFIVE_CUSTOMIZATION
 let UnMaskedPolicyScheme = HasPassthruOperand,
-    MaskedPolicyScheme = HasPassthruOperand, IsPrototypeDefaultTU = true,
-    SupportedMaskedPolicies = [TUMPolicy, TAMPolicy] in {
-#endif // SIFIVE_CUSTOMIZATION
+    MaskedPolicyScheme = HasPassthruOperand,
+    IsPrototypeDefaultTU = true,
+    HasMaskPolicy = false in {
 defm vredsum : RVVIntReductionBuiltinSet;
 defm vredmaxu : RVVUnsignedReductionBuiltin;
 defm vredmax : RVVSignedReductionBuiltin;
@@ -2316,14 +2166,10 @@ def vcpop : RVVMaskOp0Builtin<"um">;
 
 // 16.3. vfirst find-first-set mask bit
 def vfirst : RVVMaskOp0Builtin<"lm">;
-#ifdef SIFIVE_CUSTOMIZATION
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-#ifdef SIFIVE_CUSTOMIZATION
 let MaskedPolicyScheme = HasPassthruOperand,
-    SupportedMaskedPolicies = [MUPolicy, MAPolicy] in {
-#endif // SIFIVE_CUSTOMIZATION
+    HasTailPolicy = false in {
 // 16.4. vmsbf.m set-before-first mask bit
 def vmsbf : RVVMaskUnaryBuiltin;
 
@@ -2334,9 +2180,7 @@ def vmsif : RVVMaskUnaryBuiltin;
 def vmsof : RVVMaskUnaryBuiltin;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 let UnMaskedPolicyScheme = HasPassthruOperand, SupportOverloading = false in {
-#endif // SIFIVE_CUSTOMIZATION
   // 16.8. Vector Iota Instruction
   defm viota : RVVOutBuiltinSet<"viota", "csil", [["m", "Uv", "Uvm"]]>;
 
@@ -2352,11 +2196,9 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
     defm vmv_x : RVVOp0BuiltinSet<"vmv_x_s", "csil",
                                    [["s", "ve", "ev"],
                                     ["s", "UvUe", "UeUv"]]>;
-#ifdef SIFIVE_CUSTOMIZATION
   let OverloadedName = "vmv_s", IsPrototypeDefaultTU = true,
       UnMaskedPolicyScheme = HasPassthruOperand,
       SupportOverloading = false in
-#endif // SIFIVE_CUSTOMIZATION
     defm vmv_s : RVVOutBuiltinSet<"vmv_s_x", "csil",
                                    [["x", "v", "vve"],
                                     ["x", "Uv", "UvUvUe"]]>;
@@ -2408,7 +2250,6 @@ defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "csil",
 }
 
 // 17.5. Vector Compress Instruction
-#ifdef SIFIVE_CUSTOMIZATION
 let IsPrototypeDefaultTU = true,
     HasMasked = false,
     UnMaskedPolicyScheme = HasPassthruOperandAtIdx1,
@@ -2420,7 +2261,6 @@ let IsPrototypeDefaultTU = true,
         Ops.insert(Ops.begin(), llvm::UndefValue::get(ResultType));
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
     }] in {
-#endif // SIFIVE_CUSTOMIZATION
   // signed and floating type
   defm vcompress : RVVOutBuiltinSet<"vcompress", "csilxfd",
                                     [["vm", "v", "vmvv"]]>;
@@ -2453,10 +2293,8 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     }
   }
 
-#ifdef SIFIVE_CUSTOMIZATION
   let Name = "vundefined", SupportOverloading = false,
       MaskedPolicyScheme = NonePolicy,
-#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
         return llvm::UndefValue::get(ResultType);
       }] in {

@@ -116,13 +116,13 @@ body:             |
     ; CHECK-NEXT: [[PseudoVLE32_V_M2_1:%[0-9]+]]:vrm2 = PseudoVLE32_V_M2 %stack.1, 4, 5 /* e32 */
     ; CHECK-NEXT: [[ReadVXRM:%[0-9]+]]:gpr = ReadVXRM implicit $vxrm
     ; CHECK-NEXT: WriteVXRMImm 2, implicit-def dead $vxrm
-    ; CHECK-NEXT: [[PseudoVAADD_VV_M2_:%[0-9]+]]:vrm2 = PseudoVAADD_VV_M2 [[PseudoVLE32_V_M2_]], killed [[PseudoVLE32_V_M2_1]], 4, 5 /* e32 */, implicit $vxrm
+    ; CHECK-NEXT: [[PseudoVAADD_VV_M2_:%[0-9]+]]:vrm2 = PseudoVAADD_VV_M2 [[PseudoVLE32_V_M2_]], killed [[PseudoVLE32_V_M2_1]], 4, 4, 5 /* e32 */, implicit $vxrm
     ; CHECK-NEXT: SW [[COPY]], %stack.2, 8 :: (store (s32) into %stack.2 + 8, align 8, basealign 16)
     ; CHECK-NEXT: SW [[COPY1]], %stack.2, 0 :: (store (s32) into %stack.2, align 16)
     ; CHECK-NEXT: SW killed [[SRLI1]], %stack.2, 12 :: (store (s32) into %stack.2 + 12, basealign 16)
     ; CHECK-NEXT: SW killed [[SRLI]], %stack.2, 4 :: (store (s32) into %stack.2 + 4, basealign 16)
     ; CHECK-NEXT: [[PseudoVLE32_V_M2_2:%[0-9]+]]:vrm2 = PseudoVLE32_V_M2 %stack.2, 4, 5 /* e32 */
-    ; CHECK-NEXT: [[PseudoVAADD_VV_M2_1:%[0-9]+]]:vrm2 = PseudoVAADD_VV_M2 [[PseudoVLE32_V_M2_]], killed [[PseudoVLE32_V_M2_2]], 4, 5 /* e32 */, implicit $vxrm
+    ; CHECK-NEXT: [[PseudoVAADD_VV_M2_1:%[0-9]+]]:vrm2 = PseudoVAADD_VV_M2 [[PseudoVLE32_V_M2_]], killed [[PseudoVLE32_V_M2_2]], 4, 4, 5 /* e32 */, implicit $vxrm
     ; CHECK-NEXT: WriteVXRM killed [[ReadVXRM]], implicit-def dead $vxrm
     ; CHECK-NEXT: PseudoVSE32_V_M2 killed [[PseudoVAADD_VV_M2_]], [[LD]], 4, 5 /* e32 */
     ; CHECK-NEXT: PseudoVSE32_V_M2 killed [[PseudoVAADD_VV_M2_1]], [[LD]], 4, 5 /* e32 */
@@ -152,7 +152,7 @@ body:             |
     %16:vrm2 = PseudoVLE32_V_M2 %stack.1, 4, 5
     %17:gpr = ReadVXRM implicit $vxrm
     WriteVXRMImm 2, implicit-def dead $vxrm
-    %18:vrm2 = PseudoVAADD_VV_M2 %15, killed %16, 4, 5, implicit $vxrm
+    %18:vrm2 = PseudoVAADD_VV_M2 %15, killed %16, 4, 4, 5, implicit $vxrm
     WriteVXRM killed %17, implicit-def dead $vxrm
     SW %5, %stack.2, 8 :: (store (s32) into %stack.2 + 8, align 8, basealign 16)
     SW %4, %stack.2, 0 :: (store (s32) into %stack.2, align 16)
@@ -161,7 +161,7 @@ body:             |
     %19:vrm2 = PseudoVLE32_V_M2 %stack.2, 4, 5
     %20:gpr = ReadVXRM implicit $vxrm
     WriteVXRMImm 2, implicit-def dead $vxrm
-    %21:vrm2 = PseudoVAADD_VV_M2 %15, killed %19, 4, 5, implicit $vxrm
+    %21:vrm2 = PseudoVAADD_VV_M2 %15, killed %19, 4, 4, 5, implicit $vxrm
     WriteVXRM killed %20, implicit-def dead $vxrm
     PseudoVSE32_V_M2 killed %18, %14, 4, 5
     PseudoVSE32_V_M2 killed %21, %14, 4, 5

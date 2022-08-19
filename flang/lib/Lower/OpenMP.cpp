@@ -61,9 +61,10 @@ getOmpObjectSymbol(const Fortran::parser::OmpObject &ompObject) {
 }
 
 template <typename T>
-static void createPrivateVarSyms(Fortran::lower::AbstractConverter &converter,
-                                 const T *clause,
-                                 Block *lastPrivBlock = nullptr) {
+static void
+createPrivateVarSyms(Fortran::lower::AbstractConverter &converter,
+                     const T *clause,
+                     [[maybe_unused]] Block *lastPrivBlock = nullptr) {
   const Fortran::parser::OmpObjectList &ompObjectList = clause->v;
   for (const Fortran::parser::OmpObject &ompObject : ompObjectList.v) {
     Fortran::semantics::Symbol *sym = getOmpObjectSymbol(ompObject);
@@ -906,6 +907,7 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
   mlir::Value scheduleChunkClauseOperand, ifClauseOperand;
   mlir::Attribute scheduleClauseOperand, noWaitClauseOperand,
       orderedClauseOperand, orderClauseOperand;
+  mlir::IntegerAttr simdlenClauseOperand;
   SmallVector<Attribute> reductionDeclSymbols;
   Fortran::lower::StatementContext stmtCtx;
   const auto &loopOpClauseList = std::get<Fortran::parser::OmpClauseList>(
@@ -1017,6 +1019,13 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
         TODO(currentLocation,
              "Reduction of intrinsic procedures is not supported");
       }
+    } else if (const auto &simdlenClause =
+                   std::get_if<Fortran::parser::OmpClause::Simdlen>(
+                       &clause.u)) {
+      const auto *expr = Fortran::semantics::GetExpr(simdlenClause->v);
+      const std::optional<std::int64_t> simdlenVal =
+          Fortran::evaluate::ToInt64(*expr);
+      simdlenClauseOperand = firOpBuilder.getI64IntegerAttr(*simdlenVal);
     }
   }
 
@@ -1038,7 +1047,8 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
     TypeRange resultType;
     auto SimdLoopOp = firOpBuilder.create<mlir::omp::SimdLoopOp>(
         currentLocation, resultType, lowerBound, upperBound, step,
-        ifClauseOperand, /*inclusive=*/firOpBuilder.getUnitAttr());
+        ifClauseOperand, simdlenClauseOperand,
+        /*inclusive=*/firOpBuilder.getUnitAttr());
     createBodyOfOp<omp::SimdLoopOp>(SimdLoopOp, converter, currentLocation,
                                     eval, &loopOpClauseList, iv);
     return;
@@ -1623,42 +1633,19 @@ void Fortran::lower::genOpenMPReduction(
           if (const auto *name{
                   Fortran::parser::Unwrap<Fortran::parser::Name>(ompObject)}) {
             if (const auto *symbol{name->symbol}) {
-              mlir::Value symVal = converter.getSymbolAddress(*symbol);
-              mlir::Type redType =
-                  symVal.getType().cast<fir::ReferenceType>().getEleTy();
-              if (!redType.isIntOrIndex())
+              mlir::Value reductionVal = converter.getSymbolAddress(*symbol);
+              mlir::Type reductionType =
+                  reductionVal.getType().cast<fir::ReferenceType>().getEleTy();
+              if (!reductionType.isIntOrIndex())
                 continue;
-              for (mlir::OpOperand &use1 : symVal.getUses()) {
-                if (auto load = mlir::dyn_cast<fir::LoadOp>(use1.getOwner())) {
-                  mlir::Value loadVal = load.getRes();
-                  for (mlir::OpOperand &use2 : loadVal.getUses()) {
-                    if (auto add = mlir::dyn_cast<mlir::arith::AddIOp>(
-                            use2.getOwner())) {
-                      mlir::Value addRes = add.getResult();
-                      for (mlir::OpOperand &use3 : addRes.getUses()) {
-                        if (auto store =
-                                mlir::dyn_cast<fir::StoreOp>(use3.getOwner())) {
-                          if (store.getMemref() == symVal) {
-                            // Chain found! Now replace load->reduction->store
-                            // with the OpenMP reduction operation.
-                            mlir::OpBuilder::InsertPoint insertPtDel =
-                                firOpBuilder.saveInsertionPoint();
-                            firOpBuilder.setInsertionPoint(add);
-                            if (add.getLhs() == loadVal) {
-                              firOpBuilder.create<mlir::omp::ReductionOp>(
-                                  add.getLoc(), add.getRhs(), symVal);
-                            } else {
-                              firOpBuilder.create<mlir::omp::ReductionOp>(
-                                  add.getLoc(), add.getLhs(), symVal);
-                            }
-                            store.erase();
-                            add.erase();
-                            load.erase();
-                            firOpBuilder.restoreInsertionPoint(insertPtDel);
-                          }
-                        }
-                      }
-                    }
+
+              for (mlir::OpOperand &reductionValUse : reductionVal.getUses()) {
+
+                if (auto loadOp =
+                        mlir::dyn_cast<fir::LoadOp>(reductionValUse.getOwner())) {
+                  mlir::Value loadVal = loadOp.getRes();
+                  if (auto reductionOp = getReductionInChain(reductionVal, loadVal)) {
+                    updateReduction(reductionOp, firOpBuilder, loadVal, reductionVal);
                   }
                 }
               }
@@ -1668,4 +1655,43 @@ void Fortran::lower::genOpenMPReduction(
       }
     }
   }
+}
+
+// Checks whether loadVal is used in an operation,
+// the result of which is then stored into reductionVal. 
+// If yes, then the operation corresponding to the reduction is returned. 
+// loadVal is assumed to be the value of a load operation
+// reductionVal is the results of an OpenMP reduction operation.
+mlir::Operation *Fortran::lower::getReductionInChain(mlir::Value reductionVal,
+                                                     mlir::Value loadVal) {
+  for (mlir::OpOperand &loadUse : loadVal.getUses()) {
+    if (auto reductionOp = loadUse.getOwner()) {
+      for (mlir::OpOperand &reductionOperand : reductionOp->getUses()) {
+        if (auto store =
+                mlir::dyn_cast<fir::StoreOp>(reductionOperand.getOwner())) {
+          if (store.getMemref() == reductionVal) {
+            store.erase();
+            return reductionOp;
+          }
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+void Fortran::lower::updateReduction(mlir::Operation *op,
+                                     fir::FirOpBuilder &firOpBuilder,
+                                     mlir::Value loadVal, mlir::Value reductionVal) {
+  mlir::OpBuilder::InsertPoint insertPtDel = firOpBuilder.saveInsertionPoint();
+  firOpBuilder.setInsertionPoint(op);
+
+  if (op->getOperand(0) == loadVal)
+    firOpBuilder.create<mlir::omp::ReductionOp>(op->getLoc(), op->getOperand(1),
+                                                reductionVal);
+  else
+    firOpBuilder.create<mlir::omp::ReductionOp>(op->getLoc(), op->getOperand(0),
+                                                reductionVal);
+
+  firOpBuilder.restoreInsertionPoint(insertPtDel);
 }

@@ -628,7 +628,7 @@ public:
   }
 
   /// Return the list of stores to invariant addresses.
-  const ArrayRef<StoreInst *> getStoresToInvariantAddresses() const {
+  ArrayRef<StoreInst *> getStoresToInvariantAddresses() const {
     return StoresToInvariantAddresses;
   }
 

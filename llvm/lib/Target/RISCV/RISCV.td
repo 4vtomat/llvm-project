@@ -553,6 +553,7 @@ def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
 def HasCMOVBranchOpt : Predicate<"Subtarget->hasCMOVBranchOpt()">;
+def NoCMOVBranchOpt : Predicate<"!Subtarget->hasCMOVBranchOpt()">;
 
 // This is a more advanced version of CMOVBranchOpt where ALU operations can be
 // predicated.
@@ -560,6 +561,7 @@ def TuneShortForwardBranchOpt
     : SubtargetFeature<"short-forward-branch-opt", "HasShortForwardBranchOpt",
                        "true", "Enable short forward branch optimization">;
 def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
+def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
 def TuneJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",

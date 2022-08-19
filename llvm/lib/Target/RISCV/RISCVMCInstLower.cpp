@@ -161,6 +161,9 @@ bool llvm::lowerRISCVMachineOperandToMCOperand(const MachineOperand &MO,
   case MachineOperand::MO_JumpTableIndex:
     MCOp = lowerSymbolOperand(MO, AP.GetJTISymbol(MO.getIndex()), AP);
     break;
+  case MachineOperand::MO_MCSymbol:
+    MCOp = lowerSymbolOperand(MO, MO.getMCSymbol(), AP);
+    break;
   }
   return true;
 }
@@ -192,6 +195,10 @@ static bool lowerRISCVVMachineInstrToMCInst(const MachineInstr *MI,
     --NumOps;
   if (RISCVII::hasVLOp(TSFlags))
     --NumOps;
+#ifdef SIFIVE_CUSTOMIZATION
+  if (RISCVII::hasRoundModeOp(TSFlags))
+    --NumOps;
+#endif // SIFIVE_CUSTOMIZATION
   if (RISCVII::hasSEWOp(TSFlags))
     --NumOps;
 

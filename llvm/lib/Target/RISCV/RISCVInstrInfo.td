@@ -1317,10 +1317,14 @@ def : Pat<(seteq GPR:$rs1, 0), (SLTIU GPR:$rs1, 1)>;
 def : Pat<(seteq GPR:$rs1, GPR:$rs2), (SLTIU (XOR GPR:$rs1, GPR:$rs2), 1)>;
 def : Pat<(seteq GPR:$rs1, simm12_plus1:$imm12),
           (SLTIU (ADDI GPR:$rs1, (NegImm simm12_plus1:$imm12)), 1)>;
+def : Pat<(seteq GPR:$rs1, -2048),
+          (SLTIU (XORI GPR:$rs1, -2048), 1)>;
 def : Pat<(setne GPR:$rs1, 0), (SLTU X0, GPR:$rs1)>;
 def : Pat<(setne GPR:$rs1, GPR:$rs2), (SLTU X0, (XOR GPR:$rs1, GPR:$rs2))>;
 def : Pat<(setne GPR:$rs1, simm12_plus1:$imm12),
           (SLTU X0, (ADDI GPR:$rs1, (NegImm simm12_plus1:$imm12)))>;
+def : Pat<(setne GPR:$rs1, -2048),
+          (SLTU X0, (XORI GPR:$rs1, -2048))>;
 def : Pat<(setugt GPR:$rs1, GPR:$rs2), (SLTU GPR:$rs2, GPR:$rs1)>;
 def : Pat<(setuge GPR:$rs1, GPR:$rs2), (XORI (SLTU GPR:$rs1, GPR:$rs2), 1)>;
 def : Pat<(setule GPR:$rs1, GPR:$rs2), (XORI (SLTU GPR:$rs2, GPR:$rs1), 1)>;
@@ -1353,9 +1357,9 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                   IntCCtoRISCVCC>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-// U8 can only predicate c.mv so requires the C extension. This should always
-// expand to a branch+c.mv so the size is 6 or 4 if the branch is compressible.
-let Predicates = [HasCMOVBranchOpt, HasStdExtC],
+// This should always expand to a branch+c.mv so the size is 6 or 4 if the
+// branch is compressible.
+let Predicates = [HasCMOVBranchOpt, NoShortForwardBranchOpt],
     Constraints = "$dst = $falsev", isCommutable = 1, Size = 6 in {
 // This instruction moves $truev to $dst when the condition is true. It will
 // be expanded to control flow in RISCVExpandPseudoInsts.
@@ -1509,30 +1513,42 @@ def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-let usesCustomInserter = 1 in
-class SelectCC_rrirr<RegisterClass valty, RegisterClass cmpty>
-    : Pseudo<(outs valty:$dst),
-             (ins cmpty:$lhs, cmpty:$rhs, ixlenimm:$imm,
-              valty:$truev, valty:$falsev),
-             [(set valty:$dst,
-               (riscv_selectcc_frag:$imm cmpty:$lhs, cmpty:$rhs, cond,
-                                         valty:$truev, valty:$falsev))]>;
+multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
+  let usesCustomInserter = 1 in
+  def _Using_CC_GPR : Pseudo<(outs valty:$dst),
+                             (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                              valty:$truev, valty:$falsev),
+                             [(set valty:$dst,
+                               (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs, cond,
+                                                        valty:$truev, valty:$falsev))]>;
+  // Explicitly select 0 in the condition to X0. The register coalescer doesn't
+  // always do it.
+  def : Pat<(riscv_selectcc_frag:$cc GPR:$lhs, 0, cond, valty:$truev,
+                                     valty:$falsev),
+            (!cast<Instruction>(NAME#"_Using_CC_GPR") GPR:$lhs, X0,
+             (IntCCtoRISCVCC $cc), valty:$truev, valty:$falsev)>;
+}
 
-def Select_GPR_Using_CC_GPR : SelectCC_rrirr<GPR, GPR>;
+let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in // SIFIVE
+defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
 /// Branches and jumps
 
 // Match `riscv_brcc` and lower to the appropriate RISC-V branch instruction.
-class BccPat<CondCode Cond, RVInstB Inst>
-    : Pat<(riscv_brcc GPR:$rs1, GPR:$rs2, Cond, bb:$imm12),
-          (Inst GPR:$rs1, GPR:$rs2, simm13_lsb0:$imm12)>;
+multiclass BccPat<CondCode Cond, RVInstB Inst> {
+  def : Pat<(riscv_brcc GPR:$rs1, GPR:$rs2, Cond, bb:$imm12),
+            (Inst GPR:$rs1, GPR:$rs2, simm13_lsb0:$imm12)>;
+  // Explicitly select 0 to X0. The register coalescer doesn't always do it.
+  def : Pat<(riscv_brcc GPR:$rs1, 0, Cond, bb:$imm12),
+            (Inst GPR:$rs1, X0, simm13_lsb0:$imm12)>;
+}
 
-def : BccPat<SETEQ, BEQ>;
-def : BccPat<SETNE, BNE>;
-def : BccPat<SETLT, BLT>;
-def : BccPat<SETGE, BGE>;
-def : BccPat<SETULT, BLTU>;
-def : BccPat<SETUGE, BGEU>;
+defm : BccPat<SETEQ, BEQ>;
+defm : BccPat<SETNE, BNE>;
+defm : BccPat<SETLT, BLT>;
+defm : BccPat<SETGE, BGE>;
+defm : BccPat<SETULT, BLTU>;
+defm : BccPat<SETUGE, BGEU>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 class LongBccPseudo : Pseudo<(outs),
@@ -1797,11 +1813,13 @@ let hasSideEffects = true in {
 def ReadFFLAGS : ReadSysReg<SysRegFFLAGS, [FFLAGS]>;
 def WriteFFLAGS : WriteSysReg<SysRegFFLAGS, [FFLAGS]>;
 
-// SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
 def ReadVXRM : ReadSysReg<SysRegVXRM, [VXRM]>;
-def WriteVXRM: WriteSysReg<SysRegVXRM, [VXRM]>;
-def WriteVXRMImm: WriteSysRegImm<SysRegVXRM, [VXRM]>;
-// end SIFIVE
+def WriteVXRM : WriteSysReg<SysRegVXRM, [VXRM]>;
+def WriteVXRMImm : WriteSysRegImm<SysRegVXRM, [VXRM]>;
+def SwapVXRMImm : SwapSysRegImm<SysRegVXRM, [VXRM]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 }
 
 /// Other pseudo-instructions

@@ -50,19 +50,26 @@ let TargetPrefix = "riscv" in {
     def _i64 : MaskedAtomicRMWFiveArg<llvm_i64_ty>;
   }
 
-  // @llvm.riscv.masked.atomicrmw.*.{i32,i64}.<p>(...)
+  // These intrinsics are intended only for internal compiler use (i.e. as
+  // part of AtomicExpandpass via the emitMaskedAtomic*Intrinsic hooks). Their
+  // names and semantics could change in the future.
+
+  // @llvm.riscv.masked.atomicrmw.*.{i32,i64}.<p>(
+  //   ptr addr, ixlen oparg, ixlen mask, ixlenimm ordering)
   defm int_riscv_masked_atomicrmw_xchg : MaskedAtomicRMWFourArgIntrinsics;
   defm int_riscv_masked_atomicrmw_add : MaskedAtomicRMWFourArgIntrinsics;
   defm int_riscv_masked_atomicrmw_sub : MaskedAtomicRMWFourArgIntrinsics;
   defm int_riscv_masked_atomicrmw_nand : MaskedAtomicRMWFourArgIntrinsics;
-  // Signed min and max need an extra operand to do sign extension with.
-  defm int_riscv_masked_atomicrmw_max : MaskedAtomicRMWFiveArgIntrinsics;
-  defm int_riscv_masked_atomicrmw_min : MaskedAtomicRMWFiveArgIntrinsics;
-  // Unsigned min and max don't need the extra operand.
   defm int_riscv_masked_atomicrmw_umax : MaskedAtomicRMWFourArgIntrinsics;
   defm int_riscv_masked_atomicrmw_umin : MaskedAtomicRMWFourArgIntrinsics;
+  // Signed min and max need an extra operand to do sign extension with.
+  // @llvm.riscv.masked.atomicrmw.{max,min}.{i32,i64}.<p>(
+  //   ptr addr, ixlen oparg, ixlen mask, ixlen shamt, ixlenimm ordering)
+  defm int_riscv_masked_atomicrmw_max : MaskedAtomicRMWFiveArgIntrinsics;
+  defm int_riscv_masked_atomicrmw_min : MaskedAtomicRMWFiveArgIntrinsics;
 
-  // @llvm.riscv.masked.cmpxchg.{i32,i64}.<p>(...)
+  // @llvm.riscv.masked.cmpxchg.{i32,i64}.<p>(
+  //   ptr addr, ixlen cmpval, ixlen newval, ixlen mask, ixlenimm ordering)
   defm int_riscv_masked_cmpxchg : MaskedAtomicRMWFiveArgIntrinsics;
 
 } // TargetPrefix = "riscv"
@@ -731,6 +738,19 @@ let TargetPrefix = "riscv" in {
     let ScalarOperand = 2;
     let VLOperand = 3;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  // For Saturating binary operations with rounding-mode operand
+  // The destination vector type is the same as first source vector.
+  // Input: (passthru, vector_in, vector_in/scalar_in, vl, vxrm)
+  class RISCVSaturatingBinaryRMAAXUnMasked
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
+                     llvm_anyint_ty, LLVMMatchType<2>],
+                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+    let ScalarOperand = 2;
+    let VLOperand = 3;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // For Saturating binary operations with mask.
   // The destination vector type is the same as first source vector.
   // Input: (maskedoff, vector_in, vector_in/scalar_in, mask, vl, policy)
@@ -743,6 +763,20 @@ let TargetPrefix = "riscv" in {
     let ScalarOperand = 2;
     let VLOperand = 4;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  // For Saturating binary operations with mask and rounding-mode operand
+  // The destination vector type is the same as first source vector.
+  // Input: (maskedoff, vector_in, vector_in/scalar_in, mask, vl, policy, vxrm)
+  class RISCVSaturatingBinaryRMAAXMasked
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
+                     LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>, llvm_anyint_ty,
+                     LLVMMatchType<2>, LLVMMatchType<2>],
+                    [ImmArg<ArgIndex<5>>, ImmArg<ArgIndex<6>>, IntrNoMem]>, RISCVVIntrinsic {
+    let ScalarOperand = 2;
+    let VLOperand = 4;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // For Saturating binary operations.
   // The destination vector type is the same as first source vector.
   // The second source operand matches the destination type or is an XLen scalar.
@@ -1219,6 +1253,12 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RISCVSaturatingBinaryAAXUnMasked;
     def "int_riscv_" # NAME # "_mask" : RISCVSaturatingBinaryAAXMasked;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  multiclass RISCVSaturatingBinaryRMAAX {
+    def "int_riscv_" # NAME : RISCVSaturatingBinaryRMAAXUnMasked;
+    def "int_riscv_" # NAME # "_mask" : RISCVSaturatingBinaryRMAAXMasked;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   multiclass RISCVSaturatingBinaryAAShift {
     def "int_riscv_" # NAME : RISCVSaturatingBinaryAAShiftUnMasked;
     def "int_riscv_" # NAME # "_mask" : RISCVSaturatingBinaryAAShiftMasked;
@@ -1498,6 +1538,9 @@ let TargetPrefix = "riscv" in {
 
   defm vaaddu : RISCVSaturatingBinaryAAX;
   defm vaadd : RISCVSaturatingBinaryAAX;
+#ifdef SIFIVE_CUSTOMIZATION
+  defm vaadd_rm : RISCVSaturatingBinaryRMAAX;
+#endif // SIFIVE_CUSTOMIZATION
   defm vasubu : RISCVSaturatingBinaryAAX;
   defm vasub : RISCVSaturatingBinaryAAX;
 

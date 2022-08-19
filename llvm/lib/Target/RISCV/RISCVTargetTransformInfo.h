@@ -203,6 +203,11 @@ public:
                                              Optional<FastMathFlags> FMF,
                                              TTI::TargetCostKind CostKind);
 
+  InstructionCost getExtendedReductionCost(unsigned Opcode, bool IsUnsigned,
+                                           Type *ResTy, VectorType *ValTy,
+                                           Optional<FastMathFlags> FMF,
+                                           TTI::TargetCostKind CostKind);
+
   bool isElementTypeLegalForScalableVector(Type *Ty) const {
     return TLI->isLegalElementTypeForRVV(Ty);
   }
@@ -366,6 +371,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
 
+  using BaseT::getVectorInstrCost;
   InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
                                      unsigned Index);
 

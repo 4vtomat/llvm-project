@@ -242,19 +242,60 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
   const auto *DeadII = dyn_cast<IntrinsicInst>(DeadI);
   if (KillingII == nullptr || DeadII == nullptr)
     return OW_Unknown;
-  if (KillingII->getIntrinsicID() != Intrinsic::masked_store ||
-      DeadII->getIntrinsicID() != Intrinsic::masked_store)
+#if SIFIVE_CUSTOMIZATION
+  // Only like type intrinsics...
+  if (KillingII->getIntrinsicID() != DeadII->getIntrinsicID())
     return OW_Unknown;
-  // Pointers.
-  Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
-  Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
-  if (KillingPtr != DeadPtr && !AA.isMustAlias(KillingPtr, DeadPtr))
-    return OW_Unknown;
-  // Masks.
-  // TODO: check that KillingII's mask is a superset of the DeadII's mask.
-  if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
-    return OW_Unknown;
-  return OW_Complete;
+  if (KillingII->getIntrinsicID() == Intrinsic::masked_store) {
+    // Types.
+    if (KillingII->getArgOperand(0)->getType() !=
+        DeadII->getArgOperand(0)->getType())
+      return OW_Unknown;
+    // Pointers.
+    Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
+    Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
+    if (KillingPtr != DeadPtr && !AA.isMustAlias(KillingPtr, DeadPtr))
+      return OW_Unknown;
+    // Masks.
+    // TODO: check that KillingII's mask is a superset of the DeadII's mask.
+    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
+      return OW_Unknown;
+    return OW_Complete;
+  } else if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
+    // Operands {0        , 1     , 2   , 3 }
+    //          {StoredVal, VecPtr, Mask, VL}
+    // Types.
+    if (KillingII->getArgOperand(0)->getType() !=
+        DeadII->getArgOperand(0)->getType())
+      return OW_Unknown;
+    // Pointers.
+    Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
+    Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
+    if (KillingPtr != DeadPtr && !AA.isMustAlias(KillingPtr, DeadPtr))
+      return OW_Unknown;
+    // Masks.
+    // TODO: check that KillingII's mask is a superset of the DeadII's mask.
+    if (KillingII->getArgOperand(2) != DeadII->getArgOperand(2))
+      return OW_Unknown;
+    // Lengths.
+    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
+      return OW_Unknown;
+    // There must be scoped noalias metadata on both stores.
+    if (!KillingI->getMetadata(LLVMContext::MD_alias_scope) ||
+        !DeadI->getMetadata(LLVMContext::MD_alias_scope) ||
+        !KillingI->getMetadata(LLVMContext::MD_noalias) ||
+        !DeadI->getMetadata(LLVMContext::MD_noalias))
+      return OW_Unknown;
+    // These must be the same for both stores as well
+    if ((KillingI->getMetadata(LLVMContext::MD_alias_scope) !=
+         DeadI->getMetadata(LLVMContext::MD_alias_scope)) ||
+        (KillingI->getMetadata(LLVMContext::MD_noalias) !=
+         DeadI->getMetadata(LLVMContext::MD_noalias)))
+      return OW_Unknown;
+    return OW_Complete;
+  }
+#endif
+  return OW_Unknown;
 }
 
 /// Return 'OW_Complete' if a store to the 'KillingLoc' location completely

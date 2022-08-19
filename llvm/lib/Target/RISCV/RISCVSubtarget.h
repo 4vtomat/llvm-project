@@ -233,7 +233,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool hasCMOVBranchOpt() const {
-    return HasCMOVBranchOpt && !HasShortForwardBranchOpt;
+    // U8 can only predicate c.mv so requires the C extension.
+    return HasCMOVBranchOpt && hasStdExtC();
   }
   bool setJumpIsCheap() const { return SetJumpIsCheap; }
   bool hasFuseLUILoad() const { return HasFuseLUILoad; }
