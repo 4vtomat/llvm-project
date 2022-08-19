@@ -77,9 +77,22 @@ raw_ostream &llvm::operator<<(raw_ostream &OS, const StrideAccessInfo &SAI) {
 #endif
 
 Value *VPLane::getAsRuntimeExpr(IRBuilderBase &Builder,
+#if SIFIVE_CUSTOMIZATION
+                                const ElementCount &VF, Value *EVL) const {
+#else
                                 const ElementCount &VF) const {
+#endif // SIFIVE_CUSTOMIZATION
   switch (LaneKind) {
   case VPLane::Kind::ScalableLast:
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: The extract should be a part of the VPlan, rather than implicit
+    // thing, otherwise code in that function is a ticking bomb and will produce
+    // incorrect result if upstream adds another kind to `VPLane`
+    if (EVL) {
+      // Generate EVL - 1
+      return Builder.CreateSub(EVL, Builder.getInt32(1));
+    }
+#endif // SIFIVE_CUSTOMIZATION
     // Lane = RuntimeVF - VF.getKnownMinValue() + Lane
     return Builder.CreateSub(getRuntimeVF(Builder, Builder.getInt32Ty(), VF),
                              Builder.getInt32(VF.getKnownMinValue() - Lane));
@@ -234,7 +247,16 @@ Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
     return VecPart;
   }
   // TODO: Cache created scalar values.
+#if SIFIVE_CUSTOMIZATION
+  // EVL indicates that we have RVV VLA vectorization. When the first lane
+  // (0-based) needs to be extracted, there's nothing special needed for RVV
+  // VLA, however when the last lane needs to be extracted, we need to use
+  // RuntimeVL (EVL) to extract that element
+  Value *Lane = Instance.Lane.getAsRuntimeExpr(
+      Builder, VF, Plan->getEVL() ? get(Plan->getEVL(), 0) : nullptr);
+#else
   Value *Lane = Instance.Lane.getAsRuntimeExpr(Builder, VF);
+#endif // SIFIVE_CUSTOMIZATION
   auto *Extract = Builder.CreateExtractElement(VecPart, Lane);
   // set(Def, Extract, Instance);
   return Extract;
