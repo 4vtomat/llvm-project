@@ -4409,7 +4409,13 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
   if (FlagsHi == RISCVII::MO_TLS_GD_GPREL_HI)
     return MNAddLo;
 
-  return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MachinePointerInfo());
+  MachineFunction &MF = DAG.getMachineFunction();
+  MachineMemOperand *MemOp = MF.getMachineMemOperand(
+      MachinePointerInfo::getGOT(MF),
+      MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+          MachineMemOperand::MOInvariant,
+      LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+  return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MemOp);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
