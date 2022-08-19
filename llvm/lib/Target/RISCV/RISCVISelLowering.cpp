@@ -4378,7 +4378,6 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
   EVT Ty = getPointerTy(DAG.getDataLayout());
   unsigned FlagsAdd;
   unsigned FlagsLo;
-  unsigned Opcode;
 
   switch (FlagsHi) {
   default:
@@ -4386,29 +4385,31 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
   case RISCVII::MO_GOT_GPREL_HI:
     FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
     FlagsLo = RISCVII::MO_GOT_GPREL_LO;
-    Opcode = RISCV::LD;
     break;
   case RISCVII::MO_TLS_GOT_GPREL_HI:
     FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
     FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
-    Opcode = RISCV::LD;
     break;
   case RISCVII::MO_TLS_GD_GPREL_HI:
     FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
     FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
-    Opcode = RISCV::ADDI;
     break;
   }
 
   SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, FlagsHi);
+  SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
   SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, FlagsLo);
   SDValue GPReg = getGlobalBaseReg(DAG, Subtarget);
 
-  SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
-  SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
-  SDValue MNAdd = SDValue(DAG.getMachineNode(RISCV::PseudoAddRegRel,
-                                             DL, Ty, MNHi, GPReg, AddrAdd), 0);
-  return SDValue(DAG.getMachineNode(Opcode, DL, Ty, MNAdd, AddrLo), 0);
+  SDValue MNHi = DAG.getNode(RISCVISD::HI, DL, Ty, AddrHi);
+  SDValue MNAdd = DAG.getNode(RISCVISD::ADD_REGREL, DL, Ty, MNHi, GPReg,
+                              AddrAdd);
+  SDValue MNAddLo = DAG.getNode(RISCVISD::ADD_LO, DL, Ty, MNAdd, AddrLo);
+
+  if (FlagsHi == RISCVII::MO_TLS_GD_GPREL_HI)
+    return MNAddLo;
+
+  return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MachinePointerInfo());
 }
 #endif // SIFIVE_CUSTOMIZATION
 

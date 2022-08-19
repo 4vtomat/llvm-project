@@ -1304,6 +1304,22 @@ def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tglobaltlsaddr:$src),
 def : Pat<(riscv_add_lo GPR:$src, tglobaltlsaddr:$lo),
           (ADDI GPR:$src, tglobaltlsaddr:$lo)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+/// Compact code model
+def : Pat<(riscv_hi texternalsym:$in), (LUI texternalsym:$in)>;
+
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tglobaladdr:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tglobaladdr:$src)>;
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tblockaddress:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tblockaddress:$src)>;
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tjumptable:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tjumptable:$src)>;
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, tconstpool:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, tconstpool:$src)>;
+def : Pat<(riscv_add_regrel GPR:$rs1, GPR:$rs2, texternalsym:$src),
+          (PseudoAddRegRel GPR:$rs1, GPR:$rs2, texternalsym:$src)>;
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Setcc
 
 def : PatGprGpr<setlt, SLT>;
