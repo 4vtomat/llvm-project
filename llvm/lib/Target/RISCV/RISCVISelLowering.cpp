@@ -5871,9 +5871,11 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     EVT VT = Op.getValueType();
     SDValue TrueVal = DAG.getConstantFP(
         APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
-    SDValue FalseVal = DAG.getNode(
-        IntNo == Intrinsic::aarch64_neon_fmax ? ISD::FMAXNUM : ISD::FMINNUM, DL,
-        VT, Op0, Op1);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG,
+                                         IntNo == Intrinsic::aarch64_neon_fmax
+                                             ? RISCVISD::FMAXNUM_VL
+                                             : RISCVISD::FMINNUM_VL,
+                                         true);
     SDValue IsNaN = DAG.getSetCC(
         DL, getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT), Op0,
         Op1, ISD::SETUO);
