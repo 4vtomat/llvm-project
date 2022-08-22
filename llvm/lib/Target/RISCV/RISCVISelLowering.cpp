@@ -7093,7 +7093,13 @@ SDValue RISCVTargetLowering::lowerToScalableOp(SDValue Op, SelectionDAG &DAG,
 
   // Create list of operands by converting existing ones to scalable types.
   SmallVector<SDValue, 6> Ops;
-  for (const SDValue &V : Op->op_values()) {
+#if SIFIVE_CUSTOMIZATION
+  iterator_range<SDNode::value_op_iterator> op_values = make_range(
+      SDNode::value_op_iterator(
+          Op->op_begin() + (Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ? 1 : 0)),
+      SDNode::value_op_iterator(Op->op_end()));
+  for (const SDValue &V : op_values) {
+#endif
     assert(!isa<VTSDNode>(V) && "Unexpected VTSDNode node!");
 
     // Pass through non-vector operands.
