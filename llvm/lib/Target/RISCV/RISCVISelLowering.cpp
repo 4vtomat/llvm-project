@@ -5855,6 +5855,19 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VSELECT_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, VL);
   }
+#ifdef SIFIVE_CUSTOMIZATION
+#define CASE_RVV(Intrin, Opcode)                                               \
+  case Intrinsic::riscv_##Intrin:                                              \
+    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ false);           \
+  case Intrinsic::riscv_##Intrin##_mask:                                       \
+    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ true);
+
+    CASE_RVV(vaadd_rm, RISCVISD::VAADD_VL)
+    CASE_RVV(vaaddu_rm, RISCVISD::VAADDU_VL)
+    CASE_RVV(vasub_rm, RISCVISD::VASUB_VL)
+    CASE_RVV(vasubu_rm, RISCVISD::VASUBU_VL)
+#undef CASE_RVV
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
@@ -7059,6 +7072,66 @@ SDValue RISCVTargetLowering::lowerFixedLengthVectorSelectToRVV(
 
   return convertFromScalableVector(VT, Select, DAG, Subtarget);
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue RISCVTargetLowering::lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG,
+                                                  unsigned Opc,
+                                                  bool HasMask) const {
+  SDLoc DL(Op);
+  MVT XLenVT = Subtarget.getXLenVT();
+  MVT VT = Op.getSimpleValueType();
+  SmallVector<SDValue, 7> Ops;
+  unsigned NumOperands = Op.getNumOperands();
+  SDValue MergeOp = Op.getOperand(1);
+  if (HasMask) {
+    // masked rvv intrinsic (merge, rs1, rs2, mask, roundmode, vl, policy)
+    // VL SDNode (rs1, rs2, merge, mask, roundmode, vl, policy)
+    SDValue VL = Op.getOperand(NumOperands - 2);
+    for (size_t i = 2; i < NumOperands - 4; i++) {
+      SDValue V = Op.getOperand(i);
+      MVT OpVT = V.getSimpleValueType();
+      if (!OpVT.isScalarInteger()) {
+        Ops.push_back(V);
+        continue;
+      }
+      V = lowerScalarSplat(SDValue(), V, VL, VT, DL, DAG, Subtarget);
+      Ops.push_back(V);
+    }
+    Ops.push_back(MergeOp);
+    for (size_t i = NumOperands - 4; i < NumOperands; i++)
+      Ops.push_back(Op.getOperand(i));
+  } else {
+    // unmasked rvv intrinsic (merge, rs1, rs2, roundmode, vl)
+    // VL SDNode (rs1, rs2, merge, mask, roundmode, vl, policy)
+    SDValue VL = Op.getOperand(NumOperands - 1);
+
+    for (size_t i = 2; i < NumOperands - 2; i++) {
+      SDValue V = Op.getOperand(i);
+      MVT OpVT = V.getSimpleValueType();
+      if (!OpVT.isScalarInteger()) {
+        Ops.push_back(V);
+        continue;
+      }
+      V = lowerScalarSplat(SDValue(), V, VL, VT, DL, DAG, Subtarget);
+      Ops.push_back(V);
+    }
+
+    Ops.push_back(MergeOp);
+
+    SDValue TrueMask = getAllOnesMask(VT, VL, DL, DAG);
+    Ops.push_back(TrueMask);
+
+    for (size_t i = NumOperands - 2; i < NumOperands; i++)
+      Ops.push_back(Op.getOperand(i));
+
+    unsigned Policy = 0;
+    if (MergeOp.isUndef())
+      Policy = RISCVII::TAIL_AGNOSTIC;
+    Ops.push_back(DAG.getTargetConstant(Policy, DL, XLenVT));
+  }
+  return DAG.getNode(Opc, DL, VT, Ops);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue RISCVTargetLowering::lowerToScalableOp(SDValue Op, SelectionDAG &DAG,
                                                unsigned NewOpc, bool HasMergeOp,
@@ -13914,6 +13987,10 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(UADDSAT_VL)
   NODE_NAME_CASE(SSUBSAT_VL)
   NODE_NAME_CASE(USUBSAT_VL)
+  NODE_NAME_CASE(VAADD_VL)   // SIFIVE
+  NODE_NAME_CASE(VAADDU_VL)  // SIFIVE
+  NODE_NAME_CASE(VASUB_VL)   // SIFIVE
+  NODE_NAME_CASE(VASUBU_VL)  // SIFIVE
   NODE_NAME_CASE(FADD_VL)
   NODE_NAME_CASE(FSUB_VL)
   NODE_NAME_CASE(FMUL_VL)
