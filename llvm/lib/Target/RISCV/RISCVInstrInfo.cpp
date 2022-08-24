@@ -1548,6 +1548,9 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
   MachineBasicBlock *MBB = MI.getParent();
   const TargetRegisterInfo *TRI =
       MBB->getParent()->getSubtarget().getRegisterInfo();
+#if SIFIVE_CUSTOMIZATION
+  const auto &F = MI.getMF()->getFunction();
+#endif // SIFIVE_CUSTOMIZATION
 
   // Positions generally can't safely be outlined.
   if (MI.isPosition()) {
@@ -1556,9 +1559,10 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
       // If current function has exception handling code, we can't outline &
       // strip these CFI instructions since it may break .eh_frame section
       // needed in unwinding.
-      return MI.getMF()->getFunction().needsUnwindTableEntry()
-                 ? outliner::InstrType::Illegal
-                 : outliner::InstrType::Invisible;
+#if SIFIVE_CUSTOMIZATION
+      return F.needsUnwindTableEntry() ? outliner::InstrType::Illegal
+                                       : outliner::InstrType::Invisible;
+#endif // SIFIVE_CUSTOMIZATION
 
     return outliner::InstrType::Illegal;
   }
@@ -1582,10 +1586,21 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
       MI.getDesc().hasImplicitDefOfPhysReg(RISCV::X5))
     return outliner::InstrType::Illegal;
 
+#if SIFIVE_CUSTOMIZATION
+  const auto &TM =
+      static_cast<const RISCVTargetMachine &>(MI.getMF()->getTarget());
   // Make sure the operands don't reference something unsafe.
-  for (const auto &MO : MI.operands())
+  for (const auto &MO : MI.operands()) {
     if (MO.isMBB() || MO.isBlockAddress() || MO.isCPI() || MO.isJTI())
       return outliner::InstrType::Illegal;
+
+    // pcrel-hi and pcrel-lo can't put in separate sections, filter that out
+    // if any possible.
+    if (MO.getTargetFlags() == RISCVII::MO_PCREL_LO &&
+        (TM.getFunctionSections() || F.hasComdat() || F.hasSection()))
+      return outliner::InstrType::Illegal;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Don't allow instructions which won't be materialized to impact outlining
   // analysis.
