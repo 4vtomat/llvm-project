@@ -64,6 +64,11 @@ static cl::opt<unsigned> RISCVMaxBuildIntsCost(
     cl::desc("The maximum cost used for building integers."), cl::init(0),
     cl::Hidden);
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> UseAA("riscv-use-aa", cl::init(false),
+                           cl::desc("Enable the use of AA during codegen."));
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVSubtarget::anchor() {}
 
 RISCVSubtarget &
@@ -676,4 +681,6 @@ void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
   if (getProcFamily() == RISCVSubtarget::SiFive7)
     Policy.OnlyBottomUp = false;
 }
+
+bool RISCVSubtarget::useAA() const { return UseAA; }
 #endif // SIFIVE_CUSTOMIZATION
