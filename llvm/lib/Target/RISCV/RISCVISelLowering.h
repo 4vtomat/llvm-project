@@ -438,6 +438,18 @@ public:
   // This method returns the name of a target specific DAG node.
   const char *getTargetNodeName(unsigned Opcode) const override;
 
+#if SIFIVE_CUSTOMIZATION
+  MachineMemOperand::Flags
+  getTargetMMOFlags(const Instruction &I) const override;
+
+  MachineMemOperand::Flags
+  getTargetMMOFlags(const MemSDNode &Node) const override;
+
+  bool
+  areTwoSDNodeTargetMMOFlagsMergeable(const MemSDNode &NodeX,
+                                      const MemSDNode &NodeY) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
   ConstraintType getConstraintType(StringRef Constraint) const override;
 
   unsigned getInlineAsmMemConstraint(StringRef ConstraintCode) const override;

@@ -2625,4 +2625,13 @@ bool RISCVInstrInfo::shouldClusterMemOps(
   // so checking if they are within 4 bytes.
   return (LowOffset <= HighOffset) && (HighOffset <= LowOffset + 4);
 }
+
+ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
+RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
+  static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
+      {{MONontemporalBit0, "riscv-non-temporal-domain-bit-0"},
+       {MONontemporalBit1, "riscv-non-temporal-domain-bit-1"}};
+  return makeArrayRef(TargetFlags);
+}
+
 #endif // SIFIVE_CUSTOMIZATION

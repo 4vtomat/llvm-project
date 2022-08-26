@@ -25,6 +25,13 @@ namespace llvm {
 
 class RISCVSubtarget;
 
+#if SIFIVE_CUSTOMIZATION
+static const MachineMemOperand::Flags MONontemporalBit0 =
+    MachineMemOperand::MOTargetFlag1;
+static const MachineMemOperand::Flags MONontemporalBit1 =
+    MachineMemOperand::MOTargetFlag2;
+#endif // SIFIVE_CUSTOMIZATION
+
 namespace RISCVCC {
 
 enum CondCode {
@@ -221,6 +228,9 @@ public:
   bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
                            ArrayRef<const MachineOperand *> BaseOps2,
                            unsigned NumLoads, unsigned NumBytes) const override;
+  ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
+  getSerializableMachineMemOperandTargetFlags() const override;
+
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:
