@@ -105,8 +105,8 @@ def riscv_fabs_vl  : SDNode<"RISCVISD::FABS_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fsqrt_vl : SDNode<"RISCVISD::FSQRT_VL", SDT_RISCVFPUnOp_VL>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_frsqrt7_vl : SDNode<"RISCVISD::FRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
-def riscv_frec7_vl   : SDNode<"RISCVISD::FREC7_VL",   SDT_RISCVFPUnOp_VL>;
+def riscv_vfrsqrt7_vl : SDNode<"RISCVISD::VFRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
+def riscv_vfrec7_vl   : SDNode<"RISCVISD::VFREC7_VL",   SDT_RISCVFPUnOp_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL", SDT_RISCVCopySign_VL>;
@@ -114,13 +114,13 @@ def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL, [S
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_fclass_vl : SDNode<"RISCVISD::FCLASS_VL",
-                             SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
-                                                  SDTCisFP<1>, SDTCisVec<1>,
-                                                  SDTCisSameSizeAs<0, 1>,
-                                                  SDTCVecEltisVT<2, i1>,
-                                                  SDTCisSameNumEltsAs<0, 2>,
-                                                  SDTCisVT<3, XLenVT>]>>;
+def riscv_vfclass_vl : SDNode<"RISCVISD::VFCLASS_VL",
+                              SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
+                                                   SDTCisFP<1>, SDTCisVec<1>,
+                                                   SDTCisSameSizeAs<0, 1>,
+                                                   SDTCVecEltisVT<2, i1>,
+                                                   SDTCisSameNumEltsAs<0, 2>,
+                                                   SDTCisVT<3, XLenVT>]>>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVVecFMA_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
@@ -136,7 +136,7 @@ def riscv_vfmsub_vl : SDNode<"RISCVISD::VFMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCom
 def riscv_vfnmsub_vl : SDNode<"RISCVISD::VFNMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_fnmsac_vl : SDNode<"RISCVISD::FNMSAC_VL", SDT_RISCVVecFMA_VL>;
+def riscv_vfnmsac_vl : SDNode<"RISCVISD::VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVFPRoundOp_VL  : SDTypeProfile<1, 3, [
@@ -1424,9 +1424,9 @@ defm : VPatFPMulAddVL_VV_VF<riscv_vfnmsub_vl, "PseudoVFNMSUB">;
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllFloatVectors in {
   defvar suffix = vti.LMul.MX;
-  def : Pat<(vti.Vector (riscv_fnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
-                                         vti.RegClass:$rs2, (vti.Mask V0),
-                                         VLOpFrag)),
+  def : Pat<(vti.Vector (riscv_vfnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
+                                          vti.RegClass:$rs2, (vti.Mask V0),
+                                          VLOpFrag)),
             (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
                  (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_UNDISTURBED_MASK_UNDISTURBED)>;
@@ -1465,13 +1465,13 @@ foreach vti = AllFloatVectors in {
 
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
-  def : Pat<(riscv_frsqrt7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                               VLOpFrag),
+  def : Pat<(riscv_vfrsqrt7_vl (vti.Vector vti.RegClass:$rs2),
+                               (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
   // 14.10. Vector Floating-Point Reciprocal Estimate Instruction
-  def : Pat<(riscv_frec7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                             VLOpFrag),
+  def : Pat<(riscv_vfrec7_vl (vti.Vector vti.RegClass:$rs2),
+                             (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
@@ -1521,8 +1521,8 @@ foreach vti = AllFloatVectors in {
 
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.14. Vector Floating-Point Classify Instruction
-  def : Pat<(riscv_fclass_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                             VLOpFrag),
+  def : Pat<(riscv_vfclass_vl (vti.Vector vti.RegClass:$rs2),
+                              (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFCLASS_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION

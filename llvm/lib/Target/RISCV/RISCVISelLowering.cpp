@@ -3674,7 +3674,7 @@ SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SelectionDAG &DAG,
   if (Enabled != ReciprocalEstimate::Enabled)
     return SDValue();
 
-  return getEstimate(Subtarget, RISCVISD::FRSQRT7_VL, Operand, DAG, Steps,
+  return getEstimate(Subtarget, RISCVISD::VFRSQRT7_VL, Operand, DAG, Steps,
                      Reciprocal);
 }
 
@@ -3684,7 +3684,7 @@ SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
   if (Enabled != ReciprocalEstimate::Enabled)
     return SDValue();
 
-  return getEstimate(Subtarget, RISCVISD::FREC7_VL, Operand, DAG, Steps,
+  return getEstimate(Subtarget, RISCVISD::VFREC7_VL, Operand, DAG, Steps,
                      /*Reciprocal*/ true);
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -13921,14 +13921,14 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(FNEG_VL)
   NODE_NAME_CASE(FABS_VL)
   NODE_NAME_CASE(FSQRT_VL)
-  NODE_NAME_CASE(FRSQRT7_VL) // SIFIVE
-  NODE_NAME_CASE(FREC7_VL) // SIFIVE
-  NODE_NAME_CASE(FCLASS_VL) // SIFIVE
+  NODE_NAME_CASE(VFRSQRT7_VL) // SIFIVE
+  NODE_NAME_CASE(VFREC7_VL) // SIFIVE
+  NODE_NAME_CASE(VFCLASS_VL) // SIFIVE
   NODE_NAME_CASE(VFMADD_VL)
   NODE_NAME_CASE(VFNMADD_VL)
   NODE_NAME_CASE(VFMSUB_VL)
   NODE_NAME_CASE(VFNMSUB_VL)
-  NODE_NAME_CASE(FNMSAC_VL) // SIFIVE
+  NODE_NAME_CASE(VFNMSAC_VL) // SIFIVE
   NODE_NAME_CASE(FCOPYSIGN_VL)
   NODE_NAME_CASE(SMIN_VL)
   NODE_NAME_CASE(SMAX_VL)

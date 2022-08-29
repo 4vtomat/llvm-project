@@ -255,10 +255,10 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
-  FRSQRT7_VL, // SIFIVE
-  FREC7_VL,   // SIFIVE
-  FCLASS_VL,  // SIFIVE
-  FNMSAC_VL, // SIFIVE
+  VFRSQRT7_VL,  // SIFIVE
+  VFREC7_VL,    // SIFIVE
+  VFCLASS_VL,   // SIFIVE
+  VFNMSAC_VL,   // SIFIVE
   FCOPYSIGN_VL, // Has a merge operand
   FP_TO_SINT_VL,
   FP_TO_UINT_VL,
