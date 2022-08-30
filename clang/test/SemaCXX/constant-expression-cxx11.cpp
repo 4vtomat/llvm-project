@@ -2482,20 +2482,6 @@ void A::f(SortOrder order) {
   if (order == SortOrder(-1)) // ok, not a constant expression context
     return;
 }
-
-enum SortOrder {
-  AscendingOrder,
-  DescendingOrder
-};
-
-class A {
-  static void f(SortOrder order);
-};
-
-void A::f(SortOrder order) {
-  if (order == SortOrder(-1)) // ok, not a constant expression context
-    return;
-}
 }
 
 GH50055::E2 GlobalInitNotCE1 = (GH50055::E2)-1; // ok, not a constant expression context
