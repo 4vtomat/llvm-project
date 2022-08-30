@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zfh -verify-machineinstrs \
 ; RUN:   -target-abi ilp32f < %s | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zfh -verify-machineinstrs \
-; RUN:   -target-abi lp64f < %s | FileCheck %s
+; RUN:   -target-abi lp64f < %s | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
 
 define half @select_fcmp_false(half %a, half %b) nounwind {
 ; CHECK-LABEL: select_fcmp_false:
@@ -255,11 +255,11 @@ define i32 @select_fcmp_oeq_1_2(half %a, half %b) {
 }
 
 define signext i32 @select_fcmp_uge_negone_zero(half %a, half %b) nounwind {
-; CHECK-LABEL: select_fcmp_uge_negone_zero:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fle.h a0, fa0, fa1
-; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    ret
+; CHECK-RV64-LABEL: select_fcmp_uge_negone_zero:
+; CHECK-RV64:       # %bb.0:
+; CHECK-RV64-NEXT:    fle.h a0, fa0, fa1
+; CHECK-RV64-NEXT:    addiw a0, a0, -1
+; CHECK-RV64-NEXT:    ret
   %1 = fcmp ugt half %a, %b
   %2 = select i1 %1, i32 -1, i32 0
   ret i32 %2

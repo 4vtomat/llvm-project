@@ -244,7 +244,7 @@ define signext i32 @select_eq_zero_negone(i32 signext %a, i32 signext %b) nounwi
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    xor a0, a0, a1
 ; RV64-NEXT:    snez a0, a0
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp eq i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0
@@ -263,7 +263,7 @@ define signext i32 @select_ne_zero_negone(i32 signext %a, i32 signext %b) nounwi
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    xor a0, a0, a1
 ; RV64-NEXT:    seqz a0, a0
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp ne i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0
@@ -314,7 +314,7 @@ define signext i32 @select_sge_zero_negone(i32 signext %a, i32 signext %b) nounw
 ; RV64-LABEL: select_sge_zero_negone:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    slt a0, a0, a1
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp sge i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0
@@ -331,7 +331,7 @@ define signext i32 @select_sle_zero_negone(i32 signext %a, i32 signext %b) nounw
 ; RV64-LABEL: select_sle_zero_negone:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    slt a0, a1, a0
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp sle i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0
@@ -382,7 +382,7 @@ define signext i32 @select_uge_zero_negone(i32 signext %a, i32 signext %b) nounw
 ; RV64-LABEL: select_uge_zero_negone:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    sltu a0, a0, a1
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp uge i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0
@@ -399,7 +399,7 @@ define signext i32 @select_ule_zero_negone(i32 signext %a, i32 signext %b) nounw
 ; RV64-LABEL: select_ule_zero_negone:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    sltu a0, a1, a0
-; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    addiw a0, a0, -1
 ; RV64-NEXT:    ret
   %1 = icmp ule i32 %a, %b
   %2 = select i1 %1, i32 -1, i32 0

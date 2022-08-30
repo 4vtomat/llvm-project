@@ -426,8 +426,8 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64-NEXT:    addi a2, s3, -1
 ; RV64-NEXT:    seqz a2, a2
 ; RV64-NEXT:    neg a0, a0
-; RV64-NEXT:    addi a2, a2, -1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    slli a3, a1, 29
 ; RV64-NEXT:    srli a3, a3, 61
 ; RV64-NEXT:    sb a3, 12(s0)
@@ -579,8 +579,8 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64M-NEXT:    srli a3, a3, 1
 ; RV64M-NEXT:    or a3, a3, a4
 ; RV64M-NEXT:    sltu a3, a5, a3
-; RV64M-NEXT:    addi a2, a2, -1
-; RV64M-NEXT:    addi a1, a1, -1
+; RV64M-NEXT:    addiw a2, a2, -1
+; RV64M-NEXT:    addiw a1, a1, -1
 ; RV64M-NEXT:    neg a3, a3
 ; RV64M-NEXT:    slli a4, a1, 29
 ; RV64M-NEXT:    srli a4, a4, 61

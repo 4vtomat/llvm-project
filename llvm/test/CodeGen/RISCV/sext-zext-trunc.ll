@@ -484,7 +484,7 @@ define i32 @sext_of_not_cmp_i32(i32 %x) {
 ; RV64I-NEXT:    sext.w a0, a0
 ; RV64I-NEXT:    addi a0, a0, -7
 ; RV64I-NEXT:    seqz a0, a0
-; RV64I-NEXT:    addi a0, a0, -1
+; RV64I-NEXT:    addiw a0, a0, -1
 ; RV64I-NEXT:    ret
   %cmp = icmp eq i32 %x, 7
   %xor = xor i1 %cmp, 1
@@ -506,7 +506,7 @@ define i64 @sext_of_not_cmp_i64(i64 %x) {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    addi a0, a0, -7
 ; RV64I-NEXT:    seqz a0, a0
-; RV64I-NEXT:    addi a0, a0, -1
+; RV64I-NEXT:    addiw a0, a0, -1
 ; RV64I-NEXT:    ret
   %cmp = icmp eq i64 %x, 7
   %xor = xor i1 %cmp, 1
