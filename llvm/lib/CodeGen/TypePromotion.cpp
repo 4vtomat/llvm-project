@@ -956,6 +956,13 @@ bool TypePromotion::runOnFunction(Function &F) {
       return 0;
 
     EVT PromotedVT = TLI->getTypeToTransformTo(*Ctx, SrcVT);
+
+#if SIFIVE_CUSTOMIZATION
+    // Don't promote if sext is cheaper. RISC-V has it's own pass that
+    // already assessed the compare.
+    if (TLI->isSExtCheaperThanZExt(SrcVT, PromotedVT))
+      return 0;
+#endif
     if (RegisterBitWidth < PromotedVT.getFixedSizeInBits()) {
       LLVM_DEBUG(dbgs() << "IR Promotion: Couldn't find target register "
                         << "for promoted type\n");
@@ -999,39 +1006,12 @@ bool TypePromotion::runOnFunction(Function &F) {
 
         LLVM_DEBUG(dbgs() << "IR Promotion: Searching from: " << *ICmp << "\n");
 
-<<<<<<< HEAD
-      LLVM_DEBUG(dbgs() << "IR Promotion: Searching from: " << *ICmp << "\n");
-
-      for (auto &Op : ICmp->operands()) {
-        if (auto *I = dyn_cast<Instruction>(Op)) {
-          EVT SrcVT = TLI->getValueType(DL, I->getType());
-          if (SrcVT.isSimple() && TLI->isTypeLegal(SrcVT.getSimpleVT()))
-            break;
-
-          if (TLI->getTypeAction(*Ctx, SrcVT) !=
-              TargetLowering::TypePromoteInteger)
-            break;
-          EVT PromotedVT = TLI->getTypeToTransformTo(*Ctx, SrcVT);
-
-#if SIFIVE_CUSTOMIZATION
-          // Don't promote if sext is cheaper. RISC-V has it's own pass that
-          // already assessed the compare.
-          if (TLI->isSExtCheaperThanZExt(SrcVT, PromotedVT))
-            break;
-#endif
-
-          if (RegisterBitWidth < PromotedVT.getFixedSizeInBits()) {
-            LLVM_DEBUG(dbgs() << "IR Promotion: Couldn't find target register "
-                              << "for promoted type\n");
-            break;
-=======
         for (auto &Op : ICmp->operands()) {
           if (auto *OpI = dyn_cast<Instruction>(Op)) {
             if (auto PromotedWidth = GetPromoteWidth(OpI)) {
               MadeChange |= TryToPromote(OpI, PromotedWidth);
               break;
             }
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
           }
         }
       }
