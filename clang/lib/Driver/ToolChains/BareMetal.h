@@ -35,11 +35,10 @@ protected:
 
 public:
   bool useIntegratedAs() const override { return true; }
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   bool HasNativeLLVMSupport() const override { return true; }
-=======
+#endif // SIFIVE_CUSTOMIZATION
   bool isBareMetal() const override { return true; }
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   bool isCrossCompiling() const override { return true; }
   bool isPICDefault() const override { return false; }
   bool isPIEDefault(const llvm::opt::ArgList &Args) const override {
