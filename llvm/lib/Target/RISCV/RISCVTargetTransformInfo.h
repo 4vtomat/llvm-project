@@ -51,16 +51,16 @@ public:
       : BaseT(TM, F.getParent()->getDataLayout()), ST(TM->getSubtargetImpl(F)),
         TLI(ST->getTargetLowering()) {}
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   Optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                IntrinsicInst &II) const;
-=======
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Return the cost of materializing a vector immediate, assuming it does
   /// not get folded into the using instruction(s).
   InstructionCost getVectorImmCost(VectorType *VecTy,
                                    TTI::OperandValueInfo OpInfo,
                                    TTI::TargetCostKind CostKind);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   InstructionCost getIntImmCost(const APInt &Imm, Type *Ty,
                                 TTI::TargetCostKind CostKind);

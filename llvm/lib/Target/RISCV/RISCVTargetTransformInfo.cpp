@@ -350,7 +350,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     }
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(Tp) &&
       (!SubTp || isa<ScalableVectorType>(SubTp))) {
@@ -376,10 +375,7 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  return BaseT::getShuffleCost(Kind, Tp, Mask, Index, SubTp);
-=======
   return BaseT::getShuffleCost(Kind, Tp, Mask, CostKind, Index, SubTp);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 }
 
 InstructionCost
@@ -426,9 +422,6 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   return NumLoads * MemOpCost;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
 // Currently, these represent both throughput and codesize costs
 // for the respective intrinsics.  The costs in this table are simply
 // instruction counts with the following adjustments made:

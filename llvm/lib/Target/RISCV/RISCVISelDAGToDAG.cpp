@@ -27,14 +27,9 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-isel"
 
-<<<<<<< HEAD
 extern cl::opt<bool> ForceTailUndisturbed; // SIFIVE
 
-namespace llvm {
-namespace RISCV {
-=======
 namespace llvm::RISCV {
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 #define GET_RISCVVSSEGTable_IMPL
 #define GET_RISCVVLSEGTable_IMPL
 #define GET_RISCVVLXSEGTable_IMPL
@@ -2691,7 +2686,6 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(SDNode *N) {
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   unsigned Opc = N->getMachineOpcode();
@@ -2737,7 +2731,7 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // Try to fold VMERGE_VVM with unmasked intrinsic to masked intrinsic. The
 // peephole only deals with VMERGE_VVM which is TU and has false operand same as
 // its true operand now. E.g. (VMERGE_VVM_M1_TU False, False, (VADD_M1 ...),
@@ -2850,7 +2844,6 @@ bool RISCVDAGToDAGISel::doPeepholeMergeVVMFold() {
   }
   return MadeChange;
 }
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
 // This pass converts a legalized DAG into a RISCV-specific DAG, ready
 // for instruction scheduling.

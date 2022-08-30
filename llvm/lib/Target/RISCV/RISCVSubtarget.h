@@ -57,12 +57,9 @@ private:
   bool HasStdExtD = false;
   bool HasStdExtC = false;
   bool HasStdExtZihintpause = false;
-<<<<<<< HEAD
   bool HasStdExtZicsr = false; // SIFIVE
   bool HasStdExtZifencei = false; // SIFIVE
-=======
   bool HasStdExtZihintntl = false;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   bool HasStdExtZba = false;
   bool HasStdExtZbb = false;
   bool HasStdExtZbc = false;
@@ -110,11 +107,8 @@ private:
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
   bool HasStdExtZmmul = false;
-<<<<<<< HEAD
   bool HasStdExtSscofpmf = false; // SIFIVE
-=======
   bool HasRV32 = false;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;

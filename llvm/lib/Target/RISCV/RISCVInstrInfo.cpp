@@ -1611,13 +1611,7 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
   MachineBasicBlock *MBB = MI.getParent();
   const TargetRegisterInfo *TRI =
       MBB->getParent()->getSubtarget().getRegisterInfo();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   const auto &F = MI.getMF()->getFunction();
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  const auto &F = MI.getMF()->getFunction();
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   // Positions generally can't safely be outlined.
   if (MI.isPosition()) {
@@ -1626,15 +1620,8 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
       // If current function has exception handling code, we can't outline &
       // strip these CFI instructions since it may break .eh_frame section
       // needed in unwinding.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       return F.needsUnwindTableEntry() ? outliner::InstrType::Illegal
                                        : outliner::InstrType::Invisible;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      return F.needsUnwindTableEntry() ? outliner::InstrType::Illegal
-                                       : outliner::InstrType::Invisible;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
     return outliner::InstrType::Illegal;
   }
@@ -1658,7 +1645,6 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
       MI.getDesc().hasImplicitDefOfPhysReg(RISCV::X5))
     return outliner::InstrType::Illegal;
 
-#if SIFIVE_CUSTOMIZATION
   // Make sure the operands don't reference something unsafe.
   for (const auto &MO : MI.operands()) {
     if (MO.isMBB() || MO.isBlockAddress() || MO.isCPI() || MO.isJTI())
@@ -1671,10 +1657,6 @@ RISCVInstrInfo::getOutliningType(MachineBasicBlock::iterator &MBBI,
          F.hasSection()))
       return outliner::InstrType::Illegal;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   // Don't allow instructions which won't be materialized to impact outlining
   // analysis.

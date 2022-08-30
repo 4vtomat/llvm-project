@@ -3947,12 +3947,8 @@ void InnerLoopVectorizer::fixCrossIterationPHIs(VPTransformState &State) {
       fixFixedOrderRecurrence(FOR, State);
   }
 }
-<<<<<<< HEAD
-void InnerLoopVectorizer::fixFirstOrderRecurrence(
-=======
 
 void InnerLoopVectorizer::fixFixedOrderRecurrence(
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
     VPFirstOrderRecurrencePHIRecipe *PhiR, VPTransformState &State) {
   // This is the second phase of vectorizing first-order recurrences. An
   // overview of the transformation is described below. Suppose we have the
