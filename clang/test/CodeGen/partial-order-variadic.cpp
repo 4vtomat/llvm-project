@@ -1,4 +1,4 @@
-// RUN: %clang_cc1 -triple x86_64-unknown-unknown -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15 %s -emit-llvm -disable-llvm-passes -o - | FileCheck %s
+// RUN: %clang_cc1 -triple x86_64-unknown-unknown -fclang-abi-compat=14 -DCLANG_ABI_COMPAT=15 %s -emit-llvm -disable-llvm-passes -o - | FileCheck %s
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -emit-llvm -disable-llvm-passes -o - | FileCheck %s --check-prefixes=CHECK,AFTER-15
 
 // CHECK: %struct.S = type { i8 }
