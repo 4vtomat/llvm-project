@@ -24,29 +24,7 @@
 // MTUNE-ROCKET-32: "-tune-cpu" "rocket"
 
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mtune=rocket | FileCheck -check-prefix=MTUNE-ROCKET-64 %s
-<<<<<<< HEAD
-// MTUNE-ROCKET-64: "-tune-cpu" "rocket-rv64"
-
-// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mtune=sifive-7-series | FileCheck -check-prefix=MTUNE-SIFIVE7-SERIES-32 %s
-// MTUNE-SIFIVE7-SERIES-32: "-tune-cpu" "sifive-7n-rv32"
-
-// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mtune=sifive-7-series | FileCheck -check-prefix=MTUNE-SIFIVE7-SERIES-64 %s
-// MTUNE-SIFIVE7-SERIES-64: "-tune-cpu" "sifive-7n-rv64"
-
-// RUN: %clang -target riscv32 -### -c %s 2>&1 -mtune=sifive-7m-series | FileCheck -check-prefix=MTUNE-SIFIVE7M-SERIES-32 %s
-// MTUNE-SIFIVE7M-SERIES-32: "-tune-cpu" "sifive-7m-rv32"
-
-// RUN: %clang -target riscv64 -### -c %s 2>&1 -mtune=sifive-7m-series | FileCheck -check-prefix=MTUNE-SIFIVE7M-SERIES-64 %s
-// MTUNE-SIFIVE7M-SERIES-64: "-tune-cpu" "sifive-7m-rv64"
-
-// RUN: %clang -target riscv32 -### -c %s 2>&1 -mtune=sifive-7n-series | FileCheck -check-prefix=MTUNE-SIFIVE7N-SERIES-32 %s
-// MTUNE-SIFIVE7N-SERIES-32: "-tune-cpu" "sifive-7n-rv32"
-
-// RUN: %clang -target riscv64 -### -c %s 2>&1 -mtune=sifive-7n-series | FileCheck -check-prefix=MTUNE-SIFIVE7N-SERIES-64 %s
-// MTUNE-SIFIVE7N-SERIES-64: "-tune-cpu" "sifive-7n-rv64"
-=======
 // MTUNE-ROCKET-64: "-tune-cpu" "rocket"
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e20 | FileCheck -check-prefix=MCPU-SIFIVE-E20 %s

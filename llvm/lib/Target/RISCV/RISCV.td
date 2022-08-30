@@ -469,7 +469,11 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
-<<<<<<< HEAD
+// Feature32Bit exists to mark CPUs that support RV32 to distinquish them from
+// tuning CPU names.
+def Feature32Bit
+    : SubtargetFeature<"32bit", "HasRV32", "true", "Implements RV32">;
+
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSscofpmf
     : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
@@ -526,12 +530,6 @@ def HasExtXsfvcp : Predicate<"Subtarget->hasExtXsfvcp()">,
                              "'Xsfvcp' (SiFive custom vector coprocessor interface instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-// Feature32Bit exists to mark CPUs that support RV32 to distinquish them from
-// tuning CPU names.
-def Feature32Bit
-    : SubtargetFeature<"32bit", "HasRV32", "true", "Implements RV32">;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 def Feature64Bit
     : SubtargetFeature<"64bit", "HasRV64", "true", "Implements RV64">;
 def IsRV64 : Predicate<"Subtarget->is64Bit()">,
@@ -704,48 +702,32 @@ def : ProcessorModel<"generic", NoSchedModel, []>;
 
 def : ProcessorModel<"rocket-rv32", RocketModel, [Feature32Bit]>;
 def : ProcessorModel<"rocket-rv64", RocketModel, [Feature64Bit]>;
-<<<<<<< HEAD
-def : ProcessorModel<"sifive-7-rv32", SiFive7Model, [],
-                     [TuneSiFive7]>;
-def : ProcessorModel<"sifive-7-rv64", SiFive7Model, [Feature64Bit],
-                     [TuneSiFive7]>;
-
-#ifdef SIFIVE_CUSTOMIZATION
-def : ProcessorModel<"sifive-6-rv32", SiFive6Model, [],
-                     [TuneSiFive6]>;
-def : ProcessorModel<"sifive-6-rv64", SiFive6Model, [Feature64Bit],
-                     [TuneSiFive6]>;
-
-def : ProcessorModel<"sifive-7m-rv32", SiFive7Model, [],
-                     [TuneSiFive7]>;
-def : ProcessorModel<"sifive-7m-rv64", SiFive7Model, [Feature64Bit],
-                     [TuneSiFive7]>;
-
-def : ProcessorModel<"sifive-7n-rv32", SiFive7NModel, [],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-def : ProcessorModel<"sifive-7n-rv64", SiFive7NModel, [Feature64Bit],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-def : ProcessorModel<"sifive-8-rv32", SiFive8Model, [],
-                     [TuneSiFive8]>;
-def : ProcessorModel<"sifive-8-rv64", SiFive8Model, [Feature64Bit],
-                     [TuneSiFive8]>;
-
-def : ProcessorModel<"sifive-9-rv32", SiFive9Model, [],
-                     [TuneSiFive9]>;
-def : ProcessorModel<"sifive-9-rv64", SiFive9Model, [Feature64Bit],
-                     [TuneSiFive9]>;
-#endif // SIFIVE_CUSTOMIZATION
-
-def : ProcessorModel<"sifive-e20", RocketModel, [FeatureStdExtM,
-=======
 def : ProcessorModel<"rocket", RocketModel, []>;
 
 def : ProcessorModel<"sifive-7-series", SiFive7Model, [],
                      [TuneSiFive7]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+
+def : ProcessorModel<"sifive-6-series", SiFive6Model, [],
+                     [TuneSiFive6]>;
+
+def : ProcessorModel<"sifive-7m-series", SiFive7Model, [],
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
+
+def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
+
+def : ProcessorModel<"sifive-8-series", SiFive8Model, [],
+                     [TuneSiFive8]>;
+
+def : ProcessorModel<"sifive-9-series", SiFive9Model, [],
+                     [TuneSiFive9]>;
+
+#endif // SIFIVE_CUSTOMIZATION
+
 def : ProcessorModel<"sifive-e20", RocketModel, [Feature32Bit,
                                                  FeatureStdExtM,
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
                                                  FeatureStdExtC]>;
 
 def : ProcessorModel<"sifive-e21", RocketModel, [Feature32Bit,
@@ -778,7 +760,8 @@ def : ProcessorModel<"sifive-e76", SiFive7Model, [Feature32Bit,
                      [TuneSiFive7]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def : ProcessorModel<"sifive-e66", SiFive6Model, [FeatureStdExtM,
+def : ProcessorModel<"sifive-e66", SiFive6Model, [Feature32Bit,
+                                                  FeatureStdExtM,
                                                   FeatureStdExtA,
                                                   FeatureStdExtF,
                                                   FeatureStdExtC,
@@ -786,7 +769,8 @@ def : ProcessorModel<"sifive-e66", SiFive6Model, [FeatureStdExtM,
                                                   FeatureStdExtZbb],
                      [TuneSiFive6]>;
 
-def : ProcessorModel<"sifive-e76m", SiFive7Model, [FeatureStdExtM,
+def : ProcessorModel<"sifive-e76m", SiFive7Model, [Feature32Bit,
+                                                   FeatureStdExtM,
                                                    FeatureStdExtA,
                                                    FeatureStdExtF,
                                                    FeatureStdExtC,
@@ -794,7 +778,8 @@ def : ProcessorModel<"sifive-e76m", SiFive7Model, [FeatureStdExtM,
                                                    FeatureStdExtZbb],
                      [TuneSiFive7]>;
 
-def : ProcessorModel<"sifive-e76n", SiFive7NModel, [FeatureStdExtM,
+def : ProcessorModel<"sifive-e76n", SiFive7NModel, [Feature32Bit,
+                                                    FeatureStdExtM,
                                                     FeatureStdExtA,
                                                     FeatureStdExtF,
                                                     FeatureStdExtC,
