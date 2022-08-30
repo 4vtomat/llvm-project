@@ -1079,9 +1079,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     }
   }
 
-<<<<<<< HEAD
-  EnableExtLdPromotion = true; // SIFIVE
-=======
   if (Subtarget.hasForcedAtomics()) {
     // Set atomic rmw/cas operations to expand to force __sync libcalls.
     setOperationAction(
@@ -1091,7 +1088,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
          ISD::ATOMIC_LOAD_MAX, ISD::ATOMIC_LOAD_UMIN, ISD::ATOMIC_LOAD_UMAX},
         XLenVT, Expand);
   }
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+
+  EnableExtLdPromotion = true; // SIFIVE
 
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtC() ? 2 : 4);
@@ -1453,14 +1451,10 @@ bool RISCVTargetLowering::isLegalAddImmediate(int64_t Imm) const {
 
 // On RV32, 64-bit integers are split into their high and low parts and held
 // in two different registers, so the trunc is free since the low register can
-<<<<<<< HEAD
 // just be used. Also consider it free for RV64 since W instructions can // SIFIVE
 // compensate in many cases. // SIFIVE
-=======
-// just be used.
 // FIXME: Should we consider i64->i32 free on RV64 to match the EVT version of
 // isTruncateFree?
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 bool RISCVTargetLowering::isTruncateFree(Type *SrcTy, Type *DstTy) const {
   if (!SrcTy->isIntegerTy() || !DstTy->isIntegerTy()) // SIFIVE
     return false;
@@ -1470,15 +1464,10 @@ bool RISCVTargetLowering::isTruncateFree(Type *SrcTy, Type *DstTy) const {
 }
 
 bool RISCVTargetLowering::isTruncateFree(EVT SrcVT, EVT DstVT) const {
-<<<<<<< HEAD
-  if (SrcVT.isVector() || DstVT.isVector() || // SIFIVE
-      !SrcVT.isInteger() || !DstVT.isInteger())
-=======
   // We consider i64->i32 free on RV64 since we have good selection of W
   // instructions that make promoting operations back to i64 free in many cases.
   if (SrcVT.isVector() || DstVT.isVector() || !SrcVT.isInteger() ||
       !DstVT.isInteger())
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
     return false;
   unsigned SrcBits = SrcVT.getSizeInBits();
   unsigned DestBits = DstVT.getSizeInBits();
@@ -4397,8 +4386,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_SETCC:
     if (Op.getOperand(0).getSimpleValueType().getVectorElementType() == MVT::i1)
       return lowerVPSetCCMaskOp(Op, DAG);
-<<<<<<< HEAD
-    return lowerVPOp(Op, DAG, RISCVISD::SETCC_VL);
+    return lowerVPOp(Op, DAG, RISCVISD::SETCC_VL, /*HasMergeOp*/ true);
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_SMIN:
     return lowerVPOp(Op, DAG, RISCVISD::SMIN_VL, /*HasMergeOp*/ true);
@@ -4409,9 +4397,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_UMAX:
     return lowerVPOp(Op, DAG, RISCVISD::UMAX_VL, /*HasMergeOp*/ true);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return lowerVPOp(Op, DAG, RISCVISD::SETCC_VL, /*HasMergeOp*/ true);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   case ISD::EXPERIMENTAL_VP_STRIDED_LOAD:
     return lowerVPStridedLoad(Op, DAG);
   case ISD::EXPERIMENTAL_VP_STRIDED_STORE:
@@ -9866,7 +9851,6 @@ static SDValue performANDCombine(SDNode *N,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ true);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // combine or (zext a) (shl (anyext b) c) to shufflevector
 static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
@@ -9927,13 +9911,9 @@ static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static SDValue performORCombine(SDNode *N, SelectionDAG &DAG,
-=======
 static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
                                 const RISCVSubtarget &Subtarget) {
   SelectionDAG &DAG = DCI.DAG;
-
   if (Subtarget.hasStdExtZbp()) {
     if (auto GREV = combineORToGREV(SDValue(N, 0), DAG, Subtarget))
       return GREV;
@@ -9946,16 +9926,14 @@ static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
   if (SDValue V = combineBinOpToReduce(N, DAG))
     return V;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (SDValue V = combineOrZextShlAnyext(N, DAG, Subtarget))
     return V;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   if (DCI.isAfterLegalizeDAG())
     if (SDValue V = combineDeMorganOfBoolean(N, DAG))
       return V;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   // fold (or (select cond, 0, y), x) ->
   //      (select cond, x, (or x, y))
@@ -15058,7 +15036,6 @@ RISCVTargetLowering::getRegisterByName(const char *RegName, LLT VT,
   return Reg;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // i32->i64 sign extends of most binary operators are free on RV64.
 bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
@@ -15078,11 +15055,7 @@ bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-namespace llvm {
-namespace RISCVVIntrinsicsTable {
-=======
 namespace llvm::RISCVVIntrinsicsTable {
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
 #define GET_RISCVVIntrinsicsTable_IMPL
 #include "RISCVGenSearchableTables.inc"
