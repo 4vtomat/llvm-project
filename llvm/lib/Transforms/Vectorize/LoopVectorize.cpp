@@ -4714,12 +4714,10 @@ bool LoopVectorizationCostModel::isScalarWithPredication(
   case Instruction::SDiv:
   case Instruction::SRem:
   case Instruction::URem:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Legal->preferPredicatedVectorOps())
       return false;
 #endif // SIFIVE_CUSTOMIZATION
-=======
     // We have the option to use the safe-divisor idiom to avoid predication.
     // At the moment this is only used for scalable (which legally can't
     // scalarize), but long term we want to make a cost based decision
@@ -4762,7 +4760,6 @@ bool LoopVectorizationCostModel::isPredicatedInst(Instruction *I) const {
   case Instruction::SDiv:
   case Instruction::SRem:
   case Instruction::URem:
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
     // TODO: We can use the loop-preheader as context point here and get
     // context sensitive reasoning
     return !isSafeToSpeculativelyExecute(I);
@@ -9282,65 +9279,17 @@ bool VPRecipeBuilder::shouldWiden(Instruction *I, VFRange &Range) const {
                                                              Range);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool VPRecipeBuilder::preferPredicatedWiden() const {
   return CM.foldTailByMasking() && Legal->preferPredicatedVectorOps();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
-                                           ArrayRef<VPValue *> Operands) const {
-  auto IsVectorizableOpcode = [](unsigned Opcode) {
-    switch (Opcode) {
-    case Instruction::Add:
-    case Instruction::And:
-    case Instruction::AShr:
-    case Instruction::BitCast:
-    case Instruction::FAdd:
-    case Instruction::FCmp:
-    case Instruction::FDiv:
-    case Instruction::FMul:
-    case Instruction::FNeg:
-    case Instruction::FPExt:
-    case Instruction::FPToSI:
-    case Instruction::FPToUI:
-    case Instruction::FPTrunc:
-    case Instruction::FRem:
-    case Instruction::FSub:
-    case Instruction::ICmp:
-    case Instruction::IntToPtr:
-    case Instruction::LShr:
-    case Instruction::Mul:
-    case Instruction::Or:
-    case Instruction::PtrToInt:
-    case Instruction::SDiv:
-    case Instruction::Select:
-    case Instruction::SExt:
-    case Instruction::Shl:
-    case Instruction::SIToFP:
-    case Instruction::SRem:
-    case Instruction::Sub:
-    case Instruction::Trunc:
-    case Instruction::UDiv:
-    case Instruction::UIToFP:
-    case Instruction::URem:
-    case Instruction::Xor:
-    case Instruction::ZExt:
-    case Instruction::Freeze:
-      return true;
-    }
-    return false;
-  };
-
-  if (!IsVectorizableOpcode(I->getOpcode()))
-=======
 VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
                                           ArrayRef<VPValue *> Operands,
                                           VPBasicBlock *VPBB, VPlanPtr &Plan) {
   switch (I->getOpcode()) {
   default:
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
     return nullptr;
   case Instruction::SDiv:
   case Instruction::UDiv:
@@ -9561,19 +9510,16 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 #endif // SIFIVE_CUSTOMIZATION
       );
     } else {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Create the node for previous EVL value, required for the splice
       // intrinsic.
       if (Plan->getEVL())
         Plan->createPrevEVL();
 #endif // SIFIVE_CUSTOMIZATION
-=======
       // TODO: Currently fixed-order recurrences are modeled as chains of
       // first-order recurrences. If there are no users of the intermediate
       // recurrences in the chain, the fixed order recurrence should be modeled
       // directly, enabling more efficient codegen.
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
       PhiRecipe = new VPFirstOrderRecurrencePHIRecipe(Phi, *StartV);
     }
 
