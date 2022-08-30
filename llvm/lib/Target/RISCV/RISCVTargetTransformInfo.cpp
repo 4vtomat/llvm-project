@@ -388,7 +388,7 @@ RISCVTTIImpl::getMaskedMemoryOpCost(unsigned Opcode, Type *Src, Align Alignment,
 
 #if SIFIVE_CUSTOMIZATION
   // FIXME: copied from AARCH64, need to improve.
-  std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Src);
+  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
   if (!LT.first.isValid())
     return InstructionCost::getInvalid();
   return LT.first;
@@ -858,17 +858,16 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
    {Intrinsic::ssub_sat, MVT::nxv8i64, 1},
 };
 
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 InstructionCost
 RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                     TTI::TargetCostKind CostKind) {
-  // Taken from AArch64.
   auto *RetTy = ICA.getReturnType();
+
   switch (ICA.getID()) {
+#if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_stepvector: {
-<<<<<<< HEAD
     InstructionCost Cost = 1; // Cost of the `index' instruction
-    auto LT = TLI->getTypeLegalizationCost(DL, RetTy);
+    auto LT = getTypeLegalizationCost(RetTy);
     // Legalisation of illegal vectors involves an `index' instruction plus
     // (LT.first - 1) vector adds.
     if (LT.first > 1) {
@@ -878,11 +877,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       Cost += AddCost * (LT.first - 1);
     }
     return Cost;
-=======
-    unsigned Cost = 1; // vid
-    auto LT = getTypeLegalizationCost(RetTy);
-    return Cost + (LT.first - 1);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   }
   case Intrinsic::nearbyint: {
     if (isa<ScalableVectorType>(RetTy))
@@ -940,6 +934,7 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC_LIST
 #undef VP_INTRINSIC
     return 1;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     if (ST->hasVInstructions() && RetTy->isVectorTy()) {
       auto LT = getTypeLegalizationCost(RetTy);
@@ -949,10 +944,8 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     }
     break;
   }
-
   return BaseT::getIntrinsicInstrCost(ICA, CostKind);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
@@ -962,8 +955,7 @@ InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
                                                  const Instruction *I) {
   // FIXME: Revisit this code when we start to tune vectorizer's cost model
   if (isa<ScalableVectorType>(ValTy)) {
-    std::pair<InstructionCost, MVT> LT =
-        TLI->getTypeLegalizationCost(DL, ValTy);
+    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(ValTy);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
     return LT.first;
@@ -1057,14 +1049,9 @@ unsigned RISCVTTIImpl::getEstimatedVLFor(VectorType *Ty) {
 #else
     const unsigned EltSize = DL.getTypeSizeInBits(Ty->getElementType());
     const unsigned MinSize = DL.getTypeSizeInBits(Ty).getKnownMinValue();
-<<<<<<< HEAD
-    const unsigned VectorBitsMax = ST->getRealMaxVLen();
-    return RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     const unsigned VectorBits = *getVScaleForTuning() * RISCV::RVVBitsPerBlock;
     return RISCVTargetLowering::computeVLMAX(VectorBits, EltSize, MinSize);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+#endif // SIFIVE_CUSTOMIZATION
   }
   return cast<FixedVectorType>(Ty)->getNumElements();
 }
@@ -1075,7 +1062,7 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
                                      TTI::TargetCostKind CostKind) {
 #if SIFIVE_CUSTOMIZATION
   if (!isa<FixedVectorType>(Ty)) {
-    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
+    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
     // IR Reduction is composed by two vmv and one rvv reduction instruction.
@@ -1113,7 +1100,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
 #if SIFIVE_CUSTOMIZATION
   if (!isa<FixedVectorType>(Ty)) {
     // FIXME: Revisit this code when we start to tune vectorizer's cost model
-    std::pair<InstructionCost, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
+    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
     // IR Reduction is composed by two vmv and one rvv reduction instruction.
@@ -1145,16 +1132,11 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return (LT.first - 1) + (ISD == ISD::AND ? 3 : 2);
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // The vector to scalar move is expensive on x280, give it more cost.
   InstructionCost BaseCost = 4;
 #endif // SIFIVE_CUSTOMIZATION
-  unsigned VL = getMaxVLFor(Ty);
-=======
-  InstructionCost BaseCost = 2;
   unsigned VL = getEstimatedVLFor(Ty);
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   if (TTI::requiresOrderedReduction(FMF))
     return (LT.first - 1) + BaseCost + VL;
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
@@ -1359,7 +1341,7 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
                                                  unsigned Index) {
   if (Opcode == Instruction::ExtractElement) {
     std::pair<InstructionCost, MVT> LT =
-        getTLI()->getTypeLegalizationCost(DL, Val->getScalarType());
+        getTypeLegalizationCost(Val->getScalarType());
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
     if (Index == 0)
