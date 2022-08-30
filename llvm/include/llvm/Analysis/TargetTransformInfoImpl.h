@@ -855,7 +855,6 @@ public:
 
   unsigned getGISelRematGlobalCost() const { return 1; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool preferPredicatedVectorOps() const { return false; }
 
@@ -863,9 +862,7 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   bool supportsScalableVectors() const { return false; }
 

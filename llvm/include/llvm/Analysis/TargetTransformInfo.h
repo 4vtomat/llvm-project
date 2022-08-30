@@ -1487,7 +1487,6 @@ public:
   /// to a stack reload.
   unsigned getGISelRematGlobalCost() const;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \returns True if the target prefers using vector predication for all Ops
   /// instead of just loads and stores.
@@ -1497,11 +1496,9 @@ public:
   /// start value.
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// \returns the lower bound of a trip count to decide on vectorization
   /// while tail-folding.
   unsigned getMinTripCountTailFoldingThreshold() const;
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 
   /// \returns True if the target supports scalable vectors.
   bool supportsScalableVectors() const;
@@ -1908,14 +1905,10 @@ public:
   virtual bool supportsScalableVectors() const = 0;
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const = 0;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool preferPredicatedVectorOps() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
-  virtual InstructionCost getInstructionLatency(const Instruction *I) = 0;
-=======
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
 };
@@ -2590,11 +2583,6 @@ public:
     return Impl.hasActiveVectorLength(Opcode, DataType, Alignment);
   }
 
-<<<<<<< HEAD
-  InstructionCost getInstructionLatency(const Instruction *I) override {
-    return Impl.getInstructionLatency(I);
-  }
-
 #if SIFIVE_CUSTOMIZATION
   bool preferPredicatedVectorOps() const override {
     return Impl.preferPredicatedVectorOps();
@@ -2604,9 +2592,6 @@ public:
     return Impl.preferPostFixStartValue(Opcode, Ty);
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const override {
     return Impl.getVPLegalizationStrategy(PI);

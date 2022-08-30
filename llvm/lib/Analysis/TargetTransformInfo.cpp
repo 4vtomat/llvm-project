@@ -1174,12 +1174,6 @@ bool TargetTransformInfo::hasActiveVectorLength(unsigned Opcode, Type *DataType,
   return TTIImpl->hasActiveVectorLength(Opcode, DataType, Alignment);
 }
 
-<<<<<<< HEAD
-InstructionCost
-TargetTransformInfo::getInstructionLatency(const Instruction *I) const {
-  return TTIImpl->getInstructionLatency(I);
-}
-
 #if SIFIVE_CUSTOMIZATION
 bool TargetTransformInfo::preferPredicatedVectorOps() const {
   return TTIImpl->preferPredicatedVectorOps();
@@ -1191,67 +1185,6 @@ bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-InstructionCost
-TargetTransformInfo::getInstructionThroughput(const Instruction *I) const {
-  TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
-
-  switch (I->getOpcode()) {
-  case Instruction::GetElementPtr:
-  case Instruction::Ret:
-  case Instruction::PHI:
-  case Instruction::Br:
-  case Instruction::Add:
-  case Instruction::FAdd:
-  case Instruction::Sub:
-  case Instruction::FSub:
-  case Instruction::Mul:
-  case Instruction::FMul:
-  case Instruction::UDiv:
-  case Instruction::SDiv:
-  case Instruction::FDiv:
-  case Instruction::URem:
-  case Instruction::SRem:
-  case Instruction::FRem:
-  case Instruction::Shl:
-  case Instruction::LShr:
-  case Instruction::AShr:
-  case Instruction::And:
-  case Instruction::Or:
-  case Instruction::Xor:
-  case Instruction::FNeg:
-  case Instruction::Select:
-  case Instruction::ICmp:
-  case Instruction::FCmp:
-  case Instruction::Store:
-  case Instruction::Load:
-  case Instruction::ZExt:
-  case Instruction::SExt:
-  case Instruction::FPToUI:
-  case Instruction::FPToSI:
-  case Instruction::FPExt:
-  case Instruction::PtrToInt:
-  case Instruction::IntToPtr:
-  case Instruction::SIToFP:
-  case Instruction::UIToFP:
-  case Instruction::Trunc:
-  case Instruction::FPTrunc:
-  case Instruction::BitCast:
-  case Instruction::AddrSpaceCast:
-  case Instruction::ExtractElement:
-  case Instruction::InsertElement:
-  case Instruction::ExtractValue:
-  case Instruction::ShuffleVector:
-  case Instruction::Call:
-  case Instruction::Switch:
-    return getUserCost(I, CostKind);
-  default:
-    // We don't have any information on this instruction.
-    return -1;
-  }
-}
-
-=======
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 TargetTransformInfo::Concept::~Concept() = default;
 
 TargetIRAnalysis::TargetIRAnalysis() : TTICallback(&getDefaultTTI) {}
