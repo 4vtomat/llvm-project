@@ -733,6 +733,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV32-NEXT:    csrr a4, vlenb
 ; CHECK-RV32-NEXT:    slli a4, a4, 3
 ; CHECK-RV32-NEXT:    sub sp, sp, a4
+; CHECK-RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-RV32-NEXT:    csrr a4, vlenb
 ; CHECK-RV32-NEXT:    slli a7, a4, 1
 ; CHECK-RV32-NEXT:    vmv1r.v v24, v0
@@ -787,6 +788,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV32-NEXT:    csrr a0, vlenb
 ; CHECK-RV32-NEXT:    slli a0, a0, 3
 ; CHECK-RV32-NEXT:    add sp, sp, a0
+; CHECK-RV32-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-RV32-NEXT:    addi sp, sp, 16
 ; CHECK-RV32-NEXT:    ret
 ;
@@ -797,6 +799,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    csrr a4, vlenb
 ; CHECK-RV64-NEXT:    slli a4, a4, 3
 ; CHECK-RV64-NEXT:    sub sp, sp, a4
+; CHECK-RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-RV64-NEXT:    csrr a4, vlenb
 ; CHECK-RV64-NEXT:    slli a7, a4, 1
 ; CHECK-RV64-NEXT:    vmv1r.v v24, v0
@@ -851,6 +854,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    csrr a0, vlenb
 ; CHECK-RV64-NEXT:    slli a0, a0, 3
 ; CHECK-RV64-NEXT:    add sp, sp, a0
+; CHECK-RV64-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-RV64-NEXT:    addi sp, sp, 16
 ; CHECK-RV64-NEXT:    ret
   call void @llvm.experimental.vp.strided.store.nxv17f64.p0f64.i32(<vscale x 17 x double> %v, double* %ptr, i32 %stride, <vscale x 17 x i1> %mask, i32 %evl)
