@@ -13533,13 +13533,6 @@ bool IntExprEvaluator::VisitCastExpr(const CastExpr *E) {
       return Info.Ctx.getTypeSize(DestType) == Info.Ctx.getTypeSize(SrcType);
     }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (Info.Ctx.getLangOpts().CPlusPlus && Info.InConstantContext &&
-        Info.EvalMode == EvalInfo::EM_ConstantExpression &&
-        DestType->isEnumeralType()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (Info.Ctx.getLangOpts().CPlusPlus && Info.InConstantContext &&
         Info.EvalMode == EvalInfo::EM_ConstantExpression &&
         DestType->isEnumeralType()) {
@@ -13555,7 +13548,6 @@ bool IntExprEvaluator::VisitCastExpr(const CastExpr *E) {
               Info.EvaluatingDecl.dyn_cast<const ValueDecl *>()))
         ConstexprVar = VD->isConstexpr();
 
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
       const EnumType *ET = dyn_cast<EnumType>(DestType.getCanonicalType());
       const EnumDecl *ED = ET->getDecl();
       // Check that the value is within the range of the enumeration values.
