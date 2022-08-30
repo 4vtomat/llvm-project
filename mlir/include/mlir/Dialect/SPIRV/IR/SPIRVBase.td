@@ -82,43 +82,31 @@ def SPIRV_Dialect : Dialect {
 // Utility definitions
 //===----------------------------------------------------------------------===//
 
-// A predicate that checks whether `$_self` is a known enum case for the
-// enum class with `name`.
-class SPV_IsKnownEnumCaseFor<string name> :
-    CPred<"::mlir::spirv::symbolize" # name # "("
-          "$_self.cast<IntegerAttr>().getValue().getZExtValue()).has_value()">;
-
 // Wrapper over base BitEnumAttr to set common fields.
-class SPV_BitEnumAttr<string name, string description,
+class SPV_BitEnum<string name, string description,
+                  list<BitEnumAttrCaseBase> cases>
+    : I32BitEnumAttr<name, description, cases> {
+  let genSpecializedAttr = 0;
+  let cppNamespace = "::mlir::spirv";
+}
+class SPV_BitEnumAttr<string name, string description, string mnemonic,
                       list<BitEnumAttrCaseBase> cases> :
-    I32BitEnumAttr<name, description, cases> {
-  let predicate = And<[
-    I32Attr.predicate,
-    SPV_IsKnownEnumCaseFor<name>,
-  ]>;
-  let cppNamespace = "::mlir::spirv";
+    EnumAttr<SPIRV_Dialect, SPV_BitEnum<name, description, cases>, mnemonic> {
+  let assemblyFormat = "`<` $value `>`";
 }
 
 // Wrapper over base I32EnumAttr to set common fields.
-class SPV_I32EnumAttr<string name, string description,
-                      list<I32EnumAttrCase> cases> :
-    I32EnumAttr<name, description, cases> {
-  let predicate = And<[
-    I32Attr.predicate,
-    SPV_IsKnownEnumCaseFor<name>,
-  ]>;
-  let cppNamespace = "::mlir::spirv";
-}
-
-// Wrapper over base I32EnumAttr to set common fields.
-class SPV_Enum<string name, string description, list<I32EnumAttrCase> cases>
+class SPV_I32Enum<string name, string description,
+                  list<I32EnumAttrCase> cases>
     : I32EnumAttr<name, description, cases> {
   let genSpecializedAttr = 0;
   let cppNamespace = "::mlir::spirv";
 }
-class SPV_EnumAttr<string name, string description, string mnemonic,
+class SPV_I32EnumAttr<string name, string description, string mnemonic,
                       list<I32EnumAttrCase> cases> :
-    EnumAttr<SPIRV_Dialect, SPV_Enum<name, description, cases>, mnemonic>;
+    EnumAttr<SPIRV_Dialect, SPV_I32Enum<name, description, cases>, mnemonic> {
+  let assemblyFormat = "`<` $value `>`";
+}
 
 //===----------------------------------------------------------------------===//
 // SPIR-V availability definitions
@@ -132,7 +120,8 @@ def SPV_V_1_4 : I32EnumAttrCase<"V_1_4", 4, "v1.4">;
 def SPV_V_1_5 : I32EnumAttrCase<"V_1_5", 5, "v1.5">;
 def SPV_V_1_6 : I32EnumAttrCase<"V_1_6", 6, "v1.6">;
 
-def SPV_VersionAttr : SPV_I32EnumAttr<"Version", "valid SPIR-V version", [
+def SPV_VersionAttr : SPV_I32EnumAttr<
+  "Version", "valid SPIR-V version", "version", [
     SPV_V_1_0, SPV_V_1_1, SPV_V_1_2, SPV_V_1_3, SPV_V_1_4, SPV_V_1_5,
     SPV_V_1_6]>;
 
@@ -284,7 +273,7 @@ def SPV_DT_Other         : I32EnumAttrCase<"Other", 3>;
 // Information missing.
 def SPV_DT_Unknown       : I32EnumAttrCase<"Unknown", 4>;
 
-def SPV_DeviceTypeAttr : SPV_EnumAttr<
+def SPV_DeviceTypeAttr : SPV_I32EnumAttr<
   "DeviceType", "valid SPIR-V device types", "device_type", [
     SPV_DT_Other, SPV_DT_IntegratedGPU, SPV_DT_DiscreteGPU,
     SPV_DT_CPU, SPV_DT_Unknown
@@ -300,7 +289,7 @@ def SPV_V_Qualcomm    : I32EnumAttrCase<"Qualcomm", 6>;
 def SPV_V_SwiftShader : I32EnumAttrCase<"SwiftShader", 7>;
 def SPV_V_Unknown     : I32EnumAttrCase<"Unknown", 0xff>;
 
-def SPV_VendorAttr : SPV_EnumAttr<
+def SPV_VendorAttr : SPV_I32EnumAttr<
   "Vendor", "recognized SPIR-V vendor strings", "vendor", [
     SPV_V_AMD, SPV_V_Apple, SPV_V_ARM, SPV_V_Imagination,
     SPV_V_Intel, SPV_V_NVIDIA, SPV_V_Qualcomm, SPV_V_SwiftShader,
@@ -398,6 +387,7 @@ def SPV_INTEL_debug_module                       : I32EnumAttrCase<"SPV_INTEL_de
 def SPV_INTEL_fp_fast_math_mode                  : I32EnumAttrCase<"SPV_INTEL_fp_fast_math_mode", 4027>;
 def SPV_INTEL_memory_access_aliasing             : I32EnumAttrCase<"SPV_INTEL_memory_access_aliasing", 4028>;
 def SPV_INTEL_split_barrier                      : I32EnumAttrCase<"SPV_INTEL_split_barrier", 4029>;
+def SPV_INTEL_joint_matrix                       : I32EnumAttrCase<"SPV_INTEL_joint_matrix", 4030>;
 
 def SPV_NV_compute_shader_derivatives    : I32EnumAttrCase<"SPV_NV_compute_shader_derivatives", 5000>;
 def SPV_NV_cooperative_matrix            : I32EnumAttrCase<"SPV_NV_cooperative_matrix", 5001>;
@@ -418,7 +408,7 @@ def SPV_NV_ray_tracing_motion_blur       : I32EnumAttrCase<"SPV_NV_ray_tracing_m
 def SPV_NVX_multiview_per_view_attributes : I32EnumAttrCase<"SPV_NVX_multiview_per_view_attributes", 5015>;
 
 def SPV_ExtensionAttr :
-    SPV_EnumAttr<"Extension", "supported SPIR-V extensions", "ext", [
+    SPV_I32EnumAttr<"Extension", "supported SPIR-V extensions", "ext", [
       SPV_KHR_16bit_storage, SPV_KHR_8bit_storage, SPV_KHR_device_group,
       SPV_KHR_float_controls, SPV_KHR_physical_storage_buffer, SPV_KHR_multiview,
       SPV_KHR_no_integer_wrap_decoration, SPV_KHR_post_depth_coverage,
@@ -454,7 +444,7 @@ def SPV_ExtensionAttr :
       SPV_INTEL_usm_storage_classes, SPV_INTEL_io_pipes, SPV_INTEL_blocking_pipes,
       SPV_INTEL_fpga_reg, SPV_INTEL_long_constant_composite, SPV_INTEL_optnone,
       SPV_INTEL_debug_module, SPV_INTEL_fp_fast_math_mode,
-      SPV_INTEL_memory_access_aliasing, SPV_INTEL_split_barrier,
+      SPV_INTEL_memory_access_aliasing, SPV_INTEL_split_barrier, SPV_INTEL_joint_matrix,
       SPV_NV_compute_shader_derivatives, SPV_NV_cooperative_matrix,
       SPV_NV_fragment_shader_barycentric, SPV_NV_geometry_shader_passthrough,
       SPV_NV_mesh_shader, SPV_NV_ray_tracing, SPV_NV_sample_mask_override_coverage,
@@ -1401,8 +1391,14 @@ def SPV_C_ShaderStereoViewNV                          : I32EnumAttrCase<"ShaderS
   ];
 }
 
+def SPV_C_JointMatrixINTEL                         : I32EnumAttrCase<"JointMatrixINTEL", 6118> {
+  list<Availability> availability = [
+    Extension<[SPV_INTEL_joint_matrix]>
+  ];
+}
+
 def SPV_CapabilityAttr :
-    SPV_I32EnumAttr<"Capability", "valid SPIR-V Capability", [
+    SPV_I32EnumAttr<"Capability", "valid SPIR-V Capability", "capability", [
       SPV_C_Matrix, SPV_C_Addresses, SPV_C_Linkage, SPV_C_Kernel, SPV_C_Float16,
       SPV_C_Float64, SPV_C_Int64, SPV_C_Groups, SPV_C_Int16, SPV_C_Int8,
       SPV_C_Sampled1D, SPV_C_SampledBuffer, SPV_C_GroupNonUniform, SPV_C_ShaderLayer,
@@ -1492,7 +1488,7 @@ def SPV_CapabilityAttr :
       SPV_C_UniformTexelBufferArrayNonUniformIndexing,
       SPV_C_StorageTexelBufferArrayNonUniformIndexing,
       SPV_C_ShaderViewportIndexLayerEXT, SPV_C_ShaderViewportMaskNV,
-      SPV_C_ShaderStereoViewNV
+      SPV_C_ShaderStereoViewNV, SPV_C_JointMatrixINTEL
     ]>;
 
 def SPV_AM_Logical                 : I32EnumAttrCase<"Logical", 0>;
@@ -1514,7 +1510,7 @@ def SPV_AM_PhysicalStorageBuffer64 : I32EnumAttrCase<"PhysicalStorageBuffer64", 
 }
 
 def SPV_AddressingModelAttr :
-    SPV_I32EnumAttr<"AddressingModel", "valid SPIR-V AddressingModel", [
+    SPV_I32EnumAttr<"AddressingModel", "valid SPIR-V AddressingModel", "addressing_model", [
       SPV_AM_Logical, SPV_AM_Physical32, SPV_AM_Physical64,
       SPV_AM_PhysicalStorageBuffer64
     ]>;
@@ -2049,7 +2045,7 @@ def SPV_BI_CullMaskKHR                 : I32EnumAttrCase<"CullMaskKHR", 6021> {
 }
 
 def SPV_BuiltInAttr :
-    SPV_I32EnumAttr<"BuiltIn", "valid SPIR-V BuiltIn", [
+    SPV_I32EnumAttr<"BuiltIn", "valid SPIR-V BuiltIn", "built_in", [
       SPV_BI_Position, SPV_BI_PointSize, SPV_BI_ClipDistance, SPV_BI_CullDistance,
       SPV_BI_VertexId, SPV_BI_InstanceId, SPV_BI_PrimitiveId, SPV_BI_InvocationId,
       SPV_BI_Layer, SPV_BI_ViewportIndex, SPV_BI_TessLevelOuter,
@@ -2610,7 +2606,7 @@ def SPV_D_MediaBlockIOINTEL                  : I32EnumAttrCase<"MediaBlockIOINTE
 }
 
 def SPV_DecorationAttr :
-    SPV_I32EnumAttr<"Decoration", "valid SPIR-V Decoration", [
+    SPV_I32EnumAttr<"Decoration", "valid SPIR-V Decoration", "decoration", [
       SPV_D_RelaxedPrecision, SPV_D_SpecId, SPV_D_Block, SPV_D_BufferBlock,
       SPV_D_RowMajor, SPV_D_ColMajor, SPV_D_ArrayStride, SPV_D_MatrixStride,
       SPV_D_GLSLShared, SPV_D_GLSLPacked, SPV_D_CPacked, SPV_D_BuiltIn,
@@ -2679,7 +2675,7 @@ def SPV_D_SubpassData : I32EnumAttrCase<"SubpassData", 6> {
 }
 
 def SPV_DimAttr :
-    SPV_I32EnumAttr<"Dim", "valid SPIR-V Dim", [
+    SPV_I32EnumAttr<"Dim", "valid SPIR-V Dim", "dim", [
       SPV_D_1D, SPV_D_2D, SPV_D_3D, SPV_D_Cube, SPV_D_Rect, SPV_D_Buffer,
       SPV_D_SubpassData
     ]>;
@@ -3093,7 +3089,7 @@ def SPV_EM_NamedBarrierCountINTEL           : I32EnumAttrCase<"NamedBarrierCount
 }
 
 def SPV_ExecutionModeAttr :
-    SPV_I32EnumAttr<"ExecutionMode", "valid SPIR-V ExecutionMode", [
+    SPV_I32EnumAttr<"ExecutionMode", "valid SPIR-V ExecutionMode", "execution_mode", [
       SPV_EM_Invocations, SPV_EM_SpacingEqual, SPV_EM_SpacingFractionalEven,
       SPV_EM_SpacingFractionalOdd, SPV_EM_VertexOrderCw, SPV_EM_VertexOrderCcw,
       SPV_EM_PixelCenterInteger, SPV_EM_OriginUpperLeft, SPV_EM_OriginLowerLeft,
@@ -3203,7 +3199,7 @@ def SPV_EM_CallableKHR            : I32EnumAttrCase<"CallableKHR", 5318> {
 }
 
 def SPV_ExecutionModelAttr :
-    SPV_I32EnumAttr<"ExecutionModel", "valid SPIR-V ExecutionModel", [
+    SPV_I32EnumAttr<"ExecutionModel", "valid SPIR-V ExecutionModel", "execution_model", [
       SPV_EM_Vertex, SPV_EM_TessellationControl, SPV_EM_TessellationEvaluation,
       SPV_EM_Geometry, SPV_EM_Fragment, SPV_EM_GLCompute, SPV_EM_Kernel,
       SPV_EM_TaskNV, SPV_EM_MeshNV, SPV_EM_RayGenerationKHR, SPV_EM_IntersectionKHR,
@@ -3222,7 +3218,7 @@ def SPV_FC_OptNoneINTEL : I32BitEnumAttrCaseBit<"OptNoneINTEL", 16> {
 }
 
 def SPV_FunctionControlAttr :
-    SPV_BitEnumAttr<"FunctionControl", "valid SPIR-V FunctionControl", [
+    SPV_BitEnumAttr<"FunctionControl", "valid SPIR-V FunctionControl", "function_control", [
       SPV_FC_None, SPV_FC_Inline, SPV_FC_DontInline, SPV_FC_Pure, SPV_FC_Const,
       SPV_FC_OptNoneINTEL
     ]>;
@@ -3268,7 +3264,7 @@ def SPV_GO_PartitionedExclusiveScanNV : I32EnumAttrCase<"PartitionedExclusiveSca
 }
 
 def SPV_GroupOperationAttr :
-    SPV_I32EnumAttr<"GroupOperation", "valid SPIR-V GroupOperation", [
+    SPV_I32EnumAttr<"GroupOperation", "valid SPIR-V GroupOperation", "group_operation", [
       SPV_GO_Reduce, SPV_GO_InclusiveScan, SPV_GO_ExclusiveScan,
       SPV_GO_ClusteredReduce, SPV_GO_PartitionedReduceNV,
       SPV_GO_PartitionedInclusiveScanNV, SPV_GO_PartitionedExclusiveScanNV
@@ -3482,7 +3478,7 @@ def SPV_IF_R64i         : I32EnumAttrCase<"R64i", 41> {
 }
 
 def SPV_ImageFormatAttr :
-    SPV_I32EnumAttr<"ImageFormat", "valid SPIR-V ImageFormat", [
+    SPV_I32EnumAttr<"ImageFormat", "valid SPIR-V ImageFormat", "image_format", [
       SPV_IF_Unknown, SPV_IF_Rgba32f, SPV_IF_Rgba16f, SPV_IF_R32f, SPV_IF_Rgba8,
       SPV_IF_Rgba8Snorm, SPV_IF_Rg32f, SPV_IF_Rg16f, SPV_IF_R11fG11fB10f,
       SPV_IF_R16f, SPV_IF_Rgba16, SPV_IF_Rgb10A2, SPV_IF_Rg16, SPV_IF_Rg8,
@@ -3561,7 +3557,7 @@ def SPV_IO_Nontemporal        : I32BitEnumAttrCaseBit<"Nontemporal", 14> {
 }
 
 def SPV_ImageOperandsAttr :
-    SPV_BitEnumAttr<"ImageOperands", "valid SPIR-V ImageOperands", [
+    SPV_BitEnumAttr<"ImageOperands", "valid SPIR-V ImageOperands", "image_operands", [
       SPV_IO_None, SPV_IO_Bias, SPV_IO_Lod, SPV_IO_Grad, SPV_IO_ConstOffset,
       SPV_IO_Offset, SPV_IO_ConstOffsets, SPV_IO_Sample, SPV_IO_MinLod,
       SPV_IO_MakeTexelAvailable, SPV_IO_MakeTexelVisible, SPV_IO_NonPrivateTexel,
@@ -3587,7 +3583,7 @@ def SPV_LT_LinkOnceODR : I32EnumAttrCase<"LinkOnceODR", 2> {
 }
 
 def SPV_LinkageTypeAttr :
-    SPV_I32EnumAttr<"LinkageType", "valid SPIR-V LinkageType", [
+    SPV_I32EnumAttr<"LinkageType", "valid SPIR-V LinkageType", "linkage_type", [
       SPV_LT_Export, SPV_LT_Import, SPV_LT_LinkOnceODR
     ]>;
 
@@ -3679,7 +3675,7 @@ def SPV_LC_NoFusionINTEL             : I32BitEnumAttrCaseBit<"NoFusionINTEL", 23
 }
 
 def SPV_LoopControlAttr :
-    SPV_BitEnumAttr<"LoopControl", "valid SPIR-V LoopControl", [
+    SPV_BitEnumAttr<"LoopControl", "valid SPIR-V LoopControl", "loop_control", [
       SPV_LC_None, SPV_LC_Unroll, SPV_LC_DontUnroll, SPV_LC_DependencyInfinite,
       SPV_LC_DependencyLength, SPV_LC_MinIterations, SPV_LC_MaxIterations,
       SPV_LC_IterationMultiple, SPV_LC_PeelCount, SPV_LC_PartialCount,
@@ -3725,7 +3721,7 @@ def SPV_MA_NoAliasINTELMask     : I32BitEnumAttrCaseBit<"NoAliasINTELMask", 17> 
 }
 
 def SPV_MemoryAccessAttr :
-    SPV_BitEnumAttr<"MemoryAccess", "valid SPIR-V MemoryAccess", [
+    SPV_BitEnumAttr<"MemoryAccess", "valid SPIR-V MemoryAccess", "memory_access", [
       SPV_MA_None, SPV_MA_Volatile, SPV_MA_Aligned, SPV_MA_Nontemporal,
       SPV_MA_MakePointerAvailable, SPV_MA_MakePointerVisible,
       SPV_MA_NonPrivatePointer, SPV_MA_AliasScopeINTELMask, SPV_MA_NoAliasINTELMask
@@ -3754,7 +3750,7 @@ def SPV_MM_Vulkan  : I32EnumAttrCase<"Vulkan", 3> {
 }
 
 def SPV_MemoryModelAttr :
-    SPV_I32EnumAttr<"MemoryModel", "valid SPIR-V MemoryModel", [
+    SPV_I32EnumAttr<"MemoryModel", "valid SPIR-V MemoryModel", "memory_model", [
       SPV_MM_Simple, SPV_MM_GLSL450, SPV_MM_OpenCL, SPV_MM_Vulkan
     ]>;
 
@@ -3803,7 +3799,7 @@ def SPV_MS_Volatile               : I32BitEnumAttrCaseBit<"Volatile", 15> {
 }
 
 def SPV_MemorySemanticsAttr :
-    SPV_BitEnumAttr<"MemorySemantics", "valid SPIR-V MemorySemantics", [
+    SPV_BitEnumAttr<"MemorySemantics", "valid SPIR-V MemorySemantics", "memory_semantics", [
       SPV_MS_None, SPV_MS_Acquire, SPV_MS_Release, SPV_MS_AcquireRelease,
       SPV_MS_SequentiallyConsistent, SPV_MS_UniformMemory, SPV_MS_SubgroupMemory,
       SPV_MS_WorkgroupMemory, SPV_MS_CrossWorkgroupMemory,
@@ -3829,7 +3825,7 @@ def SPV_S_ShaderCallKHR : I32EnumAttrCase<"ShaderCallKHR", 6> {
 }
 
 def SPV_ScopeAttr :
-    SPV_I32EnumAttr<"Scope", "valid SPIR-V Scope", [
+    SPV_I32EnumAttr<"Scope", "valid SPIR-V Scope", "scope", [
       SPV_S_CrossDevice, SPV_S_Device, SPV_S_Workgroup, SPV_S_Subgroup,
       SPV_S_Invocation, SPV_S_QueueFamily, SPV_S_ShaderCallKHR
     ]>;
@@ -3839,7 +3835,7 @@ def SPV_SC_Flatten     : I32BitEnumAttrCaseBit<"Flatten", 0>;
 def SPV_SC_DontFlatten : I32BitEnumAttrCaseBit<"DontFlatten", 1>;
 
 def SPV_SelectionControlAttr :
-    SPV_BitEnumAttr<"SelectionControl", "valid SPIR-V SelectionControl", [
+    SPV_BitEnumAttr<"SelectionControl", "valid SPIR-V SelectionControl", "selection_control", [
       SPV_SC_None, SPV_SC_Flatten, SPV_SC_DontFlatten
     ]>;
 
@@ -3947,7 +3943,7 @@ def SPV_SC_HostOnlyINTEL           : I32EnumAttrCase<"HostOnlyINTEL", 5937> {
 }
 
 def SPV_StorageClassAttr :
-    SPV_I32EnumAttr<"StorageClass", "valid SPIR-V StorageClass", [
+    SPV_I32EnumAttr<"StorageClass", "valid SPIR-V StorageClass", "storage_class", [
       SPV_SC_UniformConstant, SPV_SC_Input, SPV_SC_Uniform, SPV_SC_Output,
       SPV_SC_Workgroup, SPV_SC_CrossWorkgroup, SPV_SC_Private, SPV_SC_Function,
       SPV_SC_Generic, SPV_SC_PushConstant, SPV_SC_AtomicCounter, SPV_SC_Image,
@@ -3965,34 +3961,42 @@ def SPV_IDI_NoDepth      : I32EnumAttrCase<"NoDepth", 0>;
 def SPV_IDI_IsDepth      : I32EnumAttrCase<"IsDepth", 1>;
 def SPV_IDI_DepthUnknown : I32EnumAttrCase<"DepthUnknown", 2>;
 
-def SPV_DepthAttr :
-    SPV_I32EnumAttr<"ImageDepthInfo", "valid SPIR-V Image Depth specification",
-      [SPV_IDI_NoDepth, SPV_IDI_IsDepth, SPV_IDI_DepthUnknown]>;
+def SPV_DepthAttr : SPV_I32EnumAttr<
+  "ImageDepthInfo", "valid SPIR-V Image Depth specification",
+  "image_depth_info", [SPV_IDI_NoDepth, SPV_IDI_IsDepth, SPV_IDI_DepthUnknown]>;
 
 def SPV_IAI_NonArrayed : I32EnumAttrCase<"NonArrayed", 0>;
 def SPV_IAI_Arrayed    : I32EnumAttrCase<"Arrayed", 1>;
 
-def SPV_ArrayedAttr :
-    SPV_I32EnumAttr<
-      "ImageArrayedInfo", "valid SPIR-V Image Arrayed specification",
-      [SPV_IAI_NonArrayed, SPV_IAI_Arrayed]>;
+def SPV_ArrayedAttr : SPV_I32EnumAttr<
+  "ImageArrayedInfo", "valid SPIR-V Image Arrayed specification",
+  "image_arrayed_info", [SPV_IAI_NonArrayed, SPV_IAI_Arrayed]>;
 
 def SPV_ISI_SingleSampled : I32EnumAttrCase<"SingleSampled", 0>;
 def SPV_ISI_MultiSampled  : I32EnumAttrCase<"MultiSampled", 1>;
 
-def SPV_SamplingAttr:
-    SPV_I32EnumAttr<
-      "ImageSamplingInfo", "valid SPIR-V Image Sampling specification",
-      [SPV_ISI_SingleSampled, SPV_ISI_MultiSampled]>;
+def SPV_SamplingAttr: SPV_I32EnumAttr<
+  "ImageSamplingInfo", "valid SPIR-V Image Sampling specification",
+  "image_sampling_info", [SPV_ISI_SingleSampled, SPV_ISI_MultiSampled]>;
 
 def SPV_ISUI_SamplerUnknown : I32EnumAttrCase<"SamplerUnknown", 0>;
 def SPV_ISUI_NeedSampler    : I32EnumAttrCase<"NeedSampler", 1>;
 def SPV_ISUI_NoSampler      : I32EnumAttrCase<"NoSampler", 2>;
 
-def SPV_SamplerUseAttr:
-    SPV_I32EnumAttr<
-      "ImageSamplerUseInfo", "valid SPIR-V Sampler Use specification",
-      [SPV_ISUI_SamplerUnknown, SPV_ISUI_NeedSampler, SPV_ISUI_NoSampler]>;
+def SPV_SamplerUseAttr: SPV_I32EnumAttr<
+  "ImageSamplerUseInfo", "valid SPIR-V Sampler Use specification",
+  "image_sampler_use_info",
+  [SPV_ISUI_SamplerUnknown, SPV_ISUI_NeedSampler, SPV_ISUI_NoSampler]>;
+
+def SPV_ML_ColumnMajor : I32EnumAttrCase<"ColumnMajor", 0>;
+def SPV_ML_RowMajor    : I32EnumAttrCase<"RowMajor", 1>;
+def SPV_ML_PackedA     : I32EnumAttrCase<"PackedA", 2>;
+def SPV_ML_PackedB     : I32EnumAttrCase<"PackedB", 3>;
+
+def SPV_MatrixLayoutAttr  :
+    SPV_I32EnumAttr<"MatrixLayout", "valid SPIR-V MatrixLayout", "matrixLayout", [
+      SPV_ML_ColumnMajor, SPV_ML_RowMajor, SPV_ML_PackedA, SPV_ML_PackedB
+    ]>;
 
 //===----------------------------------------------------------------------===//
 // SPIR-V attribute definitions
@@ -4026,6 +4030,8 @@ def SPV_IsArrayType : CPred<"$_self.isa<::mlir::spirv::ArrayType>()">;
 def SPV_IsCooperativeMatrixType :
   CPred<"$_self.isa<::mlir::spirv::CooperativeMatrixNVType>()">;
 def SPV_IsImageType : CPred<"$_self.isa<::mlir::spirv::ImageType>()">;
+def SPV_IsJointMatrixType :
+  CPred<"$_self.isa<::mlir::spirv::JointMatrixINTELType>()">;
 def SPV_IsMatrixType : CPred<"$_self.isa<::mlir::spirv::MatrixType>()">;
 def SPV_IsPtrType : CPred<"$_self.isa<::mlir::spirv::PointerType>()">;
 def SPV_IsRTArrayType : CPred<"$_self.isa<::mlir::spirv::RuntimeArrayType>()">;
@@ -4056,6 +4062,8 @@ def SPV_AnyCooperativeMatrix : DialectType<SPIRV_Dialect,
                                "any SPIR-V cooperative matrix type">;
 def SPV_AnyImage : DialectType<SPIRV_Dialect, SPV_IsImageType,
                                 "any SPIR-V image type">;
+def SPV_AnyJointMatrix : DialectType<SPIRV_Dialect, SPV_IsJointMatrixType,
+                                "any SPIR-V joint matrix type">;
 def SPV_AnyMatrix : DialectType<SPIRV_Dialect, SPV_IsMatrixType,
                                 "any SPIR-V matrix type">;
 def SPV_AnyRTArray : DialectType<SPIRV_Dialect, SPV_IsRTArrayType,
@@ -4070,11 +4078,12 @@ def SPV_Scalar : AnyTypeOf<[SPV_Numerical, SPV_Bool]>;
 def SPV_Aggregate : AnyTypeOf<[SPV_AnyArray, SPV_AnyRTArray, SPV_AnyStruct]>;
 def SPV_Composite :
     AnyTypeOf<[SPV_Vector, SPV_AnyArray, SPV_AnyRTArray, SPV_AnyStruct,
-               SPV_AnyCooperativeMatrix, SPV_AnyMatrix]>;
+               SPV_AnyCooperativeMatrix, SPV_AnyJointMatrix, SPV_AnyMatrix]>;
 def SPV_Type : AnyTypeOf<[
     SPV_Void, SPV_Bool, SPV_Integer, SPV_Float, SPV_Vector,
     SPV_AnyPtr, SPV_AnyArray, SPV_AnyRTArray, SPV_AnyStruct,
-    SPV_AnyCooperativeMatrix, SPV_AnyMatrix, SPV_AnySampledImage
+    SPV_AnyCooperativeMatrix, SPV_AnyJointMatrix, SPV_AnyMatrix,
+    SPV_AnySampledImage
   ]>;
 
 def SPV_SignedInt : SignedIntOfWidths<[8, 16, 32, 64]>;
@@ -4084,6 +4093,11 @@ class SPV_CoopMatrixOfType<list<Type> allowedTypes> :
   ContainerType<AnyTypeOf<allowedTypes>, SPV_IsCooperativeMatrixType,
     "$_self.cast<::mlir::spirv::CooperativeMatrixNVType>().getElementType()",
     "Cooperative Matrix">;
+
+class SPV_JointMatrixOfType<list<Type> allowedTypes> :
+  ContainerType<AnyTypeOf<allowedTypes>, SPV_IsJointMatrixType,
+    "$_self.cast<::mlir::spirv::JointMatrixINTELType>().getElementType()",
+    "Joint Matrix">;
 
 class SPV_ScalarOrVectorOf<Type type> :
     AnyTypeOf<[type, VectorOfLengthAndType<[2, 3, 4, 8, 16], [type]>]>;
@@ -4324,9 +4338,14 @@ def SPV_OC_OpSubgroupBlockReadINTEL    : I32EnumAttrCase<"OpSubgroupBlockReadINT
 def SPV_OC_OpSubgroupBlockWriteINTEL   : I32EnumAttrCase<"OpSubgroupBlockWriteINTEL", 5576>;
 def SPV_OC_OpAssumeTrueKHR             : I32EnumAttrCase<"OpAssumeTrueKHR", 5630>;
 def SPV_OC_OpAtomicFAddEXT             : I32EnumAttrCase<"OpAtomicFAddEXT", 6035>;
+def SPV_OC_OpTypeJointMatrixINTEL      : I32EnumAttrCase<"OpTypeJointMatrixINTEL", 6119>;
+def SPV_OC_OpJointMatrixLoadINTEL      : I32EnumAttrCase<"OpJointMatrixLoadINTEL", 6120>;
+def SPV_OC_OpJointMatrixStoreINTEL     : I32EnumAttrCase<"OpJointMatrixStoreINTEL", 6121>;
+def SPV_OC_OpJointMatrixMadINTEL       : I32EnumAttrCase<"OpJointMatrixMadINTEL", 6122>;
+def SPV_OC_OpTypejointMatrixWorkItemLengthINTEL : I32EnumAttrCase<"OpJointMatrixWorkItemLengthINTEL", 6410>;
 
 def SPV_OpcodeAttr :
-    SPV_I32EnumAttr<"Opcode", "valid SPIR-V instructions", [
+    SPV_I32EnumAttr<"Opcode", "valid SPIR-V instructions", "opcode", [
       SPV_OC_OpNop, SPV_OC_OpUndef, SPV_OC_OpSourceContinued, SPV_OC_OpSource,
       SPV_OC_OpSourceExtension, SPV_OC_OpName, SPV_OC_OpMemberName, SPV_OC_OpString,
       SPV_OC_OpLine, SPV_OC_OpExtension, SPV_OC_OpExtInstImport, SPV_OC_OpExtInst,
@@ -4389,7 +4408,10 @@ def SPV_OpcodeAttr :
       SPV_OC_OpCooperativeMatrixLoadNV, SPV_OC_OpCooperativeMatrixStoreNV,
       SPV_OC_OpCooperativeMatrixMulAddNV, SPV_OC_OpCooperativeMatrixLengthNV,
       SPV_OC_OpSubgroupBlockReadINTEL, SPV_OC_OpSubgroupBlockWriteINTEL,
-      SPV_OC_OpAssumeTrueKHR, SPV_OC_OpAtomicFAddEXT
+      SPV_OC_OpAssumeTrueKHR, SPV_OC_OpAtomicFAddEXT,
+      SPV_OC_OpTypeJointMatrixINTEL, SPV_OC_OpJointMatrixLoadINTEL,
+      SPV_OC_OpJointMatrixStoreINTEL, SPV_OC_OpJointMatrixMadINTEL,
+      SPV_OC_OpTypejointMatrixWorkItemLengthINTEL
     ]>;
 
 // End opcode section. Generated from SPIR-V spec; DO NOT MODIFY!

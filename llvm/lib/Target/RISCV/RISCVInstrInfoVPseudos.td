@@ -550,6 +550,11 @@ class RISCVVLE<bit M, bit TU, bit Str, bit F, bits<3> S, bits<3> L> {
   Pseudo Pseudo = !cast<Pseudo>(NAME);
 }
 
+def lookupMaskedIntrinsicByUnmaskedTA : SearchIndex {
+  let Table = RISCVMaskedPseudosTable;
+  let Key = ["UnmaskedPseudo"];
+}
+
 def RISCVVLETable : GenericTable {
   let FilterClass = "RISCVVLE";
   let CppTypeName = "VLEPseudo";
@@ -1799,6 +1804,7 @@ multiclass VPseudoUSLoad {
           VLESched<eew>;
         def "E" # eew # "_V_" # LInfo # "_MASK" :
           VPseudoUSLoadMask<vreg, eew>,
+          RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
           VLESched<eew>;
       }
     }
@@ -1819,6 +1825,7 @@ multiclass VPseudoFFLoad {
           VLFSched<eew>;
         def "E" # eew # "FF_V_" # LInfo # "_MASK":
           VPseudoUSLoadFFMask<vreg, eew>,
+          RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
           VLFSched<eew>;
       }
     }
@@ -1843,8 +1850,10 @@ multiclass VPseudoSLoad {
                                         VLSSched<eew>;
         def "E" # eew # "_V_" # LInfo # "_TU": VPseudoSLoadNoMaskTU<vreg, eew>,
                                         VLSSched<eew>;
-        def "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSLoadMask<vreg, eew>,
-                                                  VLSSched<eew>;
+        def "E" # eew # "_V_" # LInfo # "_MASK" :
+          VPseudoSLoadMask<vreg, eew>,
+          RISCVMaskedPseudo</*MaskOpIdx*/ 3>,
+          VLSSched<eew>;
       }
     }
   }
@@ -1874,6 +1883,7 @@ multiclass VPseudoILoad<bit Ordered> {
               VLXSched<eew, Order>;
             def "EI" # eew # "_V_" # IdxLInfo # "_" # LInfo # "_MASK" :
               VPseudoILoadMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint>,
+              RISCVMaskedPseudo</*MaskOpIdx*/ 3>,
               VLXSched<eew, Order>;
           }
         }
@@ -1993,6 +2003,7 @@ multiclass VPseudoVID_V {
       def "_V_" # m.MX # "_TU": VPseudoNullaryNoMaskTU<m.vrclass>,
                                 Sched<[WriteVMIdxV, ReadVMask]>;
       def "_V_" # m.MX # "_MASK" : VPseudoNullaryMask<m.vrclass>,
+                                   RISCVMaskedPseudo</*MaskOpIdx*/ 1>,
                                    Sched<[WriteVMIdxV, ReadVMask]>;
     }
   }
@@ -2015,6 +2026,7 @@ multiclass VPseudoVIOT_M {
       def "_" # m.MX # "_TU" : VPseudoUnaryNoMaskTU<m.vrclass, VR, constraint>,
                                Sched<[WriteVMIotV, ReadVMIotV, ReadVMask]>;
       def "_" # m.MX # "_MASK" : VPseudoUnaryMaskTA<m.vrclass, VR, constraint>,
+                                 RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
                                  Sched<[WriteVMIotV, ReadVMIotV, ReadVMask]>;
     }
   }
@@ -2384,6 +2396,7 @@ multiclass VPseudoVCLS_V {
       def "_V_" # m.MX # "_TU": VPseudoUnaryNoMaskTU<m.vrclass, m.vrclass>,
                                 Sched<[WriteVFClassV, ReadVFClassV, ReadVMask]>;
       def "_V_" # m.MX # "_MASK" : VPseudoUnaryMaskTA<m.vrclass, m.vrclass>,
+                                   RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
                                    Sched<[WriteVFClassV, ReadVFClassV, ReadVMask]>;
     }
   }
@@ -2397,6 +2410,7 @@ multiclass VPseudoVSQR_V {
       def "_V_" # m.MX # "_TU": VPseudoUnaryNoMaskTU<m.vrclass, m.vrclass>,
                                 Sched<[WriteVFSqrtV, ReadVFSqrtV, ReadVMask]>;
       def "_V_" # m.MX # "_MASK" : VPseudoUnaryMaskTA<m.vrclass, m.vrclass>,
+                                   RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
                                    Sched<[WriteVFSqrtV, ReadVFSqrtV, ReadVMask]>;
     }
   }
@@ -2410,6 +2424,7 @@ multiclass VPseudoVRCP_V {
       def "_V_" # m.MX # "_TU": VPseudoUnaryNoMaskTU<m.vrclass, m.vrclass>,
                                 Sched<[WriteVFRecpV, ReadVFRecpV, ReadVMask]>;
       def "_V_" # m.MX # "_MASK" : VPseudoUnaryMaskTA<m.vrclass, m.vrclass>,
+                                   RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
                                    Sched<[WriteVFRecpV, ReadVFRecpV, ReadVMask]>;
     }
   }
@@ -3078,11 +3093,11 @@ multiclass VPseudoUSSegLoad {
         foreach nf = NFSet<lmul>.L in {
           defvar vreg = SegRegClass<lmul, nf>.RC;
           def nf # "E" # eew # "_V_" # LInfo :
-            VPseudoUSSegLoadNoMask<vreg, eew, nf>;
+            VPseudoUSSegLoadNoMask<vreg, eew, nf>, VLSEGSched<nf, eew>;
           def nf # "E" # eew # "_V_" # LInfo # "_TU" :
-            VPseudoUSSegLoadNoMaskTU<vreg, eew, nf>;
+            VPseudoUSSegLoadNoMaskTU<vreg, eew, nf>, VLSEGSched<nf, eew>;
           def nf # "E" # eew # "_V_" # LInfo # "_MASK" :
-            VPseudoUSSegLoadMask<vreg, eew, nf>;
+            VPseudoUSSegLoadMask<vreg, eew, nf>, VLSEGSched<nf, eew>;
         }
       }
     }
@@ -3097,11 +3112,11 @@ multiclass VPseudoUSSegLoadFF {
         foreach nf = NFSet<lmul>.L in {
           defvar vreg = SegRegClass<lmul, nf>.RC;
           def nf # "E" # eew # "FF_V_" # LInfo :
-            VPseudoUSSegLoadFFNoMask<vreg, eew, nf>;
+            VPseudoUSSegLoadFFNoMask<vreg, eew, nf>, VLSEGFFSched<nf, eew>;
           def nf # "E" # eew # "FF_V_" # LInfo # "_TU" :
-            VPseudoUSSegLoadFFNoMaskTU<vreg, eew, nf>;
+            VPseudoUSSegLoadFFNoMaskTU<vreg, eew, nf>, VLSEGFFSched<nf, eew>;
           def nf # "E" # eew # "FF_V_" # LInfo # "_MASK" :
-            VPseudoUSSegLoadFFMask<vreg, eew, nf>;
+            VPseudoUSSegLoadFFMask<vreg, eew, nf>, VLSEGFFSched<nf, eew>;
         }
       }
     }
@@ -3115,9 +3130,12 @@ multiclass VPseudoSSegLoad {
       let VLMul = lmul.value in {
         foreach nf = NFSet<lmul>.L in {
           defvar vreg = SegRegClass<lmul, nf>.RC;
-          def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegLoadNoMask<vreg, eew, nf>;
-          def nf # "E" # eew # "_V_" # LInfo # "_TU" : VPseudoSSegLoadNoMaskTU<vreg, eew, nf>;
-          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegLoadMask<vreg, eew, nf>;
+          def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegLoadNoMask<vreg, eew, nf>,
+                                               VLSSEGSched<nf, eew>;
+          def nf # "E" # eew # "_V_" # LInfo # "_TU" : VPseudoSSegLoadNoMaskTU<vreg, eew, nf>,
+                                                       VLSSEGSched<nf, eew>;
+          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegLoadMask<vreg, eew, nf>,
+                                                         VLSSEGSched<nf, eew>;
         }
       }
     }
@@ -3137,18 +3155,22 @@ multiclass VPseudoISegLoad<bit Ordered> {
           defvar idx_lmul = !cast<LMULInfo>("V_" # IdxLInfo);
           defvar Vreg = val_lmul.vrclass;
           defvar IdxVreg = idx_lmul.vrclass;
+          defvar Order = !if(Ordered, "O", "U");
           let VLMul = val_lmul.value in {
             foreach nf = NFSet<val_lmul>.L in {
               defvar ValVreg = SegRegClass<val_lmul, nf>.RC;
               def nf # "EI" # idx_eew # "_V_" # IdxLInfo # "_" # ValLInfo :
                 VPseudoISegLoadNoMask<ValVreg, IdxVreg, idx_eew, idx_lmul.value,
-                                      nf, Ordered>;
+                                      nf, Ordered>,
+                VLXSEGSched<nf, idx_eew, Order>;
               def nf # "EI" # idx_eew # "_V_" # IdxLInfo # "_" # ValLInfo # "_TU" :
                 VPseudoISegLoadNoMaskTU<ValVreg, IdxVreg, idx_eew, idx_lmul.value,
-                                        nf, Ordered>;
+                                        nf, Ordered>,
+                VLXSEGSched<nf, idx_eew, Order>;
               def nf # "EI" # idx_eew # "_V_" # IdxLInfo # "_" # ValLInfo # "_MASK" :
                 VPseudoISegLoadMask<ValVreg, IdxVreg, idx_eew, idx_lmul.value,
-                                    nf, Ordered>;
+                                    nf, Ordered>,
+                VLXSEGSched<nf, idx_eew, Order>;
             }
           }
         }
@@ -3164,8 +3186,10 @@ multiclass VPseudoUSSegStore {
       let VLMul = lmul.value in {
         foreach nf = NFSet<lmul>.L in {
           defvar vreg = SegRegClass<lmul, nf>.RC;
-          def nf # "E" # eew # "_V_" # LInfo : VPseudoUSSegStoreNoMask<vreg, eew, nf>;
-          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoUSSegStoreMask<vreg, eew, nf>;
+          def nf # "E" # eew # "_V_" # LInfo : VPseudoUSSegStoreNoMask<vreg, eew, nf>,
+                                               VSSEGSched<nf, eew>;
+          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoUSSegStoreMask<vreg, eew, nf>,
+                                                         VSSEGSched<nf, eew>;
         }
       }
     }
@@ -3179,8 +3203,10 @@ multiclass VPseudoSSegStore {
       let VLMul = lmul.value in {
         foreach nf = NFSet<lmul>.L in {
           defvar vreg = SegRegClass<lmul, nf>.RC;
-          def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegStoreNoMask<vreg, eew, nf>;
-          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegStoreMask<vreg, eew, nf>;
+          def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegStoreNoMask<vreg, eew, nf>,
+                                               VSSSEGSched<nf, eew>;
+          def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegStoreMask<vreg, eew, nf>,
+                                                         VSSSEGSched<nf, eew>;
         }
       }
     }
@@ -3200,15 +3226,18 @@ multiclass VPseudoISegStore<bit Ordered> {
           defvar idx_lmul = !cast<LMULInfo>("V_" # IdxLInfo);
           defvar Vreg = val_lmul.vrclass;
           defvar IdxVreg = idx_lmul.vrclass;
+          defvar Order = !if(Ordered, "O", "U");
           let VLMul = val_lmul.value in {
             foreach nf = NFSet<val_lmul>.L in {
               defvar ValVreg = SegRegClass<val_lmul, nf>.RC;
               def nf # "EI" # idx_eew # "_V_" # IdxLInfo # "_" # ValLInfo :
                 VPseudoISegStoreNoMask<ValVreg, IdxVreg, idx_eew, idx_lmul.value,
-                                       nf, Ordered>;
+                                       nf, Ordered>,
+                VSXSEGSched<nf, idx_eew, Order>;
               def nf # "EI" # idx_eew # "_V_" # IdxLInfo # "_" # ValLInfo # "_MASK" :
                 VPseudoISegStoreMask<ValVreg, IdxVreg, idx_eew, idx_lmul.value,
-                                     nf, Ordered>;
+                                     nf, Ordered>,
+                VSXSEGSched<nf, idx_eew, Order>;
             }
           }
         }

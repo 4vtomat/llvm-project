@@ -27,6 +27,10 @@ struct MemberZero {
   constexpr int zero() const { return 0; }
 };
 
+constexpr int arr[]; // expected-error {{constexpr variable 'arr' must be initialized by a constant expression}}
+constexpr int arr2[2]; // expected-error {{constexpr variable 'arr2' must be initialized by a constant expression}}
+constexpr int arr3[2] = {};
+
 namespace DerivedToVBaseCast {
 
   struct U { int n; };
@@ -1298,7 +1302,7 @@ namespace ExternConstexpr {
   void f() {
     extern constexpr int i; // expected-error {{constexpr variable declaration must be a definition}}
     constexpr int j = 0;
-    constexpr int k; // expected-error {{default initialization of an object of const type}}
+    constexpr int k; // expected-error {{constexpr variable 'k' must be initialized by a constant expression}}
   }
 
   extern const int q;
@@ -1913,11 +1917,13 @@ namespace VirtualFromBase {
   // cxx11-error@-1    {{not an integral constant expression}}
   // cxx11-note@-2     {{call to virtual function}}
   // cxx20_2b-error@-3 {{static assertion failed}}
+  // cxx20_2b-note@-4 {{8 == 16}}
 
   // Non-virtual f(), OK.
   constexpr X<X<S2>> xxs2;
   constexpr X<S2> *q = const_cast<X<X<S2>>*>(&xxs2);
-  static_assert(q->f() == sizeof(S2), ""); // cxx20_2b-error {{static assertion failed}}
+  static_assert(q->f() == sizeof(S2), ""); // cxx20_2b-error {{static assertion failed}} \
+                                           // cxx20_2b-note {{16 == 8}}
 }
 
 namespace ConstexprConstructorRecovery {
@@ -2035,6 +2041,7 @@ namespace Bitfields {
       }
     };
     static_assert(X::f(3) == -1, "3 should truncate to -1");
+    static_assert(X::f(1) == -1, "1 should truncate to -1");
   }
 
   struct HasUnnamedBitfield {
@@ -2416,6 +2423,13 @@ enum class EScoped {escoped1=-4, escoped2=4};
 
 enum EMaxInt {emaxint1=-1, emaxint2=__INT_MAX__};
 
+enum NumberType {};
+
+E2 testDefaultArgForParam(E2 e2Param = (E2)-1) { // ok, not a constant expression context
+  E2 e2LocalInit = e2Param; // ok, not a constant expression context
+  return e2LocalInit;
+}
+
 void testValueInRangeOfEnumerationValues() {
   constexpr E1 x1 = static_cast<E1>(-8);
   constexpr E1 x2 = static_cast<E1>(8);
@@ -2451,6 +2465,22 @@ void testValueInRangeOfEnumerationValues() {
   constexpr EMaxInt x19 = static_cast<EMaxInt>(__INT_MAX__-1);
   constexpr EMaxInt x20 = static_cast<EMaxInt>((long)__INT_MAX__+1);
   // expected-error@-1 {{integer value 2147483648 is outside the valid range of values [-2147483648, 2147483647] for this enumeration type}}
+
+  const NumberType neg_one = (NumberType) ((NumberType) 0 - (NumberType) 1); // ok, not a constant expression context
+}
+
+enum SortOrder {
+  AscendingOrder,
+  DescendingOrder
+};
+
+class A {
+  static void f(SortOrder order);
+};
+
+void A::f(SortOrder order) {
+  if (order == SortOrder(-1)) // ok, not a constant expression context
+    return;
 }
 
 enum SortOrder {
@@ -2467,3 +2497,8 @@ void A::f(SortOrder order) {
     return;
 }
 }
+
+GH50055::E2 GlobalInitNotCE1 = (GH50055::E2)-1; // ok, not a constant expression context
+GH50055::E2 GlobalInitNotCE2 = GH50055::testDefaultArgForParam(); // ok, not a constant expression context
+constexpr GH50055::E2 GlobalInitCE = (GH50055::E2)-1;
+// expected-error@-1 {{integer value -1 is outside the valid range of values [0, 7] for this enumeration type}}

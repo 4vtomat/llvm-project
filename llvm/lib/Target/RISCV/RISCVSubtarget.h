@@ -57,8 +57,12 @@ private:
   bool HasStdExtD = false;
   bool HasStdExtC = false;
   bool HasStdExtZihintpause = false;
+<<<<<<< HEAD
   bool HasStdExtZicsr = false; // SIFIVE
   bool HasStdExtZifencei = false; // SIFIVE
+=======
+  bool HasStdExtZihintntl = false;
+>>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   bool HasStdExtZba = false;
   bool HasStdExtZbb = false;
   bool HasStdExtZbc = false;
@@ -69,6 +73,7 @@ private:
   bool HasStdExtZbr = false;
   bool HasStdExtZbs = false;
   bool HasStdExtZbt = false;
+  bool HasStdExtZca = false;
   bool HasStdExtV = false;
   bool HasStdExtZve32x = false;
   bool HasStdExtZve32f = false;
@@ -105,7 +110,11 @@ private:
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
   bool HasStdExtZmmul = false;
+<<<<<<< HEAD
   bool HasStdExtSscofpmf = false; // SIFIVE
+=======
+  bool HasRV32 = false;
+>>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
   bool HasRV64 = false;
   bool IsRV32E = false;
   bool EnableLinkerRelax = false;
@@ -125,12 +134,13 @@ private:
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
   bool HasLUIADDIFusion = false;
+  bool HasForcedAtomics = false;
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
   MVT XLenVT = MVT::i32;
   uint8_t MaxInterleaveFactor = 2;
   RISCVABI::ABI TargetABI = RISCVABI::ABI_Unknown;
-  BitVector UserReservedRegister;
+  std::bitset<RISCV::NUM_TARGET_REGS> UserReservedRegister;
   RISCVFrameLowering FrameLowering;
   RISCVInstrInfo InstrInfo;
   RISCVRegisterInfo RegInfo;
@@ -186,6 +196,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   bool hasStdExtV() const { return HasStdExtV; }
   bool hasStdExtZihintpause() const { return HasStdExtZihintpause; }
+  bool hasStdExtZihintntl() const { return HasStdExtZihintntl; }
   bool hasStdExtZba() const { return HasStdExtZba; }
   bool hasStdExtZbb() const { return HasStdExtZbb; }
   bool hasStdExtZbc() const { return HasStdExtZbc; }
@@ -196,6 +207,7 @@ public:
   bool hasStdExtZbr() const { return HasStdExtZbr; }
   bool hasStdExtZbs() const { return HasStdExtZbs; }
   bool hasStdExtZbt() const { return HasStdExtZbt; }
+  bool hasStdExtZca() const { return HasStdExtZca; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
   bool hasExtXsfvqmaccqoq() const { return HasExtXsfvqmaccqoq; } // SIFIVE
   bool hasExtXsfvqmaccdod() const { return HasExtXsfvqmaccdod; } // SIFIVE
@@ -252,6 +264,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   bool enableUnalignedScalarMem() const { return EnableUnalignedScalarMem; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
+  bool hasForcedAtomics() const { return HasForcedAtomics; }
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
   unsigned getFLen() const {

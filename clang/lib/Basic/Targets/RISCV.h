@@ -105,6 +105,11 @@ public:
   bool useFP16ConversionIntrinsics() const override {
     return false;
   }
+
+  bool isValidCPUName(StringRef Name) const override;
+  void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
+  bool isValidTuneCPUName(StringRef Name) const override;
+  void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
 };
 class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
 public:
@@ -123,11 +128,6 @@ public:
     }
     return false;
   }
-
-  bool isValidCPUName(StringRef Name) const override;
-  void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
-  bool isValidTuneCPUName(StringRef Name) const override;
-  void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
 
   void setMaxAtomicWidth() override {
     MaxAtomicPromoteWidth = 128;
@@ -154,11 +154,6 @@ public:
     }
     return false;
   }
-
-  bool isValidCPUName(StringRef Name) const override;
-  void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
-  bool isValidTuneCPUName(StringRef Name) const override;
-  void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
 
   void setMaxAtomicWidth() override {
     MaxAtomicPromoteWidth = 128;

@@ -145,7 +145,8 @@ bool Sema::isSimpleTypeSpecifier(tok::TokenKind Kind) const {
   case tok::kw___ibm128:
   case tok::kw_wchar_t:
   case tok::kw_bool:
-  case tok::kw___underlying_type:
+#define TRANSFORM_TYPE_TRAIT_DEF(_, Trait) case tok::kw___##Trait:
+#include "clang/Basic/TransformTypeTraits.def"
   case tok::kw___auto_type:
     return true;
 
@@ -1855,7 +1856,7 @@ bool Sema::mightHaveNonExternalLinkage(const DeclaratorDecl *D) {
 // FIXME: This needs to be refactored; some other isInMainFile users want
 // these semantics.
 static bool isMainFileLoc(const Sema &S, SourceLocation Loc) {
-  if (S.TUKind != TU_Complete)
+  if (S.TUKind != TU_Complete || S.getLangOpts().IsHeaderFile)
     return false;
   return S.SourceMgr.isInMainFile(Loc);
 }
@@ -4042,7 +4043,7 @@ bool Sema::MergeFunctionDecl(FunctionDecl *New, NamedDecl *&OldD, Scope *S,
     // default argument promotion rules were already checked by
     // ASTContext::typesAreCompatible().
     if (Old->hasPrototype() && !New->hasWrittenPrototype() && NewDeclIsDefn &&
-        Old->getNumParams() != New->getNumParams()) {
+        Old->getNumParams() != New->getNumParams() && !Old->isImplicit()) {
       if (Old->hasInheritedPrototype())
         Old = Old->getCanonicalDecl();
       Diag(New->getLocation(), diag::err_conflicting_types) << New;
@@ -4739,6 +4740,7 @@ bool Sema::checkVarDeclRedefinition(VarDecl *Old, VarDecl *New) {
   if (!hasVisibleDefinition(Old) &&
       (New->getFormalLinkage() == InternalLinkage ||
        New->isInline() ||
+       isa<VarTemplateSpecializationDecl>(New) ||
        New->getDescribedVarTemplate() ||
        New->getNumTemplateParameterLists() ||
        New->getDeclContext()->isDependentContext())) {
@@ -5922,7 +5924,8 @@ static bool RebuildDeclaratorInCurrentInstantiation(Sema &S, Declarator &D,
   switch (DS.getTypeSpecType()) {
   case DeclSpec::TST_typename:
   case DeclSpec::TST_typeofType:
-  case DeclSpec::TST_underlyingType:
+#define TRANSFORM_TYPE_TRAIT_DEF(_, Trait) case DeclSpec::TST_##Trait:
+#include "clang/Basic/TransformTypeTraits.def"
   case DeclSpec::TST_atomic: {
     // Grab the type from the parser.
     TypeSourceInfo *TSI = nullptr;
@@ -9837,6 +9840,19 @@ Sema::ActOnFunctionDeclarator(Scope *S, Declarator &D, DeclContext *DC,
       NewFD->setType(Context.getFunctionType(
           FPT->getReturnType(), FPT->getParamTypes(),
           FPT->getExtProtoInfo().withExceptionSpec(EST_BasicNoexcept)));
+
+    // C++20 [dcl.inline]/7
+    // If an inline function or variable that is attached to a named module
+    // is declared in a definition domain, it shall be defined in that
+    // domain.
+    // So, if the current declaration does not have a definition, we must
+    // check at the end of the TU (or when the PMF starts) to see that we
+    // have a definition at that point.
+    if (isInline && !D.isFunctionDefinition() && getLangOpts().CPlusPlus20 &&
+        NewFD->hasOwningModule() &&
+        NewFD->getOwningModule()->isModulePurview()) {
+      PendingInlineFuncDecls.insert(NewFD);
+    }
   }
 
   // Filter out previous declarations that don't match the scope.
@@ -11513,16 +11529,25 @@ bool Sema::CheckFunctionDeclaration(Scope *S, FunctionDecl *NewFD,
     if (CXXConstructorDecl *Constructor = dyn_cast<CXXConstructorDecl>(NewFD)) {
       CheckConstructor(Constructor);
     } else if (CXXDestructorDecl *Destructor =
-                dyn_cast<CXXDestructorDecl>(NewFD)) {
-      CXXRecordDecl *Record = Destructor->getParent();
-      QualType ClassType = Context.getTypeDeclType(Record);
+                   dyn_cast<CXXDestructorDecl>(NewFD)) {
+      // We check here for invalid destructor names.
+      // If we have a friend destructor declaration that is dependent, we can't
+      // diagnose right away because cases like this are still valid:
+      // template <class T> struct A { friend T::X::~Y(); };
+      // struct B { struct Y { ~Y(); }; using X = Y; };
+      // template struct A<B>;
+      if (NewFD->getFriendObjectKind() == Decl::FriendObjectKind::FOK_None ||
+          !Destructor->getThisType()->isDependentType()) {
+        CXXRecordDecl *Record = Destructor->getParent();
+        QualType ClassType = Context.getTypeDeclType(Record);
 
-      DeclarationName Name = Context.DeclarationNames.getCXXDestructorName(
-          Context.getCanonicalType(ClassType));
-      if (NewFD->getDeclName() != Name) {
-        Diag(NewFD->getLocation(), diag::err_destructor_name);
-        NewFD->setInvalidDecl();
-        return Redeclaration;
+        DeclarationName Name = Context.DeclarationNames.getCXXDestructorName(
+            Context.getCanonicalType(ClassType));
+        if (NewFD->getDeclName() != Name) {
+          Diag(NewFD->getLocation(), diag::err_destructor_name);
+          NewFD->setInvalidDecl();
+          return Redeclaration;
+        }
       }
     } else if (auto *Guide = dyn_cast<CXXDeductionGuideDecl>(NewFD)) {
       if (auto *TD = Guide->getDescribedFunctionTemplate())
@@ -11869,6 +11894,16 @@ void Sema::CheckHLSLEntryPoint(FunctionDecl *FD) {
     }
     break;
   }
+
+  for (const auto *Param : FD->parameters()) {
+    if (!Param->hasAttr<HLSLAnnotationAttr>()) {
+      // FIXME: Handle struct parameters where annotations are on struct fields.
+      Diag(FD->getLocation(), diag::err_hlsl_missing_semantic_annotation);
+      Diag(Param->getLocation(), diag::note_previous_decl) << Param;
+      FD->setInvalidDecl();
+    }
+  }
+  // FIXME: Verify return type semantic annotation.
 }
 
 bool Sema::CheckForConstantInitializer(Expr *Init, QualType DclT) {
@@ -13362,8 +13397,12 @@ void Sema::ActOnUninitializedDecl(Decl *RealDecl) {
     // Provide a specific diagnostic for uninitialized variable
     // definitions with incomplete array type.
     if (Type->isIncompleteArrayType()) {
-      Diag(Var->getLocation(),
-           diag::err_typecheck_incomplete_array_needs_initializer);
+      if (Var->isConstexpr())
+        Diag(Var->getLocation(), diag::err_constexpr_var_requires_const_init)
+            << Var;
+      else
+        Diag(Var->getLocation(),
+             diag::err_typecheck_incomplete_array_needs_initializer);
       Var->setInvalidDecl();
       return;
     }
@@ -15709,11 +15748,20 @@ void Sema::AddKnownFunctionAttributes(FunctionDecl *FD) {
       FD->addAttr(CallbackAttr::CreateImplicit(
           Context, Encoding.data(), Encoding.size(), FD->getLocation()));
 
-    // Mark const if we don't care about errno and that is the only thing
-    // preventing the function from being const. This allows IRgen to use LLVM
-    // intrinsics for such functions.
-    if (!getLangOpts().MathErrno && !FD->hasAttr<ConstAttr>() &&
-        Context.BuiltinInfo.isConstWithoutErrno(BuiltinID))
+    // Mark const if we don't care about errno and/or floating point exceptions
+    // that are the only thing preventing the function from being const. This
+    // allows IRgen to use LLVM intrinsics for such functions.
+    bool NoExceptions =
+        getLangOpts().getDefaultExceptionMode() == LangOptions::FPE_Ignore;
+    bool ConstWithoutErrnoAndExceptions =
+        Context.BuiltinInfo.isConstWithoutErrnoAndExceptions(BuiltinID);
+    bool ConstWithoutExceptions =
+        Context.BuiltinInfo.isConstWithoutExceptions(BuiltinID);
+    if (!FD->hasAttr<ConstAttr>() &&
+        (ConstWithoutErrnoAndExceptions || ConstWithoutExceptions) &&
+        (!ConstWithoutErrnoAndExceptions ||
+         (!getLangOpts().MathErrno && NoExceptions)) &&
+        (!ConstWithoutExceptions || NoExceptions))
       FD->addAttr(ConstAttr::CreateImplicit(Context, FD->getLocation()));
 
     // We make "fma" on GNU or Windows const because we know it does not set
@@ -17920,7 +17968,6 @@ void Sema::ActOnLastBitfield(SourceLocation DeclLoc,
   AllIvarDecls.push_back(Ivar);
 }
 
-namespace {
 /// [class.dtor]p4:
 ///   At the end of the definition of a class, overload resolution is
 ///   performed among the prospective destructors declared in that class with
@@ -17929,7 +17976,7 @@ namespace {
 ///
 /// We do the overload resolution here, then mark the selected constructor in the AST.
 /// Later CXXRecordDecl::getDestructor() will return the selected constructor.
-void ComputeSelectedDestructor(Sema &S, CXXRecordDecl *Record) {
+static void ComputeSelectedDestructor(Sema &S, CXXRecordDecl *Record) {
   if (!Record->hasUserDeclaredDestructor()) {
     return;
   }
@@ -17987,7 +18034,135 @@ void ComputeSelectedDestructor(Sema &S, CXXRecordDecl *Record) {
     Record->addedSelectedDestructor(dyn_cast<CXXDestructorDecl>(OCS.begin()->Function));
   }
 }
-} // namespace
+
+/// [class.mem.special]p5
+/// Two special member functions are of the same kind if:
+/// - they are both default constructors,
+/// - they are both copy or move constructors with the same first parameter
+///   type, or
+/// - they are both copy or move assignment operators with the same first
+///   parameter type and the same cv-qualifiers and ref-qualifier, if any.
+static bool AreSpecialMemberFunctionsSameKind(ASTContext &Context,
+                                              CXXMethodDecl *M1,
+                                              CXXMethodDecl *M2,
+                                              Sema::CXXSpecialMember CSM) {
+  if (CSM == Sema::CXXDefaultConstructor)
+    return true;
+  if (!Context.hasSameType(M1->getParamDecl(0)->getType(),
+                           M2->getParamDecl(0)->getType()))
+    return false;
+  if (!Context.hasSameType(M1->getThisType(), M2->getThisType()))
+    return false;
+
+  return true;
+}
+
+/// [class.mem.special]p6:
+/// An eligible special member function is a special member function for which:
+/// - the function is not deleted,
+/// - the associated constraints, if any, are satisfied, and
+/// - no special member function of the same kind whose associated constraints
+///   [CWG2595], if any, are satisfied is more constrained.
+static void SetEligibleMethods(Sema &S, CXXRecordDecl *Record,
+                               ArrayRef<CXXMethodDecl *> Methods,
+                               Sema::CXXSpecialMember CSM) {
+  SmallVector<bool, 4> SatisfactionStatus;
+
+  for (CXXMethodDecl *Method : Methods) {
+    const Expr *Constraints = Method->getTrailingRequiresClause();
+    if (!Constraints)
+      SatisfactionStatus.push_back(true);
+    else {
+      ConstraintSatisfaction Satisfaction;
+      if (S.CheckFunctionConstraints(Method, Satisfaction))
+        SatisfactionStatus.push_back(false);
+      else
+        SatisfactionStatus.push_back(Satisfaction.IsSatisfied);
+    }
+  }
+
+  for (size_t i = 0; i < Methods.size(); i++) {
+    if (!SatisfactionStatus[i])
+      continue;
+    CXXMethodDecl *Method = Methods[i];
+    const Expr *Constraints = Method->getTrailingRequiresClause();
+    bool AnotherMethodIsMoreConstrained = false;
+    for (size_t j = 0; j < Methods.size(); j++) {
+      if (i == j || !SatisfactionStatus[j])
+        continue;
+      CXXMethodDecl *OtherMethod = Methods[j];
+      if (!AreSpecialMemberFunctionsSameKind(S.Context, Method, OtherMethod,
+                                             CSM))
+        continue;
+
+      const Expr *OtherConstraints = OtherMethod->getTrailingRequiresClause();
+      if (!OtherConstraints)
+        continue;
+      if (!Constraints) {
+        AnotherMethodIsMoreConstrained = true;
+        break;
+      }
+      if (S.IsAtLeastAsConstrained(OtherMethod, {OtherConstraints}, Method,
+                                   {Constraints},
+                                   AnotherMethodIsMoreConstrained)) {
+        // There was an error with the constraints comparison. Exit the loop
+        // and don't consider this function eligible.
+        AnotherMethodIsMoreConstrained = true;
+      }
+      if (AnotherMethodIsMoreConstrained)
+        break;
+    }
+    // FIXME: Do not consider deleted methods as eligible after implementing
+    // DR1734 and DR1496.
+    if (!AnotherMethodIsMoreConstrained) {
+      Method->setIneligibleOrNotSelected(false);
+      Record->addedEligibleSpecialMemberFunction(Method, 1 << CSM);
+    }
+  }
+}
+
+static void ComputeSpecialMemberFunctionsEligiblity(Sema &S,
+                                                    CXXRecordDecl *Record) {
+  SmallVector<CXXMethodDecl *, 4> DefaultConstructors;
+  SmallVector<CXXMethodDecl *, 4> CopyConstructors;
+  SmallVector<CXXMethodDecl *, 4> MoveConstructors;
+  SmallVector<CXXMethodDecl *, 4> CopyAssignmentOperators;
+  SmallVector<CXXMethodDecl *, 4> MoveAssignmentOperators;
+
+  for (auto *Decl : Record->decls()) {
+    auto *MD = dyn_cast<CXXMethodDecl>(Decl);
+    if (!MD) {
+      auto *FTD = dyn_cast<FunctionTemplateDecl>(Decl);
+      if (FTD)
+        MD = dyn_cast<CXXMethodDecl>(FTD->getTemplatedDecl());
+    }
+    if (!MD)
+      continue;
+    if (auto *CD = dyn_cast<CXXConstructorDecl>(MD)) {
+      if (CD->isInvalidDecl())
+        continue;
+      if (CD->isDefaultConstructor())
+        DefaultConstructors.push_back(MD);
+      else if (CD->isCopyConstructor())
+        CopyConstructors.push_back(MD);
+      else if (CD->isMoveConstructor())
+        MoveConstructors.push_back(MD);
+    } else if (MD->isCopyAssignmentOperator()) {
+      CopyAssignmentOperators.push_back(MD);
+    } else if (MD->isMoveAssignmentOperator()) {
+      MoveAssignmentOperators.push_back(MD);
+    }
+  }
+
+  SetEligibleMethods(S, Record, DefaultConstructors,
+                     Sema::CXXDefaultConstructor);
+  SetEligibleMethods(S, Record, CopyConstructors, Sema::CXXCopyConstructor);
+  SetEligibleMethods(S, Record, MoveConstructors, Sema::CXXMoveConstructor);
+  SetEligibleMethods(S, Record, CopyAssignmentOperators,
+                     Sema::CXXCopyAssignment);
+  SetEligibleMethods(S, Record, MoveAssignmentOperators,
+                     Sema::CXXMoveAssignment);
+}
 
 void Sema::ActOnFields(Scope *S, SourceLocation RecLoc, Decl *EnclosingDecl,
                        ArrayRef<Decl *> Fields, SourceLocation LBrac,
@@ -18014,9 +18189,6 @@ void Sema::ActOnFields(Scope *S, SourceLocation RecLoc, Decl *EnclosingDecl,
 
   RecordDecl *Record = dyn_cast<RecordDecl>(EnclosingDecl);
   CXXRecordDecl *CXXRecord = dyn_cast<CXXRecordDecl>(EnclosingDecl);
-
-  if (CXXRecord && !CXXRecord->isDependentType())
-    ComputeSelectedDestructor(*this, CXXRecord);
 
   // Start counting up the number of named members; make sure to include
   // members of anonymous structs and unions in the total.
@@ -18303,6 +18475,8 @@ void Sema::ActOnFields(Scope *S, SourceLocation RecLoc, Decl *EnclosingDecl,
             Completed = true;
           }
         }
+        ComputeSelectedDestructor(*this, CXXRecord);
+        ComputeSpecialMemberFunctionsEligiblity(*this, CXXRecord);
       }
     }
 

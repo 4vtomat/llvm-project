@@ -1575,9 +1575,45 @@ static void computeKnownBitsFromOperator(const Operator *I,
         RecQ.CxtI = P->getIncomingBlock(u)->getTerminator();
 
         Known2 = KnownBits(BitWidth);
+
         // Recurse, but cap the recursion to one level, because we don't
         // want to waste time spinning around in loops.
         computeKnownBits(IncValue, Known2, MaxAnalysisRecursionDepth - 1, RecQ);
+
+        // If this failed, see if we can use a conditional branch into the phi
+        // to help us determine the range of the value.
+        if (Known2.isUnknown()) {
+          ICmpInst::Predicate Pred;
+          const APInt *RHSC;
+          BasicBlock *TrueSucc, *FalseSucc;
+          // TODO: Use RHS Value and compute range from its known bits.
+          if (match(RecQ.CxtI,
+                    m_Br(m_c_ICmp(Pred, m_Specific(IncValue), m_APInt(RHSC)),
+                         m_BasicBlock(TrueSucc), m_BasicBlock(FalseSucc)))) {
+            // Check for cases of duplicate successors.
+            if ((TrueSucc == P->getParent()) != (FalseSucc == P->getParent())) {
+              // If we're using the false successor, invert the predicate.
+              if (FalseSucc == P->getParent())
+                Pred = CmpInst::getInversePredicate(Pred);
+
+              switch (Pred) {
+              case CmpInst::Predicate::ICMP_EQ:
+                Known2 = KnownBits::makeConstant(*RHSC);
+                break;
+              case CmpInst::Predicate::ICMP_ULE:
+                Known2.Zero.setHighBits(RHSC->countLeadingZeros());
+                break;
+              case CmpInst::Predicate::ICMP_ULT:
+                Known2.Zero.setHighBits((*RHSC - 1).countLeadingZeros());
+                break;
+              default:
+                // TODO - add additional integer predicate handling.
+                break;
+              }
+            }
+          }
+        }
+
         Known = KnownBits::commonBits(Known, Known2);
         // If all bits have been ruled out, there's no need to check
         // more operands.
@@ -6049,6 +6085,7 @@ static SelectPatternResult matchSelectPattern(CmpInst::Predicate Pred,
                                               Value *TrueVal, Value *FalseVal,
                                               Value *&LHS, Value *&RHS,
                                               unsigned Depth) {
+  bool HasMismatchedZeros = false;
   if (CmpInst::isFPPredicate(Pred)) {
     // IEEE-754 ignores the sign of 0.0 in comparisons. So if the select has one
     // 0.0 operand, set the compare's 0.0 operands to that same value for the
@@ -6063,10 +6100,14 @@ static SelectPatternResult matchSelectPattern(CmpInst::Predicate Pred,
       OutputZeroVal = FalseVal;
 
     if (OutputZeroVal) {
-      if (match(CmpLHS, m_AnyZeroFP()))
+      if (match(CmpLHS, m_AnyZeroFP()) && CmpLHS != OutputZeroVal) {
+        HasMismatchedZeros = true;
         CmpLHS = OutputZeroVal;
-      if (match(CmpRHS, m_AnyZeroFP()))
+      }
+      if (match(CmpRHS, m_AnyZeroFP()) && CmpRHS != OutputZeroVal) {
+        HasMismatchedZeros = true;
         CmpRHS = OutputZeroVal;
+      }
     }
   }
 
@@ -6080,7 +6121,11 @@ static SelectPatternResult matchSelectPattern(CmpInst::Predicate Pred,
   // operands is known to not be zero or if we don't care about signed zero.
   switch (Pred) {
   default: break;
-  // FIXME: Include OGT/OLT/UGT/ULT.
+  case CmpInst::FCMP_OGT: case CmpInst::FCMP_OLT:
+  case CmpInst::FCMP_UGT: case CmpInst::FCMP_ULT:
+    if (!HasMismatchedZeros)
+      break;
+    [[fallthrough]];
   case CmpInst::FCMP_OGE: case CmpInst::FCMP_OLE:
   case CmpInst::FCMP_UGE: case CmpInst::FCMP_ULE:
     if (!FMF.noSignedZeros() && !isKnownNonZero(CmpLHS) &&
@@ -6502,7 +6547,8 @@ bool llvm::matchSimpleRecurrence(const PHINode *P, BinaryOperator *&BO,
     case Instruction::Sub:
     case Instruction::And:
     case Instruction::Or:
-    case Instruction::Mul: {
+    case Instruction::Mul:
+    case Instruction::FMul: {
       Value *LL = LU->getOperand(0);
       Value *LR = LU->getOperand(1);
       // Find a recurrence.

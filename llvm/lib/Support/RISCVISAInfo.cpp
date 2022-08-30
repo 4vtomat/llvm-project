@@ -132,12 +132,15 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
+    {"zihintntl", RISCVExtensionVersion{0, 2}},
+
     {"zbe", RISCVExtensionVersion{0, 93}},
     {"zbf", RISCVExtensionVersion{0, 93}},
     {"zbm", RISCVExtensionVersion{0, 93}},
     {"zbp", RISCVExtensionVersion{0, 93}},
     {"zbr", RISCVExtensionVersion{0, 93}},
     {"zbt", RISCVExtensionVersion{0, 93}},
+    {"zca", RISCVExtensionVersion{0, 70}},
     {"zvfh", RISCVExtensionVersion{0, 1}},
 };
 
@@ -609,7 +612,11 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
     // No matter which version is given to `g`, we always set imafd to default
     // version since the we don't have clear version scheme for that on
     // ISA spec.
+<<<<<<< HEAD
     for (auto Ext : RISCVGImplications)
+=======
+    for (const auto *Ext : {"i", "m", "a", "f", "d"})
+>>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
       if (auto Version = findDefaultVersion(Ext))
         ISAInfo->addExtension(Ext, Version->Major, Version->Minor);
       else

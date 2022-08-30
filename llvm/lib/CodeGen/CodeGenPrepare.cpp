@@ -2045,13 +2045,13 @@ static bool despeculateCountZeros(IntrinsicInst *CountZeros,
     return false;
 
   // If it's cheap to speculate, there's nothing to do.
+  Type *Ty = CountZeros->getType();
   auto IntrinsicID = CountZeros->getIntrinsicID();
-  if ((IntrinsicID == Intrinsic::cttz && TLI->isCheapToSpeculateCttz()) ||
-      (IntrinsicID == Intrinsic::ctlz && TLI->isCheapToSpeculateCtlz()))
+  if ((IntrinsicID == Intrinsic::cttz && TLI->isCheapToSpeculateCttz(Ty)) ||
+      (IntrinsicID == Intrinsic::ctlz && TLI->isCheapToSpeculateCtlz(Ty)))
     return false;
 
   // Only handle legal scalar cases. Anything else requires too much work.
-  Type *Ty = CountZeros->getType();
   unsigned SizeInBits = Ty->getScalarSizeInBits();
   if (Ty->isVectorTy() || SizeInBits > DL->getLargestLegalIntTypeSizeInBits())
     return false;
@@ -6608,8 +6608,8 @@ static bool sinkSelectOperand(const TargetTransformInfo *TTI, Value *V) {
   // If it's safe to speculatively execute, then it should not have side
   // effects; therefore, it's safe to sink and possibly *not* execute.
   return I && I->hasOneUse() && isSafeToSpeculativelyExecute(I) &&
-         TTI->getUserCost(I, TargetTransformInfo::TCK_SizeAndLatency) >=
-         TargetTransformInfo::TCC_Expensive;
+         TTI->getInstructionCost(I, TargetTransformInfo::TCK_SizeAndLatency) >=
+             TargetTransformInfo::TCC_Expensive;
 }
 
 /// Returns true if a SelectInst should be turned into an explicit branch.
@@ -7278,17 +7278,16 @@ class VectorPromoteHelper {
       Value *Arg0 = Inst->getOperand(0);
       bool IsArg0Constant = isa<UndefValue>(Arg0) || isa<ConstantInt>(Arg0) ||
                             isa<ConstantFP>(Arg0);
-      TargetTransformInfo::OperandValueKind Arg0OVK =
-          IsArg0Constant ? TargetTransformInfo::OK_UniformConstantValue
-                         : TargetTransformInfo::OK_AnyValue;
-      TargetTransformInfo::OperandValueKind Arg1OVK =
-          !IsArg0Constant ? TargetTransformInfo::OK_UniformConstantValue
-                          : TargetTransformInfo::OK_AnyValue;
+      TargetTransformInfo::OperandValueInfo Arg0Info, Arg1Info;
+      if (IsArg0Constant)
+        Arg0Info.Kind = TargetTransformInfo::OK_UniformConstantValue;
+      else
+        Arg1Info.Kind = TargetTransformInfo::OK_UniformConstantValue;
+
       ScalarCost += TTI.getArithmeticInstrCost(
-          Inst->getOpcode(), Inst->getType(), CostKind, Arg0OVK, Arg1OVK);
+          Inst->getOpcode(), Inst->getType(), CostKind, Arg0Info, Arg1Info);
       VectorCost += TTI.getArithmeticInstrCost(Inst->getOpcode(), PromotedType,
-                                               CostKind,
-                                               Arg0OVK, Arg1OVK);
+                                               CostKind, Arg0Info, Arg1Info);
     }
     LLVM_DEBUG(
         dbgs() << "Estimated cost of computation to be promoted:\nScalar: "
@@ -7759,14 +7758,14 @@ static bool tryUnmergingGEPsAcrossIndirectBr(GetElementPtrInst *GEPI,
     return false;
   // Check that GEP is used outside the block, meaning it's alive on the
   // IndirectBr edge(s).
-  if (find_if(GEPI->users(), [&](User *Usr) {
+  if (llvm::none_of(GEPI->users(), [&](User *Usr) {
         if (auto *I = dyn_cast<Instruction>(Usr)) {
           if (I->getParent() != SrcBlock) {
             return true;
           }
         }
         return false;
-      }) == GEPI->users().end())
+      }))
     return false;
   // The second elements of the GEP chains to be unmerged.
   std::vector<GetElementPtrInst *> UGEPIs;

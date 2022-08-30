@@ -133,7 +133,11 @@ public:
 private:
   bool doPeepholeSExtW(SDNode *Node);
   bool doPeepholeMaskedRVV(SDNode *Node);
+<<<<<<< HEAD
   bool doPeepholeLUIADDI(SDNode *Node); // SIFIVE
+=======
+  bool doPeepholeMergeVVMFold();
+>>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
 };
 
 namespace RISCV {

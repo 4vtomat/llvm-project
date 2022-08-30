@@ -1108,8 +1108,7 @@ Optional<uint64_t> IntegerRelation::computeVolume() const {
   bool hasUnboundedVar = false;
   for (unsigned i = 0, e = getNumDimAndSymbolVars(); i < e; ++i) {
     dim[i] = 1;
-    MaybeOptimum<int64_t> min, max;
-    std::tie(min, max) = simplex.computeIntegerBounds(dim);
+    auto [min, max] = simplex.computeIntegerBounds(dim);
     dim[i] = 0;
 
     assert((!min.isEmpty() && !max.isEmpty()) &&
@@ -1456,7 +1455,7 @@ Optional<int64_t> IntegerRelation::getConstantBoundOnDimSize(
                                /*eqIndices=*/nullptr, /*offset=*/0,
                                /*num=*/getNumDimVars());
 
-  Optional<int64_t> minDiff = None;
+  Optional<int64_t> minDiff;
   unsigned minLbPosition = 0, minUbPosition = 0;
   for (auto ubPos : ubIndices) {
     for (auto lbPos : lbIndices) {
@@ -1539,7 +1538,7 @@ IntegerRelation::computeConstantLowerOrUpperBound(unsigned pos) {
     // If it doesn't, there isn't a bound on it.
     return None;
 
-  Optional<int64_t> minOrMaxConst = None;
+  Optional<int64_t> minOrMaxConst;
 
   // Take the max across all const lower bounds (or min across all constant
   // upper bounds).

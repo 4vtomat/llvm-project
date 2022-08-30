@@ -375,6 +375,11 @@ static bool collectSRATypes(DenseMap<uint64_t, Type *> &Types, GlobalValue *GV,
       auto It = Types.try_emplace(Offset.getZExtValue(), Ty).first;
       if (Ty != It->second)
         return false;
+
+      // Scalable types not currently supported.
+      if (isa<ScalableVectorType>(Ty))
+        return false;
+
       continue;
     }
 
@@ -650,7 +655,7 @@ static bool allUsesOfLoadedValueWillTrapIfNull(const GlobalVariable *GV) {
   Worklist.push_back(GV);
   while (!Worklist.empty()) {
     const Value *P = Worklist.pop_back_val();
-    for (auto *U : P->users()) {
+    for (const auto *U : P->users()) {
       if (auto *LI = dyn_cast<LoadInst>(U)) {
         SmallPtrSet<const PHINode *, 8> PHIs;
         if (!AllUsesOfValueWillTrapIfNull(LI, PHIs))
@@ -2397,7 +2402,7 @@ static bool cxxDtorIsEmpty(const Function &Fn) {
   if (Fn.isDeclaration())
     return false;
 
-  for (auto &I : Fn.getEntryBlock()) {
+  for (const auto &I : Fn.getEntryBlock()) {
     if (I.isDebugOrPseudoInst())
       continue;
     if (isa<ReturnInst>(I))

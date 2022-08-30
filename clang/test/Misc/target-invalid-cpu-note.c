@@ -81,6 +81,7 @@
 
 // RUN: not %clang_cc1 -triple riscv32 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV32
 // RISCV32: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // RISCV32: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-6-rv32,
 // RISCV32: sifive-7-rv32, sifive-7m-rv32, sifive-7n-rv32, sifive-e20, sifive-e21, sifive-e24, sifive-e31,
 // RISCV32: sifive-e34, sifive-e66, sifive-e76, sifive-e76m, sifive-e76n, sifive-8-rv32, sifive-9-rv32{{$}}
@@ -110,3 +111,18 @@
 // TUNE-RISCV64: sifive-8-rv64, sifive-p270, sifive-p270n, sifive-p550, sifive-9-rv64, sifive-p650, generic, rocket,
 // TUNE-RISCV64: sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-8-series, sifive-9-series,
 // TUNE-RISCV64: sifive-p500-series, sifive-p600-series{{$}}
+=======
+// RISCV32-NEXT: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e76{{$}}
+
+// RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
+// RISCV64: error: unknown target CPU 'not-a-cpu'
+// RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74{{$}}
+
+// RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
+// TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
+// TUNE-RISCV32-NEXT: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e76, generic, rocket, sifive-7-series{{$}}
+
+// RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
+// TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
+// TUNE-RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, generic, rocket, sifive-7-series{{$}}
+>>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
