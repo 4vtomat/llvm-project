@@ -7525,9 +7525,10 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) con
 
   // Convert back to mask.
   SDValue TrueMask = DAG.getNode(RISCVISD::VMSET_VL, DL, ContainerVT, VL);
-  SDValue Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, VPMerge,
-                               DAG.getConstant(0, DL, PromotedVT),
-                               DAG.getCondCode(ISD::SETNE), TrueMask, VLMax);
+  SDValue Result = DAG.getNode(
+      RISCVISD::SETCC_VL, DL, ContainerVT,
+      {VPMerge, DAG.getConstant(0, DL, PromotedVT), DAG.getCondCode(ISD::SETNE),
+       DAG.getUNDEF(getMaskTypeFor(ContainerVT)), TrueMask, VLMax});
 
   if (VT.isFixedLengthVector())
     Result = convertFromScalableVector(VT, Result, DAG, Subtarget);
@@ -7603,10 +7604,11 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
 
   if (IsMaskVector) {
     // Truncate Result back to a mask vector (Result has same EVL as Op2)
-    Result = DAG.getNode(RISCVISD::SETCC_VL, DL,
-                         ContainerVT.changeVectorElementType(MVT::i1), Result,
-                         DAG.getConstant(0, DL, ContainerVT),
-                         DAG.getCondCode(ISD::SETNE), Mask, EVL2);
+    Result = DAG.getNode(
+        RISCVISD::SETCC_VL, DL, ContainerVT.changeVectorElementType(MVT::i1),
+        {Result, DAG.getConstant(0, DL, ContainerVT),
+         DAG.getCondCode(ISD::SETNE), DAG.getUNDEF(getMaskTypeFor(ContainerVT)),
+         Mask, EVL2});
   }
 
   if (!VT.isFixedLengthVector())
@@ -7710,9 +7712,11 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
 
       if (IsMaskVector) {
         // Truncate Result back to a mask vector
-        Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, Result,
-                             DAG.getConstant(0, DL, GatherVT),
-                             DAG.getCondCode(ISD::SETNE), Mask, EVL);
+        Result =
+            DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT,
+                        {Result, DAG.getConstant(0, DL, GatherVT),
+                         DAG.getCondCode(ISD::SETNE),
+                         DAG.getUNDEF(getMaskTypeFor(ContainerVT)), Mask, EVL});
       }
 
       if (!VT.isFixedLengthVector())
@@ -7738,9 +7742,10 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
 
   if (IsMaskVector) {
     // Truncate Result back to a mask vector
-    Result = DAG.getNode(RISCVISD::SETCC_VL, DL, ContainerVT, Result,
-                         DAG.getConstant(0, DL, GatherVT),
-                         DAG.getCondCode(ISD::SETNE), Mask, EVL);
+    Result = DAG.getNode(
+        RISCVISD::SETCC_VL, DL, ContainerVT,
+        {Result, DAG.getConstant(0, DL, GatherVT), DAG.getCondCode(ISD::SETNE),
+         DAG.getUNDEF(getMaskTypeFor(ContainerVT)), Mask, EVL});
   }
 
   if (!VT.isFixedLengthVector())
@@ -10635,8 +10640,8 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
     return SDValue();
 
   // Only handle unmasked SETCC_VL.
-  assert(Cond.getNumOperands() == 5);
-  if (Cond.getOperand(3).getOpcode() != RISCVISD::VMSET_VL)
+  assert(Cond.getNumOperands() == 6);
+  if (Cond.getOperand(4).getOpcode() != RISCVISD::VMSET_VL)
     return SDValue();
 
   EVT VT = N->getValueType(0);
@@ -10645,7 +10650,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
 
   // VL should match.
   SDValue VL = N->getOperand(3);
-  if (VL != Cond.getOperand(4))
+  if (VL != Cond.getOperand(5))
     return SDValue();
 
   SDValue TrueVal = N->getOperand(1);
