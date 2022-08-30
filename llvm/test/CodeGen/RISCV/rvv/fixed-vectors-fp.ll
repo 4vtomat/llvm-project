@@ -2060,31 +2060,21 @@ define void @ceil_v8f16(<8 x half>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI94_1)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI94_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v10, v9, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vfadd.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI94_2)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI94_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vse16.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v11, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfadd.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse16.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI94_2)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI94_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <8 x half>, <8 x half>* %x
   %b = call <8 x half> @llvm.ceil.v8f16(<8 x half> %a)
@@ -2106,31 +2096,21 @@ define void @ceil_v4f32(<4 x float>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI95_1)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI95_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v10, v9, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vfadd.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI95_2)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI95_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vse32.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v11, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfadd.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse32.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI95_2)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI95_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <4 x float>, <4 x float>* %x
   %b = call <4 x float> @llvm.ceil.v4f32(<4 x float> %a)
@@ -2152,31 +2132,21 @@ define void @ceil_v2f64(<2 x double>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI96_1)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI96_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v10, v9, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
-; CHECK-NEXT:    vfadd.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI96_2)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI96_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vse64.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v11, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfadd.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse64.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI96_2)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI96_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <2 x double>, <2 x double>* %x
   %b = call <2 x double> @llvm.ceil.v2f64(<2 x double> %a)
@@ -2198,31 +2168,21 @@ define void @floor_v8f16(<8 x half>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI97_1)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI97_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v9, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vfsub.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI97_2)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI97_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vse16.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfsub.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse16.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI97_2)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI97_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <8 x half>, <8 x half>* %x
   %b = call <8 x half> @llvm.floor.v8f16(<8 x half> %a)
@@ -2244,31 +2204,21 @@ define void @floor_v4f32(<4 x float>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI98_1)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI98_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v9, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vfsub.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI98_2)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI98_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vse32.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfsub.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse32.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI98_2)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI98_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <4 x float>, <4 x float>* %x
   %b = call <4 x float> @llvm.floor.v4f32(<4 x float> %a)
@@ -2290,31 +2240,21 @@ define void @floor_v2f64(<2 x double>* %x) {
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v9, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI99_1)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI99_1)(a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vmflt.vv v0, v9, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
-; CHECK-NEXT:    vfsub.vf v10, v10, ft0, v0.t
-; CHECK-NEXT:    vmv.v.v v11, v9
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v11, v10, v9, v0.t
-; CHECK-NEXT:    lui a1, %hi(.LCPI99_2)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI99_2)(a1)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
-; CHECK-NEXT:    vmfne.vv v0, v9, v9
-; CHECK-NEXT:    vfmerge.vfm v8, v11, ft0, v0
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vse64.v v8, (a0)
-=======
 ; CHECK-NEXT:    vfcvt.f.x.v v11, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vmflt.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vfsub.vf v11, v11, ft0, v0.t
+; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vfsgnj.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vse64.v v10, (a0)
->>>>>>> 1f5215668a2bbf34a915f0e3a4e2ca65e28915c7
+; CHECK-NEXT:    vfsgnj.vv v9, v11, v10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI99_2)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI99_2)(a1)
+; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmfne.vv v0, v10, v10
+; CHECK-NEXT:    vfmerge.vfm v8, v9, ft0, v0
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <2 x double>, <2 x double>* %x
   %b = call <2 x double> @llvm.floor.v2f64(<2 x double> %a)

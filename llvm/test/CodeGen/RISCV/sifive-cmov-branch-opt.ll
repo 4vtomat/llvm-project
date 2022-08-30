@@ -161,14 +161,14 @@ declare i32 @llvm.abs.i32(i32, i1)
 define signext i32 @test5(i32 signext %x) {
 ; NOCMOV-LABEL: test5:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    sraiw a1, a0, 31
+; NOCMOV-NEXT:    srai a1, a0, 31
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    subw a0, a0, a1
 ; NOCMOV-NEXT:    ret
 ;
 ; CMOV-LABEL: test5:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    sraiw a1, a0, 31
+; CMOV-NEXT:    srai a1, a0, 31
 ; CMOV-NEXT:    xor a0, a0, a1
 ; CMOV-NEXT:    subw a0, a0, a1
 ; CMOV-NEXT:    ret

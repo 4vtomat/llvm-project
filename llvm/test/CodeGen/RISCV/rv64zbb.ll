@@ -1096,8 +1096,7 @@ define i64 @bswap_i64(i64 %a) {
 define signext i32 @max1_sub1_i32(i32 signext %a, i32 signext %b) nounwind {
 ; RV64I-LABEL: max1_sub1_i32:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    li a1, 1
-; RV64I-NEXT:    blt a1, a0, .LBB34_2
+; RV64I-NEXT:    bgtz a0, .LBB34_2
 ; RV64I-NEXT:  # %bb.1:
 ; RV64I-NEXT:    li a0, 1
 ; RV64I-NEXT:  .LBB34_2:

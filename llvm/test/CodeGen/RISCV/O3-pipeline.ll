@@ -60,9 +60,9 @@
 ; CHECK-NEXT:       TLS Variable Hoist
 ; CHECK-NEXT:       RISCV Late CodeGenPrepare
 ; CHECK-NEXT:       RISCV Type Promotion
-; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
+; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       CodeGen Prepare
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Exception handling preparation
