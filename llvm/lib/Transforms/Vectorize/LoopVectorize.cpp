@@ -9300,6 +9300,11 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands.begin(), Operands.end());
       VPValue *Mask = createBlockInMask(I->getParent(), Plan);
+
+#if SIFIVE_CUSTOMIZATION
+      if (!Mask && Legal->preferPredicatedVectorOps())
+        Mask = Plan->getOrCreateAllTrueMask();
+#endif // SIFIVE_CUSTOMIZATION
       VPValue *One =
         Plan->getOrAddExternalDef(ConstantInt::get(I->getType(), 1u, false));
       auto *SafeRHS =
