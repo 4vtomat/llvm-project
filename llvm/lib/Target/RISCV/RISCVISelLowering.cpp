@@ -516,18 +516,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::INTRINSIC_WO_CHAIN, ISD::INTRINSIC_W_CHAIN},
                          MVT::i64, Custom);
 
-#if SIFIVE_CUSTOMIZATION
-    if (Subtarget.is64Bit()) {
-      // Copied from D121113
-      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, MVT::i32, Custom);
-      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, MVT::i32, Custom);
-    } else {
-      // Copied from D121113
-      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_LOAD, MVT::i64, Custom);
-      setOperationAction(ISD::EXPERIMENTAL_VP_STRIDED_STORE, MVT::i64, Custom);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-
     setOperationAction({ISD::INTRINSIC_W_CHAIN, ISD::INTRINSIC_VOID},
                        MVT::Other, Custom);
 
@@ -7794,8 +7782,6 @@ SDValue RISCVTargetLowering::lowerVPStridedLoad(SDValue Op,
   SDVTList VTs = DAG.getVTList({ContainerVT, MVT::Other});
 
   auto *VPNode = cast<VPStridedLoadSDNode>(Op);
-  // Check that the Stride type is legal
-  SDValue Stride = DAG.getSExtOrTrunc(VPNode->getStride(), DL, XLenVT);
   // Check if the mask is known to be all ones
   SDValue Mask = VPNode->getMask();
   bool IsUnmasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
@@ -7805,7 +7791,7 @@ SDValue RISCVTargetLowering::lowerVPStridedLoad(SDValue Op,
                                         DL, XLenVT);
   SmallVector<SDValue, 8> Ops{VPNode->getChain(), IntID,
                               DAG.getUNDEF(ContainerVT), VPNode->getBasePtr(),
-                              Stride};
+                              VPNode->getStride()};
   if (!IsUnmasked) {
     if (VT.isFixedLengthVector()) {
       MVT MaskVT = ContainerVT.changeVectorElementType(MVT::i1);
@@ -7844,8 +7830,6 @@ SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
     StoreVal = convertToScalableVector(ContainerVT, StoreVal, DAG, Subtarget);
   }
 
-  // Check that the Stride type is legal
-  SDValue Stride = DAG.getSExtOrTrunc(VPNode->getStride(), DL, XLenVT);
   // Check if the mask is known to be all ones
   SDValue Mask = VPNode->getMask();
   bool IsUnmasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
@@ -7854,7 +7838,7 @@ SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
                                                    : Intrinsic::riscv_vsse_mask,
                                         DL, XLenVT);
   SmallVector<SDValue, 8> Ops{VPNode->getChain(), IntID, StoreVal,
-                              VPNode->getBasePtr(), Stride};
+                              VPNode->getBasePtr(), VPNode->getStride()};
   if (!IsUnmasked) {
     if (VT.isFixedLengthVector()) {
       MVT MaskVT = ContainerVT.changeVectorElementType(MVT::i1);
