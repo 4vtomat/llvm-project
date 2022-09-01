@@ -33,6 +33,7 @@
 #include "llvm/IR/CFG.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/Dominators.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/ValueHandle.h"
@@ -262,6 +263,190 @@ static bool iterativelySimplifyCFG(Function &F, const TargetTransformInfo &TTI,
   return Changed;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// For making Pred2 have a BranchInst that decides the value of phi-nodes of BB,
+// the function reorder the CFG,
+//    Pred1
+//      |  \
+//      |   Pred2
+//      |  /   \
+//       BB    Else
+// to,
+//     Pred1'
+//       |  \
+//       |  Else
+//       |
+//     Pred2'
+//       |  \
+//       | Empty
+//       |  /
+//       BB
+//
+// Suppose Cond1 and Cond2 is the condition make Pred1 and Pred2 go to BB. The
+// function also does the below equation,
+// COND1' = COND1 || COND2
+// COND2' = COND1
+static bool performIfConditionPHI(Function &F, BasicBlock *BB,
+                                  DomTreeUpdater *DTU) {
+  auto *PN = cast<PHINode>(BB->begin());
+  assert(PN->getNumIncomingValues() == 2 &&
+         "Only deal with two-entry phi nodes.");
+
+  BasicBlock *Pred1 = PN->getIncomingBlock(0);
+  BasicBlock *Pred2 = PN->getIncomingBlock(1);
+
+  // We need Pred1 is the exactly one predecessor of Pred2 and Pred1.
+  if (Pred1->getUniquePredecessor() != Pred2 &&
+      Pred2->getUniquePredecessor() != Pred1)
+    return false;
+
+  if (Pred1->getUniquePredecessor() == Pred2)
+    std::swap(Pred1, Pred2);
+
+  auto *Br1 = dyn_cast<BranchInst>(Pred1->getTerminator());
+  auto *Br2 = dyn_cast<BranchInst>(Pred2->getTerminator());
+
+  if (!Br1 || !Br1->isConditional() || !Br2 || !Br2->isConditional())
+    return false;
+
+  auto OrOfTwoIsCheap = [](Value *C1, Value *C2) {
+    auto *Cmp1 = dyn_cast<CmpInst>(C1);
+    auto *Cmp2 = dyn_cast<CmpInst>(C2);
+
+    if (!Cmp1 || !Cmp2)
+      return false;
+
+    // It's a simple method about law of trichotomy. Restrict the two comparison
+    // only compares two number and the two comparison are same signedness. The
+    // restriction make the complement of the or transformed to one
+    // instruction.
+    // TODO: Support 3 or 4 operands. e.g. (x < 1 || x < 3) => x < 1
+    if (Cmp1->getOperand(0) == Cmp2->getOperand(0) &&
+        Cmp1->getOperand(1) == Cmp2->getOperand(1))
+      ;
+    else if (Cmp1->getOperand(1) == Cmp2->getOperand(0) &&
+             Cmp1->getOperand(0) == Cmp2->getOperand(1))
+      ;
+    else
+      return false;
+
+    // Make sure Cmp1 and Cmp2 have same signedness.
+    // TODO: Support float comparison.
+    auto P1 = Cmp1->getPredicate();
+    auto P2 = Cmp2->getPredicate();
+    if ((Cmp1->isEquality() || ICmpInst::isSigned(P1)) &&
+        (Cmp2->isEquality() || ICmpInst::isSigned(P2)))
+      return true;
+
+    if ((Cmp1->isEquality() || ICmpInst::isUnsigned(P1)) &&
+        (Cmp2->isEquality() || ICmpInst::isUnsigned(P2)))
+      return true;
+
+    return false;
+  };
+
+  Value *Cond1 = Br1->getCondition();
+  Value *Cond2 = Br2->getCondition();
+
+  // Reorder if the result condition could be simplified to one instruction.
+  if (!OrOfTwoIsCheap(Cond1, Cond2))
+    return false;
+
+  assert(isa<Instruction>(Cond1) && isa<Instruction>(Cond2) &&
+         "Expected Cond1 and Cond2 should be instructions.");
+
+  // Only reorder if Pred2 is just a branch.
+  // FIXME: The condition may not be needed.
+  if (Pred2->size() > 2)
+    return false;
+
+  if (Pred2->size() == 2) {
+    const auto *I = cast<Instruction>(Cond2);
+    if (!I || I != &Pred2->front())
+      return false;
+  }
+
+  // Create empty basic block as else block of Pred1.
+  BasicBlock *EmptyBB = BasicBlock::Create(F.getContext(), "empty", &F);
+  IRBuilder<> IB(EmptyBB);
+  IB.CreateBr(BB);
+
+  // Update Pred1.
+  IB.SetInsertPoint(Br1);
+  if (Br1->getSuccessor(0) != BB)
+    Cond1 = IB.CreateNot(Cond1);
+
+  // If Cond2 is defined in Pred2, insert it into Pred1.
+  auto *IC2 = cast<Instruction>(Cond2);
+  if (IC2->getParent() == Pred2)
+    IC2->moveBefore(Br1);
+
+  if (Br2->getSuccessor(0) != BB)
+    Cond2 = IB.CreateNot(Cond2);
+
+  Value *Res = IB.CreateOr(Cond1, Cond2);
+  BasicBlock *ElseBB = Br2->getSuccessor(Br2->getSuccessor(0) == BB);
+  IB.CreateCondBr(Res, Pred2, ElseBB);
+  Br1->eraseFromParent();
+
+  // Update Pred2.
+  IB.SetInsertPoint(Br2);
+  IB.CreateCondBr(Cond1, BB, EmptyBB);
+  Br2->eraseFromParent();
+
+  assert(EmptyBB->getUniquePredecessor() == Pred2 &&
+         "Pred2 should be the unique predecessor of EmptyBB.");
+  if (DTU)
+    DTU->applyUpdates({{DominatorTree::Delete, Pred1, BB},
+                       {DominatorTree::Insert, Pred2, BB},
+                       {DominatorTree::Insert, Pred2, EmptyBB}});
+
+  // Update phis of BB
+  for (PHINode &PN : BB->phis()) {
+    PN.replaceIncomingBlockWith(Pred2, EmptyBB);
+    PN.replaceIncomingBlockWith(Pred1, Pred2);
+  }
+
+  // Update phis of ElseBB
+  for (PHINode &PN : ElseBB->phis())
+    PN.replaceIncomingBlockWith(Pred2, Pred1);
+
+  return true;
+}
+
+// Preprocess work to make more phi-nodes be folded to selects.
+static bool preprocessFoldPHIs(Function &F, DomTreeUpdater *DTU,
+                               const SimplifyCFGOptions &Options) {
+  if (!Options.FoldTwoEntryPHINode)
+    return false;
+
+  SmallVector<BasicBlock *, 2> BBs;
+
+  for (BasicBlock &BB : F) {
+    if (auto *PN = dyn_cast<PHINode>(BB.begin())) {
+      if (PN->getNumIncomingValues() != 2)
+        continue;
+
+      // Basicblocks having more than 2 phi nodes do not transformed their phis
+      // to selects.
+      unsigned NumPhis = 0;
+      for (auto I = BB.begin(); isa<PHINode>(I); ++I)
+        ++NumPhis;
+
+      if (NumPhis > 2)
+        continue;
+
+      BBs.push_back(&BB);
+    }
+  }
+
+  bool Changed = false;
+  for (BasicBlock *BB : BBs)
+    Changed |= performIfConditionPHI(F, BB, DTU);
+  return Changed;
+}
+#endif
+
 static bool simplifyFunctionCFGImpl(Function &F, const TargetTransformInfo &TTI,
                                     DominatorTree *DT,
                                     const SimplifyCFGOptions &Options) {
@@ -270,6 +455,11 @@ static bool simplifyFunctionCFGImpl(Function &F, const TargetTransformInfo &TTI,
   bool EverChanged = removeUnreachableBlocks(F, DT ? &DTU : nullptr);
   EverChanged |=
       tailMergeBlocksWithSimilarFunctionTerminators(F, DT ? &DTU : nullptr);
+#if SIFIVE_CUSTOMIZATION
+  EverChanged |= preprocessFoldPHIs(F, DT ? &DTU : nullptr, Options);
+  if (DT)
+    assert(DT->verify());
+#endif
   EverChanged |= iterativelySimplifyCFG(F, TTI, DT ? &DTU : nullptr, Options);
 
   // If neither pass changed anything, we're done.
