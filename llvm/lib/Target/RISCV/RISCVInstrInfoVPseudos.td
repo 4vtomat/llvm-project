@@ -3446,16 +3446,6 @@ multiclass VPatBinaryRMNoMaskTA<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    (XLenVT VXRM_DYN), GPR:$vl, sew)>;
-  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
-                   (result_type (undef)),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag,
-                   (XLenVT timmu2:$round))),
-            (!cast<Instruction>(inst)
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT timm:$round), GPR:$vl, sew)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3499,17 +3489,6 @@ multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    (XLenVT VXRM_DYN), GPR:$vl, sew)>;
-  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag,
-                   (XLenVT timmu2:$round))),
-            (!cast<Instruction>(inst#"_TU")
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT timm:$round), GPR:$vl, sew)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3597,17 +3576,6 @@ multiclass VPatBinaryRMMaskTA<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    (mask_type V0), (XLenVT VXRM_DYN), GPR:$vl, sew, (XLenVT timm:$policy))>;
-  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_rm_mask")
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (mask_type V0),
-                   VLOpFrag, (XLenVT timm:$policy), (XLenVT timmu2:$round))),
-            (!cast<Instruction>(inst#"_MASK")
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (mask_type V0), (XLenVT timm:$round), GPR:$vl, sew, (XLenVT timm:$policy))>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -5240,15 +5208,13 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 13.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
-let Uses = [VXRM], hasSideEffects = 1 in {
-  defm PseudoVAADDU : VPseudoVAALU_VV_VX;
-  defm PseudoVASUBU : VPseudoVAALU_VV_VX;
-  defm PseudoVASUB  : VPseudoVAALU_VV_VX;
-}
 
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1, hasSideEffects = 1 in {
+  defm PseudoVAADDU : VPseudoVAALU_RM_VV_VX;
   defm PseudoVAADD  : VPseudoVAALU_RM_VV_VX;
+  defm PseudoVASUBU : VPseudoVAALU_RM_VV_VX;
+  defm PseudoVASUB  : VPseudoVAALU_RM_VV_VX;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -5920,12 +5886,12 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vssub", "PseudoVSSUB", AllIntegerVectors>;
 //===----------------------------------------------------------------------===//
 // 13.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
-defm : VPatBinaryV_VV_VX<"int_riscv_vaaddu", "PseudoVAADDU", AllIntegerVectors>;
 #ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vaaddu", "PseudoVAADDU", AllIntegerVectors>;
 defm : VPatBinaryRM_V_VV_VX<"int_riscv_vaadd", "PseudoVAADD", AllIntegerVectors>;
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasubu", "PseudoVASUBU", AllIntegerVectors>;
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>;
 #endif // SIFIVE_CUSTOMIZATION
-defm : VPatBinaryV_VV_VX<"int_riscv_vasubu", "PseudoVASUBU", AllIntegerVectors>;
-defm : VPatBinaryV_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation

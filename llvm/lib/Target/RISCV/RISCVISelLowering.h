@@ -242,6 +242,11 @@ enum NodeType : unsigned {
   SSUBSAT_VL,
   USUBSAT_VL,
 
+  VAADD_VL,  // SIFIVE
+  VAADDU_VL, // SIFIVE
+  VASUB_VL,  // SIFIVE
+  VASUBU_VL, // SIFIVE
+
   MULHS_VL,
   MULHU_VL,
   FADD_VL,
@@ -711,6 +716,10 @@ private:
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG, unsigned NewOpc,
                             bool HasMergeOp = false, bool HasMask = true) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
+                               bool HasMask) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG, unsigned RISCVISDOpc,
                     bool HasMergeOp = false) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG, unsigned MaskOpc,
