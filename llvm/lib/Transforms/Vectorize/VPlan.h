@@ -157,7 +157,12 @@ public:
 
   /// Returns an expression describing the lane index that can be used at
   /// runtime.
+#if SIFIVE_CUSTOMIZATION
+  Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF,
+                          Value *EVL = nullptr) const;
+#else
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the Kind of lane offset.
   Kind getKind() const { return LaneKind; }

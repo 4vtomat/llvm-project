@@ -29,6 +29,19 @@ def SDT_RISCVIntBinOp_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                                 SDTCisSameNumEltsAs<0, 4>,
                                                 SDTCisVT<5, XLenVT>]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// Input: (vector, vector, merge, mask, roundmode, vl, policy)
+def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 7, [SDTCisVec<0>, SDTCisInt<0>,
+                                                   SDTCisSameAs<0, 1>,
+                                                   SDTCisSameAs<0, 2>,
+                                                   SDTCisSameAs<0, 3>,
+                                                   SDTCisSameNumEltsAs<0, 4>,
+                                                   SDTCVecEltisVT<4, i1>,
+                                                   SDTCisVT<5, XLenVT>,
+                                                   SDTCisVT<6, XLenVT>,
+                                                   SDTCisVT<7, XLenVT>]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SDT_RISCVFPUnOp_VL : SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                               SDTCisVec<0>, SDTCisFP<0>,
                                               SDTCVecEltisVT<2, i1>,
@@ -96,6 +109,13 @@ def riscv_uaddsat_vl   : SDNode<"RISCVISD::UADDSAT_VL", SDT_RISCVIntBinOp_VL, [S
 def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 def riscv_usubsat_vl   : SDNode<"RISCVISD::USUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_aadd_vl  : SDNode<"RISCVISD::VAADD_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_aaddu_vl : SDNode<"RISCVISD::VAADDU_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_asub_vl  : SDNode<"RISCVISD::VASUB_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_asubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def riscv_fadd_vl  : SDNode<"RISCVISD::FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 def riscv_fsub_vl  : SDNode<"RISCVISD::FSUB_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fmul_vl  : SDNode<"RISCVISD::FMUL_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
@@ -105,8 +125,8 @@ def riscv_fabs_vl  : SDNode<"RISCVISD::FABS_VL",  SDT_RISCVFPUnOp_VL>;
 def riscv_fsqrt_vl : SDNode<"RISCVISD::FSQRT_VL", SDT_RISCVFPUnOp_VL>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_frsqrt7_vl : SDNode<"RISCVISD::FRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
-def riscv_frec7_vl   : SDNode<"RISCVISD::FREC7_VL",   SDT_RISCVFPUnOp_VL>;
+def riscv_vfrsqrt7_vl : SDNode<"RISCVISD::VFRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
+def riscv_vfrec7_vl   : SDNode<"RISCVISD::VFREC7_VL",   SDT_RISCVFPUnOp_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL", SDT_RISCVCopySign_VL>;
@@ -114,13 +134,13 @@ def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL, [S
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_fclass_vl : SDNode<"RISCVISD::FCLASS_VL",
-                             SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
-                                                  SDTCisFP<1>, SDTCisVec<1>,
-                                                  SDTCisSameSizeAs<0, 1>,
-                                                  SDTCVecEltisVT<2, i1>,
-                                                  SDTCisSameNumEltsAs<0, 2>,
-                                                  SDTCisVT<3, XLenVT>]>>;
+def riscv_vfclass_vl : SDNode<"RISCVISD::VFCLASS_VL",
+                              SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
+                                                   SDTCisFP<1>, SDTCisVec<1>,
+                                                   SDTCisSameSizeAs<0, 1>,
+                                                   SDTCVecEltisVT<2, i1>,
+                                                   SDTCisSameNumEltsAs<0, 2>,
+                                                   SDTCisVT<3, XLenVT>]>>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVVecFMA_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
@@ -136,7 +156,7 @@ def riscv_vfmsub_vl : SDNode<"RISCVISD::VFMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCom
 def riscv_vfnmsub_vl : SDNode<"RISCVISD::VFNMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_fnmsac_vl : SDNode<"RISCVISD::FNMSAC_VL", SDT_RISCVVecFMA_VL>;
+def riscv_vfnmsac_vl : SDNode<"RISCVISD::VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVFPRoundOp_VL  : SDTypeProfile<1, 3, [
@@ -398,6 +418,37 @@ multiclass VPatBinaryVL_V<SDNode vop,
                      (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_VL_V<SDNode vop,
+                             string instruction_name,
+                             string suffix,
+                             ValueType result_type,
+                             ValueType op1_type,
+                             ValueType op2_type,
+                             ValueType mask_type,
+                             int sew,
+                             LMULInfo vlmul,
+                             VReg result_reg_class,
+                             VReg op1_reg_class,
+                             VReg op2_reg_class> {
+  def : Pat<(result_type (vop
+                         (op1_type op1_reg_class:$rs1),
+                         (op2_type op2_reg_class:$rs2),
+                         (result_type result_reg_class:$merge),
+                         (mask_type V0),
+                         (XLenVT timm:$roundmode),
+                         VLOpFrag,
+                         (XLenVT timm:$policy))),
+        (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_MASK")
+                     result_reg_class:$merge,
+                     op1_reg_class:$rs1,
+                     op2_reg_class:$rs2,
+                     (mask_type V0),
+                     (XLenVT timm:$roundmode),
+                     GPR:$vl, sew, (XLenVT timm:$policy))>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryVL_XI<SDNode vop,
                            string instruction_name,
                            string suffix,
@@ -424,6 +475,38 @@ multiclass VPatBinaryVL_XI<SDNode vop,
                      (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_VL_XI<SDNode vop,
+                              string instruction_name,
+                              string suffix,
+                              ValueType result_type,
+                              ValueType vop1_type,
+                              ValueType vop2_type,
+                              ValueType mask_type,
+                              int sew,
+                              LMULInfo vlmul,
+                              VReg result_reg_class,
+                              VReg vop_reg_class,
+                              ComplexPattern SplatPatKind,
+                              DAGOperand xop_kind> {
+  def : Pat<(result_type (vop
+                     (vop1_type vop_reg_class:$rs1),
+                     (vop2_type (SplatPatKind (XLenVT xop_kind:$rs2))),
+                     (result_type result_reg_class:$merge),
+                     (mask_type V0),
+                     (XLenVT timm:$roundmode),
+                     VLOpFrag,
+                     (XLenVT timm:$policy))),
+        (!cast<Instruction>(instruction_name#_#suffix#_# vlmul.MX#"_MASK")
+                     result_reg_class:$merge,
+                     vop_reg_class:$rs1,
+                     xop_kind:$rs2,
+                     (mask_type V0),
+                     (XLenVT timm:$roundmode),
+                     GPR:$vl, sew, (XLenVT timm:$policy))>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryVL_VV_VX<SDNode vop, string instruction_name> {
   foreach vti = AllIntegerVectors in {
     defm : VPatBinaryVL_V<vop, instruction_name, "VV",
@@ -436,6 +519,21 @@ multiclass VPatBinaryVL_VV_VX<SDNode vop, string instruction_name> {
                            SplatPat, GPR>;
   }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_VL_VV_VX<SDNode vop, string instruction_name> {
+  foreach vti = AllIntegerVectors in {
+    defm : VPatBinaryRM_VL_V<vop, instruction_name, "VV",
+                             vti.Vector, vti.Vector, vti.Vector, vti.Mask,
+                             vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
+                             vti.RegClass>;
+    defm : VPatBinaryRM_VL_XI<vop, instruction_name, "VX",
+                              vti.Vector, vti.Vector, vti.Vector, vti.Mask,
+                              vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
+                              SplatPat, GPR>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryVL_VV_VX_VI<SDNode vop, string instruction_name,
                                  Operand ImmType = simm5>
@@ -1356,6 +1454,14 @@ defm : VPatBinaryVL_VV_VX_VI<riscv_uaddsat_vl, "PseudoVSADDU">;
 defm : VPatBinaryVL_VV_VX<riscv_ssubsat_vl, "PseudoVSSUB">;
 defm : VPatBinaryVL_VV_VX<riscv_usubsat_vl, "PseudoVSSUBU">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// 12.2 Vector Single-Width Averaging Add and Subtract
+defm : VPatBinaryRM_VL_VV_VX<riscv_aadd_vl, "PseudoVAADD">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_aaddu_vl, "PseudoVAADDU">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_asub_vl, "PseudoVASUB">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_asubu_vl, "PseudoVASUBU">;
+#endif // SIFIVE_CUSTOMIZATION
+
 } // Predicates = [HasVInstructions]
 
 // 15.1. Vector Single-Width Integer Reduction Instructions
@@ -1424,9 +1530,9 @@ defm : VPatFPMulAddVL_VV_VF<riscv_vfnmsub_vl, "PseudoVFNMSUB">;
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllFloatVectors in {
   defvar suffix = vti.LMul.MX;
-  def : Pat<(vti.Vector (riscv_fnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
-                                         vti.RegClass:$rs2, (vti.Mask V0),
-                                         VLOpFrag)),
+  def : Pat<(vti.Vector (riscv_vfnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
+                                          vti.RegClass:$rs2, (vti.Mask V0),
+                                          VLOpFrag)),
             (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
                  (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_UNDISTURBED_MASK_UNDISTURBED)>;
@@ -1465,13 +1571,13 @@ foreach vti = AllFloatVectors in {
 
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
-  def : Pat<(riscv_frsqrt7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                               VLOpFrag),
+  def : Pat<(riscv_vfrsqrt7_vl (vti.Vector vti.RegClass:$rs2),
+                               (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
   // 14.10. Vector Floating-Point Reciprocal Estimate Instruction
-  def : Pat<(riscv_frec7_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                             VLOpFrag),
+  def : Pat<(riscv_vfrec7_vl (vti.Vector vti.RegClass:$rs2),
+                             (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
@@ -1521,8 +1627,8 @@ foreach vti = AllFloatVectors in {
 
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.14. Vector Floating-Point Classify Instruction
-  def : Pat<(riscv_fclass_vl (vti.Vector vti.RegClass:$rs2), (vti.Mask true_mask),
-                             VLOpFrag),
+  def : Pat<(riscv_vfclass_vl (vti.Vector vti.RegClass:$rs2),
+                              (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFCLASS_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION

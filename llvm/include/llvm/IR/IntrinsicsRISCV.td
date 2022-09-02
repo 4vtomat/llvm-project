@@ -741,12 +741,12 @@ let TargetPrefix = "riscv" in {
 #ifdef SIFIVE_CUSTOMIZATION
   // For Saturating binary operations with rounding-mode operand
   // The destination vector type is the same as first source vector.
-  // Input: (passthru, vector_in, vector_in/scalar_in, vl, vxrm)
+  // Input: (passthru, vector_in, vector_in/scalar_in, vxrm, vl)
   class RISCVSaturatingBinaryRMAAXUnMasked
         : Intrinsic<[llvm_anyvector_ty],
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
                      llvm_anyint_ty, LLVMMatchType<2>],
-                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+                    [ImmArg<ArgIndex<3>>, IntrNoMem]>, RISCVVIntrinsic {
     let ScalarOperand = 2;
     let VLOperand = 3;
   }
@@ -766,13 +766,13 @@ let TargetPrefix = "riscv" in {
 #ifdef SIFIVE_CUSTOMIZATION
   // For Saturating binary operations with mask and rounding-mode operand
   // The destination vector type is the same as first source vector.
-  // Input: (maskedoff, vector_in, vector_in/scalar_in, mask, vl, policy, vxrm)
+  // Input: (maskedoff, vector_in, vector_in/scalar_in, mask, vxrm, vl, policy)
   class RISCVSaturatingBinaryRMAAXMasked
         : Intrinsic<[llvm_anyvector_ty],
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
                      LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>, llvm_anyint_ty,
                      LLVMMatchType<2>, LLVMMatchType<2>],
-                    [ImmArg<ArgIndex<5>>, ImmArg<ArgIndex<6>>, IntrNoMem]>, RISCVVIntrinsic {
+                    [ImmArg<ArgIndex<4>>, ImmArg<ArgIndex<6>>, IntrNoMem]>, RISCVVIntrinsic {
     let ScalarOperand = 2;
     let VLOperand = 4;
   }
@@ -1538,11 +1538,14 @@ let TargetPrefix = "riscv" in {
 
   defm vaaddu : RISCVSaturatingBinaryAAX;
   defm vaadd : RISCVSaturatingBinaryAAX;
-#ifdef SIFIVE_CUSTOMIZATION
-  defm vaadd_rm : RISCVSaturatingBinaryRMAAX;
-#endif // SIFIVE_CUSTOMIZATION
   defm vasubu : RISCVSaturatingBinaryAAX;
   defm vasub : RISCVSaturatingBinaryAAX;
+#ifdef SIFIVE_CUSTOMIZATION
+  defm vaaddu_rm : RISCVSaturatingBinaryRMAAX;
+  defm vaadd_rm : RISCVSaturatingBinaryRMAAX;
+  defm vasubu_rm : RISCVSaturatingBinaryRMAAX;
+  defm vasub_rm : RISCVSaturatingBinaryRMAAX;
+#endif // SIFIVE_CUSTOMIZATION
 
   defm vsmul : RISCVSaturatingBinaryAAX;
 

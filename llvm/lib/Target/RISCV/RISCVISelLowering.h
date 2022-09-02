@@ -242,6 +242,11 @@ enum NodeType : unsigned {
   SSUBSAT_VL,
   USUBSAT_VL,
 
+  VAADD_VL,  // SIFIVE
+  VAADDU_VL, // SIFIVE
+  VASUB_VL,  // SIFIVE
+  VASUBU_VL, // SIFIVE
+
   MULHS_VL,
   MULHU_VL,
   FADD_VL,
@@ -255,10 +260,10 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
-  FRSQRT7_VL, // SIFIVE
-  FREC7_VL,   // SIFIVE
-  FCLASS_VL,  // SIFIVE
-  FNMSAC_VL, // SIFIVE
+  VFRSQRT7_VL,  // SIFIVE
+  VFREC7_VL,    // SIFIVE
+  VFCLASS_VL,   // SIFIVE
+  VFNMSAC_VL,   // SIFIVE
   FCOPYSIGN_VL, // Has a merge operand
   FP_TO_SINT_VL,
   FP_TO_UINT_VL,
@@ -710,6 +715,10 @@ private:
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG, unsigned NewOpc,
                             bool HasMergeOp = false, bool HasMask = true) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
+                               bool HasMask) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG, unsigned RISCVISDOpc,
                     bool HasMergeOp = false) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG, unsigned MaskOpc,

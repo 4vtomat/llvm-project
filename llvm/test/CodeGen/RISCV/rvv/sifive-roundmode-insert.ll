@@ -24,14 +24,14 @@ entry:
     <vscale x 8 x i8> undef,
     <vscale x 8 x i8> %0,
     <vscale x 8 x i8> %1,
-    i64 %3,
-    i64 2)
+    i64 2,
+    i64 %3)
   %res = call <vscale x 8 x i8> @llvm.riscv.vaadd.rm.nxv8i8.nxv8i8(
     <vscale x 8 x i8> undef,
     <vscale x 8 x i8> %a,
     <vscale x 8 x i8> %2,
-    i64 %3,
-    i64 0)
+    i64 0,
+    i64 %3)
 
   ret <vscale x 8 x i8> %res
 }
@@ -69,7 +69,7 @@ for.body:
   %3 = bitcast i8* %ptr_dest to <vscale x 8 x i8>*
   %4 = tail call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> undef, <vscale x 8 x i8>* %1, i64 %avl.010)
   %5 = tail call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> undef, <vscale x 8 x i8>* %2, i64 %avl.010)
-  %6 = tail call <vscale x 8 x i8> @llvm.riscv.vaadd.rm.nxv8i8.nxv8i8(<vscale x 8 x i8> undef, <vscale x 8 x i8> %4, <vscale x 8 x i8> %5, i64 %avl.010, i64 2)
+  %6 = tail call <vscale x 8 x i8> @llvm.riscv.vaadd.rm.nxv8i8.nxv8i8(<vscale x 8 x i8> undef, <vscale x 8 x i8> %4, <vscale x 8 x i8> %5, i64 2, i64 %avl.010)
   tail call void @llvm.riscv.vse.nxv8i8.i64(<vscale x 8 x i8> %6, <vscale x 8 x i8>* %3, i64 %avl.010)
   %sub = sub i64 %n.addr.011, %avl.010
   %7 = tail call i64 @llvm.riscv.vsetvli.i64(i64 %sub, i64 0, i64 2)

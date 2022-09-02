@@ -1454,23 +1454,39 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
   for (auto &Reduction : getReductionVars())
     ReductionLiveOuts.insert(Reduction.second.getLoopExitInstr());
 
+#if !SIFIVE_CUSTOMIZATION
   // TODO: handle non-reduction outside users when tail is folded by masking.
-  for (auto *AE : AllowedExit) {
-    // Check that all users of allowed exit values are inside the loop or
-    // are the live-out of a reduction.
-    if (ReductionLiveOuts.count(AE))
-      continue;
-    for (User *U : AE->users()) {
-      Instruction *UI = cast<Instruction>(U);
-      if (TheLoop->contains(UI))
+#else
+  // The limitations that LV has for masking loop body are not applicable to RVV
+  // VLA vectorization as loop body is not masked.
+  //
+  // FIXME: This function shouldn't be called for RVV VLA in the first place.
+  // However, there's coupling in CM and TTI that expect all operations to be
+  // masked. More specifically, this function places all instructions into
+  // `MaskedOp` container, and for unmasked operations TTI returns `Invalid`
+  // cost
+  // Need to modify TTI to return costs for unmasked operations and then not
+  // call this function if we do RVV VLA vectorization.
+  if (!preferPredicatedVectorOps()) {
+    // TODO: handle non-reduction outside users when tail is folded by masking.
+    for (auto *AE : AllowedExit) {
+      // Check that all users of allowed exit values are inside the loop or
+      // are the live-out of a reduction.
+      if (ReductionLiveOuts.count(AE))
         continue;
-      LLVM_DEBUG(
-          dbgs()
-          << "LV: Cannot fold tail by masking, loop has an outside user for "
-          << *UI << "\n");
-      return false;
+      for (User *U : AE->users()) {
+        Instruction *UI = cast<Instruction>(U);
+        if (TheLoop->contains(UI))
+          continue;
+        LLVM_DEBUG(
+            dbgs()
+            << "LV: Cannot fold tail by masking, loop has an outside user for "
+            << *UI << "\n");
+        return false;
+      }
     }
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   // The list of pointers that we can safely read and write to remains empty.
   SmallPtrSet<Value *, 8> SafePointers;

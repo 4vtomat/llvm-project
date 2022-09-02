@@ -353,6 +353,7 @@ public:
                              SDep &Dep) const override;
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
+  bool useAA() const override;
 #endif // SIFIVE_CUSTOMIZATION
 };
 } // End llvm namespace
