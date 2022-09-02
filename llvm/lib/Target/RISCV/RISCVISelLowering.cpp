@@ -5676,8 +5676,8 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
 }
 
 #if SIFIVE_CUSTOMIZATION
-static SDValue getFixedFclass(SDValue Op, SelectionDAG &DAG,
-                              const RISCVSubtarget &Subtarget) {
+static SDValue getFixedVFclass(SDValue Op, SelectionDAG &DAG,
+                               const RISCVSubtarget &Subtarget) {
   MVT VT = getContainerForFixedLengthVector(DAG.getTargetLoweringInfo(),
                                             Op.getSimpleValueType(), Subtarget);
   SDValue ScalableOp = convertToScalableVector(VT, Op, DAG, Subtarget);
@@ -5687,7 +5687,7 @@ static SDValue getFixedFclass(SDValue Op, SelectionDAG &DAG,
       getDefaultVLOps(Op.getSimpleValueType(), VT, DL, DAG, Subtarget);
   return convertFromScalableVector(
       Op.getValueType().changeVectorElementTypeToInteger(),
-      DAG.getNode(RISCVISD::FCLASS_VL, DL,
+      DAG.getNode(RISCVISD::VFCLASS_VL, DL,
                   ScalableOp.getValueType().changeVectorElementTypeToInteger(),
                   ScalableOp, Mask, VL),
       DAG, Subtarget);
@@ -5934,14 +5934,14 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Op0 = Op.getOperand(1);
     SDValue Op1 = Op.getOperand(2);
     EVT VT = Op.getValueType();
-    SDValue FclassOp0 = getFixedFclass(Op0, DAG, Subtarget);
-    SDValue FclassOp1 = getFixedFclass(Op1, DAG, Subtarget);
-    SDValue FclassOr = DAG.getNode(ISD::OR, DL, FclassOp0.getValueType(),
-                                   FclassOp0, FclassOp1);
-    EVT FclassOrVT = FclassOr.getValueType();
+    SDValue VFclassOp0 = getFixedVFclass(Op0, DAG, Subtarget);
+    SDValue VFclassOp1 = getFixedVFclass(Op1, DAG, Subtarget);
+    SDValue VFclassOr = DAG.getNode(ISD::OR, DL, VFclassOp0.getValueType(),
+                                    VFclassOp0, VFclassOp1);
+    EVT VFclassOrVT = VFclassOr.getValueType();
     // 256 is signaling NaN.
-    SDValue FclassMask = DAG.getNode(ISD::AND, DL, FclassOrVT, FclassOr,
-                                     DAG.getConstant(256, DL, FclassOrVT));
+    SDValue VFclassMask = DAG.getNode(ISD::AND, DL, VFclassOrVT, VFclassOr,
+                                      DAG.getConstant(256, DL, VFclassOrVT));
     SDValue TrueVal = DAG.getConstantFP(
         APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
     SDValue FalseVal = lowerToScalableOp(Op, DAG,
@@ -5949,7 +5949,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                              ? RISCVISD::FMAXNUM_VL
                                              : RISCVISD::FMINNUM_VL,
                                          true);
-    return DAG.getSelectCC(DL, FclassMask, DAG.getConstant(0, DL, FclassOrVT),
+    return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
                            TrueVal, FalseVal, ISD::SETNE);
   }
 #endif
