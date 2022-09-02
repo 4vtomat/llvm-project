@@ -110,10 +110,12 @@ def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 def riscv_usubsat_vl   : SDNode<"RISCVISD::USUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_aadd_vl  : SDNode<"RISCVISD::VAADD_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_aaddu_vl : SDNode<"RISCVISD::VAADDU_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_asub_vl  : SDNode<"RISCVISD::VASUB_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_asubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vaadd_vl  : SDNode<"RISCVISD::VAADD_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vaaddu_vl : SDNode<"RISCVISD::VAADDU_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vasub_vl  : SDNode<"RISCVISD::VASUB_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vasubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def riscv_fadd_vl  : SDNode<"RISCVISD::FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
@@ -531,6 +533,18 @@ multiclass VPatBinaryRM_VL_VV_VX<SDNode vop, string instruction_name> {
                               vti.Vector, vti.Vector, vti.Vector, vti.Mask,
                               vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
                               SplatPat, GPR>;
+  }
+}
+
+multiclass VPatBinaryRM_VL_VV_VX_VI<SDNode vop, string instruction_name,
+                                    Operand ImmType = simm5>
+    : VPatBinaryRM_VL_VV_VX<vop, instruction_name> {
+  foreach vti = AllIntegerVectors in {
+    defm : VPatBinaryRM_VL_XI<vop, instruction_name, "VI",
+                              vti.Vector, vti.Vector, vti.Vector, vti.Mask,
+                              vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
+                              !cast<ComplexPattern>(SplatPat#_#ImmType),
+                              ImmType>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1456,10 +1470,15 @@ defm : VPatBinaryVL_VV_VX<riscv_usubsat_vl, "PseudoVSSUBU">;
 
 #ifdef SIFIVE_CUSTOMIZATION
 // 12.2 Vector Single-Width Averaging Add and Subtract
-defm : VPatBinaryRM_VL_VV_VX<riscv_aadd_vl, "PseudoVAADD">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_aaddu_vl, "PseudoVAADDU">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_asub_vl, "PseudoVASUB">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_asubu_vl, "PseudoVASUBU">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_vaadd_vl, "PseudoVAADD">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_vaaddu_vl, "PseudoVAADDU">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_vasub_vl, "PseudoVASUB">;
+defm : VPatBinaryRM_VL_VV_VX<riscv_vasubu_vl, "PseudoVASUBU">;
+
+// 12.4 Vector Single-Width Scaling Shift Instructions
+defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssrl_vl, "PseudoVSSRL">;
+defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA">;
+
 #endif // SIFIVE_CUSTOMIZATION
 
 } // Predicates = [HasVInstructions]
