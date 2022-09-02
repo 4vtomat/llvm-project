@@ -249,6 +249,8 @@ enum NodeType : unsigned {
   VSMUL_VL, // SIFIVE
   VSSRL_VL, // SIFIVE
   VSSRA_VL, // SIFIVE
+  VNCLIPU_VL, // SIFIVE
+  VNCLIP_VL, // SIFIVE
 
   MULHS_VL,
   MULHU_VL,

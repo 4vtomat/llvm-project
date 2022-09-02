@@ -40,6 +40,19 @@ def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 7, [SDTCisVec<0>, SDTCisInt<0>,
                                                    SDTCisVT<5, XLenVT>,
                                                    SDTCisVT<6, XLenVT>,
                                                    SDTCisVT<7, XLenVT>]>;
+
+// Input: (vector, vector/scalar, merge, mask, roundmode, vl, policy)
+def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 7, [SDTCisVec<0>, SDTCisInt<0>,
+                                               SDTCisSameAs<0, 3>,
+                                               SDTCisSameNumEltsAs<0, 1>,
+                                               SDTCisVec<1>,
+                                               SDTCisOpSmallerThanOp<2, 1>,
+                                               SDTCisSameAs<0, 2>,
+                                               SDTCisSameNumEltsAs<0, 4>,
+                                               SDTCVecEltisVT<4, i1>,
+                                               SDTCisVT<5, XLenVT>,
+                                               SDTCisVT<6, XLenVT>,
+                                               SDTCisVT<7, XLenVT>]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVFPUnOp_VL : SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
@@ -117,6 +130,8 @@ def riscv_vasubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vsmul_vl  : SDNode<"RISCVISD::VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
+def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
+def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def riscv_fadd_vl  : SDNode<"RISCVISD::FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
@@ -609,6 +624,24 @@ multiclass VPatBinaryNVL_WV_WX_WI<SDNode vop, string instruction_name> {
                            vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
                            !cast<ComplexPattern>(SplatPat#_#uimm5),
                            uimm5>;
+  }
+}
+
+multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
+  foreach VtiToWti = AllWidenableIntVectors in {
+    defvar vti = VtiToWti.Vti;
+    defvar wti = VtiToWti.Wti;
+    defm : VPatBinaryRM_VL_V<vop, instruction_name, "WV",
+                             vti.Vector, wti.Vector, vti.Vector, vti.Mask,
+                             vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass, vti.RegClass>;
+    defm : VPatBinaryRM_VL_XI<vop, instruction_name, "WX",
+                              vti.Vector, wti.Vector, vti.Vector, vti.Mask,
+                              vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass, SplatPat, GPR>;
+    defm : VPatBinaryRM_VL_XI<vop, instruction_name, "WI",
+                              vti.Vector, wti.Vector, vti.Vector, vti.Mask,
+                              vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
+                              !cast<ComplexPattern>(SplatPat#_#uimm5),
+                              uimm5>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1483,6 +1516,9 @@ defm : VPatBinaryRM_VL_VV_VX<riscv_vsmul_vl, "PseudoVSMUL">;
 defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssrl_vl, "PseudoVSSRL">;
 defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA">;
 
+// 12.5. Vector Narrowing Fixed-Point Clip Instructions
+defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
+defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclipu_vl, "PseudoVNCLIPU">;
 #endif // SIFIVE_CUSTOMIZATION
 
 } // Predicates = [HasVInstructions]
