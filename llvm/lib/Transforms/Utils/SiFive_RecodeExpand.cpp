@@ -25,7 +25,7 @@ static CallInst *toScalableVector(const TargetTransformInfo &TTI,
                                   IRBuilder<> &Builder, Value *Vec) {
   Type *ScalableVecTy = TTI.getScalableVectorFromFixed(Vec->getType());
   return Builder.CreateInsertVector(
-      ScalableVecTy, UndefValue::get(ScalableVecTy), Vec, Builder.getInt64(0));
+      ScalableVecTy, PoisonValue::get(ScalableVecTy), Vec, Builder.getInt64(0));
 }
 
 static Value *widen(IRBuilder<> &Builder, Value *V, unsigned DesNumElements) {
@@ -140,14 +140,14 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             TTI.getScalableVectorFromFixed(StructElementType);
         SmallVector<Value *, 6> Ops;
         for (unsigned i = 0; i != StructNumElements; ++i)
-          Ops.push_back(UndefValue::get(ScalableStructElementType));
+          Ops.push_back(PoisonValue::get(ScalableStructElementType));
         Ops.push_back(II->getArgOperand(0));
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
         CallInst *NewLoad = Builder.CreateIntrinsic(
             Vlseg[StructNumElements - 2],
             {ScalableStructElementType, VL->getType()}, Ops);
-        Value *NewDes = UndefValue::get(DesTy);
+        Value *NewDes = PoisonValue::get(DesTy);
         for (unsigned i = 0; i != StructNumElements; ++i)
           NewDes = Builder.CreateInsertValue(
               NewDes,
