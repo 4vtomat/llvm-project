@@ -5881,7 +5881,19 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VSELECT_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, VL);
   }
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
+#define CASE_RVV(Intrin, Opcode)                                               \
+  case Intrinsic::riscv_##Intrin:                                              \
+    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ false);           \
+  case Intrinsic::riscv_##Intrin##_mask:                                       \
+    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ true);
+
+    CASE_RVV(vaadd_rm, RISCVISD::VAADD_VL)
+    CASE_RVV(vaaddu_rm, RISCVISD::VAADDU_VL)
+    CASE_RVV(vasub_rm, RISCVISD::VASUB_VL)
+    CASE_RVV(vasubu_rm, RISCVISD::VASUBU_VL)
+#undef CASE_RVV
+#endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::aarch64_neon_fmax:
   case Intrinsic::aarch64_neon_fmin: {
@@ -5941,21 +5953,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                            TrueVal, FalseVal, ISD::SETNE);
   }
 #endif
-=======
-#ifdef SIFIVE_CUSTOMIZATION
-#define CASE_RVV(Intrin, Opcode)                                               \
-  case Intrinsic::riscv_##Intrin:                                              \
-    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ false);           \
-  case Intrinsic::riscv_##Intrin##_mask:                                       \
-    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ true);
-
-    CASE_RVV(vaadd_rm, RISCVISD::VAADD_VL)
-    CASE_RVV(vaaddu_rm, RISCVISD::VAADDU_VL)
-    CASE_RVV(vasub_rm, RISCVISD::VASUB_VL)
-    CASE_RVV(vasubu_rm, RISCVISD::VASUBU_VL)
-#undef CASE_RVV
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
   }
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
