@@ -246,6 +246,7 @@ enum NodeType : unsigned {
   VAADDU_VL, // SIFIVE
   VASUB_VL,  // SIFIVE
   VASUBU_VL, // SIFIVE
+  VSMUL_VL, // SIFIVE
   VSSRL_VL, // SIFIVE
   VSSRA_VL, // SIFIVE
 

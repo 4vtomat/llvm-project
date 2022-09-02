@@ -2566,12 +2566,14 @@ multiclass VPseudoVSALU_VV_VX {
             Sched<[WriteVSALUX, ReadVSALUV, ReadVSALUX, ReadVMask]>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSMUL_VV_VX {
-  defm "" : VPseudoBinaryV_VV,
+  defm "" : VPseudoBinaryRM_V_VV,
             Sched<[WriteVSMulV, ReadVSMulV, ReadVSMulV, ReadVMask]>;
-  defm "" : VPseudoBinaryV_VX,
+  defm "" : VPseudoBinaryRM_V_VX,
             Sched<[WriteVSMulX, ReadVSMulV, ReadVSMulX, ReadVMask]>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVAALU_VV_VX {
   defm "" : VPseudoBinaryV_VV,
@@ -5220,9 +5222,11 @@ let hasPostISelHook = 1, hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-let Uses = [VXRM], Defs = [VXSAT], hasSideEffects = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Scaling Shift Instructions
@@ -5897,7 +5901,9 @@ defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-defm : VPatBinaryV_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Scaling Shift Instructions

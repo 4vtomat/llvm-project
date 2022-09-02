@@ -1576,6 +1576,7 @@ let TargetPrefix = "riscv" in {
   defm vasub_rm : RISCVSaturatingBinaryRMAAX;
   defm vssrl_rm : RISCVSaturatingBinaryRMAAShift;
   defm vssra_rm : RISCVSaturatingBinaryRMAAShift;
+  defm vsmul_rm : RISCVSaturatingBinaryRMAAX;
 #endif // SIFIVE_CUSTOMIZATION
 
   defm vsmul : RISCVSaturatingBinaryAAX;
