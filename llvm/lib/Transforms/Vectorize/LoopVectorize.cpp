@@ -9302,16 +9302,17 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
       VPValue *Mask = createBlockInMask(I->getParent(), Plan);
 
 #if SIFIVE_CUSTOMIZATION
-      if (!Mask && Legal->preferPredicatedVectorOps())
-        Mask = Plan->getOrCreateAllTrueMask();
+      assert((Mask || Legal->preferPredicatedVectorOps()) &&
+             "Mask cannot be nullptr for in non RVV VLA vectorization");
+      if (Mask) {
+        VPValue *One = Plan->getOrAddExternalDef(
+            ConstantInt::get(I->getType(), 1u, false));
+        auto *SafeRHS = new VPInstruction(
+            Instruction::Select, {Mask, Ops[1], One}, I->getDebugLoc());
+        VPBB->appendRecipe(SafeRHS);
+        Ops[1] = SafeRHS;
+      }
 #endif // SIFIVE_CUSTOMIZATION
-      VPValue *One =
-        Plan->getOrAddExternalDef(ConstantInt::get(I->getType(), 1u, false));
-      auto *SafeRHS =
-         new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
-                           I->getDebugLoc());
-      VPBB->appendRecipe(SafeRHS);
-      Ops[1] = SafeRHS;
       return new VPWidenRecipe(*I, make_range(Ops.begin(), Ops.end()));
     }
     LLVM_FALLTHROUGH;
