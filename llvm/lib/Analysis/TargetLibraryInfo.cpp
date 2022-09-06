@@ -30,6 +30,10 @@ static cl::opt<TargetLibraryInfoImpl::VectorLibrary> ClVectorLibrary(
                           "GLIBC Vector Math library"),
                clEnumValN(TargetLibraryInfoImpl::MASSV, "MASSV",
                           "IBM MASS vector library"),
+#if SIFIVE_CUSTOMIZATION
+               clEnumValN(TargetLibraryInfoImpl::SiFive_NF, "SiFive_NF",
+                          "SiFive Nonlinear Functions Library"),
+#endif
                clEnumValN(TargetLibraryInfoImpl::SVML, "SVML",
                           "Intel SVML library")));
 
@@ -1884,6 +1888,16 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     addVectorizableFunctions(VecFuncs);
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case SiFive_NF: {
+    const VecDesc VecFuncs[] = {
+    #define TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS
+    #include "llvm/Analysis/VecFuncs.def"
+    };
+    addVectorizableFunctions(VecFuncs);
+    break;
+  }
+#endif
   case NoLibrary:
     break;
   }

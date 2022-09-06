@@ -4481,6 +4481,14 @@ void InnerLoopVectorizer::widenCallInstruction(CallInst &CI, VPValue *Def,
              "Can't create vector function.");
 #endif
       VectorF = VFDatabase(CI).getVectorizedFunction(Shape);
+#if SIFIVE_CUSTOMIZATION
+      // Add VL as an explicit final argument to SiFive NF Library functions
+      if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
+          State.Plan->getEVL()) {
+        Value *EVL = State.get(State.Plan->getEVL(), Part);
+        Args.push_back(EVL);
+      }
+#endif
     }
       SmallVector<OperandBundleDef, 1> OpBundles;
       CI.getOperandBundlesAsDefs(OpBundles);

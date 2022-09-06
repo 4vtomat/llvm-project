@@ -93,6 +93,9 @@ public:
     DarwinLibSystemM, // Use Darwin's libsystem_m.
     LIBMVEC_X86,      // GLIBC Vector Math library.
     MASSV,            // IBM MASS vector library.
+#if SIFIVE_CUSTOMIZATION
+    SiFive_NF,        // SiFive Nonlinear Functions math library
+#endif
     SVML              // Intel short vector math library.
   };
 
