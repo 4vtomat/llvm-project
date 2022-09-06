@@ -2214,9 +2214,9 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (Args.hasFlag(options::OPT_fuse_vla_vectorizer,
-                   options::OPT_fno_use_vla_vectorizer, true))
-    CmdArgs.append({"-mllvm", "-use-vla-vectorizer"});
+  if (Args.hasFlag(options::OPT_fno_use_vla_vectorizer,
+                   options::OPT_fuse_vla_vectorizer, false))
+    CmdArgs.append({"-mllvm", "-riscv-use-vla-vectorizer=false"});
 #endif // SIFIVE_CUSTOMIZATION
 }
 

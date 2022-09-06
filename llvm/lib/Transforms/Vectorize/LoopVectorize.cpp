@@ -256,10 +256,6 @@ static cl::opt<PreferPredicateTy::Option> PreferPredicateOverEpilogue(
                          "tail-folding fails.")));
 
 #if SIFIVE_CUSTOMIZATION
-cl::opt<bool>
-    UseVLAVectorizer("use-vla-vectorizer", cl::init(false), cl::Hidden,
-                     cl::desc("Use vla vectorizer and fine-tuned parameter."));
-
 static cl::opt<bool> UseStridedAccesses(
     "vectorizer-use-vp-strided-load-store",
     cl::init(false),
@@ -578,8 +574,8 @@ public:
   PHINode *getReductionResumeValue(const RecurrenceDescriptor &RdxDesc);
 
 #if SIFIVE_CUSTOMIZATION
-  /// Returns true if vectorization prefers using predicated vector intrinsics.
-  bool preferPredicatedVectorOps() const;
+  /// Returns true if VLA Vectorizer is enabled.
+  bool useVLAVectorizer() const;
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:
@@ -2672,9 +2668,8 @@ void InnerLoopVectorizer::packScalarIntoVectorValue(VPValue *Def,
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool InnerLoopVectorizer::preferPredicatedVectorOps() const {
-  return Cost->foldTailByMasking() &&
-         (UseVLAVectorizer || TTI->preferPredicatedVectorOps());
+bool InnerLoopVectorizer::useVLAVectorizer() const {
+  return Cost->foldTailByMasking() && TTI->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3028,7 +3023,7 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     return VectorTripCount;
 
 #if SIFIVE_CUSTOMIZATION
-  if (preferPredicatedVectorOps())
+  if (useVLAVectorizer())
     return VectorTripCount = getOrCreateTripCount(InsertBlock);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3160,7 +3155,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
 #if SIFIVE_CUSTOMIZATION
       // Don't require this overflow check as with VP-intrinsics we don't mask
       // the loop body.
-      && !preferPredicatedVectorOps()
+      && !useVLAVectorizer()
 #endif // SIFIVE_CUSTOMIZATION
     ) {
     // vscale is not necessarily a power-of-2, which means we cannot guarantee
@@ -3177,7 +3172,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   }
 #if SIFIVE_CUSTOMIZATION
   if (!VectorizerDisableProfitableTripCountRTCheck &&
-      Cost->foldTailByMasking() && preferPredicatedVectorOps() &&
+      Cost->foldTailByMasking() && useVLAVectorizer() &&
       !Legal->getReductionVars().empty()) {
     if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
       // FIXME: That should be done during VPlan construction and be aligned
@@ -4139,7 +4134,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
               RdxDesc.getOpcode(), PhiTy,
               TargetTransformInfo::ReductionFlags())
 #if SIFIVE_CUSTOMIZATION
-          || preferPredicatedVectorOps()) {
+          || useVLAVectorizer()) {
 #else
               ) {
 #endif // SIFIVE_CUSTOMIZATION
@@ -4714,7 +4709,7 @@ bool LoopVectorizationCostModel::isScalarWithPredication(
   case Instruction::SRem:
   case Instruction::URem:
 #if SIFIVE_CUSTOMIZATION
-    if (Legal->preferPredicatedVectorOps())
+    if (Legal->useVLAVectorizer())
       return false;
 #endif // SIFIVE_CUSTOMIZATION
     // TODO: We can use the loop-preheader as context point here and get
@@ -6952,7 +6947,7 @@ LoopVectorizationCostModel::expectedCost(
     // Legal is used so as to not include all blocks in tail folded loops.
 #if SIFIVE_CUSTOMIZATION
     if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
-        !Legal->preferPredicatedVectorOps()) {
+        !Legal->useVLAVectorizer()) {
       auto Scale = getReciprocalPredBlockProb();
       // LLVM_DEBUG(dbgs() << "LV: Dividing cost of " << BlockCost.first << " by "
       //                   << Scale << " due to branch probability\n");
@@ -6986,7 +6981,7 @@ LoopVectorizationCostModel::expectedCost(
   // on the induction variable type, expecting the TTI to result in an
   // "infinitely" high cost if the type is illegal. We also just enable for the
   // case when we are using VP instructions to avoid breaking existing tests.
-  if (Legal->preferPredicatedVectorOps() && foldTailByMasking()) {
+  if (Legal->useVLAVectorizer() && foldTailByMasking()) {
     // Add cost of generating a compare instruction to build mask.
     Type *VectorTy = ToVectorTy(Legal->getWidestInductionType(), VF);
     InstructionCost MaskCost = TTI.getCmpSelInstrCost(
@@ -8432,7 +8427,7 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
       ILV.createVectorizedLoopSkeleton();
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
-  State.PreferPredicatedVectorOps = ILV.preferPredicatedVectorOps();
+  State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
   if (State.Plan->getEVL()) {
     unsigned SmallestTypeSize, WidestTypeSize;
     Type *WidestType;
@@ -8953,7 +8948,7 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlanPtr &Plan) {
     // non-phi instructions.
 
 #if SIFIVE_CUSTOMIZATION
-    if (Legal->preferPredicatedVectorOps())
+    if (Legal->useVLAVectorizer())
       return BlockMaskCache[BB] = BlockMask;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -9235,7 +9230,7 @@ bool VPRecipeBuilder::shouldWiden(Instruction *I, VFRange &Range) const {
 
 #if SIFIVE_CUSTOMIZATION
 bool VPRecipeBuilder::preferPredicatedWiden() const {
-  return CM.foldTailByMasking() && Legal->preferPredicatedVectorOps();
+  return CM.foldTailByMasking() && Legal->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -9752,7 +9747,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
       *Plan, Legal->getWidestInductionType(),
       DLInst ? DLInst->getDebugLoc() : DebugLoc(), !CM.foldTailByMasking(),
       CM.useActiveLaneMaskForControlFlow(),
-      CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
+      CM.foldTailByMasking() && Legal->useVLAVectorizer());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
@@ -10077,7 +10072,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(), DebugLoc(), true,
       CM.useActiveLaneMaskForControlFlow(),
-      CM.foldTailByMasking() && Legal->preferPredicatedVectorOps());
+      CM.foldTailByMasking() && Legal->useVLAVectorizer());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
                         true, CM.useActiveLaneMaskForControlFlow());
@@ -10185,7 +10180,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       VPValue *Cond =
           RecipeBuilder.createBlockInMask(OrigLoop->getHeader(), Plan);
 #if SIFIVE_CUSTOMIZATION
-      if (!Cond && Legal->preferPredicatedVectorOps())
+      if (!Cond && Legal->useVLAVectorizer())
         Cond = Plan->getOrCreateAllTrueMask();
 #endif // SIFIVE_CUSTOMIZATION
       VPValue *Red = PhiR->getBackedgeValue();
@@ -10985,7 +10980,7 @@ static ScalarEpilogueLowering getScalarEpilogueLowering(
 
   // 2) If set, obey the directives
 #if SIFIVE_CUSTOMIZATION
-  if (UseVLAVectorizer)
+  if (TTI->useVLAVectorizer())
     return CM_ScalarEpilogueNotAllowedUsePredicate;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11707,7 +11702,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         Triple TargetTriple(M.getTargetTriple());
         Triple::ArchType Arch = TargetTriple.getArch();
         if ((Arch == Triple::riscv32 || Arch == Triple::riscv64) &&
-            VF.Width.isScalable() && LVL.preferPredicatedVectorOps()) {
+            VF.Width.isScalable() && LVL.useVLAVectorizer()) {
           auto VFToLMULTypeSizePair = [&LVP](const ElementCount &VF) {
             assert(VF.isVector() && "Cannot convert scalar type to LMUL");
             assert(VF.isScalable() && "Cannot convert fixed vector type to LMUL");

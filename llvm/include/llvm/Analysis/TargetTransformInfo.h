@@ -1486,9 +1486,8 @@ public:
   unsigned getGISelRematGlobalCost() const;
 
 #if SIFIVE_CUSTOMIZATION
-  /// \returns True if the target prefers using vector predication for all Ops
-  /// instead of just loads and stores.
-  bool preferPredicatedVectorOps() const;
+  /// \returns True if the target should use the VLA Vectorizer.
+  bool useVLAVectorizer() const;
 
   /// \returns True if the target prefers to postpone the computation of the
   /// start value.
@@ -1907,7 +1906,7 @@ public:
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const = 0;
 #if SIFIVE_CUSTOMIZATION
-  virtual bool preferPredicatedVectorOps() const = 0;
+  virtual bool useVLAVectorizer() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual InstructionCost getInstructionLatency(const Instruction *I) = 0;
@@ -2580,8 +2579,8 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool preferPredicatedVectorOps() const override {
-    return Impl.preferPredicatedVectorOps();
+  bool useVLAVectorizer() const override {
+    return Impl.useVLAVectorizer();
   }
 
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override {
