@@ -9305,7 +9305,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
       VPValue *Mask = createBlockInMask(I->getParent(), Plan);
 
 #if SIFIVE_CUSTOMIZATION
-      assert((Mask || Legal->preferPredicatedVectorOps()) &&
+      assert((Mask || Legal->useVLAVectorizer()) &&
              "Mask cannot be nullptr for in non RVV VLA vectorization");
       if (Mask) {
         VPValue *One = Plan->getOrAddExternalDef(
