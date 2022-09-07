@@ -142,7 +142,7 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
 
 #if SIFIVE_CUSTOMIZATION
   // force-vector-width should be ignored if VLA is enabled
-  if (UseVLAVectorizer && Width.Value) {
+  if (TTI && TTI->useVLAVectorizer() && Width.Value) {
       auto VectorizationFactor = Width.Value;
       Width.Value = VectorizerParams::DefaultVectorizationFactor;
       ORE.emit([&]() {
@@ -188,7 +188,8 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     // loop hint.
     Scalable.Value = SK_ScalableOnly;
 
-  if (UseVLAVectorizer)
+  if (TTI && TTI->useVLAVectorizer() &&
+      ForceScalableVectorization == SK_Unspecified)
     Scalable.Value = SK_ScalableOnly;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1472,7 +1473,7 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
   // cost
   // Need to modify TTI to return costs for unmasked operations and then not
   // call this function if we do RVV VLA vectorization.
-  if (!preferPredicatedVectorOps()) {
+  if (!useVLAVectorizer()) {
     // TODO: handle non-reduction outside users when tail is folded by masking.
     for (auto *AE : AllowedExit) {
       // Check that all users of allowed exit values are inside the loop or

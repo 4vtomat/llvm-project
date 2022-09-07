@@ -1,5 +1,5 @@
-; RUN: opt -S -mtriple=riscv64-unknown-elf -march=rv64gcv1p0 -mattr=+v,+f \
-; RUN: -force-vector-width=16 -use-vla-vectorizer -passes=loop-vectorize \
+; RUN: opt -S -mtriple=riscv64-unknown-elf -mattr=+v,+f \
+; RUN: -force-vector-width=16 -riscv-use-vla-vectorizer -passes=loop-vectorize \
 ; RUN: -pass-remarks=loop-vectorize -pass-remarks-missed=loop-vectorize \
 ; RUN: -pass-remarks-analysis=loop-vectorize < %s  2>%t 
 ; RUN: cat %t | FileCheck %s -check-prefix=CHECK-REMARK

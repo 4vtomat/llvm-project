@@ -145,7 +145,7 @@ public:
       unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
       unsigned RegWidthFactor = 1, bool IsScalable = false) const;
 
-  bool preferPredicatedVectorOps() const;
+  bool useVLAVectorizer() const;
 #endif // SIFIVE_CUSTOMIZATION
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
 

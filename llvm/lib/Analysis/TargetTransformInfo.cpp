@@ -1175,8 +1175,8 @@ bool TargetTransformInfo::hasActiveVectorLength(unsigned Opcode, Type *DataType,
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool TargetTransformInfo::preferPredicatedVectorOps() const {
-  return TTIImpl->preferPredicatedVectorOps();
+bool TargetTransformInfo::useVLAVectorizer() const {
+  return TTIImpl->useVLAVectorizer();
 }
 
 bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,

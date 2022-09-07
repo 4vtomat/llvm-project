@@ -856,7 +856,7 @@ public:
   unsigned getGISelRematGlobalCost() const { return 1; }
 
 #if SIFIVE_CUSTOMIZATION
-  bool preferPredicatedVectorOps() const { return false; }
+  bool useVLAVectorizer() const { return false; }
 
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
     return false;

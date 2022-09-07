@@ -32,10 +32,6 @@
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
 
-#if SIFIVE_CUSTOMIZATION
-extern llvm::cl::opt<bool> UseVLAVectorizer;
-#endif // SIFIVE_CUSTOMIZATION
-
 namespace llvm {
 class AAResults;
 class AssumptionCache;
@@ -428,10 +424,9 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// Returns true if TTI prefers widening vector ops using predicated vector
-  /// intrinsics.
-  bool preferPredicatedVectorOps() const {
-    return UseVLAVectorizer || TTI->preferPredicatedVectorOps();
+  /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
+  bool useVLAVectorizer() const {
+    return TTI->useVLAVectorizer();
   }
 #endif // SIFIVE_CUSTOMIZATION
 

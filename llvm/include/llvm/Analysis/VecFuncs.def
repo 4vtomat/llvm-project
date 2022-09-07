@@ -466,6 +466,14 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f4", FIXED(4))
 TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f8", FIXED(8))
 TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16))
 
+// SIFIVE_CUSTOMIZATION
+#elif defined(TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS)
+
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2))
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4))
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8))
+// end SIFIVE_CUSTOMIZATION
+
 #else
 #error "Must choose which vector library functions are to be defined."
 #endif
@@ -477,3 +485,7 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16))
 #undef TLI_DEFINE_MASSV_VECFUNCS
 #undef TLI_DEFINE_SVML_VECFUNCS
 #undef TLI_DEFINE_MASSV_VECFUNCS_NAMES
+
+#if SIFIVE_CUSTOMIZATION
+#undef TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS
+#endif

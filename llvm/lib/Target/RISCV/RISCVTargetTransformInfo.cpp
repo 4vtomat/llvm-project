@@ -24,9 +24,9 @@ static cl::opt<unsigned>
                                 cl::init(2), cl::Hidden);
 
 static cl::opt<bool>
-    PreferPredicatedVectorOps("riscv-prefer-predicated-vector-ops",
-                              cl::desc("Prefer to use VP-intrinsics"),
-                              cl::init(false), cl::Hidden);
+    UseVLAVectorizer("riscv-use-vla-vectorizer",
+                     cl::desc("Enable VLA Vectorizer on RISCV Targets"),
+                     cl::init(true), cl::Hidden);
 
 static cl::opt<bool> PreferPostFixStartValue(
     "riscv-prefer-post-fix-start-value",
@@ -158,9 +158,9 @@ unsigned RISCVTTIImpl::getMaxElementWidth() const {
   return ST->hasVInstructionsI64() ? 64 : 32;
 }
 
-bool RISCVTTIImpl::preferPredicatedVectorOps() const {
-  return PreferPredicatedVectorOps; // TODO: Replace with a call like
-                                    // ST->isSiFiveCPU()
+bool RISCVTTIImpl::useVLAVectorizer() const {
+  return UseVLAVectorizer; // TODO: Replace with a call like
+                           // ST->isSiFiveCPU()
 }
 #endif // SIFIVE_CUSTOMIZATION
 

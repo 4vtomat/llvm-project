@@ -17,6 +17,11 @@
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
 
+#if SIFIVE_CUSTOMIZATION
+// Prefix that every SiFive NF Library function name must begin with
+static constexpr char SiFiveNFLibraryPrefix[] = "sifive_nf";
+#endif
+
 namespace llvm {
 class Function;
 class InjectTLIMappings : public PassInfoMixin<InjectTLIMappings> {
