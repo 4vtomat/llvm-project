@@ -133,10 +133,21 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
 /// For the input call instruction it finds mapping intrinsic and returns
 /// its ID, in case it does not found it return not_intrinsic.
 Intrinsic::ID llvm::getVectorIntrinsicIDForCall(const CallInst *CI,
+#if SIFIVE_CUSTOMIZATION
+                                                const TargetLibraryInfo *TLI,
+                                                bool PreferVPOps) {
+#else
                                                 const TargetLibraryInfo *TLI) {
+#endif // SIFIVE_CUSTOMIZATION
   Intrinsic::ID ID = getIntrinsicForCallSite(*CI, TLI);
   if (ID == Intrinsic::not_intrinsic)
     return Intrinsic::not_intrinsic;
+
+#if SIFIVE_CUSTOMIZATION
+  if (PreferVPOps)
+    if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(ID))
+      return VPID;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (isTriviallyVectorizable(ID) || ID == Intrinsic::lifetime_start ||
       ID == Intrinsic::lifetime_end || ID == Intrinsic::assume ||

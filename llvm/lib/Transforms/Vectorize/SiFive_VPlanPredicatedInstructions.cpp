@@ -271,4 +271,25 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   llvm_unreachable("Unexpected opcode.");
 }
 
+void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
+                         VPTransformState &State, Intrinsic::ID VPID,
+                         unsigned Part) {
+  IRBuilderBase &Builder = State.Builder;
+  SmallVector<Type *, 2> TysForDecl = {CI.getType()};
+  SmallVector<Value *, 4> Args;
+  for (auto &I : enumerate(ArgOperands.operands())) {
+    Value *Arg = State.get(I.value(), Part);
+    if (isVectorIntrinsicWithOverloadTypeAtArg(VPID, I.index()))
+      TysForDecl.push_back(Arg->getType());
+    Args.push_back(Arg);
+  }
+
+  Args.push_back(Builder.getTrueVector(State.VF));
+  Args.push_back(State.get(State.Plan->getEVL(), Part));
+  auto *DestTy = VectorType::get(CI.getType(), State.VF);
+  CallInst *V = Builder.CreateIntrinsic(VPID, DestTy, Args, nullptr, "vp.op");
+  if (isa<FPMathOperator>(V))
+    V->copyFastMathFlags(&CI);
+  State.set(Def, V, Part);
+}
 } // namespace llvm
