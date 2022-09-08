@@ -261,8 +261,13 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
     // Operands {0        , 1     , 2   , 3 }
     //          {StoredVal, VecPtr, Mask, VL}
     // Types.
-    if (KillingII->getArgOperand(0)->getType() !=
-        DeadII->getArgOperand(0)->getType())
+    VectorType *KillingTy =
+        cast<VectorType>(KillingII->getArgOperand(0)->getType());
+    VectorType *DeadTy = cast<VectorType>(DeadII->getArgOperand(0)->getType());
+    if (KillingTy->getScalarSizeInBits() != DeadTy->getScalarSizeInBits())
+      return OW_Unknown;
+    // Element count.
+    if (KillingTy->getElementCount() != DeadTy->getElementCount())
       return OW_Unknown;
     // Pointers.
     Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
