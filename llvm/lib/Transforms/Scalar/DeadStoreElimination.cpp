@@ -247,10 +247,6 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
   if (KillingII->getIntrinsicID() != DeadII->getIntrinsicID())
     return OW_Unknown;
   if (KillingII->getIntrinsicID() == Intrinsic::masked_store) {
-    // Types.
-    if (KillingII->getArgOperand(0)->getType() !=
-        DeadII->getArgOperand(0)->getType())
-      return OW_Unknown;
     // Pointers.
     Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
     Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();

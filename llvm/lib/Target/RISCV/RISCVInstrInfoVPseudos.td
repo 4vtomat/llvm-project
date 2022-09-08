@@ -2197,6 +2197,13 @@ multiclass VPseudoBinaryV_VI<Operand ImmType = simm5, string Constraint = ""> {
     defm _VI : VPseudoBinary<m.vrclass, m.vrclass, ImmType, m, Constraint>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoBinaryRM_V_VI<Operand ImmType = simm5, string Constraint = ""> {
+  foreach m = MxList in
+    defm _VI : VPseudoBinaryRM<m.vrclass, m.vrclass, ImmType, m, Constraint>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPseudoVALU_MM {
   foreach m = MxList in
     let VLMul = m.value in {
@@ -2275,6 +2282,24 @@ multiclass VPseudoBinaryV_WI {
     defm _WI : VPseudoBinary<m.vrclass, m.wvrclass, uimm5, m,
                              !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoBinaryRM_V_WV {
+  foreach m = MxListW in
+    defm _WV : VPseudoBinaryRM<m.vrclass, m.wvrclass, m.vrclass, m,
+                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+}
+multiclass VPseudoBinaryRM_V_WX {
+  foreach m = MxListW in
+    defm _WX : VPseudoBinaryRM<m.vrclass, m.wvrclass, GPR, m,
+                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+}
+multiclass VPseudoBinaryRM_V_WI {
+  foreach m = MxListW in
+    defm _WI : VPseudoBinaryRM<m.vrclass, m.wvrclass, uimm5, m,
+                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // For vadc and vsbc, the instruction encoding is reserved if the destination
 // vector register is v0.
@@ -2547,14 +2572,16 @@ multiclass VPseudoVSHT_VV_VX_VI<Operand ImmType = simm5, string Constraint = "">
             Sched<[WriteVShiftI, ReadVShiftV, ReadVMask]>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSSHT_VV_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
-  defm "" : VPseudoBinaryV_VV<Constraint>,
+  defm "" : VPseudoBinaryRM_V_VV<Constraint>,
             Sched<[WriteVSShiftV, ReadVSShiftV, ReadVSShiftV, ReadVMask]>;
-  defm "" : VPseudoBinaryV_VX<Constraint>,
+  defm "" : VPseudoBinaryRM_V_VX<Constraint>,
             Sched<[WriteVSShiftX, ReadVSShiftV, ReadVSShiftX, ReadVMask]>;
-  defm "" : VPseudoBinaryV_VI<ImmType, Constraint>,
+  defm "" : VPseudoBinaryRM_V_VI<ImmType, Constraint>,
             Sched<[WriteVSShiftI, ReadVSShiftV, ReadVMask]>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVALU_VV_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
   defm "" : VPseudoBinaryV_VV<Constraint>,
@@ -2572,12 +2599,14 @@ multiclass VPseudoVSALU_VV_VX {
             Sched<[WriteVSALUX, ReadVSALUV, ReadVSALUX, ReadVMask]>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSMUL_VV_VX {
-  defm "" : VPseudoBinaryV_VV,
+  defm "" : VPseudoBinaryRM_V_VV,
             Sched<[WriteVSMulV, ReadVSMulV, ReadVSMulV, ReadVMask]>;
-  defm "" : VPseudoBinaryV_VX,
+  defm "" : VPseudoBinaryRM_V_VX,
             Sched<[WriteVSMulX, ReadVSMulV, ReadVSMulX, ReadVMask]>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVAALU_VV_VX {
   defm "" : VPseudoBinaryV_VV,
@@ -2793,14 +2822,16 @@ multiclass VPseudoVCALUM_V_X<string Constraint> {
             Sched<[WriteVICALUX, ReadVIALUCV, ReadVIALUCX]>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVNCLP_WV_WX_WI {
-  defm "" : VPseudoBinaryV_WV,
+  defm "" : VPseudoBinaryRM_V_WV,
             Sched<[WriteVNClipV, ReadVNClipV, ReadVNClipV, ReadVMask]>;
-  defm "" : VPseudoBinaryV_WX,
+  defm "" : VPseudoBinaryRM_V_WX,
             Sched<[WriteVNClipX, ReadVNClipV, ReadVNClipX, ReadVMask]>;
-  defm "" : VPseudoBinaryV_WI,
+  defm "" : VPseudoBinaryRM_V_WI,
             Sched<[WriteVNClipI, ReadVNClipV, ReadVMask]>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVNSHT_WV_WX_WI {
   defm "" : VPseudoBinaryV_WV,
@@ -4197,6 +4228,17 @@ multiclass VPatBinaryV_VI<string intrinsic, string instruction,
                         vti.RegClass, imm_type>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinary_RM_V_VI<string intrinsic, string instruction,
+                              list<VTypeInfo> vtilist, Operand imm_type> {
+  foreach vti = vtilist in
+    defm : VPatBinaryRMTA<intrinsic, instruction # "_VI_" # vti.LMul.MX,
+                          vti.Vector, vti.Vector, XLenVT, vti.Mask,
+                          vti.Log2SEW, vti.RegClass,
+                          vti.RegClass, imm_type>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryM_MM<string intrinsic, string instruction> {
   foreach mti = AllMasks in
     def : VPatBinaryM<intrinsic, instruction # "_MM_" # mti.LMul.MX,
@@ -4329,6 +4371,43 @@ multiclass VPatBinaryV_WI<string intrinsic, string instruction,
                         Wti.RegClass, uimm5>;
   }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_V_WV<string intrinsic, string instruction,
+                             list<VTypeInfoToWide> vtilist> {
+  foreach VtiToWti = vtilist in {
+    defvar Vti = VtiToWti.Vti;
+    defvar Wti = VtiToWti.Wti;
+    defm : VPatBinaryRMTA<intrinsic, instruction # "_WV_" # Vti.LMul.MX,
+                          Vti.Vector, Wti.Vector, Vti.Vector, Vti.Mask,
+                          Vti.Log2SEW, Vti.RegClass,
+                          Wti.RegClass, Vti.RegClass>;
+  }
+}
+multiclass VPatBinaryRM_V_WX<string intrinsic, string instruction,
+                             list<VTypeInfoToWide> vtilist> {
+  foreach VtiToWti = vtilist in {
+    defvar Vti = VtiToWti.Vti;
+    defvar Wti = VtiToWti.Wti;
+    defvar kind = "W"#Vti.ScalarSuffix;
+    defm : VPatBinaryRMTA<intrinsic, instruction#"_"#kind#"_"#Vti.LMul.MX,
+                          Vti.Vector, Wti.Vector, Vti.Scalar, Vti.Mask,
+                          Vti.Log2SEW, Vti.RegClass,
+                          Wti.RegClass, Vti.ScalarRegClass>;
+  }
+}
+multiclass VPatBinaryRM_V_WI<string intrinsic, string instruction,
+                             list<VTypeInfoToWide> vtilist> {
+  foreach VtiToWti = vtilist in {
+    defvar Vti = VtiToWti.Vti;
+    defvar Wti = VtiToWti.Wti;
+    defm : VPatBinaryRMTA<intrinsic, instruction # "_WI_" # Vti.LMul.MX,
+                          Vti.Vector, Wti.Vector, XLenVT, Vti.Mask,
+                          Vti.Log2SEW, Vti.RegClass,
+                          Wti.RegClass, uimm5>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryV_VM<string intrinsic, string instruction,
                           bit CarryOut = 0,
@@ -4464,6 +4543,14 @@ multiclass VPatBinaryV_VV_VX_VI<string intrinsic, string instruction,
       VPatBinaryV_VX<intrinsic, instruction, vtilist>,
       VPatBinaryV_VI<intrinsic, instruction, vtilist, ImmType>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatBinaryRM_V_VV_VX_VI<string intrinsic, string instruction,
+                                   list<VTypeInfo> vtilist, Operand ImmType = simm5>
+    : VPatBinary_RM_V_VV<intrinsic, instruction, vtilist>,
+      VPatBinary_RM_V_VX<intrinsic, instruction, vtilist>,
+      VPatBinary_RM_V_VI<intrinsic, instruction, vtilist, ImmType>;
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatBinaryV_VV_VX<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
     : VPatBinaryV_VV<intrinsic, instruction, vtilist>,
@@ -4474,6 +4561,12 @@ multiclass VPatBinaryRM_V_VV_VX<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
     : VPatBinary_RM_V_VV<intrinsic, instruction, vtilist>,
       VPatBinary_RM_V_VX<intrinsic, instruction, vtilist>;
+
+multiclass VPatBinaryRM_V_WV_WX_WI<string intrinsic, string instruction,
+                                   list<VTypeInfoToWide> vtilist>
+    : VPatBinaryRM_V_WV<intrinsic, instruction, vtilist>,
+      VPatBinaryRM_V_WX<intrinsic, instruction, vtilist>,
+      VPatBinaryRM_V_WI<intrinsic, instruction, vtilist>;
 #endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryV_VX_VI<string intrinsic, string instruction,
@@ -5221,25 +5314,31 @@ let hasPostISelHook = 1, hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-let Uses = [VXRM], Defs = [VXSAT], hasSideEffects = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
-let Uses = [VXRM], hasSideEffects = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1, hasSideEffects = 1 in {
   defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI<uimm5>;
   defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI<uimm5>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-let Uses = [VXRM], Defs = [VXSAT], hasSideEffects = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVNCLIP  : VPseudoVNCLP_WV_WX_WI;
   defm PseudoVNCLIPU : VPseudoVNCLP_WV_WX_WI;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 } // Predicates = [HasVInstructions]
 
@@ -5896,21 +5995,27 @@ defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-defm : VPatBinaryV_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
-defm : VPatBinaryV_VV_VX_VI<"int_riscv_vssrl", "PseudoVSSRL", AllIntegerVectors,
-                            uimm5>;
-defm : VPatBinaryV_VV_VX_VI<"int_riscv_vssra", "PseudoVSSRA", AllIntegerVectors,
-                            uimm5>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_VV_VX_VI<"int_riscv_vssrl", "PseudoVSSRL", AllIntegerVectors,
+                               uimm5>;
+defm : VPatBinaryRM_V_VV_VX_VI<"int_riscv_vssra", "PseudoVSSRA", AllIntegerVectors,
+                               uimm5>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-defm : VPatBinaryV_WV_WX_WI<"int_riscv_vnclipu", "PseudoVNCLIPU", AllWidenableIntVectors>;
-defm : VPatBinaryV_WV_WX_WI<"int_riscv_vnclip", "PseudoVNCLIP", AllWidenableIntVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryRM_V_WV_WX_WI<"int_riscv_vnclipu", "PseudoVNCLIPU", AllWidenableIntVectors>;
+defm : VPatBinaryRM_V_WV_WX_WI<"int_riscv_vnclip", "PseudoVNCLIP", AllWidenableIntVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 } // Predicates = [HasVInstructions]
 
