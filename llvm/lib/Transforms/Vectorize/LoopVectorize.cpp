@@ -7546,7 +7546,15 @@ bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
     Ptr = SI->getPointerOperand();
   }
   assert(Ptr && "Invalid pointer");
-  return isStridedAddressing(Ptr, PSE.getSE());
+  auto *SCEVPtr = isStridedAddressing(Ptr, PSE.getSE());
+  if (!SCEVPtr)
+    return false;
+
+  assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
+         "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
+
+  // Need the recurrence of Ptr is for current loop.
+  return cast<SCEVAddRecExpr>(SCEVPtr)->getLoop() == TheLoop;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
