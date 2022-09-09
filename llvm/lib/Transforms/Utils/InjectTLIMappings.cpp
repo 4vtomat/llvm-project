@@ -48,6 +48,12 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
   SmallVector<Type *, 4> Tys;
   for (Value *ArgOperand : CI.args())
     Tys.push_back(ToVectorTy(ArgOperand->getType(), VF));
+#if SIFIVE_CUSTOMIZATION
+  // Add explicit VL argument for NF Library functions
+  if (VFName.startswith(SiFiveNFLibraryPrefix))
+    Tys.push_back(Type::getInt32Ty(M->getContext()));
+#endif
+
   assert(!CI.getFunctionType()->isVarArg() &&
          "VarArg functions are not supported.");
   FunctionType *FTy = FunctionType::get(RetTy, Tys, /*isVarArg=*/false);
@@ -113,9 +119,15 @@ static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
        ElementCount::isKnownLE(VF, WidestFixedVF); VF *= 2)
     AddVariantDecl(VF);
 
+#if SIFIVE_CUSTOMIZATION
+  for (ElementCount VF = ElementCount::getScalable(1);
+       ElementCount::isKnownLE(VF, WidestScalableVF); VF *= 2)
+    AddVariantDecl(VF);
+#else
   // TODO: Add scalable variants once we're able to test them.
   assert(WidestScalableVF.isZero() &&
          "Scalable vector mappings not yet supported");
+#endif
 
   VFABI::setVectorVariantNames(&CI, Mappings);
 }

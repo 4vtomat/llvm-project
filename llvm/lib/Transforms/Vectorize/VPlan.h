@@ -604,7 +604,7 @@ public:
 
   /// The method which generates the output IR that correspond to this
   /// VPBlockBase, thereby "executing" the VPlan.
-  virtual void execute(struct VPTransformState *State) = 0;
+  virtual void execute(VPTransformState *State) = 0;
 
   /// Delete all blocks reachable from a given VPBlockBase, inclusive.
   static void deleteCFG(VPBlockBase *Entry);
@@ -704,7 +704,7 @@ public:
 
   /// The method which generates the output IR instructions that correspond to
   /// this VPRecipe, thereby "executing" the VPlan.
-  virtual void execute(struct VPTransformState &State) = 0;
+  virtual void execute(VPTransformState &State) = 0;
 
   /// Insert an unlinked recipe into a basic block immediately before
   /// the specified recipe.
@@ -2185,7 +2185,7 @@ public:
 
   /// The method which generates the output IR instructions that correspond to
   /// this VPBasicBlock, thereby "executing" the VPlan.
-  void execute(struct VPTransformState *State) override;
+  void execute(VPTransformState *State) override;
 
   /// Return the position of the first non-phi node recipe in the block.
   iterator getFirstNonPhi();
@@ -2318,7 +2318,7 @@ public:
 
   /// The method which generates the output IR instructions that correspond to
   /// this VPRegionBlock, thereby "executing" the VPlan.
-  void execute(struct VPTransformState *State) override;
+  void execute(VPTransformState *State) override;
 
   void dropAllReferences(VPValue *NewValue) override;
 
@@ -2689,7 +2689,7 @@ public:
                         bool IsEpilogueVectorization);
 
   /// Generate the IR code for this VPlan.
-  void execute(struct VPTransformState *State);
+  void execute(VPTransformState *State);
 
   VPBlockBase *getEntry() { return Entry; }
   const VPBlockBase *getEntry() const { return Entry; }

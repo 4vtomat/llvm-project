@@ -39,25 +39,29 @@ struct RISCVSupportedExtension {
 
 static constexpr StringLiteral AllStdExts = "mafdqlcbkjtpvn";
 
+#if SIFIVE_CUSTOMIZATION
 static const char *RISCVGImplications[] = {
   "i", "m", "a", "f", "d", "zicsr", "zifencei"
 };
+#endif // SIFIVE_CUSTOMIZATION
 
 // The first definition of extension info is default version.
 static const RISCVSupportedExtension SupportedExtensions[] = {
-    {"i", RISCVExtensionVersion{2, 1}}, // default
+    {"i", RISCVExtensionVersion{2, 1}}, // default // SIFIVE
     {"i", RISCVExtensionVersion{2, 0}},
     {"e", RISCVExtensionVersion{1, 9}},
     {"m", RISCVExtensionVersion{2, 0}},
-    {"a", RISCVExtensionVersion{2, 1}}, // default
+    {"a", RISCVExtensionVersion{2, 1}}, // default // SIFIVE
     {"a", RISCVExtensionVersion{2, 0}},
-    {"f", RISCVExtensionVersion{2, 2}}, // default
+    {"f", RISCVExtensionVersion{2, 2}}, // default // SIFIVE
     {"f", RISCVExtensionVersion{2, 0}},
-    {"d", RISCVExtensionVersion{2, 2}}, // default
+    {"d", RISCVExtensionVersion{2, 2}}, // default // SIFIVE
     {"d", RISCVExtensionVersion{2, 0}},
     {"c", RISCVExtensionVersion{2, 0}},
+#if SIFIVE_CUSTOMIZATION
     {"zicsr", RISCVExtensionVersion{2, 0}},
     {"zifencei", RISCVExtensionVersion{2, 0}},
+#endif // SIFIVE_CUSTOMIZATION
 
     {"zihintpause", RISCVExtensionVersion{2, 0}},
 
@@ -132,12 +136,15 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
+    {"zihintntl", RISCVExtensionVersion{0, 2}},
+
     {"zbe", RISCVExtensionVersion{0, 93}},
     {"zbf", RISCVExtensionVersion{0, 93}},
     {"zbm", RISCVExtensionVersion{0, 93}},
     {"zbp", RISCVExtensionVersion{0, 93}},
     {"zbr", RISCVExtensionVersion{0, 93}},
     {"zbt", RISCVExtensionVersion{0, 93}},
+    {"zca", RISCVExtensionVersion{0, 70}},
     {"zvfh", RISCVExtensionVersion{0, 1}},
 };
 
@@ -609,7 +616,7 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
     // No matter which version is given to `g`, we always set imafd to default
     // version since the we don't have clear version scheme for that on
     // ISA spec.
-    for (auto Ext : RISCVGImplications)
+    for (const auto *Ext : RISCVGImplications) // SIFIVE
       if (auto Version = findDefaultVersion(Ext))
         ISAInfo->addExtension(Ext, Version->Major, Version->Minor);
       else

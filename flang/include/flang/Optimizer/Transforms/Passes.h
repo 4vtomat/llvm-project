@@ -9,12 +9,14 @@
 #ifndef FORTRAN_OPTIMIZER_TRANSFORMS_PASSES_H
 #define FORTRAN_OPTIMIZER_TRANSFORMS_PASSES_H
 
+#include "flang/Optimizer/Dialect/FIROps.h"
 #include "mlir/Pass/Pass.h"
 #include "mlir/Pass/PassRegistry.h"
 #include <memory>
 
 namespace mlir {
 class BlockAndValueMapping;
+class GreedyRewriteConfig;
 class Operation;
 class Pass;
 class Region;
@@ -27,6 +29,7 @@ namespace fir {
 //===----------------------------------------------------------------------===//
 
 std::unique_ptr<mlir::Pass> createAbstractResultOnFuncOptPass();
+std::unique_ptr<mlir::Pass> createAbstractResultOnGlobalOptPass();
 std::unique_ptr<mlir::Pass> createAffineDemotionPass();
 std::unique_ptr<mlir::Pass> createArrayValueCopyPass();
 std::unique_ptr<mlir::Pass> createFirToCfgPass();
@@ -42,6 +45,8 @@ createMemoryAllocationPass(bool dynOnHeap, std::size_t maxStackSize);
 std::unique_ptr<mlir::Pass> createAnnotateConstantOperandsPass();
 std::unique_ptr<mlir::Pass> createSimplifyRegionLitePass();
 std::unique_ptr<mlir::Pass> createAlgebraicSimplificationPass();
+std::unique_ptr<mlir::Pass>
+createAlgebraicSimplificationPass(const mlir::GreedyRewriteConfig &config);
 
 // declarative passes
 #define GEN_PASS_REGISTRATION

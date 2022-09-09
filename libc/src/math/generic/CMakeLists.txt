@@ -125,6 +125,24 @@ add_entrypoint_object(
 )
 
 add_entrypoint_object(
+  tanf
+  SRCS
+    tanf.cpp
+  HDRS
+    ../tanf.h
+  DEPENDS
+    .range_reduction
+    libc.include.math
+    libc.src.errno.errno
+    libc.src.__support.FPUtil.fputil
+    libc.src.__support.FPUtil.fma
+    libc.src.__support.FPUtil.multiply_add
+    libc.src.__support.FPUtil.polyeval
+  COMPILE_OPTIONS
+    -O3
+)
+
+add_entrypoint_object(
   fabs
   SRCS
     fabs.cpp
@@ -1117,7 +1135,7 @@ add_object_library(
   DEPENDS
     libc.src.__support.FPUtil.fputil #FPBits and ManipulationFunction
     libc.src.__support.FPUtil.xfloat
-    libc.src.__support.CPP.uint
+    libc.src.__support.uint
   COMPILE_OPTIONS
    -O3
 )

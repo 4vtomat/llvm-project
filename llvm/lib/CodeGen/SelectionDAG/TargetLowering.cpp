@@ -856,6 +856,8 @@ SDValue TargetLowering::SimplifyMultipleUseDemandedBits(
     if (DemandedSubElts == 0)
       return Vec;
     // If this simply widens the lowest subvector, see if we can do it earlier.
+    // TODO: REMOVE ME - SimplifyMultipleUseDemandedBits shouldn't be creating
+    // general nodes like this.
     if (Idx == 0 && Vec.isUndef()) {
       if (SDValue NewSub = SimplifyMultipleUseDemandedBits(
               Sub, DemandedBits, DemandedSubElts, DAG, Depth + 1))
@@ -1107,7 +1109,7 @@ bool TargetLowering::SimplifyDemandedBits(
 
   // Other users may use these bits.
   bool HasMultiUse = false;
-  if (!Op.getNode()->hasOneUse() && !AssumeSingleUse) {
+  if (!AssumeSingleUse && !Op.getNode()->hasOneUse()) {
     if (Depth >= SelectionDAG::MaxRecursionDepth) {
       // Limit search depth.
       return false;
@@ -2827,7 +2829,7 @@ bool TargetLowering::SimplifyDemandedVectorElts(
   }
 
   // If Op has other users, assume that all elements are needed.
-  if (!Op.getNode()->hasOneUse() && !AssumeSingleUse)
+  if (!AssumeSingleUse && !Op.getNode()->hasOneUse())
     DemandedElts.setAllBits();
 
   // Not demanding any elements from Op.
@@ -3389,9 +3391,15 @@ bool TargetLowering::SimplifyDemandedVectorElts(
     if (SimplifyDemandedVectorElts(Op1, DemandedElts, SrcUndef, SrcZero, TLO,
                                    Depth + 1))
       return true;
-    if (SimplifyDemandedVectorElts(Op0, DemandedElts, KnownUndef, KnownZero,
+    // If we know that a demanded element was zero in Op1 we don't need to
+    // demand it in Op0 - its guaranteed to be zero.
+    APInt DemandedElts0 = DemandedElts & ~SrcZero;
+    if (SimplifyDemandedVectorElts(Op0, DemandedElts0, KnownUndef, KnownZero,
                                    TLO, Depth + 1))
       return true;
+
+    KnownUndef &= DemandedElts0;
+    KnownZero &= DemandedElts0;
 
     // If every element pair has a zero/undef then just fold to zero.
     // fold (and x, undef) -> 0  /  (and x, 0) -> 0
@@ -3995,14 +4003,14 @@ static SDValue simplifySetCCWithCTPOP(const TargetLowering &TLI, EVT VT,
   EVT CTVT = CTPOP.getValueType();
   SDValue CTOp = CTPOP.getOperand(0);
 
-  // If this is a vector CTPOP, keep the CTPOP if it is legal.
-  // TODO: Should we check if CTPOP is legal(or custom) for scalars?
-  if (VT.isVector() && TLI.isOperationLegal(ISD::CTPOP, CTVT))
-    return SDValue();
-
+  // Expand a power-of-2-or-zero comparison based on ctpop:
   // (ctpop x) u< 2 -> (x & x-1) == 0
   // (ctpop x) u> 1 -> (x & x-1) != 0
   if (Cond == ISD::SETULT || Cond == ISD::SETUGT) {
+    // Keep the CTPOP if it is a legal vector op.
+    if (CTVT.isVector() && TLI.isOperationLegal(ISD::CTPOP, CTVT))
+      return SDValue();
+
     unsigned CostLimit = TLI.getCustomCtpopCost(CTVT, Cond);
     if (C1.ugt(CostLimit + (Cond == ISD::SETULT)))
       return SDValue();
@@ -4021,16 +4029,14 @@ static SDValue simplifySetCCWithCTPOP(const TargetLowering &TLI, EVT VT,
     return DAG.getSetCC(dl, VT, Result, DAG.getConstant(0, dl, CTVT), CC);
   }
 
-  // If ctpop is not supported, expand a power-of-2 comparison based on it.
+  // Expand a power-of-2 comparison based on ctpop:
+  // (ctpop x) == 1 --> (x != 0) && ((x & x-1) == 0)
+  // (ctpop x) != 1 --> (x == 0) || ((x & x-1) != 0)
   if ((Cond == ISD::SETEQ || Cond == ISD::SETNE) && C1 == 1) {
-    // For scalars, keep CTPOP if it is legal or custom.
-    if (!VT.isVector() && TLI.isOperationLegalOrCustom(ISD::CTPOP, CTVT))
+    // Keep the CTPOP if it is legal.
+    if (TLI.isOperationLegal(ISD::CTPOP, CTVT))
       return SDValue();
-    // This is based on X86's custom lowering for CTPOP which produces more
-    // instructions than the expansion here.
 
-    // (ctpop x) == 1 --> (x != 0) && ((x & x-1) == 0)
-    // (ctpop x) != 1 --> (x == 0) || ((x & x-1) != 0)
     SDValue Zero = DAG.getConstant(0, dl, CTVT);
     SDValue NegOne = DAG.getAllOnesConstant(dl, CTVT);
     assert(CTVT.isInteger());
@@ -5361,11 +5367,7 @@ TargetLowering::ParseConstraints(const DataLayout &DL,
       OpInfo.CallOperandVal = Call.getArgOperand(ArgNo);
       break;
     case InlineAsm::isLabel:
-      OpInfo.CallOperandVal =
-          cast<CallBrInst>(&Call)->getBlockAddressForIndirectDest(LabelNo);
-      OpInfo.ConstraintVT =
-          getAsmOperandValueType(DL, OpInfo.CallOperandVal->getType())
-              .getSimpleVT();
+      OpInfo.CallOperandVal = cast<CallBrInst>(&Call)->getIndirectDest(LabelNo);
       ++LabelNo;
       continue;
     case InlineAsm::isClobber:

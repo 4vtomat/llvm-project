@@ -170,15 +170,15 @@ def AnyAttrOfOp : TEST_Op<"any_attr_of_i32_str"> {
 
 def NonNegIntAttrOp : TEST_Op<"non_negative_int_attr"> {
   let arguments = (ins
-      Confined<I32Attr, [IntNonNegative]>:$i32attr,
-      Confined<I64Attr, [IntNonNegative]>:$i64attr
+      ConfinedAttr<I32Attr, [IntNonNegative]>:$i32attr,
+      ConfinedAttr<I64Attr, [IntNonNegative]>:$i64attr
   );
 }
 
 def PositiveIntAttrOp : TEST_Op<"positive_int_attr"> {
   let arguments = (ins
-      Confined<I32Attr, [IntPositive]>:$i32attr,
-      Confined<I64Attr, [IntPositive]>:$i64attr
+      ConfinedAttr<I32Attr, [IntPositive]>:$i32attr,
+      ConfinedAttr<I64Attr, [IntPositive]>:$i64attr
   );
 }
 
@@ -377,7 +377,7 @@ def OpWithBitEnumVerticalBar : TEST_Op<"op_with_bit_enum_vbar"> {
 
 def SymbolRefOp : TEST_Op<"symbol_ref_attr"> {
   let arguments = (ins
-    Confined<FlatSymbolRefAttr, [ReferToOp<"func::FuncOp">]>:$symbol
+    ConfinedAttr<FlatSymbolRefAttr, [ReferToOp<"func::FuncOp">]>:$symbol
   );
 }
 
@@ -716,21 +716,23 @@ def AttrSizedOperandOp : TEST_Op<"attr_sized_operands",
     Variadic<I32>:$b,
     I32:$c,
     Variadic<I32>:$d,
-    I32ElementsAttr:$operand_segment_sizes
+    DenseI32ArrayAttr:$operand_segment_sizes
   );
 }
 
 def AttrSizedResultOp : TEST_Op<"attr_sized_results",
                                 [AttrSizedResultSegments]> {
-  let arguments = (ins
-    I32ElementsAttr:$result_segment_sizes
-  );
   let results = (outs
     Variadic<I32>:$a,
     Variadic<I32>:$b,
     I32:$c,
     Variadic<I32>:$d
   );
+}
+
+def AttrSizedResultCompileTestOp : TEST_Op<"attr_sized_results_compile_test",
+                                           [AttrSizedResultSegments]> {
+  let results = (outs Variadic<I32>:$a, I32:$b, Optional<I32>:$c);
 }
 
 // This is used to test that the fallback for a custom op's parser and printer
@@ -1127,7 +1129,7 @@ def : Pattern<(OpNativeCodeCall6 $arg1, $arg2),
               [(OpNativeCodeCall7 (BindMultipleNativeCodeCallResult:$native__0 $arg1, $arg2)),
                (OpNativeCodeCall7 $native__1)]>;
 
-// Test AllAttrConstraintsOf.
+// Test AllAttrOf.
 def OpAllAttrConstraint1 : TEST_Op<"all_attr_constraint_of1"> {
   let arguments = (ins I64ArrayAttr:$attr);
   let results = (outs I32);
@@ -1144,7 +1146,7 @@ def Constraint1 : AttrConstraint<
     CPred<"$_self.cast<ArrayAttr>()[1].cast<::mlir::IntegerAttr>().getInt() == 1">,
     "[1] == 1">;
 def : Pat<(OpAllAttrConstraint1
-            AllAttrConstraintsOf<[Constraint0, Constraint1]>:$attr),
+            AllAttrOf<[Constraint0, Constraint1]>:$attr),
           (OpAllAttrConstraint2 $attr)>;
 
 // Op for testing RewritePattern removing op with inner ops.
@@ -2056,7 +2058,7 @@ def FormatVariadicOfVariadicOperand
    : TEST_Op<"format_variadic_of_variadic_operand"> {
   let arguments = (ins
     VariadicOfVariadic<I64, "operand_segments">:$operand,
-    I32ElementsAttr:$operand_segments
+    DenseI32ArrayAttr:$operand_segments
   );
   let assemblyFormat = [{ $operand `:` type($operand) attr-dict}];
 }
@@ -2741,7 +2743,8 @@ def TestLinalgConvOpNotLinalgOp : TEST_Op<"conv_op_not_linalg_op", [
 
 def TestLinalgConvOp :
   TEST_Op<"linalg_conv_op", [AttrSizedOperandSegments, SingleBlock,
-      LinalgStructuredInterface, LinalgConvolutionOpInterface]> {
+      DestinationStyleOpInterface, LinalgStructuredInterface,
+      LinalgConvolutionOpInterface]> {
 
   let arguments = (ins Variadic<AnyType>:$inputs,
     Variadic<AnyType>:$outputs);
@@ -2799,7 +2802,8 @@ def TestLinalgFillOpNotLinalgOp : TEST_Op<"fill_op_not_linalg_op", [
 
 def TestLinalgFillOp :
   TEST_Op<"linalg_fill_op", [AttrSizedOperandSegments, SingleBlock,
-      LinalgStructuredInterface, LinalgFillOpInterface]> {
+      DestinationStyleOpInterface, LinalgStructuredInterface,
+      LinalgFillOpInterface]> {
 
   let arguments = (ins Variadic<AnyType>:$inputs,
     Variadic<AnyType>:$outputs);

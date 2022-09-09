@@ -463,6 +463,12 @@ if(CLANG_ENABLE_ARCMT)
   set(CLANG_ENABLE_OBJC_REWRITER ON)
 endif()
 
+# This option is a stop-gap, we should commit to removing this as
+# soon as possible. See discussion:
+# https://discourse.llvm.org/t/rationale-for-removing-versioned-libclang-middle-ground-to-keep-it-behind-option/
+option(CLANG_FORCE_MATCHING_LIBCLANG_SOVERSION
+  "Force the SOVERSION of libclang to be equal to CLANG_MAJOR" ON)
+
 # Clang version information
 set(CLANG_EXECUTABLE_VERSION
     "${CLANG_VERSION_MAJOR}" CACHE STRING
@@ -758,6 +764,19 @@ if (CLANG_ENABLE_BOOTSTRAP)
     set(LTO_RANLIB)
   endif()
 
+  # Populate the passthrough variables
+  foreach(variableName ${CLANG_BOOTSTRAP_PASSTHROUGH} ${_BOOTSTRAP_DEFAULT_PASSTHROUGH})
+    if(DEFINED ${variableName})
+      if("${${variableName}}" STREQUAL "")
+        set(value "")
+      else()
+        string(REPLACE ";" "|" value "${${variableName}}")
+      endif()
+      list(APPEND PASSTHROUGH_VARIABLES
+        -D${variableName}=${value})
+    endif()
+  endforeach()
+
   # Find all variables that start with BOOTSTRAP_ and populate a variable with
   # them.
   get_cmake_property(variableNames VARIABLES)
@@ -774,18 +793,13 @@ if (CLANG_ENABLE_BOOTSTRAP)
     endif()
   endforeach()
 
-  # Populate the passthrough variables
-  foreach(variableName ${CLANG_BOOTSTRAP_PASSTHROUGH} ${_BOOTSTRAP_DEFAULT_PASSTHROUGH})
-    if(DEFINED ${variableName})
-      if("${${variableName}}" STREQUAL "")
-        set(value "")
-      else()
-        string(REPLACE ";" "|" value "${${variableName}}")
-      endif()
-      list(APPEND PASSTHROUGH_VARIABLES
-        -D${variableName}=${value})
-    endif()
-  endforeach()
+  # Build arguments for native tool used in CMake.
+  set(build_configuration "$<CONFIG>")
+  set(build_tool_args "${LLVM_EXTERNAL_PROJECT_BUILD_TOOL_ARGS}")
+  if(NOT build_tool_args STREQUAL "")
+    string(PREPEND build_tool_args "-- ")
+    separate_arguments(build_tool_args UNIX_COMMAND "${build_tool_args}")
+  endif()
 
   ExternalProject_Add(${NEXT_CLANG_STAGE}
     DEPENDS clang-bootstrap-deps
@@ -809,6 +823,9 @@ if (CLANG_ENABLE_BOOTSTRAP)
                 ${${CLANG_STAGE}_RANLIB}
                 ${${CLANG_STAGE}_OBJCOPY}
                 ${${CLANG_STAGE}_STRIP}
+    BUILD_COMMAND ${CMAKE_COMMAND} --build ${BINARY_DIR}
+                                   --config ${build_configuration}
+                                   ${build_tool_args}
     INSTALL_COMMAND ""
     STEP_TARGETS configure build
     USES_TERMINAL_CONFIGURE 1
@@ -870,6 +887,8 @@ if(CLANG_BUILT_STANDALONE)
   llvm_distribution_add_targets()
   process_llvm_pass_plugins()
 endif()
+
+set(CLANG_INSTALL_LIBDIR_BASENAME "lib${CLANG_LIBDIR_SUFFIX}")
 
 configure_file(
   ${CLANG_SOURCE_DIR}/include/clang/Config/config.h.cmake

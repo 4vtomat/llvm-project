@@ -298,6 +298,9 @@ RawComment *ASTContext::getRawCommentForDeclNoCache(const Decl *D) const {
     return nullptr;
 
   const FileID File = SourceMgr.getDecomposedLoc(DeclLoc).first;
+  if (!File.isValid()) {
+    return nullptr;
+  }
   const auto CommentsInThisFile = Comments.getCommentsInFile(File);
   if (!CommentsInThisFile || CommentsInThisFile->empty())
     return nullptr;
@@ -4750,19 +4753,20 @@ QualType ASTContext::getBTFTagAttributedType(const BTFTypeTagAttr *BTFAttr,
 /// Retrieve a substitution-result type.
 QualType
 ASTContext::getSubstTemplateTypeParmType(const TemplateTypeParmType *Parm,
-                                         QualType Replacement) const {
+                                         QualType Replacement,
+                                         Optional<unsigned> PackIndex) const {
   assert(Replacement.isCanonical()
          && "replacement types must always be canonical");
 
   llvm::FoldingSetNodeID ID;
-  SubstTemplateTypeParmType::Profile(ID, Parm, Replacement);
+  SubstTemplateTypeParmType::Profile(ID, Parm, Replacement, PackIndex);
   void *InsertPos = nullptr;
   SubstTemplateTypeParmType *SubstParm
     = SubstTemplateTypeParmTypes.FindNodeOrInsertPos(ID, InsertPos);
 
   if (!SubstParm) {
     SubstParm = new (*this, TypeAlignment)
-      SubstTemplateTypeParmType(Parm, Replacement);
+        SubstTemplateTypeParmType(Parm, Replacement, PackIndex);
     Types.push_back(SubstParm);
     SubstTemplateTypeParmTypes.InsertNode(SubstParm, InsertPos);
   }
@@ -6907,6 +6911,21 @@ ASTContext::getConstantArrayElementCount(const ConstantArrayType *CA)  const {
   return ElementCount;
 }
 
+uint64_t ASTContext::getArrayInitLoopExprElementCount(
+    const ArrayInitLoopExpr *AILE) const {
+  if (!AILE)
+    return 0;
+
+  uint64_t ElementCount = 1;
+
+  do {
+    ElementCount *= AILE->getArraySize().getZExtValue();
+    AILE = dyn_cast<ArrayInitLoopExpr>(AILE->getSubExpr());
+  } while (AILE);
+
+  return ElementCount;
+}
+
 /// getFloatingRank - Return a relative rank for floating point types.
 /// This routine will assert if passed a built-in type that isn't a float.
 static FloatingRank getFloatingRank(QualType T) {
@@ -7067,12 +7086,11 @@ QualType ASTContext::getPromotedIntegerType(QualType Promotable) const {
       uint64_t FromSize = getTypeSize(BT);
       QualType PromoteTypes[] = { IntTy, UnsignedIntTy, LongTy, UnsignedLongTy,
                                   LongLongTy, UnsignedLongLongTy };
-      for (size_t Idx = 0; Idx < llvm::array_lengthof(PromoteTypes); ++Idx) {
-        uint64_t ToSize = getTypeSize(PromoteTypes[Idx]);
+      for (const auto &PT : PromoteTypes) {
+        uint64_t ToSize = getTypeSize(PT);
         if (FromSize < ToSize ||
-            (FromSize == ToSize &&
-             FromIsSigned == PromoteTypes[Idx]->isSignedIntegerType()))
-          return PromoteTypes[Idx];
+            (FromSize == ToSize && FromIsSigned == PT->isSignedIntegerType()))
+          return PT;
       }
       llvm_unreachable("char type should fit into long long");
     }
@@ -10784,7 +10802,8 @@ unsigned ASTContext::getIntWidth(QualType T) const {
 }
 
 QualType ASTContext::getCorrespondingUnsignedType(QualType T) const {
-  assert((T->hasSignedIntegerRepresentation() || T->isSignedFixedPointType()) &&
+  assert((T->hasIntegerRepresentation() || T->isEnumeralType() ||
+          T->isFixedPointType()) &&
          "Unexpected type");
 
   // Turn <4 x signed int> -> <4 x unsigned int>
@@ -10802,8 +10821,11 @@ QualType ASTContext::getCorrespondingUnsignedType(QualType T) const {
     T = ETy->getDecl()->getIntegerType();
 
   switch (T->castAs<BuiltinType>()->getKind()) {
+  case BuiltinType::Char_U:
+    // Plain `char` is mapped to `unsigned char` even if it's already unsigned
   case BuiltinType::Char_S:
   case BuiltinType::SChar:
+  case BuiltinType::Char8:
     return UnsignedCharTy;
   case BuiltinType::Short:
     return UnsignedShortTy;
@@ -10817,7 +10839,7 @@ QualType ASTContext::getCorrespondingUnsignedType(QualType T) const {
     return UnsignedInt128Ty;
   // wchar_t is special. It is either signed or not, but when it's signed,
   // there's no matching "unsigned wchar_t". Therefore we return the unsigned
-  // version of it's underlying type instead.
+  // version of its underlying type instead.
   case BuiltinType::WChar_S:
     return getUnsignedWCharType();
 
@@ -10846,13 +10868,16 @@ QualType ASTContext::getCorrespondingUnsignedType(QualType T) const {
   case BuiltinType::SatLongFract:
     return SatUnsignedLongFractTy;
   default:
-    llvm_unreachable("Unexpected signed integer or fixed point type");
+    assert((T->hasUnsignedIntegerRepresentation() ||
+            T->isUnsignedFixedPointType()) &&
+           "Unexpected signed integer or fixed point type");
+    return T;
   }
 }
 
 QualType ASTContext::getCorrespondingSignedType(QualType T) const {
-  assert((T->hasUnsignedIntegerRepresentation() ||
-          T->isUnsignedFixedPointType()) &&
+  assert((T->hasIntegerRepresentation() || T->isEnumeralType() ||
+          T->isFixedPointType()) &&
          "Unexpected type");
 
   // Turn <4 x unsigned int> -> <4 x signed int>
@@ -10870,8 +10895,11 @@ QualType ASTContext::getCorrespondingSignedType(QualType T) const {
     T = ETy->getDecl()->getIntegerType();
 
   switch (T->castAs<BuiltinType>()->getKind()) {
+  case BuiltinType::Char_S:
+    // Plain `char` is mapped to `signed char` even if it's already signed
   case BuiltinType::Char_U:
   case BuiltinType::UChar:
+  case BuiltinType::Char8:
     return SignedCharTy;
   case BuiltinType::UShort:
     return ShortTy;
@@ -10885,7 +10913,7 @@ QualType ASTContext::getCorrespondingSignedType(QualType T) const {
     return Int128Ty;
   // wchar_t is special. It is either unsigned or not, but when it's unsigned,
   // there's no matching "signed wchar_t". Therefore we return the signed
-  // version of it's underlying type instead.
+  // version of its underlying type instead.
   case BuiltinType::WChar_U:
     return getSignedWCharType();
 
@@ -10914,7 +10942,10 @@ QualType ASTContext::getCorrespondingSignedType(QualType T) const {
   case BuiltinType::SatULongFract:
     return SatLongFractTy;
   default:
-    llvm_unreachable("Unexpected unsigned integer or fixed point type");
+    assert(
+        (T->hasSignedIntegerRepresentation() || T->isSignedFixedPointType()) &&
+        "Unexpected signed integer or fixed point type");
+    return T;
   }
 }
 

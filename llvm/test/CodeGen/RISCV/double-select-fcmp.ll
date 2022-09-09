@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+d -verify-machineinstrs < %s \
 ; RUN:   -target-abi=ilp32d | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+d -verify-machineinstrs < %s \
-; RUN:   -target-abi=lp64d | FileCheck %s
+; RUN:   -target-abi=lp64d | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
 
 define double @select_fcmp_false(double %a, double %b) nounwind {
 ; CHECK-LABEL: select_fcmp_false:
@@ -239,5 +239,39 @@ define i32 @i32_select_fcmp_oeq(double %a, double %b, i32 %c, i32 %d) nounwind {
 ; CHECK-NEXT:    ret
   %1 = fcmp oeq double %a, %b
   %2 = select i1 %1, i32 %c, i32 %d
+  ret i32 %2
+}
+
+define i32 @select_fcmp_oeq_1_2(double %a, double %b) {
+; CHECK-LABEL: select_fcmp_oeq_1_2:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    feq.d a0, fa0, fa1
+; CHECK-NEXT:    li a1, 2
+; CHECK-NEXT:    sub a0, a1, a0
+; CHECK-NEXT:    ret
+  %1 = fcmp fast oeq double %a, %b
+  %2 = select i1 %1, i32 1, i32 2
+  ret i32 %2
+}
+
+define signext i32 @select_fcmp_uge_negone_zero(double %a, double %b) nounwind {
+; CHECK-RV64-LABEL: select_fcmp_uge_negone_zero:
+; CHECK-RV64:       # %bb.0:
+; CHECK-RV64-NEXT:    fle.d a0, fa0, fa1
+; CHECK-RV64-NEXT:    addiw a0, a0, -1
+; CHECK-RV64-NEXT:    ret
+  %1 = fcmp ugt double %a, %b
+  %2 = select i1 %1, i32 -1, i32 0
+  ret i32 %2
+}
+
+define signext i32 @select_fcmp_uge_1_2(double %a, double %b) nounwind {
+; CHECK-LABEL: select_fcmp_uge_1_2:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    fle.d a0, fa0, fa1
+; CHECK-NEXT:    addi a0, a0, 1
+; CHECK-NEXT:    ret
+  %1 = fcmp ugt double %a, %b
+  %2 = select i1 %1, i32 1, i32 2
   ret i32 %2
 }

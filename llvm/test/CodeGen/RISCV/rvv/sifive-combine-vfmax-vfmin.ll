@@ -180,11 +180,8 @@ define <vscale x 2 x float> @select_min_uge(<vscale x 2 x float> %x, <vscale x 2
 define <vscale x 2 x float> @merge_max_olt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_olt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"olt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -194,11 +191,8 @@ define <vscale x 2 x float> @merge_max_olt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_ole(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_ole:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ole", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -208,11 +202,8 @@ define <vscale x 2 x float> @merge_max_ole(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_ult(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_ult:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ult", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -222,11 +213,8 @@ define <vscale x 2 x float> @merge_max_ult(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_ule(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_ule:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ule", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -236,11 +224,8 @@ define <vscale x 2 x float> @merge_max_ule(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_ogt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_ogt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ogt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -251,11 +236,8 @@ define <vscale x 2 x float> @merge_max_ogt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_oge(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_oge:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"oge", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -266,11 +248,8 @@ define <vscale x 2 x float> @merge_max_oge(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_ugt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_ugt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ugt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -281,11 +260,8 @@ define <vscale x 2 x float> @merge_max_ugt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_max_uge(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_max_uge:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"uge", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -296,11 +272,8 @@ define <vscale x 2 x float> @merge_max_uge(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_olt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_olt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"olt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -311,11 +284,8 @@ define <vscale x 2 x float> @merge_min_olt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_ole(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_ole:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ole", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -326,11 +296,8 @@ define <vscale x 2 x float> @merge_min_ole(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_ult(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_ult:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ult", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -341,11 +308,8 @@ define <vscale x 2 x float> @merge_min_ult(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_ule(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_ule:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ule", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
@@ -356,11 +320,8 @@ define <vscale x 2 x float> @merge_min_ule(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_ogt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_ogt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ogt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -370,11 +331,8 @@ define <vscale x 2 x float> @merge_min_ogt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_oge(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_oge:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"oge", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -384,11 +342,8 @@ define <vscale x 2 x float> @merge_min_oge(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_ugt(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_ugt:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"ugt", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)
@@ -398,11 +353,8 @@ define <vscale x 2 x float> @merge_min_ugt(<vscale x 2 x float> %x, <vscale x 2 
 define <vscale x 2 x float> @merge_min_uge(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i32 zeroext %vl) #0 {
 ; CHECK-LABEL: merge_min_uge:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v9, v9, v8
-; CHECK-NEXT:    vmset.m v0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, mu
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    ret
   %a = tail call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x float> %y, metadata !"uge", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %vl)
   %b = tail call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> %a, <vscale x 2 x float> %y, <vscale x 2 x float> %x, i32 %vl)

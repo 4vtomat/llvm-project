@@ -8,6 +8,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+d %s -o - | FileCheck --check-prefix=RV32D %s
 ; RUN: llc -mtriple=riscv32 -mattr=+c %s -o - | FileCheck --check-prefix=RV32C %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zihintpause %s -o - | FileCheck --check-prefix=RV32ZIHINTPAUSE %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-zihintntl %s -o - | FileCheck --check-prefix=RV32ZIHINTNTL %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zfhmin %s -o - | FileCheck --check-prefix=RV32ZFHMIN %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zfh %s -o - | FileCheck --check-prefix=RV32ZFH %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zba %s -o - | FileCheck --check-prefix=RV32ZBA %s
@@ -49,6 +50,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+d %s -o - | FileCheck --check-prefix=RV64D %s
 ; RUN: llc -mtriple=riscv64 -mattr=+c %s -o - | FileCheck --check-prefix=RV64C %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zihintpause %s -o - | FileCheck --check-prefix=RV64ZIHINTPAUSE %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-zihintntl %s -o - | FileCheck --check-prefix=RV64ZIHINTNTL %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zfhmin %s -o - | FileCheck --check-prefix=RV64ZFHMIN %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zfh %s -o - | FileCheck --check-prefix=RV64ZFH %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zba %s -o - | FileCheck --check-prefix=RV64ZBA %s
@@ -95,6 +97,7 @@
 ; RV32D: .attribute 5, "rv32i2p1_f2p2_d2p2_zicsr2p0"
 ; RV32C: .attribute 5, "rv32i2p1_c2p0"
 ; RV32ZIHINTPAUSE: .attribute 5, "rv32i2p1_zihintpause2p0"
+; RV32ZIHINTNTL: .attribute 5, "rv32i2p1_zihintntl0p2"
 ; RV32ZFHMIN: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfhmin1p0"
 ; RV32ZFH: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfh1p0"
 ; RV32ZBA: .attribute 5, "rv32i2p1_zba1p0"
@@ -137,6 +140,7 @@
 ; RV64D: .attribute 5, "rv64i2p1_f2p2_d2p2_zicsr2p0"
 ; RV64C: .attribute 5, "rv64i2p1_c2p0"
 ; RV64ZIHINTPAUSE: .attribute 5, "rv64i2p1_zihintpause2p0"
+; RV64ZIHINTNTL: .attribute 5, "rv64i2p1_zihintntl0p2"
 ; RV64ZFHMIN: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfhmin1p0"
 ; RV64ZFH: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfh1p0"
 ; RV64ZBA: .attribute 5, "rv64i2p1_zba1p0"

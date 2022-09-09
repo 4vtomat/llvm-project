@@ -1,21 +1,3 @@
-#ifndef PROC_ALIAS
-#define PROC_ALIAS(NAME, RV32, RV64)
-#endif
-
-PROC_ALIAS("generic", "generic-rv32", "generic-rv64")
-PROC_ALIAS("rocket", "rocket-rv32", "rocket-rv64")
-PROC_ALIAS("sifive-6-series", "sifive-6-rv32", "sifive-6-rv64")
-// Default mtune chooses narwhal version for Narwhal release
-PROC_ALIAS("sifive-7-series", "sifive-7n-rv32", "sifive-7n-rv64")
-PROC_ALIAS("sifive-7m-series", "sifive-7m-rv32", "sifive-7m-rv64")
-PROC_ALIAS("sifive-7n-series", "sifive-7n-rv32", "sifive-7n-rv64")
-PROC_ALIAS("sifive-8-series", "sifive-8-rv32", "sifive-8-rv64")
-PROC_ALIAS("sifive-9-series", "sifive-9-rv32", "sifive-9-rv64")
-PROC_ALIAS("sifive-p500-series", "sifive-8-rv32", "sifive-8-rv64")
-PROC_ALIAS("sifive-p600-series", "sifive-9-rv32", "sifive-9-rv64")
-
-#undef PROC_ALIAS
-
 #ifndef PROC
 #define PROC(ENUM, NAME, FEATURES, DEFAULT_MARCH)
 #endif
@@ -25,14 +7,6 @@ PROC(GENERIC_RV32, {"generic-rv32"}, FK_NONE, {""})
 PROC(GENERIC_RV64, {"generic-rv64"}, FK_64BIT, {""})
 PROC(ROCKET_RV32, {"rocket-rv32"}, FK_NONE, {""})
 PROC(ROCKET_RV64, {"rocket-rv64"}, FK_64BIT, {""})
-PROC(SIFIVE_632, {"sifive-6-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_664, {"sifive-6-rv64"}, FK_64BIT, {""})
-PROC(SIFIVE_732, {"sifive-7-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_764, {"sifive-7-rv64"}, FK_64BIT, {""})
-PROC(SIFIVE_7M32, {"sifive-7m-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_7M64, {"sifive-7m-rv64"}, FK_64BIT, {""})
-PROC(SIFIVE_7N32, {"sifive-7n-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_7N64, {"sifive-7n-rv64"}, FK_64BIT, {""})
 PROC(SIFIVE_E20, {"sifive-e20"}, FK_NONE, {"rv32imc"})
 PROC(SIFIVE_E21, {"sifive-e21"}, FK_NONE, {"rv32imac"})
 PROC(SIFIVE_E24, {"sifive-e24"}, FK_NONE, {"rv32imafc"})
@@ -57,13 +31,26 @@ PROC(SIFIVE_U74N, {"sifive-u74n"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_X280, {"sifive-x280"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq"})
 PROC(SIFIVE_X280n, {"sifive-x280n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq"})
 PROC(SIFIVE_X280o, {"sifive-x280o"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq"})
-PROC(SIFIVE_832, {"sifive-8-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_864, {"sifive-8-rv64"}, FK_64BIT, {""})
 PROC(SIFIVE_P270, {"sifive-p270"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
 PROC(SIFIVE_P270N, {"sifive-p270n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
 PROC(SIFIVE_P550, {"sifive-p550"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
-PROC(SIFIVE_932, {"sifive-9-rv32"}, FK_NONE, {""})
-PROC(SIFIVE_964, {"sifive-9-rv64"}, FK_64BIT, {""})
 PROC(SIFIVE_P650, {"sifive-p650"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 
 #undef PROC
+
+#ifndef TUNE_PROC
+#define TUNE_PROC(ENUM, NAME)
+#endif
+
+TUNE_PROC(GENERIC, "generic")
+TUNE_PROC(ROCKET, "rocket")
+TUNE_PROC(SIFIVE_6, "sifive-6-series")
+TUNE_PROC(SIFIVE_7, "sifive-7-series")
+TUNE_PROC(SIFIVE_7M, "sifive-7m-series")
+TUNE_PROC(SIFIVE_7N, "sifive-7n-series")
+TUNE_PROC(SIFIVE_8, "sifive-8-series")
+TUNE_PROC(SIFIVE_9, "sifive-9-series")
+TUNE_PROC(SIFIVE_P500, "sifive-p500-series")
+TUNE_PROC(SIFIVE_P600, "sifive-p600-series")
+
+#undef TUNE_PROC

@@ -246,6 +246,11 @@ enum NodeType : unsigned {
   VAADDU_VL, // SIFIVE
   VASUB_VL,  // SIFIVE
   VASUBU_VL, // SIFIVE
+  VSMUL_VL, // SIFIVE
+  VSSRL_VL, // SIFIVE
+  VSSRA_VL, // SIFIVE
+  VNCLIPU_VL, // SIFIVE
+  VNCLIP_VL, // SIFIVE
 
   MULHS_VL,
   MULHU_VL,
@@ -394,8 +399,8 @@ public:
   bool isZExtFree(SDValue Val, EVT VT2) const override;
   bool isSExtCheaperThanZExt(EVT SrcVT, EVT DstVT) const override;
   bool signExtendConstant(const ConstantInt *CI) const override;
-  bool isCheapToSpeculateCttz() const override;
-  bool isCheapToSpeculateCtlz() const override;
+  bool isCheapToSpeculateCttz(Type *Ty) const override;
+  bool isCheapToSpeculateCtlz(Type *Ty) const override;
   bool hasAndNotCompare(SDValue Y) const override;
   bool hasBitTest(SDValue X, SDValue Y) const override;
   bool shouldProduceAndByConstByHoistingConstFromShiftsLHSOfAnd(
@@ -555,6 +560,7 @@ public:
 
   bool shouldConvertConstantLoadToIntImm(const APInt &Imm,
                                          Type *Ty) const override;
+  bool isUsedByReturnOnly(SDNode *N, SDValue &Chain) const override;
   bool mayBeEmittedAsTailCall(const CallInst *CI) const override;
   bool shouldConsiderGEPOffsetSplit() const override { return true; }
 

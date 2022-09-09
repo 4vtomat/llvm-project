@@ -24,6 +24,7 @@ ASM_FUNCTION_X86_RE = re.compile(
 
 ASM_FUNCTION_ARM_RE = re.compile(
     r'^(?P<func>[0-9a-zA-Z_$]+):\n' # f: (name of function)
+    r'(?:\.L(?P=func)\$local:\n)?'  # drop .L<func>$local:
     r'\s+\.fnstart\n' # .fnstart
     r'(?P<body>.*?)' # (body of the function)
     r'^.Lfunc_end[0-9]+:', # .Lfunc_end0: or # -- End function
@@ -169,6 +170,9 @@ ASM_FUNCTION_WASM32_RE = re.compile(
 
 ASM_FUNCTION_VE_RE = re.compile(
     r'^_?(?P<func>[^:]+):[ \t]*#+[ \t]*@(?P=func)\n'
+    r'(?:\s*\.?L(?P=func)\$local:\n)?'  # optional .L<func>$local: due to -fno-semantic-interposition
+    r'(?:\s*\.type\s+\.?L(?P=func)\$local,@function\n)?'  # optional .type .L<func>$local
+    r'(?:\s*\.?Lfunc_begin[^:\n]*:\n)?[^:]*?'
     r'(?P<body>^##?[ \t]+[^:]+:.*?)\s*'
     r'.Lfunc_end[0-9]+:\n',
     flags=(re.M | re.S))

@@ -324,7 +324,12 @@ bool isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID, unsigned OpdIdx);
 /// For the input call instruction it finds mapping intrinsic and returns
 /// its intrinsic ID, in case it does not found it return not_intrinsic.
 Intrinsic::ID getVectorIntrinsicIDForCall(const CallInst *CI,
+#if SIFIVE_CUSTOMIZATION
+                                          const TargetLibraryInfo *TLI,
+                                          bool UseVP = false);
+#else
                                           const TargetLibraryInfo *TLI);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Find the operand of the GEP that should be checked for consecutive
 /// stores. This ignores trailing indices that have no effect on the final

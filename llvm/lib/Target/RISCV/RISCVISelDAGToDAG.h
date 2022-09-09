@@ -134,6 +134,7 @@ private:
   bool doPeepholeSExtW(SDNode *Node);
   bool doPeepholeMaskedRVV(SDNode *Node);
   bool doPeepholeLUIADDI(SDNode *Node); // SIFIVE
+  bool doPeepholeMergeVVMFold();
 };
 
 namespace RISCV {

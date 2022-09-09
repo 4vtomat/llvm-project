@@ -48,9 +48,15 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
   if (SecondMI.getOperand(1).getReg() != FirstDest)
     return false;
 
+  // If the input is virtual make sure this is the only user.
+  if (FirstDest.isVirtual()) {
+    auto &MRI = SecondMI.getMF()->getRegInfo();
+    return MRI.hasOneNonDBGUse(FirstDest);
+  }
+
   // If the FirstMI destination is non-virtual, it should match the SecondMI
   // destination.
-  return FirstDest.isVirtual() || SecondMI.getOperand(0).getReg() == FirstDest;
+  return SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -146,9 +152,15 @@ static bool isIndexedLoad(const MachineInstr *FirstMI,
   if (SecondMI.getOperand(1).getReg() != FirstDest)
     return false;
 
+  // If the input is virtual make sure this is the only user.
+  if (FirstDest.isVirtual()) {
+    auto &MRI = SecondMI.getMF()->getRegInfo();
+    return MRI.hasOneNonDBGUse(FirstDest);
+  }
+
   // If the FirstMI destination is non-virtual, it should match the SecondMI
   // destination.
-  return FirstDest.isVirtual() || SecondMI.getOperand(0).getReg() == FirstDest;
+  return SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
 static bool isArithEqZ(const MachineInstr *FirstMI,
@@ -198,15 +210,22 @@ static bool isArithEqZ(const MachineInstr *FirstMI,
   if (SecondMI.getOperand(SrcOpIdx).getReg() != FirstDest)
     return false;
 
+  // If the input is virtual make sure this is the only user.
+  if (FirstDest.isVirtual()) {
+    if (!PreRA)
+      return false;
+    auto &MRI = SecondMI.getMF()->getRegInfo();
+    return MRI.hasOneNonDBGUse(FirstDest);
+  }
+
   // If the FirstMI destination is non-virtual, it should match the SecondMI
   // destination.
-  return (FirstDest.isVirtual() && PreRA) ||
-         SecondMI.getOperand(0).getReg() == FirstDest;
+  return SecondMI.getOperand(0).getReg() == FirstDest;
 }
 
-// \brief Check if the instr pair, FirstMI and SecondMI, should be fused
-// together. Given SecondMI, when FirstMI is unspecified, then check if
-// SecondMI may be part of a fused pair at all.
+/// Check if the instr pair, FirstMI and SecondMI, should be fused
+/// together. Given SecondMI, when FirstMI is unspecified, then check if
+/// SecondMI may be part of a fused pair at all.
 #endif // SIFIVE_CUSTOMIZATION
 static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
                                    const TargetSubtargetInfo &TSI,

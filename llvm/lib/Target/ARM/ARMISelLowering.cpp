@@ -7679,10 +7679,9 @@ static SDValue LowerBUILD_VECTOR_i1(SDValue Op, SelectionDAG &DAG,
   // extend that single value
   SDValue FirstOp = Op.getOperand(0);
   if (!isa<ConstantSDNode>(FirstOp) &&
-      std::all_of(std::next(Op->op_begin()), Op->op_end(),
-                  [&FirstOp](SDUse &U) {
-                    return U.get().isUndef() || U.get() == FirstOp;
-                  })) {
+      llvm::all_of(llvm::drop_begin(Op->ops()), [&FirstOp](const SDUse &U) {
+        return U.get().isUndef() || U.get() == FirstOp;
+      })) {
     SDValue Ext = DAG.getNode(ISD::SIGN_EXTEND_INREG, dl, MVT::i32, FirstOp,
                               DAG.getValueType(MVT::i1));
     return DAG.getNode(ARMISD::PREDICATE_CAST, dl, Op.getValueType(), Ext);
@@ -19150,18 +19149,6 @@ bool ARMTargetLowering::allowTruncateForTailCall(Type *Ty1, Type *Ty2) const {
   return true;
 }
 
-InstructionCost ARMTargetLowering::getScalingFactorCost(const DataLayout &DL,
-                                                        const AddrMode &AM,
-                                                        Type *Ty,
-                                                        unsigned AS) const {
-  if (isLegalAddressingMode(DL, AM, Ty, AS)) {
-    if (Subtarget->hasFPAO())
-      return AM.Scale < 0 ? 1 : 0; // positive offsets execute faster
-    return 0;
-  }
-  return -1;
-}
-
 /// isFMAFasterThanFMulAndFAdd - Return true if an FMA operation is faster
 /// than a pair of fmul and fadd instructions. fmuladd intrinsics will be
 /// expanded to FMAs when this method returns true, otherwise fmuladd is
@@ -21108,7 +21095,10 @@ bool ARMTargetLowering::shouldInsertFencesForAtomic(
   return InsertFencesForAtomic;
 }
 
-bool ARMTargetLowering::useLoadStackGuardNode() const { return true; }
+bool ARMTargetLowering::useLoadStackGuardNode() const {
+  // ROPI/RWPI are not supported currently.
+  return !Subtarget->isROPI() && !Subtarget->isRWPI();
+}
 
 void ARMTargetLowering::insertSSPDeclarations(Module &M) const {
   if (!Subtarget->getTargetTriple().isWindowsMSVCEnvironment())
@@ -21169,11 +21159,11 @@ bool ARMTargetLowering::canCombineStoreAndExtract(Type *VectorTy, Value *Idx,
   return false;
 }
 
-bool ARMTargetLowering::isCheapToSpeculateCttz() const {
+bool ARMTargetLowering::isCheapToSpeculateCttz(Type *Ty) const {
   return Subtarget->hasV6T2Ops();
 }
 
-bool ARMTargetLowering::isCheapToSpeculateCtlz() const {
+bool ARMTargetLowering::isCheapToSpeculateCtlz(Type *Ty) const {
   return Subtarget->hasV6T2Ops();
 }
 
