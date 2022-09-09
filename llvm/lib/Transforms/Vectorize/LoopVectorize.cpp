@@ -11704,6 +11704,18 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         "but is explicitly disabled or interleave count is set to 1");
     InterleaveLoop = false;
   }
+#if SIFIVE_CUSTOMIZATION
+  else if (UserIC > 1 && LVL.useVLAVectorizer()) {
+    LLVM_DEBUG(
+        dbgs() << "LV: Interleaving is disabled for RVV VLA vectorization.\n");
+    IntDiagMsg = std::make_pair("InterleavingAvoided",
+                                "Ignoring interleave count provided by the "
+                                "user, because it's not currently supported");
+    IC = 1;
+    UserIC = 0;
+    InterleaveLoop = false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Override IC if user provided an interleave count.
   IC = UserIC > 0 ? UserIC : IC;
