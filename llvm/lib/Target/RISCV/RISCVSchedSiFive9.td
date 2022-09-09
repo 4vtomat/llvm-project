@@ -35,9 +35,9 @@ def SiFive9LDST       : ProcResource<2>;
 
 // 4-wide pipeline with 4 ALU pipes.
 def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2, SiFive9IEXQ3]>;
-defvar SiFive9Branch   = SiFive9IEXQ0;
-defvar SiFive9SYS      = SiFive9IEXQ1;
-defvar SiFive9MulI2F   = SiFive9IEXQ2;
+defvar SiFive9SYS      = SiFive9IEXQ0;
+defvar SiFive9MulI2F   = SiFive9IEXQ1;
+defvar SiFive9Branch   = SiFive9IEXQ2;
 def SiFive9Div         : ProcResource<1>;
 
 def SiFive9FloatArith  : ProcResGroup<[SiFive9FEXQ0, SiFive9FEXQ1]>;
@@ -69,11 +69,11 @@ def : WriteRes<WriteCPOP32, [SiFive9MulI2F]>;
 }
 
 // Integer division
-def : WriteRes<WriteIDiv, [SiFive9IEXQ2, SiFive9Div]> {
+def : WriteRes<WriteIDiv, [SiFive9MulI2F, SiFive9Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
-def : WriteRes<WriteIDiv32,  [SiFive9IEXQ2, SiFive9Div]> {
+def : WriteRes<WriteIDiv32,  [SiFive9MulI2F, SiFive9Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }

@@ -71,11 +71,11 @@ def : WriteRes<WriteCPOP32, [SiFive8MulI2F]>;
 }
 
 // Integer division
-def : WriteRes<WriteIDiv, [SiFive8IEXQ2, SiFive8Div]> {
+def : WriteRes<WriteIDiv, [SiFive8MulI2F, SiFive8Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
-def : WriteRes<WriteIDiv32,  [SiFive8IEXQ2, SiFive8Div]> {
+def : WriteRes<WriteIDiv32, [SiFive8MulI2F, SiFive8Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
