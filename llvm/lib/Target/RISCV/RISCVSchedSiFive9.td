@@ -63,6 +63,9 @@ let Latency = 3 in {
 // Integer multiplication
 def : WriteRes<WriteIMul, [SiFive9MulI2F]>;
 def : WriteRes<WriteIMul32, [SiFive9MulI2F]>;
+// cpop[w] look exactly like multiply.
+def : WriteRes<WriteCPOP, [SiFive9MulI2F]>;
+def : WriteRes<WriteCPOP32, [SiFive9MulI2F]>;
 }
 
 // Integer division
@@ -93,12 +96,6 @@ def : WriteRes<WriteREV8, [SiFive9IntArith]>;
 
 def : WriteRes<WriteSHXADD, [SiFive9IntArith]>;
 def : WriteRes<WriteSHXADD32, [SiFive9IntArith]>;
-}
-
-let Latency = 3 in {
-// cpop[w] look exactly like multiply.
-def : WriteRes<WriteCPOP, [SiFive9IntArith]>;
-def : WriteRes<WriteCPOP32, [SiFive9IntArith]>;
 }
 
 // Memory
