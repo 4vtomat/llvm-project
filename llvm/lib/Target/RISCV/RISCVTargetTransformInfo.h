@@ -330,6 +330,9 @@ public:
     case RecurKind::UMax:
     case RecurKind::FMin:
     case RecurKind::FMax:
+#ifdef SIFIVE_CUSTOMIZATION
+    case RecurKind::FMulAdd:
+#endif // SIFIVE_CUSTOMIZATION
       return true;
     default:
       return false;
