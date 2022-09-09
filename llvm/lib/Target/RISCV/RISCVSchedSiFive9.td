@@ -35,13 +35,13 @@ def SiFive9LDST       : ProcResource<2>;
 
 // 4-wide pipeline with 4 ALU pipes.
 def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2, SiFive9IEXQ3]>;
-def SiFive9Branch      : ProcResGroup<[SiFive9IEXQ0]>;
-def SiFive9SYS         : ProcResGroup<[SiFive9IEXQ1]>;
-def SiFive9MulI2F      : ProcResGroup<[SiFive9IEXQ2]>;
+defvar SiFive9Branch   = SiFive9IEXQ0;
+defvar SiFive9SYS      = SiFive9IEXQ1;
+defvar SiFive9MulI2F   = SiFive9IEXQ2;
 def SiFive9Div         : ProcResource<1>;
 
 def SiFive9FloatArith  : ProcResGroup<[SiFive9FEXQ0, SiFive9FEXQ1]>;
-def SiFive9F2I         : ProcResGroup<[SiFive9FEXQ0]>;
+defvar SiFive9F2I      = SiFive9FEXQ0;
 def SiFive9FloatDiv    : ProcResource<1>;
 
 let Latency = 1 in {

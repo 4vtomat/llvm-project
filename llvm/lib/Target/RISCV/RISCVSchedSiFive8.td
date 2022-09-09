@@ -33,19 +33,17 @@ def SiFive8FEXQ0       : ProcResource<1>;
 def SiFive8FEXQ1       : ProcResource<1>;
 // Define two resources for the load/store pipeline. It is better to schedule
 // load/store interchange for U8.
-def SiFive8LDST0       : ProcResource<1>;
-def SiFive8LDST1       : ProcResource<1>;
+def SiFive8Load        : ProcResource<1>;
+def SiFive8Store       : ProcResource<1>;
 
 def SiFive8IntArith    : ProcResGroup<[SiFive8IEXQ0, SiFive8IEXQ1, SiFive8IEXQ2]>;
-def SiFive8Branch      : ProcResGroup<[SiFive8IEXQ0]>;
-def SiFive8SYS         : ProcResGroup<[SiFive8IEXQ1]>;
-def SiFive8MulI2F      : ProcResGroup<[SiFive8IEXQ2]>;
+defvar SiFive8Branch   = SiFive8IEXQ0;
+defvar SiFive8SYS      = SiFive8IEXQ1;
+defvar SiFive8MulI2F   = SiFive8IEXQ2;
 def SiFive8Div         : ProcResource<1>;
 
 def SiFive8FloatArith  : ProcResGroup<[SiFive8FEXQ0, SiFive8FEXQ1]>;
-def SiFive8F2I         : ProcResGroup<[SiFive8FEXQ0]>;
-def SiFive8Load        : ProcResGroup<[SiFive8LDST0]>;
-def SiFive8Store       : ProcResGroup<[SiFive8LDST1]>;
+defvar SiFive8F2I      = SiFive8FEXQ0;
 def SiFive8FloatDiv    : ProcResource<1>;
 
 let Latency = 1 in {
