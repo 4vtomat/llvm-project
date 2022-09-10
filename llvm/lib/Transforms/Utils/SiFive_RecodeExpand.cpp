@@ -415,7 +415,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateBitCast(II->getArgOperand(II->arg_size() - 1),
                                   ConcatenateTy->getPointerTo()),
             Align(1));
-        Value *Lane = II->getArgOperand(StructNumElements);
+        ConstantInt *Lane =
+            cast<ConstantInt>(II->getArgOperand(StructNumElements));
         Value *Des = PoisonValue::get(II->getType());
         for (unsigned i = 0; i != StructNumElements; ++i)
           Des = Builder.CreateInsertValue(
@@ -604,7 +605,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         FixedVectorType *DesTy = FixedVectorType::get(
             II->getArgOperand(0)->getType()->getScalarType(),
             StructNumElements);
-        Value *Lane = II->getArgOperand(StructNumElements);
+        ConstantInt *Lane =
+            cast<ConstantInt>(II->getArgOperand(StructNumElements));
         Value *Des = PoisonValue::get(DesTy);
         for (unsigned i = 0; i != StructNumElements; ++i)
           Des = Builder.CreateInsertElement(
