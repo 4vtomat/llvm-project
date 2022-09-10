@@ -309,12 +309,12 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
         II->replaceAllUsesWith(Builder.CreateExtractVector(
             VecTy,
-            Builder.CreateIntrinsic(II->getIntrinsicID() ==
-                                            Intrinsic::aarch64_neon_frecpe
-                                        ? Intrinsic::riscv_vfrec7
-                                        : Intrinsic::riscv_vfrsqrt7,
-                                    {Src->getType(), VL->getType()},
-                                    {UndefValue::get(Src->getType()), Src, VL}),
+            Builder.CreateIntrinsic(
+                II->getIntrinsicID() == Intrinsic::aarch64_neon_frecpe
+                    ? Intrinsic::riscv_vfrec7
+                    : Intrinsic::riscv_vfrsqrt7,
+                {Src->getType(), VL->getType()},
+                {PoisonValue::get(Src->getType()), Src, VL}),
             Builder.getInt64(0)));
         break;
       }
@@ -664,7 +664,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         ConstantInt *VL = Builder.getIntN(XLEN, IndexNumElements);
         Value *Vrgather = Builder.CreateIntrinsic(
             Intrinsic::riscv_vrgather_vv, {VrgatherTy, VL->getType()},
-            {UndefValue::get(VrgatherTy),
+            {PoisonValue::get(VrgatherTy),
              toScalableVector(TTI, Builder, Concatenate),
              toScalableVector(TTI, Builder, WidenIndex), VL});
         Vrgather = Builder.CreateExtractVector(Concatenate->getType(), Vrgather,
