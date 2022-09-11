@@ -39,6 +39,7 @@ def SiFive8Store       : ProcResource<1>;
 def SiFive8IntArith    : ProcResGroup<[SiFive8IEXQ0, SiFive8IEXQ1, SiFive8IEXQ2]>;
 defvar SiFive8Branch   = SiFive8IEXQ0;
 defvar SiFive8SYS      = SiFive8IEXQ1;
+defvar SiFive8CMOV     = SiFive8IEXQ1;
 defvar SiFive8MulI2F   = SiFive8IEXQ2;
 def SiFive8Div         : ProcResource<1>;
 
@@ -59,6 +60,12 @@ def : WriteRes<WriteJmp, [SiFive8Branch]>;
 def : WriteRes<WriteJal, [SiFive8Branch]>;
 def : WriteRes<WriteJalr, [SiFive8Branch]>;
 def : WriteRes<WriteJmpReg, [SiFive8Branch]>;
+}
+
+// CMOV
+def : WriteRes<WriteCMOV, [SiFive8Branch, SiFive8CMOV]> {
+  let Latency = 2;
+  let NumMicroOps = 2;
 }
 
 let Latency = 3 in {
@@ -326,6 +333,8 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
+
+def : ReadAdvance<ReadCMOV, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

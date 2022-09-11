@@ -36,6 +36,7 @@ def SiFive9LDST       : ProcResource<2>;
 // 4-wide pipeline with 4 ALU pipes.
 def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2, SiFive9IEXQ3]>;
 defvar SiFive9SYS      = SiFive9IEXQ0;
+defvar SiFive9CMOV     = SiFive9IEXQ0;
 defvar SiFive9MulI2F   = SiFive9IEXQ1;
 defvar SiFive9Branch   = SiFive9IEXQ2;
 def SiFive9Div         : ProcResource<1>;
@@ -57,6 +58,12 @@ def : WriteRes<WriteJmp, [SiFive9Branch]>;
 def : WriteRes<WriteJal, [SiFive9Branch]>;
 def : WriteRes<WriteJalr, [SiFive9Branch]>;
 def : WriteRes<WriteJmpReg, [SiFive9Branch]>;
+}
+
+// CMOV
+def : WriteRes<WriteCMOV, [SiFive9Branch, SiFive9CMOV]> {
+  let Latency = 2;
+  let NumMicroOps = 2;
 }
 
 let Latency = 3 in {
@@ -325,6 +332,8 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
+
+def : ReadAdvance<ReadCMOV, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

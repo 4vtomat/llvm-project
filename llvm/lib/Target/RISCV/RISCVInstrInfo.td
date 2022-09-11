@@ -1377,7 +1377,8 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
                                 [(set GPRNoX0:$dst,
                                   (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs,
                                                            cond, GPRNoX0:$truev,
-                                                           GPRNoX0:$falsev))]>;
+                                                           GPRNoX0:$falsev))]>,
+                         Sched<[WriteCMOV, ReadCMOV, ReadCMOV, ReadCMOV, ReadCMOV]>;
 }
 
 let Predicates = [HasShortForwardBranchOpt],
