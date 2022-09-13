@@ -142,15 +142,17 @@ def : WriteRes<WriteAtomicLDD, [SiFive9LDST]>;
 }
 
 // Floating point
-let Latency = 4 in {
+let Latency = 2 in {
 def : WriteRes<WriteFALU16, [SiFive9FloatArith]>;
 def : WriteRes<WriteFALU32, [SiFive9FloatArith]>;
 def : WriteRes<WriteFALU64, [SiFive9FloatArith]>;
-
+}
+let Latency = 3 in {
 def : WriteRes<WriteFMul16, [SiFive9FloatArith]>;
 def : WriteRes<WriteFMul32, [SiFive9FloatArith]>;
 def : WriteRes<WriteFMul64, [SiFive9FloatArith]>;
-
+}
+let Latency = 4 in {
 def : WriteRes<WriteFMA16, [SiFive9FloatArith]>;
 def : WriteRes<WriteFMA32, [SiFive9FloatArith]>;
 def : WriteRes<WriteFMA64, [SiFive9FloatArith]>;
