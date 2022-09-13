@@ -208,29 +208,29 @@ def : WriteRes<WriteFCvtI64ToF32, [SiFive9MulI2F]>;
 def : WriteRes<WriteFCvtI64ToF64, [SiFive9MulI2F]>;
 def : WriteRes<WriteFCvtF16ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF16ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF16ToF32, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF16ToF64, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF16ToF32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF16ToF64, [SiFive9FloatArith]>;
 def : WriteRes<WriteFCvtF32ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF32ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF32ToF16, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF32ToF64, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF32ToF16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF32ToF64, [SiFive9FloatArith]>;
 def : WriteRes<WriteFCvtF64ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF64ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF64ToF16, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF64ToF32, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF64ToF16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF64ToF32, [SiFive9FloatArith]>;
 
-def : WriteRes<WriteFClass16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFClass32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFClass64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI16ToF16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF16ToI16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI32ToF32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF32ToI32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI64ToF64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF64ToI64, [SiFive9FloatArith]>;
+def : WriteRes<WriteFClass16, [SiFive9F2I]>;
+def : WriteRes<WriteFClass32, [SiFive9F2I]>;
+def : WriteRes<WriteFClass64, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp16, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp32, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp64, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI16ToF16, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF16ToI16, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI32ToF32, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF32ToI32, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI64ToF64, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF64ToI64, [SiFive9F2I]>;
 }
 
 // Others
