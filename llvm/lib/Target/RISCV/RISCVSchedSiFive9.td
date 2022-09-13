@@ -38,7 +38,7 @@ def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2,
 defvar SiFive9SYS      = SiFive9IEXQ0;
 defvar SiFive9CMOV     = SiFive9IEXQ0;
 defvar SiFive9MulI2F   = SiFive9IEXQ1;
-defvar SiFive9Branch   = SiFive9IEXQ2;
+def SiFive9Branch      : ProcResGroup<[SiFive9IEXQ2, SiFive9IEXQ3]>;
 def SiFive9Div         : ProcResource<1>;
 
 def SiFive9FloatArith  : ProcResGroup<[SiFive9FEXQ0, SiFive9FEXQ1]>;
