@@ -57,6 +57,8 @@ private:
   bool expandBitfieldExtract(MachineBasicBlock &MBB,
                              MachineBasicBlock::iterator MBBI,
                              unsigned ShOpc);
+  bool expandNTLLoadStore(MachineBasicBlock &MBB,
+                          MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
@@ -158,6 +160,24 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRLI);
   case RISCV::PseudoSBFX:
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
+  case RISCV::PseudoNonTemporalLB:
+  case RISCV::PseudoNonTemporalLH:
+  case RISCV::PseudoNonTemporalLW:
+  case RISCV::PseudoNonTemporalLD:
+  case RISCV::PseudoNonTemporalLBU:
+  case RISCV::PseudoNonTemporalLHU:
+  case RISCV::PseudoNonTemporalLWU:
+  case RISCV::PseudoNonTemporalFLH:
+  case RISCV::PseudoNonTemporalFLW:
+  case RISCV::PseudoNonTemporalFLD:
+  case RISCV::PseudoNonTemporalSB:
+  case RISCV::PseudoNonTemporalSH:
+  case RISCV::PseudoNonTemporalSW:
+  case RISCV::PseudoNonTemporalSD:
+  case RISCV::PseudoNonTemporalFSH:
+  case RISCV::PseudoNonTemporalFSW:
+  case RISCV::PseudoNonTemporalFSD:
+    return expandNTLLoadStore(MBB, MBBI);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
@@ -384,6 +404,52 @@ bool RISCVExpandPseudo::expandBitfieldExtract(
                            getRenamableRegState(Renamable))
       .addReg(DestReg, RegState::Kill | getRenamableRegState(Renamable))
       .add(MI.getOperand(3));
+
+  MI.eraseFromParent();
+  return true;
+}
+
+bool RISCVExpandPseudo::expandNTLLoadStore(MachineBasicBlock &MBB,
+                                           MachineBasicBlock::iterator MBBI) {
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  unsigned LoadStoreOpc;
+  switch (MBBI->getOpcode()) {
+  // clang-format off
+  case RISCV::PseudoNonTemporalSB:  LoadStoreOpc = RISCV::SB;  break;
+  case RISCV::PseudoNonTemporalSH:  LoadStoreOpc = RISCV::SH;  break;
+  case RISCV::PseudoNonTemporalSW:  LoadStoreOpc = RISCV::SW;  break;
+  case RISCV::PseudoNonTemporalSD:  LoadStoreOpc = RISCV::SD;  break;
+  case RISCV::PseudoNonTemporalFSH: LoadStoreOpc = RISCV::FSH; break;
+  case RISCV::PseudoNonTemporalFSW: LoadStoreOpc = RISCV::FSW; break;
+  case RISCV::PseudoNonTemporalFSD: LoadStoreOpc = RISCV::FSD; break;
+  case RISCV::PseudoNonTemporalLB:  LoadStoreOpc = RISCV::LB;  break;
+  case RISCV::PseudoNonTemporalLH:  LoadStoreOpc = RISCV::LH;  break;
+  case RISCV::PseudoNonTemporalLW:  LoadStoreOpc = RISCV::LW;  break;
+  case RISCV::PseudoNonTemporalLBU: LoadStoreOpc = RISCV::LBU; break;
+  case RISCV::PseudoNonTemporalLHU: LoadStoreOpc = RISCV::LHU; break;
+  case RISCV::PseudoNonTemporalLWU: LoadStoreOpc = RISCV::LWU; break;
+  case RISCV::PseudoNonTemporalLD:  LoadStoreOpc = RISCV::LD;  break;
+  case RISCV::PseudoNonTemporalFLH: LoadStoreOpc = RISCV::FLH; break;
+  case RISCV::PseudoNonTemporalFLW: LoadStoreOpc = RISCV::FLW; break;
+  case RISCV::PseudoNonTemporalFLD: LoadStoreOpc = RISCV::FLD; break;
+  // clang-format on
+  default:
+    llvm_unreachable("Unexpected opcode!");
+  }
+
+  MachineFunction *MF = MBB.getParent();
+  const auto &STI = MF->getSubtarget<RISCVSubtarget>();
+  if (STI.hasStdExtC() && STI.enableRVCHintInstrs())
+    BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoCNTLALL));
+  else
+    BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoNTLALL));
+  BuildMI(MBB, MBBI, DL, TII->get(LoadStoreOpc))
+      .add(MI.getOperand(0))
+      .add(MI.getOperand(1))
+      .add(MI.getOperand(2))
+      .addMemOperand(*(MBBI->memoperands_begin()));
 
   MI.eraseFromParent();
   return true;
