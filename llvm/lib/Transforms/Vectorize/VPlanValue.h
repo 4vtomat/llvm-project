@@ -105,14 +105,17 @@ public:
 
     // Phi-like VPValues. Need to be kept together.
     VPVBlendSC,
+    VPVPredInstPHI,
+    // Header-phi recipes. Need to be kept together.
     VPVCanonicalIVPHISC,
     VPVActiveLaneMaskPHISC,
     VPVFirstOrderRecurrencePHISC,
     VPVWidenPHISC,
     VPVWidenIntOrFpInductionSC,
     VPVWidenPointerInductionSC,
-    VPVPredInstPHI,
     VPVReductionPHISC,
+    VPVFirstHeaderPHISC = VPVCanonicalIVPHISC,
+    VPVLastPHISC = VPVReductionPHISC,
   };
 
   VPValue(Value *UV = nullptr, VPDef *Def = nullptr)
@@ -361,15 +364,17 @@ public:
 
     // Phi-like recipes. Need to be kept together.
     VPBlendSC,
+    VPPredInstPHISC,
+    // Header-phi recipes. Need to be kept together.
     VPCanonicalIVPHISC,
     VPActiveLaneMaskPHISC,
     VPFirstOrderRecurrencePHISC,
     VPWidenPHISC,
     VPWidenIntOrFpInductionSC,
     VPWidenPointerInductionSC,
-    VPPredInstPHISC,
     VPReductionPHISC,
     VPFirstPHISC = VPBlendSC,
+    VPFirstHeaderPHISC = VPCanonicalIVPHISC,
     VPLastPHISC = VPReductionPHISC,
   };
 

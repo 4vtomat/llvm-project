@@ -246,3 +246,6 @@
 
 .attribute arch, "rv32i_zve64x"
 # CHECK: attribute      5, "rv32i2p1_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
+
+.attribute arch, "rv32iztso0p1"
+# CHECK: attribute      5, "rv32i2p1_ztso0p1"

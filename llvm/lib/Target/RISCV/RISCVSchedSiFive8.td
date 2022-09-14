@@ -143,7 +143,7 @@ def : WriteRes<WriteAtomicLDD, [SiFive8Load]>;
 
 // Half precision.
 let Latency = 4 in {
-def : WriteRes<WriteFALU16, [SiFive8FloatArith]>;
+def : WriteRes<WriteFAdd16, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMul16, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMA16, [SiFive8FloatArith]>;
 }
@@ -163,7 +163,7 @@ def : WriteRes<WriteFSqrt16, [SiFive8FEXQ1, SiFive8FloatDiv]> {
 
 // Single precision.
 let Latency = 4 in {
-def : WriteRes<WriteFALU32, [SiFive8FloatArith]>;
+def : WriteRes<WriteFAdd32, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMul32, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMA32, [SiFive8FloatArith]>;
 }
@@ -183,7 +183,7 @@ def : WriteRes<WriteFSqrt32, [SiFive8FEXQ1, SiFive8FloatDiv]> {
 
 // Double precision
 let Latency = 4 in {
-def : WriteRes<WriteFALU64, [SiFive8FloatArith]>;
+def : WriteRes<WriteFAdd64, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMul64, [SiFive8FloatArith]>;
 def : WriteRes<WriteFMA64, [SiFive8FloatArith]>;
 }
@@ -270,9 +270,9 @@ def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
 def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
-def : ReadAdvance<ReadFALU16, 0>;
-def : ReadAdvance<ReadFALU32, 0>;
-def : ReadAdvance<ReadFALU64, 0>;
+def : ReadAdvance<ReadFAdd16, 0>;
+def : ReadAdvance<ReadFAdd32, 0>;
+def : ReadAdvance<ReadFAdd64, 0>;
 def : ReadAdvance<ReadFMul16, 0>;
 def : ReadAdvance<ReadFMA16, 0>;
 def : ReadAdvance<ReadFMul32, 0>;

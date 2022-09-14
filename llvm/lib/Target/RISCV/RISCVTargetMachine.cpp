@@ -60,6 +60,10 @@ static cl::opt<bool>
                   cl::desc("Enable optimizations on SLSR"),
                   cl::init(false));
 #endif // SIFIVE_CUSTOMIZATION
+// FIXME: Unify control over GlobalMerge.
+static cl::opt<cl::boolOrDefault>
+    EnableGlobalMerge("riscv-enable-global-merge", cl::Hidden,
+                      cl::desc("Enable the global merge pass"));
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -285,6 +289,13 @@ bool RISCVPassConfig::addPreISel() {
     // more details.
     addPass(createBarrierNoopPass());
   }
+
+  if (EnableGlobalMerge == cl::BOU_TRUE) {
+    addPass(createGlobalMergePass(TM, /* MaxOffset */ 2047,
+                                  /* OnlyOptimizeForSize */ false,
+                                  /* MergeExternalByDefault */ true));
+  }
+
   return false;
 }
 
