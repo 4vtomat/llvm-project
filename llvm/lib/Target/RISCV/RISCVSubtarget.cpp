@@ -273,7 +273,7 @@ calculateLatency(const RISCVSubtarget *ST, const MachineInstr *MI, unsigned Lat,
         return factorLMul(Lat, LMul, DLenFactor);
 
       unsigned SEW =
-          1 << MI->getOperand(MI->getNumExplicitOperands() - 1).getImm();
+          1 << MI->getOperand(RISCVII::getSEWOpNum(MI->getDesc())).getImm();
 
       switch(Opcode) {
       default:

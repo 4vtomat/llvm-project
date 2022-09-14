@@ -520,6 +520,13 @@ public:
   /// complex control flow around the loops.
   virtual std::pair<BasicBlock *, Value *> createVectorizedLoopSkeleton();
 
+#if SIFIVE_CUSTOMIZATION
+  /// Return true if widen a single call within the innermost loop using vector
+  /// predicated intrinsics. Otherwise, return false.
+  bool widenPredicatedCall(CallInst &I, VPValue *Def, VPUser &ArgOperands,
+                           VPTransformState &State);
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Widen a single call instruction within the innermost loop.
   void widenCallInstruction(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
                             VPTransformState &State,
@@ -3713,7 +3720,12 @@ static Type *MaybeVectorizeType(Type *Elt, ElementCount VF) {
 InstructionCost
 LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
                                                    ElementCount VF) const {
+#if SIFIVE_CUSTOMIZATION
+  Intrinsic::ID ID =
+      getVectorIntrinsicIDForCall(CI, TLI, Legal->useVLAVectorizer());
+#else
   Intrinsic::ID ID = getVectorIntrinsicIDForCall(CI, TLI);
+#endif
   assert(ID && "Expected intrinsic call!");
   Type *RetTy = MaybeVectorizeType(CI->getType(), VF);
   FastMathFlags FMF;
@@ -4442,10 +4454,50 @@ bool InnerLoopVectorizer::useOrderedReductions(
   return Cost->useOrderedReductions(RdxDesc);
 }
 
+/// A helper function for checking whether an integer division-related
+/// instruction may divide by zero (in which case it must be predicated if
+/// executed conditionally in the scalar code).
+/// TODO: It may be worthwhile to generalize and check isKnownNonZero().
+/// Non-zero divisors that are non compile-time constants will not be
+/// converted into multiplication, so we will still end up scalarizing
+/// the division, but can do so w/o predication.
+static bool mayDivideByZero(Instruction &I) {
+  assert((I.getOpcode() == Instruction::UDiv ||
+          I.getOpcode() == Instruction::SDiv ||
+          I.getOpcode() == Instruction::URem ||
+          I.getOpcode() == Instruction::SRem) &&
+         "Unexpected instruction");
+  Value *Divisor = I.getOperand(1);
+  auto *CInt = dyn_cast<ConstantInt>(Divisor);
+  return !CInt || CInt->isZero();
+}
+
+#if SIFIVE_CUSTOMIZATION
+bool InnerLoopVectorizer::widenPredicatedCall(CallInst &CI, VPValue *Def,
+                                              VPUser &ArgOperands,
+                                              VPTransformState &State) {
+  assert(State.Plan->getEVL() &&
+         "Only widen call to vp intrinsic if State has EVL.");
+
+  Intrinsic::ID VPID = getVectorIntrinsicIDForCall(&CI, TLI, true);
+
+  // Skip if CI doesn't have vp form.
+  if (!VPIntrinsic::isVPIntrinsic(VPID))
+    return false;
+
+  for (unsigned Part = 0; Part < UF; ++Part) {
+    llvm::widenPredicatedCall(CI, Def, ArgOperands, State, VPID, Part);
+    Value *V = State.get(Def, Part);
+    State.addMetadata(V, &CI);
+  }
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void InnerLoopVectorizer::widenCallInstruction(CallInst &CI, VPValue *Def,
                                                VPUser &ArgOperands,
                                                VPTransformState &State,
-					       Intrinsic::ID VectorIntrinsicID) {
+					                                     Intrinsic::ID VectorIntrinsicID) {
   assert(!isa<DbgInfoIntrinsic>(CI) &&
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFromInst(&CI);
@@ -11720,6 +11772,18 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         "but is explicitly disabled or interleave count is set to 1");
     InterleaveLoop = false;
   }
+#if SIFIVE_CUSTOMIZATION
+  else if (UserIC > 1 && LVL.useVLAVectorizer()) {
+    LLVM_DEBUG(
+        dbgs() << "LV: Interleaving is disabled for RVV VLA vectorization.\n");
+    IntDiagMsg = std::make_pair("InterleavingAvoided",
+                                "Ignoring interleave count provided by the "
+                                "user, because it's not currently supported");
+    IC = 1;
+    UserIC = 0;
+    InterleaveLoop = false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Override IC if user provided an interleave count.
   IC = UserIC > 0 ? UserIC : IC;

@@ -35,13 +35,14 @@ def SiFive9LDST       : ProcResource<2>;
 
 // 4-wide pipeline with 4 ALU pipes.
 def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2, SiFive9IEXQ3]>;
-def SiFive9Branch      : ProcResGroup<[SiFive9IEXQ0]>;
-def SiFive9SYS         : ProcResGroup<[SiFive9IEXQ1]>;
-def SiFive9MulI2F      : ProcResGroup<[SiFive9IEXQ2]>;
+defvar SiFive9SYS      = SiFive9IEXQ0;
+defvar SiFive9CMOV     = SiFive9IEXQ0;
+defvar SiFive9MulI2F   = SiFive9IEXQ1;
+defvar SiFive9Branch   = SiFive9IEXQ2;
 def SiFive9Div         : ProcResource<1>;
 
 def SiFive9FloatArith  : ProcResGroup<[SiFive9FEXQ0, SiFive9FEXQ1]>;
-def SiFive9F2I         : ProcResGroup<[SiFive9FEXQ0]>;
+defvar SiFive9F2I      = SiFive9FEXQ0;
 def SiFive9FloatDiv    : ProcResource<1>;
 
 let Latency = 1 in {
@@ -59,18 +60,27 @@ def : WriteRes<WriteJalr, [SiFive9Branch]>;
 def : WriteRes<WriteJmpReg, [SiFive9Branch]>;
 }
 
+// CMOV
+def : WriteRes<WriteCMOV, [SiFive9Branch, SiFive9CMOV]> {
+  let Latency = 2;
+  let NumMicroOps = 2;
+}
+
 let Latency = 3 in {
 // Integer multiplication
 def : WriteRes<WriteIMul, [SiFive9MulI2F]>;
 def : WriteRes<WriteIMul32, [SiFive9MulI2F]>;
+// cpop[w] look exactly like multiply.
+def : WriteRes<WriteCPOP, [SiFive9MulI2F]>;
+def : WriteRes<WriteCPOP32, [SiFive9MulI2F]>;
 }
 
 // Integer division
-def : WriteRes<WriteIDiv, [SiFive9IEXQ2, SiFive9Div]> {
+def : WriteRes<WriteIDiv, [SiFive9MulI2F, SiFive9Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
-def : WriteRes<WriteIDiv32,  [SiFive9IEXQ2, SiFive9Div]> {
+def : WriteRes<WriteIDiv32,  [SiFive9MulI2F, SiFive9Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
@@ -93,12 +103,6 @@ def : WriteRes<WriteREV8, [SiFive9IntArith]>;
 
 def : WriteRes<WriteSHXADD, [SiFive9IntArith]>;
 def : WriteRes<WriteSHXADD32, [SiFive9IntArith]>;
-}
-
-let Latency = 3 in {
-// cpop[w] look exactly like multiply.
-def : WriteRes<WriteCPOP, [SiFive9IntArith]>;
-def : WriteRes<WriteCPOP32, [SiFive9IntArith]>;
 }
 
 // Memory
@@ -137,17 +141,34 @@ def : WriteRes<WriteAtomicLDW, [SiFive9LDST]>;
 def : WriteRes<WriteAtomicLDD, [SiFive9LDST]>;
 }
 
-// Half precision.
-let Latency = 4 in {
-def : WriteRes<WriteFAdd16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMul16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMA16, [SiFive9FloatArith]>;
-}
+// Floating point
 let Latency = 2 in {
-def : WriteRes<WriteFSGNJ16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMinMax16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd64, [SiFive9FloatArith]>;
+}
+let Latency = 3 in {
+def : WriteRes<WriteFMul16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMul32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMul64, [SiFive9FloatArith]>;
+}
+let Latency = 4 in {
+def : WriteRes<WriteFMA16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMA32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMA64, [SiFive9FloatArith]>;
 }
 
+let Latency = 2 in {
+def : WriteRes<WriteFSGNJ16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFSGNJ32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFSGNJ64, [SiFive9FloatArith]>;
+
+def : WriteRes<WriteFMinMax16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMinMax32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFMinMax64, [SiFive9FloatArith]>;
+}
+
+// Half precision.
 def : WriteRes<WriteFDiv16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 19;
   let ResourceCycles = [1, 18];
@@ -158,16 +179,6 @@ def : WriteRes<WriteFSqrt16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 }
 
 // Single precision.
-let Latency = 4 in {
-def : WriteRes<WriteFAdd32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMul32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMA32, [SiFive9FloatArith]>;
-}
-let Latency = 2 in {
-def : WriteRes<WriteFSGNJ32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMinMax32, [SiFive9FloatArith]>;
-}
-
 def : WriteRes<WriteFDiv32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 19;
   let ResourceCycles = [1, 18];
@@ -178,16 +189,6 @@ def : WriteRes<WriteFSqrt32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 }
 
 // Double precision
-let Latency = 4 in {
-def : WriteRes<WriteFAdd64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMul64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMA64, [SiFive9FloatArith]>;
-}
-let Latency = 2 in {
-def : WriteRes<WriteFSGNJ64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMinMax64, [SiFive9FloatArith]>;
-}
-
 def : WriteRes<WriteFDiv64, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 33;
   let ResourceCycles = [1, 32];
@@ -333,6 +334,8 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
+
+def : ReadAdvance<ReadCMOV, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

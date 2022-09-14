@@ -1142,31 +1142,27 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   if (!State.Plan->getEVL())
     return;
   Value *TripCount = State.get(&State.Plan->getVectorTripCount(), 0);
-  Value *PrevEVLVal = nullptr;
-  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part) {
-    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
-    // Compute TC - IV as the RVL(requested vector length).
-    Value *IV = State.get(this, Part);
-    Value *RVL = State.Builder.CreateSub(TripCount, IV);
-    // Set EVL
-    Value *SetVL = State.Plan->getSetVL(State, RVL);
-    Value *EVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
-    State.set(State.Plan->getEVL(), EVL, Part);
-    if (State.Plan->getPrevEVL()) {
-      if (Part == 0) {
-        auto *PrevEVL =
-            PHINode::Create(EVL->getType(), 2, "prev.evl",
-                            &*State.CFG.PrevBB->getFirstInsertionPt());
-        IRBuilder<>::InsertPointGuard Guard(State.Builder);
-        State.Builder.SetInsertPoint(VectorPH->getTerminator());
-        auto *RuntimeVF = getRuntimeVF(State.Builder, EVL->getType(), State.VF);
-        PrevEVL->addIncoming(RuntimeVF, VectorPH);
-        State.set(State.Plan->getPrevEVL(), PrevEVL, Part);
-      } else {
-        State.set(State.Plan->getPrevEVL(), PrevEVLVal, Part);
-      }
-    }
-    PrevEVLVal = EVL;
+  // TODO: Restructure this code With an explicit remainder loop, vsetvli can be
+  // outside of the main loop that allows to use interleave or unroll in the
+  // main loop.
+  assert(State.UF < 2 &&
+         "Neither unrolling, nor interleaving is supported by RVV VLA");
+  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+  // Compute TC - IV as the RVL(requested vector length).
+  Value *IV = State.get(this, 0);
+  Value *RVL = State.Builder.CreateSub(TripCount, IV);
+  // Set EVL
+  Value *SetVL = State.Plan->getSetVL(State, RVL);
+  Value *EVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
+  State.set(State.Plan->getEVL(), EVL, 0);
+  if (State.Plan->getPrevEVL()) {
+    auto *PrevEVL = PHINode::Create(EVL->getType(), 2, "prev.evl",
+                                    &*State.CFG.PrevBB->getFirstInsertionPt());
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
+    State.Builder.SetInsertPoint(VectorPH->getTerminator());
+    auto *RuntimeVF = getRuntimeVF(State.Builder, EVL->getType(), State.VF);
+    PrevEVL->addIncoming(RuntimeVF, VectorPH);
+    State.set(State.Plan->getPrevEVL(), PrevEVL, 0);
   }
 #endif // SIFIVE_CUSTOMIZATION
 }

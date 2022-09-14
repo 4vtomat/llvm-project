@@ -341,4 +341,5 @@ defm : UnsupportedSchedZbm;
 defm : UnsupportedSchedZbp;
 defm : UnsupportedSchedZbr;
 defm : UnsupportedSchedZbt;
+defm : UnsupportedSchedCMOV; // SIFIVE
 }
