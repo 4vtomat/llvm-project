@@ -12,7 +12,7 @@
 // https://sifive.atlassian.net/wiki/spaces/AR/pages/1844513085/FLC+Draft+Proposal+-+Bordeaux+SPECint2006+Performance+Uplift
 def SiFive9Model : SchedMachineModel {
   let IssueWidth = 4;         // 4 micro-ops are dispatched per cycle.
-  let MicroOpBufferSize = 56; // Max micro-ops that can be buffered.
+  let MicroOpBufferSize = 160; // Max micro-ops that can be buffered.
   let LoadLatency = 4;        // Cycles for loads to access the cache.
   let MispredictPenalty = 9;  // Extra cycles for a mispredicted branch.
   let PostRAScheduler = true;
