@@ -4351,27 +4351,6 @@ bool Sema::CheckRISCVLMUL(CallExpr *TheCall, unsigned ArgNum) {
          << Arg->getSourceRange();
 }
 
-static bool isRISCV32Builtin(unsigned BuiltinID) {
-  // These builtins only work on riscv32 targets.
-  switch (BuiltinID) {
-  case RISCV::BI__builtin_riscv_zip_32:
-  case RISCV::BI__builtin_riscv_unzip_32:
-  case RISCV::BI__builtin_riscv_aes32dsi_32:
-  case RISCV::BI__builtin_riscv_aes32dsmi_32:
-  case RISCV::BI__builtin_riscv_aes32esi_32:
-  case RISCV::BI__builtin_riscv_aes32esmi_32:
-  case RISCV::BI__builtin_riscv_sha512sig0h_32:
-  case RISCV::BI__builtin_riscv_sha512sig0l_32:
-  case RISCV::BI__builtin_riscv_sha512sig1h_32:
-  case RISCV::BI__builtin_riscv_sha512sig1l_32:
-  case RISCV::BI__builtin_riscv_sha512sum0r_32:
-  case RISCV::BI__builtin_riscv_sha512sum1r_32:
-    return true;
-  }
-
-  return false;
-}
-
 #if SIFIVE_CUSTOMIZATION
 // Is this an RVV vector type.
 static bool CheckRISCVVecTy(QualType T) {
