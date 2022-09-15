@@ -498,11 +498,20 @@ void VPInstruction::setFastMathFlags(FastMathFlags FMFNew) {
   FMF = FMFNew;
 }
 
+extern bool widenPredicatedCallHelper(CallInst &CI, VPValue *Def,
+                                      VPUser &ArgOperands,
+                                      VPTransformState &State);
+
 void VPWidenCallRecipe::execute(VPTransformState &State) {
   auto &CI = *cast<CallInst>(getUnderlyingInstr());
   assert(!isa<DbgInfoIntrinsic>(CI) &&
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFromInst(&CI);
+
+#if SIFIVE_CUSTOMIZATION
+  if (widenPredicatedCallHelper(CI, this, *this, State))
+    return;
+#endif // SIFIVE_CUSTOMIZATION
 
   SmallVector<Type *, 4> Tys;
   for (Value *ArgOperand : CI.args())

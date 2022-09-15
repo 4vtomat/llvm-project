@@ -4494,6 +4494,17 @@ bool InnerLoopVectorizer::widenPredicatedCall(CallInst &CI, VPValue *Def,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+bool widenPredicatedCallHelper(CallInst &CI, VPValue *Def,
+                               VPUser &ArgOperands,
+                               VPTransformState &State) {
+#if SIFIVE_CUSTOMIZATION
+  if (State.Plan->getEVL() &&
+      State.ILV->widenPredicatedCall(CI, Def, ArgOperands, State))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
+  return false;
+}
+
 void InnerLoopVectorizer::widenCallInstruction(CallInst &CI, VPValue *Def,
                                                VPUser &ArgOperands,
                                                VPTransformState &State,
@@ -9352,19 +9363,12 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
                   // call?
                   InstructionCost CallCost =
                       CM.getVectorCallCost(CI, VF, NeedToScalarize);
+                  InstructionCost IntrinsicCost =
+                      CM.getVectorIntrinsicCost(CI, VF);
 #if SIFIVE_CUSTOMIZATION
-                  Module *M = CI->getParent()->getParent()->getParent();
-                  Triple TargetTriple(M->getTargetTriple());
-                  Triple::ArchType Arch = TargetTriple.getArch();
-                  if (Arch == Triple::riscv32 || Arch == Triple::riscv64) {
-                    InstructionCost IntrinsicCost =
-                        ID ? CM.getVectorIntrinsicCost(CI, VF) : 
-                             InstructionCost::getInvalid();
-                    bool UseVectorIntrinsic = ID && IntrinsicCost <= CallCost;
-                    return UseVectorIntrinsic || !NeedToScalarize;
+                  if (Legal->useVLAVectorizer()) {
+                    return (IntrinsicCost <= CallCost) || !NeedToScalarize;
                   } else {
-                    InstructionCost IntrinsicCost =
-                        CM.getVectorIntrinsicCost(CI, VF);
                     return IntrinsicCost <= CallCost;
                   }
 #endif // SIFIVE_CUSTOMIZATION 
