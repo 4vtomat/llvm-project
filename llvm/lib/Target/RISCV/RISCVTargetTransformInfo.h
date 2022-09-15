@@ -166,8 +166,6 @@ public:
 
   unsigned getRegUsageForType(Type *Ty);
 
-  unsigned getMaximumVF(unsigned ElemWidth, unsigned Opcode) const;
-
   InstructionCost getMaskedMemoryOpCost(unsigned Opcode, Type *Src,
                                         Align Alignment, unsigned AddressSpace,
                                         TTI::TargetCostKind CostKind);
