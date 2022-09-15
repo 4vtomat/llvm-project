@@ -6672,11 +6672,6 @@ LoopVectorizationCostModel::calculateRegisterUsage(ArrayRef<ElementCount> VFs) {
   SmallPtrSet<Instruction *, 8> OpenIntervals;
 
 #if SIFIVE_CUSTOMIZATION
-  // Get the size of the widest register.
-  unsigned MaxSafeDepDist = -1U;
-  if (Legal->getMaxSafeDepDistBytes() != -1U)
-    MaxSafeDepDist = Legal->getMaxSafeDepDistBytes() * 8;
-
   // FIXME: This is wrong. Register grouping is not necessary if using scalable
   // vector type. We need another TTI method to indicate it.
 #endif // SIFIVE_CUSTOMIZATION
