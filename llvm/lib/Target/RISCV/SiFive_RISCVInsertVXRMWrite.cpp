@@ -83,7 +83,7 @@ bool RISCVInsertVXRMWrite::emitWriteVXRM(MachineBasicBlock &MBB) {
   unsigned CurVXRMImm = RISCVVXRndMode::DYN;
   for (MachineInstr &MI : MBB) {
     if (auto Idx = getRoundModeIdx(MI.getDesc())) {
-      MachineOperand &RoundModeOp = MI.getOperand(Idx.getValue());
+      MachineOperand &RoundModeOp = MI.getOperand(Idx.value());
       unsigned NewVXRMImm = RoundModeOp.getImm();
       if (NewVXRMImm == CurVXRMImm)
         continue;
