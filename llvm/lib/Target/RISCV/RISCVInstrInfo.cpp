@@ -1281,6 +1281,24 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
       return 4;
     return 6;
   }
+
+  if (!MI.memoperands_empty()) {
+    MachineMemOperand *MMO = *(MI.memoperands_begin());
+    const auto &ST = MF->getSubtarget<RISCVSubtarget>();
+    if (ST.hasStdExtZihintntl() && MMO->isNonTemporal()) {
+      if (ST.hasStdExtC() && ST.enableRVCHintInstrs()) {
+        const auto &TM =
+            static_cast<const RISCVTargetMachine &>(MF->getTarget());
+        const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
+        const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
+        if (isCompressibleInst(MI, &ST, MRI, STI))
+          return 4; // c.ntl.all + c.load/c.store
+        return 6;   // c.ntl.all + load/store
+      }
+      return 8; // ntl.all + load/store
+    }
+  }
+
 #endif // SIFIVE_CUSTOMIZATION
 
   if (MI.getParent() && MI.getParent()->getParent()) {

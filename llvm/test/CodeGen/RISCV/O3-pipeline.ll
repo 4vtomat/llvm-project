@@ -175,6 +175,7 @@
 ; CHECK-NEXT:     Machine Outliner
 ; CHECK-NEXT:     FunctionPass Manager
 ; CHECK-NEXT:       RISCV pseudo instruction expansion pass
+; CHECK-NEXT:       RISCV insert NTLH instruction pass
 ; CHECK-NEXT:       RISCV atomic pseudo instruction expansion pass
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine Optimization Remark Emitter
