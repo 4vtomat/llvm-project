@@ -170,8 +170,8 @@ def : WriteRes<WriteFMinMax64, [SiFive9FloatArith]>;
 
 // Half precision.
 def : WriteRes<WriteFDiv16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let Latency = 4;
+  let ResourceCycles = [1, 4];
 }
 def : WriteRes<WriteFSqrt16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 18;
@@ -180,8 +180,8 @@ def : WriteRes<WriteFSqrt16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 
 // Single precision.
 def : WriteRes<WriteFDiv32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let Latency = 6;
+  let ResourceCycles = [1, 6];
 }
 def : WriteRes<WriteFSqrt32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 18;
@@ -190,8 +190,8 @@ def : WriteRes<WriteFSqrt32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 
 // Double precision
 def : WriteRes<WriteFDiv64, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let Latency = 11;
+  let ResourceCycles = [1, 11];
 }
 def : WriteRes<WriteFSqrt64, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 33;
