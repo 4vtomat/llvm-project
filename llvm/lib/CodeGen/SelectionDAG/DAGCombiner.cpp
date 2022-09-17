@@ -526,6 +526,7 @@ namespace {
 
 #if SIFIVE_CUSTOMIZATION
     SDValue visitVPFADDForVPFMACombine(SDNode *N);
+    SDValue visitVPXOR(SDNode *N);
 #endif // SIFIVE_CUSTOMIZATION
 
     SDValue XformToShuffleWithZero(SDNode *N);
@@ -23575,6 +23576,41 @@ SDValue DAGCombiner::visitVPFADDForVPFMACombine(SDNode *N) {
 
   return SDValue();
 }
+
+SDValue DAGCombiner::visitVPXOR(SDNode *N) {
+  // Fold:
+  //    vp.xor(vp.setcc(X, Y, CC, MASK, VL), ALLONES, MASK, VL) ->
+  //    vp.setcc(X, Y, INVCC, MASK, VL)
+
+  SDValue SetCC = N->getOperand(0);
+  if (SetCC.getOpcode() == ISD::VP_SETCC) {
+    assert(N->getValueType(0) == SetCC.getValueType());
+
+    if (!SetCC.hasOneUse())
+      return SDValue();
+
+    // xor(V, ALLONE) <-> ~V
+    if (!TLI.isConstTrueVal(N->getOperand(1)))
+      return SDValue();
+
+    SDValue X = SetCC.getOperand(0);
+    SDValue Y = SetCC.getOperand(1);
+    SDValue CondCode = SetCC.getOperand(2);
+    SDValue Mask = SetCC.getOperand(3);
+    SDValue VL = SetCC.getOperand(4);
+
+    // Check if vp.xor's MASK and VL are identical to vp.setcc's.
+    if (N->getOperand(2) != Mask || N->getOperand(3) != VL)
+      return SDValue();
+
+    ISD::CondCode CC = cast<CondCodeSDNode>(CondCode)->get();
+
+    return DAG.getSetCCVP(SDLoc(N), N->getValueType(0), X, Y,
+                          ISD::getSetCCInverse(CC, X.getValueType()), Mask, VL);
+  }
+
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
@@ -23594,6 +23630,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     switch (N->getOpcode()) {
     case ISD::VP_FADD:
       return visitVPFADDForVPFMACombine(N);
+    case ISD::VP_XOR:
+      return visitVPXOR(N);
     }
 #endif // SIFIVE_CUSTOMIZATION
     return SDValue();

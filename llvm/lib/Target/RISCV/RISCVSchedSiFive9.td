@@ -12,7 +12,7 @@
 // https://sifive.atlassian.net/wiki/spaces/AR/pages/1844513085/FLC+Draft+Proposal+-+Bordeaux+SPECint2006+Performance+Uplift
 def SiFive9Model : SchedMachineModel {
   let IssueWidth = 4;         // 4 micro-ops are dispatched per cycle.
-  let MicroOpBufferSize = 56; // Max micro-ops that can be buffered.
+  let MicroOpBufferSize = 160; // Max micro-ops that can be buffered.
   let LoadLatency = 4;        // Cycles for loads to access the cache.
   let MispredictPenalty = 9;  // Extra cycles for a mispredicted branch.
   let PostRAScheduler = true;
@@ -38,7 +38,7 @@ def SiFive9IntArith    : ProcResGroup<[SiFive9IEXQ0, SiFive9IEXQ1, SiFive9IEXQ2,
 defvar SiFive9SYS      = SiFive9IEXQ0;
 defvar SiFive9CMOV     = SiFive9IEXQ0;
 defvar SiFive9MulI2F   = SiFive9IEXQ1;
-defvar SiFive9Branch   = SiFive9IEXQ2;
+def SiFive9Branch      : ProcResGroup<[SiFive9IEXQ2, SiFive9IEXQ3]>;
 def SiFive9Div         : ProcResource<1>;
 
 def SiFive9FloatArith  : ProcResGroup<[SiFive9FEXQ0, SiFive9FEXQ1]>;
@@ -170,8 +170,8 @@ def : WriteRes<WriteFMinMax64, [SiFive9FloatArith]>;
 
 // Half precision.
 def : WriteRes<WriteFDiv16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let Latency = 4;
+  let ResourceCycles = [1, 4];
 }
 def : WriteRes<WriteFSqrt16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 18;
@@ -180,8 +180,8 @@ def : WriteRes<WriteFSqrt16, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 
 // Single precision.
 def : WriteRes<WriteFDiv32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let Latency = 6;
+  let ResourceCycles = [1, 6];
 }
 def : WriteRes<WriteFSqrt32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 18;
@@ -190,8 +190,8 @@ def : WriteRes<WriteFSqrt32, [SiFive9FEXQ1, SiFive9FloatDiv]> {
 
 // Double precision
 def : WriteRes<WriteFDiv64, [SiFive9FEXQ1, SiFive9FloatDiv]> {
-  let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let Latency = 11;
+  let ResourceCycles = [1, 11];
 }
 def : WriteRes<WriteFSqrt64, [SiFive9FEXQ1, SiFive9FloatDiv]> {
   let Latency = 33;
@@ -208,29 +208,29 @@ def : WriteRes<WriteFCvtI64ToF32, [SiFive9MulI2F]>;
 def : WriteRes<WriteFCvtI64ToF64, [SiFive9MulI2F]>;
 def : WriteRes<WriteFCvtF16ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF16ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF16ToF32, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF16ToF64, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF16ToF32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF16ToF64, [SiFive9FloatArith]>;
 def : WriteRes<WriteFCvtF32ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF32ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF32ToF16, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF32ToF64, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF32ToF16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF32ToF64, [SiFive9FloatArith]>;
 def : WriteRes<WriteFCvtF64ToI32, [SiFive9F2I]>;
 def : WriteRes<WriteFCvtF64ToI64, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF64ToF16, [SiFive9F2I]>;
-def : WriteRes<WriteFCvtF64ToF32, [SiFive9F2I]>;
+def : WriteRes<WriteFCvtF64ToF16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFCvtF64ToF32, [SiFive9FloatArith]>;
 
-def : WriteRes<WriteFClass16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFClass32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFClass64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFCmp64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI16ToF16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF16ToI16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI32ToF32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF32ToI32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovI64ToF64, [SiFive9FloatArith]>;
-def : WriteRes<WriteFMovF64ToI64, [SiFive9FloatArith]>;
+def : WriteRes<WriteFClass16, [SiFive9F2I]>;
+def : WriteRes<WriteFClass32, [SiFive9F2I]>;
+def : WriteRes<WriteFClass64, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp16, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp32, [SiFive9F2I]>;
+def : WriteRes<WriteFCmp64, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI16ToF16, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF16ToI16, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI32ToF32, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF32ToI32, [SiFive9F2I]>;
+def : WriteRes<WriteFMovI64ToF64, [SiFive9MulI2F]>;
+def : WriteRes<WriteFMovF64ToI64, [SiFive9F2I]>;
 }
 
 // Others
