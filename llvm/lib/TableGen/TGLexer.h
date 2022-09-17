@@ -53,7 +53,7 @@ namespace tgtok {
 
     // Bang operators.
 #ifdef SIFIVE_CUSTOMIZATION
-    XConcat, XADD, XSUB, XMUL, XDIV, XNOT, XAND, XOR, XXOR, XSRA, XSRL, XSHL,
+    XConcat, XADD, XSUB, XMUL, XLOG2, XDIV, XNOT, XAND, XOR, XXOR, XSRA, XSRL, XSHL,
 #else
     XConcat, XADD, XSUB, XMUL, XNOT, XAND, XOR, XXOR, XSRA, XSRL, XSHL,
 #endif // SIFIVE_CUSTOMIZATION
