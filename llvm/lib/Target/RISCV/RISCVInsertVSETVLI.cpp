@@ -1101,7 +1101,11 @@ void RISCVInsertVSETVLI::computeIncomingVLVTYPE(const MachineBasicBlock &MBB) {
 
   BBInfo.InQueue = false;
 
-  VSETVLIInfo InInfo;
+#if SIFIVE_CUSTOMIZATION
+  // Consider this block's previous state as its own predecessor so we
+  // saturate.
+  VSETVLIInfo InInfo = BBInfo.Pred;
+#endif // SIFIVE_CUSTOMIZATION
   if (MBB.pred_empty()) {
     // There are no predecessors, so use the default starting status.
     InInfo.setUnknown();
