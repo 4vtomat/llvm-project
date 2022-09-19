@@ -5424,7 +5424,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
 
       // Scale VF by vscale before checking if it's safe.
       MaxSafeVF = ElementCount::getScalable(
-          MaxVScale ? (MaxSafeElements / MaxVScale.getValue()) : 0);
+          MaxVScale ? (MaxSafeElements / MaxVScale.value()) : 0);
 
       if (MaxSafeVF.isZero()) {
         // The dependence distance is too small to use scalable vectors,

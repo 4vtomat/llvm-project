@@ -24,6 +24,9 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/ErrorHandling.h"
+#ifdef SIFIVE_CUSTOMIZATION
+#include "llvm/Support/MathExtras.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Support/SMLoc.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/TableGen/Error.h"
@@ -885,6 +888,24 @@ Init *UnOpInit::Fold(Record *CurRec, bool IsFinal) const {
       }
     }
     break;
+#ifdef SIFIVE_CUSTOMIZATION
+    case LOG2:
+    if (IntInit *LHSi = dyn_cast_or_null<IntInit>(
+            LHS->convertInitializerTo(IntRecTy::get(RK)))) {
+      int64_t LHSv = LHSi->getValue();
+      if (LHSv <= 0) {
+        PrintFatalError(CurRec->getLoc(),
+                        "Illegal operation: log is undefined "
+                        "on arguments less than or equal to 0");
+      } else {
+        uint64_t Log = Log2_64(LHSi->getValue());
+        assert(Log <= INT64_MAX &&
+               "Log of an int64_t must be smaller than INT64_MAX");
+        return IntInit::get(RK, static_cast<int64_t>(Log));
+      }
+    }
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
   return const_cast<UnOpInit *>(this);
 }
@@ -908,6 +929,9 @@ std::string UnOpInit::getAsString() const {
   case SIZE: Result = "!size"; break;
   case EMPTY: Result = "!empty"; break;
   case GETDAGOP: Result = "!getdagop"; break;
+#ifdef SIFIVE_CUSTOMIZATION
+  case LOG2 : Result = "!log"; break;
+#endif // SIFIVE_CUSTOMIZATION
   }
   return Result + "(" + LHS->getAsString() + ")";
 }
@@ -1165,6 +1189,9 @@ Init *BinOpInit::Fold(Record *CurRec) const {
   case ADD:
   case SUB:
   case MUL:
+#ifdef SIFIVE_CUSTOMIZATION
+  case DIV:
+#endif // SIFIVE_CUSTOMIZATION
   case AND:
   case OR:
   case XOR:
@@ -1183,6 +1210,18 @@ Init *BinOpInit::Fold(Record *CurRec) const {
       case ADD: Result = LHSv + RHSv; break;
       case SUB: Result = LHSv - RHSv; break;
       case MUL: Result = LHSv * RHSv; break;
+#ifdef SIFIVE_CUSTOMIZATION
+      case DIV:
+        if (RHSv == 0)
+          PrintFatalError(CurRec->getLoc(),
+                          "Illegal operation: division by zero");
+        else if (LHSv == INT64_MIN && RHSv == -1)
+          PrintFatalError(CurRec->getLoc(),
+                          "Illegal operation: INT64_MIN / -1");
+        else
+          Result = LHSv / RHSv;
+        break;
+#endif // SIFIVE_CUSTOMIZATION
       case AND: Result = LHSv & RHSv; break;
       case OR:  Result = LHSv | RHSv; break;
       case XOR: Result = LHSv ^ RHSv; break;
@@ -1215,6 +1254,9 @@ std::string BinOpInit::getAsString() const {
   case ADD: Result = "!add"; break;
   case SUB: Result = "!sub"; break;
   case MUL: Result = "!mul"; break;
+#ifdef SIFIVE_CUSTOMIZATION
+  case DIV: Result = "!div"; break;
+#endif // SIFIVE_CUSTOMIZATION
   case AND: Result = "!and"; break;
   case OR: Result = "!or"; break;
   case XOR: Result = "!xor"; break;

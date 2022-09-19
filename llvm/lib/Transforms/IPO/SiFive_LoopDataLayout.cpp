@@ -1946,7 +1946,7 @@ static void walkCallGraphToFillParamMap(
     TargetLibraryInfo &TLI = LookupTLI(*F);
     // Vist all the Edges of F in the CG
     for (const auto &GI : *Node) {
-      auto *CurCB = cast<CallBase>(GI.first.getValue());
+      auto *CurCB = cast<CallBase>(GI.first.value());
       FunctionType *FTy = CurCB->getFunctionType();
       auto *CurCGN = GI.second;
 

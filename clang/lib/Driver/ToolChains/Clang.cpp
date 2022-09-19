@@ -2199,9 +2199,10 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     CmdArgs.push_back(A->getValue());
   }
 
+#if SIFIVE_CUSTOMIZATION
   // SiFive specific options.
   // Check SiFive Recode option.
-  if (const Arg *A = Args.getLastArg(clang::driver::options::OPT_msifive_recode_EQ)) {
+  if (const Arg *A = Args.getLastArg(options::OPT_msifive_recode_EQ)) {
     StringRef Target = A->getValue();
     if (Target == "neon") {
       CmdArgs.push_back("-msifive-recode=neon");
@@ -2216,7 +2217,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     }
   }
 
-#if SIFIVE_CUSTOMIZATION
   if (Args.hasFlag(options::OPT_fno_use_vla_vectorizer,
                    options::OPT_fuse_vla_vectorizer, false))
     CmdArgs.append({"-mllvm", "-riscv-use-vla-vectorizer=false"});

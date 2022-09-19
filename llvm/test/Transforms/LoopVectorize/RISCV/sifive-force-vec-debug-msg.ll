@@ -78,3 +78,45 @@ for.body:                                         ; preds = %for.body.lr.ph, %fo
   %cmp.not.not = icmp sgt i64 %indvars.iv.next, %7
   br i1 %cmp.not.not, label %for.body, label %for.cond.cleanup
 }
+
+
+; The following IR is generated from the following code:
+; int foo(int* a, int n) {
+;     int res = 0;
+; #pragma clang loop vectorize(disable)
+;     for (int i = 0; i < n; ++i)
+;         res += a[i];
+;     return res;
+; }
+
+; CHECK: LV: Not vectorizing, Respects #pragma vectorize(disable) over option 'force-vectorization'
+define signext i32 @foo(ptr %a, i32 %n) #0 {
+entry:
+  %cmp4 = icmp sgt i32 %n, 0
+  br i1 %cmp4, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  %res.0.lcssa = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  ret i32 %res.0.lcssa
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %res.05 = phi i32 [ 0, %for.body.preheader ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds i32, ptr %a, i64 %indvars.iv
+  %0 = load i32, ptr %arrayidx, align 4
+  %add = add nsw i32 %0, %res.05
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body, !llvm.loop !0
+}
+
+attributes #0 = { argmemonly nofree norecurse nosync nounwind readonly "frame-pointer"="none" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+v,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b,-save-restore" }
+
+!0 = distinct !{!0, !1, !2, !3}
+!1 = !{!"llvm.loop.mustprogress"}
+!2 = !{!"llvm.loop.unroll.disable"}
+!3 = !{!"llvm.loop.vectorize.enable", i1 false}

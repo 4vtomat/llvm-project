@@ -87,6 +87,9 @@ void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVCleanupVXRMPass();
 void initializeRISCVCleanupVXRMPass(PassRegistry &);
+
+FunctionPass *createRISCVMachineConstPropagationPass();
+void initializeRISCVMachineConstPropagationPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 InstructionSelector *createRISCVInstructionSelector(const RISCVTargetMachine &,

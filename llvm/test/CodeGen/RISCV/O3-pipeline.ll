@@ -166,6 +166,7 @@
 ; CHECK-NEXT:       Insert fentry calls
 ; CHECK-NEXT:       Insert XRay ops
 ; CHECK-NEXT:       Implement the 'patchable-function' attribute
+; CHECK-NEXT:       RISCV Machine Constant Propagation
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISCV Make Compressible
 ; CHECK-NEXT:       Contiguously Lay Out Funclets
