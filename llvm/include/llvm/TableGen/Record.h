@@ -784,7 +784,11 @@ public:
 ///
 class UnOpInit : public OpInit, public FoldingSetNode {
 public:
+#ifdef SIFIVE_CUSTOMIZATION
+  enum UnaryOp : uint8_t { CAST, NOT, HEAD, TAIL, SIZE, EMPTY, GETDAGOP, LOG2 };
+#else
   enum UnaryOp : uint8_t { CAST, NOT, HEAD, TAIL, SIZE, EMPTY, GETDAGOP };
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   Init *LHS;
@@ -833,9 +837,36 @@ public:
 /// !op (X, Y) - Combine two inits.
 class BinOpInit : public OpInit, public FoldingSetNode {
 public:
+#ifdef SIFIVE_CUSTOMIZATION
+  enum BinaryOp : uint8_t {
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    AND,
+    OR,
+    XOR,
+    SHL,
+    SRA,
+    SRL,
+    LISTCONCAT,
+    LISTSPLAT,
+    STRCONCAT,
+    INTERLEAVE,
+    CONCAT,
+    EQ,
+    NE,
+    LE,
+    LT,
+    GE,
+    GT,
+    SETDAGOP
+  };
+#else
   enum BinaryOp : uint8_t { ADD, SUB, MUL, AND, OR, XOR, SHL, SRA, SRL, LISTCONCAT,
                             LISTSPLAT, STRCONCAT, INTERLEAVE, CONCAT, EQ,
                             NE, LE, LT, GE, GT, SETDAGOP };
+#endif
 
 private:
   Init *LHS, *RHS;

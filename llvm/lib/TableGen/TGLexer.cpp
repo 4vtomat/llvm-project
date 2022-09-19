@@ -563,7 +563,13 @@ tgtok::TokKind TGLexer::LexExclaim() {
     .Case("add", tgtok::XADD)
     .Case("sub", tgtok::XSUB)
     .Case("mul", tgtok::XMUL)
+#ifdef SIFIVE_CUSTOMIZATION
+    .Case("div", tgtok::XDIV)
+#endif // SIFIVE_CUSTOMIZATION
     .Case("not", tgtok::XNOT)
+#ifdef SIFIVE_CUSTOMIZATION
+    .Case("log", tgtok::XLOG2)
+#endif // SIFIVE_CUSTOMIZATION
     .Case("and", tgtok::XAND)
     .Case("or", tgtok::XOR)
     .Case("xor", tgtok::XXOR)

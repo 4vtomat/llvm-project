@@ -613,7 +613,7 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
       return false;
 
     if (Optional<unsigned> Opt = VP->getFunctionalOpcode())
-      BinOpc = Opt.getValue();
+      BinOpc = Opt.value();
     else
       return false;
   }

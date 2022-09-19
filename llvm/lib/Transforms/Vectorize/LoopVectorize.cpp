@@ -4432,24 +4432,6 @@ bool InnerLoopVectorizer::useOrderedReductions(
   return Cost->useOrderedReductions(RdxDesc);
 }
 
-/// A helper function for checking whether an integer division-related
-/// instruction may divide by zero (in which case it must be predicated if
-/// executed conditionally in the scalar code).
-/// TODO: It may be worthwhile to generalize and check isKnownNonZero().
-/// Non-zero divisors that are non compile-time constants will not be
-/// converted into multiplication, so we will still end up scalarizing
-/// the division, but can do so w/o predication.
-static bool mayDivideByZero(Instruction &I) {
-  assert((I.getOpcode() == Instruction::UDiv ||
-          I.getOpcode() == Instruction::SDiv ||
-          I.getOpcode() == Instruction::URem ||
-          I.getOpcode() == Instruction::SRem) &&
-         "Unexpected instruction");
-  Value *Divisor = I.getOperand(1);
-  auto *CInt = dyn_cast<ConstantInt>(Divisor);
-  return !CInt || CInt->isZero();
-}
-
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::widenPredicatedCall(CallInst &CI, VPValue *Def,
                                               VPUser &ArgOperands,
@@ -5341,7 +5323,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
 
       // Scale VF by vscale before checking if it's safe.
       MaxSafeVF = ElementCount::getScalable(
-          MaxVScale ? (MaxSafeElements / MaxVScale.getValue()) : 0);
+          MaxVScale ? (MaxSafeElements / MaxVScale.value()) : 0);
 
       if (MaxSafeVF.isZero()) {
         // The dependence distance is too small to use scalable vectors,
@@ -6672,11 +6654,6 @@ LoopVectorizationCostModel::calculateRegisterUsage(ArrayRef<ElementCount> VFs) {
   SmallPtrSet<Instruction *, 8> OpenIntervals;
 
 #if SIFIVE_CUSTOMIZATION
-  // Get the size of the widest register.
-  unsigned MaxSafeDepDist = -1U;
-  if (Legal->getMaxSafeDepDistBytes() != -1U)
-    MaxSafeDepDist = Legal->getMaxSafeDepDistBytes() * 8;
-
   // FIXME: This is wrong. Register grouping is not necessary if using scalable
   // vector type. We need another TTI method to indicate it.
 #endif // SIFIVE_CUSTOMIZATION

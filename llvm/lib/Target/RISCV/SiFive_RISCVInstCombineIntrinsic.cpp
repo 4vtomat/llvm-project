@@ -611,7 +611,7 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
     return nullptr;
 
   Optional<ICmpInst::Predicate> Pred = getPredicate(ValII->getIntrinsicID());
-  if (!Pred.hasValue())
+  if (!Pred.has_value())
     return nullptr;
   if (ValII->getArgOperand(2) != VL)
     return nullptr;
@@ -625,9 +625,9 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
 
   Value *CmpV;
   if (LHSScalar->getType()->isIntegerTy())
-    CmpV = IC.Builder.CreateICmp(Pred.getValue(), LHSScalar, RHSScalar);
+    CmpV = IC.Builder.CreateICmp(Pred.value(), LHSScalar, RHSScalar);
   else if (LHSScalar->getType()->isFloatingPointTy())
-    CmpV = IC.Builder.CreateFCmp(Pred.getValue(), LHSScalar, RHSScalar);
+    CmpV = IC.Builder.CreateFCmp(Pred.value(), LHSScalar, RHSScalar);
   else
     return nullptr;
 
@@ -656,7 +656,7 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
     return nullptr;
 
   Optional<ICmpInst::Predicate> Pred = getPredicate(MaskII->getIntrinsicID());
-  if (!Pred.hasValue())
+  if (!Pred.has_value())
     return nullptr;
   if (MaskII->getArgOperand(2) != VL)
     return nullptr;
@@ -681,9 +681,9 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
 
   Value *CmpV;
   if (MaskLHSScalar->getType()->isIntegerTy())
-    CmpV = IC.Builder.CreateICmp(Pred.getValue(), MaskLHSScalar, MaskRHSScalar);
+    CmpV = IC.Builder.CreateICmp(Pred.value(), MaskLHSScalar, MaskRHSScalar);
   else if (MaskLHSScalar->getType()->isFloatingPointTy())
-    CmpV = IC.Builder.CreateFCmp(Pred.getValue(), MaskLHSScalar, MaskRHSScalar);
+    CmpV = IC.Builder.CreateFCmp(Pred.value(), MaskLHSScalar, MaskRHSScalar);
   else
     llvm_unreachable("Unexpected types for scalar comparison.");
 

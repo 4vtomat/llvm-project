@@ -1525,8 +1525,8 @@ defm : VPatBinaryRM_VL_VV_VX<riscv_vasubu_vl, "PseudoVASUBU">;
 defm : VPatBinaryRM_VL_VV_VX<riscv_vsmul_vl, "PseudoVSMUL">;
 
 // 12.4 Vector Single-Width Scaling Shift Instructions
-defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssrl_vl, "PseudoVSSRL">;
-defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA">;
+defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssrl_vl, "PseudoVSSRL", uimm5>;
+defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA", uimm5>;
 
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
