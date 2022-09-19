@@ -725,6 +725,9 @@ def : ProcessorModel<"sifive-7m-series", SiFive7Model, [],
 def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
 
+def : ProcessorModel<"sifive-7o-series", SiFive7NModel, [],
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
+
 def : ProcessorModel<"sifive-8-series", SiFive8Model, [],
                      [TuneSiFive8]>;
 
