@@ -29,6 +29,11 @@
 
 using namespace llvm;
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> DisableCostPerUse("riscv-disable-cost-per-use",
+                                       cl::init(false), cl::Hidden);
+#endif // SIFIVE_CUSTOMIZATION
+
 static_assert(RISCV::X1 == RISCV::X0 + 1, "Register list not consecutive");
 static_assert(RISCV::X31 == RISCV::X0 + 31, "Register list not consecutive");
 static_assert(RISCV::F1_H == RISCV::F0_H + 1, "Register list not consecutive");
@@ -349,5 +354,9 @@ void RISCVRegisterInfo::getOffsetOpcodes(const StackOffset &Offset,
 
 unsigned
 RISCVRegisterInfo::getRegisterCostTableIndex(const MachineFunction &MF) const {
+#if SIFIVE_CUSTOMIZATION
+  if (DisableCostPerUse)
+    return 0;
+#endif
   return MF.getSubtarget<RISCVSubtarget>().hasStdExtC() ? 1 : 0;
 }
