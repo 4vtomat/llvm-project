@@ -1026,8 +1026,10 @@ RegsForValue::getRegsAndSizes() const {
 }
 
 void SelectionDAGBuilder::init(GCFunctionInfo *gfi, AliasAnalysis *aa,
+                               AssumptionCache *ac,
                                const TargetLibraryInfo *li) {
   AA = aa;
+  AC = ac;
   GFI = gfi;
   LibInfo = li;
   Context = DAG.getContext();
@@ -4143,7 +4145,7 @@ void SelectionDAGBuilder::visitLoad(const LoadInst &I) {
   }
 
   if (isDereferenceableAndAlignedPointer(SV, Ty, Alignment, DAG.getDataLayout(),
-                                         &I, nullptr, LibInfo))
+                                         &I, AC, nullptr, LibInfo))
     MMOFlags |= MachineMemOperand::MODereferenceable;
 
   SDLoc dl = getCurSDLoc();
@@ -9466,12 +9468,11 @@ void SelectionDAGBuilder::visitStackmap(const CallInst &CI) {
 
   assert(CI.getType()->isVoidTy() && "Stackmap cannot return a value.");
 
-  SDValue Chain, InFlag, Callee, NullPtr;
+  SDValue Chain, InFlag, Callee;
   SmallVector<SDValue, 32> Ops;
 
   SDLoc DL = getCurSDLoc();
   Callee = getValue(CI.getCalledOperand());
-  NullPtr = DAG.getIntPtrConstant(0, DL, true);
 
   // The stackmap intrinsic only records the live variables (the arguments
   // passed to it) and emits NOPS (if requested). Unlike the patchpoint
@@ -9514,7 +9515,7 @@ void SelectionDAGBuilder::visitStackmap(const CallInst &CI) {
   Chain = DAG.getNode(ISD::STACKMAP, DL, NodeTys, Ops);
   InFlag = Chain.getValue(1);
 
-  Chain = DAG.getCALLSEQ_END(Chain, NullPtr, NullPtr, InFlag, DL);
+  Chain = DAG.getCALLSEQ_END(Chain, 0, 0, InFlag, DL);
 
   // Stackmaps don't generate values, so nothing goes into the NodeMap.
 

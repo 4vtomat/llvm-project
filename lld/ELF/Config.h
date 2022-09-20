@@ -152,6 +152,7 @@ struct Configuration {
   llvm::SmallVector<llvm::StringRef, 0> undefined;
   llvm::SmallVector<SymbolVersion, 0> dynamicList;
   llvm::SmallVector<uint8_t, 0> buildIdVector;
+  llvm::SmallVector<llvm::StringRef, 0> mllvmOpts;
   llvm::MapVector<std::pair<const InputSectionBase *, const InputSectionBase *>,
                   uint64_t>
       callGraphProfile;
@@ -364,6 +365,8 @@ struct Configuration {
   // this means to map the primary and thread stacks as PROT_MTE. Note: This is
   // not supported on Android 11 & 12.
   bool androidMemtagStack;
+
+  unsigned threadCount;
 };
 
 // The only instance of Configuration struct.

@@ -612,8 +612,7 @@ HexagonTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   Glue = Chain.getValue(1);
 
   // Create the CALLSEQ_END node.
-  Chain = DAG.getCALLSEQ_END(Chain, DAG.getIntPtrConstant(NumBytes, dl, true),
-                             DAG.getIntPtrConstant(0, dl, true), Glue, dl);
+  Chain = DAG.getCALLSEQ_END(Chain, NumBytes, 0, Glue, dl);
   Glue = Chain.getValue(1);
 
   // Handle result values, copying them out of physregs into vregs that we
@@ -1900,6 +1899,8 @@ const char* HexagonTargetLowering::getTargetNodeName(unsigned Opcode) const {
   case HexagonISD::VASL:          return "HexagonISD::VASL";
   case HexagonISD::VASR:          return "HexagonISD::VASR";
   case HexagonISD::VLSR:          return "HexagonISD::VLSR";
+  case HexagonISD::SSAT:          return "HexagonISD::SSAT";
+  case HexagonISD::USAT:          return "HexagonISD::USAT";
   case HexagonISD::VEXTRACTW:     return "HexagonISD::VEXTRACTW";
   case HexagonISD::VINSERTW0:     return "HexagonISD::VINSERTW0";
   case HexagonISD::VROR:          return "HexagonISD::VROR";
@@ -3291,13 +3292,25 @@ HexagonTargetLowering::LowerOperationWrapper(SDNode *N,
       return;
   }
 
-  // We are only custom-lowering stores to verify the alignment of the
-  // address if it is a compile-time constant. Since a store can be modified
-  // during type-legalization (the value being stored may need legalization),
-  // return empty Results here to indicate that we don't really make any
-  // changes in the custom lowering.
-  if (N->getOpcode() != ISD::STORE)
-    return TargetLowering::LowerOperationWrapper(N, Results, DAG);
+  SDValue Op(N, 0);
+  unsigned Opc = N->getOpcode();
+
+  switch (Opc) {
+    case HexagonISD::SSAT:
+    case HexagonISD::USAT:
+      Results.push_back(opJoin(SplitVectorOp(Op, DAG), SDLoc(Op), DAG));
+      break;
+    case ISD::STORE:
+      // We are only custom-lowering stores to verify the alignment of the
+      // address if it is a compile-time constant. Since a store can be
+      // modified during type-legalization (the value being stored may need
+      // legalization), return empty Results here to indicate that we don't
+      // really make any changes in the custom lowering.
+      return;
+    default:
+      TargetLowering::LowerOperationWrapper(N, Results, DAG);
+      break;
+  }
 }
 
 void

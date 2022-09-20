@@ -3021,6 +3021,9 @@ def err_attribute_too_many_arguments : Error<
 def err_attribute_too_few_arguments : Error<
   "%0 attribute takes at least %1 argument%s1">;
 def err_attribute_invalid_vector_type : Error<"invalid vector element type %0">;
+def err_attribute_invalid_bitint_vector_type : Error<
+  "'_BitInt' vector element width must be %select{a power of 2|"
+  "at least as wide as 'CHAR_BIT'}0">;
 def err_attribute_invalid_matrix_type : Error<"invalid matrix element type %0">;
 def err_attribute_bad_neon_vector_size : Error<
   "Neon vector size must be 64 or 128 bits">;
@@ -11636,7 +11639,7 @@ def warn_tcb_enforcement_violation : Warning<
 
 // RISC-V builtin required extension warning
 def err_riscv_builtin_requires_extension : Error<
-  "builtin requires at least one of the following extensions to be enabled: %0">;
+  "builtin requires%select{| at least one of the following extensions to be enabled}0: %1">;
 def err_riscv_builtin_invalid_lmul : Error<
   "LMUL argument must be in the range [0,3] or [5,7]">;
 

@@ -1534,23 +1534,83 @@ public:
 };
 
 // Pattern to rewrite a ExtractOp(splat ConstantOp) -> ConstantOp.
-class ExtractOpConstantFolder final : public OpRewritePattern<ExtractOp> {
+class ExtractOpSplatConstantFolder final : public OpRewritePattern<ExtractOp> {
 public:
   using OpRewritePattern::OpRewritePattern;
 
   LogicalResult matchAndRewrite(ExtractOp extractOp,
                                 PatternRewriter &rewriter) const override {
-    // Return if 'extractStridedSliceOp' operand is not defined by a
+    // Return if 'ExtractOp' operand is not defined by a splat vector
     // ConstantOp.
-    auto constantOp = extractOp.getVector().getDefiningOp<arith::ConstantOp>();
-    if (!constantOp)
+    Value sourceVector = extractOp.getVector();
+    Attribute vectorCst;
+    if (!matchPattern(sourceVector, m_Constant(&vectorCst)))
       return failure();
-    auto dense = constantOp.getValue().dyn_cast<SplatElementsAttr>();
-    if (!dense)
+    auto splat = vectorCst.dyn_cast<SplatElementsAttr>();
+    if (!splat)
       return failure();
-    Attribute newAttr = dense.getSplatValue<Attribute>();
+    Attribute newAttr = splat.getSplatValue<Attribute>();
     if (auto vecDstType = extractOp.getType().dyn_cast<VectorType>())
       newAttr = DenseElementsAttr::get(vecDstType, newAttr);
+    rewriter.replaceOpWithNewOp<arith::ConstantOp>(extractOp, newAttr);
+    return success();
+  }
+};
+
+// Pattern to rewrite a ExtractOp(vector<...xT> ConstantOp)[...] -> ConstantOp,
+// where the position array specifies a scalar element.
+class ExtractOpScalarVectorConstantFolder final
+    : public OpRewritePattern<ExtractOp> {
+public:
+  using OpRewritePattern::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(ExtractOp extractOp,
+                                PatternRewriter &rewriter) const override {
+    // Return if 'ExtractOp' operand is not defined by a compatible vector
+    // ConstantOp.
+    Value sourceVector = extractOp.getVector();
+    Attribute vectorCst;
+    if (!matchPattern(sourceVector, m_Constant(&vectorCst)))
+      return failure();
+
+    auto vecTy = sourceVector.getType().cast<VectorType>();
+    Type elemTy = vecTy.getElementType();
+    ArrayAttr positions = extractOp.getPosition();
+    if (vecTy.isScalable())
+      return failure();
+    // Do not allow extracting sub-vectors to limit the size of the generated
+    // constants.
+    if (vecTy.getRank() != static_cast<int64_t>(positions.size()))
+      return failure();
+    // TODO: Handle more element types, e.g., complex values.
+    if (!elemTy.isIntOrIndexOrFloat())
+      return failure();
+
+    // The splat case is handled by `ExtractOpSplatConstantFolder`.
+    auto dense = vectorCst.dyn_cast<DenseElementsAttr>();
+    if (!dense || dense.isSplat())
+      return failure();
+
+    // Calculate the flattened position.
+    int64_t elemPosition = 0;
+    int64_t innerElems = 1;
+    for (auto [dimSize, positionInDim] :
+         llvm::reverse(llvm::zip(vecTy.getShape(), positions))) {
+      int64_t positionVal = positionInDim.cast<IntegerAttr>().getInt();
+      elemPosition += positionVal * innerElems;
+      innerElems *= dimSize;
+    }
+
+    Attribute newAttr;
+    if (vecTy.getElementType().isIntOrIndex()) {
+      auto values = to_vector(dense.getValues<APInt>());
+      newAttr = IntegerAttr::get(extractOp.getType(), values[elemPosition]);
+    } else if (vecTy.getElementType().isa<FloatType>()) {
+      auto values = to_vector(dense.getValues<APFloat>());
+      newAttr = FloatAttr::get(extractOp.getType(), values[elemPosition]);
+    }
+    assert(newAttr && "Unhandled case");
+
     rewriter.replaceOpWithNewOp<arith::ConstantOp>(extractOp, newAttr);
     return success();
   }
@@ -1560,7 +1620,8 @@ public:
 
 void ExtractOp::getCanonicalizationPatterns(RewritePatternSet &results,
                                             MLIRContext *context) {
-  results.add<ExtractOpConstantFolder, ExtractOpFromBroadcast>(context);
+  results.add<ExtractOpSplatConstantFolder, ExtractOpScalarVectorConstantFolder,
+              ExtractOpFromBroadcast>(context);
 }
 
 static void populateFromInt64AttrArray(ArrayAttr arrayAttr,
@@ -1568,81 +1629,6 @@ static void populateFromInt64AttrArray(ArrayAttr arrayAttr,
   for (auto attr : arrayAttr)
     results.push_back(attr.cast<IntegerAttr>().getInt());
 }
-
-//===----------------------------------------------------------------------===//
-// ExtractMapOp
-//===----------------------------------------------------------------------===//
-
-void ExtractMapOp::build(OpBuilder &builder, OperationState &result,
-                         Value vector, ValueRange ids,
-                         ArrayRef<int64_t> multiplicity,
-                         AffineMap permutationMap) {
-  assert(ids.size() == multiplicity.size() &&
-         ids.size() == permutationMap.getNumResults());
-  assert(permutationMap.isProjectedPermutation());
-  VectorType type = vector.getType().cast<VectorType>();
-  SmallVector<int64_t, 4> newShape(type.getShape().begin(),
-                                   type.getShape().end());
-  for (unsigned i = 0, e = permutationMap.getNumResults(); i < e; i++) {
-    AffineExpr expr = permutationMap.getResult(i);
-    auto dim = expr.cast<AffineDimExpr>();
-    newShape[dim.getPosition()] = newShape[dim.getPosition()] / multiplicity[i];
-  }
-  VectorType resultType = VectorType::get(newShape, type.getElementType());
-  ExtractMapOp::build(builder, result, resultType, vector, ids);
-}
-
-LogicalResult ExtractMapOp::verify() {
-  if (getSourceVectorType().getRank() != getResultType().getRank())
-    return emitOpError("expected source and destination vectors of same rank");
-  unsigned numId = 0;
-  for (unsigned i = 0, e = getSourceVectorType().getRank(); i < e; ++i) {
-    if (getSourceVectorType().getDimSize(i) % getResultType().getDimSize(i) !=
-        0)
-      return emitOpError("source vector dimensions must be a multiple of "
-                         "destination vector dimensions");
-    if (getSourceVectorType().getDimSize(i) != getResultType().getDimSize(i))
-      numId++;
-  }
-  if (numId != getIds().size())
-    return emitOpError("expected number of ids must match the number of "
-                       "dimensions distributed");
-  return success();
-}
-
-OpFoldResult ExtractMapOp::fold(ArrayRef<Attribute> operands) {
-  auto insert = getVector().getDefiningOp<vector::InsertMapOp>();
-  if (insert == nullptr || getType() != insert.getVector().getType() ||
-      getIds() != insert.getIds())
-    return {};
-  return insert.getVector();
-}
-
-void ExtractMapOp::getMultiplicity(SmallVectorImpl<int64_t> &multiplicity) {
-  assert(multiplicity.empty());
-  for (unsigned i = 0, e = getSourceVectorType().getRank(); i < e; i++) {
-    if (getSourceVectorType().getDimSize(i) != getResultType().getDimSize(i))
-      multiplicity.push_back(getSourceVectorType().getDimSize(i) /
-                             getResultType().getDimSize(i));
-  }
-}
-
-template <typename MapOp>
-AffineMap calculateImplicitMap(MapOp op) {
-  SmallVector<AffineExpr, 4> perm;
-  // Check which dimension have a multiplicity greater than 1 and associated
-  // them to the IDs in order.
-  for (unsigned i = 0, e = op.getSourceVectorType().getRank(); i < e; i++) {
-    if (op.getSourceVectorType().getDimSize(i) !=
-        op.getResultType().getDimSize(i))
-      perm.push_back(getAffineDimExpr(i, op.getContext()));
-  }
-  auto map = AffineMap::get(op.getSourceVectorType().getRank(), 0, perm,
-                            op.getContext());
-  return map;
-}
-
-AffineMap ExtractMapOp::map() { return calculateImplicitMap(*this); }
 
 //===----------------------------------------------------------------------===//
 // FmaOp
@@ -2071,30 +2057,6 @@ OpFoldResult vector::InsertOp::fold(ArrayRef<Attribute> operands) {
     return getSource();
   return {};
 }
-
-//===----------------------------------------------------------------------===//
-// InsertMapOp
-//===----------------------------------------------------------------------===//
-
-LogicalResult InsertMapOp::verify() {
-  if (getSourceVectorType().getRank() != getResultType().getRank())
-    return emitOpError("expected source and destination vectors of same rank");
-  unsigned numId = 0;
-  for (unsigned i = 0, e = getResultType().getRank(); i < e; i++) {
-    if (getResultType().getDimSize(i) % getSourceVectorType().getDimSize(i) !=
-        0)
-      return emitOpError(
-          "destination vector size must be a multiple of source vector size");
-    if (getResultType().getDimSize(i) != getSourceVectorType().getDimSize(i))
-      numId++;
-  }
-  if (numId != getIds().size())
-    return emitOpError("expected number of ids must match the number of "
-                       "dimensions distributed");
-  return success();
-}
-
-AffineMap InsertMapOp::map() { return calculateImplicitMap(*this); }
 
 //===----------------------------------------------------------------------===//
 // InsertStridedSliceOp
@@ -3233,7 +3195,7 @@ public:
       return failure();
     if (xferOp.hasOutOfBoundsDim())
       return failure();
-    if (!xferOp.getPermutationMap().isIdentity())
+    if (!xferOp.getPermutationMap().isMinorIdentity())
       return failure();
     if (xferOp.getMask())
       return failure();

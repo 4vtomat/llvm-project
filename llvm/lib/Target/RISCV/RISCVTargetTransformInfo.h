@@ -229,6 +229,10 @@ public:
                                      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput,
                                      const Instruction *I = nullptr);
 
+  using BaseT::getVectorInstrCost;
+  InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
+                                     unsigned Index);
+
   bool isElementTypeLegalForScalableVector(Type *Ty) const {
     return TLI->isLegalElementTypeForRVV(Ty);
   }

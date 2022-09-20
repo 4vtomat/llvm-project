@@ -176,6 +176,12 @@ static inline bool usesMaskPolicy(uint64_t TSFlags) {
   return TSFlags & UsesMaskPolicyMask;
 }
 
+static inline unsigned getMergeOpNum(const MCInstrDesc &Desc) {
+  assert(hasMergeOp(Desc.TSFlags));
+  assert(!Desc.isVariadic());
+  return Desc.getNumDefs();
+}
+
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   // This method is only called if we expect to have a VL operand, and all
@@ -196,6 +202,7 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
   return Desc.getNumOperands() - Offset;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 static inline bool hasRoundModeOp(uint64_t TSFlags) {
   return TSFlags & HasRoundModeOpMask;
@@ -235,6 +242,13 @@ static inline unsigned getLMULGroups(VLMUL LMul) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+static inline unsigned getVecPolicyOpNum(const MCInstrDesc &Desc) {
+  assert(hasVecPolicyOp(Desc.TSFlags));
+  return Desc.getNumOperands() - 1;
+}
+
+>>>>>>> main
 // RISC-V Specific Machine Operand Flags
 enum {
   MO_None = 0,

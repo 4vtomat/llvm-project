@@ -691,6 +691,9 @@ public:
   PragmaStack<StringLiteral *> ConstSegStack;
   PragmaStack<StringLiteral *> CodeSegStack;
 
+  // #pragma strict_gs_check.
+  PragmaStack<bool> StrictGuardStackCheckStack;
+
   // This stack tracks the current state of Sema.CurFPFeatures.
   PragmaStack<FPOptionsOverride> FpPragmaStack;
   FPOptionsOverride CurFPFeatureOverrides() {
@@ -6646,8 +6649,8 @@ public:
                                        ArrayRef<QualType> Params);
 
   bool FindDeallocationFunction(SourceLocation StartLoc, CXXRecordDecl *RD,
-                                DeclarationName Name, FunctionDecl* &Operator,
-                                bool Diagnose = true);
+                                DeclarationName Name, FunctionDecl *&Operator,
+                                bool Diagnose = true, bool WantSize = false);
   FunctionDecl *FindUsualDeallocationFunction(SourceLocation StartLoc,
                                               bool CanProvideSize,
                                               bool Overaligned,
@@ -10294,6 +10297,12 @@ public:
   void DiagnoseNonDefaultPragmaAlignPack(PragmaAlignPackDiagnoseKind Kind,
                                          SourceLocation IncludeLoc);
   void DiagnoseUnterminatedPragmaAlignPack();
+
+  /// ActOnPragmaMSStrictGuardStackCheck - Called on well formed \#pragma
+  /// strict_gs_check.
+  void ActOnPragmaMSStrictGuardStackCheck(SourceLocation PragmaLocation,
+                                          PragmaMsStackAction Action,
+                                          bool Value);
 
   /// ActOnPragmaMSStruct - Called on well formed \#pragma ms_struct [on|off].
   void ActOnPragmaMSStruct(PragmaMSStructKind Kind);

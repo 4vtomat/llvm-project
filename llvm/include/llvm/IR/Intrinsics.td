@@ -1437,14 +1437,22 @@ def int_vp_gather: DefaultAttrsIntrinsic<[ llvm_anyvector_ty],
                              [ LLVMVectorOfAnyPointersToElt<0>,
                                LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                llvm_i32_ty],
+<<<<<<< HEAD
                              [ IntrReadMem, IntrNoSync, IntrWillReturn]>; // SIFIVE
+=======
+                             [ IntrReadMem, IntrNoSync, IntrWillReturn]>;
+>>>>>>> main
 
 def int_vp_scatter: DefaultAttrsIntrinsic<[],
                              [ llvm_anyvector_ty,
                                LLVMVectorOfAnyPointersToElt<0>,
                                LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                llvm_i32_ty],
+<<<<<<< HEAD
                              [ IntrNoSync, IntrWillReturn ]>; // TODO allow IntrNoCapture for vectors of pointers // SIFIVE
+=======
+                             [ IntrNoSync, IntrWillReturn ]>; // TODO allow IntrNoCapture for vectors of pointers
+>>>>>>> main
 
 // Experimental strided memory accesses
 def int_experimental_vp_strided_store : DefaultAttrsIntrinsic<[],

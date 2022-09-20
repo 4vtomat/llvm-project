@@ -765,7 +765,7 @@ void VPlan::execute(VPTransformState *State) {
         auto *WidenPhi = cast<VPWidenPointerInductionRecipe>(&R);
         // TODO: Split off the case that all users of a pointer phi are scalar
         // from the VPWidenPointerInductionRecipe.
-        if (WidenPhi->onlyScalarsGenerated(State->VF))
+        if (WidenPhi->onlyScalarsGenerated())
           continue;
 
         auto *GEP = cast<GetElementPtrInst>(State->get(WidenPhi, 0));

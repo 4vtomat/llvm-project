@@ -323,9 +323,12 @@ def riscv_vwaddu_vl : SDNode<"RISCVISD::VWADDU_VL", SDT_RISCVVWBinOp_VL, [SDNPCo
 def riscv_vwsub_vl :  SDNode<"RISCVISD::VWSUB_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 def riscv_vwsubu_vl : SDNode<"RISCVISD::VWSUBU_VL", SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfwmul_vl  : SDNode<"RISCVISD::VFWMUL_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 
+=======
+>>>>>>> main
 def SDT_RISCVVNBinOp_VL : SDTypeProfile<1, 5, [SDTCisVec<0>,
                                                SDTCisSameNumEltsAs<0, 1>,
                                                SDTCisOpSmallerThanOp<0, 1>,
@@ -335,7 +338,10 @@ def SDT_RISCVVNBinOp_VL : SDTypeProfile<1, 5, [SDTCisVec<0>,
                                                SDTCVecEltisVT<4, i1>,
                                                SDTCisVT<5, XLenVT>]>;
 def riscv_vnsrl_vl : SDNode<"RISCVISD::VNSRL_VL", SDT_RISCVVNBinOp_VL>;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> main
 
 def SDT_RISCVVWBinOpW_VL : SDTypeProfile<1, 5, [SDTCisVec<0>,
                                                 SDTCisSameAs<0, 1>,
@@ -617,7 +623,10 @@ multiclass VPatBinaryWVL_VV_VX_WV_WX<SDNode vop, SDNode vop_w,
   }
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> main
 multiclass VPatBinaryNVL_WV_WX_WI<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableIntVectors in {
     defvar vti = VtiToWti.Vti;
@@ -636,6 +645,7 @@ multiclass VPatBinaryNVL_WV_WX_WI<SDNode vop, string instruction_name> {
   }
 }
 
+<<<<<<< HEAD
 multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableIntVectors in {
     defvar vti = VtiToWti.Vti;
@@ -655,6 +665,8 @@ multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> main
 multiclass VPatBinaryVL_VF<SDNode vop,
                            string instruction_name,
                            ValueType result_type,
@@ -1334,9 +1346,13 @@ defm : VPatNarrowShiftSplatExt_WX<riscv_sra_vl, riscv_zext_vl_oneuse, "PseudoVNS
 defm : VPatNarrowShiftSplatExt_WX<riscv_srl_vl, riscv_sext_vl_oneuse, "PseudoVNSRL">;
 defm : VPatNarrowShiftSplatExt_WX<riscv_srl_vl, riscv_zext_vl_oneuse, "PseudoVNSRL">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 defm : VPatBinaryNVL_WV_WX_WI<riscv_vnsrl_vl, "PseudoVNSRL">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+defm : VPatBinaryNVL_WV_WX_WI<riscv_vnsrl_vl, "PseudoVNSRL">;
+>>>>>>> main
 
 foreach vtiTowti = AllWidenableIntVectors in {
   defvar vti = vtiTowti.Vti;
