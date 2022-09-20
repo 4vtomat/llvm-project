@@ -202,7 +202,6 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
   return Desc.getNumOperands() - Offset;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 static inline bool hasRoundModeOp(uint64_t TSFlags) {
   return TSFlags & HasRoundModeOpMask;
@@ -242,13 +241,11 @@ static inline unsigned getLMULGroups(VLMUL LMul) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 static inline unsigned getVecPolicyOpNum(const MCInstrDesc &Desc) {
   assert(hasVecPolicyOp(Desc.TSFlags));
   return Desc.getNumOperands() - 1;
 }
 
->>>>>>> main
 // RISC-V Specific Machine Operand Flags
 enum {
   MO_None = 0,
