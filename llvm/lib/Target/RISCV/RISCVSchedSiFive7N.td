@@ -78,12 +78,12 @@ def : WriteRes<WriteIMul32, [SiFive7NPipeB]>;
 
 // Integer division
 def : WriteRes<WriteIDiv, [SiFive7NPipeB, SiFive7NIDiv]> {
-  let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let Latency = 66;
+  let ResourceCycles = [1, 65];
 }
 def : WriteRes<WriteIDiv32,  [SiFive7NPipeB, SiFive7NIDiv]> {
-  let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let Latency = 34;
+  let ResourceCycles = [1, 33];
 }
 
 // Bitmanip
