@@ -1748,25 +1748,6 @@ bool RISCVTargetLowering::isFPImmLegal(const APFloat &Imm, EVT VT,
   return Imm.isZero();
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const
-{
-  if (!isOperationLegalOrCustom(ISD::EXTRACT_SUBVECTOR, ResVT))
-    return false;
-
-  if (Index == 0)
-    return true;
-
-  // The smallest type we can slide is i8.
-  if (ResVT.getVectorElementType() == MVT::i1)
-    return false;
-
-  // Slide can support arbitrary index. But we only treat vslidedown.vi cheap.
-  return Index < 32;
-}
-#endif // SIFIVE_CUSTOMIZATION
-=======
 // TODO: This is very conservative.
 bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
                                                   unsigned Index) const {
@@ -1799,7 +1780,6 @@ bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
   // the upper half of a vector until we have more test coverage.
   return Index == 0 || Index == ResElts;
 }
->>>>>>> main
 
 bool RISCVTargetLowering::hasBitPreservingFPLogic(EVT VT) const {
   return (VT == MVT::f16 && Subtarget.hasStdExtZfh()) ||
@@ -3068,10 +3048,6 @@ static int isElementRotate(int &LoSrc, int &HiSrc, ArrayRef<int> Mask) {
   return Rotation;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> main
 // Lower the following shuffles to vnsrl.
 // t34: v8i8 = extract_subvector t11, Constant:i64<0>
 // t33: v8i8 = extract_subvector t11, Constant:i64<8>
@@ -3143,24 +3119,14 @@ static SDValue lowerVECTOR_SHUFFLEAsVNSRL(const SDLoc &DL, MVT VT,
   SDValue SplatShift = DAG.getNode(
       RISCVISD::VMV_V_X_VL, DL, IntContainerVT, DAG.getUNDEF(ContainerVT),
       DAG.getConstant(Shift, DL, Subtarget.getXLenVT()), VL);
-<<<<<<< HEAD
-  SDValue Res = DAG.getNode(RISCVISD::VNSRL_VL, DL, IntContainerVT, Src,
-                            SplatShift, DAG.getUNDEF(IntContainerVT), TrueMask,
-                            VL);
-=======
   SDValue Res =
       DAG.getNode(RISCVISD::VNSRL_VL, DL, IntContainerVT, Src, SplatShift,
                   DAG.getUNDEF(IntContainerVT), TrueMask, VL);
->>>>>>> main
   // Cast back to FP if needed.
   Res = DAG.getBitcast(ContainerVT, Res);
 
   return convertFromScalableVector(VT, Res, DAG, Subtarget);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> main
 
 static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
                                    const RISCVSubtarget &Subtarget) {
@@ -3303,17 +3269,9 @@ static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
     return convertFromScalableVector(VT, Res, DAG, Subtarget);
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (SDValue V = lowerVECTOR_SHUFFLEAsVNSRL(
           DL, VT, ContainerVT, V1, V2, TrueMask, VL, Mask, Subtarget, DAG))
     return V;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (SDValue V = lowerVECTOR_SHUFFLEAsVNSRL(
-          DL, VT, ContainerVT, V1, V2, TrueMask, VL, Mask, Subtarget, DAG))
-    return V;
->>>>>>> main
 
   // Detect an interleave shuffle and lower to
   // (vmaccu.vx (vwaddu.vx lohalf(V1), lohalf(V2)), lohalf(V2), (2^eltbits - 1))
@@ -14407,12 +14365,8 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VWADDU_W_VL)
   NODE_NAME_CASE(VWSUB_W_VL)
   NODE_NAME_CASE(VWSUBU_W_VL)
-<<<<<<< HEAD
   NODE_NAME_CASE(VFWMUL_VL) // SIFIVE
-  NODE_NAME_CASE(VNSRL_VL) // SIFIVE
-=======
   NODE_NAME_CASE(VNSRL_VL)
->>>>>>> main
   NODE_NAME_CASE(SETCC_VL)
   NODE_NAME_CASE(VSELECT_VL)
   NODE_NAME_CASE(VP_MERGE_VL)
