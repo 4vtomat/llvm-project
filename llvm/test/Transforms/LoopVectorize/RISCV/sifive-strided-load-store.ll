@@ -35,7 +35,7 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32V-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[TMP4]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV32V-NEXT:    [[TMP7:%.*]] = shl nsw <vscale x 2 x i64> [[VEC_IND]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 2, i32 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
 ; RV32V-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, i32* [[ARG1:%.*]], <vscale x 2 x i64> [[TMP7]]
-; RV32V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 2 x i32> @llvm.masked.gather.nxv2i32.nxv2p0i32(<vscale x 2 x i32*> [[TMP8]], i32 4, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i32> undef)
+; RV32V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 2 x i32> @llvm.masked.gather.nxv2i32.nxv2p0i32(<vscale x 2 x i32*> [[TMP8]], i32 4, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i32> poison)
 ; RV32V-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, i32* [[ARG:%.*]], i64 [[INDEX]]
 ; RV32V-NEXT:    [[TMP10:%.*]] = bitcast i32* [[TMP9]] to <vscale x 2 x i32>*
 ; RV32V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i32>, <vscale x 2 x i32>* [[TMP10]], align 4
@@ -97,7 +97,7 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV64V-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[TMP4]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV64V-NEXT:    [[TMP7:%.*]] = shl nsw <vscale x 2 x i64> [[VEC_IND]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 2, i32 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
 ; RV64V-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, i32* [[ARG1:%.*]], <vscale x 2 x i64> [[TMP7]]
-; RV64V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 2 x i32> @llvm.masked.gather.nxv2i32.nxv2p0i32(<vscale x 2 x i32*> [[TMP8]], i32 4, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i32> undef)
+; RV64V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 2 x i32> @llvm.masked.gather.nxv2i32.nxv2p0i32(<vscale x 2 x i32*> [[TMP8]], i32 4, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i32> poison)
 ; RV64V-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, i32* [[ARG:%.*]], i64 [[INDEX]]
 ; RV64V-NEXT:    [[TMP10:%.*]] = bitcast i32* [[TMP9]] to <vscale x 2 x i32>*
 ; RV64V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i32>, <vscale x 2 x i32>* [[TMP10]], align 4
@@ -149,7 +149,7 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32ZVE32F-NEXT:    [[VEC_IND:%.*]] = phi <8 x i64> [ <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV32ZVE32F-NEXT:    [[TMP0:%.*]] = shl nsw <8 x i64> [[VEC_IND]], <i64 2, i64 2, i64 2, i64 2, i64 2, i64 2, i64 2, i64 2>
 ; RV32ZVE32F-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, i32* [[ARG1:%.*]], <8 x i64> [[TMP0]]
-; RV32ZVE32F-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0i32(<8 x i32*> [[TMP1]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> undef)
+; RV32ZVE32F-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0i32(<8 x i32*> [[TMP1]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> poison)
 ; RV32ZVE32F-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, i32* [[ARG:%.*]], i64 [[INDEX]]
 ; RV32ZVE32F-NEXT:    [[TMP3:%.*]] = bitcast i32* [[TMP2]] to <8 x i32>*
 ; RV32ZVE32F-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i32>, <8 x i32>* [[TMP3]], align 4
@@ -199,7 +199,7 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV64ZVE32f-NEXT:    [[VEC_IND:%.*]] = phi <8 x i64> [ <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV64ZVE32f-NEXT:    [[TMP0:%.*]] = shl nsw <8 x i64> [[VEC_IND]], <i64 2, i64 2, i64 2, i64 2, i64 2, i64 2, i64 2, i64 2>
 ; RV64ZVE32f-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, i32* [[ARG1:%.*]], <8 x i64> [[TMP0]]
-; RV64ZVE32f-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0i32(<8 x i32*> [[TMP1]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> undef)
+; RV64ZVE32f-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0i32(<8 x i32*> [[TMP1]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> poison)
 ; RV64ZVE32f-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, i32* [[ARG:%.*]], i64 [[INDEX]]
 ; RV64ZVE32f-NEXT:    [[TMP3:%.*]] = bitcast i32* [[TMP2]] to <8 x i32>*
 ; RV64ZVE32f-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i32>, <8 x i32>* [[TMP3]], align 4

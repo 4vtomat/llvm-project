@@ -16,9 +16,9 @@ define void @food(i32 signext %0, i32 signext %1) {
 ;
 ; PRERA-LABEL: food:
 ; PRERA:       # %bb.0:
+; PRERA-NEXT:    fcvt.s.w fa0, a1
 ; PRERA-NEXT:    lui a0, %hi(.L.str)
 ; PRERA-NEXT:    addi a0, a0, %lo(.L.str)
-; PRERA-NEXT:    fcvt.s.w fa0, a1
 ; PRERA-NEXT:    tail bar@plt
   %3 = sitofp i32 %1 to float
   tail call void @bar(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), float %3)
