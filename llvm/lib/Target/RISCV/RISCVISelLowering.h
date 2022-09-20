@@ -299,8 +299,6 @@ enum NodeType : unsigned {
   VWSUBU_W_VL,
   VFWMUL_VL, // SIFIVE
 
-  VNSRL_VL, // SIFIVE
-
   VNSRL_VL,
 
   // Vector compare producing a mask. Fourth operand is input mask. Fifth
@@ -417,14 +415,8 @@ public:
   bool isOffsetFoldingLegal(const GlobalAddressSDNode *GA) const override;
   bool isFPImmLegal(const APFloat &Imm, EVT VT,
                     bool ForCodeSize) const override;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const override;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
                                unsigned Index) const override;
->>>>>>> main
 
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 
