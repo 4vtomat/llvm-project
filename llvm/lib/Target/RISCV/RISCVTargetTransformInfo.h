@@ -396,11 +396,6 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
-
-  using BaseT::getVectorInstrCost;
-  InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
-                                     unsigned Index);
-
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
 };
