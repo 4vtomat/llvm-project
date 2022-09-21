@@ -11425,11 +11425,21 @@ static bool areRuntimeChecksProfitable(GeneratedRTChecks &Checks,
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+LoopVectorizePass::LoopVectorizePass(LoopVectorizeOptions Opts,
+                                     bool IsLTOPreLink)
+    : InterleaveOnlyWhenForced(Opts.InterleaveOnlyWhenForced ||
+                               !EnableLoopInterleaving),
+      VectorizeOnlyWhenForced(Opts.VectorizeOnlyWhenForced ||
+                              !EnableLoopVectorization),
+      IsLTOPreLink(IsLTOPreLink) {}
+#else
 LoopVectorizePass::LoopVectorizePass(LoopVectorizeOptions Opts)
     : InterleaveOnlyWhenForced(Opts.InterleaveOnlyWhenForced ||
                                !EnableLoopInterleaving),
       VectorizeOnlyWhenForced(Opts.VectorizeOnlyWhenForced ||
                               !EnableLoopVectorization) {}
+#endif
 
 bool LoopVectorizePass::processLoop(Loop *L) {
   assert((EnableVPlanNativePath || L->isInnermost()) &&

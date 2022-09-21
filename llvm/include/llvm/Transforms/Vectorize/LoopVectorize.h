@@ -169,7 +169,11 @@ private:
   bool VectorizeOnlyWhenForced;
 
 public:
+#if SIFIVE_CUSTOMIZATION
+  LoopVectorizePass(LoopVectorizeOptions Opts = {}, bool IsLTOPreLink = false);
+#else
   LoopVectorizePass(LoopVectorizeOptions Opts = {});
+#endif
 
   ScalarEvolution *SE;
   LoopInfo *LI;
@@ -183,6 +187,7 @@ public:
   LoopAccessInfoManager *LAIs;
   OptimizationRemarkEmitter *ORE;
   ProfileSummaryInfo *PSI;
+  bool IsLTOPreLink; // SIFIVE
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
   void printPipeline(raw_ostream &OS,
