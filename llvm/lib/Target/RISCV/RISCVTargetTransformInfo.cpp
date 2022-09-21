@@ -825,15 +825,10 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
 
 unsigned RISCVTTIImpl::getEstimatedVLFor(VectorType *Ty) {
   if (isa<ScalableVectorType>(Ty)) {
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: Re-sync with upstream?
-    return cast<ScalableVectorType>(Ty)->getMinNumElements();
-#else
     const unsigned EltSize = DL.getTypeSizeInBits(Ty->getElementType());
     const unsigned MinSize = DL.getTypeSizeInBits(Ty).getKnownMinValue();
     const unsigned VectorBits = *getVScaleForTuning() * RISCV::RVVBitsPerBlock;
     return RISCVTargetLowering::computeVLMAX(VectorBits, EltSize, MinSize);
-#endif // SIFIVE_CUSTOMIZATION
   }
   return cast<FixedVectorType>(Ty)->getNumElements();
 }
@@ -847,12 +842,6 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
-    // IR Reduction is composed by two vmv and one rvv reduction instruction.
-    InstructionCost BaseCost = 2;
-    unsigned VL =
-        (ST->getRealMinVLen() * Ty->getElementCount().getKnownMinValue()) /
-        RISCV::RVVBitsPerBlock;
-    return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -885,12 +874,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
     if (!LT.first.isValid())
       return InstructionCost::getInvalid();
-    // IR Reduction is composed by two vmv and one rvv reduction instruction.
-    InstructionCost BaseCost = 2;
-    unsigned VL =
-        (ST->getRealMinVLen() * Ty->getElementCount().getKnownMinValue()) /
-        RISCV::RVVBitsPerBlock;
-    return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -914,9 +897,11 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return (LT.first - 1) + (ISD == ISD::AND ? 3 : 2);
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
+  InstructionCost BaseCost = 2;
 #if SIFIVE_CUSTOMIZATION
   // The vector to scalar move is expensive on x280, give it more cost.
-  InstructionCost BaseCost = 4;
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    BaseCost = 4;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
   if (TTI::requiresOrderedReduction(FMF))
