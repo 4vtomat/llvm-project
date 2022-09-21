@@ -416,6 +416,12 @@ static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
     "vectorize-with-known-depdist", cl::init(true), cl::Hidden,
     cl::desc("Enable vectorization of loops that have a known dependence "
              "distance."));
+
+static cl::opt<bool> AdhocSkipVectorizeInPrelink(
+    "sifive-vectorize-assume-optimizable-strided-accesses", cl::init(false),
+    cl::Hidden,
+    cl::desc("Allow the compiler to skip vectorization for loops of non-unit "
+             "stride memory access(es)"));
 #endif // SIFIVE_CUSTOMIZATION
 
 cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -1234,10 +1240,20 @@ public:
                              AssumptionCache *AC,
                              OptimizationRemarkEmitter *ORE, const Function *F,
                              const LoopVectorizeHints *Hints,
+#if SIFIVE_CUSTOMIZATION
+                             InterleavedAccessInfo &IAI, bool IsLTOPreLink)
+#else
                              InterleavedAccessInfo &IAI)
+#endif
       : ScalarEpilogueStatus(SEL), TheLoop(L), PSE(PSE), LI(LI), Legal(Legal),
         TTI(TTI), TLI(TLI), DB(DB), AC(AC), ORE(ORE), TheFunction(F),
-        Hints(Hints), InterleaveInfo(IAI) {}
+#if SIFIVE_CUSTOMIZATION
+        Hints(Hints), InterleaveInfo(IAI), IsLTOPreLink(IsLTOPreLink) {
+  }
+#else
+        Hints(Hints), InterleaveInfo(IAI) {
+  }
+#endif
 
   /// \return An upper bound for the vectorization factors (both fixed and
   /// scalable). If the factors are 0, vectorization and interleaving should be
@@ -1980,6 +1996,9 @@ public:
 
   /// Profitable vector factors.
   SmallVector<VectorizationFactor, 8> ProfitableVFs;
+
+  /// (SIFIVE) Whether or not we are in pre-link stage
+  bool IsLTOPreLink; // SIFIVE
 };
 } // end namespace llvm
 
@@ -5861,8 +5880,45 @@ bool LoopVectorizationCostModel::isMoreProfitable(
   return (CostA * EstimatedWidthB) < (CostB * EstimatedWidthA);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool
+hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
+  bool HasMemoryAccess = false;
+  for (BasicBlock *BB : L->blocks()) {
+    for (Instruction &I : *BB) {
+      Value *Ptr = getLoadStorePointerOperand(&I);
+      if (!Ptr)
+        continue;
+      Optional<int64_t> Stride =
+          Legal->isConsecutiveOrUnknownPtr(getLoadStoreType(&I), Ptr);
+      if (!Stride.has_value())
+        continue;
+      if (Stride.value() != 0)
+        return false;
+      HasMemoryAccess = true;
+    }
+  }
+  return HasMemoryAccess;
+}
+#endif
+
 VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     const ElementCountSet &VFCandidates) {
+#if SIFIVE_CUSTOMIZATION
+  // Within SiFive, we have AOS to SOA transformation that is only effective
+  // during LTO phase. The LoopVectorizer is executed both in pre-link and LTO.
+  // However we don't want vectorization to potententially scramble the code and
+  // paralyze AOS to SOA transformation. This adhoc approach is driven by
+  // SCT-1716, we seek to skip the vectorizer when when all memory accesses are
+  // non-unit strides during the pre-link stage.
+  if (AdhocSkipVectorizeInPrelink && IsLTOPreLink &&
+      hasOnlyNonUnitStrideMemoryAccesses(TheLoop, Legal)) {
+    LLVM_DEBUG(dbgs() << "LV: Bail out in pre-link stage when there is only "
+                         "non-unit stride memory accesses.\n");
+    return VectorizationFactor::Disabled();
+  }
+#endif
+
   InstructionCost ExpectedCost = expectedCost(ElementCount::getFixed(1)).first;
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
@@ -11222,7 +11278,11 @@ static bool processLoopInVPlanNativePath(
     TargetLibraryInfo *TLI, DemandedBits *DB, AssumptionCache *AC,
     OptimizationRemarkEmitter *ORE, BlockFrequencyInfo *BFI,
     ProfileSummaryInfo *PSI, LoopVectorizeHints &Hints,
-    LoopVectorizationRequirements &Requirements) {
+#if SIFIVE_CUSTOMIZATION
+    LoopVectorizationRequirements &Requirements, bool IsLTOPreLink) {
+#else
+    LoopVectorizationRequirements & Requirements) {
+#endif
 
   if (isa<SCEVCouldNotCompute>(PSE.getBackedgeTakenCount())) {
     LLVM_DEBUG(dbgs() << "LV: cannot compute the outer-loop trip count\n");
@@ -11236,7 +11296,12 @@ static bool processLoopInVPlanNativePath(
       F, L, Hints, PSI, BFI, TTI, TLI, AC, LI, PSE.getSE(), DT, *LVL, &IAI);
 
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, LVL, *TTI, TLI, DB, AC, ORE, F,
+#if SIFIVE_CUSTOMIZATION
+                                &Hints, IAI, IsLTOPreLink);
+#else
                                 &Hints, IAI);
+#endif
+
   // Use the planner for outer loop vectorization.
   // TODO: CM is not used at this point inside the planner. Turn CM into an
   // optional argument if we don't need it in the future.
@@ -11505,7 +11570,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
   // pipeline.
   if (!L->isInnermost())
     return processLoopInVPlanNativePath(L, PSE, LI, DT, &LVL, TTI, TLI, DB, AC,
+#if SIFIVE_CUSTOMIZATION
+                                        ORE, BFI, PSI, Hints, Requirements,
+                                        IsLTOPreLink);
+#else
                                         ORE, BFI, PSI, Hints, Requirements);
+#endif
 
   assert(L->isInnermost() && "Inner loop expected.");
 
@@ -11599,7 +11669,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Use the cost model.
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, &LVL, *TTI, TLI, DB, AC, ORE,
+#if SIFIVE_CUSTOMIZATION
+                                F, &Hints, IAI, IsLTOPreLink);
+#else
                                 F, &Hints, IAI);
+#endif
+
   CM.collectValuesToIgnore();
   CM.collectElementTypesForWidening();
 

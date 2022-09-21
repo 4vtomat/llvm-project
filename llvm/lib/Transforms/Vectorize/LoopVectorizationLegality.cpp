@@ -556,6 +556,28 @@ int LoopVectorizationLegality::isConsecutivePtr(Type *AccessTy,
   return 0;
 }
 
+#if SIFIVE_CUSTOMIZATION
+Optional<int64_t>
+LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
+                                                     Value *Ptr) const {
+  const ValueToValueMap &Strides =
+      getSymbolicStrides() ? *getSymbolicStrides() : ValueToValueMap();
+
+  Function *F = TheLoop->getHeader()->getParent();
+  bool OptForSize = F->hasOptSize() ||
+                    llvm::shouldOptimizeForSize(TheLoop->getHeader(), PSI, BFI,
+                                                PGSOQueryType::IRPass);
+  bool CanAddPredicate = !OptForSize;
+  Optional<int64_t> Stride = getPtrStride(PSE, AccessTy, Ptr, TheLoop, Strides,
+                                          CanAddPredicate, false);
+  if (!Stride.has_value())
+    return None;
+  if (Stride.value() == 1 || Stride.value() == -1)
+    return Stride;
+  return 0;
+}
+#endif
+
 bool LoopVectorizationLegality::isUniform(Value *V) const {
   return LAI->isUniform(V);
 }

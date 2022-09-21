@@ -384,6 +384,12 @@ public:
   /// loop. Do not use after invoking 'createVectorizedLoopSkeleton' (PR34965).
   int isConsecutivePtr(Type *AccessTy, Value *Ptr) const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// This function resembles isConsecutivePtr but returns None when stride is
+  /// unknown
+  Optional<int64_t> isConsecutiveOrUnknownPtr(Type *AccessTy, Value *Ptr) const;
+#endif
+
   /// Returns true if the value V is uniform within the loop.
   bool isUniform(Value *V) const;
 
