@@ -267,6 +267,9 @@ END_REGISTER_VP(vp_fneg, VP_FNEG)
 
 // llvm.vp.fabs(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_fabs, 1, 2, VP_FABS, -1)
+#if SIFIVE_CUSTOMIZATION
+VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fabs)
+#endif // SIFIVE_CUSTOMIZATION
 END_REGISTER_VP(vp_fabs, VP_FABS)
 
 // llvm.vp.fma(x,y,z,mask,vlen)
