@@ -121,6 +121,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_fminp:
   case Intrinsic::aarch64_neon_fminv:
   case Intrinsic::aarch64_neon_frecpe:
+  case Intrinsic::aarch64_neon_frecps:
   case Intrinsic::aarch64_neon_frsqrte:
   case Intrinsic::aarch64_neon_frsqrts:
   case Intrinsic::aarch64_neon_ld1x2:
@@ -409,6 +410,18 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.getInt64(0)));
         break;
       }
+      case Intrinsic::aarch64_neon_frecps:
+        // If either left or right is NaN, return NaN.
+        //               |         right
+        //               |----------------------
+        //               |  inf  |   0   | other
+        // --------------+-------+-------+------
+        //       |  inf  | ?inf  |  +2   | ?inf
+        //  left |   0   |  +2   |  op   |  op
+        //       | other | ?inf  |  op   |  op
+        // ? is signedness, it depends on the signedness of left and right.
+        // op = 2 - left * right
+        // op is a fully fused multiply-add.
       case Intrinsic::aarch64_neon_frsqrts: {
         // If either left or right is NaN, return NaN.
         //               |         right
@@ -421,6 +434,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         // ? is signedness, it depends on the signedness of left and right.
         // op = (3 - left * right) / 2
         // op is a fully fused multiply-add.
+        bool Isfrecps = II->getIntrinsicID() == Intrinsic::aarch64_neon_frecps;
         FixedVectorType *VecTy =
             cast<FixedVectorType>(II->getArgOperand(0)->getType());
         unsigned VecNumElements = VecTy->getNumElements();
@@ -447,11 +461,14 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateIntrinsic(
                 Intrinsic::riscv_vfnmsac_mask,
                 {ScalableOp0->getType(), ScalableOp0->getType(), VL->getType()},
-                {ConstantFP::get(ScalableOp0->getType(), 3), ScalableOp0,
-                 ScalableOp1, ScalableIsNotInfAnd0, VL, Agnostic}),
+                {ConstantFP::get(ScalableOp0->getType(), Isfrecps ? 2 : 3),
+                 ScalableOp0, ScalableOp1, ScalableIsNotInfAnd0, VL, Agnostic}),
             Builder.getInt64(0));
-        II->replaceAllUsesWith(Builder.CreateFMul(
-            Vfmacc, ConstantFP::get(Vfmacc->getType(), 0.5)));
+        if (Isfrecps)
+          II->replaceAllUsesWith(Vfmacc);
+        else
+          II->replaceAllUsesWith(Builder.CreateFMul(
+              Vfmacc, ConstantFP::get(Vfmacc->getType(), 0.5)));
         break;
       }
       case Intrinsic::aarch64_neon_ld1x2:
