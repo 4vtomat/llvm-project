@@ -85,6 +85,19 @@ static Value *smaxZero(IRBuilder<> &Builder, Value *Src) {
                                  {Src, ConstantInt::get(Src->getType(), 0)});
 }
 
+static Value *createFclass(const TargetTransformInfo &TTI, IRBuilder<> &Builder,
+                           Value *V, ConstantInt *VL) {
+  Value *ScalableV = toScalableVector(TTI, Builder, V);
+  Value *Fclass = Builder.CreateIntrinsic(
+      Intrinsic::riscv_vfclass, {ScalableV->getType(), VL->getType()},
+      {PoisonValue::get(ScalableVectorType::getInteger(
+           cast<ScalableVectorType>(ScalableV->getType()))),
+       ScalableV, VL});
+  return Builder.CreateExtractVector(
+      FixedVectorType::getInteger(cast<FixedVectorType>(V->getType())), Fclass,
+      Builder.getInt64(0));
+}
+
 bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
   case Intrinsic::aarch64_neon_abs:
@@ -109,6 +122,7 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
   case Intrinsic::aarch64_neon_fminv:
   case Intrinsic::aarch64_neon_frecpe:
   case Intrinsic::aarch64_neon_frsqrte:
+  case Intrinsic::aarch64_neon_frsqrts:
   case Intrinsic::aarch64_neon_ld1x2:
   case Intrinsic::aarch64_neon_ld1x3:
   case Intrinsic::aarch64_neon_ld1x4:
@@ -393,6 +407,51 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                 {Src->getType(), VL->getType()},
                 {PoisonValue::get(Src->getType()), Src, VL}),
             Builder.getInt64(0)));
+        break;
+      }
+      case Intrinsic::aarch64_neon_frsqrts: {
+        // If either left or right is NaN, return NaN.
+        //               |         right
+        //               |----------------------
+        //               |  inf  |   0   | other
+        // --------------+-------+-------+------
+        //       |  inf  | ?inf  | +1.5  | ?inf
+        //  left |   0   | +1.5  |  op   |  op
+        //       | other | ?inf  |  op   |  op
+        // ? is signedness, it depends on the signedness of left and right.
+        // op = (3 - left * right) / 2
+        // op is a fully fused multiply-add.
+        FixedVectorType *VecTy =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        unsigned VecNumElements = VecTy->getNumElements();
+        Value *Op0 = II->getArgOperand(0);
+        Value *Op1 = II->getArgOperand(1);
+        Value *FabsOp0 =
+            Builder.CreateIntrinsic(Intrinsic::fabs, {VecTy}, {Op0});
+        Value *FabsOp1 =
+            Builder.CreateIntrinsic(Intrinsic::fabs, {VecTy}, {Op1});
+        ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
+        ConstantInt *Agnostic = Builder.getIntN(XLEN, 1);
+        Value *FclassOp0 = createFclass(TTI, Builder, FabsOp0, VL);
+        Value *FclassOp1 = createFclass(TTI, Builder, FabsOp1, VL);
+        Value *FclassOr = Builder.CreateOr(FclassOp0, FclassOp1);
+        // 144 = 128 (+inf) + 16 (+0)
+        Value *IsNotInfAnd0 = Builder.CreateICmpNE(
+            FclassOr, ConstantInt::get(FclassOr->getType(), 144));
+        Value *ScalableOp0 = toScalableVector(TTI, Builder, Op0);
+        Value *ScalableOp1 = toScalableVector(TTI, Builder, Op1);
+        Value *ScalableIsNotInfAnd0 =
+            toScalableVector(TTI, Builder, IsNotInfAnd0);
+        Value *Vfmacc = Builder.CreateExtractVector(
+            VecTy,
+            Builder.CreateIntrinsic(
+                Intrinsic::riscv_vfnmsac_mask,
+                {ScalableOp0->getType(), ScalableOp0->getType(), VL->getType()},
+                {ConstantFP::get(ScalableOp0->getType(), 3), ScalableOp0,
+                 ScalableOp1, ScalableIsNotInfAnd0, VL, Agnostic}),
+            Builder.getInt64(0));
+        II->replaceAllUsesWith(Builder.CreateFMul(
+            Vfmacc, ConstantFP::get(Vfmacc->getType(), 0.5)));
         break;
       }
       case Intrinsic::aarch64_neon_ld1x2:
