@@ -32,6 +32,12 @@ static cl::opt<bool> PreferPostFixStartValue(
     "riscv-prefer-post-fix-start-value",
     cl::desc("Prefer to postpone the computation of start value in reduction."),
     cl::init(true), cl::Hidden);
+
+static cl::opt<unsigned>
+  ExitingBlockThreshold("riscv-exiting-block-threshold",
+                        cl::desc("Maximum number of exiting blocks allowed for "
+                                 "loop unrolling"),
+                        cl::init(2), cl::Hidden);
 #endif
 
 static cl::opt<unsigned> RVVRegisterWidthLMUL(
@@ -1083,7 +1089,7 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
 
   // Only allow another exit other than the latch. This acts as an early exit
   // as it mirrors the profitability calculation of the runtime unroller.
-  if (ExitingBlocks.size() > 2)
+  if (ExitingBlocks.size() > ExitingBlockThreshold) // SIFIVE
     return;
 
   // Limit the CFG of the loop body for targets with a branch predictor.
