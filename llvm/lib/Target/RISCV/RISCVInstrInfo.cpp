@@ -1222,10 +1222,6 @@ RISCVInstrInfo::optimizeSelect(MachineInstr &MI,
   DefMI->eraseFromParent();
   return NewMI;
 }
-
-static bool isPseudoNonTemporalInst(const MachineInstr &MI) {
-  return MI.getDesc().TSFlags & RISCVII::IsNonTemporalLoadStoreMask;
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
@@ -1285,20 +1281,6 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
       return 4;
     return 6;
   }
-
-  if (isPseudoNonTemporalInst(MI)) {
-    const auto &ST = MF->getSubtarget<RISCVSubtarget>();
-    if (ST.hasStdExtC() && ST.enableRVCHintInstrs()) {
-      const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
-      const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
-      const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
-      if (isCompressibleInst(MI, &ST, MRI, STI))
-        return 4; // c.ntl.all + c.load/c.store
-      return 6; // c.ntl.all + load/store
-    }
-    return 8;   // ntl.all + load/store
-  }
-
 #endif // SIFIVE_CUSTOMIZATION
 
   if (MI.getParent() && MI.getParent()->getParent()) {

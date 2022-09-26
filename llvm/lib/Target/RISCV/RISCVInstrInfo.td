@@ -2018,4 +2018,3 @@ include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZfh.td"
 include "RISCVInstrInfoZicbo.td"
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
-include "SiFive_RISCVInstrInfoZihintntl.td" // SIFIVE
