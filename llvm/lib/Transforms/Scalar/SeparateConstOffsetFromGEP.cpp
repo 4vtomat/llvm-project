@@ -986,7 +986,11 @@ bool SeparateConstOffsetFromGEP::splitGEP(GetElementPtrInst *GEP) {
   // the addressing mode, we can still do optimizations to other lowered parts
   // of variable indices. Therefore, we don't check for addressing modes in that
   // case.
+#if SIFIVE_CUSTOMIZATION
+  if (!LowerGEP || TTI.forceCheckAddressingMode()) {
+#else
   if (!LowerGEP) {
+#endif // SIFIVE_CUSTOMIZATION
     unsigned AddrSpace = GEP->getPointerAddressSpace();
     if (!TTI.isLegalAddressingMode(GEP->getResultElementType(),
                                    /*BaseGV=*/nullptr, AccumulativeByteOffset,

@@ -262,7 +262,7 @@ void RISCVPassConfig::addIRPasses() {
   if (TM->getOptLevel() == CodeGenOpt::Aggressive &&
       (EnableGEPOpt || EnableSLSROpt)) {
     if (EnableGEPOpt)
-      addPass(createSeparateConstOffsetFromGEPPass());
+      addPass(createSeparateConstOffsetFromGEPPass(true));
     if (EnableSLSROpt)
       addPass(createStraightLineStrengthReducePass());
 
