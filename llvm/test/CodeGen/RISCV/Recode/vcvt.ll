@@ -164,12 +164,16 @@ define void @vcvt_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    beqz a2, .LBB4_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB4_2: # %entry
 ; CHECK-NEXT:    flw ft0, 4(a0)
 ; CHECK-NEXT:    feq.s a0, ft0, ft0
 ; CHECK-NEXT:    beqz a0, .LBB4_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB4_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a0
@@ -459,6 +463,8 @@ define void @vcvtq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a2, .LBB10_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB10_2: # %entry
 ; CHECK-NEXT:    sw a2, 12(sp)
 ; CHECK-NEXT:    flw ft0, 8(a0)
@@ -466,6 +472,8 @@ define void @vcvtq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a2, .LBB10_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB10_4: # %entry
 ; CHECK-NEXT:    sw a2, 8(sp)
 ; CHECK-NEXT:    flw ft0, 4(a0)
@@ -473,6 +481,8 @@ define void @vcvtq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a2, .LBB10_6
 ; CHECK-NEXT:  # %bb.5:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB10_6: # %entry
 ; CHECK-NEXT:    sw a2, 4(sp)
 ; CHECK-NEXT:    flw ft0, 0(a0)
@@ -480,6 +490,8 @@ define void @vcvtq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a0, .LBB10_8
 ; CHECK-NEXT:  # %bb.7:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB10_8: # %entry
 ; CHECK-NEXT:    sw a0, 0(sp)
 ; CHECK-NEXT:    mv a0, sp

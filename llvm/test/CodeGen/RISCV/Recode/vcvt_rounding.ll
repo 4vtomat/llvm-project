@@ -234,6 +234,8 @@ define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a0, .LBB4_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB4_2: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 1
@@ -242,6 +244,8 @@ define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a2, .LBB4_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB4_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a2
@@ -642,6 +646,8 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a0, .LBB10_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB10_2: # %entry
 ; CHECK-NEXT:    sw a0, 0(sp)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
@@ -651,6 +657,8 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a0, .LBB10_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB10_4: # %entry
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 2
 ; CHECK-NEXT:    vfmv.f.s ft0, v9
@@ -662,6 +670,8 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB10_7
 ; CHECK-NEXT:  .LBB10_6:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB10_7: # %entry
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 1
 ; CHECK-NEXT:    vfmv.f.s ft0, v8
@@ -673,6 +683,8 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB10_10
 ; CHECK-NEXT:  .LBB10_9:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB10_10: # %entry
 ; CHECK-NEXT:    sw a0, 4(sp)
 ; CHECK-NEXT:    mv a0, sp
@@ -965,11 +977,15 @@ define void @vcvtn_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a0, .LBB16_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft1, rne
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB16_2: # %entry
 ; CHECK-NEXT:    feq.s a2, ft0, ft0
 ; CHECK-NEXT:    beqz a2, .LBB16_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rne
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB16_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a2
@@ -1394,6 +1410,8 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a2, .LBB22_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rne
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB22_2: # %entry
 ; CHECK-NEXT:    flw ft0, 0(a0)
 ; CHECK-NEXT:    flw ft2, 4(a0)
@@ -1402,6 +1420,8 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a0, .LBB22_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft1, rne
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB22_4: # %entry
 ; CHECK-NEXT:    feq.s a2, ft2, ft2
 ; CHECK-NEXT:    sw a0, 8(sp)
@@ -1411,6 +1431,8 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB22_7
 ; CHECK-NEXT:  .LBB22_6:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft2, rne
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB22_7: # %entry
 ; CHECK-NEXT:    feq.s a2, ft0, ft0
 ; CHECK-NEXT:    sw a0, 4(sp)
@@ -1420,6 +1442,8 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB22_10
 ; CHECK-NEXT:  .LBB22_9:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rne
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB22_10: # %entry
 ; CHECK-NEXT:    sw a0, 0(sp)
 ; CHECK-NEXT:    mv a0, sp
@@ -1696,6 +1720,8 @@ define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a0, .LBB28_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB28_2: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 1
@@ -1704,6 +1730,8 @@ define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    beqz a2, .LBB28_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
 ; CHECK-NEXT:  .LBB28_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a2
@@ -2104,6 +2132,8 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a0, .LBB34_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB34_2: # %entry
 ; CHECK-NEXT:    sw a0, 0(sp)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
@@ -2113,6 +2143,8 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    beqz a0, .LBB34_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB34_4: # %entry
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 2
 ; CHECK-NEXT:    vfmv.f.s ft0, v9
@@ -2124,6 +2156,8 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB34_7
 ; CHECK-NEXT:  .LBB34_6:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB34_7: # %entry
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 1
 ; CHECK-NEXT:    vfmv.f.s ft0, v8
@@ -2135,6 +2169,8 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    j .LBB34_10
 ; CHECK-NEXT:  .LBB34_9:
 ; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:  .LBB34_10: # %entry
 ; CHECK-NEXT:    sw a0, 4(sp)
 ; CHECK-NEXT:    mv a0, sp
