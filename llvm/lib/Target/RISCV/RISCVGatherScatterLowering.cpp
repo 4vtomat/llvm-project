@@ -105,8 +105,7 @@ bool RISCVGatherScatterLowering::isLegalTypeAndAlignment(Type *DataType,
                                                          Value *AlignOp) {
 #if SIFIVE_CUSTOMIZATION
   // Moved from the runOnMachineFunction to support scalable vectors.
-  assert(isa<FixedVectorType>(DataType) && "Expected a fixed vector type!");
-  if (!ST->useRVVForFixedLengthVectors())
+  if (isa<FixedVectorType>(DataType) && !ST->useRVVForFixedLengthVectors())
     return false;
 #endif // SIFIVE_CUSTOMIZATION
 

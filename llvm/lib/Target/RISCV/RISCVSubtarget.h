@@ -101,11 +101,8 @@ private:
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
   bool HasStdExtZmmul = false;
-<<<<<<< HEAD
   bool HasStdExtSscofpmf = false; // SIFIVE
-=======
   bool HasStdExtZawrs = false;
->>>>>>> upstream/main
   bool HasStdExtZtso = false;
   bool HasRV32 = false;
   bool HasRV64 = false;

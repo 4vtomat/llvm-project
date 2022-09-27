@@ -157,56 +157,6 @@ define signext i32 @foo(i32 signext %a, i32 *%b) nounwind {
 ; RV64I-NEXT:  .LBB0_28:
 ; RV64I-NEXT:    sext.w a0, a0
 ; RV64I-NEXT:    ret
-<<<<<<< HEAD
-;
-; RV64ZBT-LABEL: foo:
-; RV64ZBT:       # %bb.0:
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    xor a4, a0, a2
-; RV64ZBT-NEXT:    cmov a0, a4, a2, a0
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    xor a4, a0, a3
-; RV64ZBT-NEXT:    cmov a0, a4, a0, a3
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    sltu a4, a2, a0
-; RV64ZBT-NEXT:    cmov a0, a4, a0, a2
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    sltu a4, a0, a3
-; RV64ZBT-NEXT:    cmov a0, a4, a3, a0
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    sltu a4, a0, a2
-; RV64ZBT-NEXT:    cmov a0, a4, a0, a2
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    sltu a4, a3, a0
-; RV64ZBT-NEXT:    cmov a0, a4, a3, a0
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    slt a4, a2, a0
-; RV64ZBT-NEXT:    cmov a0, a4, a0, a2
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    slt a4, a0, a3
-; RV64ZBT-NEXT:    cmov a0, a4, a3, a0
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    slt a4, a0, a2
-; RV64ZBT-NEXT:    lw a5, 0(a1)
-; RV64ZBT-NEXT:    cmov a0, a4, a0, a2
-; RV64ZBT-NEXT:    slt a2, a3, a0
-; RV64ZBT-NEXT:    cmov a0, a2, a3, a0
-; RV64ZBT-NEXT:    slti a2, a5, 1
-; RV64ZBT-NEXT:    lw a3, 0(a1)
-; RV64ZBT-NEXT:    cmov a0, a2, a0, a5
-; RV64ZBT-NEXT:    lw a2, 0(a1)
-; RV64ZBT-NEXT:    slti a4, a5, 0
-; RV64ZBT-NEXT:    cmov a0, a4, a3, a0
-; RV64ZBT-NEXT:    lw a1, 0(a1)
-; RV64ZBT-NEXT:    slti a3, a2, 1025
-; RV64ZBT-NEXT:    cmov a0, a3, a2, a0
-; RV64ZBT-NEXT:    sltiu a2, a5, 2047
-; RV64ZBT-NEXT:    cmov a0, a2, a1, a0
-; RV64ZBT-NEXT:    sext.w a0, a0
-; RV64ZBT-NEXT:    ret
-=======
->>>>>>> upstream/main
   %val1 = load volatile i32, i32* %b
   %tst1 = icmp eq i32 %a, %val1
   %val2 = select i1 %tst1, i32 %a, i32 %val1

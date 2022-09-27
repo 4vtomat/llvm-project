@@ -242,32 +242,10 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
   const auto *DeadII = dyn_cast<IntrinsicInst>(DeadI);
   if (KillingII == nullptr || DeadII == nullptr)
     return OW_Unknown;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Only like type intrinsics...
-  if (KillingII->getIntrinsicID() != DeadII->getIntrinsicID())
-    return OW_Unknown;
-  if (KillingII->getIntrinsicID() == Intrinsic::masked_store) {
-    // Pointers.
-    Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
-    Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
-    if (KillingPtr != DeadPtr && !AA.isMustAlias(KillingPtr, DeadPtr))
-      return OW_Unknown;
-    // Masks.
-    // TODO: check that KillingII's mask is a superset of the DeadII's mask.
-    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
-      return OW_Unknown;
-    return OW_Complete;
-  } else if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
-    // Operands {0        , 1     , 2   , 3 }
-    //          {StoredVal, VecPtr, Mask, VL}
-    // Types.
-=======
   if (KillingII->getIntrinsicID() != DeadII->getIntrinsicID())
     return OW_Unknown;
   if (KillingII->getIntrinsicID() == Intrinsic::masked_store) {
     // Type size.
->>>>>>> upstream/main
     VectorType *KillingTy =
         cast<VectorType>(KillingII->getArgOperand(0)->getType());
     VectorType *DeadTy = cast<VectorType>(DeadII->getArgOperand(0)->getType());
@@ -283,7 +261,14 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
       return OW_Unknown;
     // Masks.
     // TODO: check that KillingII's mask is a superset of the DeadII's mask.
-<<<<<<< HEAD
+    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
+      return OW_Unknown;
+    return OW_Complete;
+#if SIFIVE_CUSTOMIZATION
+  } else if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
+    // Operands {0        , 1     , 2   , 3 }
+    //          {StoredVal, VecPtr, Mask, VL}
+    // Types.
     if (KillingII->getArgOperand(2) != DeadII->getArgOperand(2))
       return OW_Unknown;
     // Lengths.
@@ -302,14 +287,8 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
          DeadI->getMetadata(LLVMContext::MD_noalias)))
       return OW_Unknown;
     return OW_Complete;
-  }
 #endif
-=======
-    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
-      return OW_Unknown;
-    return OW_Complete;
   }
->>>>>>> upstream/main
   return OW_Unknown;
 }
 

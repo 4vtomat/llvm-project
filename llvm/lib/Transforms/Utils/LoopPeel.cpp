@@ -479,14 +479,9 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
       DesiredPeelCount, countToEliminateCompares(*L, MaxPeelCount, TripCount,
                                                    SE, PP.PeelProlog));
 
-<<<<<<< HEAD
   if (DesiredPeelCount == 0 && (PP.PeelProlog))
-    DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT);
-  // end SIFIVE
-=======
-  if (DesiredPeelCount == 0)
     DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT, AC);
->>>>>>> upstream/main
+  // end SIFIVE
 
   if (DesiredPeelCount > 0) {
     DesiredPeelCount = std::min(DesiredPeelCount, MaxPeelCount);

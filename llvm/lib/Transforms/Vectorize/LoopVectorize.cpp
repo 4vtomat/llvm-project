@@ -520,21 +520,6 @@ public:
   /// complex control flow around the loops.
   virtual std::pair<BasicBlock *, Value *> createVectorizedLoopSkeleton();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  /// Return true if widen a single call within the innermost loop using vector
-  /// predicated intrinsics. Otherwise, return false.
-  bool widenPredicatedCall(CallInst &I, VPValue *Def, VPUser &ArgOperands,
-                           VPTransformState &State);
-#endif // SIFIVE_CUSTOMIZATION
-
-  /// Widen a single call instruction within the innermost loop.
-  void widenCallInstruction(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
-                            VPTransformState &State,
-                            Intrinsic::ID VectorIntrinsicID);
-
-=======
->>>>>>> upstream/main
   /// Fix the vectorized code, taking care of header phi's, live-outs, and more.
   void fixVectorizedLoop(VPTransformState &State, VPlan &Plan);
 
@@ -4456,122 +4441,6 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPlan &Plan,
 bool InnerLoopVectorizer::useOrderedReductions(
     const RecurrenceDescriptor &RdxDesc) {
   return Cost->useOrderedReductions(RdxDesc);
-}
-
-#if SIFIVE_CUSTOMIZATION
-bool InnerLoopVectorizer::widenPredicatedCall(CallInst &CI, VPValue *Def,
-                                              VPUser &ArgOperands,
-                                              VPTransformState &State) {
-  assert(State.Plan->getEVL() &&
-         "Only widen call to vp intrinsic if State has EVL.");
-
-  Intrinsic::ID VPID = getVectorIntrinsicIDForCall(&CI, TLI, true);
-
-  // Skip if CI doesn't have vp form.
-  if (!VPIntrinsic::isVPIntrinsic(VPID))
-    return false;
-
-  for (unsigned Part = 0; Part < UF; ++Part) {
-    llvm::widenPredicatedCall(CI, Def, ArgOperands, State, VPID, Part);
-    Value *V = State.get(Def, Part);
-    State.addMetadata(V, &CI);
-  }
-  return true;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
-bool widenPredicatedCallHelper(CallInst &CI, VPValue *Def,
-                               VPUser &ArgOperands,
-                               VPTransformState &State) {
-#if SIFIVE_CUSTOMIZATION
-  if (State.Plan->getEVL() &&
-      State.ILV->widenPredicatedCall(CI, Def, ArgOperands, State))
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-  return false;
-}
-
-void InnerLoopVectorizer::widenCallInstruction(CallInst &CI, VPValue *Def,
-                                               VPUser &ArgOperands,
-                                               VPTransformState &State,
-					                                     Intrinsic::ID VectorIntrinsicID) {
-  assert(!isa<DbgInfoIntrinsic>(CI) &&
-         "DbgInfoIntrinsic should have been dropped during VPlan construction");
-  State.setDebugLocFromInst(&CI);
-
-  SmallVector<Type *, 4> Tys;
-  for (Value *ArgOperand : CI.args())
-    Tys.push_back(ToVectorTy(ArgOperand->getType(), VF.getKnownMinValue()));
-
-  Intrinsic::ID ID = getVectorIntrinsicIDForCall(&CI, TLI);
-
-  // The flag shows whether we use Intrinsic or a usual Call for vectorized
-  // version of the instruction.
-  // Is it beneficial to perform intrinsic call compared to lib call?
-  bool NeedToScalarize = false;
-  InstructionCost CallCost = Cost->getVectorCallCost(&CI, VF, NeedToScalarize);
-#if SIFIVE_CUSTOMIZATION
-  InstructionCost IntrinsicCost = ID ? Cost->getVectorIntrinsicCost(&CI, VF)
-                                     : InstructionCost::getInvalid();
-#endif // SIFIVE_CUSTOMIZATION
-  bool UseVectorIntrinsic = ID && IntrinsicCost <= CallCost;
-  assert((UseVectorIntrinsic || !NeedToScalarize) &&
-         "Instruction should be scalarized elsewhere.");
-  assert((IntrinsicCost.isValid() || CallCost.isValid()) &&
-         "Either the intrinsic cost or vector call cost must be valid");
-
-  for (unsigned Part = 0; Part < UF; ++Part) {
-    SmallVector<Type *, 2> TysForDecl = {CI.getType()};
-    SmallVector<Value *, 4> Args;
-    for (const auto &I : enumerate(ArgOperands.operands())) {
-      // Some intrinsics have a scalar argument - don't replace it with a
-      // vector.
-      Value *Arg;
-      if (!UseVectorIntrinsic ||
-          !isVectorIntrinsicWithScalarOpAtArg(ID, I.index()))
-        Arg = State.get(I.value(), Part);
-      else
-        Arg = State.get(I.value(), VPIteration(0, 0));
-      if (isVectorIntrinsicWithOverloadTypeAtArg(ID, I.index()))
-        TysForDecl.push_back(Arg->getType());
-      Args.push_back(Arg);
-    }
-
-    Function *VectorF;
-    if (UseVectorIntrinsic) {
-      // Use vector version of the intrinsic.
-      if (VF.isVector())
-        TysForDecl[0] = VectorType::get(CI.getType()->getScalarType(), VF);
-      Module *M = State.Builder.GetInsertBlock()->getModule();
-      VectorF = Intrinsic::getDeclaration(M, ID, TysForDecl);
-      assert(VectorF && "Can't retrieve vector intrinsic.");
-    } else {
-      // Use vector version of the function call.
-      const VFShape Shape = VFShape::get(CI, VF, false /*HasGlobalPred*/);
-#ifndef NDEBUG
-      assert(VFDatabase(CI).getVectorizedFunction(Shape) != nullptr &&
-             "Can't create vector function.");
-#endif
-      VectorF = VFDatabase(CI).getVectorizedFunction(Shape);
-#if SIFIVE_CUSTOMIZATION
-      // Add VL as an explicit final argument to SiFive NF Library functions
-      if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
-          State.Plan->getEVL()) {
-        Value *EVL = State.get(State.Plan->getEVL(), Part);
-        Args.push_back(EVL);
-      }
-#endif
-    }
-      SmallVector<OperandBundleDef, 1> OpBundles;
-      CI.getOperandBundlesAsDefs(OpBundles);
-      CallInst *V = Builder.CreateCall(VectorF, Args, OpBundles);
-
-      if (isa<FPMathOperator>(V))
-        V->copyFastMathFlags(&CI);
-
-      State.set(Def, V, Part);
-      State.addMetadata(V, &CI);
-  }
 }
 
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
@@ -9358,7 +9227,7 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
                   } else {
                     return IntrinsicCost <= CallCost;
                   }
-#endif // SIFIVE_CUSTOMIZATION 
+#endif // SIFIVE_CUSTOMIZATION
                 },
                 Range);
   if (ShouldUseVectorIntrinsic)

@@ -978,13 +978,8 @@ bool llvm::computeUnrollCount(
     }
   }
 
-<<<<<<< HEAD
-  // 5th priority is loop prolog peeling.
-  computePeelCount(L, LoopSize, PP, TripCount, DT, SE, UP.Threshold);
-=======
   // 5th priority is loop peeling.
   computePeelCount(L, LoopSize, PP, TripCount, DT, SE, AC, UP.Threshold);
->>>>>>> upstream/main
   if (PP.PeelCount) {
     UP.Runtime = false;
     UP.Count = 1;
@@ -996,7 +991,7 @@ bool llvm::computeUnrollCount(
   if (PP.AllowEpilogPeeling) {
     PP.PeelProlog = false;
     PP.PeelEpilog = PP.AllowEpilogPeeling;
-    computePeelCount(L, LoopSize, PP, MaxTripCount, DT, SE, UP.Threshold);
+    computePeelCount(L, LoopSize, PP, MaxTripCount, DT, SE, AC, UP.Threshold);
     if (PP.PeelCount) {
       UP.Runtime = false;
       UP.Count = 1;

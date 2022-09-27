@@ -342,11 +342,7 @@ def : ReadAdvance<ReadCMOV, 0>;
 defm : UnsupportedSchedV;
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbs;
-defm : UnsupportedSchedZbe;
-defm : UnsupportedSchedZbf;
-defm : UnsupportedSchedZbm;
-defm : UnsupportedSchedZbp;
-defm : UnsupportedSchedZbr;
-defm : UnsupportedSchedZbt;
+defm : UnsupportedSchedZbkb;
+defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
 }

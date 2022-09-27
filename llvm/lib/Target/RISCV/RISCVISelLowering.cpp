@@ -355,25 +355,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::ABS, MVT::i32, Custom);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // We could use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (Subtarget.hasStdExtZbt()) {
-    setOperationAction({ISD::FSHL, ISD::FSHR}, XLenVT, Custom);
-    setOperationAction(ISD::SELECT, XLenVT, Legal);
-
-    if (Subtarget.is64Bit())
-      setOperationAction({ISD::FSHL, ISD::FSHR}, MVT::i32, Custom);
-  } else {
-    setOperationAction(ISD::SELECT, XLenVT, Custom);
-  }
-=======
   setOperationAction(ISD::SELECT, XLenVT, Custom);
->>>>>>> upstream/main
 
   static const unsigned FPLegalNodeTypes[] = {
       ISD::FMINNUM,        ISD::FMAXNUM,       ISD::LRINT,
@@ -535,7 +523,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     }
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
     // EXPERIMENTAL_VP_REVERSE copied from BSC.
     static const unsigned IntegerVPOps[] = {
         ISD::VP_ADD,         ISD::VP_SUB,         ISD::VP_MUL,
@@ -558,12 +545,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_REDUCE_FMIN, ISD::VP_REDUCE_FMAX, ISD::VP_MERGE,
         ISD::VP_SELECT,      ISD::VP_SINT_TO_FP,  ISD::VP_UINT_TO_FP,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
-<<<<<<< HEAD
-        ISD::EXPERIMENTAL_VP_REVERSE};
-#endif // SIFIVE_CUSTOMIZATION
-=======
-        ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM};
->>>>>>> upstream/main
+        ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
+        ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
 
     static const unsigned IntegerVecReduceOps[] = {
         ISD::VECREDUCE_ADD,  ISD::VECREDUCE_AND,  ISD::VECREDUCE_OR,
@@ -9394,17 +9377,6 @@ static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
 static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
                                 const RISCVSubtarget &Subtarget) {
   SelectionDAG &DAG = DCI.DAG;
-<<<<<<< HEAD
-  if (Subtarget.hasStdExtZbp()) {
-    if (auto GREV = combineORToGREV(SDValue(N, 0), DAG, Subtarget))
-      return GREV;
-    if (auto GORC = combineORToGORC(SDValue(N, 0), DAG, Subtarget))
-      return GORC;
-    if (auto SHFL = combineORToSHFL(SDValue(N, 0), DAG, Subtarget))
-      return SHFL;
-  }
-=======
->>>>>>> upstream/main
 
   if (SDValue V = combineBinOpToReduce(N, DAG))
     return V;
