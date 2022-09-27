@@ -229,6 +229,10 @@ public:
                                      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput,
                                      const Instruction *I = nullptr);
 
+  using BaseT::getVectorInstrCost;
+  InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
+                                     unsigned Index);
+
   bool isElementTypeLegalForScalableVector(Type *Ty) const {
     return TLI->isLegalElementTypeForRVV(Ty);
   }
@@ -392,11 +396,6 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
-
-  using BaseT::getVectorInstrCost;
-  InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
-                                     unsigned Index);
-
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
   Type *getScalableVectorFromFixed(Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION

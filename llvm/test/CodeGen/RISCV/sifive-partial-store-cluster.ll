@@ -13,15 +13,15 @@ define signext i32 @main() {
 ; CHECK-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    .cfi_offset ra, -8
 ; CHECK-NEXT:    lui a0, 6
-; CHECK-NEXT:    lui a1, 275749
 ; CHECK-NEXT:    lui a3, %hi(.LCPI0_2)
-; CHECK-NEXT:    lui a2, %hi(.LCPI0_1)
-; CHECK-NEXT:    lui a4, %hi(.LCPI0_3)
-; CHECK-NEXT:    sb zero, 70(sp)
 ; CHECK-NEXT:    addiw a0, a0, -1712
+; CHECK-NEXT:    lui a1, 275749
 ; CHECK-NEXT:    addiw a1, a1, 1107
+; CHECK-NEXT:    lui a2, %hi(.LCPI0_1)
 ; CHECK-NEXT:    ld a3, %lo(.LCPI0_2)(a3)
+; CHECK-NEXT:    lui a4, %hi(.LCPI0_3)
 ; CHECK-NEXT:    sh a0, 68(sp)
+; CHECK-NEXT:    sb zero, 70(sp)
 ; CHECK-NEXT:    sh a0, 36(sp)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    sb zero, 38(sp)

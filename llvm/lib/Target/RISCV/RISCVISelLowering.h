@@ -299,7 +299,7 @@ enum NodeType : unsigned {
   VWSUBU_W_VL,
   VFWMUL_VL, // SIFIVE
 
-  VNSRL_VL, // SIFIVE
+  VNSRL_VL,
 
   // Vector compare producing a mask. Fourth operand is input mask. Fifth
   // operand is VL.
@@ -402,6 +402,7 @@ public:
   bool signExtendConstant(const ConstantInt *CI) const override;
   bool isCheapToSpeculateCttz(Type *Ty) const override;
   bool isCheapToSpeculateCtlz(Type *Ty) const override;
+  bool isMaskAndCmp0FoldingBeneficial(const Instruction &AndI) const override;
   bool hasAndNotCompare(SDValue Y) const override;
   bool hasBitTest(SDValue X, SDValue Y) const override;
   bool shouldProduceAndByConstByHoistingConstFromShiftsLHSOfAnd(
@@ -414,9 +415,8 @@ public:
   bool isOffsetFoldingLegal(const GlobalAddressSDNode *GA) const override;
   bool isFPImmLegal(const APFloat &Imm, EVT VT,
                     bool ForCodeSize) const override;
-#if SIFIVE_CUSTOMIZATION
-  bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const override;
-#endif // SIFIVE_CUSTOMIZATION
+  bool isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
+                               unsigned Index) const override;
 
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 

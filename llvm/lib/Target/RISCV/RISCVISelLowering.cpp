@@ -1521,6 +1521,22 @@ bool RISCVTargetLowering::isCheapToSpeculateCtlz(Type *Ty) const {
   return Subtarget.hasStdExtZbb();
 }
 
+bool RISCVTargetLowering::isMaskAndCmp0FoldingBeneficial(
+    const Instruction &AndI) const {
+  // We expect to be able to match a bit extraction instruction if the Zbs
+  // extension is supported and the mask is a power of two. However, we
+  // conservatively return false if the mask would fit in an ANDI instruction,
+  // on the basis that it's possible the sinking+duplication of the AND in
+  // CodeGenPrepare triggered by this hook wouldn't decrease the instruction
+  // count and would increase code size (e.g. ANDI+BNEZ => BEXTI+BNEZ).
+  if (!Subtarget.hasStdExtZbs())
+    return false;
+  ConstantInt *Mask = dyn_cast<ConstantInt>(AndI.getOperand(1));
+  if (!Mask)
+    return false;
+  return !Mask->getValue().isSignedIntN(12) && Mask->getValue().isPowerOf2();
+}
+
 bool RISCVTargetLowering::hasAndNotCompare(SDValue Y) const {
   EVT VT = Y.getValueType();
 
@@ -1534,6 +1550,9 @@ bool RISCVTargetLowering::hasAndNotCompare(SDValue Y) const {
 }
 
 bool RISCVTargetLowering::hasBitTest(SDValue X, SDValue Y) const {
+  // Zbs provides BEXT[_I], which can be used with SEQZ/SNEZ as a bit test.
+  if (Subtarget.hasStdExtZbs())
+    return X.getValueType().isScalarInteger();
   // We can use ANDI+SEQZ/SNEZ as a bit test. Y contains the bit position.
   auto *C = dyn_cast<ConstantSDNode>(Y);
   return C && C->getAPIntValue().ule(10);
@@ -1745,23 +1764,38 @@ bool RISCVTargetLowering::isFPImmLegal(const APFloat &Imm, EVT VT,
   return Imm.isZero();
 }
 
-#if SIFIVE_CUSTOMIZATION
-bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT, unsigned Index) const
-{
+// TODO: This is very conservative.
+bool RISCVTargetLowering::isExtractSubvectorCheap(EVT ResVT, EVT SrcVT,
+                                                  unsigned Index) const {
   if (!isOperationLegalOrCustom(ISD::EXTRACT_SUBVECTOR, ResVT))
     return false;
 
-  if (Index == 0)
-    return true;
+  // Only support extracting a fixed from a fixed vector for now.
+  if (ResVT.isScalableVector() || SrcVT.isScalableVector())
+    return false;
+
+  unsigned ResElts = ResVT.getVectorNumElements();
+  unsigned SrcElts = SrcVT.getVectorNumElements();
+
+  // Convervatively only handle extracting half of a vector.
+  // TODO: Relax this.
+  if ((ResElts * 2) != SrcElts)
+    return false;
 
   // The smallest type we can slide is i8.
+  // TODO: We can extract index 0 from a mask vector without a slide.
   if (ResVT.getVectorElementType() == MVT::i1)
     return false;
 
-  // Slide can support arbitrary index. But we only treat vslidedown.vi cheap.
-  return Index < 32;
+  // Slide can support arbitrary index, but we only treat vslidedown.vi as
+  // cheap.
+  if (Index >= 32)
+    return false;
+
+  // TODO: We can do arbitrary slidedowns, but for now only support extracting
+  // the upper half of a vector until we have more test coverage.
+  return Index == 0 || Index == ResElts;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTargetLowering::hasBitPreservingFPLogic(EVT VT) const {
   return (VT == MVT::f16 && Subtarget.hasStdExtZfh()) ||
@@ -2220,6 +2254,11 @@ static SDValue lowerFP_TO_INT_SAT(SDValue Op, SelectionDAG &DAG,
   SDValue FpToInt = DAG.getNode(
       Opc, DL, DstVT, Src,
       DAG.getTargetConstant(RISCVFPRndMode::RTZ, DL, Subtarget.getXLenVT()));
+
+  // fcvt.wu.* sign extends bit 31 on RV64. FP_TO_UINT_SAT expects to zero
+  // extend.
+  if (Opc == RISCVISD::FCVT_WU_RV64)
+    FpToInt = DAG.getZeroExtendInReg(FpToInt, DL, MVT::i32);
 
   SDValue ZeroInt = DAG.getConstant(0, DL, DstVT);
   return DAG.getSelectCC(DL, Src, Src, ZeroInt, FpToInt, ISD::CondCode::SETUO);
@@ -2989,7 +3028,6 @@ static int isElementRotate(int &LoSrc, int &HiSrc, ArrayRef<int> Mask) {
   return Rotation;
 }
 
-#if SIFIVE_CUSTOMIZATION
 // Lower the following shuffles to vnsrl.
 // t34: v8i8 = extract_subvector t11, Constant:i64<0>
 // t33: v8i8 = extract_subvector t11, Constant:i64<8>
@@ -3061,15 +3099,14 @@ static SDValue lowerVECTOR_SHUFFLEAsVNSRL(const SDLoc &DL, MVT VT,
   SDValue SplatShift = DAG.getNode(
       RISCVISD::VMV_V_X_VL, DL, IntContainerVT, DAG.getUNDEF(ContainerVT),
       DAG.getConstant(Shift, DL, Subtarget.getXLenVT()), VL);
-  SDValue Res = DAG.getNode(RISCVISD::VNSRL_VL, DL, IntContainerVT, Src,
-                            SplatShift, DAG.getUNDEF(IntContainerVT), TrueMask,
-                            VL);
+  SDValue Res =
+      DAG.getNode(RISCVISD::VNSRL_VL, DL, IntContainerVT, Src, SplatShift,
+                  DAG.getUNDEF(IntContainerVT), TrueMask, VL);
   // Cast back to FP if needed.
   Res = DAG.getBitcast(ContainerVT, Res);
 
   return convertFromScalableVector(VT, Res, DAG, Subtarget);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
                                    const RISCVSubtarget &Subtarget) {
@@ -3212,11 +3249,9 @@ static SDValue lowerVECTOR_SHUFFLE(SDValue Op, SelectionDAG &DAG,
     return convertFromScalableVector(VT, Res, DAG, Subtarget);
   }
 
-#if SIFIVE_CUSTOMIZATION
   if (SDValue V = lowerVECTOR_SHUFFLEAsVNSRL(
           DL, VT, ContainerVT, V1, V2, TrueMask, VL, Mask, Subtarget, DAG))
     return V;
-#endif // SIFIVE_CUSTOMIZATION
 
   // Detect an interleave shuffle and lower to
   // (vmaccu.vx (vwaddu.vx lohalf(V1), lohalf(V2)), lohalf(V2), (2^eltbits - 1))
@@ -3960,16 +3995,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
       break;
     }
 
-    MVT ContainerVT, SrcContainerVT;
-    // Derive the reference container type from the larger vector type.
-    if (SrcEltSize > EltSize) {
-      SrcContainerVT = getContainerForFixedLengthVector(SrcVT);
-      ContainerVT =
-          SrcContainerVT.changeVectorElementType(VT.getVectorElementType());
-    } else {
-      ContainerVT = getContainerForFixedLengthVector(VT);
-      SrcContainerVT = ContainerVT.changeVectorElementType(SrcEltVT);
-    }
+    MVT ContainerVT = getContainerForFixedLengthVector(VT);
+    MVT SrcContainerVT = getContainerForFixedLengthVector(SrcVT);
+    assert(ContainerVT.getVectorElementCount() == SrcContainerVT.getVectorElementCount() &&
+           "Expected same element count");
 
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
@@ -10812,6 +10841,11 @@ static SDValue performFP_TO_INT_SATCombine(SDNode *N,
   SDValue FpToInt = DAG.getNode(Opc, DL, XLenVT, Src,
                                 DAG.getTargetConstant(FRM, DL, XLenVT));
 
+  // fcvt.wu.* sign extends bit 31 on RV64. FP_TO_UINT_SAT expects to zero
+  // extend.
+  if (Opc == RISCVISD::FCVT_WU_RV64)
+    FpToInt = DAG.getZeroExtendInReg(FpToInt, DL, MVT::i32);
+
   // RISCV FP-to-int conversions saturate to the destination register size, but
   // don't produce 0 for nan.
   SDValue ZeroInt = DAG.getConstant(0, DL, DstVT);
@@ -12293,7 +12327,6 @@ bool RISCVTargetLowering::targetShrinkDemandedConstant(
   if (VT.isVector())
     return false;
 
-  // Only handle AND for now.
   unsigned Opcode = Op.getOpcode();
   if (Opcode != ISD::AND && Opcode != ISD::OR && Opcode != ISD::XOR)
     return false;
@@ -12331,12 +12364,11 @@ bool RISCVTargetLowering::targetShrinkDemandedConstant(
 
   // And has a few special cases for zext.
   if (Opcode == ISD::AND) {
-    // Preserve (and X, 0xffff) when zext.h is supported.
-    if (Subtarget.hasStdExtZbb() || Subtarget.hasStdExtZbp()) {
-      APInt NewMask = APInt(Mask.getBitWidth(), 0xffff);
-      if (IsLegalMask(NewMask))
-        return UseMask(NewMask);
-    }
+    // Preserve (and X, 0xffff), if zext.h exists use zext.h,
+    // otherwise use SLLI + SRLI.
+    APInt NewMask = APInt(Mask.getBitWidth(), 0xffff);
+    if (IsLegalMask(NewMask))
+      return UseMask(NewMask);
 
     // Try to preserve (and X, 0xffffffff), the (zext_inreg X, i32) pattern.
     if (VT == MVT::i64) {
@@ -14370,10 +14402,7 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   Glue = Chain.getValue(1);
 
   // Mark the end of the call, which is glued to the call itself.
-  Chain = DAG.getCALLSEQ_END(Chain,
-                             DAG.getConstant(NumBytes, DL, PtrVT, true),
-                             DAG.getConstant(0, DL, PtrVT, true),
-                             Glue, DL);
+  Chain = DAG.getCALLSEQ_END(Chain, NumBytes, 0, Glue, DL);
   Glue = Chain.getValue(1);
 
   // Assign locations to each value returned by this call.
@@ -14743,7 +14772,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VWSUB_W_VL)
   NODE_NAME_CASE(VWSUBU_W_VL)
   NODE_NAME_CASE(VFWMUL_VL) // SIFIVE
-  NODE_NAME_CASE(VNSRL_VL) // SIFIVE
+  NODE_NAME_CASE(VNSRL_VL)
   NODE_NAME_CASE(SETCC_VL)
   NODE_NAME_CASE(VSELECT_VL)
   NODE_NAME_CASE(VP_MERGE_VL)

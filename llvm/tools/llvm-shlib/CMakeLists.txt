@@ -63,8 +63,9 @@ if(LLVM_BUILD_LLVM_DYLIB)
 
   target_link_libraries(LLVM PRIVATE ${LIB_NAMES})
 
-  get_property(SYSTEM_LIBS TARGET LLVMSupport PROPERTY LLVM_SYSTEM_LIBS)
-  target_link_libraries(LLVM PUBLIC ${SYSTEM_LIBS})
+  if(LLVM_ENABLE_THREADS AND NOT HAVE_CXX_ATOMICS64_WITHOUT_LIB)
+    target_link_libraries(LLVM PUBLIC atomic)
+  endif()
 
   if (APPLE)
     set_property(TARGET LLVM APPEND_STRING PROPERTY
@@ -91,7 +92,7 @@ if(LLVM_BUILD_LLVM_C_DYLIB AND NOT MSVC)
 
   set(LLVM_EXPORTED_SYMBOL_FILE ${LLVM_BINARY_DIR}/libllvm-c.exports)
 
-  set(LIB_DIR ${LLVM_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib${LLVM_LIBDIR_SUFFIX})
+  set(LIB_DIR ${LLVM_LIBRARY_DIR})
   set(LIB_NAME ${LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}LLVM)
   set(LIB_PATH ${LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
   set(LIB_EXPORTS_PATH ${LIB_NAME}.exports)
@@ -139,7 +140,7 @@ if(LLVM_BUILD_LLVM_C_DYLIB AND MSVC)
 
   # Get the full name to the libs so the python script understands them.
   foreach(lib ${LIB_NAMES})
-    list(APPEND FULL_LIB_NAMES ${LLVM_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib/${lib}.lib)
+    list(APPEND FULL_LIB_NAMES ${LLVM_LIBRARY_DIR}/${lib}.lib)
   endforeach()
 
   # Need to separate lib names with newlines.

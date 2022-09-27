@@ -85,8 +85,7 @@ bool DeadMachineInstructionElim::isDead(const MachineInstr *MI) const {
       } else {
         if (MO.isDead()) {
 #ifndef NDEBUG
-          // Baisc check on the register. All of them should be
-          // 'undef'.
+          // Basic check on the register. All of them should be 'undef'.
           for (auto &U : MRI->use_nodbg_operands(Reg))
             assert(U.isUndef() && "'Undef' use on a 'dead' register is found!");
 #endif
@@ -108,6 +107,13 @@ bool DeadMachineInstructionElim::isDead(const MachineInstr *MI) const {
 bool DeadMachineInstructionElim::runOnMachineFunction(MachineFunction &MF) {
   if (skipFunction(MF.getFunction()))
     return false;
+
+  MRI = &MF.getRegInfo();
+
+  const TargetSubtargetInfo &ST = MF.getSubtarget();
+  TII = ST.getInstrInfo();
+  LivePhysRegs.init(*ST.getRegisterInfo());
+
   bool AnyChanges = eliminateDeadMI(MF);
   while (AnyChanges && eliminateDeadMI(MF))
     ;
@@ -116,10 +122,6 @@ bool DeadMachineInstructionElim::runOnMachineFunction(MachineFunction &MF) {
 
 bool DeadMachineInstructionElim::eliminateDeadMI(MachineFunction &MF) {
   bool AnyChanges = false;
-  MRI = &MF.getRegInfo();
-  TII = MF.getSubtarget().getInstrInfo();
-
-  LivePhysRegs.init(*MF.getSubtarget().getRegisterInfo());
 
   // Loop over all instructions in all blocks, from bottom to top, so that it's
   // more likely that chains of dependent but ultimately dead instructions will

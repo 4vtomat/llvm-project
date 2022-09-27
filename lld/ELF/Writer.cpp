@@ -317,7 +317,7 @@ template <class ELFT> void elf::createSyntheticSections() {
 
   StringRef relaDynName = config->isRela ? ".rela.dyn" : ".rel.dyn";
 
-  const unsigned threadCount = parallel::strategy.compute_thread_count();
+  const unsigned threadCount = config->threadCount;
   for (Partition &part : partitions) {
     auto add = [&](SyntheticSection &sec) {
       sec.partition = part.getNumber();
@@ -589,7 +589,8 @@ template <class ELFT> void Writer<ELFT>::run() {
       return;
 
     if (auto e = buffer->commit())
-      error("failed to write to the output file: " + toString(std::move(e)));
+      fatal("failed to write output '" + buffer->getPath() +
+            "': " + toString(std::move(e)));
   }
 }
 

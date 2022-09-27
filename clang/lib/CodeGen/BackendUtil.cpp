@@ -225,6 +225,7 @@ getSancovOptsFromCGOpts(const CodeGenOptions &CGOpts) {
   Opts.StackDepth = CGOpts.SanitizeCoverageStackDepth;
   Opts.TraceLoads = CGOpts.SanitizeCoverageTraceLoads;
   Opts.TraceStores = CGOpts.SanitizeCoverageTraceStores;
+  Opts.CollectControlFlow = CGOpts.SanitizeCoverageControlFlow;
   return Opts;
 }
 
@@ -441,7 +442,7 @@ static bool initTargetOptions(DiagnosticsEngine &Diags,
       CodeGenOpts.UniqueBasicBlockSectionNames;
   Options.TLSSize = CodeGenOpts.TLSSize;
   Options.EmulatedTLS = CodeGenOpts.EmulatedTLS;
-  Options.ExplicitEmulatedTLS = CodeGenOpts.ExplicitEmulatedTLS;
+  Options.ExplicitEmulatedTLS = true;
   Options.DebuggerTuning = CodeGenOpts.getDebuggerTuning();
   Options.EmitStackSizeSection = CodeGenOpts.StackSizeSection;
   Options.StackUsageOutput = CodeGenOpts.StackUsageOutput;
@@ -642,7 +643,6 @@ static OptimizationLevel mapToLevel(const CodeGenOptions &Opts) {
 static void addSanitizers(const Triple &TargetTriple,
                           const CodeGenOptions &CodeGenOpts,
                           const LangOptions &LangOpts, PassBuilder &PB) {
-
   auto SanitizersCallback = [&](ModulePassManager &MPM,
                                 OptimizationLevel Level) {
     if (CodeGenOpts.hasSanitizeCoverage()) {
@@ -670,7 +670,7 @@ static void addSanitizers(const Triple &TargetTriple,
           // the logic of the original code, but operates on "shadow" values. It
           // can benefit from re-running some general purpose optimization
           // passes.
-          MPM.addPass(RecomputeGlobalsAAPass());
+          MPM.addPass(RequireAnalysisPass<GlobalsAA, Module>());
           FunctionPassManager FPM;
           FPM.addPass(EarlyCSEPass(true /* Enable mem-ssa. */));
           FPM.addPass(InstCombinePass());
@@ -725,10 +725,21 @@ static void addSanitizers(const Triple &TargetTriple,
       MPM.addPass(DataFlowSanitizerPass(LangOpts.NoSanitizeFiles));
     }
   };
-  if (ClSanitizeOnOptimizerEarlyEP)
-    PB.registerOptimizerEarlyEPCallback(SanitizersCallback);
-  else
+  if (ClSanitizeOnOptimizerEarlyEP) {
+    PB.registerOptimizerEarlyEPCallback(
+        [SanitizersCallback](ModulePassManager &MPM, OptimizationLevel Level) {
+          ModulePassManager NewMPM;
+          SanitizersCallback(NewMPM, Level);
+          if (!NewMPM.isEmpty()) {
+            // Sanitizers can abandon<GlobalsAA>.
+            NewMPM.addPass(RequireAnalysisPass<GlobalsAA, Module>());
+            MPM.addPass(std::move(NewMPM));
+          }
+        });
+  } else {
+    // LastEP does not need GlobalsAA.
     PB.registerOptimizerLastEPCallback(SanitizersCallback);
+  }
 }
 
 void EmitAssemblyHelper::RunOptimizationPipeline(

@@ -548,7 +548,8 @@ public:
   /// and \p MaxLane, times each part between \p MinPart and \p MaxPart,
   /// inclusive. Uses the VPValue operands from \p RepRecipe instead of \p
   /// Instr's operands.
-  void scalarizeInstruction(Instruction *Instr, VPReplicateRecipe *RepRecipe,
+  void scalarizeInstruction(const Instruction *Instr,
+                            VPReplicateRecipe *RepRecipe,
                             const VPIteration &Instance, bool IfPredicateInstr,
                             VPTransformState &State);
 
@@ -2941,7 +2942,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   }
 }
 
-void InnerLoopVectorizer::scalarizeInstruction(Instruction *Instr,
+void InnerLoopVectorizer::scalarizeInstruction(const Instruction *Instr,
                                                VPReplicateRecipe *RepRecipe,
                                                const VPIteration &Instance,
                                                bool IfPredicateInstr,
@@ -9231,7 +9232,13 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
     VPValue *Step = vputils::getOrCreateVPValueForSCEVExpr(Plan, II->getStep(),
                                                            *PSE.getSE());
     assert(isa<SCEVConstant>(II->getStep()));
-    return new VPWidenPointerInductionRecipe(Phi, Operands[0], Step, *II);
+    return new VPWidenPointerInductionRecipe(
+        Phi, Operands[0], Step, *II,
+        LoopVectorizationPlanner::getDecisionAndClampRange(
+            [&](ElementCount VF) {
+              return !VF.isScalable() && CM.isScalarAfterVectorization(Phi, VF);
+            },
+            Range));
   }
   return nullptr;
 }
@@ -10536,7 +10543,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   auto *IVR = getParent()->getPlan()->getCanonicalIV();
   PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0));
 
-  if (onlyScalarsGenerated(State.VF)) {
+  if (onlyScalarsGenerated()) {
     // This is the normalized GEP that starts counting at zero.
     Value *PtrInd = State.Builder.CreateSExtOrTrunc(
         CanonicalIV, IndDesc.getStep()->getType());
@@ -11609,10 +11616,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     }
   }
 
-  // Check the function attributes to see if implicit floats are allowed.
-  // FIXME: This check doesn't seem possibly correct -- what if the loop is
-  // an integer loop and the vector instructions selected are purely integer
-  // vector instructions?
+  // Check the function attributes to see if implicit floats or vectors are
+  // allowed.
   if (F->hasFnAttribute(Attribute::NoImplicitFloat)) {
     reportVectorizationFailure(
         "Can't vectorize when the NoImplicitFloat attribute is used",
