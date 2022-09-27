@@ -81,8 +81,8 @@ def : WriteRes<WriteIDiv, [SiFive9MulI2F, SiFive9Div]> {
   let ResourceCycles = [1, 34];
 }
 def : WriteRes<WriteIDiv32,  [SiFive9MulI2F, SiFive9Div]> {
-  let Latency = 35;
-  let ResourceCycles = [1, 34];
+  let Latency = 20;
+  let ResourceCycles = [1, 19];
 }
 
 let Latency = 1 in {

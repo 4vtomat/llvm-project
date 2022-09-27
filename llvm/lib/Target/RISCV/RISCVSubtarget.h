@@ -363,6 +363,8 @@ public:
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
   bool useAA() const override;
+  bool useAltGPROrder() const;
+  bool useAltFPROrder() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 } // End llvm namespace
