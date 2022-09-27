@@ -648,20 +648,20 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt,
                                     TuneJumpIsCheap]>;
-def TuneSiFive8 : SubtargetFeature<"sifive8", "RISCVProcFamily", "SiFive8",
-                                   "SiFive 8-Series processors",
-                                   [TuneNoDefaultUnroll,
-                                    TuneCMOVBranchOpt,
-                                    TuneJumpIsCheap,
-                                    TuneLUIADDIFusion,
-                                    TuneDontSinkSplatOperands]>;
-def TuneSiFive9 : SubtargetFeature<"sifive9", "RISCVProcFamily", "SiFive9",
-                                   "SiFive 9-Series processors",
-                                   [TuneNoDefaultUnroll,
-                                    TuneCMOVBranchOpt,
-                                    TuneJumpIsCheap,
-                                    TuneLUIADDIFusion,
-                                    TuneDontSinkSplatOperands]>;
+def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
+                                      "SiFive P500-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneCMOVBranchOpt,
+                                       TuneJumpIsCheap,
+                                       TuneLUIADDIFusion,
+                                       TuneDontSinkSplatOperands]>;
+def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
+                                      "SiFive P600-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneCMOVBranchOpt,
+                                       TuneJumpIsCheap,
+                                       TuneLUIADDIFusion,
+                                       TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Assume that lock-free native-width atomics are available, even if the target
@@ -695,8 +695,8 @@ include "RISCVSchedSiFive7.td"
 #ifdef SIFIVE_CUSTOMIZATION
 include "RISCVSchedSiFive6.td"
 include "RISCVSchedSiFive7N.td"
-include "RISCVSchedSiFive8.td"
-include "RISCVSchedSiFive9.td"
+include "SiFive_RISCVSchedSiFiveP500.td"
+include "SiFive_RISCVSchedSiFiveP600.td"
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -723,23 +723,20 @@ def : ProcessorModel<"sifive-6-series", SiFive6Model, [],
 
 def : ProcessorModel<"sifive-7m-series", SiFive7Model, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
-
 def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
-
 def : ProcessorModel<"sifive-7o-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
 
-def : ProcessorModel<"sifive-8-series", SiFive8Model, [],
-                     [TuneSiFive8]>;
-def : ProcessorModel<"sifive-p500-series", SiFive8Model, [],
-                     [TuneSiFive8]>;
+def : ProcessorModel<"sifive-8-series", SiFiveP500Model, [],
+                     [TuneSiFiveP500]>;
+def : ProcessorModel<"sifive-p500-series", SiFiveP500Model, [],
+                     [TuneSiFiveP500]>;
 
-def : ProcessorModel<"sifive-9-series", SiFive9Model, [],
-                     [TuneSiFive9]>;
-def : ProcessorModel<"sifive-p600-series", SiFive9Model, [],
-                     [TuneSiFive9]>;
-
+def : ProcessorModel<"sifive-9-series", SiFiveP600Model, [],
+                     [TuneSiFiveP600]>;
+def : ProcessorModel<"sifive-p600-series", SiFiveP600Model, [],
+                     [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def : ProcessorModel<"sifive-e20", RocketModel, [Feature32Bit,
@@ -988,25 +985,25 @@ def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvfwmaccqqq],
                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
-def : ProcessorModel<"sifive-p550", SiFive8Model, [Feature64Bit,
-                                                   FeatureStdExtM,
-                                                   FeatureStdExtA,
-                                                   FeatureStdExtF,
-                                                   FeatureStdExtD,
-                                                   FeatureStdExtC,
-                                                   FeatureStdExtZba,
-                                                   FeatureStdExtZbb],
-                     [TuneSiFive8]>;
+def : ProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
+                                                      FeatureStdExtM,
+                                                      FeatureStdExtA,
+                                                      FeatureStdExtF,
+                                                      FeatureStdExtD,
+                                                      FeatureStdExtC,
+                                                      FeatureStdExtZba,
+                                                      FeatureStdExtZbb],
+                     [TuneSiFiveP500]>;
 
-def : ProcessorModel<"sifive-p650", SiFive9Model, [Feature64Bit,
-                                                   FeatureStdExtM,
-                                                   FeatureStdExtA,
-                                                   FeatureStdExtF,
-                                                   FeatureStdExtD,
-                                                   FeatureStdExtC,
-                                                   FeatureStdExtZba,
-                                                   FeatureStdExtZbb],
-                     [TuneSiFive9]>;
+def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
+                                                      FeatureStdExtM,
+                                                      FeatureStdExtA,
+                                                      FeatureStdExtF,
+                                                      FeatureStdExtD,
+                                                      FeatureStdExtC,
+                                                      FeatureStdExtZba,
+                                                      FeatureStdExtZbb],
+                     [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
