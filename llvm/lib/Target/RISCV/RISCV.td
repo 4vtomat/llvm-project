@@ -652,12 +652,14 @@ def TuneSiFive8 : SubtargetFeature<"sifive8", "RISCVProcFamily", "SiFive8",
                                    "SiFive 8-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneCMOVBranchOpt,
+                                    TuneJumpIsCheap,
                                     TuneLUIADDIFusion,
                                     TuneDontSinkSplatOperands]>;
 def TuneSiFive9 : SubtargetFeature<"sifive9", "RISCVProcFamily", "SiFive9",
                                    "SiFive 9-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneCMOVBranchOpt,
+                                    TuneJumpIsCheap,
                                     TuneLUIADDIFusion,
                                     TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION

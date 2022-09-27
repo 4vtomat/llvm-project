@@ -425,6 +425,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     // FIXME: Need to promote f16 STRICT_* to f32 libcalls, but we don't have
     // complete support for all operations in LegalizeDAG.
 
+#if SIFIVE_CUSTOMIZATION
+    setOperationAction({ISD::STRICT_FRINT, ISD::STRICT_FNEARBYINT,
+                        ISD::STRICT_FCEIL, ISD::STRICT_FFLOOR,
+                        ISD::STRICT_FROUND, ISD::STRICT_FROUNDEVEN,
+                        ISD::STRICT_FTRUNC},
+                       MVT::f16, Promote);
+#endif
+
     // We need to custom promote this.
     if (Subtarget.is64Bit())
       setOperationAction(ISD::FPOWI, MVT::i32, Custom);
