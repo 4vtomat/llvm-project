@@ -520,6 +520,7 @@ public:
   /// complex control flow around the loops.
   virtual std::pair<BasicBlock *, Value *> createVectorizedLoopSkeleton();
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Return true if widen a single call within the innermost loop using vector
   /// predicated intrinsics. Otherwise, return false.
@@ -532,6 +533,8 @@ public:
                             VPTransformState &State,
                             Intrinsic::ID VectorIntrinsicID);
 
+=======
+>>>>>>> upstream/main
   /// Fix the vectorized code, taking care of header phi's, live-outs, and more.
   void fixVectorizedLoop(VPTransformState &State, VPlan &Plan);
 
@@ -9236,7 +9239,7 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
         Phi, Operands[0], Step, *II,
         LoopVectorizationPlanner::getDecisionAndClampRange(
             [&](ElementCount VF) {
-              return !VF.isScalable() && CM.isScalarAfterVectorization(Phi, VF);
+              return CM.isScalarAfterVectorization(Phi, VF);
             },
             Range));
   }
@@ -10543,7 +10546,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   auto *IVR = getParent()->getPlan()->getCanonicalIV();
   PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0));
 
-  if (onlyScalarsGenerated()) {
+  if (onlyScalarsGenerated(State.VF)) {
     // This is the normalized GEP that starts counting at zero.
     Value *PtrInd = State.Builder.CreateSExtOrTrunc(
         CanonicalIV, IndDesc.getStep()->getType());
@@ -10806,6 +10809,15 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
     for (unsigned Part = 0; Part < State.UF; ++Part)
       State.ILV->scalarizeInstruction(UI, this, VPIteration(Part, 0),
                                       IsPredicated, State);
+    return;
+  }
+
+  // A store of a loop varying value to a loop invariant address only
+  // needs only the last copy of the store.
+  if (isa<StoreInst>(UI) && !getOperand(1)->getDef()) {
+    auto Lane = VPLane::getLastLaneForVF(State.VF);
+    State.ILV->scalarizeInstruction(UI, this, VPIteration(State.UF - 1, Lane), IsPredicated,
+                                    State);
     return;
   }
 

@@ -136,7 +136,7 @@ private:
   bool doPeepholeLUIADDI(SDNode *Node); // SIFIVE
   bool doPeepholeMergeVVMFold();
   bool performVMergeToVAdd(SDNode *N);
-  bool performCombineVMergeAndVOps(SDNode *N);
+  bool performCombineVMergeAndVOps(SDNode *N, bool IsTA);
 };
 
 namespace RISCV {
