@@ -78,12 +78,12 @@ def : WriteRes<WriteIMul32, [SiFive7NPipeB]>;
 
 // Integer division
 def : WriteRes<WriteIDiv, [SiFive7NPipeB, SiFive7NIDiv]> {
-  let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let Latency = 66;
+  let ResourceCycles = [1, 65];
 }
 def : WriteRes<WriteIDiv32,  [SiFive7NPipeB, SiFive7NIDiv]> {
-  let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let Latency = 34;
+  let ResourceCycles = [1, 33];
 }
 
 // Bitmanip
@@ -158,7 +158,7 @@ def : WriteRes<WriteAtomicLDD, [SiFive7NPipeA, SiFive7NMem]>;
 
 // Half precision.
 let Latency = 4 in {
-def : WriteRes<WriteFALU16, [SiFive7NPipeB]>;
+def : WriteRes<WriteFAdd16, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMul16, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMA16, [SiFive7NPipeB]>;
 }
@@ -174,7 +174,7 @@ def : WriteRes<WriteFSqrt16, [SiFive7NPipeB, SiFive7NFDiv]> { let Latency = 14;
 
 // Single precision.
 let Latency = 4 in {
-def : WriteRes<WriteFALU32, [SiFive7NPipeB]>;
+def : WriteRes<WriteFAdd32, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMul32, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMA32, [SiFive7NPipeB]>;
 }
@@ -190,7 +190,7 @@ def : WriteRes<WriteFSqrt32, [SiFive7NPipeB, SiFive7NFDiv]> { let Latency = 27;
 
 // Double precision
 let Latency = 4 in {
-def : WriteRes<WriteFALU64, [SiFive7NPipeB]>;
+def : WriteRes<WriteFAdd64, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMul64, [SiFive7NPipeB]>;
 def : WriteRes<WriteFMA64, [SiFive7NPipeB]>;
 }
@@ -541,9 +541,9 @@ def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
 def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
-defm : AnytoFPRBypass<ReadFALU16, 1>;
-defm : AnytoFPRBypass<ReadFALU32, 1>;
-defm : AnytoFPRBypass<ReadFALU64, 1>;
+defm : AnytoFPRBypass<ReadFAdd16, 1>;
+defm : AnytoFPRBypass<ReadFAdd32, 1>;
+defm : AnytoFPRBypass<ReadFAdd64, 1>;
 defm : AnytoFPRBypass<ReadFMul16, 1>;
 defm : AnytoFPRBypass<ReadFMA16, 1>;
 defm : AnytoFPRBypass<ReadFMul32, 1>;

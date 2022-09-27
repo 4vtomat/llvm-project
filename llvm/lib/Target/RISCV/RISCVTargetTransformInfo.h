@@ -200,13 +200,6 @@ public:
                                          TTI::TargetCostKind CostKind,
                                          const Instruction *I);
 
-#if SIFIVE_CUSTOMIZATION
-  InstructionCost getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
-                                     CmpInst::Predicate VecPred,
-                                     TTI::TargetCostKind CostKind,
-                                     const Instruction *I = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
-
   InstructionCost getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
                                    TTI::CastContextHint CCH,
                                    TTI::TargetCostKind CostKind,
@@ -230,6 +223,11 @@ public:
                   unsigned AddressSpace, TTI::TargetCostKind CostKind,
                   TTI::OperandValueInfo OpdInfo = {TTI::OK_AnyValue, TTI::OP_None},
                   const Instruction *I = nullptr);
+
+  InstructionCost getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
+                                     CmpInst::Predicate VecPred,
+                                     TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput,
+                                     const Instruction *I = nullptr);
 
   bool isElementTypeLegalForScalableVector(Type *Ty) const {
     return TLI->isLegalElementTypeForRVV(Ty);
@@ -330,9 +328,7 @@ public:
     case RecurKind::UMax:
     case RecurKind::FMin:
     case RecurKind::FMax:
-#ifdef SIFIVE_CUSTOMIZATION
     case RecurKind::FMulAdd:
-#endif // SIFIVE_CUSTOMIZATION
       return true;
     default:
       return false;

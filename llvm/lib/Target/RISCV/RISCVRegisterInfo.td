@@ -132,6 +132,19 @@ def GPR : RegisterClass<"RISCV", [XLenVT], 32, (add
     (sequence "X%u", 18, 27),
     (sequence "X%u", 0, 4)
   )> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let AltOrders = [(add (sequence "X%u", 10, 17),
+                        (sequence "X%u", 5, 7),
+                        (sequence "X%u", 28, 31),
+                        X1,
+                        (sequence "X%u", 8, 9),
+                        (sequence "X%u", 18, 27),
+                        X0,
+                        (sequence "X%u", 2, 4))];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltGPROrder();
+  }];
+#endif
   let RegInfos = XLenRI;
 }
 
@@ -231,16 +244,38 @@ def FPR16 : RegisterClass<"RISCV", [f16], 16, (add
     (sequence "F%u_H", 10, 17),
     (sequence "F%u_H", 28, 31),
     (sequence "F%u_H", 8, 9),
-    (sequence "F%u_H", 18, 27)
-)>;
+    (sequence "F%u_H", 18, 27))> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let AltOrders = [(add (sequence "F%u_H", 15, 10),
+                        (sequence "F%u_H", 0, 7),
+                        (sequence "F%u_H", 16, 17),
+                        (sequence "F%u_H", 28, 31),
+                        (sequence "F%u_H", 8, 9),
+                        (sequence "F%u_H", 18, 27))];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltFPROrder();
+  }];
+#endif
+}
 
 def FPR32 : RegisterClass<"RISCV", [f32], 32, (add
     (sequence "F%u_F", 0, 7),
     (sequence "F%u_F", 10, 17),
     (sequence "F%u_F", 28, 31),
     (sequence "F%u_F", 8, 9),
-    (sequence "F%u_F", 18, 27)
-)>;
+    (sequence "F%u_F", 18, 27))> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let AltOrders = [(add (sequence "F%u_F", 15, 10),
+                        (sequence "F%u_F", 0, 7),
+                        (sequence "F%u_F", 16, 17),
+                        (sequence "F%u_F", 28, 31),
+                        (sequence "F%u_F", 8, 9),
+                        (sequence "F%u_F", 18, 27))];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltFPROrder();
+  }];
+#endif
+}
 
 def FPR32C : RegisterClass<"RISCV", [f32], 32, (add
   (sequence "F%u_F", 10, 15),
@@ -254,8 +289,19 @@ def FPR64 : RegisterClass<"RISCV", [f64], 64, (add
     (sequence "F%u_D", 10, 17),
     (sequence "F%u_D", 28, 31),
     (sequence "F%u_D", 8, 9),
-    (sequence "F%u_D", 18, 27)
-)>;
+    (sequence "F%u_D", 18, 27))> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let AltOrders = [(add (sequence "F%u_D", 15, 10),
+                        (sequence "F%u_D", 0, 7),
+                        (sequence "F%u_D", 16, 17),
+                        (sequence "F%u_D", 28, 31),
+                        (sequence "F%u_D", 8, 9),
+                        (sequence "F%u_D", 18, 27))];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltFPROrder();
+  }];
+#endif
+}
 
 def FPR64C : RegisterClass<"RISCV", [f64], 64, (add
   (sequence "F%u_D", 10, 15),

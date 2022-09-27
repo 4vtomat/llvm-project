@@ -225,6 +225,12 @@ void LoopVectorizeHints::setAlreadyVectorized() {
 bool LoopVectorizeHints::allowVectorization(
     Function *F, Loop *L, bool VectorizeOnlyWhenForced) const {
   if (getForce() == LoopVectorizeHints::FK_Disabled) {
+#if SIFIVE_CUSTOMIZATION
+    if (ForceVectorization)
+      LLVM_DEBUG(
+          dbgs() << "LV: Not vectorizing, Respects #pragma vectorize(disable) "
+                    "over option 'force-vectorization'\n");
+#endif // SIFIVE_CUSTOMIZATION
     LLVM_DEBUG(dbgs() << "LV: Not vectorizing: #pragma vectorize disable.\n");
     emitRemarkWithHints();
     return false;
@@ -361,7 +367,7 @@ void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
 
   Hint *Hints[] = {&Width,        &Interleave, &Force,
                    &IsVectorized, &Predicate,  &Scalable};
-  for (auto H : Hints) {
+  for (auto *H : Hints) {
     if (Name == H->Name) {
       if (H->validate(Val)) {
         H->Value = Val;

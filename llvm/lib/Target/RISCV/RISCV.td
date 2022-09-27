@@ -469,6 +469,13 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
+def FeatureStdExtZtso
+    : SubtargetFeature<"experimental-ztso", "HasStdExtZtso", "true",
+                       "'Ztso' (Memory Model - Total Store Order)">;
+def HasStdExtZtso : Predicate<"Subtarget->hasStdExtZTso()">,
+                           AssemblerPredicate<(all_of FeatureStdExtZtso),
+                           "'Ztso' (Memory Model - Total Store Order)">;
+
 // Feature32Bit exists to mark CPUs that support RV32 to distinquish them from
 // tuning CPU names.
 def Feature32Bit
@@ -645,12 +652,14 @@ def TuneSiFive8 : SubtargetFeature<"sifive8", "RISCVProcFamily", "SiFive8",
                                    "SiFive 8-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneCMOVBranchOpt,
+                                    TuneJumpIsCheap,
                                     TuneLUIADDIFusion,
                                     TuneDontSinkSplatOperands]>;
 def TuneSiFive9 : SubtargetFeature<"sifive9", "RISCVProcFamily", "SiFive9",
                                    "SiFive 9-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneCMOVBranchOpt,
+                                    TuneJumpIsCheap,
                                     TuneLUIADDIFusion,
                                     TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
@@ -718,10 +727,17 @@ def : ProcessorModel<"sifive-7m-series", SiFive7Model, [],
 def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
 
+def : ProcessorModel<"sifive-7o-series", SiFive7NModel, [],
+                     [TuneSiFive7, TunePseudoLIsimm32]>;
+
 def : ProcessorModel<"sifive-8-series", SiFive8Model, [],
+                     [TuneSiFive8]>;
+def : ProcessorModel<"sifive-p500-series", SiFive8Model, [],
                      [TuneSiFive8]>;
 
 def : ProcessorModel<"sifive-9-series", SiFive9Model, [],
+                     [TuneSiFive9]>;
+def : ProcessorModel<"sifive-p600-series", SiFive9Model, [],
                      [TuneSiFive9]>;
 
 #endif // SIFIVE_CUSTOMIZATION

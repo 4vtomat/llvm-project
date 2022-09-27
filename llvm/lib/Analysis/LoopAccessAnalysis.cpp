@@ -293,7 +293,8 @@ void RuntimePointerChecking::tryToCreateDiffCheck(
 
   auto *SrcAR = dyn_cast<SCEVAddRecExpr>(Src->Expr);
   auto *SinkAR = dyn_cast<SCEVAddRecExpr>(Sink->Expr);
-  if (!SrcAR || !SinkAR) {
+  if (!SrcAR || !SinkAR || SrcAR->getLoop() != DC.getInnermostLoop() ||
+      SinkAR->getLoop() != DC.getInnermostLoop()) {
     CanUseDiffCheck = false;
     return;
   }
@@ -2467,11 +2468,10 @@ void LoopAccessInfo::emitUnsafeDependenceRemark() {
   auto Deps = getDepChecker().getDependences();
   if (!Deps)
     return;
-  auto Found = std::find_if(
-      Deps->begin(), Deps->end(), [](const MemoryDepChecker::Dependence &D) {
-        return MemoryDepChecker::Dependence::isSafeForVectorization(D.Type) !=
-               MemoryDepChecker::VectorizationSafetyStatus::Safe;
-      });
+  auto Found = llvm::find_if(*Deps, [](const MemoryDepChecker::Dependence &D) {
+    return MemoryDepChecker::Dependence::isSafeForVectorization(D.Type) !=
+           MemoryDepChecker::VectorizationSafetyStatus::Safe;
+  });
   if (Found == Deps->end())
     return;
   MemoryDepChecker::Dependence Dep = *Found;

@@ -477,3 +477,11 @@
 // RUN:   -msifive-recode=off -o - \
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
 // CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
+
+// RUN: %clang -target riscv32-unknown-linux-gnu -menable-experimental-extensions \
+// RUN: -march=rv32iztso0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZTSO-EXT %s
+// RUN: %clang -target riscv64-unknown-linux-gnu -menable-experimental-extensions \
+// RUN: -march=rv64iztso0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZTSO-EXT %s
+// CHECK-ZTSO-EXT: __riscv_ztso 1000{{$}}

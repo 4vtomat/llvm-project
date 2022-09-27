@@ -87,6 +87,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbom %s -o - | FileCheck --check-prefix=RV64ZICBOM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicboz %s -o - | FileCheck --check-prefix=RV64ZICBOZ %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-ztso %s -o - | FileCheck --check-prefix=RV64ZTSO %s
 
 ; SIFIVE_CUSTOMIZATION
 ; RV32M: .attribute 5, "rv32i2p1_m2p0"
@@ -175,6 +176,7 @@
 ; RV64ZICBOM: .attribute 5, "rv64i2p1_zicbom1p0"
 ; RV64ZICBOZ: .attribute 5, "rv64i2p1_zicboz1p0"
 ; RV64ZICBOP: .attribute 5, "rv64i2p1_zicbop1p0"
+; RV64ZTSO: .attribute 5, "rv64i2p1_ztso0p1"
 ; end SIFIVE_CUSTOMIZATION
 
 define i32 @addi(i32 %a) {

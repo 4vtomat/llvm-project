@@ -76,10 +76,18 @@ DiagnosedSilenceableFailure
 transform::DecomposeOp::applyToOne(linalg::LinalgOp target,
                                    SmallVectorImpl<Operation *> &results,
                                    transform::TransformState &state) {
-  FailureOr<LinalgOp> windowed =
-      tryApply<DownscaleSizeOneWindowed2DConvolution>(target);
-  if (succeeded(windowed)) {
-    results.push_back(*windowed);
+  FailureOr<LinalgOp> windowedNhwc =
+      tryApply<DownscaleSizeOneWindowed2DConvolution<linalg::Conv2DNhwcHwcfOp,
+                                                     Conv1DNwcWcfOp>>(target);
+  if (succeeded(windowedNhwc)) {
+    results.push_back(*windowedNhwc);
+    return DiagnosedSilenceableFailure(success());
+  }
+  FailureOr<LinalgOp> windowedNchw =
+      tryApply<DownscaleSizeOneWindowed2DConvolution<linalg::Conv2DNchwFchwOp,
+                                                     Conv1DNcwFcwOp>>(target);
+  if (succeeded(windowedNchw)) {
+    results.push_back(*windowedNchw);
     return DiagnosedSilenceableFailure(success());
   }
   FailureOr<LinalgOp> depthwise =
@@ -242,9 +250,6 @@ static FailureOr<SmallVector<Operation *>> tileAndFuse(Operation *producerOp,
   if (sliceOps.empty())
     return failure();
 
-  SmallVector<Value> destinationOperands =
-      tileableProducer.getDestinationOperands(rewriter);
-
   // Try to fuse the producer in-place.
   SmallVector<Operation *> fusedOps;
   for (tensor::ExtractSliceOp sliceOp : sliceOps) {
@@ -253,8 +258,8 @@ static FailureOr<SmallVector<Operation *>> tileAndFuse(Operation *producerOp,
 
     // Tile the producer.
     FailureOr<Value> tiledProducer = tileableProducer.generateResultTileValue(
-        rewriter, /*resultNumber=*/0, destinationOperands,
-        sliceOp.getMixedOffsets(), sliceOp.getMixedSizes(), true);
+        rewriter, /*resultNumber=*/0, sliceOp.getMixedOffsets(),
+        sliceOp.getMixedSizes());
     if (failed(tiledProducer))
       return failure();
     fusedOps.push_back(tiledProducer->getDefiningOp());

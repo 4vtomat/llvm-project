@@ -81,8 +81,8 @@ def : WriteRes<WriteIDiv, [SiFive9MulI2F, SiFive9Div]> {
   let ResourceCycles = [1, 34];
 }
 def : WriteRes<WriteIDiv32,  [SiFive9MulI2F, SiFive9Div]> {
-  let Latency = 35;
-  let ResourceCycles = [1, 34];
+  let Latency = 20;
+  let ResourceCycles = [1, 19];
 }
 
 let Latency = 1 in {
@@ -143,9 +143,9 @@ def : WriteRes<WriteAtomicLDD, [SiFive9LDST]>;
 
 // Floating point
 let Latency = 2 in {
-def : WriteRes<WriteFALU16, [SiFive9FloatArith]>;
-def : WriteRes<WriteFALU32, [SiFive9FloatArith]>;
-def : WriteRes<WriteFALU64, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd16, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd32, [SiFive9FloatArith]>;
+def : WriteRes<WriteFAdd64, [SiFive9FloatArith]>;
 }
 let Latency = 3 in {
 def : WriteRes<WriteFMul16, [SiFive9FloatArith]>;
@@ -267,9 +267,9 @@ def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
 def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
-def : ReadAdvance<ReadFALU16, 0>;
-def : ReadAdvance<ReadFALU32, 0>;
-def : ReadAdvance<ReadFALU64, 0>;
+def : ReadAdvance<ReadFAdd16, 0>;
+def : ReadAdvance<ReadFAdd32, 0>;
+def : ReadAdvance<ReadFAdd64, 0>;
 def : ReadAdvance<ReadFMul16, 0>;
 def : ReadAdvance<ReadFMA16, 0>;
 def : ReadAdvance<ReadFMul32, 0>;
