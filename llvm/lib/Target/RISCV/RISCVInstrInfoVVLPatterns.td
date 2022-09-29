@@ -320,8 +320,8 @@ def riscv_vwmulu_vl : SDNode<"RISCVISD::VWMULU_VL", SDT_RISCVVWBinOp_VL, [SDNPCo
 def riscv_vwmulsu_vl : SDNode<"RISCVISD::VWMULSU_VL", SDT_RISCVVWBinOp_VL>;
 def riscv_vwadd_vl :  SDNode<"RISCVISD::VWADD_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
 def riscv_vwaddu_vl : SDNode<"RISCVISD::VWADDU_VL", SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
-def riscv_vwsub_vl :  SDNode<"RISCVISD::VWSUB_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
-def riscv_vwsubu_vl : SDNode<"RISCVISD::VWSUBU_VL", SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
+def riscv_vwsub_vl :  SDNode<"RISCVISD::VWSUB_VL",  SDT_RISCVVWBinOp_VL, []>;
+def riscv_vwsubu_vl : SDNode<"RISCVISD::VWSUBU_VL", SDT_RISCVVWBinOp_VL, []>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfwmul_vl  : SDNode<"RISCVISD::VFWMUL_VL",  SDT_RISCVVWBinOp_VL, [SDNPCommutative]>;
