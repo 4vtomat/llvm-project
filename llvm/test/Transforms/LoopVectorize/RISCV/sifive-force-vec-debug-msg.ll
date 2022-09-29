@@ -90,7 +90,7 @@ for.body:                                         ; preds = %for.body.lr.ph, %fo
 ; }
 
 ; CHECK: LV: Not vectorizing, Respects #pragma vectorize(disable) over option 'force-vectorization'
-define signext i32 @foo(ptr %a, i32 %n) #0 {
+define signext i32 @foo(ptr %a, i32 %n) {
 entry:
   %cmp4 = icmp sgt i32 %n, 0
   br i1 %cmp4, label %for.body.preheader, label %for.cond.cleanup
@@ -114,9 +114,5 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body, !llvm.loop !0
 }
 
-attributes #0 = { argmemonly nofree norecurse nosync nounwind readonly "frame-pointer"="none" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+v,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b,-save-restore" }
-
-!0 = distinct !{!0, !1, !2, !3}
-!1 = !{!"llvm.loop.mustprogress"}
-!2 = !{!"llvm.loop.unroll.disable"}
-!3 = !{!"llvm.loop.vectorize.enable", i1 false}
+!0 = distinct !{!0, !1}
+!1 = !{!"llvm.loop.vectorize.enable", i1 false}

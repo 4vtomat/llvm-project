@@ -396,6 +396,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
+
+  bool forceCheckAddressingMode() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 

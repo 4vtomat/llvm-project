@@ -1225,5 +1225,9 @@ bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
   // can benefit.
   return PreferPostFixStartValue;
 }
+
+bool RISCVTTIImpl::forceCheckAddressingMode() const {
+  return true;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
