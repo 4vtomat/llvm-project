@@ -978,7 +978,7 @@ bool llvm::computeUnrollCount(
     }
   }
 
-  // 5th priority is loop peeling.
+  // 5th priority is loop prolog peeling. - SIFIVE
   computePeelCount(L, LoopSize, PP, TripCount, DT, SE, AC, UP.Threshold);
   if (PP.PeelCount) {
     UP.Runtime = false;
