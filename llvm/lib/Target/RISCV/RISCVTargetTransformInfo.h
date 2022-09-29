@@ -397,7 +397,12 @@ public:
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
+<<<<<<< HEAD
   Type *getScalableVectorFromFixed(Type *Ty) const;
+=======
+
+  bool forceCheckAddressingMode() const;
+>>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
 };
 

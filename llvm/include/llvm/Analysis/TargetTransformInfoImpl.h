@@ -863,6 +863,8 @@ public:
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
     return false;
   }
+
+  bool forceCheckAddressingMode() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
   unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
 

@@ -1221,6 +1221,7 @@ bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
   return PreferPostFixStartValue;
 }
 
+<<<<<<< HEAD
 Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
   FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
   assert(VecTy->getElementType()->isIntegerTy() ||
@@ -1234,6 +1235,10 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
   NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);
   assert(isPowerOf2_32(NumElts) && "Expected power of 2 NumElts");
   return ScalableVectorType::get(VecTy->getElementType(), NumElts);
+=======
+bool RISCVTTIImpl::forceCheckAddressingMode() const {
+  return true;
+>>>>>>> origin/sifive-dev
 }
 #endif // SIFIVE_CUSTOMIZATION
 

@@ -1194,6 +1194,10 @@ bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
                                                   Type *Ty) const {
   return TTIImpl->preferPostFixStartValue(Opcode, Ty);
 }
+
+bool TargetTransformInfo::forceCheckAddressingMode() const {
+  return TTIImpl->forceCheckAddressingMode();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::Concept::~Concept() = default;

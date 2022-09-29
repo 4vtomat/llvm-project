@@ -41,8 +41,8 @@ public:
     SiFive6, // SIFIVE
     SiFive7,
 #if SIFIVE_CUSTOMIZATION
-    SiFive8,
-    SiFive9,
+    SiFiveP500,
+    SiFiveP600,
 #endif // SIFIVE_CUSTOMIZATION
   };
 

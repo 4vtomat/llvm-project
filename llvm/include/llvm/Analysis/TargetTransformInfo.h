@@ -1504,6 +1504,10 @@ public:
   /// \returns True if the target prefers to postpone the computation of the
   /// start value.
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
+
+  /// \returns True if the target force to check addressing mode
+  /// in SeparateConstOffsetFromGEP pass.
+  bool forceCheckAddressingMode() const;
 #endif // SIFIVE_CUSTOMIZATION
   /// \returns the lower bound of a trip count to decide on vectorization
   /// while tail-folding.
@@ -1927,6 +1931,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   virtual bool useVLAVectorizer() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
+  virtual bool forceCheckAddressingMode() = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
@@ -2619,6 +2624,10 @@ public:
 
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override {
     return Impl.preferPostFixStartValue(Opcode, Ty);
+  }
+
+  bool forceCheckAddressingMode() override {
+    return Impl.forceCheckAddressingMode();
   }
 #endif // SIFIVE_CUSTOMIZATION
   VPLegalization
