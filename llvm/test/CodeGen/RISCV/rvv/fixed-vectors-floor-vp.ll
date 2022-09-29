@@ -635,6 +635,7 @@ define <32 x double> @vp_floor_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    lui a2, %hi(.LCPI26_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI26_0)(a2)
 ; CHECK-NEXT:    vsetvli zero, a1, e64, m8, ta, mu
@@ -676,6 +677,7 @@ define <32 x double> @vp_floor_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <32 x double> @llvm.vp.floor.v32f64(<32 x double> %va, <32 x i1> %m, i32 %evl)
@@ -698,6 +700,7 @@ define <32 x double> @vp_floor_v32f64_unmasked(<32 x double> %va, i32 zeroext %e
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    lui a2, %hi(.LCPI27_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI27_0)(a2)
 ; CHECK-NEXT:    vsetvli zero, a1, e64, m8, ta, mu
@@ -740,6 +743,7 @@ define <32 x double> @vp_floor_v32f64_unmasked(<32 x double> %va, i32 zeroext %e
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %head = insertelement <32 x i1> poison, i1 true, i32 0

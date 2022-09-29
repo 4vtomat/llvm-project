@@ -546,12 +546,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SELECT,      ISD::VP_SINT_TO_FP,  ISD::VP_UINT_TO_FP,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
-<<<<<<< HEAD
-        ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
-=======
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-        ISD::VP_FROUNDEVEN};
->>>>>>> upstream/main
+        ISD::VP_FROUNDEVEN,  ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
 
     static const unsigned IntegerVecReduceOps[] = {
         ISD::VECREDUCE_ADD,  ISD::VECREDUCE_AND,  ISD::VECREDUCE_OR,
@@ -4422,7 +4418,11 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerVPStridedLoad(Op, DAG);
   case ISD::EXPERIMENTAL_VP_STRIDED_STORE:
     return lowerVPStridedStore(Op, DAG);
-<<<<<<< HEAD
+  case ISD::VP_FCEIL:
+  case ISD::VP_FFLOOR:
+  case ISD::VP_FROUND:
+  case ISD::VP_FROUNDEVEN:
+    return lowerFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
 #if SIFIVE_CUSTOMIZATION
   // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
@@ -4430,13 +4430,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::EXPERIMENTAL_VP_REVERSE:
     return lowerVPReverseExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case ISD::VP_FCEIL:
-  case ISD::VP_FFLOOR:
-  case ISD::VP_FROUND:
-  case ISD::VP_FROUNDEVEN:
-    return lowerFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
->>>>>>> upstream/main
   }
 }
 

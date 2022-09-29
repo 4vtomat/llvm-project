@@ -52,8 +52,6 @@ define void @splat_store_i16(ptr %dest, ptr %p) {
 ; CHECK-NEXT:    store i16 [[E0]], ptr [[INC2]], align 2
 ; CHECK-NEXT:    ret void
 ;
-<<<<<<< HEAD
-=======
 ; DEFAULT-LABEL: @splat_store_i16(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
@@ -62,7 +60,6 @@ define void @splat_store_i16(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[E0]], ptr [[INC2]], align 2
 ; DEFAULT-NEXT:    ret void
 ;
->>>>>>> upstream/main
 entry:
   %e0 = load i16, ptr %p, align 4
 

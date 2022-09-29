@@ -843,8 +843,8 @@ define i64 @extractelt_nxv16i64_idx(<vscale x 16 x i64> %v, i32 signext %idx) {
 ; CHECK-LABEL: extractelt_nxv16i64_idx:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a2, a1, 1
-; CHECK-NEXT:    addi a2, a2, -1
+; CHECK-NEXT:    slliw a2, a1, 1
+; CHECK-NEXT:    addiw a2, a2, -1
 ; CHECK-NEXT:    bltu a0, a2, .LBB74_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a0, a2

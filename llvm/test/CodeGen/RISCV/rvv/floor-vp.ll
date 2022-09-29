@@ -708,6 +708,7 @@ define <vscale x 16 x double> @vp_floor_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    csrr a3, vlenb
 ; CHECK-NEXT:    slli a3, a3, 3
 ; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    lui a3, %hi(.LCPI32_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI32_0)(a3)
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, mu
@@ -748,6 +749,7 @@ define <vscale x 16 x double> @vp_floor_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <vscale x 16 x double> @llvm.vp.floor.nxv16f64(<vscale x 16 x double> %va, <vscale x 16 x i1> %m, i32 %evl)
