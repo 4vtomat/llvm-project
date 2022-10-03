@@ -445,7 +445,6 @@ multiclass VPatBinaryVL_V<SDNode vop,
                      (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_V<SDNode vop,
                              string instruction_name,
@@ -476,7 +475,7 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
                      GPR:$vl, sew, (XLenVT timm:$policy))>;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                                     string instruction_name,
                                     string suffix,
@@ -497,7 +496,6 @@ multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                      op2_reg_class:$rs2,
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
->>>>>>> upstream/main
 
 multiclass VPatBinaryVL_XI<SDNode vop,
                            string instruction_name,
