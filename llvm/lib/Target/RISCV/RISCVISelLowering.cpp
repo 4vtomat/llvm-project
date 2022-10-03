@@ -547,11 +547,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-<<<<<<< HEAD
-        ISD::VP_FROUNDEVEN,  ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
-=======
-        ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN};
->>>>>>> upstream/main
+        ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN, ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
 
     static const unsigned IntegerVecReduceOps[] = {
         ISD::VECREDUCE_ADD,  ISD::VECREDUCE_AND,  ISD::VECREDUCE_OR,
