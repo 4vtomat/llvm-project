@@ -4,18 +4,16 @@
 define void @vqtbx1_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v9, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -29,18 +27,16 @@ entry:
 define void @vqtbx1_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v9, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -57,11 +53,10 @@ define void @vqtbx1q_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vrgather.vv v11, v9, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -78,11 +73,10 @@ define void @vqtbx1q_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vrgather.vv v11, v9, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -96,20 +90,18 @@ entry:
 define void @vqtbx2_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx2_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -125,20 +117,18 @@ entry:
 define void @vqtbx2_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx2_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -154,20 +144,18 @@ entry:
 define void @vqtbx2q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx2q_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -183,20 +171,18 @@ entry:
 define void @vqtbx2q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx2q_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -223,114 +209,113 @@ define void @vqtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    lb a4, 47(a1)
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lb a0, 46(a1)
-; CHECK-NEXT:    sb a0, 46(sp)
-; CHECK-NEXT:    lb a0, 45(a1)
-; CHECK-NEXT:    sb a0, 45(sp)
-; CHECK-NEXT:    lb a0, 44(a1)
-; CHECK-NEXT:    sb a0, 44(sp)
-; CHECK-NEXT:    lb a0, 43(a1)
-; CHECK-NEXT:    sb a0, 43(sp)
-; CHECK-NEXT:    lb a0, 42(a1)
-; CHECK-NEXT:    sb a0, 42(sp)
-; CHECK-NEXT:    lb a0, 41(a1)
-; CHECK-NEXT:    sb a0, 41(sp)
-; CHECK-NEXT:    lb a0, 40(a1)
-; CHECK-NEXT:    sb a0, 40(sp)
-; CHECK-NEXT:    lb a0, 39(a1)
-; CHECK-NEXT:    sb a0, 39(sp)
-; CHECK-NEXT:    lb a0, 38(a1)
-; CHECK-NEXT:    sb a0, 38(sp)
-; CHECK-NEXT:    lb a0, 37(a1)
-; CHECK-NEXT:    sb a0, 37(sp)
-; CHECK-NEXT:    lb a0, 36(a1)
-; CHECK-NEXT:    sb a0, 36(sp)
-; CHECK-NEXT:    lb a0, 35(a1)
-; CHECK-NEXT:    sb a0, 35(sp)
-; CHECK-NEXT:    lb a0, 34(a1)
-; CHECK-NEXT:    sb a0, 34(sp)
-; CHECK-NEXT:    lb a0, 33(a1)
-; CHECK-NEXT:    sb a0, 33(sp)
-; CHECK-NEXT:    lb a0, 32(a1)
-; CHECK-NEXT:    sb a0, 32(sp)
-; CHECK-NEXT:    lb a0, 31(a1)
-; CHECK-NEXT:    sb a0, 31(sp)
-; CHECK-NEXT:    lb a0, 30(a1)
-; CHECK-NEXT:    sb a0, 30(sp)
-; CHECK-NEXT:    lb a0, 29(a1)
-; CHECK-NEXT:    sb a0, 29(sp)
-; CHECK-NEXT:    lb a0, 28(a1)
-; CHECK-NEXT:    sb a0, 28(sp)
-; CHECK-NEXT:    lb a0, 27(a1)
-; CHECK-NEXT:    sb a0, 27(sp)
-; CHECK-NEXT:    lb a0, 26(a1)
-; CHECK-NEXT:    sb a0, 26(sp)
-; CHECK-NEXT:    lb a0, 25(a1)
-; CHECK-NEXT:    sb a0, 25(sp)
-; CHECK-NEXT:    lb a0, 24(a1)
-; CHECK-NEXT:    sb a0, 24(sp)
-; CHECK-NEXT:    lb a0, 23(a1)
-; CHECK-NEXT:    sb a0, 23(sp)
-; CHECK-NEXT:    lb a0, 22(a1)
-; CHECK-NEXT:    sb a0, 22(sp)
-; CHECK-NEXT:    lb a0, 21(a1)
-; CHECK-NEXT:    sb a0, 21(sp)
-; CHECK-NEXT:    lb a0, 20(a1)
-; CHECK-NEXT:    sb a0, 20(sp)
-; CHECK-NEXT:    lb a0, 19(a1)
-; CHECK-NEXT:    sb a0, 19(sp)
-; CHECK-NEXT:    lb a0, 18(a1)
-; CHECK-NEXT:    sb a0, 18(sp)
-; CHECK-NEXT:    lb a0, 17(a1)
-; CHECK-NEXT:    sb a0, 17(sp)
-; CHECK-NEXT:    lb a0, 16(a1)
-; CHECK-NEXT:    sb a0, 16(sp)
-; CHECK-NEXT:    lb a0, 15(a1)
-; CHECK-NEXT:    sb a0, 15(sp)
-; CHECK-NEXT:    lb a0, 14(a1)
-; CHECK-NEXT:    sb a0, 14(sp)
-; CHECK-NEXT:    lb a0, 13(a1)
-; CHECK-NEXT:    sb a0, 13(sp)
-; CHECK-NEXT:    lb a0, 12(a1)
-; CHECK-NEXT:    sb a0, 12(sp)
-; CHECK-NEXT:    lb a0, 11(a1)
-; CHECK-NEXT:    sb a0, 11(sp)
-; CHECK-NEXT:    lb a0, 10(a1)
-; CHECK-NEXT:    sb a0, 10(sp)
-; CHECK-NEXT:    lb a0, 9(a1)
-; CHECK-NEXT:    sb a0, 9(sp)
-; CHECK-NEXT:    lb a0, 8(a1)
-; CHECK-NEXT:    sb a0, 8(sp)
-; CHECK-NEXT:    lb a0, 7(a1)
-; CHECK-NEXT:    sb a0, 7(sp)
-; CHECK-NEXT:    lb a0, 6(a1)
-; CHECK-NEXT:    sb a0, 6(sp)
-; CHECK-NEXT:    lb a0, 5(a1)
-; CHECK-NEXT:    sb a0, 5(sp)
-; CHECK-NEXT:    lb a0, 4(a1)
-; CHECK-NEXT:    sb a0, 4(sp)
-; CHECK-NEXT:    lb a0, 3(a1)
-; CHECK-NEXT:    sb a0, 3(sp)
-; CHECK-NEXT:    lb a0, 2(a1)
-; CHECK-NEXT:    sb a0, 2(sp)
-; CHECK-NEXT:    lb a0, 1(a1)
-; CHECK-NEXT:    sb a0, 1(sp)
-; CHECK-NEXT:    lb a0, 0(a1)
-; CHECK-NEXT:    sb a0, 0(sp)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a1)
+; CHECK-NEXT:    lb a2, 46(a1)
+; CHECK-NEXT:    sb a2, 46(sp)
+; CHECK-NEXT:    lb a2, 45(a1)
+; CHECK-NEXT:    sb a2, 45(sp)
+; CHECK-NEXT:    lb a2, 44(a1)
+; CHECK-NEXT:    sb a2, 44(sp)
+; CHECK-NEXT:    lb a2, 43(a1)
+; CHECK-NEXT:    sb a2, 43(sp)
+; CHECK-NEXT:    lb a2, 42(a1)
+; CHECK-NEXT:    sb a2, 42(sp)
+; CHECK-NEXT:    lb a2, 41(a1)
+; CHECK-NEXT:    sb a2, 41(sp)
+; CHECK-NEXT:    lb a2, 40(a1)
+; CHECK-NEXT:    sb a2, 40(sp)
+; CHECK-NEXT:    lb a2, 39(a1)
+; CHECK-NEXT:    sb a2, 39(sp)
+; CHECK-NEXT:    lb a2, 38(a1)
+; CHECK-NEXT:    sb a2, 38(sp)
+; CHECK-NEXT:    lb a2, 37(a1)
+; CHECK-NEXT:    sb a2, 37(sp)
+; CHECK-NEXT:    lb a2, 36(a1)
+; CHECK-NEXT:    sb a2, 36(sp)
+; CHECK-NEXT:    lb a2, 35(a1)
+; CHECK-NEXT:    sb a2, 35(sp)
+; CHECK-NEXT:    lb a2, 34(a1)
+; CHECK-NEXT:    sb a2, 34(sp)
+; CHECK-NEXT:    lb a2, 33(a1)
+; CHECK-NEXT:    sb a2, 33(sp)
+; CHECK-NEXT:    lb a2, 32(a1)
+; CHECK-NEXT:    sb a2, 32(sp)
+; CHECK-NEXT:    lb a2, 31(a1)
+; CHECK-NEXT:    sb a2, 31(sp)
+; CHECK-NEXT:    lb a2, 30(a1)
+; CHECK-NEXT:    sb a2, 30(sp)
+; CHECK-NEXT:    lb a2, 29(a1)
+; CHECK-NEXT:    sb a2, 29(sp)
+; CHECK-NEXT:    lb a2, 28(a1)
+; CHECK-NEXT:    sb a2, 28(sp)
+; CHECK-NEXT:    lb a2, 27(a1)
+; CHECK-NEXT:    sb a2, 27(sp)
+; CHECK-NEXT:    lb a2, 26(a1)
+; CHECK-NEXT:    sb a2, 26(sp)
+; CHECK-NEXT:    lb a2, 25(a1)
+; CHECK-NEXT:    sb a2, 25(sp)
+; CHECK-NEXT:    lb a2, 24(a1)
+; CHECK-NEXT:    sb a2, 24(sp)
+; CHECK-NEXT:    lb a2, 23(a1)
+; CHECK-NEXT:    sb a2, 23(sp)
+; CHECK-NEXT:    lb a2, 22(a1)
+; CHECK-NEXT:    sb a2, 22(sp)
+; CHECK-NEXT:    lb a2, 21(a1)
+; CHECK-NEXT:    sb a2, 21(sp)
+; CHECK-NEXT:    lb a2, 20(a1)
+; CHECK-NEXT:    sb a2, 20(sp)
+; CHECK-NEXT:    lb a2, 19(a1)
+; CHECK-NEXT:    sb a2, 19(sp)
+; CHECK-NEXT:    lb a2, 18(a1)
+; CHECK-NEXT:    sb a2, 18(sp)
+; CHECK-NEXT:    lb a2, 17(a1)
+; CHECK-NEXT:    sb a2, 17(sp)
+; CHECK-NEXT:    lb a2, 16(a1)
+; CHECK-NEXT:    sb a2, 16(sp)
+; CHECK-NEXT:    lb a2, 15(a1)
+; CHECK-NEXT:    sb a2, 15(sp)
+; CHECK-NEXT:    lb a2, 14(a1)
+; CHECK-NEXT:    sb a2, 14(sp)
+; CHECK-NEXT:    lb a2, 13(a1)
+; CHECK-NEXT:    sb a2, 13(sp)
+; CHECK-NEXT:    lb a2, 12(a1)
+; CHECK-NEXT:    sb a2, 12(sp)
+; CHECK-NEXT:    lb a2, 11(a1)
+; CHECK-NEXT:    sb a2, 11(sp)
+; CHECK-NEXT:    lb a2, 10(a1)
+; CHECK-NEXT:    sb a2, 10(sp)
+; CHECK-NEXT:    lb a2, 9(a1)
+; CHECK-NEXT:    sb a2, 9(sp)
+; CHECK-NEXT:    lb a2, 8(a1)
+; CHECK-NEXT:    sb a2, 8(sp)
+; CHECK-NEXT:    lb a2, 7(a1)
+; CHECK-NEXT:    sb a2, 7(sp)
+; CHECK-NEXT:    lb a2, 6(a1)
+; CHECK-NEXT:    sb a2, 6(sp)
+; CHECK-NEXT:    lb a2, 5(a1)
+; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lb a2, 4(a1)
+; CHECK-NEXT:    sb a2, 4(sp)
+; CHECK-NEXT:    lb a2, 3(a1)
+; CHECK-NEXT:    sb a2, 3(sp)
+; CHECK-NEXT:    lb a2, 2(a1)
+; CHECK-NEXT:    sb a2, 2(sp)
+; CHECK-NEXT:    lb a2, 1(a1)
+; CHECK-NEXT:    sb a2, 1(sp)
+; CHECK-NEXT:    lb a1, 0(a1)
+; CHECK-NEXT:    sb a1, 0(sp)
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    mv a2, sp
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v16, v12
-; CHECK-NEXT:    li a0, 47
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    li a1, 47
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    addi sp, s0, -128
 ; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
@@ -362,114 +347,113 @@ define void @vqtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    lb a4, 47(a1)
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lb a0, 46(a1)
-; CHECK-NEXT:    sb a0, 46(sp)
-; CHECK-NEXT:    lb a0, 45(a1)
-; CHECK-NEXT:    sb a0, 45(sp)
-; CHECK-NEXT:    lb a0, 44(a1)
-; CHECK-NEXT:    sb a0, 44(sp)
-; CHECK-NEXT:    lb a0, 43(a1)
-; CHECK-NEXT:    sb a0, 43(sp)
-; CHECK-NEXT:    lb a0, 42(a1)
-; CHECK-NEXT:    sb a0, 42(sp)
-; CHECK-NEXT:    lb a0, 41(a1)
-; CHECK-NEXT:    sb a0, 41(sp)
-; CHECK-NEXT:    lb a0, 40(a1)
-; CHECK-NEXT:    sb a0, 40(sp)
-; CHECK-NEXT:    lb a0, 39(a1)
-; CHECK-NEXT:    sb a0, 39(sp)
-; CHECK-NEXT:    lb a0, 38(a1)
-; CHECK-NEXT:    sb a0, 38(sp)
-; CHECK-NEXT:    lb a0, 37(a1)
-; CHECK-NEXT:    sb a0, 37(sp)
-; CHECK-NEXT:    lb a0, 36(a1)
-; CHECK-NEXT:    sb a0, 36(sp)
-; CHECK-NEXT:    lb a0, 35(a1)
-; CHECK-NEXT:    sb a0, 35(sp)
-; CHECK-NEXT:    lb a0, 34(a1)
-; CHECK-NEXT:    sb a0, 34(sp)
-; CHECK-NEXT:    lb a0, 33(a1)
-; CHECK-NEXT:    sb a0, 33(sp)
-; CHECK-NEXT:    lb a0, 32(a1)
-; CHECK-NEXT:    sb a0, 32(sp)
-; CHECK-NEXT:    lb a0, 31(a1)
-; CHECK-NEXT:    sb a0, 31(sp)
-; CHECK-NEXT:    lb a0, 30(a1)
-; CHECK-NEXT:    sb a0, 30(sp)
-; CHECK-NEXT:    lb a0, 29(a1)
-; CHECK-NEXT:    sb a0, 29(sp)
-; CHECK-NEXT:    lb a0, 28(a1)
-; CHECK-NEXT:    sb a0, 28(sp)
-; CHECK-NEXT:    lb a0, 27(a1)
-; CHECK-NEXT:    sb a0, 27(sp)
-; CHECK-NEXT:    lb a0, 26(a1)
-; CHECK-NEXT:    sb a0, 26(sp)
-; CHECK-NEXT:    lb a0, 25(a1)
-; CHECK-NEXT:    sb a0, 25(sp)
-; CHECK-NEXT:    lb a0, 24(a1)
-; CHECK-NEXT:    sb a0, 24(sp)
-; CHECK-NEXT:    lb a0, 23(a1)
-; CHECK-NEXT:    sb a0, 23(sp)
-; CHECK-NEXT:    lb a0, 22(a1)
-; CHECK-NEXT:    sb a0, 22(sp)
-; CHECK-NEXT:    lb a0, 21(a1)
-; CHECK-NEXT:    sb a0, 21(sp)
-; CHECK-NEXT:    lb a0, 20(a1)
-; CHECK-NEXT:    sb a0, 20(sp)
-; CHECK-NEXT:    lb a0, 19(a1)
-; CHECK-NEXT:    sb a0, 19(sp)
-; CHECK-NEXT:    lb a0, 18(a1)
-; CHECK-NEXT:    sb a0, 18(sp)
-; CHECK-NEXT:    lb a0, 17(a1)
-; CHECK-NEXT:    sb a0, 17(sp)
-; CHECK-NEXT:    lb a0, 16(a1)
-; CHECK-NEXT:    sb a0, 16(sp)
-; CHECK-NEXT:    lb a0, 15(a1)
-; CHECK-NEXT:    sb a0, 15(sp)
-; CHECK-NEXT:    lb a0, 14(a1)
-; CHECK-NEXT:    sb a0, 14(sp)
-; CHECK-NEXT:    lb a0, 13(a1)
-; CHECK-NEXT:    sb a0, 13(sp)
-; CHECK-NEXT:    lb a0, 12(a1)
-; CHECK-NEXT:    sb a0, 12(sp)
-; CHECK-NEXT:    lb a0, 11(a1)
-; CHECK-NEXT:    sb a0, 11(sp)
-; CHECK-NEXT:    lb a0, 10(a1)
-; CHECK-NEXT:    sb a0, 10(sp)
-; CHECK-NEXT:    lb a0, 9(a1)
-; CHECK-NEXT:    sb a0, 9(sp)
-; CHECK-NEXT:    lb a0, 8(a1)
-; CHECK-NEXT:    sb a0, 8(sp)
-; CHECK-NEXT:    lb a0, 7(a1)
-; CHECK-NEXT:    sb a0, 7(sp)
-; CHECK-NEXT:    lb a0, 6(a1)
-; CHECK-NEXT:    sb a0, 6(sp)
-; CHECK-NEXT:    lb a0, 5(a1)
-; CHECK-NEXT:    sb a0, 5(sp)
-; CHECK-NEXT:    lb a0, 4(a1)
-; CHECK-NEXT:    sb a0, 4(sp)
-; CHECK-NEXT:    lb a0, 3(a1)
-; CHECK-NEXT:    sb a0, 3(sp)
-; CHECK-NEXT:    lb a0, 2(a1)
-; CHECK-NEXT:    sb a0, 2(sp)
-; CHECK-NEXT:    lb a0, 1(a1)
-; CHECK-NEXT:    sb a0, 1(sp)
-; CHECK-NEXT:    lb a0, 0(a1)
-; CHECK-NEXT:    sb a0, 0(sp)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a1)
+; CHECK-NEXT:    lb a2, 46(a1)
+; CHECK-NEXT:    sb a2, 46(sp)
+; CHECK-NEXT:    lb a2, 45(a1)
+; CHECK-NEXT:    sb a2, 45(sp)
+; CHECK-NEXT:    lb a2, 44(a1)
+; CHECK-NEXT:    sb a2, 44(sp)
+; CHECK-NEXT:    lb a2, 43(a1)
+; CHECK-NEXT:    sb a2, 43(sp)
+; CHECK-NEXT:    lb a2, 42(a1)
+; CHECK-NEXT:    sb a2, 42(sp)
+; CHECK-NEXT:    lb a2, 41(a1)
+; CHECK-NEXT:    sb a2, 41(sp)
+; CHECK-NEXT:    lb a2, 40(a1)
+; CHECK-NEXT:    sb a2, 40(sp)
+; CHECK-NEXT:    lb a2, 39(a1)
+; CHECK-NEXT:    sb a2, 39(sp)
+; CHECK-NEXT:    lb a2, 38(a1)
+; CHECK-NEXT:    sb a2, 38(sp)
+; CHECK-NEXT:    lb a2, 37(a1)
+; CHECK-NEXT:    sb a2, 37(sp)
+; CHECK-NEXT:    lb a2, 36(a1)
+; CHECK-NEXT:    sb a2, 36(sp)
+; CHECK-NEXT:    lb a2, 35(a1)
+; CHECK-NEXT:    sb a2, 35(sp)
+; CHECK-NEXT:    lb a2, 34(a1)
+; CHECK-NEXT:    sb a2, 34(sp)
+; CHECK-NEXT:    lb a2, 33(a1)
+; CHECK-NEXT:    sb a2, 33(sp)
+; CHECK-NEXT:    lb a2, 32(a1)
+; CHECK-NEXT:    sb a2, 32(sp)
+; CHECK-NEXT:    lb a2, 31(a1)
+; CHECK-NEXT:    sb a2, 31(sp)
+; CHECK-NEXT:    lb a2, 30(a1)
+; CHECK-NEXT:    sb a2, 30(sp)
+; CHECK-NEXT:    lb a2, 29(a1)
+; CHECK-NEXT:    sb a2, 29(sp)
+; CHECK-NEXT:    lb a2, 28(a1)
+; CHECK-NEXT:    sb a2, 28(sp)
+; CHECK-NEXT:    lb a2, 27(a1)
+; CHECK-NEXT:    sb a2, 27(sp)
+; CHECK-NEXT:    lb a2, 26(a1)
+; CHECK-NEXT:    sb a2, 26(sp)
+; CHECK-NEXT:    lb a2, 25(a1)
+; CHECK-NEXT:    sb a2, 25(sp)
+; CHECK-NEXT:    lb a2, 24(a1)
+; CHECK-NEXT:    sb a2, 24(sp)
+; CHECK-NEXT:    lb a2, 23(a1)
+; CHECK-NEXT:    sb a2, 23(sp)
+; CHECK-NEXT:    lb a2, 22(a1)
+; CHECK-NEXT:    sb a2, 22(sp)
+; CHECK-NEXT:    lb a2, 21(a1)
+; CHECK-NEXT:    sb a2, 21(sp)
+; CHECK-NEXT:    lb a2, 20(a1)
+; CHECK-NEXT:    sb a2, 20(sp)
+; CHECK-NEXT:    lb a2, 19(a1)
+; CHECK-NEXT:    sb a2, 19(sp)
+; CHECK-NEXT:    lb a2, 18(a1)
+; CHECK-NEXT:    sb a2, 18(sp)
+; CHECK-NEXT:    lb a2, 17(a1)
+; CHECK-NEXT:    sb a2, 17(sp)
+; CHECK-NEXT:    lb a2, 16(a1)
+; CHECK-NEXT:    sb a2, 16(sp)
+; CHECK-NEXT:    lb a2, 15(a1)
+; CHECK-NEXT:    sb a2, 15(sp)
+; CHECK-NEXT:    lb a2, 14(a1)
+; CHECK-NEXT:    sb a2, 14(sp)
+; CHECK-NEXT:    lb a2, 13(a1)
+; CHECK-NEXT:    sb a2, 13(sp)
+; CHECK-NEXT:    lb a2, 12(a1)
+; CHECK-NEXT:    sb a2, 12(sp)
+; CHECK-NEXT:    lb a2, 11(a1)
+; CHECK-NEXT:    sb a2, 11(sp)
+; CHECK-NEXT:    lb a2, 10(a1)
+; CHECK-NEXT:    sb a2, 10(sp)
+; CHECK-NEXT:    lb a2, 9(a1)
+; CHECK-NEXT:    sb a2, 9(sp)
+; CHECK-NEXT:    lb a2, 8(a1)
+; CHECK-NEXT:    sb a2, 8(sp)
+; CHECK-NEXT:    lb a2, 7(a1)
+; CHECK-NEXT:    sb a2, 7(sp)
+; CHECK-NEXT:    lb a2, 6(a1)
+; CHECK-NEXT:    sb a2, 6(sp)
+; CHECK-NEXT:    lb a2, 5(a1)
+; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lb a2, 4(a1)
+; CHECK-NEXT:    sb a2, 4(sp)
+; CHECK-NEXT:    lb a2, 3(a1)
+; CHECK-NEXT:    sb a2, 3(sp)
+; CHECK-NEXT:    lb a2, 2(a1)
+; CHECK-NEXT:    sb a2, 2(sp)
+; CHECK-NEXT:    lb a2, 1(a1)
+; CHECK-NEXT:    sb a2, 1(sp)
+; CHECK-NEXT:    lb a1, 0(a1)
+; CHECK-NEXT:    sb a1, 0(sp)
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    mv a2, sp
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v16, v12
-; CHECK-NEXT:    li a0, 47
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    li a1, 47
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    addi sp, s0, -128
 ; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
@@ -501,114 +485,113 @@ define void @vqtbx3q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    lb a4, 47(a1)
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lb a0, 46(a1)
-; CHECK-NEXT:    sb a0, 46(sp)
-; CHECK-NEXT:    lb a0, 45(a1)
-; CHECK-NEXT:    sb a0, 45(sp)
-; CHECK-NEXT:    lb a0, 44(a1)
-; CHECK-NEXT:    sb a0, 44(sp)
-; CHECK-NEXT:    lb a0, 43(a1)
-; CHECK-NEXT:    sb a0, 43(sp)
-; CHECK-NEXT:    lb a0, 42(a1)
-; CHECK-NEXT:    sb a0, 42(sp)
-; CHECK-NEXT:    lb a0, 41(a1)
-; CHECK-NEXT:    sb a0, 41(sp)
-; CHECK-NEXT:    lb a0, 40(a1)
-; CHECK-NEXT:    sb a0, 40(sp)
-; CHECK-NEXT:    lb a0, 39(a1)
-; CHECK-NEXT:    sb a0, 39(sp)
-; CHECK-NEXT:    lb a0, 38(a1)
-; CHECK-NEXT:    sb a0, 38(sp)
-; CHECK-NEXT:    lb a0, 37(a1)
-; CHECK-NEXT:    sb a0, 37(sp)
-; CHECK-NEXT:    lb a0, 36(a1)
-; CHECK-NEXT:    sb a0, 36(sp)
-; CHECK-NEXT:    lb a0, 35(a1)
-; CHECK-NEXT:    sb a0, 35(sp)
-; CHECK-NEXT:    lb a0, 34(a1)
-; CHECK-NEXT:    sb a0, 34(sp)
-; CHECK-NEXT:    lb a0, 33(a1)
-; CHECK-NEXT:    sb a0, 33(sp)
-; CHECK-NEXT:    lb a0, 32(a1)
-; CHECK-NEXT:    sb a0, 32(sp)
-; CHECK-NEXT:    lb a0, 31(a1)
-; CHECK-NEXT:    sb a0, 31(sp)
-; CHECK-NEXT:    lb a0, 30(a1)
-; CHECK-NEXT:    sb a0, 30(sp)
-; CHECK-NEXT:    lb a0, 29(a1)
-; CHECK-NEXT:    sb a0, 29(sp)
-; CHECK-NEXT:    lb a0, 28(a1)
-; CHECK-NEXT:    sb a0, 28(sp)
-; CHECK-NEXT:    lb a0, 27(a1)
-; CHECK-NEXT:    sb a0, 27(sp)
-; CHECK-NEXT:    lb a0, 26(a1)
-; CHECK-NEXT:    sb a0, 26(sp)
-; CHECK-NEXT:    lb a0, 25(a1)
-; CHECK-NEXT:    sb a0, 25(sp)
-; CHECK-NEXT:    lb a0, 24(a1)
-; CHECK-NEXT:    sb a0, 24(sp)
-; CHECK-NEXT:    lb a0, 23(a1)
-; CHECK-NEXT:    sb a0, 23(sp)
-; CHECK-NEXT:    lb a0, 22(a1)
-; CHECK-NEXT:    sb a0, 22(sp)
-; CHECK-NEXT:    lb a0, 21(a1)
-; CHECK-NEXT:    sb a0, 21(sp)
-; CHECK-NEXT:    lb a0, 20(a1)
-; CHECK-NEXT:    sb a0, 20(sp)
-; CHECK-NEXT:    lb a0, 19(a1)
-; CHECK-NEXT:    sb a0, 19(sp)
-; CHECK-NEXT:    lb a0, 18(a1)
-; CHECK-NEXT:    sb a0, 18(sp)
-; CHECK-NEXT:    lb a0, 17(a1)
-; CHECK-NEXT:    sb a0, 17(sp)
-; CHECK-NEXT:    lb a0, 16(a1)
-; CHECK-NEXT:    sb a0, 16(sp)
-; CHECK-NEXT:    lb a0, 15(a1)
-; CHECK-NEXT:    sb a0, 15(sp)
-; CHECK-NEXT:    lb a0, 14(a1)
-; CHECK-NEXT:    sb a0, 14(sp)
-; CHECK-NEXT:    lb a0, 13(a1)
-; CHECK-NEXT:    sb a0, 13(sp)
-; CHECK-NEXT:    lb a0, 12(a1)
-; CHECK-NEXT:    sb a0, 12(sp)
-; CHECK-NEXT:    lb a0, 11(a1)
-; CHECK-NEXT:    sb a0, 11(sp)
-; CHECK-NEXT:    lb a0, 10(a1)
-; CHECK-NEXT:    sb a0, 10(sp)
-; CHECK-NEXT:    lb a0, 9(a1)
-; CHECK-NEXT:    sb a0, 9(sp)
-; CHECK-NEXT:    lb a0, 8(a1)
-; CHECK-NEXT:    sb a0, 8(sp)
-; CHECK-NEXT:    lb a0, 7(a1)
-; CHECK-NEXT:    sb a0, 7(sp)
-; CHECK-NEXT:    lb a0, 6(a1)
-; CHECK-NEXT:    sb a0, 6(sp)
-; CHECK-NEXT:    lb a0, 5(a1)
-; CHECK-NEXT:    sb a0, 5(sp)
-; CHECK-NEXT:    lb a0, 4(a1)
-; CHECK-NEXT:    sb a0, 4(sp)
-; CHECK-NEXT:    lb a0, 3(a1)
-; CHECK-NEXT:    sb a0, 3(sp)
-; CHECK-NEXT:    lb a0, 2(a1)
-; CHECK-NEXT:    sb a0, 2(sp)
-; CHECK-NEXT:    lb a0, 1(a1)
-; CHECK-NEXT:    sb a0, 1(sp)
-; CHECK-NEXT:    lb a0, 0(a1)
-; CHECK-NEXT:    sb a0, 0(sp)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a1)
+; CHECK-NEXT:    lb a2, 46(a1)
+; CHECK-NEXT:    sb a2, 46(sp)
+; CHECK-NEXT:    lb a2, 45(a1)
+; CHECK-NEXT:    sb a2, 45(sp)
+; CHECK-NEXT:    lb a2, 44(a1)
+; CHECK-NEXT:    sb a2, 44(sp)
+; CHECK-NEXT:    lb a2, 43(a1)
+; CHECK-NEXT:    sb a2, 43(sp)
+; CHECK-NEXT:    lb a2, 42(a1)
+; CHECK-NEXT:    sb a2, 42(sp)
+; CHECK-NEXT:    lb a2, 41(a1)
+; CHECK-NEXT:    sb a2, 41(sp)
+; CHECK-NEXT:    lb a2, 40(a1)
+; CHECK-NEXT:    sb a2, 40(sp)
+; CHECK-NEXT:    lb a2, 39(a1)
+; CHECK-NEXT:    sb a2, 39(sp)
+; CHECK-NEXT:    lb a2, 38(a1)
+; CHECK-NEXT:    sb a2, 38(sp)
+; CHECK-NEXT:    lb a2, 37(a1)
+; CHECK-NEXT:    sb a2, 37(sp)
+; CHECK-NEXT:    lb a2, 36(a1)
+; CHECK-NEXT:    sb a2, 36(sp)
+; CHECK-NEXT:    lb a2, 35(a1)
+; CHECK-NEXT:    sb a2, 35(sp)
+; CHECK-NEXT:    lb a2, 34(a1)
+; CHECK-NEXT:    sb a2, 34(sp)
+; CHECK-NEXT:    lb a2, 33(a1)
+; CHECK-NEXT:    sb a2, 33(sp)
+; CHECK-NEXT:    lb a2, 32(a1)
+; CHECK-NEXT:    sb a2, 32(sp)
+; CHECK-NEXT:    lb a2, 31(a1)
+; CHECK-NEXT:    sb a2, 31(sp)
+; CHECK-NEXT:    lb a2, 30(a1)
+; CHECK-NEXT:    sb a2, 30(sp)
+; CHECK-NEXT:    lb a2, 29(a1)
+; CHECK-NEXT:    sb a2, 29(sp)
+; CHECK-NEXT:    lb a2, 28(a1)
+; CHECK-NEXT:    sb a2, 28(sp)
+; CHECK-NEXT:    lb a2, 27(a1)
+; CHECK-NEXT:    sb a2, 27(sp)
+; CHECK-NEXT:    lb a2, 26(a1)
+; CHECK-NEXT:    sb a2, 26(sp)
+; CHECK-NEXT:    lb a2, 25(a1)
+; CHECK-NEXT:    sb a2, 25(sp)
+; CHECK-NEXT:    lb a2, 24(a1)
+; CHECK-NEXT:    sb a2, 24(sp)
+; CHECK-NEXT:    lb a2, 23(a1)
+; CHECK-NEXT:    sb a2, 23(sp)
+; CHECK-NEXT:    lb a2, 22(a1)
+; CHECK-NEXT:    sb a2, 22(sp)
+; CHECK-NEXT:    lb a2, 21(a1)
+; CHECK-NEXT:    sb a2, 21(sp)
+; CHECK-NEXT:    lb a2, 20(a1)
+; CHECK-NEXT:    sb a2, 20(sp)
+; CHECK-NEXT:    lb a2, 19(a1)
+; CHECK-NEXT:    sb a2, 19(sp)
+; CHECK-NEXT:    lb a2, 18(a1)
+; CHECK-NEXT:    sb a2, 18(sp)
+; CHECK-NEXT:    lb a2, 17(a1)
+; CHECK-NEXT:    sb a2, 17(sp)
+; CHECK-NEXT:    lb a2, 16(a1)
+; CHECK-NEXT:    sb a2, 16(sp)
+; CHECK-NEXT:    lb a2, 15(a1)
+; CHECK-NEXT:    sb a2, 15(sp)
+; CHECK-NEXT:    lb a2, 14(a1)
+; CHECK-NEXT:    sb a2, 14(sp)
+; CHECK-NEXT:    lb a2, 13(a1)
+; CHECK-NEXT:    sb a2, 13(sp)
+; CHECK-NEXT:    lb a2, 12(a1)
+; CHECK-NEXT:    sb a2, 12(sp)
+; CHECK-NEXT:    lb a2, 11(a1)
+; CHECK-NEXT:    sb a2, 11(sp)
+; CHECK-NEXT:    lb a2, 10(a1)
+; CHECK-NEXT:    sb a2, 10(sp)
+; CHECK-NEXT:    lb a2, 9(a1)
+; CHECK-NEXT:    sb a2, 9(sp)
+; CHECK-NEXT:    lb a2, 8(a1)
+; CHECK-NEXT:    sb a2, 8(sp)
+; CHECK-NEXT:    lb a2, 7(a1)
+; CHECK-NEXT:    sb a2, 7(sp)
+; CHECK-NEXT:    lb a2, 6(a1)
+; CHECK-NEXT:    sb a2, 6(sp)
+; CHECK-NEXT:    lb a2, 5(a1)
+; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lb a2, 4(a1)
+; CHECK-NEXT:    sb a2, 4(sp)
+; CHECK-NEXT:    lb a2, 3(a1)
+; CHECK-NEXT:    sb a2, 3(sp)
+; CHECK-NEXT:    lb a2, 2(a1)
+; CHECK-NEXT:    sb a2, 2(sp)
+; CHECK-NEXT:    lb a2, 1(a1)
+; CHECK-NEXT:    sb a2, 1(sp)
+; CHECK-NEXT:    lb a1, 0(a1)
+; CHECK-NEXT:    sb a1, 0(sp)
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    mv a2, sp
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v16, v12
-; CHECK-NEXT:    li a0, 47
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    li a1, 47
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    addi sp, s0, -128
 ; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
@@ -640,114 +623,113 @@ define void @vqtbx3q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    lb a4, 47(a1)
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lb a0, 46(a1)
-; CHECK-NEXT:    sb a0, 46(sp)
-; CHECK-NEXT:    lb a0, 45(a1)
-; CHECK-NEXT:    sb a0, 45(sp)
-; CHECK-NEXT:    lb a0, 44(a1)
-; CHECK-NEXT:    sb a0, 44(sp)
-; CHECK-NEXT:    lb a0, 43(a1)
-; CHECK-NEXT:    sb a0, 43(sp)
-; CHECK-NEXT:    lb a0, 42(a1)
-; CHECK-NEXT:    sb a0, 42(sp)
-; CHECK-NEXT:    lb a0, 41(a1)
-; CHECK-NEXT:    sb a0, 41(sp)
-; CHECK-NEXT:    lb a0, 40(a1)
-; CHECK-NEXT:    sb a0, 40(sp)
-; CHECK-NEXT:    lb a0, 39(a1)
-; CHECK-NEXT:    sb a0, 39(sp)
-; CHECK-NEXT:    lb a0, 38(a1)
-; CHECK-NEXT:    sb a0, 38(sp)
-; CHECK-NEXT:    lb a0, 37(a1)
-; CHECK-NEXT:    sb a0, 37(sp)
-; CHECK-NEXT:    lb a0, 36(a1)
-; CHECK-NEXT:    sb a0, 36(sp)
-; CHECK-NEXT:    lb a0, 35(a1)
-; CHECK-NEXT:    sb a0, 35(sp)
-; CHECK-NEXT:    lb a0, 34(a1)
-; CHECK-NEXT:    sb a0, 34(sp)
-; CHECK-NEXT:    lb a0, 33(a1)
-; CHECK-NEXT:    sb a0, 33(sp)
-; CHECK-NEXT:    lb a0, 32(a1)
-; CHECK-NEXT:    sb a0, 32(sp)
-; CHECK-NEXT:    lb a0, 31(a1)
-; CHECK-NEXT:    sb a0, 31(sp)
-; CHECK-NEXT:    lb a0, 30(a1)
-; CHECK-NEXT:    sb a0, 30(sp)
-; CHECK-NEXT:    lb a0, 29(a1)
-; CHECK-NEXT:    sb a0, 29(sp)
-; CHECK-NEXT:    lb a0, 28(a1)
-; CHECK-NEXT:    sb a0, 28(sp)
-; CHECK-NEXT:    lb a0, 27(a1)
-; CHECK-NEXT:    sb a0, 27(sp)
-; CHECK-NEXT:    lb a0, 26(a1)
-; CHECK-NEXT:    sb a0, 26(sp)
-; CHECK-NEXT:    lb a0, 25(a1)
-; CHECK-NEXT:    sb a0, 25(sp)
-; CHECK-NEXT:    lb a0, 24(a1)
-; CHECK-NEXT:    sb a0, 24(sp)
-; CHECK-NEXT:    lb a0, 23(a1)
-; CHECK-NEXT:    sb a0, 23(sp)
-; CHECK-NEXT:    lb a0, 22(a1)
-; CHECK-NEXT:    sb a0, 22(sp)
-; CHECK-NEXT:    lb a0, 21(a1)
-; CHECK-NEXT:    sb a0, 21(sp)
-; CHECK-NEXT:    lb a0, 20(a1)
-; CHECK-NEXT:    sb a0, 20(sp)
-; CHECK-NEXT:    lb a0, 19(a1)
-; CHECK-NEXT:    sb a0, 19(sp)
-; CHECK-NEXT:    lb a0, 18(a1)
-; CHECK-NEXT:    sb a0, 18(sp)
-; CHECK-NEXT:    lb a0, 17(a1)
-; CHECK-NEXT:    sb a0, 17(sp)
-; CHECK-NEXT:    lb a0, 16(a1)
-; CHECK-NEXT:    sb a0, 16(sp)
-; CHECK-NEXT:    lb a0, 15(a1)
-; CHECK-NEXT:    sb a0, 15(sp)
-; CHECK-NEXT:    lb a0, 14(a1)
-; CHECK-NEXT:    sb a0, 14(sp)
-; CHECK-NEXT:    lb a0, 13(a1)
-; CHECK-NEXT:    sb a0, 13(sp)
-; CHECK-NEXT:    lb a0, 12(a1)
-; CHECK-NEXT:    sb a0, 12(sp)
-; CHECK-NEXT:    lb a0, 11(a1)
-; CHECK-NEXT:    sb a0, 11(sp)
-; CHECK-NEXT:    lb a0, 10(a1)
-; CHECK-NEXT:    sb a0, 10(sp)
-; CHECK-NEXT:    lb a0, 9(a1)
-; CHECK-NEXT:    sb a0, 9(sp)
-; CHECK-NEXT:    lb a0, 8(a1)
-; CHECK-NEXT:    sb a0, 8(sp)
-; CHECK-NEXT:    lb a0, 7(a1)
-; CHECK-NEXT:    sb a0, 7(sp)
-; CHECK-NEXT:    lb a0, 6(a1)
-; CHECK-NEXT:    sb a0, 6(sp)
-; CHECK-NEXT:    lb a0, 5(a1)
-; CHECK-NEXT:    sb a0, 5(sp)
-; CHECK-NEXT:    lb a0, 4(a1)
-; CHECK-NEXT:    sb a0, 4(sp)
-; CHECK-NEXT:    lb a0, 3(a1)
-; CHECK-NEXT:    sb a0, 3(sp)
-; CHECK-NEXT:    lb a0, 2(a1)
-; CHECK-NEXT:    sb a0, 2(sp)
-; CHECK-NEXT:    lb a0, 1(a1)
-; CHECK-NEXT:    sb a0, 1(sp)
-; CHECK-NEXT:    lb a0, 0(a1)
-; CHECK-NEXT:    sb a0, 0(sp)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a1)
+; CHECK-NEXT:    lb a2, 46(a1)
+; CHECK-NEXT:    sb a2, 46(sp)
+; CHECK-NEXT:    lb a2, 45(a1)
+; CHECK-NEXT:    sb a2, 45(sp)
+; CHECK-NEXT:    lb a2, 44(a1)
+; CHECK-NEXT:    sb a2, 44(sp)
+; CHECK-NEXT:    lb a2, 43(a1)
+; CHECK-NEXT:    sb a2, 43(sp)
+; CHECK-NEXT:    lb a2, 42(a1)
+; CHECK-NEXT:    sb a2, 42(sp)
+; CHECK-NEXT:    lb a2, 41(a1)
+; CHECK-NEXT:    sb a2, 41(sp)
+; CHECK-NEXT:    lb a2, 40(a1)
+; CHECK-NEXT:    sb a2, 40(sp)
+; CHECK-NEXT:    lb a2, 39(a1)
+; CHECK-NEXT:    sb a2, 39(sp)
+; CHECK-NEXT:    lb a2, 38(a1)
+; CHECK-NEXT:    sb a2, 38(sp)
+; CHECK-NEXT:    lb a2, 37(a1)
+; CHECK-NEXT:    sb a2, 37(sp)
+; CHECK-NEXT:    lb a2, 36(a1)
+; CHECK-NEXT:    sb a2, 36(sp)
+; CHECK-NEXT:    lb a2, 35(a1)
+; CHECK-NEXT:    sb a2, 35(sp)
+; CHECK-NEXT:    lb a2, 34(a1)
+; CHECK-NEXT:    sb a2, 34(sp)
+; CHECK-NEXT:    lb a2, 33(a1)
+; CHECK-NEXT:    sb a2, 33(sp)
+; CHECK-NEXT:    lb a2, 32(a1)
+; CHECK-NEXT:    sb a2, 32(sp)
+; CHECK-NEXT:    lb a2, 31(a1)
+; CHECK-NEXT:    sb a2, 31(sp)
+; CHECK-NEXT:    lb a2, 30(a1)
+; CHECK-NEXT:    sb a2, 30(sp)
+; CHECK-NEXT:    lb a2, 29(a1)
+; CHECK-NEXT:    sb a2, 29(sp)
+; CHECK-NEXT:    lb a2, 28(a1)
+; CHECK-NEXT:    sb a2, 28(sp)
+; CHECK-NEXT:    lb a2, 27(a1)
+; CHECK-NEXT:    sb a2, 27(sp)
+; CHECK-NEXT:    lb a2, 26(a1)
+; CHECK-NEXT:    sb a2, 26(sp)
+; CHECK-NEXT:    lb a2, 25(a1)
+; CHECK-NEXT:    sb a2, 25(sp)
+; CHECK-NEXT:    lb a2, 24(a1)
+; CHECK-NEXT:    sb a2, 24(sp)
+; CHECK-NEXT:    lb a2, 23(a1)
+; CHECK-NEXT:    sb a2, 23(sp)
+; CHECK-NEXT:    lb a2, 22(a1)
+; CHECK-NEXT:    sb a2, 22(sp)
+; CHECK-NEXT:    lb a2, 21(a1)
+; CHECK-NEXT:    sb a2, 21(sp)
+; CHECK-NEXT:    lb a2, 20(a1)
+; CHECK-NEXT:    sb a2, 20(sp)
+; CHECK-NEXT:    lb a2, 19(a1)
+; CHECK-NEXT:    sb a2, 19(sp)
+; CHECK-NEXT:    lb a2, 18(a1)
+; CHECK-NEXT:    sb a2, 18(sp)
+; CHECK-NEXT:    lb a2, 17(a1)
+; CHECK-NEXT:    sb a2, 17(sp)
+; CHECK-NEXT:    lb a2, 16(a1)
+; CHECK-NEXT:    sb a2, 16(sp)
+; CHECK-NEXT:    lb a2, 15(a1)
+; CHECK-NEXT:    sb a2, 15(sp)
+; CHECK-NEXT:    lb a2, 14(a1)
+; CHECK-NEXT:    sb a2, 14(sp)
+; CHECK-NEXT:    lb a2, 13(a1)
+; CHECK-NEXT:    sb a2, 13(sp)
+; CHECK-NEXT:    lb a2, 12(a1)
+; CHECK-NEXT:    sb a2, 12(sp)
+; CHECK-NEXT:    lb a2, 11(a1)
+; CHECK-NEXT:    sb a2, 11(sp)
+; CHECK-NEXT:    lb a2, 10(a1)
+; CHECK-NEXT:    sb a2, 10(sp)
+; CHECK-NEXT:    lb a2, 9(a1)
+; CHECK-NEXT:    sb a2, 9(sp)
+; CHECK-NEXT:    lb a2, 8(a1)
+; CHECK-NEXT:    sb a2, 8(sp)
+; CHECK-NEXT:    lb a2, 7(a1)
+; CHECK-NEXT:    sb a2, 7(sp)
+; CHECK-NEXT:    lb a2, 6(a1)
+; CHECK-NEXT:    sb a2, 6(sp)
+; CHECK-NEXT:    lb a2, 5(a1)
+; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lb a2, 4(a1)
+; CHECK-NEXT:    sb a2, 4(sp)
+; CHECK-NEXT:    lb a2, 3(a1)
+; CHECK-NEXT:    sb a2, 3(sp)
+; CHECK-NEXT:    lb a2, 2(a1)
+; CHECK-NEXT:    sb a2, 2(sp)
+; CHECK-NEXT:    lb a2, 1(a1)
+; CHECK-NEXT:    sb a2, 1(sp)
+; CHECK-NEXT:    lb a1, 0(a1)
+; CHECK-NEXT:    sb a1, 0(sp)
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    mv a2, sp
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v16, v12
-; CHECK-NEXT:    li a0, 47
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    li a1, 47
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    addi sp, s0, -128
 ; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
@@ -768,20 +750,18 @@ entry:
 define void @vqtbx4_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx4_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a2)
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v12, v16
-; CHECK-NEXT:    li a0, 63
+; CHECK-NEXT:    vrgather.vv v16, v8, v12
+; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v16, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -799,20 +779,18 @@ entry:
 define void @vqtbx4_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx4_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a2)
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v12, v16
-; CHECK-NEXT:    li a0, 63
+; CHECK-NEXT:    vrgather.vv v16, v8, v12
+; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v16, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -830,20 +808,18 @@ entry:
 define void @vqtbx4q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx4q_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a2)
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v12, v16
-; CHECK-NEXT:    li a0, 63
+; CHECK-NEXT:    vrgather.vv v16, v8, v12
+; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v16, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -861,20 +837,18 @@ entry:
 define void @vqtbx4q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx4q_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a2)
+; CHECK-NEXT:    vle8.v v12, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, mu
-; CHECK-NEXT:    vrgather.vv v20, v12, v16
-; CHECK-NEXT:    li a0, 63
+; CHECK-NEXT:    vrgather.vv v16, v8, v12
+; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v16, a0
-; CHECK-NEXT:    vmerge.vvm v8, v20, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -892,18 +866,16 @@ entry:
 define void @vtbx2_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx2_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v9, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -920,18 +892,16 @@ entry:
 define void @vtbx2_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx2_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v9, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -948,20 +918,18 @@ entry:
 define void @vtbx4_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx4_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -981,20 +949,18 @@ entry:
 define void @vtbx4_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx4_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a4, 32
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vle8.v v10, (a2)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v14, v10, v12
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
-; CHECK-NEXT:    vmerge.vvm v8, v14, v8, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1

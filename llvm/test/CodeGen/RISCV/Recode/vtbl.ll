@@ -1137,21 +1137,20 @@ define void @vtbx1_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vtbx1_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vmv.v.i v11, 0
+; CHECK-NEXT:    vle8.v v9, (a2)
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, mu
-; CHECK-NEXT:    vslideup.vi v8, v11, 8
+; CHECK-NEXT:    vslideup.vi v8, v10, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmsgtu.vi v8, v10, 7
-; CHECK-NEXT:    vmerge.vim v10, v11, 0, v0
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vmsgtu.vi v8, v9, 7
+; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vle8.v v9, (a0), v0.t
+; CHECK-NEXT:    vse8.v v9, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -1169,21 +1168,20 @@ define void @vtbx1_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vtbx1_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vmv.v.i v11, 0
+; CHECK-NEXT:    vle8.v v9, (a2)
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, mu
-; CHECK-NEXT:    vslideup.vi v8, v11, 8
+; CHECK-NEXT:    vslideup.vi v8, v10, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vmsgtu.vi v8, v10, 7
-; CHECK-NEXT:    vmerge.vim v10, v11, 0, v0
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vmsgtu.vi v8, v9, 7
+; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vle8.v v9, (a0), v0.t
+; CHECK-NEXT:    vse8.v v9, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -1202,55 +1200,53 @@ define void @vtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    lbu a0, 17(a1)
-; CHECK-NEXT:    lbu a4, 16(a1)
-; CHECK-NEXT:    lbu a5, 19(a1)
-; CHECK-NEXT:    lbu a6, 18(a1)
-; CHECK-NEXT:    slli a0, a0, 8
-; CHECK-NEXT:    or a0, a0, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    or a0, a4, a0
-; CHECK-NEXT:    lbu a4, 21(a1)
-; CHECK-NEXT:    lbu a5, 20(a1)
-; CHECK-NEXT:    lbu a6, 23(a1)
-; CHECK-NEXT:    lbu a7, 22(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 16(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    lbu a7, 18(a1)
 ; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a4, a4, a5
 ; CHECK-NEXT:    slli a5, a6, 8
 ; CHECK-NEXT:    or a5, a5, a7
 ; CHECK-NEXT:    slli a5, a5, 16
 ; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    slli a4, a4, 32
-; CHECK-NEXT:    or a0, a4, a0
-; CHECK-NEXT:    sd a0, 0(sp)
+; CHECK-NEXT:    lbu a5, 21(a1)
+; CHECK-NEXT:    lbu a6, 20(a1)
+; CHECK-NEXT:    lbu a7, 23(a1)
+; CHECK-NEXT:    lbu t0, 22(a1)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a5, a5, a6
+; CHECK-NEXT:    slli a6, a7, 8
+; CHECK-NEXT:    or a6, a6, t0
+; CHECK-NEXT:    slli a6, a6, 16
+; CHECK-NEXT:    or a5, a6, a5
+; CHECK-NEXT:    slli a5, a5, 32
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    sd a4, 0(sp)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    mv a0, sp
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    mv a1, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vle64.v v12, (a0)
+; CHECK-NEXT:    vle64.v v10, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v14, (a2)
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, mu
-; CHECK-NEXT:    vslideup.vi v12, v8, 8
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
-; CHECK-NEXT:    vslideup.vi v10, v12, 16
+; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, mu
+; CHECK-NEXT:    vslideup.vi v8, v10, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v12, v10, v14
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v10, v8, v12
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v14, a0
-; CHECK-NEXT:    li a0, 23
-; CHECK-NEXT:    vmsgtu.vx v8, v14, a0
-; CHECK-NEXT:    vmerge.vim v10, v12, 0, v0
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    li a1, 23
+; CHECK-NEXT:    vmsgtu.vx v8, v12, a1
+; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vle8.v v9, (a0), v0.t
+; CHECK-NEXT:    vse8.v v9, (a3)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
@@ -1274,55 +1270,53 @@ define void @vtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    lbu a0, 17(a1)
-; CHECK-NEXT:    lbu a4, 16(a1)
-; CHECK-NEXT:    lbu a5, 19(a1)
-; CHECK-NEXT:    lbu a6, 18(a1)
-; CHECK-NEXT:    slli a0, a0, 8
-; CHECK-NEXT:    or a0, a0, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    or a0, a4, a0
-; CHECK-NEXT:    lbu a4, 21(a1)
-; CHECK-NEXT:    lbu a5, 20(a1)
-; CHECK-NEXT:    lbu a6, 23(a1)
-; CHECK-NEXT:    lbu a7, 22(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 16(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    lbu a7, 18(a1)
 ; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a4, a4, a5
 ; CHECK-NEXT:    slli a5, a6, 8
 ; CHECK-NEXT:    or a5, a5, a7
 ; CHECK-NEXT:    slli a5, a5, 16
 ; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    slli a4, a4, 32
-; CHECK-NEXT:    or a0, a4, a0
-; CHECK-NEXT:    sd a0, 0(sp)
+; CHECK-NEXT:    lbu a5, 21(a1)
+; CHECK-NEXT:    lbu a6, 20(a1)
+; CHECK-NEXT:    lbu a7, 23(a1)
+; CHECK-NEXT:    lbu t0, 22(a1)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a5, a5, a6
+; CHECK-NEXT:    slli a6, a7, 8
+; CHECK-NEXT:    or a6, a6, t0
+; CHECK-NEXT:    slli a6, a6, 16
+; CHECK-NEXT:    or a5, a6, a5
+; CHECK-NEXT:    slli a5, a5, 32
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    sd a4, 0(sp)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    mv a0, sp
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    mv a1, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vle64.v v12, (a0)
+; CHECK-NEXT:    vle64.v v10, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v14, (a2)
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, mu
-; CHECK-NEXT:    vslideup.vi v12, v8, 8
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
-; CHECK-NEXT:    vslideup.vi v10, v12, 16
+; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, mu
+; CHECK-NEXT:    vslideup.vi v8, v10, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, mu
-; CHECK-NEXT:    vrgather.vv v12, v10, v14
-; CHECK-NEXT:    li a0, 31
+; CHECK-NEXT:    vrgather.vv v10, v8, v12
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vx v0, v14, a0
-; CHECK-NEXT:    li a0, 23
-; CHECK-NEXT:    vmsgtu.vx v8, v14, a0
-; CHECK-NEXT:    vmerge.vim v10, v12, 0, v0
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
+; CHECK-NEXT:    li a1, 23
+; CHECK-NEXT:    vmsgtu.vx v8, v12, a1
+; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vle8.v v9, (a0), v0.t
+; CHECK-NEXT:    vse8.v v9, (a3)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:

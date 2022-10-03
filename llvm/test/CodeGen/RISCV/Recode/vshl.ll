@@ -18,10 +18,9 @@ define void @vshl_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    li a0, 15
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -48,10 +47,9 @@ define void @vshl_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vsll.vv v10, v9, v10
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -78,10 +76,9 @@ define void @vshl_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vsll.vv v10, v9, v10
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse64.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
@@ -104,10 +101,9 @@ define void @vshl_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
 ; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v10, v10, v11
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
-; CHECK-NEXT:    vse8.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v9, v10, v11, v0.t
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -255,10 +251,9 @@ define void @vshlq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    li a0, 15
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -285,10 +280,9 @@ define void @vshlq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vsll.vv v10, v9, v10
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -315,10 +309,9 @@ define void @vshlq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vsll.vv v10, v9, v10
 ; CHECK-NEXT:    vmerge.vim v10, v10, 0, v0
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v9, v9, v11
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-NEXT:    vse64.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v10, v9, v11, v0.t
+; CHECK-NEXT:    vse64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -341,10 +334,9 @@ define void @vshlq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
 ; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    vminu.vx v11, v11, a0
-; CHECK-NEXT:    vsra.vv v10, v10, v11
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
-; CHECK-NEXT:    vse8.v v8, (a2)
+; CHECK-NEXT:    vsra.vv v9, v10, v11, v0.t
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1

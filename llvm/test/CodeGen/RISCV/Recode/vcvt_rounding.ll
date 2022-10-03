@@ -4,8 +4,6 @@
 define void @vcvtm_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
@@ -17,65 +15,10 @@ define void @vcvtm_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI0_1)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_2)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI0_2)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB0_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB0_2: # %entry
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB0_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB0_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    bnez a2, .LBB0_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB0_7
-; CHECK-NEXT:  .LBB0_6:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB0_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB0_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB0_10
-; CHECK-NEXT:  .LBB0_9:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB0_10: # %entry
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    addi a0, sp, 8
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -98,24 +41,9 @@ define void @vcvtm_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB1_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB1_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB1_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a2, ft0, rtz
-; CHECK-NEXT:  .LBB1_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -139,13 +67,9 @@ define void @vcvtm_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB2_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB2_2: # %entry
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -158,8 +82,6 @@ entry:
 define void @vcvtm_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
@@ -171,42 +93,10 @@ define void @vcvtm_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI3_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI3_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    addi a0, sp, 8
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -229,28 +119,9 @@ define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB4_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB4_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB4_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:  .LBB4_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -274,13 +145,9 @@ define void @vcvtm_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB5_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB5_2: # %entry
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -293,8 +160,6 @@ entry:
 define void @vcvtmq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
@@ -306,121 +171,10 @@ define void @vcvtmq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI6_1)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI6_1)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI6_2)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI6_2)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB6_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_2: # %entry
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB6_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_7
-; CHECK-NEXT:  .LBB6_6:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_10
-; CHECK-NEXT:  .LBB6_9:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_10: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_12
-; CHECK-NEXT:  # %bb.11: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_13
-; CHECK-NEXT:  .LBB6_12:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_13: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_15
-; CHECK-NEXT:  # %bb.14: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_16
-; CHECK-NEXT:  .LBB6_15:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_16: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_18
-; CHECK-NEXT:  # %bb.17: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_19
-; CHECK-NEXT:  .LBB6_18:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB6_19: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    bnez a2, .LBB6_21
-; CHECK-NEXT:  # %bb.20: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB6_22
-; CHECK-NEXT:  .LBB6_21:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB6_22: # %entry
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -432,8 +186,6 @@ entry:
 define void @vcvtmq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
@@ -445,49 +197,10 @@ define void @vcvtmq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB7_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB7_2: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB7_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB7_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB7_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB7_7
-; CHECK-NEXT:  .LBB7_6:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB7_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB7_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB7_10
-; CHECK-NEXT:  .LBB7_9:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB7_10: # %entry
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -510,24 +223,9 @@ define void @vcvtmq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB8_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB8_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB8_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.l.d a2, ft0, rtz
-; CHECK-NEXT:  .LBB8_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -540,8 +238,6 @@ entry:
 define void @vcvtmq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
@@ -553,70 +249,10 @@ define void @vcvtmq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI9_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI9_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -628,8 +264,6 @@ entry:
 define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
@@ -641,57 +275,10 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB10_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB10_2: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB10_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB10_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB10_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB10_7
-; CHECK-NEXT:  .LBB10_6:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB10_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB10_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB10_10
-; CHECK-NEXT:  .LBB10_9:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB10_10: # %entry
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -714,24 +301,9 @@ define void @vcvtmq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB11_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB11_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB11_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.lu.d a2, ft0, rtz
-; CHECK-NEXT:  .LBB11_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -744,95 +316,21 @@ entry:
 define void @vcvtn_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -64
-; CHECK-NEXT:    .cfi_def_cfa_offset 64
-; CHECK-NEXT:    sd ra, 56(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 48(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s1, 40(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs0, 32(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs1, 24(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs2, 16(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    .cfi_offset s1, -24
-; CHECK-NEXT:    .cfi_offset fs0, -32
-; CHECK-NEXT:    .cfi_offset fs1, -40
-; CHECK-NEXT:    .cfi_offset fs2, -48
-; CHECK-NEXT:    mv s0, a1
-; CHECK-NEXT:    mv s1, a0
-; CHECK-NEXT:    flh ft0, 4(a0)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs2, fa0
-; CHECK-NEXT:    flh ft0, 2(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs1, fa0
-; CHECK-NEXT:    flh ft0, 0(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs0, fa0
-; CHECK-NEXT:    flh ft0, 6(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    fcvt.h.s fs2, fs2
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fcvt.h.s ft2, fa0
-; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI12_0)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI12_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI12_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB12_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB12_2: # %entry
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, fs2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs1
-; CHECK-NEXT:    beqz a0, .LBB12_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB12_4: # %entry
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs0
-; CHECK-NEXT:    beqz a0, .LBB12_6
-; CHECK-NEXT:  # %bb.5:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB12_6: # %entry
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a1, ft2, ft2
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    bnez a1, .LBB12_8
-; CHECK-NEXT:  # %bb.7: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB12_9
-; CHECK-NEXT:  .LBB12_8:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB12_9: # %entry
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    addi a0, sp, 8
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vse16.v v8, (s0)
-; CHECK-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs0, 32(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs1, 24(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs2, 16(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 64
+; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI12_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -844,22 +342,20 @@ entry:
 define void @vcvtn_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    flw ft1, 0(a0)
-; CHECK-NEXT:    flw ft0, 4(a0)
-; CHECK-NEXT:    feq.s a0, ft1, ft1
-; CHECK-NEXT:    beqz a0, .LBB13_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a0, ft1, rne
-; CHECK-NEXT:  .LBB13_2: # %entry
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB13_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a2, ft0, rne
-; CHECK-NEXT:  .LBB13_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI13_0)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI13_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -872,14 +368,20 @@ entry:
 define void @vcvtn_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    fld ft0, 0(a0)
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB14_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft0, rne
-; CHECK-NEXT:  .LBB14_2: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI14_0)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI14_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -892,74 +394,21 @@ entry:
 define void @vcvtn_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -64
-; CHECK-NEXT:    .cfi_def_cfa_offset 64
-; CHECK-NEXT:    sd ra, 56(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 48(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s1, 40(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs0, 32(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs1, 24(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs2, 16(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    .cfi_offset s1, -24
-; CHECK-NEXT:    .cfi_offset fs0, -32
-; CHECK-NEXT:    .cfi_offset fs1, -40
-; CHECK-NEXT:    .cfi_offset fs2, -48
-; CHECK-NEXT:    mv s0, a1
-; CHECK-NEXT:    mv s1, a0
-; CHECK-NEXT:    flh ft0, 4(a0)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs0, fa0
-; CHECK-NEXT:    flh ft0, 2(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs1, fa0
-; CHECK-NEXT:    flh ft0, 0(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    flh ft0, 6(s1)
-; CHECK-NEXT:    fcvt.h.s fs2, fa0
-; CHECK-NEXT:    fcvt.h.s fs1, fs1
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    fcvt.h.s fs0, fs0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fcvt.h.s ft0, fa0
-; CHECK-NEXT:    lui a0, %hi(.LCPI15_0)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI15_0)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs1
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs2
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    addi a0, sp, 8
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vse16.v v8, (s0)
-; CHECK-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs0, 32(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs1, 24(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs2, 16(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 64
+; CHECK-NEXT:    lui a0, %hi(.LCPI15_0)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI15_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -971,26 +420,20 @@ entry:
 define void @vcvtn_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    flw ft1, 0(a0)
-; CHECK-NEXT:    flw ft0, 4(a0)
-; CHECK-NEXT:    feq.s a0, ft1, ft1
-; CHECK-NEXT:    beqz a0, .LBB16_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a0, ft1, rne
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB16_2: # %entry
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB16_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a2, ft0, rne
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:  .LBB16_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI16_0)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI16_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1003,14 +446,20 @@ entry:
 define void @vcvtn_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    fld ft0, 0(a0)
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB17_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft0, rne
-; CHECK-NEXT:  .LBB17_2: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI17_0)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI17_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1023,163 +472,21 @@ entry:
 define void @vcvtnq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -96
-; CHECK-NEXT:    .cfi_def_cfa_offset 96
-; CHECK-NEXT:    sd ra, 88(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 80(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s1, 72(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs0, 64(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs1, 56(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs2, 48(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs3, 40(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs4, 32(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs5, 24(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs6, 16(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    .cfi_offset s1, -24
-; CHECK-NEXT:    .cfi_offset fs0, -32
-; CHECK-NEXT:    .cfi_offset fs1, -40
-; CHECK-NEXT:    .cfi_offset fs2, -48
-; CHECK-NEXT:    .cfi_offset fs3, -56
-; CHECK-NEXT:    .cfi_offset fs4, -64
-; CHECK-NEXT:    .cfi_offset fs5, -72
-; CHECK-NEXT:    .cfi_offset fs6, -80
-; CHECK-NEXT:    mv s0, a1
-; CHECK-NEXT:    mv s1, a0
-; CHECK-NEXT:    flh ft0, 12(a0)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs6, fa0
-; CHECK-NEXT:    flh ft0, 10(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs5, fa0
-; CHECK-NEXT:    flh ft0, 8(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs4, fa0
-; CHECK-NEXT:    flh ft0, 6(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs3, fa0
-; CHECK-NEXT:    flh ft0, 4(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs2, fa0
-; CHECK-NEXT:    flh ft0, 2(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs1, fa0
-; CHECK-NEXT:    flh ft0, 0(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs0, fa0
-; CHECK-NEXT:    flh ft0, 14(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    fcvt.h.s fs6, fs6
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fcvt.h.s ft2, fa0
-; CHECK-NEXT:    lui a0, %hi(.LCPI18_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI18_0)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI18_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI18_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB18_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB18_2: # %entry
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, fs6
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs5
-; CHECK-NEXT:    beqz a0, .LBB18_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_4: # %entry
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs4
-; CHECK-NEXT:    beqz a0, .LBB18_6
-; CHECK-NEXT:  # %bb.5:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_6: # %entry
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs3
-; CHECK-NEXT:    beqz a0, .LBB18_8
-; CHECK-NEXT:  # %bb.7:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_8: # %entry
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs2
-; CHECK-NEXT:    beqz a0, .LBB18_10
-; CHECK-NEXT:  # %bb.9:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_10: # %entry
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs1
-; CHECK-NEXT:    beqz a0, .LBB18_12
-; CHECK-NEXT:  # %bb.11:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_12: # %entry
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    fcvt.s.h ft3, ft2
-; CHECK-NEXT:    feq.s a0, ft3, ft3
-; CHECK-NEXT:    fcvt.h.s ft2, fs0
-; CHECK-NEXT:    beqz a0, .LBB18_14
-; CHECK-NEXT:  # %bb.13:
-; CHECK-NEXT:    fmax.s ft3, ft3, ft0
-; CHECK-NEXT:    fmin.s ft3, ft3, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft3, rtz
-; CHECK-NEXT:  .LBB18_14: # %entry
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a1, ft2, ft2
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    bnez a1, .LBB18_16
-; CHECK-NEXT:  # %bb.15: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB18_17
-; CHECK-NEXT:  .LBB18_16:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB18_17: # %entry
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vse16.v v8, (s0)
-; CHECK-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs0, 64(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs1, 56(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs2, 48(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs3, 40(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs4, 32(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs5, 24(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs6, 16(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 96
+; CHECK-NEXT:    lui a0, %hi(.LCPI18_0)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI18_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -1191,47 +498,21 @@ entry:
 define void @vcvtnq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    flw ft0, 12(a0)
-; CHECK-NEXT:    flw ft1, 8(a0)
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB19_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a2, ft0, rne
-; CHECK-NEXT:  .LBB19_2: # %entry
-; CHECK-NEXT:    flw ft0, 0(a0)
-; CHECK-NEXT:    flw ft2, 4(a0)
-; CHECK-NEXT:    feq.s a0, ft1, ft1
-; CHECK-NEXT:    sw a2, 12(sp)
-; CHECK-NEXT:    beqz a0, .LBB19_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a0, ft1, rne
-; CHECK-NEXT:  .LBB19_4: # %entry
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB19_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB19_7
-; CHECK-NEXT:  .LBB19_6:
-; CHECK-NEXT:    fcvt.w.s a0, ft2, rne
-; CHECK-NEXT:  .LBB19_7: # %entry
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    bnez a2, .LBB19_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB19_10
-; CHECK-NEXT:  .LBB19_9:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rne
-; CHECK-NEXT:  .LBB19_10: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI19_0)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI19_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -1243,22 +524,20 @@ entry:
 define void @vcvtnq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    fld ft1, 0(a0)
-; CHECK-NEXT:    fld ft0, 8(a0)
-; CHECK-NEXT:    feq.d a0, ft1, ft1
-; CHECK-NEXT:    beqz a0, .LBB20_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft1, rne
-; CHECK-NEXT:  .LBB20_2: # %entry
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB20_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.l.d a2, ft0, rne
-; CHECK-NEXT:  .LBB20_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI20_0)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI20_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1271,126 +550,21 @@ entry:
 define void @vcvtnq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -96
-; CHECK-NEXT:    .cfi_def_cfa_offset 96
-; CHECK-NEXT:    sd ra, 88(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 80(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s1, 72(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs0, 64(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs1, 56(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs2, 48(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs3, 40(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs4, 32(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs5, 24(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    fsd fs6, 16(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    .cfi_offset s1, -24
-; CHECK-NEXT:    .cfi_offset fs0, -32
-; CHECK-NEXT:    .cfi_offset fs1, -40
-; CHECK-NEXT:    .cfi_offset fs2, -48
-; CHECK-NEXT:    .cfi_offset fs3, -56
-; CHECK-NEXT:    .cfi_offset fs4, -64
-; CHECK-NEXT:    .cfi_offset fs5, -72
-; CHECK-NEXT:    .cfi_offset fs6, -80
-; CHECK-NEXT:    mv s0, a1
-; CHECK-NEXT:    mv s1, a0
-; CHECK-NEXT:    flh ft0, 12(a0)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs0, fa0
-; CHECK-NEXT:    flh ft0, 10(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs1, fa0
-; CHECK-NEXT:    flh ft0, 8(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs2, fa0
-; CHECK-NEXT:    flh ft0, 6(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs3, fa0
-; CHECK-NEXT:    flh ft0, 4(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs4, fa0
-; CHECK-NEXT:    flh ft0, 2(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fmv.s fs5, fa0
-; CHECK-NEXT:    flh ft0, 0(s1)
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fcvt.h.s fs6, fa0
-; CHECK-NEXT:    fcvt.h.s fs5, fs5
-; CHECK-NEXT:    fcvt.h.s fs4, fs4
-; CHECK-NEXT:    flh ft0, 14(s1)
-; CHECK-NEXT:    fcvt.h.s fs3, fs3
-; CHECK-NEXT:    fcvt.h.s fs2, fs2
-; CHECK-NEXT:    fcvt.h.s fs1, fs1
-; CHECK-NEXT:    fcvt.s.h fa0, ft0
-; CHECK-NEXT:    fcvt.h.s fs0, fs0
-; CHECK-NEXT:    call roundevenf@plt
-; CHECK-NEXT:    fcvt.h.s ft0, fa0
-; CHECK-NEXT:    lui a0, %hi(.LCPI21_0)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI21_0)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs1
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs2
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs3
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs4
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs5
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    fcvt.s.h ft0, fs6
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vse16.v v8, (s0)
-; CHECK-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs0, 64(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs1, 56(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs2, 48(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs3, 40(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs4, 32(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs5, 24(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    fld fs6, 16(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 96
+; CHECK-NEXT:    lui a0, %hi(.LCPI21_0)
+; CHECK-NEXT:    flh ft0, %lo(.LCPI21_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -1402,55 +576,21 @@ entry:
 define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    flw ft0, 12(a0)
-; CHECK-NEXT:    flw ft1, 8(a0)
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB22_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a2, ft0, rne
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:  .LBB22_2: # %entry
-; CHECK-NEXT:    flw ft0, 0(a0)
-; CHECK-NEXT:    flw ft2, 4(a0)
-; CHECK-NEXT:    feq.s a0, ft1, ft1
-; CHECK-NEXT:    sw a2, 12(sp)
-; CHECK-NEXT:    beqz a0, .LBB22_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a0, ft1, rne
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB22_4: # %entry
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB22_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB22_7
-; CHECK-NEXT:  .LBB22_6:
-; CHECK-NEXT:    fcvt.wu.s a0, ft2, rne
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB22_7: # %entry
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    bnez a2, .LBB22_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB22_10
-; CHECK-NEXT:  .LBB22_9:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rne
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB22_10: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    mv a0, sp
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI22_0)
+; CHECK-NEXT:    flw ft0, %lo(.LCPI22_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -1462,22 +602,20 @@ entry:
 define void @vcvtnq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    fld ft1, 0(a0)
-; CHECK-NEXT:    fld ft0, 8(a0)
-; CHECK-NEXT:    feq.d a0, ft1, ft1
-; CHECK-NEXT:    beqz a0, .LBB23_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft1, rne
-; CHECK-NEXT:  .LBB23_2: # %entry
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB23_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.lu.d a2, ft0, rne
-; CHECK-NEXT:  .LBB23_4: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(.LCPI23_0)
+; CHECK-NEXT:    fld ft0, %lo(.LCPI23_0)(a0)
+; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    vmflt.vf v0, v9, ft0
+; CHECK-NEXT:    fsrmi a0, 0
+; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
+; CHECK-NEXT:    fsrm a0
+; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1490,8 +628,6 @@ entry:
 define void @vcvtp_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI24_0)
@@ -1503,65 +639,10 @@ define void @vcvtp_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI24_1)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI24_1)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI24_2)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI24_2)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB24_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB24_2: # %entry
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB24_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB24_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    bnez a2, .LBB24_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB24_7
-; CHECK-NEXT:  .LBB24_6:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB24_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB24_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB24_10
-; CHECK-NEXT:  .LBB24_9:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB24_10: # %entry
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    addi a0, sp, 8
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -1584,24 +665,9 @@ define void @vcvtp_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB25_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB25_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB25_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a2, ft0, rtz
-; CHECK-NEXT:  .LBB25_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1625,13 +691,9 @@ define void @vcvtp_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB26_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB26_2: # %entry
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1644,8 +706,6 @@ entry:
 define void @vcvtp_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI27_0)
@@ -1657,42 +717,10 @@ define void @vcvtp_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI27_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI27_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    addi a0, sp, 8
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -1715,28 +743,9 @@ define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB28_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB28_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB28_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a2, ft0, rtz
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    srli a2, a2, 32
-; CHECK-NEXT:  .LBB28_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1760,13 +769,9 @@ define void @vcvtp_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB29_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB29_2: # %entry
-; CHECK-NEXT:    vmv.v.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1779,8 +784,6 @@ entry:
 define void @vcvtpq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI30_0)
@@ -1792,121 +795,10 @@ define void @vcvtpq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI30_1)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI30_1)(a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI30_2)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI30_2)(a0)
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB30_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_2: # %entry
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a0, ft2, ft2
-; CHECK-NEXT:    beqz a0, .LBB30_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_7
-; CHECK-NEXT:  .LBB30_6:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_10
-; CHECK-NEXT:  .LBB30_9:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_10: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_12
-; CHECK-NEXT:  # %bb.11: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_13
-; CHECK-NEXT:  .LBB30_12:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_13: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_15
-; CHECK-NEXT:  # %bb.14: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_16
-; CHECK-NEXT:  .LBB30_15:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_16: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft2, v9
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_18
-; CHECK-NEXT:  # %bb.17: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_19
-; CHECK-NEXT:  .LBB30_18:
-; CHECK-NEXT:    fmax.s ft2, ft2, ft0
-; CHECK-NEXT:    fmin.s ft2, ft2, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft2, rtz
-; CHECK-NEXT:  .LBB30_19: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft2, v8
-; CHECK-NEXT:    fcvt.s.h ft2, ft2
-; CHECK-NEXT:    feq.s a2, ft2, ft2
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    bnez a2, .LBB30_21
-; CHECK-NEXT:  # %bb.20: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB30_22
-; CHECK-NEXT:  .LBB30_21:
-; CHECK-NEXT:    fmax.s ft0, ft2, ft0
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.l.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB30_22: # %entry
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -1918,8 +810,6 @@ entry:
 define void @vcvtpq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI31_0)
@@ -1931,49 +821,10 @@ define void @vcvtpq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB31_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB31_2: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB31_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB31_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB31_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB31_7
-; CHECK-NEXT:  .LBB31_6:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB31_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB31_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB31_10
-; CHECK-NEXT:  .LBB31_9:
-; CHECK-NEXT:    fcvt.w.s a0, ft0, rtz
-; CHECK-NEXT:  .LBB31_10: # %entry
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -1996,24 +847,9 @@ define void @vcvtpq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB32_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.l.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB32_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB32_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.l.d a2, ft0, rtz
-; CHECK-NEXT:  .LBB32_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -2026,8 +862,6 @@ entry:
 define void @vcvtpq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI33_0)
@@ -2039,70 +873,10 @@ define void @vcvtpq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI33_1)
-; CHECK-NEXT:    flw ft1, %lo(.LCPI33_1)(a0)
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 8(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 6(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 4(sp)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    fcvt.s.h ft0, ft0
-; CHECK-NEXT:    fmax.s ft0, ft0, ft2
-; CHECK-NEXT:    fmin.s ft0, ft0, ft1
-; CHECK-NEXT:    fcvt.lu.s a0, ft0, rtz
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -2114,8 +888,6 @@ entry:
 define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI34_0)
@@ -2127,57 +899,10 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB34_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB34_2: # %entry
-; CHECK-NEXT:    sw a0, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB34_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB34_4: # %entry
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 12(sp)
-; CHECK-NEXT:    bnez a2, .LBB34_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB34_7
-; CHECK-NEXT:  .LBB34_6:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB34_7: # %entry
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.s a2, ft0, ft0
-; CHECK-NEXT:    sw a0, 8(sp)
-; CHECK-NEXT:    bnez a2, .LBB34_9
-; CHECK-NEXT:  # %bb.8: # %entry
-; CHECK-NEXT:    li a0, 0
-; CHECK-NEXT:    j .LBB34_10
-; CHECK-NEXT:  .LBB34_9:
-; CHECK-NEXT:    fcvt.wu.s a0, ft0, rtz
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:  .LBB34_10: # %entry
-; CHECK-NEXT:    sw a0, 4(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -2200,24 +925,9 @@ define void @vcvtpq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a0, ft0, ft0
-; CHECK-NEXT:    beqz a0, .LBB35_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    fcvt.lu.d a0, ft0, rtz
-; CHECK-NEXT:  .LBB35_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v8
-; CHECK-NEXT:    feq.d a2, ft0, ft0
-; CHECK-NEXT:    beqz a2, .LBB35_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    fcvt.lu.d a2, ft0, rtz
-; CHECK-NEXT:  .LBB35_4: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a0
+; CHECK-NEXT:    vmfne.vv v0, v8, v8
+; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
+; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
