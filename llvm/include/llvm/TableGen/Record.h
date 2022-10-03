@@ -837,7 +837,10 @@ public:
 /// !op (X, Y) - Combine two inits.
 class BinOpInit : public OpInit, public FoldingSetNode {
 public:
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   enum BinaryOp : uint8_t {
     ADD,
     SUB,
@@ -862,11 +865,14 @@ public:
     GT,
     SETDAGOP
   };
+<<<<<<< HEAD
 #else
   enum BinaryOp : uint8_t { ADD, SUB, MUL, AND, OR, XOR, SHL, SRA, SRL, LISTCONCAT,
                             LISTSPLAT, STRCONCAT, INTERLEAVE, CONCAT, EQ,
                             NE, LE, LT, GE, GT, SETDAGOP };
 #endif
+=======
+>>>>>>> upstream/main
 
 private:
   Init *LHS, *RHS;

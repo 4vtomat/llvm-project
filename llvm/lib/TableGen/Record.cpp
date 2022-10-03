@@ -1189,9 +1189,13 @@ Init *BinOpInit::Fold(Record *CurRec) const {
   case ADD:
   case SUB:
   case MUL:
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   case DIV:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case DIV:
+>>>>>>> upstream/main
   case AND:
   case OR:
   case XOR:
@@ -1210,7 +1214,10 @@ Init *BinOpInit::Fold(Record *CurRec) const {
       case ADD: Result = LHSv + RHSv; break;
       case SUB: Result = LHSv - RHSv; break;
       case MUL: Result = LHSv * RHSv; break;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
       case DIV:
         if (RHSv == 0)
           PrintFatalError(CurRec->getLoc(),
@@ -1221,7 +1228,10 @@ Init *BinOpInit::Fold(Record *CurRec) const {
         else
           Result = LHSv / RHSv;
         break;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
       case AND: Result = LHSv & RHSv; break;
       case OR:  Result = LHSv | RHSv; break;
       case XOR: Result = LHSv ^ RHSv; break;
@@ -1254,9 +1264,13 @@ std::string BinOpInit::getAsString() const {
   case ADD: Result = "!add"; break;
   case SUB: Result = "!sub"; break;
   case MUL: Result = "!mul"; break;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   case DIV: Result = "!div"; break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case DIV: Result = "!div"; break;
+>>>>>>> upstream/main
   case AND: Result = "!and"; break;
   case OR: Result = "!or"; break;
   case XOR: Result = "!xor"; break;

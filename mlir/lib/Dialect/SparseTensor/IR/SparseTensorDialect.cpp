@@ -8,7 +8,7 @@
 
 #include "mlir/Dialect/SparseTensor/IR/SparseTensor.h"
 
-#include "mlir/Dialect/Arithmetic/IR/Arithmetic.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/DialectImplementation.h"
 #include "mlir/IR/Matchers.h"
@@ -595,6 +595,32 @@ LogicalResult CompressOp::verify() {
   if (ttp.getRank() != 1 + static_cast<int64_t>(getIndices().size()))
     return emitOpError("incorrect number of indices");
   return success();
+}
+
+void ForeachOp::build(
+    OpBuilder &builder, OperationState &result, Value tensor,
+    function_ref<void(OpBuilder &, Location, ValueRange)> bodyBuilder) {
+  build(builder, result, tensor);
+  if (!bodyBuilder)
+    return;
+
+  auto rtp = tensor.getType().cast<RankedTensorType>();
+  int64_t rank = rtp.getRank();
+
+  SmallVector<Type, 4> blockArgTypes;
+  // Starts with n index.
+  std::fill_n(std::back_inserter(blockArgTypes), rank, builder.getIndexType());
+  // Followed by one value.
+  blockArgTypes.push_back(rtp.getElementType());
+
+  SmallVector<Location, 4> blockArgLocs;
+  std::fill_n(std::back_inserter(blockArgLocs), rank + 1, tensor.getLoc());
+
+  OpBuilder::InsertionGuard guard(builder);
+  auto &region = *result.regions.front();
+  Block *bodyBlock =
+      builder.createBlock(&region, region.end(), blockArgTypes, blockArgLocs);
+  bodyBuilder(builder, result.location, bodyBlock->getArguments());
 }
 
 LogicalResult ForeachOp::verify() {
