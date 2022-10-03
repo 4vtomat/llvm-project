@@ -173,7 +173,8 @@ static Optional<unsigned> calculateIterationsToInvariance(
 // by an exit condition. Returns the number of iterations to peel off (at the
 // moment either 0 or 1).
 static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
-                                                      DominatorTree &DT) {
+                                                      DominatorTree &DT,
+                                                      AssumptionCache *AC) {
   // Skip loops with a single exiting block, because there should be no benefit
   // for the heuristic below.
   if (L.getExitingBlock())
@@ -214,7 +215,7 @@ static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
       if (auto *LI = dyn_cast<LoadInst>(&I)) {
         Value *Ptr = LI->getPointerOperand();
         if (DT.dominates(BB, Latch) && L.isLoopInvariant(Ptr) &&
-            !isDereferenceablePointer(Ptr, LI->getType(), DL, LI, nullptr, &DT))
+            !isDereferenceablePointer(Ptr, LI->getType(), DL, LI, AC, &DT))
           for (Value *U : I.users())
             LoadUsers.insert(U);
       }
@@ -390,7 +391,8 @@ static bool violatesLegacyMultiExitLoopCheck(Loop *L) {
 void llvm::computePeelCount(Loop *L, unsigned LoopSize,
                             TargetTransformInfo::PeelingPreferences &PP,
                             unsigned TripCount, DominatorTree &DT,
-                            ScalarEvolution &SE, unsigned Threshold) {
+                            ScalarEvolution &SE, AssumptionCache *AC,
+                            unsigned Threshold) {
   assert(LoopSize > 0 && "Zero loop size is not allowed!");
   // Save the PP.PeelCount value set by the target in
   // TTI.getPeelingPreferences or by the flag -unroll-peel-count.
@@ -478,7 +480,7 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
                                                    SE, PP.PeelProlog));
 
   if (DesiredPeelCount == 0 && (PP.PeelProlog))
-    DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT);
+    DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT, AC);
   // end SIFIVE
 
   if (DesiredPeelCount > 0) {

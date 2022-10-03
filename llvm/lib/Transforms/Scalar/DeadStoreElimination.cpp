@@ -242,11 +242,18 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
   const auto *DeadII = dyn_cast<IntrinsicInst>(DeadI);
   if (KillingII == nullptr || DeadII == nullptr)
     return OW_Unknown;
-#if SIFIVE_CUSTOMIZATION
-  // Only like type intrinsics...
   if (KillingII->getIntrinsicID() != DeadII->getIntrinsicID())
     return OW_Unknown;
   if (KillingII->getIntrinsicID() == Intrinsic::masked_store) {
+    // Type size.
+    VectorType *KillingTy =
+        cast<VectorType>(KillingII->getArgOperand(0)->getType());
+    VectorType *DeadTy = cast<VectorType>(DeadII->getArgOperand(0)->getType());
+    if (KillingTy->getScalarSizeInBits() != DeadTy->getScalarSizeInBits())
+      return OW_Unknown;
+    // Element count.
+    if (KillingTy->getElementCount() != DeadTy->getElementCount())
+      return OW_Unknown;
     // Pointers.
     Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
     Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
@@ -257,7 +264,9 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
     if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
       return OW_Unknown;
     return OW_Complete;
-  } else if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
+  }
+#if SIFIVE_CUSTOMIZATION
+  if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
     // Operands {0        , 1     , 2   , 3 }
     //          {StoredVal, VecPtr, Mask, VL}
     // Types.

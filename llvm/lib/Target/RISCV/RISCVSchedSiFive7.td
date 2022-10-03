@@ -812,11 +812,7 @@ def : ReadAdvance<ReadSFB, 2, [WriteIALU, WriteIALU32,
 // Unsupported extensions
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbs;
-defm : UnsupportedSchedZbe;
-defm : UnsupportedSchedZbf;
-defm : UnsupportedSchedZbm;
-defm : UnsupportedSchedZbp;
-defm : UnsupportedSchedZbr;
-defm : UnsupportedSchedZbt;
+defm : UnsupportedSchedZbkb;
+defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedCMOV; // SIFIVE
 }

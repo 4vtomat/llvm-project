@@ -135,6 +135,7 @@ public:
   }
 
   SMLoc getLoc() const;
+  SMRange getLocRange() const;
 
 private:
   /// LexToken - Read the next token and return its code.

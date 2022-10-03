@@ -257,5 +257,5 @@ def : ReadAdvance<ReadCMOV, 0>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Include the scheduler resources for other instruction extensions.
-include "RISCVScheduleB.td"
+include "RISCVScheduleZb.td"
 include "RISCVScheduleV.td"

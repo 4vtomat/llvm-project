@@ -27,6 +27,9 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Utils/InjectTLIMappings.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
 #if SIFIVE_CUSTOMIZATION
@@ -498,10 +501,6 @@ void VPInstruction::setFastMathFlags(FastMathFlags FMFNew) {
   FMF = FMFNew;
 }
 
-extern bool widenPredicatedCallHelper(CallInst &CI, VPValue *Def,
-                                      VPUser &ArgOperands,
-                                      VPTransformState &State);
-
 void VPWidenCallRecipe::execute(VPTransformState &State) {
   auto &CI = *cast<CallInst>(getUnderlyingInstr());
   assert(!isa<DbgInfoIntrinsic>(CI) &&
@@ -509,8 +508,18 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   State.setDebugLocFromInst(&CI);
 
 #if SIFIVE_CUSTOMIZATION
-  if (widenPredicatedCallHelper(CI, this, *this, State))
-    return;
+  if (State.Plan->getEVL()) {
+    // Skip if CI doesn't have vp form.
+    if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(VectorIntrinsicID);
+        VPIntrinsic::isVPIntrinsic(VPID)) {
+      for (unsigned Part = 0; Part < State.UF; ++Part) {
+        llvm::widenPredicatedCall(CI, this, *this, State, VPID, Part);
+        Value *V = State.get(this, Part);
+        State.addMetadata(V, &CI);
+      }
+      return;
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   SmallVector<Type *, 4> Tys;
@@ -552,6 +561,14 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
              "Can't create vector function.");
 #endif
       VectorF = VFDatabase(CI).getVectorizedFunction(Shape);
+#if SIFIVE_CUSTOMIZATION
+      // Add VL as an explicit final argument to SiFive NF Library functions
+      if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
+          State.Plan->getEVL()) {
+        Value *EVL = State.get(State.Plan->getEVL(), Part);
+        Args.push_back(EVL);
+      }
+#endif
     }
     SmallVector<OperandBundleDef, 1> OpBundles;
     CI.getOperandBundlesAsDefs(OpBundles);
@@ -1185,8 +1202,9 @@ void VPCanonicalIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-bool VPWidenPointerInductionRecipe::onlyScalarsGenerated() {
-  return IsScalarAfterVectorization;
+bool VPWidenPointerInductionRecipe::onlyScalarsGenerated(ElementCount VF) {
+  return IsScalarAfterVectorization &&
+         (!VF.isScalable() || vputils::onlyFirstLaneUsed(this));
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
