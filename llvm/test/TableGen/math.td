@@ -1,15 +1,10 @@
 // RUN: llvm-tblgen %s | FileCheck %s
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
 // RUN: not llvm-tblgen -DERROR1 %s 2>&1 | FileCheck --check-prefix=ERROR1 %s
 // RUN: not llvm-tblgen -DERROR2 %s 2>&1 | FileCheck --check-prefix=ERROR2 %s
+// SIFIVE_CUSTOMIZATION
 // RUN: not llvm-tblgen -DERROR3 %s 2>&1 | FileCheck --check-prefix=ERROR3 %s
 // RUN: not llvm-tblgen -DERROR4 %s 2>&1 | FileCheck --check-prefix=ERROR4 %s
 // END OF SIFIVE_CUSTOMIZATION
-=======
-// RUN: not llvm-tblgen -DERROR1 %s 2>&1 | FileCheck --check-prefix=ERROR1 %s
-// RUN: not llvm-tblgen -DERROR2 %s 2>&1 | FileCheck --check-prefix=ERROR2 %s
->>>>>>> upstream/main
 // XFAIL: vg_leak
 
 // CHECK: def shifts
@@ -58,10 +53,6 @@ def v1025   : Int<!add(int1024.Value, 1)>;
 // CHECK: Value = 12
 def v12   : Int<!mul(4, 3)>;
 
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 // CHECK: def v13
 // CHECK: Value = 5
 def v13   : Int<!div(10, 2)>;
@@ -92,10 +83,6 @@ def v18 : Int<!div(4, 0)>;
 def v19 : Int<!div(-9223372036854775808, -1)>;
 #endif
 
-<<<<<<< HEAD
-// END OF SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 // CHECK: def v1a
 // CHECK: Value = 1
 
