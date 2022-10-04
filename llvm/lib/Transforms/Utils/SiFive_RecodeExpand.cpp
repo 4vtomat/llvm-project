@@ -241,6 +241,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         break;
       }
       case Intrinsic::aarch64_neon_facgt: {
+        // If either operand is a NaN, return false and set invalid flag.
         CallInst *Abs0 = Builder.CreateIntrinsic(
             Intrinsic::fabs, {II->getArgOperand(0)->getType()},
             {II->getArgOperand(0)});
@@ -276,6 +277,14 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       case Intrinsic::aarch64_neon_fcvtnu:
       case Intrinsic::aarch64_neon_fcvtps:
       case Intrinsic::aarch64_neon_fcvtpu: {
+        // a: rounding to nearest with ties to Away
+        // m: rounding toward minus infinity
+        // n: rounding to nearest with ties to even
+        // p: rounding toward plus infinity
+        // out of range -> clamp the value and set invalid flag
+        // inf -> clamp the value and set invalid flag
+        // nan -> 0, set invalid flag
+        // Inexact flag may be set.
         Intrinsic::ID RoundID;
         Intrinsic::ID FPToI;
         switch (II->getIntrinsicID()) {
@@ -322,6 +331,11 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       }
       case Intrinsic::aarch64_neon_fcvtzs:
       case Intrinsic::aarch64_neon_fcvtzu: {
+        // rounding towards zero
+        // out of range -> clamp the value and set invalid flag
+        // inf -> clamp the value and set invalid flag
+        // nan -> 0, set invalid flag
+        // Inexact flag may be set.
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             II->getIntrinsicID() == Intrinsic::aarch64_neon_fcvtzs
                 ? Intrinsic::fptosi_sat
@@ -412,6 +426,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       }
       case Intrinsic::aarch64_neon_frecps:
         // If either left or right is NaN, return NaN.
+        // If either operand is sNaN, set invalid flag.
         //               |         right
         //               |----------------------
         //               |  inf  |   0   | other
@@ -424,6 +439,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         // op is a fully fused multiply-add.
       case Intrinsic::aarch64_neon_frsqrts: {
         // If either left or right is NaN, return NaN.
+        // If either operand is sNaN, set invalid flag.
         //               |         right
         //               |----------------------
         //               |  inf  |   0   | other

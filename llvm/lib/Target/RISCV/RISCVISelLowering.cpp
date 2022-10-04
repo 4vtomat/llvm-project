@@ -5991,6 +5991,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     //        | qnan  |  NaN  |  NaN  |  NaN
     //   left | snan  |  NaN  |  NaN  |  NaN
     //        | other |  NaN  |  NaN  | op(left, right)
+    // If either operand is sNaN, set invalid flag.
     SDValue Op0 = Op.getOperand(1);
     SDValue Op1 = Op.getOperand(2);
     EVT VT = Op.getValueType();
@@ -6017,6 +6018,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     //        | qnan  |  NaN  |  NaN  | other
     //   left | snan  |  NaN  |  NaN  |  NaN
     //        | other | other |  NaN  | op(left, right)
+    // If either operand is sNaN, set invalid flag.
     SDValue Op0 = Op.getOperand(1);
     SDValue Op1 = Op.getOperand(2);
     EVT VT = Op.getValueType();
