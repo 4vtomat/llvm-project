@@ -4,7 +4,7 @@
 
 ; Reduced case from 403.gcc
 define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
-; CHECK: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, i64))
+; CHECK: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, i64))
 entry:
   br label %for.body.i172
 
