@@ -78,6 +78,11 @@ static cl::opt<bool> UserSinkCommonInsts(
     "sink-common-insts", cl::Hidden, cl::init(false),
     cl::desc("Sink common instructions (default = false)"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    PreprocesssForSelect("preprocess-for-select", cl::Hidden, cl::init(false),
+                         cl::desc("Preprocess of folding phis to selects"));
+#endif
 
 STATISTIC(NumSimpl, "Number of blocks simplified");
 
@@ -417,7 +422,7 @@ static bool performIfConditionPHI(Function &F, BasicBlock *BB,
 // Preprocess work to make more phi-nodes be folded to selects.
 static bool preprocessFoldPHIs(Function &F, DomTreeUpdater *DTU,
                                const SimplifyCFGOptions &Options) {
-  if (!Options.FoldTwoEntryPHINode)
+  if (!PreprocesssForSelect || !Options.FoldTwoEntryPHINode)
     return false;
 
   SmallVector<BasicBlock *, 2> BBs;
