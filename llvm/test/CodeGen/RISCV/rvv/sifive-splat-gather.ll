@@ -62,3 +62,43 @@ bb:
   %v = call <4 x double> @llvm.vp.gather.v4f64.v4p0(<4 x ptr> %tmp3, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 %evl)
   ret <4 x double> %v
 }
+
+define void @test_sink_zero(ptr %dst, ptr %arg, i64 zeroext %avl) {
+; CHECK-LABEL: test_sink_zero:
+; CHECK:       # %bb.0: # %bb
+; CHECK-NEXT:    li a3, 0
+; CHECK-NEXT:  .LBB4_1: # %body
+; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:    sub a4, a2, a3
+; CHECK-NEXT:    vsetvli a4, a4, e16, m4, ta, mu
+; CHECK-NEXT:    vlse16.v v8, (a1), zero
+; CHECK-NEXT:    slli a5, a3, 1
+; CHECK-NEXT:    add a5, a0, a5
+; CHECK-NEXT:    add a3, a3, a4
+; CHECK-NEXT:    vse16.v v8, (a5)
+; CHECK-NEXT:    bne a3, a2, .LBB4_1
+; CHECK-NEXT:  # %bb.2: # %end
+; CHECK-NEXT:    ret
+bb:
+  %broadcast.splatinsert = insertelement <vscale x 16 x ptr> poison, ptr %arg, i64 0
+  %broadcast.splat = shufflevector <vscale x 16 x ptr> %broadcast.splatinsert, <vscale x 16 x ptr> poison, <vscale x 16 x i32> zeroinitializer
+  br label %body
+
+body:
+  %index = phi i64 [ 0, %bb ], [ %index.next, %body ]
+  %avl.1 = sub i64 %avl, %index
+  %vl.0 = tail call i64 @llvm.riscv.vsetvli.i64(i64 %avl.1, i64 1, i64 2)
+  %vl = trunc i64 %vl.0 to i32
+  %vp.gather = tail call <vscale x 16 x i16> @llvm.vp.gather.nxv16i16.nxv16p0(<vscale x 16 x ptr> %broadcast.splat, <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i32 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 %vl)
+  %tmp = getelementptr inbounds [16 x i16], ptr %dst, i64 0, i64 %index
+  tail call void @llvm.vp.store.nxv16i16.p0(<vscale x 16 x i16> %vp.gather, ptr %tmp, <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i32 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 %vl)
+  %index.next = add i64 %index, %vl.0
+  %cond = icmp eq i64 %index.next, %avl
+  br i1 %cond, label %end, label %body
+end:
+  ret void
+}
+
+declare i64 @llvm.riscv.vsetvli.i64(i64, i64 immarg, i64 immarg)
+declare <vscale x 16 x i16> @llvm.vp.gather.nxv16i16.nxv16p0(<vscale x 16 x ptr>, <vscale x 16 x i1>, i32)
+declare void @llvm.vp.store.nxv16i16.p0(<vscale x 16 x i16>, ptr nocapture, <vscale x 16 x i1>, i32)

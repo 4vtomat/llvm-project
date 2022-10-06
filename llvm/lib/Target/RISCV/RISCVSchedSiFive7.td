@@ -238,6 +238,12 @@ def : WriteRes<WriteFMovI64ToF64, [SiFive7PipeA]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFive7PipeA]>;
 }
 
+// 6. Configuration-Setting Instructions
+let Latency = 3 in {
+def : WriteRes<WriteVSETVLI, [SiFive7PipeA]>;
+def : WriteRes<WriteVSETIVLI, [SiFive7PipeA]>;
+def : WriteRes<WriteVSETVL, [SiFive7PipeA]>;
+}
 // 7. Vector Loads and Stores
 let Latency = 4 in {
 def : WriteRes<WriteVLDE8, [SiFive7VL]>;
@@ -622,6 +628,10 @@ def : ReadAdvance<ReadFMovI64ToF64, 0>;
 def : ReadAdvance<ReadFClass16, 0>;
 def : ReadAdvance<ReadFClass32, 0>;
 def : ReadAdvance<ReadFClass64, 0>;
+
+// 6. Configuration-Setting Instructions
+def : ReadAdvance<ReadVSETVLI, 2>;
+def : ReadAdvance<ReadVSETVL, 2>;
 
 // 7. Vector Loads and Stores
 def : ReadAdvance<ReadVLDX, 0>;

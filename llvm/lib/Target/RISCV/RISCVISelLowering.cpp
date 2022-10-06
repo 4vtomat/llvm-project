@@ -1640,6 +1640,12 @@ bool RISCVTargetLowering::shouldSinkOperands(
         case Intrinsic::fma:
         case Intrinsic::vp_fma:
           return Operand == 0 || Operand == 1;
+#if SIFIVE_CUSTOMIZATION
+        case Intrinsic::vp_gather:
+          return Operand == 0;
+        case Intrinsic::vp_scatter:
+          return Operand == 1;
+#endif // SIFIVE_CUSTOMIZATION
         // FIXME: Our patterns can only match vx/vf instructions when the splat
         // it on the RHS, because TableGen doesn't recognize our VP operations
         // as commutative.
@@ -7921,6 +7927,23 @@ SDValue RISCVTargetLowering::lowerVPStridedStore(SDValue Op,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// The splat could already be in the base pointer or it could be hidden in
+// the index.
+static SDValue findSplatPointer(SDValue BasePtr, SDValue Index, SelectionDAG &DAG) {
+  if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
+    return BasePtr;
+
+  // Try to extract from index.
+  if (!isNullConstant(BasePtr))
+    return SDValue();
+
+  SDValue SplatVal = DAG.getSplatValue(Index);
+  if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
+    return SDValue();
+
+  return SplatVal;
+}
+
 // Look for VP gather where all elements use the same pointer. Lower to a
 // strided load with rs2=x0. This is only possible if the mask is all ones.
 static SDValue lowerSplatPtrVPGather(SDValue Op, SelectionDAG &DAG,
@@ -7934,54 +7957,19 @@ static SDValue lowerSplatPtrVPGather(SDValue Op, SelectionDAG &DAG,
   if (!ISD::isConstantSplatVectorAllOnes(Mask.getNode()))
     return SDValue();
 
-  // The splat could already be in the base pointer or it could be hidden in
-  // the index.
-  auto findSplatPointer = [&DAG](SDValue BasePtr, SDValue Index) {
-    if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
-      return BasePtr;
-
-    // Try to extract from index.
-    if (!isNullConstant(BasePtr))
-      return SDValue();
-
-    SDValue SplatVal = DAG.getSplatValue(Index);
-    if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
-      return SDValue();
-
-    return SplatVal;
-  };
-
-  SDValue BasePtr = findSplatPointer(VPGN->getBasePtr(), VPGN->getIndex());
+  SDValue BasePtr = findSplatPointer(VPGN->getBasePtr(), VPGN->getIndex(), DAG);
   if (!BasePtr)
     return SDValue();
 
-  MVT VT = Op.getSimpleValueType();
+  EVT VT = Op.getValueType();
   MVT XLenVT = Subtarget.getXLenVT();
 
-  MVT ContainerVT = VT;
-  if (VT.isFixedLengthVector()) {
-    ContainerVT = getContainerForFixedLengthVector(DAG, VT, Subtarget);
-  }
-
   SDLoc DL(Op);
-  SDVTList VTs = DAG.getVTList({ContainerVT, MVT::Other});
-  SDValue IntID = DAG.getTargetConstant(Intrinsic::riscv_vlse, DL, XLenVT);
   SDValue VL = VPGN->getVectorLength();
-  SDValue Ops[] = {VPGN->getChain(),
-                   IntID,
-                   DAG.getUNDEF(ContainerVT),
-                   BasePtr,
-                   DAG.getRegister(RISCV::X0, XLenVT),
-                   VL};
-  SDValue NewLoad =
-      DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops,
-                              VPGN->getMemoryVT(), VPGN->getMemOperand());
-  SDValue Chain = NewLoad.getValue(1);
-
-  if (VT.isFixedLengthVector())
-    NewLoad = convertFromScalableVector(VT, NewLoad, DAG, Subtarget);
-
-  return DAG.getMergeValues({NewLoad, Chain}, DL);
+  SDValue Stride =  DAG.getRegister(RISCV::X0, XLenVT);
+  SDValue NewLoad = DAG.getStridedLoadVP(VT, DL, VPGN->getChain(),
+                                         BasePtr, Stride, Mask, VL, VPGN->getMemOperand());
+  return NewLoad;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -8108,24 +8096,7 @@ static SDValue lowerSplatPtrVPScatter(SDValue Op, SelectionDAG &DAG,
   if (!ISD::isConstantSplatVectorAllOnes(Mask.getNode()))
     return SDValue();
 
-  // The splat could already be in the base pointer or it could be hidden in
-  // the index.
-  auto findSplatPointer = [&DAG](SDValue BasePtr, SDValue Index) {
-    if (ISD::isConstantSplatVectorAllZeros(Index.getNode()))
-      return BasePtr;
-
-    // Try to extract from index.
-    if (!isNullConstant(BasePtr))
-      return SDValue();
-
-    SDValue SplatVal = DAG.getSplatValue(Index);
-    if (!SplatVal || SplatVal.getValueType() != BasePtr.getValueType())
-      return SDValue();
-
-    return SplatVal;
-  };
-
-  SDValue BasePtr = findSplatPointer(VPSN->getBasePtr(), VPSN->getIndex());
+  SDValue BasePtr = findSplatPointer(VPSN->getBasePtr(), VPSN->getIndex(), DAG);
   if (!BasePtr)
     return SDValue();
 
@@ -10811,6 +10782,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case ISD::VP_SCATTER: {
     if (!DCI.isBeforeLegalize())
       break;
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerSplatPtrVPGather(SDValue(N, 0), DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
     SDValue Index, ScaleOp;
     bool IsIndexSigned = false;
     if (const auto *VPGSN = dyn_cast<VPGatherScatterSDNode>(N)) {
