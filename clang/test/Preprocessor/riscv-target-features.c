@@ -41,6 +41,12 @@
 // CHECK-NOT: __riscv_zicboz
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicbop
+// CHECK-NOT: __riscv_zicclsm
+// CHECK-NOT: __riscv_ziccif
+// CHECK-NOT: __riscv_ziccamoa
+// CHECK-NOT: __riscv_ziccrse
+// CHECK-NOT: __riscv_za64rs
+// CHECK-NOT: __riscv_zic64b
 // end SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __sifive_recode_neon
 
@@ -407,6 +413,42 @@
 // RUN: %clang -target riscv64 -march=rv64izicbop -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOP-EXT %s
 // CHECK-ZICBOP-EXT: __riscv_zicbop 1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32izicclsm -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCLSM-EXT %s
+// RUN: %clang -target riscv64 -march=rv64izicclsm  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCLSM-EXT %s
+// CHECK-ZICCLSM-EXT: __riscv_zicclsm  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32iziccif -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCIF-EXT %s
+// RUN: %clang -target riscv64 -march=rv64iziccif  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCIF-EXT %s
+// CHECK-ZICCIF-EXT: __riscv_ziccif  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32iziccamoa -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCAMOA-EXT %s
+// RUN: %clang -target riscv64 -march=rv64iziccamoa  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCAMOA-EXT %s
+// CHECK-ZICCAMOA-EXT: __riscv_ziccamoa  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32iziccrse -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCRSE-EXT %s
+// RUN: %clang -target riscv64 -march=rv64iziccrse  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICCRSE-EXT %s
+// CHECK-ZICCRSE-EXT: __riscv_ziccrse  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32iza64rs -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZA64RS-EXT %s
+// RUN: %clang -target riscv64 -march=rv64iza64rs  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZA64RS-EXT %s
+// CHECK-ZA64RS-EXT: __riscv_za64rs  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32izic64b -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZIC64B-EXT %s
+// RUN: %clang -target riscv64 -march=rv64izic64b  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZIC64B-EXT %s
+// CHECK-ZIC64B-EXT: __riscv_zic64b  1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
