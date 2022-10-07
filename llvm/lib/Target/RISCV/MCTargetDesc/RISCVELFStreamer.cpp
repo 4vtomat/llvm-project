@@ -210,7 +210,6 @@ class RISCVELFStreamer : public MCELFStreamer {
   static bool requiresFixups(MCContext &C, const MCExpr *Value,
                              const MCExpr *&LHS, const MCExpr *&RHS) {
 #if SIFIVE_CUSTOMIZATION
-    // SIFIVE: Cherry-picked from upstream
     auto IsMetadataOrEHFrameSection = [](const MCSection &S) -> bool {
       // Additionally check .apple_names/.apple_types. They are fixed-size and
       // do not need fixups. llvm-dwarfdump --apple-names does not process
@@ -218,8 +217,7 @@ class RISCVELFStreamer : public MCELFStreamer {
       return S.getKind().isMetadata() || S.getName() == ".eh_frame" ||
              S.getName() == ".apple_names" || S.getName() == ".apple_types";
     };
-#endif // SIFIVE_CUSTOMIZATION
-
+#endif
     const auto *MBE = dyn_cast<MCBinaryExpr>(Value);
     if (MBE == nullptr)
       return false;

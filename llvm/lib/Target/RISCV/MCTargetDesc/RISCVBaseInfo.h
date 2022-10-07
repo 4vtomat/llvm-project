@@ -99,9 +99,6 @@ enum {
 #ifdef SIFIVE_CUSTOMIZATION
   HasRoundModeOpShift = UsesMaskPolicyShift + 1,
   HasRoundModeOpMask = 1 << HasRoundModeOpShift,
-
-  IsNonTemporalLoadStoreShift = HasRoundModeOpShift + 1,
-  IsNonTemporalLoadStoreMask = 1 << IsNonTemporalLoadStoreShift,
 #endif // SIFIVE_CUSTOMIZATION
 };
 

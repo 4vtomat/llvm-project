@@ -205,9 +205,6 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
 #ifdef SIFIVE_CUSTOMIZATION
   bit HasRoundModeOp = 0;
   let TSFlags{19} =  HasRoundModeOp;
-
-  bit IsNonTemporalLoadStore = 0;
-  let TSFlags{20} =  IsNonTemporalLoadStore;
 #endif // SIFIVE_CUSTOMIZATION
 }
 

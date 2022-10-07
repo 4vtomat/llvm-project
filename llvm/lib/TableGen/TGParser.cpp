@@ -1169,9 +1169,7 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
   case tgtok::XADD:
   case tgtok::XSUB:
   case tgtok::XMUL:
-#ifdef SIFIVE_CUSTOMIZATION
   case tgtok::XDIV:
-#endif // SIFIVE_CUSTOMIZATION
   case tgtok::XAND:
   case tgtok::XOR:
   case tgtok::XXOR:
@@ -1200,9 +1198,7 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
     case tgtok::XADD:    Code = BinOpInit::ADD; break;
     case tgtok::XSUB:    Code = BinOpInit::SUB; break;
     case tgtok::XMUL:    Code = BinOpInit::MUL; break;
-#ifdef SIFIVE_CUSTOMIZATION
     case tgtok::XDIV:    Code = BinOpInit::DIV; break;
-#endif // SIFIVE_CUSTOMIZATION
     case tgtok::XAND:    Code = BinOpInit::AND; break;
     case tgtok::XOR:     Code = BinOpInit::OR; break;
     case tgtok::XXOR:    Code = BinOpInit::XOR; break;
@@ -1241,9 +1237,7 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
     case tgtok::XADD:
     case tgtok::XSUB:
     case tgtok::XMUL:
-#ifdef SIFIVE_CUSTOMIZATION
     case tgtok::XDIV:
-#endif // SIFIVE_CUSTOMIZATION
       Type = IntRecTy::get(Records);
       ArgType = IntRecTy::get(Records);
       break;
@@ -1403,11 +1397,7 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
             Code != BinOpInit::AND && Code != BinOpInit::OR &&
             Code != BinOpInit::XOR && Code != BinOpInit::SRA &&
             Code != BinOpInit::SRL && Code != BinOpInit::SHL &&
-#ifdef SIFIVE_CUSTOMIZATION
             Code != BinOpInit::MUL && Code != BinOpInit::DIV)
-#else
-            Code != BinOpInit::MUL)
-#endif // SIFIVE_CUSTOMIZATION
           ArgType = Resolved;
       }
 
@@ -2162,9 +2152,7 @@ Init *TGParser::ParseOperationCond(Record *CurRec, RecTy *ItemType) {
 ///   SimpleValue ::= '(' IDValue DagArgList ')'
 ///   SimpleValue ::= CONCATTOK '(' Value ',' Value ')'
 ///   SimpleValue ::= ADDTOK '(' Value ',' Value ')'
-#ifdef SIFIVE_CUSTOMIZATION
 ///   SimpleValue ::= DIVTOK '(' Value ',' Value ')'
-#endif // SIFIVE_CUSTOMIZATION
 ///   SimpleValue ::= SUBTOK '(' Value ',' Value ')'
 ///   SimpleValue ::= SHLTOK '(' Value ',' Value ')'
 ///   SimpleValue ::= SRATOK '(' Value ',' Value ')'
@@ -2453,9 +2441,7 @@ Init *TGParser::ParseSimpleValue(Record *CurRec, RecTy *ItemType,
   case tgtok::XADD:
   case tgtok::XSUB:
   case tgtok::XMUL:
-#ifdef SIFIVE_CUSTOMIZATION
   case tgtok::XDIV:
-#endif // SIFIVE_CUSTOMIZATION
   case tgtok::XNOT:
 #ifdef SIFIVE_CUSTOMIZATION
   case tgtok::XLOG2:

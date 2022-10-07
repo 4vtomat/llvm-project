@@ -79,6 +79,9 @@ void initializeRISCVPostRAExpandPseudoPass(PassRegistry &);
 
 FunctionPass *createRISCVInsertVXRMWritePass();
 void initializeRISCVInsertVXRMWritePass(PassRegistry &);
+
+FunctionPass *createRISCVInsertNTLHInstsPass();
+void initializeRISCVInsertNTLHInstsPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVRedundantCopyEliminationPass();

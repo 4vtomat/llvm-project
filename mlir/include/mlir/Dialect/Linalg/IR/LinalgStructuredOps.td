@@ -265,6 +265,9 @@ def ReduceOp : LinalgStructuredBase_Op<"reduce", [
     // Declare functions necessary for LinalgStructuredInterface.
     ArrayAttr getIteratorTypes();
     ArrayAttr getIndexingMaps();
+    std::string getLibraryCallName() {
+      return "op_has_no_registered_library_name";
+    }
 
     // Implement functions necessary for DestinationStyleOpInterface.
     mlir::ValueRange getOutputs() { return getInits(); }

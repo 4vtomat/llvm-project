@@ -1,7 +1,7 @@
 // RUN: llvm-tblgen %s | FileCheck %s
-// SIFIVE_CUSTOMIZATION
 // RUN: not llvm-tblgen -DERROR1 %s 2>&1 | FileCheck --check-prefix=ERROR1 %s
 // RUN: not llvm-tblgen -DERROR2 %s 2>&1 | FileCheck --check-prefix=ERROR2 %s
+// SIFIVE_CUSTOMIZATION
 // RUN: not llvm-tblgen -DERROR3 %s 2>&1 | FileCheck --check-prefix=ERROR3 %s
 // RUN: not llvm-tblgen -DERROR4 %s 2>&1 | FileCheck --check-prefix=ERROR4 %s
 // END OF SIFIVE_CUSTOMIZATION
@@ -53,7 +53,6 @@ def v1025   : Int<!add(int1024.Value, 1)>;
 // CHECK: Value = 12
 def v12   : Int<!mul(4, 3)>;
 
-// SIFIVE_CUSTOMIZATION
 // CHECK: def v13
 // CHECK: Value = 5
 def v13   : Int<!div(10, 2)>;
@@ -84,7 +83,6 @@ def v18 : Int<!div(4, 0)>;
 def v19 : Int<!div(-9223372036854775808, -1)>;
 #endif
 
-// END OF SIFIVE_CUSTOMIZATION
 // CHECK: def v1a
 // CHECK: Value = 1
 

@@ -2800,10 +2800,9 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
   bool HasChainOp =
       True.getOperand(True.getNumOperands() - 1).getValueType() == MVT::Other;
 
-#if SIFIVE_CUSTOMIZATION
-  // Avoid creating cycles in the DAG.
-  // TODO: Upstream this.
   if (HasChainOp) {
+    // Avoid creating cycles in the DAG. We must ensure that none of the other
+    // operands depend on True through it's Chain.
     SmallVector<const SDNode *, 4> LoopWorklist;
     SmallPtrSet<const SDNode *, 16> Visited;
     LoopWorklist.push_back(False.getNode());
@@ -2814,7 +2813,6 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
     if (SDNode::hasPredecessorHelper(True.getNode(), Visited, LoopWorklist))
       return false;
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Need True has same VL with N.
   unsigned TrueVLIndex = True.getNumOperands() - HasChainOp - 2;
