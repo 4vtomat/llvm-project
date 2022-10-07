@@ -10676,7 +10676,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     // (select (and (x , 0x1) != 0), (z ^ y) ), y -> (-(and (x , 0x1)) & z ) ^ y
     // (select (and (x , 0x1) == 0), y, (z | y) ) -> (-(and (x , 0x1)) & z ) | y
     // (select (and (x , 0x1) != 0), (z | y) ), y -> (-(and (x , 0x1)) & z ) | y
-    if (isNullConstant(RHS) && ISD::isIntEqualitySetCC(CCVal) &&
+#if SIFIVE_CUSTOMIZATION
+    if (!Subtarget.hasShortForwardBranchOpt() &&
+        !Subtarget.hasCMOVBranchOpt() &&
+#endif // SIFIVE_CUSTOMIZATION
+        isNullConstant(RHS) && ISD::isIntEqualitySetCC(CCVal) &&
         LHS.getOpcode() == ISD::AND && isOneConstant(LHS.getOperand(1))) {
       unsigned Opcode;
       SDValue Src1, Src2;
