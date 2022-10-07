@@ -11,8 +11,8 @@ define void @vabal_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmax.vv v11, v8, v9
 ; CHECK-NEXT:    vmin.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse32.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse32.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -35,8 +35,8 @@ define void @vabal_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmax.vv v11, v8, v9
 ; CHECK-NEXT:    vmin.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse64.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse64.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -59,8 +59,8 @@ define void @vabal_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmax.vv v11, v8, v9
 ; CHECK-NEXT:    vmin.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse16.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse16.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -83,8 +83,8 @@ define void @vabal_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmaxu.vv v11, v8, v9
 ; CHECK-NEXT:    vminu.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse32.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse32.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -107,8 +107,8 @@ define void @vabal_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmaxu.vv v11, v8, v9
 ; CHECK-NEXT:    vminu.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse64.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse64.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -131,8 +131,8 @@ define void @vabal_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmaxu.vv v11, v8, v9
 ; CHECK-NEXT:    vminu.vv v8, v8, v9
 ; CHECK-NEXT:    vsub.vv v8, v11, v8
-; CHECK-NEXT:    vwaddu.wv v9, v10, v8
-; CHECK-NEXT:    vse16.v v9, (a3)
+; CHECK-NEXT:    vwaddu.wv v10, v10, v8
+; CHECK-NEXT:    vse16.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
