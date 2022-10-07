@@ -12,6 +12,7 @@
 
 #include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/IntrinsicInst.h"
@@ -813,41 +814,86 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         FixedVectorType *VecTy =
             cast<FixedVectorType>(II->getArgOperand(0)->getType());
         unsigned Size = VecTy->getScalarSizeInBits();
-        Value *Zero = ConstantInt::get(VecTy, 0);
+        Value *VectorZero = ConstantInt::get(VecTy, 0);
         Value *Op0 = II->getArgOperand(0);
         Value *Op1 = II->getArgOperand(1);
         Value *RShiftAmount;
-        if (Size == 8) {
-          RShiftAmount = Builder.CreateSub(Zero, Op1);
+        if (auto Op1SplatValue = getSplatValue(Op1)) {
+          if (Size == 8) {
+            RShiftAmount =
+                Builder.CreateSub(Builder.getIntN(Size, 0), Op1SplatValue);
+          } else {
+            // Only lower 8 bit is effective for Op1.
+            Op1SplatValue = Builder.CreateAnd(Op1SplatValue, 255);
+            RShiftAmount =
+                Builder.CreateSub(Builder.getIntN(Size, 256), Op1SplatValue);
+          }
+          Value *IsRight =
+              Builder.CreateICmpUGT(Op1SplatValue, Builder.getIntN(Size, 127));
+          Value *MaxShift = Builder.getIntN(Size, Size - 1);
+          Value *LShift = Builder.CreateSelect(
+              Builder.CreateICmpUGT(Op1SplatValue, MaxShift), VectorZero,
+              Builder.CreateShl(
+                  Op0, Builder.CreateVectorSplat(VecTy->getElementCount(),
+                                                 Op1SplatValue)));
+          Value *RShift;
+          if (II->getIntrinsicID() == Intrinsic::aarch64_neon_sshl) {
+            RShift = Builder.CreateAShr(
+                Op0, Builder.CreateVectorSplat(
+                         VecTy->getElementCount(),
+                         Builder.CreateIntrinsic(Intrinsic::umin,
+                                                 {RShiftAmount->getType()},
+                                                 {RShiftAmount, MaxShift})));
+          } else {
+            // For lshr, if a shift amount is greater than or equal to Size, it
+            // returns a poison value.
+            // However, aarch64_neon_ushl can accept wider range. As a result,
+            // we split a lshr into two, and set the maximum shift amount for
+            // the second lshr to (Size - 1).
+            Op0 = Builder.CreateLShr(Op0, ConstantInt::get(VecTy, 1));
+            RShift = Builder.CreateLShr(
+                Op0, Builder.CreateVectorSplat(
+                         VecTy->getElementCount(),
+                         Builder.CreateIntrinsic(
+                             Intrinsic::umin, {RShiftAmount->getType()},
+                             {Builder.CreateSub(RShiftAmount,
+                                                Builder.getIntN(Size, 1)),
+                              MaxShift})));
+          }
+          II->replaceAllUsesWith(Builder.CreateSelect(IsRight, RShift, LShift));
         } else {
-          // Only lower 8 bit is effective for Op1.
-          Op1 = Builder.CreateAnd(Op1, 255);
-          RShiftAmount = Builder.CreateSub(ConstantInt::get(VecTy, 256), Op1);
+          if (Size == 8) {
+            RShiftAmount = Builder.CreateSub(VectorZero, Op1);
+          } else {
+            // Only lower 8 bit is effective for Op1.
+            Op1 = Builder.CreateAnd(Op1, 255);
+            RShiftAmount = Builder.CreateSub(ConstantInt::get(VecTy, 256), Op1);
+          }
+          // If Op1 is in [0, 127], we do Op0 << Op1.
+          // If Op1 is in [128, 255], we do Op0 >> Op1.
+          Value *IsRight =
+              Builder.CreateICmpUGT(Op1, ConstantInt::get(VecTy, 127));
+          // Because RISCV only takes log2(Size) bit to do shift. If a shift
+          // amount is greater than or equal to log2(Size), we need to handle it
+          // by ourselves.
+          Value *MaxShift = ConstantInt::get(VecTy, Size - 1);
+          // For a left shift, when a shift amount is greater than or equal to
+          // log2(Size), Op0 << Op1 is 0.
+          Value *LShift =
+              Builder.CreateSelect(Builder.CreateICmpUGT(Op1, MaxShift),
+                                   VectorZero, Builder.CreateShl(Op0, Op1));
+          Value *RShift;
+          // For a right shift, the result is different because of signedness.
+          if (II->getIntrinsicID() == Intrinsic::aarch64_neon_sshl)
+            RShift = Builder.CreateAShr(
+                Op0, Builder.CreateIntrinsic(Intrinsic::umin, {Op0->getType()},
+                                             {RShiftAmount, MaxShift}));
+          else
+            RShift = Builder.CreateSelect(
+                Builder.CreateICmpUGT(RShiftAmount, MaxShift), VectorZero,
+                Builder.CreateLShr(Op0, RShiftAmount));
+          II->replaceAllUsesWith(Builder.CreateSelect(IsRight, RShift, LShift));
         }
-        // If Op1 is in [0, 127], we do Op0 << Op1.
-        // If Op1 is in [128, 255], we do Op0 >> Op1.
-        Value *IsRight =
-            Builder.CreateICmpUGT(Op1, ConstantInt::get(VecTy, 127));
-        // Because RISCV only takes log2(Size) bit to do shift. If a shift
-        // amount is greater than or equal to log2(Size), we need to handle it
-        // by ourselves.
-        Value *MaxShift = ConstantInt::get(VecTy, Size - 1);
-        // For a left shift, when a shift amount is greater than or equal to
-        // log2(Size), Op0 << Op1 is 0.
-        Value *LShift =
-            Builder.CreateSelect(Builder.CreateICmpUGT(Op1, MaxShift), Zero,
-                                 Builder.CreateShl(Op0, Op1));
-        Value *RShift;
-        // For a right shift, the result is different because of signedness.
-        if (II->getIntrinsicID() == Intrinsic::aarch64_neon_sshl)
-          RShift = Builder.CreateAShr(
-              Op0, Builder.CreateIntrinsic(Intrinsic::umin, {Op0->getType()},
-                                           {RShiftAmount, MaxShift}));
-        else
-          RShift = Builder.CreateSelect(
-              Builder.CreateICmpUGT(RShiftAmount, MaxShift), Zero,
-              Builder.CreateLShr(Op0, RShiftAmount));
-        II->replaceAllUsesWith(Builder.CreateSelect(IsRight, RShift, LShift));
         break;
       }
       case Intrinsic::aarch64_neon_st1x2:
