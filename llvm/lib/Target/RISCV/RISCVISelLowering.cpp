@@ -5812,6 +5812,149 @@ static SDValue getFixedVFclass(SDValue Op, SelectionDAG &DAG,
                   ScalableOp, Mask, VL),
       DAG, Subtarget);
 }
+
+static SDValue lowerAArch64_qrshl(SelectionDAG &DAG,
+                                  const RISCVSubtarget &Subtarget,
+                                  unsigned IntNo, SDLoc DL, SDValue Op0,
+                                  SDValue Op1, bool IsSigned) {
+  auto toVectorIfScalar = [&](SDValue V) {
+    if (V.getSimpleValueType().isVector())
+      return V;
+    return DAG.getSplatVector(Op0.getSimpleValueType(), DL, V);
+  };
+  MVT XLenVT = Subtarget.getXLenVT();
+  MVT VecVT = Op0.getSimpleValueType();
+  MVT VT = Op1.getSimpleValueType();
+  SDValue Zero = DAG.getConstant(0, DL, VecVT);
+  unsigned Size = VecVT.getScalarSizeInBits();
+  MVT SetccVecVT = MVT::getVectorVT(MVT::i1, VecVT.getVectorElementCount());
+  MVT SetccVT = VT.isVector() ? SetccVecVT : XLenVT;
+  SDValue RShiftAmount;
+  if (Size == 8) {
+    RShiftAmount =
+        DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(0, DL, VT), Op1);
+  } else {
+    // Only lower 8 bit is effective for Op1.
+    Op1 = DAG.getNode(ISD::AND, DL, VT, Op1, DAG.getConstant(255, DL, VT));
+    // If the shift is greater than 127, it is a right shift. We need to make
+    // right shift to positive.
+    RShiftAmount =
+        DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(256, DL, VT), Op1);
+  }
+  // If Op1 is in [0, 127], we do Op0 << Op1.
+  // If Op1 is in [128, 255], we do Op0 >> Op1.
+  SDValue IsRight =
+      DAG.getSetCC(DL, SetccVT, Op1, DAG.getConstant(127, DL, VT), ISD::SETUGT);
+  // Because RISCV only takes log2(Size) bit to do shift. If a shift amount is
+  // greater than or equal to log2(Size), we need to handle it by ourselves.
+  SDValue MaxShift = DAG.getConstant(Size - 1, DL, VT);
+  SDValue LShift;
+  switch (IntNo) {
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_uqshl: {
+    // We need to max the shift amount. Otherwise, the result is poison value.
+    SDValue ValidShift =
+        toVectorIfScalar(DAG.getNode(ISD::UMIN, DL, VT, Op1, MaxShift));
+    // This is a saturated left shift. When a shift amount is greater than or
+    // equal to log2(Size), Op0 << ValidShift is the maximum value of
+    // signedness.
+    // Arm Compiler 6 does not support __saturation_occurred. That said we don't
+    // need to set saturation flag if saturation occurs.
+    LShift = DAG.getNode(ISD::SHL, DL, VecVT, Op0, ValidShift);
+    // If ((Op0 << ValidShift) >> ValidShift) != Op0, it is saturated.
+    SDValue IsSat = DAG.getSetCC(DL, SetccVecVT, Op0,
+                                 DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL,
+                                             VecVT, LShift, ValidShift),
+                                 ISD::SETNE);
+    SDValue IsNotZero = DAG.getSetCC(DL, SetccVecVT, Op0, Zero, ISD::SETNE);
+    SDValue MustSat = DAG.getSetCC(DL, SetccVT, Op1, MaxShift, ISD::SETUGT);
+    if (!VT.isVector())
+      MustSat = DAG.getSplatBuildVector(SetccVecVT, DL, MustSat);
+    MustSat = DAG.getNode(ISD::AND, DL, SetccVecVT, IsNotZero, MustSat);
+    IsSat = DAG.getNode(ISD::OR, DL, SetccVecVT, IsSat, MustSat);
+    SDValue SatLShift;
+    if (IsSigned) {
+      // A maximum value is different if Op0 is positive or negative.
+      SatLShift = DAG.getSelectCC(
+          DL, Op0, Zero,
+          DAG.getConstant(APInt::getSignedMinValue(Size), DL, VecVT),
+          DAG.getConstant(APInt::getSignedMaxValue(Size), DL, VecVT),
+          ISD::SETLT);
+    } else {
+      SatLShift = DAG.getConstant(APInt::getMaxValue(Size), DL, VecVT);
+    }
+    LShift = DAG.getSelect(DL, VecVT, IsSat, SatLShift, LShift);
+    break;
+  }
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_urshl:
+    // This is a normal left shift.
+    LShift = DAG.getSelectCC(
+        DL, Op1, MaxShift, DAG.getConstant(0, DL, VecVT),
+        DAG.getNode(ISD::SHL, DL, VecVT, Op0, toVectorIfScalar(Op1)),
+        ISD::SETUGT);
+    break;
+  }
+  SDValue RShift;
+  switch (IntNo) {
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_urshl: {
+    // This is a right shift with rounding mode.
+    MVT ContainerVecVT =
+        getContainerForFixedLengthVector(DAG, VecVT, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(ContainerVecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) =
+        getDefaultVLOps(VecVT, ContainerVecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    SDValue SShift = convertFromScalableVector(
+        VecVT,
+        DAG.getNode(
+            IsSigned ? RISCVISD::VSSRA_VL : RISCVISD::VSSRL_VL, DL,
+            ContainerVecVT,
+            {convertToScalableVector(ContainerVecVT, Op0, DAG, Subtarget),
+             convertToScalableVector(ContainerVecVT,
+                                     toVectorIfScalar(RShiftAmount), DAG,
+                                     Subtarget),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+    if (!IsSigned) {
+      // If the shift amount is equal to Size, the result depends on MSB. We can
+      // use Op0 >> MaxShift to calculate result.
+      SShift = DAG.getSelectCC(
+          DL, RShiftAmount, DAG.getConstant(Size, DL, VT),
+          DAG.getNode(ISD::SRL, DL, VecVT, Op0, toVectorIfScalar(MaxShift)),
+          SShift, ISD::SETEQ);
+    }
+    // For a signed integer type, a negative value will be 0 if a shift amount
+    // is greater than (Size - 1).
+    RShift = DAG.getSelectCC(
+        DL, RShiftAmount, DAG.getConstant(IsSigned ? Size - 1 : Size, DL, VT),
+        Zero, SShift, ISD::SETUGT);
+    break;
+  }
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_uqshl:
+    // For a normal right shift, the result is different because of signedness.
+    if (IsSigned)
+      RShift = DAG.getNode(
+          ISD::SRA, DL, VecVT, Op0,
+          toVectorIfScalar(DAG.getNode(ISD::UMIN, DL, VT, RShiftAmount,
+                                       DAG.getConstant(Size - 1, DL, VT))));
+    else
+      RShift = DAG.getSelectCC(
+          DL, RShiftAmount, DAG.getConstant(Size - 1, DL, VT), Zero,
+          DAG.getNode(ISD::SRL, DL, VecVT, Op0, toVectorIfScalar(RShiftAmount)),
+          ISD::SETUGT);
+    break;
+  }
+  return DAG.getSelect(DL, VecVT, IsRight, RShift, LShift);
+}
 #endif
 
 SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
@@ -6243,127 +6386,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
       IsSigned = false;
       break;
     }
-    MVT VT = Op.getSimpleValueType();
-    unsigned Size = VT.getScalarSizeInBits();
-    SDValue Zero = DAG.getConstant(0, DL, VT);
-    SDValue Op0 = Op.getOperand(1);
-    SDValue Op1 = Op.getOperand(2);
-    SDValue RShiftAmount;
-    if (Size == 8) {
-      RShiftAmount = DAG.getNode(ISD::SUB, DL, VT, Zero, Op1);
-    } else {
-      // Only lower 8 bit is effective for Op1.
-      Op1 = DAG.getNode(ISD::AND, DL, VT, Op1, DAG.getConstant(255, DL, VT));
-      // If the shift is greater than 127, it is a right shift. We need to make
-      // right shift to positive.
-      RShiftAmount =
-          DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(256, DL, VT), Op1);
-    }
-    MVT SetccVT = MVT::getVectorVT(MVT::i1, VT.getVectorElementCount());
-    // If Op1 is in [0, 127], we do Op0 << Op1.
-    // If Op1 is in [128, 255], we do Op0 >> Op1.
-    SDValue IsRight = DAG.getSetCC(DL, SetccVT, Op1,
-                                   DAG.getConstant(127, DL, VT), ISD::SETUGT);
-    // Because RISCV only takes log2(Size) bit to do shift. If a shift amount is
-    // greater than or equal to log2(Size), we need to handle it by ourselves.
-    SDValue MaxShift = DAG.getConstant(Size - 1, DL, VT);
-    SDValue LShift;
-    switch (IntNo) {
-    case Intrinsic::aarch64_neon_sqrshl:
-    case Intrinsic::aarch64_neon_sqshl:
-    case Intrinsic::aarch64_neon_uqrshl:
-    case Intrinsic::aarch64_neon_uqshl: {
-      // We need to max the shift amount. Otherwise, the result is poison value.
-      SDValue ValidShift = DAG.getNode(ISD::UMIN, DL, VT, Op1, MaxShift);
-      // This is a saturated left shift. When a shift amount is greater than or
-      // equal to log2(Size), Op0 << ValidShift is the maximum value of
-      // signedness.
-      // Arm Compiler 6 does not support __saturation_occurred. That said we
-      // don't need to set saturation flag if saturation occurs.
-      LShift = DAG.getNode(ISD::SHL, DL, VT, Op0, ValidShift);
-      // If ((Op0 << ValidShift) >> ValidShift) != Op0, it is saturated.
-      SDValue IsSat = DAG.getSetCC(DL, SetccVT, Op0,
-                                   DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL,
-                                               DL, VT, LShift, ValidShift),
-                                   ISD::SETNE);
-      SDValue IsNotZero = DAG.getSetCC(DL, SetccVT, Op0, Zero, ISD::SETNE);
-      SDValue MustSat =
-          DAG.getNode(ISD::AND, DL, SetccVT, IsNotZero,
-                      DAG.getSetCC(DL, SetccVT, Op1, MaxShift, ISD::SETUGT));
-      IsSat = DAG.getNode(ISD::OR, DL, SetccVT, IsSat, MustSat);
-      SDValue SatLShift;
-      if (IsSigned) {
-        // A maximum value is different if Op0 is positive or negative.
-        SatLShift = DAG.getSelectCC(
-            DL, Op0, Zero,
-            DAG.getConstant(APInt::getSignedMinValue(Size), DL, VT),
-            DAG.getConstant(APInt::getSignedMaxValue(Size), DL, VT),
-            ISD::SETLT);
-      } else {
-        SatLShift = DAG.getConstant(APInt::getMaxValue(Size), DL, VT);
-      }
-      LShift = DAG.getSelect(DL, VT, IsSat, SatLShift, LShift);
-      break;
-    }
-    case Intrinsic::aarch64_neon_srshl:
-    case Intrinsic::aarch64_neon_urshl:
-      // This is a normal left shift.
-      LShift =
-          DAG.getSelectCC(DL, Op1, MaxShift, Zero,
-                          DAG.getNode(ISD::SHL, DL, VT, Op0, Op1), ISD::SETUGT);
-      break;
-    }
-    SDValue RShift;
-    switch (IntNo) {
-    case Intrinsic::aarch64_neon_sqrshl:
-    case Intrinsic::aarch64_neon_srshl:
-    case Intrinsic::aarch64_neon_uqrshl:
-    case Intrinsic::aarch64_neon_urshl: {
-      // This is a right shift with rounding mode.
-      MVT VecVT = getContainerForFixedLengthVector(VT);
-      SDValue Passthru = DAG.getUNDEF(VecVT);
-      SDValue Mask, VL;
-      std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
-      SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
-      SDValue Policy =
-          DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
-      SDValue SShift = convertFromScalableVector(
-          VT,
-          DAG.getNode(
-              IsSigned ? RISCVISD::VSSRA_VL : RISCVISD::VSSRL_VL, DL, VecVT,
-              {convertToScalableVector(VecVT, Op0, DAG, Subtarget),
-               convertToScalableVector(VecVT, RShiftAmount, DAG, Subtarget),
-               Passthru, Mask, RM, VL, Policy}),
-          DAG, Subtarget);
-      if (!IsSigned) {
-        // If the shift amount is equal to Size, the result depends on MSB. We
-        // can use Op0 >> MaxShift to calculate result.
-        SShift = DAG.getSelectCC(
-            DL, RShiftAmount, DAG.getConstant(Size, DL, VT),
-            DAG.getNode(ISD::SRL, DL, VT, Op0, MaxShift), SShift, ISD::SETEQ);
-      }
-      // For a signed integer type, a negative value will be 0 if a shift amount
-      // is greater than (Size - 1).
-      RShift = DAG.getSelectCC(
-          DL, RShiftAmount, DAG.getConstant(IsSigned ? Size - 1 : Size, DL, VT),
-          Zero, SShift, ISD::SETUGT);
-      break;
-    }
-    case Intrinsic::aarch64_neon_sqshl:
-    case Intrinsic::aarch64_neon_uqshl:
-      // For a normal right shift, the result is different because of
-      // signedness.
-      if (IsSigned)
-        RShift = DAG.getNode(ISD::SRA, DL, VT, Op0,
-                             DAG.getNode(ISD::UMIN, DL, VT, RShiftAmount,
-                                         DAG.getConstant(Size - 1, DL, VT)));
-      else
-        RShift = DAG.getSelectCC(
-            DL, RShiftAmount, DAG.getConstant(Size - 1, DL, VT), Zero,
-            DAG.getNode(ISD::SRL, DL, VT, Op0, RShiftAmount), ISD::SETUGT);
-      break;
-    }
-    return DAG.getSelect(DL, VT, IsRight, RShift, LShift);
+    return lowerAArch64_qrshl(DAG, Subtarget, IntNo, DL, Op.getOperand(1),
+                              Op.getOperand(2), IsSigned);
   }
   case Intrinsic::aarch64_neon_sqxtn:
   case Intrinsic::aarch64_neon_uqxtn: {
