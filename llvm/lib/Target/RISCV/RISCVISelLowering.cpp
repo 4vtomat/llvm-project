@@ -6386,8 +6386,11 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
       IsSigned = false;
       break;
     }
-    return lowerAArch64_qrshl(DAG, Subtarget, IntNo, DL, Op.getOperand(1),
-                              Op.getOperand(2), IsSigned);
+    SDValue Op1 = Op.getOperand(2);
+    if (SDValue SplatValue = DAG.getSplatValue(Op.getOperand(2), true))
+      Op1 = SplatValue;
+    return lowerAArch64_qrshl(DAG, Subtarget, IntNo, DL, Op.getOperand(1), Op1,
+                              IsSigned);
   }
   case Intrinsic::aarch64_neon_sqxtn:
   case Intrinsic::aarch64_neon_uqxtn: {
