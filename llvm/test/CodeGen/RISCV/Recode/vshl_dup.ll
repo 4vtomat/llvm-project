@@ -2089,21 +2089,18 @@ define void @vshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, p
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    vand.vx v10, v8, a0
-; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vrsub.vx v11, v10, a0
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vmsgtu.vx v8, v10, a0
-; CHECK-NEXT:    li a0, 63
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a0
-; CHECK-NEXT:    vsll.vv v12, v9, v10
-; CHECK-NEXT:    vmerge.vim v12, v12, 0, v0
-; CHECK-NEXT:    li a0, 193
-; CHECK-NEXT:    vmsltu.vx v0, v10, a0
-; CHECK-NEXT:    vsrl.vv v9, v9, v11
-; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
+; CHECK-NEXT:    li a1, 127
+; CHECK-NEXT:    vmsgtu.vx v8, v10, a1
+; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
+; CHECK-NEXT:    vsll.vv v11, v9, v10
+; CHECK-NEXT:    vmerge.vim v11, v11, 0, v0
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vxor.vx v10, v10, a0
+; CHECK-NEXT:    vminu.vx v10, v10, a1
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v12, v9, v0
-; CHECK-NEXT:    vse64.v v8, (a2)
+; CHECK-NEXT:    vsrl.vv v11, v9, v10, v0.t
+; CHECK-NEXT:    vse64.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
