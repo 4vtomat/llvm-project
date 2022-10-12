@@ -1081,10 +1081,10 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             cast<ConstantInt>(II->getArgOperand(2))->getZExtValue();
         // (II->getArgOperand(1) << Shift) |
         //     (II->getArgOperand(0) & ((1 << Shift) - 1))
-        Value *NBit =
-            Builder.CreateAnd(II->getArgOperand(0),
-                              ConstantInt::get(II->getArgOperand(0)->getType(),
-                                               (1 << Shift) - 1));
+        Value *NBit = Builder.CreateAnd(
+            II->getArgOperand(0),
+            ConstantInt::get(II->getArgOperand(0)->getType(),
+                             (static_cast<uint64_t>(1) << Shift) - 1));
         II->replaceAllUsesWith(Builder.CreateOr(
             NBit,
             Builder.CreateShl(
