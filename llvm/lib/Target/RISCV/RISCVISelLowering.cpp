@@ -11689,6 +11689,17 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performVP_STORECombine(N, DAG, Subtarget);
   case RISCVISD::VSELECT_VL:
     return performVSELECT_VLCombine(N, DAG);
+  case RISCVISD::VMAND_VL: {
+    // vmand_vl (vmset_vl, Y) -> Y
+    // vmand_vl (X, vmset_vl) -> X
+    SDValue VL = N->getOperand(2);
+    for (unsigned i = 0; i != 2; ++i) {
+      SDValue Op = N->getOperand(i);
+      if (Op.getOpcode() == RISCVISD::VMSET_VL && Op.getOperand(0) == VL)
+        return N->getOperand(1 - i);
+    }
+    return SDValue();
+  }
   case RISCVISD::VP_MERGE_VL: {
     if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
       return V;
