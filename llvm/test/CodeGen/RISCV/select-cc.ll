@@ -155,7 +155,6 @@ define signext i32 @foo(i32 signext %a, i32 *%b) nounwind {
 ; RV64I-NEXT:  # %bb.27:
 ; RV64I-NEXT:    mv a0, a1
 ; RV64I-NEXT:  .LBB0_28:
-; RV64I-NEXT:    sext.w a0, a0
 ; RV64I-NEXT:    ret
   %val1 = load volatile i32, i32* %b
   %tst1 = icmp eq i32 %a, %val1

@@ -187,10 +187,10 @@ public:
                           unsigned OpIdx,
                           const TargetRegisterInfo *TRI) const override;
 
-  Register getVLENFactoredAmount(
+  void getVLENFactoredAmount(
       MachineFunction &MF, MachineBasicBlock &MBB,
-      MachineBasicBlock::iterator II, const DebugLoc &DL, int64_t Amount,
-      MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
+      MachineBasicBlock::iterator II, const DebugLoc &DL, Register DestReg,
+      int64_t Amount, MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
 
   /// Return a virtual register initialized with the global base
   /// register value. Output instructions required to initialize

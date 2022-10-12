@@ -25,7 +25,7 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 24 * VLENB
 ; CHECK-NEXT:    li a0, 55
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vloxseg2ei32.v v8, (a0), v8
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -36,7 +36,7 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li s0, 36
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, tu, mu
@@ -50,7 +50,7 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
 ; CHECK-NEXT:    vrgather.vv v4, v8, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, sp, a1
@@ -103,7 +103,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    sub sp, sp, a0
 ; SUBREGLIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * VLENB
 ; SUBREGLIVENESS-NEXT:    li a0, 55
-; SUBREGLIVENESS-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; SUBREGLIVENESS-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; SUBREGLIVENESS-NEXT:    vloxseg2ei32.v v8, (a0), v8
 ; SUBREGLIVENESS-NEXT:    csrr a0, vlenb
 ; SUBREGLIVENESS-NEXT:    slli a0, a0, 3
@@ -114,7 +114,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
 ; SUBREGLIVENESS-NEXT:    add a0, a0, a1
 ; SUBREGLIVENESS-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
-; SUBREGLIVENESS-NEXT:    vsetvli a0, zero, e8, m2, ta, mu
+; SUBREGLIVENESS-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; SUBREGLIVENESS-NEXT:    vmclr.m v0
 ; SUBREGLIVENESS-NEXT:    li s0, 36
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, s0, e16, m4, tu, mu
@@ -125,7 +125,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    li a0, 32
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
 ; SUBREGLIVENESS-NEXT:    vrgather.vv v16, v8, v8, v0.t
-; SUBREGLIVENESS-NEXT:    vsetvli zero, s0, e16, m4, ta, mu
+; SUBREGLIVENESS-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; SUBREGLIVENESS-NEXT:    csrr a1, vlenb
 ; SUBREGLIVENESS-NEXT:    slli a1, a1, 3
 ; SUBREGLIVENESS-NEXT:    add a1, sp, a1

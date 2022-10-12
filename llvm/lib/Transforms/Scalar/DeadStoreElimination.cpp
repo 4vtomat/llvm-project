@@ -1255,8 +1255,10 @@ struct DSEState {
       if (GEP->hasAllConstantIndices())
         Ptr = GEP->getPointerOperand()->stripPointerCasts();
 
-    if (auto *I = dyn_cast<Instruction>(Ptr))
-      return I->getParent()->isEntryBlock();
+    if (auto *I = dyn_cast<Instruction>(Ptr)) {
+      return I->getParent()->isEntryBlock() ||
+             (!ContainsIrreducibleLoops && !LI.getLoopFor(I->getParent()));
+    }
     return true;
   }
 
@@ -1828,10 +1830,9 @@ struct DSEState {
         !memoryIsNotModifiedBetween(Malloc, MemSet, BatchAA, DL, &DT))
       return false;
     IRBuilder<> IRB(Malloc);
-    const auto &DL = Malloc->getModule()->getDataLayout();
-    auto *Calloc =
-      emitCalloc(ConstantInt::get(IRB.getIntPtrTy(DL), 1),
-                 Malloc->getArgOperand(0), IRB, TLI);
+    Type *SizeTTy = Malloc->getArgOperand(0)->getType();
+    auto *Calloc = emitCalloc(ConstantInt::get(SizeTTy, 1),
+                              Malloc->getArgOperand(0), IRB, TLI);
     if (!Calloc)
       return false;
     MemorySSAUpdater Updater(&MSSA);
@@ -1915,23 +1916,8 @@ struct DSEState {
           // We are searching for the definition of the store's destination.
           // So, if that is the same definition as the load, then this is a
           // noop. Otherwise, fail.
-          if (LoadAccess != Current) {
-            // This is a potentially clobbering store, but it writes the same
-            // value, so we can safely ignore it if alignment is as expected.
-            if (auto *CurrentDef = cast<MemoryDef>(Current))
-              if (auto *CurrentStoreI =
-                      dyn_cast_or_null<StoreInst>(CurrentDef->getMemoryInst()))
-                // Check alignment to ensure load or store does not access at an
-                // offset.
-                if (CurrentStoreI->getValueOperand() == LoadI) {
-                  TypeSize StoreSize = DL.getTypeStoreSize(LoadI->getType());
-                  if (!StoreSize.isScalable() &&
-                      std::min(CurrentStoreI->getAlign(), LoadI->getAlign()) >=
-                          StoreSize)
-                    continue;
-                }
+          if (LoadAccess != Current)
             return false;
-          }
         }
         return true;
       }

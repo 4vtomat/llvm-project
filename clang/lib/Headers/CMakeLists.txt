@@ -225,7 +225,6 @@ set(files
   ${cuda_files}
   ${hexagon_files}
   ${hip_files}
-  ${hlsl_files}
   ${mips_msa_files}
   ${opencl_files}
   ${ppc_files}
@@ -312,7 +311,7 @@ endfunction(clang_generate_header)
 
 
 # Copy header files from the source directory to the build directory
-foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${sifive_wrapper_files}) # SIFIVE
+foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files} ${sifive_wrapper_files}) # SIFIVE
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 

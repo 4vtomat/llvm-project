@@ -25,9 +25,9 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV32-NEXT:  # %bb.1: # %entry
 ; RV32-NEXT:    vmv1r.v v8, v9
 ; RV32-NEXT:  .LBB0_2: # %entry
-; RV32-NEXT:    vsetivli zero, 0, e32, m1, ta, mu
+; RV32-NEXT:    vsetivli zero, 0, e32, m1, ta, ma
 ; RV32-NEXT:    vmv.x.s a0, v8
-; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
+; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV32-NEXT:    vmv.v.i v8, 0
 ; RV32-NEXT:    vmerge.vim v8, v8, 1, v0
 ; end SIFIVE
@@ -35,7 +35,7 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV32-NEXT:    andi a1, a1, 1
 ; RV32-NEXT:    vmv.v.x v8, a1
 ; RV32-NEXT:    vmsne.vi v0, v8, 0
-; RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
+; RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vmv.v.i v8, 10
 ; RV32-NEXT:    vse32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
@@ -49,9 +49,9 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV64-NEXT:  # %bb.1: # %entry
 ; RV64-NEXT:    vmv2r.v v8, v10
 ; RV64-NEXT:  .LBB0_2: # %entry
-; RV64-NEXT:    vsetivli zero, 0, e64, m2, ta, mu
+; RV64-NEXT:    vsetivli zero, 0, e64, m2, ta, ma
 ; RV64-NEXT:    vmv.x.s a0, v8
-; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
+; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV64-NEXT:    vmv.v.i v8, 0
 ; RV64-NEXT:    vmerge.vim v8, v8, 1, v0
 ; end SIFIVE
@@ -59,7 +59,7 @@ define void @constant_folding_crash(i8* %v54, <4 x <4 x i32>*> %lanes.a, <4 x <4
 ; RV64-NEXT:    andi a1, a1, 1
 ; RV64-NEXT:    vmv.v.x v8, a1
 ; RV64-NEXT:    vmsne.vi v0, v8, 0
-; RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
+; RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; RV64-NEXT:    vmv.v.i v8, 10
 ; RV64-NEXT:    vse32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret
