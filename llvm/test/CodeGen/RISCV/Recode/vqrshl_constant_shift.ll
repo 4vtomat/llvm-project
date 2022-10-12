@@ -155,16 +155,7 @@ define void @vqrshlq_s64(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-LABEL: vqrshlq_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vle64.v v9, (a0)
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    srli a2, a0, 1
-; CHECK-NEXT:    vmv.v.x v10, a2
-; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vmclr.m v8
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
+; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -227,8 +218,6 @@ define void @vqrshl_u8(ptr nocapture noundef readonly %src, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

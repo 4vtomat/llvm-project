@@ -10668,6 +10668,22 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(RISCVISD::VP_MERGE_VL, DL, VT, TrueMask, Res, FalseVal,
                      VL);
 }
+
+static SDValue performVSELECT_VLCombine(SDNode *N, SelectionDAG &DAG) {
+  if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
+    return V;
+
+  // vselect_vl (vmclr_vl, X, Y) -> Y
+  SDValue Cond = N->getOperand(0);
+  if (Cond.getOpcode() != RISCVISD::VMCLR_VL)
+    return SDValue();
+
+  SDValue VL = N->getOperand(3);
+  if (VL != Cond.getOperand(0))
+    return SDValue();
+
+  return N->getOperand(2);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Convert from one FMA opcode to another based on whether we are negating the
@@ -11672,7 +11688,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case ISD::VP_STORE:
     return performVP_STORECombine(N, DAG, Subtarget);
   case RISCVISD::VSELECT_VL:
-    return combineToVFMAX_VFMIN(N, DAG);
+    return performVSELECT_VLCombine(N, DAG);
   case RISCVISD::VP_MERGE_VL: {
     if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
       return V;

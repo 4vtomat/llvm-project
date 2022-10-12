@@ -5,15 +5,7 @@ define void @vqshl_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vqshl_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v9, (a0)
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    addiw a2, a0, -1
-; CHECK-NEXT:    vmv.v.x v10, a2
-; CHECK-NEXT:    vmclr.m v8
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
+; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -122,8 +114,6 @@ define void @vqshl_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -138,8 +128,6 @@ define void @vqshl_n_u64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -499,17 +487,7 @@ define void @vqshlq_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqshlq_n_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmv.v.x v10, a0
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a0, a0, 31
-; CHECK-NEXT:    vmclr.m v8
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -628,8 +606,6 @@ define void @vqshlq_n_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
