@@ -385,6 +385,13 @@ struct VPTransformState {
   /// Hold a pointer to ScalarEvolution which will be used during the IR
   /// generation.
   ScalarEvolution *SE = nullptr;
+
+  static const uint64_t UnknownNumSafeElems = UINT64_C(-1);
+
+  /// The maximum number of elements we can vectorize without a dependency.
+  /// UnknownNumSafeElems if the dependence distance is unknown, or there is no
+  /// dependency.
+  uint64_t MaxSafeNumElems = UnknownNumSafeElems;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.

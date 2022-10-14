@@ -183,8 +183,10 @@ const char LLVMLoopVectorizeFollowupEpilogue[] =
 STATISTIC(LoopsVectorized, "Number of loops vectorized");
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
-
 #if SIFIVE_CUSTOMIZATION
+STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
+                                  "from dependence distance information.");
+
 static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
     "vectorizer-disable-profitable-trip-count-rt-check", cl::init(false),
     cl::Hidden,
@@ -409,7 +411,13 @@ static cl::opt<int64_t>
     LoopVectorizationLimit("loop-vectorization-limit", cl::init(-1), cl::Hidden,
                            cl::desc("Specify maximum number of loops in the "
                                     "compilation unit that be vectorized"));
+
+static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
+    "vectorize-with-known-depdist", cl::init(true), cl::Hidden,
+    cl::desc("Enable vectorization of loops that have a known dependence "
+             "distance."));
 #endif // SIFIVE_CUSTOMIZATION
+
 cl::opt<cl::boolOrDefault> ForceSafeDivisor(
     "force-widen-divrem-via-safe-divisor", cl::Hidden,
     cl::desc("Override cost based safe divisor widening for div/rem instructions"));
@@ -5270,17 +5278,13 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // dependence distance).
   unsigned MaxSafeVectorWidthInBits = Legal->getMaxSafeVectorWidthInBits();
 
-  // Make sure we do not attempt to vectorize loops that we can't vectorize yet:
-  // it should be possible for us to clamp the EVL in this case, but this
-  // impacts other things like reductions, so conservatively disable these
-  // cases for now.
-  if (Legal->getMaxSafeDepDistBytes() != -1U &&
-      UserVF.isZero()) {
-    reportVectorizationFailure(
-        "LV: Scalable vectorization does not support non-infinite distance yet",
-        "Scalable vectorization does not support vectorizing loops that are "
-        "not parallel yet",
-        "ScalableVFUnfeasible", ORE, TheLoop);
+  if (Legal->getMaxSafeDepDistBytes() != -1U && UserVF.isZero() &&
+      !VectorizeLoopsWithKnownDepDist) {
+    reportVectorizationFailure("LV: Scalable vectorization for loops with "
+                               "known dependence distance is disabled.",
+                               "Scalable vectorization is disabled for loops "
+                               "with known dependence distance.",
+                               "ScalableVFUnfeasible", ORE, TheLoop);
     return FixedScalableVFPair::getNone();
   }
 
@@ -8467,6 +8471,15 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     assert(SmallestTypeSize >= 8 && WidestTypeSize <= 64 &&
            "Cannot set vector length: Unsupported type");
     State.SEW = Log2_32(WidestTypeSize) - 3;
+    // Only update MaxSafeNumElems if there is a dependency
+    if (Legal->getMaxSafeDepDistBytes() != -1U) {
+      State.MaxSafeNumElems =
+          Legal->getMaxSafeDepDistBytes() / (WidestTypeSize / 8);
+      LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeDepDistBytes="
+                        << Legal->getMaxSafeDepDistBytes()
+                        << ", MaxSafeNumElems=" << State.MaxSafeNumElems
+                        << "\n");
+    }
     unsigned Numerator = WidestTypeSize * State.VF.getKnownMinValue();
     unsigned Denominator = TTI->getMaxElementWidth();
     State.LMULExp = Numerator >= Denominator
@@ -10495,9 +10508,16 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
   Value *NumUnrolledElems =
       State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
+  // If MaxSafeNumElems is not unknown, then we have clamped the VL.
+  // Therefore, we need to bump the pointer by the clamped disntance
+  // instead.
+  Value *PtrStride =
+      State.MaxSafeNumElems == VPTransformState::UnknownNumSafeElems
+          ? NumUnrolledElems
+          : ConstantInt::get(PhiType, State.MaxSafeNumElems);
   Value *InductionGEP = GetElementPtrInst::Create(
       IndDesc.getElementType(), NewPointerPhi,
-      State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
+      State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getEVL())
@@ -11779,6 +11799,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                         DT, true);
         ++LoopsVectorized;
 
+#if SIFIVE_CUSTOMIZATION
+        if (LVL.getMaxSafeDepDistBytes() != -1U)
+          ++LoopsVectorizedWithDep;
+
+#endif // SIFIVE_CUSTOMIZATION
         // Second pass vectorizes the epilogue and adjusts the control flow
         // edges from the first pass.
         EPI.MainLoopVF = EPI.EpilogueVF;
@@ -11819,6 +11844,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         LVP.executePlan(VF.Width, IC, BestPlan, LB, DT, false);
         ++LoopsVectorized;
 
+#if SIFIVE_CUSTOMIZATION
+        if (LVL.getMaxSafeDepDistBytes() != -1U)
+          ++LoopsVectorizedWithDep;
+
+#endif // SIFIVE_CUSTOMIZATION
         // Add metadata to disable runtime unrolling a scalar loop when there
         // are no runtime checks about strides and memory. A scalar loop that is
         // rarely used is not worth unrolling.
