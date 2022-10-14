@@ -1042,9 +1042,17 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
     if (EnableUnrollAndJam && PTO.LoopUnrolling)
       FPM.addPass(createFunctionToLoopPassAdaptor(
           LoopUnrollAndJamPass(Level.getSpeedupLevel())));
+#if SIFIVE_CUSTOMIZATION
+    FPM.addPass(
+        LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
+                                         /*OnlyWhenForced=*/!PTO.LoopUnrolling,
+                                         PTO.ForgetAllSCEVInLoopUnroll),
+                       IsLTOPreLink));
+#else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
+#endif
     FPM.addPass(WarnMissedTransformationsPass());
   }
 
@@ -1129,9 +1137,17 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
       FPM.addPass(createFunctionToLoopPassAdaptor(
           LoopUnrollAndJamPass(Level.getSpeedupLevel())));
     }
+#if SIFIVE_CUSTOMIZATION
+    FPM.addPass(
+        LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
+                                         /*OnlyWhenForced=*/!PTO.LoopUnrolling,
+                                         PTO.ForgetAllSCEVInLoopUnroll),
+                       IsLTOPreLink));
+#else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
+#endif
     FPM.addPass(WarnMissedTransformationsPass());
     FPM.addPass(InstCombinePass());
     FPM.addPass(
