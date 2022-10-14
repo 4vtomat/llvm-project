@@ -10289,6 +10289,12 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       VPValue *Red = PhiR->getBackedgeValue();
       assert(cast<VPRecipeBase>(Red->getDef())->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
+#if SIFIVE_CUSTOMIZATION
+      if (Legal->useVLAVectorizer())
+        Builder.createSelect(Cond, Red, PhiR, DebugLoc(),
+                             VPSelectInstruction::TailPolicy::Undisturbed);
+      else
+#endif // SIFIVE_CUSTOMIZATION
       Builder.createNaryOp(Instruction::Select, {Cond, Red, PhiR});
     }
   }

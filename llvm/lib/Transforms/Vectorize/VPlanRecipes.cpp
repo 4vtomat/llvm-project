@@ -619,6 +619,29 @@ void VPWidenSelectRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+#if SIFIVE_CUSTOMIZATION
+void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
+                                VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = select ";
+  getOperand(0)->printAsOperand(O, SlotTracker);
+  O << " ";
+  getOperand(1)->printAsOperand(O, SlotTracker);
+  O << " ";
+  getOperand(2)->printAsOperand(O, SlotTracker);
+  if (TP != TailPolicy::Unknown) {
+    O << " tail policy = ";
+    O << (TP == TailPolicy::Agnostic ? "agnostic" : "undisturbed");
+  }
+
+  if (auto DL = getDebugLoc()) {
+    O << ", !dbg ";
+    DL.print(O);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void VPWidenSelectRecipe::execute(VPTransformState &State) {
   auto &I = *cast<SelectInst>(getUnderlyingInstr());
   State.setDebugLocFromInst(&I);
@@ -638,7 +661,7 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
     Value *Sel;
     if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
       Value *EVLArg = State.get(State.Plan->getEVL(), Part);
-      Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_merge, {Op0->getType()},
+      Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_select, {Op0->getType()},
                                           {Cond, Op0, Op1, EVLArg}, nullptr,
                                           "vp.widen.select");
     } else {

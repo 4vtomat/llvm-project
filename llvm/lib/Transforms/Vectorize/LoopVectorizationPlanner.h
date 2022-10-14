@@ -151,6 +151,17 @@ public:
     return createInstruction(Instruction::BinaryOps::Or, {LHS, RHS}, DL, Name);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
+                        DebugLoc DL, const VPSelectInstruction::TailPolicy TP,
+                        const Twine &Name = "") {
+    auto *SelectInst =
+        new VPSelectInstruction(Cond, TrueVal, FalseVal, DL, TP, Name);
+    insert(SelectInst);
+    return SelectInst;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         DebugLoc DL, const Twine &Name = "") {
     return createNaryOp(Instruction::Select, {Cond, TrueVal, FalseVal}, DL,

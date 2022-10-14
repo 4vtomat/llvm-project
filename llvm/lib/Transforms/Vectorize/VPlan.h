@@ -947,6 +947,12 @@ public:
     };
     llvm_unreachable("switch should return");
   }
+
+#if SIFIVE_CUSTOMIZATION
+  DebugLoc getDebugLoc() const { return DL; }
+
+  FastMathFlags getFastMathFlags() const { return FMF; }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// VPWidenRecipe is a recipe for producing a copy of vector type its
@@ -1053,6 +1059,72 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 };
+
+#if SIFIVE_CUSTOMIZATION
+/// A special select vp-instruction with additional tail policy encoding
+class VPSelectInstruction : public VPInstruction {
+public:
+  /// Tail policy of the instruction. That is, what is going to happen with
+  /// tail elements
+  enum class TailPolicy {
+    /// With Unknown tail policy, it's up to backend to decide which tail policy
+    /// to use
+    Unknown,
+    /// With Agnostic tail policy, tail elements may be overwritten
+    Agnostic,
+    /// With Undisturbed tail policy, tail elements will be preserved
+    Undisturbed,
+  };
+
+private:
+  TailPolicy TP = TailPolicy::Unknown;
+
+public:
+  explicit VPSelectInstruction(VPValue *Cond, VPValue *TrueVal,
+                               VPValue *FalseVal, DebugLoc DL,
+                               TailPolicy TP = TailPolicy::Agnostic,
+                               const Twine &Name = "")
+      : VPInstruction(Instruction::Select, {Cond, TrueVal, FalseVal}, DL, Name),
+        TP(TP) {}
+
+  explicit VPSelectInstruction() = delete;
+
+  ~VPSelectInstruction() override = default;
+
+  /// Return tail policy of the current instruction
+  TailPolicy getTailPolicy() const { return TP; }
+
+  /// Return true if current instruction has Undisturbed tail policy
+  bool hasTailUndisturbedPolicy(void) const {
+    return TP == TailPolicy::Undisturbed;
+  }
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    auto *R = cast<VPRecipeBase>(D);
+    auto *I = dyn_cast<VPInstruction>(R);
+    return I && I->getOpcode() == Instruction::Select;
+  }
+
+  static inline bool classof(const VPRecipeBase *R) {
+    auto *VPInst = dyn_cast<VPInstruction>(R);
+    return VPInst && VPInst->getOpcode() == Instruction::Select;
+  }
+
+  static inline bool classof(const VPUser *U) {
+    auto *R = dyn_cast<VPRecipeBase>(U);
+    return R && VPSelectInstruction::classof(R);
+  }
+
+  void execute(VPTransformState &State) override final;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 /// A recipe for handling GEP instructions.
 class VPWidenGEPRecipe : public VPRecipeBase, public VPValue {
