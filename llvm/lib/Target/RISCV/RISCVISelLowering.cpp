@@ -11155,7 +11155,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     // (select (and (x , 0x1) != 0), (z ^ y) ), y -> (-(and (x , 0x1)) & z ) ^ y
     // (select (and (x , 0x1) == 0), y, (z | y) ) -> (-(and (x , 0x1)) & z ) | y
     // (select (and (x , 0x1) != 0), (z | y) ), y -> (-(and (x , 0x1)) & z ) | y
-    if (isNullConstant(RHS) && ISD::isIntEqualitySetCC(CCVal) &&
+#if SIFIVE_CUSTOMIZATION
+    if (!Subtarget.hasShortForwardBranchOpt() &&
+        !Subtarget.hasCMOVBranchOpt() &&
+#endif // SIFIVE_CUSTOMIZATION
+        isNullConstant(RHS) && ISD::isIntEqualitySetCC(CCVal) &&
         LHS.getOpcode() == ISD::AND && isOneConstant(LHS.getOperand(1))) {
       unsigned Opcode;
       SDValue Src1, Src2;
@@ -15039,6 +15043,56 @@ bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
   // We have W instructions for all binary operators except AND/OR/XOR.
   return isa<BinaryOperator>(Src) &&
          !cast<BinaryOperator>(Src)->isBitwiseLogicOp();
+}
+
+MachineMemOperand::Flags
+RISCVTargetLowering::getTargetMMOFlags(const Instruction &I) const {
+  const MDNode *NontemporalInfo = I.getMetadata(LLVMContext::MD_nontemporal);
+
+  if (NontemporalInfo == nullptr)
+    return MachineMemOperand::MONone;
+
+  // 1 for default value work as __RISCV_NTLH_ALL
+  // 2 -> __RISCV_NTLH_INNERMOST_PRIVATE
+  // 3 -> __RISCV_NTLH_ALL_PRIVATE
+  // 4 -> __RISCV_NTLH_INNERMOST_SHARED
+  // 5 -> __RISCV_NTLH_ALL
+  int NontemporalLevel =
+      cast<ConstantInt>(
+          cast<ConstantAsMetadata>(NontemporalInfo->getOperand(0))->getValue())
+          ->getZExtValue();
+
+  assert((1 <= NontemporalLevel && NontemporalLevel <= 5) &&
+         "RISC-V target doesn't support this non-temporal domain.");
+
+  // Mapping default value into __RISCV_NTLH_ALL
+  if (NontemporalLevel == 1)
+    NontemporalLevel = 5;
+
+  NontemporalLevel -= 2;
+  MachineMemOperand::Flags Flags = MachineMemOperand::MONone;
+  if (NontemporalLevel & 0b1)
+    Flags |= MONontemporalBit0;
+  if (NontemporalLevel & 0b10)
+    Flags |= MONontemporalBit1;
+
+  return Flags;
+}
+
+MachineMemOperand::Flags
+RISCVTargetLowering::getTargetMMOFlags(const MemSDNode &Node) const {
+
+  MachineMemOperand::Flags NodeFlags = Node.getMemOperand()->getFlags();
+  MachineMemOperand::Flags TargetFlags = MachineMemOperand::MONone;
+  TargetFlags |= (NodeFlags & MONontemporalBit0);
+  TargetFlags |= (NodeFlags & MONontemporalBit1);
+
+  return TargetFlags;
+}
+
+bool RISCVTargetLowering::areTwoSDNodeTargetMMOFlagsMergeable(
+    const MemSDNode &NodeX, const MemSDNode &NodeY) const {
+  return getTargetMMOFlags(NodeX) == getTargetMMOFlags(NodeY);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

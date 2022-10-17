@@ -210,3 +210,237 @@ define i64 @test6(i64 %x) {
   %a = call i64 @llvm.abs.i64(i64 %x, i1 false)
   ret i64 %a
 }
+
+define i16 @select_xor_1(i16 %A, i8 %cond) {
+; NOCMOV-LABEL: select_xor_1:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a1, a1, 1
+; NOCMOV-NEXT:    negw a1, a1
+; NOCMOV-NEXT:    andi a1, a1, 43
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_xor_1:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a1, a1, 1
+; CMOV-NEXT:    xori a2, a0, 43
+; CMOV-NEXT:    beqz a1, .LBB6_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a2
+; CMOV-NEXT:  .LBB6_2: # %entry
+; CMOV-NEXT:    ret
+;
+; SHORT_FORWARD-LABEL: select_xor_1:
+; SHORT_FORWARD:       # %bb.0: # %entry
+; SHORT_FORWARD-NEXT:    andi a1, a1, 1
+; SHORT_FORWARD-NEXT:    beqz a1, .LBB6_2
+; SHORT_FORWARD-NEXT:  # %bb.1: # %entry
+; SHORT_FORWARD-NEXT:    xori a0, a0, 43
+; SHORT_FORWARD-NEXT:  .LBB6_2: # %entry
+; SHORT_FORWARD-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp eq i8 %and, 0
+ %0 = xor i16 %A, 43
+ %1 = select i1 %cmp10, i16 %A, i16 %0
+ ret i16 %1
+}
+
+; Equivalent to above, but with icmp ne (and %cond, 1), 1 instead of
+; icmp eq (and %cond, 1), 0
+define i16 @select_xor_1b(i16 %A, i8 %cond) {
+; NOCMOV-LABEL: select_xor_1b:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a1, a1, 1
+; NOCMOV-NEXT:    negw a1, a1
+; NOCMOV-NEXT:    andi a1, a1, 43
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_xor_1b:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a1, a1, 1
+; CMOV-NEXT:    xori a2, a0, 43
+; CMOV-NEXT:    beqz a1, .LBB7_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a2
+; CMOV-NEXT:  .LBB7_2: # %entry
+; CMOV-NEXT:    ret
+;
+; SHORT_FORWARD-LABEL: select_xor_1b:
+; SHORT_FORWARD:       # %bb.0: # %entry
+; SHORT_FORWARD-NEXT:    andi a1, a1, 1
+; SHORT_FORWARD-NEXT:    beqz a1, .LBB7_2
+; SHORT_FORWARD-NEXT:  # %bb.1: # %entry
+; SHORT_FORWARD-NEXT:    xori a0, a0, 43
+; SHORT_FORWARD-NEXT:  .LBB7_2: # %entry
+; SHORT_FORWARD-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp ne i8 %and, 1
+ %0 = xor i16 %A, 43
+ %1 = select i1 %cmp10, i16 %A, i16 %0
+ ret i16 %1
+}
+
+define i32 @select_xor_2(i32 %A, i32 %B, i8 %cond) {
+; NOCMOV-LABEL: select_xor_2:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_xor_2:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    xor a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB8_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB8_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp eq i8 %and, 0
+ %0 = xor i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
+
+; Equivalent to above, but with icmp ne (and %cond, 1), 1 instead of
+; icmp eq (and %cond, 1), 0
+define i32 @select_xor_2b(i32 %A, i32 %B, i8 %cond) {
+; NOCMOV-LABEL: select_xor_2b:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_xor_2b:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    xor a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB9_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB9_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp ne i8 %and, 1
+ %0 = xor i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
+
+define i32 @select_or(i32 %A, i32 %B, i8 %cond) {
+; NOCMOV-LABEL: select_or:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    or a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_or:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    or a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB10_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB10_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp eq i8 %and, 0
+ %0 = or i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
+
+; Equivalent to above, but with icmp ne (and %cond, 1), 1 instead of
+; icmp eq (and %cond, 1), 0
+define i32 @select_or_b(i32 %A, i32 %B, i8 %cond) {
+; NOCMOV-LABEL: select_or_b:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    or a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_or_b:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    or a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB11_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB11_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i8 %cond, 1
+ %cmp10 = icmp ne i8 %and, 1
+ %0 = or i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
+
+define i32 @select_or_1(i32 %A, i32 %B, i32 %cond) {
+; NOCMOV-LABEL: select_or_1:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    or a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_or_1:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    or a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB12_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB12_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i32 %cond, 1
+ %cmp10 = icmp eq i32 %and, 0
+ %0 = or i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
+
+; Equivalent to above, but with icmp ne (and %cond, 1), 1 instead of
+; icmp eq (and %cond, 1), 0
+define i32 @select_or_1b(i32 %A, i32 %B, i32 %cond) {
+; NOCMOV-LABEL: select_or_1b:
+; NOCMOV:       # %bb.0: # %entry
+; NOCMOV-NEXT:    andi a2, a2, 1
+; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    and a1, a1, a2
+; NOCMOV-NEXT:    or a0, a0, a1
+; NOCMOV-NEXT:    ret
+;
+; CMOV-LABEL: select_or_1b:
+; CMOV:       # %bb.0: # %entry
+; CMOV-NEXT:    andi a2, a2, 1
+; CMOV-NEXT:    or a1, a1, a0
+; CMOV-NEXT:    beqz a2, .LBB13_2
+; CMOV-NEXT:  # %bb.1: # %entry
+; CMOV-NEXT:    mv a0, a1
+; CMOV-NEXT:  .LBB13_2: # %entry
+; CMOV-NEXT:    ret
+entry:
+ %and = and i32 %cond, 1
+ %cmp10 = icmp ne i32 %and, 1
+ %0 = or i32 %B, %A
+ %1 = select i1 %cmp10, i32 %A, i32 %0
+ ret i32 %1
+}
