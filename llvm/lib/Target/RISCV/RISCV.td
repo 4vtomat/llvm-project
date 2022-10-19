@@ -698,8 +698,6 @@ def : ProcessorModel<"sifive-8-series", SiFiveP500Model, [],
 def : ProcessorModel<"sifive-p500-series", SiFiveP500Model, [],
                      [TuneSiFiveP500]>;
 
-def : ProcessorModel<"sifive-9-series", SiFiveP600Model, [],
-                     [TuneSiFiveP600]>;
 def : ProcessorModel<"sifive-p600-series", SiFiveP600Model, [],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION

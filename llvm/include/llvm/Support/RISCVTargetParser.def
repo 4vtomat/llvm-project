@@ -50,7 +50,6 @@ TUNE_PROC(SIFIVE_7M, "sifive-7m-series")
 TUNE_PROC(SIFIVE_7N, "sifive-7n-series")
 TUNE_PROC(SIFIVE_7O, "sifive-7o-series")
 TUNE_PROC(SIFIVE_8, "sifive-8-series")
-TUNE_PROC(SIFIVE_9, "sifive-9-series")
 TUNE_PROC(SIFIVE_P500, "sifive-p500-series")
 TUNE_PROC(SIFIVE_P600, "sifive-p600-series")
 
