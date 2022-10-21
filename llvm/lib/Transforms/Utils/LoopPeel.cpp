@@ -92,6 +92,37 @@ bool llvm::canPeel(Loop *L) {
   return L->isLoopSimplifyForm();
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool llvm::canPeelEpilog(Loop *L) {
+  if (!L->isLoopSimplifyForm())
+     return false;
+
+   // Don't try to peel loops where the latch is not the exiting block.
+   // This can be an indication of two different things:
+   // 1) The loop is not rotated.
+   // 2) The loop contains irreducible control flow that involves the latch.
+   const BasicBlock *Latch = L->getLoopLatch();
+   if (!L->isLoopExiting(Latch))
+     return false;
+
+   // Peeling is only supported if the latch is a branch.
+   if (!isa<BranchInst>(Latch->getTerminator()))
+     return false;
+
+   SmallVector<BasicBlock *, 4> Exits;
+   L->getUniqueNonLatchExitBlocks(Exits);
+   // The latch must either be the only exiting block or all non-latch exit
+   // blocks have either a deopt or unreachable terminator or compose a chain of
+   // blocks where the last one is either deopt or unreachable terminated. Both
+   // deopt and unreachable terminators are a strong indication they are not
+   // taken. Note that this is a profitability check, not a legality check. Also
+   // note that LoopPeeling currently can only update the branch weights of latch
+   // blocks and branch weights to blocks with deopt or unreachable do not need
+   // updating.
+   return llvm::all_of(Exits, IsBlockFollowedByDeoptOrUnreachable);
+}
+#endif
+
 // This function calculates the number of iterations after which the given Phi
 // becomes an invariant. The pre-calculated values are memorized in the map. The
 // function (shortcut is I) is calculated according to the following definition:
@@ -373,10 +404,13 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   // TTI.getPeelingPreferences or by the flag -unroll-peel-count.
   unsigned TargetPeelCount = PP.PeelCount;
   PP.PeelCount = 0;
-  if (!canPeel(L))
+  // SIFIVE
+  if (PP.PeelProlog && !canPeel(L))
     return;
 
-  // SIFIVE
+  if (PP.PeelEpilog && !canPeelEpilog(L))
+    return;
+
   // Must have enabled peeling in one direction, but not both.
   assert(PP.PeelProlog != PP.PeelEpilog &&
          "Unsupported use of computePeelCount");
@@ -677,17 +711,17 @@ static void cloneLoopBlocks(
   // header (for the last peeled iteration) or the copied header of the next
   // iteration (for every other iteration)
   BasicBlock *NewLatch = cast<BasicBlock>(VMap[Latch]);
-  BranchInst *LatchBR = cast<BranchInst>(NewLatch->getTerminator());
+  auto *LatchTerm = NewLatch->getTerminator();
   // SIFIVE
   if (EpilogPeeling) {
     // Replace LatchBR copy with an unconditional branch to InsertBot.
     BranchInst::Create(InsertBot, NewLatch);
     // Now remove the old LatchBR from NewLatch.
-    LatchBR->eraseFromParent();
+    LatchTerm->eraseFromParent();
   } else {
-    for (unsigned idx = 0, e = LatchBR->getNumSuccessors(); idx < e; ++idx)
-      if (LatchBR->getSuccessor(idx) == Header) {
-        LatchBR->setSuccessor(idx, InsertBot);
+    for (unsigned idx = 0, e = LatchTerm->getNumSuccessors(); idx < e; ++idx)
+      if (LatchTerm->getSuccessor(idx) == Header) {
+        LatchTerm->setSuccessor(idx, InsertBot);
         break;
       }
   }
@@ -1025,7 +1059,7 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
                           ScalarEvolution *SE, DominatorTree &DT,
                           AssumptionCache *AC, bool PreserveLCSSA) {
   assert(PeelCount > 0 && "Attempt to peel out zero iterations?");
-  assert(canPeel(L) && "Attempt to peel a loop which is not peelable?");
+  assert(canPeelEpilog(L) && "Attempt to peel a loop which is not peelable?");
 
   LoopBlocksDFS LoopBlocks(L);
   LoopBlocks.perform(LI);
@@ -1158,9 +1192,8 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
 
   // If we have branch weight information, we'll want to update it for the
   // newly created branches.
-  auto *LatchBR = cast<BranchInst>(Latch->getTerminator());
-  uint64_t ExitWeight = 0, FallThroughWeight = 0;
-  initBranchWeights(Header, LatchBR, ExitWeight, FallThroughWeight);
+  DenseMap<Instruction *, WeightInfo> Weights;
+  initBranchWeights(Weights, L);
 
   // Identify what noalias metadata is inside the loop: if it is inside the
   // loop, the associated metadata must be cloned for each iteration.
@@ -1183,11 +1216,19 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
     // previous one.
     remapInstructionsInBlocks(NewBlocks, VMap);
 
+    for (auto &[Term, Info] : Weights) {
+      auto *TermCopy = cast<Instruction>(VMap[Term]);
+      updateBranchWeights(TermCopy, Info);
+    }
+
     InsertTop = InsertBot;
     F->getBasicBlockList().splice(InsertTop->getIterator(),
                                   F->getBasicBlockList(),
                                   NewBlocks[0]->getIterator(), F->end());
   }
+
+  for (const auto &[Term, Info] : Weights)
+    fixupBranchWeights(Term, Info);
 
   // Update Metadata for count of peeled off iterations.
   unsigned AlreadyPeeled = 0;
