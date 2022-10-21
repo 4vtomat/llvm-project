@@ -11,12 +11,12 @@ declare <vscale x 1 x i8> @llvm.riscv.vadd.nxv1i8.nxv1i8(
 define <vscale x 1 x i8> @switch_tail_policy(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, i64 %2) nounwind {
 ; CHECK-LABEL: switch_tail_policy:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, ma
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vadd.vv v10, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    vadd.vv v9, v8, v10
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, tu, ma
 ; CHECK-NEXT:    vadd.vv v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -50,7 +50,7 @@ declare <vscale x 1 x i8> @llvm.riscv.vluxei.tu.nxv1i8.nxv1i64(
 define <vscale x 1 x i8> @intrinsic_vluxei_v_tu_nxv1i8_nxv1i8_nxv1i64(<vscale x 1 x i8> %0, <vscale x 1 x i8>* %1, <vscale x 1 x i64> %2, i64 %3) nounwind {
 ; CHECK-LABEL: intrinsic_vluxei_v_tu_nxv1i8_nxv1i8_nxv1i64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, ma
 ; CHECK-NEXT:    vluxei64.v v8, (a0), v9
 ; CHECK-NEXT:    ret
 entry:
@@ -71,7 +71,7 @@ declare <vscale x 1 x i8> @llvm.riscv.vmv.v.v.tu.nxv1i8(
 define <vscale x 1 x i8> @intrinsic_vmv.v.v_v_tu_nxv1i8_nxv1i8(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, i64 %2) nounwind {
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_tu_nxv1i8_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, ma
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -91,7 +91,7 @@ declare <vscale x 1 x i8> @llvm.riscv.vmv.v.x.tu.nxv1i8(
 define <vscale x 1 x i8> @intrinsic_vmv.v.x_x_tu_nxv1i8(<vscale x 1 x i8> %0, i8 %1, i64 %2) nounwind {
 ; CHECK-LABEL: intrinsic_vmv.v.x_x_tu_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -111,7 +111,7 @@ declare <vscale x 1 x half> @llvm.riscv.vfmv.v.f.tu.nxv1f16(
 define <vscale x 1 x half> @intrinsic_vfmv.v.f_f_tu_nxv1f16(<vscale x 1 x half> %0, half %1, i64 %2) nounwind {
 ; CHECK-LABEL: intrinsic_vfmv.v.f_f_tu_nxv1f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, tu, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
 ; CHECK-NEXT:    ret
 entry:

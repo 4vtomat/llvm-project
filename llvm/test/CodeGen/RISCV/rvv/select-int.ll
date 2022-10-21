@@ -511,6 +511,7 @@ define <vscale x 32 x i16> @selectcc_nxv32i16(i16 signext %a, i16 signext %b, <v
 ; CHECK-NEXT:    bne a0, a1, .LBB39_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv8r.v v8, v16
+; CHECK-NEXT:  .LBB39_2:
 ; CHECK-NEXT:    ret
   %cmp = icmp ne i16 %a, %b
   %v = select i1 %cmp, <vscale x 32 x i16> %c, <vscale x 32 x i16> %d

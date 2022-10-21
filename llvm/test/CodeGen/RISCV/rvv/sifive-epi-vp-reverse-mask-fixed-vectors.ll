@@ -27,7 +27,7 @@ define <2 x i1> @test_vp_reverse_v2i1(<2 x i1> %src, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_reverse_v2i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a1, a0, -1
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vrsub.vx v8, v8, a1
 ; CHECK-NEXT:    vmv.v.i v9, 0
@@ -67,7 +67,7 @@ define <4 x i1> @test_vp_reverse_v4i1(<4 x i1> %src, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_reverse_v4i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a1, a0, -1
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vrsub.vx v8, v8, a1
 ; CHECK-NEXT:    vmv.v.i v9, 0
@@ -107,7 +107,7 @@ define <8 x i1> @test_vp_reverse_v8i1(<8 x i1> %src, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_reverse_v8i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a1, a0, -1
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vrsub.vx v8, v8, a1
 ; CHECK-NEXT:    vmv.v.i v9, 0
@@ -148,10 +148,10 @@ define <16 x i1> @test_vp_reverse_v16i1(<16 x i1> %src, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_reverse_v16i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a1, a0, -1
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vrsub.vx v8, v8, a1
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    vmerge.vim v10, v10, 1, v0
 ; CHECK-NEXT:    vrgatherei16.vv v11, v10, v8

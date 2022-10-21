@@ -13,7 +13,7 @@ define void @test_scalable_constant_pointer(<vscale x 4 x double> %arg, i32 zero
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:  .LBB0_2: # %bb
 ; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    vsetvli zero, a1, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
 ; CHECK-NEXT:    lui a0, %hi(global)
 ; CHECK-NEXT:    addi a0, a0, %lo(global)
@@ -34,7 +34,7 @@ define void @test_scalable_variable_pointer(ptr %arg, <vscale x 4 x double> %arg
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:  .LBB1_2: # %bb
 ; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    vsetvli zero, a2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a1
 ; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
@@ -58,7 +58,7 @@ define void @test_fixed_constant_pointer(<4 x double> %arg, i32 zeroext %arg1) {
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:  .LBB2_2: # %bb
 ; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    vsetvli zero, a1, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
 ; CHECK-NEXT:    lui a0, %hi(global)
 ; CHECK-NEXT:    addi a0, a0, %lo(global)
@@ -79,7 +79,7 @@ define void @test_fixed_variable_pointer(ptr %arg, <4 x double> %arg1, i32 zeroe
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:  .LBB3_2: # %bb
 ; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    vsetvli zero, a2, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a1
 ; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret

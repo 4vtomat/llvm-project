@@ -747,8 +747,7 @@ define signext i32 @test14(i32 signext %0, i32 signext %1) {
 ; NOREMOVAL-NEXT:    li a2, 1
 ; NOREMOVAL-NEXT:    li a3, 1000
 ; NOREMOVAL-NEXT:  .LBB13_2: # =>This Inner Loop Header: Depth=1
-; NOREMOVAL-NEXT:    sext.w a4, a0
-; NOREMOVAL-NEXT:    blt a3, a4, .LBB13_5
+; NOREMOVAL-NEXT:    blt a3, a0, .LBB13_5
 ; NOREMOVAL-NEXT:  # %bb.3: # in Loop: Header=BB13_2 Depth=1
 ; NOREMOVAL-NEXT:    addw a0, a2, a0
 ; NOREMOVAL-NEXT:    addiw a2, a2, 1
@@ -784,45 +783,41 @@ define signext i32 @test14b(i32 %0, i32 signext %1) {
 ; CHECK-LABEL: test14b:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a2, 2
+; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    blt a1, a2, .LBB14_4
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    li a3, 1000
 ; CHECK-NEXT:  .LBB14_2: # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    sext.w a4, a0
-; CHECK-NEXT:    blt a3, a4, .LBB14_5
+; CHECK-NEXT:    blt a3, a0, .LBB14_5
 ; CHECK-NEXT:  # %bb.3: # in Loop: Header=BB14_2 Depth=1
 ; CHECK-NEXT:    addw a0, a2, a0
 ; CHECK-NEXT:    addiw a2, a2, 1
 ; CHECK-NEXT:    blt a2, a1, .LBB14_2
 ; CHECK-NEXT:  .LBB14_4:
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB14_5:
 ; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    ret
 ;
 ; NOREMOVAL-LABEL: test14b:
 ; NOREMOVAL:       # %bb.0:
 ; NOREMOVAL-NEXT:    li a2, 2
+; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    blt a1, a2, .LBB14_4
 ; NOREMOVAL-NEXT:  # %bb.1: # %.preheader
 ; NOREMOVAL-NEXT:    li a2, 1
 ; NOREMOVAL-NEXT:    li a3, 1000
 ; NOREMOVAL-NEXT:  .LBB14_2: # =>This Inner Loop Header: Depth=1
-; NOREMOVAL-NEXT:    sext.w a4, a0
-; NOREMOVAL-NEXT:    blt a3, a4, .LBB14_5
+; NOREMOVAL-NEXT:    blt a3, a0, .LBB14_5
 ; NOREMOVAL-NEXT:  # %bb.3: # in Loop: Header=BB14_2 Depth=1
 ; NOREMOVAL-NEXT:    addw a0, a2, a0
 ; NOREMOVAL-NEXT:    addiw a2, a2, 1
 ; NOREMOVAL-NEXT:    blt a2, a1, .LBB14_2
 ; NOREMOVAL-NEXT:  .LBB14_4:
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    ret
 ; NOREMOVAL-NEXT:  .LBB14_5:
 ; NOREMOVAL-NEXT:    li a0, -1
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    ret
   %3 = icmp sgt i32 %1, 1
   br i1 %3, label %4, label %12
@@ -850,45 +845,41 @@ define signext i32 @test14c(i32 zeroext %0, i32 signext %1) {
 ; CHECK-LABEL: test14c:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a2, 2
+; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    blt a1, a2, .LBB15_4
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    li a3, 1000
 ; CHECK-NEXT:  .LBB15_2: # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    sext.w a4, a0
-; CHECK-NEXT:    blt a3, a4, .LBB15_5
+; CHECK-NEXT:    blt a3, a0, .LBB15_5
 ; CHECK-NEXT:  # %bb.3: # in Loop: Header=BB15_2 Depth=1
 ; CHECK-NEXT:    addw a0, a2, a0
 ; CHECK-NEXT:    addiw a2, a2, 1
 ; CHECK-NEXT:    blt a2, a1, .LBB15_2
 ; CHECK-NEXT:  .LBB15_4:
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB15_5:
 ; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    ret
 ;
 ; NOREMOVAL-LABEL: test14c:
 ; NOREMOVAL:       # %bb.0:
 ; NOREMOVAL-NEXT:    li a2, 2
+; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    blt a1, a2, .LBB15_4
 ; NOREMOVAL-NEXT:  # %bb.1: # %.preheader
 ; NOREMOVAL-NEXT:    li a2, 1
 ; NOREMOVAL-NEXT:    li a3, 1000
 ; NOREMOVAL-NEXT:  .LBB15_2: # =>This Inner Loop Header: Depth=1
-; NOREMOVAL-NEXT:    sext.w a4, a0
-; NOREMOVAL-NEXT:    blt a3, a4, .LBB15_5
+; NOREMOVAL-NEXT:    blt a3, a0, .LBB15_5
 ; NOREMOVAL-NEXT:  # %bb.3: # in Loop: Header=BB15_2 Depth=1
 ; NOREMOVAL-NEXT:    addw a0, a2, a0
 ; NOREMOVAL-NEXT:    addiw a2, a2, 1
 ; NOREMOVAL-NEXT:    blt a2, a1, .LBB15_2
 ; NOREMOVAL-NEXT:  .LBB15_4:
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    ret
 ; NOREMOVAL-NEXT:  .LBB15_5:
 ; NOREMOVAL-NEXT:    li a0, -1
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    ret
   %3 = icmp sgt i32 %1, 1
   br i1 %3, label %4, label %12
@@ -940,8 +931,7 @@ define signext i32 @test14d(i31 zeroext %0, i32 signext %1) {
 ; NOREMOVAL-NEXT:    li a2, 1
 ; NOREMOVAL-NEXT:    li a3, 1000
 ; NOREMOVAL-NEXT:  .LBB16_2: # =>This Inner Loop Header: Depth=1
-; NOREMOVAL-NEXT:    sext.w a4, a0
-; NOREMOVAL-NEXT:    blt a3, a4, .LBB16_5
+; NOREMOVAL-NEXT:    blt a3, a0, .LBB16_5
 ; NOREMOVAL-NEXT:  # %bb.3: # in Loop: Header=BB16_2 Depth=1
 ; NOREMOVAL-NEXT:    addw a0, a2, a0
 ; NOREMOVAL-NEXT:    addiw a2, a2, 1

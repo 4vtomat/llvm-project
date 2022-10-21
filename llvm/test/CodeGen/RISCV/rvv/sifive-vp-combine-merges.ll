@@ -4,9 +4,9 @@
 define <vscale x 2 x double> @test_combine_vp_merges(<vscale x 2 x i64> %arg, <vscale x 2 x double> %arg1, <vscale x 2 x double> %arg2, i32 zeroext %arg3) {
 ; CHECK-LABEL: test_combine_vp_merges:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e64, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e64, m2, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v12, v12, v10, v0
 ; CHECK-NEXT:    vmv2r.v v8, v12
 ; CHECK-NEXT:    ret

@@ -5,7 +5,7 @@
 define <2 x half> @recip_v2f16(<2 x half> %a) #0 {
 ; CHECK-LABEL: recip_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -20,7 +20,7 @@ define <2 x half> @recip_v2f16(<2 x half> %a) #0 {
 define <4 x half> @recip_v4f16(<4 x half> %a) #0 {
 ; CHECK-LABEL: recip_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI1_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -35,7 +35,7 @@ define <4 x half> @recip_v4f16(<4 x half> %a) #0 {
 define <8 x half> @recip_v8f16(<8 x half> %a) #0 {
 ; CHECK-LABEL: recip_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI2_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -50,7 +50,7 @@ define <8 x half> @recip_v8f16(<8 x half> %a) #0 {
 define <2 x float> @recip_v2f32(<2 x float> %a) #0 {
 ; CHECK-LABEL: recip_v2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -68,7 +68,7 @@ define <2 x float> @recip_v2f32(<2 x float> %a) #0 {
 define <4 x float> @recip_v4f32(<4 x float> %a) #0 {
 ; CHECK-LABEL: recip_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI4_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -86,7 +86,7 @@ define <4 x float> @recip_v4f32(<4 x float> %a) #0 {
 define <8 x float> @recip_v8f32(<8 x float> %a) #0 {
 ; CHECK-LABEL: recip_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
 ; CHECK-NEXT:    vlse32.v v10, (a0), zero
@@ -104,7 +104,7 @@ define <8 x float> @recip_v8f32(<8 x float> %a) #0 {
 define <2 x double> @recip_v2f64(<2 x double> %a) #0 {
 ; CHECK-LABEL: recip_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI6_0)
 ; CHECK-NEXT:    vlse64.v v9, (a0), zero
@@ -125,7 +125,7 @@ define <2 x double> @recip_v2f64(<2 x double> %a) #0 {
 define <4 x double> @recip_v4f64(<4 x double> %a) #0 {
 ; CHECK-LABEL: recip_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI7_0)
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
@@ -146,7 +146,7 @@ define <4 x double> @recip_v4f64(<4 x double> %a) #0 {
 define <8 x double> @recip_v8f64(<8 x double> %a) #0 {
 ; CHECK-LABEL: recip_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI8_0)
 ; CHECK-NEXT:    vlse64.v v12, (a0), zero
@@ -167,7 +167,7 @@ define <8 x double> @recip_v8f64(<8 x double> %a) #0 {
 define <2 x half> @recip_zero_steps_v2f16(<2 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x half> <half 1.000000e+00, half 1.000000e+00>, %a
@@ -177,7 +177,7 @@ define <2 x half> @recip_zero_steps_v2f16(<2 x half> %a) #1 {
 define <4 x half> @recip_zero_steps_v4f16(<4 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x half> <half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00>, %a
@@ -187,7 +187,7 @@ define <4 x half> @recip_zero_steps_v4f16(<4 x half> %a) #1 {
 define <8 x half> @recip_zero_steps_v8f16(<8 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x half> <half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00>, %a
@@ -197,7 +197,7 @@ define <8 x half> @recip_zero_steps_v8f16(<8 x half> %a) #1 {
 define <2 x float> @recip_zero_steps_v2f32(<2 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x float> <float 1.000000e+00, float 1.000000e+00>, %a
@@ -207,7 +207,7 @@ define <2 x float> @recip_zero_steps_v2f32(<2 x float> %a) #1 {
 define <4 x float> @recip_zero_steps_v4f32(<4 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %a
@@ -217,7 +217,7 @@ define <4 x float> @recip_zero_steps_v4f32(<4 x float> %a) #1 {
 define <8 x float> @recip_zero_steps_v8f32(<8 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %a
@@ -227,7 +227,7 @@ define <8 x float> @recip_zero_steps_v8f32(<8 x float> %a) #1 {
 define <2 x double> @recip_zero_steps_v2f64(<2 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x double> <double 1.000000e+00, double 1.000000e+00>, %a
@@ -237,7 +237,7 @@ define <2 x double> @recip_zero_steps_v2f64(<2 x double> %a) #1 {
 define <4 x double> @recip_zero_steps_v4f64(<4 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x double> <double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00>, %a
@@ -247,7 +247,7 @@ define <4 x double> @recip_zero_steps_v4f64(<4 x double> %a) #1 {
 define <8 x double> @recip_zero_steps_v8f64(<8 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x double> <double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00>, %a

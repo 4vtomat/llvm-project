@@ -4,7 +4,7 @@
 define void @shufflevector_0_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_0_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -18,9 +18,9 @@ entry:
 define void @shufflevector_0_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_0_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -78,13 +78,13 @@ entry:
 define void @shufflevector_0_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_0_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -98,16 +98,16 @@ entry:
 define void @shufflevector_0_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_0_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 0
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -120,16 +120,16 @@ entry:
 define void @shufflevector_0_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_0_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 0
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -142,11 +142,11 @@ entry:
 define void @shufflevector_1_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
@@ -161,7 +161,7 @@ define void @shufflevector_1_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_1:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 8
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -220,11 +220,11 @@ entry:
 define void @shufflevector_1_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 1
@@ -241,16 +241,16 @@ entry:
 define void @shufflevector_1_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 1
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -263,16 +263,16 @@ entry:
 define void @shufflevector_1_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 1
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -316,7 +316,7 @@ define void @shufflevector_2_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_2:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -330,11 +330,11 @@ entry:
 define void @shufflevector_2_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_3:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -362,16 +362,16 @@ entry:
 define void @shufflevector_2_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 1, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -384,16 +384,16 @@ entry:
 define void @shufflevector_2_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -406,16 +406,16 @@ entry:
 define void @shufflevector_2_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -458,13 +458,13 @@ entry:
 define void @shufflevector_3_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
@@ -479,7 +479,7 @@ define void @shufflevector_3_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_3:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 24
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -508,16 +508,16 @@ entry:
 define void @shufflevector_3_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 1, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -530,16 +530,16 @@ entry:
 define void @shufflevector_3_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -552,16 +552,16 @@ entry:
 define void @shufflevector_3_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -635,7 +635,7 @@ define void @shufflevector_4_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_4:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 32
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -649,11 +649,11 @@ entry:
 define void @shufflevector_4_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -666,15 +666,15 @@ entry:
 define void @shufflevector_4_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vadd.vv v12, v12, v12
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -687,17 +687,17 @@ entry:
 define void @shufflevector_4_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    li a0, 3
 ; CHECK-NEXT:    vmul.vx v12, v12, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -710,13 +710,13 @@ entry:
 define void @shufflevector_5_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v12, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
@@ -730,11 +730,11 @@ entry:
 define void @shufflevector_5_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v12, 1
@@ -751,16 +751,16 @@ entry:
 define void @shufflevector_5_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 1, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -773,16 +773,16 @@ entry:
 define void @shufflevector_5_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_3:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 1, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -795,13 +795,13 @@ entry:
 define void @shufflevector_5_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
@@ -816,7 +816,7 @@ define void @shufflevector_5_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_5:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 40
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -830,13 +830,13 @@ entry:
 define void @shufflevector_5_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -849,16 +849,16 @@ entry:
 define void @shufflevector_5_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_5_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vadd.vv v12, v12, v12
 ; CHECK-NEXT:    vadd.vi v12, v12, 1
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -871,16 +871,16 @@ entry:
 define void @shufflevector_6_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 0
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -893,16 +893,16 @@ entry:
 define void @shufflevector_6_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 1
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -915,16 +915,16 @@ entry:
 define void @shufflevector_6_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -937,16 +937,16 @@ entry:
 define void @shufflevector_6_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_3:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -959,16 +959,16 @@ entry:
 define void @shufflevector_6_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vadd.vv v12, v12, v12
 ; CHECK-NEXT:    vrsub.vi v12, v12, 2
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -981,15 +981,15 @@ entry:
 define void @shufflevector_6_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vrsub.vi v12, v12, 2
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1003,7 +1003,7 @@ define void @shufflevector_6_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_6:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -1017,11 +1017,11 @@ entry:
 define void @shufflevector_6_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_6_7:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 6
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1034,15 +1034,15 @@ entry:
 define void @shufflevector_7_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v12, 3
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1055,16 +1055,16 @@ entry:
 define void @shufflevector_7_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 1
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1077,16 +1077,16 @@ entry:
 define void @shufflevector_7_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 2
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1099,16 +1099,16 @@ entry:
 define void @shufflevector_7_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_3:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v16, v8, 3
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1121,15 +1121,15 @@ entry:
 define void @shufflevector_7_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 3
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1142,16 +1142,16 @@ entry:
 define void @shufflevector_7_5(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_5:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vadd.vv v12, v12, v12
 ; CHECK-NEXT:    vrsub.vi v12, v12, 3
 ; CHECK-NEXT:    vrgather.vv v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v14, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -1164,13 +1164,13 @@ entry:
 define void @shufflevector_7_6(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 6
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 1
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v12, v8, 1
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
@@ -1185,7 +1185,7 @@ define void @shufflevector_7_7(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_7_7:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi a0, a0, 56
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret

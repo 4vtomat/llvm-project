@@ -29,15 +29,15 @@ declare <vscale x 16 x i1> @llvm.vp.merge.nxv16i1(<vscale x 16 x i1>, <vscale x 
 define <vscale x 16 x i1> @vpmerge_nxv16i1(<vscale x 16 x i1> %va, <vscale x 16 x i1> %vb, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpmerge_nxv16i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    vmerge.vim v12, v10, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v10, v10, 1, v0
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, ma
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vvm v10, v10, v12, v0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    ret
   %v = call <vscale x 16 x i1> @llvm.vp.merge.nxv16i1(<vscale x 16 x i1> %m, <vscale x 16 x i1> %va, <vscale x 16 x i1> %vb, i32 %evl)

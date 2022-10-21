@@ -17,7 +17,7 @@ define void @main() {
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x1c, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 28 * VLENB
-; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v12, (zero)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 20
@@ -35,15 +35,15 @@ define void @main() {
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, ma
 ; CHECK-NEXT:    vmacc.vv v8, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v4, 0
-; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; CHECK-NEXT:    vand.vx v28, v4, a0
-; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmclr.m v1
 ; CHECK-NEXT:    li a0, 108
 ; CHECK-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
@@ -76,7 +76,7 @@ define void @main() {
 ; CHECK-NEXT:    vs4r.v v20, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    vs4r.v v24, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_2)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -145,9 +145,9 @@ define void @main() {
 ; CHECK-NEXT:    addiw a0, a0, 733
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
 ; CHECK-NEXT:    vnmsac.vx v12, a0, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vsseg2e64.v v20, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vsseg2e32.v v12, (a0)
 ;
 ; SUBREG_LIVENESS-LABEL: main:
@@ -158,20 +158,20 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    slli a0, a0, 2
 ; SUBREG_LIVENESS-NEXT:    sub sp, sp, a0
 ; SUBREG_LIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * VLENB
-; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)
 ; SUBREG_LIVENESS-NEXT:    vle64.v v8, (a0)
 ; SUBREG_LIVENESS-NEXT:    addi a0, sp, 16
 ; SUBREG_LIVENESS-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, ma
 ; SUBREG_LIVENESS-NEXT:    vmacc.vv v12, v8, v8
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_0)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
-; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e64, m4, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmv.v.i v28, 0
-; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vand.vx v4, v28, a0
-; SUBREG_LIVENESS-NEXT:    vsetvli a0, zero, e8, mf2, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmclr.m v8
 ; SUBREG_LIVENESS-NEXT:    li a0, 108
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
@@ -191,7 +191,7 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vmv4r.v v28, v24
 ; SUBREG_LIVENESS-NEXT:    vmv4r.v v24, v20
 ; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v24, (a0), v8, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_2)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
 ; SUBREG_LIVENESS-NEXT:    vaaddu.vv v12, v24, v20
@@ -212,9 +212,9 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    addiw a0, a0, 733
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vnmsac.vx v8, a0, v8, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vsseg2e64.v v12, (a0)
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vsseg2e32.v v8, (a0)
 entry:
   %0 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64>* nonnull null, i64 0)

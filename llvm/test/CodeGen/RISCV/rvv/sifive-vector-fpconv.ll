@@ -15,17 +15,17 @@ define <32 x i32> @vfptosi_v32i32_v32f64_unmasked(<32 x double> %va, i32 zeroext
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a2, a1
 ; CHECK-NEXT:  .LBB0_2:
-; CHECK-NEXT:    vsetvli zero, a2, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e32, m4, ta, ma
 ; CHECK-NEXT:    li a1, 16
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v24, v16
 ; CHECK-NEXT:    bltu a0, a1, .LBB0_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    li a0, 16
 ; CHECK-NEXT:  .LBB0_4:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v16, v8
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vi v16, v24, 16
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:    ret
@@ -44,17 +44,17 @@ define <32 x i32> @vfptoui_v32i32_v32f64_unmasked(<32 x double> %va, i32 zeroext
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a2, a1
 ; CHECK-NEXT:  .LBB1_2:
-; CHECK-NEXT:    vsetvli zero, a2, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e32, m4, ta, ma
 ; CHECK-NEXT:    li a1, 16
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v24, v16
 ; CHECK-NEXT:    bltu a0, a1, .LBB1_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    li a0, 16
 ; CHECK-NEXT:  .LBB1_4:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v16, v8
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vi v16, v24, 16
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:    ret
@@ -74,13 +74,13 @@ define <vscale x 16 x i32> @vfptosi_v16i32_v16f64_unmasked(<vscale x 16 x double
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a3, a2
 ; CHECK-NEXT:  .LBB2_2:
-; CHECK-NEXT:    vsetvli zero, a3, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v28, v16
 ; CHECK-NEXT:    bltu a0, a1, .LBB2_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB2_4:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v24, v8
 ; CHECK-NEXT:    vmv8r.v v8, v24
 ; CHECK-NEXT:    ret
@@ -100,13 +100,13 @@ define <vscale x 16 x i32> @vfptoui_v16i32_v16f64_unmasked(<vscale x 16 x double
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a3, a2
 ; CHECK-NEXT:  .LBB3_2:
-; CHECK-NEXT:    vsetvli zero, a3, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v28, v16
 ; CHECK-NEXT:    bltu a0, a1, .LBB3_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB3_4:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v24, v8
 ; CHECK-NEXT:    vmv8r.v v8, v24
 ; CHECK-NEXT:    ret

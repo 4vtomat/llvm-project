@@ -13,7 +13,7 @@ declare void @llvm.riscv.vse.nxv4i32(<vscale x 4 x i32>, <vscale x 4 x i32>*, iX
 define <vscale x 16 x i8> @test_vle8x2(i8* %0) {
 ; CHECK-LABEL: test_vle8x2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    ret
   %add.ptr0 = getelementptr inbounds i8, i8* %0, iXLen 8
@@ -30,7 +30,7 @@ define <vscale x 16 x i8> @test_vle8x2(i8* %0) {
 define void @test_vle32x2(i32* %0, i32* %1) {
 ; CHECK-LABEL: test_vle32x2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 16, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -50,7 +50,7 @@ define void @test_vle32x2(i32* %0, i32* %1) {
 define <vscale x 4 x i32> @test_vle32x3(i32* %0) {
 ; CHECK-LABEL: test_vle32x3:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 24, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 24, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    ret
   %add.ptr0 = getelementptr inbounds i32, i32* %0, iXLen 8
@@ -73,7 +73,7 @@ define <vscale x 4 x i32> @test_vle32x4(i32* %0) {
 ; CHECK-LABEL: test_vle32x4:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    ret
   %add.ptr0 = getelementptr inbounds i32, i32* %0, iXLen 8

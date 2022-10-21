@@ -220,7 +220,7 @@ define signext i32 @findLastSet_i32(i32 signext %a) nounwind {
 ; RV64I-NEXT:    srliw a0, a0, 24
 ; RV64I-NEXT:    xori a0, a0, 31
 ; RV64I-NEXT:    snez a1, s0
-; RV64I-NEXT:    addi a1, a1, -1
+; RV64I-NEXT:    addiw a1, a1, -1
 ; RV64I-NEXT:    or a0, a1, a0
 ; RV64I-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
@@ -232,7 +232,7 @@ define signext i32 @findLastSet_i32(i32 signext %a) nounwind {
 ; RV64ZBB-NEXT:    clzw a1, a0
 ; RV64ZBB-NEXT:    xori a1, a1, 31
 ; RV64ZBB-NEXT:    snez a0, a0
-; RV64ZBB-NEXT:    addi a0, a0, -1
+; RV64ZBB-NEXT:    addiw a0, a0, -1
 ; RV64ZBB-NEXT:    or a0, a0, a1
 ; RV64ZBB-NEXT:    ret
   %1 = call i32 @llvm.ctlz.i32(i32 %a, i1 true)
@@ -456,7 +456,7 @@ define signext i32 @findFirstSet_i32(i32 signext %a) nounwind {
 ; RV64I-NEXT:    lbu a1, 0(a0)
 ; RV64I-NEXT:  .LBB8_2:
 ; RV64I-NEXT:    snez a0, s0
-; RV64I-NEXT:    addi a0, a0, -1
+; RV64I-NEXT:    addiw a0, a0, -1
 ; RV64I-NEXT:    or a0, a0, a1
 ; RV64I-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
@@ -467,7 +467,7 @@ define signext i32 @findFirstSet_i32(i32 signext %a) nounwind {
 ; RV64ZBB:       # %bb.0:
 ; RV64ZBB-NEXT:    ctzw a1, a0
 ; RV64ZBB-NEXT:    snez a0, a0
-; RV64ZBB-NEXT:    addi a0, a0, -1
+; RV64ZBB-NEXT:    addiw a0, a0, -1
 ; RV64ZBB-NEXT:    or a0, a0, a1
 ; RV64ZBB-NEXT:    ret
   %1 = call i32 @llvm.cttz.i32(i32 %a, i1 true)

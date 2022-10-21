@@ -4,7 +4,7 @@
 define <2 x i16> @or_shl_sext_zext_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-LABEL: or_shl_sext_zext_v2i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -21,7 +21,7 @@ entry:
 define <2 x i16> @or_zext_shl_sext_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-LABEL: or_zext_shl_sext_v2i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -38,7 +38,7 @@ entry:
 define <2 x i16> @or_shl_zext_zext_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-LABEL: or_shl_zext_zext_v2i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -55,7 +55,7 @@ entry:
 define <2 x i16> @or_zext_shl_zext_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-LABEL: or_zext_shl_zext_v2i8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf8, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -72,7 +72,7 @@ entry:
 define <2 x i32> @or_shl_sext_zext_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-LABEL: or_shl_sext_zext_v2i16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -89,7 +89,7 @@ entry:
 define <2 x i32> @or_zext_shl_sext_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-LABEL: or_zext_shl_sext_v2i16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -106,7 +106,7 @@ entry:
 define <2 x i32> @or_shl_zext_zext_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-LABEL: or_shl_zext_zext_v2i16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -123,7 +123,7 @@ entry:
 define <2 x i32> @or_zext_shl_zext_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-LABEL: or_zext_shl_zext_v2i16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -140,7 +140,7 @@ entry:
 define <2 x i64> @or_shl_sext_zext_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-LABEL: or_shl_sext_zext_v2i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -157,7 +157,7 @@ entry:
 define <2 x i64> @or_zext_shl_sext_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-LABEL: or_zext_shl_sext_v2i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -174,7 +174,7 @@ entry:
 define <2 x i64> @or_shl_zext_zext_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-LABEL: or_shl_zext_zext_v2i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8
@@ -191,7 +191,7 @@ entry:
 define <2 x i64> @or_zext_shl_zext_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-LABEL: or_zext_shl_zext_v2i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v9, v8
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a0, v8

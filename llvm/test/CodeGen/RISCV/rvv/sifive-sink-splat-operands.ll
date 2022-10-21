@@ -10,7 +10,7 @@
 define void @sink_splat_add(i32* nocapture %a, i32 signext %x) {
 ; CHECK-LABEL: sink_splat_add:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    li a1, 1024
 ; CHECK-NEXT:  .LBB0_1: # %vector.body
@@ -60,7 +60,7 @@ define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-NEXT:    addiw a4, a3, -1
 ; CHECK-NEXT:    slli a5, a2, 1
 ; CHECK-NEXT:    andi a6, a4, 1024
-; CHECK-NEXT:    vsetvli a4, zero, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli a4, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    mv a4, a0
 ; CHECK-NEXT:    xori a7, a6, 1024
@@ -144,7 +144,7 @@ declare <4 x i32> @llvm.vp.add.v4i32(<4 x i32>, <4 x i32>, <4 x i1>, i32)
 define void @sink_splat_vp_add(i32* nocapture %a, i32 signext %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_add:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    li a1, 1024
 ; CHECK-NEXT:  .LBB2_1: # %vector.body
@@ -153,7 +153,7 @@ define void @sink_splat_vp_add(i32* nocapture %a, i32 signext %x, <4 x i1> %m, i
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, mu
 ; CHECK-NEXT:    addi a1, a1, -4
 ; CHECK-NEXT:    vadd.vv v9, v9, v8, v0.t
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    bnez a1, .LBB2_1
@@ -183,7 +183,7 @@ for.cond.cleanup:                                 ; preds = %vector.body
 define void @sink_splat_fadd(float* nocapture %a, float %x) {
 ; CHECK-LABEL: sink_splat_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
 ; CHECK-NEXT:    li a1, 1024
 ; CHECK-NEXT:  .LBB3_1: # %vector.body
@@ -231,7 +231,7 @@ define void @sink_splat_fadd_scalable(float* nocapture %a, float %x) {
 ; CHECK-NEXT:    addiw a1, a3, -1
 ; CHECK-NEXT:    mv a5, a0
 ; CHECK-NEXT:    andi a6, a1, 1024
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
 ; CHECK-NEXT:    xori a4, a6, 1024
 ; CHECK-NEXT:    mv a1, a4
@@ -314,7 +314,7 @@ declare <4 x float> @llvm.vp.fadd.v4i32(<4 x float>, <4 x float>, <4 x i1>, i32)
 define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
 ; CHECK-NEXT:    li a2, 1024
 ; CHECK-NEXT:  .LBB5_1: # %vector.body
@@ -323,7 +323,7 @@ define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
 ; CHECK-NEXT:    addi a2, a2, -4
 ; CHECK-NEXT:    vfadd.vv v9, v9, v8, v0.t
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    bnez a2, .LBB5_1

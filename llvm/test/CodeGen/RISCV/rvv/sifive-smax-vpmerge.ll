@@ -19,7 +19,7 @@ define <vscale x 2 x i32> @vpmerge_smax(<vscale x 2 x i32> %passthru, <vscale x 
 define <vscale x 2 x i32> @vpmerge_smax_allones_mask(<vscale x 2 x i32> %passthru, <vscale x 2 x i32> %x, <vscale x 2 x i32> %y, i32 zeroext %vl) {
 ; CHECK-LABEL: vpmerge_smax_allones_mask:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
 ; CHECK-NEXT:    vmax.vv v8, v9, v10
 ; CHECK-NEXT:    ret
   %a = call <vscale x 2 x i32> @llvm.smax.nxv2i32(<vscale x 2 x i32> %x, <vscale x 2 x i32> %y)

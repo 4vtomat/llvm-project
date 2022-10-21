@@ -170,7 +170,7 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_gvl_zero:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vle64.v v8, (a0)
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
@@ -180,7 +180,7 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O2-LABEL: test_gvl_zero:
 ; CHECK-O2:       # %bb.0:
-; CHECK-O2-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vle64.v v8, (a0)
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)
@@ -214,7 +214,7 @@ define void @test_implicit_vlmax(<vscale x 1 x double>* %v) nounwind
 ; CHECK-O0-LABEL: test_implicit_vlmax:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vl1re64.v v8, (a0)
-; CHECK-O0-NEXT:    vsetvli a0, zero, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
@@ -224,7 +224,7 @@ define void @test_implicit_vlmax(<vscale x 1 x double>* %v) nounwind
 ; CHECK-O2-LABEL: test_implicit_vlmax:
 ; CHECK-O2:       # %bb.0:
 ; CHECK-O2-NEXT:    vl1re64.v v8, (a0)
-; CHECK-O2-NEXT:    vsetvli a0, zero, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O2-NEXT:    addi a0, a0, %lo(scratch)

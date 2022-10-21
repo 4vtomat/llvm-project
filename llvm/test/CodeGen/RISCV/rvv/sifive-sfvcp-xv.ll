@@ -7,7 +7,7 @@
 define void @test_sf_vc_vv_se_e8mf8(<vscale x 1 x i8> %vs2, <vscale x 1 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -20,7 +20,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv1i8.nxv1i8.iXLen(i32, i32, <vscale x
 define void @test_sf_vc_vv_se_e8mf4(<vscale x 2 x i8> %vs2, <vscale x 2 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -33,7 +33,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv2i8.nxv2i8.iXLen(i32, i32, <vscale x
 define void @test_sf_vc_vv_se_e8mf2(<vscale x 4 x i8> %vs2, <vscale x 4 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -46,7 +46,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv4i8.nxv4i8.iXLen(i32, i32, <vscale x
 define void @test_sf_vc_vv_se_e8m1(<vscale x 8 x i8> %vs2, <vscale x 8 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -59,7 +59,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv8i8.nxv8i8.iXLen(i32, i32, <vscale x
 define void @test_sf_vc_vv_se_e8m2(<vscale x 16 x i8> %vs2, <vscale x 16 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -72,7 +72,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv16i8.nxv16i8.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e8m4(<vscale x 32 x i8> %vs2, <vscale x 32 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -85,7 +85,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv32i8.nxv32i8.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e8m8(<vscale x 64 x i8> %vs2, <vscale x 64 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -98,7 +98,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv64i8.nxv64i8.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e16mf4(<vscale x 1 x i16> %vs2, <vscale x 1 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -111,7 +111,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv1i16.nxv1i16.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e16mf2(<vscale x 2 x i16> %vs2, <vscale x 2 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -124,7 +124,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv2i16.nxv2i16.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e16m1(<vscale x 4 x i16> %vs2, <vscale x 4 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -137,7 +137,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv4i16.nxv4i16.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e16m2(<vscale x 8 x i16> %vs2, <vscale x 8 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -150,7 +150,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv8i16.nxv8i16.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e16m4(<vscale x 16 x i16> %vs2, <vscale x 16 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -163,7 +163,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv16i16.nxv16i16.iXLen(i32, i32, <vsca
 define void @test_sf_vc_vv_se_e16m8(<vscale x 32 x i16> %vs2, <vscale x 32 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -176,7 +176,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv32i16.nxv32i16.iXLen(i32, i32, <vsca
 define void @test_sf_vc_vv_se_e32mf2(<vscale x 1 x i32> %vs2, <vscale x 1 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -189,7 +189,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv1i32.nxv1i32.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e32m1(<vscale x 2 x i32> %vs2, <vscale x 2 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -202,7 +202,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv2i32.nxv2i32.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e32m2(<vscale x 4 x i32> %vs2, <vscale x 4 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -215,7 +215,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv4i32.nxv4i32.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e32m4(<vscale x 8 x i32> %vs2, <vscale x 8 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -228,7 +228,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv8i32.nxv8i32.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e32m8(<vscale x 16 x i32> %vs2, <vscale x 16 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -241,7 +241,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv16i32.nxv16i32.iXLen(i32, i32, <vsca
 define void @test_sf_vc_vv_se_e64m1(<vscale x 1 x i64> %vs2, <vscale x 1 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -254,7 +254,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv1i64.nxv1i64.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e64m2(<vscale x 2 x i64> %vs2, <vscale x 2 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -267,7 +267,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv2i64.nxv2i64.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e64m4(<vscale x 4 x i64> %vs2, <vscale x 4 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -280,7 +280,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv4i64.nxv4i64.iXLen(i32, i32, <vscale
 define void @test_sf_vc_vv_se_e64m8(<vscale x 8 x i64> %vs2, <vscale x 8 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_vv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.vv 3, 31, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -293,7 +293,7 @@ declare void @llvm.riscv.sf.vc.vv.se.i32.nxv8i64.nxv8i64.iXLen(i32, i32, <vscale
 define <vscale x 1 x i8> @test_sf_vc_v_vv_se_e8mf8(<vscale x 1 x i8> %vs2, <vscale x 1 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -306,7 +306,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv1i8.i32.nxv1i8.iXLen(i32,
 define <vscale x 2 x i8> @test_sf_vc_v_vv_se_e8mf4(<vscale x 2 x i8> %vs2, <vscale x 2 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -319,7 +319,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv2i8.i32.nxv2i8.iXLen(i32,
 define <vscale x 4 x i8> @test_sf_vc_v_vv_se_e8mf2(<vscale x 4 x i8> %vs2, <vscale x 4 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -332,7 +332,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv4i8.i32.nxv4i8.iXLen(i32,
 define <vscale x 8 x i8> @test_sf_vc_v_vv_se_e8m1(<vscale x 8 x i8> %vs2, <vscale x 8 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -345,7 +345,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv8i8.i32.nxv8i8.iXLen(i32,
 define <vscale x 16 x i8> @test_sf_vc_v_vv_se_e8m2(<vscale x 16 x i8> %vs2, <vscale x 16 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -358,7 +358,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv16i8.i32.nxv16i8.iXLen(i
 define <vscale x 32 x i8> @test_sf_vc_v_vv_se_e8m4(<vscale x 32 x i8> %vs2, <vscale x 32 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -371,7 +371,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv32i8.i32.nxv32i8.iXLen(i
 define <vscale x 64 x i8> @test_sf_vc_v_vv_se_e8m8(<vscale x 64 x i8> %vs2, <vscale x 64 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -384,7 +384,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.vv.se.nxv64i8.i32.nxv64i8.iXLen(i
 define <vscale x 1 x i16> @test_sf_vc_v_vv_se_e16mf4(<vscale x 1 x i16> %vs2, <vscale x 1 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -397,7 +397,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv1i16.i32.nxv1i16.iXLen(i
 define <vscale x 2 x i16> @test_sf_vc_v_vv_se_e16mf2(<vscale x 2 x i16> %vs2, <vscale x 2 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -410,7 +410,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv2i16.i32.nxv2i16.iXLen(i
 define <vscale x 4 x i16> @test_sf_vc_v_vv_se_e16m1(<vscale x 4 x i16> %vs2, <vscale x 4 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -423,7 +423,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv4i16.i32.nxv4i16.iXLen(i
 define <vscale x 8 x i16> @test_sf_vc_v_vv_se_e16m2(<vscale x 8 x i16> %vs2, <vscale x 8 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -436,7 +436,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv8i16.i32.nxv8i16.iXLen(i
 define <vscale x 16 x i16> @test_sf_vc_v_vv_se_e16m4(<vscale x 16 x i16> %vs2, <vscale x 16 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -449,7 +449,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv16i16.i32.nxv16i16.iXLe
 define <vscale x 32 x i16> @test_sf_vc_v_vv_se_e16m8(<vscale x 32 x i16> %vs2, <vscale x 32 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -462,7 +462,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.vv.se.nxv32i16.i32.nxv32i16.iXLe
 define <vscale x 1 x i32> @test_sf_vc_v_vv_se_e32mf2(<vscale x 1 x i32> %vs2, <vscale x 1 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -475,7 +475,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.vv.se.nxv1i32.i32.nxv1i32.iXLen(i
 define <vscale x 2 x i32> @test_sf_vc_v_vv_se_e32m1(<vscale x 2 x i32> %vs2, <vscale x 2 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -488,7 +488,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.vv.se.nxv2i32.i32.nxv2i32.iXLen(i
 define <vscale x 4 x i32> @test_sf_vc_v_vv_se_e32m2(<vscale x 4 x i32> %vs2, <vscale x 4 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -501,7 +501,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.vv.se.nxv4i32.i32.nxv4i32.iXLen(i
 define <vscale x 8 x i32> @test_sf_vc_v_vv_se_e32m4(<vscale x 8 x i32> %vs2, <vscale x 8 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -514,7 +514,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.vv.se.nxv8i32.i32.nxv8i32.iXLen(i
 define <vscale x 16 x i32> @test_sf_vc_v_vv_se_e32m8(<vscale x 16 x i32> %vs2, <vscale x 16 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -527,7 +527,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.vv.se.nxv16i32.i32.nxv16i32.iXLe
 define <vscale x 1 x i64> @test_sf_vc_v_vv_se_e64m1(<vscale x 1 x i64> %vs2, <vscale x 1 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -540,7 +540,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.vv.se.nxv1i64.i32.nxv1i64.iXLen(i
 define <vscale x 2 x i64> @test_sf_vc_v_vv_se_e64m2(<vscale x 2 x i64> %vs2, <vscale x 2 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -553,7 +553,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.vv.se.nxv2i64.i32.nxv2i64.iXLen(i
 define <vscale x 4 x i64> @test_sf_vc_v_vv_se_e64m4(<vscale x 4 x i64> %vs2, <vscale x 4 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -566,7 +566,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.vv.se.nxv4i64.i32.nxv4i64.iXLen(i
 define <vscale x 8 x i64> @test_sf_vc_v_vv_se_e64m8(<vscale x 8 x i64> %vs2, <vscale x 8 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -579,7 +579,7 @@ declare <vscale x 8 x i64> @llvm.riscv.sf.vc.v.vv.se.nxv8i64.i32.nxv8i64.iXLen(i
 define <vscale x 1 x i8> @test_sf_vc_v_vv_e8mf8(<vscale x 1 x i8> %vs2, <vscale x 1 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -592,7 +592,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.vv.nxv1i8.i32.nxv1i8.iXLen(i32, <v
 define <vscale x 2 x i8> @test_sf_vc_v_vv_e8mf4(<vscale x 2 x i8> %vs2, <vscale x 2 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -605,7 +605,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.vv.nxv2i8.i32.nxv2i8.iXLen(i32, <v
 define <vscale x 4 x i8> @test_sf_vc_v_vv_e8mf2(<vscale x 4 x i8> %vs2, <vscale x 4 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -618,7 +618,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.vv.nxv4i8.i32.nxv4i8.iXLen(i32, <v
 define <vscale x 8 x i8> @test_sf_vc_v_vv_e8m1(<vscale x 8 x i8> %vs2, <vscale x 8 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -631,7 +631,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.vv.nxv8i8.i32.nxv8i8.iXLen(i32, <v
 define <vscale x 16 x i8> @test_sf_vc_v_vv_e8m2(<vscale x 16 x i8> %vs2, <vscale x 16 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -644,7 +644,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.vv.nxv16i8.i32.nxv16i8.iXLen(i32,
 define <vscale x 32 x i8> @test_sf_vc_v_vv_e8m4(<vscale x 32 x i8> %vs2, <vscale x 32 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -657,7 +657,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.vv.nxv32i8.i32.nxv32i8.iXLen(i32,
 define <vscale x 64 x i8> @test_sf_vc_v_vv_e8m8(<vscale x 64 x i8> %vs2, <vscale x 64 x i8> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -670,7 +670,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.vv.nxv64i8.i32.nxv64i8.iXLen(i32,
 define <vscale x 1 x i16> @test_sf_vc_v_vv_e16mf4(<vscale x 1 x i16> %vs2, <vscale x 1 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -683,7 +683,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.vv.nxv1i16.i32.nxv1i16.iXLen(i32,
 define <vscale x 2 x i16> @test_sf_vc_v_vv_e16mf2(<vscale x 2 x i16> %vs2, <vscale x 2 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -696,7 +696,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.vv.nxv2i16.i32.nxv2i16.iXLen(i32,
 define <vscale x 4 x i16> @test_sf_vc_v_vv_e16m1(<vscale x 4 x i16> %vs2, <vscale x 4 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -709,7 +709,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.vv.nxv4i16.i32.nxv4i16.iXLen(i32,
 define <vscale x 8 x i16> @test_sf_vc_v_vv_e16m2(<vscale x 8 x i16> %vs2, <vscale x 8 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -722,7 +722,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.vv.nxv8i16.i32.nxv8i16.iXLen(i32,
 define <vscale x 16 x i16> @test_sf_vc_v_vv_e16m4(<vscale x 16 x i16> %vs2, <vscale x 16 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -735,7 +735,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.vv.nxv16i16.i32.nxv16i16.iXLen(i
 define <vscale x 32 x i16> @test_sf_vc_v_vv_e16m8(<vscale x 32 x i16> %vs2, <vscale x 32 x i16> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -748,7 +748,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.vv.nxv32i16.i32.nxv32i16.iXLen(i
 define <vscale x 1 x i32> @test_sf_vc_v_vv_e32mf2(<vscale x 1 x i32> %vs2, <vscale x 1 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -761,7 +761,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.vv.nxv1i32.i32.nxv1i32.iXLen(i32,
 define <vscale x 2 x i32> @test_sf_vc_v_vv_e32m1(<vscale x 2 x i32> %vs2, <vscale x 2 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -774,7 +774,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.vv.nxv2i32.i32.nxv2i32.iXLen(i32,
 define <vscale x 4 x i32> @test_sf_vc_v_vv_e32m2(<vscale x 4 x i32> %vs2, <vscale x 4 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -787,7 +787,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.vv.nxv4i32.i32.nxv4i32.iXLen(i32,
 define <vscale x 8 x i32> @test_sf_vc_v_vv_e32m4(<vscale x 8 x i32> %vs2, <vscale x 8 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -800,7 +800,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.vv.nxv8i32.i32.nxv8i32.iXLen(i32,
 define <vscale x 16 x i32> @test_sf_vc_v_vv_e32m8(<vscale x 16 x i32> %vs2, <vscale x 16 x i32> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -813,7 +813,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.vv.nxv16i32.i32.nxv16i32.iXLen(i
 define <vscale x 1 x i64> @test_sf_vc_v_vv_e64m1(<vscale x 1 x i64> %vs2, <vscale x 1 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
@@ -826,7 +826,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.vv.nxv1i64.i32.nxv1i64.iXLen(i32,
 define <vscale x 2 x i64> @test_sf_vc_v_vv_e64m2(<vscale x 2 x i64> %vs2, <vscale x 2 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v10
 ; CHECK-NEXT:    ret
 entry:
@@ -839,7 +839,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.vv.nxv2i64.i32.nxv2i64.iXLen(i32,
 define <vscale x 4 x i64> @test_sf_vc_v_vv_e64m4(<vscale x 4 x i64> %vs2, <vscale x 4 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -852,7 +852,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.vv.nxv4i64.i32.nxv4i64.iXLen(i32,
 define <vscale x 8 x i64> @test_sf_vc_v_vv_e64m8(<vscale x 8 x i64> %vs2, <vscale x 8 x i64> %vs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_vv_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.vv 3, v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -865,7 +865,7 @@ declare <vscale x 8 x i64> @llvm.riscv.sf.vc.v.vv.nxv8i64.i32.nxv8i64.iXLen(i32,
 define void @test_sf_vc_xv_se_e8mf8(<vscale x 1 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -878,7 +878,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv1i8.i8.iXLen(i32, i32, <vscale x 1 x
 define void @test_sf_vc_xv_se_e8mf4(<vscale x 2 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -891,7 +891,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv2i8.i8.iXLen(i32, i32, <vscale x 2 x
 define void @test_sf_vc_xv_se_e8mf2(<vscale x 4 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -904,7 +904,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv4i8.i8.iXLen(i32, i32, <vscale x 4 x
 define void @test_sf_vc_xv_se_e8m1(<vscale x 8 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -917,7 +917,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv8i8.i8.iXLen(i32, i32, <vscale x 8 x
 define void @test_sf_vc_xv_se_e8m2(<vscale x 16 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -930,7 +930,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv16i8.i8.iXLen(i32, i32, <vscale x 16
 define void @test_sf_vc_xv_se_e8m4(<vscale x 32 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -943,7 +943,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv32i8.i8.iXLen(i32, i32, <vscale x 32
 define void @test_sf_vc_xv_se_e8m8(<vscale x 64 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -956,7 +956,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv64i8.i8.iXLen(i32, i32, <vscale x 64
 define void @test_sf_vc_xv_se_e16mf4(<vscale x 1 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -969,7 +969,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv1i16.i16.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_xv_se_e16mf2(<vscale x 2 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -982,7 +982,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv2i16.i16.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_xv_se_e16m1(<vscale x 4 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -995,7 +995,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv4i16.i16.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_xv_se_e16m2(<vscale x 8 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1008,7 +1008,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv8i16.i16.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_xv_se_e16m4(<vscale x 16 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1021,7 +1021,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv16i16.i16.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_xv_se_e16m8(<vscale x 32 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1034,7 +1034,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv32i16.i16.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_xv_se_e32mf2(<vscale x 1 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1047,7 +1047,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv1i32.i32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_xv_se_e32m1(<vscale x 2 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1060,7 +1060,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv2i32.i32.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_xv_se_e32m2(<vscale x 4 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1073,7 +1073,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv4i32.i32.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_xv_se_e32m4(<vscale x 8 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1086,7 +1086,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv8i32.i32.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_xv_se_e32m8(<vscale x 16 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_xv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.xv 3, 31, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1099,7 +1099,7 @@ declare void @llvm.riscv.sf.vc.xv.se.i32.nxv16i32.i32.iXLen(i32, i32, <vscale x 
 define <vscale x 1 x i8> @test_sf_vc_v_xv_se_e8mf8(<vscale x 1 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1112,7 +1112,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv1i8.i32.i8.iXLen(i32, <vs
 define <vscale x 2 x i8> @test_sf_vc_v_xv_se_e8mf4(<vscale x 2 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1125,7 +1125,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv2i8.i32.i8.iXLen(i32, <vs
 define <vscale x 4 x i8> @test_sf_vc_v_xv_se_e8mf2(<vscale x 4 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1138,7 +1138,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv4i8.i32.i8.iXLen(i32, <vs
 define <vscale x 8 x i8> @test_sf_vc_v_xv_se_e8m1(<vscale x 8 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1151,7 +1151,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv8i8.i32.i8.iXLen(i32, <vs
 define <vscale x 16 x i8> @test_sf_vc_v_xv_se_e8m2(<vscale x 16 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1164,7 +1164,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv16i8.i32.i8.iXLen(i32, <
 define <vscale x 32 x i8> @test_sf_vc_v_xv_se_e8m4(<vscale x 32 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1177,7 +1177,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv32i8.i32.i8.iXLen(i32, <
 define <vscale x 64 x i8> @test_sf_vc_v_xv_se_e8m8(<vscale x 64 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1190,7 +1190,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.xv.se.nxv64i8.i32.i8.iXLen(i32, <
 define <vscale x 1 x i16> @test_sf_vc_v_xv_se_e16mf4(<vscale x 1 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1203,7 +1203,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv1i16.i32.i16.iXLen(i32, 
 define <vscale x 2 x i16> @test_sf_vc_v_xv_se_e16mf2(<vscale x 2 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1216,7 +1216,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv2i16.i32.i16.iXLen(i32, 
 define <vscale x 4 x i16> @test_sf_vc_v_xv_se_e16m1(<vscale x 4 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1229,7 +1229,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv4i16.i32.i16.iXLen(i32, 
 define <vscale x 8 x i16> @test_sf_vc_v_xv_se_e16m2(<vscale x 8 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1242,7 +1242,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv8i16.i32.i16.iXLen(i32, 
 define <vscale x 16 x i16> @test_sf_vc_v_xv_se_e16m4(<vscale x 16 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1255,7 +1255,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv16i16.i32.i16.iXLen(i32
 define <vscale x 32 x i16> @test_sf_vc_v_xv_se_e16m8(<vscale x 32 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1268,7 +1268,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.xv.se.nxv32i16.i32.i16.iXLen(i32
 define <vscale x 1 x i32> @test_sf_vc_v_xv_se_e32mf2(<vscale x 1 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1281,7 +1281,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.xv.se.nxv1i32.i32.i32.iXLen(i32, 
 define <vscale x 2 x i32> @test_sf_vc_v_xv_se_e32m1(<vscale x 2 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1294,7 +1294,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.xv.se.nxv2i32.i32.i32.iXLen(i32, 
 define <vscale x 4 x i32> @test_sf_vc_v_xv_se_e32m2(<vscale x 4 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1307,7 +1307,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.xv.se.nxv4i32.i32.i32.iXLen(i32, 
 define <vscale x 8 x i32> @test_sf_vc_v_xv_se_e32m4(<vscale x 8 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1320,7 +1320,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.xv.se.nxv8i32.i32.i32.iXLen(i32, 
 define <vscale x 16 x i32> @test_sf_vc_v_xv_se_e32m8(<vscale x 16 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1333,7 +1333,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.xv.se.nxv16i32.i32.i32.iXLen(i32
 define <vscale x 1 x i8> @test_sf_vc_v_xv_e8mf8(<vscale x 1 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1346,7 +1346,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.xv.nxv1i8.i32.i8.iXLen(i32, <vscal
 define <vscale x 2 x i8> @test_sf_vc_v_xv_e8mf4(<vscale x 2 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1359,7 +1359,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.xv.nxv2i8.i32.i8.iXLen(i32, <vscal
 define <vscale x 4 x i8> @test_sf_vc_v_xv_e8mf2(<vscale x 4 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1372,7 +1372,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.xv.nxv4i8.i32.i8.iXLen(i32, <vscal
 define <vscale x 8 x i8> @test_sf_vc_v_xv_e8m1(<vscale x 8 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1385,7 +1385,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.xv.nxv8i8.i32.i8.iXLen(i32, <vscal
 define <vscale x 16 x i8> @test_sf_vc_v_xv_e8m2(<vscale x 16 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1398,7 +1398,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.xv.nxv16i8.i32.i8.iXLen(i32, <vsc
 define <vscale x 32 x i8> @test_sf_vc_v_xv_e8m4(<vscale x 32 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1411,7 +1411,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.xv.nxv32i8.i32.i8.iXLen(i32, <vsc
 define <vscale x 64 x i8> @test_sf_vc_v_xv_e8m8(<vscale x 64 x i8> %vs2, i8 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1424,7 +1424,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.xv.nxv64i8.i32.i8.iXLen(i32, <vsc
 define <vscale x 1 x i16> @test_sf_vc_v_xv_e16mf4(<vscale x 1 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1437,7 +1437,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.xv.nxv1i16.i32.i16.iXLen(i32, <vs
 define <vscale x 2 x i16> @test_sf_vc_v_xv_e16mf2(<vscale x 2 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1450,7 +1450,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.xv.nxv2i16.i32.i16.iXLen(i32, <vs
 define <vscale x 4 x i16> @test_sf_vc_v_xv_e16m1(<vscale x 4 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1463,7 +1463,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.xv.nxv4i16.i32.i16.iXLen(i32, <vs
 define <vscale x 8 x i16> @test_sf_vc_v_xv_e16m2(<vscale x 8 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1476,7 +1476,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.xv.nxv8i16.i32.i16.iXLen(i32, <vs
 define <vscale x 16 x i16> @test_sf_vc_v_xv_e16m4(<vscale x 16 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1489,7 +1489,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.xv.nxv16i16.i32.i16.iXLen(i32, <
 define <vscale x 32 x i16> @test_sf_vc_v_xv_e16m8(<vscale x 32 x i16> %vs2, i16 zeroext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1502,7 +1502,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.xv.nxv32i16.i32.i16.iXLen(i32, <
 define <vscale x 1 x i32> @test_sf_vc_v_xv_e32mf2(<vscale x 1 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1515,7 +1515,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.xv.nxv1i32.i32.i32.iXLen(i32, <vs
 define <vscale x 2 x i32> @test_sf_vc_v_xv_e32m1(<vscale x 2 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1528,7 +1528,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.xv.nxv2i32.i32.i32.iXLen(i32, <vs
 define <vscale x 4 x i32> @test_sf_vc_v_xv_e32m2(<vscale x 4 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1541,7 +1541,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.xv.nxv4i32.i32.i32.iXLen(i32, <vs
 define <vscale x 8 x i32> @test_sf_vc_v_xv_e32m4(<vscale x 8 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1554,7 +1554,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.xv.nxv8i32.i32.i32.iXLen(i32, <vs
 define <vscale x 16 x i32> @test_sf_vc_v_xv_e32m8(<vscale x 16 x i32> %vs2, i32 signext %rs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_xv_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.xv 3, v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -1567,7 +1567,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.xv.nxv16i32.i32.i32.iXLen(i32, <
 define void @test_sf_vc_iv_se_e8mf8(<vscale x 1 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1580,7 +1580,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv1i8.i32.iXLen(i32, i32, <vscale x 1 
 define void @test_sf_vc_iv_se_e8mf4(<vscale x 2 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1593,7 +1593,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv2i8.i32.iXLen(i32, i32, <vscale x 2 
 define void @test_sf_vc_iv_se_e8mf2(<vscale x 4 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1606,7 +1606,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv4i8.i32.iXLen(i32, i32, <vscale x 4 
 define void @test_sf_vc_iv_se_e8m1(<vscale x 8 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1619,7 +1619,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv8i8.i32.iXLen(i32, i32, <vscale x 8 
 define void @test_sf_vc_iv_se_e8m2(<vscale x 16 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1632,7 +1632,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv16i8.i32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_iv_se_e8m4(<vscale x 32 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1645,7 +1645,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv32i8.i32.iXLen(i32, i32, <vscale x 3
 define void @test_sf_vc_iv_se_e8m8(<vscale x 64 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1658,7 +1658,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv64i8.i32.iXLen(i32, i32, <vscale x 6
 define void @test_sf_vc_iv_se_e16mf4(<vscale x 1 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1671,7 +1671,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv1i16.i32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_iv_se_e16mf2(<vscale x 2 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1684,7 +1684,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv2i16.i32.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_iv_se_e16m1(<vscale x 4 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1697,7 +1697,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv4i16.i32.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_iv_se_e16m2(<vscale x 8 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1710,7 +1710,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv8i16.i32.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_iv_se_e16m4(<vscale x 16 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1723,7 +1723,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv16i16.i32.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_iv_se_e16m8(<vscale x 32 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1736,7 +1736,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv32i16.i32.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_iv_se_e32mf2(<vscale x 1 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1749,7 +1749,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv1i32.i32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_iv_se_e32m1(<vscale x 2 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1762,7 +1762,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv2i32.i32.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_iv_se_e32m2(<vscale x 4 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1775,7 +1775,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv4i32.i32.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_iv_se_e32m4(<vscale x 8 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1788,7 +1788,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv8i32.i32.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_iv_se_e32m8(<vscale x 16 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1801,7 +1801,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv16i32.i32.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_iv_se_e64m1(<vscale x 1 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1814,7 +1814,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv1i64.i32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_iv_se_e64m2(<vscale x 2 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1827,7 +1827,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv2i64.i32.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_iv_se_e64m4(<vscale x 4 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1840,7 +1840,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv4i64.i32.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_iv_se_e64m8(<vscale x 8 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_iv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.iv 3, 31, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1853,7 +1853,7 @@ declare void @llvm.riscv.sf.vc.iv.se.i32.nxv8i64.i32.iXLen(i32, i32, <vscale x 8
 define <vscale x 1 x i8> @test_sf_vc_v_iv_se_e8mf8(<vscale x 1 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1866,7 +1866,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv1i8.i32.i32.iXLen(i32, <v
 define <vscale x 2 x i8> @test_sf_vc_v_iv_se_e8mf4(<vscale x 2 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1879,7 +1879,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv2i8.i32.i32.iXLen(i32, <v
 define <vscale x 4 x i8> @test_sf_vc_v_iv_se_e8mf2(<vscale x 4 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1892,7 +1892,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv4i8.i32.i32.iXLen(i32, <v
 define <vscale x 8 x i8> @test_sf_vc_v_iv_se_e8m1(<vscale x 8 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1905,7 +1905,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv8i8.i32.i32.iXLen(i32, <v
 define <vscale x 16 x i8> @test_sf_vc_v_iv_se_e8m2(<vscale x 16 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1918,7 +1918,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv16i8.i32.i32.iXLen(i32, 
 define <vscale x 32 x i8> @test_sf_vc_v_iv_se_e8m4(<vscale x 32 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1931,7 +1931,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv32i8.i32.i32.iXLen(i32, 
 define <vscale x 64 x i8> @test_sf_vc_v_iv_se_e8m8(<vscale x 64 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1944,7 +1944,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.iv.se.nxv64i8.i32.i32.iXLen(i32, 
 define <vscale x 1 x i16> @test_sf_vc_v_iv_se_e16mf4(<vscale x 1 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1957,7 +1957,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv1i16.i32.i32.iXLen(i32, 
 define <vscale x 2 x i16> @test_sf_vc_v_iv_se_e16mf2(<vscale x 2 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1970,7 +1970,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv2i16.i32.i32.iXLen(i32, 
 define <vscale x 4 x i16> @test_sf_vc_v_iv_se_e16m1(<vscale x 4 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1983,7 +1983,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv4i16.i32.i32.iXLen(i32, 
 define <vscale x 8 x i16> @test_sf_vc_v_iv_se_e16m2(<vscale x 8 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -1996,7 +1996,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv8i16.i32.i32.iXLen(i32, 
 define <vscale x 16 x i16> @test_sf_vc_v_iv_se_e16m4(<vscale x 16 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2009,7 +2009,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv16i16.i32.i32.iXLen(i32
 define <vscale x 32 x i16> @test_sf_vc_v_iv_se_e16m8(<vscale x 32 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2022,7 +2022,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.iv.se.nxv32i16.i32.i32.iXLen(i32
 define <vscale x 1 x i32> @test_sf_vc_v_iv_se_e32mf2(<vscale x 1 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2035,7 +2035,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.iv.se.nxv1i32.i32.i32.iXLen(i32, 
 define <vscale x 2 x i32> @test_sf_vc_v_iv_se_e32m1(<vscale x 2 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2048,7 +2048,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.iv.se.nxv2i32.i32.i32.iXLen(i32, 
 define <vscale x 4 x i32> @test_sf_vc_v_iv_se_e32m2(<vscale x 4 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2061,7 +2061,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.iv.se.nxv4i32.i32.i32.iXLen(i32, 
 define <vscale x 8 x i32> @test_sf_vc_v_iv_se_e32m4(<vscale x 8 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2074,7 +2074,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.iv.se.nxv8i32.i32.i32.iXLen(i32, 
 define <vscale x 16 x i32> @test_sf_vc_v_iv_se_e32m8(<vscale x 16 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2087,7 +2087,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.iv.se.nxv16i32.i32.i32.iXLen(i32
 define <vscale x 1 x i64> @test_sf_vc_v_iv_se_e64m1(<vscale x 1 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2100,7 +2100,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.iv.se.nxv1i64.i32.i32.iXLen(i32, 
 define <vscale x 2 x i64> @test_sf_vc_v_iv_se_e64m2(<vscale x 2 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2113,7 +2113,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.iv.se.nxv2i64.i32.i32.iXLen(i32, 
 define <vscale x 4 x i64> @test_sf_vc_v_iv_se_e64m4(<vscale x 4 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2126,7 +2126,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.iv.se.nxv4i64.i32.i32.iXLen(i32, 
 define <vscale x 8 x i64> @test_sf_vc_v_iv_se_e64m8(<vscale x 8 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2139,7 +2139,7 @@ declare <vscale x 8 x i64> @llvm.riscv.sf.vc.v.iv.se.nxv8i64.i32.i32.iXLen(i32, 
 define <vscale x 1 x i8> @test_sf_vc_v_iv_e8mf8(<vscale x 1 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8mf8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2152,7 +2152,7 @@ declare <vscale x 1 x i8> @llvm.riscv.sf.vc.v.iv.nxv1i8.i32.i32.iXLen(i32, <vsca
 define <vscale x 2 x i8> @test_sf_vc_v_iv_e8mf4(<vscale x 2 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2165,7 +2165,7 @@ declare <vscale x 2 x i8> @llvm.riscv.sf.vc.v.iv.nxv2i8.i32.i32.iXLen(i32, <vsca
 define <vscale x 4 x i8> @test_sf_vc_v_iv_e8mf2(<vscale x 4 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2178,7 +2178,7 @@ declare <vscale x 4 x i8> @llvm.riscv.sf.vc.v.iv.nxv4i8.i32.i32.iXLen(i32, <vsca
 define <vscale x 8 x i8> @test_sf_vc_v_iv_e8m1(<vscale x 8 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2191,7 +2191,7 @@ declare <vscale x 8 x i8> @llvm.riscv.sf.vc.v.iv.nxv8i8.i32.i32.iXLen(i32, <vsca
 define <vscale x 16 x i8> @test_sf_vc_v_iv_e8m2(<vscale x 16 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2204,7 +2204,7 @@ declare <vscale x 16 x i8> @llvm.riscv.sf.vc.v.iv.nxv16i8.i32.i32.iXLen(i32, <vs
 define <vscale x 32 x i8> @test_sf_vc_v_iv_e8m4(<vscale x 32 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2217,7 +2217,7 @@ declare <vscale x 32 x i8> @llvm.riscv.sf.vc.v.iv.nxv32i8.i32.i32.iXLen(i32, <vs
 define <vscale x 64 x i8> @test_sf_vc_v_iv_e8m8(<vscale x 64 x i8> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e8m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2230,7 +2230,7 @@ declare <vscale x 64 x i8> @llvm.riscv.sf.vc.v.iv.nxv64i8.i32.i32.iXLen(i32, <vs
 define <vscale x 1 x i16> @test_sf_vc_v_iv_e16mf4(<vscale x 1 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2243,7 +2243,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.iv.nxv1i16.i32.i32.iXLen(i32, <vs
 define <vscale x 2 x i16> @test_sf_vc_v_iv_e16mf2(<vscale x 2 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2256,7 +2256,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.iv.nxv2i16.i32.i32.iXLen(i32, <vs
 define <vscale x 4 x i16> @test_sf_vc_v_iv_e16m1(<vscale x 4 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2269,7 +2269,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.iv.nxv4i16.i32.i32.iXLen(i32, <vs
 define <vscale x 8 x i16> @test_sf_vc_v_iv_e16m2(<vscale x 8 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2282,7 +2282,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.iv.nxv8i16.i32.i32.iXLen(i32, <vs
 define <vscale x 16 x i16> @test_sf_vc_v_iv_e16m4(<vscale x 16 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2295,7 +2295,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.iv.nxv16i16.i32.i32.iXLen(i32, <
 define <vscale x 32 x i16> @test_sf_vc_v_iv_e16m8(<vscale x 32 x i16> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2308,7 +2308,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.iv.nxv32i16.i32.i32.iXLen(i32, <
 define <vscale x 1 x i32> @test_sf_vc_v_iv_e32mf2(<vscale x 1 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2321,7 +2321,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.iv.nxv1i32.i32.i32.iXLen(i32, <vs
 define <vscale x 2 x i32> @test_sf_vc_v_iv_e32m1(<vscale x 2 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2334,7 +2334,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.iv.nxv2i32.i32.i32.iXLen(i32, <vs
 define <vscale x 4 x i32> @test_sf_vc_v_iv_e32m2(<vscale x 4 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2347,7 +2347,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.iv.nxv4i32.i32.i32.iXLen(i32, <vs
 define <vscale x 8 x i32> @test_sf_vc_v_iv_e32m4(<vscale x 8 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2360,7 +2360,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.iv.nxv8i32.i32.i32.iXLen(i32, <vs
 define <vscale x 16 x i32> @test_sf_vc_v_iv_e32m8(<vscale x 16 x i32> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2373,7 +2373,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.iv.nxv16i32.i32.i32.iXLen(i32, <
 define <vscale x 1 x i64> @test_sf_vc_v_iv_e64m1(<vscale x 1 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2386,7 +2386,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.iv.nxv1i64.i32.i32.iXLen(i32, <vs
 define <vscale x 2 x i64> @test_sf_vc_v_iv_e64m2(<vscale x 2 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2399,7 +2399,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.iv.nxv2i64.i32.i32.iXLen(i32, <vs
 define <vscale x 4 x i64> @test_sf_vc_v_iv_e64m4(<vscale x 4 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2412,7 +2412,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.iv.nxv4i64.i32.i32.iXLen(i32, <vs
 define <vscale x 8 x i64> @test_sf_vc_v_iv_e64m8(<vscale x 8 x i64> %vs2, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_iv_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.iv 3, v8, v8, 10
 ; CHECK-NEXT:    ret
 entry:
@@ -2425,7 +2425,7 @@ declare <vscale x 8 x i64> @llvm.riscv.sf.vc.v.iv.nxv8i64.i32.i32.iXLen(i32, <vs
 define void @test_sf_vc_fv_se_e16mf4(<vscale x 1 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2438,7 +2438,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv1i16.f16.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_fv_se_e16mf2(<vscale x 2 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2451,7 +2451,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv2i16.f16.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_fv_se_e16m1(<vscale x 4 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2464,7 +2464,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv4i16.f16.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_fv_se_e16m2(<vscale x 8 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2477,7 +2477,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv8i16.f16.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_fv_se_e16m4(<vscale x 16 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2490,7 +2490,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv16i16.f16.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_fv_se_e16m8(<vscale x 32 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2503,7 +2503,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv32i16.f16.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_fv_se_e32mf2(<vscale x 1 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2516,7 +2516,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv1i32.f32.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_fv_se_e32m1(<vscale x 2 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2529,7 +2529,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv2i32.f32.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_fv_se_e32m2(<vscale x 4 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2542,7 +2542,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv4i32.f32.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_fv_se_e32m4(<vscale x 8 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2555,7 +2555,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv8i32.f32.iXLen(i32, i32, <vscale x 8
 define void @test_sf_vc_fv_se_e32m8(<vscale x 16 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2568,7 +2568,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv16i32.f32.iXLen(i32, i32, <vscale x 
 define void @test_sf_vc_fv_se_e64m1(<vscale x 1 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2581,7 +2581,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv1i64.f64.iXLen(i32, i32, <vscale x 1
 define void @test_sf_vc_fv_se_e64m2(<vscale x 2 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2594,7 +2594,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv2i64.f64.iXLen(i32, i32, <vscale x 2
 define void @test_sf_vc_fv_se_e64m4(<vscale x 4 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2607,7 +2607,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv4i64.f64.iXLen(i32, i32, <vscale x 4
 define void @test_sf_vc_fv_se_e64m8(<vscale x 8 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_fv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.fv 1, 31, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2620,7 +2620,7 @@ declare void @llvm.riscv.sf.vc.fv.se.i32.nxv8i64.f64.iXLen(i32, i32, <vscale x 8
 define <vscale x 1 x i16> @test_sf_vc_v_fv_se_e16mf4(<vscale x 1 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2633,7 +2633,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv1i16.i32.f16.iXLen(i32, 
 define <vscale x 2 x i16> @test_sf_vc_v_fv_se_e16mf2(<vscale x 2 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2646,7 +2646,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv2i16.i32.f16.iXLen(i32, 
 define <vscale x 4 x i16> @test_sf_vc_v_fv_se_e16m1(<vscale x 4 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2659,7 +2659,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv4i16.i32.f16.iXLen(i32, 
 define <vscale x 8 x i16> @test_sf_vc_v_fv_se_e16m2(<vscale x 8 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2672,7 +2672,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv8i16.i32.f16.iXLen(i32, 
 define <vscale x 16 x i16> @test_sf_vc_v_fv_se_e16m4(<vscale x 16 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2685,7 +2685,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv16i16.i32.f16.iXLen(i32
 define <vscale x 32 x i16> @test_sf_vc_v_fv_se_e16m8(<vscale x 32 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2698,7 +2698,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.fv.se.nxv32i16.i32.f16.iXLen(i32
 define <vscale x 1 x i32> @test_sf_vc_v_fv_se_e32mf2(<vscale x 1 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2711,7 +2711,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.fv.se.nxv1i32.i32.f32.iXLen(i32, 
 define <vscale x 2 x i32> @test_sf_vc_v_fv_se_e32m1(<vscale x 2 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2724,7 +2724,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.fv.se.nxv2i32.i32.f32.iXLen(i32, 
 define <vscale x 4 x i32> @test_sf_vc_v_fv_se_e32m2(<vscale x 4 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2737,7 +2737,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.fv.se.nxv4i32.i32.f32.iXLen(i32, 
 define <vscale x 8 x i32> @test_sf_vc_v_fv_se_e32m4(<vscale x 8 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2750,7 +2750,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.fv.se.nxv8i32.i32.f32.iXLen(i32, 
 define <vscale x 16 x i32> @test_sf_vc_v_fv_se_e32m8(<vscale x 16 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2763,7 +2763,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.fv.se.nxv16i32.i32.f32.iXLen(i32
 define <vscale x 1 x i64> @test_sf_vc_v_fv_se_e64m1(<vscale x 1 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2776,7 +2776,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.fv.se.nxv1i64.i32.f64.iXLen(i32, 
 define <vscale x 2 x i64> @test_sf_vc_v_fv_se_e64m2(<vscale x 2 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2789,7 +2789,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.fv.se.nxv2i64.i32.f64.iXLen(i32, 
 define <vscale x 4 x i64> @test_sf_vc_v_fv_se_e64m4(<vscale x 4 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2802,7 +2802,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.fv.se.nxv4i64.i32.f64.iXLen(i32, 
 define <vscale x 8 x i64> @test_sf_vc_v_fv_se_e64m8(<vscale x 8 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_se_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2815,7 +2815,7 @@ declare <vscale x 8 x i64> @llvm.riscv.sf.vc.v.fv.se.nxv8i64.i32.f64.iXLen(i32, 
 define <vscale x 1 x i16> @test_sf_vc_v_fv_e16mf4(<vscale x 1 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2828,7 +2828,7 @@ declare <vscale x 1 x i16> @llvm.riscv.sf.vc.v.fv.nxv1i16.i32.f16.iXLen(i32, <vs
 define <vscale x 2 x i16> @test_sf_vc_v_fv_e16mf2(<vscale x 2 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2841,7 +2841,7 @@ declare <vscale x 2 x i16> @llvm.riscv.sf.vc.v.fv.nxv2i16.i32.f16.iXLen(i32, <vs
 define <vscale x 4 x i16> @test_sf_vc_v_fv_e16m1(<vscale x 4 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2854,7 +2854,7 @@ declare <vscale x 4 x i16> @llvm.riscv.sf.vc.v.fv.nxv4i16.i32.f16.iXLen(i32, <vs
 define <vscale x 8 x i16> @test_sf_vc_v_fv_e16m2(<vscale x 8 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2867,7 +2867,7 @@ declare <vscale x 8 x i16> @llvm.riscv.sf.vc.v.fv.nxv8i16.i32.f16.iXLen(i32, <vs
 define <vscale x 16 x i16> @test_sf_vc_v_fv_e16m4(<vscale x 16 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2880,7 +2880,7 @@ declare <vscale x 16 x i16> @llvm.riscv.sf.vc.v.fv.nxv16i16.i32.f16.iXLen(i32, <
 define <vscale x 32 x i16> @test_sf_vc_v_fv_e16m8(<vscale x 32 x i16> %vs2, half %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e16m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2893,7 +2893,7 @@ declare <vscale x 32 x i16> @llvm.riscv.sf.vc.v.fv.nxv32i16.i32.f16.iXLen(i32, <
 define <vscale x 1 x i32> @test_sf_vc_v_fv_e32mf2(<vscale x 1 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e32mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2906,7 +2906,7 @@ declare <vscale x 1 x i32> @llvm.riscv.sf.vc.v.fv.nxv1i32.i32.f32.iXLen(i32, <vs
 define <vscale x 2 x i32> @test_sf_vc_v_fv_e32m1(<vscale x 2 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e32m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2919,7 +2919,7 @@ declare <vscale x 2 x i32> @llvm.riscv.sf.vc.v.fv.nxv2i32.i32.f32.iXLen(i32, <vs
 define <vscale x 4 x i32> @test_sf_vc_v_fv_e32m2(<vscale x 4 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e32m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2932,7 +2932,7 @@ declare <vscale x 4 x i32> @llvm.riscv.sf.vc.v.fv.nxv4i32.i32.f32.iXLen(i32, <vs
 define <vscale x 8 x i32> @test_sf_vc_v_fv_e32m4(<vscale x 8 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e32m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2945,7 +2945,7 @@ declare <vscale x 8 x i32> @llvm.riscv.sf.vc.v.fv.nxv8i32.i32.f32.iXLen(i32, <vs
 define <vscale x 16 x i32> @test_sf_vc_v_fv_e32m8(<vscale x 16 x i32> %vs2, float %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e32m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2958,7 +2958,7 @@ declare <vscale x 16 x i32> @llvm.riscv.sf.vc.v.fv.nxv16i32.i32.f32.iXLen(i32, <
 define <vscale x 1 x i64> @test_sf_vc_v_fv_e64m1(<vscale x 1 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e64m1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2971,7 +2971,7 @@ declare <vscale x 1 x i64> @llvm.riscv.sf.vc.v.fv.nxv1i64.i32.f64.iXLen(i32, <vs
 define <vscale x 2 x i64> @test_sf_vc_v_fv_e64m2(<vscale x 2 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e64m2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2984,7 +2984,7 @@ declare <vscale x 2 x i64> @llvm.riscv.sf.vc.v.fv.nxv2i64.i32.f64.iXLen(i32, <vs
 define <vscale x 4 x i64> @test_sf_vc_v_fv_e64m4(<vscale x 4 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e64m4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:
@@ -2997,7 +2997,7 @@ declare <vscale x 4 x i64> @llvm.riscv.sf.vc.v.fv.nxv4i64.i32.f64.iXLen(i32, <vs
 define <vscale x 8 x i64> @test_sf_vc_v_fv_e64m8(<vscale x 8 x i64> %vs2, double %fs1, iXLen %vl) {
 ; CHECK-LABEL: test_sf_vc_v_fv_e64m8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    sf.vc.v.fv 1, v8, v8, fa0
 ; CHECK-NEXT:    ret
 entry:

@@ -15,7 +15,7 @@ declare <8 x double> @llvm.sqrt.v8f64(<8 x double>) #0
 define <2 x half> @sqrt_v2f16(<2 x half> %a) #0 {
 ; CHECK-LABEL: sqrt_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
@@ -39,7 +39,7 @@ define <2 x half> @sqrt_v2f16(<2 x half> %a) #0 {
 define <4 x half> @sqrt_v4f16(<4 x half> %a) #0 {
 ; CHECK-LABEL: sqrt_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_1)
@@ -63,7 +63,7 @@ define <4 x half> @sqrt_v4f16(<4 x half> %a) #0 {
 define <8 x half> @sqrt_v8f16(<8 x half> %a) #0 {
 ; CHECK-LABEL: sqrt_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_1)
@@ -87,7 +87,7 @@ define <8 x half> @sqrt_v8f16(<8 x half> %a) #0 {
 define <2 x float> @sqrt_v2f32(<2 x float> %a) #0 {
 ; CHECK-LABEL: sqrt_v2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -115,7 +115,7 @@ define <2 x float> @sqrt_v2f32(<2 x float> %a) #0 {
 define <4 x float> @sqrt_v4f32(<4 x float> %a) #0 {
 ; CHECK-LABEL: sqrt_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI4_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -143,7 +143,7 @@ define <4 x float> @sqrt_v4f32(<4 x float> %a) #0 {
 define <8 x float> @sqrt_v8f32(<8 x float> %a) #0 {
 ; CHECK-LABEL: sqrt_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
 ; CHECK-NEXT:    vlse32.v v10, (a0), zero
@@ -171,7 +171,7 @@ define <8 x float> @sqrt_v8f32(<8 x float> %a) #0 {
 define <2 x double> @sqrt_v2f64(<2 x double> %a) #0 {
 ; CHECK-LABEL: sqrt_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI6_0)
 ; CHECK-NEXT:    vlse64.v v9, (a0), zero
@@ -203,7 +203,7 @@ define <2 x double> @sqrt_v2f64(<2 x double> %a) #0 {
 define <4 x double> @sqrt_v4f64(<4 x double> %a) #0 {
 ; CHECK-LABEL: sqrt_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI7_0)
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
@@ -235,7 +235,7 @@ define <4 x double> @sqrt_v4f64(<4 x double> %a) #0 {
 define <8 x double> @sqrt_v8f64(<8 x double> %a) #0 {
 ; CHECK-LABEL: sqrt_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI8_0)
 ; CHECK-NEXT:    vlse64.v v12, (a0), zero
@@ -267,7 +267,7 @@ define <8 x double> @sqrt_v8f64(<8 x double> %a) #0 {
 define <2 x half> @rsqrt_v2f16(<2 x half> %a) #0 {
 ; CHECK-LABEL: rsqrt_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI9_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -287,7 +287,7 @@ define <2 x half> @rsqrt_v2f16(<2 x half> %a) #0 {
 define <4 x half> @rsqrt_v4f16(<4 x half> %a) #0 {
 ; CHECK-LABEL: rsqrt_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI10_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -307,7 +307,7 @@ define <4 x half> @rsqrt_v4f16(<4 x half> %a) #0 {
 define <8 x half> @rsqrt_v8f16(<8 x half> %a) #0 {
 ; CHECK-LABEL: rsqrt_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI11_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI11_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -327,7 +327,7 @@ define <8 x half> @rsqrt_v8f16(<8 x half> %a) #0 {
 define <2 x float> @rsqrt_v2f32(<2 x float> %a) #0 {
 ; CHECK-LABEL: rsqrt_v2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI12_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -351,7 +351,7 @@ define <2 x float> @rsqrt_v2f32(<2 x float> %a) #0 {
 define <4 x float> @rsqrt_v4f32(<4 x float> %a) #0 {
 ; CHECK-LABEL: rsqrt_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI13_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI13_0)
 ; CHECK-NEXT:    vlse32.v v9, (a0), zero
@@ -375,7 +375,7 @@ define <4 x float> @rsqrt_v4f32(<4 x float> %a) #0 {
 define <8 x float> @rsqrt_v8f32(<8 x float> %a) #0 {
 ; CHECK-LABEL: rsqrt_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI14_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI14_0)
 ; CHECK-NEXT:    vlse32.v v10, (a0), zero
@@ -399,7 +399,7 @@ define <8 x float> @rsqrt_v8f32(<8 x float> %a) #0 {
 define <2 x double> @rsqrt_v2f64(<2 x double> %a) #0 {
 ; CHECK-LABEL: rsqrt_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI15_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI15_0)
 ; CHECK-NEXT:    vlse64.v v9, (a0), zero
@@ -427,7 +427,7 @@ define <2 x double> @rsqrt_v2f64(<2 x double> %a) #0 {
 define <4 x double> @rsqrt_v4f64(<4 x double> %a) #0 {
 ; CHECK-LABEL: rsqrt_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI16_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI16_0)
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
@@ -455,7 +455,7 @@ define <4 x double> @rsqrt_v4f64(<4 x double> %a) #0 {
 define <8 x double> @rsqrt_v8f64(<8 x double> %a) #0 {
 ; CHECK-LABEL: rsqrt_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI17_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI17_0)
 ; CHECK-NEXT:    vlse64.v v12, (a0), zero
@@ -485,7 +485,7 @@ define <2 x half> @sqrt_zero_steps_v2f16(<2 x half> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI18_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI18_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -501,7 +501,7 @@ define <4 x half> @sqrt_zero_steps_v4f16(<4 x half> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI19_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI19_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -517,7 +517,7 @@ define <8 x half> @sqrt_zero_steps_v8f16(<8 x half> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI20_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI20_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -533,7 +533,7 @@ define <2 x float> @sqrt_zero_steps_v2f32(<2 x float> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI21_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI21_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -549,7 +549,7 @@ define <4 x float> @sqrt_zero_steps_v4f32(<4 x float> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI22_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI22_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -565,7 +565,7 @@ define <8 x float> @sqrt_zero_steps_v8f32(<8 x float> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI23_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI23_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vmflt.vf v0, v10, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
@@ -581,7 +581,7 @@ define <2 x double> @sqrt_zero_steps_v2f64(<2 x double> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI24_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI24_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
@@ -597,7 +597,7 @@ define <4 x double> @sqrt_zero_steps_v4f64(<4 x double> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI25_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI25_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vmflt.vf v0, v10, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
@@ -613,7 +613,7 @@ define <8 x double> @sqrt_zero_steps_v8f64(<8 x double> %a) #1 {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI26_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI26_0)(a0)
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8
 ; CHECK-NEXT:    vmflt.vf v0, v12, ft0
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
@@ -627,7 +627,7 @@ define <8 x double> @sqrt_zero_steps_v8f64(<8 x double> %a) #1 {
 define <2 x half> @rsqrt_zero_steps_v2f16(<2 x half> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <2 x half> @llvm.sqrt.v2f16(<2 x half> %a)
@@ -638,7 +638,7 @@ define <2 x half> @rsqrt_zero_steps_v2f16(<2 x half> %a) #1 {
 define <4 x half> @rsqrt_zero_steps_v4f16(<4 x half> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <4 x half> @llvm.sqrt.v4f16(<4 x half> %a)
@@ -649,7 +649,7 @@ define <4 x half> @rsqrt_zero_steps_v4f16(<4 x half> %a) #1 {
 define <8 x half> @rsqrt_zero_steps_v8f16(<8 x half> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <8 x half> @llvm.sqrt.v8f16(<8 x half> %a)
@@ -660,7 +660,7 @@ define <8 x half> @rsqrt_zero_steps_v8f16(<8 x half> %a) #1 {
 define <2 x float> @rsqrt_zero_steps_v2f32(<2 x float> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <2 x float> @llvm.sqrt.v2f32(<2 x float> %a)
@@ -671,7 +671,7 @@ define <2 x float> @rsqrt_zero_steps_v2f32(<2 x float> %a) #1 {
 define <4 x float> @rsqrt_zero_steps_v4f32(<4 x float> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <4 x float> @llvm.sqrt.v4f32(<4 x float> %a)
@@ -682,7 +682,7 @@ define <4 x float> @rsqrt_zero_steps_v4f32(<4 x float> %a) #1 {
 define <8 x float> @rsqrt_zero_steps_v8f32(<8 x float> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <8 x float> @llvm.sqrt.v8f32(<8 x float> %a)
@@ -693,7 +693,7 @@ define <8 x float> @rsqrt_zero_steps_v8f32(<8 x float> %a) #1 {
 define <2 x double> @rsqrt_zero_steps_v2f64(<2 x double> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <2 x double> @llvm.sqrt.v2f64(<2 x double> %a)
@@ -704,7 +704,7 @@ define <2 x double> @rsqrt_zero_steps_v2f64(<2 x double> %a) #1 {
 define <4 x double> @rsqrt_zero_steps_v4f64(<4 x double> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <4 x double> @llvm.sqrt.v4f64(<4 x double> %a)
@@ -715,7 +715,7 @@ define <4 x double> @rsqrt_zero_steps_v4f64(<4 x double> %a) #1 {
 define <8 x double> @rsqrt_zero_steps_v8f64(<8 x double> %a) #1 {
 ; CHECK-LABEL: rsqrt_zero_steps_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    ret
   %1 = tail call fast <8 x double> @llvm.sqrt.v8f64(<8 x double> %a)

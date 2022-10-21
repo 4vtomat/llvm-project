@@ -8,7 +8,7 @@ define <vscale x 2 x float> @test_reverse_load_combiner(<vscale x 2 x float>* %p
 ; CHECK-NEXT:    add a0, a2, a0
 ; CHECK-NEXT:    addi a0, a0, -4
 ; CHECK-NEXT:    li a2, -4
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vlse32.v v8, (a0), a2
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -22,12 +22,12 @@ define <vscale x 2 x float> @test_reverse_load_combiner(<vscale x 2 x float>* %p
 define <vscale x 2 x float> @test_load_mask_is_vp_reverse(<vscale x 2 x float>* %ptr, i32 zeroext %evl) {
 ; CHECK-LABEL: test_load_mask_is_vp_reverse:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a2, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a2
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vand.vi v8, v8, 1
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    slli a2, a1, 2
@@ -49,7 +49,7 @@ define <vscale x 2 x float> @test_load_mask_is_vp_reverse(<vscale x 2 x float>* 
 define <vscale x 2 x float> @test_load_mask_not_all_one(<vscale x 2 x float>* %ptr, i32 zeroext %evl) {
 ; CHECK-LABEL: test_load_mask_not_all_one:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v9, (a0), v0.t
@@ -70,12 +70,12 @@ define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 
 ; CHECK-LABEL: test_differnet_evl:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a3, 1
-; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v8, a3
 ; CHECK-NEXT:    vmv.v.i v9, 0
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 1
-; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vand.vi v8, v9, 1
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmclr.m v9
