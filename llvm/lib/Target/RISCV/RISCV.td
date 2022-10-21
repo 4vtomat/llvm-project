@@ -965,7 +965,8 @@ def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtD,
                                                       FeatureStdExtC,
                                                       FeatureStdExtZba,
-                                                      FeatureStdExtZbb],
+                                                      FeatureStdExtZbb,
+                                                      FeatureStdExtZbs],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
