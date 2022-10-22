@@ -170,6 +170,11 @@ def main():
       help='Omit the top specified level of content. For example, by default '
            'it omits "module {"')
   parser.add_argument('-i', '--inplace', action='store_true', default=False)
+ 
+  # SIFIVE_CUSTOMIZATION
+  parser.add_argument('-e', '--end_check', action='store_true',
+      default=False, help="Insert EOL at end of every CHECK")
+  # SIFIVE_CUSTOMIZATION
 
   args = parser.parse_args()
 
@@ -249,6 +254,11 @@ def main():
 
       # Process the rest of the input line.
       output_line += process_line(ssa_split[1:], variable_namer)
+
+      # SIFIVE_CUSTOMIZATION
+      if args.end_check:
+          output_line = output_line.rstrip('\n') + "{{$}}\n"
+      # SIFIVE_CUSTOMIZATION
 
     else:
       # Output the first line chunk that does not contain an SSA name for the

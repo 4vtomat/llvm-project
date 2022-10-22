@@ -476,6 +476,30 @@ def FeatureStdExtXsfvcp
 def HasExtXsfvcp : Predicate<"Subtarget->hasExtXsfvcp()">,
                              AssemblerPredicate<(all_of FeatureStdExtXsfvcp),
                              "'Xsfvcp' (SiFive custom vector coprocessor interface instructions)">;
+
+def FeatureStdExtZicclsm
+    : SubtargetFeature<"zicclsm", "HasStdExtZicclsm", "true",
+                       "Zicclsm (Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs.)">;
+
+def FeatureStdExtZiccif
+    : SubtargetFeature<"ziccif", "HasStdExtZiccif", "true",
+                       "Ziccif (Main memory regions with both the cacheability and coherence PMAs must support instruction fetch.)">;
+
+def FeatureStdExtZiccamoa
+    : SubtargetFeature<"ziccamoa", "HasStdExtZiccamoa", "true",
+                       "Ziccamoa (Main memory regions with both the cacheability and coherence PMAs must support AMOArithmetic.)">;
+
+def FeatureStdExtZiccrse
+    : SubtargetFeature<"ziccrse", "HasStdExtZiccrse", "true",
+                       "Ziccrse (Main memory regions with both the cacheability and coherence PMAs must support RsrvEventual.)">;
+
+def FeatureStdExtZa64rs
+    : SubtargetFeature<"za64rs", "HasStdExtZa64rs", "true",
+                       "Za64rs (Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.)">;
+
+def FeatureStdExtZic64b
+    : SubtargetFeature<"zic64b", "HasStdExtZic64b", "true",
+                       "Zic64b (Cache blocks must be 64 bytes in size, naturally aligned in the address space.)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
@@ -674,8 +698,6 @@ def : ProcessorModel<"sifive-8-series", SiFiveP500Model, [],
 def : ProcessorModel<"sifive-p500-series", SiFiveP500Model, [],
                      [TuneSiFiveP500]>;
 
-def : ProcessorModel<"sifive-9-series", SiFiveP600Model, [],
-                     [TuneSiFiveP600]>;
 def : ProcessorModel<"sifive-p600-series", SiFiveP600Model, [],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
@@ -943,7 +965,8 @@ def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtD,
                                                       FeatureStdExtC,
                                                       FeatureStdExtZba,
-                                                      FeatureStdExtZbb],
+                                                      FeatureStdExtZbb,
+                                                      FeatureStdExtZbs],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 

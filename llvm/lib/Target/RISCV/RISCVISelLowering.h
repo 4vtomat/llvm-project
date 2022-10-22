@@ -690,6 +690,9 @@ private:
   SDValue lowerVECTOR_REVERSE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVECTOR_SPLICE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerABS(SDValue Op, SelectionDAG &DAG) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerSHLSAT(SDValue Op, SelectionDAG &DAG, bool IsSigned) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerMaskedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerMaskedStore(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFixedLengthVectorFCOPYSIGNToRVV(SDValue Op,

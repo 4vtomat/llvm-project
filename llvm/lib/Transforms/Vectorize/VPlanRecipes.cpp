@@ -620,6 +620,7 @@ void VPWidenSelectRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 #if SIFIVE_CUSTOMIZATION
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
                                 VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -640,6 +641,7 @@ void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
     DL.print(O);
   }
 }
+#endif
 #endif // SIFIVE_CUSTOMIZATION
 
 void VPWidenSelectRecipe::execute(VPTransformState &State) {

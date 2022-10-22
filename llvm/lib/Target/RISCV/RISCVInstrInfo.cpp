@@ -1359,6 +1359,130 @@ RISCVInstrInfo::isCopyInstrImpl(const MachineInstr &MI) const {
   return None;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE: This has been cherry-picked from upstream.
+void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
+                                           MachineInstr &OldMI2,
+                                           MachineInstr &NewMI1,
+                                           MachineInstr &NewMI2) const {
+  uint16_t IntersectedFlags = OldMI1.getFlags() & OldMI2.getFlags();
+  NewMI1.setFlags(IntersectedFlags);
+  NewMI2.setFlags(IntersectedFlags);
+}
+
+void RISCVInstrInfo::finalizeInsInstrs(
+    MachineInstr &Root, MachineCombinerPattern &P,
+    SmallVectorImpl<MachineInstr *> &InsInstrs) const {
+  int16_t FrmOpIdx =
+      RISCV::getNamedOperandIdx(Root.getOpcode(), RISCV::OpName::frm);
+  if (FrmOpIdx < 0) {
+    assert(all_of(InsInstrs,
+                  [](MachineInstr *MI) {
+                    return RISCV::getNamedOperandIdx(MI->getOpcode(),
+                                                     RISCV::OpName::frm) < 0;
+                  }) &&
+           "New instructions require FRM whereas the old one does not have it");
+    return;
+  }
+
+  const MachineOperand &FRM = Root.getOperand(FrmOpIdx);
+  MachineFunction &MF = *Root.getMF();
+
+  for (auto *NewMI : InsInstrs) {
+    assert(static_cast<unsigned>(RISCV::getNamedOperandIdx(
+               NewMI->getOpcode(), RISCV::OpName::frm)) ==
+               NewMI->getNumOperands() &&
+           "Instruction has unexpected number of operands");
+    MachineInstrBuilder MIB(MF, NewMI);
+    MIB.add(FRM);
+    if (FRM.getImm() == RISCVFPRndMode::DYN)
+      MIB.addUse(RISCV::FRM, RegState::Implicit);
+  }
+}
+
+static bool isFADD(unsigned Opc) {
+  switch (Opc) {
+  default:
+    return false;
+  case RISCV::FADD_H:
+  case RISCV::FADD_S:
+  case RISCV::FADD_D:
+    return true;
+  }
+}
+
+static bool isFMUL(unsigned Opc) {
+  switch (Opc) {
+  default:
+    return false;
+  case RISCV::FMUL_H:
+  case RISCV::FMUL_S:
+  case RISCV::FMUL_D:
+    return true;
+  }
+}
+
+static bool isAssociativeAndCommutativeFPOpcode(unsigned Opc) {
+  return isFADD(Opc) || isFMUL(Opc);
+}
+
+static bool canReassociate(MachineInstr &Root, MachineOperand &MO) {
+  if (!MO.isReg() || !Register::isVirtualRegister(MO.getReg()))
+    return false;
+  MachineRegisterInfo &MRI = Root.getMF()->getRegInfo();
+  MachineInstr *MI = MRI.getVRegDef(MO.getReg());
+  if (!MI || !MRI.hasOneNonDBGUse(MO.getReg()))
+    return false;
+
+  if (MI->getOpcode() != Root.getOpcode())
+    return false;
+
+  if (!Root.getFlag(MachineInstr::MIFlag::FmReassoc) ||
+      !Root.getFlag(MachineInstr::MIFlag::FmNsz) ||
+      !MI->getFlag(MachineInstr::MIFlag::FmReassoc) ||
+      !MI->getFlag(MachineInstr::MIFlag::FmNsz))
+    return false;
+
+  return RISCV::hasEqualFRM(Root, *MI);
+}
+
+static bool
+getFPReassocPatterns(MachineInstr &Root,
+                     SmallVectorImpl<MachineCombinerPattern> &Patterns) {
+  bool Added = false;
+  if (canReassociate(Root, Root.getOperand(1))) {
+    Patterns.push_back(MachineCombinerPattern::REASSOC_AX_BY);
+    Patterns.push_back(MachineCombinerPattern::REASSOC_XA_BY);
+    Added = true;
+  }
+  if (canReassociate(Root, Root.getOperand(2))) {
+    Patterns.push_back(MachineCombinerPattern::REASSOC_AX_YB);
+    Patterns.push_back(MachineCombinerPattern::REASSOC_XA_YB);
+    Added = true;
+  }
+  return Added;
+}
+
+static bool getFPPatterns(MachineInstr &Root,
+                          SmallVectorImpl<MachineCombinerPattern> &Patterns) {
+  unsigned Opc = Root.getOpcode();
+  if (isAssociativeAndCommutativeFPOpcode(Opc))
+    return getFPReassocPatterns(Root, Patterns);
+  return false;
+}
+
+bool RISCVInstrInfo::getMachineCombinerPatterns(
+    MachineInstr &Root, SmallVectorImpl<MachineCombinerPattern> &Patterns,
+    bool DoRegPressureReduce) const {
+
+  if (getFPPatterns(Root, Patterns))
+    return true;
+
+  return TargetInstrInfo::getMachineCombinerPatterns(Root, Patterns,
+                                                     DoRegPressureReduce);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
                                        StringRef &ErrInfo) const {
   MCInstrDesc const &Desc = MI.getDesc();
@@ -2417,6 +2541,22 @@ bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
          !MI.isInlineAsm();
 }
 
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE: This has been cherry-picked from upstream.
+bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
+  int16_t MI1FrmOpIdx =
+      RISCV::getNamedOperandIdx(MI1.getOpcode(), RISCV::OpName::frm);
+  int16_t MI2FrmOpIdx =
+      RISCV::getNamedOperandIdx(MI2.getOpcode(), RISCV::OpName::frm);
+  if (MI1FrmOpIdx < 0 || MI2FrmOpIdx < 0)
+    return false;
+  MachineOperand FrmOp1 = MI1.getOperand(MI1FrmOpIdx);
+  MachineOperand FrmOp2 = MI2.getOperand(MI2FrmOpIdx);
+  return FrmOp1.getImm() == FrmOp2.getImm();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
 Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
   Register GlobalBaseReg = RVFI->getGlobalBaseReg();
@@ -2448,70 +2588,6 @@ Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
 
   RVFI->setGlobalBaseReg(GlobalBaseReg);
   return GlobalBaseReg;
-}
-
-#if SIFIVE_CUSTOMIZATION
-bool RISCVInstrInfo::isAssociativeAndCommutative(
-    const MachineInstr &Inst) const {
-  switch (Inst.getOpcode()) {
-  case RISCV::FADD_D:
-  case RISCV::FADD_H:
-  case RISCV::FADD_S:
-  case RISCV::FMUL_D:
-  case RISCV::FMUL_H:
-  case RISCV::FMUL_S:
-    // We only reassociate DYN rounding mode to ensure the two operations
-    // have the same rounding mode.
-    if (Inst.getOperand(3).getImm() != RISCVFPRndMode::DYN)
-      return false;
-    return Inst.getFlag(MachineInstr::MIFlag::FmReassoc) &&
-           Inst.getFlag(MachineInstr::MIFlag::FmNsz);
-  default:
-    return false;
-  }
-}
-
-// FIXME: This is abusing what this function was intended for. It is normally
-// used to copy fast math flags and dead flags.
-// TargetInstrInfo::reassociateOps doesn't know how to deal with the FRM
-// operands so we need to add them and this conveniently gets called right after
-// the instructions are created.
-void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
-                                           MachineInstr &OldMI2,
-                                           MachineInstr &NewMI1,
-                                           MachineInstr &NewMI2) const {
-  MachineFunction &MF = *OldMI1.getParent()->getParent();
-
-  // Copy the FRM operands.
-  auto Idx1 = RISCV::getNamedOperandIdx(OldMI2.getOpcode(), RISCV::OpName::frm);
-  if (Idx1 < 0)
-    return;
-  assert(NewMI1.getNumOperands() == (unsigned)Idx1);
-  NewMI1.addOperand(MF, OldMI1.getOperand(Idx1));
-  if (OldMI1.getOperand(Idx1).getImm() == RISCVFPRndMode::DYN &&
-      !NewMI1.readsRegister(RISCV::FRM))
-    NewMI1.addOperand(MF, MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false, /*isImp*/ true));
-
-  auto Idx2 = RISCV::getNamedOperandIdx(OldMI2.getOpcode(), RISCV::OpName::frm);
-  if (Idx2 < 0)
-    return;
-  assert(NewMI2.getNumOperands() == (unsigned)Idx2);
-  NewMI2.addOperand(MF, OldMI2.getOperand(Idx2));
-  if (OldMI2.getOperand(Idx2).getImm() == RISCVFPRndMode::DYN &&
-      !NewMI2.readsRegister(RISCV::FRM))
-    NewMI2.addOperand(MF, MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false, /*isImp*/ true));
-
-  // Merge the fast math flags, but drop the poison generating flags.
-  uint16_t IntersectedFlags = OldMI1.getFlags() & OldMI2.getFlags();
-  NewMI1.setFlags(IntersectedFlags);
-  NewMI1.clearFlag(MachineInstr::MIFlag::NoSWrap);
-  NewMI1.clearFlag(MachineInstr::MIFlag::NoUWrap);
-  NewMI1.clearFlag(MachineInstr::MIFlag::IsExact);
-
-  NewMI2.setFlags(IntersectedFlags);
-  NewMI2.clearFlag(MachineInstr::MIFlag::NoSWrap);
-  NewMI2.clearFlag(MachineInstr::MIFlag::NoUWrap);
-  NewMI2.clearFlag(MachineInstr::MIFlag::IsExact);
 }
 
 void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,

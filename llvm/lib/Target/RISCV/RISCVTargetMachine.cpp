@@ -57,11 +57,6 @@ static cl::opt<bool>
                  cl::init(false));
 
 static cl::opt<bool>
-    EnableMachineCombinerPass("riscv-machine-combiner",
-                              cl::desc("Enable the machine combiner pass"),
-                              cl::init(true), cl::Hidden);
-
-static cl::opt<bool>
     EnableSLSROpt("riscv-slsr-opt", cl::Hidden,
                   cl::desc("Enable optimizations on SLSR"),
                   cl::init(false));
@@ -70,6 +65,14 @@ static cl::opt<bool>
 static cl::opt<cl::boolOrDefault>
     EnableGlobalMerge("riscv-enable-global-merge", cl::Hidden,
                       cl::desc("Enable the global merge pass"));
+
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE: This has been cherry-picked from upstream.
+static cl::opt<bool>
+    EnableMachineCombiner("riscv-enable-machine-combiner",
+                          cl::desc("Enable the machine combiner pass"),
+                          cl::init(true), cl::Hidden);
+#endif // SIFIVE_CUSTOMIZATION
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -244,9 +247,6 @@ public:
   void addMachineSSAOptimization() override;
   void addPreRegAlloc() override;
   void addPostRegAlloc() override;
-#if SIFIVE_CUSTOMIZATION
-  bool addILPOpts() override;
-#endif // SIFIVE_CUSTOMIZATION
 };
 } // namespace
 
@@ -334,12 +334,6 @@ bool RISCVPassConfig::addGlobalInstructionSelect() {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVPassConfig::addILPOpts() {
-  if (EnableMachineCombinerPass)
-    addPass(&MachineCombinerID);
-  return true;
-}
-
 void RISCVPassConfig::addPreSched2() { addPass(createRISCVPostRAExpandPseudoPass()); }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -365,6 +359,11 @@ void RISCVPassConfig::addPreEmitPass2() {
 
 void RISCVPassConfig::addMachineSSAOptimization() {
   TargetPassConfig::addMachineSSAOptimization();
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE: This has been cherry-picked from upstream.
+  if (TM->getOptLevel() == CodeGenOpt::Aggressive && EnableMachineCombiner)
+    addPass(&MachineCombinerID);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (TM->getTargetTriple().getArch() == Triple::riscv64)
     addPass(createRISCVSExtWRemovalPass());
