@@ -4326,9 +4326,11 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerABS(Op, DAG);
 #if SIFIVE_CUSTOMIZATION
   case ISD::SSHLSAT:
-    return lowerSHLSAT(Op, DAG, /*IsSigned*/ true);
-  case ISD::USHLSAT:
-    return lowerSHLSAT(Op, DAG, /*IsSigned*/ false);
+  case ISD::USHLSAT: {
+    SDLoc DL(Op);
+    return lowerSHLSAT(DL, Op.getSimpleValueType(), Op.getOperand(0),
+                       Op.getOperand(1), DAG, Op.getOpcode() == ISD::SSHLSAT);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::CTLZ_ZERO_UNDEF:
   case ISD::CTTZ_ZERO_UNDEF:
@@ -7582,32 +7584,25 @@ SDValue RISCVTargetLowering::lowerABS(SDValue Op, SelectionDAG &DAG) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
+SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
+                                         SDValue RHS, SelectionDAG &DAG,
                                          bool IsSigned) const {
-  SDLoc DL(Op);
-  MVT VT = Op.getSimpleValueType();
   assert(VT.isFixedLengthVector() && "Unexpected type");
   unsigned EltBitSize = VT.getScalarSizeInBits();
-  SDValue LHS = Op.getOperand(0);
-  SDValue RHS = Op.getOperand(1);
   MVT XLenVT = Subtarget.getXLenVT();
   MVT ContainerVT = getContainerForFixedLengthVector(VT);
   SDValue SplatRHS = DAG.getSplatValue(RHS, /*LegalTypes*/ true);
   // Convert RHS from (LHS << RHS) to (LHS * (1 << RHS)).
   SDValue MulRHS;
   if (SplatRHS) {
-    MulRHS = DAG.getSplatVector(ContainerVT, DL,
-                                DAG.getNode(ISD::SHL, DL, XLenVT,
-                                            DAG.getConstant(1, DL, XLenVT),
-                                            SplatRHS));
+    MulRHS = DAG.getSplatBuildVector(VT, DL,
+                                     DAG.getNode(ISD::SHL, DL, XLenVT,
+                                                 DAG.getConstant(1, DL, XLenVT),
+                                                 SplatRHS));
   } else {
-    MulRHS = convertToScalableVector(
-        ContainerVT,
-        DAG.getNode(
-            ISD::SHL, DL, VT,
-            DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)),
-            RHS),
-        DAG, Subtarget);
+    MulRHS = DAG.getNode(
+        ISD::SHL, DL, VT,
+        DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
@@ -7617,10 +7612,11 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
   CanUseSmul = CanUseSmul && IsSigned;
   if (CanUseSmul) {
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Smul =
-        DAG.getNode(RISCVISD::VSMUL_VL, DL, ContainerVT,
-                    {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-                     MulRHS, DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+    SDValue Smul = DAG.getNode(
+        RISCVISD::VSMUL_VL, DL, ContainerVT,
+        {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+         convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
+         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
     return convertFromScalableVector(VT, Smul, DAG, Subtarget);
   }
   MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
@@ -7644,10 +7640,11 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
       NclipOpc = RISCVISD::VNCLIPU_VL;
     }
     MVT WidenContainerVT = getContainerForFixedLengthVector(WidenVT);
-    SDValue Wmul =
-        DAG.getNode(WmulOpc, DL, WidenContainerVT,
-                    convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-                    MulRHS, DAG.getUNDEF(WidenContainerVT), Mask, VL);
+    SDValue Wmul = DAG.getNode(
+        WmulOpc, DL, WidenContainerVT,
+        convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+        convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
+        DAG.getUNDEF(WidenContainerVT), Mask, VL);
     // Every rounding modes produces same value if the shift amount is 0.
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
     SDValue Nclip = DAG.getNode(
