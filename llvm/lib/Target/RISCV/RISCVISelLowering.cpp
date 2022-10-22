@@ -5823,10 +5823,10 @@ static SDValue getFixedVFclass(SDValue Op, SelectionDAG &DAG,
       DAG, Subtarget);
 }
 
-static SDValue lowerAArch64_qrshl(SelectionDAG &DAG,
-                                  const RISCVSubtarget &Subtarget,
-                                  unsigned IntNo, SDLoc DL, SDValue Op0,
-                                  SDValue Op1, bool IsSigned) {
+SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
+                                                unsigned IntNo, SDLoc DL,
+                                                SDValue Op0, SDValue Op1,
+                                                bool IsSigned) const {
   auto toVectorIfScalar = [&](SDValue V) {
     if (V.getSimpleValueType().isVector())
       return V;
@@ -5914,8 +5914,7 @@ static SDValue lowerAArch64_qrshl(SelectionDAG &DAG,
   case Intrinsic::aarch64_neon_uqrshl:
   case Intrinsic::aarch64_neon_urshl: {
     // This is a right shift with rounding mode.
-    MVT ContainerVecVT =
-        getContainerForFixedLengthVector(DAG, VecVT, Subtarget);
+    MVT ContainerVecVT = getContainerForFixedLengthVector(VecVT);
     SDValue Passthru = DAG.getUNDEF(ContainerVecVT);
     SDValue Mask, VL;
     std::tie(Mask, VL) =
@@ -6399,8 +6398,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Op1 = Op.getOperand(2);
     if (SDValue SplatValue = DAG.getSplatValue(Op.getOperand(2), true))
       Op1 = SplatValue;
-    return lowerAArch64_qrshl(DAG, Subtarget, IntNo, DL, Op.getOperand(1), Op1,
-                              IsSigned);
+    return lowerAArch64_qrshl(DAG, IntNo, DL, Op.getOperand(1), Op1, IsSigned);
   }
   case Intrinsic::aarch64_neon_sqxtn:
   case Intrinsic::aarch64_neon_uqxtn: {

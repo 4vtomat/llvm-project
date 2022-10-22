@@ -676,6 +676,10 @@ private:
   SDValue lowerVectorFPExtendOrRoundLike(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerINSERT_VECTOR_ELT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerEXTRACT_VECTOR_ELT(SDValue Op, SelectionDAG &DAG) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerAArch64_qrshl(SelectionDAG &DAG, unsigned IntNo, SDLoc DL,
+                             SDValue Op0, SDValue Op1, bool IsSigned) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue LowerINTRINSIC_WO_CHAIN(SDValue Op, SelectionDAG &DAG) const;
   SDValue LowerINTRINSIC_W_CHAIN(SDValue Op, SelectionDAG &DAG) const;
   SDValue LowerINTRINSIC_VOID(SDValue Op, SelectionDAG &DAG) const;
