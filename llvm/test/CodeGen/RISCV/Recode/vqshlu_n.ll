@@ -4,62 +4,13 @@
 define void @vqshlu_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqshlu_n_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a2, a0, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB0_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB0_2: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 8(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB0_4
-; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB0_4: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB0_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB0_6: # %entry
-; CHECK-NEXT:    srli a4, a4, 48
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a2, a5, a2
-; CHECK-NEXT:    sh a4, 12(sp)
-; CHECK-NEXT:    bne a5, a2, .LBB0_8
-; CHECK-NEXT:  # %bb.7: # %entry
-; CHECK-NEXT:    slli a0, a3, 63
-; CHECK-NEXT:  .LBB0_8: # %entry
-; CHECK-NEXT:    srli a0, a0, 48
-; CHECK-NEXT:    sh a0, 10(sp)
-; CHECK-NEXT:    addi a0, sp, 8
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    lui a0, 8
+; CHECK-NEXT:    vwmulu.vx v9, v8, a0
+; CHECK-NEXT:    vnclipu.wi v8, v9, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -74,32 +25,10 @@ define void @vqshlu_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vmv.x.s a4, v8
-; CHECK-NEXT:    slli a5, a4, 32
 ; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a2, a0, 32
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a3, -1
-; CHECK-NEXT:    bne a5, a6, .LBB1_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    slli a3, a4, 63
-; CHECK-NEXT:  .LBB1_2: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vmv.x.s a4, v8
-; CHECK-NEXT:    slli a5, a4, 32
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    srli a2, a3, 32
-; CHECK-NEXT:    bne a5, a6, .LBB1_4
-; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    slli a0, a4, 63
-; CHECK-NEXT:  .LBB1_4: # %entry
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, mu
-; CHECK-NEXT:    vmv.s.x v8, a2
+; CHECK-NEXT:    slli a0, a0, 31
+; CHECK-NEXT:    vwmulu.vx v9, v8, a0
+; CHECK-NEXT:    vnclipu.wi v8, v9, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -142,106 +71,13 @@ entry:
 define void @vqshluq_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqshluq_n_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a2, a0, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_2: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_4
-; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_4: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_6: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_8
-; CHECK-NEXT:  # %bb.7: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_8: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 10(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_10
-; CHECK-NEXT:  # %bb.9: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_10: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 8(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_12
-; CHECK-NEXT:  # %bb.11: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_12: # %entry
-; CHECK-NEXT:    srli a3, a4, 48
-; CHECK-NEXT:    sh a3, 6(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB4_14
-; CHECK-NEXT:  # %bb.13: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB4_14: # %entry
-; CHECK-NEXT:    srli a4, a4, 48
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 48
-; CHECK-NEXT:    and a2, a5, a2
-; CHECK-NEXT:    sh a4, 4(sp)
-; CHECK-NEXT:    bne a5, a2, .LBB4_16
-; CHECK-NEXT:  # %bb.15: # %entry
-; CHECK-NEXT:    slli a0, a3, 63
-; CHECK-NEXT:  .LBB4_16: # %entry
-; CHECK-NEXT:    srli a0, a0, 48
-; CHECK-NEXT:    sh a0, 2(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    lui a0, 8
+; CHECK-NEXT:    vwmulu.vx v10, v8, a0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -284,194 +120,13 @@ entry:
 define void @vqshluq_n_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqshluq_n_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a2, a0, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_2: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 0(sp)
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v9, v8, 15
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_4
-; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_4: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 15(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 14
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_6
-; CHECK-NEXT:  # %bb.5: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_6: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 14(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 13
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_8
-; CHECK-NEXT:  # %bb.7: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_8: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 13(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 12
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_10
-; CHECK-NEXT:  # %bb.9: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_10: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 12(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 11
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_12
-; CHECK-NEXT:  # %bb.11: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_12: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 11(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 10
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_14
-; CHECK-NEXT:  # %bb.13: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_14: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 10(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 9
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_16
-; CHECK-NEXT:  # %bb.15: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_16: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 9(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 8
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_18
-; CHECK-NEXT:  # %bb.17: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_18: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 8(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 7
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_20
-; CHECK-NEXT:  # %bb.19: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_20: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 7(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 6
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_22
-; CHECK-NEXT:  # %bb.21: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_22: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 6(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 5
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_24
-; CHECK-NEXT:  # %bb.23: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_24: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 5(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 4
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_26
-; CHECK-NEXT:  # %bb.25: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_26: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 4(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 3
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_28
-; CHECK-NEXT:  # %bb.27: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_28: # %entry
-; CHECK-NEXT:    srli a3, a4, 56
-; CHECK-NEXT:    sb a3, 3(sp)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 2
-; CHECK-NEXT:    vmv.x.s a3, v9
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a6, a5, a2
-; CHECK-NEXT:    li a4, -1
-; CHECK-NEXT:    bne a5, a6, .LBB7_30
-; CHECK-NEXT:  # %bb.29: # %entry
-; CHECK-NEXT:    slli a4, a3, 63
-; CHECK-NEXT:  .LBB7_30: # %entry
-; CHECK-NEXT:    srli a4, a4, 56
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vmv.x.s a3, v8
-; CHECK-NEXT:    slli a5, a3, 56
-; CHECK-NEXT:    and a2, a5, a2
-; CHECK-NEXT:    sb a4, 2(sp)
-; CHECK-NEXT:    bne a5, a2, .LBB7_32
-; CHECK-NEXT:  # %bb.31: # %entry
-; CHECK-NEXT:    slli a0, a3, 63
-; CHECK-NEXT:  .LBB7_32: # %entry
-; CHECK-NEXT:    srli a0, a0, 56
-; CHECK-NEXT:    sb a0, 1(sp)
-; CHECK-NEXT:    mv a0, sp
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    li a0, 128
+; CHECK-NEXT:    vwmulu.vx v10, v8, a0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
