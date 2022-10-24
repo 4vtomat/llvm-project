@@ -38,7 +38,10 @@ enum class OutputType {
 static LogicalResult
 processBuffer(raw_ostream &os, std::unique_ptr<llvm::MemoryBuffer> chunkBuffer,
               OutputType outputType, std::vector<std::string> &includeDirs,
-              bool dumpODS, std::set<std::string> *includedFiles) {
+#if SIFIVE_CUSTOMIZATION
+              bool dumpODS, std::set<std::string> *includedFiles,
+              bool allowUnregisteredDialects) {
+#endif // SIFIVE_CUSTOMIZATION
   llvm::SourceMgr sourceMgr;
   sourceMgr.setIncludeDirs(includeDirs);
   sourceMgr.AddNewSourceBuffer(std::move(chunkBuffer), SMLoc());
@@ -73,6 +76,11 @@ processBuffer(raw_ostream &os, std::unique_ptr<llvm::MemoryBuffer> chunkBuffer,
   }
 
   MLIRContext mlirContext;
+#if SIFIVE_CUSTOMIZATION
+  if (allowUnregisteredDialects)
+    mlirContext.allowUnregisteredDialects(true);
+#endif // SIFIVE_CUSTOMIZATION
+
   OwningOpRef<ModuleOp> pdlModule =
       codegenPDLLToMLIR(&mlirContext, astContext, sourceMgr, **module);
   if (!pdlModule)
@@ -157,6 +165,11 @@ int main(int argc, char **argv) {
   llvm::cl::opt<bool> writeIfChanged(
       "write-if-changed",
       llvm::cl::desc("Only write to the output file if it changed"));
+#if SIFIVE_CUSTOMIZATION
+  llvm::cl::opt<bool> allowUnregisteredDialects(
+      "allow-unregistered-dialects",
+      llvm::cl::desc("Allow unregistered dialects"), llvm::cl::init(false));
+#endif // SIFIVE_CUSTOMIZATION
 
   llvm::InitLLVM y(argc, argv);
   llvm::cl::ParseCommandLineOptions(argc, argv, "PDLL Frontend");
@@ -184,7 +197,9 @@ int main(int argc, char **argv) {
   auto processFn = [&](std::unique_ptr<llvm::MemoryBuffer> chunkBuffer,
                        raw_ostream &os) {
     return processBuffer(os, std::move(chunkBuffer), outputType, includeDirs,
-                         dumpODS, includedFiles);
+#if SIFIVE_CUSTOMIZATION
+                         dumpODS, includedFiles, allowUnregisteredDialects);
+#endif // SIFIVE_CUSTOMIZATION
   };
   if (failed(splitAndProcessBuffer(std::move(inputFile), processFn, outputStrOS,
                                    splitInputFile)))
