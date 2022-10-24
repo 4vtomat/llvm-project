@@ -1,4 +1,4 @@
-// RUN: %clang_cc1 %s -std=c++11 -verify -fexceptions -fcxx-exceptions -pedantic-errors -fno-spell-checking -fclang-abi-compat=15
+// RUN: %clang_cc1 %s -std=c++11 -verify -fexceptions -fcxx-exceptions -pedantic-errors -fno-spell-checking -fclang-abi-compat=14
 
 template <typename... T> struct A1 {};
 template <typename U, typename... T> struct A2 {};

@@ -135,8 +135,7 @@
 // CHECK-RV64-SAME: "-Lsome{{[/\\]+}}directory{{[/\\]+}}user{{[/\\]+}}asked{{[/\\]+}}for"
 // CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
 // CHECK-RV64-SAME: "-L[[RESOURCE_DIR:[^"]+]]{{[/\\]+}}lib{{[/\\]+}}baremetal{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d"
-// CHECK-RV64-SAME: "-lc" "-lm" "-lclang_rt.builtins-riscv64"
-// CHECK-RV64-SAME: "-o" "{{.*}}.o"
+// CHECK-RV64-SAME: "-lc" "-lm" "-lclang_rt.builtins-riscv64" "-o" "{{.*}}.tmp.out"
 
 // RUN: %clangxx %s -### --target=riscv64-unknown-elf 2>&1 \
 // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf \
@@ -243,8 +242,7 @@
 // CHECK-RV64-NDL: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
 // CHECK-RV64-NDL: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
 // CHECK-RV64-NDL-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
-// CHECK-RV64-NDL-SAME: "-L[[RESOURCE_DIR]]{{[/\\]+}}lib{{[/\\]+}}baremetal{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d"
-// CHECK-RV64-NDL-SAME: "-o" "{{.*}}.o"
+// CHECK-RV64-NDL-SAME: "-L[[RESOURCE_DIR]]{{[/\\]+}}lib{{[/\\]+}}baremetal{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d" "-o" "a.out"
 
 // RUN: %clang %s -### 2>&1 --target=riscv64-unknown-elf \
 // RUN:     -march=rv64imafdc -mabi=lp64d \

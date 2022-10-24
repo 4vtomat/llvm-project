@@ -551,8 +551,7 @@ void loop() {
 // CHECK1-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq ptr [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK1-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK1:       arraydestroy.done2:
-// CHECK1-NEXT:    [[TMP7:%.*]] = load i32, ptr [[RETVAL]], align 4
-// CHECK1-NEXT:    ret i32 [[TMP7]]
+// CHECK1-NEXT:    ret i32 poison
 //
 //
 // CHECK1-LABEL: define {{[^@]+}}@_ZN1SIdED1Ev
@@ -937,8 +936,7 @@ void loop() {
 // CHECK1-NEXT:    [[ARRAYDESTROY_DONE:%.*]] = icmp eq ptr [[ARRAYDESTROY_ELEMENT]], [[ARRAY_BEGIN]]
 // CHECK1-NEXT:    br i1 [[ARRAYDESTROY_DONE]], label [[ARRAYDESTROY_DONE2:%.*]], label [[ARRAYDESTROY_BODY]]
 // CHECK1:       arraydestroy.done2:
-// CHECK1-NEXT:    [[TMP7:%.*]] = load i32, ptr [[RETVAL]], align 4
-// CHECK1-NEXT:    ret i32 [[TMP7]]
+// CHECK1-NEXT:    ret i32 poison
 //
 //
 // CHECK1-LABEL: define {{[^@]+}}@_ZN1SIiED1Ev
