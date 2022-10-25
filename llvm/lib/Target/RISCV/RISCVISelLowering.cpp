@@ -4329,7 +4329,8 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::USHLSAT: {
     SDLoc DL(Op);
     return lowerSHLSAT(DL, Op.getSimpleValueType(), Op.getOperand(0),
-                       Op.getOperand(1), DAG, Op.getOpcode() == ISD::SSHLSAT);
+                       Op.getOperand(1), DAG, Op.getOpcode() == ISD::SSHLSAT,
+                       /*ShiftIncSize*/ false);
   }
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::CTLZ_ZERO_UNDEF:
@@ -5866,38 +5867,12 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
   case Intrinsic::aarch64_neon_sqshl:
   case Intrinsic::aarch64_neon_uqrshl:
   case Intrinsic::aarch64_neon_uqshl: {
-    // We need to max the shift amount. Otherwise, the result is poison value.
-    SDValue ValidShift =
-        toVectorIfScalar(DAG.getNode(ISD::UMIN, DL, VT, Op1, MaxShift));
-    // This is a saturated left shift. When a shift amount is greater than or
-    // equal to log2(Size), Op0 << ValidShift is the maximum value of
-    // signedness.
-    // Arm Compiler 6 does not support __saturation_occurred. That said we don't
-    // need to set saturation flag if saturation occurs.
-    LShift = DAG.getNode(ISD::SHL, DL, VecVT, Op0, ValidShift);
-    // If ((Op0 << ValidShift) >> ValidShift) != Op0, it is saturated.
-    SDValue IsSat = DAG.getSetCC(DL, SetccVecVT, Op0,
-                                 DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL,
-                                             VecVT, LShift, ValidShift),
-                                 ISD::SETNE);
-    SDValue IsNotZero = DAG.getSetCC(DL, SetccVecVT, Op0, Zero, ISD::SETNE);
-    SDValue MustSat = DAG.getSetCC(DL, SetccVT, Op1, MaxShift, ISD::SETUGT);
-    if (!VT.isVector())
-      MustSat = DAG.getSplatBuildVector(SetccVecVT, DL, MustSat);
-    MustSat = DAG.getNode(ISD::AND, DL, SetccVecVT, IsNotZero, MustSat);
-    IsSat = DAG.getNode(ISD::OR, DL, SetccVecVT, IsSat, MustSat);
-    SDValue SatLShift;
-    if (IsSigned) {
-      // A maximum value is different if Op0 is positive or negative.
-      SatLShift = DAG.getSelectCC(
-          DL, Op0, Zero,
-          DAG.getConstant(APInt::getSignedMinValue(Size), DL, VecVT),
-          DAG.getConstant(APInt::getSignedMaxValue(Size), DL, VecVT),
-          ISD::SETLT);
-    } else {
-      SatLShift = DAG.getConstant(APInt::getMaxValue(Size), DL, VecVT);
-    }
-    LShift = DAG.getSelect(DL, VecVT, IsSat, SatLShift, LShift);
+    LShift =
+        lowerSHLSAT(DL, VecVT, Op0,
+                    toVectorIfScalar(DAG.getNode(
+                        ISD::UMIN, DL, VT, Op1, DAG.getConstant(Size, DL, VT))),
+                    DAG, IsSigned,
+                    /*ShiftIncSize*/ true);
     break;
   }
   case Intrinsic::aarch64_neon_srshl:
@@ -7583,9 +7558,12 @@ SDValue RISCVTargetLowering::lowerABS(SDValue Op, SelectionDAG &DAG) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
+// If ShiftIncSize is false, RHS is in [0, VT.getScalarSizeInBits() - 1].
+// Otherwise, RHS is in [0, VT.getScalarSizeInBits()].
+SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
                                          SDValue RHS, SelectionDAG &DAG,
-                                         bool IsSigned) const {
+                                         bool IsSigned,
+                                         bool ShiftIncSize) const {
   assert(VT.isFixedLengthVector() && "Unexpected type");
   unsigned EltBitSize = VT.getScalarSizeInBits();
   MVT XLenVT = Subtarget.getXLenVT();
@@ -7593,23 +7571,37 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
   SDValue SplatRHS = DAG.getSplatValue(RHS, /*LegalTypes*/ true);
   // Convert RHS from (LHS << RHS) to (LHS * (1 << RHS)).
   SDValue MulRHS;
+  SDValue Zero = DAG.getConstant(0, DL, VT);
   if (SplatRHS) {
     MulRHS = DAG.getSplatBuildVector(VT, DL,
                                      DAG.getNode(ISD::SHL, DL, XLenVT,
                                                  DAG.getConstant(1, DL, XLenVT),
                                                  SplatRHS));
   } else {
-    MulRHS = DAG.getNode(
-        ISD::SHL, DL, VT,
-        DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
+    if (ShiftIncSize) {
+      // We need to do SHL twice because RHS may be EltBitSize.
+      MulRHS = DAG.getSelectCC(
+          DL, RHS, Zero,
+          DAG.getNode(
+              ISD::SHL, DL, VT,
+              DAG.getSplatBuildVector(VT, DL, DAG.getConstant(2, DL, XLenVT)),
+              DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
+          Zero, ISD::SETNE);
+    } else {
+      MulRHS = DAG.getNode(
+          ISD::SHL, DL, VT,
+          DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
+    }
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+  // If Shift is equal to RHS size, (1 << RHS) would have widening type.
+  bool CanHoldMulRHS = !ShiftIncSize || EltBitSize < Subtarget.getXLen();
   // SEW 64 vsmul is only included in V.
   bool CanUseSmul = (EltBitSize != 64) || Subtarget.hasStdExtV();
   // Only signed type can use vsmul.
   CanUseSmul = CanUseSmul && IsSigned;
-  if (CanUseSmul) {
+  if (CanHoldMulRHS && CanUseSmul) {
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
     SDValue Smul = DAG.getNode(
         RISCVISD::VSMUL_VL, DL, ContainerVT,
@@ -7628,7 +7620,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
       EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
   // For unsigned type, widen algo causes higher register pressure.
   bool UseWidenAlgo = SplatRHS ? true : IsSigned;
-  if (CanUseWidenAlgo && UseWidenAlgo) {
+  if (CanHoldMulRHS && CanUseWidenAlgo && UseWidenAlgo) {
     unsigned WmulOpc;
     unsigned NclipOpc;
     if (IsSigned) {
@@ -7654,11 +7646,13 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
     return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
   }
   MVT SetccVT = MVT::getVectorVT(MVT::i1, VT.getVectorElementCount());
-  SDValue LShift = DAG.getNode(ISD::SHL, DL, VT, LHS, RHS);
+  SDValue MaxShift = DAG.getConstant(EltBitSize - 1, DL, VT);
+  SDValue ValidRHS =
+      ShiftIncSize ? DAG.getNode(ISD::UMIN, DL, VT, RHS, MaxShift) : RHS;
+  SDValue LShift = DAG.getNode(ISD::SHL, DL, VT, LHS, ValidRHS);
   SDValue SatValue;
   if (IsSigned) {
-    SDValue IsNegative =
-        DAG.getSetCC(DL, SetccVT, LHS, DAG.getConstant(0, DL, VT), ISD::SETLT);
+    SDValue IsNegative = DAG.getSetCC(DL, SetccVT, LHS, Zero, ISD::SETLT);
     // The maximum value is different if LHS is positive or negative.
     SatValue = DAG.getSelect(
         DL, VT, IsNegative,
@@ -7667,11 +7661,17 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS,
   } else {
     SatValue = DAG.getConstant(APInt::getMaxValue(EltBitSize), DL, VT);
   }
-  // If LHS != ((LHS << RHS) >> RHS), it is saturated.
+  // If LHS != ((LHS << ValidRHS) >> ValidRHS), it is saturated.
   SDValue IsSat = DAG.getSetCC(
       DL, SetccVT, LHS,
-      DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL, VT, LShift, RHS),
+      DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL, VT, LShift, ValidRHS),
       ISD::SETNE);
+  if (ShiftIncSize) {
+    SDValue IsNotZero = DAG.getSetCC(DL, SetccVT, LHS, Zero, ISD::SETNE);
+    SDValue MustSat = DAG.getSetCC(DL, SetccVT, RHS, MaxShift, ISD::SETUGT);
+    MustSat = DAG.getNode(ISD::AND, DL, SetccVT, IsNotZero, MustSat);
+    IsSat = DAG.getNode(ISD::OR, DL, SetccVT, IsSat, MustSat);
+  }
   return DAG.getSelect(DL, VT, IsSat, SatValue, LShift);
 }
 #endif // SIFIVE_CUSTOMIZATION

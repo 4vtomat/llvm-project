@@ -695,8 +695,9 @@ private:
   SDValue lowerVECTOR_SPLICE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerABS(SDValue Op, SelectionDAG &DAG) const;
 #if SIFIVE_CUSTOMIZATION
-  SDValue lowerSHLSAT(SDLoc DL, MVT VT, SDValue LHS, SDValue RHS,
-                      SelectionDAG &DAG, bool IsSigned) const;
+  SDValue lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS, SDValue RHS,
+                      SelectionDAG &DAG, bool IsSigned,
+                      bool ShiftIncSize) const;
 #endif // SIFIVE_CUSTOMIZATION
   SDValue lowerMaskedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerMaskedStore(SDValue Op, SelectionDAG &DAG) const;

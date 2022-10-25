@@ -5,45 +5,30 @@ define void @vqrshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-LABEL: vqrshl_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 16
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB0_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB0_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB0_2: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    lui a1, 8
-; CHECK-NEXT:    addiw a3, a1, -1
-; CHECK-NEXT:    vmv.v.x v10, a3
-; CHECK-NEXT:    vmerge.vxm v10, v10, a1, v0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a0, a1, .LBB0_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB0_4: # %entry
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -58,47 +43,30 @@ define void @vqrshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-LABEL: vqrshl_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB1_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB1_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB1_2: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    lui a1, 524288
-; CHECK-NEXT:    addiw a1, a1, -1
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    slli a1, a1, 31
-; CHECK-NEXT:    vmerge.vxm v10, v10, a1, v0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a0, a1, .LBB1_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB1_4: # %entry
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -116,29 +84,27 @@ define void @vqrshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    vle64.v v10, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 64
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB2_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v9, v10, a3
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB2_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB2_2: # %entry
-; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    li a3, 63
+; CHECK-NEXT:    vminu.vx v8, v8, a3
+; CHECK-NEXT:    vsll.vv v11, v10, v8
+; CHECK-NEXT:    vsra.vv v8, v11, v8
 ; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
+; CHECK-NEXT:    vmsne.vi v13, v10, 0
+; CHECK-NEXT:    vmand.mm v12, v13, v12
 ; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmslt.vx v0, v10, zero
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    srli a3, a1, 1
@@ -166,40 +132,28 @@ define void @vqrshl_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-LABEL: vqrshl_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a0
-; CHECK-NEXT:    li a4, 8
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a0, a4, .LBB3_2
+; CHECK-NEXT:    vle8.v v9, (a0)
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a0, .LBB3_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB3_2: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v11, v10, a0
-; CHECK-NEXT:    vsra.vx v8, v11, a0
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v13, a0
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a1, a0, .LBB3_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB3_4: # %entry
-; CHECK-NEXT:    vse8.v v9, (a2)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -217,36 +171,26 @@ define void @vqrshl_u16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a4, 16
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a1, a4, .LBB4_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a1, .LBB4_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 15
 ; CHECK-NEXT:  .LBB4_2: # %entry
-; CHECK-NEXT:    li a3, 17
-; CHECK-NEXT:    bltu a1, a3, .LBB4_4
+; CHECK-NEXT:    li a4, 17
+; CHECK-NEXT:    bltu a3, a4, .LBB4_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB4_4: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB4_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -269,36 +213,26 @@ define void @vqrshl_u32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a1, a4, .LBB5_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a1, .LBB5_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 31
 ; CHECK-NEXT:  .LBB5_2: # %entry
-; CHECK-NEXT:    li a3, 33
-; CHECK-NEXT:    bltu a1, a3, .LBB5_4
+; CHECK-NEXT:    li a4, 33
+; CHECK-NEXT:    bltu a3, a4, .LBB5_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB5_4: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB5_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -322,35 +256,33 @@ define void @vqrshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a3, 63
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a4, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a5, 64
-; CHECK-NEXT:    csrw vxrm, a4
-; CHECK-NEXT:    bne a1, a5, .LBB6_2
+; CHECK-NEXT:    sub a4, a1, a0
+; CHECK-NEXT:    csrrwi a5, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a4
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    csrw vxrm, a5
+; CHECK-NEXT:    bne a4, a1, .LBB6_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:  .LBB6_2: # %entry
-; CHECK-NEXT:    li a4, 65
-; CHECK-NEXT:    bltu a1, a4, .LBB6_4
+; CHECK-NEXT:    li a5, 65
+; CHECK-NEXT:    bltu a4, a5, .LBB6_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB6_4: # %entry
-; CHECK-NEXT:    minu a1, a0, a3
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    vminu.vx v10, v10, a3
+; CHECK-NEXT:    vsll.vv v11, v9, v10
+; CHECK-NEXT:    vsrl.vv v10, v11, v10
+; CHECK-NEXT:    vmsne.vv v10, v9, v10
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
 ; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
 ; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmor.mm v0, v10, v9
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vmerge.vim v9, v11, -1, v0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB6_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -370,34 +302,26 @@ define void @vqrshl_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a0
-; CHECK-NEXT:    li a4, 8
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a0, a4, .LBB7_2
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a0, .LBB7_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 7
 ; CHECK-NEXT:  .LBB7_2: # %entry
-; CHECK-NEXT:    li a3, 9
-; CHECK-NEXT:    bltu a0, a3, .LBB7_4
+; CHECK-NEXT:    li a4, 9
+; CHECK-NEXT:    bltu a3, a4, .LBB7_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB7_4: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a0
-; CHECK-NEXT:    vsrl.vx v11, v10, a0
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v12, a0
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    vwmulu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB7_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -417,45 +341,30 @@ define void @vqrshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signe
 ; CHECK-LABEL: vqrshlq_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 16
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB8_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB8_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB8_2: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    lui a1, 8
-; CHECK-NEXT:    addiw a3, a1, -1
-; CHECK-NEXT:    vmv.v.x v10, a3
-; CHECK-NEXT:    vmerge.vxm v10, v10, a1, v0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a0, a1, .LBB8_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB8_4: # %entry
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -470,47 +379,30 @@ define void @vqrshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signe
 ; CHECK-LABEL: vqrshlq_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB9_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB9_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB9_2: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    lui a1, 524288
-; CHECK-NEXT:    addiw a1, a1, -1
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    slli a1, a1, 31
-; CHECK-NEXT:    vmerge.vxm v10, v10, a1, v0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a0, a1, .LBB9_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB9_4: # %entry
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -528,29 +420,27 @@ define void @vqrshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK-NEXT:    vle64.v v10, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a1
-; CHECK-NEXT:    li a4, 64
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a1, a4, .LBB10_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v9, v10, a3
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a1, .LBB10_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB10_2: # %entry
-; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v11, v10, a1
-; CHECK-NEXT:    vsra.vx v8, v11, a1
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    li a3, 63
+; CHECK-NEXT:    vminu.vx v8, v8, a3
+; CHECK-NEXT:    vsll.vv v11, v10, v8
+; CHECK-NEXT:    vsra.vv v8, v11, v8
 ; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v13, a1
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
+; CHECK-NEXT:    vmsne.vi v13, v10, 0
+; CHECK-NEXT:    vmand.mm v12, v13, v12
 ; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmslt.vx v0, v10, zero
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    srli a3, a1, 1
@@ -579,40 +469,28 @@ define void @vqrshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext
 ; CHECK-LABEL: vqrshlq_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssra.vx v9, v10, a0
-; CHECK-NEXT:    li a4, 8
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bltu a0, a4, .LBB11_2
+; CHECK-NEXT:    vle8.v v9, (a0)
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssra.vx v8, v9, a3
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bltu a3, a0, .LBB11_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB11_2: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v11, v10, a0
-; CHECK-NEXT:    vsra.vx v8, v11, a0
-; CHECK-NEXT:    vmsne.vv v8, v10, v8
-; CHECK-NEXT:    vmsne.vi v12, v10, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v13, a0
-; CHECK-NEXT:    vmsne.vi v13, v13, 0
-; CHECK-NEXT:    vmand.mm v12, v12, v13
-; CHECK-NEXT:    vmor.mm v8, v8, v12
-; CHECK-NEXT:    vmslt.vx v0, v10, zero
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    csrw vxrm, a3
 ; CHECK-NEXT:    bgeu a1, a0, .LBB11_4
 ; CHECK-NEXT:  # %bb.3: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB11_4: # %entry
-; CHECK-NEXT:    vse8.v v9, (a2)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -630,36 +508,26 @@ define void @vqrshlq_u16(ptr nocapture noundef readonly %in_0, i16 noundef signe
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a4, 16
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a1, a4, .LBB12_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a1, .LBB12_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 15
 ; CHECK-NEXT:  .LBB12_2: # %entry
-; CHECK-NEXT:    li a3, 17
-; CHECK-NEXT:    bltu a1, a3, .LBB12_4
+; CHECK-NEXT:    li a4, 17
+; CHECK-NEXT:    bltu a3, a4, .LBB12_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB12_4: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB12_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -682,36 +550,26 @@ define void @vqrshlq_u32(ptr nocapture noundef readonly %in_0, i32 noundef signe
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a1, a4, .LBB13_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a1, .LBB13_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 31
 ; CHECK-NEXT:  .LBB13_2: # %entry
-; CHECK-NEXT:    li a3, 33
-; CHECK-NEXT:    bltu a1, a3, .LBB13_4
+; CHECK-NEXT:    li a4, 33
+; CHECK-NEXT:    bltu a3, a4, .LBB13_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB13_4: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB13_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -735,35 +593,33 @@ define void @vqrshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK-NEXT:    li a3, 63
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    csrrwi a4, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a1
-; CHECK-NEXT:    li a5, 64
-; CHECK-NEXT:    csrw vxrm, a4
-; CHECK-NEXT:    bne a1, a5, .LBB14_2
+; CHECK-NEXT:    sub a4, a1, a0
+; CHECK-NEXT:    csrrwi a5, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a4
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    csrw vxrm, a5
+; CHECK-NEXT:    bne a4, a1, .LBB14_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:  .LBB14_2: # %entry
-; CHECK-NEXT:    li a4, 65
-; CHECK-NEXT:    bltu a1, a4, .LBB14_4
+; CHECK-NEXT:    li a5, 65
+; CHECK-NEXT:    bltu a4, a5, .LBB14_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB14_4: # %entry
-; CHECK-NEXT:    minu a1, a0, a3
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    vminu.vx v10, v10, a3
+; CHECK-NEXT:    vsll.vv v11, v9, v10
+; CHECK-NEXT:    vsrl.vv v10, v11, v10
+; CHECK-NEXT:    vmsne.vv v10, v9, v10
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
 ; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
 ; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmor.mm v0, v10, v9
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vmerge.vim v9, v11, -1, v0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB14_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -784,34 +640,26 @@ define void @vqrshlq_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 0
-; CHECK-NEXT:    vssrl.vx v8, v9, a0
-; CHECK-NEXT:    li a4, 8
-; CHECK-NEXT:    csrw vxrm, a3
-; CHECK-NEXT:    bne a0, a4, .LBB15_2
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    csrrwi a4, vxrm, 0
+; CHECK-NEXT:    vssrl.vx v8, v9, a3
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    csrw vxrm, a4
+; CHECK-NEXT:    bne a3, a0, .LBB15_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vsrl.vi v8, v9, 7
 ; CHECK-NEXT:  .LBB15_2: # %entry
-; CHECK-NEXT:    li a3, 9
-; CHECK-NEXT:    bltu a0, a3, .LBB15_4
+; CHECK-NEXT:    li a4, 9
+; CHECK-NEXT:    bltu a3, a4, .LBB15_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB15_4: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a0
-; CHECK-NEXT:    vsrl.vx v11, v10, a0
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v12, a0
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    vwmulu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB15_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -831,38 +679,25 @@ define void @vqshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-LABEL: vqshl_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 15
-; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 16
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a3, 8
-; CHECK-NEXT:    addiw a4, a3, -1
-; CHECK-NEXT:    vmv.v.x v11, a4
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a0, a3, .LBB16_2
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    li a1, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a0, a1, .LBB16_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a3, 256
-; CHECK-NEXT:    sub a0, a3, a0
+; CHECK-NEXT:    li a1, 256
+; CHECK-NEXT:    sub a0, a1, a0
+; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a0, a0, a1
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB16_2: # %entry
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -877,40 +712,25 @@ define void @vqshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-LABEL: vqshl_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 32
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a3, 524288
-; CHECK-NEXT:    addiw a3, a3, -1
-; CHECK-NEXT:    vmv.v.x v11, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
-; CHECK-NEXT:    slli a3, a3, 31
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a0, a3, .LBB17_2
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    li a1, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a0, a1, .LBB17_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a3, 256
-; CHECK-NEXT:    sub a0, a3, a0
+; CHECK-NEXT:    li a1, 256
+; CHECK-NEXT:    sub a0, a1, a0
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a0, a0, a1
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB17_2: # %entry
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -927,20 +747,19 @@ define void @vqshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    li a1, 64
 ; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
+; CHECK-NEXT:    vmv.v.x v8, a3
+; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vminu.vx v8, v8, a1
+; CHECK-NEXT:    vsll.vv v10, v9, v8
+; CHECK-NEXT:    vsra.vv v8, v10, v8
 ; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 64
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
+; CHECK-NEXT:    vmv.v.x v11, a1
+; CHECK-NEXT:    vmsltu.vx v11, v11, a3
+; CHECK-NEXT:    vmsne.vi v12, v9, 0
+; CHECK-NEXT:    vmand.mm v11, v12, v11
 ; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmslt.vx v0, v9, zero
 ; CHECK-NEXT:    li a3, -1
 ; CHECK-NEXT:    srli a4, a3, 1
@@ -948,7 +767,7 @@ define void @vqshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    slli a3, a3, 63
 ; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
 ; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
 ; CHECK-NEXT:    bltu a0, a3, .LBB18_2
 ; CHECK-NEXT:  # %bb.1:
@@ -971,33 +790,23 @@ define void @vqshl_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK-LABEL: vqshl_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    li a0, 7
-; CHECK-NEXT:    minu a3, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a1, 8
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    li a3, 127
-; CHECK-NEXT:    vmv.v.x v11, a3
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a1, a3, .LBB19_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    neg a1, a1
+; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a0
+; CHECK-NEXT:    li a0, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a1, a0, .LBB19_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    neg a0, a1
+; CHECK-NEXT:    li a1, 7
+; CHECK-NEXT:    minu a0, a0, a1
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB19_2: # %entry
-; CHECK-NEXT:    vse8.v v8, (a2)
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -1012,39 +821,29 @@ define void @vqshl_u16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-LABEL: vqshl_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 16
-; CHECK-NEXT:    bgeu a1, a3, .LBB20_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    bgeu a3, a1, .LBB20_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    j .LBB20_3
 ; CHECK-NEXT:  .LBB20_2:
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB20_3: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB20_5
 ; CHECK-NEXT:  # %bb.4: # %entry
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:  .LBB20_5: # %entry
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -1059,39 +858,29 @@ define void @vqshl_u32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-LABEL: vqshl_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 32
-; CHECK-NEXT:    bgeu a1, a3, .LBB21_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    bgeu a3, a1, .LBB21_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    j .LBB21_3
 ; CHECK-NEXT:  .LBB21_2:
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB21_3: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB21_5
 ; CHECK-NEXT:  # %bb.4: # %entry
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:  .LBB21_5: # %entry
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -1109,31 +898,29 @@ define void @vqshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    bgeu a1, a3, .LBB22_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    bgeu a3, a1, .LBB22_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:    j .LBB22_3
 ; CHECK-NEXT:  .LBB22_2:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB22_3: # %entry
-; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    li a3, 63
+; CHECK-NEXT:    vminu.vx v10, v10, a3
+; CHECK-NEXT:    vsll.vv v11, v9, v10
+; CHECK-NEXT:    vsrl.vv v10, v11, v10
+; CHECK-NEXT:    vmsne.vv v10, v9, v10
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
 ; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
 ; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmor.mm v0, v10, v9
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vmerge.vim v9, v11, -1, v0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB22_5
 ; CHECK-NEXT:  # %bb.4: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -1153,29 +940,21 @@ define void @vqshl_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    li a3, 8
-; CHECK-NEXT:    bgeu a0, a3, .LBB23_2
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    bgeu a3, a0, .LBB23_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a0
+; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:    j .LBB23_3
 ; CHECK-NEXT:  .LBB23_2:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB23_3: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a0
-; CHECK-NEXT:    vsrl.vx v11, v10, a0
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v12, a0
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    vwmulu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB23_5
 ; CHECK-NEXT:  # %bb.4: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -1195,38 +974,25 @@ define void @vqshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-LABEL: vqshlq_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 15
-; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 16
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a3, 8
-; CHECK-NEXT:    addiw a4, a3, -1
-; CHECK-NEXT:    vmv.v.x v11, a4
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a0, a3, .LBB24_2
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    li a1, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a0, a1, .LBB24_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a3, 256
-; CHECK-NEXT:    sub a0, a3, a0
+; CHECK-NEXT:    li a1, 256
+; CHECK-NEXT:    sub a0, a1, a0
+; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a0, a0, a1
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB24_2: # %entry
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -1241,40 +1007,25 @@ define void @vqshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-LABEL: vqshlq_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 32
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    lui a3, 524288
-; CHECK-NEXT:    addiw a3, a3, -1
-; CHECK-NEXT:    vmv.v.x v11, a3
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
-; CHECK-NEXT:    slli a3, a3, 31
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a0, a3, .LBB25_2
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    li a1, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a0, a1, .LBB25_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a3, 256
-; CHECK-NEXT:    sub a0, a3, a0
+; CHECK-NEXT:    li a1, 256
+; CHECK-NEXT:    sub a0, a1, a0
+; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a0, a0, a1
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB25_2: # %entry
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -1291,20 +1042,19 @@ define void @vqshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    li a1, 64
 ; CHECK-NEXT:    minu a3, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
+; CHECK-NEXT:    vmv.v.x v8, a3
+; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vminu.vx v8, v8, a1
+; CHECK-NEXT:    vsll.vv v10, v9, v8
+; CHECK-NEXT:    vsra.vv v8, v10, v8
 ; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a0, 64
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
+; CHECK-NEXT:    vmv.v.x v11, a1
+; CHECK-NEXT:    vmsltu.vx v11, v11, a3
+; CHECK-NEXT:    vmsne.vi v12, v9, 0
+; CHECK-NEXT:    vmand.mm v11, v12, v11
 ; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmslt.vx v0, v9, zero
 ; CHECK-NEXT:    li a3, -1
 ; CHECK-NEXT:    srli a4, a3, 1
@@ -1312,7 +1062,7 @@ define void @vqshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    slli a3, a3, 63
 ; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
 ; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
 ; CHECK-NEXT:    bltu a0, a3, .LBB26_2
 ; CHECK-NEXT:  # %bb.1:
@@ -1336,33 +1086,23 @@ define void @vqshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-LABEL: vqshlq_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    li a0, 7
-; CHECK-NEXT:    minu a3, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a3
-; CHECK-NEXT:    vsra.vx v8, v10, a3
-; CHECK-NEXT:    vmsne.vv v8, v9, v8
-; CHECK-NEXT:    vmsne.vi v11, v9, 0
-; CHECK-NEXT:    sltiu a3, a1, 8
-; CHECK-NEXT:    xori a3, a3, 1
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v11, v11, v12
-; CHECK-NEXT:    vmor.mm v8, v8, v11
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    li a3, 127
-; CHECK-NEXT:    vmv.v.x v11, a3
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
-; CHECK-NEXT:    bltu a1, a3, .LBB27_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    neg a1, a1
+; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsra.vx v8, v9, a0
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    csrrwi a3, vxrm, 2
+; CHECK-NEXT:    vsmul.vx v9, v8, a0
+; CHECK-NEXT:    li a0, 128
+; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    bltu a1, a0, .LBB27_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    neg a0, a1
+; CHECK-NEXT:    li a1, 7
+; CHECK-NEXT:    minu a0, a0, a1
+; CHECK-NEXT:    vsra.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB27_2: # %entry
-; CHECK-NEXT:    vse8.v v8, (a2)
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -1377,39 +1117,29 @@ define void @vqshlq_u16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-LABEL: vqshlq_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 16
-; CHECK-NEXT:    bgeu a1, a3, .LBB28_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 16
+; CHECK-NEXT:    bgeu a3, a1, .LBB28_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    j .LBB28_3
 ; CHECK-NEXT:  .LBB28_2:
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB28_3: # %entry
-; CHECK-NEXT:    li a1, 15
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 16
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB28_5
 ; CHECK-NEXT:  # %bb.4: # %entry
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:  .LBB28_5: # %entry
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -1424,39 +1154,29 @@ define void @vqshlq_u32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-LABEL: vqshlq_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 32
-; CHECK-NEXT:    bgeu a1, a3, .LBB29_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    bgeu a3, a1, .LBB29_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    j .LBB29_3
 ; CHECK-NEXT:  .LBB29_2:
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB29_3: # %entry
-; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 32
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a1, a3, a1
+; CHECK-NEXT:    vwmulu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB29_5
 ; CHECK-NEXT:  # %bb.4: # %entry
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:  .LBB29_5: # %entry
-; CHECK-NEXT:    vse32.v v8, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -1474,31 +1194,29 @@ define void @vqshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    sub a1, a1, a0
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    bgeu a1, a3, .LBB30_2
+; CHECK-NEXT:    sub a3, a1, a0
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    bgeu a3, a1, .LBB30_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a1
+; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:    j .LBB30_3
 ; CHECK-NEXT:  .LBB30_2:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB30_3: # %entry
-; CHECK-NEXT:    li a1, 63
 ; CHECK-NEXT:    minu a1, a0, a1
-; CHECK-NEXT:    vsll.vx v10, v9, a1
-; CHECK-NEXT:    vsrl.vx v11, v10, a1
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    li a3, 63
+; CHECK-NEXT:    vminu.vx v10, v10, a3
+; CHECK-NEXT:    vsll.vv v11, v9, v10
+; CHECK-NEXT:    vsrl.vv v10, v11, v10
+; CHECK-NEXT:    vmsne.vv v10, v9, v10
+; CHECK-NEXT:    vmv.v.x v12, a3
+; CHECK-NEXT:    vmsltu.vx v12, v12, a1
 ; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a1, a0, 64
-; CHECK-NEXT:    xori a1, a1, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, mu
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
 ; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-NEXT:    vmor.mm v0, v10, v9
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vmerge.vim v9, v11, -1, v0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB30_5
 ; CHECK-NEXT:  # %bb.4: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -1519,29 +1237,21 @@ define void @vqshlq_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vle8.v v9, (a0)
-; CHECK-NEXT:    neg a0, a1
-; CHECK-NEXT:    li a3, 8
-; CHECK-NEXT:    bgeu a0, a3, .LBB31_2
+; CHECK-NEXT:    neg a3, a1
+; CHECK-NEXT:    li a0, 8
+; CHECK-NEXT:    bgeu a3, a0, .LBB31_2
 ; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    vsrl.vx v8, v9, a0
+; CHECK-NEXT:    vsrl.vx v8, v9, a3
 ; CHECK-NEXT:    j .LBB31_3
 ; CHECK-NEXT:  .LBB31_2:
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB31_3: # %entry
-; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    minu a0, a1, a0
-; CHECK-NEXT:    vsll.vx v10, v9, a0
-; CHECK-NEXT:    vsrl.vx v11, v10, a0
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    sltiu a0, a1, 8
-; CHECK-NEXT:    xori a0, a0, 1
-; CHECK-NEXT:    vmv.v.x v12, a0
-; CHECK-NEXT:    vmsne.vi v12, v12, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v12
-; CHECK-NEXT:    vmor.mm v0, v11, v9
+; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    sll a0, a3, a0
+; CHECK-NEXT:    vwmulu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vim v9, v10, -1, v0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB31_5
 ; CHECK-NEXT:  # %bb.4: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
