@@ -5953,13 +5953,12 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
   case Intrinsic::aarch64_neon_uqshl:
     // For a normal right shift, the result is different because of signedness.
     if (IsSigned)
-      RShift = DAG.getNode(
-          ISD::SRA, DL, VecVT, Op0,
-          toVectorIfScalar(DAG.getNode(ISD::UMIN, DL, VT, RShiftAmount,
-                                       DAG.getConstant(Size - 1, DL, VT))));
+      RShift = DAG.getNode(ISD::SRA, DL, VecVT, Op0,
+                           toVectorIfScalar(DAG.getNode(
+                               ISD::UMIN, DL, VT, RShiftAmount, MaxShift)));
     else
       RShift = DAG.getSelectCC(
-          DL, RShiftAmount, DAG.getConstant(Size - 1, DL, VT), Zero,
+          DL, RShiftAmount, MaxShift, Zero,
           DAG.getNode(ISD::SRL, DL, VecVT, Op0, toVectorIfScalar(RShiftAmount)),
           ISD::SETUGT);
     break;
