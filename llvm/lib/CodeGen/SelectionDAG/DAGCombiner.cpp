@@ -23748,6 +23748,116 @@ SDValue DAGCombiner::visitVPXOR(SDNode *N) {
 
   return SDValue();
 }
+
+/// A similiar function to foldSelectWithIdentityConstant.
+/// Communicate (vp.bop x, vp.merge(y, id, m1, vl), m2, vl) to
+/// (vp.merge (vp.bop x, y, true, vl), x, m1, vl)
+/// The optimization works when target supports merge operand for those binary
+/// operations.
+static SDValue foldVPSelectWithIdentityConstant(SDNode *N, SelectionDAG &DAG,
+                                                unsigned SelectIndex) {
+  // Match a select as operand 1.
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  SDValue VL = N->getOperand(3);
+  if (SelectIndex == 0)
+    std::swap(N0, N1);
+
+  if ((N1.getOpcode() != ISD::VP_SELECT && N1.getOpcode() != ISD::VP_MERGE) ||
+      N1.getOperand(3) != VL || !N1.hasOneUse())
+    return SDValue();
+
+  unsigned Opcode = N->getOpcode();
+  EVT VT = N->getValueType(0);
+  SDValue Mask = N1.getOperand(0);
+  SDValue TVal = N1.getOperand(1);
+  SDValue FVal = N1.getOperand(2);
+
+  auto GetNormalOp = [](unsigned VPOp) {
+    // Skip div/rem because of immediate UB (not speculatable).
+    switch (VPOp) {
+    case ISD::VP_ADD:
+      return ISD::ADD;
+    case ISD::VP_OR:
+      return ISD::OR;
+    case ISD::VP_XOR:
+      return ISD::XOR;
+    case ISD::VP_MUL:
+      return ISD::MUL;
+    case ISD::VP_AND:
+      return ISD::AND;
+    case ISD::VP_UMAX:
+      return ISD::UMAX;
+    case ISD::VP_UMIN:
+      return ISD::UMIN;
+    case ISD::VP_SMAX:
+      return ISD::SMAX;
+    case ISD::VP_SMIN:
+      return ISD::SMIN;
+    case ISD::VP_SUB:
+      return ISD::SUB;
+    case ISD::VP_SHL:
+      return ISD::SHL;
+    case ISD::VP_LSHR:
+      return ISD::SRA;
+    case ISD::VP_ASHR:
+      return ISD::SRL;
+    case ISD::VP_FADD:
+      return ISD::FADD;
+    case ISD::VP_FSUB:
+      return ISD::FSUB;
+    case ISD::VP_FMUL:
+      return ISD::FMUL;
+    case ISD::VP_FMINNUM:
+      return ISD::FMINNUM;
+    case ISD::VP_FMAXNUM:
+      return ISD::FMAXNUM;
+    }
+    return ISD::DELETED_NODE;
+  };
+
+  unsigned NormalOp = GetNormalOp(Opcode);
+  if (NormalOp != ISD::DELETED_NODE &&
+      isNeutralConstant(NormalOp, N->getFlags(), FVal, SelectIndex)) {
+    // This transform increases uses of N0, so freeze it to be safe.
+    SDValue F0 = DAG.getFreeze(N0);
+    // Use all ones mask for easier optimization, since RISC-V could fold
+    // unmasked intrinsics and vmerge.vvm. It may make more sense to use same
+    // mask as the vp.select node.
+    SDValue Ops1[] = {
+        F0, TVal, DAG.getAllOnesConstant(SDLoc(N), Mask.getValueType()), VL};
+    if (SelectIndex == 0)
+      std::swap(Ops1[0], Ops1[1]);
+    SDValue NewBO = DAG.getNode(Opcode, SDLoc(N), VT, Ops1, N->getFlags());
+    SDValue Ops2[] = {Mask, NewBO, F0, VL};
+    return DAG.getNode(N1->getOpcode(), SDLoc(N), VT, Ops2);
+  }
+  return SDValue();
+}
+
+static SDValue foldVPBinOpIntoVPSelect(SDNode *N, SelectionDAG &DAG) {
+  if (SDValue Res = foldVPSelectWithIdentityConstant(N, DAG, 1))
+    return Res;
+
+  // Test opcodes that are commutable.
+  switch (N->getOpcode()) {
+  case ISD::VP_ADD:
+  case ISD::VP_OR:
+  case ISD::VP_XOR:
+  case ISD::VP_MUL:
+  case ISD::VP_AND:
+  case ISD::VP_UMAX:
+  case ISD::VP_UMIN:
+  case ISD::VP_SMAX:
+  case ISD::VP_SMIN:
+  case ISD::VP_FADD:
+  case ISD::VP_FMUL:
+  case ISD::VP_FMINNUM:
+  case ISD::VP_FMAXNUM:
+    return foldVPSelectWithIdentityConstant(N, DAG, 0);
+  }
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
@@ -23773,11 +23883,23 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
   // This is the only generic VP combine we support for now.
   if (!AreAllEltsDisabled) {
 #if SIFIVE_CUSTOMIZATION
+    if (ISD::isVPBinaryOp(N->getOpcode()))
+      if (SDValue Res = foldVPBinOpIntoVPSelect(N, DAG))
+        return Res;
+
     switch (N->getOpcode()) {
     case ISD::VP_FADD:
       return visitVPFADDForVPFMACombine(N);
     case ISD::VP_XOR:
       return visitVPXOR(N);
+    case ISD::VP_UMAX:
+    case ISD::VP_UMIN:
+    case ISD::VP_SMAX:
+    case ISD::VP_SMIN:
+    case ISD::VP_FMINNUM:
+    case ISD::VP_FMAXNUM:
+      // Those vp intrinsics could not be served by isVPBinaryOp.
+      return foldVPBinOpIntoVPSelect(N, DAG);
     }
 #endif // SIFIVE_CUSTOMIZATION
     return SDValue();
