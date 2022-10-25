@@ -169,9 +169,6 @@ define void @vqrshl_u8(ptr nocapture noundef readonly %src, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    vwmulu.vx v9, v8, a0
-; CHECK-NEXT:    vnclipu.wi v8, v9, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

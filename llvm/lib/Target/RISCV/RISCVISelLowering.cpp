@@ -7573,6 +7573,8 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
   SDValue MulRHS;
   SDValue Zero = DAG.getConstant(0, DL, VT);
   if (SplatRHS) {
+    if (isNullConstant(SplatRHS))
+      return LHS;
     MulRHS = DAG.getSplatBuildVector(VT, DL,
                                      DAG.getNode(ISD::SHL, DL, XLenVT,
                                                  DAG.getConstant(1, DL, XLenVT),
