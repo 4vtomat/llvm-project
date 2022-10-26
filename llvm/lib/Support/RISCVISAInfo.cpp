@@ -155,6 +155,17 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvfh", RISCVExtensionVersion{0, 1}},
     {"zawrs", RISCVExtensionVersion{1, 0}},
     {"ztso", RISCVExtensionVersion{0, 1}},
+
+#if SIFIVE_CUSTOMIZATION
+    // vector crypto
+    {"zvkb", RISCVExtensionVersion{0, 1}},
+    {"zvkg", RISCVExtensionVersion{0, 1}},
+    {"zvknha", RISCVExtensionVersion{0, 1}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}},
+    {"zvkns", RISCVExtensionVersion{0, 1}},
+    {"zvksed", RISCVExtensionVersion{0, 1}},
+    {"zvksh", RISCVExtensionVersion{0, 1}},
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 static bool stripExperimentalPrefix(StringRef &Ext) {
@@ -816,6 +827,19 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "zvl*b requires v or zve* extension to also be specified");
+
+#if SIFIVE_CUSTOMIZATION
+  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") || Exts.count("zvkns") ||
+       Exts.count("zvksed") || Exts.count("zvksh")) && !HasVector)
+    return createStringError(
+        errc::invalid_argument,
+        "zvk* requires v or zve* extension to also be specified");
+
+  if (Exts.count("zvknhb") && !Exts.count("zve64x"))
+    return createStringError(
+        errc::invalid_argument,
+        "zvknhb requires zve64x extension to also be specified");
+#endif // SIFIVE_CUSTOMIZATION
 
   // Additional dependency checks.
   // TODO: The 'q' extension requires rv64.
