@@ -183,8 +183,10 @@ const char LLVMLoopVectorizeFollowupEpilogue[] =
 STATISTIC(LoopsVectorized, "Number of loops vectorized");
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
-
 #if SIFIVE_CUSTOMIZATION
+STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
+                                  "from dependence distance information.");
+
 static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
     "vectorizer-disable-profitable-trip-count-rt-check", cl::init(false),
     cl::Hidden,
@@ -409,7 +411,13 @@ static cl::opt<int64_t>
     LoopVectorizationLimit("loop-vectorization-limit", cl::init(-1), cl::Hidden,
                            cl::desc("Specify maximum number of loops in the "
                                     "compilation unit that be vectorized"));
+
+static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
+    "vectorize-with-known-depdist", cl::init(true), cl::Hidden,
+    cl::desc("Enable vectorization of loops that have a known dependence "
+             "distance."));
 #endif // SIFIVE_CUSTOMIZATION
+
 cl::opt<cl::boolOrDefault> ForceSafeDivisor(
     "force-widen-divrem-via-safe-divisor", cl::Hidden,
     cl::desc("Override cost based safe divisor widening for div/rem instructions"));
@@ -5269,17 +5277,13 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // dependence distance).
   unsigned MaxSafeVectorWidthInBits = Legal->getMaxSafeVectorWidthInBits();
 
-  // Make sure we do not attempt to vectorize loops that we can't vectorize yet:
-  // it should be possible for us to clamp the EVL in this case, but this
-  // impacts other things like reductions, so conservatively disable these
-  // cases for now.
-  if (Legal->getMaxSafeDepDistBytes() != -1U &&
-      UserVF.isZero()) {
-    reportVectorizationFailure(
-        "LV: Scalable vectorization does not support non-infinite distance yet",
-        "Scalable vectorization does not support vectorizing loops that are "
-        "not parallel yet",
-        "ScalableVFUnfeasible", ORE, TheLoop);
+  if (Legal->getMaxSafeDepDistBytes() != -1U && UserVF.isZero() &&
+      !VectorizeLoopsWithKnownDepDist) {
+    reportVectorizationFailure("LV: Scalable vectorization for loops with "
+                               "known dependence distance is disabled.",
+                               "Scalable vectorization is disabled for loops "
+                               "with known dependence distance.",
+                               "ScalableVFUnfeasible", ORE, TheLoop);
     return FixedScalableVFPair::getNone();
   }
 
@@ -5393,46 +5397,46 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   }
 
   ElementCount MaxVF = FeasibleMaxVFUpperBound;
-  TargetTransformInfo::RegisterKind RegKind = MaxVF ?
-      TargetTransformInfo::RGK_ScalableVector :
-      TargetTransformInfo::RGK_FixedWidthVector;
-  if (TTI.shouldMaximizeVectorBandwidth(RegKind) ||
-      (MaximizeBandwidth && isScalarEpilogueAllowed())) {
-    // Collect all viable vectorization factors larger than the default MaxVF
-    // (i.e. FeasibleMaxVFUpperBound).
-    SmallVector<ElementCount, 8> VFs;
-    unsigned MaxVFKnownMinUpperBound =
-        FeasibleMaxVFUpperBound.getKnownMinValue();
-    for (unsigned VS = MaxVFKnownMinLowerBound * 2;
-         VS <= MaxVFKnownMinUpperBound; VS *= 2)
-      VFs.push_back(ElementCount::getScalable(VS));
 
-    // For each VF calculate its register usage.
-    auto RUs = calculateRegisterUsage(VFs);
-    // FIXME: calculateRegisterUsage takes decisions because it calls
-    // collectUniformsAndScalars.
-    invalidateCostModelingDecisions();
+  // Because TTI.getFeasibleMaxVFRange does not consider register usage
+  // here is to select best MaxVF that is not running out of registers
 
-    // Select the largest VF which doesn't require more registers than existing
-    // ones.
-    for (int I = RUs.size() - 1; I >= 0; --I) {
-      const auto &MLU = RUs[I].MaxLocalUsers;
-      if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
-            return LU.second <= TTI.getNumberOfRegisters(LU.first);
-          })) {
-        MaxVF = VFs[I];
-        break;
-      }
-    }
-    if (ElementCount MinVF =
-            TTI.getMinimumVF(SmallestType, /* Scalable */ true)) {
-      if (ElementCount::isKnownLT(MaxVF, MinVF)) {
-        LLVM_DEBUG(dbgs() << "LV: Overriding calculated MaxVF(" << MaxVF
-                          << ") with target's minimum: " << MinVF << '\n');
-        MaxVF = MinVF;
-      }
+  SmallVector<ElementCount, 8> VFs;
+  unsigned MaxVFKnownMinUpperBound = FeasibleMaxVFUpperBound.getKnownMinValue();
+  for (unsigned VS = MaxVFKnownMinLowerBound; VS <= MaxVFKnownMinUpperBound;
+       VS *= 2)
+    VFs.push_back(ElementCount::getScalable(VS));
+
+  // For each VF calculate its register usage.
+  auto RUs = calculateRegisterUsage(VFs);
+  // FIXME: calculateRegisterUsage takes decisions because it calls
+  // collectUniformsAndScalars.
+  invalidateCostModelingDecisions();
+  // Select the largest VF which doesn't require more registers than existing
+  // ones.
+  for (int I = RUs.size() - 1; I >= 0; --I) {
+    const auto &MLU = RUs[I].MaxLocalUsers;
+    if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
+          return LU.second <= TTI.getNumberOfRegisters(LU.first);
+        })) {
+      MaxVF = VFs[I];
+      break;
     }
   }
+  if (ElementCount MinVF =
+          TTI.getMinimumVF(SmallestType, /* Scalable */ true)) {
+    if (ElementCount::isKnownLT(MaxVF, MinVF)) {
+      LLVM_DEBUG(dbgs() << "LV: Overriding calculated MaxVF(" << MaxVF
+                        << ") with target's minimum: " << MinVF << '\n');
+      MaxVF = MinVF;
+    }
+  }
+  // Invalidate any widening decisions we might have made, in case the loop
+  // requires prediction (decided later), but we have already made some
+  // load/store widening decisions.
+  invalidateCostModelingDecisions();
+  LLVM_DEBUG(dbgs() << "LV: calculated MaxVF(" << MaxVF << "), MaxVFUpperBound("
+                    << FeasibleMaxVFUpperBound << ")\n");
   return MaxVF;
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -8466,6 +8470,15 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     assert(SmallestTypeSize >= 8 && WidestTypeSize <= 64 &&
            "Cannot set vector length: Unsupported type");
     State.SEW = Log2_32(WidestTypeSize) - 3;
+    // Only update MaxSafeNumElems if there is a dependency
+    if (Legal->getMaxSafeDepDistBytes() != -1U) {
+      State.MaxSafeNumElems =
+          Legal->getMaxSafeDepDistBytes() / (WidestTypeSize / 8);
+      LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeDepDistBytes="
+                        << Legal->getMaxSafeDepDistBytes()
+                        << ", MaxSafeNumElems=" << State.MaxSafeNumElems
+                        << "\n");
+    }
     unsigned Numerator = WidestTypeSize * State.VF.getKnownMinValue();
     unsigned Denominator = TTI->getMaxElementWidth();
     State.LMULExp = Numerator >= Denominator
@@ -10275,6 +10288,12 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       VPValue *Red = PhiR->getBackedgeValue();
       assert(cast<VPRecipeBase>(Red->getDef())->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
+#if SIFIVE_CUSTOMIZATION
+      if (Legal->useVLAVectorizer())
+        Builder.createSelect(Cond, Red, PhiR, DebugLoc(),
+                             VPSelectInstruction::TailPolicy::Undisturbed);
+      else
+#endif // SIFIVE_CUSTOMIZATION
       Builder.createNaryOp(Instruction::Select, {Cond, Red, PhiR});
     }
   }
@@ -10494,9 +10513,16 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
   Value *NumUnrolledElems =
       State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
+  // If MaxSafeNumElems is not unknown, then we have clamped the VL.
+  // Therefore, we need to bump the pointer by the clamped disntance
+  // instead.
+  Value *PtrStride =
+      State.MaxSafeNumElems == VPTransformState::UnknownNumSafeElems
+          ? NumUnrolledElems
+          : ConstantInt::get(PhiType, State.MaxSafeNumElems);
   Value *InductionGEP = GetElementPtrInst::Create(
       IndDesc.getElementType(), NewPointerPhi,
-      State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
+      State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getEVL())
@@ -11778,6 +11804,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                         DT, true);
         ++LoopsVectorized;
 
+#if SIFIVE_CUSTOMIZATION
+        if (LVL.getMaxSafeDepDistBytes() != -1U)
+          ++LoopsVectorizedWithDep;
+
+#endif // SIFIVE_CUSTOMIZATION
         // Second pass vectorizes the epilogue and adjusts the control flow
         // edges from the first pass.
         EPI.MainLoopVF = EPI.EpilogueVF;
@@ -11818,6 +11849,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         LVP.executePlan(VF.Width, IC, BestPlan, LB, DT, false);
         ++LoopsVectorized;
 
+#if SIFIVE_CUSTOMIZATION
+        if (LVL.getMaxSafeDepDistBytes() != -1U)
+          ++LoopsVectorizedWithDep;
+
+#endif // SIFIVE_CUSTOMIZATION
         // Add metadata to disable runtime unrolling a scalar loop when there
         // are no runtime checks about strides and memory. A scalar loop that is
         // rarely used is not worth unrolling.

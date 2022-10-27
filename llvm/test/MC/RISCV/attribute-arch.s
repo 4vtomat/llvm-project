@@ -93,6 +93,24 @@
 .attribute arch, "rv32izicbop"
 # CHECK: attribute      5, "rv32i2p1_zicbop1p0"
 
+.attribute arch, "rv32izicclsm"
+# CHECK: attribute      5, "rv32i2p1_zicclsm1p0"
+
+.attribute arch, "rv32iziccif"
+# CHECK: attribute      5, "rv32i2p1_ziccif1p0"
+
+.attribute arch, "rv32iziccamoa"
+# CHECK: attribute      5, "rv32i2p1_ziccamoa1p0"
+
+.attribute arch, "rv32iziccrse"
+# CHECK: attribute      5, "rv32i2p1_ziccrse1p0"
+
+.attribute arch, "rv32iza64rs"
+# CHECK: attribute      5, "rv32i2p1_za64rs1p0"
+
+.attribute arch, "rv32izic64b"
+# CHECK: attribute      5, "rv32i2p1_zic64b1p0"
+
 ## SIFIVE_CUSTOMIZATION
 .attribute arch, "rv32i_sscofpmf"
 # CHECK: attribute      5, "rv32i2p1_sscofpmf1p0"

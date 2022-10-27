@@ -46,6 +46,21 @@ static bool canUnaryOrBinaryOpBeUnmasked(const unsigned Opcode, Type *ElementTyp
   return true;
 }
 
+static void widenSelectInstruction(VPTransformState &State,
+                                   const unsigned VPOpCode, VPValue *Def,
+                                   VPUser &User, const unsigned Part,
+                                   StringRef Name) {
+  VPValue *EVL = State.Plan->getEVL();
+  Value *Cond = State.get(User.getOperand(0), Part);
+  Value *Op1 = State.get(User.getOperand(1), Part);
+  Value *Op2 = State.get(User.getOperand(2), Part);
+  Value *EVLArg = State.get(EVL, Part);
+  Value *V = State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
+                                           {Cond, Op1, Op2, EVLArg}, nullptr,
+                                           "vp.op.select");
+  State.set(Def, V, Part);
+}
+
 namespace llvm {
 void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                 VPTransformState &State, VPValue *BlockInMask,
@@ -97,18 +112,8 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   case Instruction::Select: {
     assert((!Op || isa<VPWidenSelectRecipe>(Def->getDef())) &&
            "Expected with no-op only or VPWidenSelectRecipe.");
-    Value *Cond = State.get(User.getOperand(0), Part);
-    Value *Op1 = State.get(User.getOperand(1), Part);
-    Value *Op2 = State.get(User.getOperand(2), Part);
-    Value *EVLArg = State.get(EVL, Part);
-    // Emit vp.merge intrinsic to keep same tail policy in entire loop.
-    // Otherwise, this will lead to switching it to/from tail-agnostic, which is
-    // not performant and may break optimizations in backend. Keep name of the
-    // value as "vp.op.select" for debugging purposes
-    Value *V = BuilderIR.CreateIntrinsic(Intrinsic::vp_merge, {Op1->getType()},
-                                         {Cond, Op1, Op2, EVLArg}, nullptr,
-                                         "vp.op.select");
-    State.set(Def, V, Part);
+    widenSelectInstruction(State, Intrinsic::vp_select, Def, User, Part,
+                           "vp.op.select");
     return;
   }
   case VPInstruction::ICmpULE: {
@@ -292,4 +297,28 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
     V->copyFastMathFlags(&CI);
   State.set(Def, V, Part);
 }
+
+void VPSelectInstruction::execute(VPTransformState &State) {
+  if (!State.Plan->getEVL()) {
+    // For non RVV VLA vectorization, reuse existing mechanism to generate the
+    // vector code
+    VPInstruction::execute(State);
+    return;
+  }
+
+  assert(!State.Instance && "VPInstruction executing an Instance");
+  IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
+  State.Builder.setFastMathFlags(getFastMathFlags());
+
+  unsigned VPOpCode = Intrinsic::vp_select;
+  StringRef Name = "vp.op.select";
+  if (hasTailUndisturbedPolicy()) {
+    VPOpCode = Intrinsic::vp_merge;
+    Name = "vp.op.merge";
+  }
+
+  for (unsigned Part = 0; Part < State.UF; ++Part)
+    widenSelectInstruction(State, VPOpCode, this, *this, Part, Name);
+}
+
 } // namespace llvm

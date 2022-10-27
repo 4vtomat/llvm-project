@@ -612,6 +612,18 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
          "Requested vector length should be an integer.");
   Value *RVLArg = State.Builder.CreateZExtOrTrunc(
       RVL, Type::getInt64Ty(State.Builder.getContext()));
+
+  // RVL must be clamped by the number of elements that corresponds to the
+  // maximum safe dependence distance.
+  assert(State.MaxSafeNumElems != 0 &&
+         "Max safe number of elements that can be vectorized cannot be 0.");
+  if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems) {
+    Constant *MaxSafe =
+        ConstantInt::get(RVLArg->getType(), State.MaxSafeNumElems);
+    RVLArg =
+        State.Builder.CreateBinaryIntrinsic(Intrinsic::umin, RVLArg, MaxSafe);
+  }
+
   assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
          "LMUL is not supported by the hardware");
   Constant *SEWArg = ConstantInt::get(

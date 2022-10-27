@@ -25,6 +25,13 @@ namespace llvm {
 
 class RISCVSubtarget;
 
+#if SIFIVE_CUSTOMIZATION
+static const MachineMemOperand::Flags MONontemporalBit0 =
+    MachineMemOperand::MOTargetFlag1;
+static const MachineMemOperand::Flags MONontemporalBit1 =
+    MachineMemOperand::MOTargetFlag2;
+#endif // SIFIVE_CUSTOMIZATION
+
 namespace RISCVCC {
 
 enum CondCode {
@@ -198,15 +205,23 @@ public:
   Register getGlobalBaseReg(MachineFunction *MF) const;
 
 #if SIFIVE_CUSTOMIZATION
+  // SIFIVE: This has been cherry-picked from upstream.
   bool useMachineCombiner() const override { return true; }
 
-  /// Return true when Inst is associative and commutative so that it can be
-  /// reassociated.
-  bool isAssociativeAndCommutative(const MachineInstr &Inst) const override;
   void setSpecialOperandAttr(MachineInstr &OldMI1, MachineInstr &OldMI2,
                              MachineInstr &NewMI1,
                              MachineInstr &NewMI2) const override;
+  bool
+  getMachineCombinerPatterns(MachineInstr &Root,
+                             SmallVectorImpl<MachineCombinerPattern> &Patterns,
+                             bool DoRegPressureReduce) const override;
 
+  void
+  finalizeInsInstrs(MachineInstr &Root, MachineCombinerPattern &P,
+                    SmallVectorImpl<MachineInstr *> &InsInstrs) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
   void expandLIsimm32(MachineBasicBlock &MBB,
                       MachineBasicBlock::iterator MBBI) const;
 
@@ -221,6 +236,9 @@ public:
   bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
                            ArrayRef<const MachineOperand *> BaseOps2,
                            unsigned NumLoads, unsigned NumBytes) const override;
+  ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
+  getSerializableMachineMemOperandTargetFlags() const override;
+
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:
@@ -244,6 +262,13 @@ bool isFaultFirstLoad(const MachineInstr &MI);
 
 // Implemented in RISCVGenInstrInfo.inc
 int16_t getNamedOperandIdx(uint16_t Opcode, uint16_t NamedIndex);
+
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE: This has been cherry-picked from upstream
+// Return true if both input instructions have equal rounding mode. If at least
+// one of the instructions does not have rounding mode, false will be returned.
+bool hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2);
+#endif // SIFIVE_CUSTOMIZATION
 
 // Special immediate for AVL operand of V pseudo instructions to indicate VLMax.
 static constexpr int64_t VLMaxSentinel = -1LL;

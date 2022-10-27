@@ -100,6 +100,12 @@ private:
   bool HasStdExtZicbom = false;
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
+  bool HasStdExtZicclsm = false; //SIFIVE
+  bool HasStdExtZiccif = false; //SIFIVE
+  bool HasStdExtZiccamoa = false; //SIFIVE
+  bool HasStdExtZiccrse = false; //SIFIVE
+  bool HasStdExtZa64rs = false; //SIFIVE
+  bool HasStdExtZic64b = false; //SIFIVE
   bool HasStdExtZmmul = false;
   bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasStdExtZawrs = false;
@@ -183,6 +189,12 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool hasStdExtZicsr() const { return HasStdExtZicsr; }
   bool hasStdExtZifencei() const { return HasStdExtZifencei; }
+  bool hasStdExtZicclsm() const { return HasStdExtZicclsm; }
+  bool hasStdExtZiccif() const { return HasStdExtZiccif; }
+  bool hasStdExtZiccamoa() const { return HasStdExtZiccamoa; }
+  bool hasStdExtZiccrse() const { return HasStdExtZiccrse; }
+  bool hasStdExtZa64rs() const { return HasStdExtZa64rs; }
+  bool hasStdExtZic64b() const { return HasStdExtZic64b; }
 #endif // SIFIVE_CUSTOMIZATION
   bool hasStdExtV() const { return HasStdExtV; }
   bool hasStdExtZihintpause() const { return HasStdExtZihintpause; }

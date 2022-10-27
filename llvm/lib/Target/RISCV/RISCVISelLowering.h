@@ -438,6 +438,18 @@ public:
   // This method returns the name of a target specific DAG node.
   const char *getTargetNodeName(unsigned Opcode) const override;
 
+#if SIFIVE_CUSTOMIZATION
+  MachineMemOperand::Flags
+  getTargetMMOFlags(const Instruction &I) const override;
+
+  MachineMemOperand::Flags
+  getTargetMMOFlags(const MemSDNode &Node) const override;
+
+  bool
+  areTwoSDNodeTargetMMOFlagsMergeable(const MemSDNode &NodeX,
+                                      const MemSDNode &NodeY) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
   ConstraintType getConstraintType(StringRef Constraint) const override;
 
   unsigned getInlineAsmMemConstraint(StringRef ConstraintCode) const override;
@@ -678,6 +690,9 @@ private:
   SDValue lowerVECTOR_REVERSE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVECTOR_SPLICE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerABS(SDValue Op, SelectionDAG &DAG) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerSHLSAT(SDValue Op, SelectionDAG &DAG, bool IsSigned) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerMaskedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerMaskedStore(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFixedLengthVectorFCOPYSIGNToRVV(SDValue Op,

@@ -969,6 +969,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(
             {ISD::SMIN, ISD::SMAX, ISD::UMIN, ISD::UMAX, ISD::ABS}, VT, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+        setOperationAction({ISD::SSHLSAT, ISD::USHLSAT}, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
+
         // vXi64 MULHS/MULHU requires the V extension instead of Zve64*.
         if (VT.getVectorElementType() != MVT::i64 || Subtarget.hasStdExtV())
           setOperationAction({ISD::MULHS, ISD::MULHU}, VT, Custom);
@@ -4329,6 +4333,12 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
                              /*HasMergeOp*/ true);
   case ISD::ABS:
     return lowerABS(Op, DAG);
+#if SIFIVE_CUSTOMIZATION
+  case ISD::SSHLSAT:
+    return lowerSHLSAT(Op, DAG, /*IsSigned*/ true);
+  case ISD::USHLSAT:
+    return lowerSHLSAT(Op, DAG, /*IsSigned*/ false);
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::CTLZ_ZERO_UNDEF:
   case ISD::CTTZ_ZERO_UNDEF:
     return lowerCTLZ_CTTZ_ZERO_UNDEF(Op, DAG);
@@ -7141,6 +7151,105 @@ SDValue RISCVTargetLowering::lowerABS(SDValue Op, SelectionDAG &DAG) const {
 
   return convertFromScalableVector(VT, Max, DAG, Subtarget);
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
+                                         bool IsSigned) const {
+  SDLoc DL(Op);
+  MVT VT = Op.getSimpleValueType();
+  assert(VT.isFixedLengthVector() && "Unexpected type");
+  unsigned EltBitSize = VT.getScalarSizeInBits();
+  SDValue LHS = Op.getOperand(0);
+  SDValue RHS = Op.getOperand(1);
+  MVT XLenVT = Subtarget.getXLenVT();
+  MVT ContainerVT = getContainerForFixedLengthVector(VT);
+  SDValue SplatRHS = DAG.getSplatValue(RHS, /*LegalTypes*/ true);
+  // Convert RHS from (LHS << RHS) to (LHS * (1 << RHS)).
+  SDValue MulRHS;
+  if (SplatRHS) {
+    MulRHS = DAG.getSplatVector(ContainerVT, DL,
+                                DAG.getNode(ISD::SHL, DL, XLenVT,
+                                            DAG.getConstant(1, DL, XLenVT),
+                                            SplatRHS));
+  } else {
+    MulRHS = convertToScalableVector(
+        ContainerVT,
+        DAG.getNode(
+            ISD::SHL, DL, VT,
+            DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)),
+            RHS),
+        DAG, Subtarget);
+  }
+  auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
+  SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+  // SEW 64 vsmul is only included in V.
+  bool CanUseSmul = (EltBitSize != 64) || Subtarget.hasStdExtV();
+  // Only signed type can use vsmul.
+  CanUseSmul = CanUseSmul && IsSigned;
+  if (CanUseSmul) {
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
+    SDValue Smul =
+        DAG.getNode(RISCVISD::VSMUL_VL, DL, ContainerVT,
+                    {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+                     MulRHS, DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+    return convertFromScalableVector(VT, Smul, DAG, Subtarget);
+  }
+  MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
+                                 VT.getVectorNumElements());
+  // Widening operation is used. Make sure EltBitSize * 2 is smaller than or
+  // equal to ELEN.
+  // isTypeLegal(WidenVT): if VT is v1024i8, WidenVT is v1024i16. But v1024i16
+  // is not existed.
+  bool CanUseWidenAlgo =
+      EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
+  // For unsigned type, widen algo causes higher register pressure.
+  bool UseWidenAlgo = SplatRHS ? true : IsSigned;
+  if (CanUseWidenAlgo && UseWidenAlgo) {
+    unsigned WmulOpc;
+    unsigned NclipOpc;
+    if (IsSigned) {
+      WmulOpc = RISCVISD::VWMULSU_VL;
+      NclipOpc = RISCVISD::VNCLIP_VL;
+    } else {
+      WmulOpc = RISCVISD::VWMULU_VL;
+      NclipOpc = RISCVISD::VNCLIPU_VL;
+    }
+    MVT WidenContainerVT = getContainerForFixedLengthVector(WidenVT);
+    SDValue Wmul =
+        DAG.getNode(WmulOpc, DL, WidenContainerVT,
+                    convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+                    MulRHS, DAG.getUNDEF(WidenContainerVT), Mask, VL);
+    // Every rounding modes produces same value if the shift amount is 0.
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
+    SDValue Nclip = DAG.getNode(
+        NclipOpc, DL, ContainerVT,
+        {Wmul,
+         DAG.getSplatVector(ContainerVT, DL, DAG.getConstant(0, DL, XLenVT)),
+         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+    return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
+  }
+  MVT SetccVT = MVT::getVectorVT(MVT::i1, VT.getVectorElementCount());
+  SDValue LShift = DAG.getNode(ISD::SHL, DL, VT, LHS, RHS);
+  SDValue SatValue;
+  if (IsSigned) {
+    SDValue IsNegative =
+        DAG.getSetCC(DL, SetccVT, LHS, DAG.getConstant(0, DL, VT), ISD::SETLT);
+    // The maximum value is different if LHS is positive or negative.
+    SatValue = DAG.getSelect(
+        DL, VT, IsNegative,
+        DAG.getConstant(APInt::getSignedMinValue(EltBitSize), DL, VT),
+        DAG.getConstant(APInt::getSignedMaxValue(EltBitSize), DL, VT));
+  } else {
+    SatValue = DAG.getConstant(APInt::getMaxValue(EltBitSize), DL, VT);
+  }
+  // If LHS != ((LHS << RHS) >> RHS), it is saturated.
+  SDValue IsSat = DAG.getSetCC(
+      DL, SetccVT, LHS,
+      DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL, VT, LShift, RHS),
+      ISD::SETNE);
+  return DAG.getSelect(DL, VT, IsSat, SatValue, LShift);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue RISCVTargetLowering::lowerFixedLengthVectorFCOPYSIGNToRVV(
     SDValue Op, SelectionDAG &DAG) const {
@@ -14974,6 +15083,56 @@ bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
   // We have W instructions for all binary operators except AND/OR/XOR.
   return isa<BinaryOperator>(Src) &&
          !cast<BinaryOperator>(Src)->isBitwiseLogicOp();
+}
+
+MachineMemOperand::Flags
+RISCVTargetLowering::getTargetMMOFlags(const Instruction &I) const {
+  const MDNode *NontemporalInfo = I.getMetadata(LLVMContext::MD_nontemporal);
+
+  if (NontemporalInfo == nullptr)
+    return MachineMemOperand::MONone;
+
+  // 1 for default value work as __RISCV_NTLH_ALL
+  // 2 -> __RISCV_NTLH_INNERMOST_PRIVATE
+  // 3 -> __RISCV_NTLH_ALL_PRIVATE
+  // 4 -> __RISCV_NTLH_INNERMOST_SHARED
+  // 5 -> __RISCV_NTLH_ALL
+  int NontemporalLevel =
+      cast<ConstantInt>(
+          cast<ConstantAsMetadata>(NontemporalInfo->getOperand(0))->getValue())
+          ->getZExtValue();
+
+  assert((1 <= NontemporalLevel && NontemporalLevel <= 5) &&
+         "RISC-V target doesn't support this non-temporal domain.");
+
+  // Mapping default value into __RISCV_NTLH_ALL
+  if (NontemporalLevel == 1)
+    NontemporalLevel = 5;
+
+  NontemporalLevel -= 2;
+  MachineMemOperand::Flags Flags = MachineMemOperand::MONone;
+  if (NontemporalLevel & 0b1)
+    Flags |= MONontemporalBit0;
+  if (NontemporalLevel & 0b10)
+    Flags |= MONontemporalBit1;
+
+  return Flags;
+}
+
+MachineMemOperand::Flags
+RISCVTargetLowering::getTargetMMOFlags(const MemSDNode &Node) const {
+
+  MachineMemOperand::Flags NodeFlags = Node.getMemOperand()->getFlags();
+  MachineMemOperand::Flags TargetFlags = MachineMemOperand::MONone;
+  TargetFlags |= (NodeFlags & MONontemporalBit0);
+  TargetFlags |= (NodeFlags & MONontemporalBit1);
+
+  return TargetFlags;
+}
+
+bool RISCVTargetLowering::areTwoSDNodeTargetMMOFlagsMergeable(
+    const MemSDNode &NodeX, const MemSDNode &NodeY) const {
+  return getTargetMMOFlags(NodeX) == getTargetMMOFlags(NodeY);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

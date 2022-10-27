@@ -19374,9 +19374,47 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     ID = Intrinsic::riscv_sm3p1;
     IntrinsicTypes = {ResultType};
     break;
-
-  // Vector builtins are handled from here.
 #if SIFIVE_CUSTOMIZATION
+  case RISCV::BI__builtin_riscv_ntl_load: {
+    llvm::Type *ResTy = ConvertType(E->getType());
+    ConstantInt *Mode = llvm::dyn_cast<llvm::ConstantInt>(Ops[1]);
+
+    assert(
+        Mode &&
+        "__builtin_riscv_ntl_load's domain argument value must be constant.");
+
+    llvm::MDNode *Node = llvm::MDNode::get(
+        getLLVMContext(),
+        llvm::ConstantAsMetadata::get(Builder.getInt32(Mode->getZExtValue())));
+
+    int Width = ResTy->getPrimitiveSizeInBits();
+    LoadInst *Load = Builder.CreateLoad(
+        Address(Ops[0], ResTy, CharUnits::fromQuantity(Width / 8)));
+
+    Load->setMetadata(CGM.getModule().getMDKindID("nontemporal"), Node);
+
+    return Load;
+  }
+  case RISCV::BI__builtin_riscv_ntl_store: {
+    ConstantInt *Mode = llvm::dyn_cast<llvm::ConstantInt>(Ops[2]);
+
+    assert(
+        Mode &&
+        "__builtin_riscv_ntl_store's domain argument value must be constant.");
+
+    llvm::MDNode *Node = llvm::MDNode::get(
+        getLLVMContext(),
+        llvm::ConstantAsMetadata::get(Builder.getInt32(Mode->getZExtValue())));
+
+    Value *BC = Builder.CreateBitCast(
+        Ops[0], llvm::PointerType::getUnqual(Ops[1]->getType()), "cast");
+
+    StoreInst *Store = Builder.CreateDefaultAlignedStore(Ops[1], BC);
+    Store->setMetadata(CGM.getModule().getMDKindID("nontemporal"), Node);
+
+    return Store;
+  }
+  // Vector builtins are handled from here.
   case RISCVVector::BI__builtin_rvv_vcast_from_fixed_64_i8m1:
   case RISCVVector::BI__builtin_rvv_vcast_from_fixed_64_i16m1:
   case RISCVVector::BI__builtin_rvv_vcast_from_fixed_64_i32m1:

@@ -82,31 +82,31 @@
 // RUN: not %clang_cc1 -triple riscv32 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV32
 // RISCV32: error: unknown target CPU 'not-a-cpu'
 // RISCV32: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20,
-// RISCV32: sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e66, sifive-e76,
-// RISCV32: sifive-e76m, sifive-e76n{{$}}
+// RISCV32-SAME: sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e66, sifive-e76,
+// RISCV32-SAME: sifive-e76m, sifive-e76n{{$}}
 
 // RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
 // RISCV64: error: unknown target CPU 'not-a-cpu'
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21,
-// RISCV64: sifive-s51, sifive-s54, sifive-s66, sifive-s76, sifive-s76m, sifive-s76n,
-// RISCV64: sifive-u54, sifive-u64, sifive-u74, sifive-u74m, sifive-u74n, sifive-x280,
-// RISCV64: sifive-x280n, sifive-x280o, sifive-p270, sifive-p270n, sifive-p550, sifive-p650{{$}}
+// RISCV64-SAME: sifive-s51, sifive-s54, sifive-s66, sifive-s76, sifive-s76m, sifive-s76n,
+// RISCV64-SAME: sifive-u54, sifive-u64, sifive-u74, sifive-u74m, sifive-u74n, sifive-x280,
+// RISCV64-SAME: sifive-x280n, sifive-x280o, sifive-p270, sifive-p270n, sifive-p550, sifive-p650{{$}}
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
 // TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
 // TUNE-RISCV32: note: valid target CPU values are: generic-rv32, rocket-rv32,
-// TUNE-RISCV32: sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34,
-// TUNE-RISCV32: sifive-e66, sifive-e76, sifive-e76m, sifive-e76n, generic, rocket,
-// TUNE-RISCV32: sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series,
-// TUNE-RISCV32: sifive-8-series, sifive-9-series, sifive-p500-series, sifive-p600-series{{$}}
+// TUNE-RISCV32-SAME: sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34,
+// TUNE-RISCV32-SAME: sifive-e66, sifive-e76, sifive-e76m, sifive-e76n, generic, rocket,
+// TUNE-RISCV32-SAME: sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series,
+// TUNE-RISCV32-SAME: sifive-8-series, sifive-p500-series, sifive-p600-series{{$}}
 
 // RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
 // TUNE-RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64,
-// TUNE-RISCV64: sifive-s21, sifive-s51, sifive-s54, sifive-s66, sifive-s76,
-// TUNE-RISCV64: sifive-s76m, sifive-s76n, sifive-u54, sifive-u64, sifive-u74,
-// TUNE-RISCV64: sifive-u74m, sifive-u74n, sifive-x280, sifive-x280n, sifive-x280o,
-// TUNE-RISCV64: sifive-p270, sifive-p270n, sifive-p550, sifive-p650, generic,
-// TUNE-RISCV64: rocket, sifive-6-series, sifive-7-series, sifive-7m-series,
-// TUNE-RISCV64: sifive-7n-series, sifive-7o-series, sifive-8-series, sifive-9-series, sifive-p500-series,
-// TUNE-RISCV64: sifive-p600-series{{$}}
+// TUNE-RISCV64-SAME: sifive-s21, sifive-s51, sifive-s54, sifive-s66, sifive-s76,
+// TUNE-RISCV64-SAME: sifive-s76m, sifive-s76n, sifive-u54, sifive-u64, sifive-u74,
+// TUNE-RISCV64-SAME: sifive-u74m, sifive-u74n, sifive-x280, sifive-x280n, sifive-x280o,
+// TUNE-RISCV64-SAME: sifive-p270, sifive-p270n, sifive-p550, sifive-p650, generic,
+// TUNE-RISCV64-SAME: rocket, sifive-6-series, sifive-7-series, sifive-7m-series,
+// TUNE-RISCV64-SAME: sifive-7n-series, sifive-7o-series, sifive-8-series, sifive-p500-series,
+// TUNE-RISCV64-SAME: sifive-p600-series{{$}}

@@ -517,6 +517,53 @@ define <vscale x 64 x i8> @test_vp_reverse_nxv64i8(<vscale x 64 x i8> %src, i32 
   ret <vscale x 64 x i8> %dst
 }
 
+define <vscale x 128 x i8> @test_vp_reverse_nxv128i8(<vscale x 128 x i8> %src, i32 zeroext %evl) {
+; CHECK-LABEL: test_vp_reverse_nxv128i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 3
+; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    bltu a0, a1, .LBB32_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:  .LBB32_2:
+; CHECK-NEXT:    addi sp, sp, -64
+; CHECK-NEXT:    .cfi_def_cfa_offset 64
+; CHECK-NEXT:    addi s0, sp, 64
+; CHECK-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a3, a3, 4
+; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    andi sp, sp, -64
+; CHECK-NEXT:    li a4, 0
+; CHECK-NEXT:    addi a3, sp, 64
+; CHECK-NEXT:    add a5, a0, a3
+; CHECK-NEXT:    addi a6, a5, -1
+; CHECK-NEXT:    li a5, -1
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsse8.v v8, (a6), a5
+; CHECK-NEXT:    sub a7, a0, a1
+; CHECK-NEXT:    sub a6, a6, a2
+; CHECK-NEXT:    bltu a0, a7, .LBB32_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a4, a7
+; CHECK-NEXT:  .LBB32_4:
+; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, mu
+; CHECK-NEXT:    vsse8.v v16, (a6), a5
+; CHECK-NEXT:    add a0, a3, a1
+; CHECK-NEXT:    vle8.v v16, (a0)
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vle8.v v8, (a3)
+; CHECK-NEXT:    addi sp, s0, -64
+; CHECK-NEXT:    addi sp, sp, 64
+; CHECK-NEXT:    ret
+  %head = insertelement <vscale x 128 x i1> undef, i1 1, i32 0
+  %allones = shufflevector <vscale x 128 x i1> %head, <vscale x 128 x i1> undef, <vscale x 128 x i32> zeroinitializer
+
+  %dst = call <vscale x 128 x i8> @llvm.experimental.vp.reverse.nxv128i8(<vscale x 128 x i8> %src, <vscale x 128 x i1> %allones, i32 %evl)
+  ret <vscale x 128 x i8> %dst
+}
+
 ; LMUL = 1
 declare <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64>,<vscale x 1 x i1>,i32)
 declare <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32>,<vscale x 2 x i1>,i32)
@@ -540,3 +587,5 @@ declare <vscale x 8 x i64> @llvm.experimental.vp.reverse.nxv8i64(<vscale x 8 x i
 declare <vscale x 16 x i32> @llvm.experimental.vp.reverse.nxv16i32(<vscale x 16 x i32>,<vscale x 16 x i1>,i32)
 declare <vscale x 32 x i16> @llvm.experimental.vp.reverse.nxv32i16(<vscale x 32 x i16>,<vscale x 32 x i1>,i32)
 declare <vscale x 64 x i8> @llvm.experimental.vp.reverse.nxv64i8(<vscale x 64 x i8>,<vscale x 64 x i1>,i32)
+
+declare <vscale x 128 x i8> @llvm.experimental.vp.reverse.nxv128i8(<vscale x 128 x i8>,<vscale x 128 x i1>,i32)
