@@ -7,7 +7,7 @@ declare <1 x i8> @llvm.sshl.sat.v1i8(<1 x i8>, <1 x i8>)
 define <1 x i8> @sshl_sat_v1i8(<1 x i8> %a, <1 x i8> %b) {
 ; CHECK-LABEL: sshl_sat_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    csrrwi a0, vxrm, 2
@@ -23,7 +23,7 @@ define <1 x i8> @sshl_sat_v1i8_splat(<1 x i8> %a, i8 %b) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
@@ -39,7 +39,7 @@ declare <2 x i8> @llvm.sshl.sat.v2i8(<2 x i8>, <2 x i8>)
 define <2 x i8> @sshl_sat_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i8:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -49,7 +49,7 @@ define <2 x i8> @sshl_sat_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i8:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -65,7 +65,7 @@ define <2 x i8> @sshl_sat_v2i8_splat(<2 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -75,7 +75,7 @@ define <2 x i8> @sshl_sat_v2i8_splat(<2 x i8> %a, i8 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -91,7 +91,7 @@ declare <4 x i8> @llvm.sshl.sat.v4i8(<4 x i8>, <4 x i8>)
 define <4 x i8> @sshl_sat_v4i8(<4 x i8> %a, <4 x i8> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i8:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -101,7 +101,7 @@ define <4 x i8> @sshl_sat_v4i8(<4 x i8> %a, <4 x i8> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i8:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -117,7 +117,7 @@ define <4 x i8> @sshl_sat_v4i8_splat(<4 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -127,7 +127,7 @@ define <4 x i8> @sshl_sat_v4i8_splat(<4 x i8> %a, i8 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -143,7 +143,7 @@ declare <8 x i8> @llvm.sshl.sat.v8i8(<8 x i8>, <8 x i8>)
 define <8 x i8> @sshl_sat_v8i8(<8 x i8> %a, <8 x i8> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v8i8:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -153,7 +153,7 @@ define <8 x i8> @sshl_sat_v8i8(<8 x i8> %a, <8 x i8> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i8:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -169,7 +169,7 @@ define <8 x i8> @sshl_sat_v8i8_splat(<8 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -179,7 +179,7 @@ define <8 x i8> @sshl_sat_v8i8_splat(<8 x i8> %a, i8 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -195,7 +195,7 @@ declare <16 x i8> @llvm.sshl.sat.v16i8(<16 x i8>, <16 x i8>)
 define <16 x i8> @sshl_sat_v16i8(<16 x i8> %a, <16 x i8> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v16i8:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -205,7 +205,7 @@ define <16 x i8> @sshl_sat_v16i8(<16 x i8> %a, <16 x i8> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i8:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -221,7 +221,7 @@ define <16 x i8> @sshl_sat_v16i8_splat(<16 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -231,7 +231,7 @@ define <16 x i8> @sshl_sat_v16i8_splat(<16 x i8> %a, i8 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -248,7 +248,7 @@ define <32 x i8> @sshl_sat_v32i8(<32 x i8> %a, <32 x i8> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v32i8:
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a0, 32
-; CHECK-ZVE64X-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -259,7 +259,7 @@ define <32 x i8> @sshl_sat_v32i8(<32 x i8> %a, <32 x i8> %b) {
 ; CHECK-V-LABEL: sshl_sat_v32i8:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a0, 32
-; CHECK-V-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
+; CHECK-V-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -276,7 +276,7 @@ define <32 x i8> @sshl_sat_v32i8_splat(<32 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    li a1, 32
-; CHECK-ZVE64X-NEXT:    vsetvli zero, a1, e8, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -287,7 +287,7 @@ define <32 x i8> @sshl_sat_v32i8_splat(<32 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    li a1, 32
-; CHECK-V-NEXT:    vsetvli zero, a1, e8, m2, ta, mu
+; CHECK-V-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -303,7 +303,7 @@ declare <1 x i16> @llvm.sshl.sat.v1i16(<1 x i16>, <1 x i16>)
 define <1 x i16> @sshl_sat_v1i16(<1 x i16> %a, <1 x i16> %b) {
 ; CHECK-LABEL: sshl_sat_v1i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    csrrwi a0, vxrm, 2
@@ -319,7 +319,7 @@ define <1 x i16> @sshl_sat_v1i16_splat(<1 x i16> %a, i16 %b) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
@@ -335,7 +335,7 @@ declare <2 x i16> @llvm.sshl.sat.v2i16(<2 x i16>, <2 x i16>)
 define <2 x i16> @sshl_sat_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i16:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -345,7 +345,7 @@ define <2 x i16> @sshl_sat_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i16:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -361,7 +361,7 @@ define <2 x i16> @sshl_sat_v2i16_splat(<2 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -371,7 +371,7 @@ define <2 x i16> @sshl_sat_v2i16_splat(<2 x i16> %a, i16 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -387,7 +387,7 @@ declare <4 x i16> @llvm.sshl.sat.v4i16(<4 x i16>, <4 x i16>)
 define <4 x i16> @sshl_sat_v4i16(<4 x i16> %a, <4 x i16> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i16:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -397,7 +397,7 @@ define <4 x i16> @sshl_sat_v4i16(<4 x i16> %a, <4 x i16> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i16:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -413,7 +413,7 @@ define <4 x i16> @sshl_sat_v4i16_splat(<4 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -423,7 +423,7 @@ define <4 x i16> @sshl_sat_v4i16_splat(<4 x i16> %a, i16 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -439,7 +439,7 @@ declare <8 x i16> @llvm.sshl.sat.v8i16(<8 x i16>, <8 x i16>)
 define <8 x i16> @sshl_sat_v8i16(<8 x i16> %a, <8 x i16> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v8i16:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -449,7 +449,7 @@ define <8 x i16> @sshl_sat_v8i16(<8 x i16> %a, <8 x i16> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i16:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -465,7 +465,7 @@ define <8 x i16> @sshl_sat_v8i16_splat(<8 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -475,7 +475,7 @@ define <8 x i16> @sshl_sat_v8i16_splat(<8 x i16> %a, i16 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -491,7 +491,7 @@ declare <16 x i16> @llvm.sshl.sat.v16i16(<16 x i16>, <16 x i16>)
 define <16 x i16> @sshl_sat_v16i16(<16 x i16> %a, <16 x i16> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v16i16:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -501,7 +501,7 @@ define <16 x i16> @sshl_sat_v16i16(<16 x i16> %a, <16 x i16> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i16:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -517,7 +517,7 @@ define <16 x i16> @sshl_sat_v16i16_splat(<16 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -527,7 +527,7 @@ define <16 x i16> @sshl_sat_v16i16_splat(<16 x i16> %a, i16 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -543,7 +543,7 @@ declare <1 x i32> @llvm.sshl.sat.v1i32(<1 x i32>, <1 x i32>)
 define <1 x i32> @sshl_sat_v1i32(<1 x i32> %a, <1 x i32> %b) {
 ; CHECK-LABEL: sshl_sat_v1i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    csrrwi a0, vxrm, 2
@@ -559,7 +559,7 @@ define <1 x i32> @sshl_sat_v1i32_splat(<1 x i32> %a, i32 %b) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
@@ -575,7 +575,7 @@ declare <2 x i32> @llvm.sshl.sat.v2i32(<2 x i32>, <2 x i32>)
 define <2 x i32> @sshl_sat_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i32:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -585,7 +585,7 @@ define <2 x i32> @sshl_sat_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i32:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -601,7 +601,7 @@ define <2 x i32> @sshl_sat_v2i32_splat(<2 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -611,7 +611,7 @@ define <2 x i32> @sshl_sat_v2i32_splat(<2 x i32> %a, i32 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -627,7 +627,7 @@ declare <4 x i32> @llvm.sshl.sat.v4i32(<4 x i32>, <4 x i32>)
 define <4 x i32> @sshl_sat_v4i32(<4 x i32> %a, <4 x i32> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i32:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -637,7 +637,7 @@ define <4 x i32> @sshl_sat_v4i32(<4 x i32> %a, <4 x i32> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i32:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -653,7 +653,7 @@ define <4 x i32> @sshl_sat_v4i32_splat(<4 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -663,7 +663,7 @@ define <4 x i32> @sshl_sat_v4i32_splat(<4 x i32> %a, i32 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -679,7 +679,7 @@ declare <8 x i32> @llvm.sshl.sat.v8i32(<8 x i32>, <8 x i32>)
 define <8 x i32> @sshl_sat_v8i32(<8 x i32> %a, <8 x i32> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v8i32:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
 ; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
@@ -689,7 +689,7 @@ define <8 x i32> @sshl_sat_v8i32(<8 x i32> %a, <8 x i32> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i32:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -705,7 +705,7 @@ define <8 x i32> @sshl_sat_v8i32_splat(<8 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
@@ -715,7 +715,7 @@ define <8 x i32> @sshl_sat_v8i32_splat(<8 x i32> %a, i32 %b) {
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
-; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
 ; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
 ; CHECK-V-NEXT:    csrw vxrm, a1
@@ -731,7 +731,7 @@ declare <1 x i64> @llvm.sshl.sat.v1i64(<1 x i64>, <1 x i64>)
 define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v1i64:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
@@ -747,7 +747,7 @@ define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v1i64:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -763,7 +763,7 @@ declare <2 x i64> @llvm.sshl.sat.v2i64(<2 x i64>, <2 x i64>)
 define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i64:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e64, m2, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e64, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
@@ -779,7 +779,7 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i64:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
@@ -795,7 +795,7 @@ declare <4 x i64> @llvm.sshl.sat.v4i64(<4 x i64>, <4 x i64>)
 define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i64:
 ; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e64, m4, ta, mu
+; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
@@ -811,7 +811,7 @@ define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i64:
 ; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-V-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
 ; CHECK-V-NEXT:    csrrwi a0, vxrm, 2

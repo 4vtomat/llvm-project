@@ -540,7 +540,7 @@ define <vscale x 128 x i8> @test_vp_reverse_nxv128i8(<vscale x 128 x i8> %src, i
 ; CHECK-NEXT:    add a5, a0, a3
 ; CHECK-NEXT:    addi a6, a5, -1
 ; CHECK-NEXT:    li a5, -1
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vsse8.v v8, (a6), a5
 ; CHECK-NEXT:    sub a7, a0, a1
 ; CHECK-NEXT:    sub a6, a6, a2
@@ -548,11 +548,11 @@ define <vscale x 128 x i8> @test_vp_reverse_nxv128i8(<vscale x 128 x i8> %src, i
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a4, a7
 ; CHECK-NEXT:  .LBB32_4:
-; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, ma
 ; CHECK-NEXT:    vsse8.v v16, (a6), a5
 ; CHECK-NEXT:    add a0, a3, a1
 ; CHECK-NEXT:    vle8.v v16, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a3)
 ; CHECK-NEXT:    addi sp, s0, -64
 ; CHECK-NEXT:    addi sp, sp, 64
