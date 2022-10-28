@@ -165,6 +165,18 @@ public:
 
   unsigned getRegUsageForType(Type *Ty);
 
+<<<<<<< HEAD
+=======
+  unsigned getMaximumVF(unsigned ElemWidth, unsigned Opcode) const;
+
+  bool preferEpilogueVectorization() const {
+    // Epilogue vectorization is usually unprofitable - tail folding or
+    // a smaller VF would have been better.  This a blunt hammer - we
+    // should re-examine this once vectorization is better tuned.
+    return false;
+  }
+
+>>>>>>> upstream/main
   InstructionCost getMaskedMemoryOpCost(unsigned Opcode, Type *Src,
                                         Align Alignment, unsigned AddressSpace,
                                         TTI::TargetCostKind CostKind);

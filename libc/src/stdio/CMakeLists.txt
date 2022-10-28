@@ -101,6 +101,30 @@ add_entrypoint_object(
 )
 
 add_entrypoint_object(
+  fgetc
+  SRCS
+    fgetc.cpp
+  HDRS
+    fgetc.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
+)
+
+add_entrypoint_object(
+  fgets
+  SRCS
+    fgets.cpp
+  HDRS
+    fgets.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
+)
+
+add_entrypoint_object(
   fflush
   SRCS
     fflush.cpp
@@ -185,6 +209,42 @@ add_entrypoint_object(
 )
 
 add_entrypoint_object(
+  fputc
+  SRCS
+    fputc.cpp
+  HDRS
+    fputc.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
+)
+
+add_entrypoint_object(
+  putc
+  SRCS
+    putc.cpp
+  HDRS
+    putc.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
+)
+
+add_entrypoint_object(
+  putchar
+  SRCS
+    putchar.cpp
+  HDRS
+    putchar.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
+)
+
+add_entrypoint_object(
   fputs
   SRCS
     fputs.cpp
@@ -230,6 +290,18 @@ add_entrypoint_object(
   DEPENDS
     libc.include.stdio
     libc.src.__support.File.file
+)
+
+add_entrypoint_object(
+  stdin
+  SRCS
+    stdin.cpp
+  HDRS
+    stdin.h
+  DEPENDS
+    libc.include.stdio
+    libc.src.__support.File.file
+    libc.src.__support.File.platform_file
 )
 
 add_entrypoint_object(

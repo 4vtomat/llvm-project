@@ -24,9 +24,13 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/ErrorHandling.h"
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 #include "llvm/Support/MathExtras.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "llvm/Support/MathExtras.h"
+>>>>>>> upstream/main
 #include "llvm/Support/SMLoc.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/TableGen/Error.h"
@@ -888,24 +892,39 @@ Init *UnOpInit::Fold(Record *CurRec, bool IsFinal) const {
       }
     }
     break;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     case LOG2:
+=======
+
+  case LOG2:
+>>>>>>> upstream/main
     if (IntInit *LHSi = dyn_cast_or_null<IntInit>(
             LHS->convertInitializerTo(IntRecTy::get(RK)))) {
       int64_t LHSv = LHSi->getValue();
       if (LHSv <= 0) {
         PrintFatalError(CurRec->getLoc(),
+<<<<<<< HEAD
                         "Illegal operation: log is undefined "
                         "on arguments less than or equal to 0");
       } else {
         uint64_t Log = Log2_64(LHSi->getValue());
+=======
+                        "Illegal operation: logtwo is undefined "
+                        "on arguments less than or equal to 0");
+      } else {
+        uint64_t Log = Log2_64(LHSv);
+>>>>>>> upstream/main
         assert(Log <= INT64_MAX &&
                "Log of an int64_t must be smaller than INT64_MAX");
         return IntInit::get(RK, static_cast<int64_t>(Log));
       }
     }
     break;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   }
   return const_cast<UnOpInit *>(this);
 }
@@ -929,9 +948,13 @@ std::string UnOpInit::getAsString() const {
   case SIZE: Result = "!size"; break;
   case EMPTY: Result = "!empty"; break;
   case GETDAGOP: Result = "!getdagop"; break;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   case LOG2 : Result = "!log"; break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case LOG2 : Result = "!logtwo"; break;
+>>>>>>> upstream/main
   }
   return Result + "(" + LHS->getAsString() + ")";
 }

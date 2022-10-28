@@ -417,6 +417,7 @@ private:
           DTU.applyUpdates(DTUpdates);
         DTUpdates.clear();
         formLCSSARecursively(*FixLCSSALoop, DT, &LI, &SE);
+        SE.forgetBlockAndLoopDispositions();
       }
     }
 
@@ -659,7 +660,8 @@ static bool constantFoldTerminators(Loop &L, DominatorTree &DT, LoopInfo &LI,
 }
 
 static bool mergeBlocksIntoPredecessors(Loop &L, DominatorTree &DT,
-                                        LoopInfo &LI, MemorySSAUpdater *MSSAU) {
+                                        LoopInfo &LI, MemorySSAUpdater *MSSAU,
+                                        ScalarEvolution &SE) {
   bool Changed = false;
   DomTreeUpdater DTU(DT, DomTreeUpdater::UpdateStrategy::Eager);
   // Copy blocks into a temporary array to avoid iterator invalidation issues
@@ -686,6 +688,9 @@ static bool mergeBlocksIntoPredecessors(Loop &L, DominatorTree &DT,
     Changed = true;
   }
 
+  if (Changed)
+    SE.forgetBlockAndLoopDispositions();
+
   return Changed;
 }
 
@@ -701,7 +706,7 @@ static bool simplifyLoopCFG(Loop &L, DominatorTree &DT, LoopInfo &LI,
     return true;
 
   // Eliminate unconditional branches by merging blocks into their predecessors.
-  Changed |= mergeBlocksIntoPredecessors(L, DT, LI, MSSAU);
+  Changed |= mergeBlocksIntoPredecessors(L, DT, LI, MSSAU, SE);
 
   if (Changed)
     SE.forgetTopmostLoop(&L);

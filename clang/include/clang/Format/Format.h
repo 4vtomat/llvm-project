@@ -610,7 +610,7 @@ struct FormatStyle {
     SLS_None,
     /// Only merge empty lambdas.
     /// \code
-    ///   auto lambda = [](int a) {}
+    ///   auto lambda = [](int a) {};
     ///   auto lambda2 = [](int a) {
     ///       return a;
     ///   };
@@ -621,12 +621,12 @@ struct FormatStyle {
     ///   auto lambda = [](int a) {
     ///       return a;
     ///   };
-    ///   sort(a.begin(), a.end(), ()[] { return x < y; })
+    ///   sort(a.begin(), a.end(), []() { return x < y; });
     /// \endcode
     SLS_Inline,
     /// Merge all lambdas fitting on a single line.
     /// \code
-    ///   auto lambda = [](int a) {}
+    ///   auto lambda = [](int a) {};
     ///   auto lambda2 = [](int a) { return a; };
     /// \endcode
     SLS_All,
@@ -2617,6 +2617,7 @@ struct FormatStyle {
   bool isJson() const { return Language == LK_Json; }
   bool isJavaScript() const { return Language == LK_JavaScript; }
   bool isVerilog() const { return Language == LK_Verilog; }
+  bool isProto() const { return Language == LK_Proto; }
 
   /// Language, this format style is targeted at.
   /// \version 3.5
@@ -3152,6 +3153,32 @@ struct FormatStyle {
   /// \brief The position of the ``requires`` clause.
   /// \version 15
   RequiresClausePositionStyle RequiresClausePosition;
+
+  /// Indentation logic for requires expression bodies.
+  enum RequiresExpressionIndentationKind : int8_t {
+    /// Align requires expression body relative to the indentation level of the
+    /// outer scope the requires expression resides in.
+    /// This is the default.
+    /// \code
+    ///    template <typename T>
+    ///    concept C = requires(T t) {
+    ///      ...
+    ///    }
+    /// \endcode
+    REI_OuterScope,
+    /// Align requires expression body relative to the `requires` keyword.
+    /// \code
+    ///    template <typename T>
+    ///    concept C = requires(T t) {
+    ///                  ...
+    ///                }
+    /// \endcode
+    REI_Keyword,
+  };
+
+  /// The indentation used for requires expression bodies.
+  /// \version 16
+  RequiresExpressionIndentationKind RequiresExpressionIndentation;
 
   /// \brief The style if definition blocks should be separated.
   enum SeparateDefinitionStyle : int8_t {
@@ -3988,6 +4015,7 @@ struct FormatStyle {
            RemoveBracesLLVM == R.RemoveBracesLLVM &&
            RemoveSemicolon == R.RemoveSemicolon &&
            RequiresClausePosition == R.RequiresClausePosition &&
+           RequiresExpressionIndentation == R.RequiresExpressionIndentation &&
            SeparateDefinitionBlocks == R.SeparateDefinitionBlocks &&
            ShortNamespaceLines == R.ShortNamespaceLines &&
            SortIncludes == R.SortIncludes &&

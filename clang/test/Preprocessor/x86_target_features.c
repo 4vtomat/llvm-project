@@ -545,6 +545,20 @@
 
 // NOUINTR-NOT: #define __UINTR__ 1
 
+// RUN: %clang -target x86_64-unknown-linux-gnu -march=atom -mamx-fp16 -x c \
+// RUN: -E -dM -o - %s | FileCheck  -check-prefix=AMX-FP16 %s
+
+// AMX-FP16: #define __AMXFP16__ 1
+// AMX-FP16: #define __AMXTILE__ 1
+
+// RUN: %clang -target x86_64-unknown-linux-gnu -march=atom -mno-amx-fp16 \
+// RUN: -x c -E -dM -o - %s | FileCheck  -check-prefix=NO-AMX-FP16 %s
+// RUN: %clang -target x86_64-unknown-linux-gnu -march=atom -mamx-fp16 \
+// RUN: -mno-amx-tile -x c -E -dM -o - %s | FileCheck  -check-prefix=NO-AMX-FP16 %s
+
+// NO-AMX-FP16-NOT: #define __AMXFP16__ 1
+// NO-AMX-FP16-NOT: #define __AMXTILE__ 1
+
 // RUN: %clang -target i386-unknown-unknown -march=atom -mavxvnni -x c -E -dM -o - %s | FileCheck -match-full-lines --check-prefix=AVXVNNI %s
 
 // AVXVNNI: #define __AVX2__ 1
@@ -580,6 +594,31 @@
 
 // AVX512FP16NOAVX512DQ-NOT: #define __AVX512DQ__ 1
 // AVX512FP16NOAVX512DQ-NOT: #define __AVX512FP16__ 1
+
+// RUN: %clang -target x86_64-unknown-linux-gnu -march=atom -mcmpccxadd -x c -E -dM -o - %s | FileCheck  -check-prefix=CMPCCXADD %s
+
+// CMPCCXADD: #define __CMPCCXADD__ 1
+
+// RUN: %clang -target x86_64-unknown-linux-gnu -march=atom -mno-cmpccxadd -x c -E -dM -o - %s | FileCheck  -check-prefix=NO-CMPCCXADD %s
+
+// NO-CMPCCXADD-NOT: #define __CMPCCXADD__ 1
+// RUN: %clang -target i386-unknown-unknown -march=atom -mavxifma -x c -E -dM -o - %s | FileCheck -match-full-lines --check-prefix=AVXIFMA %s
+
+// AVXIFMA: #define __AVX2__ 1
+// AVXIFMA: #define __AVXIFMA__ 1
+
+// RUN: %clang -target i386-unknown-unknown -march=atom -mavxifma -mno-avx2 -x c -E -dM -o - %s | FileCheck -match-full-lines --check-prefix=AVXIFMANOAVX2 %s
+
+// AVXIFMANOAVX2-NOT: #define __AVX2__ 1
+// AVXIFMANOAVX2-NOT: #define __AVXIFMA__ 1
+
+// RUN: %clang -target i386-unknown-linux-gnu -march=atom -mraoint -x c -E -dM -o - %s | FileCheck  -check-prefix=RAOINT %s
+
+// RAOINT: #define __RAOINT__ 1
+
+// RUN: %clang -target i386-unknown-linux-gnu -march=atom -mno-raoint -x c -E -dM -o - %s | FileCheck  -check-prefix=NO-RAOINT %s
+
+// NO-RAOINT-NOT: #define __RAOINT__ 1
 
 // RUN: %clang -target i386-unknown-linux-gnu -march=i386 -mcrc32 -x c -E -dM -o - %s | FileCheck -check-prefix=CRC32 %s
 

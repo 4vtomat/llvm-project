@@ -100,12 +100,17 @@ private:
   bool HasStdExtZicbom = false;
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
+<<<<<<< HEAD
   bool HasStdExtZicclsm = false; //SIFIVE
   bool HasStdExtZiccif = false; //SIFIVE
   bool HasStdExtZiccamoa = false; //SIFIVE
   bool HasStdExtZiccrse = false; //SIFIVE
   bool HasStdExtZa64rs = false; //SIFIVE
   bool HasStdExtZic64b = false; //SIFIVE
+=======
+  bool HasStdExtSvnapot = false;
+  bool HasStdExtSvinval = false;
+>>>>>>> upstream/main
   bool HasStdExtZmmul = false;
   bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasStdExtZawrs = false;
@@ -129,6 +134,7 @@ private:
   bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
+  bool HasShortForwardBranchOpt = false;
   bool HasLUIADDIFusion = false;
   bool HasForcedAtomics = false;
   unsigned XLen = 32;
@@ -230,6 +236,8 @@ public:
   bool hasStdExtZicbom() const { return HasStdExtZicbom; }
   bool hasStdExtZicboz() const { return HasStdExtZicboz; }
   bool hasStdExtZicbop() const { return HasStdExtZicbop; }
+  bool hasStdExtSvnapot() const { return HasStdExtSvnapot; }
+  bool hasStdExtSvinval() const { return HasStdExtSvinval; }
   bool hasStdExtZawrs() const { return HasStdExtZawrs; }
   bool hasStdExtZmmul() const { return HasStdExtZmmul; }
   bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
@@ -240,6 +248,7 @@ public:
   bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
   bool enableDefaultUnroll() const { return EnableDefaultUnroll; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool hasCMOVBranchOpt() const {
@@ -260,6 +269,9 @@ public:
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
+>>>>>>> upstream/main
   bool enableUnalignedScalarMem() const { return EnableUnalignedScalarMem; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasForcedAtomics() const { return HasForcedAtomics; }

@@ -743,7 +743,7 @@ bool mlir::hasNoInterveningEffect(Operation *start, T memOp) {
       return;
     }
 
-    if (op->hasTrait<OpTrait::HasRecursiveSideEffects>()) {
+    if (op->hasTrait<OpTrait::HasRecursiveMemoryEffects>()) {
       // Recurse into the regions for this op and check whether the internal
       // operations may have the side effect `EffectType` on memOp.
       for (Region &region : op->getRegions())
@@ -1796,7 +1796,7 @@ MemRefType mlir::normalizeMemRefType(MemRefType memrefType,
     bool isDynDim =
         isNormalizedMemRefDynamicDim(d, layoutMap, memrefTypeDynDims, context);
     if (isDynDim) {
-      newShape[d] = -1;
+      newShape[d] = ShapedType::kDynamicSize;
     } else {
       // The lower bound for the shape is always zero.
       Optional<int64_t> ubConst =

@@ -237,6 +237,12 @@ class SelectionDAG {
   ProfileSummaryInfo *PSI = nullptr;
   BlockFrequencyInfo *BFI = nullptr;
 
+  /// List of non-single value types.
+  FoldingSet<SDVTListNode> VTListMap;
+
+  /// Pool allocation for misc. objects that are created once per SelectionDAG.
+  BumpPtrAllocator Allocator;
+
   /// The starting token.
   SDNode EntryNode;
 
@@ -262,9 +268,6 @@ class SelectionDAG {
   /// Pool allocation for machine-opcode SDNode operands.
   BumpPtrAllocator OperandAllocator;
   ArrayRecycler<SDUse> OperandRecycler;
-
-  /// Pool allocation for misc. objects that are created once per SelectionDAG.
-  BumpPtrAllocator Allocator;
 
   /// Tracks dbg_value and dbg_label information through SDISel.
   SDDbgInfo *DbgInfo;
@@ -2253,6 +2256,23 @@ public:
   SDValue getNeutralElement(unsigned Opcode, const SDLoc &DL, EVT VT,
                             SDNodeFlags Flags);
 
+  /// Some opcodes may create immediate undefined behavior when used with some
+  /// values (integer division-by-zero for example). Therefore, these operations
+  /// are not generally safe to move around or change.
+  bool isSafeToSpeculativelyExecute(unsigned Opcode) const {
+    switch (Opcode) {
+    case ISD::SDIV:
+    case ISD::SREM:
+    case ISD::SDIVREM:
+    case ISD::UDIV:
+    case ISD::UREM:
+    case ISD::UDIVREM:
+      return false;
+    default:
+      return true;
+    }
+  }
+
 private:
   void InsertNode(SDNode *N);
   bool RemoveNodeFromCSEMaps(SDNode *N);
@@ -2280,9 +2300,6 @@ private:
   /// additional processing for constant nodes.
   SDNode *FindNodeOrInsertPos(const FoldingSetNodeID &ID, const SDLoc &DL,
                               void *&InsertPos);
-
-  /// List of non-single value types.
-  FoldingSet<SDVTListNode> VTListMap;
 
   /// Maps to auto-CSE operations.
   std::vector<CondCodeSDNode*> CondCodeNodes;

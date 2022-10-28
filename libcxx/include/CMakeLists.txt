@@ -288,6 +288,7 @@ set(files
   __format/buffer.h
   __format/concepts.h
   __format/enable_insertable.h
+  __format/escaped_output_table.h
   __format/extended_grapheme_cluster_table.h
   __format/format_arg.h
   __format/format_arg_store.h
@@ -414,6 +415,12 @@ set(files
   __memory/uses_allocator.h
   __memory/uses_allocator_construction.h
   __memory/voidify.h
+  __memory_resource/memory_resource.h
+  __memory_resource/monotonic_buffer_resource.h
+  __memory_resource/polymorphic_allocator.h
+  __memory_resource/pool_options.h
+  __memory_resource/synchronized_pool_resource.h
+  __memory_resource/unsynchronized_pool_resource.h
   __mutex_base
   __node_handle
   __numeric/accumulate.h
@@ -475,6 +482,7 @@ set(files
   __ranges/dangling.h
   __ranges/data.h
   __ranges/drop_view.h
+  __ranges/drop_while_view.h
   __ranges/empty.h
   __ranges/empty_view.h
   __ranges/enable_borrowed_range.h
@@ -776,6 +784,7 @@ set(files
   map
   math.h
   memory
+  memory_resource
   mutex
   new
   numbers

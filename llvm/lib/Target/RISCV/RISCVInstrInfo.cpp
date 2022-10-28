@@ -21,6 +21,7 @@
 #include "llvm/Analysis/MemoryLocation.h"
 #include "llvm/CodeGen/LiveIntervals.h"
 #include "llvm/CodeGen/LiveVariables.h"
+#include "llvm/CodeGen/MachineCombinerPattern.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
@@ -1359,8 +1360,11 @@ RISCVInstrInfo::isCopyInstrImpl(const MachineInstr &MI) const {
   return None;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // SIFIVE: This has been cherry-picked from upstream.
+=======
+>>>>>>> upstream/main
 void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
                                            MachineInstr &OldMI2,
                                            MachineInstr &NewMI1,
@@ -1481,7 +1485,10 @@ bool RISCVInstrInfo::getMachineCombinerPatterns(
   return TargetInstrInfo::getMachineCombinerPatterns(Root, Patterns,
                                                      DoRegPressureReduce);
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
 bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
                                        StringRef &ErrInfo) const {
@@ -1991,12 +1998,18 @@ bool RISCVInstrInfo::findCommutedOpIndices(const MachineInstr &MI,
     return false;
 
   switch (MI.getOpcode()) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCMOVGPRNoX0:
     // Operands 4 and 5 are commutable.
     return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 4, 5);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::PseudoCCMOVGPR:
+    // Operands 4 and 5 are commutable.
+    return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 4, 5);
+>>>>>>> upstream/main
   case CASE_VFMA_SPLATS(FMADD):
   case CASE_VFMA_SPLATS(FMSUB):
   case CASE_VFMA_SPLATS(FMACC):
@@ -2142,18 +2155,28 @@ MachineInstr *RISCVInstrInfo::commuteInstructionImpl(MachineInstr &MI,
   };
 
   switch (MI.getOpcode()) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCMOVGPRNoX0: {
+=======
+  case RISCV::PseudoCCMOVGPR: {
+>>>>>>> upstream/main
     // CCMOV can be commuted by inverting the condition.
     auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
     CC = RISCVCC::getOppositeBranchCondition(CC);
     auto &WorkingMI = cloneIfNew(MI);
     WorkingMI.getOperand(3).setImm(CC);
+<<<<<<< HEAD
     return TargetInstrInfo::commuteInstructionImpl(MI, /*NewMI*/ false, OpIdx1,
                                                    OpIdx2);
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return TargetInstrInfo::commuteInstructionImpl(WorkingMI, /*NewMI*/ false,
+                                                   OpIdx1, OpIdx2);
+  }
+>>>>>>> upstream/main
   case CASE_VFMA_SPLATS(FMACC):
   case CASE_VFMA_SPLATS(FMADD):
   case CASE_VFMA_SPLATS(FMSAC):
@@ -2546,8 +2569,11 @@ bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
          !MI.isInlineAsm();
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // SIFIVE: This has been cherry-picked from upstream.
+=======
+>>>>>>> upstream/main
 bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
   int16_t MI1FrmOpIdx =
       RISCV::getNamedOperandIdx(MI1.getOpcode(), RISCV::OpName::frm);
@@ -2559,6 +2585,7 @@ bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
   MachineOperand FrmOp2 = MI2.getOperand(MI2FrmOpIdx);
   return FrmOp1.getImm() == FrmOp2.getImm();
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
@@ -2716,3 +2743,5 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
 }
 
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main

@@ -922,35 +922,6 @@ void Driver::CreateOffloadingDeviceToolChains(Compilation &C,
   //
 }
 
-/// Looks the given directories for the specified file.
-///
-/// \param[out] FilePath File path, if the file was found.
-/// \param[in]  Dirs Directories used for the search.
-/// \param[in]  FileName Name of the file to search for.
-/// \return True if file was found.
-///
-/// Looks for file specified by FileName sequentially in directories specified
-/// by Dirs.
-///
-static bool searchForFile(SmallVectorImpl<char> &FilePath,
-                          ArrayRef<StringRef> Dirs, StringRef FileName,
-                          llvm::vfs::FileSystem &FS) {
-  SmallString<128> WPath;
-  for (const StringRef &Dir : Dirs) {
-    if (Dir.empty())
-      continue;
-    WPath.clear();
-    llvm::sys::path::append(WPath, Dir, FileName);
-    llvm::sys::path::native(WPath);
-    auto Status = FS.status(WPath);
-    if (Status && Status->getType() == llvm::sys::fs::file_type::regular_file) {
-      FilePath = std::move(WPath);
-      return true;
-    }
-  }
-  return false;
-}
-
 static void appendOneArg(InputArgList &Args, const Arg *Opt,
                          const Arg *BaseArg) {
   // The args for config files or /clang: flags belong to different InputArgList
@@ -967,11 +938,10 @@ static void appendOneArg(InputArgList &Args, const Arg *Opt,
   Args.append(Copy);
 }
 
-bool Driver::readConfigFile(StringRef FileName) {
+bool Driver::readConfigFile(StringRef FileName,
+                            llvm::cl::ExpansionContext &ExpCtx) {
   // Try reading the given file.
   SmallVector<const char *, 32> NewCfgArgs;
-  llvm::cl::ExpansionContext ExpCtx(Alloc, llvm::cl::tokenizeConfigFile);
-  ExpCtx.setVFS(&getVFS());
   if (!ExpCtx.readConfigFile(FileName, NewCfgArgs)) {
     Diag(diag::err_drv_cannot_read_config_file) << FileName;
     return true;
@@ -1012,6 +982,10 @@ bool Driver::readConfigFile(StringRef FileName) {
 }
 
 bool Driver::loadConfigFiles() {
+  llvm::cl::ExpansionContext ExpCtx(Saver.getAllocator(),
+                                    llvm::cl::tokenizeConfigFile);
+  ExpCtx.setVFS(&getVFS());
+
   // Process options that change search path for config files.
   if (CLOptions) {
     if (CLOptions->hasArg(options::OPT_config_system_dir_EQ)) {
@@ -1036,19 +1010,20 @@ bool Driver::loadConfigFiles() {
 
   // Prepare list of directories where config file is searched for.
   StringRef CfgFileSearchDirs[] = {UserConfigDir, SystemConfigDir, Dir};
+  ExpCtx.setSearchDirs(CfgFileSearchDirs);
 
   // First try to load configuration from the default files, return on error.
-  if (loadDefaultConfigFiles(CfgFileSearchDirs))
+  if (loadDefaultConfigFiles(ExpCtx))
     return true;
 
   // Then load configuration files specified explicitly.
-  llvm::SmallString<128> CfgFilePath;
+  SmallString<128> CfgFilePath;
   if (CLOptions) {
     for (auto CfgFileName : CLOptions->getAllArgValues(options::OPT_config)) {
       // If argument contains directory separator, treat it as a path to
       // configuration file.
       if (llvm::sys::path::has_parent_path(CfgFileName)) {
-        CfgFilePath = CfgFileName;
+        CfgFilePath.assign(CfgFileName);
         if (llvm::sys::path::is_relative(CfgFilePath)) {
           if (getVFS().makeAbsolute(CfgFilePath))
             return true;
@@ -1059,8 +1034,7 @@ bool Driver::loadConfigFiles() {
             return true;
           }
         }
-      } else if (!searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName,
-                                getVFS())) {
+      } else if (!ExpCtx.findConfigFile(CfgFileName, CfgFilePath)) {
         // Report an error that the config file could not be found.
         Diag(diag::err_drv_config_file_not_found) << CfgFileName;
         for (const StringRef &SearchDir : CfgFileSearchDirs)
@@ -1070,7 +1044,7 @@ bool Driver::loadConfigFiles() {
       }
 
       // Try to read the config file, return on error.
-      if (readConfigFile(CfgFilePath))
+      if (readConfigFile(CfgFilePath, ExpCtx))
         return true;
     }
   }
@@ -1079,7 +1053,7 @@ bool Driver::loadConfigFiles() {
   return false;
 }
 
-bool Driver::loadDefaultConfigFiles(ArrayRef<StringRef> CfgFileSearchDirs) {
+bool Driver::loadDefaultConfigFiles(llvm::cl::ExpansionContext &ExpCtx) {
   // Disable default config if CLANG_NO_DEFAULT_CONFIG is set to a non-empty
   // value.
   if (const char *NoConfigEnv = ::getenv("CLANG_NO_DEFAULT_CONFIG")) {
@@ -1123,36 +1097,36 @@ bool Driver::loadDefaultConfigFiles(ArrayRef<StringRef> CfgFileSearchDirs) {
   //    (e.g. i386-pc-linux-gnu.cfg + clang-g++.cfg for *clang-g++).
 
   // Try loading <triple>-<mode>.cfg, and return if we find a match.
-  llvm::SmallString<128> CfgFilePath;
+  SmallString<128> CfgFilePath;
   std::string CfgFileName = Triple + '-' + RealMode + ".cfg";
-  if (searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName, getVFS()))
-    return readConfigFile(CfgFilePath);
+  if (ExpCtx.findConfigFile(CfgFileName, CfgFilePath))
+    return readConfigFile(CfgFilePath, ExpCtx);
 
   bool TryModeSuffix = !ClangNameParts.ModeSuffix.empty() &&
                        ClangNameParts.ModeSuffix != RealMode;
   if (TryModeSuffix) {
     CfgFileName = Triple + '-' + ClangNameParts.ModeSuffix + ".cfg";
-    if (searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName, getVFS()))
-      return readConfigFile(CfgFilePath);
+    if (ExpCtx.findConfigFile(CfgFileName, CfgFilePath))
+      return readConfigFile(CfgFilePath, ExpCtx);
   }
 
   // Try loading <mode>.cfg, and return if loading failed.  If a matching file
   // was not found, still proceed on to try <triple>.cfg.
   CfgFileName = RealMode + ".cfg";
-  if (searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName, getVFS())) {
-    if (readConfigFile(CfgFilePath))
+  if (ExpCtx.findConfigFile(CfgFileName, CfgFilePath)) {
+    if (readConfigFile(CfgFilePath, ExpCtx))
       return true;
   } else if (TryModeSuffix) {
     CfgFileName = ClangNameParts.ModeSuffix + ".cfg";
-    if (searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName, getVFS()) &&
-        readConfigFile(CfgFilePath))
+    if (ExpCtx.findConfigFile(CfgFileName, CfgFilePath) &&
+        readConfigFile(CfgFilePath, ExpCtx))
       return true;
   }
 
   // Try loading <triple>.cfg and return if we find a match.
   CfgFileName = Triple + ".cfg";
-  if (searchForFile(CfgFilePath, CfgFileSearchDirs, CfgFileName, getVFS()))
-    return readConfigFile(CfgFilePath);
+  if (ExpCtx.findConfigFile(CfgFileName, CfgFilePath))
+    return readConfigFile(CfgFilePath, ExpCtx);
 
   // If we were unable to find a config file deduced from executable name,
   // that is not an error.
@@ -3952,13 +3926,16 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
 
   handleArguments(C, Args, Inputs, Actions);
 
-  // Builder to be used to build offloading actions.
-  OffloadingActionBuilder OffloadBuilder(C, Args, Inputs);
-
   bool UseNewOffloadingDriver =
       C.isOffloadingHostKind(Action::OFK_OpenMP) ||
       Args.hasFlag(options::OPT_offload_new_driver,
                    options::OPT_no_offload_new_driver, false);
+
+  // Builder to be used to build offloading actions.
+  std::unique_ptr<OffloadingActionBuilder> OffloadBuilder =
+      !UseNewOffloadingDriver
+          ? std::make_unique<OffloadingActionBuilder>(C, Args, Inputs)
+          : nullptr;
 
   // Construct the actions to perform.
   HeaderModulePrecompileJobAction *HeaderModuleAction = nullptr;
@@ -3982,14 +3959,14 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
     // Use the current host action in any of the offloading actions, if
     // required.
     if (!UseNewOffloadingDriver)
-      if (OffloadBuilder.addHostDependenceToDeviceActions(Current, InputArg))
+      if (OffloadBuilder->addHostDependenceToDeviceActions(Current, InputArg))
         break;
 
     for (phases::ID Phase : PL) {
 
       // Add any offload action the host action depends on.
       if (!UseNewOffloadingDriver)
-        Current = OffloadBuilder.addDeviceDependencesToHostAction(
+        Current = OffloadBuilder->addDeviceDependencesToHostAction(
             Current, InputArg, Phase, PL.back(), FullPL);
       if (!Current)
         break;
@@ -4052,7 +4029,7 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
       // Use the current host action in any of the offloading actions, if
       // required.
       if (!UseNewOffloadingDriver)
-        if (OffloadBuilder.addHostDependenceToDeviceActions(Current, InputArg))
+        if (OffloadBuilder->addHostDependenceToDeviceActions(Current, InputArg))
           break;
 
       // Try to build the offloading actions and add the result as a dependency
@@ -4070,7 +4047,7 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
 
     // Add any top level actions generated for offloading.
     if (!UseNewOffloadingDriver)
-      OffloadBuilder.appendTopLevelActions(Actions, Current, InputArg);
+      OffloadBuilder->appendTopLevelActions(Actions, Current, InputArg);
     else if (Current)
       Current->propagateHostOffloadInfo(C.getActiveOffloadKinds(),
                                         /*BoundArch=*/nullptr);
@@ -4082,12 +4059,12 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
     Arg *FinalPhaseArg;
     if (getFinalPhase(Args, &FinalPhaseArg) == phases::Link)
       if (!UseNewOffloadingDriver)
-        OffloadBuilder.appendDeviceLinkActions(Actions);
+        OffloadBuilder->appendDeviceLinkActions(Actions);
   }
 
   if (!LinkerInputs.empty()) {
     if (!UseNewOffloadingDriver)
-      if (Action *Wrapper = OffloadBuilder.makeHostLinkAction())
+      if (Action *Wrapper = OffloadBuilder->makeHostLinkAction())
         LinkerInputs.push_back(Wrapper);
     Action *LA;
     // Check if this Linker Job should emit a static library.
@@ -4102,7 +4079,7 @@ void Driver::BuildActions(Compilation &C, DerivedArgList &Args,
       LA = C.MakeAction<LinkJobAction>(LinkerInputs, types::TY_Image);
     }
     if (!UseNewOffloadingDriver)
-      LA = OffloadBuilder.processHostLinkAction(LA);
+      LA = OffloadBuilder->processHostLinkAction(LA);
     Actions.push_back(LA);
   }
 
@@ -4270,15 +4247,27 @@ Driver::getOffloadArchs(Compilation &C, const llvm::opt::DerivedArgList &Args,
       Arg = ExtractedArg.get();
     }
 
+    // Add or remove the seen architectures in order of appearance. If an
+    // invalid architecture is given we simply exit.
     if (Arg->getOption().matches(options::OPT_offload_arch_EQ)) {
-      for (StringRef Arch : llvm::split(Arg->getValue(), ","))
-        Archs.insert(getCanonicalArchString(C, Args, Arch, TC->getTriple()));
+      for (StringRef Arch : llvm::split(Arg->getValue(), ",")) {
+        StringRef ArchStr =
+            getCanonicalArchString(C, Args, Arch, TC->getTriple());
+        if (ArchStr.empty())
+          return Archs;
+        Archs.insert(ArchStr);
+      }
     } else if (Arg->getOption().matches(options::OPT_no_offload_arch_EQ)) {
       for (StringRef Arch : llvm::split(Arg->getValue(), ",")) {
-        if (Arch == StringRef("all"))
+        if (Arch == "all") {
           Archs.clear();
-        else
-          Archs.erase(getCanonicalArchString(C, Args, Arch, TC->getTriple()));
+        } else {
+          StringRef ArchStr =
+              getCanonicalArchString(C, Args, Arch, TC->getTriple());
+          if (ArchStr.empty())
+            return Archs;
+          Archs.erase(ArchStr);
+        }
       }
     }
   }

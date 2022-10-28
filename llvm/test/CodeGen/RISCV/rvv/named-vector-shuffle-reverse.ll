@@ -3575,9 +3575,19 @@ define <vscale x 6 x i64> @reverse_nxv6i64(<vscale x 6 x i64> %a) {
 define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV32-BITS-UNKNOWN-LABEL: reverse_nxv12i64:
 ; RV32-BITS-UNKNOWN:       # %bb.0:
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-NEXT:    addi sp, sp, -64
 ; RV32-BITS-UNKNOWN-NEXT:    .cfi_def_cfa_offset 64
 ; RV32-BITS-UNKNOWN-NEXT:    addi s0, sp, 64
+=======
+; RV32-BITS-UNKNOWN-NEXT:    addi sp, sp, -80
+; RV32-BITS-UNKNOWN-NEXT:    .cfi_def_cfa_offset 80
+; RV32-BITS-UNKNOWN-NEXT:    sw ra, 76(sp) # 4-byte Folded Spill
+; RV32-BITS-UNKNOWN-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
+; RV32-BITS-UNKNOWN-NEXT:    .cfi_offset ra, -4
+; RV32-BITS-UNKNOWN-NEXT:    .cfi_offset s0, -8
+; RV32-BITS-UNKNOWN-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-UNKNOWN-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-UNKNOWN-NEXT:    csrr a0, vlenb
 ; RV32-BITS-UNKNOWN-NEXT:    slli a0, a0, 4
@@ -3599,15 +3609,32 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV32-BITS-UNKNOWN-NEXT:    vs8r.v v16, (a1)
 ; RV32-BITS-UNKNOWN-NEXT:    vl8re64.v v16, (a0)
 ; RV32-BITS-UNKNOWN-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-NEXT:    addi sp, s0, -64
 ; RV32-BITS-UNKNOWN-NEXT:    addi sp, sp, 64
+=======
+; RV32-BITS-UNKNOWN-NEXT:    addi sp, s0, -80
+; RV32-BITS-UNKNOWN-NEXT:    lw ra, 76(sp) # 4-byte Folded Reload
+; RV32-BITS-UNKNOWN-NEXT:    lw s0, 72(sp) # 4-byte Folded Reload
+; RV32-BITS-UNKNOWN-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-UNKNOWN-NEXT:    ret
 ;
 ; RV32-BITS-256-LABEL: reverse_nxv12i64:
 ; RV32-BITS-256:       # %bb.0:
+<<<<<<< HEAD
 ; RV32-BITS-256-NEXT:    addi sp, sp, -64
 ; RV32-BITS-256-NEXT:    .cfi_def_cfa_offset 64
 ; RV32-BITS-256-NEXT:    addi s0, sp, 64
+=======
+; RV32-BITS-256-NEXT:    addi sp, sp, -80
+; RV32-BITS-256-NEXT:    .cfi_def_cfa_offset 80
+; RV32-BITS-256-NEXT:    sw ra, 76(sp) # 4-byte Folded Spill
+; RV32-BITS-256-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
+; RV32-BITS-256-NEXT:    .cfi_offset ra, -4
+; RV32-BITS-256-NEXT:    .cfi_offset s0, -8
+; RV32-BITS-256-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-256-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-256-NEXT:    csrr a0, vlenb
 ; RV32-BITS-256-NEXT:    slli a0, a0, 4
@@ -3629,15 +3656,32 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV32-BITS-256-NEXT:    vs8r.v v16, (a1)
 ; RV32-BITS-256-NEXT:    vl8re64.v v16, (a0)
 ; RV32-BITS-256-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV32-BITS-256-NEXT:    addi sp, s0, -64
 ; RV32-BITS-256-NEXT:    addi sp, sp, 64
+=======
+; RV32-BITS-256-NEXT:    addi sp, s0, -80
+; RV32-BITS-256-NEXT:    lw ra, 76(sp) # 4-byte Folded Reload
+; RV32-BITS-256-NEXT:    lw s0, 72(sp) # 4-byte Folded Reload
+; RV32-BITS-256-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-256-NEXT:    ret
 ;
 ; RV32-BITS-512-LABEL: reverse_nxv12i64:
 ; RV32-BITS-512:       # %bb.0:
+<<<<<<< HEAD
 ; RV32-BITS-512-NEXT:    addi sp, sp, -64
 ; RV32-BITS-512-NEXT:    .cfi_def_cfa_offset 64
 ; RV32-BITS-512-NEXT:    addi s0, sp, 64
+=======
+; RV32-BITS-512-NEXT:    addi sp, sp, -80
+; RV32-BITS-512-NEXT:    .cfi_def_cfa_offset 80
+; RV32-BITS-512-NEXT:    sw ra, 76(sp) # 4-byte Folded Spill
+; RV32-BITS-512-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
+; RV32-BITS-512-NEXT:    .cfi_offset ra, -4
+; RV32-BITS-512-NEXT:    .cfi_offset s0, -8
+; RV32-BITS-512-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-512-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-512-NEXT:    csrr a0, vlenb
 ; RV32-BITS-512-NEXT:    slli a0, a0, 4
@@ -3659,22 +3703,43 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV32-BITS-512-NEXT:    vs8r.v v16, (a1)
 ; RV32-BITS-512-NEXT:    vl8re64.v v16, (a0)
 ; RV32-BITS-512-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV32-BITS-512-NEXT:    addi sp, s0, -64
 ; RV32-BITS-512-NEXT:    addi sp, sp, 64
+=======
+; RV32-BITS-512-NEXT:    addi sp, s0, -80
+; RV32-BITS-512-NEXT:    lw ra, 76(sp) # 4-byte Folded Reload
+; RV32-BITS-512-NEXT:    lw s0, 72(sp) # 4-byte Folded Reload
+; RV32-BITS-512-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV32-BITS-512-NEXT:    ret
 ;
 ; RV64-BITS-UNKNOWN-LABEL: reverse_nxv12i64:
 ; RV64-BITS-UNKNOWN:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-BITS-UNKNOWN-NEXT:    addi sp, sp, -64
 ; RV64-BITS-UNKNOWN-NEXT:    .cfi_def_cfa_offset 64
 ; RV64-BITS-UNKNOWN-NEXT:    addi s0, sp, 64
+=======
+; RV64-BITS-UNKNOWN-NEXT:    addi sp, sp, -80
+; RV64-BITS-UNKNOWN-NEXT:    .cfi_def_cfa_offset 80
+; RV64-BITS-UNKNOWN-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
+; RV64-BITS-UNKNOWN-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
+; RV64-BITS-UNKNOWN-NEXT:    .cfi_offset ra, -8
+; RV64-BITS-UNKNOWN-NEXT:    .cfi_offset s0, -16
+; RV64-BITS-UNKNOWN-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-UNKNOWN-NEXT:    .cfi_def_cfa s0, 0
 ; RV64-BITS-UNKNOWN-NEXT:    csrr a0, vlenb
 ; RV64-BITS-UNKNOWN-NEXT:    slli a0, a0, 4
 ; RV64-BITS-UNKNOWN-NEXT:    sub sp, sp, a0
 ; RV64-BITS-UNKNOWN-NEXT:    andi sp, sp, -64
 ; RV64-BITS-UNKNOWN-NEXT:    csrr a0, vlenb
+<<<<<<< HEAD
 ; RV64-BITS-UNKNOWN-NEXT:    addiw a1, a0, -1
+=======
+; RV64-BITS-UNKNOWN-NEXT:    addi a1, a0, -1
+>>>>>>> upstream/main
 ; RV64-BITS-UNKNOWN-NEXT:    vsetvli a2, zero, e64, m8, ta, ma
 ; RV64-BITS-UNKNOWN-NEXT:    vid.v v24
 ; RV64-BITS-UNKNOWN-NEXT:    vrsub.vx v24, v24, a1
@@ -3689,22 +3754,43 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV64-BITS-UNKNOWN-NEXT:    vs8r.v v16, (a1)
 ; RV64-BITS-UNKNOWN-NEXT:    vl8re64.v v16, (a0)
 ; RV64-BITS-UNKNOWN-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV64-BITS-UNKNOWN-NEXT:    addi sp, s0, -64
 ; RV64-BITS-UNKNOWN-NEXT:    addi sp, sp, 64
+=======
+; RV64-BITS-UNKNOWN-NEXT:    addi sp, s0, -80
+; RV64-BITS-UNKNOWN-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
+; RV64-BITS-UNKNOWN-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
+; RV64-BITS-UNKNOWN-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-UNKNOWN-NEXT:    ret
 ;
 ; RV64-BITS-256-LABEL: reverse_nxv12i64:
 ; RV64-BITS-256:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-BITS-256-NEXT:    addi sp, sp, -64
 ; RV64-BITS-256-NEXT:    .cfi_def_cfa_offset 64
 ; RV64-BITS-256-NEXT:    addi s0, sp, 64
+=======
+; RV64-BITS-256-NEXT:    addi sp, sp, -80
+; RV64-BITS-256-NEXT:    .cfi_def_cfa_offset 80
+; RV64-BITS-256-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
+; RV64-BITS-256-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
+; RV64-BITS-256-NEXT:    .cfi_offset ra, -8
+; RV64-BITS-256-NEXT:    .cfi_offset s0, -16
+; RV64-BITS-256-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-256-NEXT:    .cfi_def_cfa s0, 0
 ; RV64-BITS-256-NEXT:    csrr a0, vlenb
 ; RV64-BITS-256-NEXT:    slli a0, a0, 4
 ; RV64-BITS-256-NEXT:    sub sp, sp, a0
 ; RV64-BITS-256-NEXT:    andi sp, sp, -64
 ; RV64-BITS-256-NEXT:    csrr a0, vlenb
+<<<<<<< HEAD
 ; RV64-BITS-256-NEXT:    addiw a1, a0, -1
+=======
+; RV64-BITS-256-NEXT:    addi a1, a0, -1
+>>>>>>> upstream/main
 ; RV64-BITS-256-NEXT:    vsetvli a2, zero, e64, m8, ta, ma
 ; RV64-BITS-256-NEXT:    vid.v v24
 ; RV64-BITS-256-NEXT:    vrsub.vx v24, v24, a1
@@ -3719,22 +3805,43 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV64-BITS-256-NEXT:    vs8r.v v16, (a1)
 ; RV64-BITS-256-NEXT:    vl8re64.v v16, (a0)
 ; RV64-BITS-256-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV64-BITS-256-NEXT:    addi sp, s0, -64
 ; RV64-BITS-256-NEXT:    addi sp, sp, 64
+=======
+; RV64-BITS-256-NEXT:    addi sp, s0, -80
+; RV64-BITS-256-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
+; RV64-BITS-256-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
+; RV64-BITS-256-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-256-NEXT:    ret
 ;
 ; RV64-BITS-512-LABEL: reverse_nxv12i64:
 ; RV64-BITS-512:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-BITS-512-NEXT:    addi sp, sp, -64
 ; RV64-BITS-512-NEXT:    .cfi_def_cfa_offset 64
 ; RV64-BITS-512-NEXT:    addi s0, sp, 64
+=======
+; RV64-BITS-512-NEXT:    addi sp, sp, -80
+; RV64-BITS-512-NEXT:    .cfi_def_cfa_offset 80
+; RV64-BITS-512-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
+; RV64-BITS-512-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
+; RV64-BITS-512-NEXT:    .cfi_offset ra, -8
+; RV64-BITS-512-NEXT:    .cfi_offset s0, -16
+; RV64-BITS-512-NEXT:    addi s0, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-512-NEXT:    .cfi_def_cfa s0, 0
 ; RV64-BITS-512-NEXT:    csrr a0, vlenb
 ; RV64-BITS-512-NEXT:    slli a0, a0, 4
 ; RV64-BITS-512-NEXT:    sub sp, sp, a0
 ; RV64-BITS-512-NEXT:    andi sp, sp, -64
 ; RV64-BITS-512-NEXT:    csrr a0, vlenb
+<<<<<<< HEAD
 ; RV64-BITS-512-NEXT:    addiw a1, a0, -1
+=======
+; RV64-BITS-512-NEXT:    addi a1, a0, -1
+>>>>>>> upstream/main
 ; RV64-BITS-512-NEXT:    vsetvli a2, zero, e64, m8, ta, ma
 ; RV64-BITS-512-NEXT:    vid.v v24
 ; RV64-BITS-512-NEXT:    vrsub.vx v24, v24, a1
@@ -3749,8 +3856,15 @@ define <vscale x 12 x i64> @reverse_nxv12i64(<vscale x 12 x i64> %a) {
 ; RV64-BITS-512-NEXT:    vs8r.v v16, (a1)
 ; RV64-BITS-512-NEXT:    vl8re64.v v16, (a0)
 ; RV64-BITS-512-NEXT:    vl8re64.v v8, (a1)
+<<<<<<< HEAD
 ; RV64-BITS-512-NEXT:    addi sp, s0, -64
 ; RV64-BITS-512-NEXT:    addi sp, sp, 64
+=======
+; RV64-BITS-512-NEXT:    addi sp, s0, -80
+; RV64-BITS-512-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
+; RV64-BITS-512-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
+; RV64-BITS-512-NEXT:    addi sp, sp, 80
+>>>>>>> upstream/main
 ; RV64-BITS-512-NEXT:    ret
   %res = call <vscale x 12 x i64> @llvm.experimental.vector.reverse.nxv12i64(<vscale x 12 x i64> %a)
   ret <vscale x 12 x i64> %res

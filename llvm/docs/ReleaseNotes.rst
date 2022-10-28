@@ -42,7 +42,16 @@ Non-comprehensive list of changes in this release
    functionality, or simply have a lot to talk about), see the `NOTE` below
    for adding a new subsection.
 
+<<<<<<< HEAD
 * The LoopFlatten pass is now enabled by default.
+=======
+*  The ``readnone`` calls which are crossing suspend points in coroutines will
+   not be merged. Since ``readnone`` calls may access thread id and thread id
+   is not a constant in coroutines. This decision may cause unnecessary
+   performance regressions and we plan to fix it in later versions.
+
+* ...
+>>>>>>> upstream/main
 
 Update on required toolchains to build LLVM
 -------------------------------------------
@@ -130,6 +139,12 @@ Changes to the Windows Target
 
 Changes to the X86 Backend
 --------------------------
+* Support ISA of ``AVX-IFMA``.
+
+* Add support for the ``RDMSRLIST and WRMSRLIST`` instructions.
+* Add support for the ``WRMSRNS`` instruction.
+* Support ISA of ``AMX-FP16`` which contains ``tdpfp16ps`` instruction.
+* Support ISA of ``CMPCCXADD``.
 
 Changes to the OCaml bindings
 -----------------------------
@@ -167,10 +182,23 @@ Changes to the Metadata Info
 Changes to the Debug Info
 ---------------------------------
 
-During this release ...
+Previously when emitting DWARF v4 and tuning for GDB, llc would use DWARF v2's
+``DW_AT_bit_offset`` and ``DW_AT_data_member_location``. llc now uses DWARF v4's
+``DW_AT_data_bit_offset`` regardless of tuning.
+
+Support for ``DW_AT_data_bit_offset`` was added in GDB 8.0. For earlier versions,
+you can use llc's ``-dwarf-version=3`` option to emit compatible DWARF.
 
 Changes to the LLVM tools
 ---------------------------------
+
+* ``llvm-readobj --elf-output-style=JSON`` no longer prefixes each JSON object
+  with the file name. Previously, each object file's output looked like
+  ``"main.o":{"FileSummary":{"File":"main.o"},...}`` but is now
+  ``{"FileSummary":{"File":"main.o"},...}``. This allows each JSON object to be
+  parsed in the same way, since each object no longer has a unique key. Tools
+  that consume ``llvm-readobj``'s JSON output should update their parsers
+  accordingly.
 
 Changes to LLDB
 ---------------------------------

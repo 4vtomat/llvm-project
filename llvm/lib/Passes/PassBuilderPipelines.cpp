@@ -207,7 +207,6 @@ PipelineTuningOptions::PipelineTuningOptions() {
 }
 
 namespace llvm {
-
 extern cl::opt<unsigned> MaxDevirtIterations;
 extern cl::opt<bool> EnableConstraintElimination;
 extern cl::opt<bool> EnableFunctionSpecialization;
@@ -224,14 +223,10 @@ extern cl::opt<bool> EnableDFAJumpThreading;
 extern cl::opt<bool> RunNewGVN;
 extern cl::opt<bool> RunPartialInlining;
 extern cl::opt<bool> ExtraVectorizerPasses;
-
 extern cl::opt<bool> FlattenedProfileUsed;
-
 extern cl::opt<AttributorRunOption> AttributorRun;
 extern cl::opt<bool> EnableKnowledgeRetention;
-
 extern cl::opt<bool> EnableMatrix;
-
 extern cl::opt<bool> DisablePreInliner;
 extern cl::opt<int> PreInlineThreshold;
 } // namespace llvm

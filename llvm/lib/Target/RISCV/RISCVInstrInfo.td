@@ -838,6 +838,7 @@ def WFI : Priv<"wfi", 0b0001000>, Sched<[]> {
   let rs2 = 0b00101;
 }
 
+let Predicates = [HasStdExtSvinval] in {
 def SFENCE_W_INVAL : Priv<"sfence.w.inval", 0b0001100>, Sched<[]> {
   let rd = 0;
   let rs1 = 0;
@@ -849,13 +850,14 @@ def SFENCE_INVAL_IR : Priv<"sfence.inval.ir", 0b0001100>, Sched<[]> {
   let rs1 = 0;
   let rs2 = 0b00001;
 }
-
-def SFENCE_VMA  : Priv_rr<"sfence.vma", 0b0001001>, Sched<[]>;
 def SINVAL_VMA  : Priv_rr<"sinval.vma", 0b0001011>, Sched<[]>;
-def HFENCE_VVMA : Priv_rr<"hfence.vvma", 0b0010001>, Sched<[]>;
-def HFENCE_GVMA : Priv_rr<"hfence.gvma", 0b0110001>, Sched<[]>;
 def HINVAL_VVMA : Priv_rr<"hinval.vvma", 0b0010011>, Sched<[]>;
 def HINVAL_GVMA : Priv_rr<"hinval.gvma", 0b0110011>, Sched<[]>;
+} // Predicates = [HasStdExtSvinval]
+
+def SFENCE_VMA  : Priv_rr<"sfence.vma", 0b0001001>, Sched<[]>;
+def HFENCE_VVMA : Priv_rr<"hfence.vvma", 0b0010001>, Sched<[]>;
+def HFENCE_GVMA : Priv_rr<"hfence.gvma", 0b0110001>, Sched<[]>;
 
 def HLV_B   : HLoad_r<0b0110000, 0b00000, "hlv.b">, Sched<[]>;
 def HLV_BU  : HLoad_r<0b0110000, 0b00001, "hlv.bu">, Sched<[]>;
@@ -1383,6 +1385,7 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // This should always expand to a branch+c.mv so the size is 6 or 4 if the
 // branch is compressible.
@@ -1403,6 +1406,10 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
 
 let Predicates = [HasShortForwardBranchOpt],
     Constraints = "$dst = $falsev", isCommutable = 1, isSelect = 1, Size = 8 in {
+=======
+let Predicates = [HasShortForwardBranchOpt],
+    Constraints = "$dst = $falsev", isCommutable = 1, Size = 8 in {
+>>>>>>> upstream/main
 // This instruction moves $truev to $dst when the condition is true. It will
 // be expanded to control flow in RISCVExpandPseudoInsts.
 def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
@@ -1415,6 +1422,7 @@ def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
                      Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
 }
 
+<<<<<<< HEAD
 let Constraints = "$dst = $falsev" in {
 // Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
@@ -1541,6 +1549,8 @@ def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
 multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
   let usesCustomInserter = 1 in
   def _Using_CC_GPR : Pseudo<(outs valty:$dst),
@@ -1557,7 +1567,11 @@ multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
              (IntCCtoRISCVCC $cc), valty:$truev, valty:$falsev)>;
 }
 
+<<<<<<< HEAD
 let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in // SIFIVE
+=======
+let Predicates = [NoShortForwardBranchOpt] in
+>>>>>>> upstream/main
 defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
 class SelectCompressOpt<CondCode Cond>: Pat<(riscv_selectcc_frag:$select GPR:$lhs, simm12_no6:$Constant, Cond,
@@ -1965,10 +1979,14 @@ def : Pat<(add nonnegative_33signbits_node:$rs1, -1), (ADDIW GPR:$rs1, -1)>;
 
 // Use binop_allwusers to recover immediates that may have been broken by
 // SimplifyDemandedBits.
-// TODO: This is valid for ADDI/ORI/XORI.
 def : Pat<(binop_allwusers<and> GPR:$rs1, u32simm12:$imm),
           (ANDI GPR:$rs1, u32simm12:$imm)>;
 
+def : Pat<(binop_allwusers<or> GPR:$rs1, u32simm12:$imm),
+          (ORI GPR:$rs1, u32simm12:$imm)>;
+
+def : Pat<(binop_allwusers<xor> GPR:$rs1, u32simm12:$imm),
+          (XORI GPR:$rs1, u32simm12:$imm)>;
 /// Loads
 
 defm : LdPat<sextloadi32, LW, i64>;

@@ -437,6 +437,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::floor, MVT::v4f32, 9},
     {Intrinsic::floor, MVT::v8f32, 9},
     {Intrinsic::floor, MVT::v16f32, 9},
+    {Intrinsic::floor, MVT::nxv1f32, 9},
     {Intrinsic::floor, MVT::nxv2f32, 9},
     {Intrinsic::floor, MVT::nxv4f32, 9},
     {Intrinsic::floor, MVT::nxv8f32, 9},
@@ -453,6 +454,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::ceil, MVT::v4f32, 9},
     {Intrinsic::ceil, MVT::v8f32, 9},
     {Intrinsic::ceil, MVT::v16f32, 9},
+    {Intrinsic::ceil, MVT::nxv1f32, 9},
     {Intrinsic::ceil, MVT::nxv2f32, 9},
     {Intrinsic::ceil, MVT::nxv4f32, 9},
     {Intrinsic::ceil, MVT::nxv8f32, 9},
@@ -469,6 +471,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::trunc, MVT::v4f32, 7},
     {Intrinsic::trunc, MVT::v8f32, 7},
     {Intrinsic::trunc, MVT::v16f32, 7},
+    {Intrinsic::trunc, MVT::nxv1f32, 7},
     {Intrinsic::trunc, MVT::nxv2f32, 7},
     {Intrinsic::trunc, MVT::nxv4f32, 7},
     {Intrinsic::trunc, MVT::nxv8f32, 7},
@@ -485,6 +488,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::round, MVT::v4f32, 9},
     {Intrinsic::round, MVT::v8f32, 9},
     {Intrinsic::round, MVT::v16f32, 9},
+    {Intrinsic::round, MVT::nxv1f32, 9},
     {Intrinsic::round, MVT::nxv2f32, 9},
     {Intrinsic::round, MVT::nxv4f32, 9},
     {Intrinsic::round, MVT::nxv8f32, 9},
@@ -501,6 +505,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::roundeven, MVT::v4f32, 9},
     {Intrinsic::roundeven, MVT::v8f32, 9},
     {Intrinsic::roundeven, MVT::v16f32, 9},
+    {Intrinsic::roundeven, MVT::nxv1f32, 9},
     {Intrinsic::roundeven, MVT::nxv2f32, 9},
     {Intrinsic::roundeven, MVT::nxv4f32, 9},
     {Intrinsic::roundeven, MVT::nxv8f32, 9},
@@ -517,6 +522,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::fabs, MVT::v4f32, 1},
     {Intrinsic::fabs, MVT::v8f32, 1},
     {Intrinsic::fabs, MVT::v16f32, 1},
+    {Intrinsic::fabs, MVT::nxv1f32, 1},
     {Intrinsic::fabs, MVT::nxv2f32, 1},
     {Intrinsic::fabs, MVT::nxv4f32, 1},
     {Intrinsic::fabs, MVT::nxv8f32, 1},
@@ -533,6 +539,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::sqrt, MVT::v4f32, 1},
     {Intrinsic::sqrt, MVT::v8f32, 1},
     {Intrinsic::sqrt, MVT::v16f32, 1},
+    {Intrinsic::sqrt, MVT::nxv1f32, 1},
     {Intrinsic::sqrt, MVT::nxv2f32, 1},
     {Intrinsic::sqrt, MVT::nxv4f32, 1},
     {Intrinsic::sqrt, MVT::nxv8f32, 1},
@@ -549,6 +556,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bswap, MVT::v4i16, 3},
     {Intrinsic::bswap, MVT::v8i16, 3},
     {Intrinsic::bswap, MVT::v16i16, 3},
+    {Intrinsic::bswap, MVT::nxv1i16, 3},
     {Intrinsic::bswap, MVT::nxv2i16, 3},
     {Intrinsic::bswap, MVT::nxv4i16, 3},
     {Intrinsic::bswap, MVT::nxv8i16, 3},
@@ -557,6 +565,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bswap, MVT::v4i32, 12},
     {Intrinsic::bswap, MVT::v8i32, 12},
     {Intrinsic::bswap, MVT::v16i32, 12},
+    {Intrinsic::bswap, MVT::nxv1i32, 12},
     {Intrinsic::bswap, MVT::nxv2i32, 12},
     {Intrinsic::bswap, MVT::nxv4i32, 12},
     {Intrinsic::bswap, MVT::nxv8i32, 12},
@@ -565,6 +574,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bswap, MVT::v4i64, 31},
     {Intrinsic::bswap, MVT::v8i64, 31},
     {Intrinsic::bswap, MVT::v16i64, 31},
+    {Intrinsic::bswap, MVT::nxv1i64, 31},
     {Intrinsic::bswap, MVT::nxv2i64, 31},
     {Intrinsic::bswap, MVT::nxv4i64, 31},
     {Intrinsic::bswap, MVT::nxv8i64, 31},
@@ -572,6 +582,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bitreverse, MVT::v4i8, 17},
     {Intrinsic::bitreverse, MVT::v8i8, 17},
     {Intrinsic::bitreverse, MVT::v16i8, 17},
+    {Intrinsic::bitreverse, MVT::nxv1i8, 17},
     {Intrinsic::bitreverse, MVT::nxv2i8, 17},
     {Intrinsic::bitreverse, MVT::nxv4i8, 17},
     {Intrinsic::bitreverse, MVT::nxv8i8, 17},
@@ -580,6 +591,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bitreverse, MVT::v4i16, 24},
     {Intrinsic::bitreverse, MVT::v8i16, 24},
     {Intrinsic::bitreverse, MVT::v16i16, 24},
+    {Intrinsic::bitreverse, MVT::nxv1i16, 24},
     {Intrinsic::bitreverse, MVT::nxv2i16, 24},
     {Intrinsic::bitreverse, MVT::nxv4i16, 24},
     {Intrinsic::bitreverse, MVT::nxv8i16, 24},
@@ -588,6 +600,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bitreverse, MVT::v4i32, 33},
     {Intrinsic::bitreverse, MVT::v8i32, 33},
     {Intrinsic::bitreverse, MVT::v16i32, 33},
+    {Intrinsic::bitreverse, MVT::nxv1i32, 33},
     {Intrinsic::bitreverse, MVT::nxv2i32, 33},
     {Intrinsic::bitreverse, MVT::nxv4i32, 33},
     {Intrinsic::bitreverse, MVT::nxv8i32, 33},
@@ -596,6 +609,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::bitreverse, MVT::v4i64, 52},
     {Intrinsic::bitreverse, MVT::v8i64, 52},
     {Intrinsic::bitreverse, MVT::v16i64, 52},
+    {Intrinsic::bitreverse, MVT::nxv1i64, 52},
     {Intrinsic::bitreverse, MVT::nxv2i64, 52},
     {Intrinsic::bitreverse, MVT::nxv4i64, 52},
     {Intrinsic::bitreverse, MVT::nxv8i64, 52},
@@ -603,6 +617,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::ctpop, MVT::v4i8, 12},
     {Intrinsic::ctpop, MVT::v8i8, 12},
     {Intrinsic::ctpop, MVT::v16i8, 12},
+    {Intrinsic::ctpop, MVT::nxv1i8, 12},
     {Intrinsic::ctpop, MVT::nxv2i8, 12},
     {Intrinsic::ctpop, MVT::nxv4i8, 12},
     {Intrinsic::ctpop, MVT::nxv8i8, 12},
@@ -611,6 +626,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::ctpop, MVT::v4i16, 19},
     {Intrinsic::ctpop, MVT::v8i16, 19},
     {Intrinsic::ctpop, MVT::v16i16, 19},
+    {Intrinsic::ctpop, MVT::nxv1i16, 19},
     {Intrinsic::ctpop, MVT::nxv2i16, 19},
     {Intrinsic::ctpop, MVT::nxv4i16, 19},
     {Intrinsic::ctpop, MVT::nxv8i16, 19},
@@ -619,6 +635,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::ctpop, MVT::v4i32, 20},
     {Intrinsic::ctpop, MVT::v8i32, 20},
     {Intrinsic::ctpop, MVT::v16i32, 20},
+    {Intrinsic::ctpop, MVT::nxv1i32, 20},
     {Intrinsic::ctpop, MVT::nxv2i32, 20},
     {Intrinsic::ctpop, MVT::nxv4i32, 20},
     {Intrinsic::ctpop, MVT::nxv8i32, 20},
@@ -627,6 +644,7 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::ctpop, MVT::v4i64, 21},
     {Intrinsic::ctpop, MVT::v8i64, 21},
     {Intrinsic::ctpop, MVT::v16i64, 21},
+    {Intrinsic::ctpop, MVT::nxv1i64, 21},
     {Intrinsic::ctpop, MVT::nxv2i64, 21},
     {Intrinsic::ctpop, MVT::nxv4i64, 21},
     {Intrinsic::ctpop, MVT::nxv8i64, 21},
@@ -638,6 +656,18 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   auto *RetTy = ICA.getReturnType();
 
   switch (ICA.getID()) {
+  case Intrinsic::ceil:
+  case Intrinsic::floor:
+  case Intrinsic::trunc:
+  case Intrinsic::rint:
+  case Intrinsic::round:
+  case Intrinsic::roundeven: {
+    // These all use the same code.
+    auto LT = getTypeLegalizationCost(RetTy);
+    if (!LT.second.isVector() && TLI->isOperationCustom(ISD::FCEIL, LT.second))
+      return LT.first * 8;
+    break;
+  }
   case Intrinsic::umin:
   case Intrinsic::umax:
   case Intrinsic::smin:
@@ -677,6 +707,7 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return InstructionCost::getInvalid();
     break;
   }
+<<<<<<< HEAD
   // This is not ideal but untill all VP intrinsics are in upstream we can't use
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
@@ -742,7 +773,17 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
         return LT.first * Entry->Cost;
     }
     break;
+=======
+>>>>>>> upstream/main
   }
+
+  if (ST->hasVInstructions() && RetTy->isVectorTy()) {
+    auto LT = getTypeLegalizationCost(RetTy);
+    if (const auto *Entry = CostTableLookup(VectorIntrinsicCostTable,
+                                            ICA.getID(), LT.second))
+      return LT.first * Entry->Cost;
+  }
+
   return BaseT::getIntrinsicInstrCost(ICA, CostKind);
 }
 
@@ -1275,11 +1316,15 @@ void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
 }
 
 unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   TypeSize Size = DL.getTypeSizeInBits(Ty);
 #else
   TypeSize Size = Ty->getPrimitiveSizeInBits();
 #endif
+=======
+  TypeSize Size = DL.getTypeSizeInBits(Ty);
+>>>>>>> upstream/main
   if (Ty->isVectorTy()) {
     if (Size.isScalable() && ST->hasVInstructions())
       return divideCeil(Size.getKnownMinValue(), RISCV::RVVBitsPerBlock);

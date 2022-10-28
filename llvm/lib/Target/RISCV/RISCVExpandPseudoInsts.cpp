@@ -47,6 +47,7 @@ private:
   bool expandMBB(MachineBasicBlock &MBB);
   bool expandMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool expandLoadStore(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                        MachineBasicBlock::iterator &NextMBBI,
@@ -58,6 +59,10 @@ private:
                              MachineBasicBlock::iterator MBBI,
                              unsigned ShOpc);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool expandCCOp(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
+                  MachineBasicBlock::iterator &NextMBBI);
+>>>>>>> upstream/main
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
@@ -99,6 +104,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
   switch (MBBI->getOpcode()) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoSB:
     return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::SB, /*HasTmpReg=*/true);
@@ -159,6 +165,10 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoSBFX:
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::PseudoCCMOVGPR:
+    return expandCCOp(MBB, MBBI, NextMBBI);
+>>>>>>> upstream/main
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
   case RISCV::PseudoVSETIVLI:
@@ -222,6 +232,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   return false;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // TODO: This shares a lot of similarities with expandAuipcInstPair we may be
 // able to merge them if we make interface changes to expandAuipcInstPair.
@@ -275,6 +286,13 @@ bool RISCVExpandPseudo::expandLoadStore(MachineBasicBlock &MBB,
 bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
                                    MachineBasicBlock::iterator MBBI,
                                    MachineBasicBlock::iterator &NextMBBI) {
+=======
+bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
+                                   MachineBasicBlock::iterator MBBI,
+                                   MachineBasicBlock::iterator &NextMBBI) {
+  assert(MBBI->getOpcode() == RISCV::PseudoCCMOVGPR && "Unexpected opcode");
+
+>>>>>>> upstream/main
   MachineFunction *MF = MBB.getParent();
   MachineInstr &MI = *MBBI;
   DebugLoc DL = MI.getDebugLoc();
@@ -300,6 +318,7 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   Register DestReg = MI.getOperand(0).getReg();
   assert(MI.getOperand(4).getReg() == DestReg);
 
+<<<<<<< HEAD
   if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
       MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
     // Add MV.
@@ -340,6 +359,12 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
         .add(MI.getOperand(5))
         .add(MI.getOperand(6));
   }
+=======
+  // Add MV.
+  BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
+      .add(MI.getOperand(5))
+      .addImm(0);
+>>>>>>> upstream/main
 
   TrueBB->addSuccessor(MergeBB);
 
@@ -360,6 +385,7 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   return true;
 }
 
+<<<<<<< HEAD
 bool RISCVExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
                                        MachineBasicBlock::iterator MBBI) {
   TII->expandLIsimm32(MBB, MBBI);
@@ -390,6 +416,8 @@ bool RISCVExpandPseudo::expandBitfieldExtract(
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
 bool RISCVExpandPseudo::expandVSetVL(MachineBasicBlock &MBB,
                                      MachineBasicBlock::iterator MBBI) {
   assert(MBBI->getNumExplicitOperands() == 3 && MBBI->getNumOperands() >= 5 &&

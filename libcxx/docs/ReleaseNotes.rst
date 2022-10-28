@@ -42,12 +42,15 @@ Implemented Papers
 - P2445R1 - ``std::forward_like``
 - P2273R3 - Making ``std::unique_ptr`` constexpr
 - P0591R4 - Utility functions to implement uses-allocator construction
+- P2291R3 - Add Constexpr Modifiers to Functions ``to_chars`` and
+  ``from_chars`` for Integral Types in ``<charconv>`` Header
 
 Improvements and New Features
 -----------------------------
 - Declarations of ``std::c8rtomb()`` and ``std::mbrtoc8()`` from P0482R6 are
   now provided when implementations in the global namespace are provided by
   the C library.
+- Implemented ``<memory_resource>`` header from C++17
 
 Deprecations and Removals
 -------------------------
@@ -83,6 +86,9 @@ Deprecations and Removals
   C++14 as an undocumented extension. This extension makes it hard to implement
   the C++23 paper that makes these functions ``constexpr``, therefore the
   extension has been removed.
+
+- The ``_LIBCPP_ENABLE_CXX03_FUNCTION`` macro that allowed re-enabling the now-deprecated C++03 implementation of
+  ``std::function`` has been removed. Users who need to use ``std::function`` should switch to C++11 and above.
 
 Upcoming Deprecations and Removals
 ----------------------------------

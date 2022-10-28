@@ -123,6 +123,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zicboz", RISCVExtensionVersion{1, 0}},
     {"zicbop", RISCVExtensionVersion{1, 0}},
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 
@@ -139,6 +140,10 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"za64rs", RISCVExtensionVersion{1, 0}},
     {"zic64b", RISCVExtensionVersion{1, 0}},
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    {"svnapot", RISCVExtensionVersion{1, 0}},
+    {"svinval", RISCVExtensionVersion{1, 0}},
+>>>>>>> upstream/main
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
@@ -671,8 +676,8 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
 
     // The order is OK, then push it into features.
     // TODO: Use version number when setting target features
-    // Currently LLVM supports only "mafdcbv".
-    StringRef SupportedStandardExtension = "mafdcbv";
+    // Currently LLVM supports only "mafdcv".
+    StringRef SupportedStandardExtension = "mafdcv";
     if (!SupportedStandardExtension.contains(C))
       return createStringError(errc::invalid_argument,
                                "unsupported standard user-level extension '%c'",
