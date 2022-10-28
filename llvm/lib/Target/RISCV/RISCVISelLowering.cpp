@@ -6136,9 +6136,10 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                              ? RISCVISD::FMAXNUM_VL
                                              : RISCVISD::FMINNUM_VL,
                                          true);
-    SDValue IsNaN = DAG.getSetCC(
-        DL, getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT), Op0,
-        Op1, ISD::SETUO);
+    EVT BoolVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
+    SDValue IsNaN0 = DAG.getSetCC(DL, BoolVT, Op0, Op0, ISD::SETUNE);
+    SDValue IsNaN1 = DAG.getSetCC(DL, BoolVT, Op1, Op1, ISD::SETUNE);
+    SDValue IsNaN = DAG.getNode(ISD::OR, DL, BoolVT, IsNaN0, IsNaN1);
     return DAG.getSelect(DL, VT, IsNaN, TrueVal, FalseVal);
   }
   case Intrinsic::aarch64_neon_fmaxnm:
