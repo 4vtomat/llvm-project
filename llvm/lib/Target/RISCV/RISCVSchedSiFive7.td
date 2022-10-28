@@ -245,18 +245,10 @@ def : WriteRes<WriteVSETIVLI, [SiFive7PipeA]>;
 def : WriteRes<WriteVSETVL, [SiFive7PipeA]>;
 }
 // 7. Vector Loads and Stores
-let Latency = 4 in {
-def : WriteRes<WriteVLDE8, [SiFive7VL]>;
-def : WriteRes<WriteVLDE16, [SiFive7VL]>;
-def : WriteRes<WriteVLDE32, [SiFive7VL]>;
-def : WriteRes<WriteVLDE64, [SiFive7VL]>;
-}
-let Latency = 1 in {
-def : WriteRes<WriteVSTE8, [SiFive7VS]>;
-def : WriteRes<WriteVSTE16, [SiFive7VS]>;
-def : WriteRes<WriteVSTE32, [SiFive7VS]>;
-def : WriteRes<WriteVSTE64, [SiFive7VS]>;
-}
+let Latency = 4 in
+def : WriteRes<WriteVLDE, [SiFive7VL]>;
+let Latency = 1 in
+def : WriteRes<WriteVSTE, [SiFive7VS]>;
 let Latency = 4 in
 def : WriteRes<WriteVLDM, [SiFive7VL]>;
 let Latency = 1 in
@@ -294,26 +286,11 @@ def : WriteRes<WriteVSTOX32, [SiFive7VS]>;
 def : WriteRes<WriteVSTOX64, [SiFive7VS]>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVLDFF8, [SiFive7VL]>;
-def : WriteRes<WriteVLDFF16, [SiFive7VL]>;
-def : WriteRes<WriteVLDFF32, [SiFive7VL]>;
-def : WriteRes<WriteVLDFF64, [SiFive7VL]>;
-def : WriteRes<WriteVLD1R8, [SiFive7VL]>;
-def : WriteRes<WriteVLD1R16, [SiFive7VL]>;
-def : WriteRes<WriteVLD1R32, [SiFive7VL]>;
-def : WriteRes<WriteVLD1R64, [SiFive7VL]>;
-def : WriteRes<WriteVLD2R8, [SiFive7VL]>;
-def : WriteRes<WriteVLD2R16, [SiFive7VL]>;
-def : WriteRes<WriteVLD2R32, [SiFive7VL]>;
-def : WriteRes<WriteVLD2R64, [SiFive7VL]>;
-def : WriteRes<WriteVLD4R8, [SiFive7VL]>;
-def : WriteRes<WriteVLD4R16, [SiFive7VL]>;
-def : WriteRes<WriteVLD4R32, [SiFive7VL]>;
-def : WriteRes<WriteVLD4R64, [SiFive7VL]>;
-def : WriteRes<WriteVLD8R8, [SiFive7VL]>;
-def : WriteRes<WriteVLD8R16, [SiFive7VL]>;
-def : WriteRes<WriteVLD8R32, [SiFive7VL]>;
-def : WriteRes<WriteVLD8R64, [SiFive7VL]>;
+def : WriteRes<WriteVLDFF, [SiFive7VL]>;
+def : WriteRes<WriteVLD1R, [SiFive7VL]>;
+def : WriteRes<WriteVLD2R, [SiFive7VL]>;
+def : WriteRes<WriteVLD4R, [SiFive7VL]>;
+def : WriteRes<WriteVLD8R, [SiFive7VL]>;
 }
 let Latency = 1 in {
 def : WriteRes<WriteVST1R, [SiFive7VS]>;
@@ -636,10 +613,7 @@ def : ReadAdvance<ReadVSETVL, 2>;
 // 7. Vector Loads and Stores
 def : ReadAdvance<ReadVLDX, 0>;
 def : ReadAdvance<ReadVSTX, 0>;
-def : ReadAdvance<ReadVSTE8V, 0>;
-def : ReadAdvance<ReadVSTE16V, 0>;
-def : ReadAdvance<ReadVSTE32V, 0>;
-def : ReadAdvance<ReadVSTE64V, 0>;
+def : ReadAdvance<ReadVSTEV, 0>;
 def : ReadAdvance<ReadVSTM, 0>;
 def : ReadAdvance<ReadVLDSX, 0>;
 def : ReadAdvance<ReadVSTSX, 0>;

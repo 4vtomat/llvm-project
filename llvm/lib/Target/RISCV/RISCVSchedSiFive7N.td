@@ -246,18 +246,10 @@ def : WriteRes<WriteVSETIVLI, [SiFive7NPipeA]>;
 def : WriteRes<WriteVSETVL, [SiFive7NPipeA]>;
 }
 // 7. Vector Loads and Stores
-let Latency = 4 in {
-def : WriteRes<WriteVLDE8, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE16, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE32, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE64, [SiFive7NVL]>;
-}
-let Latency = 1 in {
-def : WriteRes<WriteVSTE8, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE16, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE32, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE64, [SiFive7NVS]>;
-}
+let Latency = 4 in
+def : WriteRes<WriteVLDE, [SiFive7NVL]>;
+let Latency = 1 in
+def : WriteRes<WriteVSTE, [SiFive7NVS]>;
 let Latency = 4 in
 def : WriteRes<WriteVLDM, [SiFive7NVL]>;
 let Latency = 1 in
@@ -295,26 +287,11 @@ def : WriteRes<WriteVSTOX32, [SiFive7NVS]>;
 def : WriteRes<WriteVSTOX64, [SiFive7NVS]>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVLDFF8, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF16, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF32, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R64, [SiFive7NVL]>;
+def : WriteRes<WriteVLDFF, [SiFive7NVL]>;
+def : WriteRes<WriteVLD1R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD2R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD4R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD8R, [SiFive7NVL]>;
 }
 let Latency = 1 in {
 def : WriteRes<WriteVST1R, [SiFive7NVS]>;
@@ -606,10 +583,7 @@ def : ReadAdvance<ReadVSETVL, 2>;
 // 7. Vector Loads and Stores
 def : ReadAdvance<ReadVLDX, 0>;
 def : ReadAdvance<ReadVSTX, 0>;
-def : ReadAdvance<ReadVSTE8V, 0>;
-def : ReadAdvance<ReadVSTE16V, 0>;
-def : ReadAdvance<ReadVSTE32V, 0>;
-def : ReadAdvance<ReadVSTE64V, 0>;
+def : ReadAdvance<ReadVSTEV, 0>;
 def : ReadAdvance<ReadVSTM, 0>;
 def : ReadAdvance<ReadVLDSX, 0>;
 def : ReadAdvance<ReadVSTSX, 0>;
