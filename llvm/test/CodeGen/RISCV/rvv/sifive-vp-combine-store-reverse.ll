@@ -51,7 +51,7 @@ define void @test_store_mask_not_all_one(<vscale x 2 x float> %val, <vscale x 2 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vid.v v9, v0.t
 ; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    vrsub.vx v9, v9, a1, v0.t

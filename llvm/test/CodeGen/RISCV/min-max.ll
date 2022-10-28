@@ -663,28 +663,19 @@ define signext i32 @smax_i32_pos_constant_trailing_zeros(i32 signext %a) {
 }
 
 define signext i32 @smin_i32_negone(i32 signext %a) {
-<<<<<<< HEAD
 ; RV32I-LABEL: smin_i32_negone:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    slti a1, a0, 0
+; RV32I-NEXT:    slti a1, a0, -1
 ; RV32I-NEXT:    addi a1, a1, -1
 ; RV32I-NEXT:    or a0, a1, a0
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: smin_i32_negone:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    slti a1, a0, 0
+; RV64I-NEXT:    slti a1, a0, -1
 ; RV64I-NEXT:    addiw a1, a1, -1
 ; RV64I-NEXT:    or a0, a1, a0
 ; RV64I-NEXT:    ret
-=======
-; NOZBB-LABEL: smin_i32_negone:
-; NOZBB:       # %bb.0:
-; NOZBB-NEXT:    slti a1, a0, -1
-; NOZBB-NEXT:    addi a1, a1, -1
-; NOZBB-NEXT:    or a0, a1, a0
-; NOZBB-NEXT:    ret
->>>>>>> upstream/main
 ;
 ; ZBB-LABEL: smin_i32_negone:
 ; ZBB:       # %bb.0:
@@ -710,13 +701,8 @@ define i64 @smin_i64_negone(i64 %a) {
 ;
 ; RV64I-LABEL: smin_i64_negone:
 ; RV64I:       # %bb.0:
-<<<<<<< HEAD
-; RV64I-NEXT:    slti a1, a0, 0
-; RV64I-NEXT:    addiw a1, a1, -1
-=======
 ; RV64I-NEXT:    slti a1, a0, -1
-; RV64I-NEXT:    addi a1, a1, -1
->>>>>>> upstream/main
+; RV64I-NEXT:    addiw a1, a1, -1
 ; RV64I-NEXT:    or a0, a1, a0
 ; RV64I-NEXT:    ret
 ;

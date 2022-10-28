@@ -1,15 +1,8 @@
 // RUN: llvm-tblgen %s | FileCheck %s
 // RUN: not llvm-tblgen -DERROR1 %s 2>&1 | FileCheck --check-prefix=ERROR1 %s
 // RUN: not llvm-tblgen -DERROR2 %s 2>&1 | FileCheck --check-prefix=ERROR2 %s
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
 // RUN: not llvm-tblgen -DERROR3 %s 2>&1 | FileCheck --check-prefix=ERROR3 %s
 // RUN: not llvm-tblgen -DERROR4 %s 2>&1 | FileCheck --check-prefix=ERROR4 %s
-// END OF SIFIVE_CUSTOMIZATION
-=======
-// RUN: not llvm-tblgen -DERROR3 %s 2>&1 | FileCheck --check-prefix=ERROR3 %s
-// RUN: not llvm-tblgen -DERROR4 %s 2>&1 | FileCheck --check-prefix=ERROR4 %s
->>>>>>> upstream/main
 // XFAIL: vg_leak
 
 // CHECK: def shifts
@@ -125,31 +118,6 @@ def v924   : Int<!mul(v84.Value, 11)>;
 // CHECK: Value = 925
 def v925 : Int<!sub(v924.Value, -1)>;
 
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-// CHECK: def v950
-// CHECK: Value = 4
-def v950: Int<!log(16)>;
-
-// CHECK: def v951
-// CHECK: Value = 10
-def v951 : Int<!log(1024)>;
-
-// CHECK: def v952
-// CHECK: Value = 10
-def v952 : Int<!log(1025)>;
-
-#ifdef ERROR3
-// ERROR3: error: Illegal operation: log is undefined on arguments less than or equal to 0
-def v953 : Int<!log(0)>;
-#endif
-
-#ifdef ERROR4
-// ERROR4: error: Illegal operation: log is undefined on arguments less than or equal to 0
-def v954 : Int<!log(-1)>;
-#endif
-// END OF SIFIVE_CUSTOMIZATION
-=======
 // CHECK: def v950
 // CHECK: Value = 4
 def v950: Int<!logtwo(16)>;
@@ -171,7 +139,6 @@ def v953 : Int<!logtwo(0)>;
 // ERROR4: error: Illegal operation: logtwo is undefined on arguments less than or equal to 0
 def v954 : Int<!logtwo(-1)>;
 #endif
->>>>>>> upstream/main
 
 // CHECK: def vneg
 // CHECK: Value = -2

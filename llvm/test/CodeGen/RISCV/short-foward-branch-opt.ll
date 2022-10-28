@@ -87,7 +87,7 @@ define signext i32 @test4(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test4:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    snez a1, a1
-; NOSFB-NEXT:    addi a1, a1, -1
+; NOSFB-NEXT:    addiw a1, a1, -1
 ; NOSFB-NEXT:    and a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -108,7 +108,7 @@ define signext i32 @test5(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test5:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    seqz a1, a1
-; NOSFB-NEXT:    addi a1, a1, -1
+; NOSFB-NEXT:    addiw a1, a1, -1
 ; NOSFB-NEXT:    and a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -129,7 +129,7 @@ define signext i32 @test6(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test6:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    seqz a1, a1
-; NOSFB-NEXT:    addi a1, a1, -1
+; NOSFB-NEXT:    addiw a1, a1, -1
 ; NOSFB-NEXT:    or a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -151,7 +151,7 @@ define signext i32 @test7(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test7:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    snez a1, a1
-; NOSFB-NEXT:    addi a1, a1, -1
+; NOSFB-NEXT:    addiw a1, a1, -1
 ; NOSFB-NEXT:    or a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -180,10 +180,9 @@ define i16 @select_xor_1(i16 %A, i8 %cond) {
 ; SFB-LABEL: select_xor_1:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a1, a1, 1
-; SFB-NEXT:    xori a2, a0, 43
 ; SFB-NEXT:    beqz a1, .LBB7_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a2
+; SFB-NEXT:    xori a0, a0, 43
 ; SFB-NEXT:  .LBB7_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -208,10 +207,9 @@ define i16 @select_xor_1b(i16 %A, i8 %cond) {
 ; SFB-LABEL: select_xor_1b:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a1, a1, 1
-; SFB-NEXT:    xori a2, a0, 43
 ; SFB-NEXT:    beqz a1, .LBB8_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a2
+; SFB-NEXT:    xori a0, a0, 43
 ; SFB-NEXT:  .LBB8_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -234,10 +232,9 @@ define i32 @select_xor_2(i32 %A, i32 %B, i8 %cond) {
 ; SFB-LABEL: select_xor_2:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    xor a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB9_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    xor a0, a0, a1
 ; SFB-NEXT:  .LBB9_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -262,10 +259,9 @@ define i32 @select_xor_2b(i32 %A, i32 %B, i8 %cond) {
 ; SFB-LABEL: select_xor_2b:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    xor a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB10_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    xor a0, a0, a1
 ; SFB-NEXT:  .LBB10_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -288,10 +284,9 @@ define i32 @select_or(i32 %A, i32 %B, i8 %cond) {
 ; SFB-LABEL: select_or:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    or a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB11_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    or a0, a0, a1
 ; SFB-NEXT:  .LBB11_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -316,10 +311,9 @@ define i32 @select_or_b(i32 %A, i32 %B, i8 %cond) {
 ; SFB-LABEL: select_or_b:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    or a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB12_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    or a0, a0, a1
 ; SFB-NEXT:  .LBB12_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -342,10 +336,9 @@ define i32 @select_or_1(i32 %A, i32 %B, i32 %cond) {
 ; SFB-LABEL: select_or_1:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    or a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB13_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    or a0, a0, a1
 ; SFB-NEXT:  .LBB13_2: # %entry
 ; SFB-NEXT:    ret
 entry:
@@ -370,10 +363,9 @@ define i32 @select_or_1b(i32 %A, i32 %B, i32 %cond) {
 ; SFB-LABEL: select_or_1b:
 ; SFB:       # %bb.0: # %entry
 ; SFB-NEXT:    andi a2, a2, 1
-; SFB-NEXT:    or a1, a1, a0
 ; SFB-NEXT:    beqz a2, .LBB14_2
 ; SFB-NEXT:  # %bb.1: # %entry
-; SFB-NEXT:    mv a0, a1
+; SFB-NEXT:    or a0, a0, a1
 ; SFB-NEXT:  .LBB14_2: # %entry
 ; SFB-NEXT:    ret
 entry:

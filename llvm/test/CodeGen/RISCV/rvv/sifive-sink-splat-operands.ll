@@ -150,7 +150,7 @@ define void @sink_splat_vp_add(i32* nocapture %a, i32 signext %x, <4 x i1> %m, i
 ; CHECK-NEXT:  .LBB2_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, ma
 ; CHECK-NEXT:    addi a1, a1, -4
 ; CHECK-NEXT:    vadd.vv v9, v9, v8, v0.t
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -320,7 +320,7 @@ define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 
 ; CHECK-NEXT:  .LBB5_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    addi a2, a2, -4
 ; CHECK-NEXT:    vfadd.vv v9, v9, v8, v0.t
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma

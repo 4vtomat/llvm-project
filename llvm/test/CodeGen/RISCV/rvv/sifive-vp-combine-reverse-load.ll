@@ -34,7 +34,7 @@ define <vscale x 2 x float> @test_load_mask_is_vp_reverse(<vscale x 2 x float>* 
 ; CHECK-NEXT:    add a0, a2, a0
 ; CHECK-NEXT:    addi a0, a0, -4
 ; CHECK-NEXT:    li a2, -4
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vlse32.v v8, (a0), a2, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -51,7 +51,7 @@ define <vscale x 2 x float> @test_load_mask_not_all_one(<vscale x 2 x float>* %p
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0), v0.t
 ; CHECK-NEXT:    vid.v v8, v0.t
 ; CHECK-NEXT:    addi a0, a1, -1
@@ -79,7 +79,7 @@ define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 
 ; CHECK-NEXT:    vand.vi v8, v9, 1
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmclr.m v9
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vid.v v10, v0.t
 ; CHECK-NEXT:    addi a1, a1, -1
@@ -89,9 +89,8 @@ define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 
 ; CHECK-NEXT:    vmerge.vim v8, v11, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrgather.vv v11, v8, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0, v0.t
-; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v10, (a0), v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vid.v v8, v0.t

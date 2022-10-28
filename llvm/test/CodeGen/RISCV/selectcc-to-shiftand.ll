@@ -129,7 +129,7 @@ define i32 @pos_sel_variable_and_zero(i32 signext %a, i32 signext %b) {
 ; RV64I-LABEL: pos_sel_variable_and_zero:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slti a0, a0, 0
-; RV64I-NEXT:    addi a0, a0, -1
+; RV64I-NEXT:    addiw a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;

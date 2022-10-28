@@ -132,16 +132,9 @@ define <2 x i64> @mgather_v2i64_align4(<2 x i64*> %ptrs, <2 x i1> %m, <2 x i64> 
 ; RV32-LABEL: mgather_v2i64_align4:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 0, e8, mf8, ta, ma
-<<<<<<< HEAD
-; RV32-NEXT:    vmv.x.s a1, v0
-; RV32-NEXT:    andi a0, a1, 3
-; RV32-NEXT:    andi a1, a1, 1
-; RV32-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v10, 0
-=======
 ; RV32-NEXT:    vmv.x.s a0, v0
 ; RV32-NEXT:    andi a1, a0, 1
->>>>>>> upstream/main
+; RV32-NEXT:    andi a0, a0, 3
 ; RV32-NEXT:    bnez a1, .LBB5_3
 ; RV32-NEXT:  # %bb.1: # %else
 ; RV32-NEXT:    andi a0, a0, 2

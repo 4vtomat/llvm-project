@@ -843,54 +843,53 @@ define signext i32 @vpreduce_xor_v4i32(i32 signext %s, <4 x i32> %v, <4 x i1> %m
 declare i32 @llvm.vp.reduce.xor.v64i32(i32, <64 x i32>, <64 x i1>, i32)
 
 define signext i32 @vpreduce_xor_v64i32(i32 signext %s, <64 x i32> %v, <64 x i1> %m, i32 zeroext %evl) {
-; CHECK-LABEL: vpreduce_xor_v64i32:
-; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    li a3, 32
-; CHECK-NEXT:    mv a2, a1
-; CHECK-NEXT:    bltu a1, a3, .LBB49_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:  .LBB49_2:
-; CHECK-NEXT:    li a3, 0
-=======
->>>>>>> upstream/main
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v24, v0, 4
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.s.x v25, a0
-; CHECK-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
-; CHECK-NEXT:    addi a0, a1, -32
-; CHECK-NEXT:    vredxor.vs v25, v8, v25, v0.t
-; CHECK-NEXT:    bltu a1, a0, .LBB49_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    mv a3, a0
-; CHECK-NEXT:  .LBB49_4:
-; CHECK-NEXT:    vsetvli zero, a3, e32, m8, tu, ma
-=======
-; CHECK-NEXT:    mv a2, a1
-; CHECK-NEXT:    bltu a1, a3, .LBB49_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:  .LBB49_2:
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.s.x v25, a0
-; CHECK-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
-; CHECK-NEXT:    vredxor.vs v25, v8, v25, v0.t
-; CHECK-NEXT:    vmv.x.s a0, v25
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    addi a0, a1, -32
-; CHECK-NEXT:    sltu a1, a1, a0
-; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    and a0, a1, a0
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
->>>>>>> upstream/main
-; CHECK-NEXT:    vmv1r.v v0, v24
-; CHECK-NEXT:    vredxor.vs v25, v16, v25, v0.t
-; CHECK-NEXT:    vmv.x.s a0, v25
-; CHECK-NEXT:    ret
+; RV32-LABEL: vpreduce_xor_v64i32:
+; RV32:       # %bb.0:
+; RV32-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
+; RV32-NEXT:    li a3, 32
+; RV32-NEXT:    vslidedown.vi v24, v0, 4
+; RV32-NEXT:    mv a2, a1
+; RV32-NEXT:    bltu a1, a3, .LBB49_2
+; RV32-NEXT:  # %bb.1:
+; RV32-NEXT:    li a2, 32
+; RV32-NEXT:  .LBB49_2:
+; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
+; RV32-NEXT:    vmv.s.x v25, a0
+; RV32-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
+; RV32-NEXT:    vredxor.vs v25, v8, v25, v0.t
+; RV32-NEXT:    addi a0, a1, -32
+; RV32-NEXT:    sltu a1, a1, a0
+; RV32-NEXT:    addi a1, a1, -1
+; RV32-NEXT:    and a0, a1, a0
+; RV32-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
+; RV32-NEXT:    vmv1r.v v0, v24
+; RV32-NEXT:    vredxor.vs v25, v16, v25, v0.t
+; RV32-NEXT:    vmv.x.s a0, v25
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: vpreduce_xor_v64i32:
+; RV64:       # %bb.0:
+; RV64-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
+; RV64-NEXT:    li a3, 32
+; RV64-NEXT:    vslidedown.vi v24, v0, 4
+; RV64-NEXT:    mv a2, a1
+; RV64-NEXT:    bltu a1, a3, .LBB49_2
+; RV64-NEXT:  # %bb.1:
+; RV64-NEXT:    li a2, 32
+; RV64-NEXT:  .LBB49_2:
+; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
+; RV64-NEXT:    vmv.s.x v25, a0
+; RV64-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
+; RV64-NEXT:    vredxor.vs v25, v8, v25, v0.t
+; RV64-NEXT:    addi a0, a1, -32
+; RV64-NEXT:    sltu a1, a1, a0
+; RV64-NEXT:    addiw a1, a1, -1
+; RV64-NEXT:    and a0, a1, a0
+; RV64-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
+; RV64-NEXT:    vmv1r.v v0, v24
+; RV64-NEXT:    vredxor.vs v25, v16, v25, v0.t
+; RV64-NEXT:    vmv.x.s a0, v25
+; RV64-NEXT:    ret
   %r = call i32 @llvm.vp.reduce.xor.v64i32(i32 %s, <64 x i32> %v, <64 x i1> %m, i32 %evl)
   ret i32 %r
 }

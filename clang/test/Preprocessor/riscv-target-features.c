@@ -39,7 +39,8 @@
 // CHECK-NOT: __riscv_zk
 // CHECK-NOT: __riscv_zicbom
 // CHECK-NOT: __riscv_zicboz
-<<<<<<< HEAD
+// CHECK-NOT: __riscv_svnapot
+// CHECK-NOT: __riscv_svinval
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicbop
 // CHECK-NOT: __riscv_zicclsm
@@ -48,12 +49,8 @@
 // CHECK-NOT: __riscv_ziccrse
 // CHECK-NOT: __riscv_za64rs
 // CHECK-NOT: __riscv_zic64b
-// end SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __sifive_recode_neon
-=======
-// CHECK-NOT: __riscv_svnapot
-// CHECK-NOT: __riscv_svinval
->>>>>>> upstream/main
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-M-EXT %s

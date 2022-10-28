@@ -1213,7 +1213,7 @@ define i64 @stest_f64i64(double %x) {
 ; RV64IFD-NEXT:    fcvt.l.d a0, fa0, rtz
 ; RV64IFD-NEXT:    feq.d a1, fa0, fa0
 ; RV64IFD-NEXT:    seqz a1, a1
-; RV64IFD-NEXT:    addi a1, a1, -1
+; RV64IFD-NEXT:    addiw a1, a1, -1
 ; RV64IFD-NEXT:    and a0, a1, a0
 ; RV64IFD-NEXT:    ret
 entry:
@@ -1265,7 +1265,7 @@ define i64 @utest_f64i64(double %x) {
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:    call __fixunsdfti@plt
 ; RV64-NEXT:    snez a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -1529,7 +1529,7 @@ define i64 @stest_f32i64(float %x) {
 ; RV64-NEXT:    fcvt.l.s a0, fa0, rtz
 ; RV64-NEXT:    feq.s a1, fa0, fa0
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ret
 entry:
@@ -1579,7 +1579,7 @@ define i64 @utest_f32i64(float %x) {
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:    call __fixunssfti@plt
 ; RV64-NEXT:    snez a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -1842,7 +1842,7 @@ define i64 @utesth_f16i64(half %x) {
 ; RV64-NEXT:    call __extendhfsf2@plt
 ; RV64-NEXT:    call __fixunssfti@plt
 ; RV64-NEXT:    snez a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -3208,7 +3208,7 @@ define i64 @stest_f64i64_mm(double %x) {
 ; RV64IFD-NEXT:    fcvt.l.d a0, fa0, rtz
 ; RV64IFD-NEXT:    feq.d a1, fa0, fa0
 ; RV64IFD-NEXT:    seqz a1, a1
-; RV64IFD-NEXT:    addi a1, a1, -1
+; RV64IFD-NEXT:    addiw a1, a1, -1
 ; RV64IFD-NEXT:    and a0, a1, a0
 ; RV64IFD-NEXT:    ret
 entry:
@@ -3259,11 +3259,11 @@ define i64 @utest_f64i64_mm(double %x) {
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:    call __fixunsdfti@plt
 ; RV64-NEXT:    snez a2, a1
-; RV64-NEXT:    addi a2, a2, -1
+; RV64-NEXT:    addiw a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -3393,7 +3393,7 @@ define i64 @ustest_f64i64_mm(double %x) {
 ; RV64-NEXT:    and a0, a3, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    beqz a2, .LBB47_4
 ; RV64-NEXT:  # %bb.3: # %entry
@@ -3577,7 +3577,7 @@ define i64 @stest_f32i64_mm(float %x) {
 ; RV64-NEXT:    fcvt.l.s a0, fa0, rtz
 ; RV64-NEXT:    feq.s a1, fa0, fa0
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ret
 entry:
@@ -3626,11 +3626,11 @@ define i64 @utest_f32i64_mm(float %x) {
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:    call __fixunssfti@plt
 ; RV64-NEXT:    snez a2, a1
-; RV64-NEXT:    addi a2, a2, -1
+; RV64-NEXT:    addiw a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -3729,7 +3729,7 @@ define i64 @ustest_f32i64_mm(float %x) {
 ; RV64-NEXT:    and a0, a3, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    beqz a2, .LBB50_4
 ; RV64-NEXT:  # %bb.3: # %entry
@@ -3941,11 +3941,11 @@ define i64 @utesth_f16i64_mm(half %x) {
 ; RV64-NEXT:    call __extendhfsf2@plt
 ; RV64-NEXT:    call __fixunssfti@plt
 ; RV64-NEXT:    snez a2, a1
-; RV64-NEXT:    addi a2, a2, -1
+; RV64-NEXT:    addiw a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 16
@@ -4048,7 +4048,7 @@ define i64 @ustest_f16i64_mm(half %x) {
 ; RV64-NEXT:    and a0, a3, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    seqz a1, a1
-; RV64-NEXT:    addi a1, a1, -1
+; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    beqz a2, .LBB53_4
 ; RV64-NEXT:  # %bb.3: # %entry

@@ -654,7 +654,7 @@ define void @strided_store_nxv16f64(<vscale x 16 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    vsse64.v v8, (a0), a1, v0.t
 ; CHECK-RV64-NEXT:    sub a5, a2, a4
 ; CHECK-RV64-NEXT:    sltu a2, a2, a5
-; CHECK-RV64-NEXT:    addi a2, a2, -1
+; CHECK-RV64-NEXT:    addiw a2, a2, -1
 ; CHECK-RV64-NEXT:    and a2, a2, a5
 ; CHECK-RV64-NEXT:    srli a4, a4, 3
 ; CHECK-RV64-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
@@ -701,7 +701,7 @@ define void @strided_store_nxv16f64_allones_mask(<vscale x 16 x double> %v, doub
 ; CHECK-RV64-NEXT:    vsse64.v v8, (a0), a1
 ; CHECK-RV64-NEXT:    sub a4, a2, a4
 ; CHECK-RV64-NEXT:    sltu a2, a2, a4
-; CHECK-RV64-NEXT:    addi a2, a2, -1
+; CHECK-RV64-NEXT:    addiw a2, a2, -1
 ; CHECK-RV64-NEXT:    and a2, a2, a4
 ; CHECK-RV64-NEXT:    mul a3, a3, a1
 ; CHECK-RV64-NEXT:    add a0, a0, a3
@@ -720,15 +720,6 @@ declare void @llvm.experimental.vp.strided.store.nxv16f64.p0f64.i32(<vscale x 16
 define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32 signext %stride, <vscale x 17 x i1> %mask, i32 zeroext %evl) {
 ; CHECK-RV32-LABEL: strided_store_nxv17f64:
 ; CHECK-RV32:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-RV32-NEXT:    addi sp, sp, -16
-; CHECK-RV32-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-RV32-NEXT:    csrr a4, vlenb
-; CHECK-RV32-NEXT:    slli a4, a4, 3
-; CHECK-RV32-NEXT:    sub sp, sp, a4
-; CHECK-RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
-=======
->>>>>>> upstream/main
 ; CHECK-RV32-NEXT:    csrr a4, vlenb
 ; CHECK-RV32-NEXT:    slli a6, a4, 1
 ; CHECK-RV32-NEXT:    vmv1r.v v24, v0
@@ -747,6 +738,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV32-NEXT:    csrr t0, vlenb
 ; CHECK-RV32-NEXT:    slli t0, t0, 3
 ; CHECK-RV32-NEXT:    sub sp, sp, t0
+; CHECK-RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-RV32-NEXT:    vl8re64.v v0, (a0)
 ; CHECK-RV32-NEXT:    addi a0, sp, 16
 ; CHECK-RV32-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
@@ -790,15 +782,6 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ;
 ; CHECK-RV64-LABEL: strided_store_nxv17f64:
 ; CHECK-RV64:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-RV64-NEXT:    addi sp, sp, -16
-; CHECK-RV64-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-RV64-NEXT:    csrr a4, vlenb
-; CHECK-RV64-NEXT:    slli a4, a4, 3
-; CHECK-RV64-NEXT:    sub sp, sp, a4
-; CHECK-RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
-=======
->>>>>>> upstream/main
 ; CHECK-RV64-NEXT:    csrr a4, vlenb
 ; CHECK-RV64-NEXT:    slli a6, a4, 1
 ; CHECK-RV64-NEXT:    vmv1r.v v24, v0
@@ -817,6 +800,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    csrr t0, vlenb
 ; CHECK-RV64-NEXT:    slli t0, t0, 3
 ; CHECK-RV64-NEXT:    sub sp, sp, t0
+; CHECK-RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-RV64-NEXT:    vl8re64.v v0, (a0)
 ; CHECK-RV64-NEXT:    addi a0, sp, 16
 ; CHECK-RV64-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
@@ -825,7 +809,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    vsse64.v v8, (a1), a2, v0.t
 ; CHECK-RV64-NEXT:    sub a0, a5, a4
 ; CHECK-RV64-NEXT:    sltu t0, a5, a0
-; CHECK-RV64-NEXT:    addi t0, t0, -1
+; CHECK-RV64-NEXT:    addiw t0, t0, -1
 ; CHECK-RV64-NEXT:    and a0, t0, a0
 ; CHECK-RV64-NEXT:    srli t0, a4, 3
 ; CHECK-RV64-NEXT:    vsetvli t1, zero, e8, mf4, ta, ma
@@ -835,7 +819,7 @@ define void @strided_store_nxv17f64(<vscale x 17 x double> %v, double* %ptr, i32
 ; CHECK-RV64-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-RV64-NEXT:    sub a0, a3, a6
 ; CHECK-RV64-NEXT:    sltu a3, a3, a0
-; CHECK-RV64-NEXT:    addi a3, a3, -1
+; CHECK-RV64-NEXT:    addiw a3, a3, -1
 ; CHECK-RV64-NEXT:    and a0, a3, a0
 ; CHECK-RV64-NEXT:    vsse64.v v16, (a7), a2, v0.t
 ; CHECK-RV64-NEXT:    bltu a0, a4, .LBB36_6
