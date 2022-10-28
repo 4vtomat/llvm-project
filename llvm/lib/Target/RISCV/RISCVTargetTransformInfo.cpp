@@ -1327,15 +1327,7 @@ void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
 }
 
 unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   TypeSize Size = DL.getTypeSizeInBits(Ty);
-#else
-  TypeSize Size = Ty->getPrimitiveSizeInBits();
-#endif
-=======
-  TypeSize Size = DL.getTypeSizeInBits(Ty);
->>>>>>> upstream/main
   if (Ty->isVectorTy()) {
     if (Size.isScalable() && ST->hasVInstructions())
       return divideCeil(Size.getKnownMinValue(), RISCV::RVVBitsPerBlock);
