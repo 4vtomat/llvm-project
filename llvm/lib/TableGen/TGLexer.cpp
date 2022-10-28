@@ -569,13 +569,7 @@ tgtok::TokKind TGLexer::LexExclaim() {
     .Case("mul", tgtok::XMUL)
     .Case("div", tgtok::XDIV)
     .Case("not", tgtok::XNOT)
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    .Case("log", tgtok::XLOG2)
-#endif // SIFIVE_CUSTOMIZATION
-=======
     .Case("logtwo", tgtok::XLOG2)
->>>>>>> upstream/main
     .Case("and", tgtok::XAND)
     .Case("or", tgtok::XOR)
     .Case("xor", tgtok::XXOR)

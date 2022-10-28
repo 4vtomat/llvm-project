@@ -945,13 +945,7 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
     TokError("unknown bang operator");
     return nullptr;
   case tgtok::XNOT:
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   case tgtok::XLOG2:
-#endif
-=======
-  case tgtok::XLOG2:
->>>>>>> upstream/main
   case tgtok::XHead:
   case tgtok::XTail:
   case tgtok::XSize:
@@ -980,19 +974,11 @@ Init *TGParser::ParseOperation(Record *CurRec, RecTy *ItemType) {
       Code = UnOpInit::NOT;
       Type = IntRecTy::get(Records);
       break;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
     case tgtok::XLOG2:
       Lex.Lex();  // eat the operation
       Code = UnOpInit::LOG2;
       Type = IntRecTy::get(Records);
       break;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
     case tgtok::XHead:
       Lex.Lex();  // eat the operation
       Code = UnOpInit::HEAD;
@@ -2453,13 +2439,7 @@ Init *TGParser::ParseSimpleValue(Record *CurRec, RecTy *ItemType,
   case tgtok::XMUL:
   case tgtok::XDIV:
   case tgtok::XNOT:
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   case tgtok::XLOG2:
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  case tgtok::XLOG2:
->>>>>>> upstream/main
   case tgtok::XAND:
   case tgtok::XOR:
   case tgtok::XXOR:

@@ -52,19 +52,9 @@ namespace tgtok {
     String, Then, TrueKW,
 
     // Bang operators.
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    XConcat, XADD, XSUB, XMUL, XLOG2, XDIV, XNOT, XAND, XOR, XXOR, XSRA, XSRL, XSHL,
-#else
-    XConcat, XADD, XSUB, XMUL, XDIV, XNOT, XAND, XOR, XXOR, XSRA, XSRL, XSHL,
-#endif // SIFIVE_CUSTOMIZATION
-    XListConcat, XListSplat, XStrConcat, XInterleave, XSubstr, XFind, XCast,
-    XSubst, XForEach, XFilter, XFoldl, XHead, XTail, XSize, XEmpty, XIf,
-=======
     XConcat, XADD, XSUB, XMUL, XDIV, XNOT, XLOG2, XAND, XOR, XXOR, XSRA, XSRL,
     XSHL, XListConcat, XListSplat, XStrConcat, XInterleave, XSubstr, XFind,
     XCast, XSubst, XForEach, XFilter, XFoldl, XHead, XTail, XSize, XEmpty, XIf,
->>>>>>> upstream/main
     XCond, XEq, XIsA, XDag, XNe, XLe, XLt, XGe, XGt, XSetDagOp, XGetDagOp,
     XExists,
 
