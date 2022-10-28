@@ -100,17 +100,14 @@ private:
   bool HasStdExtZicbom = false;
   bool HasStdExtZicboz = false;
   bool HasStdExtZicbop = false;
-<<<<<<< HEAD
   bool HasStdExtZicclsm = false; //SIFIVE
   bool HasStdExtZiccif = false; //SIFIVE
   bool HasStdExtZiccamoa = false; //SIFIVE
   bool HasStdExtZiccrse = false; //SIFIVE
   bool HasStdExtZa64rs = false; //SIFIVE
   bool HasStdExtZic64b = false; //SIFIVE
-=======
   bool HasStdExtSvnapot = false;
   bool HasStdExtSvinval = false;
->>>>>>> upstream/main
   bool HasStdExtZmmul = false;
   bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasStdExtZawrs = false;
