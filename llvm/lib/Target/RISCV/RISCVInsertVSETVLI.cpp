@@ -632,15 +632,6 @@ static VSETVLIInfo computeInfoForInstr(const MachineInstr &MI, uint64_t TSFlags,
     if (RISCVII::doesForceTailAgnostic(TSFlags))
       TailAgnostic = true;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Override to always use tail undisturbed. Useful to reduce vsetvli on
-  // CPUs that treat them the same.
-  if (ForceTailUndisturbed)
-    TailAgnostic = false;
-#endif // SIFIVE_CUSTOMIZATION
-  if (!RISCVII::usesMaskPolicy(TSFlags))
-=======
     if (!RISCVII::usesMaskPolicy(TSFlags))
       MaskAgnostic = true;
   } else {
@@ -648,9 +639,15 @@ static VSETVLIInfo computeInfoForInstr(const MachineInstr &MI, uint64_t TSFlags,
     assert(!RISCVII::hasVecPolicyOp(TSFlags) && "Unexpected policy operand");
     // No tied operand use agnostic policies.
     TailAgnostic = true;
->>>>>>> upstream/main
     MaskAgnostic = true;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Override to always use tail undisturbed. Useful to reduce vsetvli on
+  // CPUs that treat them the same.
+  if (ForceTailUndisturbed)
+    TailAgnostic = false;
+#endif // SIFIVE_CUSTOMIZATION
 
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);
 
