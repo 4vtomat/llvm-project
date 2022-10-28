@@ -4908,7 +4908,11 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Subtarget.hasShortForwardBranchOpt() && !Subtarget.hasCMOVBranchOpt()) {
+#else
   if (!Subtarget.hasShortForwardBranchOpt()) {
+#endif
     // (select c, -1, y) -> -c | y
     if (isAllOnesConstant(TrueV)) {
       SDValue Neg = DAG.getNegative(CondV, DL, VT);
@@ -11320,19 +11324,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (TrueV == FalseV)
       return TrueV;
 
-<<<<<<< HEAD
-    // (select (and (x , 0x1) == 0), y, (z ^ y) ) -> (-(and (x , 0x1)) & z ) ^ y
-    // (select (and (x , 0x1) != 0), (z ^ y) ), y -> (-(and (x , 0x1)) & z ) ^ y
-    // (select (and (x , 0x1) == 0), y, (z | y) ) -> (-(and (x , 0x1)) & z ) | y
-    // (select (and (x , 0x1) != 0), (z | y) ), y -> (-(and (x , 0x1)) & z ) | y
-    APInt Mask = APInt::getBitsSetFrom(LHS.getValueSizeInBits(), 1);
-#if SIFIVE_CUSTOMIZATION
-    if (!Subtarget.hasShortForwardBranchOpt() &&
-        !Subtarget.hasCMOVBranchOpt() &&
-#endif // SIFIVE_CUSTOMIZATION
-        isNullConstant(RHS) && ISD::isIntEqualitySetCC(CCVal) &&
-        DAG.MaskedValueIsZero(LHS, Mask)) {
-=======
     // (select (x in [0,1] == 0), y, (z ^ y) ) -> (-x & z ) ^ y
     // (select (x in [0,1] != 0), (z ^ y), y ) -> (-x & z ) ^ y
     // (select (x in [0,1] == 0), y, (z | y) ) -> (-x & z ) | y
@@ -11341,8 +11332,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     // branch optimization.
     APInt Mask = APInt::getBitsSetFrom(LHS.getValueSizeInBits(), 1);
     if (!Subtarget.hasShortForwardBranchOpt() && isNullConstant(RHS) &&
+#if SIFIVE_CUSTOMIZATION
+        !Subtarget.hasCMOVBranchOpt() &&
+#endif // SIFIVE_CUSTOMIZATION
         ISD::isIntEqualitySetCC(CCVal) && DAG.MaskedValueIsZero(LHS, Mask)) {
->>>>>>> upstream/main
       unsigned Opcode;
       SDValue Src1, Src2;
       // true if FalseV is XOR or OR operator and one of its operands
@@ -11394,7 +11387,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       return DAG.getNode(RISCVISD::SELECT_CC, DL, N->getValueType(0),
                          {LHS, RHS, CC, TrueV, FalseV});
 
+#if SIFIVE_CUSTOMIZATION
+    if (!Subtarget.hasShortForwardBranchOpt() &&
+        !Subtarget.hasCMOVBranchOpt()) {
+#else
     if (!Subtarget.hasShortForwardBranchOpt()) {
+#endif // SIFIVE_CUSTOMIZATION
       // (select c, -1, y) -> -c | y
       if (isAllOnesConstant(TrueV)) {
         SDValue C = DAG.getSetCC(DL, VT, LHS, RHS, CCVal);

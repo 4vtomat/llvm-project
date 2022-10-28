@@ -249,10 +249,6 @@ defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfh;
-<<<<<<< HEAD
-defm : UnsupportedSchedSFB; // SIFIVE
-defm : UnsupportedSchedCMOV; // SIFIVE
-=======
 defm : UnsupportedSchedSFB;
->>>>>>> upstream/main
+defm : UnsupportedSchedCMOV; // SIFIVE
 }

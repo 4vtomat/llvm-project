@@ -629,7 +629,6 @@ def : ReadAdvance<ReadFClass16, 0>;
 def : ReadAdvance<ReadFClass32, 0>;
 def : ReadAdvance<ReadFClass64, 0>;
 
-<<<<<<< HEAD
 // 6. Configuration-Setting Instructions
 def : ReadAdvance<ReadVSETVLI, 2>;
 def : ReadAdvance<ReadVSETVL, 2>;
@@ -818,9 +817,6 @@ def : ReadAdvance<ReadSFB, 2, [WriteIALU, WriteIALU32,
                                WriteCLZ, WriteCLZ32, WriteCTZ,
                                WriteCTZ32, WriteCPOP, WriteCPOP32,
                                WriteREV8, WriteORCB, WriteSFB]>;
-=======
-def : ReadAdvance<ReadSFB, 0>;
->>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

@@ -1385,7 +1385,21 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
-<<<<<<< HEAD
+let Predicates = [HasShortForwardBranchOpt],
+    isSelect = 1, // SIFIVE
+    Constraints = "$dst = $falsev", isCommutable = 1, Size = 8 in {
+// This instruction moves $truev to $dst when the condition is true. It will
+// be expanded to control flow in RISCVExpandPseudoInsts.
+def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
+                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
+                             GPR:$falsev, GPR:$truev),
+                            [(set GPR:$dst,
+                              (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs,
+                                                       cond, GPR:$truev,
+                                                       GPR:$falsev))]>,
+                     Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+}
+
 #ifdef SIFIVE_CUSTOMIZATION
 // This should always expand to a branch+c.mv so the size is 6 or 4 if the
 // branch is compressible.
@@ -1404,25 +1418,7 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
                          Sched<[WriteCMOV, ReadCMOV, ReadCMOV, ReadCMOV, ReadCMOV]>;
 }
 
-let Predicates = [HasShortForwardBranchOpt],
-    Constraints = "$dst = $falsev", isCommutable = 1, isSelect = 1, Size = 8 in {
-=======
-let Predicates = [HasShortForwardBranchOpt],
-    Constraints = "$dst = $falsev", isCommutable = 1, Size = 8 in {
->>>>>>> upstream/main
-// This instruction moves $truev to $dst when the condition is true. It will
-// be expanded to control flow in RISCVExpandPseudoInsts.
-def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
-                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
-                             GPR:$falsev, GPR:$truev),
-                            [(set GPR:$dst,
-                              (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs,
-                                                       cond, GPR:$truev,
-                                                       GPR:$falsev))]>,
-                     Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
-}
-
-<<<<<<< HEAD
+// This should always expand to a branch+c.mv so the size is 6 or 4 if the
 let Constraints = "$dst = $falsev" in {
 // Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
@@ -1549,8 +1545,6 @@ def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
   let usesCustomInserter = 1 in
   def _Using_CC_GPR : Pseudo<(outs valty:$dst),
@@ -1567,11 +1561,11 @@ multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
              (IntCCtoRISCVCC $cc), valty:$truev, valty:$falsev)>;
 }
 
-<<<<<<< HEAD
-let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in // SIFIVE
-=======
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in
+#else
 let Predicates = [NoShortForwardBranchOpt] in
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
 class SelectCompressOpt<CondCode Cond>: Pat<(riscv_selectcc_frag:$select GPR:$lhs, simm12_no6:$Constant, Cond,

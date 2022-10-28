@@ -105,20 +105,14 @@ def WriteFST16        : SchedWrite;    // Floating point sp store
 def WriteFST32        : SchedWrite;    // Floating point sp store
 def WriteFST64        : SchedWrite;    // Floating point dp store
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-// short forward branch for Bullet
-def WriteSFB        : SchedWrite;
-def ReadSFB         : SchedRead;
 // CMOV for Mallard.
 def WriteCMOV       : SchedWrite;
 def ReadCMOV        : SchedRead;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 // short forward branch for Bullet
 def WriteSFB        : SchedWrite;
 def ReadSFB         : SchedRead;
->>>>>>> upstream/main
 
 /// Define scheduler resources associated with use operands.
 def ReadJmp         : SchedRead;
@@ -244,10 +238,6 @@ def : ReadAdvance<ReadFSqrt16, 0>;
 } // Unsupported = true
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 multiclass UnsupportedSchedSFB {
 let Unsupported = true in {
 def : WriteRes<WriteSFB, []>;
@@ -256,7 +246,7 @@ def : ReadAdvance<ReadSFB, 0>;
 } // Unsupported = true
 }
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass UnsupportedSchedCMOV {
 let Unsupported = true in {
 def : WriteRes<WriteCMOV, []>;
@@ -266,8 +256,6 @@ def : ReadAdvance<ReadCMOV, 0>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 // Include the scheduler resources for other instruction extensions.
 include "RISCVScheduleZb.td"
 include "RISCVScheduleV.td"

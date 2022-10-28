@@ -1989,18 +1989,12 @@ bool RISCVInstrInfo::findCommutedOpIndices(const MachineInstr &MI,
     return false;
 
   switch (MI.getOpcode()) {
-<<<<<<< HEAD
+  case RISCV::PseudoCCMOVGPR:
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCMOVGPRNoX0:
-    // Operands 4 and 5 are commutable.
-    return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 4, 5);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case RISCV::PseudoCCMOVGPR:
     // Operands 4 and 5 are commutable.
     return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 4, 5);
->>>>>>> upstream/main
   case CASE_VFMA_SPLATS(FMADD):
   case CASE_VFMA_SPLATS(FMSUB):
   case CASE_VFMA_SPLATS(FMACC):
@@ -2146,28 +2140,18 @@ MachineInstr *RISCVInstrInfo::commuteInstructionImpl(MachineInstr &MI,
   };
 
   switch (MI.getOpcode()) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoCCMOVGPR:
-  case RISCV::PseudoCCMOVGPRNoX0: {
-=======
+  case RISCV::PseudoCCMOVGPRNoX0:
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR: {
->>>>>>> upstream/main
     // CCMOV can be commuted by inverting the condition.
     auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
     CC = RISCVCC::getOppositeBranchCondition(CC);
     auto &WorkingMI = cloneIfNew(MI);
     WorkingMI.getOperand(3).setImm(CC);
-<<<<<<< HEAD
-    return TargetInstrInfo::commuteInstructionImpl(MI, /*NewMI*/ false, OpIdx1,
-                                                   OpIdx2);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return TargetInstrInfo::commuteInstructionImpl(WorkingMI, /*NewMI*/ false,
                                                    OpIdx1, OpIdx2);
   }
->>>>>>> upstream/main
   case CASE_VFMA_SPLATS(FMACC):
   case CASE_VFMA_SPLATS(FMADD):
   case CASE_VFMA_SPLATS(FMSAC):

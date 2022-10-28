@@ -123,7 +123,6 @@ private:
   bool EnableDefaultUnroll = true;
   bool EnableSaveRestore = false;
   bool HasCMOVBranchOpt = false; // SIFIVE
-  bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasFuseLUILoad = false;        // SIFIVE
   bool HasFuseIndexedLoad = false;    // SIFIVE
@@ -248,9 +247,7 @@ public:
   bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
   bool enableDefaultUnroll() const { return EnableDefaultUnroll; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool hasCMOVBranchOpt() const {
     // U8 can only predicate c.mv so requires the C extension.
     return HasCMOVBranchOpt && hasStdExtC();
@@ -269,9 +266,7 @@ public:
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
->>>>>>> upstream/main
   bool enableUnalignedScalarMem() const { return EnableUnalignedScalarMem; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasForcedAtomics() const { return HasForcedAtomics; }
