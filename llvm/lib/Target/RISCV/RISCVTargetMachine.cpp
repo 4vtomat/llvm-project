@@ -60,19 +60,10 @@ static cl::opt<cl::boolOrDefault>
     EnableGlobalMerge("riscv-enable-global-merge", cl::Hidden,
                       cl::desc("Enable the global merge pass"));
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream.
-=======
->>>>>>> upstream/main
 static cl::opt<bool>
     EnableMachineCombiner("riscv-enable-machine-combiner",
                           cl::desc("Enable the machine combiner pass"),
                           cl::init(true), cl::Hidden);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -359,16 +350,8 @@ void RISCVPassConfig::addPreEmitPass2() {
 
 void RISCVPassConfig::addMachineSSAOptimization() {
   TargetPassConfig::addMachineSSAOptimization();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE: This has been cherry-picked from upstream.
-  if (TM->getOptLevel() == CodeGenOpt::Aggressive && EnableMachineCombiner)
-    addPass(&MachineCombinerID);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (EnableMachineCombiner)
     addPass(&MachineCombinerID);
->>>>>>> upstream/main
 
   if (TM->getTargetTriple().getArch() == Triple::riscv64)
     addPass(createRISCVSExtWRemovalPass());

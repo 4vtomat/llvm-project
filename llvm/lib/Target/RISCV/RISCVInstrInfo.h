@@ -199,16 +199,6 @@ public:
       MachineBasicBlock::iterator II, const DebugLoc &DL, Register DestReg,
       int64_t Amount, MachineInstr::MIFlag Flag = MachineInstr::NoFlags) const;
 
-<<<<<<< HEAD
-  /// Return a virtual register initialized with the global base
-  /// register value. Output instructions required to initialize
-  // the register in the function entry block, if necessary.
-  Register getGlobalBaseReg(MachineFunction *MF) const;
-
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE: This has been cherry-picked from upstream.
-=======
->>>>>>> upstream/main
   bool useMachineCombiner() const override { return true; }
 
   void setSpecialOperandAttr(MachineInstr &OldMI1, MachineInstr &OldMI2,
@@ -222,10 +212,13 @@ public:
   void
   finalizeInsInstrs(MachineInstr &Root, MachineCombinerPattern &P,
                     SmallVectorImpl<MachineInstr *> &InsInstrs) const override;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
+  /// Return a virtual register initialized with the global base
+  /// register value. Output instructions required to initialize
+  // the register in the function entry block, if necessary.
+  Register getGlobalBaseReg(MachineFunction *MF) const;
+
   void expandLIsimm32(MachineBasicBlock &MBB,
                       MachineBasicBlock::iterator MBBI) const;
 
@@ -244,8 +237,6 @@ public:
   getSerializableMachineMemOperandTargetFlags() const override;
 
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 protected:
   const RISCVSubtarget &STI;
@@ -269,18 +260,9 @@ bool isFaultFirstLoad(const MachineInstr &MI);
 // Implemented in RISCVGenInstrInfo.inc
 int16_t getNamedOperandIdx(uint16_t Opcode, uint16_t NamedIndex);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream
 // Return true if both input instructions have equal rounding mode. If at least
 // one of the instructions does not have rounding mode, false will be returned.
 bool hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-// Return true if both input instructions have equal rounding mode. If at least
-// one of the instructions does not have rounding mode, false will be returned.
-bool hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2);
->>>>>>> upstream/main
 
 // Special immediate for AVL operand of V pseudo instructions to indicate VLMax.
 static constexpr int64_t VLMaxSentinel = -1LL;

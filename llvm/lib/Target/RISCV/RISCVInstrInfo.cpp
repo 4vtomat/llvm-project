@@ -1360,11 +1360,6 @@ RISCVInstrInfo::isCopyInstrImpl(const MachineInstr &MI) const {
   return None;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream.
-=======
->>>>>>> upstream/main
 void RISCVInstrInfo::setSpecialOperandAttr(MachineInstr &OldMI1,
                                            MachineInstr &OldMI2,
                                            MachineInstr &NewMI1,
@@ -1485,10 +1480,6 @@ bool RISCVInstrInfo::getMachineCombinerPatterns(
   return TargetInstrInfo::getMachineCombinerPatterns(Root, Patterns,
                                                      DoRegPressureReduce);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
                                        StringRef &ErrInfo) const {
@@ -2569,11 +2560,6 @@ bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
          !MI.isInlineAsm();
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream.
-=======
->>>>>>> upstream/main
 bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
   int16_t MI1FrmOpIdx =
       RISCV::getNamedOperandIdx(MI1.getOpcode(), RISCV::OpName::frm);
@@ -2585,8 +2571,6 @@ bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
   MachineOperand FrmOp2 = MI2.getOperand(MI2FrmOpIdx);
   return FrmOp1.getImm() == FrmOp2.getImm();
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
@@ -2743,5 +2727,3 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
 }
 
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
