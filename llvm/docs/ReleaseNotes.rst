@@ -42,16 +42,12 @@ Non-comprehensive list of changes in this release
    functionality, or simply have a lot to talk about), see the `NOTE` below
    for adding a new subsection.
 
-<<<<<<< HEAD
-* The LoopFlatten pass is now enabled by default.
-=======
 *  The ``readnone`` calls which are crossing suspend points in coroutines will
    not be merged. Since ``readnone`` calls may access thread id and thread id
    is not a constant in coroutines. This decision may cause unnecessary
    performance regressions and we plan to fix it in later versions.
 
 * ...
->>>>>>> upstream/main
 
 Update on required toolchains to build LLVM
 -------------------------------------------
