@@ -4558,8 +4558,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_FROUND:
   case ISD::VP_FROUNDEVEN:
   case ISD::VP_FROUNDTOZERO:
-<<<<<<< HEAD
-    return lowerFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
+    return lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
 #if SIFIVE_CUSTOMIZATION
   // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
@@ -4567,9 +4566,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::EXPERIMENTAL_VP_REVERSE:
     return lowerVPReverseExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
->>>>>>> upstream/main
   }
 }
 
