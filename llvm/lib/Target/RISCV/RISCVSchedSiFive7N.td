@@ -427,7 +427,6 @@ def : WriteRes<WriteVFMergeV, [SiFive7NVA]>;
 def : WriteRes<WriteVFMovV, [SiFive7NVA]>;
 def : WriteRes<WriteVFCvtIToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFCvtFToIV, [SiFive7NVA]>;
-def : WriteRes<WriteVFCvtFToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtIToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtFToIV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtFToFV, [SiFive7NVA]>;
