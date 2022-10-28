@@ -1002,6 +1002,18 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
           // Also Skip if we can use bexti.
           Skip |= Subtarget->hasStdExtZbs() && Leading == XLen - 1;
           if (OneUseOrZExtW && !Skip) {
+#if SIFIVE_CUSTOMIZATION
+            if (Subtarget->hasFuseBFX()) {
+              // Emit as a UBFX pseudoinstruction which will be expanded to a
+              // shift pair later.
+              SDNode *UBFX = CurDAG->getMachineNode(
+                  RISCV::PseudoUBFX, DL, XLenVT, X,
+                  CurDAG->getTargetConstant(Leading - C2, DL, XLenVT),
+                  CurDAG->getTargetConstant(Leading, DL, XLenVT));
+              ReplaceNode(Node, UBFX);
+              return;
+            }
+#endif // SIFIVE_CUSTOMIZATION
             SDNode *SLLI = CurDAG->getMachineNode(
                 RISCV::SLLI, DL, VT, X,
                 CurDAG->getTargetConstant(Leading - C2, DL, VT));
@@ -1014,36 +1026,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
         }
       }
 
-<<<<<<< HEAD
-        // (srli (slli x, c3-c2), c3).
-        // Skip if we could use (zext.w (sraiw X, C2)).
-        bool Skip = Subtarget->hasStdExtZba() && Leading == 32 &&
-                    X.getOpcode() == ISD::SIGN_EXTEND_INREG &&
-                    cast<VTSDNode>(X.getOperand(1))->getVT() == MVT::i32;
-        // Also Skip if we can use bexti.
-        Skip |= Subtarget->hasStdExtZbs() && Leading == XLen - 1;
-        if (OneUseOrZExtW && !Skip) {
-#if SIFIVE_CUSTOMIZATION
-          if (Subtarget->hasFuseBFX()) {
-            // Emit as a UBFX pseudoinstruction which will be expanded to a
-            // shift pair later.
-            SDNode *UBFX = CurDAG->getMachineNode(
-                RISCV::PseudoUBFX, DL, XLenVT, X,
-                CurDAG->getTargetConstant(Leading - C2, DL, XLenVT),
-                CurDAG->getTargetConstant(Leading, DL, XLenVT));
-            ReplaceNode(Node, UBFX);
-            return;
-          }
-#endif // SIFIVE_CUSTOMIZATION
-          SDNode *SLLI = CurDAG->getMachineNode(
-              RISCV::SLLI, DL, VT, X,
-              CurDAG->getTargetConstant(Leading - C2, DL, VT));
-          SDNode *SRLI = CurDAG->getMachineNode(
-              RISCV::SRLI, DL, VT, SDValue(SLLI, 0),
-              CurDAG->getTargetConstant(Leading, DL, VT));
-          ReplaceNode(Node, SRLI);
-          return;
-=======
       // Turn (and (shl x, c2), c1) -> (srli (slli c2+c3), c3) if c1 is a mask
       // shifted by c2 bits with c3 leading zeros.
       if (LeftShift && isShiftedMask_64(C1)) {
@@ -1071,7 +1053,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
             ReplaceNode(Node, SRLI);
             return;
           }
->>>>>>> upstream/main
         }
       }
 
