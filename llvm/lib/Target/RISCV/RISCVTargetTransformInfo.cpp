@@ -47,6 +47,17 @@ static cl::opt<unsigned> RVVRegisterWidthLMUL(
         "by autovectorized code. Fractional LMULs are not supported."),
     cl::init(1), cl::Hidden);
 
+static cl::opt<unsigned> SLPMaxVF(
+    "riscv-v-slp-max-vf",
+    cl::desc(
+        "Result used for getMaximumVF query which is used exclusively by "
+        "SLP vectorizer.  Defaults to 1 which disables SLP."),
+#if SIFIVE_CUSTOMIZATION
+    cl::init(0), cl::Hidden);
+#else
+    cl::init(1), cl::Hidden);
+#endif
+
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<unsigned> VectorPrimaryLMULMinExp(
     "vector-primary-lmul-min",
@@ -1334,6 +1345,15 @@ unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) {
   }
 
   return BaseT::getRegUsageForType(Ty);
+}
+
+unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
+  // This interface is currently only used by SLP.  Returning 1 (which is the
+  // default value for SLPMaxVF) disables SLP. We currently have a cost modeling
+  // problem w/ constant materialization which causes SLP to perform majorly
+  // unprofitable transformations.
+  // TODO: Figure out constant materialization cost modeling and remove.
+  return SLPMaxVF;
 }
 
 #if SIFIVE_CUSTOMIZATION

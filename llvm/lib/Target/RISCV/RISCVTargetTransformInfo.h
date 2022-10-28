@@ -165,10 +165,10 @@ public:
 
   unsigned getRegUsageForType(Type *Ty);
 
-<<<<<<< HEAD
-=======
   unsigned getMaximumVF(unsigned ElemWidth, unsigned Opcode) const;
 
+<<<<<<< HEAD
+=======
   bool preferEpilogueVectorization() const {
     // Epilogue vectorization is usually unprofitable - tail folding or
     // a smaller VF would have been better.  This a blunt hammer - we
