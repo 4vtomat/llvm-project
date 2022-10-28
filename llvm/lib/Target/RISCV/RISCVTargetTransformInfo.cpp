@@ -718,7 +718,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return InstructionCost::getInvalid();
     break;
   }
-<<<<<<< HEAD
   // This is not ideal but untill all VP intrinsics are in upstream we can't use
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
@@ -776,16 +775,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
 #undef VP_INTRINSIC
     return 1;
 #endif // SIFIVE_CUSTOMIZATION
-  default:
-    if (ST->hasVInstructions() && RetTy->isVectorTy()) {
-      auto LT = getTypeLegalizationCost(RetTy);
-      if (const auto *Entry = CostTableLookup(VectorIntrinsicCostTable,
-                                              ICA.getID(), LT.second))
-        return LT.first * Entry->Cost;
-    }
-    break;
-=======
->>>>>>> upstream/main
   }
 
   if (ST->hasVInstructions() && RetTy->isVectorTy()) {
