@@ -42,11 +42,13 @@ void DAGTypeLegalizer::ScalarizeVectorResult(SDNode *N, unsigned ResNo) {
              dbgs() << "\n");
   SDValue R = SDValue();
 
+#if SIFIVE_CUSTOMIZATION
   // See if the target wants to custom expand this node.
   if (CustomLowerNode(N, N->getValueType(ResNo), true)) {
     LLVM_DEBUG(dbgs() << "Node has been custom expanded, done\n");
     return;
   }
+#endif
 
   switch (N->getOpcode()) {
   default:
@@ -633,10 +635,12 @@ bool DAGTypeLegalizer::ScalarizeVectorOperand(SDNode *N, unsigned OpNo) {
              dbgs() << "\n");
   SDValue Res = SDValue();
 
+#if SIFIVE_CUSTOMIZATION
   if (CustomLowerNode(N, N->getOperand(OpNo).getValueType(), false)) {
     LLVM_DEBUG(dbgs() << "Node has been custom lowered, done\n");
     return false;
   }
+#endif
 
   switch (N->getOpcode()) {
   default:
@@ -2854,6 +2858,7 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::INSERT_SUBVECTOR:  Res = SplitVecOp_INSERT_SUBVECTOR(N, OpNo); break;
   case ISD::EXTRACT_VECTOR_ELT:Res = SplitVecOp_EXTRACT_VECTOR_ELT(N); break;
   case ISD::CONCAT_VECTORS:    Res = SplitVecOp_CONCAT_VECTORS(N); break;
+  case ISD::VP_TRUNCATE:
   case ISD::TRUNCATE:
     Res = SplitVecOp_TruncateHelper(N);
     break;
@@ -2957,11 +2962,6 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMIN:
     Res = SplitVecOp_VP_REDUCE(N, OpNo);
     break;
-#if SIFIVE_CUSTOMIZATION
-  case ISD::VP_TRUNCATE:
-    Res = SplitVecOp_UnaryOp(N);
-    break;
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -3106,6 +3106,7 @@ SDValue DAGTypeLegalizer::SplitVecOp_UnaryOp(SDNode *N) {
     // of the other one.
     SDValue Ch = DAG.getNode(ISD::TokenFactor, dl, MVT::Other, Lo.getValue(1),
                              Hi.getValue(1));
+  
     // Legalize the chain result - switch anything that used the old chain to
     // use the new one.
     ReplaceValueWith(SDValue(N, 1), Ch);
@@ -3825,6 +3826,7 @@ SDValue DAGTypeLegalizer::SplitVecOp_VSETCC(SDNode *N) {
       TargetLowering::getExtendForContent(TLI.getBooleanContents(OpVT));
   return DAG.getNode(ExtendCode, DL, N->getValueType(0), Con);
 }
+
 
 SDValue DAGTypeLegalizer::SplitVecOp_FP_ROUND(SDNode *N) {
   // The result has a legal vector type, but the input needs splitting.
