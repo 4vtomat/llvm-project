@@ -2701,6 +2701,10 @@ class VPlan {
   // EVL on the previous iteration. Represented as a PHI.
   VPValue *PrevEVL = nullptr;
 
+  /// Represent initial EVL, i.e. EVL of the first vector iteration for the
+  /// predicated loop vectorizer.
+  VPValue *InitEVL = nullptr;
+
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
 
@@ -2811,6 +2815,15 @@ public:
   void createPrevEVL() {
     if (!PrevEVL)
       PrevEVL = new VPValue();
+  }
+
+  /// Returns VPValue for InitEVL
+  VPValue *getInitEVL() const { return InitEVL; }
+
+  /// Creates InitEVL VPValue
+  void createInitEVL() {
+    if (!InitEVL)
+      InitEVL = new VPValue();
   }
 
   /// Gets or creates a constant all-true mask VPValue.

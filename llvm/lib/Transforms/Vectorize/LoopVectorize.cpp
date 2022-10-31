@@ -4062,10 +4062,21 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   Value *Incoming = State.get(PreviousDef, UF - 1);
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
+#if SIFIVE_CUSTOMIZATION
+  Value *EVL =
+      State.Plan->getEVL() ? State.get(State.Plan->getEVL(), 0) : nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   if (VF.isVector()) {
     auto *One = ConstantInt::get(IdxTy, 1);
     Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
-    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, VF);
+#if SIFIVE_CUSTOMIZATION
+    // TODO: This code is better to be changed to use VPLane::getLastLaneForVF
+    // or even better to have VPLane::getLastLane(unsigned). The problem with
+    // current function in VPLane is it does use different lane kind for fixed
+    // and scalable vectors, which makes it hard to use here. Also for RVV VLA
+    // we have to provide offset from the last lane.
+    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+#endif // SIFIVE_CUSTOMIZATION
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     ExtractForScalar = Builder.CreateExtractElement(ExtractForScalar, LastIdx,
                                                     "vector.recur.extract");
@@ -4077,10 +4088,48 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   // when the scalar loop is not run at all.
   Value *ExtractForPhiUsedOutsideLoop = nullptr;
   if (VF.isVector()) {
-    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, VF);
+#if SIFIVE_CUSTOMIZATION
+    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+#endif // SIFIVE_CUSTOMIZATION
     auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
     ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
         Incoming, Idx, "vector.recur.extract.for.phi");
+#if SIFIVE_CUSTOMIZATION
+    if (EVL) {
+      // Take care of the corner case when last vector iteration processed just
+      // one element. In this case extract of the `EVL-2` element of the
+      // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
+      // last iteration.
+      //
+      //   vector.ph:
+      //     v_init = vector(..., ..., ..., a[-1])
+      //     initial_vl = vsetvli tripcount
+      //     br vector.body
+      //
+      //   vector.body
+      //     i = phi [0, vector.ph], [i+4, vector.body]
+      //     v1 = phi [v_init, vector.ph], [v2, vector.body]
+      //     prev.evl = phi i32 [ %initial_vl, %vector.ph ], [ %evl, %vector.body ]
+      //
+      //     v2 = a[i, i+1, i+2, i+3];
+      //     v3 = vector(v1(3), v2(0, 1, 2))
+      //     b[i, i+1, i+2, i+3] = v2 - v3
+      //     br cond, vector.body, middle.block
+      //
+      // Take the value of the `PhiR`(`v1`) as it contains value from the
+      // previous iteration (or the initial value) and extract last lane using
+      // `PrevEVL`(`prev.evl`)
+      Value *Cond =
+          Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
+
+      Idx = Builder.CreateSub(State.get(State.Plan->getPrevEVL(), 0),
+                              ConstantInt::get(IdxTy, 1));
+      Value *PreviousValue = Builder.CreateExtractElement(
+          State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
+      ExtractForPhiUsedOutsideLoop =
+          Builder.CreateSelect(Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
+    }
+#endif // SIFIVE_CUSTOMIZATION
   } else if (UF > 1)
     // When loop is unrolled without vectorizing, initialize
     // ExtractForPhiUsedOutsideLoop with the value just prior to unrolled value
@@ -8545,11 +8594,15 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));
-      Value *RVL = ILV.getOrCreateTripCount(nullptr);
-      Value *V = BestVPlan.getSetVL(State, RVL);
-      ILV.InitVL->replaceAllUsesWith(V);
+      if (!State.hasAnyVectorValue(BestVPlan.getInitEVL())) {
+        Value *RVL = ILV.getOrCreateTripCount(nullptr);
+        Value *InitEVL = BestVPlan.getSetVL(State, RVL);
+        State.set(State.Plan->getInitEVL(), InitEVL, 0);
+      }
+      Value *InitEVL = State.get(BestVPlan.getInitEVL(), 0);
+      ILV.InitVL->replaceAllUsesWith(InitEVL);
       cast<Instruction>(ILV.InitVL)->eraseFromParent();
-      ILV.InitVL = V;
+      ILV.InitVL = InitEVL;
     }
 
     // FIXME: The list of pairs should be filled outside of this function and
@@ -9593,8 +9646,10 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 #if SIFIVE_CUSTOMIZATION
       // Create the node for previous EVL value, required for the splice
       // intrinsic.
-      if (Plan->getEVL())
+      if (Plan->getEVL()) {
         Plan->createPrevEVL();
+        Plan->createInitEVL();
+      }
 #endif // SIFIVE_CUSTOMIZATION
       // TODO: Currently fixed-order recurrences are modeled as chains of
       // first-order recurrences. If there are no users of the intermediate
