@@ -53,6 +53,38 @@ static cl::opt<bool, true>
     VerifyLoopInfoX("verify-loop-info", cl::location(VerifyLoopInfo),
                     cl::Hidden, cl::desc("Verify loop info (time consuming)"));
 
+#if SIFIVE_CUSTOMIZATION
+namespace {
+/// VLA vectorization mode for loops with non-const strided accesses.
+enum class RISCVRuntimeStrideVectorizationMode {
+  ConsecutiveOnly, ///< Vectorize loops with stride == 1 checks.
+  StridedOnly,     ///< Vectorize loops with strided accesses.
+  Default, ///< Vectorize loops with stride==1 checks and then vectorize loop
+           ///< version with strided accesses.
+};
+
+static cl::opt<RISCVRuntimeStrideVectorizationMode>
+    RISCVLoopVectorizationRuntimeStride(
+        "riscv-loop-vectorization-runtime-stride",
+        cl::init(RISCVRuntimeStrideVectorizationMode::Default), cl::Hidden,
+        cl::desc("Control whether the compiler will vectorize loops with "
+                 "consecutive strides checks only or generate the strided "
+                 "vectorized versions of the loop too."),
+        cl::values(
+            clEnumValN(
+                RISCVRuntimeStrideVectorizationMode::ConsecutiveOnly,
+                "only-consecutive",
+                "Vectorize consecutive accesses with stride==1 checks only."),
+            clEnumValN(RISCVRuntimeStrideVectorizationMode::StridedOnly,
+                       "only-strided",
+                       "Vectorize loops with strided accesses directly without "
+                       "any checks."),
+            clEnumValN(RISCVRuntimeStrideVectorizationMode::Default, "default",
+                       "Generate two versions of the vectorized loops, with "
+                       "consecutive accesses and strided.")));
+} // end anonymous namespace
+#endif // SIFIVE_CUSTOMIZATION
+
 //===----------------------------------------------------------------------===//
 // Loop implementation
 //
@@ -1081,6 +1113,22 @@ Optional<bool> llvm::getOptionalBoolLoopAttribute(const Loop *TheLoop,
 bool llvm::getBooleanLoopAttribute(const Loop *TheLoop, StringRef Name) {
   return getOptionalBoolLoopAttribute(TheLoop, Name).value_or(false);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool llvm::isRevectorizeWithoutStrideChecks(const Loop &L) {
+  return getBooleanLoopAttribute(&L, LoopMetaData::NoScevChecks);
+}
+
+bool llvm::doNotRevectorizeWithoutStrideChecks() {
+  return RISCVLoopVectorizationRuntimeStride ==
+         RISCVRuntimeStrideVectorizationMode::ConsecutiveOnly;
+}
+
+bool llvm::vectorizeWithoutStrideChecks() {
+  return RISCVLoopVectorizationRuntimeStride ==
+         RISCVRuntimeStrideVectorizationMode::StridedOnly;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 llvm::Optional<int> llvm::getOptionalIntLoopAttribute(const Loop *TheLoop,
                                                       StringRef Name) {

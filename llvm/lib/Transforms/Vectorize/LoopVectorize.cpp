@@ -591,6 +591,21 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if VLA Vectorizer is enabled.
   bool useVLAVectorizer() const;
+
+  /// Returns previous SCEV check block.
+  BasicBlock *getPrevSCEVCheckBlock() const {
+    if (!VF.isScalable() || Legal->getLAI()->getSymbolicStrides().empty())
+      return nullptr;
+    return PrevSCEVCheckBlock;
+  }
+
+  // Sets previous SCEV check block.
+  void setPrevSCEVCheckBlock(BasicBlock *BB) {
+    if (VF.isScalable())
+      PrevSCEVCheckBlock = BB;
+    else
+      PrevSCEVCheckBlock = nullptr;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a new phi node for the induction variable \p OrigPhi to resume
@@ -791,8 +806,10 @@ protected:
 #if SIFIVE_CUSTOMIZATION
   /// Initial VL value to check the loop trip count.
   Value *InitVL = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
 
+  // Previous SCEV check block.
+  BasicBlock *PrevSCEVCheckBlock = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The legality analysis.
   LoopVectorizationLegality *Legal;
@@ -3186,6 +3203,18 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   // If tail is to be folded, vector loop takes care of all iterations.
   Type *CountTy = Count->getType();
   Value *CheckMinIters = Builder.getFalse();
+#if SIFIVE_CUSTOMIZATION
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
+    auto *NewPHI = PHINode::Create(
+        Builder.getInt1Ty(),
+        pred_size(TCCheckBlock), "no.scev.check", TCCheckBlock->getFirstNonPHI());
+    for (BasicBlock *BB : predecessors(TCCheckBlock))
+      NewPHI->addIncoming(BB == PrevSCEVCheckBlock ? Builder.getFalse()
+                                                   : Builder.getTrue(),
+                          BB);
+    CheckMinIters = NewPHI;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   auto CreateStep = [&]() -> Value * {
     // Create step with max(MinProTripCount, UF * VF).
     if (UF * VF.getKnownMinValue() >= MinProfitableTripCount.getKnownMinValue())
@@ -3253,6 +3282,9 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
 
   // Update dominator for Bypass & LoopExit (if needed).
   DT->changeImmediateDominator(Bypass, TCCheckBlock);
+#if SIFIVE_CUSTOMIZATION
+  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
+#endif // SIFIVE_CUSTOMIZATION
   if (!Cost->requiresScalarEpilogue(VF))
     // If there is an epilogue which must run, there's no edge from the
     // middle block to exit blocks  and thus no need to update the immediate
@@ -3359,6 +3391,11 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
                        Builder.getTrue());
   BrInst->setDebugLoc(ScalarLatchTerm->getDebugLoc());
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
+
+#if SIFIVE_CUSTOMIZATION
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop))
+    return;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Update dominator for loop exit. During skeleton creation, only the vector
   // pre-header and the middle block are created. The vector loop is entirely
@@ -3550,6 +3587,9 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 
   // Generate the code to check any assumptions that we've made for SCEV
   // expressions.
+#if SIFIVE_CUSTOMIZATION
+  PrevSCEVCheckBlock =
+#endif // SIFIVE_CUSTOMIZATION
   emitSCEVChecks(LoopScalarPreHeader);
 
   // Generate the code that checks in runtime if arrays overlap. We put the
@@ -11323,6 +11363,29 @@ Value *VPTransformState::get(VPValue *Def, unsigned Part) {
   return VectorValue;
 }
 
+#if SIFIVE_CUSTOMIZATION
+namespace {
+/// Sets and tracks the SCEV check block for VLA vectorization mode.
+class SCEVBlockRAII {
+  InnerLoopVectorizer &ILV;
+  BasicBlock *&SCEVCheckBlock;
+
+public:
+  SCEVBlockRAII(InnerLoopVectorizer &ILV, BasicBlock *&SCEVCheckBlock)
+      : ILV(ILV), SCEVCheckBlock(SCEVCheckBlock) {
+    if (ILV.useVLAVectorizer())
+      ILV.setPrevSCEVCheckBlock(SCEVCheckBlock);
+  }
+  ~SCEVBlockRAII() {
+    if (ILV.useVLAVectorizer())
+      SCEVCheckBlock = ILV.getPrevSCEVCheckBlock();
+    else
+      SCEVCheckBlock = nullptr;
+  }
+};
+} // end anonymous namespace
+#endif // SIFIVE_CUSTOMIZATION
+
 // Process the loop in the VPlan-native vectorization path. This path builds
 // VPlan upfront in the vectorization pipeline, which allows to apply
 // VPlan-to-VPlan transformations from the very beginning without modifying the
@@ -11334,7 +11397,8 @@ static bool processLoopInVPlanNativePath(
     OptimizationRemarkEmitter *ORE, BlockFrequencyInfo *BFI,
     ProfileSummaryInfo *PSI, LoopVectorizeHints &Hints,
 #if SIFIVE_CUSTOMIZATION
-    LoopVectorizationRequirements &Requirements, bool IsLTOPreLink) {
+    LoopVectorizationRequirements &Requirements, bool IsLTOPreLink,
+    BasicBlock *&IgnoreSCEVMemCheckBB) {
 #else
     LoopVectorizationRequirements & Requirements) {
 #endif
@@ -11390,12 +11454,21 @@ static bool processLoopInVPlanNativePath(
                              F->getParent()->getDataLayout());
     InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                            VF.Width, 1, LVL, &CM, BFI, PSI, Checks);
+#if SIFIVE_CUSTOMIZATION
+    SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
     LLVM_DEBUG(dbgs() << "Vectorizing outer loop in \""
                       << L->getHeader()->getParent()->getName() << "\"\n");
     LVP.executePlan(VF.Width, 1, BestPlan, LB, DT, false);
   }
 
   // Mark the loop as already vectorized to avoid vectorizing again.
+#if SIFIVE_CUSTOMIZATION
+  if (IgnoreSCEVMemCheckBB && !(isRevectorizeWithoutStrideChecks(*L) ||
+                                doNotRevectorizeWithoutStrideChecks()))
+    Hints.setRevectorizeWithoutStrideChecks();
+  else
+#endif // SIFIVE_CUSTOMIZATION
   Hints.setAlreadyVectorized();
   assert(!verifyFunction(*L->getHeader()->getParent(), &dbgs()));
   return true;
@@ -11627,7 +11700,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     return processLoopInVPlanNativePath(L, PSE, LI, DT, &LVL, TTI, TLI, DB, AC,
 #if SIFIVE_CUSTOMIZATION
                                         ORE, BFI, PSI, Hints, Requirements,
-                                        IsLTOPreLink);
+                                        IsLTOPreLink, IgnoreSCEVMemCheckBB);
 #else
                                         ORE, BFI, PSI, Hints, Requirements);
 #endif
@@ -11956,6 +12029,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         EpilogueVectorizerEpilogueLoop EpilogILV(L, PSE, LI, DT, TLI, TTI, AC,
                                                  ORE, EPI, &LVL, &CM, BFI, PSI,
                                                  Checks);
+#if SIFIVE_CUSTOMIZATION
+        SCEVBlockRAII SCEVRAII(EpilogILV, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
 
         VPlan &BestEpiPlan = LVP.getBestPlanFor(EPI.EpilogueVF);
         VPRegionBlock *VectorLoop = BestEpiPlan.getVectorLoopRegion();
@@ -11984,6 +12060,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                                VF.MinProfitableTripCount, IC, &LVL, &CM, BFI,
                                PSI, Checks);
+#if SIFIVE_CUSTOMIZATION
+        SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
 
         VPlan &BestPlan = LVP.getBestPlanFor(VF.Width);
         LVP.executePlan(VF.Width, IC, BestPlan, LB, DT, false);
@@ -12052,6 +12131,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       AddRuntimeUnrollDisableMetaData(L);
 
     // Mark the loop as already vectorized to avoid vectorizing again.
+#if SIFIVE_CUSTOMIZATION
+    if (IgnoreSCEVMemCheckBB && !(isRevectorizeWithoutStrideChecks(*L) ||
+                                  doNotRevectorizeWithoutStrideChecks()))
+      Hints.setRevectorizeWithoutStrideChecks();
+    else
+#endif // SIFIVE_CUSTOMIZATION
     Hints.setAlreadyVectorized();
   }
 
@@ -12111,6 +12196,9 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
   LoopsAnalyzed += Worklist.size();
 
   // Now walk the identified inner loops.
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Loop *, 4> LoopsTried;
+#endif // SIFIVE_CUSTOMIZATION
   while (!Worklist.empty()) {
     Loop *L = Worklist.pop_back_val();
 
@@ -12119,6 +12207,21 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
     Changed |= formLCSSARecursively(*L, *DT, LI, SE);
 
     Changed |= CFGChanged |= processLoop(L);
+#if SIFIVE_CUSTOMIZATION
+    if (isRevectorizeWithoutStrideChecks(*L)) {
+      if (LoopsTried.insert(L).second) {
+        Worklist.push_back(L);
+      } else {
+        // Remove no_scev_checks metadata if vectorization failed.
+        LLVMContext &Context = L->getHeader()->getContext();
+
+        MDNode *LoopID = L->getLoopID();
+        MDNode *NewLoopID = makePostTransformationMetadata(
+            Context, LoopID, {LoopMetaData::NoScevChecks}, None);
+        L->setLoopID(NewLoopID);
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Process each loop nest in the function.

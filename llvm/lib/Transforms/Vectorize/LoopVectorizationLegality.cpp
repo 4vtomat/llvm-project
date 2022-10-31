@@ -214,13 +214,31 @@ void LoopVectorizeHints::setAlreadyVectorized() {
   MDNode *NewLoopID =
       makePostTransformationMetadata(Context, LoopID,
                                      {Twine(Prefix(), "vectorize.").str(),
-                                      Twine(Prefix(), "interleave.").str()},
+                                      Twine(Prefix(), "interleave.").str(),
+#if SIFIVE_CUSTOMIZATION
+                                      LoopMetaData::NoScevChecks},
+#endif // SIFIVE_CUSTOMIZATION
                                      {IsVectorizedMD});
   TheLoop->setLoopID(NewLoopID);
 
   // Update internal cache.
   IsVectorized.Value = 1;
 }
+
+#if SIFIVE_CUSTOMIZATION
+void LoopVectorizeHints::setRevectorizeWithoutStrideChecks() {
+  LLVMContext &Context = TheLoop->getHeader()->getContext();
+
+  MDNode *RevectorizeMD = MDNode::get(
+      Context,
+      {MDString::get(Context, LoopMetaData::NoScevChecks),
+       ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
+  MDNode *LoopID = TheLoop->getLoopID();
+  MDNode *NewLoopID =
+      makePostTransformationMetadata(Context, LoopID, None, {RevectorizeMD});
+  TheLoop->setLoopID(NewLoopID);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LoopVectorizeHints::allowVectorization(
     Function *F, Loop *L, bool VectorizeOnlyWhenForced) const {

@@ -771,6 +771,9 @@ bool isConsecutiveAccess(Value *A, Value *B, const DataLayout &DL,
 class LoopAccessInfoManager {
   /// The cache.
   DenseMap<Loop *, std::unique_ptr<LoopAccessInfo>> LoopAccessInfoMap;
+#if SIFIVE_CUSTOMIZATION
+  DenseMap<Loop *, std::unique_ptr<LoopAccessInfo>> LoopAccessInfoNoStridesMap;
+#endif // SIFIVE_CUSTOMIZATION
 
   // The used analysis passes.
   ScalarEvolution &SE;
