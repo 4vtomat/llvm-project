@@ -302,7 +302,11 @@ void RISCVRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
 
 bool RISCVRegisterInfo::requiresVirtualBaseRegisters(
     const MachineFunction &MF) const {
+#if SIFIVE_CUSTOMIZATION
+  return false;
+#else
   return true;
+#endif
 }
 
 // Returns true if the instruction's frame index reference would be better
