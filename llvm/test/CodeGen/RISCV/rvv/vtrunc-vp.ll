@@ -372,7 +372,6 @@ define <vscale x 32 x i32> @vtrunc_nxv32i64_nxv32i32(<vscale x 32 x i64> %a, <vs
 ; RV32-NEXT:    li a3, 24
 ; RV32-NEXT:    mul a1, a1, a3
 ; RV32-NEXT:    sub sp, sp, a1
-; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; RV32-NEXT:    vmv1r.v v1, v0
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
@@ -451,7 +450,6 @@ define <vscale x 32 x i32> @vtrunc_nxv32i64_nxv32i32(<vscale x 32 x i64> %a, <vs
 ; RV32-NEXT:    li a1, 24
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -463,7 +461,6 @@ define <vscale x 32 x i32> @vtrunc_nxv32i64_nxv32i32(<vscale x 32 x i64> %a, <vs
 ; RV64-NEXT:    li a3, 24
 ; RV64-NEXT:    mul a1, a1, a3
 ; RV64-NEXT:    sub sp, sp, a1
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; RV64-NEXT:    vmv1r.v v1, v0
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
@@ -542,7 +539,6 @@ define <vscale x 32 x i32> @vtrunc_nxv32i64_nxv32i32(<vscale x 32 x i64> %a, <vs
 ; RV64-NEXT:    li a1, 24
 ; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <vscale x 32 x i32> @llvm.vp.trunc.nxv32i32.nxv32i64(<vscale x 32 x i64> %a, <vscale x 32 x i1> %m, i32 %vl)

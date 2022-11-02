@@ -277,7 +277,6 @@ define <128 x i16> @vwmul_v128i16(<128 x i8>* %x, <128 x i8>* %y) {
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v16, (a0)
@@ -296,7 +295,6 @@ define <128 x i16> @vwmul_v128i16(<128 x i8>* %x, <128 x i8>* %y) {
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <128 x i8>, <128 x i8>* %x
@@ -315,7 +313,6 @@ define <64 x i32> @vwmul_v64i32(<64 x i16>* %x, <64 x i16>* %y) {
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, ma
 ; CHECK-NEXT:    vle16.v v16, (a0)
@@ -334,7 +331,6 @@ define <64 x i32> @vwmul_v64i32(<64 x i16>* %x, <64 x i16>* %y) {
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <64 x i16>, <64 x i16>* %x
@@ -353,7 +349,6 @@ define <32 x i64> @vwmul_v32i64(<32 x i32>* %x, <32 x i32>* %y) {
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; CHECK-NEXT:    li a2, 32
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
 ; CHECK-NEXT:    vle32.v v16, (a0)
@@ -371,7 +366,6 @@ define <32 x i64> @vwmul_v32i64(<32 x i32>* %x, <32 x i32>* %y) {
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %a = load <32 x i32>, <32 x i32>* %x

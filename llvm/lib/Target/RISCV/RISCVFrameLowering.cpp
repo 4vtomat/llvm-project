@@ -13,16 +13,13 @@
 #include "RISCVFrameLowering.h"
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
-#include "llvm/BinaryFormat/Dwarf.h" // SIFIVE
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/RegisterScavenging.h"
-#include "llvm/IR/DebugInfoMetadata.h" // SIFIVE
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/MC/MCDwarf.h"
-#include "llvm/Support/LEB128.h" // SIFIVE
 
 #include <algorithm>
 
@@ -368,50 +365,6 @@ getNonLibcallCSI(const MachineFunction &MF,
   return NonLibcallCSI;
 }
 
-#if SIFIVE_CUSTOMIZATION
-static MCCFIInstruction createDefCfaExpression(unsigned DwarfReg,
-                                               int64_t NumBytes,
-                                               int64_t ScalableBytes) {
-  SmallString<64> CfaExpr;
-  std::string CommentBuffer = "sp";
-  llvm::raw_string_ostream Comment(CommentBuffer);
-
-  assert(ScalableBytes % 8 == 0 &&
-         "ScalableBytes should be the multiple of one vector size.");
-  int64_t NumVRegs = ScalableBytes / 8;
-
-  // 1. Build up expression (SP + Fixed + Scalable)
-  SmallString<64> OffsetExpr;
-  uint8_t buffer[16];
-
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_breg0 + /*SP*/ 2);
-  OffsetExpr.push_back(0);
-
-  // 1.1 Add Fixed Size
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_consts);
-  OffsetExpr.append(buffer, buffer + encodeSLEB128(NumBytes, buffer));
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_plus);
-  Comment << (NumBytes < 0 ? " - " : " + ") << std::abs(NumBytes);
-
-  // 1.2 Add Scalable Size
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_consts);
-  OffsetExpr.append(buffer, buffer + encodeSLEB128(NumVRegs, buffer));
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_bregx);
-  OffsetExpr.append(buffer, buffer + encodeULEB128(DwarfReg, buffer));
-  OffsetExpr.push_back(0);
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_mul);
-  OffsetExpr.push_back((uint8_t)dwarf::DW_OP_plus);
-  Comment << (NumVRegs < 0 ? " - " : " + ") << std::abs(NumVRegs) << " * VLENB";
-
-  // 2. Wrap this into DW_CFA_def_cfa
-  CfaExpr.push_back(dwarf::DW_CFA_def_cfa_expression);
-  CfaExpr.append(buffer, buffer + encodeULEB128(OffsetExpr.size(), buffer));
-  CfaExpr.append(OffsetExpr.str());
-
-  return MCCFIInstruction::createEscape(nullptr, CfaExpr.str(), Comment.str());
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 void RISCVFrameLowering::adjustStackForRVV(MachineFunction &MF,
                                            MachineBasicBlock &MBB,
                                            MachineBasicBlock::iterator MBBI,
@@ -598,25 +551,9 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
     }
   }
 
-#if SIFIVE_CUSTOMIZATION
-  if (RVVStackSize) {
-#else
   if (RVVStackSize)
-#endif // SIFIVE_CUSTOMIZATION
     adjustStackForRVV(MF, MBB, MBBI, DL, -RVVStackSize,
                       MachineInstr::FrameSetup);
-
-#if SIFIVE_CUSTOMIZATION
-    if (!hasFP(MF)) {
-      unsigned DwarfReg = RI->getDwarfRegNum(RISCV::VLENB, true);
-      unsigned CFIIndex = MF.addFrameInst(
-          createDefCfaExpression(DwarfReg, MFI.getStackSize(), RVVStackSize));
-      BuildMI(MBB, MBBI, DL, TII->get(TargetOpcode::CFI_INSTRUCTION))
-          .addCFIIndex(CFIIndex)
-          .setMIFlags(MachineInstr::FrameSetup);
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   if (hasFP(MF)) {
     // Realign Stack
@@ -660,7 +597,6 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
 void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
                                       MachineBasicBlock &MBB) const {
   const RISCVRegisterInfo *RI = STI.getRegisterInfo();
-  const RISCVInstrInfo *TII = STI.getInstrInfo();
   MachineFrameInfo &MFI = MF.getFrameInfo();
   auto *RVFI = MF.getInfo<RISCVMachineFunctionInfo>();
   Register FPReg = getFPReg(STI);
@@ -719,17 +655,9 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
     adjustReg(MBB, LastFrameDestroy, DL, SPReg, FPReg, -FPOffset,
               MachineInstr::FrameDestroy);
   } else {
-    if (RVVStackSize) {
+    if (RVVStackSize)
       adjustStackForRVV(MF, MBB, LastFrameDestroy, DL, RVVStackSize,
                         MachineInstr::FrameDestroy);
-      if (!hasFP(MF)) {
-        unsigned CFIIndex = MF.addFrameInst(
-            MCCFIInstruction::cfiDefCfaOffset(nullptr, MFI.getStackSize()));
-        BuildMI(MBB, MBBI, DL, TII->get(TargetOpcode::CFI_INSTRUCTION))
-            .addCFIIndex(CFIIndex)
-            .setMIFlag(MachineInstr::FrameDestroy);
-      }
-    }
   }
 
   uint64_t FirstSPAdjustAmount = getFirstSPAdjustAmount(MF);

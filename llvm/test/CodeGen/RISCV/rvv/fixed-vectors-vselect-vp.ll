@@ -157,7 +157,6 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; RV32-NEXT:    csrr a2, vlenb
 ; RV32-NEXT:    slli a2, a2, 3
 ; RV32-NEXT:    sub sp, sp, a2
-; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV32-NEXT:    addi a2, sp, 16
 ; RV32-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
 ; RV32-NEXT:    vmv1r.v v2, v8
@@ -188,7 +187,6 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 3
 ; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -199,7 +197,6 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    sub sp, sp, a2
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * VLENB
 ; RV64-NEXT:    addi a2, sp, 16
 ; RV64-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
 ; RV64-NEXT:    vmv1r.v v2, v8
@@ -230,7 +227,6 @@ define <256 x i8> @select_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i3
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <256 x i8> @llvm.vp.select.v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i32 %evl)
@@ -246,7 +242,6 @@ define <256 x i8> @select_evl_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c
 ; CHECK-NEXT:    li a3, 24
 ; CHECK-NEXT:    mul a2, a2, a3
 ; CHECK-NEXT:    sub sp, sp, a2
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * VLENB
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v24, (a0)
@@ -289,7 +284,6 @@ define <256 x i8> @select_evl_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c
 ; CHECK-NEXT:    li a1, 24
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
   %v = call <256 x i8> @llvm.vp.select.v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c, i32 129)
@@ -450,7 +444,6 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 4
 ; RV32-NEXT:    sub sp, sp, a1
-; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
 ; RV32-NEXT:    add a1, sp, a1
@@ -489,7 +482,6 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -500,7 +492,6 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 4
 ; RV64-NEXT:    sub sp, sp, a1
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
 ; RV64-NEXT:    add a1, sp, a1
@@ -539,7 +530,6 @@ define <32 x i64> @select_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <32 x i64> @llvm.vp.select.v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c, i32 %evl)
@@ -669,7 +659,6 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 4
 ; RV32-NEXT:    sub sp, sp, a1
-; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    slli a1, a1, 3
 ; RV32-NEXT:    add a1, sp, a1
@@ -708,7 +697,6 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
@@ -719,7 +707,6 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 4
 ; RV64-NEXT:    sub sp, sp, a1
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * VLENB
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    slli a1, a1, 3
 ; RV64-NEXT:    add a1, sp, a1
@@ -758,7 +745,6 @@ define <64 x float> @select_v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %v = call <64 x float> @llvm.vp.select.v64f32(<64 x i1> %a, <64 x float> %b, <64 x float> %c, i32 %evl)

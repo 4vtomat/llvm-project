@@ -2151,7 +2151,6 @@ define <2 x i64> @stest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -2232,7 +2231,6 @@ define <2 x i64> @stest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -2291,7 +2289,6 @@ define <2 x i64> @utest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -2326,7 +2323,6 @@ define <2 x i64> @utest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -2409,7 +2405,6 @@ define <2 x i64> @ustest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -2471,7 +2466,6 @@ define <2 x i64> @ustest_f64i64(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -2577,7 +2571,6 @@ define <2 x i64> @stest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2658,7 +2651,6 @@ define <2 x i64> @stest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -2717,7 +2709,6 @@ define <2 x i64> @utest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2752,7 +2743,6 @@ define <2 x i64> @utest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -2835,7 +2825,6 @@ define <2 x i64> @ustest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2897,7 +2886,6 @@ define <2 x i64> @ustest_f32i64(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -5454,7 +5442,6 @@ define <2 x i64> @stest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -5524,7 +5511,6 @@ define <2 x i64> @stest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 ; CHECK-V-NEXT:  .LBB45_15: # %entry
@@ -5625,7 +5611,6 @@ define <2 x i64> @utest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -5668,7 +5653,6 @@ define <2 x i64> @utest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -5753,7 +5737,6 @@ define <2 x i64> @ustest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
@@ -5817,7 +5800,6 @@ define <2 x i64> @ustest_f64i64_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -5947,7 +5929,6 @@ define <2 x i64> @stest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -6017,7 +5998,6 @@ define <2 x i64> @stest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 ; CHECK-V-NEXT:  .LBB48_15: # %entry
@@ -6118,7 +6098,6 @@ define <2 x i64> @utest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -6161,7 +6140,6 @@ define <2 x i64> @utest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:
@@ -6246,7 +6224,6 @@ define <2 x i64> @ustest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
 ; CHECK-V-NEXT:    sub sp, sp, a0
-; CHECK-V-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0xc0, 0x00, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 64 + 2 * VLENB
 ; CHECK-V-NEXT:    addi a0, sp, 48
 ; CHECK-V-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-V-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -6310,7 +6287,6 @@ define <2 x i64> @ustest_f32i64_mm(<2 x float> %x) {
 ; CHECK-V-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s0, 64(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s1, 56(sp) # 8-byte Folded Reload
-; CHECK-V-NEXT:    .cfi_def_cfa_offset 64
 ; CHECK-V-NEXT:    addi sp, sp, 80
 ; CHECK-V-NEXT:    ret
 entry:

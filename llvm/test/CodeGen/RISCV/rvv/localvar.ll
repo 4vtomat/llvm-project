@@ -10,7 +10,6 @@ define void @local_var_mf8() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    sub sp, sp, a0
-; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 2 * VLENB
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    add a0, sp, a0
 ; RV64IV-NEXT:    addi a0, a0, 16
@@ -21,7 +20,6 @@ define void @local_var_mf8() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    add sp, sp, a0
-; RV64IV-NEXT:    .cfi_def_cfa_offset 16
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 1 x i8>
@@ -39,7 +37,6 @@ define void @local_var_m1() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    sub sp, sp, a0
-; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x02, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 2 * VLENB
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    add a0, sp, a0
 ; RV64IV-NEXT:    addi a0, a0, 16
@@ -49,7 +46,6 @@ define void @local_var_m1() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    add sp, sp, a0
-; RV64IV-NEXT:    .cfi_def_cfa_offset 16
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 8 x i8>
@@ -67,7 +63,6 @@ define void @local_var_m2() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 2
 ; RV64IV-NEXT:    sub sp, sp, a0
-; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * VLENB
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
 ; RV64IV-NEXT:    add a0, sp, a0
@@ -78,7 +73,6 @@ define void @local_var_m2() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 2
 ; RV64IV-NEXT:    add sp, sp, a0
-; RV64IV-NEXT:    .cfi_def_cfa_offset 16
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local0 = alloca <vscale x 16 x i8>
@@ -164,7 +158,6 @@ define void @local_var_m2_mix_local_scalar() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 2
 ; RV64IV-NEXT:    sub sp, sp, a0
-; RV64IV-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * VLENB
 ; RV64IV-NEXT:    lw a0, 12(sp)
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 1
@@ -177,7 +170,6 @@ define void @local_var_m2_mix_local_scalar() {
 ; RV64IV-NEXT:    csrr a0, vlenb
 ; RV64IV-NEXT:    slli a0, a0, 2
 ; RV64IV-NEXT:    add sp, sp, a0
-; RV64IV-NEXT:    .cfi_def_cfa_offset 16
 ; RV64IV-NEXT:    addi sp, sp, 16
 ; RV64IV-NEXT:    ret
   %local_scalar0 = alloca i32
