@@ -623,6 +623,7 @@ define <32 x double> @vp_rint_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroex
 ; RV32-NEXT:    csrr a2, vlenb
 ; RV32-NEXT:    slli a2, a2, 3
 ; RV32-NEXT:    sub sp, sp, a2
+; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; RV32-NEXT:    lui a2, %hi(.LCPI26_0)
 ; RV32-NEXT:    fld ft0, %lo(.LCPI26_0)(a2)
 ; RV32-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
@@ -677,6 +678,7 @@ define <32 x double> @vp_rint_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroex
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    sub sp, sp, a2
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; RV64-NEXT:    lui a2, %hi(.LCPI26_0)
 ; RV64-NEXT:    fld ft0, %lo(.LCPI26_0)(a2)
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
@@ -734,6 +736,7 @@ define <32 x double> @vp_rint_v32f64_unmasked(<32 x double> %va, i32 zeroext %ev
 ; RV32-NEXT:    csrr a2, vlenb
 ; RV32-NEXT:    slli a2, a2, 3
 ; RV32-NEXT:    sub sp, sp, a2
+; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; RV32-NEXT:    lui a2, %hi(.LCPI27_0)
 ; RV32-NEXT:    fld ft0, %lo(.LCPI27_0)(a2)
 ; RV32-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
@@ -788,6 +791,7 @@ define <32 x double> @vp_rint_v32f64_unmasked(<32 x double> %va, i32 zeroext %ev
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    sub sp, sp, a2
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; RV64-NEXT:    lui a2, %hi(.LCPI27_0)
 ; RV64-NEXT:    fld ft0, %lo(.LCPI27_0)(a2)
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma

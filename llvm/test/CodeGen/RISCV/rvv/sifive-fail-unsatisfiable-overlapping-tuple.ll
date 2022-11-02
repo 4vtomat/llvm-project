@@ -16,6 +16,7 @@ define void @main() {
 ; CHECK-NEXT:    li a1, 28
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x1c, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 28 * vlenb
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; CHECK-NEXT:    vle64.v v12, (zero)
 ; CHECK-NEXT:    csrr a0, vlenb
@@ -155,6 +156,7 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    csrr a0, vlenb
 ; SUBREG_LIVENESS-NEXT:    slli a0, a0, 2
 ; SUBREG_LIVENESS-NEXT:    sub sp, sp, a0
+; SUBREG_LIVENESS-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * vlenb
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)
 ; SUBREG_LIVENESS-NEXT:    vle64.v v8, (a0)
