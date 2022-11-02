@@ -264,6 +264,11 @@ RISCVTargetInfo::getVScaleRange(const LangOptions &LangOpts) const {
         LangOpts.VScaleMin ? LangOpts.VScaleMin : 1, LangOpts.VScaleMax);
 
   if (unsigned MinVLen = ISAInfo->getMinVLen()) {
+#if SIFIVE_CUSTOMIZATION
+    // Avoid return vscale_range with minimum value 0.
+    if (MinVLen < 64)
+      return None;
+#endif // SIFIVE_CUSTOMIZATION
     unsigned MaxVLen = ISAInfo->getMaxVLen();
     // RISCV::RVVBitsPerBlock is 64.
     return std::pair<unsigned, unsigned>(MinVLen/64, MaxVLen/64);
