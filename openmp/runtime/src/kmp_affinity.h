@@ -254,6 +254,7 @@ public:
 #elif __NR_sched_getaffinity != 5196
 #error Wrong code for getaffinity system call.
 #endif /* __NR_sched_getaffinity */
+#elif KMP_ARCH_RISCV64 // SiFive
 #else
 #error Unknown or unsupported architecture
 #endif /* KMP_ARCH_* */
