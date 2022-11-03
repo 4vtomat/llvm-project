@@ -681,58 +681,68 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
 #define VP_INTRINSIC_LIST                                                      \
-  VP_INTRINSIC(vp_add)                                                         \
-  VP_INTRINSIC(vp_and)                                                         \
-  VP_INTRINSIC(vp_ashr)                                                        \
-  VP_INTRINSIC(vp_fadd)                                                        \
-  VP_INTRINSIC(vp_fcmp)                                                        \
-  VP_INTRINSIC(vp_fdiv)                                                        \
-  VP_INTRINSIC(vp_fma)                                                         \
-  VP_INTRINSIC(vp_fmul)                                                        \
-  VP_INTRINSIC(vp_fneg)                                                        \
-  VP_INTRINSIC(vp_fpext)                                                       \
-  VP_INTRINSIC(vp_fptosi)                                                      \
-  VP_INTRINSIC(vp_fptoui)                                                      \
-  VP_INTRINSIC(vp_fptrunc)                                                     \
-  VP_INTRINSIC(vp_frem)                                                        \
-  VP_INTRINSIC(vp_fsub)                                                        \
-  VP_INTRINSIC(vp_gather)                                                      \
-  VP_INTRINSIC(vp_icmp)                                                        \
-  VP_INTRINSIC(vp_inttoptr)                                                    \
-  VP_INTRINSIC(vp_load)                                                        \
-  VP_INTRINSIC(vp_lshr)                                                        \
-  VP_INTRINSIC(vp_mul)                                                         \
-  VP_INTRINSIC(vp_or)                                                          \
-  VP_INTRINSIC(vp_ptrtoint)                                                    \
-  VP_INTRINSIC(vp_scatter)                                                     \
-  VP_INTRINSIC(vp_sdiv)                                                        \
-  VP_INTRINSIC(vp_select)                                                      \
-  VP_INTRINSIC(vp_merge)                                                       \
-  VP_INTRINSIC(vp_sext)                                                        \
-  VP_INTRINSIC(vp_shl)                                                         \
-  VP_INTRINSIC(vp_sitofp)                                                      \
-  VP_INTRINSIC(vp_srem)                                                        \
-  VP_INTRINSIC(vp_store)                                                       \
-  VP_INTRINSIC(vp_sub)                                                         \
-  VP_INTRINSIC(vp_trunc)                                                       \
-  VP_INTRINSIC(vp_udiv)                                                        \
-  VP_INTRINSIC(vp_uitofp)                                                      \
-  VP_INTRINSIC(vp_urem)                                                        \
-  VP_INTRINSIC(vp_xor)                                                         \
-  VP_INTRINSIC(vp_zext)                                                        \
-  VP_INTRINSIC(vp_fabs)                                                        \
-  VP_INTRINSIC(vp_smax)                                                        \
-  VP_INTRINSIC(vp_smin)                                                        \
-  VP_INTRINSIC(vp_umax)                                                        \
-  VP_INTRINSIC(vp_umin)                                                        \
-  VP_INTRINSIC(experimental_vp_strided_load)                                   \
-  VP_INTRINSIC(experimental_vp_strided_store)                                  \
-  VP_INTRINSIC(experimental_vp_splice)                                         \
-  VP_INTRINSIC(experimental_vp_reverse)
-#define VP_INTRINSIC(name) case Intrinsic::name:
-  VP_INTRINSIC_LIST
+  VP_INTRINSIC(vp_add, 1)                                                      \
+  VP_INTRINSIC(vp_and, 1)                                                      \
+  VP_INTRINSIC(vp_ashr, 1)                                                     \
+  VP_INTRINSIC(vp_fadd, 1)                                                     \
+  VP_INTRINSIC(vp_fcmp, 1)                                                     \
+  VP_INTRINSIC(vp_fdiv, 1)                                                     \
+  VP_INTRINSIC(vp_fma, 1)                                                      \
+  VP_INTRINSIC(vp_fmul, 1)                                                     \
+  VP_INTRINSIC(vp_fneg, 1)                                                     \
+  VP_INTRINSIC(vp_fpext, 1)                                                    \
+  VP_INTRINSIC(vp_fptosi, 1)                                                   \
+  VP_INTRINSIC(vp_fptoui, 1)                                                   \
+  VP_INTRINSIC(vp_fptrunc, 1)                                                  \
+  VP_INTRINSIC(vp_frem, 1)                                                     \
+  VP_INTRINSIC(vp_fsub, 1)                                                     \
+  VP_INTRINSIC(vp_gather, 1)                                                   \
+  VP_INTRINSIC(vp_icmp, 1)                                                     \
+  VP_INTRINSIC(vp_inttoptr, 1)                                                 \
+  VP_INTRINSIC(vp_load, 1)                                                     \
+  VP_INTRINSIC(vp_lshr, 1)                                                     \
+  VP_INTRINSIC(vp_mul, 1)                                                      \
+  VP_INTRINSIC(vp_or, 1)                                                       \
+  VP_INTRINSIC(vp_ptrtoint, 1)                                                 \
+  VP_INTRINSIC(vp_scatter, 1)                                                  \
+  VP_INTRINSIC(vp_sdiv, 1)                                                     \
+  VP_INTRINSIC(vp_select, 1)                                                   \
+  VP_INTRINSIC(vp_merge, 1)                                                    \
+  VP_INTRINSIC(vp_sext, 1)                                                     \
+  VP_INTRINSIC(vp_shl, 1)                                                      \
+  VP_INTRINSIC(vp_sitofp, 1)                                                   \
+  VP_INTRINSIC(vp_srem, 1)                                                     \
+  VP_INTRINSIC(vp_store, 1)                                                    \
+  VP_INTRINSIC(vp_sub, 1)                                                      \
+  VP_INTRINSIC(vp_trunc, 1)                                                    \
+  VP_INTRINSIC(vp_udiv, 1)                                                     \
+  VP_INTRINSIC(vp_uitofp, 1)                                                   \
+  VP_INTRINSIC(vp_urem, 1)                                                     \
+  VP_INTRINSIC(vp_xor, 1)                                                      \
+  VP_INTRINSIC(vp_zext, 1)                                                     \
+  VP_INTRINSIC(vp_fabs, 1)                                                     \
+  VP_INTRINSIC(vp_smax, 1)                                                     \
+  VP_INTRINSIC(vp_smin, 1)                                                     \
+  VP_INTRINSIC(vp_umax, 1)                                                     \
+  VP_INTRINSIC(vp_umin, 1)                                                     \
+  VP_INTRINSIC(vp_sqrt, 1)                                                     \
+  VP_INTRINSIC(vp_ceil, 9)                                                     \
+  VP_INTRINSIC(vp_floor, 9)                                                    \
+  VP_INTRINSIC(vp_round, 9)                                                    \
+  VP_INTRINSIC(vp_roundeven, 9)                                                \
+  VP_INTRINSIC(vp_copysign, 1)                                                 \
+  VP_INTRINSIC(vp_minnum, 1)                                                   \
+  VP_INTRINSIC(vp_maxnum, 1)                                                   \
+  VP_INTRINSIC(vp_fmuladd, 1)                                                  \
+  VP_INTRINSIC(experimental_vp_strided_load, 1)                                \
+  VP_INTRINSIC(experimental_vp_strided_store, 1)                               \
+  VP_INTRINSIC(experimental_vp_splice, 1)                                      \
+  VP_INTRINSIC(experimental_vp_reverse, 1)
+#define VP_INTRINSIC(name, cost)                                               \
+  case Intrinsic::name:                                                        \
+    return cost;
+    VP_INTRINSIC_LIST
 #undef VP_INTRINSIC
-    return 1;
 #endif // SIFIVE_CUSTOMIZATION
   default:
     if (ST->hasVInstructions() && RetTy->isVectorTy()) {
