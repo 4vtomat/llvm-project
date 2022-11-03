@@ -313,24 +313,18 @@ END_REGISTER_VP(vp_copysign, VP_FCOPYSIGN)
 
 // llvm.vp.minnum(x, y, mask,vlen)
 BEGIN_REGISTER_VP(vp_minnum, 2, 3, VP_FMINNUM, -1)
-<<<<<<< HEAD
 VP_PROPERTY_BINARYOP
-=======
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(minnum)
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 END_REGISTER_VP(vp_minnum, VP_FMINNUM)
 
 // llvm.vp.maxnum(x, y, mask,vlen)
 BEGIN_REGISTER_VP(vp_maxnum, 2, 3, VP_FMAXNUM, -1)
-<<<<<<< HEAD
 VP_PROPERTY_BINARYOP
-=======
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(maxnum)
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 END_REGISTER_VP(vp_maxnum, VP_FMAXNUM)
 
 // llvm.vp.ceil(x,mask,vlen)
