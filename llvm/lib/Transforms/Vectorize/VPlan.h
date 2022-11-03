@@ -38,6 +38,8 @@
 #include "llvm/ADT/ilist.h"
 #include "llvm/ADT/ilist_node.h"
 #include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/ScalarEvolution.h"
+#include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/FMF.h"
@@ -1864,17 +1866,17 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Wheter NonConsecutive loads/stores can be strided
-  bool Strided = false;
+  // Whether NonConsecutive loads/stores can be strided
+  Value *Stride = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 bool Strided = false)
+                                 Value *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse), Strided(Strided) {
+        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
@@ -1890,10 +1892,10 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 bool Strided = false)
+                                 Value *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        Strided(Strided) {
+        Stride(Stride) {
 #else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
@@ -1940,7 +1942,12 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   // Return wheter NonConsecutive loads/stores can be strided
-  bool isStrided() const { return Strided; }
+  bool isStrided() const { return Stride != nullptr; }
+
+  Value *getStride() const {
+    assert(isStrided() && "Cannot get stride for non-strided memory access");
+    return Stride;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Generate the wide load/store.
@@ -1961,6 +1968,10 @@ public:
   Instruction &getIngredient() const { return Ingredient; }
 
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: That should live in the base class
+  Type *getElementType() const {
+    return getLoadStoreType(&Ingredient);
+  }
 
   bool getConsecutive() const { return Consecutive; }
 
@@ -3320,29 +3331,40 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
 
 #if SIFIVE_CUSTOMIZATION
 // Strided accesses.
-struct StrideAccessInfo {
-  bool Valid = false;
+class StrideAccessInfo {
+private:
   const SCEV *SCEVExpr = nullptr;
+  const SCEV *SCEVStride = nullptr;
 
-  explicit operator bool() const { return Valid; }
-
+public:
+  explicit StrideAccessInfo() = default;
+  explicit StrideAccessInfo(const SCEV *SCEVExpr, const SCEV *SCEVStride)
+      : SCEVExpr(SCEVExpr), SCEVStride(SCEVStride) {}
   const SCEV *getSCEVExpr() const { return SCEVExpr; }
+  const SCEV *getSCEVStride() const { return SCEVStride; }
+  bool isConstantStride() const {
+    return SCEVStride && isa<SCEVConstant>(SCEVStride);
+  }
 
+  explicit operator bool() const { return SCEVExpr && SCEVStride; }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   void print(raw_ostream &OS) const {
     OS << "StrideAccessInfo: ";
-    if (!Valid) {
-      OS << "<<invalid>> ";
-    }
+
     OS << "SCEV: ";
     if (SCEVExpr) {
       OS << *SCEVExpr;
+      OS << " (stride: " << *SCEVStride << ')';
     } else {
       OS << "<<unknown>>";
     }
   }
 
-  Value *emitStride();
-  Value *emitBaseAddress();
+  void dump() const {
+    print(llvm::dbgs());
+  }
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
 };
 
 raw_ostream &operator<<(raw_ostream &OS, const StrideAccessInfo &SAI);
@@ -3352,12 +3374,7 @@ struct StridedAccessValues {
   Value* Stride;
 };
 
-StrideAccessInfo computeStrideAccessInfo(const VPTransformState &State,
-                                         Value *Addr);
-StridedAccessValues computeStrideAddressing(VPTransformState &State,
-                                            Type *PtrTy,
-                                            const StrideAccessInfo &SAI,
-                                            VPValue *CanonicalIV);
+StrideAccessInfo computeStrideAccessInfo(ScalarEvolution *SE, Instruction *I);
 #endif // SIFIVE_CUSTOMIZATION
 } // end namespace llvm
 

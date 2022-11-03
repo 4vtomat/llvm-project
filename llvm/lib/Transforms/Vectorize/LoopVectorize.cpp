@@ -261,7 +261,7 @@ static cl::opt<PreferPredicateTy::Option> PreferPredicateOverEpilogue(
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UseStridedAccesses(
     "vectorizer-use-vp-strided-load-store",
-    cl::init(false),
+    cl::init(true),
     cl::Hidden,
     cl::desc("Use VPred strided vector load store. This is EXPERIMENTAL"));
 
@@ -7717,17 +7717,11 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
 }
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
-  Value *Ptr = nullptr;
-  if (LoadInst *LI = dyn_cast<LoadInst>(I)) {
-    Ptr = LI->getPointerOperand();
-  } else if (StoreInst *SI = dyn_cast<StoreInst>(I)) {
-    Ptr = SI->getPointerOperand();
-  }
-  assert(Ptr && "Invalid pointer");
-  auto *SCEVPtr = isStridedAddressing(Ptr, PSE.getSE());
-  if (!SCEVPtr)
+  StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
+  if (!SAI)
     return false;
 
+  const SCEV *SCEVPtr = SAI.getSCEVExpr();
   assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
          "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
 
@@ -7917,12 +7911,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       Instruction *PtrDef =
         dyn_cast_or_null<Instruction>(getLoadStorePointerOperand(&I));
       if (PtrDef && TheLoop->contains(PtrDef) &&
-          (getWideningDecision(&I, VF) != CM_GatherScatter
-#if SIFIVE_CUSTOMIZATION
-          && getWideningDecision(&I, VF) != CM_Strided))
-#else
-          )) {
-#endif // SIFIVE_CUSTOMIZATION
+          (getWideningDecision(&I, VF) != CM_GatherScatter))
         AddrDefs.insert(PtrDef);
     }
 
@@ -9215,13 +9204,20 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   bool Consecutive =
       Reverse || Decision == LoopVectorizationCostModel::CM_Widen;
 #if SIFIVE_CUSTOMIZATION
-  bool Strided = Decision == LoopVectorizationCostModel::CM_Strided;
+  Value *Stride = nullptr;
+  if (Decision == LoopVectorizationCostModel::CM_Strided) {
+    if (StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I)) {
+      assert(SAI.isConstantStride() &&
+             "Currently only constant strides are supported");
+      Stride = cast<SCEVConstant>(SAI.getSCEVStride())->getValue();
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
     return new VPWidenMemoryInstructionRecipe(*Load, Operands[0], Mask,
 #if SIFIVE_CUSTOMIZATION
-                                              Consecutive, Reverse, Strided);
+                                              Consecutive, Reverse, Stride);
 #else
                                               Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9230,7 +9226,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   return new VPWidenMemoryInstructionRecipe(*Store, Operands[1], Operands[0],
 #if SIFIVE_CUSTOMIZATION
                                             Mask, Consecutive, Reverse,
-                                            Strided);
+                                            Stride);
 #else
                                             Mask, Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -10988,11 +10984,13 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
+    VPValue *Mask = getMask();
+    assert(Mask && "MaskValue must be called for recipes with set mask");
     // The outermost mask can be lowered as an all ones mask when using
     // EVL.
-    if (isa<VPInstruction>(getMask()) &&
-        cast<VPInstruction>(getMask())->getOpcode() == VPInstruction::ICmpULE)
-      return Builder.getTrueVector(EC);
+    if (auto *IMask = dyn_cast<VPInstruction>(Mask))
+      if (IMask->getOpcode() == VPInstruction::ICmpULE)
+        return Builder.getTrueVector(EC);
 
     return BlockInMaskParts[Part];
   };
@@ -11017,50 +11015,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
         if (EVLPart) {
-          bool EmittedStridedAccess = false;
-          Value *VectorGep = State.get(getAddr(), Part);
-          auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-          auto *DataTy = cast<VectorType>(StoredVal->getType());
-          ElementCount NumElts = PtrsTy->getElementCount();
-          Value *BlockInMaskPart = isMaskRequired
-                                       ? MaskValue(Part, NumElts)
-                                       : Builder.getTrueVector(NumElts);
-          if (isStrided()) {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "It should be possible to stride this store!\n");
-            LLVM_DEBUG(llvm::dbgs() << "Addr = " << *getAddr() << "\n");
-
-            if (StrideAccessInfo SAI = computeStrideAccessInfo(
-                    State, getAddr()->getUnderlyingValue())) {
-              LLVM_DEBUG(llvm::dbgs() << "Found stride for store\n");
-              // FIXME: This should be using VPValues rather than doing
-              // this by hand. This is not taking into account Part!
-              auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-              StridedAccessValues SAV = computeStrideAddressing(
-                  State, PtrTy, SAI, getParent()->getPlan()->getCanonicalIV());
-              Value *Operands[] = {StoredVal, SAV.BaseAddress, SAV.Stride,
-                                   BlockInMaskPart, EVLPart};
-              NewSI = Builder.CreateIntrinsic(
-                  Intrinsic::experimental_vp_strided_store,
-                  {StoredVal->getType(), PtrTy, SAV.Stride->getType()},
-                  Operands);
-              EmittedStridedAccess = true;
-            } else {
-              LLVM_DEBUG(llvm::dbgs() << "Cannot stride store: "
-                                      << *getAddr()->getUnderlyingValue()
-                                      << "SAI=" << SAI << "\n");
-            }
-          } else {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Not consecutive stride store for " << *getAddr() << "\n");
-          }
-          if (!EmittedStridedAccess) {
-            Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart,
-                                 EVLPart};
-            NewSI = Builder.CreateIntrinsic(Intrinsic::vp_scatter,
-                                            {DataTy, PtrsTy}, Operands);
-          }
-
+          NewSI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
+                                                         BlockInMaskParts);
         } else {
           Value *MaskPart = isMaskRequired ? BlockInMaskParts[Part] : nullptr;
           Value *VectorGep = State.get(getAddr(), Part);
@@ -11142,46 +11098,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
       if (EVLPart) {
-        bool EmittedStridedAccess = false;
-        Value *VectorGep = State.get(getAddr(), Part);
-        auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-        auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-        ElementCount NumElts = PtrsTy->getElementCount();
-        Value *BlockInMaskPart = isMaskRequired
-                                     ? MaskValue(Part, NumElts)
-                                     : Builder.getTrueVector(NumElts);
-        if (isStrided()) {
-          LLVM_DEBUG(llvm::dbgs()
-                     << "It should be possible to stride this load!\n");
-          LLVM_DEBUG(llvm::dbgs() << "Addr = " << *getAddr() << "\n");
-
-          if (StrideAccessInfo SAI = computeStrideAccessInfo(
-                  State, getAddr()->getUnderlyingValue())) {
-            LLVM_DEBUG(llvm::dbgs() << "Found stride for load\n");
-            StridedAccessValues SAV = computeStrideAddressing(
-                State, PtrTy, SAI, getParent()->getPlan()->getCanonicalIV());
-            Value *Operands[] = {SAV.BaseAddress, SAV.Stride, BlockInMaskPart,
-                                 EVLPart};
-            NewLI =
-                Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                        {DataTy, PtrTy, SAV.Stride->getType()},
-                                        Operands, nullptr, "vp.strided.load");
-            EmittedStridedAccess = true;
-          } else {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Cannot stride load: " << *getAddr()->getUnderlyingValue()
-                       << "SAI=" << SAI << "\n");
-          }
-        } else {
-          LLVM_DEBUG(llvm::dbgs()
-                     << "Not consecutive stride load for " << *getAddr() << "\n");
-        }
-        if (!EmittedStridedAccess) {
-          Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
-          NewLI =
-              Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
-                                      Operands, nullptr, "vp.gather");
-        }
+        NewLI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
+                                                       BlockInMaskParts);
       } else {
         Value *MaskPart = isMaskRequired ? BlockInMaskParts[Part] : nullptr;
         Value *VectorGep = State.get(getAddr(), Part);

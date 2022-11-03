@@ -13,10 +13,14 @@
 
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlan.h"
+#include "VPlanValue.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/VectorBuilder.h"
+#include "llvm/Support/Debug.h"
+
+#define DEBUG_TYPE "loop-vectorize"
 
 using namespace llvm;
 
@@ -319,6 +323,78 @@ void VPSelectInstruction::execute(VPTransformState &State) {
 
   for (unsigned Part = 0; Part < State.UF; ++Part)
     widenSelectInstruction(State, VPOpCode, this, *this, Part, Name);
+
+}
+
+/// Build and return either `vp.gather`/`vp.scatter` or
+/// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
+/// possible to be used
+Instruction *
+widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
+                                 VPTransformState &State, unsigned Part,
+                                 ArrayRef<Value *> BlockInMaskParts) {
+  assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
+  Value *EVLPart = State.get(State.Plan->getEVL(), Part);
+  assert(EVLPart && "EVL must be set prior to generation of vp-intrinsics");
+
+  VPValue *VPAddr = VPWMIR.getAddr();
+  Value *VectorGep = State.get(VPAddr, Part);
+  auto *PtrsTy = cast<VectorType>(VectorGep->getType());
+  ElementCount NumElts = PtrsTy->getElementCount();
+  auto &Builder = State.Builder;
+
+  auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
+    // The outermost mask can be lowered as an all ones mask when using
+    // EVL.
+    VPValue *Mask = VPWMIR.getMask();
+    auto *IMask = dyn_cast_or_null<VPInstruction>(Mask);
+    if (!Mask || (IMask && IMask->getOpcode() == VPInstruction::ICmpULE))
+      return Builder.getTrueVector(EC);
+
+    return BlockInMaskParts[Part];
+  };
+  Value *BlockInMaskPart = MaskValue(Part, NumElts);
+
+  if (VPWMIR.isStore()) {
+    VPValue *StoredValue = VPWMIR.getStoredValue();
+    Value *StoredVal = State.get(StoredValue, Part);
+
+    if (VPWMIR.isStrided()) {
+      Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
+      Value *Stride = VPWMIR.getStride();
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Generating strided store for addr = " << *VPAddr
+                 << " with a stride = " << *Stride << '\n');
+      auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
+      Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, EVLPart};
+      return Builder.CreateIntrinsic(
+          Intrinsic::experimental_vp_strided_store,
+          {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
+    }
+    auto *DataTy = cast<VectorType>(StoredVal->getType());
+    LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
+    Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, EVLPart};
+    return Builder.CreateIntrinsic(Intrinsic::vp_scatter, {DataTy, PtrsTy},
+                                   Operands);
+  } else {
+    auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
+    if (VPWMIR.isStrided()) {
+      Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
+      auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
+      Value *Stride = VPWMIR.getStride();
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Generating strided load for addr = " << *VPAddr
+                 << " with a stride = " << *Stride << '\n');
+      Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
+      return Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
+                                      {DataTy, PtrTy, Stride->getType()},
+                                      Operands, nullptr, "vp.strided.load");
+    }
+    LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
+    Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
+    return Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
+                                   Operands, nullptr, "vp.gather");
+  }
 }
 
 } // namespace llvm
