@@ -1012,9 +1012,18 @@ PassBuilder::buildModuleSimplificationPipeline(OptimizationLevel Level,
 
 /// TODO: Should LTO cause any differences to this set of passes?
 void PassBuilder::addVectorPasses(OptimizationLevel Level,
+#if SIFIVE_CUSTOMIZATION
+                                  FunctionPassManager &FPM, bool IsFullLTO,
+                                  bool IsLTOPreLink) {
+  FPM.addPass(LoopVectorizePass(
+      LoopVectorizeOptions(!PTO.LoopInterleaving, !PTO.LoopVectorization),
+      IsLTOPreLink));
+
+#else
                                   FunctionPassManager &FPM, bool IsFullLTO) {
   FPM.addPass(LoopVectorizePass(
       LoopVectorizeOptions(!PTO.LoopInterleaving, !PTO.LoopVectorization)));
+#endif
 
   if (IsFullLTO) {
     // The vectorizer may have significantly shortened a loop body; unroll
@@ -1028,9 +1037,17 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
     if (EnableUnrollAndJam && PTO.LoopUnrolling)
       FPM.addPass(createFunctionToLoopPassAdaptor(
           LoopUnrollAndJamPass(Level.getSpeedupLevel())));
+#if SIFIVE_CUSTOMIZATION
+    FPM.addPass(
+        LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
+                                         /*OnlyWhenForced=*/!PTO.LoopUnrolling,
+                                         PTO.ForgetAllSCEVInLoopUnroll),
+                       IsLTOPreLink));
+#else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
+#endif
     FPM.addPass(WarnMissedTransformationsPass());
   }
 
@@ -1115,9 +1132,17 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
       FPM.addPass(createFunctionToLoopPassAdaptor(
           LoopUnrollAndJamPass(Level.getSpeedupLevel())));
     }
+#if SIFIVE_CUSTOMIZATION
+    FPM.addPass(
+        LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
+                                         /*OnlyWhenForced=*/!PTO.LoopUnrolling,
+                                         PTO.ForgetAllSCEVInLoopUnroll),
+                       IsLTOPreLink));
+#else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
+#endif
     FPM.addPass(WarnMissedTransformationsPass());
     FPM.addPass(InstCombinePass());
     FPM.addPass(
@@ -1240,7 +1265,11 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   // from the TargetLibraryInfo.
   OptimizePM.addPass(InjectTLIMappings());
 
+#if SIFIVE_CUSTOMIZATION
+  addVectorPasses(Level, OptimizePM, /* IsFullLTO */ false, LTOPreLink);
+#else
   addVectorPasses(Level, OptimizePM, /* IsFullLTO */ false);
+#endif
 
   // LoopSink pass sinks instructions hoisted by LICM, which serves as a
   // canonicalization pass that enables other optimizations. As a result,
@@ -1729,7 +1758,12 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
   MainFPM.addPass(LoopDistributePass());
 
+#if SIFIVE_CUSTOMIZATION
+  addVectorPasses(Level, MainFPM, /* IsFullLTO */ true,
+                  /* IsLTOPreLink */ false);
+#else
   addVectorPasses(Level, MainFPM, /* IsFullLTO */ true);
+#endif
 
   // Run the OpenMPOpt CGSCC pass again late.
   MPM.addPass(createModuleToPostOrderCGSCCPassAdaptor(OpenMPOptCGSCCPass()));

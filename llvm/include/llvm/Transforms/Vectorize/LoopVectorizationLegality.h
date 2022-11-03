@@ -137,6 +137,12 @@ public:
   /// Mark the loop L as already vectorized by setting the width to 1.
   void setAlreadyVectorized();
 
+#if SIFIVE_CUSTOMIZATION
+  /// Mark the loop \p L as the one that should be revectorized without strides
+  /// checks.
+  void setRevectorizeWithoutStrideChecks();
+#endif // SIFIVE_CUSTOMIZATION
+
   bool allowVectorization(Function *F, Loop *L,
                           bool VectorizeOnlyWhenForced) const;
 
@@ -383,6 +389,12 @@ public:
   /// NOTE: This method must only be used before modifying the original scalar
   /// loop. Do not use after invoking 'createVectorizedLoopSkeleton' (PR34965).
   int isConsecutivePtr(Type *AccessTy, Value *Ptr) const;
+
+#if SIFIVE_CUSTOMIZATION
+  /// This function resembles isConsecutivePtr but returns None when stride is
+  /// unknown
+  Optional<int64_t> isConsecutiveOrUnknownPtr(Type *AccessTy, Value *Ptr) const;
+#endif
 
   /// Returns true if the value V is uniform within the loop.
   bool isUniform(Value *V) const;

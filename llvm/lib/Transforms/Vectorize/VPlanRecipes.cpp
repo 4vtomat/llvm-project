@@ -1214,8 +1214,16 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
                                     &*State.CFG.PrevBB->getFirstInsertionPt());
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    auto *RuntimeVF = getRuntimeVF(State.Builder, EVL->getType(), State.VF);
-    PrevEVL->addIncoming(RuntimeVF, VectorPH);
+    Value *InitEVL;
+    if (!State.hasAnyVectorValue(State.Plan->getInitEVL())) {
+      InitEVL = State.Plan->getSetVL(State, TripCount);
+      // Record initial EVL in InitEVL VPValue for future use
+      State.set(State.Plan->getInitEVL(), InitEVL, 0);
+    } else {
+      InitEVL = State.get(State.Plan->getInitEVL(), 0);
+    }
+    InitEVL = State.Builder.CreateTrunc(InitEVL, State.Builder.getInt32Ty());
+    PrevEVL->addIncoming(InitEVL, VectorPH);
     State.set(State.Plan->getPrevEVL(), PrevEVL, 0);
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1312,7 +1320,19 @@ void VPFirstOrderRecurrencePHIRecipe::execute(VPTransformState &State) {
     auto *One = ConstantInt::get(IdxTy, 1);
     IRBuilder<>::InsertPointGuard Guard(Builder);
     Builder.SetInsertPoint(VectorPH->getTerminator());
-    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
+
+#if SIFIVE_CUSTOMIZATION
+    Value *RuntimeVF = nullptr;
+    if (State.Plan->getEVL()) {
+      assert(State.Plan->getInitEVL() &&
+             "InitEVL must be constructed to correctly handle "
+             "VPFirstOrderRecurrencePHIRecipe");
+      Value *InitEVL = State.get(State.Plan->getInitEVL(), 0);
+      RuntimeVF = State.Builder.CreateTrunc(InitEVL, IdxTy);
+    } else {
+      RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     VectorInit = Builder.CreateInsertElement(
         PoisonValue::get(VecTy), VectorInit, LastIdx, "vector.recur.init");

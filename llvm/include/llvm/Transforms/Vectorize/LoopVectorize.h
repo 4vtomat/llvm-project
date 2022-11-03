@@ -168,8 +168,17 @@ private:
   /// If true, only loops that explicitly request vectorization are considered.
   bool VectorizeOnlyWhenForced;
 
+#if SIFIVE_CUSTOMIZATION
+  /// The basic block with the SCEV check generated for the previous loop.
+  BasicBlock *IgnoreSCEVMemCheckBB = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  LoopVectorizePass(LoopVectorizeOptions Opts = {}, bool IsLTOPreLink = false);
+#else
   LoopVectorizePass(LoopVectorizeOptions Opts = {});
+#endif
 
   ScalarEvolution *SE;
   LoopInfo *LI;
@@ -183,6 +192,7 @@ public:
   LoopAccessInfoManager *LAIs;
   OptimizationRemarkEmitter *ORE;
   ProfileSummaryInfo *PSI;
+  bool IsLTOPreLink; // SIFIVE
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
   void printPipeline(raw_ostream &OS,

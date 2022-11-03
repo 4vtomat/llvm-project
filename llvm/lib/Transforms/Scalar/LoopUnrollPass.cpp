@@ -25,6 +25,7 @@
 #include "llvm/Analysis/AssumptionCache.h"
 #include "llvm/Analysis/BlockFrequencyInfo.h"
 #include "llvm/Analysis/CodeMetrics.h"
+#include "llvm/Analysis/LoopAccessAnalysis.h" // SIFIVE
 #include "llvm/Analysis/LoopAnalysisManager.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/LoopPass.h"
@@ -173,6 +174,14 @@ static cl::opt<unsigned>
                            cl::Hidden,
                            cl::desc("Default threshold (max size of unrolled "
                                     "loop), used in all but O3 optimizations"));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> AdhocSkipUnrollInPrelink(
+    "sifive-unroll-assume-optimizable-strided-accesses", cl::init(false),
+    cl::Hidden,
+    cl::desc("Allow the compiler to skip unroll for loops of non-unit "
+             "stride memory access(es)"));
+#endif
 
 /// A magic value for use with the Threshold parameter to indicate
 /// that the loop unroll should be performed regardless of how much
@@ -1469,6 +1478,7 @@ INITIALIZE_PASS_BEGIN(LoopUnroll, "loop-unroll", "Unroll loops", false, false)
 INITIALIZE_PASS_DEPENDENCY(AssumptionCacheTracker)
 INITIALIZE_PASS_DEPENDENCY(LoopPass)
 INITIALIZE_PASS_DEPENDENCY(TargetTransformInfoWrapperPass)
+INITIALIZE_PASS_DEPENDENCY(LoopAccessLegacyAnalysis) // SIFIVE
 INITIALIZE_PASS_END(LoopUnroll, "loop-unroll", "Unroll loops", false, false)
 
 Pass *llvm::createLoopUnrollPass(int OptLevel, bool OnlyWhenForced,
@@ -1604,6 +1614,59 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
 
   bool Changed = false;
 
+#if SIFIVE_CUSTOMIZATION
+  LoopAccessInfoManager &LAIs = AM.getResult<LoopAccessAnalysis>(F);
+  std::function<const LoopAccessInfo &(Loop &)> GetLAA =
+      [&](Loop &L) -> const LoopAccessInfo & { return LAIs.getInfo(L); };
+
+  // This function mimicks LoopVectorizationLegality::isConsecutiveOrUnknownPtr.
+  // The function checks if the pointer is consecutive.
+  // Returns:
+  // None - Stride is unknown.
+  // 0 - Stride is non-consecutive.
+  // 1 - Address is consecutive.
+  // -1 - Address is consecutive, and decreasing.
+  auto IsConsecutiveOrUnknownPtr = [&](Loop *L, Type *AccessTy,
+                                       Value *Ptr) -> Optional<int64_t> {
+    const LoopAccessInfo *LAI = &GetLAA(*L);
+    PredicatedScalarEvolution PSE(SE, *L);
+    const ValueToValueMap &Strides = LAI->getSymbolicStrides();
+    Function *F = L->getHeader()->getParent();
+    bool OptForSize =
+        F->hasOptSize() || llvm::shouldOptimizeForSize(L->getHeader(), PSI, BFI,
+                                                       PGSOQueryType::IRPass);
+    bool CanAddPredicate = !OptForSize;
+    Optional<int64_t> Stride =
+        getPtrStride(PSE, AccessTy, Ptr, L, Strides, CanAddPredicate, false);
+    if (!Stride.has_value())
+      return None;
+    if (Stride.value() == 1 || Stride.value() == -1)
+      return Stride;
+    return 0;
+  };
+
+  // This function is used in below, where this pass iterates through the loops
+  // of LoopInfo.
+  auto HasOnlyNonUnitStrideMemoryAccesses = [&](Loop *L) {
+    bool HasMemoryAccess = false;
+    for (BasicBlock *BB : L->blocks()) {
+      for (Instruction &I : *BB) {
+        Value *Ptr = getLoadStorePointerOperand(&I);
+        if (!Ptr)
+          continue;
+        Optional<int64_t> Stride =
+            IsConsecutiveOrUnknownPtr(L, getLoadStoreType(&I), Ptr);
+        if (!Stride.has_value())
+          continue;
+        if (Stride.value() != 0)
+          return false;
+        HasMemoryAccess = true;
+      }
+    }
+    return HasMemoryAccess;
+  };
+#endif
+
   // The unroller requires loops to be in simplified form, and also needs LCSSA.
   // Since simplification may add new inner loops, it has to run before the
   // legality and profitability checks. This means running the loop unroller
@@ -1628,6 +1691,23 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
     Loop &L = *Worklist.pop_back_val();
 #ifndef NDEBUG
     Loop *ParentL = L.getParentLoop();
+#endif
+
+#if SIFIVE_CUSTOMIZATION
+    // Within SiFive, we have AOS to SOA transformation that is only effective
+    // during LTO phase. This adhoc approach is driven by SCT-1716, which we
+    // seek to skip the vectorizer when all memory accesses are non-unit strides
+    // during the pre-link stage. Further investigation shows that LoopUnroll
+    // may perform on those loops we skip vectorization in pre-link, hence we
+    // also have to skip these loops in pre-link too. You can find the same
+    // function `HasOnlyNonUnitStrideMemoryAccesses` under LoopVectorize.cpp.
+    if (AdhocSkipUnrollInPrelink && IsLTOPrelink &&
+        HasOnlyNonUnitStrideMemoryAccesses(&L)) {
+      LLVM_DEBUG(
+          dbgs() << "Bail out loop unroll in pre-link stage when there is only "
+                    "non-unit stride memory accesses.\n");
+      continue;
+    }
 #endif
 
     // Check if the profile summary indicates that the profiled application

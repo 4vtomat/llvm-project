@@ -116,20 +116,20 @@ def : WriteRes<WriteSHXADD32, [SiFive7NPipeB]>;
 }
 
 // Memory
-let ResourceCycles = [0, 3] in {
+let ResourceCycles = [1, 3] in {
 def : WriteRes<WriteSTB, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteSTH, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteFST16, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
-let ResourceCycles = [0, 1] in {
+let ResourceCycles = [1, 1] in {
 def : WriteRes<WriteSTW, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteSTD, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteFST32, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteFST64, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
-let Latency = 3, ResourceCycles = [0, 1] in {
+let Latency = 3, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteLDB, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDH, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDW, [SiFive7NPipeA, SiFive7NMem]>;
@@ -137,19 +137,19 @@ def : WriteRes<WriteLDWU, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDD, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
-let Latency = 2, ResourceCycles = [0, 1] in {
+let Latency = 2, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteFLD16, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteFLD32, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteFLD64, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
 // Atomic memory
-let ResourceCycles = [0, 1] in {
+let ResourceCycles = [1, 1] in {
 def : WriteRes<WriteAtomicSTW, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteAtomicSTD, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
-let Latency = 3, ResourceCycles = [0, 1] in {
+let Latency = 3, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteAtomicW, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteAtomicD, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteAtomicLDW, [SiFive7NPipeA, SiFive7NMem]>;

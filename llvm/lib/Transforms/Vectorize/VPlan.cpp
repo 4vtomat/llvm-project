@@ -953,6 +953,11 @@ void VPlanPrinter::dump() {
     Plan.EVL->print(OS, SlotTracker);
     OS << " := EVL";
   }
+  if (Plan.InitEVL) {
+    OS << "\\n";
+    Plan.InitEVL->print(OS, SlotTracker);
+    OS << " := INIT-EVL";
+  }
   if (Plan.PrevEVL) {
     OS << "\\n";
     Plan.PrevEVL->print(OS, SlotTracker);
@@ -1190,6 +1195,10 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
     assignSlot(Plan.TripCount);
   if (Plan.EVL)
     assignSlot(Plan.EVL);
+  if (Plan.PrevEVL)
+    assignSlot(Plan.PrevEVL);
+  if (Plan.InitEVL)
+    assignSlot(Plan.InitEVL);
   if (Plan.AllTrueMask)
     assignSlot(Plan.AllTrueMask);
 #endif // SIFIVE_CUSTOMIZATION

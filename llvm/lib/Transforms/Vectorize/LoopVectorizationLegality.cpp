@@ -214,13 +214,31 @@ void LoopVectorizeHints::setAlreadyVectorized() {
   MDNode *NewLoopID =
       makePostTransformationMetadata(Context, LoopID,
                                      {Twine(Prefix(), "vectorize.").str(),
-                                      Twine(Prefix(), "interleave.").str()},
+                                      Twine(Prefix(), "interleave.").str(),
+#if SIFIVE_CUSTOMIZATION
+                                      LoopMetaData::NoScevChecks},
+#endif // SIFIVE_CUSTOMIZATION
                                      {IsVectorizedMD});
   TheLoop->setLoopID(NewLoopID);
 
   // Update internal cache.
   IsVectorized.Value = 1;
 }
+
+#if SIFIVE_CUSTOMIZATION
+void LoopVectorizeHints::setRevectorizeWithoutStrideChecks() {
+  LLVMContext &Context = TheLoop->getHeader()->getContext();
+
+  MDNode *RevectorizeMD = MDNode::get(
+      Context,
+      {MDString::get(Context, LoopMetaData::NoScevChecks),
+       ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
+  MDNode *LoopID = TheLoop->getLoopID();
+  MDNode *NewLoopID =
+      makePostTransformationMetadata(Context, LoopID, None, {RevectorizeMD});
+  TheLoop->setLoopID(NewLoopID);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LoopVectorizeHints::allowVectorization(
     Function *F, Loop *L, bool VectorizeOnlyWhenForced) const {
@@ -555,6 +573,28 @@ int LoopVectorizationLegality::isConsecutivePtr(Type *AccessTy,
     return Stride;
   return 0;
 }
+
+#if SIFIVE_CUSTOMIZATION
+Optional<int64_t>
+LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
+                                                     Value *Ptr) const {
+  const ValueToValueMap &Strides =
+      getSymbolicStrides() ? *getSymbolicStrides() : ValueToValueMap();
+
+  Function *F = TheLoop->getHeader()->getParent();
+  bool OptForSize = F->hasOptSize() ||
+                    llvm::shouldOptimizeForSize(TheLoop->getHeader(), PSI, BFI,
+                                                PGSOQueryType::IRPass);
+  bool CanAddPredicate = !OptForSize;
+  Optional<int64_t> Stride = getPtrStride(PSE, AccessTy, Ptr, TheLoop, Strides,
+                                          CanAddPredicate, false);
+  if (!Stride.has_value())
+    return None;
+  if (Stride.value() == 1 || Stride.value() == -1)
+    return Stride;
+  return 0;
+}
+#endif
 
 bool LoopVectorizationLegality::isUniform(Value *V) const {
   return LAI->isUniform(V);

@@ -132,12 +132,19 @@ struct LoopUnrollOptions {
 /// It will also put loops into canonical form (simplified and LCSSA).
 class LoopUnrollPass : public PassInfoMixin<LoopUnrollPass> {
   LoopUnrollOptions UnrollOpts;
+  bool IsLTOPrelink; // SIFIVE
 
 public:
+#if SIFIVE_CUSTOMIZATION
+  explicit LoopUnrollPass(LoopUnrollOptions UnrollOpts = {},
+                          bool IsLTOPrelink = false)
+      : UnrollOpts(UnrollOpts), IsLTOPrelink(IsLTOPrelink) {}
+#else
   /// This uses the target information (or flags) to control the thresholds for
   /// different unrolling stategies but supports all of them.
   explicit LoopUnrollPass(LoopUnrollOptions UnrollOpts = {})
       : UnrollOpts(UnrollOpts) {}
+#endif
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
   void printPipeline(raw_ostream &OS,
