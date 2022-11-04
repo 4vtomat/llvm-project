@@ -1234,67 +1234,17 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 }
 
 #if SIFIVE_CUSTOMIZATION
-llvm::StrideAccessInfo
-llvm::computeStrideAccessInfo(const VPTransformState &State, Value *Ptr) {
-  StrideAccessInfo SAI;
+llvm::StrideAccessInfo llvm::computeStrideAccessInfo(ScalarEvolution *SE,
+                                                     Instruction *I) {
+  Value *Ptr = getLoadStorePointerOperand(I);
+  const SCEV *V = isStridedAddressing(Ptr, SE);
+  if (!V)
+    return llvm::StrideAccessInfo();
 
-  const SCEV *V = isStridedAddressing(Ptr, State.SE);
-  assert(V && "The SCEV should be valid at this point");
+  const SCEV *Stride = cast<SCEVAddRecExpr>(V)->getStepRecurrence(*SE);
 
-  SAI.SCEVExpr = V;
-  // Remove this.
-  SAI.Valid = true;
-
-  return SAI;
-}
-
-llvm::StridedAccessValues
-llvm::computeStrideAddressing(VPTransformState &State, Type *PtrTy,
-                              const StrideAccessInfo &SAI,
-                              VPValue *CanonicalIV) {
-  // FIXME: This does not seem to adhere to the VPlan principles but I'm unsure
-  // what part of it should. We should be using Addr but AFAIU it represents
-  // the vectorised address already, which is not useful. When doing
-  // interleaving, we should use the Part to adjust the access correctly.
-  // Perhaps we should not have received a WIDEN-GEP here in the first place
-  // and make the VP build process aware of the stride access option?
-  auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-  auto &Builder = State.Builder;
-  LLVMContext &Context = PtrTy->getContext();
-
-  SCEVExpander Exp(*(State.SE), DL, "stride");
-  const SCEVAddRecExpr *S = cast<SCEVAddRecExpr>(SAI.getSCEVExpr());
-
-  LLVM_DEBUG(llvm::dbgs() << "SCEV = " << *S << "\n";);
-
-  const SCEV *Stride = S->getStepRecurrence(*(State.SE));
-  assert(Stride);
-  LLVM_DEBUG(llvm::dbgs() << "Stride = " << *Stride << "\n";);
-
-  const SCEV *Start = S->getStart();
-  auto *PointerStart =
-      Exp.expandCodeFor(Start, Start->getType(), &*Builder.GetInsertPoint());
-  LLVM_DEBUG(llvm::dbgs() << "PointerStart = " << *PointerStart << "\n";);
-  auto *BytesStride =
-      Exp.expandCodeFor(Stride, Stride->getType(), &*Builder.GetInsertPoint());
-  LLVM_DEBUG(llvm::dbgs() << "BytesStride = " << *BytesStride << "\n";);
-
-  // FIXME: Part???
-  Value *CanonicalIVValue = State.get(CanonicalIV, 0);
-
-  auto *BytesStrideIter = Builder.CreateMul(
-      CanonicalIVValue,
-      Builder.CreateZExtOrTrunc(BytesStride, CanonicalIVValue->getType()));
-  auto *StrideBaseAddress = Builder.CreateGEP(
-      Type::getInt8Ty(Context),
-      Builder.CreatePointerCast(PointerStart, Type::getInt8PtrTy(Context)),
-      BytesStrideIter);
-  StrideBaseAddress = Builder.CreateBitCast(StrideBaseAddress, PtrTy);
-
-  StridedAccessValues Ret;
-  Ret.BaseAddress = StrideBaseAddress;
-  Ret.Stride = BytesStride;
-
-  return Ret;
+  if (const auto *SCEVC = dyn_cast<SCEVConstant>(Stride))
+    return StrideAccessInfo(V, Stride);
+  return llvm::StrideAccessInfo();
 }
 #endif // SIFIVE_CUSTOMIZATION

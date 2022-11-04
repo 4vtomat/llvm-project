@@ -22,5 +22,13 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                 unsigned Part);
 void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
                          VPTransformState &State, Intrinsic::ID VPID,
-                         unsigned part);
+                         unsigned Part);
+
+/// Build and return either `vp.gather`/`vp.scatter` or
+/// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
+/// possible to be used
+Instruction *
+widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
+                                 VPTransformState &State, unsigned Part,
+                                 ArrayRef<Value *> BlockInMaskParts);
 } // namespace llvm
