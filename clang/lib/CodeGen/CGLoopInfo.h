@@ -19,6 +19,7 @@
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/Compiler.h"
+#include <optional> // SIFIVE
 
 namespace llvm {
 class BasicBlock;
@@ -81,6 +82,13 @@ struct LoopAttributes {
 
   /// Value for whether the loop is required to make progress.
   bool MustProgress;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Values for llvm.loop.vectorize.rvv.lmul_sew
+  /// Valid value of lmul -3 (mf8) to +3 (m8)
+  /// Valid value of sew is 8, 16, 32, 64
+  std::optional<std::pair<int, int>> RvvForceLmulSew;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// Information used when generating a structured loop.
@@ -284,6 +292,16 @@ public:
 
   /// Set no progress for the next loop pushed.
   void setMustProgress(bool P) { StagedAttrs.MustProgress = P; }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Add Lmul specified
+  void setForceLmulSew(int Lmul, int Sew) {
+    assert(-3 <= Lmul && Lmul <= 3 && "value should be between [-3, 3]");
+    assert((Sew == 8 || Sew == 16 || Sew == 32 || Sew == 64) &&
+           "value should be one of 8, 16, 32, 64");
+    StagedAttrs.RvvForceLmulSew = {Lmul, Sew};
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   /// Returns true if there is LoopInfo on the stack.

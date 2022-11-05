@@ -39,6 +39,27 @@ struct LoopHint {
         ValueExpr(nullptr) {}
 };
 
+#ifdef SIFIVE_CUSTOMIZATION
+/// Target specific RISC-V vectorization hint
+/// #pragma clang rvv lmul_sew(${LMUL}, ${SEW})
+/// LMUL = Length Multiplier
+/// SEW = Single Element Width
+struct RvvHint {
+  // Source range of the directive.
+  SourceRange Range;
+  // Name of the pragma, which is "rvv".
+  IdentifierLoc *PragmaNameLoc = nullptr;
+  // Name of the hint, which is "lmul_sew".
+  IdentifierLoc *OptionLoc = nullptr;
+  // Identifier of the LMUL specified
+  IdentifierLoc *Lmul = nullptr;
+  // Identifier of the LMUL specified
+  IdentifierLoc *Sew = nullptr;
+
+  RvvHint() = default;
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 } // end namespace clang
 
 #endif // LLVM_CLANG_PARSE_LOOPHINT_H

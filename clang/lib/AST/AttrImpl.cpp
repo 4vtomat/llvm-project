@@ -83,6 +83,104 @@ LoopHintAttr::getDiagnosticName(const PrintingPolicy &Policy) const {
   return getOptionName(option) + getValueString(Policy);
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+static StringRef lmulToString(const RvvHintAttr::RvvLmulValueType Lmul) {
+  switch (Lmul) {
+  case RvvHintAttr::RvvLmulValueType::Mf8:
+    return "mf8";
+  case RvvHintAttr::RvvLmulValueType::Mf4:
+    return "mf4";
+  case RvvHintAttr::RvvLmulValueType::Mf2:
+    return "mf2";
+  case RvvHintAttr::RvvLmulValueType::M1:
+    return "m1";
+  case RvvHintAttr::RvvLmulValueType::M2:
+    return "m2";
+  case RvvHintAttr::RvvLmulValueType::M4:
+    return "m4";
+  case RvvHintAttr::RvvLmulValueType::M8:
+    return "m8";
+  }
+  llvm_unreachable("Unhandled RvvLmulValueType");
+}
+
+static StringRef sewToString(const RvvHintAttr::RvvSewValueType Sew) {
+  switch (Sew) {
+  case RvvHintAttr::RvvSewValueType::E8:
+    return "e8";
+  case RvvHintAttr::RvvSewValueType::E16:
+    return "e16";
+  case RvvHintAttr::RvvSewValueType::E32:
+    return "e32";
+  case RvvHintAttr::RvvSewValueType::E64:
+    return "e64";
+  }
+  llvm_unreachable("Unhandled RvvSewValueType");
+}
+
+// Return an integer that is the log base 2 of the value in the index
+int RvvHintAttr::getLmul() const { return getLmul(rvvLmulValue); }
+
+// Return an integer that is the SEW value
+int RvvHintAttr::getSew() const { return getSew(rvvSewValue); }
+
+// Return an integer that is the log base 2 of the LMUL value
+int RvvHintAttr::getLmul(const RvvLmulValueType &Lmul) {
+  switch (Lmul) {
+  case RvvHintAttr::RvvLmulValueType::Mf8:
+    return -3;
+  case RvvHintAttr::RvvLmulValueType::Mf4:
+    return -2;
+  case RvvHintAttr::RvvLmulValueType::Mf2:
+    return -1;
+  case RvvHintAttr::RvvLmulValueType::M1:
+    return 0;
+  case RvvHintAttr::RvvLmulValueType::M2:
+    return 1;
+  case RvvHintAttr::RvvLmulValueType::M4:
+    return 2;
+  case RvvHintAttr::RvvLmulValueType::M8:
+    return 3;
+  }
+  llvm_unreachable("Unhandled RvvLmulValueType");
+}
+
+// Return an integer that is the SEW value
+int RvvHintAttr::getSew(const RvvSewValueType &Sew) {
+  switch (Sew) {
+  case RvvHintAttr::RvvSewValueType::E8:
+    return 8;
+  case RvvHintAttr::RvvSewValueType::E16:
+    return 16;
+  case RvvHintAttr::RvvSewValueType::E32:
+    return 32;
+  case RvvHintAttr::RvvSewValueType::E64:
+    return 64;
+  }
+  llvm_unreachable("Unhandled RvvSewValueType");
+}
+
+// Return a string containing the rvv hint argument including the
+// enclosing parentheses, for example '(mf4, e16)'.
+std::string RvvHintAttr::getValueString(const PrintingPolicy &Policy) const {
+  std::string ValueName;
+  llvm::raw_string_ostream OS(ValueName);
+  OS << "(" << lmulToString(rvvLmulValue) << ", " << sewToString(rvvSewValue)
+     << ")";
+  return ValueName;
+}
+
+void RvvHintAttr::printPrettyPragma(raw_ostream &OS,
+                                    const PrintingPolicy &Policy) const {
+  OS << "#pragma clang rvv lmul_sew" << getValueString(Policy);
+}
+
+// Return a string suitable for identifying this attribute in diagnostics.
+std::string RvvHintAttr::getDiagnosticName(const PrintingPolicy &Policy) const {
+  return "lmul_sew" + getValueString(Policy);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void OMPDeclareSimdDeclAttr::printPrettyPragma(
     raw_ostream &OS, const PrintingPolicy &Policy) const {
   if (getBranchState() != BS_Undefined)

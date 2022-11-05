@@ -491,6 +491,13 @@ Retry:
     ProhibitAttributes(GNUAttrs);
     return ParsePragmaLoopHint(Stmts, StmtCtx, TrailingElseLoc, CXX11Attrs);
 
+#ifdef SIFIVE_CUSTOMIZATION
+  case tok::annot_pragma_rvv_hint:
+    ProhibitAttributes(CXX11Attrs);
+    ProhibitAttributes(GNUAttrs);
+    return ParsePragmaRvvHint(Stmts, StmtCtx, TrailingElseLoc, CXX11Attrs);
+#endif // SIFIVE_CUSTOMIZATION
+
   case tok::annot_pragma_dump:
     HandlePragmaDump();
     return StmtEmpty();
@@ -2430,6 +2437,64 @@ StmtResult Parser::ParsePragmaLoopHint(StmtVector &Stmts,
 
   return S;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+StmtResult Parser::ParsePragmaRvvHint(StmtVector &Stmts,
+                                      ParsedStmtContext StmtCtx,
+                                      SourceLocation *TrailingElseLoc,
+                                      ParsedAttributes &Attrs) {
+  // Create temporary attribute list.
+  ParsedAttributes TempAttrs(AttrFactory);
+
+  SourceLocation StartLoc = Tok.getLocation();
+
+  // Get rvv hints and consume annotated token.
+  while (Tok.is(tok::annot_pragma_rvv_hint)) {
+    auto *Info = static_cast<PragmaLoopHintInfo *>(Tok.getAnnotationValue());
+
+    if (Info->Toks.size() == 1) {
+      // The only token here is the annotation token
+      Diag(Tok, diag::err_pragma_missing_argument)
+          << "clang rvv lmul_sew" << /*Expected=*/true
+          << "a legal LMUL (one of 'mf8', 'mf4', 'mf2, 'm1', "
+             "'m2', 'm4', 'm8') and a legal SEW (e8, e16, e32, e64)";
+      PP.Lex(Tok);
+      continue;
+    }
+
+    RvvHint Hint;
+    if (!HandlePragmaRvvHint(Hint))
+      continue;
+
+    ArgsUnion ArgHints[4];
+
+    ArgHints[0] = Hint.PragmaNameLoc;
+    ArgHints[1] = Hint.OptionLoc;
+    ArgHints[2] = Hint.Lmul;
+    ArgHints[3] = Hint.Sew;
+
+    TempAttrs.addNew(Hint.PragmaNameLoc->Ident, Hint.Range, nullptr,
+                     Hint.PragmaNameLoc->Loc, ArgHints, 4,
+                     ParsedAttr::AS_Pragma);
+  }
+
+  // Get the next statement.
+  MaybeParseCXX11Attributes(Attrs);
+
+  ParsedAttributes EmptyDeclSpecAttrs(AttrFactory);
+  StmtResult S = ParseStatementOrDeclarationAfterAttributes(
+      Stmts, StmtCtx, TrailingElseLoc, Attrs, EmptyDeclSpecAttrs);
+
+  Attrs.takeAllFrom(TempAttrs);
+
+  // Start of attribute range may already be set for some invalid input.
+  // See PR46336.
+  if (Attrs.Range.getBegin().isInvalid())
+    Attrs.Range.setBegin(StartLoc);
+
+  return S;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 Decl *Parser::ParseFunctionStatementBody(Decl *Decl, ParseScope &BodyScope) {
   assert(Tok.is(tok::l_brace));

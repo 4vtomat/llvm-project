@@ -361,6 +361,14 @@ private:
   Sema &Actions;
 };
 
+#ifdef SIFIVE_CUSTOMIZATION
+struct PragmaRVVHandler final : public PragmaHandler {
+  PragmaRVVHandler() : PragmaHandler("rvv") {}
+  void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
+                    Token &FirstToken) override;
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
     T.setFlag(clang::Token::IsReinjected);
@@ -511,6 +519,11 @@ void Parser::initializePragmaHandlers() {
   if (getTargetInfo().getTriple().isRISCV()) {
     RISCVPragmaHandler = std::make_unique<PragmaRISCVHandler>(Actions);
     PP.AddPragmaHandler("clang", RISCVPragmaHandler.get());
+
+#ifdef SIFIVE_CUSTOMIZATION
+    RVVPragmaHandler = std::make_unique<PragmaRVVHandler>();
+    PP.AddPragmaHandler("clang", RVVPragmaHandler.get());
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -642,6 +655,11 @@ void Parser::resetPragmaHandlers() {
   if (getTargetInfo().getTriple().isRISCV()) {
     PP.RemovePragmaHandler("clang", RISCVPragmaHandler.get());
     RISCVPragmaHandler.reset();
+
+#ifdef SIFIVE_CUSTOMIZATION
+    PP.RemovePragmaHandler("clang", RVVPragmaHandler.get());
+    RVVPragmaHandler.reset();
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -1500,6 +1518,126 @@ bool Parser::HandlePragmaLoopHint(LoopHint &Hint) {
                            Info->Toks.back().getLocation());
   return true;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
+  assert(Tok.is(tok::annot_pragma_rvv_hint) &&
+         "First token should be an annotation token of rvv hint");
+  auto *Info = static_cast<PragmaLoopHintInfo *>(Tok.getAnnotationValue());
+
+  IdentifierInfo *PragmaNameInfo = Info->PragmaName.getIdentifierInfo();
+  assert(PragmaNameInfo && PragmaNameInfo->getName() == "rvv" &&
+         "Only rvv hints should be handled here");
+  Hint.PragmaNameLoc = IdentifierLoc::create(
+      Actions.Context, Info->PragmaName.getLocation(), PragmaNameInfo);
+
+  assert(Info->Option.is(tok::identifier) &&
+         "'rvv' should be followed by 'lmul_sew', which is an identifier");
+  if (Info->Option.getIdentifierInfo()->getName() != "lmul_sew") {
+    Diag(Info->Option.getLocation(), diag::err_pragma_rvv_invalid_option)
+        << Info->Option.getIdentifierInfo()->getName();
+    return false;
+  }
+
+  Hint.OptionLoc =
+      IdentifierLoc::create(Actions.Context, Info->Option.getLocation(),
+                            Info->Option.getIdentifierInfo());
+
+  llvm::ArrayRef<Token> Toks = Info->Toks;
+  PP.EnterTokenStream(Toks, /*DisableMacroExpansion=*/false,
+                      /*IsReinject=*/false);
+  ConsumeAnnotationToken();
+
+  // Expects a pair of (LMUL, SEW)
+  bool IsParseSuccess = true;
+
+  // Parse for LMUL identifier
+  if (Tok.isNot(tok::identifier)) {
+    PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
+    IsParseSuccess = false;
+  } else {
+    const IdentifierInfo *II = Tok.getIdentifierInfo();
+    auto LmulValue =
+        llvm::StringSwitch<std::optional<const IdentifierInfo *>>(II->getName())
+            .Case("mf8", II)
+            .Case("mf4", II)
+            .Case("mf2", II)
+            .Case("m1", II)
+            .Case("m2", II)
+            .Case("m4", II)
+            .Case("m8", II)
+            .Default(std::nullopt);
+    if (!LmulValue) {
+      PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
+      IsParseSuccess = false;
+    } else
+      Hint.Lmul = IdentifierLoc::create(Actions.Context, Tok.getLocation(),
+                                        Tok.getIdentifierInfo());
+  }
+  // Parse for comma
+  PP.Lex(Tok);
+  if (Tok.is(tok::eof)) {
+    PP.Diag(Tok, diag::err_pragma_missing_argument)
+        << "clang rvv lmul_sew" << /*Expected=*/true
+        << "a legal LMUL (one of 'mf8', 'mf4', 'mf2, 'm1', "
+           "'m2', 'm4', 'm8') and a legal SEW (e8, e16, e32, e64)";
+    ConsumeToken(); // Consume the eof terminator
+    return false;
+  }
+  if (Tok.isNot(tok::comma)) {
+    PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_expect_comma);
+    while (Tok.isNot(tok::eof))
+      ConsumeAnyToken();
+    ConsumeToken(); // Consume the eof terminator
+    return false;
+  }
+
+  // Parse for SEW identifier
+  PP.Lex(Tok);
+  if (Tok.is(tok::eof)) {
+    PP.Diag(Tok, diag::err_pragma_missing_argument)
+        << "clang rvv lmul_sew" << /*Expected=*/true
+        << "a legal LMUL (one of 'mf8', 'mf4', 'mf2, 'm1', "
+           "'m2', 'm4', 'm8') and a legal SEW (e8, e16, e32, e64)";
+    ConsumeToken(); // Consume the eof terminator
+    return false;
+  }
+  if (Tok.isNot(tok::identifier)) {
+    PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
+    IsParseSuccess = false;
+  } else {
+    const IdentifierInfo *II = Tok.getIdentifierInfo();
+    auto SewValue =
+        llvm::StringSwitch<std::optional<const IdentifierInfo *>>(II->getName())
+            .Case("e8", II)
+            .Case("e16", II)
+            .Case("e32", II)
+            .Case("e64", II)
+            .Default(std::nullopt);
+    if (!SewValue) {
+      PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
+      IsParseSuccess = false;
+    } else
+      Hint.Sew = IdentifierLoc::create(Actions.Context, Tok.getLocation(),
+                                       Tok.getIdentifierInfo());
+  }
+
+  Hint.Range = SourceRange(Info->PragmaName.getLocation(), Tok.getLocation());
+
+  // Extra tokens are ignored
+  PP.Lex(Tok);
+  if (Tok.isNot(tok::eod) && Tok.isNot(tok::eof)) {
+    Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
+        << "clang rvv lmul_sew";
+    IsParseSuccess = false;
+  }
+  while (Tok.isNot(tok::eof))
+    ConsumeAnyToken();
+  ConsumeToken(); // Consume the eof terminator
+
+  return IsParseSuccess;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace {
 struct PragmaAttributeInfo {
@@ -4035,3 +4173,58 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
 
   Actions.DeclareRISCVVBuiltins = true;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+void PragmaRVVHandler::HandlePragma(Preprocessor &PP,
+                                    PragmaIntroducer Introducer, Token &Tok) {
+  // Incoming token is rvv
+  Token PragmaName = Tok;
+  PP.Lex(Tok);
+
+  SmallVector<Token, 1> TokenList;
+  Token Option = Tok;
+  IdentifierInfo *II = Tok.getIdentifierInfo();
+  // Option should be 'lmul_sew'
+  if (!II || !II->isStr("lmul_sew")) {
+    PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
+        << PP.getSpelling(Tok) << "clang rvv" << /*Expected=*/true
+        << "'lmul_sew'";
+    return;
+  }
+
+  PP.Lex(Tok);
+  // Read '('
+  if (Tok.isNot(tok::l_paren)) {
+    PP.Diag(Tok.getLocation(), diag::err_expected) << tok::l_paren;
+    return;
+  }
+
+  PP.Lex(Tok);
+  auto *Info = new (PP.getPreprocessorAllocator()) PragmaLoopHintInfo;
+  if (ParseLoopHintValue(PP, Tok, PragmaName, Option, /*ValueInParens=*/true,
+                         *Info))
+    return;
+
+  // Generate the rvv hint token
+  Token RvvHintToken;
+  RvvHintToken.startToken();
+  RvvHintToken.setKind(tok::annot_pragma_rvv_hint);
+  RvvHintToken.setLocation(Introducer.Loc);
+  RvvHintToken.setAnnotationEndLoc(PragmaName.getLocation());
+  RvvHintToken.setAnnotationValue(static_cast<void *>(Info));
+
+  TokenList.push_back(RvvHintToken);
+
+  if (Tok.isNot(tok::eod)) {
+    PP.Diag(Tok.getLocation(), diag::warn_pragma_extra_tokens_at_eol)
+        << "clang rvv";
+    return;
+  }
+
+  auto TokenArray = std::make_unique<Token[]>(TokenList.size());
+  std::copy(TokenList.begin(), TokenList.end(), TokenArray.get());
+
+  PP.EnterTokenStream(std::move(TokenArray), TokenList.size(),
+                      /*DisableMacroExpansion=*/false, /*IsReinject=*/false);
+}
+#endif // SIFIVE_CUSTOMIZATION

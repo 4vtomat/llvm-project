@@ -1025,6 +1025,19 @@ def err_pragma_loop_compatibility : Error<
 def err_pragma_loop_precedes_nonloop : Error<
   "expected a for, while, or do-while loop to follow '%0'">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// #pragma clang rvv lmul_sew diagnostics
+def err_invalid_lmul_sew_pair : Error <
+  "(LMUL, SEW) pair (%0, %1) does not map to a valid VF"
+>;
+def err_require_zve32x_feature : Error<
+  "Require at least zve32x to use the #pragma clang rvv lmul_sew"
+>;
+def err_require_zve64x_feature : Error<
+  "(LMUL, SEW) pair (%0, %1) requires at least zve64x"
+>;
+#endif
+
 def err_pragma_attribute_matcher_subrule_contradicts_rule : Error<
   "redundant attribute subject matcher sub-rule '%0'; '%1' already matches "
   "those declarations">;

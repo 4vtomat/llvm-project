@@ -19,6 +19,8 @@
 #include "clang/Sema/ScopeInfo.h"
 #include "clang/Sema/SemaInternal.h"
 #include "llvm/ADT/StringExtras.h"
+#include "llvm/Support/MathExtras.h"             // SIFIVE
+#include "llvm/TargetParser/RISCVTargetParser.h" // SIFIVE
 #include <optional>
 
 using namespace clang;
@@ -68,6 +70,80 @@ static Attr *handleSuppressAttr(Sema &S, Stmt *St, const ParsedAttr &A,
   return ::new (S.Context) SuppressAttr(
       S.Context, A, DiagnosticIdentifiers.data(), DiagnosticIdentifiers.size());
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
+                               SourceRange) {
+  IdentifierLoc *PragmaNameLoc = A.getArgAsIdent(0);
+  IdentifierLoc *OptionLoc = A.getArgAsIdent(1);
+
+  assert(PragmaNameLoc->Ident->getName() == "rvv" &&
+         "Pragma name should only be 'rvv'");
+  assert(OptionLoc->Ident->getName() == "lmul_sew" &&
+         "Option name should only be 'lmul_sew'");
+
+  RvvHintAttr::OptionType Option = RvvHintAttr::OptionType::ForceRVVLmulSew;
+
+  std::optional<RvvHintAttr::RvvLmulValueType> LmulValue =
+      llvm::StringSwitch<std::optional<RvvHintAttr::RvvLmulValueType>>(
+          A.getArgAsIdent(2)->Ident->getName())
+          .Case("mf8", RvvHintAttr::RvvLmulValueType::Mf8)
+          .Case("mf4", RvvHintAttr::RvvLmulValueType::Mf4)
+          .Case("mf2", RvvHintAttr::RvvLmulValueType::Mf2)
+          .Case("m1", RvvHintAttr::RvvLmulValueType::M1)
+          .Case("m2", RvvHintAttr::RvvLmulValueType::M2)
+          .Case("m4", RvvHintAttr::RvvLmulValueType::M4)
+          .Case("m8", RvvHintAttr::RvvLmulValueType::M8)
+          .Default(std::nullopt);
+  assert(LmulValue.has_value() &&
+         "unrecognized LMUL identifiers should not be passed here");
+
+  std::optional<RvvHintAttr::RvvSewValueType> SewValue =
+      llvm::StringSwitch<std::optional<RvvHintAttr::RvvSewValueType>>(
+          A.getArgAsIdent(3)->Ident->getName())
+          .Case("e8", RvvHintAttr::RvvSewValueType::E8)
+          .Case("e16", RvvHintAttr::RvvSewValueType::E16)
+          .Case("e32", RvvHintAttr::RvvSewValueType::E32)
+          .Case("e64", RvvHintAttr::RvvSewValueType::E64)
+          .Default(std::nullopt);
+  assert(SewValue.has_value() &&
+         "unrecognized SEW identifiers should not be passed here");
+
+  int Lmul = RvvHintAttr::getLmul(*LmulValue);
+  int Sew = RvvHintAttr::getSew(*SewValue);
+
+  // RISCV::RVVBitsPerBlock is 64.
+  // MinmumFeasibleLmul = floor(log2(Sew / llvm::RISCV::RVVBitsPerBlock))
+  //                    = log2(SEW) - log2(llvm::RISCV::RVVBitsPerBlock)
+  if (Lmul < (int)llvm::Log2_32(Sew) -
+                 (int)llvm::Log2_32(llvm::RISCV::RVVBitsPerBlock)) {
+    S.Diag(A.getLoc(), diag::err_invalid_lmul_sew_pair)
+        << A.getArgAsIdent(2)->Ident->getName()
+        << A.getArgAsIdent(3)->Ident->getName();
+    return nullptr;
+  }
+
+  const TargetOptions &Opts = S.Context.getTargetInfo().getTargetOpts();
+  if (!Opts.FeatureMap.count("zve32x")) {
+    S.Diag(A.getLoc(), diag::err_require_zve32x_feature);
+    return nullptr;
+  }
+
+  const unsigned AssumedMinimalTotalVLen =
+      Lmul >= 0 ? llvm::RISCV::RVVBitsPerBlock << Lmul
+                : llvm::RISCV::RVVBitsPerBlock >> -Lmul;
+  unsigned VF = AssumedMinimalTotalVLen / Sew;
+  if (VF == 1 && !Opts.FeatureMap.count("zve64x")) {
+    S.Diag(A.getLoc(), diag::err_require_zve64x_feature)
+        << A.getArgAsIdent(2)->Ident->getName()
+        << A.getArgAsIdent(3)->Ident->getName();
+    return nullptr;
+  }
+
+  return RvvHintAttr::CreateImplicit(S.Context, Option, *LmulValue, *SewValue,
+                                     A);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 static Attr *handleLoopHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
                                 SourceRange) {
@@ -413,6 +489,49 @@ CheckForIncompatibleAttributes(Sema &S,
           << CategoryState.NumericAttr->getDiagnosticName(Policy);
     }
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // At this moment, loop hint attributes have been filled into 'HintAttrs'.
+  // Check compatibility of RVV hints with them.
+  const RvvHintAttr *LmulSewHintAttr = nullptr;
+
+  for (const Attr *I : Attrs) {
+    const auto *RH = dyn_cast<RvvHintAttr>(I);
+
+    if (!RH)
+      continue;
+
+    PrintingPolicy Policy(S.Context.getLangOpts());
+    SourceLocation OptionLoc = RH->getRange().getBegin();
+
+    if (LmulSewHintAttr != nullptr) {
+      // Cannot specify same type of attribute twice.
+      S.Diag(OptionLoc, diag::err_pragma_loop_compatibility)
+          << /*Duplicate=*/true << LmulSewHintAttr->getDiagnosticName(Policy)
+          << RH->getDiagnosticName(Policy);
+    }
+
+    if (HintAttrs[CategoryType::Vectorize].NumericAttr) {
+      // Cannot specify lmul specification with vectorize_width
+      S.Diag(OptionLoc, diag::err_pragma_loop_compatibility)
+          << /*Duplicate=*/false
+          << HintAttrs[CategoryType::Vectorize].NumericAttr->getDiagnosticName(
+                 Policy)
+          << RH->getDiagnosticName(Policy);
+    }
+    if (HintAttrs[CategoryType::Interleave].NumericAttr) {
+      // Cannot specify lmul specification with interleave_count
+      S.Diag(OptionLoc, diag::err_pragma_loop_compatibility)
+          << /*Duplicate=*/false
+          << HintAttrs[CategoryType::Interleave].NumericAttr->getDiagnosticName(
+                 Policy)
+          << RH->getDiagnosticName(Policy);
+    }
+
+    // Record attribute to check for duplication
+    LmulSewHintAttr = RH;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 static Attr *handleOpenCLUnrollHint(Sema &S, Stmt *St, const ParsedAttr &A,
@@ -476,6 +595,10 @@ static Attr *ProcessStmtAttribute(Sema &S, Stmt *St, const ParsedAttr &A,
     return handleFallThroughAttr(S, St, A, Range);
   case ParsedAttr::AT_LoopHint:
     return handleLoopHintAttr(S, St, A, Range);
+#ifdef SIFIVE_CUSTOMIZATION
+  case ParsedAttr::AT_RvvHint:
+    return handleRvvHintAttr(S, St, A, Range);
+#endif // SIFIVE_CUSTOMIZATION
   case ParsedAttr::AT_OpenCLUnrollHint:
     return handleOpenCLUnrollHint(S, St, A, Range);
   case ParsedAttr::AT_Suppress:

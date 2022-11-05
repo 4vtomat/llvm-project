@@ -3632,6 +3632,53 @@ def InitSeg : Attr {
   }];
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+def RvvHint : Attr {
+  /// Target specific RISC-V vectorization hint
+  /// #pragma clang rvv lmul_sew(${LMUL}, ${SEW})
+  /// LMUL = Length Multiplier
+  /// SEW = Single Element Width
+
+  let Spellings = [Pragma<"clang", "rvv">];
+
+  let Args = [
+    EnumArgument<"Option", "OptionType", ["lmul_sew"], ["ForceRVVLmulSew"]>,
+    EnumArgument<"RvvLmulValue", "RvvLmulValueType",
+      ["mf8", "mf4", "mf2", "m1", "m2", "m4", "m8"],
+      ["Mf8", "Mf4", "Mf2", "M1", "M2", "M4", "M8"]>,
+    EnumArgument<"RvvSewValue", "RvvSewValueType",
+      ["e8", "e16", "e32", "e64"],
+      ["E8", "E16", "E32", "E64"]>
+  ];
+
+  let AdditionalMembers = [{
+  // Return a string containing the rvv hint argument including the
+  // enclosing parentheses, for example '(mf4, e16)'.
+  std::string getValueString(const PrintingPolicy &Policy) const;
+
+  void printPrettyPragma(raw_ostream &OS, const PrintingPolicy &Policy) const;
+
+  // Return a string suitable for identifying this attribute in diagnostics.
+  std::string getDiagnosticName(const PrintingPolicy &Policy) const;
+
+  // Return an integer that is the log base 2 of the LMUL value
+  int getLmul() const;
+
+  // Return an integer that is the SEW value
+  int getSew() const;
+
+  // Return an integer that is the log base 2 of the LMUL value
+  static int getLmul(const RvvLmulValueType& Lmul);
+
+  // Return an integer that is the SEW value
+  static int getSew(const RvvSewValueType& Sew);
+  }];
+
+  let Documentation = [InternalOnly];
+  let HasCustomParsing = 1;
+}
+#endif
+
 def LoopHint : Attr {
   /// #pragma clang loop <option> directive
   /// vectorize: vectorizes loop operations if State == Enable.

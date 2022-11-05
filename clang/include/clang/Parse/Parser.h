@@ -39,6 +39,7 @@ namespace clang {
   class DeclGroupRef;
   class DiagnosticBuilder;
   struct LoopHint;
+  struct RvvHint; // SIFIVE
   class Parser;
   class ParsingDeclRAIIObject;
   class ParsingDeclSpec;
@@ -219,6 +220,7 @@ class Parser : public CodeCompletionHandler {
   std::unique_ptr<PragmaHandler> MaxTokensHerePragmaHandler;
   std::unique_ptr<PragmaHandler> MaxTokensTotalPragmaHandler;
   std::unique_ptr<PragmaHandler> RISCVPragmaHandler;
+  std::unique_ptr<PragmaHandler> RVVPragmaHandler; // SIFIVE
 
   std::unique_ptr<CommentHandler> CommentSemaHandler;
 
@@ -793,6 +795,12 @@ private:
   /// Handle the annotation token produced for
   /// #pragma clang loop and #pragma unroll.
   bool HandlePragmaLoopHint(LoopHint &Hint);
+
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Handle the annotation token produced for
+  /// #pragma clang rvv
+  bool HandlePragmaRvvHint(RvvHint &Hint);
+#endif
 
   bool ParsePragmaAttributeSubjectMatchRuleSet(
       attr::ParsedSubjectMatchRuleSet &SubjectMatchRules,
@@ -2124,6 +2132,11 @@ private:
   StmtResult ParsePragmaLoopHint(StmtVector &Stmts, ParsedStmtContext StmtCtx,
                                  SourceLocation *TrailingElseLoc,
                                  ParsedAttributes &Attrs);
+#ifdef SIFIVE_CUSTOMIZATION
+  StmtResult ParsePragmaRvvHint(StmtVector &Stmts, ParsedStmtContext StmtCtx,
+                                SourceLocation *TrailingElseLoc,
+                                ParsedAttributes &Attrs);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Describes the behavior that should be taken for an __if_exists
   /// block.

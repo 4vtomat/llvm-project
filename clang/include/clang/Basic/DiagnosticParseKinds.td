@@ -1661,4 +1661,20 @@ def ext_hlsl_access_specifiers : ExtWarn<
   "access specifiers are a clang HLSL extension">,
   InGroup<HLSLExtension>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// #pragma clang rvv lmul_sew
+def err_pragma_rvv_invalid_option : Error<
+  "unexpected option '%0' to '#pragma clang rvv'; expected 'lmul_sew'"
+>;
+
+def err_pragma_rvv_lmul_sew_invalid_keyword : Error <
+  "unexpected keyword for '#pragma clang rvv lmul_sew', expects a legal LMUL identifier"
+  "(one of 'mf8', 'mf4', 'mf2, 'm1', 'm2', 'm4', 'm8') and a valid SEW (one of e8, e16, e32, e64)"
+>;
+
+def err_pragma_rvv_expect_comma : Error <
+  "expected ','"
+>;
+#endif
+
 } // end of Parser diagnostics
