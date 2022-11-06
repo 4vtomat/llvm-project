@@ -69,7 +69,7 @@ class DemandedBits;
 class DominatorTree;
 class Function;
 class Loop;
-class LoopAccessInfo;
+class LoopAccessInfoManager;
 class LoopInfo;
 class OptimizationRemarkEmitter;
 class ProfileSummaryInfo;
@@ -168,8 +168,17 @@ private:
   /// If true, only loops that explicitly request vectorization are considered.
   bool VectorizeOnlyWhenForced;
 
+#if SIFIVE_CUSTOMIZATION
+  /// The basic block with the SCEV check generated for the previous loop.
+  BasicBlock *IgnoreSCEVMemCheckBB = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  LoopVectorizePass(LoopVectorizeOptions Opts = {}, bool IsLTOPreLink = false);
+#else
   LoopVectorizePass(LoopVectorizeOptions Opts = {});
+#endif
 
   ScalarEvolution *SE;
   LoopInfo *LI;
@@ -180,9 +189,10 @@ public:
   DemandedBits *DB;
   AAResults *AA;
   AssumptionCache *AC;
-  std::function<const LoopAccessInfo &(Loop &)> *GetLAA;
+  LoopAccessInfoManager *LAIs;
   OptimizationRemarkEmitter *ORE;
   ProfileSummaryInfo *PSI;
+  bool IsLTOPreLink; // SIFIVE
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
   void printPipeline(raw_ostream &OS,
@@ -193,8 +203,7 @@ public:
   runImpl(Function &F, ScalarEvolution &SE_, LoopInfo &LI_,
           TargetTransformInfo &TTI_, DominatorTree &DT_,
           BlockFrequencyInfo &BFI_, TargetLibraryInfo *TLI_, DemandedBits &DB_,
-          AAResults &AA_, AssumptionCache &AC_,
-          std::function<const LoopAccessInfo &(Loop &)> &GetLAA_,
+          AAResults &AA_, AssumptionCache &AC_, LoopAccessInfoManager &LAIs_,
           OptimizationRemarkEmitter &ORE_, ProfileSummaryInfo *PSI_);
 
   bool processLoop(Loop *L);

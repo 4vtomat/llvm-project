@@ -19,6 +19,9 @@
 namespace llvm {
 
 bool canPeel(Loop *L);
+#if SIFIVE_CUSTOMIZATION
+bool canPeelEpilog(Loop * L);
+#endif
 
 bool peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI, ScalarEvolution *SE,
               DominatorTree &DT, AssumptionCache *AC, bool PreserveLCSSA);

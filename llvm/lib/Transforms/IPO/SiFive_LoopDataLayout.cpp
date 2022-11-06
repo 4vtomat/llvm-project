@@ -188,6 +188,16 @@ static bool compareEqualGEPs(const GetElementPtrInst *A,
   return ::equal(A->operands(), B->operands());
 }
 
+static bool matchBaseGEP(GetElementPtrInst *GEP, Type *RefTy, Value *RefPtr,
+                         const SmallVectorImpl<Value *> &Indices) {
+  if ((RefTy != GEP->getSourceElementType()) ||
+      (RefPtr != GEP->getPointerOperand()) || (GEP->getNumIndices() != 2))
+    return false;
+
+  return ((GEP->getOperand(1) == Indices[0]) &&
+          (GEP->getOperand(2) == Indices[1]));
+}
+
 static LoopDataLayoutResult detectArrayOfStructDataAccess(
     Loop *L, LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
@@ -605,6 +615,50 @@ updateAddressForAllocations(IRBuilder<> &IRB, SmallVectorImpl<Value *> &Indices,
   return dyn_cast<GetElementPtrInst>(NewAddr);
 }
 
+static Value *findOrCreateBaseGEP(GetElementPtrInst *SrcGEP, Type *AltTy,
+                                  const SmallVectorImpl<Value *> &Indices,
+                                  Instruction *RefInst) {
+  Value *BasePtr = SrcGEP->getPointerOperand();
+  auto FindBaseGEP = [&](Value *BasePtr) -> GetElementPtrInst * {
+    for (Instruction &I : *SrcGEP->getParent()) {
+      if (auto *GEP = dyn_cast<GetElementPtrInst>(&I)) {
+        if (matchBaseGEP(GEP, AltTy, BasePtr, Indices))
+          return GEP;
+      }
+      if (&I == RefInst)
+        break;
+    }
+    return nullptr;
+  };
+
+  IRBuilder<> IRB2(SrcGEP);
+  auto *GEP = FindBaseGEP(BasePtr);
+  return (GEP == nullptr) ?
+      IRB2.CreateInBoundsGEP(AltTy, BasePtr, Indices) : GEP;
+}
+
+static Value *findOrCreateBaseLoad(Value *BaseAddr, Instruction *InsertPt) {
+  auto FindBaseLoad = [&](Value *BaseAddr) -> LoadInst * {
+    for (Instruction &I : *InsertPt->getParent()) {
+      if (auto *Ld = dyn_cast<LoadInst>(&I)) {
+        auto *LdPtr = Ld->getPointerOperand();
+        if (auto *GEP = dyn_cast<GetElementPtrInst>(LdPtr)) {
+          if (GEP == BaseAddr)
+            return Ld;
+        }
+      }
+      if (&I == InsertPt)
+        break;
+    }
+    return nullptr;
+  };
+
+  IRBuilder<> IRB2(InsertPt);
+  auto *Ld = FindBaseLoad(BaseAddr);
+  return (Ld == nullptr) ?
+      IRB2.CreateLoad(BaseAddr->getType(), BaseAddr) : Ld;
+}
+
 static void
 splitAddressStoresForFree(Value *SrcPtr, Type *AltTy, StructType *ArrayST,
                           const TargetLibraryInfo &TLI, const DataLayout &DL,
@@ -656,21 +710,21 @@ splitAddressStoresForFree(Value *SrcPtr, Type *AltTy, StructType *ArrayST,
       // The first offset is zero indicating the start of this EltTy's array.
       Type *FirstTy = DL.getIntPtrType(CurGEP->getType());
       Indices.push_back(ConstantInt::get(FirstTy, 0));
-      // The second offset is StartingOffset+k which is a 32bit int
+      // The second offset is StartingOffset+k which is a 32bit int.
       Indices.push_back(ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
       Instruction *NewI = OrigI;
       if (k > 0) {
+        auto *BaseAddr = findOrCreateBaseGEP(CurGEP, AltTy, Indices, OrigI);
         // Clone the allocation call and provide its value to the store.
         NewI = OrigI->clone();
         // Place the cloned call near the old one.
         NewI->insertAfter(CurCB);
         // Create New address/store pairs for all but the first field, see
         // below for details about k == 0 (the first and original call).
-        Value *NewAddr = IRB.CreateInBoundsGEP(AltTy, BasePtr, Indices);
-        Value *LoadPtr = IRB.CreateLoad(NewAddr->getType(), NewAddr);
-        NewI->setOperand(0, LoadPtr);
+        auto *BaseLd = findOrCreateBaseLoad(BaseAddr, OrigI);
+        NewI->setOperand(0, BaseLd);
         IRB.SetInsertPoint(SI);
-        auto *Store = IRB.CreateStore(NullVal, NewAddr);
+        auto *Store = IRB.CreateStore(NullVal, BaseAddr);
         AddedStores.insert(Store);
       } else {
         // Check if we have an orthogonal formed CurGEP and replace it if
@@ -776,7 +830,7 @@ static void splitAddressStoresForAllocations(
       // The first offset is zero indicating the start of this EltTy's array.
       Type *FirstTy = DL.getIntPtrType(SrcPtr->getType());
       Indices.push_back(ConstantInt::get(FirstTy, 0));
-      // The second offset is StartingOffset+k which is a 32bit int
+      // The second offset is StartingOffset+k which is a 32bit int.
       Indices.push_back(ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
       // The address we create is the stored value, the GEP is where
       // we write that memory at since this store is writing a ptr value.
@@ -790,22 +844,26 @@ static void splitAddressStoresForAllocations(
       unsigned Bytes = configureBytes(TLIFn, NewSizeArg, SizeInBytes);
       updateDereferenceableAttributes(NewI, Bytes);
       if (k > 0) {
+        auto *BaseAddr = findOrCreateBaseGEP(DerivedGEP, AltTy, Indices, OrigI);
         // Clone the allocation call and provide its value to the store.
         NewI = OrigI->clone();
         // Place the cloned call near the old one.
         NewI->insertAfter(CurCB);
         // Create New address/store pairs for all but the first field, see
         // below for details about k == 0 (the first and original call).
-        IRB.SetInsertPoint(DerivedGEP);
-        auto *NewAddr = IRB.CreateInBoundsGEP(AltTy, BasePtr, Indices);
+        // Place the cloned load for BaseAddr in the current block.
+        Instruction *InsertPt = OrigI;
+        if (CurCB->getParent() == DerivedGEP->getParent())
+          InsertPt = DerivedGEP;
+        IRB.SetInsertPoint(InsertPt);
         // Can realloc use the same address as the store?
         if (ReallocReuseGEPs) {
-          // First stage a load off of NewAddr, then use the result as a ptr
-          auto *NewPtr = IRB.CreateLoad(NewAddr->getType(), NewAddr);
+          // First stage a load off of BaseAddr, then use the result as a ptr.
+          auto *NewPtr = findOrCreateBaseLoad(BaseAddr, InsertPt);
           NewI->setOperand(0, NewPtr);
         }
         IRB.SetInsertPoint(SI);
-        auto *Store = IRB.CreateStore(NewI, NewAddr);
+        auto *Store = IRB.CreateStore(NewI, BaseAddr);
         AddedStores.insert(Store);
         // Now process all the GEP uses of the original allocation function and
         // replace its ptr via type matching so that its usage model is correct.
@@ -905,19 +963,28 @@ updateMemSetCall(Instruction *RefInst, Type *RefTy, Type *AltTy, bool IsBaseTy,
           DL.getTypeSizeInBits(EltTy).getFixedSize() >> 3;
       if (k > 0) {
         BaseIndices.push_back(ConstantInt::get(FirstTy, 0));
-        // The second offset is StartingOffset+k which is a 32bit int
+        // The second offset is StartingOffset+k which is a 32bit int.
         BaseIndices.push_back(
             ConstantInt::get(IRB.getInt32Ty(), StartingOffset + k));
+        Value *BaseAddr = nullptr;
+        Instruction *InsertPt = nullptr;
+        if (const auto *Ld = dyn_cast<LoadInst>(Ptr)) {
+          if (SrcGEP == Ld->getPointerOperand()) {
+            BaseAddr = findOrCreateBaseGEP(SrcGEP, AltTy, BaseIndices, RefInst);
+            InsertPt = const_cast<LoadInst *>(Ld);
+          }
+        }
         // Clone the memset and provide its value to the store.
         NewI = RefInst->clone();
         // Place the cloned call near the old one.
         NewI->insertAfter(CurCB);
-        Addr = IRB.CreateInBoundsGEP(
-            EltTy,
-            IRB.CreateLoad(
-                Ptr->getType(),
-                IRB.CreateInBoundsGEP(AltTy, BasePtr, BaseIndices)),
-            Indices[0]);
+        // If no BaseAddr is provided, place it locally.
+        if (BaseAddr == nullptr) {
+          BaseAddr = IRB.CreateInBoundsGEP(AltTy, BasePtr, BaseIndices);
+          InsertPt = RefInst;
+        }
+        auto *BaseLd = findOrCreateBaseLoad(BaseAddr, InsertPt);
+        Addr = IRB.CreateInBoundsGEP(EltTy, BaseLd, Indices[0]);
       } else {
         Addr = IRB.CreateInBoundsGEP(EltTy, Ptr, Indices[0]);
       }
@@ -932,7 +999,7 @@ updateMemSetCall(Instruction *RefInst, Type *RefTy, Type *AltTy, bool IsBaseTy,
 static bool isFreeCall(const Value *V, const TargetLibraryInfo *TLI) {
   if (auto *CI = dyn_cast<CallInst>(V)) {
     LibFunc TLIFn;
-    TLI->getLibFunc(*CI->getCalledFunction(), TLIFn);
+    TLI->getLibFunc(*CI, TLIFn);
     return (TLIFn == LibFunc_free);
   }
   return false;
@@ -941,7 +1008,7 @@ static bool isFreeCall(const Value *V, const TargetLibraryInfo *TLI) {
 static bool isMallocOrCallocFn(const Value *V, const TargetLibraryInfo *TLI) {
   if (auto *CI = dyn_cast<CallInst>(V)) {
     LibFunc TLIFn;
-    TLI->getLibFunc(*CI->getCalledFunction(), TLIFn);
+    TLI->getLibFunc(*CI, TLIFn);
     return ((TLIFn == LibFunc_calloc) || (TLIFn == LibFunc_malloc));
   }
   return false;
@@ -950,7 +1017,7 @@ static bool isMallocOrCallocFn(const Value *V, const TargetLibraryInfo *TLI) {
 static bool isReallocFn(const Value *V, const TargetLibraryInfo *TLI) {
   if (auto *CI = dyn_cast<CallInst>(V)) {
     LibFunc TLIFn;
-    TLI->getLibFunc(*CI->getCalledFunction(), TLIFn);
+    TLI->getLibFunc(*CI, TLIFn);
     return (TLIFn == LibFunc_realloc);
   }
   return false;
@@ -1019,14 +1086,27 @@ static void handleArrayOfStructuresAddressTranslation(IRBuilder<> &IRB,
       SmallVector<Value *, 4> BaseIndices;
       Type *FirstTy = DL.getIntPtrType(SrcPtr->getType());
       BaseIndices.push_back(ConstantInt::get(FirstTy, 0));
-      // The second offset is StartingOffset+k which is a 32bit inta
+      // The second offset is StartingOffset+k which is a 32bit int.
       BaseIndices.push_back(
           ConstantInt::get(IRB.getInt32Ty(), StartingOffset + ArrayTyIdx));
-      Addr = IRB.CreateInBoundsGEP(
-          ArrayTy,
-          IRB.CreateLoad(SrcPtr->getType(),
-                         IRB.CreateInBoundsGEP(AltTy, SrcPtr, BaseIndices)),
-          Indices[0]);
+      Value *BaseAddr = nullptr;
+      Instruction *InsertPt = nullptr;
+      if (auto *Ld = dyn_cast<LoadInst>(CurGEP->getPointerOperand())) {
+        auto *LdPtr = Ld->getPointerOperand();
+        if (auto *SrcGEP = dyn_cast<GetElementPtrInst>(LdPtr)) {
+          if (SrcPtr == SrcGEP->getPointerOperand()) {
+            BaseAddr = findOrCreateBaseGEP(SrcGEP, AltTy, BaseIndices, CurGEP);
+            InsertPt = Ld;
+          }
+        }
+      }
+      // If no BaseAddr is provided, place it locally.
+      if (BaseAddr == nullptr) {
+        BaseAddr = IRB.CreateInBoundsGEP(AltTy, SrcPtr, BaseIndices);
+        InsertPt = CurGEP;
+      }
+      auto *BaseLd = findOrCreateBaseLoad(BaseAddr, InsertPt);
+      Addr = IRB.CreateInBoundsGEP(ArrayTy, BaseLd, Indices[0]);
     }
     CurGEP->replaceAllUsesWith(Addr);
   }
@@ -1840,6 +1920,8 @@ static Optional<Type *> configureParamType(
           continue;
 
         BaseTy = SrcGEP->getSourceElementType();
+      } else if (auto *GEP = dyn_cast<GetElementPtrInst>(UnderlyingObj)) {
+        BaseTy = GEP->getSourceElementType();
       } else if (auto *CurArg = dyn_cast<Argument>(UnderlyingObj)) {
         // Lookup for F in overload map, since we are processing
         // the call graph in dfs order from the CG entry node in
@@ -2097,6 +2179,11 @@ static LoopDataLayoutResult analyzeWholeProgram(
   for (Function &F : M) {
     if (F.isDeclaration())
       continue;
+
+    if (F.hasPersonalityFn()) {
+      LLVM_DEBUG(dbgs() << "Exceptions detected\n");
+      return LoopDataLayoutResult::TransformationIsIllegal;
+    }
 
     LoopInfo &LI = LookupLoopInfo(F);
     ScalarEvolution &SE = LookupScalarEvolutionInfo(F);

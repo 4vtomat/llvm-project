@@ -12,13 +12,15 @@ declare <vscale x 8 x i8> @llvm.experimental.vp.splice.nxv8i8(<vscale x 8 x i8>,
 declare <vscale x 1 x double> @llvm.experimental.vp.splice.nxv1f64(<vscale x 1 x double>, <vscale x 1 x double>, i32, <vscale x 1 x i1>, i32, i32)
 declare <vscale x 2 x float> @llvm.experimental.vp.splice.nxv2f32(<vscale x 2 x float>, <vscale x 2 x float>, i32, <vscale x 2 x i1>, i32, i32)
 
+declare <vscale x 16 x i64> @llvm.experimental.vp.splice.nxv16i64(<vscale x 16 x i64>, <vscale x 16 x i64>, i32, <vscale x 16 x i1>, i32, i32)
+
 define <vscale x 2 x i64> @test_vp_splice_nxv2i64(<vscale x 2 x i64> %va, <vscale x 2 x i64> %vb, i32 zeroext %evla, i32 zeroext %evlb) {
 ; CHECK-LABEL: test_vp_splice_nxv2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e64, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v10, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -32,9 +34,9 @@ define <vscale x 2 x i64> @test_vp_splice_nxv2i64_negative_offset(<vscale x 2 x 
 ; CHECK-LABEL: test_vp_splice_nxv2i64_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e64, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e64, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -61,9 +63,9 @@ define <vscale x 1 x i64> @test_vp_splice_nxv1i64(<vscale x 1 x i64> %va, <vscal
 ; CHECK-LABEL: test_vp_splice_nxv1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 1 x i1> undef, i1 1, i32 0
@@ -77,9 +79,9 @@ define <vscale x 1 x i64> @test_vp_splice_nxv1i64_negative_offset(<vscale x 1 x 
 ; CHECK-LABEL: test_vp_splice_nxv1i64_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 1 x i1> undef, i1 1, i32 0
@@ -106,9 +108,9 @@ define <vscale x 2 x i32> @test_vp_splice_nxv2i32(<vscale x 2 x i32> %va, <vscal
 ; CHECK-LABEL: test_vp_splice_nxv2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -122,9 +124,9 @@ define <vscale x 2 x i32> @test_vp_splice_nxv2i32_negative_offset(<vscale x 2 x 
 ; CHECK-LABEL: test_vp_splice_nxv2i32_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -151,9 +153,9 @@ define <vscale x 4 x i16> @test_vp_splice_nxv4i16(<vscale x 4 x i16> %va, <vscal
 ; CHECK-LABEL: test_vp_splice_nxv4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> undef, i1 1, i32 0
@@ -167,9 +169,9 @@ define <vscale x 4 x i16> @test_vp_splice_nxv4i16_negative_offset(<vscale x 4 x 
 ; CHECK-LABEL: test_vp_splice_nxv4i16_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> undef, i1 1, i32 0
@@ -196,9 +198,9 @@ define <vscale x 8 x i8> @test_vp_splice_nxv8i8(<vscale x 8 x i8> %va, <vscale x
 ; CHECK-LABEL: test_vp_splice_nxv8i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 8 x i1> undef, i1 1, i32 0
@@ -212,9 +214,9 @@ define <vscale x 8 x i8> @test_vp_splice_nxv8i8_negative_offset(<vscale x 8 x i8
 ; CHECK-LABEL: test_vp_splice_nxv8i8_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 8 x i1> undef, i1 1, i32 0
@@ -241,9 +243,9 @@ define <vscale x 1 x double> @test_vp_splice_nxv1f64(<vscale x 1 x double> %va, 
 ; CHECK-LABEL: test_vp_splice_nxv1f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 1 x i1> undef, i1 1, i32 0
@@ -257,9 +259,9 @@ define <vscale x 1 x double> @test_vp_splice_nxv1f64_negative_offset(<vscale x 1
 ; CHECK-LABEL: test_vp_splice_nxv1f64_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e64, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 1 x i1> undef, i1 1, i32 0
@@ -286,9 +288,9 @@ define <vscale x 2 x float> @test_vp_splice_nxv2f32(<vscale x 2 x float> %va, <v
 ; CHECK-LABEL: test_vp_splice_nxv2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 5
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -302,9 +304,9 @@ define <vscale x 2 x float> @test_vp_splice_nxv2f32_negative_offset(<vscale x 2 
 ; CHECK-LABEL: test_vp_splice_nxv2f32_negative_offset:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a0, a0, -5
-; CHECK-NEXT:    vsetivli zero, 5, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 5, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 5
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
@@ -326,3 +328,135 @@ define <vscale x 2 x float> @test_vp_splice_nxv2f32_masked(<vscale x 2 x float> 
   %v = call <vscale x 2 x float> @llvm.experimental.vp.splice.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x float> %vb, i32 5, <vscale x 2 x i1> %mask, i32 %evla, i32 %evlb)
   ret <vscale x 2 x float> %v
 }
+
+define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 zeroext %evla, i32 zeroext %evlb) {
+; CHECK-LABEL: test_vp_splice_nxv16i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    csrr a4, vlenb
+; CHECK-NEXT:    slli a1, a4, 3
+; CHECK-NEXT:    add a5, a0, a1
+; CHECK-NEXT:    mv a6, a2
+; CHECK-NEXT:    bltu a2, a4, .LBB21_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a6, a4
+; CHECK-NEXT:  .LBB21_2:
+; CHECK-NEXT:    addi sp, sp, -64
+; CHECK-NEXT:    .cfi_def_cfa_offset 64
+; CHECK-NEXT:    addi s0, sp, 64
+; CHECK-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-NEXT:    csrr a7, vlenb
+; CHECK-NEXT:    slli a7, a7, 5
+; CHECK-NEXT:    sub sp, sp, a7
+; CHECK-NEXT:    andi sp, sp, -64
+; CHECK-NEXT:    li a7, 0
+; CHECK-NEXT:    vl8re64.v v0, (a5)
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    addi a5, sp, 64
+; CHECK-NEXT:    vsetvli zero, a6, e64, m8, ta, ma
+; CHECK-NEXT:    sub a0, a2, a4
+; CHECK-NEXT:    vse64.v v8, (a5)
+; CHECK-NEXT:    bltu a2, a0, .LBB21_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a7, a0
+; CHECK-NEXT:  .LBB21_4:
+; CHECK-NEXT:    li a0, 0
+; CHECK-NEXT:    add t0, a5, a1
+; CHECK-NEXT:    vsetvli zero, a7, e64, m8, ta, ma
+; CHECK-NEXT:    sub a6, a3, a4
+; CHECK-NEXT:    vse64.v v16, (t0)
+; CHECK-NEXT:    bltu a3, a6, .LBB21_6
+; CHECK-NEXT:  # %bb.5:
+; CHECK-NEXT:    mv a0, a6
+; CHECK-NEXT:  .LBB21_6:
+; CHECK-NEXT:    slli a2, a2, 3
+; CHECK-NEXT:    add a2, a5, a2
+; CHECK-NEXT:    add a5, a2, a1
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    vse64.v v0, (a5)
+; CHECK-NEXT:    bltu a3, a4, .LBB21_8
+; CHECK-NEXT:  # %bb.7:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB21_8:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vse64.v v24, (a2)
+; CHECK-NEXT:    addi a2, sp, 104
+; CHECK-NEXT:    add a1, a2, a1
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    vle64.v v16, (a1)
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a2)
+; CHECK-NEXT:    addi sp, s0, -64
+; CHECK-NEXT:    addi sp, sp, 64
+; CHECK-NEXT:    ret
+  %head = insertelement <vscale x 16 x i1> undef, i1 1, i32 0
+  %allones = shufflevector <vscale x 16 x i1> %head, <vscale x 16 x i1> undef, <vscale x 16 x i32> zeroinitializer
+
+  %v = call <vscale x 16 x i64> @llvm.experimental.vp.splice.nxv16i64(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 5, <vscale x 16 x i1> %allones, i32 %evla, i32 %evlb)
+  ret <vscale x 16 x i64> %v
+}
+
+define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 zeroext %evla, i32 zeroext %evlb) {
+; CHECK-LABEL: test_vp_splice_nxv16i64_negative_offset:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    csrr a4, vlenb
+; CHECK-NEXT:    slli a1, a4, 3
+; CHECK-NEXT:    add a5, a0, a1
+; CHECK-NEXT:    mv a6, a2
+; CHECK-NEXT:    bltu a2, a4, .LBB22_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a6, a4
+; CHECK-NEXT:  .LBB22_2:
+; CHECK-NEXT:    addi sp, sp, -64
+; CHECK-NEXT:    .cfi_def_cfa_offset 64
+; CHECK-NEXT:    addi s0, sp, 64
+; CHECK-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-NEXT:    csrr a7, vlenb
+; CHECK-NEXT:    slli a7, a7, 5
+; CHECK-NEXT:    sub sp, sp, a7
+; CHECK-NEXT:    andi sp, sp, -64
+; CHECK-NEXT:    li a7, 0
+; CHECK-NEXT:    vl8re64.v v0, (a5)
+; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    addi a5, sp, 64
+; CHECK-NEXT:    vsetvli zero, a6, e64, m8, ta, ma
+; CHECK-NEXT:    sub a0, a2, a4
+; CHECK-NEXT:    vse64.v v8, (a5)
+; CHECK-NEXT:    bltu a2, a0, .LBB22_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a7, a0
+; CHECK-NEXT:  .LBB22_4:
+; CHECK-NEXT:    li a0, 0
+; CHECK-NEXT:    add t0, a5, a1
+; CHECK-NEXT:    vsetvli zero, a7, e64, m8, ta, ma
+; CHECK-NEXT:    sub a6, a3, a4
+; CHECK-NEXT:    vse64.v v16, (t0)
+; CHECK-NEXT:    bltu a3, a6, .LBB22_6
+; CHECK-NEXT:  # %bb.5:
+; CHECK-NEXT:    mv a0, a6
+; CHECK-NEXT:  .LBB22_6:
+; CHECK-NEXT:    slli a2, a2, 3
+; CHECK-NEXT:    add a2, a5, a2
+; CHECK-NEXT:    add a5, a2, a1
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    vse64.v v0, (a5)
+; CHECK-NEXT:    bltu a3, a4, .LBB22_8
+; CHECK-NEXT:  # %bb.7:
+; CHECK-NEXT:    mv a3, a4
+; CHECK-NEXT:  .LBB22_8:
+; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vse64.v v24, (a2)
+; CHECK-NEXT:    addi a2, a2, -8
+; CHECK-NEXT:    vle64.v v8, (a2)
+; CHECK-NEXT:    add a1, a2, a1
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    vle64.v v16, (a1)
+; CHECK-NEXT:    addi sp, s0, -64
+; CHECK-NEXT:    addi sp, sp, 64
+; CHECK-NEXT:    ret
+  %head = insertelement <vscale x 16 x i1> undef, i1 1, i32 0
+  %allones = shufflevector <vscale x 16 x i1> %head, <vscale x 16 x i1> undef, <vscale x 16 x i32> zeroinitializer
+
+  %v = call <vscale x 16 x i64> @llvm.experimental.vp.splice.nxv16i64(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 -1, <vscale x 16 x i1> %allones, i32 %evla, i32 %evlb)
+  ret <vscale x 16 x i64> %v
+}
+

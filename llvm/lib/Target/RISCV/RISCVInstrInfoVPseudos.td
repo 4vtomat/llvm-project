@@ -50,6 +50,7 @@ def DecImm : SDNodeXForm<imm, [{
 
 defvar TAIL_UNDISTURBED_MASK_UNDISTURBED = 0;
 defvar TAIL_AGNOSTIC = 1;
+defvar TA_MA = 3;
 #ifdef SIFIVE_CUSTOMIZATION
 defvar VXRM_DYN = 4;
 #endif // SIFIVE_CUSTOMIZATION

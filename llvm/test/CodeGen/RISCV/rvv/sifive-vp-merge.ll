@@ -5,7 +5,7 @@ define <vscale x 2 x i32> @vpmerge_vpxor_nxv2i32(<vscale x 2 x i1> %arg, <vscale
 ; CHECK-LABEL: vpmerge_vpxor_nxv2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vmv1r.v v8, v10
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
 ; CHECK-NEXT:    ret
   %tmp = tail call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> %arg, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %arg4)
@@ -17,7 +17,7 @@ define <vscale x 2 x float> @vpmerge_vpxor_nxv2f32(<vscale x 2 x i1> %arg, <vsca
 ; CHECK-LABEL: vpmerge_vpxor_nxv2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vmv1r.v v8, v10
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
 ; CHECK-NEXT:    ret
   %tmp = tail call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> %arg, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %arg4)

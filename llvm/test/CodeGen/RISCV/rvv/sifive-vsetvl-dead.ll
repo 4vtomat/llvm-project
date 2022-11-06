@@ -13,9 +13,10 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    mv a6, a0
 ; CHECK-NEXT:  .LBB0_2: # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:    vsetvli zero, a5, e32, m8, ta, ma
 ; CHECK-NEXT:    vle32.v v16, (a1)
 ; CHECK-NEXT:    vle32.v v24, (a3)
-; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, ma
 ; CHECK-NEXT:    vfmacc.vv v8, v16, v24
 ; CHECK-NEXT:    mul a7, a5, a2
 ; CHECK-NEXT:    slli a7, a7, 2
@@ -28,9 +29,9 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 ; CHECK-NEXT:    bnez a5, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3:
 ; CHECK-NEXT:    vsetvli a0, a0, e32, m8, ta, mu
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; CHECK-NEXT:    vfredusum.vs v16, v8, v16
 ; CHECK-NEXT:    vfmv.f.s fa0, v16
 ; CHECK-NEXT:    ret

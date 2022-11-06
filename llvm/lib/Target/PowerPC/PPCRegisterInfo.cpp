@@ -237,8 +237,14 @@ PPCRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   }
   // Standard calling convention CSRs.
   if (TM.isPPC64()) {
-    if (Subtarget.pairedVectorMemops())
+    if (Subtarget.pairedVectorMemops()) {
+      if (Subtarget.isAIXABI()) {
+        if (!TM.getAIXExtendedAltivecABI())
+          return SaveR2 ? CSR_PPC64_R2_SaveList : CSR_PPC64_SaveList;
+        return SaveR2 ? CSR_AIX64_R2_VSRP_SaveList : CSR_AIX64_VSRP_SaveList;
+      }
       return SaveR2 ? CSR_SVR464_R2_VSRP_SaveList : CSR_SVR464_VSRP_SaveList;
+    }
     if (Subtarget.hasAltivec() &&
         (!Subtarget.isAIXABI() || TM.getAIXExtendedAltivecABI())) {
       return SaveR2 ? CSR_PPC64_R2_Altivec_SaveList
@@ -248,6 +254,9 @@ PPCRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   }
   // 32-bit targets.
   if (Subtarget.isAIXABI()) {
+    if (Subtarget.pairedVectorMemops())
+      return TM.getAIXExtendedAltivecABI() ? CSR_AIX32_VSRP_SaveList
+                                           : CSR_AIX32_SaveList;
     if (Subtarget.hasAltivec())
       return TM.getAIXExtendedAltivecABI() ? CSR_AIX32_Altivec_SaveList
                                            : CSR_AIX32_SaveList;
@@ -286,6 +295,11 @@ PPCRegisterInfo::getCallPreservedMask(const MachineFunction &MF,
   }
 
   if (Subtarget.isAIXABI()) {
+    if (Subtarget.pairedVectorMemops()) {
+      if (!TM.getAIXExtendedAltivecABI())
+        return TM.isPPC64() ? CSR_PPC64_RegMask : CSR_AIX32_RegMask;
+      return TM.isPPC64() ? CSR_AIX64_VSRP_RegMask : CSR_AIX32_VSRP_RegMask;
+    }
     return TM.isPPC64()
                ? ((Subtarget.hasAltivec() && TM.getAIXExtendedAltivecABI())
                       ? CSR_PPC64_Altivec_RegMask
@@ -566,6 +580,7 @@ bool PPCRegisterInfo::getRegAllocationHints(Register VirtReg,
   // want to allocate the corresponding physical subreg for the source.
   // The copy into ACC will be a BUILD_UACC so we want to allocate
   // the same number UACC for the source.
+  const TargetRegisterClass *RegClass = MRI->getRegClass(VirtReg);
   for (MachineInstr &Use : MRI->reg_nodbg_instructions(VirtReg)) {
     const MachineOperand *ResultOp = nullptr;
     Register ResultReg;
@@ -577,10 +592,17 @@ bool PPCRegisterInfo::getRegAllocationHints(Register VirtReg,
           MRI->getRegClass(ResultReg)->contains(PPC::UACC0) &&
           VRM->hasPhys(ResultReg)) {
         Register UACCPhys = VRM->getPhys(ResultReg);
-        Register HintReg = getSubReg(UACCPhys, ResultOp->getSubReg());
-        // Ensure that the hint is a VSRp register.
-        if (HintReg >= PPC::VSRp0 && HintReg <= PPC::VSRp31)
-          Hints.push_back(HintReg);
+        Register HintReg;
+        if (RegClass->contains(PPC::VSRp0)) {
+          HintReg = getSubReg(UACCPhys, ResultOp->getSubReg());
+          // Ensure that the hint is a VSRp register.
+          if (HintReg >= PPC::VSRp0 && HintReg <= PPC::VSRp31)
+            Hints.push_back(HintReg);
+        } else if (RegClass->contains(PPC::ACC0)) {
+          HintReg = PPC::ACC0 + (UACCPhys - PPC::UACC0);
+          if (HintReg >= PPC::ACC0 && HintReg <= PPC::ACC7)
+            Hints.push_back(HintReg);
+        }
       }
       break;
     }

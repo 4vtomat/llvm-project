@@ -22,9 +22,9 @@ define i32 @test_lb() {
 ;
 ; FUSELUI-LABEL: test_lb:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari8)
-; FUSELUI-NEXT:    lb a0, %lo(vari8)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari8)
+; FUSELUI-NEXT:    lb a1, %lo(vari8)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i8, i8* getelementptr inbounds (i8, i8* @vari8, i8 0), align 1
@@ -44,9 +44,9 @@ define i32 @test_lbu() {
 ;
 ; FUSELUI-LABEL: test_lbu:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari8)
-; FUSELUI-NEXT:    lbu a0, %lo(vari8)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari8)
+; FUSELUI-NEXT:    lbu a1, %lo(vari8)(a1)
 ; FUSELUI-NEXT:    or a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i8, i8* getelementptr inbounds (i8, i8* @vari8, i8 0), align 1
@@ -66,9 +66,9 @@ define i32 @test_lh() {
 ;
 ; FUSELUI-LABEL: test_lh:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari16)
-; FUSELUI-NEXT:    lh a0, %lo(vari16)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari16)
+; FUSELUI-NEXT:    lh a1, %lo(vari16)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i16, i16* getelementptr inbounds (i16, i16* @vari16, i16 0), align 2
@@ -88,9 +88,9 @@ define i32 @test_lhu() {
 ;
 ; FUSELUI-LABEL: test_lhu:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari16)
-; FUSELUI-NEXT:    lhu a0, %lo(vari16)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari16)
+; FUSELUI-NEXT:    lhu a1, %lo(vari16)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i16, i16* getelementptr inbounds (i16, i16* @vari16, i16 0), align 2
@@ -110,9 +110,9 @@ define i64 @test_lw() {
 ;
 ; FUSELUI-LABEL: test_lw:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari32)
-; FUSELUI-NEXT:    lw a0, %lo(vari32)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari32)
+; FUSELUI-NEXT:    lw a1, %lo(vari32)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i32, i32* getelementptr inbounds (i32, i32* @vari32, i32 0), align 4
@@ -132,9 +132,9 @@ define i64 @test_lwu() {
 ;
 ; FUSELUI-LABEL: test_lwu:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari32)
-; FUSELUI-NEXT:    lwu a0, %lo(vari32)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari32)
+; FUSELUI-NEXT:    lwu a1, %lo(vari32)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i32, i32* getelementptr inbounds (i32, i32* @vari32, i32 0), align 4
@@ -154,9 +154,9 @@ define i64 @test_ld() {
 ;
 ; FUSELUI-LABEL: test_ld:
 ; FUSELUI:       # %bb.0:
-; FUSELUI-NEXT:    lui a0, %hi(vari64)
-; FUSELUI-NEXT:    ld a0, %lo(vari64)(a0)
-; FUSELUI-NEXT:    lui a1, 2
+; FUSELUI-NEXT:    lui a0, 2
+; FUSELUI-NEXT:    lui a1, %hi(vari64)
+; FUSELUI-NEXT:    ld a1, %lo(vari64)(a1)
 ; FUSELUI-NEXT:    add a0, a0, a1
 ; FUSELUI-NEXT:    ret
   %a = load i64, i64* getelementptr inbounds (i64, i64* @vari64, i64 0), align 8

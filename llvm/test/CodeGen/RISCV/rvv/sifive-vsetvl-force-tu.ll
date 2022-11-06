@@ -34,7 +34,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
 ; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, mu
 ; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
 ; CHECK-O0-NEXT:    vle64.v v8, (a0), v0.t
-; CHECK-O0-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
@@ -46,7 +46,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
 ; CHECK-O2-NEXT:    vsetvli a1, a1, e64, m1, ta, mu
 ; CHECK-O2-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
 ; CHECK-O2-NEXT:    vle64.v v8, (a0), v0.t
-; CHECK-O2-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O2-NEXT:    addi a0, a0, %lo(scratch)

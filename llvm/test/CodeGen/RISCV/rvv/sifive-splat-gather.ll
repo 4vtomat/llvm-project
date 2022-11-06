@@ -10,7 +10,7 @@ define <vscale x 4 x double> @test_scalable_constant_pointer(i32 zeroext %evl) {
 ; CHECK:       # %bb.0: # %bb
 ; CHECK-NEXT:    lui a1, %hi(global)
 ; CHECK-NEXT:    addi a1, a1, %lo(global)
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a1), zero
 ; CHECK-NEXT:    ret
 bb:
@@ -23,7 +23,7 @@ bb:
 define <vscale x 4 x double> @test_scalable_variable_pointer(ptr %arg, i32 zeroext %evl) {
 ; CHECK-LABEL: test_scalable_variable_pointer:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    vsetvli zero, a1, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m4, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    ret
 bb:
@@ -40,7 +40,7 @@ define <4 x double> @test_fixed_constant_pointer(i32 zeroext %evl) {
 ; CHECK:       # %bb.0: # %bb
 ; CHECK-NEXT:    lui a1, %hi(global)
 ; CHECK-NEXT:    addi a1, a1, %lo(global)
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a1), zero
 ; CHECK-NEXT:    ret
 bb:
@@ -53,7 +53,7 @@ bb:
 define <4 x double> @test_fixed_variable_pointer(ptr %arg, i32 zeroext %evl) {
 ; CHECK-LABEL: test_fixed_variable_pointer:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    vsetvli zero, a1, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e64, m2, ta, ma
 ; CHECK-NEXT:    vlse64.v v8, (a0), zero
 ; CHECK-NEXT:    ret
 bb:

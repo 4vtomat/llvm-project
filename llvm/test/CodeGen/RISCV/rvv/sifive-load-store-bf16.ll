@@ -5,7 +5,7 @@
 define void @store_bf16mf4(<vscale x 1 x bfloat> %value, <vscale x 1 x bfloat>* %dest) {
 ; CHECK-LABEL: store_bf16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a1, zero, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e16, mf4, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -16,7 +16,7 @@ entry:
 define <vscale x 1 x bfloat> @load_bf16mf4(<vscale x 1 x bfloat>* %src) {
 ; CHECK-LABEL: load_bf16mf4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a1, zero, e16, mf4, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e16, mf4, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -27,7 +27,7 @@ entry:
 define void @store_bf16mf2(<vscale x 2 x bfloat> %value, <vscale x 2 x bfloat>* %dest) {
 ; CHECK-LABEL: store_bf16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -38,7 +38,7 @@ entry:
 define <vscale x 2 x bfloat> @load_bf16mf2(<vscale x 2 x bfloat>* %src) {
 ; CHECK-LABEL: load_bf16mf2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:

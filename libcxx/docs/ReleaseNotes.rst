@@ -41,6 +41,7 @@ Implemented Papers
 - P2417R2 - A more constexpr bitset
 - P2445R1 - ``std::forward_like``
 - P2273R3 - Making ``std::unique_ptr`` constexpr
+- P0591R4 - Utility functions to implement uses-allocator construction
 
 Improvements and New Features
 -----------------------------
@@ -77,6 +78,12 @@ Deprecations and Removals
   reach out to the libc++ developers if you find something missing in the new
   configuration system.
 
+- The functions ``to_chars`` and ``from_chars`` for integral types are
+  available starting with C++17. Libc++ offered these functions in C++11 and
+  C++14 as an undocumented extension. This extension makes it hard to implement
+  the C++23 paper that makes these functions ``constexpr``, therefore the
+  extension has been removed.
+
 Upcoming Deprecations and Removals
 ----------------------------------
 
@@ -109,3 +116,5 @@ ABI Affecting Changes
 
 Build System Changes
 --------------------
+- Support for ``libcxx``, ``libcxxabi`` and ``libunwind`` in ``LLVM_ENABLE_PROJECTS`` has officially
+  been removed. Instead, please build according to :ref:`these instructions <build instructions>`.

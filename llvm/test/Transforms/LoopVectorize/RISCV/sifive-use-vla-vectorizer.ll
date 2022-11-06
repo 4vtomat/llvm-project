@@ -37,14 +37,15 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP12]], i32 0
 ; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], %struct.quantum_reg_node_struct* [[REG_16_VAL:%.*]], <vscale x 1 x i64> [[VEC_IND]], i32 1
-; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i64> @llvm.vp.gather.nxv1i64.nxv1p0i64(<vscale x 1 x i64*> [[TMP13]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_GATHER]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64*> [[TMP13]], <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP10]])
-; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP10]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP14]]
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i64*> [[TMP13]], i32 0
+; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0i64.i64(i64* [[TMP14]], i64 16, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_STRIDED_LOAD]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP10]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i64.p0i64.i64(<vscale x 1 x i64> zeroinitializer, i64* [[TMP14]], i64 16, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP10]])
+; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP15]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 1 x i64> [[VEC_IND]], [[DOTSPLAT2]]
-; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
+; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -53,9 +54,9 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[STATE:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT]], %struct.quantum_reg_node_struct* [[REG_16_VAL]], i64 [[INDVARS_IV]], i32 1
-; CHECK-NEXT:    [[TMP16:%.*]] = load i64, i64* [[STATE]], align 8
-; CHECK-NEXT:    [[TMP17:%.*]] = and i64 0, 1
-; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[TMP16]], 0
+; CHECK-NEXT:    [[TMP17:%.*]] = load i64, i64* [[STATE]], align 8
+; CHECK-NEXT:    [[TMP18:%.*]] = and i64 0, 1
+; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[TMP17]], 0
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[IF_THEN9:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then9:
 ; CHECK-NEXT:    [[XOR:%.*]] = xor i64 0, 0

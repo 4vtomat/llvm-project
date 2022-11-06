@@ -1330,6 +1330,24 @@ Optional<bool> getOptionalBoolLoopAttribute(const Loop *TheLoop,
 /// Returns true if Name is applied to TheLoop and enabled.
 bool getBooleanLoopAttribute(const Loop *TheLoop, StringRef Name);
 
+#if SIFIVE_CUSTOMIZATION
+/// Contains SIFIVE-specific loops metadata.
+struct LoopMetaData {
+  /// Do not generate SCEV checks for stride==1 for vectorized loops.
+  static constexpr const StringRef NoScevChecks = "llvm.loop.no_scev_checks";
+};
+
+/// Checks if the loop \p L is marked to be revectorized without strides
+/// checks.
+bool isRevectorizeWithoutStrideChecks(const Loop &L);
+
+/// Checks if only the loop with consecutive accesses should be emitted.
+bool doNotRevectorizeWithoutStrideChecks();
+
+/// Checks if only the loop with non-consecutive accesses should be emitted.
+bool vectorizeWithoutStrideChecks();
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Find named metadata for a loop with an integer value.
 llvm::Optional<int>
 getOptionalIntLoopAttribute(const Loop *TheLoop, StringRef Name);

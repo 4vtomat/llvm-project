@@ -4,9 +4,9 @@
 define void @mv_store_f16(half* nocapture readonly %in, i32 signext %lane, half* nocapture %out) {
 ; CHECK-LABEL: mv_store_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e16, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
 ; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
@@ -23,9 +23,9 @@ entry:
 define void @mv_store_f32(float* nocapture readonly %in, i32 signext %lane, float* nocapture %out) {
 ; CHECK-LABEL: mv_store_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
 ; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
@@ -42,9 +42,9 @@ entry:
 define void @mv_store_f64(double* nocapture readonly %in, i32 signext %lane, double* nocapture %out) {
 ; CHECK-LABEL: mv_store_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m2, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
 ; CHECK-NEXT:    vse64.v v10, (a2)
 ; CHECK-NEXT:    ret

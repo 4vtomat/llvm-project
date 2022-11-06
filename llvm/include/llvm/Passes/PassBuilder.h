@@ -374,12 +374,6 @@ public:
   /// returns false.
   Error parseAAPipeline(AAManager &AA, StringRef PipelineText);
 
-  /// Returns true if the pass name is the name of an alias analysis pass.
-  bool isAAPassName(StringRef PassName);
-
-  /// Returns true if the pass name is the name of a (non-alias) analysis pass.
-  bool isAnalysisPassName(StringRef PassName);
-
   /// Print pass names.
   void printPassNames(raw_ostream &OS);
 
@@ -588,7 +582,11 @@ private:
   void addRequiredLTOPreLinkPasses(ModulePassManager &MPM);
 
   void addVectorPasses(OptimizationLevel Level, FunctionPassManager &FPM,
+#if SIFIVE_CUSTOMIZATION
+                       bool IsFullLTO, bool ISLTOPreLink);
+#else
                        bool IsFullLTO);
+#endif
 
   static Optional<std::vector<PipelineElement>>
   parsePipelineText(StringRef Text);

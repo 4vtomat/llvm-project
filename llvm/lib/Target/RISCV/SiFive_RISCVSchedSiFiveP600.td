@@ -103,6 +103,9 @@ def : WriteRes<WriteREV8, [SiFiveP600IntArith]>;
 
 def : WriteRes<WriteSHXADD, [SiFiveP600IntArith]>;
 def : WriteRes<WriteSHXADD32, [SiFiveP600IntArith]>;
+
+def : WriteRes<WriteSingleBit, [SiFiveP600IntArith]>;
+def : WriteRes<WriteSingleBitImm, [SiFiveP600IntArith]>;
 }
 
 // Memory
@@ -125,7 +128,7 @@ def : WriteRes<WriteLDWU, [SiFiveP600LDST]>;
 def : WriteRes<WriteLDD, [SiFiveP600LDST]>;
 }
 
-let Latency = 8 in {
+let Latency = 6 in {
 def : WriteRes<WriteFLD16, [SiFiveP600LDST]>;
 def : WriteRes<WriteFLD32, [SiFiveP600LDST]>;
 def : WriteRes<WriteFLD64, [SiFiveP600LDST]>;
@@ -334,6 +337,8 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
+def : ReadAdvance<ReadSingleBit, 0>;
+def : ReadAdvance<ReadSingleBitImm, 0>;
 
 def : ReadAdvance<ReadCMOV, 0>;
 
@@ -341,7 +346,6 @@ def : ReadAdvance<ReadCMOV, 0>;
 // Unsupported extensions
 defm : UnsupportedSchedV;
 defm : UnsupportedSchedZbc;
-defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;

@@ -261,7 +261,7 @@ static cl::opt<PreferPredicateTy::Option> PreferPredicateOverEpilogue(
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UseStridedAccesses(
     "vectorizer-use-vp-strided-load-store",
-    cl::init(false),
+    cl::init(true),
     cl::Hidden,
     cl::desc("Use VPred strided vector load store. This is EXPERIMENTAL"));
 
@@ -416,6 +416,12 @@ static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
     "vectorize-with-known-depdist", cl::init(true), cl::Hidden,
     cl::desc("Enable vectorization of loops that have a known dependence "
              "distance."));
+
+static cl::opt<bool> AdhocSkipVectorizeInPrelink(
+    "sifive-vectorize-assume-optimizable-strided-accesses", cl::init(false),
+    cl::Hidden,
+    cl::desc("Allow the compiler to skip vectorization for loops of non-unit "
+             "stride memory access(es)"));
 #endif // SIFIVE_CUSTOMIZATION
 
 cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -585,6 +591,21 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if VLA Vectorizer is enabled.
   bool useVLAVectorizer() const;
+
+  /// Returns previous SCEV check block.
+  BasicBlock *getPrevSCEVCheckBlock() const {
+    if (!VF.isScalable() || Legal->getLAI()->getSymbolicStrides().empty())
+      return nullptr;
+    return PrevSCEVCheckBlock;
+  }
+
+  // Sets previous SCEV check block.
+  void setPrevSCEVCheckBlock(BasicBlock *BB) {
+    if (VF.isScalable())
+      PrevSCEVCheckBlock = BB;
+    else
+      PrevSCEVCheckBlock = nullptr;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a new phi node for the induction variable \p OrigPhi to resume
@@ -785,8 +806,10 @@ protected:
 #if SIFIVE_CUSTOMIZATION
   /// Initial VL value to check the loop trip count.
   Value *InitVL = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
 
+  // Previous SCEV check block.
+  BasicBlock *PrevSCEVCheckBlock = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The legality analysis.
   LoopVectorizationLegality *Legal;
@@ -1234,10 +1257,20 @@ public:
                              AssumptionCache *AC,
                              OptimizationRemarkEmitter *ORE, const Function *F,
                              const LoopVectorizeHints *Hints,
+#if SIFIVE_CUSTOMIZATION
+                             InterleavedAccessInfo &IAI, bool IsLTOPreLink)
+#else
                              InterleavedAccessInfo &IAI)
+#endif
       : ScalarEpilogueStatus(SEL), TheLoop(L), PSE(PSE), LI(LI), Legal(Legal),
         TTI(TTI), TLI(TLI), DB(DB), AC(AC), ORE(ORE), TheFunction(F),
-        Hints(Hints), InterleaveInfo(IAI) {}
+#if SIFIVE_CUSTOMIZATION
+        Hints(Hints), InterleaveInfo(IAI), IsLTOPreLink(IsLTOPreLink) {
+  }
+#else
+        Hints(Hints), InterleaveInfo(IAI) {
+  }
+#endif
 
   /// \return An upper bound for the vectorization factors (both fixed and
   /// scalable). If the factors are 0, vectorization and interleaving should be
@@ -1980,6 +2013,9 @@ public:
 
   /// Profitable vector factors.
   SmallVector<VectorizationFactor, 8> ProfitableVFs;
+
+  /// (SIFIVE) Whether or not we are in pre-link stage
+  bool IsLTOPreLink; // SIFIVE
 };
 } // end namespace llvm
 
@@ -2348,16 +2384,15 @@ struct LoopVectorize : public FunctionPass {
     auto *TLI = TLIP ? &TLIP->getTLI(F) : nullptr;
     auto *AA = &getAnalysis<AAResultsWrapperPass>().getAAResults();
     auto *AC = &getAnalysis<AssumptionCacheTracker>().getAssumptionCache(F);
-    auto *LAA = &getAnalysis<LoopAccessLegacyAnalysis>();
+    auto &LAIs = getAnalysis<LoopAccessLegacyAnalysis>().getLAIs();
     auto *DB = &getAnalysis<DemandedBitsWrapperPass>().getDemandedBits();
     auto *ORE = &getAnalysis<OptimizationRemarkEmitterWrapperPass>().getORE();
     auto *PSI = &getAnalysis<ProfileSummaryInfoWrapperPass>().getPSI();
 
-    std::function<const LoopAccessInfo &(Loop &)> GetLAA =
-        [&](Loop &L) -> const LoopAccessInfo & { return LAA->getInfo(&L); };
-
-    return Impl.runImpl(F, *SE, *LI, *TTI, *DT, *BFI, TLI, *DB, *AA, *AC,
-                        GetLAA, *ORE, PSI).MadeAnyChange;
+    return Impl
+        .runImpl(F, *SE, *LI, *TTI, *DT, *BFI, TLI, *DB, *AA, *AC, LAIs, *ORE,
+                 PSI)
+        .MadeAnyChange;
   }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
@@ -3168,6 +3203,18 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   // If tail is to be folded, vector loop takes care of all iterations.
   Type *CountTy = Count->getType();
   Value *CheckMinIters = Builder.getFalse();
+#if SIFIVE_CUSTOMIZATION
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
+    auto *NewPHI = PHINode::Create(
+        Builder.getInt1Ty(),
+        pred_size(TCCheckBlock), "no.scev.check", TCCheckBlock->getFirstNonPHI());
+    for (BasicBlock *BB : predecessors(TCCheckBlock))
+      NewPHI->addIncoming(BB == PrevSCEVCheckBlock ? Builder.getFalse()
+                                                   : Builder.getTrue(),
+                          BB);
+    CheckMinIters = NewPHI;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   auto CreateStep = [&]() -> Value * {
     // Create step with max(MinProTripCount, UF * VF).
     if (UF * VF.getKnownMinValue() >= MinProfitableTripCount.getKnownMinValue())
@@ -3235,6 +3282,9 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
 
   // Update dominator for Bypass & LoopExit (if needed).
   DT->changeImmediateDominator(Bypass, TCCheckBlock);
+#if SIFIVE_CUSTOMIZATION
+  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
+#endif // SIFIVE_CUSTOMIZATION
   if (!Cost->requiresScalarEpilogue(VF))
     // If there is an epilogue which must run, there's no edge from the
     // middle block to exit blocks  and thus no need to update the immediate
@@ -3341,6 +3391,11 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
                        Builder.getTrue());
   BrInst->setDebugLoc(ScalarLatchTerm->getDebugLoc());
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
+
+#if SIFIVE_CUSTOMIZATION
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop))
+    return;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Update dominator for loop exit. During skeleton creation, only the vector
   // pre-header and the middle block are created. The vector loop is entirely
@@ -3532,6 +3587,9 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 
   // Generate the code to check any assumptions that we've made for SCEV
   // expressions.
+#if SIFIVE_CUSTOMIZATION
+  PrevSCEVCheckBlock =
+#endif // SIFIVE_CUSTOMIZATION
   emitSCEVChecks(LoopScalarPreHeader);
 
   // Generate the code that checks in runtime if arrays overlap. We put the
@@ -4044,10 +4102,21 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   Value *Incoming = State.get(PreviousDef, UF - 1);
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
+#if SIFIVE_CUSTOMIZATION
+  Value *EVL =
+      State.Plan->getEVL() ? State.get(State.Plan->getEVL(), 0) : nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   if (VF.isVector()) {
     auto *One = ConstantInt::get(IdxTy, 1);
     Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
-    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, VF);
+#if SIFIVE_CUSTOMIZATION
+    // TODO: This code is better to be changed to use VPLane::getLastLaneForVF
+    // or even better to have VPLane::getLastLane(unsigned). The problem with
+    // current function in VPLane is it does use different lane kind for fixed
+    // and scalable vectors, which makes it hard to use here. Also for RVV VLA
+    // we have to provide offset from the last lane.
+    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+#endif // SIFIVE_CUSTOMIZATION
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     ExtractForScalar = Builder.CreateExtractElement(ExtractForScalar, LastIdx,
                                                     "vector.recur.extract");
@@ -4059,10 +4128,48 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   // when the scalar loop is not run at all.
   Value *ExtractForPhiUsedOutsideLoop = nullptr;
   if (VF.isVector()) {
-    auto *RuntimeVF = getRuntimeVF(Builder, IdxTy, VF);
+#if SIFIVE_CUSTOMIZATION
+    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+#endif // SIFIVE_CUSTOMIZATION
     auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
     ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
         Incoming, Idx, "vector.recur.extract.for.phi");
+#if SIFIVE_CUSTOMIZATION
+    if (EVL) {
+      // Take care of the corner case when last vector iteration processed just
+      // one element. In this case extract of the `EVL-2` element of the
+      // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
+      // last iteration.
+      //
+      //   vector.ph:
+      //     v_init = vector(..., ..., ..., a[-1])
+      //     initial_vl = vsetvli tripcount
+      //     br vector.body
+      //
+      //   vector.body
+      //     i = phi [0, vector.ph], [i+4, vector.body]
+      //     v1 = phi [v_init, vector.ph], [v2, vector.body]
+      //     prev.evl = phi i32 [ %initial_vl, %vector.ph ], [ %evl, %vector.body ]
+      //
+      //     v2 = a[i, i+1, i+2, i+3];
+      //     v3 = vector(v1(3), v2(0, 1, 2))
+      //     b[i, i+1, i+2, i+3] = v2 - v3
+      //     br cond, vector.body, middle.block
+      //
+      // Take the value of the `PhiR`(`v1`) as it contains value from the
+      // previous iteration (or the initial value) and extract last lane using
+      // `PrevEVL`(`prev.evl`)
+      Value *Cond =
+          Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
+
+      Idx = Builder.CreateSub(State.get(State.Plan->getPrevEVL(), 0),
+                              ConstantInt::get(IdxTy, 1));
+      Value *PreviousValue = Builder.CreateExtractElement(
+          State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
+      ExtractForPhiUsedOutsideLoop =
+          Builder.CreateSelect(Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
+    }
+#endif // SIFIVE_CUSTOMIZATION
   } else if (UF > 1)
     // When loop is unrolled without vectorizing, initialize
     // ExtractForPhiUsedOutsideLoop with the value just prior to unrolled value
@@ -5862,8 +5969,45 @@ bool LoopVectorizationCostModel::isMoreProfitable(
   return (CostA * EstimatedWidthB) < (CostB * EstimatedWidthA);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool
+hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
+  bool HasMemoryAccess = false;
+  for (BasicBlock *BB : L->blocks()) {
+    for (Instruction &I : *BB) {
+      Value *Ptr = getLoadStorePointerOperand(&I);
+      if (!Ptr)
+        continue;
+      Optional<int64_t> Stride =
+          Legal->isConsecutiveOrUnknownPtr(getLoadStoreType(&I), Ptr);
+      if (!Stride.has_value())
+        continue;
+      if (Stride.value() != 0)
+        return false;
+      HasMemoryAccess = true;
+    }
+  }
+  return HasMemoryAccess;
+}
+#endif
+
 VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     const ElementCountSet &VFCandidates) {
+#if SIFIVE_CUSTOMIZATION
+  // Within SiFive, we have AOS to SOA transformation that is only effective
+  // during LTO phase. The LoopVectorizer is executed both in pre-link and LTO.
+  // However we don't want vectorization to potententially scramble the code and
+  // paralyze AOS to SOA transformation. This adhoc approach is driven by
+  // SCT-1716, we seek to skip the vectorizer when when all memory accesses are
+  // non-unit strides during the pre-link stage.
+  if (AdhocSkipVectorizeInPrelink && IsLTOPreLink &&
+      hasOnlyNonUnitStrideMemoryAccesses(TheLoop, Legal)) {
+    LLVM_DEBUG(dbgs() << "LV: Bail out in pre-link stage when there is only "
+                         "non-unit stride memory accesses.\n");
+    return VectorizationFactor::Disabled();
+  }
+#endif
+
   InstructionCost ExpectedCost = expectedCost(ElementCount::getFixed(1)).first;
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
@@ -7573,17 +7717,11 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
 }
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
-  Value *Ptr = nullptr;
-  if (LoadInst *LI = dyn_cast<LoadInst>(I)) {
-    Ptr = LI->getPointerOperand();
-  } else if (StoreInst *SI = dyn_cast<StoreInst>(I)) {
-    Ptr = SI->getPointerOperand();
-  }
-  assert(Ptr && "Invalid pointer");
-  auto *SCEVPtr = isStridedAddressing(Ptr, PSE.getSE());
-  if (!SCEVPtr)
+  StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
+  if (!SAI)
     return false;
 
+  const SCEV *SCEVPtr = SAI.getSCEVExpr();
   assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
          "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
 
@@ -7773,12 +7911,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       Instruction *PtrDef =
         dyn_cast_or_null<Instruction>(getLoadStorePointerOperand(&I));
       if (PtrDef && TheLoop->contains(PtrDef) &&
-          (getWideningDecision(&I, VF) != CM_GatherScatter
-#if SIFIVE_CUSTOMIZATION
-          && getWideningDecision(&I, VF) != CM_Strided))
-#else
-          )) {
-#endif // SIFIVE_CUSTOMIZATION
+          (getWideningDecision(&I, VF) != CM_GatherScatter))
         AddrDefs.insert(PtrDef);
     }
 
@@ -8490,11 +8623,15 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));
-      Value *RVL = ILV.getOrCreateTripCount(nullptr);
-      Value *V = BestVPlan.getSetVL(State, RVL);
-      ILV.InitVL->replaceAllUsesWith(V);
+      if (!State.hasAnyVectorValue(BestVPlan.getInitEVL())) {
+        Value *RVL = ILV.getOrCreateTripCount(nullptr);
+        Value *InitEVL = BestVPlan.getSetVL(State, RVL);
+        State.set(State.Plan->getInitEVL(), InitEVL, 0);
+      }
+      Value *InitEVL = State.get(BestVPlan.getInitEVL(), 0);
+      ILV.InitVL->replaceAllUsesWith(InitEVL);
       cast<Instruction>(ILV.InitVL)->eraseFromParent();
-      ILV.InitVL = V;
+      ILV.InitVL = InitEVL;
     }
 
     // FIXME: The list of pairs should be filled outside of this function and
@@ -9067,13 +9204,20 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   bool Consecutive =
       Reverse || Decision == LoopVectorizationCostModel::CM_Widen;
 #if SIFIVE_CUSTOMIZATION
-  bool Strided = Decision == LoopVectorizationCostModel::CM_Strided;
+  Value *Stride = nullptr;
+  if (Decision == LoopVectorizationCostModel::CM_Strided) {
+    if (StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I)) {
+      assert(SAI.isConstantStride() &&
+             "Currently only constant strides are supported");
+      Stride = cast<SCEVConstant>(SAI.getSCEVStride())->getValue();
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
     return new VPWidenMemoryInstructionRecipe(*Load, Operands[0], Mask,
 #if SIFIVE_CUSTOMIZATION
-                                              Consecutive, Reverse, Strided);
+                                              Consecutive, Reverse, Stride);
 #else
                                               Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9082,7 +9226,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   return new VPWidenMemoryInstructionRecipe(*Store, Operands[1], Operands[0],
 #if SIFIVE_CUSTOMIZATION
                                             Mask, Consecutive, Reverse,
-                                            Strided);
+                                            Stride);
 #else
                                             Mask, Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9538,8 +9682,10 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 #if SIFIVE_CUSTOMIZATION
       // Create the node for previous EVL value, required for the splice
       // intrinsic.
-      if (Plan->getEVL())
+      if (Plan->getEVL()) {
         Plan->createPrevEVL();
+        Plan->createInitEVL();
+      }
 #endif // SIFIVE_CUSTOMIZATION
       // TODO: Currently fixed-order recurrences are modeled as chains of
       // first-order recurrences. If there are no users of the intermediate
@@ -10838,11 +10984,13 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
+    VPValue *Mask = getMask();
+    assert(Mask && "MaskValue must be called for recipes with set mask");
     // The outermost mask can be lowered as an all ones mask when using
     // EVL.
-    if (isa<VPInstruction>(getMask()) &&
-        cast<VPInstruction>(getMask())->getOpcode() == VPInstruction::ICmpULE)
-      return Builder.getTrueVector(EC);
+    if (auto *IMask = dyn_cast<VPInstruction>(Mask))
+      if (IMask->getOpcode() == VPInstruction::ICmpULE)
+        return Builder.getTrueVector(EC);
 
     return BlockInMaskParts[Part];
   };
@@ -10867,50 +11015,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
         if (EVLPart) {
-          bool EmittedStridedAccess = false;
-          Value *VectorGep = State.get(getAddr(), Part);
-          auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-          auto *DataTy = cast<VectorType>(StoredVal->getType());
-          ElementCount NumElts = PtrsTy->getElementCount();
-          Value *BlockInMaskPart = isMaskRequired
-                                       ? MaskValue(Part, NumElts)
-                                       : Builder.getTrueVector(NumElts);
-          if (isStrided()) {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "It should be possible to stride this store!\n");
-            LLVM_DEBUG(llvm::dbgs() << "Addr = " << *getAddr() << "\n");
-
-            if (StrideAccessInfo SAI = computeStrideAccessInfo(
-                    State, getAddr()->getUnderlyingValue())) {
-              LLVM_DEBUG(llvm::dbgs() << "Found stride for store\n");
-              // FIXME: This should be using VPValues rather than doing
-              // this by hand. This is not taking into account Part!
-              auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-              StridedAccessValues SAV = computeStrideAddressing(
-                  State, PtrTy, SAI, getParent()->getPlan()->getCanonicalIV());
-              Value *Operands[] = {StoredVal, SAV.BaseAddress, SAV.Stride,
-                                   BlockInMaskPart, EVLPart};
-              NewSI = Builder.CreateIntrinsic(
-                  Intrinsic::experimental_vp_strided_store,
-                  {StoredVal->getType(), PtrTy, SAV.Stride->getType()},
-                  Operands);
-              EmittedStridedAccess = true;
-            } else {
-              LLVM_DEBUG(llvm::dbgs() << "Cannot stride store: "
-                                      << *getAddr()->getUnderlyingValue()
-                                      << "SAI=" << SAI << "\n");
-            }
-          } else {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Not consecutive stride store for " << *getAddr() << "\n");
-          }
-          if (!EmittedStridedAccess) {
-            Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart,
-                                 EVLPart};
-            NewSI = Builder.CreateIntrinsic(Intrinsic::vp_scatter,
-                                            {DataTy, PtrsTy}, Operands);
-          }
-
+          NewSI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
+                                                         BlockInMaskParts);
         } else {
           Value *MaskPart = isMaskRequired ? BlockInMaskParts[Part] : nullptr;
           Value *VectorGep = State.get(getAddr(), Part);
@@ -10992,46 +11098,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
       if (EVLPart) {
-        bool EmittedStridedAccess = false;
-        Value *VectorGep = State.get(getAddr(), Part);
-        auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-        auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-        ElementCount NumElts = PtrsTy->getElementCount();
-        Value *BlockInMaskPart = isMaskRequired
-                                     ? MaskValue(Part, NumElts)
-                                     : Builder.getTrueVector(NumElts);
-        if (isStrided()) {
-          LLVM_DEBUG(llvm::dbgs()
-                     << "It should be possible to stride this load!\n");
-          LLVM_DEBUG(llvm::dbgs() << "Addr = " << *getAddr() << "\n");
-
-          if (StrideAccessInfo SAI = computeStrideAccessInfo(
-                  State, getAddr()->getUnderlyingValue())) {
-            LLVM_DEBUG(llvm::dbgs() << "Found stride for load\n");
-            StridedAccessValues SAV = computeStrideAddressing(
-                State, PtrTy, SAI, getParent()->getPlan()->getCanonicalIV());
-            Value *Operands[] = {SAV.BaseAddress, SAV.Stride, BlockInMaskPart,
-                                 EVLPart};
-            NewLI =
-                Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                        {DataTy, PtrTy, SAV.Stride->getType()},
-                                        Operands, nullptr, "vp.strided.load");
-            EmittedStridedAccess = true;
-          } else {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Cannot stride load: " << *getAddr()->getUnderlyingValue()
-                       << "SAI=" << SAI << "\n");
-          }
-        } else {
-          LLVM_DEBUG(llvm::dbgs()
-                     << "Not consecutive stride load for " << *getAddr() << "\n");
-        }
-        if (!EmittedStridedAccess) {
-          Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
-          NewLI =
-              Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
-                                      Operands, nullptr, "vp.gather");
-        }
+        NewLI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
+                                                       BlockInMaskParts);
       } else {
         Value *MaskPart = isMaskRequired ? BlockInMaskParts[Part] : nullptr;
         Value *VectorGep = State.get(getAddr(), Part);
@@ -11213,6 +11281,29 @@ Value *VPTransformState::get(VPValue *Def, unsigned Part) {
   return VectorValue;
 }
 
+#if SIFIVE_CUSTOMIZATION
+namespace {
+/// Sets and tracks the SCEV check block for VLA vectorization mode.
+class SCEVBlockRAII {
+  InnerLoopVectorizer &ILV;
+  BasicBlock *&SCEVCheckBlock;
+
+public:
+  SCEVBlockRAII(InnerLoopVectorizer &ILV, BasicBlock *&SCEVCheckBlock)
+      : ILV(ILV), SCEVCheckBlock(SCEVCheckBlock) {
+    if (ILV.useVLAVectorizer())
+      ILV.setPrevSCEVCheckBlock(SCEVCheckBlock);
+  }
+  ~SCEVBlockRAII() {
+    if (ILV.useVLAVectorizer())
+      SCEVCheckBlock = ILV.getPrevSCEVCheckBlock();
+    else
+      SCEVCheckBlock = nullptr;
+  }
+};
+} // end anonymous namespace
+#endif // SIFIVE_CUSTOMIZATION
+
 // Process the loop in the VPlan-native vectorization path. This path builds
 // VPlan upfront in the vectorization pipeline, which allows to apply
 // VPlan-to-VPlan transformations from the very beginning without modifying the
@@ -11223,7 +11314,12 @@ static bool processLoopInVPlanNativePath(
     TargetLibraryInfo *TLI, DemandedBits *DB, AssumptionCache *AC,
     OptimizationRemarkEmitter *ORE, BlockFrequencyInfo *BFI,
     ProfileSummaryInfo *PSI, LoopVectorizeHints &Hints,
-    LoopVectorizationRequirements &Requirements) {
+#if SIFIVE_CUSTOMIZATION
+    LoopVectorizationRequirements &Requirements, bool IsLTOPreLink,
+    BasicBlock *&IgnoreSCEVMemCheckBB) {
+#else
+    LoopVectorizationRequirements & Requirements) {
+#endif
 
   if (isa<SCEVCouldNotCompute>(PSE.getBackedgeTakenCount())) {
     LLVM_DEBUG(dbgs() << "LV: cannot compute the outer-loop trip count\n");
@@ -11237,7 +11333,12 @@ static bool processLoopInVPlanNativePath(
       F, L, Hints, PSI, BFI, TTI, TLI, AC, LI, PSE.getSE(), DT, *LVL, &IAI);
 
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, LVL, *TTI, TLI, DB, AC, ORE, F,
+#if SIFIVE_CUSTOMIZATION
+                                &Hints, IAI, IsLTOPreLink);
+#else
                                 &Hints, IAI);
+#endif
+
   // Use the planner for outer loop vectorization.
   // TODO: CM is not used at this point inside the planner. Turn CM into an
   // optional argument if we don't need it in the future.
@@ -11271,12 +11372,21 @@ static bool processLoopInVPlanNativePath(
                              F->getParent()->getDataLayout());
     InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                            VF.Width, 1, LVL, &CM, BFI, PSI, Checks);
+#if SIFIVE_CUSTOMIZATION
+    SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
     LLVM_DEBUG(dbgs() << "Vectorizing outer loop in \""
                       << L->getHeader()->getParent()->getName() << "\"\n");
     LVP.executePlan(VF.Width, 1, BestPlan, LB, DT, false);
   }
 
   // Mark the loop as already vectorized to avoid vectorizing again.
+#if SIFIVE_CUSTOMIZATION
+  if (IgnoreSCEVMemCheckBB && !(isRevectorizeWithoutStrideChecks(*L) ||
+                                doNotRevectorizeWithoutStrideChecks()))
+    Hints.setRevectorizeWithoutStrideChecks();
+  else
+#endif // SIFIVE_CUSTOMIZATION
   Hints.setAlreadyVectorized();
   assert(!verifyFunction(*L->getHeader()->getParent(), &dbgs()));
   return true;
@@ -11426,11 +11536,21 @@ static bool areRuntimeChecksProfitable(GeneratedRTChecks &Checks,
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+LoopVectorizePass::LoopVectorizePass(LoopVectorizeOptions Opts,
+                                     bool IsLTOPreLink)
+    : InterleaveOnlyWhenForced(Opts.InterleaveOnlyWhenForced ||
+                               !EnableLoopInterleaving),
+      VectorizeOnlyWhenForced(Opts.VectorizeOnlyWhenForced ||
+                              !EnableLoopVectorization),
+      IsLTOPreLink(IsLTOPreLink) {}
+#else
 LoopVectorizePass::LoopVectorizePass(LoopVectorizeOptions Opts)
     : InterleaveOnlyWhenForced(Opts.InterleaveOnlyWhenForced ||
                                !EnableLoopInterleaving),
       VectorizeOnlyWhenForced(Opts.VectorizeOnlyWhenForced ||
                               !EnableLoopVectorization) {}
+#endif
 
 bool LoopVectorizePass::processLoop(Loop *L) {
   assert((EnableVPlanNativePath || L->isInnermost()) &&
@@ -11481,7 +11601,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Check if it is legal to vectorize the loop.
   LoopVectorizationRequirements Requirements;
-  LoopVectorizationLegality LVL(L, PSE, DT, TTI, TLI, AA, F, GetLAA, LI, ORE,
+  LoopVectorizationLegality LVL(L, PSE, DT, TTI, TLI, AA, F, *LAIs, LI, ORE,
                                 &Requirements, &Hints, DB, AC, BFI, PSI);
   if (!LVL.canVectorize(EnableVPlanNativePath)) {
     LLVM_DEBUG(dbgs() << "LV: Not vectorizing: Cannot prove legality.\n");
@@ -11496,7 +11616,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
   // pipeline.
   if (!L->isInnermost())
     return processLoopInVPlanNativePath(L, PSE, LI, DT, &LVL, TTI, TLI, DB, AC,
+#if SIFIVE_CUSTOMIZATION
+                                        ORE, BFI, PSI, Hints, Requirements,
+                                        IsLTOPreLink, IgnoreSCEVMemCheckBB);
+#else
                                         ORE, BFI, PSI, Hints, Requirements);
+#endif
 
   assert(L->isInnermost() && "Inner loop expected.");
 
@@ -11590,7 +11715,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Use the cost model.
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, &LVL, *TTI, TLI, DB, AC, ORE,
+#if SIFIVE_CUSTOMIZATION
+                                F, &Hints, IAI, IsLTOPreLink);
+#else
                                 F, &Hints, IAI);
+#endif
+
   CM.collectValuesToIgnore();
   CM.collectElementTypesForWidening();
 
@@ -11817,6 +11947,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         EpilogueVectorizerEpilogueLoop EpilogILV(L, PSE, LI, DT, TLI, TTI, AC,
                                                  ORE, EPI, &LVL, &CM, BFI, PSI,
                                                  Checks);
+#if SIFIVE_CUSTOMIZATION
+        SCEVBlockRAII SCEVRAII(EpilogILV, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
 
         VPlan &BestEpiPlan = LVP.getBestPlanFor(EPI.EpilogueVF);
         VPRegionBlock *VectorLoop = BestEpiPlan.getVectorLoopRegion();
@@ -11827,11 +11960,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         // updated before vectorising the epilogue loop.
         for (VPRecipeBase &R : Header->phis()) {
           if (auto *ReductionPhi = dyn_cast<VPReductionPHIRecipe>(&R)) {
-            if (auto *Resume = MainILV.getReductionResumeValue(
-                    ReductionPhi->getRecurrenceDescriptor())) {
-              VPValue *StartVal = BestEpiPlan.getOrAddExternalDef(Resume);
-              ReductionPhi->setOperand(0, StartVal);
-            }
+            Value *Resume = MainILV.getReductionResumeValue(
+                ReductionPhi->getRecurrenceDescriptor());
+            assert(Resume && "Must have a resume value.");
+            VPValue *StartVal = BestEpiPlan.getOrAddExternalDef(Resume);
+            ReductionPhi->setOperand(0, StartVal);
           }
         }
 
@@ -11845,6 +11978,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                                VF.MinProfitableTripCount, IC, &LVL, &CM, BFI,
                                PSI, Checks);
+#if SIFIVE_CUSTOMIZATION
+        SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
+#endif // SIFIVE_CUSTOMIZATION
 
         VPlan &BestPlan = LVP.getBestPlanFor(VF.Width);
         LVP.executePlan(VF.Width, IC, BestPlan, LB, DT, false);
@@ -11913,6 +12049,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       AddRuntimeUnrollDisableMetaData(L);
 
     // Mark the loop as already vectorized to avoid vectorizing again.
+#if SIFIVE_CUSTOMIZATION
+    if (IgnoreSCEVMemCheckBB && !(isRevectorizeWithoutStrideChecks(*L) ||
+                                  doNotRevectorizeWithoutStrideChecks()))
+      Hints.setRevectorizeWithoutStrideChecks();
+    else
+#endif // SIFIVE_CUSTOMIZATION
     Hints.setAlreadyVectorized();
   }
 
@@ -11924,8 +12066,8 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
     Function &F, ScalarEvolution &SE_, LoopInfo &LI_, TargetTransformInfo &TTI_,
     DominatorTree &DT_, BlockFrequencyInfo &BFI_, TargetLibraryInfo *TLI_,
     DemandedBits &DB_, AAResults &AA_, AssumptionCache &AC_,
-    std::function<const LoopAccessInfo &(Loop &)> &GetLAA_,
-    OptimizationRemarkEmitter &ORE_, ProfileSummaryInfo *PSI_) {
+    LoopAccessInfoManager &LAIs_, OptimizationRemarkEmitter &ORE_,
+    ProfileSummaryInfo *PSI_) {
   SE = &SE_;
   LI = &LI_;
   TTI = &TTI_;
@@ -11934,7 +12076,7 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
   TLI = TLI_;
   AA = &AA_;
   AC = &AC_;
-  GetLAA = &GetLAA_;
+  LAIs = &LAIs_;
   DB = &DB_;
   ORE = &ORE_;
   PSI = PSI_;
@@ -11972,6 +12114,9 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
   LoopsAnalyzed += Worklist.size();
 
   // Now walk the identified inner loops.
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Loop *, 4> LoopsTried;
+#endif // SIFIVE_CUSTOMIZATION
   while (!Worklist.empty()) {
     Loop *L = Worklist.pop_back_val();
 
@@ -11980,6 +12125,21 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
     Changed |= formLCSSARecursively(*L, *DT, LI, SE);
 
     Changed |= CFGChanged |= processLoop(L);
+#if SIFIVE_CUSTOMIZATION
+    if (isRevectorizeWithoutStrideChecks(*L)) {
+      if (LoopsTried.insert(L).second) {
+        Worklist.push_back(L);
+      } else {
+        // Remove no_scev_checks metadata if vectorization failed.
+        LLVMContext &Context = L->getHeader()->getContext();
+
+        MDNode *LoopID = L->getLoopID();
+        MDNode *NewLoopID = makePostTransformationMetadata(
+            Context, LoopID, {LoopMetaData::NoScevChecks}, None);
+        L->setLoopID(NewLoopID);
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Process each loop nest in the function.
@@ -12004,13 +12164,11 @@ PreservedAnalyses LoopVectorizePass::run(Function &F,
     auto &ORE = AM.getResult<OptimizationRemarkEmitterAnalysis>(F);
 
     LoopAccessInfoManager &LAIs = AM.getResult<LoopAccessAnalysis>(F);
-    std::function<const LoopAccessInfo &(Loop &)> GetLAA =
-        [&](Loop &L) -> const LoopAccessInfo & { return LAIs.getInfo(L); };
     auto &MAMProxy = AM.getResult<ModuleAnalysisManagerFunctionProxy>(F);
     ProfileSummaryInfo *PSI =
         MAMProxy.getCachedResult<ProfileSummaryAnalysis>(*F.getParent());
     LoopVectorizeResult Result =
-        runImpl(F, SE, LI, TTI, DT, BFI, &TLI, DB, AA, AC, GetLAA, ORE, PSI);
+        runImpl(F, SE, LI, TTI, DT, BFI, &TLI, DB, AA, AC, LAIs, ORE, PSI);
     if (!Result.MadeAnyChange)
       return PreservedAnalyses::all();
     PreservedAnalyses PA;

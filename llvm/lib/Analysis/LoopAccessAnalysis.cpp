@@ -2191,6 +2191,10 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
 
   const bool EnableMemAccessVersioningOfLoop =
       EnableMemAccessVersioning &&
+#if SIFIVE_CUSTOMIZATION
+      !(isRevectorizeWithoutStrideChecks(*TheLoop) ||
+        vectorizeWithoutStrideChecks()) &&
+#endif // SIFIVE_CUSTOMIZATION
       !TheLoop->getHeader()->getParent()->hasOptSize();
 
   // Traverse blocks in fixed RPOT order, regardless of their storage in the
@@ -2684,6 +2688,10 @@ void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
 const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L) {
   auto I = LoopAccessInfoMap.insert({&L, nullptr});
 
+#if SIFIVE_CUSTOMIZATION
+  if (isRevectorizeWithoutStrideChecks(L))
+    I = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
+#endif // SIFIVE_CUSTOMIZATION
   if (I.second)
     I.first->second =
         std::make_unique<LoopAccessInfo>(&L, &SE, TLI, &AA, &DT, &LI);
@@ -2695,34 +2703,14 @@ LoopAccessLegacyAnalysis::LoopAccessLegacyAnalysis() : FunctionPass(ID) {
   initializeLoopAccessLegacyAnalysisPass(*PassRegistry::getPassRegistry());
 }
 
-const LoopAccessInfo &LoopAccessLegacyAnalysis::getInfo(Loop *L) {
-  auto &LAI = LoopAccessInfoMap[L];
-
-  if (!LAI)
-    LAI = std::make_unique<LoopAccessInfo>(L, SE, TLI, AA, DT, LI);
-
-  return *LAI;
-}
-
-void LoopAccessLegacyAnalysis::print(raw_ostream &OS, const Module *M) const {
-  LoopAccessLegacyAnalysis &LAA = *const_cast<LoopAccessLegacyAnalysis *>(this);
-
-  for (Loop *TopLevelLoop : *LI)
-    for (Loop *L : depth_first(TopLevelLoop)) {
-      OS.indent(2) << L->getHeader()->getName() << ":\n";
-      auto &LAI = LAA.getInfo(L);
-      LAI.print(OS, 4);
-    }
-}
-
 bool LoopAccessLegacyAnalysis::runOnFunction(Function &F) {
-  SE = &getAnalysis<ScalarEvolutionWrapperPass>().getSE();
+  auto &SE = getAnalysis<ScalarEvolutionWrapperPass>().getSE();
   auto *TLIP = getAnalysisIfAvailable<TargetLibraryInfoWrapperPass>();
-  TLI = TLIP ? &TLIP->getTLI(F) : nullptr;
-  AA = &getAnalysis<AAResultsWrapperPass>().getAAResults();
-  DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  LI = &getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
-
+  auto *TLI = TLIP ? &TLIP->getTLI(F) : nullptr;
+  auto &AA = getAnalysis<AAResultsWrapperPass>().getAAResults();
+  auto &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
+  auto &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
+  LAIs = std::make_unique<LoopAccessInfoManager>(SE, AA, DT, LI, TLI);
   return false;
 }
 

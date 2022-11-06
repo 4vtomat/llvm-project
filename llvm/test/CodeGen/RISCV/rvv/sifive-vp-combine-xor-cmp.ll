@@ -19,27 +19,26 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine_not_allones(<vscale x 4 x i64
 ; CHECK-LABEL: test_vp_xor_icmp_combine_not_allones:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v18, a1
 ; CHECK-NEXT:    vmv.v.i v19, 0
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv1r.v v16, v19
 ; CHECK-NEXT:    vslideup.vi v16, v18, 1
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vmv1r.v v17, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vmerge.vim v16, v19, 1, v0
-; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v16, v18, 2
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
 ; CHECK-NEXT:    vmsle.vv v17, v12, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmxor.mm v0, v17, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> zeroinitializer, i1 1, i32 1
@@ -54,7 +53,6 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine_different_mask(<vscale x 4 x 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmsle.vv v16, v12, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmnot.m v0, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
@@ -82,27 +80,26 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x dou
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_not_allones:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v18, a1
 ; CHECK-NEXT:    vmv.v.i v19, 0
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv1r.v v16, v19
 ; CHECK-NEXT:    vslideup.vi v16, v18, 1
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vmv1r.v v17, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vmerge.vim v16, v19, 1, v0
-; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, mu
+; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v16, v18, 2
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
 ; CHECK-NEXT:    vmflt.vv v17, v8, v12, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmxnor.mm v0, v17, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> zeroinitializer, i1 1, i32 1
@@ -115,11 +112,10 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x dou
 define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_different_mask(<vscale x 4 x double> %x, <vscale x 4 x double> %y, <vscale x 4 x i1> %mask1, <vscale x 4 x i1> %mask2, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_different_mask:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmset.m v16
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmflt.vv v17, v8, v12, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmxnor.mm v0, v17, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0

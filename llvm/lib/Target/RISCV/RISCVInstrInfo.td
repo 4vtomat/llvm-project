@@ -276,6 +276,11 @@ def simm12 : Operand<XLenVT>, ImmLeaf<XLenVT, [{return isInt<12>(Imm);}]> {
   let OperandNamespace = "RISCVOp";
 }
 
+// A 12-bit signed immediate which cannot fit in 6-bit signed immediate,
+// but even negative value fit in 12-bit.
+def simm12_no6 : ImmLeaf<XLenVT, [{
+  return isInt<12>(Imm) && !isInt<6>(Imm) && isInt<12>(-Imm);}]>;
+
 // A 13-bit signed immediate where the least significant bit is zero.
 def simm13_lsb0 : Operand<OtherVT> {
   let ParserMatchClass = SImmAsmOperand<13, "Lsb0">;
@@ -1555,6 +1560,18 @@ multiclass SelectCC_GPR_rrirr<RegisterClass valty> {
 let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in // SIFIVE
 defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
 
+class SelectCompressOpt<CondCode Cond>: Pat<(riscv_selectcc_frag:$select GPR:$lhs, simm12_no6:$Constant, Cond,
+                                                  GPR:$truev, GPR:$falsev),
+    (Select_GPR_Using_CC_GPR (ADDI GPR:$lhs, (NegImm simm12:$Constant)), X0,
+                          (IntCCtoRISCVCC $select), GPR:$truev, GPR:$falsev)>;
+
+def OptForMinSize : Predicate<"MF ? MF->getFunction().hasMinSize() : false">;
+
+let Predicates = [HasStdExtC, OptForMinSize] in {
+  def : SelectCompressOpt<SETEQ>;
+  def : SelectCompressOpt<SETNE>;
+}
+
 /// Branches and jumps
 
 // Match `riscv_brcc` and lower to the appropriate RISC-V branch instruction.
@@ -1566,12 +1583,20 @@ multiclass BccPat<CondCode Cond, RVInstB Inst> {
             (Inst GPR:$rs1, X0, simm13_lsb0:$imm12)>;
 }
 
+class BrccCompessOpt<CondCode Cond, RVInstB Inst> : Pat<(riscv_brcc GPR:$lhs, simm12_no6:$Constant, Cond, bb:$place),
+                              (Inst (ADDI GPR:$lhs, (NegImm simm12:$Constant)), X0, bb:$place)>;
+
 defm : BccPat<SETEQ, BEQ>;
 defm : BccPat<SETNE, BNE>;
 defm : BccPat<SETLT, BLT>;
 defm : BccPat<SETGE, BGE>;
 defm : BccPat<SETULT, BLTU>;
 defm : BccPat<SETUGE, BGEU>;
+
+let Predicates = [HasStdExtC, OptForMinSize] in {
+  def : BrccCompessOpt<SETEQ, BEQ>;
+  def : BrccCompessOpt<SETNE, BNE>;
+}
 
 #ifdef SIFIVE_CUSTOMIZATION
 class LongBccPseudo : Pseudo<(outs),

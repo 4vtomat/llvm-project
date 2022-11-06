@@ -10,7 +10,7 @@ define <vscale x 1 x i8> @sf_vfnrclip_x_f_qf_u8mf8_tu(<vscale x 1 x i8> %passthr
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf8_tu:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v8, v9, ft0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 1 x i8> @llvm.riscv.sf.vfnrclip.x.nxv1i8.nxv1f32.iXLen(<vscale x 1 x i8> %passthru, <vscale x 1 x float> %0, float %1, iXLen %vl)
@@ -21,7 +21,7 @@ define <vscale x 1 x i8> @sf_vfnrclip_x_f_qf_u8mf8_ta(<vscale x 1 x float> %0, f
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf8_ta:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v9, v8, ft0
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
@@ -85,7 +85,7 @@ define <vscale x 2 x i8> @sf_vfnrclip_x_f_qf_u8mf4_tu(<vscale x 2 x i8> %passthr
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf4_tu:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v8, v9, ft0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 2 x i8> @llvm.riscv.sf.vfnrclip.x.nxv2i8.nxv2f32.iXLen(<vscale x 2 x i8> %passthru, <vscale x 2 x float> %0, float %1, iXLen %vl)
@@ -96,7 +96,7 @@ define <vscale x 2 x i8> @sf_vfnrclip_x_f_qf_u8mf4_ta(<vscale x 2 x float> %0, f
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf4_ta:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v9, v8, ft0
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
@@ -160,7 +160,7 @@ define <vscale x 4 x i8> @sf_vfnrclip_x_f_qf_u8mf2_tu(<vscale x 4 x i8> %passthr
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf2_tu:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v8, v10, ft0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i8> @llvm.riscv.sf.vfnrclip.x.nxv4i8.nxv4f32.iXLen(<vscale x 4 x i8> %passthru, <vscale x 4 x float> %0, float %1, iXLen %vl)
@@ -171,7 +171,7 @@ define <vscale x 4 x i8> @sf_vfnrclip_x_f_qf_u8mf2_ta(<vscale x 4 x float> %0, f
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8mf2_ta:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v10, v8, ft0
 ; CHECK-NEXT:    vmv1r.v v8, v10
 ; CHECK-NEXT:    ret
@@ -235,7 +235,7 @@ define <vscale x 8 x i8> @sf_vfnrclip_x_f_qf_u8m1_tu(<vscale x 8 x i8> %passthru
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8m1_tu:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v8, v12, ft0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 8 x i8> @llvm.riscv.sf.vfnrclip.x.nxv8i8.nxv8f32.iXLen(<vscale x 8 x i8> %passthru, <vscale x 8 x float> %0, float %1, iXLen %vl)
@@ -246,7 +246,7 @@ define <vscale x 8 x i8> @sf_vfnrclip_x_f_qf_u8m1_ta(<vscale x 8 x float> %0, fl
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8m1_ta:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v12, v8, ft0
 ; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
@@ -310,7 +310,7 @@ define <vscale x 16 x i8> @sf_vfnrclip_x_f_qf_u8m2_tu(<vscale x 16 x i8> %passth
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8m2_tu:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v8, v16, ft0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 16 x i8> @llvm.riscv.sf.vfnrclip.x.nxv16i8.nxv16f32.iXLen(<vscale x 16 x i8> %passthru, <vscale x 16 x float> %0, float %1, iXLen %vl)
@@ -321,7 +321,7 @@ define <vscale x 16 x i8> @sf_vfnrclip_x_f_qf_u8m2_ta(<vscale x 16 x float> %0, 
 ; CHECK-LABEL: sf_vfnrclip_x_f_qf_u8m2_ta:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, mu
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-NEXT:    sf.vfnrclip.x.f.qf v16, v8, ft0
 ; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret

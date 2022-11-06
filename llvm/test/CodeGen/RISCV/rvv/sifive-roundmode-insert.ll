@@ -12,7 +12,7 @@ declare <vscale x 8 x i8> @llvm.riscv.vaadd.rm.nxv8i8.nxv8i8(
 define <vscale x 8 x i8> @test1(<vscale x 8 x i8> %0, <vscale x 8 x i8> %1, <vscale x 8 x i8> %2, i64 %3) nounwind {
 ; CHECK-LABEL: test1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 2
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    csrwi vxrm, 0
@@ -44,7 +44,7 @@ define dso_local void @loop1(i8* nocapture %ptr_dest, i8* nocapture readonly %pt
 ; CHECK-NEXT:    beqz a4, .LBB1_2
 ; CHECK-NEXT:  .LBB1_1: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    vsetvli zero, a4, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a4, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    csrrwi a5, vxrm, 2

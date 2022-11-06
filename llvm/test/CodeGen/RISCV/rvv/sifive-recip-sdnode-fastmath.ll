@@ -5,7 +5,7 @@
 define <vscale x 2 x half> @recip_nxv2f16(<vscale x 2 x half> %a) #0 {
 ; CHECK-LABEL: recip_nxv2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -22,7 +22,7 @@ define <vscale x 2 x half> @recip_nxv2f16(<vscale x 2 x half> %a) #0 {
 define <vscale x 4 x half> @recip_nxv4f16(<vscale x 4 x half> %a) #0 {
 ; CHECK-LABEL: recip_nxv4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI1_0)
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
@@ -39,7 +39,7 @@ define <vscale x 4 x half> @recip_nxv4f16(<vscale x 4 x half> %a) #0 {
 define <vscale x 8 x half> @recip_nxv8f16(<vscale x 8 x half> %a) #0 {
 ; CHECK-LABEL: recip_nxv8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI2_0)
 ; CHECK-NEXT:    vlse16.v v10, (a0), zero
@@ -56,7 +56,7 @@ define <vscale x 8 x half> @recip_nxv8f16(<vscale x 8 x half> %a) #0 {
 define <vscale x 2 x double> @recip_nxv2f64(<vscale x 2 x double> %a) #0 {
 ; CHECK-LABEL: recip_nxv2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
@@ -79,7 +79,7 @@ define <vscale x 2 x double> @recip_nxv2f64(<vscale x 2 x double> %a) #0 {
 define <vscale x 4 x double> @recip_nxv4f64(<vscale x 4 x double> %a) #0 {
 ; CHECK-LABEL: recip_nxv4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI4_0)
 ; CHECK-NEXT:    vlse64.v v12, (a0), zero
@@ -102,7 +102,7 @@ define <vscale x 4 x double> @recip_nxv4f64(<vscale x 4 x double> %a) #0 {
 define <vscale x 8 x double> @recip_nxv8f64(<vscale x 8 x double> %a) #0 {
 ; CHECK-LABEL: recip_nxv8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
 ; CHECK-NEXT:    vlse64.v v16, (a0), zero
@@ -125,7 +125,7 @@ define <vscale x 8 x double> @recip_nxv8f64(<vscale x 8 x double> %a) #0 {
 define <vscale x 2 x half> @recip_zero_steps_nxv2f16(<vscale x 2 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 2 x half> poison, half 1.000000e+00, i32 0
@@ -137,7 +137,7 @@ define <vscale x 2 x half> @recip_zero_steps_nxv2f16(<vscale x 2 x half> %a) #1 
 define <vscale x 4 x half> @recip_zero_steps_nxv4f16(<vscale x 4 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 4 x half> poison, half 1.000000e+00, i32 0
@@ -149,7 +149,7 @@ define <vscale x 4 x half> @recip_zero_steps_nxv4f16(<vscale x 4 x half> %a) #1 
 define <vscale x 8 x half> @recip_zero_steps_nxv8f16(<vscale x 8 x half> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 8 x half> poison, half 1.000000e+00, i32 0
@@ -161,7 +161,7 @@ define <vscale x 8 x half> @recip_zero_steps_nxv8f16(<vscale x 8 x half> %a) #1 
 define <vscale x 2 x float> @recip_zero_steps_nxv2f32(<vscale x 2 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv2f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 2 x float> poison, float 1.000000e+00, i32 0
@@ -173,7 +173,7 @@ define <vscale x 2 x float> @recip_zero_steps_nxv2f32(<vscale x 2 x float> %a) #
 define <vscale x 4 x float> @recip_zero_steps_nxv4f32(<vscale x 4 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 4 x float> poison, float 1.000000e+00, i32 0
@@ -185,7 +185,7 @@ define <vscale x 4 x float> @recip_zero_steps_nxv4f32(<vscale x 4 x float> %a) #
 define <vscale x 8 x float> @recip_zero_steps_nxv8f32(<vscale x 8 x float> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 8 x float> poison, float 1.000000e+00, i32 0
@@ -197,7 +197,7 @@ define <vscale x 8 x float> @recip_zero_steps_nxv8f32(<vscale x 8 x float> %a) #
 define <vscale x 2 x double> @recip_zero_steps_nxv2f64(<vscale x 2 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m2, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 2 x double> poison, double 1.000000e+00, i32 0
@@ -209,7 +209,7 @@ define <vscale x 2 x double> @recip_zero_steps_nxv2f64(<vscale x 2 x double> %a)
 define <vscale x 4 x double> @recip_zero_steps_nxv4f64(<vscale x 4 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 4 x double> poison, double 1.000000e+00, i32 0
@@ -221,7 +221,7 @@ define <vscale x 4 x double> @recip_zero_steps_nxv4f64(<vscale x 4 x double> %a)
 define <vscale x 8 x double> @recip_zero_steps_nxv8f64(<vscale x 8 x double> %a) #1 {
 ; CHECK-LABEL: recip_zero_steps_nxv8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, mu
+; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 8 x double> poison, double 1.000000e+00, i32 0
