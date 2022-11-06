@@ -4,7 +4,7 @@
 define void @vrshlq_s8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vadd.vv v8, v8, v8
 ; CHECK-NEXT:    vse8.v v8, (a1)
@@ -19,7 +19,7 @@ entry:
 define void @vrshl_s8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -33,7 +33,7 @@ entry:
 define void @vrshlq_s16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
 ; CHECK-NEXT:    vssra.vi v8, v8, 15
@@ -50,7 +50,7 @@ entry:
 define void @vrshl_s16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsll.vi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -65,7 +65,7 @@ entry:
 define void @vrshlq_s32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
 ; CHECK-NEXT:    vssra.vi v8, v8, 1
@@ -82,7 +82,7 @@ entry:
 define void @vrshl_s32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsll.vi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a1)
@@ -97,7 +97,7 @@ entry:
 define void @vrshlq_s64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -111,7 +111,7 @@ entry:
 define void @vrshl_s64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -125,7 +125,7 @@ entry:
 define void @vrshlq_u8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -139,7 +139,7 @@ entry:
 define void @vrshl_u8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -153,7 +153,7 @@ entry:
 define void @vrshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
 ; CHECK-NEXT:    vssrl.vi v8, v8, 15
@@ -170,7 +170,7 @@ entry:
 define void @vrshl_u16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -184,7 +184,7 @@ entry:
 define void @vrshlq_u32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -198,7 +198,7 @@ entry:
 define void @vrshl_u32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -212,7 +212,7 @@ entry:
 define void @vrshlq_u64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshlq_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -226,7 +226,7 @@ entry:
 define void @vrshl_u64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vrshl_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret

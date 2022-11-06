@@ -4,7 +4,7 @@
 define void @vrecpe_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpe_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -19,7 +19,7 @@ entry:
 define void @vrecpe_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpe_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse32.v v8, (a1)
@@ -34,7 +34,7 @@ entry:
 define void @vrecpe_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpe_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse64.v v8, (a1)
@@ -49,7 +49,7 @@ entry:
 define void @vrecpeq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpeq_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -64,7 +64,7 @@ entry:
 define void @vrecpeq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpeq_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse32.v v8, (a1)
@@ -79,7 +79,7 @@ entry:
 define void @vrecpeq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrecpeq_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vfrec7.v v8, v8
 ; CHECK-NEXT:    vse64.v v8, (a1)

@@ -79,7 +79,7 @@ entry:
 define void @vqrshl_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqrshl_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    li a0, 255
@@ -410,7 +410,7 @@ entry:
 define void @vqrshlq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqrshlq_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    li a0, 255

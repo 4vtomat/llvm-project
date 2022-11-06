@@ -4,7 +4,7 @@
 define void @vcvtm_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI0_0)(a0)
@@ -14,6 +14,7 @@ define void @vcvtm_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -30,7 +31,7 @@ entry:
 define void @vcvtm_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI1_0)(a0)
@@ -40,6 +41,7 @@ define void @vcvtm_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -56,7 +58,7 @@ entry:
 define void @vcvtm_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI2_0)(a0)
@@ -66,6 +68,7 @@ define void @vcvtm_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -82,7 +85,7 @@ entry:
 define void @vcvtm_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI3_0)(a0)
@@ -92,6 +95,7 @@ define void @vcvtm_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -108,7 +112,7 @@ entry:
 define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI4_0)(a0)
@@ -118,6 +122,7 @@ define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -134,7 +139,7 @@ entry:
 define void @vcvtm_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtm_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI5_0)(a0)
@@ -144,6 +149,7 @@ define void @vcvtm_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -160,7 +166,7 @@ entry:
 define void @vcvtmq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI6_0)(a0)
@@ -170,6 +176,7 @@ define void @vcvtmq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -186,7 +193,7 @@ entry:
 define void @vcvtmq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI7_0)(a0)
@@ -196,6 +203,7 @@ define void @vcvtmq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -212,7 +220,7 @@ entry:
 define void @vcvtmq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI8_0)(a0)
@@ -222,6 +230,7 @@ define void @vcvtmq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -238,7 +247,7 @@ entry:
 define void @vcvtmq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI9_0)(a0)
@@ -248,6 +257,7 @@ define void @vcvtmq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -264,7 +274,7 @@ entry:
 define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI10_0)(a0)
@@ -274,6 +284,7 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -290,7 +301,7 @@ entry:
 define void @vcvtmq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtmq_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI11_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI11_0)(a0)
@@ -300,6 +311,7 @@ define void @vcvtmq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -316,7 +328,7 @@ entry:
 define void @vcvtn_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI12_0)(a0)
@@ -326,6 +338,7 @@ define void @vcvtn_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -342,7 +355,7 @@ entry:
 define void @vcvtn_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI13_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI13_0)(a0)
@@ -352,6 +365,7 @@ define void @vcvtn_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -368,7 +382,7 @@ entry:
 define void @vcvtn_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI14_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI14_0)(a0)
@@ -378,6 +392,7 @@ define void @vcvtn_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -394,7 +409,7 @@ entry:
 define void @vcvtn_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI15_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI15_0)(a0)
@@ -404,6 +419,7 @@ define void @vcvtn_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -420,7 +436,7 @@ entry:
 define void @vcvtn_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI16_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI16_0)(a0)
@@ -430,6 +446,7 @@ define void @vcvtn_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -446,7 +463,7 @@ entry:
 define void @vcvtn_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtn_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI17_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI17_0)(a0)
@@ -456,6 +473,7 @@ define void @vcvtn_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -472,7 +490,7 @@ entry:
 define void @vcvtnq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI18_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI18_0)(a0)
@@ -482,6 +500,7 @@ define void @vcvtnq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -498,7 +517,7 @@ entry:
 define void @vcvtnq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI19_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI19_0)(a0)
@@ -508,6 +527,7 @@ define void @vcvtnq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -524,7 +544,7 @@ entry:
 define void @vcvtnq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI20_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI20_0)(a0)
@@ -534,6 +554,7 @@ define void @vcvtnq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -550,7 +571,7 @@ entry:
 define void @vcvtnq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI21_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI21_0)(a0)
@@ -560,6 +581,7 @@ define void @vcvtnq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -576,7 +598,7 @@ entry:
 define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI22_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI22_0)(a0)
@@ -586,6 +608,7 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -602,7 +625,7 @@ entry:
 define void @vcvtnq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtnq_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI23_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI23_0)(a0)
@@ -612,6 +635,7 @@ define void @vcvtnq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -628,7 +652,7 @@ entry:
 define void @vcvtp_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI24_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI24_0)(a0)
@@ -638,6 +662,7 @@ define void @vcvtp_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -654,7 +679,7 @@ entry:
 define void @vcvtp_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI25_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI25_0)(a0)
@@ -664,6 +689,7 @@ define void @vcvtp_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -680,7 +706,7 @@ entry:
 define void @vcvtp_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI26_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI26_0)(a0)
@@ -690,6 +716,7 @@ define void @vcvtp_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -706,7 +733,7 @@ entry:
 define void @vcvtp_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI27_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI27_0)(a0)
@@ -716,6 +743,7 @@ define void @vcvtp_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -732,7 +760,7 @@ entry:
 define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI28_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI28_0)(a0)
@@ -742,6 +770,7 @@ define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -758,7 +787,7 @@ entry:
 define void @vcvtp_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtp_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI29_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI29_0)(a0)
@@ -768,6 +797,7 @@ define void @vcvtp_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -784,7 +814,7 @@ entry:
 define void @vcvtpq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_s16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI30_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI30_0)(a0)
@@ -794,6 +824,7 @@ define void @vcvtpq_s16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -810,7 +841,7 @@ entry:
 define void @vcvtpq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_s32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI31_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI31_0)(a0)
@@ -820,6 +851,7 @@ define void @vcvtpq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -836,7 +868,7 @@ entry:
 define void @vcvtpq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_s64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI32_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI32_0)(a0)
@@ -846,6 +878,7 @@ define void @vcvtpq_s64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
@@ -862,7 +895,7 @@ entry:
 define void @vcvtpq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_u16_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI33_0)
 ; CHECK-NEXT:    flh ft0, %lo(.LCPI33_0)(a0)
@@ -872,6 +905,7 @@ define void @vcvtpq_u16_f16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -888,7 +922,7 @@ entry:
 define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_u32_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI34_0)
 ; CHECK-NEXT:    flw ft0, %lo(.LCPI34_0)(a0)
@@ -898,6 +932,7 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
@@ -914,7 +949,7 @@ entry:
 define void @vcvtpq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvtpq_u64_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI35_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI35_0)(a0)
@@ -924,6 +959,7 @@ define void @vcvtpq_u64_f64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    vfcvt.f.x.v v9, v9, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8

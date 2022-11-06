@@ -4,7 +4,7 @@
 define void @vld2_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -19,7 +19,7 @@ entry:
 define void @vld2_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -34,7 +34,7 @@ entry:
 define void @vld2_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -49,7 +49,7 @@ entry:
 define void @vld2_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -64,7 +64,7 @@ entry:
 define void @vld2_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -79,7 +79,7 @@ entry:
 define void @vld2_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -94,7 +94,7 @@ entry:
 define void @vld2_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -109,7 +109,7 @@ entry:
 define void @vld2_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -124,7 +124,7 @@ entry:
 define void @vld2_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -139,7 +139,7 @@ entry:
 define void @vld2_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -154,7 +154,7 @@ entry:
 define void @vld2_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg2e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -169,7 +169,7 @@ entry:
 define void @vld2q_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -184,7 +184,7 @@ entry:
 define void @vld2q_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -199,7 +199,7 @@ entry:
 define void @vld2q_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -214,7 +214,7 @@ entry:
 define void @vld2q_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -229,7 +229,7 @@ entry:
 define void @vld2q_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -244,7 +244,7 @@ entry:
 define void @vld2q_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -259,7 +259,7 @@ entry:
 define void @vld2q_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -274,7 +274,7 @@ entry:
 define void @vld2q_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -289,7 +289,7 @@ entry:
 define void @vld2q_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -304,7 +304,7 @@ entry:
 define void @vld2q_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -319,7 +319,7 @@ entry:
 define void @vld2q_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld2q_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg2e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg2e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -334,7 +334,7 @@ entry:
 define void @vld3_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -350,7 +350,7 @@ entry:
 define void @vld3_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -366,7 +366,7 @@ entry:
 define void @vld3_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -382,7 +382,7 @@ entry:
 define void @vld3_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -398,7 +398,7 @@ entry:
 define void @vld3_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -414,7 +414,7 @@ entry:
 define void @vld3_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -430,7 +430,7 @@ entry:
 define void @vld3_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -446,7 +446,7 @@ entry:
 define void @vld3_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -462,7 +462,7 @@ entry:
 define void @vld3_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -478,7 +478,7 @@ entry:
 define void @vld3_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -494,7 +494,7 @@ entry:
 define void @vld3_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg3e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -510,7 +510,7 @@ entry:
 define void @vld3q_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -526,7 +526,7 @@ entry:
 define void @vld3q_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -542,7 +542,7 @@ entry:
 define void @vld3q_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -558,7 +558,7 @@ entry:
 define void @vld3q_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -574,7 +574,7 @@ entry:
 define void @vld3q_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -590,7 +590,7 @@ entry:
 define void @vld3q_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -606,7 +606,7 @@ entry:
 define void @vld3q_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -622,7 +622,7 @@ entry:
 define void @vld3q_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -638,7 +638,7 @@ entry:
 define void @vld3q_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -654,7 +654,7 @@ entry:
 define void @vld3q_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -670,7 +670,7 @@ entry:
 define void @vld3q_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg3e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg3e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -686,7 +686,7 @@ entry:
 define void @vld4_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -703,7 +703,7 @@ entry:
 define void @vld4_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -720,7 +720,7 @@ entry:
 define void @vld4_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -737,7 +737,7 @@ entry:
 define void @vld4_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -754,7 +754,7 @@ entry:
 define void @vld4_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -771,7 +771,7 @@ entry:
 define void @vld4_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -788,7 +788,7 @@ entry:
 define void @vld4_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -805,7 +805,7 @@ entry:
 define void @vld4_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -822,7 +822,7 @@ entry:
 define void @vld4_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -839,7 +839,7 @@ entry:
 define void @vld4_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -856,7 +856,7 @@ entry:
 define void @vld4_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlsseg4e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -873,7 +873,7 @@ entry:
 define void @vld4q_dup_f16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -890,7 +890,7 @@ entry:
 define void @vld4q_dup_f32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -907,7 +907,7 @@ entry:
 define void @vld4q_dup_f64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -924,7 +924,7 @@ entry:
 define void @vld4q_dup_s16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -941,7 +941,7 @@ entry:
 define void @vld4q_dup_s32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -958,7 +958,7 @@ entry:
 define void @vld4q_dup_s64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -975,7 +975,7 @@ entry:
 define void @vld4q_dup_s8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -992,7 +992,7 @@ entry:
 define void @vld4q_dup_u16(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e16.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -1009,7 +1009,7 @@ entry:
 define void @vld4q_dup_u32(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e32.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -1026,7 +1026,7 @@ entry:
 define void @vld4q_dup_u64(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e64.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -1043,7 +1043,7 @@ entry:
 define void @vld4q_dup_u8(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_dup_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlsseg4e8.v v8, (a0), zero
 ; CHECK-NEXT:    vsseg4e8.v v8, (a1)
 ; CHECK-NEXT:    ret

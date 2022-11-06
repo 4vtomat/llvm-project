@@ -4,13 +4,13 @@
 define void @vqmovun_high_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_high_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 8
 ; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -26,13 +26,13 @@ entry:
 define void @vqmovun_high_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_high_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 4
 ; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -48,13 +48,13 @@ entry:
 define void @vqmovun_high_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_high_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 2
 ; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -70,10 +70,10 @@ entry:
 define void @vqmovun_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -87,10 +87,10 @@ entry:
 define void @vqmovun_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -104,10 +104,10 @@ entry:
 define void @vqmovun_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqmovun_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret

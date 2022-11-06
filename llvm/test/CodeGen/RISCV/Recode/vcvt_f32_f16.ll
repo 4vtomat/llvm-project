@@ -4,7 +4,7 @@
 define void @vcvt_f32_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvt_f32_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vse32.v v9, (a1)
@@ -19,11 +19,11 @@ entry:
 define void @vcvt_high_f32_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vcvt_high_f32_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vse32.v v9, (a1)
 ; CHECK-NEXT:    ret

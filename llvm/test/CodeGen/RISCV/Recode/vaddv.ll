@@ -4,11 +4,11 @@
 define void @vaddv_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -22,11 +22,11 @@ entry:
 define void @vaddv_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -39,11 +39,11 @@ entry:
 define void @vaddv_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -57,11 +57,11 @@ entry:
 define void @vaddv_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -75,11 +75,11 @@ entry:
 define void @vaddv_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -92,11 +92,11 @@ entry:
 define void @vaddv_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddv_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -110,11 +110,11 @@ entry:
 define void @vaddvq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -128,11 +128,11 @@ entry:
 define void @vaddvq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -145,11 +145,11 @@ entry:
 define void @vaddvq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -162,11 +162,11 @@ entry:
 define void @vaddvq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -180,11 +180,11 @@ entry:
 define void @vaddvq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -198,11 +198,11 @@ entry:
 define void @vaddvq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -215,11 +215,11 @@ entry:
 define void @vaddvq_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -232,11 +232,11 @@ entry:
 define void @vaddvq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vaddvq_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -250,11 +250,11 @@ entry:
 define void @vpaddd_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddd_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -267,11 +267,11 @@ entry:
 define void @vpaddd_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddd_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v9
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

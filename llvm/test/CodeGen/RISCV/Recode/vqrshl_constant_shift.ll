@@ -4,7 +4,7 @@
 define void @vqrshlq_s8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    csrrwi a2, vxrm, 2
@@ -22,7 +22,7 @@ entry:
 define void @vqrshl_s8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -36,7 +36,7 @@ entry:
 define void @vqrshlq_s16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    csrrwi a2, vxrm, 2
@@ -54,7 +54,7 @@ entry:
 define void @vqrshl_s16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    csrrwi a2, vxrm, 2
@@ -72,7 +72,7 @@ entry:
 define void @vqrshlq_s32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
@@ -91,7 +91,7 @@ entry:
 define void @vqrshl_s32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
@@ -110,7 +110,7 @@ entry:
 define void @vqrshlq_s64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -124,7 +124,7 @@ entry:
 define void @vqrshl_s64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_s64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmslt.vx v0, v8, zero
 ; CHECK-NEXT:    li a0, -1
@@ -150,7 +150,7 @@ entry:
 define void @vqrshlq_u8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    vwmulu.vx v10, v8, a0
@@ -167,7 +167,7 @@ entry:
 define void @vqrshl_u8(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -181,7 +181,7 @@ entry:
 define void @vqrshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, 16
 ; CHECK-NEXT:    vwmulu.vx v10, v8, a0
@@ -198,7 +198,7 @@ entry:
 define void @vqrshl_u16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    lui a0, 16
 ; CHECK-NEXT:    vwmulu.vx v9, v8, a0
@@ -215,7 +215,7 @@ entry:
 define void @vqrshlq_u32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
@@ -233,7 +233,7 @@ entry:
 define void @vqrshl_u32(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
@@ -251,7 +251,7 @@ entry:
 define void @vqrshlq_u64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshlq_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    li a0, 63
 ; CHECK-NEXT:    vsll.vx v9, v8, a0
@@ -272,7 +272,7 @@ entry:
 define void @vqrshl_u64(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqrshl_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
 ; CHECK-NEXT:    vssrl.vi v8, v8, 1

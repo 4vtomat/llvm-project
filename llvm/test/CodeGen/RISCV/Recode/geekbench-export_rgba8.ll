@@ -11,11 +11,11 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    lui a4, %hi(.LCPI0_1)
 ; CHECK-NEXT:    flw ft1, %lo(.LCPI0_1)(a4)
 ; CHECK-NEXT:    fmv.w.x ft2, zero
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB0_2: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a2)
 ; CHECK-NEXT:    vmfne.vv v0, v9, v9
 ; CHECK-NEXT:    vfmax.vf v9, v9, ft2
@@ -26,13 +26,13 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    vmfne.vv v0, v9, v9
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v9, v9
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v9, v9, 0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, mu
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 4
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v9, v9, 0
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    addi a3, a3, -1
