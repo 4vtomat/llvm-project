@@ -724,7 +724,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return InstructionCost::getInvalid();
     break;
   }
-<<<<<<< HEAD
   // This is not ideal but untill all VP intrinsics are in upstream we can't use
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
@@ -792,7 +791,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     VP_INTRINSIC_LIST
 #undef VP_INTRINSIC
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::vp_rint: {
     // RISC-V target uses at least 5 instructions to lower rounding intrinsics.
     unsigned Cost = 5;
@@ -801,7 +799,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return Cost * LT.first;
     break;
   }
->>>>>>> llvm/main
   }
 
   if (ST->hasVInstructions() && RetTy->isVectorTy()) {
