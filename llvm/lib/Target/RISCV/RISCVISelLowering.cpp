@@ -578,8 +578,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
+<<<<<<< HEAD
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO, // SIFIVE
         ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
+=======
+        ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
+        ISD::VP_FRINT};
+>>>>>>> llvm/main
 
     static const unsigned IntegerVecReduceOps[] = {
         ISD::VECREDUCE_ADD,  ISD::VECREDUCE_AND,  ISD::VECREDUCE_OR,
@@ -2369,8 +2374,9 @@ static RISCVFPRndMode::RoundingMode matchRoundingOp(unsigned Opc) {
 }
 
 // Expand vector FTRUNC, FCEIL, FFLOOR, FROUND, VP_FCEIL, VP_FFLOOR, VP_FROUND
-// VP_FROUNDEVEN and VP_FROUNDTOZERO by converting to the integer domain and
-// back. Taking care to avoid converting values that are nan or already correct.
+// VP_FROUNDEVEN, VP_FROUNDTOZERO and VP_FRINT by converting to the integer
+// domain and back. Taking care to avoid converting values that are nan or
+// already correct.
 static SDValue
 lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(SDValue Op, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
@@ -2388,13 +2394,7 @@ lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(SDValue Op, SelectionDAG &DAG,
   }
 
   SDValue Mask, VL;
-  bool IsVP = Op->getOpcode() == ISD::VP_FCEIL ||
-              Op->getOpcode() == ISD::VP_FFLOOR ||
-              Op->getOpcode() == ISD::VP_FROUND ||
-              Op->getOpcode() == ISD::VP_FROUNDEVEN ||
-              Op->getOpcode() == ISD::VP_FROUNDTOZERO;
-
-  if (IsVP) {
+  if (Op->isVPOpcode()) {
     Mask = Op.getOperand(1);
     VL = Op.getOperand(2);
   } else {
@@ -2446,14 +2446,16 @@ lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(SDValue Op, SelectionDAG &DAG,
   case ISD::VP_FROUNDTOZERO: {
     RISCVFPRndMode::RoundingMode FRM = matchRoundingOp(Op.getOpcode());
     assert(FRM != RISCVFPRndMode::Invalid);
-    Truncated = DAG.getNode(RISCVISD::VFCVT_X_F_VL, DL, IntVT, Src,
-                            Mask,
+    Truncated = DAG.getNode(RISCVISD::VFCVT_RM_X_F_VL, DL, IntVT, Src, Mask,
                             DAG.getTargetConstant(FRM, DL, XLenVT), VL);
     break;
   }
   case ISD::FTRUNC:
     Truncated = DAG.getNode(RISCVISD::VFCVT_RTZ_X_F_VL, DL, IntVT, Src,
                             Mask, VL);
+    break;
+  case ISD::VP_FRINT:
+    Truncated = DAG.getNode(RISCVISD::VFCVT_X_F_VL, DL, IntVT, Src, Mask, VL);
     break;
   }
 
@@ -4555,6 +4557,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerVPStridedStore(Op, DAG);
   case ISD::VP_FCEIL:
   case ISD::VP_FFLOOR:
+  case ISD::VP_FRINT:
   case ISD::VP_FROUND:
   case ISD::VP_FROUNDEVEN:
   case ISD::VP_FROUNDTOZERO:
@@ -5592,6 +5595,25 @@ SDValue RISCVTargetLowering::lowerINSERT_VECTOR_ELT(SDValue Op,
         getDefaultScalableVLOps(I32ContainerVT, DL, DAG, Subtarget).first;
     // Limit the active VL to two.
     SDValue InsertI64VL = DAG.getConstant(2, DL, XLenVT);
+    // If the Idx is 0 we can insert directly into the vector.
+    if (isNullConstant(Idx)) {
+      // First slide in the lo value, then the hi in above it. We use slide1down
+      // to avoid the register group overlap constraint of vslide1up.
+      ValInVec = DAG.getNode(RISCVISD::VSLIDE1DOWN_VL, DL, I32ContainerVT,
+                             Vec, Vec, ValLo, I32Mask, InsertI64VL);
+      // If the source vector is undef don't pass along the tail elements from
+      // the previous slide1down.
+      SDValue Tail = Vec.isUndef() ? Vec : ValInVec;
+      ValInVec = DAG.getNode(RISCVISD::VSLIDE1DOWN_VL, DL, I32ContainerVT,
+                             Tail, ValInVec, ValHi, I32Mask, InsertI64VL);
+      // Bitcast back to the right container type.
+      ValInVec = DAG.getBitcast(ContainerVT, ValInVec);
+
+      if (!VecVT.isFixedLengthVector())
+        return ValInVec;
+      return convertFromScalableVector(VecVT, ValInVec, DAG, Subtarget);
+    }
+
     // First slide in the lo value, then the hi in above it. We use slide1down
     // to avoid the register group overlap constraint of vslide1up.
     ValInVec = DAG.getNode(RISCVISD::VSLIDE1DOWN_VL, DL, I32ContainerVT,
@@ -9893,8 +9915,11 @@ struct NodeExtensionHelper {
     return OrigOperand.getOpcode() == RISCVISD::VMV_V_X_VL;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // SIFIVE: This has been cherry-picked from upstream to fix a crash.
+=======
+>>>>>>> llvm/main
   /// Get or create a value that can feed \p Root with the given extension \p
   /// SExt. If \p SExt is None, this returns the source of this operand.
   /// \see ::getSource().
@@ -10163,13 +10188,19 @@ struct NodeExtensionHelper {
 struct CombineResult {
   /// Opcode to be generated when materializing the combine.
   unsigned TargetOpcode;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // SIFIVE: This has been cherry-picked from upstream to fix a crash.
+=======
+>>>>>>> llvm/main
   // No value means no extension is needed. If extension is needed, the value
   // indicates if it needs to be sign extended.
   Optional<bool> SExtLHS;
   Optional<bool> SExtRHS;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> llvm/main
   /// Root of the combine.
   SDNode *Root;
   /// LHS of the TargetOpcode.
@@ -14540,6 +14571,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(MULHU_VL)
   NODE_NAME_CASE(VFCVT_RTZ_X_F_VL)
   NODE_NAME_CASE(VFCVT_RTZ_XU_F_VL)
+  NODE_NAME_CASE(VFCVT_RM_X_F_VL)
   NODE_NAME_CASE(VFCVT_X_F_VL)
   NODE_NAME_CASE(SINT_TO_FP_VL)
   NODE_NAME_CASE(UINT_TO_FP_VL)

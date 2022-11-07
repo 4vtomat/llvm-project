@@ -121,11 +121,19 @@ def : WriteRes<WriteSTH, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteFST16, [SiFive7PipeA, SiFive7Mem]>;
 }
 
+<<<<<<< HEAD
 let ResourceCycles = [1, 1] in {
 def : WriteRes<WriteSTW, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteSTD, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteFST32, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteFST64, [SiFive7PipeA, SiFive7Mem]>;
+=======
+let Latency = 3 in {
+def : WriteRes<WriteLDB, [SiFive7PipeA]>;
+def : WriteRes<WriteLDH, [SiFive7PipeA]>;
+def : WriteRes<WriteLDW, [SiFive7PipeA]>;
+def : WriteRes<WriteLDD, [SiFive7PipeA]>;
+>>>>>>> llvm/main
 }
 
 let Latency = 3, ResourceCycles = [1, 1] in {

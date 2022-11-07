@@ -921,6 +921,7 @@ def HasVNNI    : Predicate<"Subtarget->hasVNNI()">;
 def HasVP2INTERSECT : Predicate<"Subtarget->hasVP2INTERSECT()">;
 def HasBF16      : Predicate<"Subtarget->hasBF16()">;
 def HasFP16      : Predicate<"Subtarget->hasFP16()">;
+def HasAVXVNNIINT8 : Predicate<"Subtarget->hasAVXVNNIINT8()">;
 def HasAVXVNNI : Predicate <"Subtarget->hasAVXVNNI()">;
 def NoVLX_Or_NoVNNI : Predicate<"!Subtarget->hasVLX() || !Subtarget->hasVNNI()">;
 
@@ -992,6 +993,7 @@ def HasPCONFIG   : Predicate<"Subtarget->hasPCONFIG()">;
 def HasENQCMD    : Predicate<"Subtarget->hasENQCMD()">;
 def HasAMXFP16   : Predicate<"Subtarget->hasAMXFP16()">;
 def HasCMPCCXADD : Predicate<"Subtarget->hasCMPCCXADD()">;
+def HasAVXNECONVERT : Predicate<"Subtarget->hasAVXNECONVERT()">;
 def HasKL        : Predicate<"Subtarget->hasKL()">;
 def HasRAOINT    : Predicate<"Subtarget->hasRAOINT()">;
 def HasWIDEKL    : Predicate<"Subtarget->hasWIDEKL()">;

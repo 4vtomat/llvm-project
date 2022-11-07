@@ -547,6 +547,7 @@ static bool areCompatibleCmpOps(Value *BaseOp0, Value *BaseOp1, Value *Op0,
          (isConstant(BaseOp1) && isConstant(Op1)) ||
          (!isa<Instruction>(BaseOp0) && !isa<Instruction>(Op0) &&
           !isa<Instruction>(BaseOp1) && !isa<Instruction>(Op1)) ||
+         BaseOp0 == Op0 || BaseOp1 == Op1 ||
          getSameOpcode({BaseOp0, Op0}, TLI).getOpcode() ||
          getSameOpcode({BaseOp1, Op1}, TLI).getOpcode();
 }
@@ -3900,7 +3901,7 @@ static bool isRepeatedNonIdentityClusteredMask(ArrayRef<int> Mask,
   ArrayRef<int> FirstCluster = Mask.slice(0, Sz);
   if (ShuffleVectorInst::isIdentityMask(FirstCluster))
     return false;
-  for (unsigned I = 0, E = Mask.size(); I < E; I += Sz) {
+  for (unsigned I = Sz, E = Mask.size(); I < E; I += Sz) {
     ArrayRef<int> Cluster = Mask.slice(I, Sz);
     if (Cluster != FirstCluster)
       return false;
@@ -3921,10 +3922,10 @@ void BoUpSLP::reorderNodeWithReuses(TreeEntry &TE, ArrayRef<int> Mask) const {
   // Try to improve gathered nodes with clustered reuses, if possible.
   reorderScalars(TE.Scalars, makeArrayRef(TE.ReuseShuffleIndices).slice(0, Sz));
   // Fill the reuses mask with the identity submasks.
-  for (auto It = TE.ReuseShuffleIndices.begin(),
-            End = TE.ReuseShuffleIndices.end();
+  for (auto *It = TE.ReuseShuffleIndices.begin(),
+            *End = TE.ReuseShuffleIndices.end();
        It != End; std::advance(It, Sz))
-    std::iota(It, std::next(It + Sz), 0);
+    std::iota(It, std::next(It, Sz), 0);
 }
 
 void BoUpSLP::reorderTopToBottom() {

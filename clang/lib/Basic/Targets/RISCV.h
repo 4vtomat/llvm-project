@@ -147,7 +147,7 @@ public:
     LargeArrayAlign = 64; // SIFIVE
     LongWidth = LongAlign = PointerWidth = PointerAlign = 64;
     IntMaxType = Int64Type = SignedLong;
-    resetDataLayout("e-m:e-p:64:64-i64:64-i128:128-n64-S128");
+    resetDataLayout("e-m:e-p:64:64-i64:64-i128:128-n32:64-S128");
   }
 
   bool setABI(const std::string &Name) override {

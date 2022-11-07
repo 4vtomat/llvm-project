@@ -811,13 +811,14 @@ bool MachineCSE::isPRECandidate(MachineInstr *MI,
       MI->getNumExplicitDefs() != 1)
     return false;
 
-  for (const auto &def : MI->defs())
-    if (!Register::isVirtualRegister(def.getReg()))
-      return false;
-
-  for (const auto &use : MI->uses())
-    if (use.isReg() && !Register::isVirtualRegister(use.getReg()))
-      PhysRefs.insert(use.getReg());
+  for (const MachineOperand &MO : MI->operands()) {
+    if (MO.isReg() && !Register::isVirtualRegister(MO.getReg())) {
+      if (MO.isDef())
+        return false;
+      else
+        PhysRefs.insert(MO.getReg());
+    }
+  }
 
   return true;
 }

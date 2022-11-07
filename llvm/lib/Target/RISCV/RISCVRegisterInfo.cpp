@@ -300,6 +300,7 @@ void RISCVRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   }
 }
 
+<<<<<<< HEAD
 bool RISCVRegisterInfo::requiresVirtualBaseRegisters(
     const MachineFunction &MF) const {
 #if SIFIVE_CUSTOMIZATION
@@ -411,6 +412,8 @@ int64_t RISCVRegisterInfo::getFrameIndexInstrOffset(const MachineInstr *MI,
   return MI->getOperand(Idx + 1).getImm();
 }
 
+=======
+>>>>>>> llvm/main
 Register RISCVRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
   const TargetFrameLowering *TFI = getFrameLowering(MF);
   return TFI->hasFP(MF) ? RISCV::X8 : RISCV::X2;

@@ -1349,7 +1349,9 @@ td_library(
     ],
     includes = ["include"],
     deps = [
+        ":CallInterfacesTdFiles",
         ":ControlFlowInterfacesTdFiles",
+        ":FunctionInterfacesTdFiles",
         ":InferTypeOpInterfaceTdFiles",
         ":OpBaseTdFiles",
         ":SideEffectInterfacesTdFiles",
@@ -4352,6 +4354,7 @@ cc_library(
     hdrs = ["include/mlir/Dialect/LLVMIR/NVVMDialect.h"],
     includes = ["include"],
     deps = [
+        ":DialectUtils",
         ":IR",
         ":LLVMDialect",
         ":NVVMOpsIncGen",
@@ -4910,6 +4913,7 @@ cc_library(
     deps = [
         ":SPIRVDialect",
         ":Transforms",
+        "//llvm:Support",
     ],
 )
 
@@ -5920,12 +5924,24 @@ cc_library(
 )
 
 cc_library(
+    name = "ArithAttrToLLVMConversion",
+    srcs = glob(["lib/Conversion/ArithCommon/*.cpp"]),
+    hdrs = glob(["include/mlir/Conversion/ArithCommon/*.h"]),
+    includes = ["include"],
+    deps = [
+        ":ArithDialect",
+        ":LLVMDialect",
+    ],
+)
+
+cc_library(
     name = "ArithToLLVM",
     srcs = glob(["lib/Conversion/ArithToLLVM/*.cpp"]),
     hdrs = glob(["include/mlir/Conversion/ArithToLLVM/*.h"]),
     includes = ["include"],
     deps = [
         ":Analysis",
+        ":ArithAttrToLLVMConversion",
         ":ArithDialect",
         ":ConversionPassIncGen",
         ":IR",
@@ -5964,6 +5980,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":Analysis",
+        ":ArithAttrToLLVMConversion",
         ":ConversionPassIncGen",
         ":DataLayoutInterfaces",
         ":IR",
@@ -6314,9 +6331,11 @@ cc_library(
     hdrs = glob(["include/mlir/Target/LLVMIR/Dialect/NVVM/*.h"]),
     includes = ["include"],
     deps = [
+        ":DialectUtils",
         ":IR",
         ":NVVMConversionIncGen",
         ":NVVMDialect",
+        ":Support",
         ":ToLLVMIRTranslation",
         "//llvm:Core",
         "//llvm:Support",
@@ -9271,6 +9290,7 @@ td_library(
     ],
     includes = ["include"],
     deps = [
+        ":ArithOpsTdFiles",
         ":InferTypeOpInterfaceTdFiles",
         ":OpBaseTdFiles",
         ":SideEffectInterfacesTdFiles",
