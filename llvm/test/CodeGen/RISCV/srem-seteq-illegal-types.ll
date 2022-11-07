@@ -425,20 +425,8 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64-NEXT:    addi a2, s3, -1
 ; RV64-NEXT:    seqz a2, a2
 ; RV64-NEXT:    neg a0, a0
-<<<<<<< HEAD
 ; RV64-NEXT:    addiw a2, a2, -1
 ; RV64-NEXT:    addiw a1, a1, -1
-; RV64-NEXT:    slli a3, a1, 29
-; RV64-NEXT:    srli a3, a3, 61
-; RV64-NEXT:    sb a3, 12(s0)
-; RV64-NEXT:    slli a1, a1, 2
-; RV64-NEXT:    slli a3, a2, 31
-; RV64-NEXT:    srli a3, a3, 62
-; RV64-NEXT:    or a1, a3, a1
-; RV64-NEXT:    sw a1, 8(s0)
-=======
-; RV64-NEXT:    addi a2, a2, -1
-; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    slli a3, a1, 2
 ; RV64-NEXT:    slli a4, a2, 31
 ; RV64-NEXT:    srli a4, a4, 62
@@ -447,7 +435,6 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64-NEXT:    slli a1, a1, 29
 ; RV64-NEXT:    srli a1, a1, 61
 ; RV64-NEXT:    sb a1, 12(s0)
->>>>>>> llvm/main
 ; RV64-NEXT:    slli a0, a0, 31
 ; RV64-NEXT:    srli a0, a0, 31
 ; RV64-NEXT:    slli a1, a2, 33
@@ -584,29 +571,14 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64M-NEXT:    ld a5, %lo(.LCPI3_3)(a5)
 ; RV64M-NEXT:    addi a2, a2, -2
 ; RV64M-NEXT:    seqz a2, a2
-<<<<<<< HEAD
-; RV64M-NEXT:    mul a3, a3, a4
-; RV64M-NEXT:    add a3, a3, a5
-; RV64M-NEXT:    slli a4, a3, 63
-; RV64M-NEXT:    srli a3, a3, 1
-; RV64M-NEXT:    or a3, a3, a4
-; RV64M-NEXT:    sltu a3, a5, a3
-; RV64M-NEXT:    addiw a2, a2, -1
-; RV64M-NEXT:    addiw a1, a1, -1
-; RV64M-NEXT:    neg a3, a3
-; RV64M-NEXT:    slli a4, a1, 29
-; RV64M-NEXT:    srli a4, a4, 61
-; RV64M-NEXT:    sb a4, 12(a0)
-; RV64M-NEXT:    slli a4, a2, 33
-=======
 ; RV64M-NEXT:    mul a1, a1, a4
 ; RV64M-NEXT:    add a1, a1, a5
 ; RV64M-NEXT:    slli a4, a1, 63
 ; RV64M-NEXT:    srli a1, a1, 1
 ; RV64M-NEXT:    or a1, a1, a4
 ; RV64M-NEXT:    sltu a1, a5, a1
-; RV64M-NEXT:    addi a2, a2, -1
-; RV64M-NEXT:    addi a3, a3, -1
+; RV64M-NEXT:    addiw a2, a2, -1
+; RV64M-NEXT:    addiw a3, a3, -1
 ; RV64M-NEXT:    neg a1, a1
 ; RV64M-NEXT:    slli a4, a3, 33
 ; RV64M-NEXT:    slli a1, a1, 31
@@ -614,7 +586,6 @@ define void @test_srem_vec(<3 x i33>* %X) nounwind {
 ; RV64M-NEXT:    or a1, a1, a4
 ; RV64M-NEXT:    sd a1, 0(a0)
 ; RV64M-NEXT:    slli a1, a2, 2
->>>>>>> llvm/main
 ; RV64M-NEXT:    slli a3, a3, 31
 ; RV64M-NEXT:    srli a3, a3, 62
 ; RV64M-NEXT:    or a1, a3, a1

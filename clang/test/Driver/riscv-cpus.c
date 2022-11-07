@@ -160,8 +160,7 @@
 // MISMATCH-ARCH: error: unsupported argument 'generic-rv32' to option '-mcpu='
 
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=generic-rv64 | FileCheck -check-prefix=MISMATCH-MCPU %s
-<<<<<<< HEAD
-// MISMATCH-MCPU: error: the clang compiler does not support '-mcpu=generic-rv64'
+// MISMATCH-MCPU: error: unsupported argument 'generic-rv64' to option '-mcpu='
 
 // mcpu with default march include experimental extensions
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280 | FileCheck -check-prefix=MCPU-SIFIVE-X280 %s
@@ -257,6 +256,3 @@
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-U64-SAME: "-target-abi" "lp64d"
-=======
-// MISMATCH-MCPU: error: unsupported argument 'generic-rv64' to option '-mcpu='
->>>>>>> llvm/main
