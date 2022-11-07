@@ -379,9 +379,7 @@ void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
         Args.MakeArgString(Twine("-plugin-opt=") + A->getValue(0)));
   }
 }
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
 std::string riscv::getRISCVTargetCPU(const llvm::opt::ArgList &Args,
                                      const llvm::Triple &Triple) {
@@ -399,4 +397,3 @@ std::string riscv::getRISCVTargetCPU(const llvm::opt::ArgList &Args,
 
   return Triple.isRISCV64() ? "generic-rv64" : "generic-rv32";
 }
->>>>>>> llvm/main
