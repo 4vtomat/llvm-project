@@ -578,13 +578,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-<<<<<<< HEAD
-        ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO, // SIFIVE
-        ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
-=======
+        ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT};
->>>>>>> llvm/main
 
     static const unsigned IntegerVecReduceOps[] = {
         ISD::VECREDUCE_ADD,  ISD::VECREDUCE_AND,  ISD::VECREDUCE_OR,
@@ -9915,11 +9911,6 @@ struct NodeExtensionHelper {
     return OrigOperand.getOpcode() == RISCVISD::VMV_V_X_VL;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream to fix a crash.
-=======
->>>>>>> llvm/main
   /// Get or create a value that can feed \p Root with the given extension \p
   /// SExt. If \p SExt is None, this returns the source of this operand.
   /// \see ::getSource().
@@ -9953,7 +9944,6 @@ struct NodeExtensionHelper {
       llvm_unreachable("Unsupported opcode");
     }
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Helper function to get the narrow type for \p Root.
   /// The narrow type is the type of \p Root where we divided the size of each
@@ -10188,19 +10178,10 @@ struct NodeExtensionHelper {
 struct CombineResult {
   /// Opcode to be generated when materializing the combine.
   unsigned TargetOpcode;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream to fix a crash.
-=======
->>>>>>> llvm/main
   // No value means no extension is needed. If extension is needed, the value
   // indicates if it needs to be sign extended.
   Optional<bool> SExtLHS;
   Optional<bool> SExtRHS;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   /// Root of the combine.
   SDNode *Root;
   /// LHS of the TargetOpcode.
@@ -10208,8 +10189,6 @@ struct CombineResult {
   /// RHS of the TargetOpcode.
   NodeExtensionHelper RHS;
 
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE: This has been cherry-picked from upstream to fix a crash.
   CombineResult(unsigned TargetOpcode, SDNode *Root,
                 const NodeExtensionHelper &LHS, Optional<bool> SExtLHS,
                 const NodeExtensionHelper &RHS, Optional<bool> SExtRHS)
@@ -10228,7 +10207,6 @@ struct CombineResult {
                        RHS.getOrCreateExtendedOp(Root, DAG, SExtRHS), Merge,
                        Mask, VL);
   }
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// Check if \p Root follows a pattern Root(ext(LHS), ext(RHS))
