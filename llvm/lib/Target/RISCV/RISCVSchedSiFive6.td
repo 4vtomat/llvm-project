@@ -120,7 +120,6 @@ let Latency = 3 in {
 def : WriteRes<WriteLDB, [SiFive6PipeA]>;
 def : WriteRes<WriteLDH, [SiFive6PipeA]>;
 def : WriteRes<WriteLDW, [SiFive6PipeA]>;
-def : WriteRes<WriteLDWU, [SiFive6PipeA]>;
 def : WriteRes<WriteLDD, [SiFive6PipeA]>;
 }
 

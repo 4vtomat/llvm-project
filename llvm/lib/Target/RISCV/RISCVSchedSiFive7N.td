@@ -133,7 +133,6 @@ let Latency = 3, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteLDB, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDH, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDW, [SiFive7NPipeA, SiFive7NMem]>;
-def : WriteRes<WriteLDWU, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDD, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
@@ -502,7 +501,7 @@ def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
 def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW,
-                                   WriteLDWU, WriteLDD]>;
+                                   WriteLDW, WriteLDD]>;
 defm : AnyToGPRBypass<ReadIALU, 2>;
 defm : AnyToGPRBypass<ReadIALU32, 2>;
 defm : AnyToGPRBypass<ReadShiftImm, 2>;

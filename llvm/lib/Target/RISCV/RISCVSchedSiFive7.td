@@ -132,7 +132,6 @@ let Latency = 3, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteLDB, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteLDH, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteLDW, [SiFive7PipeA, SiFive7Mem]>;
-def : WriteRes<WriteLDWU, [SiFive7PipeA, SiFive7Mem]>;
 def : WriteRes<WriteLDD, [SiFive7PipeA, SiFive7Mem]>;
 }
 
@@ -507,7 +506,7 @@ multiclass AnyToGPRBypass<SchedRead read, int cycles> {
                                    WriteCTZ32, WriteCPOP, WriteCPOP32,
                                    WriteREV8, WriteORCB, WriteSFB,
                                    WriteIMul, WriteIMul32, WriteLDB,
-                                   WriteLDH, WriteLDW, WriteLDWU, WriteLDD,
+                                   WriteLDH, WriteLDW, WriteLDW, WriteLDD,
                                    WriteFMovF16ToI16, WriteFMovF32ToI32,
                                    WriteFMovF64ToI64, WriteFCvtF16ToI32,
                                    WriteFCvtF16ToI64, WriteFCvtF32ToI32,
@@ -532,7 +531,7 @@ def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
 def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW,
-                                   WriteLDWU, WriteLDD]>;
+                                   WriteLDW, WriteLDD]>;
 defm : AnyToGPRBypass<ReadIALU, 2>;
 defm : AnyToGPRBypass<ReadIALU32, 2>;
 defm : AnyToGPRBypass<ReadShiftImm, 2>;
