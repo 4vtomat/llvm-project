@@ -1227,11 +1227,6 @@ generateValueRangeStartAndEnd(Class &opClass, StringRef methodName,
 static std::string generateTypeForGetter(bool isAdaptor,
                                          const NamedTypeConstraint &value) {
   std::string str = "::mlir::Value";
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: With proper support of `unrealized_conversion_cast` in Nitro,
-  // generation of TypedValue can be unblocked
-  return str;
-#endif // SIFIVE_CUSTOMIZATION
   /// If the CPPClassName is not a fully qualified type. Uses of types
   /// across Dialect fail because they are not in the correct namespace. So we
   /// dont generate TypedValue unless the type is fully qualified.
