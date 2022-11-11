@@ -317,6 +317,7 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
   return "rv64imafdc";
 }
 
+#if SIFIVE_CUSTOMIZATION
 StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
   // Default code model is 'small' (what GCC calls 'medlow').
   StringRef CodeModel;
@@ -328,7 +329,6 @@ StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
   return CodeModel;
 }
 
-#if SIFIVE_CUSTOMIZATION
 void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                                   const llvm::opt::ArgList &Args,
                                   llvm::opt::ArgStringList &CmdArgs) {

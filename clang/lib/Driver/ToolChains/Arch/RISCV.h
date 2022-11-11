@@ -27,9 +27,9 @@ StringRef getRISCVABI(const llvm::opt::ArgList &Args,
 StringRef getRISCVArch(const llvm::opt::ArgList &Args,
                        const llvm::Triple &Triple);
 
+#if SIFIVE_CUSTOMIZATION
 StringRef getRISCVCodeModel(const llvm::opt::ArgList &Args);
 
-#if SIFIVE_CUSTOMIZATION
 void addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                            const llvm::opt::ArgList &Args,
                            llvm::opt::ArgStringList &CmdArgs);

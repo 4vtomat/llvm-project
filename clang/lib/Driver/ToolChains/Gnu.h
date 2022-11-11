@@ -215,8 +215,10 @@ public:
     // Gentoo-specific toolchain configurations are stored here.
     const std::string GentooConfigDir = "/etc/env.d/gcc";
 
+#if SIFIVE_CUSTOMIZATION
     /// Verbose message during detect multilib
     std::string MultilibVerboseMessages;
+#endif // SIFIVE_CUSTOMIZATION
 
   public:
     explicit GCCInstallationDetector(const Driver &D) : IsValid(false), D(D) {}

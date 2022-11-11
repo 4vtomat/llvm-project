@@ -834,7 +834,9 @@ def ZeroLengthArray : DiagGroup<"zero-length-array">;
 def GNUZeroLineDirective : DiagGroup<"gnu-zero-line-directive">;
 def GNUZeroVariadicMacroArguments : DiagGroup<"gnu-zero-variadic-macro-arguments">;
 def MisleadingIndentation : DiagGroup<"misleading-indentation">;
+#ifdef SIFIVE_CUSTOMIZATION
 def MultilibFallback : DiagGroup<"multilib-fallback">;
+#endif // SIFIVE_CUSTOMIZATION
 
 // This covers both the deprecated case (in C++98)
 // and the extension case (in C++11 onwards).
