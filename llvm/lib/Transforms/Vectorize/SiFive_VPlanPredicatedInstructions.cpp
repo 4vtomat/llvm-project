@@ -19,6 +19,7 @@
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/VectorBuilder.h"
 #include "llvm/Support/Debug.h"
+#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 
 #define DEBUG_TYPE "loop-vectorize"
 
@@ -361,7 +362,15 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
 
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-      Value *Stride = VPWMIR.getStride();
+      const SCEV *SCEVStride = VPWMIR.getStride();
+      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+      SCEVExpander Exp(*(State.SE), DL, "stride");
+      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+             "It's not safe to expand that SCEV in the vector loop. That was "
+             "not caught by isSafeStrideAccessInfo.");
+      Value *Stride =
+          Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided store for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
@@ -380,8 +389,16 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
+      const SCEV *SCEVStride = VPWMIR.getStride();
+      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+      SCEVExpander Exp(*(State.SE), DL, "stride");
+      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+             "It's not safe to expand that SCEV in the vector loop. That was "
+             "not caught by isSafeStrideAccessInfo.");
+      Value *Stride =
+          Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
       auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-      Value *Stride = VPWMIR.getStride();
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided load for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
