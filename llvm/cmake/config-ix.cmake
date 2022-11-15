@@ -71,7 +71,7 @@ if(APPLE)
   CHECK_C_SOURCE_COMPILES("
      static const char *__crashreporter_info__ = 0;
      asm(\".desc ___crashreporter_info__, 0x10\");
-     int main() { return 0; }"
+     int main(void) { return 0; }"
     HAVE_CRASHREPORTER_INFO)
 endif()
 
@@ -348,7 +348,7 @@ endif()
 
 check_symbol_exists(__GLIBC__ stdio.h LLVM_USING_GLIBC)
 if( LLVM_USING_GLIBC )
-  add_definitions( -D_GNU_SOURCE )
+  add_compile_definitions(_GNU_SOURCE)
   list(APPEND CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE")
 endif()
 # This check requires _GNU_SOURCE
