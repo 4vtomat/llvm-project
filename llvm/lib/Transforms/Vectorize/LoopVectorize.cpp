@@ -5083,6 +5083,9 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
 
     return (WideningDecision == CM_Widen ||
             WideningDecision == CM_Widen_Reverse ||
+#if SIFIVE_CUSTOMIZATION
+            WideningDecision == CM_Strided ||
+#endif // SIFIVE_CUSTOMIZATION
             WideningDecision == CM_Interleave);
   };
 
@@ -7715,6 +7718,9 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
 }
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
+  if (!foldTailByMasking() || !Legal->useVLAVectorizer())
+    return false;
+
   StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
   if (!isSafeStrideAccessInfo(TheLoop, SAI))
     return false;
