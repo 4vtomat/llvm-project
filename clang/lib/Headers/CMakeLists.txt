@@ -290,7 +290,6 @@ set(openmp_wrapper_files
   openmp_wrappers/new
 )
 
-<<<<<<< HEAD
 # SIFIVE
 set(sifive_wrapper_files
   sifive_wrappers/arm_neon.h
@@ -301,10 +300,7 @@ set(sifive_wrapper_files
 )
 #end SIFIVE
 
-set(output_dir ${LLVM_LIBRARY_OUTPUT_INTDIR}/clang/${CLANG_VERSION}/include)
-=======
 set(output_dir ${LLVM_LIBRARY_OUTPUT_INTDIR}/clang/${CLANG_VERSION_MAJOR}/include)
->>>>>>> upstream/main
 set(out_files)
 set(generated_files)
 

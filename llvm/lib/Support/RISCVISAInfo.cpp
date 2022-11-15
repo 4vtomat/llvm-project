@@ -125,7 +125,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svinval", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
+    {"xventanacondops", RISCVExtensionVersion{1, 0}},
 #if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 
@@ -142,9 +142,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"za64rs", RISCVExtensionVersion{1, 0}},
     {"zic64b", RISCVExtensionVersion{1, 0}},
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    {"xventanacondops", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {

@@ -440,7 +440,24 @@ static bool isSignExtendedW(MachineInstr &OrigMI, MachineRegisterInfo &MRI,
 
       break;
     }
-<<<<<<< HEAD
+    // With these opcode, we can "fix" them with the W-version
+    // if we know all users of the result only rely on bits 31:0
+    case RISCV::SLLI:
+      // SLLIW reads the lowest 5 bits, while SLLI reads lowest 6 bits
+      if (MI->getOperand(2).getImm() >= 32)
+        return false;
+      [[fallthrough]];
+    case RISCV::ADDI:
+    case RISCV::ADD:
+    case RISCV::LD:
+    case RISCV::LWU:
+    case RISCV::MUL:
+    case RISCV::SUB:
+      if (hasAllWUsers(*MI, MRI)) {
+        FixableDef.insert(MI);
+        break;
+      }
+      return false;
 #if SIFIVE_CUSTOMIZATION
     case RISCV::PseudoCCADDW:
     case RISCV::PseudoCCSUBW:
@@ -466,27 +483,6 @@ static bool isSignExtendedW(MachineInstr &OrigMI, MachineRegisterInfo &MRI,
       break;
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
-    // With these opcode, we can "fix" them with the W-version
-    // if we know all users of the result only rely on bits 31:0
-    case RISCV::SLLI:
-      // SLLIW reads the lowest 5 bits, while SLLI reads lowest 6 bits
-      if (MI->getOperand(2).getImm() >= 32)
-        return false;
-      [[fallthrough]];
-    case RISCV::ADDI:
-    case RISCV::ADD:
-    case RISCV::LD:
-    case RISCV::LWU:
-    case RISCV::MUL:
-    case RISCV::SUB:
-      if (hasAllWUsers(*MI, MRI)) {
-        FixableDef.insert(MI);
-        break;
-      }
-      return false;
->>>>>>> upstream/main
     }
   }
 

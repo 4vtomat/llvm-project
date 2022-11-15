@@ -357,29 +357,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           MVT::i32, Custom);
   } else {
     setOperationAction({ISD::CTTZ, ISD::CTLZ, ISD::CTPOP}, XLenVT, Expand);
-<<<<<<< HEAD
-
-#if SIFIVE_CUSTOMIZATION
-    // We could use PseudoCCSUBW to implement (SEXT_INREG (ABS (X)), i32)), if X
-    // has more than 32 sign bits.
-    if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
-#else
-    if (Subtarget.is64Bit())
-#endif // SIFIVE_CUSTOMIZATION
-      setOperationAction(ISD::ABS, MVT::i32, Custom);
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // We could use PseudoCCSUB to implement ABS.
-  if (Subtarget.hasShortForwardBranchOpt())
-    setOperationAction(ISD::ABS, XLenVT, Legal);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  }
-
-  if (Subtarget.is64Bit())
+  if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, MVT::i32, Custom);
->>>>>>> upstream/main
 
   setOperationAction(ISD::SELECT, XLenVT, Custom);
 
@@ -1684,25 +1665,12 @@ bool RISCVTargetLowering::shouldSinkOperands(
         case Intrinsic::fma:
         case Intrinsic::vp_fma:
           return Operand == 0 || Operand == 1;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         case Intrinsic::vp_gather:
           return Operand == 0;
         case Intrinsic::vp_scatter:
           return Operand == 1;
 #endif // SIFIVE_CUSTOMIZATION
-        // FIXME: Our patterns can only match vx/vf instructions when the splat
-        // it on the RHS, because TableGen doesn't recognize our VP operations
-        // as commutative.
-        case Intrinsic::vp_add:
-        case Intrinsic::vp_mul:
-        case Intrinsic::vp_and:
-        case Intrinsic::vp_or:
-        case Intrinsic::vp_xor:
-        case Intrinsic::vp_fadd:
-        case Intrinsic::vp_fmul:
-=======
->>>>>>> upstream/main
         case Intrinsic::vp_shl:
         case Intrinsic::vp_lshr:
         case Intrinsic::vp_ashr:
@@ -9841,7 +9809,6 @@ performSIGN_EXTEND_INREGCombine(SDNode *N, SelectionDAG &DAG,
     return DAG.getNode(RISCVISD::FMV_X_SIGNEXTH, SDLoc(N), VT,
                        Src.getOperand(0));
 
-<<<<<<< HEAD
   // Fold (i64 (sext_inreg (abs X), i32)) ->
   // (i64 (smax (sext_inreg (neg X), i32), X)) if X has more than 32 sign bits.
   // The (sext_inreg (neg X), i32) will be selected to negw by isel. This
@@ -9868,8 +9835,6 @@ performSIGN_EXTEND_INREGCombine(SDNode *N, SelectionDAG &DAG,
     return DAG.getNode(ISD::SMAX, DL, MVT::i64, Freeze, Neg);
   }
 
-=======
->>>>>>> upstream/main
   return SDValue();
 }
 

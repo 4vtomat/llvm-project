@@ -2056,14 +2056,11 @@ include "RISCVInstrInfoZk.td"
 include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZfh.td"
 include "RISCVInstrInfoZicbo.td"
-<<<<<<< HEAD
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "SiFive_RISCVInstrInfoZihintntl.td" // SIFIVE
-=======
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//
 
 include "RISCVInstrInfoXVentana.td"
->>>>>>> upstream/main
