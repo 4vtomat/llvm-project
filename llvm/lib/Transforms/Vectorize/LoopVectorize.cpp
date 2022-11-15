@@ -7716,7 +7716,7 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
   StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
-  if (!SAI)
+  if (!isSafeStrideAccessInfo(TheLoop, SAI))
     return false;
 
   const SCEV *SCEVPtr = SAI.getSCEVExpr();
@@ -9202,13 +9202,10 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   bool Consecutive =
       Reverse || Decision == LoopVectorizationCostModel::CM_Widen;
 #if SIFIVE_CUSTOMIZATION
-  Value *Stride = nullptr;
+  const SCEV *Stride = nullptr;
   if (Decision == LoopVectorizationCostModel::CM_Strided) {
-    if (StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I)) {
-      assert(SAI.isConstantStride() &&
-             "Currently only constant strides are supported");
-      Stride = cast<SCEVConstant>(SAI.getSCEVStride())->getValue();
-    }
+    StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
+    Stride = SAI.getSCEVStride();
   }
 #endif // SIFIVE_CUSTOMIZATION
 

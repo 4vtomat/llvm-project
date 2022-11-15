@@ -1866,15 +1866,15 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Whether NonConsecutive loads/stores can be strided
-  Value *Stride = nullptr;
+  // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
+  const SCEV *Stride = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 Value *Stride = nullptr)
+                                 const SCEV *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
         Consecutive(Consecutive), Reverse(Reverse), Stride(Stride) {
 #else
@@ -1892,7 +1892,7 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 Value *Stride = nullptr)
+                                 const SCEV *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
         Stride(Stride) {
@@ -1944,7 +1944,7 @@ public:
   // Return wheter NonConsecutive loads/stores can be strided
   bool isStrided() const { return Stride != nullptr; }
 
-  Value *getStride() const {
+  const SCEV *getStride() const {
     assert(isStrided() && "Cannot get stride for non-strided memory access");
     return Stride;
   }
@@ -3375,6 +3375,8 @@ struct StridedAccessValues {
   Value* BaseAddress;
   Value* Stride;
 };
+
+bool isSafeStrideAccessInfo(const Loop *L, const llvm::StrideAccessInfo &SAI);
 
 StrideAccessInfo computeStrideAccessInfo(ScalarEvolution *SE, Instruction *I);
 #endif // SIFIVE_CUSTOMIZATION
