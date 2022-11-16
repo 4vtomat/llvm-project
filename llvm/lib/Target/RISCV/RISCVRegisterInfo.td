@@ -551,8 +551,15 @@ def VR : VReg<[vint8m1_t, vint16m1_t, vint32m1_t, vint64m1_t,
                vbfloat16mf4_t, vbfloat16mf2_t,
                vbool64_t, vbool32_t, vbool16_t, vbool8_t, vbool4_t,
                vbool2_t, vbool1_t],
+#ifdef SIFIVE_CUSTOMIZATION
            (add (sequence "V%u", 8, 31),
-                (sequence "V%u", 0, 7)), 1>;
+                (sequence "V%u", 0, 7)), 1> {
+  let AltOrders = [(add (sequence "V%u", 1, 31), V0)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRNoV0 : VReg<[vint8m1_t, vint16m1_t, vint32m1_t, vint64m1_t,
                    vfloat16m1_t, vbfloat16m1_t, vfloat32m1_t, vfloat64m1_t,
@@ -562,26 +569,61 @@ def VRNoV0 : VReg<[vint8m1_t, vint16m1_t, vint32m1_t, vint64m1_t,
                    vbfloat16mf4_t, vbfloat16mf2_t,
                    vbool64_t, vbool32_t, vbool16_t, vbool8_t, vbool4_t,
                    vbool2_t, vbool1_t],
+#ifdef SIFIVE_CUSTOMIZATION
                (add (sequence "V%u", 8, 31),
-                    (sequence "V%u", 1, 7)), 1>;
+                    (sequence "V%u", 1, 7)), 1> {
+  let AltOrders = [(sequence "V%u", 1, 31)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRM2 : VReg<[vint8m2_t, vint16m2_t, vint32m2_t, vint64m2_t,
                  vfloat16m2_t, vbfloat16m2_t, vfloat32m2_t, vfloat64m2_t],
+#ifdef SIFIVE_CUSTOMIZATION
              (add (sequence "V%uM2", 8, 31, 2),
-                  (sequence "V%uM2", 0, 7, 2)), 2>;
+                  (sequence "V%uM2", 0, 7, 2)), 2> {
+  let AltOrders = [(add (sequence "V%uM2", 2, 31, 2), V0M2)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRM2NoV0 : VReg<[vint8m2_t, vint16m2_t, vint32m2_t, vint64m2_t,
                      vfloat16m2_t, vbfloat16m2_t, vfloat32m2_t, vfloat64m2_t],
+#ifdef SIFIVE_CUSTOMIZATION
              (add (sequence "V%uM2", 8, 31, 2),
-                  (sequence "V%uM2", 2, 7, 2)), 2>;
+                  (sequence "V%uM2", 2, 7, 2)), 2> {
+  let AltOrders = [(sequence "V%uM2", 2, 31, 2)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRM4 : VReg<[vint8m4_t, vint16m4_t, vint32m4_t, vint64m4_t,
                  vfloat16m4_t, vbfloat16m4_t, vfloat32m4_t, vfloat64m4_t],
-             (add V8M4, V12M4, V16M4, V20M4, V24M4, V28M4, V0M4, V4M4), 4>;
+#ifdef SIFIVE_CUSTOMIZATION
+             (add V8M4, V12M4, V16M4, V20M4, V24M4, V28M4, V0M4, V4M4), 4> {
+  let AltOrders = [(add V4M4, V8M4, V12M4, V16M4, V20M4, V24M4, V28M4, V0M4)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRM4NoV0 : VReg<[vint8m4_t, vint16m4_t, vint32m4_t, vint64m4_t,
                      vfloat16m4_t, vbfloat16m4_t, vfloat32m4_t, vfloat64m4_t],
-             (add V8M4, V12M4, V16M4, V20M4, V24M4, V28M4, V4M4), 4>;
+#ifdef SIFIVE_CUSTOMIZATION
+             (add V8M4, V12M4, V16M4, V20M4, V24M4, V28M4, V4M4), 4> {
+  let AltOrders = [(add V4M4, V8M4, V12M4, V16M4, V20M4, V24M4, V28M4)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def VRM8 : VReg<[vint8m8_t, vint16m8_t, vint32m8_t, vint64m8_t,
                  vfloat16m8_t, vbfloat16m8_t, vfloat32m8_t, vfloat64m8_t],
@@ -629,8 +671,15 @@ def GPRPF64 : RegisterClass<"RISCV", [f64], 64, (add
 
 // The register class is added for inline assembly for vector mask types.
 def VM : VReg<VMaskVTs,
+#ifdef SIFIVE_CUSTOMIZATION
            (add (sequence "V%u", 8, 31),
-                (sequence "V%u", 0, 7)), 1>;
+                (sequence "V%u", 0, 7)), 1> {
+  let AltOrders = [(add (sequence "V%u", 8, 31), V0)];
+  let AltOrderSelect = [{
+    return MF.getSubtarget<RISCVSubtarget>().useAltVROrder();
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 foreach m = LMULList.m in {
   foreach nf = NFList<m>.L in {

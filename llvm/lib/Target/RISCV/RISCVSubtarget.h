@@ -375,6 +375,7 @@ public:
   bool useAA() const override;
   bool useAltGPROrder() const;
   bool useAltFPROrder() const;
+  bool useAltVROrder() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 } // End llvm namespace
