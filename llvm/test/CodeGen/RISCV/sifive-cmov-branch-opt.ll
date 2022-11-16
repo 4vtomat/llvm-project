@@ -173,9 +173,10 @@ define signext i32 @test5(i32 signext %x) {
 ;
 ; SHORT_FORWARD-LABEL: test5:
 ; SHORT_FORWARD:       # %bb.0:
-; SHORT_FORWARD-NEXT:    srai a1, a0, 31
-; SHORT_FORWARD-NEXT:    xor a0, a0, a1
-; SHORT_FORWARD-NEXT:    subw a0, a0, a1
+; SHORT_FORWARD-NEXT:    bgez a0, .LBB4_2
+; SHORT_FORWARD-NEXT:  # %bb.1:
+; SHORT_FORWARD-NEXT:    negw a0, a0
+; SHORT_FORWARD-NEXT:  .LBB4_2:
 ; SHORT_FORWARD-NEXT:    ret
   %a = call i32 @llvm.abs.i32(i32 %x, i1 false)
   ret i32 %a
@@ -199,9 +200,10 @@ define i64 @test6(i64 %x) {
 ;
 ; SHORT_FORWARD-LABEL: test6:
 ; SHORT_FORWARD:       # %bb.0:
-; SHORT_FORWARD-NEXT:    srai a1, a0, 63
-; SHORT_FORWARD-NEXT:    xor a0, a0, a1
-; SHORT_FORWARD-NEXT:    sub a0, a0, a1
+; SHORT_FORWARD-NEXT:    bgez a0, .LBB5_2
+; SHORT_FORWARD-NEXT:  # %bb.1:
+; SHORT_FORWARD-NEXT:    neg a0, a0
+; SHORT_FORWARD-NEXT:  .LBB5_2:
 ; SHORT_FORWARD-NEXT:    ret
   %a = call i64 @llvm.abs.i64(i64 %x, i1 false)
   ret i64 %a

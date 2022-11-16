@@ -362,6 +362,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+  // We could use PseudoCCSUB to implement ABS.
+  if (Subtarget.hasShortForwardBranchOpt())
+    setOperationAction(ISD::ABS, XLenVT, Legal);
+#endif // SIFIVE_CUSTOMIZATION
+
+
   setOperationAction(ISD::SELECT, XLenVT, Custom);
 
   static const unsigned FPLegalNodeTypes[] = {
@@ -9808,32 +9815,6 @@ performSIGN_EXTEND_INREGCombine(SDNode *N, SelectionDAG &DAG,
       cast<VTSDNode>(N->getOperand(1))->getVT().bitsGE(MVT::i16))
     return DAG.getNode(RISCVISD::FMV_X_SIGNEXTH, SDLoc(N), VT,
                        Src.getOperand(0));
-
-  // Fold (i64 (sext_inreg (abs X), i32)) ->
-  // (i64 (smax (sext_inreg (neg X), i32), X)) if X has more than 32 sign bits.
-  // The (sext_inreg (neg X), i32) will be selected to negw by isel. This
-  // pattern occurs after type legalization of (i32 (abs X)) on RV64 if the user
-  // of the (i32 (abs X)) is a sext or setcc or something else that causes type
-  // legalization to add a sext_inreg after the abs. The (i32 (abs X)) will have
-  // been type legalized to (i64 (abs (sext_inreg X, i32))), but the sext_inreg
-  // may get combined into an earlier operation so we need to use
-  // ComputeNumSignBits.
-  // NOTE: (i64 (sext_inreg (abs X), i32)) can also be created for
-  // (i64 (ashr (shl (abs X), 32), 32)) without any type legalization so
-  // we can't assume that X has 33 sign bits. We must check.
-#if SIFIVE_CUSTOMIZATION
-  if (!Subtarget.hasShortForwardBranchOpt() && Subtarget.hasStdExtZbb() &&
-      Subtarget.is64Bit() && Src.getOpcode() == ISD::ABS && Src.hasOneUse() &&
-      VT == MVT::i64 && cast<VTSDNode>(N->getOperand(1))->getVT() == MVT::i32 &&
-#endif // SIFIVE_CUSTOMIZATION
-      DAG.ComputeNumSignBits(Src.getOperand(0)) > 32) {
-    SDLoc DL(N);
-    SDValue Freeze = DAG.getFreeze(Src.getOperand(0));
-    SDValue Neg = DAG.getNegative(Freeze, DL, VT);
-    Neg = DAG.getNode(ISD::SIGN_EXTEND_INREG, DL, MVT::i64, Neg,
-                      DAG.getValueType(MVT::i32));
-    return DAG.getNode(ISD::SMAX, DL, MVT::i64, Freeze, Neg);
-  }
 
   return SDValue();
 }
