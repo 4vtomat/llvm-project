@@ -5,8 +5,8 @@
 // RUN: %clang_cc1 -triple x86_64-sie-ps5         %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -DCLANG_ABI_COMPAT=6
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=6 -DCLANG_ABI_COMPAT=6
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=14 -DCLANG_ABI_COMPAT=14
-// RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=16 -DCLANG_ABI_COMPAT=16
+// COM: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15 // SIFIVE
+// COM: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -fexperimental-new-constant-interpreter -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=16 -DCLANG_ABI_COMPAT=16 // SIFIVE
 // expected-no-diagnostics
 
 // FIXME: This is a copy of clang/test/SemaCXX/class-layout.cpp, but with the
