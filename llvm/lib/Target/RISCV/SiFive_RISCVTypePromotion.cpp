@@ -25,6 +25,7 @@
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/Pass.h"
 
@@ -573,6 +574,29 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
   return true;
 }
 
+// Look for (icmp eq (and (shl 1, X), Y), 0).
+static bool isBitTest(ICmpInst *ICmp) {
+  using namespace llvm::PatternMatch;
+
+  if (!ICmp->isEquality())
+    return false;
+
+  // Must be a compare with 0.
+  if (!match(ICmp->getOperand(1), m_ZeroInt()))
+    return false;
+
+  Instruction *I = dyn_cast<Instruction>(ICmp->getOperand(0));
+  if (!I || I->getOpcode() != Instruction::And || !I->hasOneUse())
+    return false;
+
+  Value *LHS = I->getOperand(0);
+  Value *RHS = I->getOperand(1);
+
+  // If either operand is a shift of 1, this is a bit test.
+  return match(LHS, m_OneUse(m_Shl(m_SpecificInt(1), m_Value()))) ||
+         match(RHS, m_OneUse(m_Shl(m_SpecificInt(1), m_Value())));
+}
+
 bool RISCVTypePromotion::runOnFunction(Function &F) {
   if (skipFunction(F) || DisablePromotion)
     return false;
@@ -607,6 +631,11 @@ bool RISCVTypePromotion::runOnFunction(Function &F) {
 
       LLVM_DEBUG(dbgs() << "RISCV Promotion: Searching from: " << *ICmp
                         << "\n");
+
+      if (isBitTest(ICmp)) {
+        LLVM_DEBUG(dbgs() << "Skipping bittest\n");
+        continue;
+      }
 
       for (auto &Op : ICmp->operands()) {
         auto *I = dyn_cast<Instruction>(Op);
