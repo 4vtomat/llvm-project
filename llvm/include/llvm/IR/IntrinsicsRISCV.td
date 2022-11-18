@@ -347,6 +347,27 @@ let TargetPrefix = "riscv" in {
                     [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // For destination vector type is the same as source vector.
+  // Input: (passthru, vector_in, vl, policy)
+  class RISCVUnaryAAUnMaskedP
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
+                     LLVMMatchType<1>],
+                    [ImmArg<ArgIndex<3>>, IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 2;
+  }
+
+  multiclass RISCVUnaryAAUnMaskedP<bit HasVV = 1, bit HasVS = 1> {
+    if HasVV then
+      def "int_riscv_" # NAME # "_vv" : RISCVUnaryAAUnMaskedP;
+
+    if HasVS then
+      def "int_riscv_" # NAME # "_vs" : RISCVUnaryAAUnMaskedP;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // For destination vector type is the same as first source vector (with mask).
   // Input: (vector_in, vector_in, mask, vl, policy)
   class RISCVUnaryAAMasked
@@ -542,6 +563,16 @@ let TargetPrefix = "riscv" in {
     let ScalarOperand = 2;
     let VLOperand = 3;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  class RISCVBinaryAAXUnMaskedP
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
+                     llvm_anyint_ty, LLVMMatchType<2>],
+                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+    let ScalarOperand = 2;
+    let VLOperand = 3;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // For destination vector type is the same as first source vector (with mask).
   // Input: (maskedoff, vector_in, vector_in/scalar_in, mask, vl, policy)
   class RISCVBinaryAAXMasked
@@ -1893,4 +1924,47 @@ def int_riscv_sm4ed      : ScalarCryptoByteSelectAny;
 // Zksh
 def int_riscv_sm3p0      : ScalarCryptoGprIntrinsicAny;
 def int_riscv_sm3p1      : ScalarCryptoGprIntrinsicAny;
+} // TargetPrefix = "riscv"
+
+//===----------------------------------------------------------------------===//
+// Vector Cryptography
+//
+// These intrinsics will lower directly into the corresponding instructions
+// added by the vector cyptography extension, if the extension is present.
+let TargetPrefix = "riscv" in {
+#ifdef SIFIVE_CUSTOMIZATION
+  // zvkns
+  defm vaesdf : RISCVUnaryAAUnMaskedP;
+  defm vaesdm : RISCVUnaryAAUnMaskedP;
+  defm vaesef : RISCVUnaryAAUnMaskedP;
+  defm vaesem : RISCVUnaryAAUnMaskedP;
+  def int_riscv_vaeskf1 : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vaeskf2 : RISCVBinaryAAXUnMaskedP;
+  defm vaesz : RISCVUnaryAAUnMaskedP<0>;
+
+  // zvkb
+  defm vandn : RISCVBinaryAAX;
+  defm vbrev8 : RISCVUnaryAA;
+  defm vclmul : RISCVBinaryAAX;
+  defm vclmulh : RISCVBinaryAAX;
+  defm vrev8 : RISCVUnaryAA;
+  defm vrol : RISCVBinaryAAX;
+  defm vror : RISCVBinaryAAX;
+
+  // zvkg
+  def int_riscv_vghmac : RISCVBinaryAAXUnMaskedP;
+
+  // zvksed
+  def int_riscv_vsm4k : RISCVBinaryAAXUnMaskedP;
+  defm vsm4r : RISCVUnaryAAUnMaskedP;
+
+  // zvksh
+  def int_riscv_vsm3c : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsm3me : RISCVBinaryAAXUnMaskedP;
+
+  // zvknha or zvknhb
+  def int_riscv_vsha2ch : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsha2cl : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsha2ms : RISCVBinaryAAXUnMaskedP;
+#endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
