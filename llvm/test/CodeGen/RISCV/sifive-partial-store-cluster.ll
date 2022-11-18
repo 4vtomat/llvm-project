@@ -19,25 +19,25 @@ define signext i32 @main() {
 ; CHECK-NEXT:    addiw a1, a1, 1107
 ; CHECK-NEXT:    lui a2, %hi(.LCPI0_1)
 ; CHECK-NEXT:    ld a3, %lo(.LCPI0_2)(a3)
+; CHECK-NEXT:    lui a4, %hi(.LCPI0_3)
 ; CHECK-NEXT:    sh a0, 68(sp)
 ; CHECK-NEXT:    sb zero, 70(sp)
 ; CHECK-NEXT:    sh a0, 36(sp)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    sb zero, 38(sp)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
-; CHECK-NEXT:    sd a3, 56(sp)
-; CHECK-NEXT:    lui a3, %hi(.LCPI0_3)
-; CHECK-NEXT:    sd a0, 40(sp)
-; CHECK-NEXT:    sd a0, 8(sp)
-; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a3)
 ; CHECK-NEXT:    sw a1, 64(sp)
 ; CHECK-NEXT:    ld a2, %lo(.LCPI0_1)(a2)
-; CHECK-NEXT:    sd a0, 24(sp)
+; CHECK-NEXT:    sd a0, 40(sp)
+; CHECK-NEXT:    sd a3, 56(sp)
+; CHECK-NEXT:    ld a3, %lo(.LCPI0_3)(a4)
+; CHECK-NEXT:    sd a0, 8(sp)
 ; CHECK-NEXT:    addi a0, sp, 40
 ; CHECK-NEXT:    sw a1, 32(sp)
 ; CHECK-NEXT:    addi a1, sp, 8
 ; CHECK-NEXT:    sd a2, 48(sp)
 ; CHECK-NEXT:    sd a2, 16(sp)
+; CHECK-NEXT:    sd a3, 24(sp)
 ; CHECK-NEXT:    call foo@plt
 ; CHECK-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 80
