@@ -23,19 +23,19 @@ define void @vld1_f16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a0)
 ; CHECK-NEXT:    lhu a3, 16(a0)
-; CHECK-NEXT:    lhu a4, 22(a0)
-; CHECK-NEXT:    lhu a5, 20(a0)
+; CHECK-NEXT:    lhu a4, 20(a0)
+; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -106,7 +106,7 @@ define void @vld1_f32_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
@@ -217,19 +217,19 @@ define void @vld1_s16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a0)
 ; CHECK-NEXT:    lhu a3, 16(a0)
-; CHECK-NEXT:    lhu a4, 22(a0)
-; CHECK-NEXT:    lhu a5, 20(a0)
+; CHECK-NEXT:    lhu a4, 20(a0)
+; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -300,7 +300,7 @@ define void @vld1_s32_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
@@ -414,23 +414,23 @@ define void @vld1_s8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lbu a2, 17(a0)
 ; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 19(a0)
-; CHECK-NEXT:    lbu a5, 18(a0)
+; CHECK-NEXT:    lbu a4, 18(a0)
+; CHECK-NEXT:    lbu a5, 19(a0)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 8
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a3, a4, 16
+; CHECK-NEXT:    slli a4, a5, 24
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 23(a0)
-; CHECK-NEXT:    lbu a6, 22(a0)
+; CHECK-NEXT:    lbu a5, 22(a0)
+; CHECK-NEXT:    lbu a6, 23(a0)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a5, 16
+; CHECK-NEXT:    slli a5, a6, 24
+; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -439,7 +439,7 @@ define void @vld1_s8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
 ; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
@@ -513,19 +513,19 @@ define void @vld1_u16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a0)
 ; CHECK-NEXT:    lhu a3, 16(a0)
-; CHECK-NEXT:    lhu a4, 22(a0)
-; CHECK-NEXT:    lhu a5, 20(a0)
+; CHECK-NEXT:    lhu a4, 20(a0)
+; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
@@ -596,7 +596,7 @@ define void @vld1_u32_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
@@ -710,23 +710,23 @@ define void @vld1_u8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lbu a2, 17(a0)
 ; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 19(a0)
-; CHECK-NEXT:    lbu a5, 18(a0)
+; CHECK-NEXT:    lbu a4, 18(a0)
+; CHECK-NEXT:    lbu a5, 19(a0)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 8
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a3, a4, 16
+; CHECK-NEXT:    slli a4, a5, 24
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 23(a0)
-; CHECK-NEXT:    lbu a6, 22(a0)
+; CHECK-NEXT:    lbu a5, 22(a0)
+; CHECK-NEXT:    lbu a6, 23(a0)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a5, 16
+; CHECK-NEXT:    slli a5, a6, 24
+; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -735,7 +735,7 @@ define void @vld1_u8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
 ; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
@@ -1422,19 +1422,19 @@ define void @vst1_f16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a1)
 ; CHECK-NEXT:    lhu a3, 16(a1)
-; CHECK-NEXT:    lhu a4, 22(a1)
-; CHECK-NEXT:    lhu a5, 20(a1)
+; CHECK-NEXT:    lhu a4, 20(a1)
+; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
@@ -1505,7 +1505,7 @@ define void @vst1_f32_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
@@ -1616,19 +1616,19 @@ define void @vst1_s16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a1)
 ; CHECK-NEXT:    lhu a3, 16(a1)
-; CHECK-NEXT:    lhu a4, 22(a1)
-; CHECK-NEXT:    lhu a5, 20(a1)
+; CHECK-NEXT:    lhu a4, 20(a1)
+; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
@@ -1699,7 +1699,7 @@ define void @vst1_s32_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
@@ -1813,23 +1813,23 @@ define void @vst1_s8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lbu a2, 17(a1)
 ; CHECK-NEXT:    lbu a3, 16(a1)
-; CHECK-NEXT:    lbu a4, 19(a1)
-; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a4, 18(a1)
+; CHECK-NEXT:    lbu a5, 19(a1)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 8
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a3, a4, 16
+; CHECK-NEXT:    slli a4, a5, 24
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a1)
 ; CHECK-NEXT:    lbu a4, 20(a1)
-; CHECK-NEXT:    lbu a5, 23(a1)
-; CHECK-NEXT:    lbu a6, 22(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a5, 16
+; CHECK-NEXT:    slli a5, a6, 24
+; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -1838,7 +1838,7 @@ define void @vst1_s8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
 ; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a1)
@@ -1912,19 +1912,19 @@ define void @vst1_u16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lhu a2, 18(a1)
 ; CHECK-NEXT:    lhu a3, 16(a1)
-; CHECK-NEXT:    lhu a4, 22(a1)
-; CHECK-NEXT:    lhu a5, 20(a1)
+; CHECK-NEXT:    lhu a4, 20(a1)
+; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    slli a3, a4, 32
+; CHECK-NEXT:    slli a4, a5, 48
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
@@ -1995,7 +1995,7 @@ define void @vst1_u32_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    mv a2, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
@@ -2109,23 +2109,23 @@ define void @vst1_u8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    lbu a2, 17(a1)
 ; CHECK-NEXT:    lbu a3, 16(a1)
-; CHECK-NEXT:    lbu a4, 19(a1)
-; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a4, 18(a1)
+; CHECK-NEXT:    lbu a5, 19(a1)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 8
-; CHECK-NEXT:    or a3, a3, a5
-; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a3, a4, 16
+; CHECK-NEXT:    slli a4, a5, 24
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a1)
 ; CHECK-NEXT:    lbu a4, 20(a1)
-; CHECK-NEXT:    lbu a5, 23(a1)
-; CHECK-NEXT:    lbu a6, 22(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 8
-; CHECK-NEXT:    or a4, a4, a6
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a5, 16
+; CHECK-NEXT:    slli a5, a6, 24
+; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -2134,7 +2134,7 @@ define void @vst1_u8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a2)
 ; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v10, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a1)

@@ -10,13 +10,13 @@ define void @vdot_lane_s32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 1(a2)
 ; CHECK-NEXT:    lbu a1, 0(a2)
-; CHECK-NEXT:    lb a4, 3(a2)
-; CHECK-NEXT:    lbu a2, 2(a2)
+; CHECK-NEXT:    lbu a4, 2(a2)
+; CHECK-NEXT:    lb a2, 3(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -54,13 +54,13 @@ define void @vdot_lane_u32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 1(a2)
 ; CHECK-NEXT:    lbu a1, 0(a2)
-; CHECK-NEXT:    lb a4, 3(a2)
-; CHECK-NEXT:    lbu a2, 2(a2)
+; CHECK-NEXT:    lbu a4, 2(a2)
+; CHECK-NEXT:    lb a2, 3(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -98,13 +98,13 @@ define void @vdot_laneq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 1(a2)
 ; CHECK-NEXT:    lbu a1, 0(a2)
-; CHECK-NEXT:    lb a4, 3(a2)
-; CHECK-NEXT:    lbu a2, 2(a2)
+; CHECK-NEXT:    lbu a4, 2(a2)
+; CHECK-NEXT:    lb a2, 3(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -142,13 +142,13 @@ define void @vdot_laneq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 9(a2)
 ; CHECK-NEXT:    lbu a1, 8(a2)
-; CHECK-NEXT:    lb a4, 11(a2)
-; CHECK-NEXT:    lbu a2, 10(a2)
+; CHECK-NEXT:    lbu a4, 10(a2)
+; CHECK-NEXT:    lb a2, 11(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -246,13 +246,13 @@ define void @vdotq_lane_s32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 5(a2)
 ; CHECK-NEXT:    lbu a1, 4(a2)
-; CHECK-NEXT:    lb a4, 7(a2)
-; CHECK-NEXT:    lbu a2, 6(a2)
+; CHECK-NEXT:    lbu a4, 6(a2)
+; CHECK-NEXT:    lb a2, 7(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -290,13 +290,13 @@ define void @vdotq_lane_u32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 1(a2)
 ; CHECK-NEXT:    lbu a1, 0(a2)
-; CHECK-NEXT:    lb a4, 3(a2)
-; CHECK-NEXT:    lbu a2, 2(a2)
+; CHECK-NEXT:    lbu a4, 2(a2)
+; CHECK-NEXT:    lb a2, 3(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -334,13 +334,13 @@ define void @vdotq_laneq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 13(a2)
 ; CHECK-NEXT:    lbu a1, 12(a2)
-; CHECK-NEXT:    lb a4, 15(a2)
-; CHECK-NEXT:    lbu a2, 14(a2)
+; CHECK-NEXT:    lbu a4, 14(a2)
+; CHECK-NEXT:    lb a2, 15(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -378,13 +378,13 @@ define void @vdotq_laneq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    lbu a0, 1(a2)
 ; CHECK-NEXT:    lbu a1, 0(a2)
-; CHECK-NEXT:    lb a4, 3(a2)
-; CHECK-NEXT:    lbu a2, 2(a2)
+; CHECK-NEXT:    lbu a4, 2(a2)
+; CHECK-NEXT:    lb a2, 3(a2)
 ; CHECK-NEXT:    slli a0, a0, 8
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    slli a1, a4, 8
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a1, a4, 16
+; CHECK-NEXT:    slli a2, a2, 24
+; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    or a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a0
