@@ -22,6 +22,7 @@
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/GetElementPtrTypeIterator.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/PatternMatch.h"
@@ -179,24 +180,147 @@ struct DecompEntry {
 
 } // namespace
 
+static SmallVector<DecompEntry, 4>
+decompose(Value *V, SmallVector<PreconditionTy, 4> &Preconditions,
+          bool IsSigned, const DataLayout &DL);
+
+static bool canUseSExt(ConstantInt *CI) {
+  const APInt &Val = CI->getValue();
+  return Val.sgt(MinSignedConstraintValue) && Val.slt(MaxConstraintValue);
+}
+
+// A helper to multiply 2 signed integers where overflowing is allowed.
+static int64_t multiplyWithOverflow(int64_t A, int64_t B) {
+  int64_t Result;
+  MulOverflow(A, B, Result);
+  return Result;
+}
+
+// A helper to add 2 signed integers where overflowing is allowed.
+static int64_t addWithOverflow(int64_t A, int64_t B) {
+  int64_t Result;
+  AddOverflow(A, B, Result);
+  return Result;
+}
+
+static SmallVector<DecompEntry, 4>
+decomposeGEP(GetElementPtrInst &GEP,
+             SmallVector<PreconditionTy, 4> &Preconditions, bool IsSigned,
+             const DataLayout &DL) {
+  // Do not reason about pointers where the index size is larger than 64 bits,
+  // as the coefficients used to encode constraints are 64 bit integers.
+  if (DL.getIndexTypeSizeInBits(GEP.getPointerOperand()->getType()) > 64)
+    return {};
+
+  if (!GEP.isInBounds())
+    return {{0, nullptr}, {1, &GEP}};
+
+  // Handle the (gep (gep ....), C) case by incrementing the constant
+  // coefficient of the inner GEP, if C is a constant.
+  auto *InnerGEP = dyn_cast<GetElementPtrInst>(GEP.getPointerOperand());
+  if (InnerGEP && GEP.getNumOperands() == 2 &&
+      isa<ConstantInt>(GEP.getOperand(1))) {
+    APInt Offset = cast<ConstantInt>(GEP.getOperand(1))->getValue();
+    auto Result = decompose(InnerGEP, Preconditions, IsSigned, DL);
+
+    auto GTI = gep_type_begin(GEP);
+    // Bail out for scalable vectors for now.
+    if (isa<ScalableVectorType>(GTI.getIndexedType()))
+      return {};
+    int64_t Scale = static_cast<int64_t>(
+        DL.getTypeAllocSize(GTI.getIndexedType()).getFixedSize());
+
+    Result[0].Coefficient =
+        addWithOverflow(Result[0].Coefficient,
+                        multiplyWithOverflow(Scale, Offset.getSExtValue()));
+    if (Offset.isNegative()) {
+      // Add pre-condition ensuring the GEP is increasing monotonically and
+      // can be de-composed.
+      Preconditions.emplace_back(
+          CmpInst::ICMP_SGE, InnerGEP->getOperand(1),
+          ConstantInt::get(InnerGEP->getOperand(1)->getType(),
+                           -1 * Offset.getSExtValue()));
+    }
+    return Result;
+  }
+
+  SmallVector<DecompEntry, 4> Result = {{0, nullptr},
+                                        {1, GEP.getPointerOperand()}};
+  gep_type_iterator GTI = gep_type_begin(GEP);
+  for (User::const_op_iterator I = GEP.op_begin() + 1, E = GEP.op_end(); I != E;
+       ++I, ++GTI) {
+    Value *Index = *I;
+
+    // Bail out for scalable vectors for now.
+    if (isa<ScalableVectorType>(GTI.getIndexedType()))
+      return {};
+
+    // Struct indices must be constants (and reference an existing field). Add
+    // them to the constant factor.
+    if (StructType *STy = GTI.getStructTypeOrNull()) {
+      // For a struct, add the member offset.
+      unsigned FieldNo = cast<ConstantInt>(Index)->getZExtValue();
+      if (FieldNo == 0)
+        continue;
+
+      // Add offset to constant factor.
+      Result[0].Coefficient = addWithOverflow(
+          Result[0].Coefficient,
+          int64_t(DL.getStructLayout(STy)->getElementOffset(FieldNo)));
+      continue;
+    }
+
+    // For an array/pointer, add the element offset, explicitly scaled.
+    unsigned Scale = DL.getTypeAllocSize(GTI.getIndexedType()).getFixedSize();
+
+    auto IdxResult = decompose(Index, Preconditions, IsSigned, DL);
+    if (IdxResult.empty()) {
+      Result.emplace_back(Scale, Index);
+    } else {
+      for (auto &KV : IdxResult)
+        KV.Coefficient = multiplyWithOverflow(KV.Coefficient, Scale);
+      Result[0].Coefficient += IdxResult[0].Coefficient;
+      append_range(Result, ArrayRef<DecompEntry>(IdxResult).drop_front());
+    }
+    // If Op0 is signed non-negative, the GEP is increasing monotonically and
+    // can be de-composed.
+    if (!isKnownNonNegative(Index, DL, /*Depth=*/MaxAnalysisRecursionDepth - 1))
+      Preconditions.emplace_back(CmpInst::ICMP_SGE, Index,
+                                 ConstantInt::get(Index->getType(), 0));
+  }
+  return Result;
+}
+
 // Decomposes \p V into a vector of entries of the form { Coefficient, Variable
 // } where Coefficient * Variable. The sum of the pairs equals \p V.  The first
 // pair is the constant-factor and X must be nullptr. If the expression cannot
 // be decomposed, returns an empty vector.
 static SmallVector<DecompEntry, 4>
 decompose(Value *V, SmallVector<PreconditionTy, 4> &Preconditions,
-          bool IsSigned) {
+          bool IsSigned, const DataLayout &DL) {
 
-  auto CanUseSExt = [](ConstantInt *CI) {
-    const APInt &Val = CI->getValue();
-    return Val.sgt(MinSignedConstraintValue) && Val.slt(MaxConstraintValue);
+  auto MergeResults = [&Preconditions, IsSigned,
+                       &DL](Value *A, Value *B,
+                            bool IsSignedB) -> SmallVector<DecompEntry, 4> {
+    auto ResA = decompose(A, Preconditions, IsSigned, DL);
+    auto ResB = decompose(B, Preconditions, IsSignedB, DL);
+    if (ResA.empty() || ResB.empty())
+      return {};
+    ResA[0].Coefficient += ResB[0].Coefficient;
+    append_range(ResA, drop_begin(ResB));
+    return ResA;
   };
+
   // Decompose \p V used with a signed predicate.
   if (IsSigned) {
     if (auto *CI = dyn_cast<ConstantInt>(V)) {
-      if (CanUseSExt(CI))
+      if (canUseSExt(CI))
         return {{CI->getSExtValue(), nullptr}};
     }
+    Value *Op0;
+    Value *Op1;
+    if (match(V, m_NSWAdd(m_Value(Op0), m_Value(Op1))))
+      return MergeResults(Op0, Op1, IsSigned);
 
     return {{0, nullptr}, {1, V}};
   }
@@ -206,73 +330,9 @@ decompose(Value *V, SmallVector<PreconditionTy, 4> &Preconditions,
       return {};
     return {{int64_t(CI->getZExtValue()), nullptr}};
   }
-  auto *GEP = dyn_cast<GetElementPtrInst>(V);
-  if (GEP && GEP->getNumOperands() == 2 && GEP->isInBounds()) {
-    Value *Op0, *Op1;
-    ConstantInt *CI;
 
-    // Handle the (gep (gep ....), C) case by incrementing the constant
-    // coefficient of the inner GEP, if C is a constant.
-    auto *InnerGEP = dyn_cast<GetElementPtrInst>(GEP->getPointerOperand());
-    if (InnerGEP && InnerGEP->getNumOperands() == 2 &&
-        isa<ConstantInt>(GEP->getOperand(1))) {
-      APInt Offset = cast<ConstantInt>(GEP->getOperand(1))->getValue();
-      auto Result = decompose(InnerGEP, Preconditions, IsSigned);
-      Result[0].Coefficient += Offset.getSExtValue();
-      if (Offset.isNegative()) {
-        // Add pre-condition ensuring the GEP is increasing monotonically and
-        // can be de-composed.
-        Preconditions.emplace_back(
-            CmpInst::ICMP_SGE, InnerGEP->getOperand(1),
-            ConstantInt::get(InnerGEP->getOperand(1)->getType(),
-                             -1 * Offset.getSExtValue()));
-      }
-      return Result;
-    }
-
-    // If the index is zero-extended, it is guaranteed to be positive.
-    if (match(GEP->getOperand(GEP->getNumOperands() - 1),
-              m_ZExt(m_Value(Op0)))) {
-      if (match(Op0, m_NUWShl(m_Value(Op1), m_ConstantInt(CI))) &&
-          CanUseSExt(CI))
-        return {{0, nullptr},
-                {1, GEP->getPointerOperand()},
-                {int64_t(std::pow(int64_t(2), CI->getSExtValue())), Op1}};
-      if (match(Op0, m_NSWAdd(m_Value(Op1), m_ConstantInt(CI))) &&
-          CanUseSExt(CI))
-        return {{CI->getSExtValue(), nullptr},
-                {1, GEP->getPointerOperand()},
-                {1, Op1}};
-      return {{0, nullptr}, {1, GEP->getPointerOperand()}, {1, Op0, true}};
-    }
-
-    if (match(GEP->getOperand(GEP->getNumOperands() - 1), m_ConstantInt(CI)) &&
-        !CI->isNegative() && CanUseSExt(CI))
-      return {{CI->getSExtValue(), nullptr}, {1, GEP->getPointerOperand()}};
-
-    SmallVector<DecompEntry, 4> Result;
-    if (match(GEP->getOperand(GEP->getNumOperands() - 1),
-              m_NUWShl(m_Value(Op0), m_ConstantInt(CI))) &&
-        CanUseSExt(CI))
-      Result = {{0, nullptr},
-                {1, GEP->getPointerOperand()},
-                {int(std::pow(int64_t(2), CI->getSExtValue())), Op0}};
-    else if (match(GEP->getOperand(GEP->getNumOperands() - 1),
-                   m_NSWAdd(m_Value(Op0), m_ConstantInt(CI))) &&
-             CanUseSExt(CI))
-      Result = {{CI->getSExtValue(), nullptr},
-                {1, GEP->getPointerOperand()},
-                {1, Op0}};
-    else {
-      Op0 = GEP->getOperand(GEP->getNumOperands() - 1);
-      Result = {{0, nullptr}, {1, GEP->getPointerOperand()}, {1, Op0}};
-    }
-    // If Op0 is signed non-negative, the GEP is increasing monotonically and
-    // can be de-composed.
-    Preconditions.emplace_back(CmpInst::ICMP_SGE, Op0,
-                               ConstantInt::get(Op0->getType(), 0));
-    return Result;
-  }
+  if (auto *GEP = dyn_cast<GetElementPtrInst>(V))
+    return decomposeGEP(*GEP, Preconditions, IsSigned, DL);
 
   Value *Op0;
   bool IsKnownPositive = false;
@@ -281,31 +341,47 @@ decompose(Value *V, SmallVector<PreconditionTy, 4> &Preconditions,
     V = Op0;
   }
 
-  auto MergeResults = [&Preconditions, IsSigned](
-                          Value *A, Value *B,
-                          bool IsSignedB) -> SmallVector<DecompEntry, 4> {
-    auto ResA = decompose(A, Preconditions, IsSigned);
-    auto ResB = decompose(B, Preconditions, IsSignedB);
-    if (ResA.empty() || ResB.empty())
-      return {};
-    ResA[0].Coefficient += ResB[0].Coefficient;
-    append_range(ResA, drop_begin(ResB));
-    return ResA;
-  };
   Value *Op1;
   ConstantInt *CI;
   if (match(V, m_NUWAdd(m_Value(Op0), m_Value(Op1)))) {
     return MergeResults(Op0, Op1, IsSigned);
   }
+  if (match(V, m_NSWAdd(m_Value(Op0), m_Value(Op1)))) {
+    if (!isKnownNonNegative(Op0, DL, /*Depth=*/MaxAnalysisRecursionDepth - 1))
+      Preconditions.emplace_back(CmpInst::ICMP_SGE, Op0,
+                                 ConstantInt::get(Op0->getType(), 0));
+    if (!isKnownNonNegative(Op1, DL, /*Depth=*/MaxAnalysisRecursionDepth - 1))
+      Preconditions.emplace_back(CmpInst::ICMP_SGE, Op1,
+                                 ConstantInt::get(Op1->getType(), 0));
+
+    return MergeResults(Op0, Op1, IsSigned);
+  }
+
   if (match(V, m_Add(m_Value(Op0), m_ConstantInt(CI))) && CI->isNegative() &&
-      CanUseSExt(CI)) {
+      canUseSExt(CI)) {
     Preconditions.emplace_back(
         CmpInst::ICMP_UGE, Op0,
         ConstantInt::get(Op0->getType(), CI->getSExtValue() * -1));
     return MergeResults(Op0, CI, true);
   }
 
-  if (match(V, m_NUWSub(m_Value(Op0), m_ConstantInt(CI))) && CanUseSExt(CI))
+  if (match(V, m_NUWShl(m_Value(Op1), m_ConstantInt(CI))) && canUseSExt(CI)) {
+    int64_t Mult = int64_t(std::pow(int64_t(2), CI->getSExtValue()));
+    auto Result = decompose(Op1, Preconditions, IsSigned, DL);
+    for (auto &KV : Result)
+      KV.Coefficient *= Mult;
+    return Result;
+  }
+
+  if (match(V, m_NUWMul(m_Value(Op1), m_ConstantInt(CI))) && canUseSExt(CI) &&
+      (!CI->isNegative())) {
+    auto Result = decompose(Op1, Preconditions, IsSigned, DL);
+    for (auto &KV : Result)
+      KV.Coefficient *= CI->getSExtValue();
+    return Result;
+  }
+
+  if (match(V, m_NUWSub(m_Value(Op0), m_ConstantInt(CI))) && canUseSExt(CI))
     return {{-1 * CI->getSExtValue(), nullptr}, {1, Op0}};
   if (match(V, m_NUWSub(m_Value(Op0), m_Value(Op1))))
     return {{0, nullptr}, {1, Op0}, {-1, Op1}};
@@ -355,9 +431,9 @@ ConstraintInfo::getConstraint(CmpInst::Predicate Pred, Value *Op0, Value *Op1,
   bool IsSigned = CmpInst::isSigned(Pred);
   auto &Value2Index = getValue2Index(IsSigned);
   auto ADec = decompose(Op0->stripPointerCastsSameRepresentation(),
-                        Preconditions, IsSigned);
+                        Preconditions, IsSigned, DL);
   auto BDec = decompose(Op1->stripPointerCastsSameRepresentation(),
-                        Preconditions, IsSigned);
+                        Preconditions, IsSigned, DL);
   // Skip if decomposing either of the values failed.
   if (ADec.empty() || BDec.empty())
     return {};
@@ -670,6 +746,68 @@ void State::addInfoFor(BasicBlock &BB) {
     WorkList.emplace_back(DT.getNode(Br->getSuccessor(1)), CmpI, true);
 }
 
+static bool checkAndReplaceCondition(CmpInst *Cmp, ConstraintInfo &Info) {
+  LLVM_DEBUG(dbgs() << "Checking " << *Cmp << "\n");
+
+  CmpInst::Predicate Pred = Cmp->getPredicate();
+  Value *A = Cmp->getOperand(0);
+  Value *B = Cmp->getOperand(1);
+
+  auto R = Info.getConstraintForSolving(Pred, A, B);
+  if (R.empty() || !R.isValid(Info)){
+    LLVM_DEBUG(dbgs() << "   failed to decompose condition\n");
+    return false;
+  }
+
+  auto &CSToUse = Info.getCS(R.IsSigned);
+
+  // If there was extra information collected during decomposition, apply
+  // it now and remove it immediately once we are done with reasoning
+  // about the constraint.
+  for (auto &Row : R.ExtraInfo)
+    CSToUse.addVariableRow(Row);
+  auto InfoRestorer = make_scope_exit([&]() {
+    for (unsigned I = 0; I < R.ExtraInfo.size(); ++I)
+      CSToUse.popLastConstraint();
+  });
+
+  bool Changed = false;
+  if (CSToUse.isConditionImplied(R.Coefficients)) {
+    if (!DebugCounter::shouldExecute(EliminatedCounter))
+      return false;
+
+    LLVM_DEBUG({
+      dbgs() << "Condition " << *Cmp << " implied by dominating constraints\n";
+      dumpWithNames(CSToUse, Info.getValue2Index(R.IsSigned));
+    });
+    Constant *TrueC =
+        ConstantInt::getTrue(CmpInst::makeCmpResultType(Cmp->getType()));
+    Cmp->replaceUsesWithIf(TrueC, [](Use &U) {
+      // Conditions in an assume trivially simplify to true. Skip uses
+      // in assume calls to not destroy the available information.
+      auto *II = dyn_cast<IntrinsicInst>(U.getUser());
+      return !II || II->getIntrinsicID() != Intrinsic::assume;
+    });
+    NumCondsRemoved++;
+    Changed = true;
+  }
+  if (CSToUse.isConditionImplied(ConstraintSystem::negate(R.Coefficients))) {
+    if (!DebugCounter::shouldExecute(EliminatedCounter))
+      return false;
+
+    LLVM_DEBUG({
+      dbgs() << "Condition !" << *Cmp << " implied by dominating constraints\n";
+      dumpWithNames(CSToUse, Info.getValue2Index(R.IsSigned));
+    });
+    Constant *FalseC =
+        ConstantInt::getFalse(CmpInst::makeCmpResultType(Cmp->getType()));
+    Cmp->replaceAllUsesWith(FalseC);
+    NumCondsRemoved++;
+    Changed = true;
+  }
+  return Changed;
+}
+
 void ConstraintInfo::addFact(CmpInst::Predicate Pred, Value *A, Value *B,
                              unsigned NumIn, unsigned NumOut,
                              SmallVectorImpl<StackEntry> &DFSInStack) {
@@ -720,6 +858,38 @@ void ConstraintInfo::addFact(CmpInst::Predicate Pred, Value *A, Value *B,
   }
 }
 
+static bool replaceSubOverflowUses(IntrinsicInst *II, Value *A, Value *B,
+                                   SmallVectorImpl<Instruction *> &ToRemove) {
+  bool Changed = false;
+  IRBuilder<> Builder(II->getParent(), II->getIterator());
+  Value *Sub = nullptr;
+  for (User *U : make_early_inc_range(II->users())) {
+    if (match(U, m_ExtractValue<0>(m_Value()))) {
+      if (!Sub)
+        Sub = Builder.CreateSub(A, B);
+      U->replaceAllUsesWith(Sub);
+      Changed = true;
+    } else if (match(U, m_ExtractValue<1>(m_Value()))) {
+      U->replaceAllUsesWith(Builder.getFalse());
+      Changed = true;
+    } else
+      continue;
+
+    if (U->use_empty()) {
+      auto *I = cast<Instruction>(U);
+      ToRemove.push_back(I);
+      I->setOperand(0, PoisonValue::get(II->getType()));
+      Changed = true;
+    }
+  }
+
+  if (II->use_empty()) {
+    II->eraseFromParent();
+    Changed = true;
+  }
+  return Changed;
+}
+
 static bool
 tryToSimplifyOverflowMath(IntrinsicInst *II, ConstraintInfo &Info,
                           SmallVectorImpl<Instruction *> &ToRemove) {
@@ -743,33 +913,7 @@ tryToSimplifyOverflowMath(IntrinsicInst *II, ConstraintInfo &Info,
         !DoesConditionHold(CmpInst::ICMP_SGE, B,
                            ConstantInt::get(A->getType(), 0), Info))
       return false;
-
-    IRBuilder<> Builder(II->getParent(), II->getIterator());
-    Value *Sub = nullptr;
-    for (User *U : make_early_inc_range(II->users())) {
-      if (match(U, m_ExtractValue<0>(m_Value()))) {
-        if (!Sub)
-          Sub = Builder.CreateSub(A, B);
-        U->replaceAllUsesWith(Sub);
-        Changed = true;
-      } else if (match(U, m_ExtractValue<1>(m_Value()))) {
-        U->replaceAllUsesWith(Builder.getFalse());
-        Changed = true;
-      } else
-        continue;
-
-      if (U->use_empty()) {
-        auto *I = cast<Instruction>(U);
-        ToRemove.push_back(I);
-        I->setOperand(0, PoisonValue::get(II->getType()));
-        Changed = true;
-      }
-    }
-
-    if (II->use_empty()) {
-      II->eraseFromParent();
-      Changed = true;
-    }
+    Changed = replaceSubOverflowUses(II, A, B, ToRemove);
   }
   return Changed;
 }
@@ -859,58 +1003,7 @@ static bool eliminateConstraints(Function &F, DominatorTree &DT) {
         if (!Cmp)
           continue;
 
-        LLVM_DEBUG(dbgs() << "Checking " << *Cmp << "\n");
-        auto R = Info.getConstraintForSolving(
-            Cmp->getPredicate(), Cmp->getOperand(0), Cmp->getOperand(1));
-        if (R.empty() || !R.isValid(Info))
-          continue;
-
-        auto &CSToUse = Info.getCS(R.IsSigned);
-
-        // If there was extra information collected during decomposition, apply
-        // it now and remove it immediately once we are done with reasoning
-        // about the constraint.
-        for (auto &Row : R.ExtraInfo)
-          CSToUse.addVariableRow(Row);
-        auto InfoRestorer = make_scope_exit([&]() {
-          for (unsigned I = 0; I < R.ExtraInfo.size(); ++I)
-            CSToUse.popLastConstraint();
-        });
-
-        if (CSToUse.isConditionImplied(R.Coefficients)) {
-          if (!DebugCounter::shouldExecute(EliminatedCounter))
-            continue;
-
-          LLVM_DEBUG({
-            dbgs() << "Condition " << *Cmp
-                   << " implied by dominating constraints\n";
-            dumpWithNames(CSToUse, Info.getValue2Index(R.IsSigned));
-          });
-          Cmp->replaceUsesWithIf(
-              ConstantInt::getTrue(F.getParent()->getContext()), [](Use &U) {
-                // Conditions in an assume trivially simplify to true. Skip uses
-                // in assume calls to not destroy the available information.
-                auto *II = dyn_cast<IntrinsicInst>(U.getUser());
-                return !II || II->getIntrinsicID() != Intrinsic::assume;
-              });
-          NumCondsRemoved++;
-          Changed = true;
-        }
-        if (CSToUse.isConditionImplied(
-                ConstraintSystem::negate(R.Coefficients))) {
-          if (!DebugCounter::shouldExecute(EliminatedCounter))
-            continue;
-
-          LLVM_DEBUG({
-            dbgs() << "Condition !" << *Cmp
-                   << " implied by dominating constraints\n";
-            dumpWithNames(CSToUse, Info.getValue2Index(R.IsSigned));
-          });
-          Cmp->replaceAllUsesWith(
-              ConstantInt::getFalse(F.getParent()->getContext()));
-          NumCondsRemoved++;
-          Changed = true;
-        }
+        Changed |= checkAndReplaceCondition(Cmp, Info);
       }
       continue;
     }

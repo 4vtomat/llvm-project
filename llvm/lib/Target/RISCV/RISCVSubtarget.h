@@ -106,6 +106,8 @@ private:
   bool HasStdExtZiccrse = false; //SIFIVE
   bool HasStdExtZa64rs = false; //SIFIVE
   bool HasStdExtZic64b = false; //SIFIVE
+  bool HasStdExtSvnapot = false;
+  bool HasStdExtSvinval = false;
   bool HasStdExtZmmul = false;
   bool HasStdExtSscofpmf = false; // SIFIVE
   bool HasStdExtZawrs = false;
@@ -118,7 +120,6 @@ private:
   bool EnableDefaultUnroll = true;
   bool EnableSaveRestore = false;
   bool HasCMOVBranchOpt = false; // SIFIVE
-  bool HasShortForwardBranchOpt = false; // SIFIVE
   bool SetJumpIsCheap = false; // SIFIVE
   bool HasFuseLUILoad = false;        // SIFIVE
   bool HasFuseIndexedLoad = false;    // SIFIVE
@@ -129,6 +130,7 @@ private:
   bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned DLen = 0; // SIFIVE
   bool EnableUnalignedScalarMem = false;
+  bool HasShortForwardBranchOpt = false;
   bool HasLUIADDIFusion = false;
   bool HasForcedAtomics = false;
   unsigned XLen = 32;
@@ -230,6 +232,8 @@ public:
   bool hasStdExtZicbom() const { return HasStdExtZicbom; }
   bool hasStdExtZicboz() const { return HasStdExtZicboz; }
   bool hasStdExtZicbop() const { return HasStdExtZicbop; }
+  bool hasStdExtSvnapot() const { return HasStdExtSvnapot; }
+  bool hasStdExtSvinval() const { return HasStdExtSvinval; }
   bool hasStdExtZawrs() const { return HasStdExtZawrs; }
   bool hasStdExtZmmul() const { return HasStdExtZmmul; }
   bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
@@ -241,7 +245,6 @@ public:
   bool enableDefaultUnroll() const { return EnableDefaultUnroll; }
   bool enableSaveRestore() const { return EnableSaveRestore; }
 #if SIFIVE_CUSTOMIZATION
-  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool hasCMOVBranchOpt() const {
     // U8 can only predicate c.mv so requires the C extension.
     return HasCMOVBranchOpt && hasStdExtC();
@@ -260,6 +263,7 @@ public:
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
+  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
   bool enableUnalignedScalarMem() const { return EnableUnalignedScalarMem; }
   bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
   bool hasForcedAtomics() const { return HasForcedAtomics; }
@@ -367,6 +371,7 @@ public:
   bool useAA() const override;
   bool useAltGPROrder() const;
   bool useAltFPROrder() const;
+  bool useAltVROrder() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 } // End llvm namespace

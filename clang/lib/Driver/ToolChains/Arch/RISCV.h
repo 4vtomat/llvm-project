@@ -26,14 +26,17 @@ StringRef getRISCVABI(const llvm::opt::ArgList &Args,
                       const llvm::Triple &Triple);
 StringRef getRISCVArch(const llvm::opt::ArgList &Args,
                        const llvm::Triple &Triple);
-StringRef getRISCVCodeModel(const llvm::opt::ArgList &Args);
 
 #if SIFIVE_CUSTOMIZATION
+StringRef getRISCVCodeModel(const llvm::opt::ArgList &Args);
+
 void addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                            const llvm::opt::ArgList &Args,
                            llvm::opt::ArgStringList &CmdArgs);
 #endif // SIFIVE_CUSTOMIZATION
 
+std::string getRISCVTargetCPU(const llvm::opt::ArgList &Args,
+                              const llvm::Triple &Triple);
 } // end namespace riscv
 } // namespace tools
 } // end namespace driver

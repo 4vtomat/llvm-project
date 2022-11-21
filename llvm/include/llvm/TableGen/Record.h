@@ -784,11 +784,7 @@ public:
 ///
 class UnOpInit : public OpInit, public FoldingSetNode {
 public:
-#ifdef SIFIVE_CUSTOMIZATION
   enum UnaryOp : uint8_t { CAST, NOT, HEAD, TAIL, SIZE, EMPTY, GETDAGOP, LOG2 };
-#else
-  enum UnaryOp : uint8_t { CAST, NOT, HEAD, TAIL, SIZE, EMPTY, GETDAGOP };
-#endif // SIFIVE_CUSTOMIZATION
 
 private:
   Init *LHS;

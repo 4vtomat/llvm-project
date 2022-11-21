@@ -1229,6 +1229,9 @@ static void doActionsForMatchedType(
                   assert(0 && "non matching src pointers for address mapping");
               }
             }
+          } else if (Ld && isMallocOrCallocFn(SrcPtr, &TLI)) {
+            // defer calloc/malloc context to the required store for the allocation.
+            return;
           } else {
             assert(0 && "unsupported case of SoA translation of GEP");
           }

@@ -403,6 +403,17 @@ def HasStdExtZicbop : Predicate<"Subtarget->hasStdExtZicbop()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicbop),
                                 "'Zicbop' (Cache-Block Prefetch Instructions)">;
 
+def FeatureStdExtSvnapot
+    : SubtargetFeature<"svnapot", "HasStdExtSvnapot", "true",
+                       "'Svnapot' (NAPOT Translation Contiguity)">;
+
+def FeatureStdExtSvinval
+    : SubtargetFeature<"svinval", "HasStdExtSvinval", "true",
+                       "'Svinval' (Fine-Grained Address-Translation Cache Invalidation)">;
+def HasStdExtSvinval : Predicate<"Subtarget->hasStdExtSvinval()">,
+                                AssemblerPredicate<(all_of FeatureStdExtSvinval),
+                                "'Svinval' (Fine-Grained Address-Translation Cache Invalidation)">;
+
 def FeatureStdExtZtso
     : SubtargetFeature<"experimental-ztso", "HasStdExtZtso", "true",
                        "'Ztso' (Memory Model - Total Store Order)">;
@@ -545,20 +556,20 @@ def TuneNoDefaultUnroll
     : SubtargetFeature<"no-default-unroll", "EnableDefaultUnroll", "false",
                        "Disable default unroll preference.">;
 
+// SiFive 7 is able to fuse integer ALU operations with a preceding branch
+// instruction.
+def TuneShortForwardBranchOpt
+    : SubtargetFeature<"short-forward-branch-opt", "HasShortForwardBranchOpt",
+                       "true", "Enable short forward branch optimization">;
+def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
+def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
+
 #ifdef SIFIVE_CUSTOMIZATION
 def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
 def HasCMOVBranchOpt : Predicate<"Subtarget->hasCMOVBranchOpt()">;
 def NoCMOVBranchOpt : Predicate<"!Subtarget->hasCMOVBranchOpt()">;
-
-// This is a more advanced version of CMOVBranchOpt where ALU operations can be
-// predicated.
-def TuneShortForwardBranchOpt
-    : SubtargetFeature<"short-forward-branch-opt", "HasShortForwardBranchOpt",
-                       "true", "Enable short forward branch optimization">;
-def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
-def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
 def TuneJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
@@ -967,6 +978,17 @@ def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs],
+                     [TuneSiFiveP600]>;
+def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
+                                                      FeatureStdExtM,
+                                                      FeatureStdExtA,
+                                                      FeatureStdExtF,
+                                                      FeatureStdExtD,
+                                                      FeatureStdExtC,
+                                                      FeatureStdExtZba,
+                                                      FeatureStdExtZbb,
+                                                      FeatureStdExtZbs,
+                                                      FeatureStdExtV],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 

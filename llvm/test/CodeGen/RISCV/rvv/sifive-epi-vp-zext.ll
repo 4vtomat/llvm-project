@@ -102,22 +102,19 @@ define <vscale x 16 x i64> @test_vp_zext_nxv16i64_nxv16i16(<vscale x 16 x i16> %
 ; CHECK-LABEL: test_vp_zext_nxv16i64_nxv16i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    mv a2, a0
+; CHECK-NEXT:    sub a2, a0, a1
+; CHECK-NEXT:    sltu a3, a0, a2
+; CHECK-NEXT:    addiw a3, a3, -1
+; CHECK-NEXT:    and a2, a2, a3
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
+; CHECK-NEXT:    vzext.vf4 v16, v10
 ; CHECK-NEXT:    bltu a0, a1, .LBB7_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB7_2:
-; CHECK-NEXT:    li a3, 0
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    sub a1, a0, a1
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vzext.vf4 v24, v8
-; CHECK-NEXT:    bltu a0, a1, .LBB7_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    mv a3, a1
-; CHECK-NEXT:  .LBB7_4:
-; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vzext.vf4 v16, v10
-; CHECK-NEXT:    vmv8r.v v8, v24
+; CHECK-NEXT:    vmv.v.v v8, v24
 ; CHECK-NEXT:    ret
     %m.first = insertelement <vscale x 16 x i1> undef, i1 1, i32 0
     %m.splat = shufflevector <vscale x 16 x i1> %m.first, <vscale x 16 x i1> undef, <vscale x 16 x i32> zeroinitializer

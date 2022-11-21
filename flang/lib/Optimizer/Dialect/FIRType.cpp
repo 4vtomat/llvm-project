@@ -262,6 +262,18 @@ bool isAllocatableType(mlir::Type ty) {
   return false;
 }
 
+bool isBoxedRecordType(mlir::Type ty) {
+  if (auto refTy = fir::dyn_cast_ptrEleTy(ty))
+    ty = refTy;
+  if (auto boxTy = ty.dyn_cast<fir::BoxType>()) {
+    if (boxTy.getEleTy().isa<fir::RecordType>())
+      return true;
+    mlir::Type innerType = boxTy.unwrapInnerType();
+    return innerType && innerType.isa<fir::RecordType>();
+  }
+  return false;
+}
+
 static bool isAssumedType(mlir::Type ty) {
   if (auto boxTy = ty.dyn_cast<fir::BoxType>()) {
     if (boxTy.getEleTy().isa<mlir::NoneType>())
@@ -289,17 +301,8 @@ bool isUnlimitedPolymorphicType(mlir::Type ty) {
   if (auto clTy = ty.dyn_cast<fir::ClassType>()) {
     if (clTy.getEleTy().isa<mlir::NoneType>())
       return true;
-    mlir::Type innerType =
-        llvm::TypeSwitch<mlir::Type, mlir::Type>(clTy.getEleTy())
-            .Case<fir::PointerType, fir::HeapType, fir::SequenceType>(
-                [](auto ty) {
-                  mlir::Type eleTy = ty.getEleTy();
-                  if (auto seqTy = eleTy.dyn_cast<fir::SequenceType>())
-                    return seqTy.getEleTy();
-                  return eleTy;
-                })
-            .Default([](mlir::Type) { return mlir::Type{}; });
-    return innerType.isa<mlir::NoneType>();
+    mlir::Type innerType = clTy.unwrapInnerType();
+    return innerType && innerType.isa<mlir::NoneType>();
   }
   // TYPE(*)
   return isAssumedType(ty);
@@ -945,6 +948,10 @@ bool fir::hasAbstractResult(mlir::FunctionType ty) {
   if (ty.getNumResults() == 0)
     return false;
   auto resultType = ty.getResult(0);
+  // FIXME: The interoperable derived type needs more investigations and tests.
+  // The derived type without BIND attribute may also not be abstract result.
+  if (fir::isa_builtin_cptr_type(resultType))
+    return false;
   return resultType.isa<fir::SequenceType, fir::BoxType, fir::RecordType>();
 }
 
@@ -980,6 +987,17 @@ mlir::Type BaseBoxType::getEleTy() const {
   return llvm::TypeSwitch<fir::BaseBoxType, mlir::Type>(*this)
       .Case<fir::BoxType, fir::ClassType>(
           [](auto type) { return type.getEleTy(); });
+}
+
+mlir::Type BaseBoxType::unwrapInnerType() const {
+  return llvm::TypeSwitch<mlir::Type, mlir::Type>(getEleTy())
+      .Case<fir::PointerType, fir::HeapType, fir::SequenceType>([](auto ty) {
+        mlir::Type eleTy = ty.getEleTy();
+        if (auto seqTy = eleTy.dyn_cast<fir::SequenceType>())
+          return seqTy.getEleTy();
+        return eleTy;
+      })
+      .Default([](mlir::Type) { return mlir::Type{}; });
 }
 
 //===----------------------------------------------------------------------===//

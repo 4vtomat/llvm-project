@@ -215,7 +215,7 @@ public:
 protected:
   /// Initialize the printer with no internal implementation. In this case, all
   /// virtual methods of this class must be overriden.
-  AsmPrinter() {}
+  AsmPrinter() = default;
 
 private:
   AsmPrinter(const AsmPrinter &) = delete;
@@ -333,6 +333,12 @@ public:
   /// Print a newline and indent the printer to the start of the current
   /// operation.
   virtual void printNewline() = 0;
+
+  /// Increase indentation.
+  virtual void increaseIndent() = 0;
+
+  /// Decrease indentation.
+  virtual void decreaseIndent() = 0;
 
   /// Print a block argument in the usual format of:
   ///   %ssaName : type {attr1=42} loc("here")
@@ -1004,20 +1010,38 @@ public:
   //===--------------------------------------------------------------------===//
 
   /// Parse an @-identifier and store it (without the '@' symbol) in a string
-  /// attribute named 'attrName'.
-  ParseResult parseSymbolName(StringAttr &result, StringRef attrName,
-                              NamedAttrList &attrs) {
-    if (failed(parseOptionalSymbolName(result, attrName, attrs)))
+  /// attribute.
+  ParseResult parseSymbolName(StringAttr &result) {
+    if (failed(parseOptionalSymbolName(result)))
       return emitError(getCurrentLocation())
              << "expected valid '@'-identifier for symbol name";
     return success();
   }
 
+  /// Parse an @-identifier and store it (without the '@' symbol) in a string
+  /// attribute named 'attrName'.
+  ParseResult parseSymbolName(StringAttr &result, StringRef attrName,
+                              NamedAttrList &attrs) {
+    if (parseSymbolName(result))
+      return failure();
+    attrs.append(attrName, result);
+    return success();
+  }
+
+  /// Parse an optional @-identifier and store it (without the '@' symbol) in a
+  /// string attribute.
+  virtual ParseResult parseOptionalSymbolName(StringAttr &result) = 0;
+
   /// Parse an optional @-identifier and store it (without the '@' symbol) in a
   /// string attribute named 'attrName'.
-  virtual ParseResult parseOptionalSymbolName(StringAttr &result,
-                                              StringRef attrName,
-                                              NamedAttrList &attrs) = 0;
+  ParseResult parseOptionalSymbolName(StringAttr &result, StringRef attrName,
+                                      NamedAttrList &attrs) {
+    if (succeeded(parseOptionalSymbolName(result))) {
+      attrs.append(attrName, result);
+      return success();
+    }
+    return failure();
+  }
 
   //===--------------------------------------------------------------------===//
   // Resource Parsing

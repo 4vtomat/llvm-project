@@ -24,6 +24,8 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Twine.h"
 #include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/ScalarEvolution.h"
+#include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
 #include "llvm/IR/IRBuilder.h"
@@ -51,7 +53,6 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
-#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
@@ -1234,6 +1235,74 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 }
 
 #if SIFIVE_CUSTOMIZATION
+/// Visit SCEVExpr and verifies that it can be expanded safely in the other
+/// loop, i.e. it has not leaf node that is computed within the original loop.
+class SCEVRuntimeStrideChecker final
+    : public SCEVVisitor<SCEVRuntimeStrideChecker, bool> {
+private:
+  using RetVal = bool;
+  using Base = SCEVVisitor<SCEVRuntimeStrideChecker, RetVal>;
+
+  const Loop *L;
+
+  template <typename SCEVT> bool visitExpr(SCEVT *S) {
+    return llvm::all_of(S->operands(),
+                        [&](const SCEV *Op) { return Base::visit(Op); });
+  }
+
+public:
+  explicit SCEVRuntimeStrideChecker(const Loop *L) : L(L) {}
+
+  /// SCEVUnknown contains pointer to the original Value that needs to be
+  /// investigated for safe expansion in the new loop. At this point it's not
+  /// possible to call `SCEVExpander.SafeToHoist` as we don't have proper
+  /// InsertionPoint to pass to that function (vector skeleton for the vector
+  /// loop). Thus simply check if value is NOT defined within the loop we're
+  /// trying to vectorize
+  bool visitUnknown(const SCEVUnknown *S) {
+    if (auto *I = dyn_cast<Instruction>(S->getValue()))
+      if (L->contains(I)) {
+        LLVM_DEBUG(llvm::dbgs() << "SCEVUnknown = "; S->print(llvm::dbgs());
+                   llvm::dbgs() << " is defined within the loop\n");
+        return false;
+      }
+    return true;
+  }
+
+  /// Don't know what to do with this expression. Assume unsafe.
+  bool visitCouldNotCompute(const SCEVCouldNotCompute *S) { return false; }
+
+  /// All other expressions are good and won't prevent SCEV expansion in the
+  /// vector loop
+  bool visitConstant(const SCEVConstant *S) { return true; }
+  bool visitPtrToIntExpr(const SCEVPtrToIntExpr *S) { return visitExpr(S); }
+  bool visitTruncateExpr(const SCEVTruncateExpr *S) { return visitExpr(S); }
+  bool visitZeroExtendExpr(const SCEVZeroExtendExpr *S) { return visitExpr(S); }
+  bool visitSignExtendExpr(const SCEVSignExtendExpr *S) { return visitExpr(S); }
+  bool visitAddExpr(const SCEVAddExpr *S) { return visitExpr(S); }
+  bool visitMulExpr(const SCEVMulExpr *S) { return visitExpr(S); }
+  bool visitUDivExpr(const SCEVUDivExpr *S) { return visitExpr(S); }
+  bool visitAddRecExpr(const SCEVAddRecExpr *S) { return visitExpr(S); }
+  bool visitSMaxExpr(const SCEVSMaxExpr *S) { return visitExpr(S); }
+  bool visitUMaxExpr(const SCEVUMaxExpr *S) { return visitExpr(S); }
+  bool visitSMinExpr(const SCEVSMinExpr *S) { return visitExpr(S); }
+  bool visitUMinExpr(const SCEVUMinExpr *S) { return visitExpr(S); }
+  bool visitSequentialUMinExpr(const SCEVSequentialMinMaxExpr *S) {
+    return visitExpr(S);
+  }
+};
+
+/// Return true if runtime stride will be safe to expand using SCEVExpander in
+/// the vector loop
+bool llvm::isSafeStrideAccessInfo(const Loop *L,
+                                  const llvm::StrideAccessInfo &SAI) {
+  if (!SAI)
+    return false;
+
+  SCEVRuntimeStrideChecker StrideChecker(L);
+  return StrideChecker.visit(SAI.getSCEVStride());
+}
+
 llvm::StrideAccessInfo llvm::computeStrideAccessInfo(ScalarEvolution *SE,
                                                      Instruction *I) {
   Value *Ptr = getLoadStorePointerOperand(I);
@@ -1243,8 +1312,6 @@ llvm::StrideAccessInfo llvm::computeStrideAccessInfo(ScalarEvolution *SE,
 
   const SCEV *Stride = cast<SCEVAddRecExpr>(V)->getStepRecurrence(*SE);
 
-  if (const auto *SCEVC = dyn_cast<SCEVConstant>(Stride))
-    return StrideAccessInfo(V, Stride);
-  return llvm::StrideAccessInfo();
+  return StrideAccessInfo(V, Stride);
 }
 #endif // SIFIVE_CUSTOMIZATION

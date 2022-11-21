@@ -35,7 +35,6 @@ define void @main() {
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, ma
 ; CHECK-NEXT:    vmacc.vv v8, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
@@ -115,8 +114,8 @@ define void @main() {
 ; CHECK-NEXT:    vs4r.v v20, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vs4r.v v24, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    vssrl.vi v8, v28, 10, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    li a2, 20
 ; CHECK-NEXT:    mul a1, a1, a2
@@ -128,7 +127,7 @@ define void @main() {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vl4r.v v24, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vremu.vx v20, v8, a0, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
+; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_3)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
 ; CHECK-NEXT:    vmv1r.v v0, v1
@@ -163,7 +162,6 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vle64.v v8, (a0)
 ; SUBREG_LIVENESS-NEXT:    addi a0, sp, 16
 ; SUBREG_LIVENESS-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, ma
 ; SUBREG_LIVENESS-NEXT:    vmacc.vv v12, v8, v8
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_0)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
@@ -195,10 +193,10 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_2)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
 ; SUBREG_LIVENESS-NEXT:    vaaddu.vv v12, v24, v20
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vssrl.vi v20, v4, 10, v0.t
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vremu.vx v12, v8, a0, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_3)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
 ; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8

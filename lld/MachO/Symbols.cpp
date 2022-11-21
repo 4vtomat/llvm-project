@@ -9,7 +9,7 @@
 #include "Symbols.h"
 #include "InputFiles.h"
 #include "SyntheticSections.h"
-#include "lld/Common/Strings.h"
+#include "llvm/Demangle/Demangle.h"
 
 using namespace llvm;
 using namespace lld;
@@ -32,9 +32,9 @@ static_assert(sizeof(SymbolUnion) == sizeof(Defined),
 static std::string maybeDemangleSymbol(StringRef symName) {
   if (config->demangle) {
     symName.consume_front("_");
-    return demangle(symName, true);
+    return demangle(symName.str());
   }
-  return std::string(symName);
+  return symName.str();
 }
 
 std::string lld::toString(const Symbol &sym) {
@@ -103,6 +103,10 @@ uint64_t Defined::getVA() const {
     return TargetInfo::outOfRangeVA;
   }
   return isec->getVA(value);
+}
+
+ObjFile *Defined::getObjectFile() const {
+  return isec ? dyn_cast_or_null<ObjFile>(isec->getFile()) : nullptr;
 }
 
 void Defined::canonicalize() {

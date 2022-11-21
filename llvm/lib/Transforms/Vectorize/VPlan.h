@@ -1866,15 +1866,15 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Whether NonConsecutive loads/stores can be strided
-  Value *Stride = nullptr;
+  // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
+  const SCEV *Stride = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 Value *Stride = nullptr)
+                                 const SCEV *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
         Consecutive(Consecutive), Reverse(Reverse), Stride(Stride) {
 #else
@@ -1892,7 +1892,7 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 Value *Stride = nullptr)
+                                 const SCEV *Stride = nullptr)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
         Stride(Stride) {
@@ -1944,7 +1944,7 @@ public:
   // Return wheter NonConsecutive loads/stores can be strided
   bool isStrided() const { return Stride != nullptr; }
 
-  Value *getStride() const {
+  const SCEV *getStride() const {
     assert(isStrided() && "Cannot get stride for non-strided memory access");
     return Stride;
   }
@@ -3319,13 +3319,15 @@ VPValue *getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 
 /// Returns true if \p VPV is uniform after vectorization.
 inline bool isUniformAfterVectorization(VPValue *VPV) {
-  if (auto *Def = VPV->getDef()) {
-    if (auto Rep = dyn_cast<VPReplicateRecipe>(Def))
-      return Rep->isUniform();
-    return false;
-  }
-  // A value without a def is external to vplan and thus uniform.
-  return true;
+  // A value defined outside the vector region must be uniform after
+  // vectorization inside a vector region.
+  if (VPV->isDefinedOutsideVectorRegions())
+    return true;
+  VPDef *Def = VPV->getDef();
+  assert(Def && "Must have definition for value defined inside vector region");
+  if (auto Rep = dyn_cast<VPReplicateRecipe>(Def))
+    return Rep->isUniform();
+  return false;
 }
 } // end namespace vputils
 
@@ -3373,6 +3375,8 @@ struct StridedAccessValues {
   Value* BaseAddress;
   Value* Stride;
 };
+
+bool isSafeStrideAccessInfo(const Loop *L, const llvm::StrideAccessInfo &SAI);
 
 StrideAccessInfo computeStrideAccessInfo(ScalarEvolution *SE, Instruction *I);
 #endif // SIFIVE_CUSTOMIZATION

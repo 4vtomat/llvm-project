@@ -127,11 +127,9 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-LABEL: test4:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    li a0, 3
-; NOCMOV-NEXT:    beqz a2, .LBB3_2
-; NOCMOV-NEXT:  # %bb.1:
-; NOCMOV-NEXT:    li a0, 0
-; NOCMOV-NEXT:  .LBB3_2:
+; NOCMOV-NEXT:    snez a0, a2
+; NOCMOV-NEXT:    addiw a0, a0, -1
+; NOCMOV-NEXT:    andi a0, a0, 3
 ; NOCMOV-NEXT:    ret
 ;
 ; CMOV-LABEL: test4:

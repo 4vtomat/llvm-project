@@ -10,6 +10,8 @@ add_header_library(
   builtin_wrappers
   HDRS
     builtin_wrappers.h
+  DEPENDS
+    libc.src.__support.CPP.type_traits
 )
 
 add_header_library(
@@ -81,6 +83,16 @@ add_header_library(
     libc.src.__support.FPUtil.fp_bits
     libc.src.__support.builtin_wrappers
     libc.src.errno.errno
+)
+
+add_object_library(
+  fork_callbacks
+  SRCS
+    fork_callbacks.cpp
+  HDRS
+    fork_callbacks.h
+  DEPENDS
+    .threads.mutex
 )
 
 add_header_library(

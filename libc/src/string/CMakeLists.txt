@@ -5,6 +5,7 @@ add_header_library(
   HDRS
     string_utils.h
   DEPENDS
+    libc.include.stdlib
     libc.src.__support.CPP.bitset
     .memory_utils.memcpy_implementation
     .memory_utils.bzero_implementation
@@ -93,6 +94,14 @@ add_entrypoint_object(
     strcmp.cpp
   HDRS
     strcmp.h
+)
+
+add_entrypoint_object(
+  strcoll
+  SRCS
+    strcoll.cpp
+  HDRS
+    strcoll.h
 )
 
 add_entrypoint_object(

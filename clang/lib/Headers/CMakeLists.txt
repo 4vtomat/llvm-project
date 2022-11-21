@@ -33,6 +33,7 @@ set(arm_only_files
 
 set(aarch64_only_files
   arm64intr.h
+  arm_neon_sve_bridge.h
   )
 
 set(cuda_files
@@ -117,6 +118,7 @@ set(x86_files
 # Intrinsics
   adxintrin.h
   ammintrin.h
+  amxfp16intrin.h
   amxintrin.h
   avx2intrin.h
   avx512bf16intrin.h
@@ -147,7 +149,10 @@ set(x86_files
   avx512vp2intersectintrin.h
   avx512vpopcntdqintrin.h
   avx512vpopcntdqvlintrin.h
+  avxifmaintrin.h
   avxintrin.h
+  avxneconvertintrin.h
+  avxvnniint8intrin.h
   avxvnniintrin.h
   bmi2intrin.h
   bmiintrin.h
@@ -156,6 +161,7 @@ set(x86_files
   clflushoptintrin.h
   clwbintrin.h
   clzerointrin.h
+  cmpccxaddintrin.h
   crc32intrin.h
   emmintrin.h
   enqcmdintrin.h
@@ -180,8 +186,10 @@ set(x86_files
   pkuintrin.h
   pmmintrin.h
   popcntintrin.h
+  prfchiintrin.h
   prfchwintrin.h
   ptwriteintrin.h
+  raointintrin.h
   rdpruintrin.h
   rdseedintrin.h
   rtmintrin.h
@@ -328,10 +336,6 @@ if(ARM IN_LIST LLVM_TARGETS_TO_BUILD OR AArch64 IN_LIST LLVM_TARGETS_TO_BUILD)
   clang_generate_header(-gen-arm-mve-header arm_mve.td arm_mve.h)
   # Generate arm_cde.h
   clang_generate_header(-gen-arm-cde-header arm_cde.td arm_cde.h)
-  # Copy arm_neon_sve_bridge.h
-  copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR}
-    arm_neon_sve_bridge.h
-  )
 
   # Add headers to target specific lists
   list(APPEND arm_common_generated_files
@@ -347,7 +351,6 @@ if(ARM IN_LIST LLVM_TARGETS_TO_BUILD OR AArch64 IN_LIST LLVM_TARGETS_TO_BUILD)
   list(APPEND aarch64_only_generated_files
     "${CMAKE_CURRENT_BINARY_DIR}/arm_sve.h"
     "${CMAKE_CURRENT_BINARY_DIR}/arm_bf16.h"
-    "${output_dir}/arm_neon_sve_bridge.h"
     )
 endif()
 if(RISCV IN_LIST LLVM_TARGETS_TO_BUILD)

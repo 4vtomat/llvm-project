@@ -123,7 +123,6 @@ def : WriteRes<WriteLDH, [SiFiveP500Load]>;
 }
 let Latency = 4 in {
 def : WriteRes<WriteLDW, [SiFiveP500Load]>;
-def : WriteRes<WriteLDWU, [SiFiveP500Load]>;
 def : WriteRes<WriteLDD, [SiFiveP500Load]>;
 }
 

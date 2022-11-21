@@ -133,7 +133,6 @@ let Latency = 3, ResourceCycles = [1, 1] in {
 def : WriteRes<WriteLDB, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDH, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDW, [SiFive7NPipeA, SiFive7NMem]>;
-def : WriteRes<WriteLDWU, [SiFive7NPipeA, SiFive7NMem]>;
 def : WriteRes<WriteLDD, [SiFive7NPipeA, SiFive7NMem]>;
 }
 
@@ -246,18 +245,10 @@ def : WriteRes<WriteVSETIVLI, [SiFive7NPipeA]>;
 def : WriteRes<WriteVSETVL, [SiFive7NPipeA]>;
 }
 // 7. Vector Loads and Stores
-let Latency = 4 in {
-def : WriteRes<WriteVLDE8, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE16, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE32, [SiFive7NVL]>;
-def : WriteRes<WriteVLDE64, [SiFive7NVL]>;
-}
-let Latency = 1 in {
-def : WriteRes<WriteVSTE8, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE16, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE32, [SiFive7NVS]>;
-def : WriteRes<WriteVSTE64, [SiFive7NVS]>;
-}
+let Latency = 4 in
+def : WriteRes<WriteVLDE, [SiFive7NVL]>;
+let Latency = 1 in
+def : WriteRes<WriteVSTE, [SiFive7NVS]>;
 let Latency = 4 in
 def : WriteRes<WriteVLDM, [SiFive7NVL]>;
 let Latency = 1 in
@@ -295,26 +286,11 @@ def : WriteRes<WriteVSTOX32, [SiFive7NVS]>;
 def : WriteRes<WriteVSTOX64, [SiFive7NVS]>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVLDFF8, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF16, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF32, [SiFive7NVL]>;
-def : WriteRes<WriteVLDFF64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD1R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD2R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD4R64, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R8, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R16, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R32, [SiFive7NVL]>;
-def : WriteRes<WriteVLD8R64, [SiFive7NVL]>;
+def : WriteRes<WriteVLDFF, [SiFive7NVL]>;
+def : WriteRes<WriteVLD1R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD2R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD4R, [SiFive7NVL]>;
+def : WriteRes<WriteVLD8R, [SiFive7NVL]>;
 }
 let Latency = 1 in {
 def : WriteRes<WriteVST1R, [SiFive7NVS]>;
@@ -348,57 +324,57 @@ foreach nf=2-8 in {
 
 // 12. Vector Integer Arithmetic Instructions
 let Latency = 4 in {
-def : WriteRes<WriteVIALUV, [SiFive7NVA]>;
-def : WriteRes<WriteVIALUX, [SiFive7NVA]>;
-def : WriteRes<WriteVIALUI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIALUV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIALUX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIALUI", [SiFive7NVA]>;
 }
 let Latency = 8 in {
-def : WriteRes<WriteVIWALUV, [SiFive7NVA]>;
-def : WriteRes<WriteVIWALUX, [SiFive7NVA]>;
-def : WriteRes<WriteVIWALUI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIWALUV", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVIWALUX", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVIWALUI", [SiFive7NVA], SchedMxListW>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVExtV, [SiFive7NVA]>;
-def : WriteRes<WriteVICALUV, [SiFive7NVA]>;
-def : WriteRes<WriteVICALUX, [SiFive7NVA]>;
-def : WriteRes<WriteVICALUI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVExtV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICALUV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICALUX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICALUI", [SiFive7NVA]>;
 }
 let Latency = 8 in {
-def : WriteRes<WriteVShiftV, [SiFive7NVA]>;
-def : WriteRes<WriteVShiftX, [SiFive7NVA]>;
-def : WriteRes<WriteVShiftI, [SiFive7NVA]>;
-def : WriteRes<WriteVNShiftV, [SiFive7NVA]>;
-def : WriteRes<WriteVNShiftX, [SiFive7NVA]>;
-def : WriteRes<WriteVNShiftI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVShiftV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVShiftX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVShiftI", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVNShiftV", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVNShiftX", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVNShiftI", [SiFive7NVA], SchedMxListW>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVICmpV, [SiFive7NVA]>;
-def : WriteRes<WriteVICmpX, [SiFive7NVA]>;
-def : WriteRes<WriteVICmpI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICmpV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICmpX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVICmpI", [SiFive7NVA]>;
 }
 let Latency = 8 in {
-def : WriteRes<WriteVIMulV, [SiFive7NVA]>;
-def : WriteRes<WriteVIMulX, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMulV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMulX", [SiFive7NVA]>;
 }
 let Latency = 16 in {
-def : WriteRes<WriteVIDivV, [SiFive7NVA]>;
-def : WriteRes<WriteVIDivX, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIDivV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIDivX", [SiFive7NVA]>;
 }
 let Latency = 8 in {
-def : WriteRes<WriteVIWMulV, [SiFive7NVA]>;
-def : WriteRes<WriteVIWMulX, [SiFive7NVA]>;
-def : WriteRes<WriteVIMulAddV, [SiFive7NVA]>;
-def : WriteRes<WriteVIMulAddX, [SiFive7NVA]>;
-def : WriteRes<WriteVIWMulAddV, [SiFive7NVA]>;
-def : WriteRes<WriteVIWMulAddX, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIWMulV", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVIWMulX", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVIMulAddV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMulAddX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIWMulAddV", [SiFive7NVA], SchedMxListW>;
+defm : LMULWriteRes<"WriteVIWMulAddX", [SiFive7NVA], SchedMxListW>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteVIMergeV, [SiFive7NVA]>;
-def : WriteRes<WriteVIMergeX, [SiFive7NVA]>;
-def : WriteRes<WriteVIMergeI, [SiFive7NVA]>;
-def : WriteRes<WriteVIMovV, [SiFive7NVA]>;
-def : WriteRes<WriteVIMovX, [SiFive7NVA]>;
-def : WriteRes<WriteVIMovI, [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMergeV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMergeX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMergeI", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMovV", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMovX", [SiFive7NVA]>;
+defm : LMULWriteRes<"WriteVIMovI", [SiFive7NVA]>;
 }
 
 // 13. Vector Fixed-Point Arithmetic Instructions
@@ -450,7 +426,6 @@ def : WriteRes<WriteVFMergeV, [SiFive7NVA]>;
 def : WriteRes<WriteVFMovV, [SiFive7NVA]>;
 def : WriteRes<WriteVFCvtIToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFCvtFToIV, [SiFive7NVA]>;
-def : WriteRes<WriteVFCvtFToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtIToFV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtFToIV, [SiFive7NVA]>;
 def : WriteRes<WriteVFWCvtFToFV, [SiFive7NVA]>;
@@ -526,7 +501,7 @@ def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
 def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW,
-                                   WriteLDWU, WriteLDD]>;
+                                   WriteLDW, WriteLDD]>;
 defm : AnyToGPRBypass<ReadIALU, 2>;
 defm : AnyToGPRBypass<ReadIALU32, 2>;
 defm : AnyToGPRBypass<ReadShiftImm, 2>;
@@ -606,10 +581,7 @@ def : ReadAdvance<ReadVSETVL, 2>;
 // 7. Vector Loads and Stores
 def : ReadAdvance<ReadVLDX, 0>;
 def : ReadAdvance<ReadVSTX, 0>;
-def : ReadAdvance<ReadVSTE8V, 0>;
-def : ReadAdvance<ReadVSTE16V, 0>;
-def : ReadAdvance<ReadVSTE32V, 0>;
-def : ReadAdvance<ReadVSTE64V, 0>;
+def : ReadAdvance<ReadVSTEV, 0>;
 def : ReadAdvance<ReadVSTM, 0>;
 def : ReadAdvance<ReadVLDSX, 0>;
 def : ReadAdvance<ReadVSTSX, 0>;
@@ -643,33 +615,33 @@ def : ReadAdvance<ReadVST4R, 0>;
 def : ReadAdvance<ReadVST8R, 0>;
 
 // 12. Vector Integer Arithmetic Instructions
-def : ReadAdvance<ReadVIALUV, 0>;
-def : ReadAdvance<ReadVIALUX, 0>;
-def : ReadAdvance<ReadVIWALUV, 0>;
-def : ReadAdvance<ReadVIWALUX, 0>;
-def : ReadAdvance<ReadVExtV, 0>;
-def : ReadAdvance<ReadVIALUCV, 0>;
-def : ReadAdvance<ReadVIALUCX, 0>;
-def : ReadAdvance<ReadVShiftV, 0>;
-def : ReadAdvance<ReadVShiftX, 0>;
-def : ReadAdvance<ReadVNShiftV, 0>;
-def : ReadAdvance<ReadVNShiftX, 0>;
-def : ReadAdvance<ReadVICmpV, 0>;
-def : ReadAdvance<ReadVICmpX, 0>;
-def : ReadAdvance<ReadVIMulV, 0>;
-def : ReadAdvance<ReadVIMulX, 0>;
-def : ReadAdvance<ReadVIDivV, 0>;
-def : ReadAdvance<ReadVIDivX, 0>;
-def : ReadAdvance<ReadVIWMulV, 0>;
-def : ReadAdvance<ReadVIWMulX, 0>;
-def : ReadAdvance<ReadVIMulAddV, 0>;
-def : ReadAdvance<ReadVIMulAddX, 0>;
-def : ReadAdvance<ReadVIWMulAddV, 0>;
-def : ReadAdvance<ReadVIWMulAddX, 0>;
-def : ReadAdvance<ReadVIMergeV, 0>;
-def : ReadAdvance<ReadVIMergeX, 0>;
-def : ReadAdvance<ReadVIMovV, 0>;
-def : ReadAdvance<ReadVIMovX, 0>;
+defm : LMULReadAdvance<"ReadVIALUV", 0>;
+defm : LMULReadAdvance<"ReadVIALUX", 0>;
+defm : LMULReadAdvance<"ReadVIWALUV", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVIWALUX", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVExtV", 0>;
+defm : LMULReadAdvance<"ReadVICALUV", 0>;
+defm : LMULReadAdvance<"ReadVICALUX", 0>;
+defm : LMULReadAdvance<"ReadVShiftV", 0>;
+defm : LMULReadAdvance<"ReadVShiftX", 0>;
+defm : LMULReadAdvance<"ReadVNShiftV", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVNShiftX", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVICmpV", 0>;
+defm : LMULReadAdvance<"ReadVICmpX", 0>;
+defm : LMULReadAdvance<"ReadVIMulV", 0>;
+defm : LMULReadAdvance<"ReadVIMulX", 0>;
+defm : LMULReadAdvance<"ReadVIDivV", 0>;
+defm : LMULReadAdvance<"ReadVIDivX", 0>;
+defm : LMULReadAdvance<"ReadVIWMulV", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVIWMulX", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVIMulAddV", 0>;
+defm : LMULReadAdvance<"ReadVIMulAddX", 0>;
+defm : LMULReadAdvance<"ReadVIWMulAddV", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVIWMulAddX", 0, SchedMxListW>;
+defm : LMULReadAdvance<"ReadVIMergeV", 0>;
+defm : LMULReadAdvance<"ReadVIMergeX", 0>;
+defm : LMULReadAdvance<"ReadVIMovV", 0>;
+defm : LMULReadAdvance<"ReadVIMovX", 0>;
 
 // 13. Vector Fixed-Point Arithmetic Instructions
 def : ReadAdvance<ReadVSALUV, 0>;

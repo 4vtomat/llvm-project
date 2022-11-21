@@ -80,6 +80,7 @@ def ConstCharPtr : ConstType<CharPtr>;
 def CharRestrictedPtr : RestrictedPtrType<CharType>;
 def CharRestrictedPtrPtr : RestrictedPtrType<CharPtr>;
 def ConstCharRestrictedPtr : ConstType<CharRestrictedPtr>;
+def ConstCharRestrictedPtrPtr : PtrType<ConstCharRestrictedPtr>;
 
 def OnceFlagType : NamedType<"once_flag">;
 def OnceFlagTypePtr : PtrType<OnceFlagType>;
@@ -115,8 +116,16 @@ def FILERestrictedPtr : RestrictedPtrType<FILE>;
 def PThreadTType : NamedType<"pthread_t">;
 
 def PidT : NamedType<"pid_t">;
+def RestrictedPidTPtr : RestrictedPtrType<PidT>;
+
 def StructRUsage : NamedType<"struct rusage">;
 def StructRUsagePtr : PtrType<StructRUsage>;
+
+def StructTimevalType : NamedType<"struct timeval">;
+def StructTimevalPtr : PtrType<StructTimevalType>;
+def RestrictedStructTimevalPtr : RestrictedPtrType<StructTimevalType>;
+
+def SuSecondsT : NamedType<"suseconds_t">;
 
 //added because __assert_fail needs it.
 def UnsignedType : NamedType<"unsigned">;

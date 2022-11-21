@@ -189,59 +189,59 @@ declare <2 x i64> @llvm.fptoui.sat.v2i64.v2f16(<2 x half>)
 define void @fp2si_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
 ; RV32-LABEL: fp2si_v2f64_v2i8:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    fld ft2, 0(a0)
+; RV32-NEXT:    fld ft0, 0(a0)
 ; RV32-NEXT:    lui a2, %hi(.LCPI10_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI10_0)(a2)
+; RV32-NEXT:    fld ft1, %lo(.LCPI10_0)(a2)
 ; RV32-NEXT:    lui a2, %hi(.LCPI10_1)
-; RV32-NEXT:    fld ft1, %lo(.LCPI10_1)(a2)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB10_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB10_2:
-; RV32-NEXT:    fld ft2, 8(a0)
-; RV32-NEXT:    feq.d a0, ft2, ft2
-; RV32-NEXT:    beqz a0, .LBB10_4
-; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    fmax.d ft0, ft2, ft0
-; RV32-NEXT:    fmin.d ft0, ft0, ft1
-; RV32-NEXT:    fcvt.w.d a0, ft0, rtz
-; RV32-NEXT:  .LBB10_4:
+; RV32-NEXT:    fld ft2, %lo(.LCPI10_1)(a2)
+; RV32-NEXT:    fmax.d ft3, ft0, ft1
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft0, ft0
+; RV32-NEXT:    fld ft0, 8(a0)
+; RV32-NEXT:    seqz a0, a3
+; RV32-NEXT:    addi a0, a0, -1
+; RV32-NEXT:    and a0, a0, a2
+; RV32-NEXT:    fmax.d ft1, ft0, ft1
+; RV32-NEXT:    fmin.d ft1, ft1, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft1, rtz
+; RV32-NEXT:    feq.d a3, ft0, ft0
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; RV32-NEXT:    vmv.v.x v8, a0
+; RV32-NEXT:    vmv.v.x v8, a2
 ; RV32-NEXT:    vsetvli zero, zero, e8, mf8, tu, ma
-; RV32-NEXT:    vmv.s.x v8, a2
+; RV32-NEXT:    vmv.s.x v8, a0
 ; RV32-NEXT:    vse8.v v8, (a1)
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: fp2si_v2f64_v2i8:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    fld ft2, 0(a0)
+; RV64-NEXT:    fld ft0, 0(a0)
 ; RV64-NEXT:    lui a2, %hi(.LCPI10_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI10_0)(a2)
+; RV64-NEXT:    fld ft1, %lo(.LCPI10_0)(a2)
 ; RV64-NEXT:    lui a2, %hi(.LCPI10_1)
-; RV64-NEXT:    fld ft1, %lo(.LCPI10_1)(a2)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB10_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB10_2:
-; RV64-NEXT:    fld ft2, 8(a0)
-; RV64-NEXT:    feq.d a0, ft2, ft2
-; RV64-NEXT:    beqz a0, .LBB10_4
-; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    fmax.d ft0, ft2, ft0
-; RV64-NEXT:    fmin.d ft0, ft0, ft1
-; RV64-NEXT:    fcvt.l.d a0, ft0, rtz
-; RV64-NEXT:  .LBB10_4:
+; RV64-NEXT:    fld ft2, %lo(.LCPI10_1)(a2)
+; RV64-NEXT:    fmax.d ft3, ft0, ft1
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft0, ft0
+; RV64-NEXT:    fld ft0, 8(a0)
+; RV64-NEXT:    seqz a0, a3
+; RV64-NEXT:    addiw a0, a0, -1
+; RV64-NEXT:    and a0, a0, a2
+; RV64-NEXT:    fmax.d ft1, ft0, ft1
+; RV64-NEXT:    fmin.d ft1, ft1, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft1, rtz
+; RV64-NEXT:    feq.d a3, ft0, ft0
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; RV64-NEXT:    vmv.v.x v8, a0
+; RV64-NEXT:    vmv.v.x v8, a2
 ; RV64-NEXT:    vsetvli zero, zero, e8, mf8, tu, ma
-; RV64-NEXT:    vmv.s.x v8, a2
+; RV64-NEXT:    vmv.s.x v8, a0
 ; RV64-NEXT:    vse8.v v8, (a1)
 ; RV64-NEXT:    ret
   %a = load <2 x double>, <2 x double>* %x
@@ -304,81 +304,81 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    fld ft2, 56(a0)
+; RV32-NEXT:    fld ft1, 56(a0)
 ; RV32-NEXT:    lui a2, %hi(.LCPI12_0)
 ; RV32-NEXT:    fld ft0, %lo(.LCPI12_0)(a2)
 ; RV32-NEXT:    lui a2, %hi(.LCPI12_1)
-; RV32-NEXT:    fld ft1, %lo(.LCPI12_1)(a2)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_2:
+; RV32-NEXT:    fld ft2, %lo(.LCPI12_1)(a2)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 15(sp)
-; RV32-NEXT:    fld ft2, 48(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_4
-; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_4:
+; RV32-NEXT:    fld ft1, 48(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 14(sp)
-; RV32-NEXT:    fld ft2, 40(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_6
-; RV32-NEXT:  # %bb.5:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_6:
+; RV32-NEXT:    fld ft1, 40(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 13(sp)
-; RV32-NEXT:    fld ft2, 32(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_8
-; RV32-NEXT:  # %bb.7:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_8:
+; RV32-NEXT:    fld ft1, 32(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 12(sp)
-; RV32-NEXT:    fld ft2, 24(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_10
-; RV32-NEXT:  # %bb.9:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_10:
+; RV32-NEXT:    fld ft1, 24(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 11(sp)
-; RV32-NEXT:    fld ft2, 16(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_12
-; RV32-NEXT:  # %bb.11:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_12:
+; RV32-NEXT:    fld ft1, 16(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 10(sp)
-; RV32-NEXT:    fld ft2, 8(a0)
-; RV32-NEXT:    feq.d a2, ft2, ft2
-; RV32-NEXT:    beqz a2, .LBB12_14
-; RV32-NEXT:  # %bb.13:
-; RV32-NEXT:    fmax.d ft2, ft2, ft0
-; RV32-NEXT:    fmin.d ft2, ft2, ft1
-; RV32-NEXT:    fcvt.w.d a2, ft2, rtz
-; RV32-NEXT:  .LBB12_14:
+; RV32-NEXT:    fld ft1, 8(a0)
+; RV32-NEXT:    fmax.d ft3, ft1, ft0
+; RV32-NEXT:    fmin.d ft3, ft3, ft2
+; RV32-NEXT:    fcvt.w.d a2, ft3, rtz
+; RV32-NEXT:    feq.d a3, ft1, ft1
+; RV32-NEXT:    seqz a3, a3
+; RV32-NEXT:    addi a3, a3, -1
+; RV32-NEXT:    and a2, a3, a2
 ; RV32-NEXT:    sb a2, 9(sp)
-; RV32-NEXT:    fld ft2, 0(a0)
-; RV32-NEXT:    feq.d a0, ft2, ft2
-; RV32-NEXT:    beqz a0, .LBB12_16
-; RV32-NEXT:  # %bb.15:
-; RV32-NEXT:    fmax.d ft0, ft2, ft0
-; RV32-NEXT:    fmin.d ft0, ft0, ft1
+; RV32-NEXT:    fld ft1, 0(a0)
+; RV32-NEXT:    fmax.d ft0, ft1, ft0
+; RV32-NEXT:    fmin.d ft0, ft0, ft2
 ; RV32-NEXT:    fcvt.w.d a0, ft0, rtz
-; RV32-NEXT:  .LBB12_16:
+; RV32-NEXT:    feq.d a2, ft1, ft1
+; RV32-NEXT:    seqz a2, a2
+; RV32-NEXT:    addi a2, a2, -1
+; RV32-NEXT:    and a0, a2, a0
 ; RV32-NEXT:    sb a0, 8(sp)
 ; RV32-NEXT:    addi a0, sp, 8
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
@@ -391,81 +391,81 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    fld ft2, 56(a0)
+; RV64-NEXT:    fld ft1, 56(a0)
 ; RV64-NEXT:    lui a2, %hi(.LCPI12_0)
 ; RV64-NEXT:    fld ft0, %lo(.LCPI12_0)(a2)
 ; RV64-NEXT:    lui a2, %hi(.LCPI12_1)
-; RV64-NEXT:    fld ft1, %lo(.LCPI12_1)(a2)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_2:
+; RV64-NEXT:    fld ft2, %lo(.LCPI12_1)(a2)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 15(sp)
-; RV64-NEXT:    fld ft2, 48(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_4
-; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_4:
+; RV64-NEXT:    fld ft1, 48(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 14(sp)
-; RV64-NEXT:    fld ft2, 40(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_6
-; RV64-NEXT:  # %bb.5:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_6:
+; RV64-NEXT:    fld ft1, 40(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 13(sp)
-; RV64-NEXT:    fld ft2, 32(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_8
-; RV64-NEXT:  # %bb.7:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_8:
+; RV64-NEXT:    fld ft1, 32(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 12(sp)
-; RV64-NEXT:    fld ft2, 24(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_10
-; RV64-NEXT:  # %bb.9:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_10:
+; RV64-NEXT:    fld ft1, 24(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 11(sp)
-; RV64-NEXT:    fld ft2, 16(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_12
-; RV64-NEXT:  # %bb.11:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_12:
+; RV64-NEXT:    fld ft1, 16(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 10(sp)
-; RV64-NEXT:    fld ft2, 8(a0)
-; RV64-NEXT:    feq.d a2, ft2, ft2
-; RV64-NEXT:    beqz a2, .LBB12_14
-; RV64-NEXT:  # %bb.13:
-; RV64-NEXT:    fmax.d ft2, ft2, ft0
-; RV64-NEXT:    fmin.d ft2, ft2, ft1
-; RV64-NEXT:    fcvt.l.d a2, ft2, rtz
-; RV64-NEXT:  .LBB12_14:
+; RV64-NEXT:    fld ft1, 8(a0)
+; RV64-NEXT:    fmax.d ft3, ft1, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft2
+; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
+; RV64-NEXT:    feq.d a3, ft1, ft1
+; RV64-NEXT:    seqz a3, a3
+; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 9(sp)
-; RV64-NEXT:    fld ft2, 0(a0)
-; RV64-NEXT:    feq.d a0, ft2, ft2
-; RV64-NEXT:    beqz a0, .LBB12_16
-; RV64-NEXT:  # %bb.15:
-; RV64-NEXT:    fmax.d ft0, ft2, ft0
-; RV64-NEXT:    fmin.d ft0, ft0, ft1
+; RV64-NEXT:    fld ft1, 0(a0)
+; RV64-NEXT:    fmax.d ft0, ft1, ft0
+; RV64-NEXT:    fmin.d ft0, ft0, ft2
 ; RV64-NEXT:    fcvt.l.d a0, ft0, rtz
-; RV64-NEXT:  .LBB12_16:
+; RV64-NEXT:    feq.d a2, ft1, ft1
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    sb a0, 8(sp)
 ; RV64-NEXT:    addi a0, sp, 8
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma

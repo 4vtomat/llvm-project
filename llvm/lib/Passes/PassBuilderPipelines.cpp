@@ -203,11 +203,11 @@ PipelineTuningOptions::PipelineTuningOptions() {
   LicmMssaNoAccForPromotionCap = SetLicmMssaNoAccForPromotionCap;
   CallGraphProfile = true;
   MergeFunctions = EnableMergeFunctions;
+  InlinerThreshold = -1;
   EagerlyInvalidateAnalyses = EnableEagerlyInvalidateAnalyses;
 }
 
 namespace llvm {
-
 extern cl::opt<unsigned> MaxDevirtIterations;
 extern cl::opt<bool> EnableConstraintElimination;
 extern cl::opt<bool> EnableFunctionSpecialization;
@@ -224,14 +224,10 @@ extern cl::opt<bool> EnableDFAJumpThreading;
 extern cl::opt<bool> RunNewGVN;
 extern cl::opt<bool> RunPartialInlining;
 extern cl::opt<bool> ExtraVectorizerPasses;
-
 extern cl::opt<bool> FlattenedProfileUsed;
-
 extern cl::opt<AttributorRunOption> AttributorRun;
 extern cl::opt<bool> EnableKnowledgeRetention;
-
 extern cl::opt<bool> EnableMatrix;
-
 extern cl::opt<bool> DisablePreInliner;
 extern cl::opt<int> PreInlineThreshold;
 } // namespace llvm
@@ -727,7 +723,11 @@ static InlineParams getInlineParamsFromOptLevel(OptimizationLevel Level) {
 ModuleInlinerWrapperPass
 PassBuilder::buildInlinerPipeline(OptimizationLevel Level,
                                   ThinOrFullLTOPhase Phase) {
-  InlineParams IP = getInlineParamsFromOptLevel(Level);
+  InlineParams IP;
+  if (PTO.InlinerThreshold == -1)
+    IP = getInlineParamsFromOptLevel(Level);
+  else
+    IP = getInlineParams(PTO.InlinerThreshold);
   // For PreLinkThinLTO + SamplePGO, set hot-caller threshold to 0 to
   // disable hot callsite inline (as much as possible [1]) because it makes
   // profile annotation in the backend inaccurate.

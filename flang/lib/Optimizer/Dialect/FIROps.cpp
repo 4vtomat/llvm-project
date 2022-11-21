@@ -916,7 +916,9 @@ mlir::LogicalResult fir::ConvertOp::verify() {
       (isPointerCompatible(inType) && isIntegerCompatible(outType)) ||
       (inType.isa<fir::BoxType>() && outType.isa<fir::BoxType>()) ||
       (inType.isa<fir::BoxProcType>() && outType.isa<fir::BoxProcType>()) ||
-      (fir::isa_complex(inType) && fir::isa_complex(outType)))
+      (fir::isa_complex(inType) && fir::isa_complex(outType)) ||
+      (fir::isBoxedRecordType(inType) && fir::isPolymorphicType(outType)) ||
+      (fir::isPolymorphicType(inType) && fir::isPolymorphicType(outType)))
     return mlir::success();
   return emitOpError("invalid type conversion");
 }
@@ -1143,6 +1145,8 @@ mlir::LogicalResult fir::EmboxOp::verify() {
     return emitOpError("shape must not be provided for a scalar");
   if (getSlice() && !isArray)
     return emitOpError("slice must not be provided for a scalar");
+  if (getTdesc() && !getResult().getType().isa<fir::ClassType>())
+    return emitOpError("tdesc must be used with fir.class result type");
   return mlir::success();
 }
 
@@ -2966,8 +2970,11 @@ void fir::SelectTypeOp::print(mlir::OpAsmPrinter &p) {
 }
 
 mlir::LogicalResult fir::SelectTypeOp::verify() {
-  if (!(getSelector().getType().isa<fir::BoxType>()))
-    return emitOpError("must be a boxed type");
+  if (!(getSelector().getType().isa<fir::BaseBoxType>()))
+    return emitOpError("must be a fir.class or fir.box type");
+  if (auto boxType = getSelector().getType().dyn_cast<fir::BoxType>())
+    if (!boxType.getEleTy().isa<mlir::NoneType>())
+      return emitOpError("selector must be polymorphic");
   auto cases =
       getOperation()->getAttrOfType<mlir::ArrayAttr>(getCasesAttr()).getValue();
   auto count = getNumDest();

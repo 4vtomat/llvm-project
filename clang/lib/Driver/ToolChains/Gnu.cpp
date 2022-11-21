@@ -23,10 +23,13 @@
 #include "clang/Driver/Options.h"
 #include "clang/Driver/Tool.h"
 #include "clang/Driver/ToolChain.h"
+#include "llvm/ADT/Twine.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Path.h"
+#if SIFIVE_CUSTOMIZATION
 #include "llvm/Support/Program.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Support/RISCVISAInfo.h"
 #include "llvm/Support/TargetParser.h"
 #include "llvm/Support/VirtualFileSystem.h"
@@ -588,13 +591,6 @@ void tools::gnutools::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("-lm");
   }
 
-  // If we are linking for the device all symbols should be bound locally. The
-  // symbols are already protected which makes this redundant. This is only
-  // necessary to work around a problem in bfd.
-  // TODO: Remove this once 'lld' becomes the only linker for offloading.
-  if (JA.isDeviceOffloading(Action::OFK_OpenMP))
-    CmdArgs.push_back("-Bsymbolic");
-
   // Silence warnings when linking C code with a C++ '-stdlib' argument.
   Args.ClaimAllArgs(options::OPT_stdlib_EQ);
 
@@ -995,6 +991,17 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
   for (const auto &II : Inputs)
     CmdArgs.push_back(II.getFilename());
 
+  if (Arg *A = Args.getLastArg(options::OPT_g_Flag, options::OPT_gN_Group,
+                               options::OPT_gdwarf_2, options::OPT_gdwarf_3,
+                               options::OPT_gdwarf_4, options::OPT_gdwarf_5,
+                               options::OPT_gdwarf))
+    if (!A->getOption().matches(options::OPT_g0)) {
+      Args.AddLastArg(CmdArgs, options::OPT_g_Flag);
+
+      unsigned DwarfVersion = getDwarfVersion(getToolChain(), Args);
+      CmdArgs.push_back(Args.MakeArgString("-gdwarf-" + Twine(DwarfVersion)));
+    }
+
   const char *Exec =
       Args.MakeArgString(getToolChain().GetProgramPath(DefaultAssembler));
   C.addCommand(std::make_unique<Command>(JA, *this,
@@ -1058,8 +1065,16 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
   return Arch == llvm::Triple::msp430;
 }
 
-static Multilib makeMultilib(StringRef commonSuffix, int Priority = 0) {
-  return Multilib(commonSuffix, commonSuffix, commonSuffix, Priority);
+static Multilib makeMultilib(StringRef commonSuffix
+#if SIFIVE_CUSTOMIZATION
+                             , int Priority = 0
+#endif // SIFIVE_CUSTOMIZATION
+                             ) {
+  return Multilib(commonSuffix, commonSuffix, commonSuffix
+#if SIFIVE_CUSTOMIZATION
+                  , Priority
+#endif // SIFIVE_CUSTOMIZATION
+                  );
 }
 
 static bool findMipsCsMultilibs(const Multilib::flags_list &Flags,
@@ -1693,6 +1708,7 @@ static void findCSKYMultilibs(const Driver &D, const llvm::Triple &TargetTriple,
     Result.Multilibs = CSKYMultilibs;
 }
 
+#if SIFIVE_CUSTOMIZATION
 static std::string findGCCPath(const Driver &D, llvm::StringRef BasePath) {
   SmallString<128> GCCPath;
   llvm::sys::path::append(GCCPath, BasePath, "bin",
@@ -1725,6 +1741,7 @@ static std::string getGCCPath(const Driver &D, const ArgList &Args) {
     return GCCPath;
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Extend the multi-lib re-use selection mechanism for RISC-V.
 /// This funciton will try to re-use multi-lib if they are compatible.
@@ -1855,6 +1872,7 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   return false;
 }
 
+#if SIFIVE_CUSTOMIZATION
 static bool scanRISCVGCCMultilibConfig(const Driver &D,
                                        const llvm::Triple &TargetTriple,
                                        StringRef Path, const ArgList &Args,
@@ -2012,16 +2030,22 @@ static bool getRISCVMultilibFromGCC(const Driver &D,
   return scanRISCVGCCMultilibConfig(D, TargetTriple, Path, Args, MultilibOutput,
                                     Result, MultilibVerboseMessages);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 static void findRISCVBareMetalMultilibs(const Driver &D,
                                         const llvm::Triple &TargetTriple,
                                         StringRef Path, const ArgList &Args,
-                                        DetectedMultilibs &Result,
-                                        std::string &MultilibVerboseMessages) {
+                                        DetectedMultilibs &Result
+#if SIFIVE_CUSTOMIZATION
+                                        , std::string &MultilibVerboseMessages
+#endif // SIFIVE_CUSTOMIZATION
+                                        ) {
+#if SIFIVE_CUSTOMIZATION
   // Try to get multilib from GCC first.
   if (getRISCVMultilibFromGCC(D, TargetTriple, Path, Args, Result,
                               MultilibVerboseMessages))
     return;
+#endif // SIFIVE_CUSTOMIZATION
 
   FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
   struct RiscvMultilib {
@@ -2076,11 +2100,17 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
 
 static void findRISCVMultilibs(const Driver &D,
                                const llvm::Triple &TargetTriple, StringRef Path,
-                               const ArgList &Args, DetectedMultilibs &Result,
-                               std::string &MultilibVerboseMessages) {
+                               const ArgList &Args, DetectedMultilibs &Result
+#if SIFIVE_CUSTOMIZATION
+                               , std::string &MultilibVerboseMessages
+#endif // SIFIVE_CUSTOMIZATION
+                               ) {
   if (TargetTriple.getOS() == llvm::Triple::UnknownOS)
-    return findRISCVBareMetalMultilibs(D, TargetTriple, Path, Args, Result,
-                                       MultilibVerboseMessages);
+    return findRISCVBareMetalMultilibs(D, TargetTriple, Path, Args, Result
+#if SIFIVE_CUSTOMIZATION
+                                       , MultilibVerboseMessages
+#endif // SIFIVE_CUSTOMIZATION
+                                       );
 
   FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
   Multilib Ilp32 = makeMultilib("lib32/ilp32").flag("+m32").flag("+mabi=ilp32");
@@ -2227,8 +2257,15 @@ bool Generic_GCC::GCCVersion::isOlderThan(int RHSMajor, int RHSMinor,
                                           StringRef RHSPatchSuffix) const {
   if (Major != RHSMajor)
     return Major < RHSMajor;
-  if (Minor != RHSMinor)
+  if (Minor != RHSMinor) {
+    // Note that versions without a specified minor sort higher than those with
+    // a minor.
+    if (RHSMinor == -1)
+      return true;
+    if (Minor == -1)
+      return false;
     return Minor < RHSMinor;
+  }
   if (Patch != RHSPatch) {
     // Note that versions without a specified patch sort higher than those with
     // a patch.
@@ -2462,8 +2499,10 @@ void Generic_GCC::GCCInstallationDetector::print(raw_ostream &OS) const {
   if (!GCCInstallPath.empty())
     OS << "Selected GCC installation: " << GCCInstallPath << "\n";
 
+#if SIFIVE_CUSTOMIZATION
   if (!MultilibVerboseMessages.empty())
     OS << MultilibVerboseMessages;
+#endif // SIFIVE_CUSTOMIZATION
 
   for (const auto &Multilib : Multilibs)
     OS << "Candidate multilib: " << Multilib << "\n";
@@ -2516,31 +2555,21 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
   // and gcc-toolsets.
   if (SysRoot.empty() && TargetTriple.getOS() == llvm::Triple::Linux &&
       D.getVFS().exists("/opt/rh")) {
-    // Find the directory in /opt/rh/ starting with gcc-toolset-* or
-    // devtoolset-* with the highest version number and add that
-    // one to our prefixes.
-    std::string ChosenToolsetDir;
-    unsigned ChosenToolsetVersion = 0;
-    std::error_code EC;
-    for (llvm::vfs::directory_iterator LI = D.getVFS().dir_begin("/opt/rh", EC),
-                                       LE;
-         !EC && LI != LE; LI = LI.increment(EC)) {
-      StringRef ToolsetDir = llvm::sys::path::filename(LI->path());
-      unsigned ToolsetVersion;
-      if ((!ToolsetDir.startswith("gcc-toolset-") &&
-           !ToolsetDir.startswith("devtoolset-")) ||
-          ToolsetDir.substr(ToolsetDir.rfind('-') + 1)
-              .getAsInteger(10, ToolsetVersion))
-        continue;
-
-      if (ToolsetVersion > ChosenToolsetVersion) {
-        ChosenToolsetVersion = ToolsetVersion;
-        ChosenToolsetDir = "/opt/rh/" + ToolsetDir.str();
-      }
-    }
-
-    if (ChosenToolsetVersion > 0)
-      Prefixes.push_back(ChosenToolsetDir + "/root/usr");
+    // TODO: We may want to remove this, since the functionality
+    //   can be achieved using config files.
+    Prefixes.push_back("/opt/rh/gcc-toolset-12/root/usr");
+    Prefixes.push_back("/opt/rh/gcc-toolset-11/root/usr");
+    Prefixes.push_back("/opt/rh/gcc-toolset-10/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-12/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-11/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-10/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-9/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-8/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-7/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-6/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-4/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-3/root/usr");
+    Prefixes.push_back("/opt/rh/devtoolset-2/root/usr");
   }
 
   // Fall back to /usr which is used by most non-Solaris systems.
@@ -2990,8 +3019,11 @@ bool Generic_GCC::GCCInstallationDetector::ScanGCCForMultilibs(
     if (!findMIPSMultilibs(D, TargetTriple, Path, Args, Detected))
       return false;
   } else if (TargetTriple.isRISCV()) {
-    findRISCVMultilibs(D, TargetTriple, Path, Args, Detected,
-                       MultilibVerboseMessages);
+    findRISCVMultilibs(D, TargetTriple, Path, Args, Detected
+#if SIFIVE_CUSTOMIZATION
+                       , MultilibVerboseMessages
+#endif // SIFIVE_CUSTOMIZATION
+                       );
   } else if (isMSP430(TargetArch)) {
     findMSP430Multilibs(D, TargetTriple, Path, Args, Detected);
   } else if (TargetArch == llvm::Triple::avr) {

@@ -17,27 +17,31 @@
 
 namespace Fortran::lower {
 
-class LoweringOptions {
-  /// If true, lower transpose without a runtime call.
-  unsigned optimizeTranspose : 1;
+class LoweringOptionsBase {
+public:
+#define LOWERINGOPT(Name, Bits, Default) unsigned Name : Bits;
+#define ENUM_LOWERINGOPT(Name, Type, Bits, Default)
+#include "flang/Lower/LoweringOptions.def"
 
-  /// If true, enable polymorphic type lowering feature. Off by default.
-  unsigned polymorphicTypeImpl : 1;
+protected:
+#define LOWERINGOPT(Name, Bits, Default)
+#define ENUM_LOWERINGOPT(Name, Type, Bits, Default) unsigned Name : Bits;
+#include "flang/Lower/LoweringOptions.def"
+};
+
+class LoweringOptions : public LoweringOptionsBase {
 
 public:
-  LoweringOptions() : optimizeTranspose(true), polymorphicTypeImpl(false) {}
-
-  bool getOptimizeTranspose() const { return optimizeTranspose; }
-  LoweringOptions &setOptimizeTranspose(bool v) {
-    optimizeTranspose = v;
-    return *this;
+#define LOWERINGOPT(Name, Bits, Default)
+#define ENUM_LOWERINGOPT(Name, Type, Bits, Default)                            \
+  Type get##Name() const { return static_cast<Type>(Name); }                   \
+  LoweringOptions &set##Name(Type Value) {                                     \
+    Name = static_cast<unsigned>(Value);                                       \
+    return *this;                                                              \
   }
+#include "flang/Lower/LoweringOptions.def"
 
-  bool isPolymorphicTypeImplEnabled() const { return polymorphicTypeImpl; }
-  LoweringOptions &setPolymorphicTypeImpl(bool v) {
-    polymorphicTypeImpl = v;
-    return *this;
-  }
+  LoweringOptions();
 };
 
 } // namespace Fortran::lower

@@ -177,6 +177,11 @@ function(compileDeviceRTLLibrary target_cpu target_name target_triple)
       DEPENDS ${bc_files}
       COMMENT "Linking LLVM bitcode ${bclib_name}"
   )
+  if("${LINK_TOOL}" STREQUAL "$<TARGET_FILE:llvm-link>")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/linked_${bclib_name}
+      DEPENDS llvm-link
+      APPEND)
+  endif()
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/internalized_${bclib_name}
       COMMAND ${OPT_TOOL} ${link_export_flag} ${CMAKE_CURRENT_BINARY_DIR}/linked_${bclib_name}
@@ -184,6 +189,11 @@ function(compileDeviceRTLLibrary target_cpu target_name target_triple)
       DEPENDS ${source_directory}/exports ${CMAKE_CURRENT_BINARY_DIR}/linked_${bclib_name}
       COMMENT "Internalizing LLVM bitcode ${bclib_name}"
   )
+  if("${OPT_TOOL}" STREQUAL "$<TARGET_FILE:opt>")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/internalized_${bclib_name}
+      DEPENDS opt
+      APPEND)
+  endif()
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
       COMMAND ${OPT_TOOL} ${link_opt_flags} ${CMAKE_CURRENT_BINARY_DIR}/internalized_${bclib_name}
@@ -191,13 +201,37 @@ function(compileDeviceRTLLibrary target_cpu target_name target_triple)
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/internalized_${bclib_name}
       COMMENT "Optimizing LLVM bitcode ${bclib_name}"
   )
+  if("${OPT_TOOL}" STREQUAL "$<TARGET_FILE:opt>")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
+      DEPENDS opt
+      APPEND)
+  endif()
+
+  set(bclib_target_name "omptarget-${target_name}-${target_cpu}-bc")
+  add_custom_target(${bclib_target_name} DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name})
+
+  # Copy library to destination.
+  add_custom_command(TARGET ${bclib_target_name} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
+                    ${LIBOMPTARGET_LIBRARY_DIR})
+  add_dependencies(omptarget.devicertl.${target_name} ${bclib_target_name})
+
+  set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${bclib_name} ${LIBOMPTARGET_LIBRARY_DIR}/${bclib_name})
+
+  # Install bitcode library under the lib destination folder.
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name} DESTINATION "${OPENMP_INSTALL_LIBDIR}")
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extracted_${bclib_name}
       COMMAND ${EXTRACT_TOOL} ${link_extract_flag} ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
                       -o ${CMAKE_CURRENT_BINARY_DIR}/extracted_${bclib_name}
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name} ${bclib_target_name}
       COMMENT "Extracting LLVM bitcode ${bclib_name}"
   )
+  if("${EXTRACT_TOOL}" STREQUAL "$<TARGET_FILE:llvm-extract>")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extracted_${bclib_name}
+      DEPENDS llvm-extract
+      APPEND)
+  endif()
 
   # Package the bitcode in the bitcode and embed it in an ELF for the static library
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name}
@@ -206,6 +240,11 @@ function(compileDeviceRTLLibrary target_cpu target_name target_triple)
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/extracted_${bclib_name}
       COMMENT "Packaging LLVM offloading binary ${bclib_name}.out"
   )
+  if("${PACKAGER_TOOL}" STREQUAL "$<TARGET_FILE:clang-offload-packager>")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name}
+      DEPENDS clang-offload-packager
+      APPEND)
+  endif()
 
   set(output_name "${CMAKE_CURRENT_BINARY_DIR}/devicertl-${target_name}-${target_cpu}.o")
   add_custom_command(OUTPUT ${output_name}
@@ -213,55 +252,18 @@ function(compileDeviceRTLLibrary target_cpu target_name target_triple)
             -Xclang -fembed-offload-object=${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name}
             -o ${output_name}
             ${source_directory}/Stub.cpp
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name}
-    COMMENT "Embedding LLVM offloading binary in ${output_name}"
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name} ${source_directory}/Stub.cpp
+    COMMENT "Embedding LLVM offloading binary in devicertl-${target_name}-${target_cpu}.o"
     VERBATIM
   )
-  set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${output_name})
-  set_property(TARGET omptarget.devicertl.all_objs APPEND PROPERTY IMPORTED_OBJECTS ${output_name})
-
-  # Add a file-level dependency to ensure that llvm-link and opt are up-to-date.
-  # By default, add_custom_command only builds the tool if the executable is missing
-  if("${LINK_TOOL}" STREQUAL "$<TARGET_FILE:llvm-link>")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/linked_${bclib_name}
-      DEPENDS llvm-link
-      APPEND)
-  endif()
-  if("${OPT_TOOL}" STREQUAL "$<TARGET_FILE:opt>")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
-      DEPENDS opt
-      APPEND)
-  endif()
-  if("${EXTRACT_TOOL}" STREQUAL "$<TARGET_FILE:llvm-extract>")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extracted_${bclib_name}
-      DEPENDS llvm-extract
-      APPEND)
-  endif()
-  if("${PACKAGER_TOOL}" STREQUAL "$<TARGET_FILE:clang-offload-packager>")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/packaged_${bclib_name}
-      DEPENDS clang-offload-packager
-      APPEND)
-  endif()
   if("${CLANG_TOOL}" STREQUAL "$<TARGET_FILE:clang>")
     add_custom_command(OUTPUT ${output_name}
       DEPENDS clang
       APPEND)
   endif()
 
-  set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${bclib_name})
-
-  set(bclib_target_name "omptarget-${target_name}-${target_cpu}-bc")
-
-  add_custom_target(${bclib_target_name} ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name})
-
-  # Copy library to destination.
-  add_custom_command(TARGET ${bclib_target_name} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name}
-                    ${LIBOMPTARGET_LIBRARY_DIR})
-  add_dependencies("omptarget.devicertl.${target_name}" "${bclib_target_name}")
-
-  # Install bitcode library under the lib destination folder.
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${bclib_name} DESTINATION "${OPENMP_INSTALL_LIBDIR}")
+  set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${output_name})
+  set_property(TARGET omptarget.devicertl.all_objs APPEND PROPERTY IMPORTED_OBJECTS ${output_name})
 endfunction()
 
 # Generate a Bitcode library for all the compute capabilities the user requested
