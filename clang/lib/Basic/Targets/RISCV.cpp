@@ -209,6 +209,8 @@ const Builtin::Info RISCVTargetInfo::BuiltinInfo[] = {
 #if SIFIVE_CUSTOMIZATION
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
   {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, "64bit,v,zfh,experimental-zvfh"},
+#define TARGET_BUILTIN(ID, TYPE, ATTRS, FEATURE)                               \
+    {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, FEATURE},
 #include "clang/Basic/BuiltinsNEON.def"
 #endif
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
