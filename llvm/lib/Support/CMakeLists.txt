@@ -121,6 +121,7 @@ add_llvm_component_library(LLVMSupport
   AArch64TargetParser.cpp
   ABIBreak.cpp
   ARMTargetParser.cpp
+  ARMTargetParserCommon.cpp
   AMDGPUMetadata.cpp
   APFixedPoint.cpp
   APFloat.cpp
@@ -187,6 +188,7 @@ add_llvm_component_library(LLVMSupport
   LineIterator.cpp
   Locale.cpp
   LockFileManager.cpp
+  LoongArchTargetParser.cpp
   LowLevelType.cpp
   ManagedStatic.cpp
   MathExtras.cpp

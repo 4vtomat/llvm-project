@@ -713,7 +713,7 @@ protected:
   /// Complete the loop skeleton by adding debug MDs, creating appropriate
   /// conditional branches in the middle block, preparing the builder and
   /// running the verifier. Return the preheader of the completed vector loop.
-  BasicBlock *completeLoopSkeleton(MDNode *OrigLoopID);
+  BasicBlock *completeLoopSkeleton();
 
   /// Collect poison-generating recipes that may generate a poison value that is
   /// used after vectorization, even when their operands are not poison. Those
@@ -3492,7 +3492,7 @@ void InnerLoopVectorizer::createInductionResumeValues(
   }
 }
 
-BasicBlock *InnerLoopVectorizer::completeLoopSkeleton(MDNode *OrigLoopID) {
+BasicBlock *InnerLoopVectorizer::completeLoopSkeleton() {
   // The trip counts should be cached by now.
   Value *Count = getOrCreateTripCount(LoopVectorPreHeader);
   Value *VectorTripCount = getOrCreateVectorTripCount(LoopVectorPreHeader);
@@ -3561,9 +3561,6 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
    ...
    */
 
-  // Get the metadata of the original loop before it gets modified.
-  MDNode *OrigLoopID = OrigLoop->getLoopID();
-
   // Workaround!  Compute the trip count of the original loop and cache it
   // before we start modifying the CFG.  This code has a systemic problem
   // wherein it tries to run analysis over partially constructed IR; this is
@@ -3599,7 +3596,7 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
   // Emit phis for the new starting index of the scalar loop.
   createInductionResumeValues();
 
-  return {completeLoopSkeleton(OrigLoopID), nullptr};
+  return {completeLoopSkeleton(), nullptr};
 }
 
 // Fix up external users of the induction variable. At this point, we are
@@ -8734,8 +8731,6 @@ Value *InnerLoopUnroller::getBroadcastInstrs(Value *V) { return V; }
 /// depicted in https://llvm.org/docs/Vectorizers.html#epilogue-vectorization.
 std::pair<BasicBlock *, Value *>
 EpilogueVectorizerMainLoop::createEpilogueVectorizedLoopSkeleton() {
-  MDNode *OrigLoopID = OrigLoop->getLoopID();
-
   // Workaround!  Compute the trip count of the original loop and cache it
   // before we start modifying the CFG.  This code has a systemic problem
   // wherein it tries to run analysis over partially constructed IR; this is
@@ -8778,7 +8773,7 @@ EpilogueVectorizerMainLoop::createEpilogueVectorizedLoopSkeleton() {
   // because the vplan in the second pass still contains the inductions from the
   // original loop.
 
-  return {completeLoopSkeleton(OrigLoopID), nullptr};
+  return {completeLoopSkeleton(), nullptr};
 }
 
 void EpilogueVectorizerMainLoop::printDebugTracesAtStart() {
@@ -8862,7 +8857,6 @@ EpilogueVectorizerMainLoop::emitIterationCountCheck(BasicBlock *Bypass,
 /// depicted in https://llvm.org/docs/Vectorizers.html#epilogue-vectorization.
 std::pair<BasicBlock *, Value *>
 EpilogueVectorizerEpilogueLoop::createEpilogueVectorizedLoopSkeleton() {
-  MDNode *OrigLoopID = OrigLoop->getLoopID();
   createVectorLoopSkeleton("vec.epilog.");
 
   // Now, compare the remaining count and if there aren't enough iterations to
@@ -8954,7 +8948,7 @@ EpilogueVectorizerEpilogueLoop::createEpilogueVectorizedLoopSkeleton() {
   createInductionResumeValues({VecEpilogueIterationCountCheck,
                                EPI.VectorTripCount} /* AdditionalBypass */);
 
-  return {completeLoopSkeleton(OrigLoopID), EPResumeVal};
+  return {completeLoopSkeleton(), EPResumeVal};
 }
 
 BasicBlock *

@@ -61,7 +61,6 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InlineAsm.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/IR/ModRef.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/MC/LaneBitmask.h"
 #include "llvm/MC/MCAsmInfo.h"
@@ -74,6 +73,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/LowLevelTypeImpl.h"
 #include "llvm/Support/MathExtras.h"
+#include "llvm/Support/ModRef.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include <algorithm>
@@ -1712,16 +1712,6 @@ void MachineVerifier::verifyPreISelGenericInstruction(const MachineInstr *MI) {
     int64_t Test = TestMO.getImm();
     if (Test < 0 || Test > fcAllFlags) {
       report("Incorrect floating-point class set (operand 2)", MI);
-      break;
-    }
-    const MachineOperand &SemanticsMO = MI->getOperand(3);
-    if (!SemanticsMO.isImm()) {
-      report("floating-point semantics (operand 3) must be an immediate", MI);
-      break;
-    }
-    int64_t Semantics = SemanticsMO.getImm();
-    if (Semantics < 0 || Semantics > APFloat::S_MaxSemantics) {
-      report("Incorrect floating-point semantics (operand 3)", MI);
       break;
     }
     break;

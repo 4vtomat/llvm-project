@@ -125,6 +125,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svinval", RISCVExtensionVersion{1, 0}},
+    {"xventanacondops", RISCVExtensionVersion{1, 0}},
 #if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 

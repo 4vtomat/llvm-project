@@ -91,6 +91,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV64SVNAPOT %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svinval %s -o - | FileCheck --check-prefix=RV64SVINVAL %s
+; RUN: llc -mtriple=riscv64 -mattr=+xventanacondops %s -o - | FileCheck --check-prefix=RV64XVENTANACONDOPS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zawrs %s -o - | FileCheck --check-prefix=RV64ZAWRS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-ztso %s -o - | FileCheck --check-prefix=RV64ZTSO %s
 
@@ -185,7 +186,8 @@
 ; RV64ZIC64B: .attribute 5, "rv64i2p1_zic64b1p0"
 ; RV64ZAWRS: .attribute 5, "rv64i2p1_zawrs1p0"
 ; RV64SVNAPOT: .attribute 5, "rv64i2p1_svnapot1p0"
-; RV64SVINVAL: .attribute 5, "rv64i2p1_svinval1p0
+; RV64SVINVAL: .attribute 5, "rv64i2p1_svinval1p0"
+; RV64XVENTANACONDOPS: .attribute 5, "rv64i2p1_xventanacondops1p0"
 ; RV64ZTSO: .attribute 5, "rv64i2p1_ztso0p1"
 ; end SIFIVE_CUSTOMIZATION
 
