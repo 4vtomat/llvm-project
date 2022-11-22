@@ -2426,6 +2426,10 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#ifndef __ARM_RECODE_NEON_H\n";
   OS << "#define __ARM_RECODE_NEON_H\n\n";
 
+  OS << "#if !defined(__sifive_recode_neon)\n";
+  OS << "#error \"Recode support not enabled\"\n";
+  OS << "#else\n\n";
+
   OS << "#include <stdint.h>\n";
   OS << "#include <arm_fp16.h>\n\n";
 
@@ -2474,6 +2478,7 @@ static void printRecodeNEONEnd(raw_ostream &OS) {
   OS << "#undef __ARM_FP\n";
   OS << "#undef __ai\n\n";
   OS << "#undef __aarch64__\n";
+  OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
   OS << "#endif /* __ARM_RECODE_NEON_H */\n";
 }
 #endif
