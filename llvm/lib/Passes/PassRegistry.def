@@ -397,13 +397,10 @@ FUNCTION_PASS("tlshoist", TLSVariableHoistPass())
 FUNCTION_PASS("transform-warning", WarnMissedTransformationsPass())
 FUNCTION_PASS("tsan", ThreadSanitizerPass())
 FUNCTION_PASS("memprof", MemProfilerPass())
-<<<<<<< HEAD
+FUNCTION_PASS("declare-to-assign", llvm::AssignmentTrackingPass())
 #if SIFIVE_CUSTOMIZATION
 FUNCTION_PASS("sifive-recode", SiFiveRecodePass())
 #endif
-=======
-FUNCTION_PASS("declare-to-assign", llvm::AssignmentTrackingPass())
->>>>>>> origin/sifive-dev
 #undef FUNCTION_PASS
 
 #ifndef FUNCTION_PASS_WITH_PARAMS
