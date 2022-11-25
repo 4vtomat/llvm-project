@@ -2011,6 +2011,10 @@ void NeonEmitter::createIntrinsic(Record *R,
   for (auto &I : NewTypeSpecs) {
     Entry.emplace_back(R, Name, Proto, I.first, I.second, CK, Body, *this,
                        ArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
+#if SIFIVE_CUSTOMIZATION
+    if (RecodeMode && Entry.back().hasPolyType())
+      continue;
+#endif
     Out.push_back(&Entry.back());
   }
 
@@ -2512,12 +2516,6 @@ void NeonEmitter::run(raw_ostream &OS) {
 
     for (SmallVector<Intrinsic *, 128>::iterator I = Defs.begin();
          I != Defs.end(); /*No step*/) {
-#if SIFIVE_CUSTOMIZATION
-      if (RecodeMode && (*I)->hasPolyType()) {
-        I = Defs.erase(I);
-        continue;
-      }
-#endif
       bool DependenciesSatisfied = true;
       for (auto *II : (*I)->getDependencies()) {
         if (llvm::is_contained(Defs, II))
