@@ -333,6 +333,16 @@ multiclass RVVIntBinBuiltinSet
     : RVVSignedBinBuiltinSet,
       RVVUnsignedBinBuiltinSet;
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass RVVInt64BinBuiltinSet
+    : RVVOutOp1BuiltinSet<NAME, "l",
+                          [["vv", "v", "vvv"],
+                           ["vx", "v", "vve"]]>,
+      RVVOutOp1BuiltinSet<NAME, "l",
+                          [["vv", "Uv", "UvUvUv"],
+                           ["vx", "Uv", "UvUvUe"]]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass RVVSlideOneBuiltinSet
     : RVVOutOp1BuiltinSet<NAME, "csil",
                           [["vx", "v", "vve"],
@@ -2738,4 +2748,74 @@ static inline int vegetxsat(void)
 
 }] in
 def vxrm : RVVHeader;
+
+multiclass RVVOutBuiltinSetP<bit HasVV = 1, bit HasVS = 1, bit HasSigned = 0,
+                             string type_range = "i", bit IsZvkb = 0> {
+  if HasVV then {
+    defvar suffix = !if(!or(HasVS, !eq(NAME, "vsm4r")), "vv", "v");
+    defm "" : RVVOutBuiltinSet<NAME # !if(IsZvkb, "", "_" # suffix), type_range,
+                               !listconcat(!if(HasSigned,
+                                               [[suffix, "v", !if(!eq(type_range, "i"),
+                                                                  "vvv", "vv")]],
+                                               []),
+                                           [[suffix, "Uv", !if(!eq(type_range, "i"),
+                                                               "UvUvUv", "UvUv")]])>;
+  }
+
+  if HasVS then {
+    defm "" : RVVOutBuiltinSet<NAME # "_vs", type_range,
+                               !listconcat(!if(HasSigned,
+                                               [["vs", "v", "vvv"]],
+                                               []),
+                                           [["vs", "Uv", "UvUvUv"]])>;
+  }
+}
+
+multiclass RVVOutOp1BuiltinSetP<bit IsVV = 1, string type_range = "i"> {
+  defvar suffix = !if(IsVV, "vv", "vi");
+  defvar prototype = !if(IsVV, "UvUvUvUv", "UvUvUvUe");
+  defm "" : RVVBuiltinSet<NAME, type_range, [[suffix, "Uv", prototype]], [-1, 2]>;
+}
+
+let UnMaskedPolicyScheme = HasPassthruOperand in {
+  // zvkb
+  defm vandn : RVVIntBinBuiltinSet;
+  defm vbrev8 : RVVOutBuiltinSetP<1, 0, 1, "csil", 1>;
+  defm vrev8 : RVVOutBuiltinSetP<1, 0, 1, "csil", 1>;
+  defm vclmul : RVVInt64BinBuiltinSet;
+  defm vclmulh : RVVInt64BinBuiltinSet;
+  defm vrol : RVVIntBinBuiltinSet;
+  defm vror : RVVIntBinBuiltinSet;
+}
+
+let UnMaskedPolicyScheme = HasPolicyOperand in {
+  // zvkns
+  let HasMasked = false in {
+    defm vaesdf : RVVOutBuiltinSetP;
+    defm vaesdm : RVVOutBuiltinSetP;
+    defm vaesef : RVVOutBuiltinSetP;
+    defm vaesem : RVVOutBuiltinSetP;
+    defm vaeskf1 : RVVOutOp1BuiltinSetP<0>;
+    defm vaeskf2 : RVVOutOp1BuiltinSetP<0>;
+    defm vaesz : RVVOutBuiltinSetP<0>;
+  }
+
+  let HasMasked = false in {
+    // zvkg
+    defm vghmac : RVVOutOp1BuiltinSetP;
+
+    // zvksed
+    defm vsm4k : RVVOutOp1BuiltinSetP<0>;
+    defm vsm4r : RVVOutBuiltinSetP;
+
+    // zvksh
+    defm vsm3c : RVVOutOp1BuiltinSetP<0>;
+    defm vsm3me : RVVOutOp1BuiltinSetP;
+
+    // zvknha or zvknhb
+    defm vsha2ch : RVVOutOp1BuiltinSetP<1, "il">;
+    defm vsha2cl : RVVOutOp1BuiltinSetP<1, "il">;
+    defm vsha2ms : RVVOutOp1BuiltinSetP<1, "il">;
+  }
+}
 #endif // SIFIVE_CUSTOMIZATION
