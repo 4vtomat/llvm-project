@@ -261,6 +261,15 @@ bool RISCVTargetInfo::initFeatureMap(
     if (!llvm::is_contained(ImpliedFeatures, Feature))
       ImpliedFeatures.push_back(Feature);
 
+#if SIFIVE_CUSTOMIZATION
+  if (getTargetOpts().SiFiveRecode == "neon") {
+    ImpliedFeatures.push_back("+dotprod");
+    if (llvm::is_contained(ImpliedFeatures, "+zfh") &&
+        llvm::is_contained(ImpliedFeatures, "+experimental-zvfh"))
+      ImpliedFeatures.push_back("+fullfp16");
+  }
+#endif
+
   return TargetInfo::initFeatureMap(Features, Diags, CPU, ImpliedFeatures);
 }
 

@@ -106,6 +106,8 @@ private:
   bool HasStdExtZiccrse = false; //SIFIVE
   bool HasStdExtZa64rs = false; //SIFIVE
   bool HasStdExtZic64b = false; //SIFIVE
+  bool HasRecodeDotprod = false;  // SIFIVE
+  bool HasRecodeFullfp16 = false; // SIFIVE
   bool HasStdExtSvnapot = false;
   bool HasStdExtSvinval = false;
   bool HasStdExtZmmul = false;

@@ -526,6 +526,15 @@ def FeatureStdExtZa64rs
 def FeatureStdExtZic64b
     : SubtargetFeature<"zic64b", "HasStdExtZic64b", "true",
                        "Zic64b (Cache blocks must be 64 bytes in size, naturally aligned in the address space.)">;
+
+def FeatureRecodeDotprod
+    : SubtargetFeature<"dotprod", "HasRecodeDotprod", "true",
+                       "dotprod (A corresponding feature for NEON dotprod.)">;
+
+def FeatureRecodeFullfp16
+    : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
+                       "fullfp16 (A corresponding feature for NEON fullfp16.)",
+                       [FeatureStdExtZfh, FeatureStdExtZvfh]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
