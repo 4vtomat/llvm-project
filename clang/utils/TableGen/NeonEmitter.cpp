@@ -2012,7 +2012,22 @@ void NeonEmitter::createIntrinsic(Record *R,
     Entry.emplace_back(R, Name, Proto, I.first, I.second, CK, Body, *this,
                        ArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
 #if SIFIVE_CUSTOMIZATION
-    if (RecodeMode && Entry.back().hasPolyType())
+    // EmitNeonSema does not enable RecodeMode. But headers (run, runFP16) will
+    // enable RecodeMode. As a result, arm_neon.h only includes intrinsics that
+    // can be supported by Recode. But arm_neon.inc still includes all
+    // intrinsics.
+    if (RecodeMode && (Entry.back().hasPolyType() ||
+                       // Recode cannot support the following target features.
+                       (TargetGuard.find("aes") != std::string::npos ||
+                        TargetGuard.find("bf16") != std::string::npos ||
+                        TargetGuard.find("fp16fml") != std::string::npos ||
+                        TargetGuard.find("i8mm") != std::string::npos ||
+                        TargetGuard.find("sha2") != std::string::npos ||
+                        TargetGuard.find("sha3") != std::string::npos ||
+                        TargetGuard.find("sm4") != std::string::npos ||
+                        TargetGuard.find("v8.1a") != std::string::npos ||
+                        TargetGuard.find("v8.3a") != std::string::npos ||
+                        TargetGuard.find("v8.5a") != std::string::npos)))
       continue;
 #endif
     Out.push_back(&Entry.back());
