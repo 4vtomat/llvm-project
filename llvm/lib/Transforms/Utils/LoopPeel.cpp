@@ -113,9 +113,8 @@ bool llvm::canPeel(const Loop *L) {
   return llvm::all_of(Exits, IsBlockFollowedByDeoptOrUnreachable);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-bool llvm::canPeelEpilog(Loop *L) {
+bool llvm::canPeelEpilog(const Loop *L) {
   if (!L->isLoopSimplifyForm())
      return false;
 
@@ -145,10 +144,6 @@ bool llvm::canPeelEpilog(Loop *L) {
 }
 #endif
 
-// This function calculates the number of iterations after which the given Phi
-// becomes an invariant. The pre-calculated values are memorized in the map. The
-// function (shortcut is I) is calculated according to the following definition:
-=======
 namespace {
 
 // As a loop is peeled, it may be the case that Phi nodes become
@@ -243,7 +238,6 @@ PhiAnalyzer::PhiAnalyzer(const Loop &L, unsigned MaxIterations)
 // becomes an invariant. The pre-calculated values are memorized in a map.
 // N.B. This number will be Unknown or <= MaxIterations.
 // The function is calculated according to the following definition:
->>>>>>> upstream/main
 // Given %x = phi <Inputs from above the loop>, ..., [%y, %back.edge].
 //   F(%x) = G(%y) + 1 (N.B. [MaxIterations | Unknown] + 1 => Unknown)
 //   G(%y) = 0 if %y is a loop invariant
@@ -586,16 +580,11 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   unsigned MaxPeelCount = UnrollPeelMaxCount;
   MaxPeelCount = std::min(MaxPeelCount, Threshold / LoopSize - 1);
 
-  // Start the max computation with the PP.PeelCount value set by the target
-  // in TTI.getPeelingPreferences or by the flag -unroll-peel-count.
-  unsigned DesiredPeelCount = TargetPeelCount;
-
   // Here we try to get rid of Phis which become invariants after 1, 2, ..., N
   // iterations of the loop. For this we compute the number for iterations after
   // which every Phi is guaranteed to become an invariant, and try to peel the
   // maximum number of iterations among these values, thus turning all those
   // Phis into invariants.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned DesiredPeelCount = 0;
   if (PP.PeelProlog) {
@@ -606,38 +595,19 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
     // Start the max computation with the PP.PeelCount value set by the target
     // in TTI.getPeelingPreferences or by the flag -unroll-peel-count.
     DesiredPeelCount = TargetPeelCount;
-    BasicBlock *BackEdge = L->getLoopLatch();
-    assert(BackEdge && "Loop is not in simplified form?");
-    for (auto BI = L->getHeader()->begin(); isa<PHINode>(&*BI); ++BI) {
-      PHINode *Phi = cast<PHINode>(&*BI);
-      auto ToInvariance = calculateIterationsToInvariance(Phi, L, BackEdge,
-                                                          IterationsToInvariance);
-      if (ToInvariance)
-        DesiredPeelCount = std::max(DesiredPeelCount, *ToInvariance);
+    if (MaxPeelCount > DesiredPeelCount) {
+      // Check how many iterations are useful for resolving Phis
+      auto NumPeels = PhiAnalyzer(*L, MaxPeelCount).calculateIterationsToPeel();
+      if (NumPeels)
+        DesiredPeelCount = std::max(DesiredPeelCount, *NumPeels);
     }
-=======
-  if (MaxPeelCount > DesiredPeelCount) {
-    // Check how many iterations are useful for resolving Phis
-    auto NumPeels = PhiAnalyzer(*L, MaxPeelCount).calculateIterationsToPeel();
-    if (NumPeels)
-      DesiredPeelCount = std::max(DesiredPeelCount, *NumPeels);
->>>>>>> upstream/main
   }
-#endif // SIFIVE_CUSTOMIZATIOn
-
-<<<<<<< HEAD
-  // Pay respect to limitations implied by loop size and the max peel count.
-  unsigned MaxPeelCount = UnrollPeelMaxCount;
-  MaxPeelCount = std::min(MaxPeelCount, Threshold / LoopSize - 1);
+#endif // SIFIVE_CUSTOMIZATION
 
   // SIFIVE
   DesiredPeelCount = std::max(
       DesiredPeelCount, countToEliminateCompares(*L, MaxPeelCount, TripCount,
                                                    SE, PP.PeelProlog));
-=======
-  DesiredPeelCount = std::max(DesiredPeelCount,
-                              countToEliminateCompares(*L, MaxPeelCount, SE));
->>>>>>> upstream/main
 
   if (DesiredPeelCount == 0 && (PP.PeelProlog))
     DesiredPeelCount = peelToTurnInvariantLoadsDerefencebale(*L, DT, AC);
