@@ -15,13 +15,9 @@
 #include "RISCVFrameLowering.h"
 #include "RISCVMacroFusion.h"
 #include "RISCVTargetMachine.h"
-<<<<<<< HEAD
-#include "llvm/CodeGen/ScheduleDAG.h"
-=======
 #include "GISel/RISCVCallLowering.h"
 #include "GISel/RISCVLegalizerInfo.h"
 #include "GISel/RISCVRegisterBankInfo.h"
->>>>>>> upstream/main
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
