@@ -15397,12 +15397,8 @@ bool RISCVTargetLowering::allowsMisalignedMemoryAccesses(
     // TODO: When should we set fast? A misaligned access is supported, but it
     // may require more than one access.
     if (Fast)
-<<<<<<< HEAD
-      *Fast = false;
+      *Fast = 0;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      *Fast = 1;
->>>>>>> upstream/main
     return true;
   }
 
