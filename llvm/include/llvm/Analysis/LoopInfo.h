@@ -49,6 +49,7 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/Allocator.h"
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 namespace llvm {
@@ -1351,8 +1352,8 @@ bool vectorizeWithoutStrideChecks();
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Find named metadata for a loop with an integer value.
-llvm::Optional<int>
-getOptionalIntLoopAttribute(const Loop *TheLoop, StringRef Name);
+std::optional<int> getOptionalIntLoopAttribute(const Loop *TheLoop,
+                                               StringRef Name);
 
 /// Find named metadata for a loop with an integer value. Return \p Default if
 /// not set.

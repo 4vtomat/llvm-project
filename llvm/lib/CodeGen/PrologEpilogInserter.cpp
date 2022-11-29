@@ -1454,9 +1454,9 @@ void PEI::replaceFrameIndicesBackward(MachineBasicBlock *BB,
   const TargetRegisterInfo &TRI = *MF.getSubtarget().getRegisterInfo();
 
   RS->enterBasicBlockEnd(*BB);
-  
+
   for (MachineInstr &MI : make_early_inc_range(reverse(*BB))) {
-    
+
     // Register scavenger backward step
     MachineBasicBlock::iterator Step(MI);
     for (unsigned i = 0; i != MI.getNumOperands(); ++i) {
@@ -1492,13 +1492,15 @@ void PEI::replaceFrameIndicesBackward(MachineBasicBlock *BB,
       MachineBasicBlock::iterator Curr = ++RS->getCurrentPosition();
 
       // Shift back
-      Step--;
+      --Step;
 
-      TRI.eliminateFrameIndex(MI, SPAdj, i, RS);
+      bool Removed = TRI.eliminateFrameIndex(MI, SPAdj, i, RS);
       // Restore to unify logic with a shift back that happens in the end of
       // the outer loop.
-      Step++;
+      ++Step;
       RS->skipTo(--Curr);
+      if (Removed)
+        break;
     }
 
     // Shift it to make RS collect reg info up to the current instruction.

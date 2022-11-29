@@ -32,6 +32,7 @@
 #include "llvm/Pass.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Utils/Local.h"
+#include <optional>
 
 using namespace llvm;
 using namespace llvm::PatternMatch;
@@ -107,7 +108,7 @@ static bool replaceConditionalBranchesOnConstant(Instruction *II,
 
 static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo &TLI,
                                     DominatorTree *DT) {
-  Optional<DomTreeUpdater> DTU;
+  std::optional<DomTreeUpdater> DTU;
   if (DT)
     DTU.emplace(DT, DomTreeUpdater::UpdateStrategy::Lazy);
 
@@ -160,10 +161,10 @@ static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo &TLI,
       break;
     }
     HasDeadBlocks |= replaceConditionalBranchesOnConstant(
-        II, NewValue, DTU ? DTU.getPointer() : nullptr);
+        II, NewValue, DTU ? &*DTU : nullptr);
   }
   if (HasDeadBlocks)
-    removeUnreachableBlocks(F, DTU ? DTU.getPointer() : nullptr);
+    removeUnreachableBlocks(F, DTU ? &*DTU : nullptr);
   return !Worklist.empty();
 }
 

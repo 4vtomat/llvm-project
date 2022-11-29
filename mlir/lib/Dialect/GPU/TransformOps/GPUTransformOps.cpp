@@ -35,20 +35,28 @@ public:
 } // namespace
 
 /// Check if given mapping attributes are one of the desired attributes
-static DiagnosedSilenceableFailure checkAttributeType(
-    const ArrayRef<DeviceMappingAttrInterface> &threadMappingAttributes,
-    const Optional<ArrayAttr> &foreachMapping,
-    llvm::Optional<TransformOpInterface> transformOp) {
+static DiagnosedSilenceableFailure
+checkAttributeType(ArrayRef<DeviceMappingAttrInterface> threadMappingAttributes,
+                   const Optional<ArrayAttr> &foreachMapping,
+                   Optional<TransformOpInterface> transformOp) {
   if (!foreachMapping.has_value())
     return transformOp->emitSilenceableError() << "mapping must be present";
 
-  if (llvm::any_of(foreachMapping->getValue(),
-                   [&](DeviceMappingAttrInterface map) {
-                     return llvm::find(threadMappingAttributes, map) ==
-                            threadMappingAttributes.end();
-                   }))
-    return transformOp->emitDefiniteFailure()
-           << "mapping must be one of " << threadMappingAttributes;
+  DenseSet<Attribute> seen;
+  for (Attribute map : foreachMapping->getValue()) {
+    if (!llvm::is_contained(threadMappingAttributes, map)) {
+      return transformOp->emitDefiniteFailure()
+             << "mapping must be one of " << threadMappingAttributes;
+    }
+    if (llvm::is_contained(seen, map)) {
+      return transformOp->emitDefiniteFailure()
+             << map
+             << " is duplicated, cannot map different "
+                "loops to the same processor";
+    }
+    seen.insert(map);
+  }
+
   return DiagnosedSilenceableFailure::success();
 }
 
@@ -246,12 +254,9 @@ DiagnosedSilenceableFailure mlir::transform::gpu::mapForeachToBlocksImpl(
                                       sourceBlock.getOperations());
 
   // Step 5. RAUW thread indices to thread ops.
-  for (Value blockIdx : foreachThreadOp.getThreadIndices()) {
-    for (Operation *user : llvm::make_early_inc_range(blockIdx.getUsers())) {
-      rewriter.updateRootInPlace(user, [&]() {
-        user->replaceUsesOfWith(blockIdx, bvm.lookup(blockIdx));
-      });
-    }
+  for (Value loopIndex : foreachThreadOp.getThreadIndices()) {
+    Value blockIdx = bvm.lookup(loopIndex);
+    rewriter.replaceAllUsesWith(loopIndex, blockIdx);
   }
 
   // Step 6. Erase old op.
@@ -489,12 +494,9 @@ static DiagnosedSilenceableFailure rewriteOneForeachThreadToGpuThreads(
                                       sourceBlock.getOperations());
 
   // Step 6. RAUW thread indices to thread ops.
-  for (Value threadIdx : foreachThreadOp.getThreadIndices()) {
-    for (Operation *user : llvm::make_early_inc_range(threadIdx.getUsers())) {
-      rewriter.updateRootInPlace(user, [&]() {
-        user->replaceUsesOfWith(threadIdx, bvm.lookup(threadIdx));
-      });
-    }
+  for (Value loopIndex : foreachThreadOp.getThreadIndices()) {
+    Value threadIdx = bvm.lookup(loopIndex);
+    rewriter.replaceAllUsesWith(loopIndex, threadIdx);
   }
 
   // Step 7. syncthreads.

@@ -65,6 +65,7 @@
 #include <cassert>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -781,7 +782,7 @@ public:
   }
 };
 
-static Optional<unsigned>
+static std::optional<unsigned>
 shouldPragmaUnroll(Loop *L, const PragmaInfo &PInfo,
                    const unsigned TripMultiple, const unsigned TripCount,
                    const UnrollCostEstimator UCE,
@@ -809,7 +810,7 @@ shouldPragmaUnroll(Loop *L, const PragmaInfo &PInfo,
   return None;
 }
 
-static Optional<unsigned> shouldFullUnroll(
+static std::optional<unsigned> shouldFullUnroll(
     Loop *L, const TargetTransformInfo &TTI, DominatorTree &DT,
     ScalarEvolution &SE, const SmallPtrSetImpl<const Value *> &EphValues,
     const unsigned FullUnrollTripCount, const UnrollCostEstimator UCE,
@@ -839,7 +840,7 @@ static Optional<unsigned> shouldFullUnroll(
   return None;
 }
 
-static Optional<unsigned>
+static std::optional<unsigned>
 shouldPartialUnroll(const unsigned LoopSize, const unsigned TripCount,
                     const UnrollCostEstimator UCE,
                     const TargetTransformInfo::UnrollingPreferences &UP) {

@@ -213,6 +213,7 @@ public:
   finalizeInsInstrs(MachineInstr &Root, MachineCombinerPattern &P,
                     SmallVectorImpl<MachineInstr *> &InsInstrs) const override;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Return a virtual register initialized with the global base
   /// register value. Output instructions required to initialize
@@ -237,6 +238,13 @@ public:
   getSerializableMachineMemOperandTargetFlags() const override;
 
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  void genAlternativeCodeSequence(
+      MachineInstr &Root, MachineCombinerPattern Pattern,
+      SmallVectorImpl<MachineInstr *> &InsInstrs,
+      SmallVectorImpl<MachineInstr *> &DelInstrs,
+      DenseMap<unsigned, unsigned> &InstrIdxForVirtReg) const override;
+>>>>>>> upstream/main
 
 protected:
   const RISCVSubtarget &STI;

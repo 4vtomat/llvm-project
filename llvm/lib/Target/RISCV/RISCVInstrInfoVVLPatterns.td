@@ -212,6 +212,7 @@ def SDT_RISCVVecCvtX2FOp_VL : SDTypeProfile<1, 4, [
 
 def riscv_vfcvt_rm_x_f_vl : SDNode<"RISCVISD::VFCVT_RM_X_F_VL", SDT_RISCVVecCvtX2FOp_VL>;
 def riscv_vfcvt_x_f_vl : SDNode<"RISCVISD::VFCVT_X_F_VL", SDT_RISCVFP2IOp_VL>;
+def riscv_vfround_noexcept_vl: SDNode<"RISCVISD::VFROUND_NOEXCEPT_VL", SDT_RISCVFPUnOp_VL>;
 
 def riscv_setcc_vl : SDNode<"RISCVISD::SETCC_VL",
                             SDTypeProfile<1, 6, [SDTCVecEltisVT<0, i1>,
@@ -1901,6 +1902,7 @@ foreach vti = AllFloatVectors in {
                  vti.ScalarRegClass:$rs2, (vti.Mask V0), GPR:$vl, vti.Log2SEW,
                  TAIL_AGNOSTIC)>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   // 14.14. Vector Floating-Point Classify Instruction
   def : Pat<(riscv_vfclass_vl (vti.Vector vti.RegClass:$rs2),
@@ -1909,6 +1911,14 @@ foreach vti = AllFloatVectors in {
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  // Rounding without exception to implement nearbyint.
+  def : Pat<(riscv_vfround_noexcept_vl (vti.Vector vti.RegClass:$rs1),
+                                       (vti.Mask V0), VLOpFrag),
+            (!cast<Instruction>("PseudoVFROUND_NOEXCEPT_V_" # vti.LMul.MX #"_MASK")
+                  (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs1,
+                  (vti.Mask V0), GPR:$vl, vti.Log2SEW, TA_MA)>;
+>>>>>>> upstream/main
 }
 
 foreach fvti = AllFloatVectors in {

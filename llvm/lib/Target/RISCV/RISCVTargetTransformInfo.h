@@ -241,6 +241,13 @@ public:
   InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
                                      unsigned Index);
 
+  InstructionCost getArithmeticInstrCost(
+      unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
+      TTI::OperandValueInfo Op1Info = {TTI::OK_AnyValue, TTI::OP_None},
+      TTI::OperandValueInfo Op2Info = {TTI::OK_AnyValue, TTI::OP_None},
+      ArrayRef<const Value *> Args = ArrayRef<const Value *>(),
+      const Instruction *CxtI = nullptr);
+
   bool isElementTypeLegalForScalableVector(Type *Ty) const {
     return TLI->isLegalElementTypeForRVV(Ty);
   }
@@ -340,6 +347,8 @@ public:
     case RecurKind::UMax:
     case RecurKind::FMin:
     case RecurKind::FMax:
+    case RecurKind::SelectICmp:
+    case RecurKind::SelectFCmp:
     case RecurKind::FMulAdd:
       return true;
     default:

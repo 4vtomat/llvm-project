@@ -235,6 +235,10 @@ VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(umax)
 #endif // SIFIVE_CUSTOMIZATION
 VP_PROPERTY_BINARYOP
 END_REGISTER_VP(vp_umax, VP_UMAX)
+
+// llvm.vp.bswap(x,mask,vlen)
+BEGIN_REGISTER_VP(vp_bswap, 1, 2, VP_BSWAP, -1)
+END_REGISTER_VP(vp_bswap, VP_BSWAP)
 ///// } Integer Arithmetic
 
 ///// Floating-Point Arithmetic {
@@ -362,6 +366,10 @@ END_REGISTER_VP(vp_roundtozero, VP_FROUNDTOZERO)
 // llvm.vp.rint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_rint, 1, 2, VP_FRINT, -1)
 END_REGISTER_VP(vp_rint, VP_FRINT)
+
+// llvm.vp.nearbyint(x,mask,vlen)
+BEGIN_REGISTER_VP(vp_nearbyint, 1, 2, VP_FNEARBYINT, -1)
+END_REGISTER_VP(vp_nearbyint, VP_FNEARBYINT)
 
 ///// } Floating-Point Arithmetic
 

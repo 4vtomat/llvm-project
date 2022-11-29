@@ -20,7 +20,6 @@ add_public_tablegen_target(RISCVCommonTableGen)
 
 add_llvm_target(RISCVCodeGen
   RISCVAsmPrinter.cpp
-  RISCVCallLowering.cpp
   RISCVCodeGenPrepare.cpp
   RISCVMakeCompressible.cpp
   RISCVExpandAtomicPseudoInsts.cpp
@@ -32,6 +31,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVInsertVXRMWrite.cpp
   SiFive_RISCVCleanupVXRM.cpp
   RISCVInstrInfo.cpp
+<<<<<<< HEAD
   RISCVInstructionSelector.cpp
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
@@ -39,20 +39,30 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVLateCodeGenPrepare.cpp
   RISCVLegalizerInfo.cpp
   SiFive_RISCVMachineConstProp.cpp
+=======
+  RISCVISelDAGToDAG.cpp
+  RISCVISelLowering.cpp
+>>>>>>> upstream/main
   RISCVMachineFunctionInfo.cpp
   RISCVMacroFusion.cpp
   RISCVMCInstLower.cpp
   RISCVMergeBaseOffset.cpp
   RISCVRedundantCopyElimination.cpp
-  RISCVRegisterBankInfo.cpp
   RISCVRegisterInfo.cpp
   RISCVSExtWRemoval.cpp
   RISCVSubtarget.cpp
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
+<<<<<<< HEAD
   SiFive_RISCVPostRAExpandPseudoInsts.cpp
   SiFive_RISCVTypePromotion.cpp
+=======
+  GISel/RISCVCallLowering.cpp
+  GISel/RISCVInstructionSelector.cpp
+  GISel/RISCVLegalizerInfo.cpp
+  GISel/RISCVRegisterBankInfo.cpp
+>>>>>>> upstream/main
 
   LINK_COMPONENTS
   Analysis
@@ -77,4 +87,5 @@ add_llvm_target(RISCVCodeGen
 add_subdirectory(AsmParser)
 add_subdirectory(Disassembler)
 add_subdirectory(MCTargetDesc)
+add_subdirectory(MCA)
 add_subdirectory(TargetInfo)

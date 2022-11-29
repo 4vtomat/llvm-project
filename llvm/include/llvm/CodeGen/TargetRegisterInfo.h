@@ -1041,7 +1041,9 @@ public:
   /// as long as it keeps the iterator pointing at the finished product.
   /// SPAdj is the SP adjustment due to call frame setup instruction.
   /// FIOperandNum is the FI operand number.
-  virtual void eliminateFrameIndex(MachineBasicBlock::iterator MI,
+  /// Returns true if the current instruction was removed and the iterator
+  /// is not longer valid
+  virtual bool eliminateFrameIndex(MachineBasicBlock::iterator MI,
                                    int SPAdj, unsigned FIOperandNum,
                                    RegScavenger *RS = nullptr) const = 0;
 

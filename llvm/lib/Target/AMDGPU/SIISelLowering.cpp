@@ -256,6 +256,7 @@ SITargetLowering::SITargetLowering(const TargetMachine &TM,
       case ISD::INSERT_VECTOR_ELT:
       case ISD::EXTRACT_SUBVECTOR:
       case ISD::SCALAR_TO_VECTOR:
+      case ISD::IS_FPCLASS:
         break;
       case ISD::INSERT_SUBVECTOR:
       case ISD::CONCAT_VECTORS:
@@ -525,6 +526,7 @@ SITargetLowering::SITargetLowering(const TargetMachine &TM,
         case ISD::INSERT_SUBVECTOR:
         case ISD::EXTRACT_SUBVECTOR:
         case ISD::SCALAR_TO_VECTOR:
+        case ISD::IS_FPCLASS:
           break;
         case ISD::CONCAT_VECTORS:
           setOperationAction(Op, VT, Custom);
@@ -919,11 +921,11 @@ unsigned SITargetLowering::getVectorTypeBreakdownForCallingConv(
     Context, CC, VT, IntermediateVT, NumIntermediates, RegisterVT);
 }
 
-static EVT memVTFromImageData(Type *Ty, unsigned DMaskLanes) {
-  assert(DMaskLanes != 0);
+static EVT memVTFromLoadIntrData(Type *Ty, unsigned MaxNumLanes) {
+  assert(MaxNumLanes != 0);
 
   if (auto *VT = dyn_cast<FixedVectorType>(Ty)) {
-    unsigned NumElts = std::min(DMaskLanes, VT->getNumElements());
+    unsigned NumElts = std::min(MaxNumLanes, VT->getNumElements());
     return EVT::getVectorVT(Ty->getContext(),
                             EVT::getEVT(VT->getElementType()),
                             NumElts);
@@ -933,19 +935,15 @@ static EVT memVTFromImageData(Type *Ty, unsigned DMaskLanes) {
 }
 
 // Peek through TFE struct returns to only use the data size.
-static EVT memVTFromImageReturn(Type *Ty, unsigned DMaskLanes) {
+static EVT memVTFromLoadIntrReturn(Type *Ty, unsigned MaxNumLanes) {
   auto *ST = dyn_cast<StructType>(Ty);
   if (!ST)
-    return memVTFromImageData(Ty, DMaskLanes);
+    return memVTFromLoadIntrData(Ty, MaxNumLanes);
 
-  // Some intrinsics return an aggregate type - special case to work out the
-  // correct memVT.
-  //
-  // Only limited forms of aggregate type currently expected.
-  if (ST->getNumContainedTypes() != 2 ||
-      !ST->getContainedType(1)->isIntegerTy(32))
-    return EVT();
-  return memVTFromImageData(ST->getContainedType(0), DMaskLanes);
+  // TFE intrinsics return an aggregate type.
+  assert(ST->getNumContainedTypes() == 2 &&
+         ST->getContainedType(1)->isIntegerTy(32));
+  return memVTFromLoadIntrData(ST->getContainedType(0), MaxNumLanes);
 }
 
 bool SITargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
@@ -978,7 +976,7 @@ bool SITargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
 
     Info.flags |= MachineMemOperand::MODereferenceable;
     if (ME.onlyReadsMemory()) {
-      unsigned DMaskLanes = 4;
+      unsigned MaxNumLanes = 4;
 
       if (RsrcIntr->IsImage) {
         const AMDGPU::ImageDimIntrinsicInfo *Intr
@@ -991,12 +989,11 @@ bool SITargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
           // IR type. Check the dmask for the real number of elements loaded.
           unsigned DMask
             = cast<ConstantInt>(CI.getArgOperand(0))->getZExtValue();
-          DMaskLanes = DMask == 0 ? 1 : countPopulation(DMask);
+          MaxNumLanes = DMask == 0 ? 1 : countPopulation(DMask);
         }
+      }
 
-        Info.memVT = memVTFromImageReturn(CI.getType(), DMaskLanes);
-      } else
-        Info.memVT = EVT::getEVT(CI.getType());
+      Info.memVT = memVTFromLoadIntrReturn(CI.getType(), MaxNumLanes);
 
       // FIXME: What does alignment mean for an image?
       Info.opc = ISD::INTRINSIC_W_CHAIN;
@@ -1008,7 +1005,7 @@ bool SITargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
       if (RsrcIntr->IsImage) {
         unsigned DMask = cast<ConstantInt>(CI.getArgOperand(1))->getZExtValue();
         unsigned DMaskLanes = DMask == 0 ? 1 : countPopulation(DMask);
-        Info.memVT = memVTFromImageData(DataTy, DMaskLanes);
+        Info.memVT = memVTFromLoadIntrData(DataTy, DMaskLanes);
       } else
         Info.memVT = EVT::getEVT(DataTy);
 
@@ -1386,9 +1383,9 @@ bool SITargetLowering::canMergeStoresTo(unsigned AS, EVT MemVT,
 
 bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
     unsigned Size, unsigned AddrSpace, Align Alignment,
-    MachineMemOperand::Flags Flags, bool *IsFast) const {
+    MachineMemOperand::Flags Flags, unsigned *IsFast) const {
   if (IsFast)
-    *IsFast = false;
+    *IsFast = 0;
 
   if (AddrSpace == AMDGPUAS::LOCAL_ADDRESS ||
       AddrSpace == AMDGPUAS::REGION_ADDRESS) {
@@ -1426,8 +1423,21 @@ bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
         // We will either select ds_read_b64/ds_write_b64 or ds_read2_b32/
         // ds_write2_b32 depending on the alignment. In either case with either
         // alignment there is no faster way of doing this.
+
+        // The numbers returned here and below are not additive, it is a 'speed
+        // rank'. They are just meant to be compared to decide if a certain way
+        // of lowering an operation is faster than another. For that purpose
+        // naturally aligned operation gets it bitsize to indicate that "it
+        // operates with a speed comparable to N-bit wide load". With the full
+        // alignment ds128 is slower than ds96 for example. If underaligned it
+        // is comparable to a speed of a single dword access, which would then
+        // mean 32 < 128 and it is faster to issue a wide load regardless.
+        // 1 is simply "slow, don't do it". I.e. comparing an aligned load to a
+        // wider load which will not be aligned anymore the latter is slower.
         if (IsFast)
-          *IsFast = true;
+          *IsFast = (Alignment >= RequiredAlignment) ? 64
+                    : (Alignment < Align(4))         ? 32
+                                                     : 1;
         return true;
       }
 
@@ -1445,8 +1455,12 @@ bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
         // be equally slow as a single ds_read_b96/ds_write_b96, but there will
         // be more of them, so overall we will pay less penalty issuing a single
         // instruction.
+
+        // See comment on the values above.
         if (IsFast)
-          *IsFast = Alignment >= RequiredAlignment || Alignment < Align(4);
+          *IsFast = (Alignment >= RequiredAlignment) ? 96
+                    : (Alignment < Align(4))         ? 32
+                                                     : 1;
         return true;
       }
 
@@ -1466,8 +1480,12 @@ bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
         // be equally slow as a single ds_read_b128/ds_write_b128, but there
         // will be more of them, so overall we will pay less penalty issuing a
         // single instruction.
+
+        // See comment on the values above.
         if (IsFast)
-          *IsFast = Alignment >= RequiredAlignment || Alignment < Align(4);
+          *IsFast = (Alignment >= RequiredAlignment) ? 128
+                    : (Alignment < Align(4))         ? 32
+                                                     : 1;
         return true;
       }
 
@@ -1479,8 +1497,11 @@ bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
       break;
     }
 
+    // See comment on the values above.
+    // Note that we have a single-dword or sub-dword here, so if underaligned
+    // it is a slowest possible access, hence returned value is 0.
     if (IsFast)
-      *IsFast = Alignment >= RequiredAlignment;
+      *IsFast = (Alignment >= RequiredAlignment) ? Size : 0;
 
     return Alignment >= RequiredAlignment ||
            Subtarget->hasUnalignedDSAccessEnabled();
@@ -1530,30 +1551,16 @@ bool SITargetLowering::allowsMisalignedMemoryAccessesImpl(
   // byte-address are ignored, thus forcing Dword alignment.
   // This applies to private, global, and constant memory.
   if (IsFast)
-    *IsFast = true;
+    *IsFast = 1;
 
   return Size >= 32 && Alignment >= Align(4);
 }
 
 bool SITargetLowering::allowsMisalignedMemoryAccesses(
     EVT VT, unsigned AddrSpace, Align Alignment, MachineMemOperand::Flags Flags,
-    bool *IsFast) const {
-  bool Allow = allowsMisalignedMemoryAccessesImpl(VT.getSizeInBits(), AddrSpace,
-                                                  Alignment, Flags, IsFast);
-
-  if (Allow && IsFast && Subtarget->hasUnalignedDSAccessEnabled() &&
-      (AddrSpace == AMDGPUAS::LOCAL_ADDRESS ||
-       AddrSpace == AMDGPUAS::REGION_ADDRESS)) {
-    // Lie it is fast if +unaligned-access-mode is passed so that DS accesses
-    // get vectorized. We could use ds_read2_b*/ds_write2_b* instructions on a
-    // misaligned data which is faster than a pair of ds_read_b*/ds_write_b*
-    // which would be equally misaligned.
-    // This is only used by the common passes, selection always calls the
-    // allowsMisalignedMemoryAccessesImpl version.
-    *IsFast = true;
-  }
-
-  return Allow;
+    unsigned *IsFast) const {
+  return allowsMisalignedMemoryAccessesImpl(VT.getSizeInBits(), AddrSpace,
+                                            Alignment, Flags, IsFast);
 }
 
 EVT SITargetLowering::getOptimalMemOpType(
@@ -4854,8 +4861,18 @@ SDValue SITargetLowering::lowerIntrinsicLoad(MemSDNode *M, bool IsFormat,
 
   bool IsD16 = IsFormat && (EltType.getSizeInBits() == 16);
 
-  unsigned Opc =
-      IsFormat ? AMDGPUISD::BUFFER_LOAD_FORMAT : AMDGPUISD::BUFFER_LOAD;
+  assert(M->getNumValues() == 2 || M->getNumValues() == 3);
+  bool IsTFE = M->getNumValues() == 3;
+
+  unsigned Opc;
+  if (IsFormat) {
+    Opc = IsTFE ? AMDGPUISD::BUFFER_LOAD_FORMAT_TFE
+                : AMDGPUISD::BUFFER_LOAD_FORMAT;
+  } else {
+    // TODO: Support non-format TFE loads.
+    assert(!IsTFE);
+    Opc = AMDGPUISD::BUFFER_LOAD;
+  }
 
   if (IsD16) {
     return adjustLoadValueType(AMDGPUISD::BUFFER_LOAD_FORMAT_D16, M, DAG, Ops);
@@ -7850,35 +7867,54 @@ SDValue SITargetLowering::LowerINTRINSIC_W_CHAIN(SDValue Op,
 }
 
 // Call DAG.getMemIntrinsicNode for a load, but first widen a dwordx3 type to
-// dwordx4 if on SI.
+// dwordx4 if on SI and handle TFE loads.
 SDValue SITargetLowering::getMemIntrinsicNode(unsigned Opcode, const SDLoc &DL,
                                               SDVTList VTList,
                                               ArrayRef<SDValue> Ops, EVT MemVT,
                                               MachineMemOperand *MMO,
                                               SelectionDAG &DAG) const {
+  LLVMContext &C = *DAG.getContext();
+  MachineFunction &MF = DAG.getMachineFunction();
   EVT VT = VTList.VTs[0];
-  EVT WidenedVT = VT;
-  EVT WidenedMemVT = MemVT;
+
+  assert(VTList.NumVTs == 2 || VTList.NumVTs == 3);
+  bool IsTFE = VTList.NumVTs == 3;
+  if (IsTFE) {
+    unsigned NumValueDWords = divideCeil(VT.getSizeInBits(), 32);
+    unsigned NumOpDWords = NumValueDWords + 1;
+    EVT OpDWordsVT = EVT::getVectorVT(C, MVT::i32, NumOpDWords);
+    SDVTList OpDWordsVTList = DAG.getVTList(OpDWordsVT, VTList.VTs[2]);
+    MachineMemOperand *OpDWordsMMO =
+        MF.getMachineMemOperand(MMO, 0, NumOpDWords * 4);
+    SDValue Op = getMemIntrinsicNode(Opcode, DL, OpDWordsVTList, Ops,
+                                     OpDWordsVT, OpDWordsMMO, DAG);
+    SDValue Status = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, Op,
+                                 DAG.getVectorIdxConstant(NumValueDWords, DL));
+    SDValue ZeroIdx = DAG.getVectorIdxConstant(0, DL);
+    SDValue ValueDWords =
+        NumValueDWords == 1
+            ? DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, Op, ZeroIdx)
+            : DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL,
+                          EVT::getVectorVT(C, MVT::i32, NumValueDWords), Op,
+                          ZeroIdx);
+    SDValue Value = DAG.getNode(ISD::BITCAST, DL, VT, ValueDWords);
+    return DAG.getMergeValues({Value, Status, SDValue(Op.getNode(), 1)}, DL);
+  }
+
   if (!Subtarget->hasDwordx3LoadStores() &&
-      (WidenedVT == MVT::v3i32 || WidenedVT == MVT::v3f32)) {
-    WidenedVT = EVT::getVectorVT(*DAG.getContext(),
-                                 WidenedVT.getVectorElementType(), 4);
-    WidenedMemVT = EVT::getVectorVT(*DAG.getContext(),
-                                    WidenedMemVT.getVectorElementType(), 4);
-    MMO = DAG.getMachineFunction().getMachineMemOperand(MMO, 0, 16);
+      (VT == MVT::v3i32 || VT == MVT::v3f32)) {
+    EVT WidenedVT = EVT::getVectorVT(C, VT.getVectorElementType(), 4);
+    EVT WidenedMemVT = EVT::getVectorVT(C, MemVT.getVectorElementType(), 4);
+    MachineMemOperand *WidenedMMO = MF.getMachineMemOperand(MMO, 0, 16);
+    SDVTList WidenedVTList = DAG.getVTList(WidenedVT, VTList.VTs[1]);
+    SDValue Op = DAG.getMemIntrinsicNode(Opcode, DL, WidenedVTList, Ops,
+                                         WidenedMemVT, WidenedMMO);
+    SDValue Value = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Op,
+                                DAG.getVectorIdxConstant(0, DL));
+    return DAG.getMergeValues({Value, SDValue(Op.getNode(), 1)}, DL);
   }
 
-  assert(VTList.NumVTs == 2);
-  SDVTList WidenedVTList = DAG.getVTList(WidenedVT, VTList.VTs[1]);
-
-  auto NewOp = DAG.getMemIntrinsicNode(Opcode, DL, WidenedVTList, Ops,
-                                       WidenedMemVT, MMO);
-  if (WidenedVT != VT) {
-    auto Extract = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, NewOp,
-                               DAG.getVectorIdxConstant(0, DL));
-    NewOp = DAG.getMergeValues({ Extract, SDValue(NewOp.getNode(), 1) }, DL);
-  }
-  return NewOp;
+  return DAG.getMemIntrinsicNode(Opcode, DL, VTList, Ops, MemVT, MMO);
 }
 
 SDValue SITargetLowering::handleD16VData(SDValue VData, SelectionDAG &DAG,
@@ -8755,11 +8791,11 @@ SDValue SITargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
       llvm_unreachable("unsupported private_element_size");
     }
   } else if (AS == AMDGPUAS::LOCAL_ADDRESS || AS == AMDGPUAS::REGION_ADDRESS) {
-    bool Fast = false;
+    unsigned Fast = 0;
     auto Flags = Load->getMemOperand()->getFlags();
     if (allowsMisalignedMemoryAccessesImpl(MemVT.getSizeInBits(), AS,
                                            Load->getAlign(), Flags, &Fast) &&
-        Fast)
+        Fast > 1)
       return SDValue();
 
     if (MemVT.isVector())
@@ -9254,11 +9290,11 @@ SDValue SITargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
       llvm_unreachable("unsupported private_element_size");
     }
   } else if (AS == AMDGPUAS::LOCAL_ADDRESS || AS == AMDGPUAS::REGION_ADDRESS) {
-    bool Fast = false;
+    unsigned Fast = 0;
     auto Flags = Store->getMemOperand()->getFlags();
     if (allowsMisalignedMemoryAccessesImpl(VT.getSizeInBits(), AS,
                                            Store->getAlign(), Flags, &Fast) &&
-        Fast)
+        Fast > 1)
       return SDValue();
 
     if (VT.isVector())
@@ -10284,8 +10320,10 @@ bool SITargetLowering::isCanonicalized(Register Reg, MachineFunction &MF,
 SDValue SITargetLowering::getCanonicalConstantFP(
   SelectionDAG &DAG, const SDLoc &SL, EVT VT, const APFloat &C) const {
   // Flush denormals to 0 if not enabled.
-  if (C.isDenormal() && !denormalsEnabledForType(DAG, VT))
-    return DAG.getConstantFP(0.0, SL, VT);
+  if (C.isDenormal() && !denormalsEnabledForType(DAG, VT)) {
+    return DAG.getConstantFP(APFloat::getZero(C.getSemantics(),
+                                              C.isNegative()), SL, VT);
+  }
 
   if (C.isNaN()) {
     APFloat CanonicalQNaN = APFloat::getQNaN(C.getSemantics());

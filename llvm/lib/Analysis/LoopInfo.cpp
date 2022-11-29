@@ -1118,6 +1118,7 @@ bool llvm::getBooleanLoopAttribute(const Loop *TheLoop, StringRef Name) {
   return getOptionalBoolLoopAttribute(TheLoop, Name).value_or(false);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool llvm::isRevectorizeWithoutStrideChecks(const Loop &L) {
   return getBooleanLoopAttribute(&L, LoopMetaData::NoScevChecks);
@@ -1136,14 +1137,18 @@ bool llvm::vectorizeWithoutStrideChecks() {
 
 llvm::Optional<int> llvm::getOptionalIntLoopAttribute(const Loop *TheLoop,
                                                       StringRef Name) {
+=======
+std::optional<int> llvm::getOptionalIntLoopAttribute(const Loop *TheLoop,
+                                                     StringRef Name) {
+>>>>>>> upstream/main
   const MDOperand *AttrMD =
       findStringMetadataForLoop(TheLoop, Name).value_or(nullptr);
   if (!AttrMD)
-    return None;
+    return std::nullopt;
 
   ConstantInt *IntMD = mdconst::extract_or_null<ConstantInt>(AttrMD->get());
   if (!IntMD)
-    return None;
+    return std::nullopt;
 
   return IntMD->getSExtValue();
 }

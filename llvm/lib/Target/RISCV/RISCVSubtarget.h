@@ -65,6 +65,8 @@ private:
   bool HasStdExtZbc = false;
   bool HasStdExtZbs = false;
   bool HasStdExtZca = false;
+  bool HasStdExtZcd = false;
+  bool HasStdExtZcf = false;
   bool HasStdExtV = false;
   bool HasStdExtZve32x = false;
   bool HasStdExtZve32f = false;
@@ -190,6 +192,7 @@ public:
   bool hasStdExtF() const { return HasStdExtF; }
   bool hasStdExtD() const { return HasStdExtD; }
   bool hasStdExtC() const { return HasStdExtC; }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool hasStdExtZicsr() const { return HasStdExtZicsr; }
   bool hasStdExtZifencei() const { return HasStdExtZifencei; }
@@ -200,6 +203,9 @@ public:
   bool hasStdExtZa64rs() const { return HasStdExtZa64rs; }
   bool hasStdExtZic64b() const { return HasStdExtZic64b; }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
+>>>>>>> upstream/main
   bool hasStdExtV() const { return HasStdExtV; }
   bool hasStdExtZihintpause() const { return HasStdExtZihintpause; }
   bool hasStdExtZihintntl() const { return HasStdExtZihintntl; }
@@ -208,6 +214,8 @@ public:
   bool hasStdExtZbc() const { return HasStdExtZbc; }
   bool hasStdExtZbs() const { return HasStdExtZbs; }
   bool hasStdExtZca() const { return HasStdExtZca; }
+  bool hasStdExtZcd() const { return HasStdExtZcd; }
+  bool hasStdExtZcf() const { return HasStdExtZcf; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
   bool hasExtXsfvqmaccqoq() const { return HasExtXsfvqmaccqoq; } // SIFIVE
   bool hasExtXsfvqmaccdod() const { return HasExtXsfvqmaccdod; } // SIFIVE
