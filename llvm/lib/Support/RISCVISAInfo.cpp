@@ -243,12 +243,7 @@ static StringRef getExtensionType(StringRef Ext) {
   return StringRef();
 }
 
-<<<<<<< HEAD
 static bool isExperimentalExtension(StringRef Ext) {
-=======
-static std::optional<RISCVExtensionVersion>
-isExperimentalExtension(StringRef Ext) {
->>>>>>> upstream/main
   auto ExtIterator =
       llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
   return ExtIterator != std::end(SupportedExperimentalExtensions);
