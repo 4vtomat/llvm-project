@@ -184,6 +184,19 @@ public:
   /// and preferably modeled with SubtargetFeatures or properties in
   /// initializeProperties().
   RISCVProcFamilyEnum getProcFamily() const { return RISCVProcFamily; }
+#if SIFIVE_CUSTOMIZATION
+  bool isSiFiveCPU() const {
+    switch (RISCVProcFamily) {
+    case RISCVProcFamilyEnum::SiFive6:
+    case RISCVProcFamilyEnum::SiFive7:
+    case RISCVProcFamilyEnum::SiFiveP500:
+    case RISCVProcFamilyEnum::SiFiveP600:
+      return true;
+    default:
+      return false;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool hasStdExtM() const { return HasStdExtM; }
   bool hasStdExtA() const { return HasStdExtA; }
