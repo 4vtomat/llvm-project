@@ -115,7 +115,7 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     return;
   }
   case Instruction::Select: {
-    assert((!Op || isa<VPWidenSelectRecipe>(Def->getDef())) &&
+    assert((!Op || isa<VPWidenSelectRecipe>(Def->getDefiningRecipe())) &&
            "Expected with no-op only or VPWidenSelectRecipe.");
     widenSelectInstruction(State, Intrinsic::vp_select, Def, User, Part,
                            "vp.op.select");

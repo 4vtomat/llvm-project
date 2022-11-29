@@ -29,18 +29,15 @@
 
 using namespace llvm;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> DisableCostPerUse("riscv-disable-cost-per-use",
                                        cl::init(false), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static cl::opt<bool>
     DisableRegAllocHints("riscv-disable-regalloc-hints", cl::Hidden,
                          cl::init(false),
                          cl::desc("Disable two address hints for register "
                                   "allocation"));
->>>>>>> upstream/main
 
 static_assert(RISCV::X1 == RISCV::X0 + 1, "Register list not consecutive");
 static_assert(RISCV::X31 == RISCV::X0 + 31, "Register list not consecutive");

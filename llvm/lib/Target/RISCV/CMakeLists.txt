@@ -31,18 +31,11 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVInsertVXRMWrite.cpp
   SiFive_RISCVCleanupVXRM.cpp
   RISCVInstrInfo.cpp
-<<<<<<< HEAD
-  RISCVInstructionSelector.cpp
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
   RISCVISelLowering.cpp
   SiFive_RISCVLateCodeGenPrepare.cpp
-  RISCVLegalizerInfo.cpp
   SiFive_RISCVMachineConstProp.cpp
-=======
-  RISCVISelDAGToDAG.cpp
-  RISCVISelLowering.cpp
->>>>>>> upstream/main
   RISCVMachineFunctionInfo.cpp
   RISCVMacroFusion.cpp
   RISCVMCInstLower.cpp
@@ -54,15 +47,12 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
-<<<<<<< HEAD
   SiFive_RISCVPostRAExpandPseudoInsts.cpp
   SiFive_RISCVTypePromotion.cpp
-=======
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp
   GISel/RISCVRegisterBankInfo.cpp
->>>>>>> upstream/main
 
   LINK_COMPONENTS
   Analysis

@@ -406,7 +406,6 @@ static cl::opt<bool> PrintVPlansInDotFormat(
     "vplan-print-in-dot-format", cl::Hidden,
     cl::desc("Use dot format instead of plain text when dumping VPlans"));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<int64_t>
     LoopVectorizationLimit("loop-vectorization-limit", cl::init(-1), cl::Hidden,
@@ -425,10 +424,7 @@ static cl::opt<bool> AdhocSkipVectorizeInPrelink(
              "stride memory access(es)"));
 #endif // SIFIVE_CUSTOMIZATION
 
-cl::opt<cl::boolOrDefault> ForceSafeDivisor(
-=======
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
->>>>>>> upstream/main
     "force-widen-divrem-via-safe-divisor", cl::Hidden,
     cl::desc(
         "Override cost based safe divisor widening for div/rem instructions"));

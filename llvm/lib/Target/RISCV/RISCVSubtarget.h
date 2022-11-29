@@ -192,7 +192,6 @@ public:
   bool hasStdExtF() const { return HasStdExtF; }
   bool hasStdExtD() const { return HasStdExtD; }
   bool hasStdExtC() const { return HasStdExtC; }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool hasStdExtZicsr() const { return HasStdExtZicsr; }
   bool hasStdExtZifencei() const { return HasStdExtZifencei; }
@@ -203,9 +202,7 @@ public:
   bool hasStdExtZa64rs() const { return HasStdExtZa64rs; }
   bool hasStdExtZic64b() const { return HasStdExtZic64b; }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
->>>>>>> upstream/main
   bool hasStdExtV() const { return HasStdExtV; }
   bool hasStdExtZihintpause() const { return HasStdExtZihintpause; }
   bool hasStdExtZihintntl() const { return HasStdExtZihintntl; }
