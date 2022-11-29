@@ -22,6 +22,11 @@
 
 using namespace llvm;
 
+static cl::opt<bool> DisableSiFiveRecode(
+    "disable-sifive-recode",
+    cl::desc("Disable expand aarch64 NEON into LLVM IR or RISC-V Intrinsic"),
+    cl::Hidden, cl::init(false));
+
 static CallInst *toScalableVector(const TargetTransformInfo &TTI,
                                   IRBuilder<> &Builder, Value *Vec) {
   Type *ScalableVecTy = TTI.getScalableVectorFromFixed(Vec->getType());
@@ -252,6 +257,9 @@ bool SiFiveRecodePass::requireExpand(IntrinsicInst *II) {
 
 PreservedAnalyses SiFiveRecodePass::run(Function &F,
                                         FunctionAnalysisManager &AM) {
+  if (DisableSiFiveRecode)
+    return PreservedAnalyses::all();
+
   const TargetTransformInfo &TTI = AM.getResult<TargetIRAnalysis>(F);
   bool MadeChange = false;
   unsigned XLEN =
