@@ -24081,14 +24081,6 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
       return visitVPFADDForVPFMACombine(N);
     case ISD::VP_XOR:
       return visitVPXOR(N);
-    case ISD::VP_UMAX:
-    case ISD::VP_UMIN:
-    case ISD::VP_SMAX:
-    case ISD::VP_SMIN:
-    case ISD::VP_FMINNUM:
-    case ISD::VP_FMAXNUM:
-      // Those vp intrinsics could not be served by isVPBinaryOp.
-      return foldVPBinOpIntoVPSelect(N, DAG);
     }
 #endif // SIFIVE_CUSTOMIZATION
     return SDValue();
