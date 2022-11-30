@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-min=128 < %s \
 ; RUN:   | FileCheck %s
 
-; (SIFIVE) Upstream compiler generates rvv code for this test case. 
+; (SIFIVE) Upstream compiler generates rvv code for this test case.
 ; However, while RVV allows misaligned access, we want to prevent circumstances
 ; where vector length is not aligned with DLEN. Therefore in downstream, code
 ; emit here gives us scalar load/store instead of vector ones because we prevent

@@ -6,7 +6,7 @@ define void @unsupported_fp_ops(<vscale x 4 x float> %vec) {
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %sin = call <vscale x 4 x float> @llvm.sin.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %cos = call <vscale x 4 x float> @llvm.cos.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %pow = call <vscale x 4 x float> @llvm.pow.nxv4f32(<vscale x 4 x float> %vec, <vscale x 4 x float> %vec)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 14 for instruction: %powi = call <vscale x 4 x float> @llvm.powi.nxv4f32.i32(<vscale x 4 x float> %vec, i32 42)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %powi = call <vscale x 4 x float> @llvm.powi.nxv4f32.i32(<vscale x 4 x float> %vec, i32 42)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %exp = call <vscale x 4 x float> @llvm.exp.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %exp2 = call <vscale x 4 x float> @llvm.exp2.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %log = call <vscale x 4 x float> @llvm.log.nxv4f32(<vscale x 4 x float> %vec)

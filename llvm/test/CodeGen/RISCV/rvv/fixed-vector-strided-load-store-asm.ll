@@ -791,8 +791,7 @@ define void @scatter_of_pointers(i32** noalias nocapture %0, i32** noalias nocap
 ; ZVE32F-NEXT:    li a3, 1
 ; ZVE32F-NEXT:    li a4, 1024
 ; ZVE32F-NEXT:    li a5, 40
-<<<<<<< HEAD
-; ZVE32F-NEXT:  .LBB11_1: # =>This Inner Loop Header: Depth=1
+; ZVE32F-NEXT:  .LBB12_1: # =>This Inner Loop Header: Depth=1
 ; ZVE32F-NEXT:    mul a6, a3, a5
 ; ZVE32F-NEXT:    add a6, a0, a6
 ; ZVE32F-NEXT:    mul a7, a2, a5
@@ -805,21 +804,6 @@ define void @scatter_of_pointers(i32** noalias nocapture %0, i32** noalias nocap
 ; ZVE32F-NEXT:    sd t1, 0(a6)
 ; ZVE32F-NEXT:    sd t2, 80(a7)
 ; ZVE32F-NEXT:    sd t3, 80(a6)
-=======
-; ZVE32F-NEXT:  .LBB12_1: # =>This Inner Loop Header: Depth=1
-; ZVE32F-NEXT:    ld a6, 8(a1)
-; ZVE32F-NEXT:    ld a7, 0(a1)
-; ZVE32F-NEXT:    ld t0, 24(a1)
-; ZVE32F-NEXT:    ld t1, 16(a1)
-; ZVE32F-NEXT:    mul t2, a3, a5
-; ZVE32F-NEXT:    add t2, a0, t2
-; ZVE32F-NEXT:    mul t3, a2, a5
-; ZVE32F-NEXT:    add t3, a0, t3
-; ZVE32F-NEXT:    sd a7, 0(t3)
-; ZVE32F-NEXT:    sd a6, 0(t2)
-; ZVE32F-NEXT:    sd t1, 80(t3)
-; ZVE32F-NEXT:    sd t0, 80(t2)
->>>>>>> upstream/main
 ; ZVE32F-NEXT:    addi a2, a2, 4
 ; ZVE32F-NEXT:    addi a3, a3, 4
 ; ZVE32F-NEXT:    addi a4, a4, -4
@@ -892,14 +876,13 @@ define void @strided_load_startval_add_with_splat(i8* noalias nocapture %0, i8* 
 ; CHECK-NEXT:    addi a6, a6, 160
 ; CHECK-NEXT:    bnez t1, .LBB13_3
 ; CHECK-NEXT:  # %bb.4:
-<<<<<<< HEAD
-; CHECK-NEXT:    beq a4, a5, .LBB12_7
-; CHECK-NEXT:  .LBB12_5:
+; CHECK-NEXT:    beq a4, a5, .LBB13_7
+; CHECK-NEXT:  .LBB13_5:
 ; CHECK-NEXT:    slli a2, a3, 2
 ; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    li a2, 1024
-; CHECK-NEXT:  .LBB12_6: # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:  .LBB13_6: # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    lb a4, 0(a1)
 ; CHECK-NEXT:    add a5, a0, a3
 ; CHECK-NEXT:    lb a6, 0(a5)
@@ -908,27 +891,8 @@ define void @strided_load_startval_add_with_splat(i8* noalias nocapture %0, i8* 
 ; CHECK-NEXT:    addiw a4, a3, 1
 ; CHECK-NEXT:    addi a3, a3, 1
 ; CHECK-NEXT:    addi a1, a1, 5
-; CHECK-NEXT:    bne a4, a2, .LBB12_6
-; CHECK-NEXT:  .LBB12_7:
-=======
-; CHECK-NEXT:    beq a4, a5, .LBB13_7
-; CHECK-NEXT:  .LBB13_5:
-; CHECK-NEXT:    addiw a2, a3, -1024
-; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    slli a4, a3, 2
-; CHECK-NEXT:    add a3, a4, a3
-; CHECK-NEXT:    add a1, a1, a3
-; CHECK-NEXT:  .LBB13_6: # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    lb a3, 0(a1)
-; CHECK-NEXT:    lb a4, 0(a0)
-; CHECK-NEXT:    addw a3, a4, a3
-; CHECK-NEXT:    sb a3, 0(a0)
-; CHECK-NEXT:    addiw a2, a2, 1
-; CHECK-NEXT:    addi a0, a0, 1
-; CHECK-NEXT:    addi a1, a1, 5
-; CHECK-NEXT:    bnez a2, .LBB13_6
+; CHECK-NEXT:    bne a4, a2, .LBB13_6
 ; CHECK-NEXT:  .LBB13_7:
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %4 = icmp eq i32 %2, 1024
   br i1 %4, label %36, label %5

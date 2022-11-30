@@ -19,8 +19,8 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    sub a2, a2, a4
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a0, a1, a4
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    add a1, a1, a4
+; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 1337, i1 false)

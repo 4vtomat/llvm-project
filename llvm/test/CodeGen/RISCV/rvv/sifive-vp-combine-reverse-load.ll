@@ -54,8 +54,8 @@ define <vscale x 2 x float> @test_load_mask_not_all_one(<vscale x 2 x float>* %p
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0), v0.t
 ; CHECK-NEXT:    vid.v v8, v0.t
-; CHECK-NEXT:    addi a0, a1, -1
-; CHECK-NEXT:    vrsub.vx v10, v8, a0, v0.t
+; CHECK-NEXT:    addi a1, a1, -1
+; CHECK-NEXT:    vrsub.vx v10, v8, a1, v0.t
 ; CHECK-NEXT:    vrgather.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 1
@@ -94,8 +94,8 @@ define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 
 ; CHECK-NEXT:    vle32.v v10, (a0), v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vid.v v8, v0.t
-; CHECK-NEXT:    addi a0, a2, -1
-; CHECK-NEXT:    vrsub.vx v11, v8, a0, v0.t
+; CHECK-NEXT:    addi a2, a2, -1
+; CHECK-NEXT:    vrsub.vx v11, v8, a2, v0.t
 ; CHECK-NEXT:    vrgather.vv v8, v10, v11, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 1
