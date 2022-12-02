@@ -9894,6 +9894,10 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
   if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
+#if SIFIVE_CUSTOMIZATION
+    if (!ExitBB || !ExitingBB || !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
+        !ExitBB->hasNPredecessors(2))
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   // Introduce VPUsers modeling the exit values.
