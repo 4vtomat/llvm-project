@@ -388,8 +388,8 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
 #ifdef SIFIVE_CUSTOMIZATION
   OS << "#if defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)\n";
   for (int Log2LMUL : Log2LMULs) {
-    auto T = RVVType::computeType(BasicType::BFloat, Log2LMUL,
-                                  PrototypeDescriptor::Vector);
+    auto T = TypeCache.computeType(BasicType::BFloat, Log2LMUL,
+                                   PrototypeDescriptor::Vector);
     if (T)
       printType(T.value());
   }
