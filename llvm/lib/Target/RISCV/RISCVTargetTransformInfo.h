@@ -414,6 +414,8 @@ public:
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
   bool forceCheckAddressingMode() const;
+
+  Type *getScalableVectorFromFixed(Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 

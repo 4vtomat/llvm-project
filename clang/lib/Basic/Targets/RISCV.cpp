@@ -206,6 +206,13 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 }
 
 const Builtin::Info RISCVTargetInfo::BuiltinInfo[] = {
+#if SIFIVE_CUSTOMIZATION
+#define BUILTIN(ID, TYPE, ATTRS)                                               \
+  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, "64bit,v,zfh,experimental-zvfh"},
+#define TARGET_BUILTIN(ID, TYPE, ATTRS, FEATURE)                               \
+    {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, FEATURE},
+#include "clang/Basic/BuiltinsNEON.def"
+#endif
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
   {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
 #define TARGET_BUILTIN(ID, TYPE, ATTRS, FEATURE)                               \
@@ -253,6 +260,15 @@ bool RISCVTargetInfo::initFeatureMap(
   for (const std::string &Feature : FeaturesVec)
     if (!llvm::is_contained(ImpliedFeatures, Feature))
       ImpliedFeatures.push_back(Feature);
+
+#if SIFIVE_CUSTOMIZATION
+  if (getTargetOpts().SiFiveRecode == "neon") {
+    ImpliedFeatures.push_back("+dotprod");
+    if (llvm::is_contained(ImpliedFeatures, "+zfh") &&
+        llvm::is_contained(ImpliedFeatures, "+experimental-zvfh"))
+      ImpliedFeatures.push_back("+fullfp16");
+  }
+#endif
 
   return TargetInfo::initFeatureMap(Features, Diags, CPU, ImpliedFeatures);
 }
@@ -312,6 +328,11 @@ bool RISCVTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
 
   if (ABI.empty())
     ABI = ISAInfo->computeDefaultABI().str();
+
+#if SIFIVE_CUSTOMIZATION
+  if (ISAInfo->hasExtension("zfh"))
+    HasLegalHalfType = true;
+#endif
 
   return true;
 }

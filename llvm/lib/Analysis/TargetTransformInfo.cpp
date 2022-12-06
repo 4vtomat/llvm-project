@@ -1194,6 +1194,12 @@ bool TargetTransformInfo::enableScalableVectorization() const {
   return TTIImpl->enableScalableVectorization();
 }
 
+#if SIFIVE_CUSTOMIZATION
+Type *TargetTransformInfo::getScalableVectorFromFixed(Type *Ty) const {
+  return TTIImpl->getScalableVectorFromFixed(Ty);
+}
+#endif
+
 bool TargetTransformInfo::hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                                 Align Alignment) const {
   return TTIImpl->hasActiveVectorLength(Opcode, DataType, Alignment);

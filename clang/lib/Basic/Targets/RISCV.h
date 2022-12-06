@@ -45,6 +45,7 @@ public:
     HasStrictFP = true;
     BFloat16Width = BFloat16Align = 16;
     BFloat16Format = &llvm::APFloat::BFloat();
+    HalfArgsAndReturns = true;
 #endif // SIFIVE_CUSTOMIZATION
   }
 

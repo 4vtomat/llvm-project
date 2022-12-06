@@ -90,7 +90,13 @@ void EmitClangSyntaxNodeClasses(llvm::RecordKeeper &Records,
                                 llvm::raw_ostream &OS);
 
 void EmitNeon(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
+#if SIFIVE_CUSTOMIZATION
+void EmitRecodeNeon(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
+#endif
 void EmitFP16(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
+#if SIFIVE_CUSTOMIZATION
+void EmitRecodeFP16(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
+#endif
 void EmitBF16(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 void EmitNeonSema(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 void EmitNeonTest(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);

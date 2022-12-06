@@ -8,6 +8,7 @@
 
 #include "RISCVTargetTransformInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
+#include "RISCVISelLowering.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
@@ -1410,6 +1411,21 @@ bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
 
 bool RISCVTTIImpl::forceCheckAddressingMode() const {
   return true;
+}
+
+Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
+  FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
+  assert(VecTy->getElementType()->isIntegerTy() ||
+         VecTy->getElementType()->isFloatingPointTy());
+
+  // Follow getContainerForFixedLengthVector.
+  unsigned MinVLen = getST()->getRealMinVLen();
+  unsigned MaxELen = getST()->getELEN();
+  unsigned NumElts =
+      (VecTy->getNumElements() * RISCV::RVVBitsPerBlock) / MinVLen;
+  NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);
+  assert(isPowerOf2_32(NumElts) && "Expected power of 2 NumElts");
+  return ScalableVectorType::get(VecTy->getElementType(), NumElts);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

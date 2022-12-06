@@ -878,6 +878,14 @@ public:
 
   bool enableScalableVectorization() const { return false; }
 
+#if SIFIVE_CUSTOMIZATION
+  Type *getScalableVectorFromFixed(Type *Ty) const {
+    FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
+    return ScalableVectorType::get(VecTy->getElementType(),
+                                   VecTy->getNumElements());
+  }
+#endif
+
   bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                              Align Alignment) const {
     return false;

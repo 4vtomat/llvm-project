@@ -3553,6 +3553,9 @@ static StringRef mangleAArch64VectorBase(const BuiltinType *EltType) {
   case BuiltinType::ULongLong:
     return "Uint64";
   case BuiltinType::Half:
+#if SIFIVE_CUSTOMIZATION
+  case BuiltinType::Float16:
+#endif
     return "Float16";
   case BuiltinType::Float:
     return "Float32";
@@ -3720,8 +3723,14 @@ void CXXNameMangler::mangleType(const VectorType *T) {
     llvm::Triple Target = getASTContext().getTargetInfo().getTriple();
     llvm::Triple::ArchType Arch =
         getASTContext().getTargetInfo().getTriple().getArch();
-    if ((Arch == llvm::Triple::aarch64 ||
-         Arch == llvm::Triple::aarch64_be) && !Target.isOSDarwin())
+#if SIFIVE_CUSTOMIZATION
+    if (((Arch == llvm::Triple::aarch64 || Arch == llvm::Triple::aarch64_be) &&
+         !Target.isOSDarwin()) ||
+        (Arch == llvm::Triple::riscv64 &&
+         getASTContext().getTargetInfo().hasFeature("v") &&
+         getASTContext().getTargetInfo().hasFeature("zfh") &&
+         getASTContext().getTargetInfo().hasFeature("experimental-zvfh")))
+#endif
       mangleAArch64NeonVectorType(T);
     else
       mangleNeonVectorType(T);
