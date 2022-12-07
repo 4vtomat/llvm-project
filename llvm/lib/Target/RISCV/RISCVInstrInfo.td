@@ -769,7 +769,7 @@ def WRS_STO : RVInstI<0b000, OPC_SYSTEM, (outs), (ins), "wrs.sto", "">,
 
 } // hasSideEffects = 1, mayLoad = 0, mayStore = 0
 
-let Predicates = [HasStdExtZicsr] in {
+let Predicates = [HasStdExtZicsr] in { // SIFIVE
 def CSRRW : CSR_ir<0b001, "csrrw">;
 def CSRRS : CSR_ir<0b010, "csrrs">;
 def CSRRC : CSR_ir<0b011, "csrrc">;
@@ -777,7 +777,7 @@ def CSRRC : CSR_ir<0b011, "csrrc">;
 def CSRRWI : CSR_ii<0b101, "csrrwi">;
 def CSRRSI : CSR_ii<0b110, "csrrsi">;
 def CSRRCI : CSR_ii<0b111, "csrrci">;
-} // Predicates = [HasStdExtZicsr]
+} // Predicates = [HasStdExtZicsr] // SIFIVE
 
 /// RV64I instructions
 
@@ -987,16 +987,19 @@ def : InstAlias<"fence", (FENCE 0xF, 0xF)>; // 0xF == iorw
 let Predicates = [HasStdExtZihintpause] in
 def : InstAlias<"pause", (FENCE 0x1, 0x0)>; // 0x1 == w
 
+let Predicates = [HasStdExtZicsr] in { // SIFIVE
 def : InstAlias<"rdinstret $rd", (CSRRS GPR:$rd, INSTRET.Encoding, X0)>;
 def : InstAlias<"rdcycle $rd",   (CSRRS GPR:$rd, CYCLE.Encoding, X0)>;
 def : InstAlias<"rdtime $rd",    (CSRRS GPR:$rd, TIME.Encoding, X0)>;
+} // SIFIVE
 
-let Predicates = [IsRV32] in {
+let Predicates = [IsRV32, HasStdExtZicsr] in { // SIFIVE
 def : InstAlias<"rdinstreth $rd", (CSRRS GPR:$rd, INSTRETH.Encoding, X0)>;
 def : InstAlias<"rdcycleh $rd",   (CSRRS GPR:$rd, CYCLEH.Encoding, X0)>;
 def : InstAlias<"rdtimeh $rd",    (CSRRS GPR:$rd, TIMEH.Encoding, X0)>;
 } // Predicates = [IsRV32]
 
+let Predicates = [HasStdExtZicsr] in { // SIFIVE
 def : InstAlias<"csrr $rd, $csr", (CSRRS GPR:$rd, csr_sysreg:$csr,      X0)>;
 def : InstAlias<"csrw $csr, $rs", (CSRRW      X0, csr_sysreg:$csr, GPR:$rs)>;
 def : InstAlias<"csrs $csr, $rs", (CSRRS      X0, csr_sysreg:$csr, GPR:$rs)>;
@@ -1015,6 +1018,7 @@ def : InstAlias<"csrrw $rd, $csr, $imm", (CSRRWI GPR:$rd, csr_sysreg:$csr, uimm5
 def : InstAlias<"csrrs $rd, $csr, $imm", (CSRRSI GPR:$rd, csr_sysreg:$csr, uimm5:$imm)>;
 def : InstAlias<"csrrc $rd, $csr, $imm", (CSRRCI GPR:$rd, csr_sysreg:$csr, uimm5:$imm)>;
 }
+} // Predicates = [HasStdExtZicsr] // SIFIVE
 
 def : InstAlias<"sfence.vma",     (SFENCE_VMA      X0, X0)>;
 def : InstAlias<"sfence.vma $rs", (SFENCE_VMA GPR:$rs, X0)>;
