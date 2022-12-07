@@ -187,6 +187,11 @@ STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
 STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
                                   "from dependence distance information.");
 
+static cl::opt<bool> VectorizerDisableReduceOverheadEstimation(
+    "vectorizer-disable-reduce-overhead-estimation", cl::init(false),
+    cl::Hidden,
+    cl::desc("Disable estimation of a reduce intrinsic in postexit."));
+
 static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
     "vectorizer-disable-profitable-trip-count-rt-check", cl::init(false),
     cl::Hidden,
@@ -1296,7 +1301,12 @@ public:
   bool selectUserVectorizationFactor(ElementCount UserVF) {
     collectUniformsAndScalars(UserVF);
     collectInstsToScalarize(UserVF);
+#if SIFIVE_CUSTOMIZATION
+    return expectedCost(UserVF).first.isValid() &&
+           expectedOverhead(UserVF).isValid();
+#else
     return expectedCost(UserVF).first.isValid();
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// \return The size (in bits) of the smallest and widest types in the code
@@ -1786,6 +1796,9 @@ private:
   VectorizationCostTy
   expectedCost(ElementCount VF,
                SmallVectorImpl<InstructionVFPair> *Invalid = nullptr);
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost expectedOverhead(ElementCount VF);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the execution time cost of an instruction for a given vector
   /// width. Vector width of one means scalar.
@@ -5999,6 +6012,28 @@ bool LoopVectorizationCostModel::isMoreProfitable(
       EstimatedWidthB *= VScale.value();
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Taking into account overhead in preheader or postexit requries computing
+  // cost not per-lane, but of entire loop.
+  // Currently we focus on constant trip count.
+  if ((A.Width.isScalable() || B.Width.isScalable()) && MaxTripCount &&
+      (A.Overhead > 0 || B.Overhead > 0)) {
+    auto getCost = [&](const InstructionCost &VectorIterCost,
+                       const InstructionCost &Overhead, unsigned EstimatedWidth,
+                       const ElementCount VF) -> InstructionCost {
+      const uint64_t VecIters = divideCeil(MaxTripCount, EstimatedWidth);
+      const InstructionCost TotalCost = VecIters * VectorIterCost + Overhead;
+      LLVM_DEBUG(dbgs() << "LV: VF = " << VF << ": cost = " << VecIters << " x "
+                        << VectorIterCost << " + " << Overhead << " = "
+                        << TotalCost << '\n';);
+      return TotalCost;
+    };
+    auto RTCostA = getCost(CostA, A.Overhead, EstimatedWidthA, A.Width);
+    auto RTCostB = getCost(CostB, B.Overhead, EstimatedWidthB, B.Width);
+    return RTCostA < RTCostB;
+  }
+#endif
+
   // Assume vscale may be larger than 1 (or the value being tuned for),
   // so that scalable vectorization is slightly favorable over fixed-width
   // vectorization.
@@ -6106,8 +6141,13 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
                         << " yields an invalid cost. Skipping\n");
       continue;
     }
-#endif // SIFIVE_CUSTOMIZATION
+    InstructionCost Overhead = 0;
+    if (!VectorizerDisableReduceOverheadEstimation)
+      Overhead = expectedOverhead(i);
+    VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
+#else
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
+#endif // SIFIVE_CUSTOMIZATION
 
 #ifndef NDEBUG
     unsigned AssumedMinimumVscale = 1;
@@ -6556,7 +6596,11 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
   // If we did not calculate the cost for VF (because the user selected the VF)
   // then we calculate the cost of VF here.
   if (LoopCost == 0) {
+#if SIFIVE_CUSTOMIZATION
+    LoopCost = expectedCost(VF).first + expectedOverhead(VF);
+#else
     LoopCost = expectedCost(VF).first;
+#endif // SIFIVE_CUSTOMIZATION
     assert(LoopCost.isValid() && "Expected to have chosen a VF with valid cost");
 
     // Loop body is free and there is no need for interleaving.
@@ -7143,6 +7187,43 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
 
   return Discount;
 }
+
+#if SIFIVE_CUSTOMIZATION
+InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
+
+  InstructionCost Overhead = 0;
+  // For each block.
+  for (BasicBlock *BB : TheLoop->blocks()) {
+    VectorizationCostTy BlockCost;
+    // For each instruction in the old loop.
+    for (Instruction &I : BB->instructionsWithoutDebug()) {
+      // Skip ignored values.
+      if (ValuesToIgnore.count(&I) ||
+          (VF.isVector() && VecValuesToIgnore.count(&I)))
+        continue;
+
+      if (isa<PHINode>(I) && VF.isVector()) {
+        InstructionCost C = 0;
+        auto Phi = cast<PHINode>(&I);
+        if (Legal->isReductionVariable(Phi)) {
+          auto *VectorTy = ToVectorTy(I.getType(), VF);
+          const RecurrenceDescriptor &RdxDesc =
+              Legal->getReductionVars().find(Phi)->second;
+          TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+          C = TTI.getArithmeticReductionCost(
+              RdxDesc.getOpcode(), cast<VectorType>(VectorTy),
+              RdxDesc.getFastMathFlags(), CostKind);
+          LLVM_DEBUG(dbgs()
+                     << "LV: Found an estimated overhead of " << C << " for VF "
+                     << VF << " For instruction: " << I << '\n');
+          Overhead += C;
+        }
+      }
+    }
+  }
+  return Overhead;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 LoopVectorizationCostModel::VectorizationCostTy
 LoopVectorizationCostModel::expectedCost(
