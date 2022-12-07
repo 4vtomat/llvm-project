@@ -6,20 +6,18 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 1337
-; CHECK-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a3
-; CHECK-NEXT:    sub a2, a2, a3
-; CHECK-NEXT:    vsetvli a4, a2, e8, m8, ta, mu
+; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a3
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a4
-; CHECK-NEXT:    sub a2, a2, a4
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    li a3, 313
+; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, mu
+; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a4
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

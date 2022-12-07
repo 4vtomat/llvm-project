@@ -88,7 +88,7 @@ public:
   bool expandMemIntrinsic(MemIntrinsic *MI);
   void expandMemCpyUnknownSize(MemCpyInst *MCI);
   void expandMemCpyUnknownSizewithAlign(MemCpyInst *MCI);
-  void expandMemCpyKnownSize(MemCpyInst *MCI, unsigned AVL);
+  void expandMemCpyKnownSize(MemCpyInst *MCI);
   void expandMemSetUnknownSize(MemSetInst *MSI);
   void expandMemSetUnknownSizeAligned(MemSetInst *MSI);
   void expandMemSetKnownSize(MemSetInst *MSI);
@@ -303,25 +303,14 @@ bool RISCVLateCodeGenPrepare::visitICmp(ICmpInst &ICmp) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
+  CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
+
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
-  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
-  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
 
-  BasicBlock *PreLoopBB = M->getParent();
-  BasicBlock *PostLoopBB =
-      PreLoopBB->splitBasicBlock(M, "post-loop-memcpy-expansion");
-  BasicBlock *LoopBB =
-      BasicBlock::Create(PreLoopBB->getContext(), "loop-memcpy-expansion",
-                         PreLoopBB->getParent(), PostLoopBB);
 
-  // We only deal with 8-bits width of memory at a time.
-  Type *Int8Type = Type::getInt8Ty(PreLoopBB->getContext());
-  // Initial vector type for <vscale x 64 x i8>, LMUL=8, SEW=8.
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
-  Type *CopyLenType = CopyLen->getType();
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   // Main Loop, expand Memcpy() to RVV instructions.
   // The RVV instructions like below:
@@ -336,48 +325,10 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
   //   sub CopyLen, CopyLen, VL
   //   bgtu CopyLen, zero, loop
 
-  IRBuilder<> Builder(PreLoopBB->getTerminator());
-  Builder.CreateBr(LoopBB);
+  Builder.CreateBr(ForwardLoopBB);
+  createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
+                       CopyLen, false);
   PreLoopBB->getTerminator()->eraseFromParent();
-
-  Builder.SetInsertPoint(LoopBB);
-  PHINode *LoopIndex = Builder.CreatePHI(CopyLenType, 2, "loop-index");
-  LoopIndex->addIncoming(CopyLen, PreLoopBB);
-  PHINode *SrcIndex = Builder.CreatePHI(SrcAddr->getType(), 2, "src-addr");
-  SrcIndex->addIncoming(SrcAddr, PreLoopBB);
-  PHINode *DstIndex = Builder.CreatePHI(DstAddr->getType(), 2, "dst-addr");
-  DstIndex->addIncoming(DstAddr, PreLoopBB);
-
-  // Set SEW to 8 bits.
-  Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
-  // Set LMUL to 8 registers.
-  Value *LMUL = ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
-
-  Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                      {LoopIndex, SEW, LMUL});
-  Value *SrcCast =
-      Builder.CreatePointerCast(SrcIndex, PointerType::get(VTy, SrcAS));
-  Value *Load =
-      Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                              {UndefValue::get(VTy), SrcCast, VL});
-  Value *DstCast =
-      Builder.CreatePointerCast(DstIndex, PointerType::get(VTy, DstAS));
-  Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
-                          {Load, DstCast, VL});
-
-  Value *SrcGEP = Builder.CreateGEP(Int8Type, SrcIndex, VL);
-  SrcIndex->addIncoming(SrcGEP, LoopBB);
-
-  Value *DstGEP = Builder.CreateGEP(Int8Type, DstIndex, VL);
-  DstIndex->addIncoming(DstGEP, LoopBB);
-
-  Value *NewIndex = Builder.CreateSub(LoopIndex, VL);
-  LoopIndex->addIncoming(NewIndex, LoopBB);
-
-  IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
-  ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
-  Builder.CreateCondBr(Builder.CreateICmpUGT(NewIndex, Zero), LoopBB,
-                       PostLoopBB);
   M->eraseFromParent();
 }
 
@@ -826,18 +777,14 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   }
 }
 
-void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M,
-                                                    unsigned AVL) {
+void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
+  CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
+
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
-  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
-  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
 
-  Type *Int8Type = Type::getInt8Ty(M->getParent()->getContext());
-  Type *CopyLenType = CopyLen->getType();
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   // Expand Memcpy() to RVV instructions.
   // If copy length can unroll 2 times
@@ -853,37 +800,14 @@ void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M,
   //   vle8.v vData, (Src)
   //   vse8.v vData, (Dst)
 
-  unsigned MinVLenInBytes = ST->getRealMinVLen() / 8;
-  // The unroll count is equal to AVL / (MinVLen * LMUL).
-  unsigned UnrollCount = divideCeil(AVL, MinVLenInBytes * 8);
+  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  unsigned UnrollCount = divideCeil(CI->getZExtValue(), ST->getRealMinVLen());
 
-  IRBuilder<> Builder(M);
-  Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
-  Value *LMUL = ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
+  Builder.CreateBr(ForwardLoopBB);
+  createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
+                       CopyLen, false, UnrollCount);
 
-  while (UnrollCount != 0) {
-    Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                        {CopyLen, SEW, LMUL});
-    Value *SrcCast =
-        Builder.CreatePointerCast(SrcAddr, PointerType::get(VTy, SrcAS));
-    Value *Load =
-        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                {UndefValue::get(VTy), SrcCast, VL});
-
-    Value *DstCast =
-        Builder.CreatePointerCast(DstAddr, PointerType::get(VTy, DstAS));
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
-                            {Load, DstCast, VL});
-
-    // Last time, we don't need to update address and copy length.
-    if (UnrollCount != 1) {
-      SrcAddr = Builder.CreateGEP(Int8Type, SrcAddr, VL);
-      DstAddr = Builder.CreateGEP(Int8Type, DstAddr, VL);
-      CopyLen = Builder.CreateSub(CopyLen, VL);
-    }
-    UnrollCount--;
-  }
-
+  PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
 }
 
@@ -905,29 +829,14 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
+  CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
+
   Value *SrcAddr = M->getRawSource();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
-  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
-  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
+  Type *Int8Type = Type::getInt8Ty(M->getParent()->getContext());
 
-  BasicBlock *PreLoopBB = M->getParent();
-  BasicBlock *PostLoopBB =
-      PreLoopBB->splitBasicBlock(M, "post-loop-memcpy-expansion");
-  BasicBlock *LoopBB =
-      BasicBlock::Create(PreLoopBB->getContext(), "loop-memcpy-expansion",
-                         PreLoopBB->getParent(), PostLoopBB);
-
-  Type *Int8Type = Type::getInt8Ty(PreLoopBB->getContext());
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
-  Type *CopyLenType = CopyLen->getType();
-  IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
-
-  Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
-  Value *LMUL = ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
-
-  unsigned AlignBytes = ST->getDLen() / 8;
+  IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   // Expand Memcpy() to RVV instructions.
   // The RVV instructions like below:
@@ -952,7 +861,18 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   //   bgtu NewCopyLen, zero, loop
   // postloop:
 
-  IRBuilder<> Builder(PreLoopBB->getTerminator());
+  unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
+  unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
+
+  ScalableVectorType *VTy =
+      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock);
+  Type *CopyLenType = CopyLen->getType();
+  IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
+
+  Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
+  Value *LMUL = ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(8, false));
+
+  unsigned AlignBytes = ST->getDLen() / 8;
 
   Value *Addr = Builder.CreatePtrToInt(SrcAddr, ILengthType);
   Value *And =
@@ -981,39 +901,13 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   Value *NewCopyLen = Builder.CreateSub(CopyLen, AlignVL);
 
   ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
-  Builder.CreateCondBr(Builder.CreateICmpNE(NewCopyLen, Zero),
-                       LoopBB, PostLoopBB);
+  Builder.CreateCondBr(Builder.CreateICmpNE(NewCopyLen, Zero), ForwardLoopBB,
+                       PostLoopBB);
+
+  createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, AlignSrcGEP,
+                       AlignDstGEP, NewCopyLen);
+
   PreLoopBB->getTerminator()->eraseFromParent();
-
-  Builder.SetInsertPoint(LoopBB);
-  PHINode *LoopIndex = Builder.CreatePHI(CopyLenType, 2, "loop-index");
-  LoopIndex->addIncoming(NewCopyLen, PreLoopBB);
-  PHINode *SrcIndex = Builder.CreatePHI(SrcAddr->getType(), 2, "src-addr");
-  SrcIndex->addIncoming(AlignSrcGEP, PreLoopBB);
-  PHINode *DstIndex = Builder.CreatePHI(DstAddr->getType(), 2, "dst-addr");
-  DstIndex->addIncoming(AlignDstGEP, PreLoopBB);
-
-  Value *LoopVL = Builder.CreateIntrinsic(
-      Intrinsic::riscv_vsetvli, {CopyLenType}, {LoopIndex, SEW, LMUL});
-  SrcCast = Builder.CreatePointerCast(SrcIndex, PointerType::get(VTy, SrcAS));
-
-  Load = Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                 {UndefValue::get(VTy), SrcCast, LoopVL});
-  DstCast = Builder.CreatePointerCast(DstIndex, PointerType::get(VTy, DstAS));
-  Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
-                          {Load, DstCast, LoopVL});
-
-  Value *SrcGEP = Builder.CreateGEP(Int8Type, SrcIndex, LoopVL);
-  SrcIndex->addIncoming(SrcGEP, LoopBB);
-
-  Value *DstGEP = Builder.CreateGEP(Int8Type, DstIndex, LoopVL);
-  DstIndex->addIncoming(DstGEP, LoopBB);
-
-  Value *NewIndex = Builder.CreateSub(LoopIndex, LoopVL);
-  LoopIndex->addIncoming(NewIndex, LoopBB);
-
-  Builder.CreateCondBr(Builder.CreateICmpUGT(NewIndex, Zero),
-                       LoopBB, PostLoopBB);
   M->eraseFromParent();
 }
 
@@ -1228,7 +1122,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
       if (CI->getZExtValue() < (MinVLenInBytes * 8 * MaxUnrollTimes)) {
-        expandMemCpyKnownSize(cast<MemCpyInst>(MI), CI->getZExtValue());
+        expandMemCpyKnownSize(cast<MemCpyInst>(MI));
         return true;
       }
     }
