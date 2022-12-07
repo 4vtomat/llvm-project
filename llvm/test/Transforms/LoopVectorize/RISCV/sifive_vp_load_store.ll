@@ -9,7 +9,7 @@ define void @test() {
 ; SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; SCALABLE:       vector.body:
 ; SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; SCALABLE-NEXT:    [[TMP0:%.*]] = sub i64 2, [[INDEX]]
+; SCALABLE-NEXT:    [[TMP0:%.*]] = sub i64 7, [[INDEX]]
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 0)
 ; SCALABLE-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; SCALABLE-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
@@ -21,20 +21,21 @@ define void @test() {
 ; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0nxv2i32(<vscale x 2 x i32> zeroinitializer, <vscale x 2 x i32>* [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; SCALABLE-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
 ; SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
-; SCALABLE-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; SCALABLE-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 7
+; SCALABLE-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; SCALABLE:       middle.block:
 ; SCALABLE-NEXT:    br i1 true, label [[FOR_COND_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; SCALABLE:       scalar.ph:
-; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 7, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; SCALABLE-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; SCALABLE:       for.body.i:
 ; SCALABLE-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
 ; SCALABLE-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[INDVARS_IV_I]]
-; SCALABLE-NEXT:    [[TMP9:%.*]] = load i32, i32* [[ARRAYIDX_I]], align 4
+; SCALABLE-NEXT:    [[TMP10:%.*]] = load i32, i32* [[ARRAYIDX_I]], align 4
 ; SCALABLE-NEXT:    [[ARRAYIDX2_I:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[INDVARS_IV_I]]
 ; SCALABLE-NEXT:    store i32 0, i32* [[ARRAYIDX2_I]], align 4
 ; SCALABLE-NEXT:    [[INDVARS_IV_NEXT_I]] = add nuw nsw i64 [[INDVARS_IV_I]], 1
-; SCALABLE-NEXT:    [[EXITCOND_NOT_I:%.*]] = icmp eq i64 [[INDVARS_IV_I]], 1
+; SCALABLE-NEXT:    [[EXITCOND_NOT_I:%.*]] = icmp eq i64 [[INDVARS_IV_I]], 6
 ; SCALABLE-NEXT:    br i1 [[EXITCOND_NOT_I]], label [[FOR_COND_PREHEADER]], label [[FOR_BODY_I]], !llvm.loop [[LOOP2:![0-9]+]]
 ; SCALABLE:       for.cond.preheader:
 ; SCALABLE-NEXT:    ret void
@@ -49,7 +50,7 @@ for.body.i:
   %arrayidx2.i = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 %indvars.iv.i
   store i32 0, i32* %arrayidx2.i, align 4
   %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %exitcond.not.i = icmp eq i64 %indvars.iv.i, 1
+  %exitcond.not.i = icmp eq i64 %indvars.iv.i, 6
   br i1 %exitcond.not.i, label %for.cond.preheader, label %for.body.i
 
 for.cond.preheader:
