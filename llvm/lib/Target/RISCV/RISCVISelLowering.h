@@ -762,6 +762,9 @@ private:
                           bool Reciprocal) const override;
   SDValue getRecipEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
                            int &ExtraSteps) const override;
+  SDValue getRecipEstimate(SDValue Operand, SDValue Mask, SDValue EVL,
+                           SelectionDAG &DAG, int Enabled,
+                           int &ExtraSteps) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isEligibleForTailCallOptimization(

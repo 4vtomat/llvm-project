@@ -3824,9 +3824,10 @@ SDValue RISCVTargetLowering::expandUnalignedRVVStore(SDValue Op,
 #if SIFIVE_CUSTOMIZATION
 // Return the opcode and the default number of iterations required for a type.
 // According to "RISC-V V Vector Extension" (v1.0), sections 13.9 and 13.10.
+// TODO: Add Mask support.
 static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
                            SDValue Operand, SelectionDAG &DAG, int &Steps,
-                           bool Reciprocal) {
+                           bool Reciprocal, SDValue _VL = SDValue()) {
   EVT VT = Operand.getValueType();
 
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
@@ -3857,6 +3858,8 @@ static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
 
   SDValue Mask, VL;
   std::tie(Mask, VL) = getDefaultVLOps(SVT, ContainerVT, DL, DAG, Subtarget);
+  if (_VL)
+    VL = _VL;
 
   SDValue Estimate = DAG.getNode(Opcode, DL, ContainerVT, SclOperand, Mask, VL);
 
@@ -3868,7 +3871,7 @@ static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
   // Newton-Raphson code in the caller will only insert the multiply if the
   // number of steps is non-zero.
   if (Steps == 0 && !Reciprocal)
-    Estimate = DAG.getNode(ISD::FMUL, DL, VT, Operand, Estimate);
+    Estimate = DAG.getNode(ISD::VP_FMUL, DL, VT, Operand, Estimate, Mask, VL);
 
   return Estimate;
 }
@@ -3892,6 +3895,16 @@ SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
 
   return getEstimate(Subtarget, RISCVISD::VFREC7_VL, Operand, DAG, Steps,
                      /*Reciprocal*/ true);
+}
+
+SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand, SDValue Mask,
+                                              SDValue EVL, SelectionDAG &DAG,
+                                              int Enabled, int &Steps) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::VFREC7_VL, Operand, DAG, Steps,
+                     /*Reciprocal*/ true, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
