@@ -27,9 +27,9 @@ define void @vld1_f16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -221,9 +221,9 @@ define void @vld1_s16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -418,9 +418,9 @@ define void @vld1_s8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lbu a5, 19(a0)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    slli a4, a5, 24
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
@@ -428,9 +428,9 @@ define void @vld1_s8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lbu a6, 23(a0)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 16
-; CHECK-NEXT:    slli a5, a6, 24
-; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a4, a6, a5
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -517,9 +517,9 @@ define void @vld1_u16_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lhu a5, 22(a0)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -714,9 +714,9 @@ define void @vld1_u8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lbu a5, 19(a0)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    slli a4, a5, 24
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
@@ -724,9 +724,9 @@ define void @vld1_u8_x3(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-NEXT:    lbu a6, 23(a0)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 16
-; CHECK-NEXT:    slli a5, a6, 24
-; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a4, a6, a5
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -1426,9 +1426,9 @@ define void @vst1_f16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -1620,9 +1620,9 @@ define void @vst1_s16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -1817,9 +1817,9 @@ define void @vst1_s8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lbu a5, 19(a1)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    slli a4, a5, 24
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a1)
 ; CHECK-NEXT:    lbu a4, 20(a1)
@@ -1827,9 +1827,9 @@ define void @vst1_s8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lbu a6, 23(a1)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 16
-; CHECK-NEXT:    slli a5, a6, 24
-; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a4, a6, a5
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
@@ -1916,9 +1916,9 @@ define void @vst1_u16_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lhu a5, 22(a1)
 ; CHECK-NEXT:    slli a2, a2, 16
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 32
-; CHECK-NEXT:    slli a4, a5, 48
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 32
+; CHECK-NEXT:    slli a5, a5, 48
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    sd a2, 0(sp)
 ; CHECK-NEXT:    mv a2, sp
@@ -2113,9 +2113,9 @@ define void @vst1_u8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lbu a5, 19(a1)
 ; CHECK-NEXT:    slli a2, a2, 8
 ; CHECK-NEXT:    or a2, a2, a3
-; CHECK-NEXT:    slli a3, a4, 16
-; CHECK-NEXT:    slli a4, a5, 24
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a3, a5, a4
 ; CHECK-NEXT:    or a2, a3, a2
 ; CHECK-NEXT:    lbu a3, 21(a1)
 ; CHECK-NEXT:    lbu a4, 20(a1)
@@ -2123,9 +2123,9 @@ define void @vst1_u8_x3(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    lbu a6, 23(a1)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a4, a5, 16
-; CHECK-NEXT:    slli a5, a6, 24
-; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a4, a6, a5
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a2, a3, a2
