@@ -417,7 +417,7 @@ static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
     cl::desc("Enable vectorization of loops that have a known dependence "
              "distance."));
 
-static cl::opt<bool> AdhocSkipVectorizeInPrelink(
+cl::opt<bool> llvm::AdhocSkipVectorizeInPrelink(
     "sifive-vectorize-assume-optimizable-strided-accesses", cl::init(false),
     cl::Hidden,
     cl::desc("Allow the compiler to skip vectorization for loops of non-unit "
