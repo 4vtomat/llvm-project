@@ -2306,7 +2306,7 @@ multiclass PPseudoUnaryV_V_NoMask<LMULInfo m, string Constraint = ""> {
 
 multiclass PPseudoUnaryV_S_NoMask<LMULInfo m, string Constraint = ""> {
   let VLMul = m.value in {
-    def "_VS_" # m.MX : PPseudoUnaryNoMask<m.vrclass, m.vrclass, Constraint>;
+    def "_VS_" # m.MX : PPseudoUnaryNoMask<m.vrclass, V_M1.vrclass, Constraint>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4879,10 +4879,12 @@ multiclass PPatUnaryV_V_NoMask<string intrinsic, string instruction,
 
 multiclass PPatUnaryV_S_NoMask<string intrinsic, string instruction,
                         list<VTypeInfo> vtilist> {
-  foreach vti = vtilist in
+  foreach vti = vtilist in {
+    defvar vectorM1 = !cast<VTypeInfo>("VI" # vti.SEW # "M1");
     def : PPatUnaryNoMask<intrinsic # "_vs", instruction, "VS",
-                          vti.Vector, vti.Vector, vti.Log2SEW,
-                          vti.LMul, vti.RegClass, vti.RegClass>;
+                          vti.Vector, vectorM1.Vector, vti.Log2SEW,
+                          vti.LMul, vti.RegClass, VR>;
+  }
 }
 
 multiclass PPatUnaryV_V_S_NoMask<string intrinsic, string instruction,

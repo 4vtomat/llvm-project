@@ -335,21 +335,20 @@ let TargetPrefix = "riscv" in {
 #ifdef SIFIVE_CUSTOMIZATION
   // For destination vector type is the same as source vector.
   // Input: (passthru, vector_in, vl, policy)
-  class RISCVUnaryAAUnMaskedP
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                [LLVMMatchType<0>, LLVMMatchType<0>,
-                                 llvm_anyint_ty, LLVMMatchType<1>],
-                                [ImmArg<ArgIndex<3>>, IntrNoMem]>,
-                                RISCVVIntrinsic {
+  class RISCVUnaryAAUnMaskedP<bit IsVS>
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, !if(IsVS, llvm_anyvector_ty, LLVMMatchType<0>), llvm_anyint_ty,
+                     !if(IsVS, LLVMMatchType<2>, LLVMMatchType<1>)],
+                    [ImmArg<ArgIndex<3>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
   }
 
   multiclass RISCVUnaryAAUnMaskedP<bit HasVV = 1, bit HasVS = 1> {
     if HasVV then
-      def "int_riscv_" # NAME # "_vv" : RISCVUnaryAAUnMaskedP;
+      def "int_riscv_" # NAME # "_vv" : RISCVUnaryAAUnMaskedP</*IsVS*/0>;
 
     if HasVS then
-      def "int_riscv_" # NAME # "_vs" : RISCVUnaryAAUnMaskedP;
+      def "int_riscv_" # NAME # "_vs" : RISCVUnaryAAUnMaskedP</*IsVS*/1>;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
