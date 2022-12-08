@@ -2444,13 +2444,19 @@ public:
   /// 0b010         4
   /// 0b011         8
   /// ---- fractional ----
-  /// 0b101         1/2
+  /// 0b101         1/8
   /// 0b110         1/4
-  /// 0b111         1/8
+  /// 0b111         1/2
   static LMULType getWithExponent(const unsigned LMULExp) {
     assert(LMULExp != 4 && LMULExp <= 7 &&
            "LMUL exponent is not a valid or not supported.");
-    return LMULType(1u << (LMULExp & 0x3), (LMULExp & 0x4) != 0);
+    bool IsFractional = (LMULExp & 0x4) != 0;
+    unsigned LMUL;
+    if (IsFractional)
+      LMUL = 1u << (8 - (LMULExp & 0x7));
+    else
+      LMUL = 1u << (LMULExp & 0x3);
+    return LMULType(LMUL, IsFractional);
   }
 
   /// Print methods
