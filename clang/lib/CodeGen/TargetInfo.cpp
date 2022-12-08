@@ -11141,6 +11141,12 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
   assert(ArgGPRsLeft <= NumArgGPRs && "Arg GPR tracking underflow");
   Ty = useFirstFieldIfTransparentUnion(Ty);
 
+#if SIFIVE_CUSTOMIZATION
+  if (auto *VectorTy = dyn_cast<VectorType>(Ty.operator->()))
+    if (VectorTy->getVectorKind() == VectorType::NeonVector)
+      return ABIArgInfo::getDirect();
+#endif // SIFIVE_CUSTOMIZATION
+
   // Structures with either a non-trivial destructor or a non-trivial
   // copy constructor are always passed indirectly.
   if (CGCXXABI::RecordArgABI RAA = getRecordArgABI(Ty, getCXXABI())) {

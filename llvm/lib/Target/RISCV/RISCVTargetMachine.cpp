@@ -33,10 +33,16 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/MC/TargetRegistry.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Passes/PassBuilder.h"
+#endif
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
 #include "llvm/Transforms/Scalar.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
+#endif
 using namespace llvm;
 
 static cl::opt<bool> EnableRedundantCopyElimination(
@@ -393,3 +399,12 @@ bool RISCVTargetMachine::parseMachineFunctionInfo(
   PFS.MF.getInfo<RISCVMachineFunctionInfo>()->initializeBaseYamlFields(YamlMFI);
   return false;
 }
+
+#if SIFIVE_CUSTOMIZATION
+void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
+  PB.registerPipelineStartEPCallback(
+      [](ModulePassManager &MPM, OptimizationLevel Level) {
+        MPM.addPass(createModuleToFunctionPassAdaptor(SiFiveRecodePass()));
+      });
+}
+#endif

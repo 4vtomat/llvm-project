@@ -8035,6 +8035,9 @@ static bool isPermittedNeonBaseType(QualType &Ty,
          BTy->getKind() == BuiltinType::ULongLong ||
          BTy->getKind() == BuiltinType::Float ||
          BTy->getKind() == BuiltinType::Half ||
+#if SIFIVE_CUSTOMIZATION
+         BTy->getKind() == BuiltinType::Float16 ||
+#endif
          BTy->getKind() == BuiltinType::BFloat16;
 }
 
@@ -8065,13 +8068,29 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
                                      Sema &S, VectorType::VectorKind VecKind) {
   // Target must have NEON (or MVE, whose vectors are similar enough
   // not to need a separate attribute)
-  if (!S.Context.getTargetInfo().hasFeature("neon") &&
-      !S.Context.getTargetInfo().hasFeature("mve")) {
+#if SIFIVE_CUSTOMIZATION
+  llvm::Triple::ArchType Arch = S.Context.getTargetInfo().getTriple().getArch();
+  if (Arch == llvm::Triple::riscv32) {
+    S.Diag(Attr.getLoc(), diag::err_attribute_unsupported) << Attr << "'rv64'";
+    Attr.setInvalid();
+    return;
+  } else if (Arch == llvm::Triple::riscv64) {
+    if (!(S.Context.getTargetInfo().hasFeature("v") &&
+          S.Context.getTargetInfo().hasFeature("zfh") &&
+          S.Context.getTargetInfo().hasFeature("experimental-zvfh"))) {
+      S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
+          << Attr << "'v', 'zfh' and 'zvfh'";
+      Attr.setInvalid();
+      return;
+    }
+  } else if (!S.Context.getTargetInfo().hasFeature("neon") &&
+             !S.Context.getTargetInfo().hasFeature("mve")) {
     S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
         << Attr << "'neon' or 'mve'";
     Attr.setInvalid();
     return;
   }
+#endif
   // Check the attribute arguments.
   if (Attr.getNumArgs() != 1) {
     S.Diag(Attr.getLoc(), diag::err_attribute_wrong_number_arguments) << Attr

@@ -423,6 +423,13 @@ public:
     return llvm::any_of(Types, [](const Type &T) { return T.isImmediate(); });
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Return true if the intrinsic is poly type.
+  bool hasPolyType() const {
+    return llvm::any_of(Types, [](const Type &T) { return T.isPoly(); });
+  }
+#endif
+
   /// Return the parameter index of the immediate operand.
   unsigned getImmediateIdx() const {
     for (unsigned Idx = 0; Idx < Types.size(); ++Idx)
@@ -548,6 +555,9 @@ class NeonEmitter {
   DenseMap<Record *, ClassKind> ClassMap;
   std::map<std::string, std::deque<Intrinsic>> IntrinsicMap;
   unsigned UniqueNumber;
+#if SIFIVE_CUSTOMIZATION
+  bool RecodeMode;
+#endif
 
   void createIntrinsic(Record *R, SmallVectorImpl<Intrinsic *> &Out);
   void genBuiltinsDef(raw_ostream &OS, SmallVectorImpl<Intrinsic *> &Defs);
@@ -565,7 +575,10 @@ public:
   /// Called by Intrinsic - returns a globally-unique number.
   unsigned getUniqueNumber() { return UniqueNumber++; }
 
-  NeonEmitter(RecordKeeper &R) : Records(R), UniqueNumber(0) {
+#if SIFIVE_CUSTOMIZATION
+  NeonEmitter(RecordKeeper &R, bool Recode = false)
+      : Records(R), UniqueNumber(0), RecodeMode(Recode) {
+#endif
     Record *SI = R.getClass("SInst");
     Record *II = R.getClass("IInst");
     Record *WI = R.getClass("WInst");
@@ -1998,6 +2011,25 @@ void NeonEmitter::createIntrinsic(Record *R,
   for (auto &I : NewTypeSpecs) {
     Entry.emplace_back(R, Name, Proto, I.first, I.second, CK, Body, *this,
                        ArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
+#if SIFIVE_CUSTOMIZATION
+    // EmitNeonSema does not enable RecodeMode. But headers (run, runFP16) will
+    // enable RecodeMode. As a result, arm_neon.h only includes intrinsics that
+    // can be supported by Recode. But arm_neon.inc still includes all
+    // intrinsics.
+    if (RecodeMode && (Entry.back().hasPolyType() ||
+                       // Recode cannot support the following target features.
+                       (TargetGuard.find("aes") != std::string::npos ||
+                        TargetGuard.find("bf16") != std::string::npos ||
+                        TargetGuard.find("fp16fml") != std::string::npos ||
+                        TargetGuard.find("i8mm") != std::string::npos ||
+                        TargetGuard.find("sha2") != std::string::npos ||
+                        TargetGuard.find("sha3") != std::string::npos ||
+                        TargetGuard.find("sm4") != std::string::npos ||
+                        TargetGuard.find("v8.1a") != std::string::npos ||
+                        TargetGuard.find("v8.3a") != std::string::npos ||
+                        TargetGuard.find("v8.5a") != std::string::npos)))
+      continue;
+#endif
     Out.push_back(&Entry.back());
   }
 
@@ -2226,7 +2258,10 @@ void NeonEmitter::runHeader(raw_ostream &OS) {
   genIntrinsicRangeCheckCode(OS, Defs);
 }
 
-static void emitNeonTypeDefs(const std::string& types, raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
+                             bool RecodeMode = false) {
+#endif
   std::string TypedefTypes(types);
   std::vector<TypeSpec> TDTypeVec = TypeSpec::fromTypeSpecs(TypedefTypes);
 
@@ -2235,6 +2270,13 @@ static void emitNeonTypeDefs(const std::string& types, raw_ostream &OS) {
   for (auto &TS : TDTypeVec) {
     bool IsA64 = false;
     Type T(TS, ".");
+
+#if SIFIVE_CUSTOMIZATION
+    // We don't support any poly type for Recode.
+    if (RecodeMode && T.isPoly())
+      continue;
+#endif
+
     if (T.isDouble())
       IsA64 = true;
 
@@ -2268,6 +2310,13 @@ static void emitNeonTypeDefs(const std::string& types, raw_ostream &OS) {
     for (auto &TS : TDTypeVec) {
       bool IsA64 = false;
       Type T(TS, ".");
+
+#if SIFIVE_CUSTOMIZATION
+      // We don't support any poly type for Recode.
+      if (RecodeMode && T.isPoly())
+        continue;
+#endif
+
       if (T.isDouble())
         IsA64 = true;
 
@@ -2294,9 +2343,8 @@ static void emitNeonTypeDefs(const std::string& types, raw_ostream &OS) {
     OS << "#endif\n";
 }
 
-/// run - Read the records in arm_neon.td and output arm_neon.h.  arm_neon.h
-/// is comprised of type definitions and function declarations.
-void NeonEmitter::run(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+static void printNEONBegin(raw_ostream &OS) {
   OS << "/*===---- arm_neon.h - ARM Neon intrinsics "
         "------------------------------"
         "---===\n"
@@ -2382,6 +2430,87 @@ void NeonEmitter::run(raw_ostream &OS) {
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
+}
+
+static void printRecodeNEONBegin(raw_ostream &OS) {
+  OS << "/*===---- arm_neon.h - SiFive Recode for Neon intrinsics "
+        "----------------"
+        "---===\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "---"
+        "---===\n"
+        " */\n\n";
+
+  OS << "#ifndef __ARM_RECODE_NEON_H\n";
+  OS << "#define __ARM_RECODE_NEON_H\n\n";
+
+  OS << "#if !defined(__sifive_recode_neon)\n";
+  OS << "#error \"Recode support not enabled\"\n";
+  OS << "#else\n\n";
+
+  OS << "#include <stdint.h>\n";
+  OS << "#include <arm_fp16.h>\n\n";
+
+  // Emit NEON-specific scalar typedefs.
+  OS << "#if 32 <= __riscv_flen\n";
+  OS << "typedef float float32_t;\n";
+  OS << "#endif\n\n";
+
+  OS << "#if 64 <= __riscv_flen\n";
+  OS << "typedef double float64_t;\n";
+  OS << "#endif\n\n";
+
+  OS << "#define __aarch64__\n\n";
+
+  emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlhQhfQfdQdPcQPcPsQPsPlQPl",
+                   OS, true);
+
+  OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
+        "__nodebug__))\n\n";
+
+  OS << "#define __ARM_FP 2\n";
+  OS << "#define __ARM_ARCH 8\n";
+  OS << "#define __ARM_FEATURE_DIRECTED_ROUNDING\n";
+  OS << "#define __ARM_FEATURE_DOTPROD\n";
+  OS << "#define __ARM_FEATURE_FMA\n";
+  OS << "#define __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
+  OS << "#define __ARM_FEATURE_NUMERIC_MAXMIN\n\n";
+}
+
+static void printNEONEnd(raw_ostream &OS) {
+  OS << "\n";
+  OS << "#undef __ai\n\n";
+  OS << "#endif /* if !defined(__ARM_NEON) */\n";
+  OS << "#endif /* ifndef __ARM_FP */\n";
+  OS << "#endif /* __ARM_NEON_H */\n";
+}
+
+static void printRecodeNEONEnd(raw_ostream &OS) {
+  OS << "\n";
+  OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
+  OS << "#undef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
+  OS << "#undef __ARM_FEATURE_FMA\n";
+  OS << "#undef __ARM_FEATURE_DOTPROD\n";
+  OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
+  OS << "#undef __ARM_ARCH\n";
+  OS << "#undef __ARM_FP\n";
+  OS << "#undef __ai\n\n";
+  OS << "#undef __aarch64__\n";
+  OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
+  OS << "#endif /* __ARM_RECODE_NEON_H */\n";
+}
+#endif
+
+/// run - Read the records in arm_neon.td and output arm_neon.h.  arm_neon.h
+/// is comprised of type definitions and function declarations.
+void NeonEmitter::run(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeNEONBegin(OS);
+  else
+    printNEONBegin(OS);
+#endif
 
   SmallVector<Intrinsic *, 128> Defs;
   std::vector<Record *> RV = Records.getAllDerivedDefinitions("Inst");
@@ -2433,16 +2562,16 @@ void NeonEmitter::run(raw_ostream &OS) {
   if (!InGuard.empty())
     OS << "#endif\n";
 
-  OS << "\n";
-  OS << "#undef __ai\n\n";
-  OS << "#endif /* if !defined(__ARM_NEON) */\n";
-  OS << "#endif /* ifndef __ARM_FP */\n";
-  OS << "#endif /* __ARM_NEON_H */\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeNEONEnd(OS);
+  else
+    printNEONEnd(OS);
+#endif
 }
 
-/// run - Read the records in arm_fp16.td and output arm_fp16.h.  arm_fp16.h
-/// is comprised of type definitions and function declarations.
-void NeonEmitter::runFP16(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+static void printFP16Begin(raw_ostream &OS) {
   OS << "/*===---- arm_fp16.h - ARM FP16 intrinsics "
         "------------------------------"
         "---===\n"
@@ -2491,6 +2620,44 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
+}
+
+static void printRecodeFP16Begin(raw_ostream &OS) {
+  OS << "/*===---- arm_fp16.h - SiFive Recode for FP16 intrinsics "
+        "----------------"
+        "---===\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "---"
+        "---===\n"
+        " */\n\n";
+
+  OS << "#ifndef __ARM_RECODE_FP16_H\n";
+  OS << "#define __ARM_RECODE_FP16_H\n\n";
+
+  OS << "#include <stdint.h>\n\n";
+
+  OS << "#ifdef __riscv_zfh\n";
+  OS << "typedef __fp16 float16_t;\n";
+  OS << "#endif\n\n";
+
+  OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
+        "__nodebug__))\n\n";
+
+  OS << "#define __aarch64__\n";
+  OS << "#define __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n\n";
+}
+#endif
+
+/// run - Read the records in arm_fp16.td and output arm_fp16.h.  arm_fp16.h
+/// is comprised of type definitions and function declarations.
+void NeonEmitter::runFP16(raw_ostream &OS) {
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeFP16Begin(OS);
+  else
+    printFP16Begin(OS);
+#endif
 
   SmallVector<Intrinsic *, 128> Defs;
   std::vector<Record *> RV = Records.getAllDerivedDefinitions("Inst");
@@ -2543,8 +2710,17 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
     OS << "#endif\n";
 
   OS << "\n";
-  OS << "#undef __ai\n\n";
-  OS << "#endif /* __ARM_FP16_H */\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode) {
+    OS << "#undef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n";
+    OS << "#undef __aarch64__\n";
+    OS << "#undef __ai\n\n";
+    OS << "#endif /* __ARM_RECODE_FP16_H */\n";
+  } else {
+    OS << "#undef __ai\n\n";
+    OS << "#endif /* __ARM_FP16_H */\n";
+  }
+#endif
 }
 
 void NeonEmitter::runBF16(raw_ostream &OS) {
@@ -2629,9 +2805,21 @@ void clang::EmitNeon(RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).run(OS);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void clang::EmitRecodeNeon(RecordKeeper &Records, raw_ostream &OS) {
+  NeonEmitter(Records, true).run(OS);
+}
+#endif
+
 void clang::EmitFP16(RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).runFP16(OS);
 }
+
+#if SIFIVE_CUSTOMIZATION
+void clang::EmitRecodeFP16(RecordKeeper &Records, raw_ostream &OS) {
+  NeonEmitter(Records, true).runFP16(OS);
+}
+#endif
 
 void clang::EmitBF16(RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).runBF16(OS);

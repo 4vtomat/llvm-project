@@ -68,6 +68,7 @@ add_llvm_component_library(LLVMTransformUtils
   SampleProfileInference.cpp
   SampleProfileLoaderBaseUtil.cpp
   SanitizerStats.cpp
+  SiFive_RecodeExpand.cpp # SIFIVE
   SimplifyCFG.cpp
   SimplifyIndVar.cpp
   SimplifyLibCalls.cpp

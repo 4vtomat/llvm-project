@@ -290,16 +290,6 @@ set(openmp_wrapper_files
   openmp_wrappers/new
 )
 
-# SIFIVE
-set(sifive_wrapper_files
-  sifive_wrappers/arm_neon.h
-  sifive_wrappers/arm_neon_64.h
-  sifive_wrappers/arm_neon_128.h
-  sifive_wrappers/arm_neon_256.h
-  sifive_wrappers/arm_neon_512.h
-)
-#end SIFIVE
-
 set(output_dir ${LLVM_LIBRARY_OUTPUT_INTDIR}/clang/${CLANG_VERSION_MAJOR}/include)
 set(out_files)
 set(generated_files)
@@ -333,7 +323,7 @@ endfunction(clang_generate_header)
 
 
 # Copy header files from the source directory to the build directory
-foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files} ${sifive_wrapper_files}) # SIFIVE
+foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files})
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
@@ -374,6 +364,14 @@ if(RISCV IN_LIST LLVM_TARGETS_TO_BUILD)
   list(APPEND riscv_generated_files
     "${CMAKE_CURRENT_BINARY_DIR}/riscv_vector.h"
     )
+  clang_generate_header(-gen-recode-neon arm_neon.td sifive_wrappers/arm_neon.h) # SiFive
+  list(APPEND riscv_generated_files
+    "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h"
+    )
+  clang_generate_header(-gen-recode-fp16 arm_fp16.td sifive_wrappers/arm_fp16.h) # SiFive
+  list(APPEND riscv_generated_files
+    "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h"
+    )
 endif()
 
 
@@ -391,6 +389,15 @@ foreach( f ${generated_files} )
                     "distribtion target will be incorrect!")
   endif()
 endforeach( f )
+
+# SIFIVE
+list(REMOVE_ITEM generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(REMOVE_ITEM riscv_generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(APPEND sifive_wrapper_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_neon.h")
+list(REMOVE_ITEM generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
+list(REMOVE_ITEM riscv_generated_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
+list(APPEND sifive_wrapper_files "${CMAKE_CURRENT_BINARY_DIR}/sifive_wrappers/arm_fp16.h")
+#end SIFIVE
 
 function(add_header_target target_name file_list)
   add_custom_target(${target_name} DEPENDS ${file_list})

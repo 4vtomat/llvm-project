@@ -145,7 +145,20 @@ public:
       unsigned RegWidthFactor = 1, bool IsScalable = false) const;
 
   bool useVLAVectorizer() const;
+
+  InstructionCost getArithmeticInstrCost(
+      unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
+      TTI::OperandValueInfo Op1Info = {TTI::OK_AnyValue, TTI::OP_None},
+      TTI::OperandValueInfo Op2Info = {TTI::OK_AnyValue, TTI::OP_None},
+      ArrayRef<const Value *> Args = ArrayRef<const Value *>(),
+      const Instruction *CxtI = nullptr);
+
+  /// Minimum loop trip count we consider profitable for vectorization.
+  unsigned getMinTripCountTailFoldingThreshold() const {
+    return useVLAVectorizer() ? 3 : 0;
+  }
 #endif // SIFIVE_CUSTOMIZATION
+
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
 
   bool shouldConsiderAddressTypePromotion(const Instruction &I,
@@ -416,6 +429,8 @@ public:
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
   bool forceCheckAddressingMode() const;
+
+  Type *getScalableVectorFromFixed(Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 

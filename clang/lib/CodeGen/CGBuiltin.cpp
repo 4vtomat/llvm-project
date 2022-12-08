@@ -19418,6 +19418,10 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
                                              const CallExpr *E,
                                              ReturnValueSlot ReturnValue) {
 #if SIFIVE_CUSTOMIZATION
+  if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin) {
+    return EmitAArch64BuiltinExpr(BuiltinID, E, llvm::Triple::aarch64);
+  }
+
   if (BuiltinID == RISCVVector::BI__builtin_rvv_is_splat) {
     llvm::Type *ResultType = ConvertType(E->getType());
 

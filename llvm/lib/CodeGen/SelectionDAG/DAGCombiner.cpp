@@ -530,6 +530,9 @@ namespace {
 #if SIFIVE_CUSTOMIZATION
     SDValue visitVPFADDForVPFMACombine(SDNode *N);
     SDValue visitVPXOR(SDNode *N);
+    SDValue visitVPFDIV(SDNode *N);
+    SDValue BuildVPDivEstimate(SDValue N, SDValue Op, SDValue Mask, SDValue EVL,
+                               SDNodeFlags Flags);
 #endif // SIFIVE_CUSTOMIZATION
 
     SDValue XformToShuffleWithZero(SDNode *N);
@@ -24080,6 +24083,92 @@ static SDValue foldVPBinOpIntoVPSelect(SDNode *N, SelectionDAG &DAG) {
   }
   return SDValue();
 }
+
+/// VP version of BuildDivEstimate.
+SDValue DAGCombiner::BuildVPDivEstimate(SDValue N, SDValue Op, SDValue Mask,
+                                        SDValue EVL, SDNodeFlags Flags) {
+  if (LegalDAG)
+    return SDValue();
+
+  // TODO: Handle extended types?
+  EVT VT = Op.getValueType();
+  if (VT.getScalarType() != MVT::f16 && VT.getScalarType() != MVT::f32 &&
+      VT.getScalarType() != MVT::f64)
+    return SDValue();
+
+  // If estimates are explicitly disabled for this function, we're done.
+  MachineFunction &MF = DAG.getMachineFunction();
+  int Enabled = TLI.getRecipEstimateDivEnabled(VT, MF);
+  if (Enabled == TLI.ReciprocalEstimate::Disabled)
+    return SDValue();
+
+  // Estimates may be explicitly enabled for this type with a custom number of
+  // refinement steps.
+  int Iterations = TLI.getDivRefinementSteps(VT, MF);
+  if (SDValue Est =
+          TLI.getRecipEstimate(Op, Mask, EVL, DAG, Enabled, Iterations)) {
+    AddToWorklist(Est.getNode());
+
+    SDLoc DL(Op);
+    if (Iterations) {
+      SDValue FPOne = DAG.getConstantFP(1.0, DL, VT);
+
+      // Newton iterations: Est = Est + Est (N - Arg * Est)
+      // If this is the last iteration, also multiply by the numerator.
+      for (int i = 0; i < Iterations; ++i) {
+        SDValue MulEst = Est;
+
+        if (i == Iterations - 1) {
+          MulEst =
+              DAG.getNode(ISD::VP_FMUL, DL, VT, {N, Est, Mask, EVL}, Flags);
+          AddToWorklist(MulEst.getNode());
+        }
+
+        SDValue NewEst =
+            DAG.getNode(ISD::VP_FMUL, DL, VT, {Op, MulEst, Mask, EVL}, Flags);
+        AddToWorklist(NewEst.getNode());
+
+        NewEst = DAG.getNode(
+            ISD::VP_FSUB, DL, VT,
+            {(i == Iterations - 1 ? N : FPOne), NewEst, Mask, EVL}, Flags);
+        AddToWorklist(NewEst.getNode());
+
+        NewEst =
+            DAG.getNode(ISD::VP_FMUL, DL, VT, {Est, NewEst, Mask, EVL}, Flags);
+        AddToWorklist(NewEst.getNode());
+
+        Est = DAG.getNode(ISD::VP_FADD, DL, VT, {MulEst, NewEst, Mask, EVL},
+                          Flags);
+        AddToWorklist(Est.getNode());
+      }
+    } else {
+      // If no iterations are available, multiply with N.
+      Est = DAG.getNode(ISD::VP_FMUL, DL, VT, {Est, N, Mask, EVL}, Flags);
+      AddToWorklist(Est.getNode());
+    }
+
+    return Est;
+  }
+
+  return SDValue();
+}
+
+SDValue DAGCombiner::visitVPFDIV(SDNode *N) {
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  SDValue Mask = N->getOperand(2);
+  SDValue EVL = N->getOperand(3);
+  const TargetOptions &Options = DAG.getTarget().Options;
+  SDNodeFlags Flags = N->getFlags();
+
+  if (Options.UnsafeFPMath || Flags.hasAllowReciprocal()) {
+    // Fold into a reciprocal estimate and multiply instead of a real divide.
+    if (Options.NoInfsFPMath || Flags.hasNoInfs())
+      if (SDValue RV = BuildVPDivEstimate(N0, N1, Mask, EVL, Flags))
+        return RV;
+  }
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
@@ -24114,6 +24203,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
       return visitVPFADDForVPFMACombine(N);
     case ISD::VP_XOR:
       return visitVPXOR(N);
+    case ISD::VP_FDIV:
+      return visitVPFDIV(N);
     }
 #endif // SIFIVE_CUSTOMIZATION
     return SDValue();

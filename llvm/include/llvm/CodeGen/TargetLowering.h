@@ -4781,6 +4781,16 @@ public:
     return SDValue();
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Return a reciprocal estimate value with vector length and mask.
+  // NOTE: Use another naming?
+  virtual SDValue getRecipEstimate(SDValue Operand, SDValue EVL, SDValue Mask,
+                                   SelectionDAG &DAG, int Enabled,
+                                   int &RefinementSteps) const {
+    return SDValue();
+  }
+#endif
+
   /// Return a target-dependent comparison result if the input operand is
   /// suitable for use with a square root estimate calculation. For example, the
   /// comparison may check if the operand is NAN, INF, zero, normal, etc. The

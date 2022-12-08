@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "RISCVISelLowering.h"
+#include "MCTargetDesc/RISCVBaseInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
@@ -31,6 +32,9 @@
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/IR/DiagnosticPrinter.h"
 #include "llvm/IR/IRBuilder.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsAArch64.h"
+#endif
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Support/CommandLine.h"
@@ -1053,6 +1057,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction({ISD::LOAD, ISD::STORE, ISD::MLOAD, ISD::MSTORE,
                             ISD::MGATHER, ISD::MSCATTER},
                            VT, Custom);
+
+#if SIFIVE_CUSTOMIZATION
+        setOperationAction(ISD::SETCC, VT, Custom);
+#endif
 
         setOperationAction({ISD::VP_LOAD, ISD::VP_STORE,
                             ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
@@ -3869,9 +3877,10 @@ SDValue RISCVTargetLowering::expandUnalignedRVVStore(SDValue Op,
 #if SIFIVE_CUSTOMIZATION
 // Return the opcode and the default number of iterations required for a type.
 // According to "RISC-V V Vector Extension" (v1.0), sections 13.9 and 13.10.
+// TODO: Add Mask support.
 static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
                            SDValue Operand, SelectionDAG &DAG, int &Steps,
-                           bool Reciprocal) {
+                           bool Reciprocal, SDValue _VL = SDValue()) {
   EVT VT = Operand.getValueType();
 
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
@@ -3902,6 +3911,8 @@ static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
 
   SDValue Mask, VL;
   std::tie(Mask, VL) = getDefaultVLOps(SVT, ContainerVT, DL, DAG, Subtarget);
+  if (_VL)
+    VL = _VL;
 
   SDValue Estimate = DAG.getNode(Opcode, DL, ContainerVT, SclOperand, Mask, VL);
 
@@ -3913,7 +3924,7 @@ static SDValue getEstimate(const RISCVSubtarget &Subtarget, unsigned Opcode,
   // Newton-Raphson code in the caller will only insert the multiply if the
   // number of steps is non-zero.
   if (Steps == 0 && !Reciprocal)
-    Estimate = DAG.getNode(ISD::FMUL, DL, VT, Operand, Estimate);
+    Estimate = DAG.getNode(ISD::VP_FMUL, DL, VT, Operand, Estimate, Mask, VL);
 
   return Estimate;
 }
@@ -3937,6 +3948,16 @@ SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
 
   return getEstimate(Subtarget, RISCVISD::VFREC7_VL, Operand, DAG, Steps,
                      /*Reciprocal*/ true);
+}
+
+SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand, SDValue Mask,
+                                              SDValue EVL, SelectionDAG &DAG,
+                                              int Enabled, int &Steps) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::VFREC7_VL, Operand, DAG, Steps,
+                     /*Reciprocal*/ true, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -4479,9 +4500,12 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerABS(Op, DAG);
 #if SIFIVE_CUSTOMIZATION
   case ISD::SSHLSAT:
-    return lowerSHLSAT(Op, DAG, /*IsSigned*/ true);
-  case ISD::USHLSAT:
-    return lowerSHLSAT(Op, DAG, /*IsSigned*/ false);
+  case ISD::USHLSAT: {
+    SDLoc DL(Op);
+    return lowerSHLSAT(DL, Op.getSimpleValueType(), Op.getOperand(0),
+                       Op.getOperand(1), DAG, Op.getOpcode() == ISD::SSHLSAT,
+                       /*ShiftIncSize*/ false);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::CTLZ_ZERO_UNDEF:
   case ISD::CTTZ_ZERO_UNDEF:
@@ -6023,6 +6047,140 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   return DAG.getNode(Op->getOpcode(), DL, Op->getVTList(), Operands);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue getFixedVFclass(SDValue Op, SelectionDAG &DAG,
+                               const RISCVSubtarget &Subtarget) {
+  MVT VT = getContainerForFixedLengthVector(DAG.getTargetLoweringInfo(),
+                                            Op.getSimpleValueType(), Subtarget);
+  SDValue ScalableOp = convertToScalableVector(VT, Op, DAG, Subtarget);
+  SDLoc DL(Op);
+  SDValue Mask, VL;
+  std::tie(Mask, VL) =
+      getDefaultVLOps(Op.getSimpleValueType(), VT, DL, DAG, Subtarget);
+  return convertFromScalableVector(
+      Op.getValueType().changeVectorElementTypeToInteger(),
+      DAG.getNode(RISCVISD::VFCLASS_VL, DL,
+                  ScalableOp.getValueType().changeVectorElementTypeToInteger(),
+                  ScalableOp, Mask, VL),
+      DAG, Subtarget);
+}
+
+SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
+                                                unsigned IntNo, SDLoc DL,
+                                                SDValue Op0, SDValue Op1,
+                                                bool IsSigned) const {
+  auto toVectorIfScalar = [&](SDValue V) {
+    if (V.getSimpleValueType().isVector())
+      return V;
+    return DAG.getSplatVector(Op0.getSimpleValueType(), DL, V);
+  };
+  MVT XLenVT = Subtarget.getXLenVT();
+  MVT VecVT = Op0.getSimpleValueType();
+  MVT VT = Op1.getSimpleValueType();
+  SDValue Zero = DAG.getConstant(0, DL, VecVT);
+  unsigned Size = VecVT.getScalarSizeInBits();
+  MVT SetccVecVT = MVT::getVectorVT(MVT::i1, VecVT.getVectorElementCount());
+  MVT SetccVT = VT.isVector() ? SetccVecVT : XLenVT;
+  SDValue RShiftAmount;
+  if (Size == 8) {
+    RShiftAmount =
+        DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(0, DL, VT), Op1);
+  } else {
+    // Only lower 8 bit is effective for Op1.
+    Op1 = DAG.getNode(ISD::AND, DL, VT, Op1, DAG.getConstant(255, DL, VT));
+    // If the shift is greater than 127, it is a right shift. We need to make
+    // right shift to positive.
+    RShiftAmount =
+        DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(256, DL, VT), Op1);
+  }
+  // If Op1 is in [0, 127], we do Op0 << Op1.
+  // If Op1 is in [128, 255], we do Op0 >> Op1.
+  SDValue IsRight =
+      DAG.getSetCC(DL, SetccVT, Op1, DAG.getConstant(127, DL, VT), ISD::SETUGT);
+  // Because RISCV only takes log2(Size) bit to do shift. If a shift amount is
+  // greater than or equal to log2(Size), we need to handle it by ourselves.
+  SDValue MaxShift = DAG.getConstant(Size - 1, DL, VT);
+  SDValue LShift;
+  switch (IntNo) {
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_uqshl: {
+    LShift =
+        lowerSHLSAT(DL, VecVT, Op0,
+                    toVectorIfScalar(DAG.getNode(
+                        ISD::UMIN, DL, VT, Op1, DAG.getConstant(Size, DL, VT))),
+                    DAG, IsSigned,
+                    /*ShiftIncSize*/ true);
+    break;
+  }
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_urshl:
+    // This is a normal left shift.
+    LShift = DAG.getSelectCC(
+        DL, Op1, MaxShift, DAG.getConstant(0, DL, VecVT),
+        DAG.getNode(ISD::SHL, DL, VecVT, Op0, toVectorIfScalar(Op1)),
+        ISD::SETUGT);
+    break;
+  }
+  SDValue RShift;
+  switch (IntNo) {
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_urshl: {
+    // This is a right shift with rounding mode.
+    MVT ContainerVecVT = getContainerForFixedLengthVector(VecVT);
+    SDValue Passthru = DAG.getUNDEF(ContainerVecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) =
+        getDefaultVLOps(VecVT, ContainerVecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    SDValue SShift = convertFromScalableVector(
+        VecVT,
+        DAG.getNode(
+            IsSigned ? RISCVISD::VSSRA_VL : RISCVISD::VSSRL_VL, DL,
+            ContainerVecVT,
+            {convertToScalableVector(ContainerVecVT, Op0, DAG, Subtarget),
+             convertToScalableVector(ContainerVecVT,
+                                     toVectorIfScalar(RShiftAmount), DAG,
+                                     Subtarget),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+    if (!IsSigned) {
+      // If the shift amount is equal to Size, the result depends on MSB. We can
+      // use Op0 >> MaxShift to calculate result.
+      SShift = DAG.getSelectCC(
+          DL, RShiftAmount, DAG.getConstant(Size, DL, VT),
+          DAG.getNode(ISD::SRL, DL, VecVT, Op0, toVectorIfScalar(MaxShift)),
+          SShift, ISD::SETEQ);
+    }
+    // For a signed integer type, a negative value will be 0 if a shift amount
+    // is greater than (Size - 1).
+    RShift = DAG.getSelectCC(
+        DL, RShiftAmount, DAG.getConstant(IsSigned ? Size - 1 : Size, DL, VT),
+        Zero, SShift, ISD::SETUGT);
+    break;
+  }
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_uqshl:
+    // For a normal right shift, the result is different because of signedness.
+    if (IsSigned)
+      RShift = DAG.getNode(ISD::SRA, DL, VecVT, Op0,
+                           toVectorIfScalar(DAG.getNode(
+                               ISD::UMIN, DL, VT, RShiftAmount, MaxShift)));
+    else
+      RShift = DAG.getSelectCC(
+          DL, RShiftAmount, MaxShift, Zero,
+          DAG.getNode(ISD::SRL, DL, VecVT, Op0, toVectorIfScalar(RShiftAmount)),
+          ISD::SETUGT);
+    break;
+  }
+  return DAG.getSelect(DL, VecVT, IsRight, RShift, LShift);
+}
+#endif
+
 SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                                      SelectionDAG &DAG) const {
   unsigned IntNo = Op.getConstantOperandVal(0);
@@ -6195,6 +6353,293 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     CASE_RVV(vnclip_rm, RISCVISD::VNCLIP_VL)
 #undef CASE_RVV
 #endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::aarch64_neon_fmax:
+  case Intrinsic::aarch64_neon_fmin: {
+    // aarch64_neon_fmax is FMAXIMUM
+    //                |         right
+    //                |----------------------
+    //                |  qnan |  snan | other
+    // ---------------+-------+-------+------
+    //        | qnan  |  NaN  |  NaN  |  NaN
+    //   left | snan  |  NaN  |  NaN  |  NaN
+    //        | other |  NaN  |  NaN  | op(left, right)
+    // If either operand is sNaN, set invalid flag.
+    SDValue Op0 = Op.getOperand(1);
+    SDValue Op1 = Op.getOperand(2);
+    EVT VT = Op.getValueType();
+    SDValue TrueVal = DAG.getConstantFP(
+        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG,
+                                         IntNo == Intrinsic::aarch64_neon_fmax
+                                             ? RISCVISD::FMAXNUM_VL
+                                             : RISCVISD::FMINNUM_VL,
+                                         true);
+    EVT BoolVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
+    SDValue IsNaN0 = DAG.getSetCC(DL, BoolVT, Op0, Op0, ISD::SETUNE);
+    SDValue IsNaN1 = DAG.getSetCC(DL, BoolVT, Op1, Op1, ISD::SETUNE);
+    SDValue IsNaN = DAG.getNode(ISD::OR, DL, BoolVT, IsNaN0, IsNaN1);
+    return DAG.getSelect(DL, VT, IsNaN, TrueVal, FalseVal);
+  }
+  case Intrinsic::aarch64_neon_fmaxnm:
+  case Intrinsic::aarch64_neon_fminnm: {
+    // aarch64_neon_fmaxnm is similar to FMAXNUM, but
+    // aarch64_neon_fmaxnm requires (-0 < +0)
+    //                |         right
+    //                |----------------------
+    //                |  qnan |  snan | other
+    // ---------------+-------+-------+------
+    //        | qnan  |  NaN  |  NaN  | other
+    //   left | snan  |  NaN  |  NaN  |  NaN
+    //        | other | other |  NaN  | op(left, right)
+    // If either operand is sNaN, set invalid flag.
+    SDValue Op0 = Op.getOperand(1);
+    SDValue Op1 = Op.getOperand(2);
+    EVT VT = Op.getValueType();
+    SDValue VFclassOp0 = getFixedVFclass(Op0, DAG, Subtarget);
+    SDValue VFclassOp1 = getFixedVFclass(Op1, DAG, Subtarget);
+    SDValue VFclassOr = DAG.getNode(ISD::OR, DL, VFclassOp0.getValueType(),
+                                    VFclassOp0, VFclassOp1);
+    EVT VFclassOrVT = VFclassOr.getValueType();
+    // 256 is signaling NaN.
+    SDValue VFclassMask = DAG.getNode(ISD::AND, DL, VFclassOrVT, VFclassOr,
+                                      DAG.getConstant(256, DL, VFclassOrVT));
+    SDValue TrueVal = DAG.getConstantFP(
+        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG,
+                                         IntNo == Intrinsic::aarch64_neon_fmaxnm
+                                             ? RISCVISD::FMAXNUM_VL
+                                             : RISCVISD::FMINNUM_VL,
+                                         true);
+    return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
+                           TrueVal, FalseVal, ISD::SETNE);
+  }
+  case Intrinsic::aarch64_neon_rshrn: {
+    MVT Op0VT = Op.getOperand(1).getSimpleValueType();
+    MVT Op0VecVT = getContainerForFixedLengthVector(Op0VT);
+    SDValue Op0 =
+        convertToScalableVector(Op0VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(Op0VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(Op0VT, Op0VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    SDValue Ssrl = convertFromScalableVector(
+        Op0VT,
+        DAG.getNode(
+            RISCVISD::VSSRL_VL, DL, Op0VecVT,
+            {Op0,
+             DAG.getNode(
+                 RISCVISD::VMV_V_X_VL, DL, Op0VecVT, DAG.getUNDEF(Op0VecVT),
+                 DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT), VL),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+    return DAG.getAnyExtOrTrunc(Ssrl, DL, Op.getSimpleValueType());
+  }
+  case Intrinsic::aarch64_neon_shadd:
+  case Intrinsic::aarch64_neon_shsub:
+  case Intrinsic::aarch64_neon_srhadd:
+  case Intrinsic::aarch64_neon_uhadd:
+  case Intrinsic::aarch64_neon_uhsub:
+  case Intrinsic::aarch64_neon_urhadd: {
+    unsigned Opc;
+    RISCVVXRndMode::RoundingMode RoundingMode;
+    switch (IntNo) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::aarch64_neon_shadd:
+      Opc = RISCVISD::VAADD_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_shsub:
+      Opc = RISCVISD::VASUB_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_srhadd:
+      Opc = RISCVISD::VAADD_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_uhadd:
+      Opc = RISCVISD::VAADDU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_uhsub:
+      Opc = RISCVISD::VASUBU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_urhadd:
+      Opc = RISCVISD::VAADDU_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    }
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Op0 =
+        convertToScalableVector(VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Op1 =
+        convertToScalableVector(VecVT, Op.getOperand(2), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
+  case Intrinsic::aarch64_neon_sqabs: {
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src =
+        convertToScalableVector(VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    EVT SetccVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(),
+                                     Src.getValueType());
+    SDValue VsmulMask = DAG.getNode(
+        RISCVISD::SETCC_VL, DL, SetccVT,
+        {Src, DAG.getConstant(0, DL, Src.getValueType()),
+         DAG.getCondCode(ISD::SETLT), DAG.getUNDEF(SetccVT), Mask, VL});
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(
+            RISCVISD::VSMUL_VL, DL, VecVT,
+            {Src,
+             DAG.getNode(
+                 RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                 DAG.getSExtOrTrunc(
+                     DAG.getConstant(static_cast<uint64_t>(1)
+                                         << (VT.getScalarSizeInBits() - 1),
+                                     DL, VecVT.getScalarType()),
+                     DL, XLenVT),
+                 VL),
+             Src, VsmulMask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
+  case Intrinsic::aarch64_neon_sqneg: {
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src =
+        convertToScalableVector(VecVT, Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(
+            RISCVISD::VSMUL_VL, DL, VecVT,
+            {Src,
+             DAG.getNode(
+                 RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                 DAG.getSExtOrTrunc(
+                     DAG.getConstant(static_cast<uint64_t>(1)
+                                         << (VT.getScalarSizeInBits() - 1),
+                                     DL, VecVT.getScalarType()),
+                     DL, XLenVT),
+                 VL),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn: {
+    unsigned Opc;
+    RISCVVXRndMode::RoundingMode RoundingMode;
+    switch (IntNo) {
+    default:
+      llvm_unreachable("Unexpected intrinsic");
+    case Intrinsic::aarch64_neon_sqrshrn:
+      Opc = RISCVISD::VNCLIP_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_sqshrn:
+      Opc = RISCVISD::VNCLIP_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    case Intrinsic::aarch64_neon_uqrshrn:
+      Opc = RISCVISD::VNCLIPU_VL;
+      RoundingMode = RISCVVXRndMode::RNU;
+      break;
+    case Intrinsic::aarch64_neon_uqshrn:
+      Opc = RISCVISD::VNCLIPU_VL;
+      RoundingMode = RISCVVXRndMode::RDN;
+      break;
+    }
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src = convertToScalableVector(
+        getContainerForFixedLengthVector(Op.getOperand(1).getSimpleValueType()),
+        Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(
+            Opc, DL, VecVT,
+            {Src,
+             DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                         DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT),
+                         VL),
+             Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_uqshl:
+  case Intrinsic::aarch64_neon_urshl: {
+    bool IsSigned;
+    switch (IntNo) {
+    case Intrinsic::aarch64_neon_sqrshl:
+    case Intrinsic::aarch64_neon_sqshl:
+    case Intrinsic::aarch64_neon_srshl:
+      IsSigned = true;
+      break;
+    case Intrinsic::aarch64_neon_uqrshl:
+    case Intrinsic::aarch64_neon_uqshl:
+    case Intrinsic::aarch64_neon_urshl:
+      IsSigned = false;
+      break;
+    }
+    SDValue Op1 = Op.getOperand(2);
+    if (SDValue SplatValue = DAG.getSplatValue(Op.getOperand(2), true))
+      Op1 = SplatValue;
+    return lowerAArch64_qrshl(DAG, IntNo, DL, Op.getOperand(1), Op1, IsSigned);
+  }
+  case Intrinsic::aarch64_neon_sqxtn:
+  case Intrinsic::aarch64_neon_uqxtn: {
+    MVT VT = Op.getSimpleValueType();
+    MVT VecVT = getContainerForFixedLengthVector(VT);
+    SDValue Src = convertToScalableVector(
+        getContainerForFixedLengthVector(Op.getOperand(1).getSimpleValueType()),
+        Op.getOperand(1), DAG, Subtarget);
+    SDValue Passthru = DAG.getUNDEF(VecVT);
+    SDValue Mask, VL;
+    std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
+    SDValue Zero =
+        DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
+                    DAG.getConstant(0, DL, XLenVT), VL);
+    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
+    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+    return convertFromScalableVector(
+        VT,
+        DAG.getNode(IntNo == Intrinsic::aarch64_neon_sqxtn
+                        ? RISCVISD::VNCLIP_VL
+                        : RISCVISD::VNCLIPU_VL,
+                    DL, VecVT, {Src, Zero, Passthru, Mask, RM, VL, Policy}),
+        DAG, Subtarget);
+  }
+#endif
   }
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
@@ -7368,45 +7813,58 @@ SDValue RISCVTargetLowering::lowerABS(SDValue Op, SelectionDAG &DAG) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
-                                         bool IsSigned) const {
-  SDLoc DL(Op);
-  MVT VT = Op.getSimpleValueType();
+// If ShiftIncSize is false, RHS is in [0, VT.getScalarSizeInBits() - 1].
+// Otherwise, RHS is in [0, VT.getScalarSizeInBits()].
+SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
+                                         SDValue RHS, SelectionDAG &DAG,
+                                         bool IsSigned,
+                                         bool ShiftIncSize) const {
   assert(VT.isFixedLengthVector() && "Unexpected type");
   unsigned EltBitSize = VT.getScalarSizeInBits();
-  SDValue LHS = Op.getOperand(0);
-  SDValue RHS = Op.getOperand(1);
   MVT XLenVT = Subtarget.getXLenVT();
   MVT ContainerVT = getContainerForFixedLengthVector(VT);
   SDValue SplatRHS = DAG.getSplatValue(RHS, /*LegalTypes*/ true);
   // Convert RHS from (LHS << RHS) to (LHS * (1 << RHS)).
   SDValue MulRHS;
+  SDValue Zero = DAG.getConstant(0, DL, VT);
   if (SplatRHS) {
-    MulRHS = DAG.getSplatVector(ContainerVT, DL,
-                                DAG.getNode(ISD::SHL, DL, XLenVT,
-                                            DAG.getConstant(1, DL, XLenVT),
-                                            SplatRHS));
+    if (isNullConstant(SplatRHS))
+      return LHS;
+    MulRHS = DAG.getSplatBuildVector(VT, DL,
+                                     DAG.getNode(ISD::SHL, DL, XLenVT,
+                                                 DAG.getConstant(1, DL, XLenVT),
+                                                 SplatRHS));
   } else {
-    MulRHS = convertToScalableVector(
-        ContainerVT,
-        DAG.getNode(
-            ISD::SHL, DL, VT,
-            DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)),
-            RHS),
-        DAG, Subtarget);
+    if (ShiftIncSize) {
+      // We need to do SHL twice because RHS may be EltBitSize.
+      MulRHS = DAG.getSelectCC(
+          DL, RHS, Zero,
+          DAG.getNode(
+              ISD::SHL, DL, VT,
+              DAG.getSplatBuildVector(VT, DL, DAG.getConstant(2, DL, XLenVT)),
+              DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
+          Zero, ISD::SETNE);
+    } else {
+      MulRHS = DAG.getNode(
+          ISD::SHL, DL, VT,
+          DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
+    }
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
+  // If Shift is equal to RHS size, (1 << RHS) would have widening type.
+  bool CanHoldMulRHS = !ShiftIncSize || EltBitSize < Subtarget.getXLen();
   // SEW 64 vsmul is only included in V.
   bool CanUseSmul = (EltBitSize != 64) || Subtarget.hasStdExtV();
   // Only signed type can use vsmul.
   CanUseSmul = CanUseSmul && IsSigned;
-  if (CanUseSmul) {
+  if (CanHoldMulRHS && CanUseSmul) {
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Smul =
-        DAG.getNode(RISCVISD::VSMUL_VL, DL, ContainerVT,
-                    {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-                     MulRHS, DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+    SDValue Smul = DAG.getNode(
+        RISCVISD::VSMUL_VL, DL, ContainerVT,
+        {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+         convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
+         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
     return convertFromScalableVector(VT, Smul, DAG, Subtarget);
   }
   MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
@@ -7419,7 +7877,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
       EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
   // For unsigned type, widen algo causes higher register pressure.
   bool UseWidenAlgo = SplatRHS ? true : IsSigned;
-  if (CanUseWidenAlgo && UseWidenAlgo) {
+  if (CanHoldMulRHS && CanUseWidenAlgo && UseWidenAlgo) {
     unsigned WmulOpc;
     unsigned NclipOpc;
     if (IsSigned) {
@@ -7430,10 +7888,11 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
       NclipOpc = RISCVISD::VNCLIPU_VL;
     }
     MVT WidenContainerVT = getContainerForFixedLengthVector(WidenVT);
-    SDValue Wmul =
-        DAG.getNode(WmulOpc, DL, WidenContainerVT,
-                    convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-                    MulRHS, DAG.getUNDEF(WidenContainerVT), Mask, VL);
+    SDValue Wmul = DAG.getNode(
+        WmulOpc, DL, WidenContainerVT,
+        convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+        convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
+        DAG.getUNDEF(WidenContainerVT), Mask, VL);
     // Every rounding modes produces same value if the shift amount is 0.
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
     SDValue Nclip = DAG.getNode(
@@ -7444,11 +7903,13 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
     return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
   }
   MVT SetccVT = MVT::getVectorVT(MVT::i1, VT.getVectorElementCount());
-  SDValue LShift = DAG.getNode(ISD::SHL, DL, VT, LHS, RHS);
+  SDValue MaxShift = DAG.getConstant(EltBitSize - 1, DL, VT);
+  SDValue ValidRHS =
+      ShiftIncSize ? DAG.getNode(ISD::UMIN, DL, VT, RHS, MaxShift) : RHS;
+  SDValue LShift = DAG.getNode(ISD::SHL, DL, VT, LHS, ValidRHS);
   SDValue SatValue;
   if (IsSigned) {
-    SDValue IsNegative =
-        DAG.getSetCC(DL, SetccVT, LHS, DAG.getConstant(0, DL, VT), ISD::SETLT);
+    SDValue IsNegative = DAG.getSetCC(DL, SetccVT, LHS, Zero, ISD::SETLT);
     // The maximum value is different if LHS is positive or negative.
     SatValue = DAG.getSelect(
         DL, VT, IsNegative,
@@ -7457,11 +7918,17 @@ SDValue RISCVTargetLowering::lowerSHLSAT(SDValue Op, SelectionDAG &DAG,
   } else {
     SatValue = DAG.getConstant(APInt::getMaxValue(EltBitSize), DL, VT);
   }
-  // If LHS != ((LHS << RHS) >> RHS), it is saturated.
+  // If LHS != ((LHS << ValidRHS) >> ValidRHS), it is saturated.
   SDValue IsSat = DAG.getSetCC(
       DL, SetccVT, LHS,
-      DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL, VT, LShift, RHS),
+      DAG.getNode(IsSigned ? ISD::SRA : ISD::SRL, DL, VT, LShift, ValidRHS),
       ISD::SETNE);
+  if (ShiftIncSize) {
+    SDValue IsNotZero = DAG.getSetCC(DL, SetccVT, LHS, Zero, ISD::SETNE);
+    SDValue MustSat = DAG.getSetCC(DL, SetccVT, RHS, MaxShift, ISD::SETUGT);
+    MustSat = DAG.getNode(ISD::AND, DL, SetccVT, IsNotZero, MustSat);
+    IsSat = DAG.getNode(ISD::OR, DL, SetccVT, IsSat, MustSat);
+  }
   return DAG.getSelect(DL, VT, IsSat, SatValue, LShift);
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -7579,7 +8046,13 @@ SDValue RISCVTargetLowering::lowerToScalableOp(SDValue Op, SelectionDAG &DAG,
 
   // Create list of operands by converting existing ones to scalable types.
   SmallVector<SDValue, 6> Ops;
-  for (const SDValue &V : Op->op_values()) {
+#if SIFIVE_CUSTOMIZATION
+  iterator_range<SDNode::value_op_iterator> op_values = make_range(
+      SDNode::value_op_iterator(
+          Op->op_begin() + (Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ? 1 : 0)),
+      SDNode::value_op_iterator(Op->op_end()));
+  for (const SDValue &V : op_values) {
+#endif
     assert(!isa<VTSDNode>(V) && "Unexpected VTSDNode node!");
 
     // Pass through non-vector operands.
@@ -10931,6 +11404,22 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(RISCVISD::VP_MERGE_VL, DL, VT, TrueMask, Res, FalseVal,
                      VL);
 }
+
+static SDValue performVSELECT_VLCombine(SDNode *N, SelectionDAG &DAG) {
+  if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
+    return V;
+
+  // vselect_vl (vmclr_vl, X, Y) -> Y
+  SDValue Cond = N->getOperand(0);
+  if (Cond.getOpcode() != RISCVISD::VMCLR_VL)
+    return SDValue();
+
+  SDValue VL = N->getOperand(3);
+  if (VL != Cond.getOperand(0))
+    return SDValue();
+
+  return N->getOperand(2);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Convert from one FMA opcode to another based on whether we are negating the
@@ -11996,7 +12485,18 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case ISD::VP_STORE:
     return performVP_STORECombine(N, DAG, Subtarget);
   case RISCVISD::VSELECT_VL:
-    return combineToVFMAX_VFMIN(N, DAG);
+    return performVSELECT_VLCombine(N, DAG);
+  case RISCVISD::VMAND_VL: {
+    // vmand_vl (vmset_vl, Y) -> Y
+    // vmand_vl (X, vmset_vl) -> X
+    SDValue VL = N->getOperand(2);
+    for (unsigned i = 0; i != 2; ++i) {
+      SDValue Op = N->getOperand(i);
+      if (Op.getOpcode() == RISCVISD::VMSET_VL && Op.getOperand(0) == VL)
+        return N->getOperand(1 - i);
+    }
+    return SDValue();
+  }
   case RISCVISD::VP_MERGE_VL: {
     if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
       return V;

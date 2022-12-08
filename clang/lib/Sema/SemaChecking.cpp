@@ -4432,6 +4432,10 @@ static bool CheckRISCVVecTy(QualType T) {
 bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID,
                                          CallExpr *TheCall) {
+#if SIFIVE_CUSTOMIZATION
+  if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin)
+    return CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
+#endif
   // CodeGenFunction can also detect this, but this gives a better error
   // message.
   bool FeatureMissing = false;

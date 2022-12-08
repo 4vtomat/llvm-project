@@ -1530,6 +1530,12 @@ public:
   /// \returns True if the target supports scalable vectors.
   bool supportsScalableVectors() const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// \returns The scalable vector type to use after converting a fixed vector
+  /// type.
+  Type *getScalableVectorFromFixed(Type *Ty) const;
+#endif
+
   /// \return true when scalable vectorization is preferred.
   bool enableScalableVectorization() const;
 
@@ -1934,6 +1940,9 @@ public:
   virtual unsigned getMinTripCountTailFoldingThreshold() const = 0;
   virtual bool enableScalableVectorization() const = 0;
   virtual bool supportsScalableVectors() const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual Type *getScalableVectorFromFixed(Type *Ty) const = 0;
+#endif
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const = 0;
 #if SIFIVE_CUSTOMIZATION
@@ -2619,6 +2628,12 @@ public:
   bool enableScalableVectorization() const override {
     return Impl.enableScalableVectorization();
   }
+
+#if SIFIVE_CUSTOMIZATION
+  Type *getScalableVectorFromFixed(Type *Ty) const override {
+    return Impl.getScalableVectorFromFixed(Ty);
+  }
+#endif
 
   bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                              Align Alignment) const override {
