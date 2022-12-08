@@ -308,41 +308,6 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
 
   return {LowerBoundVF, UpperBoundVF};
 }
-
-InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
-    unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
-    TTI::OperandValueInfo Op1Info, TTI::OperandValueInfo Op2Info,
-    ArrayRef<const Value *> Args,
-    const Instruction *CxtI) {
-  if (!ST->isSiFiveCPU())
-    return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info,
-                                         Args, CxtI);
-
-  const unsigned ISD = TLI->InstructionOpcodeToISD(Opcode);
-  if ((ISD == ISD::SDIV || ISD == ISD::UDIV) && isa<ScalableVectorType>(Ty)) {
-    ScalableVectorType *VTy = cast<ScalableVectorType>(Ty);
-    Type *EltTy = VTy->getElementType();
-    const unsigned VL = getEstimatedVLFor(VTy);
-    unsigned EltSize = DL.getTypeSizeInBits(EltTy);
-    unsigned NumDivideUnits = 4;
-    // Each divide unit can process 2 bits per cycle. In all cases, except for
-    // F64 4 elements can be processed per cycle
-    if (EltTy->isFloatingPointTy()) {
-      EltSize = EltTy->getFPMantissaWidth();
-      if (EltTy->isDoubleTy())
-        NumDivideUnits = 2;
-    } else {
-      // [SCT-1962] FIXME: With more precise cost model, change it back to '4'.
-      // Currently '4' won't help to make hot loop not profitable to vectorize,
-      // thus assume cost of integer division is even higher.
-      NumDivideUnits = 2;
-    }
-    // 4 elements per cycle
-    return divideCeil(VL, NumDivideUnits) * divideCeil(EltSize, 2);
-  }
-  return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info,
-                                       Args, CxtI);
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTTIImpl::shouldExpandReduction(const IntrinsicInst *II) const {
@@ -1358,6 +1323,32 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
     TTI::OperandValueInfo Op1Info, TTI::OperandValueInfo Op2Info,
     ArrayRef<const Value *> Args, const Instruction *CxtI) {
+#if SIFIVE_CUSTOMIZATION
+  if (ST->isSiFiveCPU()) {
+    const unsigned ISD = TLI->InstructionOpcodeToISD(Opcode);
+    if ((ISD == ISD::SDIV || ISD == ISD::UDIV) && isa<ScalableVectorType>(Ty)) {
+      ScalableVectorType *VTy = cast<ScalableVectorType>(Ty);
+      Type *EltTy = VTy->getElementType();
+      const unsigned VL = getEstimatedVLFor(VTy);
+      unsigned EltSize = DL.getTypeSizeInBits(EltTy);
+      unsigned NumDivideUnits = 4;
+      // Each divide unit can process 2 bits per cycle. In all cases, except for
+      // F64 4 elements can be processed per cycle
+      if (EltTy->isFloatingPointTy()) {
+        EltSize = EltTy->getFPMantissaWidth();
+        if (EltTy->isDoubleTy())
+          NumDivideUnits = 2;
+      } else {
+        // [SCT-1962] FIXME: With more precise cost model, change it back to '4'.
+        // Currently '4' won't help to make hot loop not profitable to vectorize,
+        // thus assume cost of integer division is even higher.
+        NumDivideUnits = 2;
+      }
+      // 4 elements per cycle
+      return divideCeil(VL, NumDivideUnits) * divideCeil(EltSize, 2);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // TODO: Handle more cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
