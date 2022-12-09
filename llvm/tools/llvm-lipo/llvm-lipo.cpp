@@ -74,12 +74,12 @@ enum LipoID {
 };
 
 // LipoInfoTable below references LIPO_##PREFIX. OptionGroup has prefix nullptr.
-const char *const *LIPO_nullptr = nullptr;
+constexpr const char *const *LIPO_nullptr = nullptr;
 #define PREFIX(NAME, VALUE) const char *const LIPO_##NAME[] = VALUE;
 #include "LipoOpts.inc"
 #undef PREFIX
 
-const opt::OptTable::Info LipoInfoTable[] = {
+static constexpr opt::OptTable::Info LipoInfoTable[] = {
 #define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
                HELPTEXT, METAVAR, VALUES)                                      \
   {LIPO_##PREFIX, NAME,      HELPTEXT,                                         \
@@ -182,7 +182,7 @@ static Config parseLipoOptions(ArrayRef<const char *> ArgsArr) {
     reportError("unknown argument '" + Arg->getAsString(InputArgs) + "'");
 
   for (auto *Arg : InputArgs.filtered(LIPO_INPUT))
-    C.InputFiles.push_back({None, Arg->getValue()});
+    C.InputFiles.push_back({std::nullopt, Arg->getValue()});
   for (auto *Arg : InputArgs.filtered(LIPO_arch)) {
     validateArchitectureName(Arg->getValue(0));
     assert(Arg->getValue(1) && "file_name is missing");

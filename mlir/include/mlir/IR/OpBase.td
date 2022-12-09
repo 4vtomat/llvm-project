@@ -1035,7 +1035,7 @@ class OptionalAttr<Attr attr> : Attr<attr.predicate, attr.summary> {
   let storageType = attr.storageType;
   let returnType = "::llvm::Optional<" # attr.returnType #">";
   let convertFromStorage = "$_self ? " # returnType # "(" #
-                           attr.convertFromStorage # ") : (::llvm::None)";
+                           attr.convertFromStorage # ") : (::std::nullopt)";
   let valueType = attr.valueType;
   let isOptional = 1;
 
@@ -1524,6 +1524,8 @@ def TypeArrayAttr : TypedArrayAttrBase<TypeAttr, "type array attribute"> {
 }
 def IndexListArrayAttr :
   TypedArrayAttrBase<I64ArrayAttr, "Array of 64-bit integer array attributes">;
+def DictArrayAttr :
+  TypedArrayAttrBase<DictionaryAttr, "Array of dictionary attributes">;
 
 // Attributes containing symbol references.
 def SymbolRefAttr : Attr<CPred<"$_self.isa<::mlir::SymbolRefAttr>()">,
@@ -1668,6 +1670,16 @@ class ArrayMinCount<int n> : AttrConstraint<
 class ArrayCount<int n> : AttrConstraint<
     CPred<"$_self.cast<::mlir::ArrayAttr>().size() == " #n>,
     "with exactly " # n # " elements">;
+
+class DenseArrayStrictlyPositive<DenseArrayAttrBase arrayType> : AttrConstraint<
+  CPred<"::llvm::all_of($_self.cast<" # arrayType #">().asArrayRef(), "
+                        "[&](auto v) { return v > 0; })">,
+  "whose value is positive">;
+
+class DenseArrayNonNegative<DenseArrayAttrBase arrayType> : AttrConstraint<
+  CPred<"::llvm::all_of($_self.cast<" # arrayType #">().asArrayRef(), "
+                        "[&](auto v) { return v >= 0; })">,
+  "whose value is non-negative">;
 
 class DenseArraySorted<DenseArrayAttrBase arrayType> : AttrConstraint<
     CPred<"llvm::is_sorted($_self.cast<" # arrayType # ">().asArrayRef())">,

@@ -17,6 +17,7 @@ include "mlir/Dialect/SCF/IR/DeviceMappingInterface.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
 include "mlir/IR/EnumAttr.td"
 include "mlir/IR/OpBase.td"
+include "mlir/IR/RegionKindInterface.td"
 
 def DecomposeOp : Op<Transform_Dialect, "structured.decompose",
     [FunctionalStyleTransformOpTrait, MemoryEffectsOpInterface,
@@ -387,6 +388,28 @@ def PromoteOp : Op<Transform_Dialect, "structured.promote",
   }];
 }
 
+def ReplaceOp : Op<Transform_Dialect, "structured.replace",
+    [IsolatedFromAbove, DeclareOpInterfaceMethods<TransformOpInterface>,
+     DeclareOpInterfaceMethods<MemoryEffectsOpInterface>] # GraphRegionNoTerminator.traits> {
+  let description = [{
+    Replace all `target` payload ops with the single op that is contained in
+    this op's region. All targets must have zero arguments and must be isolated
+    from above.
+
+    This op is for debugging/experiments only.
+
+    #### Return modes
+
+    This operation consumes the `target` handle.
+  }];
+
+  let arguments = (ins PDL_Operation:$target);
+  let results = (outs PDL_Operation:$replacement);
+  let regions = (region SizedRegion<1>:$bodyRegion);
+  let assemblyFormat = "$target attr-dict-with-keyword regions";
+  let hasVerifier = 1;
+}
+
 def ScalarizeOp : Op<Transform_Dialect, "structured.scalarize",
     [FunctionalStyleTransformOpTrait, MemoryEffectsOpInterface,
      TransformOpInterface, TransformEachOpTrait]> {
@@ -728,6 +751,8 @@ def TileReductionUsingForeachThreadOp :
     All the partial reduction value is are parallel inserted to create a new
     tensor. After the loop a merge operation is created to do a final reduction
     with the partial reductions tensor.
+    If an extra `tile_sizes` parameter is passed the tiles are cyclically
+    distributed on the threads of the `scf.foreach_threads` loop.
 
     #### Return modes
 
@@ -781,7 +806,8 @@ def TileReductionUsingForeachThreadOp :
   }];
 
   let arguments = (ins PDL_Operation:$target,
-                   DefaultValuedAttr<I64ArrayAttr, "{}">:$num_threads);
+                   DefaultValuedAttr<I64ArrayAttr, "{}">:$num_threads,
+                   DefaultValuedAttr<I64ArrayAttr, "{}">:$tile_sizes);
   let results = (outs PDL_Operation:$fill_op,
                       PDL_Operation:$split_linalg_op,
                       PDL_Operation:$combining_linalg_op);

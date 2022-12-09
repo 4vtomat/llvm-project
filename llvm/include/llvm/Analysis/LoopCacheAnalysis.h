@@ -72,7 +72,7 @@ public:
   /// Return true/false if the current object and the indexed reference \p Other
   /// are/aren't in the same cache line of size \p CLS. Two references are in
   /// the same chace line iff the distance between them in the innermost
-  /// dimension is less than the cache line size. Return None if unsure.
+  /// dimension is less than the cache line size. Return std::nullopt if unsure.
   Optional<bool> hasSpacialReuse(const IndexedReference &Other, unsigned CLS,
                                  AAResults &AA) const;
 
@@ -200,7 +200,7 @@ public:
   /// classified to have temporal reuse.
   CacheCost(const LoopVectorTy &Loops, const LoopInfo &LI, ScalarEvolution &SE,
             TargetTransformInfo &TTI, AAResults &AA, DependenceInfo &DI,
-            Optional<unsigned> TRT = None);
+            Optional<unsigned> TRT = std::nullopt);
 
   /// Create a CacheCost for the loop nest rooted by \p Root.
   /// The optional parameter \p TRT can be used to specify the max. distance
@@ -208,7 +208,7 @@ public:
   /// classified to have temporal reuse.
   static std::unique_ptr<CacheCost>
   getCacheCost(Loop &Root, LoopStandardAnalysisResults &AR, DependenceInfo &DI,
-               Optional<unsigned> TRT = None);
+               Optional<unsigned> TRT = std::nullopt);
 
   /// Return the estimated cost of loop \p L if the given loop is part of the
   /// loop nest associated with this object. Return -1 otherwise.

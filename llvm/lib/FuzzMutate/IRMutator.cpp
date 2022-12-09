@@ -106,7 +106,7 @@ InjectorIRStrategy::chooseOperation(Value *Src, RandomIRBuilder &IB) {
   };
   auto RS = makeSampler(IB.Rand, make_filter_range(Operations, OpMatchesPred));
   if (RS.isEmpty())
-    return None;
+    return std::nullopt;
   return *RS;
 }
 
@@ -297,6 +297,58 @@ void InstModificationIRStrategy::mutate(Instruction &Inst,
   auto RS = makeSampler(IB.Rand, Modifications);
   if (RS)
     RS.getSelection()();
+}
+
+void InsertPHIStrategy::mutate(BasicBlock &BB, RandomIRBuilder &IB) {
+  // Can't insert PHI node to entry node.
+  if (&BB == &BB.getParent()->getEntryBlock())
+    return;
+  Type *Ty = IB.randomType();
+  PHINode *PHI = PHINode::Create(Ty, llvm::pred_size(&BB), "", &BB.front());
+
+  // Use a map to make sure the same incoming basic block has the same value.
+  DenseMap<BasicBlock *, Value *> IncomingValues;
+  for (BasicBlock *Pred : predecessors(&BB)) {
+    Value *Src = IncomingValues[Pred];
+    // If `Pred` is not in the map yet, we'll get a nullptr.
+    if (!Src) {
+      SmallVector<Instruction *, 32> Insts;
+      for (auto I = Pred->begin(); I != Pred->end(); ++I)
+        Insts.push_back(&*I);
+      // There is no need to inform IB what previously used values are if we are
+      // using `onlyType`
+      Src = IB.findOrCreateSource(*Pred, Insts, {}, fuzzerop::onlyType(Ty));
+      IncomingValues[Pred] = Src;
+    }
+    PHI->addIncoming(Src, Pred);
+  }
+  SmallVector<Instruction *, 32> InstsAfter;
+  for (auto I = BB.getFirstInsertionPt(), E = BB.end(); I != E; ++I)
+    InstsAfter.push_back(&*I);
+  IB.connectToSink(BB, InstsAfter, PHI);
+}
+
+void SinkInstructionStrategy::mutate(Function &F, RandomIRBuilder &IB) {
+  for (BasicBlock &BB : F) {
+    this->mutate(BB, IB);
+  }
+}
+void SinkInstructionStrategy::mutate(BasicBlock &BB, RandomIRBuilder &IB) {
+  SmallVector<Instruction *, 32> Insts;
+  for (auto I = BB.getFirstInsertionPt(), E = BB.end(); I != E; ++I)
+    Insts.push_back(&*I);
+  if (Insts.size() < 1)
+    return;
+  // Choose an Instruction to mutate.
+  uint64_t Idx = uniform<uint64_t>(IB.Rand, 0, Insts.size() - 1);
+  Instruction *Inst = Insts[Idx];
+  // `Idx + 1` so we don't sink to ourselves.
+  auto InstsAfter = makeArrayRef(Insts).slice(Idx + 1);
+  LLVMContext &C = BB.getParent()->getParent()->getContext();
+  // Don't sink terminators, void function calls, etc.
+  if (Inst->getType() != Type::getVoidTy(C))
+    // Find a new sink and wire up the results of the operation.
+    IB.connectToSink(BB, InstsAfter, Inst);
 }
 
 void ShuffleBlockStrategy::mutate(BasicBlock &BB, RandomIRBuilder &IB) {

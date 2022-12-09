@@ -340,8 +340,8 @@ static IdentifyingPassPtr overridePass(AnalysisID StandardID,
 static std::string getFSProfileFile(const TargetMachine *TM) {
   if (!FSProfileFile.empty())
     return FSProfileFile.getValue();
-  const Optional<PGOOptions> &PGOOpt = TM->getPGOOption();
-  if (PGOOpt == None || PGOOpt->Action != PGOOptions::SampleUse)
+  const std::optional<PGOOptions> &PGOOpt = TM->getPGOOption();
+  if (PGOOpt == std::nullopt || PGOOpt->Action != PGOOptions::SampleUse)
     return std::string();
   return PGOOpt->ProfileFile;
 }
@@ -351,8 +351,8 @@ static std::string getFSProfileFile(const TargetMachine *TM) {
 static std::string getFSRemappingFile(const TargetMachine *TM) {
   if (!FSRemappingFile.empty())
     return FSRemappingFile.getValue();
-  const Optional<PGOOptions> &PGOOpt = TM->getPGOOption();
-  if (PGOOpt == None || PGOOpt->Action != PGOOptions::SampleUse)
+  const std::optional<PGOOptions> &PGOOpt = TM->getPGOOption();
+  if (PGOOpt == std::nullopt || PGOOpt->Action != PGOOptions::SampleUse)
     return std::string();
   return PGOOpt->ProfileRemappingFile;
 }
@@ -905,7 +905,7 @@ void TargetPassConfig::addIRPasses() {
   addPass(&ShadowStackGCLoweringID);
   addPass(createLowerConstantIntrinsicsPass());
 
-  // For MachO, lower @llvm.global_dtors into @llvm_global_ctors with
+  // For MachO, lower @llvm.global_dtors into @llvm.global_ctors with
   // __cxa_atexit() calls to avoid emitting the deprecated __mod_term_func.
   if (TM->getTargetTriple().isOSBinFormatMachO() &&
       TM->Options.LowerGlobalDtorsViaCxaAtExit)
@@ -1059,13 +1059,13 @@ bool TargetPassConfig::addCoreISelPasses() {
   //        pass manager into two. GlobalISel with the fallback path disabled
   //        and -run-pass seem to be unaffected. The majority of GlobalISel
   //        testing uses -run-pass so this probably isn't too bad.
-  SaveAndRestore<bool> SavedDebugifyIsSafe(DebugifyIsSafe);
+  SaveAndRestore SavedDebugifyIsSafe(DebugifyIsSafe);
   if (Selector != SelectorType::GlobalISel || !isGlobalISelAbortEnabled())
     DebugifyIsSafe = false;
 
   // Add instruction selector passes.
   if (Selector == SelectorType::GlobalISel) {
-    SaveAndRestore<bool> SavedAddingMachinePasses(AddingMachinePasses, true);
+    SaveAndRestore SavedAddingMachinePasses(AddingMachinePasses, true);
     if (addIRTranslator())
       return true;
 
@@ -1115,6 +1115,7 @@ bool TargetPassConfig::addISelPasses() {
   addPass(createPreISelIntrinsicLoweringPass());
   PM->add(createTargetTransformInfoWrapperPass(TM->getTargetIRAnalysis()));
   addPass(createExpandLargeDivRemPass());
+  addPass(createExpandLargeFpConvertPass());
   addIRPasses();
   addCodeGenPrepare();
   addPassesToHandleExceptions();
@@ -1269,6 +1270,7 @@ void TargetPassConfig::addMachinePasses() {
 
   addPass(&StackMapLivenessID);
   addPass(&LiveDebugValuesID);
+  addPass(&MachineSanitizerBinaryMetadataID);
 
   if (TM->Options.EnableMachineOutliner && getOptLevel() != CodeGenOpt::None &&
       EnableMachineOutliner != RunOutliner::NeverOutline) {
@@ -1521,6 +1523,9 @@ void TargetPassConfig::addOptimizedRegAlloc() {
 
 /// Add passes that optimize machine instructions after register allocation.
 void TargetPassConfig::addMachineLateOptimization() {
+  // Cleanup of redundant immediate/address loads.
+  addPass(&MachineLateInstrsCleanupID);
+
   // Branch folding must be run after regalloc and prolog/epilog insertion.
   addPass(&BranchFolderPassID);
 

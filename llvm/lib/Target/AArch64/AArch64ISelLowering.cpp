@@ -541,15 +541,40 @@ AArch64TargetLowering::AArch64TargetLowering(const TargetMachine &TM,
   setOperationAction(ISD::UMUL_LOHI, MVT::i64, Expand);
   setOperationAction(ISD::SMUL_LOHI, MVT::i64, Expand);
 
-  setOperationAction(ISD::CTPOP, MVT::i32, Custom);
-  setOperationAction(ISD::CTPOP, MVT::i64, Custom);
-  setOperationAction(ISD::CTPOP, MVT::i128, Custom);
+  if (Subtarget->hasCSSC()) {
+    setOperationAction(ISD::CTPOP, MVT::i32, Legal);
+    setOperationAction(ISD::CTPOP, MVT::i64, Legal);
+    setOperationAction(ISD::CTPOP, MVT::i128, Expand);
 
-  setOperationAction(ISD::PARITY, MVT::i64, Custom);
-  setOperationAction(ISD::PARITY, MVT::i128, Custom);
+    setOperationAction(ISD::PARITY, MVT::i128, Expand);
 
-  setOperationAction(ISD::ABS, MVT::i32, Custom);
-  setOperationAction(ISD::ABS, MVT::i64, Custom);
+    setOperationAction(ISD::CTTZ, MVT::i32, Legal);
+    setOperationAction(ISD::CTTZ, MVT::i64, Legal);
+    setOperationAction(ISD::CTTZ, MVT::i128, Expand);
+
+    setOperationAction(ISD::ABS, MVT::i32, Legal);
+    setOperationAction(ISD::ABS, MVT::i64, Legal);
+
+    setOperationAction(ISD::SMAX, MVT::i32, Legal);
+    setOperationAction(ISD::SMAX, MVT::i64, Legal);
+    setOperationAction(ISD::UMAX, MVT::i32, Legal);
+    setOperationAction(ISD::UMAX, MVT::i64, Legal);
+
+    setOperationAction(ISD::SMIN, MVT::i32, Legal);
+    setOperationAction(ISD::SMIN, MVT::i64, Legal);
+    setOperationAction(ISD::UMIN, MVT::i32, Legal);
+    setOperationAction(ISD::UMIN, MVT::i64, Legal);
+  } else {
+    setOperationAction(ISD::CTPOP, MVT::i32, Custom);
+    setOperationAction(ISD::CTPOP, MVT::i64, Custom);
+    setOperationAction(ISD::CTPOP, MVT::i128, Custom);
+
+    setOperationAction(ISD::PARITY, MVT::i64, Custom);
+    setOperationAction(ISD::PARITY, MVT::i128, Custom);
+
+    setOperationAction(ISD::ABS, MVT::i32, Custom);
+    setOperationAction(ISD::ABS, MVT::i64, Custom);
+  }
 
   setOperationAction(ISD::SDIVREM, MVT::i32, Expand);
   setOperationAction(ISD::SDIVREM, MVT::i64, Expand);
@@ -924,6 +949,8 @@ AArch64TargetLowering::AArch64TargetLowering(const TargetMachine &TM,
   setTargetDAGCombine(ISD::FP_EXTEND);
 
   setTargetDAGCombine(ISD::GlobalAddress);
+
+  setTargetDAGCombine(ISD::CTLZ);
 
   // In case of strict alignment, avoid an excessive number of byte wide stores.
   MaxStoresPerMemsetOptSize = 8;
@@ -1600,6 +1627,11 @@ void AArch64TargetLowering::addTypeForNEON(MVT VT) {
       setIndexedStoreAction(im, VT, Legal);
     }
   }
+
+  if (Subtarget->hasD128()) {
+    setOperationAction(ISD::READ_REGISTER, MVT::i128, Custom);
+    setOperationAction(ISD::WRITE_REGISTER, MVT::i128, Custom);
+  }
 }
 
 bool AArch64TargetLowering::shouldExpandGetActiveLaneMask(EVT ResVT,
@@ -1626,6 +1658,7 @@ void AArch64TargetLowering::addTypeForStreamingSVE(MVT VT) {
   setOperationAction(ISD::ANY_EXTEND, VT, Custom);
   setOperationAction(ISD::ZERO_EXTEND, VT, Custom);
   setOperationAction(ISD::SIGN_EXTEND, VT, Custom);
+  setOperationAction(ISD::SPLAT_VECTOR, VT, Custom);
   setOperationAction(ISD::CONCAT_VECTORS, VT, Custom);
   setOperationAction(ISD::AND, VT, Custom);
   setOperationAction(ISD::ADD, VT, Custom);
@@ -2463,6 +2496,8 @@ const char *AArch64TargetLowering::getTargetNodeName(unsigned Opcode) const {
     MAKE_CASE(AArch64ISD::MOPS_MEMCOPY)
     MAKE_CASE(AArch64ISD::MOPS_MEMMOVE)
     MAKE_CASE(AArch64ISD::CALL_BTI)
+    MAKE_CASE(AArch64ISD::MRRS)
+    MAKE_CASE(AArch64ISD::MSRR)
   }
 #undef MAKE_CASE
   return nullptr;
@@ -4326,15 +4361,16 @@ static SDValue addRequiredExtensionForVectorMULL(SDValue N, SelectionDAG &DAG,
 
 // Returns lane if Op extracts from a two-element vector and lane is constant
 // (i.e., extractelt(<2 x Ty> %v, ConstantLane)), and None otherwise.
-static Optional<uint64_t> getConstantLaneNumOfExtractHalfOperand(SDValue &Op) {
+static std::optional<uint64_t>
+getConstantLaneNumOfExtractHalfOperand(SDValue &Op) {
   SDNode *OpNode = Op.getNode();
   if (OpNode->getOpcode() != ISD::EXTRACT_VECTOR_ELT)
-    return None;
+    return std::nullopt;
 
   EVT VT = OpNode->getOperand(0).getValueType();
   ConstantSDNode *C = dyn_cast<ConstantSDNode>(OpNode->getOperand(1));
   if (!VT.isFixedLengthVector() || VT.getVectorNumElements() != 2 || !C)
-    return None;
+    return std::nullopt;
 
   return C->getZExtValue();
 }
@@ -4649,7 +4685,7 @@ SDValue AArch64TargetLowering::getPStateSM(SelectionDAG &DAG, SDValue Chain,
                      Mask);
 }
 
-static Optional<SMEAttrs> getCalleeAttrsFromExternalFunction(SDValue V) {
+static std::optional<SMEAttrs> getCalleeAttrsFromExternalFunction(SDValue V) {
   if (auto *ES = dyn_cast<ExternalSymbolSDNode>(V)) {
     StringRef S(ES->getSymbol());
     if (S == "__arm_sme_state" || S == "__arm_tpidr2_save")
@@ -4657,7 +4693,7 @@ static Optional<SMEAttrs> getCalleeAttrsFromExternalFunction(SDValue V) {
     if (S == "__arm_tpidr2_restore")
       return SMEAttrs(SMEAttrs::SM_Compatible | SMEAttrs::ZA_Shared);
   }
-  return None;
+  return std::nullopt;
 }
 
 SDValue AArch64TargetLowering::LowerINTRINSIC_W_CHAIN(SDValue Op,
@@ -4732,8 +4768,10 @@ SDValue AArch64TargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue LHS = Op.getOperand(1);
     SDValue RHS = Op.getOperand(2);
 
-    Optional<uint64_t> LHSLane = getConstantLaneNumOfExtractHalfOperand(LHS);
-    Optional<uint64_t> RHSLane = getConstantLaneNumOfExtractHalfOperand(RHS);
+    std::optional<uint64_t> LHSLane =
+        getConstantLaneNumOfExtractHalfOperand(LHS);
+    std::optional<uint64_t> RHSLane =
+        getConstantLaneNumOfExtractHalfOperand(RHS);
 
     assert((!LHSLane || *LHSLane < 2) && "Expect lane to be None or 0 or 1");
     assert((!RHSLane || *RHSLane < 2) && "Expect lane to be None or 0 or 1");
@@ -4742,9 +4780,10 @@ SDValue AArch64TargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     // instructions execute on SIMD registers. So canonicalize i64 to v1i64,
     // which ISel recognizes better. For example, generate a ldr into d*
     // registers as opposed to a GPR load followed by a fmov.
-    auto TryVectorizeOperand =
-        [](SDValue N, Optional<uint64_t> NLane, Optional<uint64_t> OtherLane,
-           const SDLoc &dl, SelectionDAG &DAG) -> SDValue {
+    auto TryVectorizeOperand = [](SDValue N, std::optional<uint64_t> NLane,
+                                  std::optional<uint64_t> OtherLane,
+                                  const SDLoc &dl,
+                                  SelectionDAG &DAG) -> SDValue {
       // If the operand is an higher half itself, rewrite it to
       // extract_high_v2i64; this way aarch64_neon_pmull64 could
       // re-use the dag-combiner function with aarch64_neon_{pmull,smull,umull}.
@@ -4815,9 +4854,9 @@ SDValue AArch64TargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
       unsigned ElementSize = 128 / Op.getValueType().getVectorMinNumElements();
       unsigned NumActiveElems =
           Op.getConstantOperandVal(2) - Op.getConstantOperandVal(1);
-      Optional<unsigned> PredPattern =
+      std::optional<unsigned> PredPattern =
           getSVEPredPatternFromNumElements(NumActiveElems);
-      if ((PredPattern != None) &&
+      if ((PredPattern != std::nullopt) &&
           NumActiveElems <= (MinSVEVectorSize / ElementSize))
         return getPTrue(DAG, dl, Op.getValueType(), *PredPattern);
     }
@@ -5910,6 +5949,26 @@ SDValue AArch64TargetLowering::LowerOperation(SDValue Op,
                               {Op.getOperand(0), Op.getOperand(1)});
     return DAG.getNode(Op.getOpcode(), DL, {Op.getValueType(), MVT::Other},
                        {Ext.getValue(1), Ext.getValue(0)});
+  }
+  case ISD::WRITE_REGISTER: {
+    assert(Op.getOperand(2).getValueType() == MVT::i128 &&
+           "WRITE_REGISTER custom lowering is only for 128-bit sysregs");
+    SDLoc DL(Op);
+
+    SDValue Chain = Op.getOperand(0);
+    SDValue SysRegName = Op.getOperand(1);
+    SDValue Pair = Op.getOperand(2);
+
+    SDValue PairLo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i64, Pair,
+                                 DAG.getConstant(0, DL, MVT::i32));
+    SDValue PairHi = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i64, Pair,
+                                 DAG.getConstant(1, DL, MVT::i32));
+
+    // chain = MSRR(chain, sysregname, lo, hi)
+    SDValue Result = DAG.getNode(AArch64ISD::MSRR, DL, MVT::Other, Chain,
+                                 SysRegName, PairLo, PairHi);
+
+    return Result;
   }
   }
 }
@@ -7048,7 +7107,7 @@ AArch64TargetLowering::LowerCall(CallLoweringInfo &CLI,
   SMEAttrs CalleeAttrs, CallerAttrs(MF.getFunction());
   if (CLI.CB)
     CalleeAttrs = SMEAttrs(*CLI.CB);
-  else if (Optional<SMEAttrs> Attrs =
+  else if (std::optional<SMEAttrs> Attrs =
                getCalleeAttrsFromExternalFunction(CLI.Callee))
     CalleeAttrs = *Attrs;
 
@@ -7077,7 +7136,8 @@ AArch64TargetLowering::LowerCall(CallLoweringInfo &CLI,
   }
 
   SDValue PStateSM;
-  Optional<bool> RequiresSMChange = CallerAttrs.requiresSMChange(CalleeAttrs);
+  std::optional<bool> RequiresSMChange =
+      CallerAttrs.requiresSMChange(CalleeAttrs);
   if (RequiresSMChange)
     PStateSM = getPStateSM(DAG, Chain, CallerAttrs, DL, MVT::i64);
 
@@ -8413,8 +8473,16 @@ SDValue AArch64TargetLowering::LowerCTPOP_PARITY(SDValue Op,
     return SDValue();
 
   bool IsParity = Op.getOpcode() == ISD::PARITY;
+  SDValue Val = Op.getOperand(0);
+  SDLoc DL(Op);
+  EVT VT = Op.getValueType();
 
-  // While there is no integer popcount instruction, it can
+  // for i32, general parity function using EORs is more efficient compared to
+  // using floating point
+  if (VT == MVT::i32 && IsParity)
+    return SDValue();
+
+  // If there is no CNT instruction available, GPR popcount can
   // be more efficiently lowered to the following sequence that uses
   // AdvSIMD registers/instructions as long as the copies to/from
   // the AdvSIMD registers are cheap.
@@ -8422,10 +8490,6 @@ SDValue AArch64TargetLowering::LowerCTPOP_PARITY(SDValue Op,
   //  CNT     V0.8B, V0.8B  // 8xbyte pop-counts
   //  ADDV    B0, V0.8B     // sum 8xbyte pop-counts
   //  UMOV    X0, V0.B[0]   // copy byte result back to integer reg
-  SDValue Val = Op.getOperand(0);
-  SDLoc DL(Op);
-  EVT VT = Op.getValueType();
-
   if (VT == MVT::i32 || VT == MVT::i64) {
     if (VT == MVT::i32)
       Val = DAG.getNode(ISD::ZERO_EXTEND, DL, MVT::i64, Val);
@@ -9000,10 +9064,10 @@ SDValue AArch64TargetLowering::LowerVECTOR_SPLICE(SDValue Op,
   // splice predicate. However, we can only do this if we can guarantee that
   // there are enough elements in the vector, hence we check the index <= min
   // number of elements.
-  Optional<unsigned> PredPattern;
+  std::optional<unsigned> PredPattern;
   if (Ty.isScalableVector() && IdxVal < 0 &&
       (PredPattern = getSVEPredPatternFromNumElements(std::abs(IdxVal))) !=
-          None) {
+          std::nullopt) {
     SDLoc DL(Op);
 
     // Create a predicate where all but the last -IdxVal elements are false.
@@ -10583,13 +10647,11 @@ static bool isEXTMask(ArrayRef<int> M, EVT VT, bool &ReverseEXT,
 /// instruction with the specified blocksize.  (The order of the elements
 /// within each block of the vector is reversed.)
 static bool isREVMask(ArrayRef<int> M, EVT VT, unsigned BlockSize) {
-  assert((BlockSize == 16 || BlockSize == 32 || BlockSize == 64) &&
-         "Only possible block sizes for REV are: 16, 32, 64");
+  assert((BlockSize == 16 || BlockSize == 32 || BlockSize == 64 ||
+          BlockSize == 128) &&
+         "Only possible block sizes for REV are: 16, 32, 64, 128");
 
   unsigned EltSz = VT.getScalarSizeInBits();
-  if (EltSz == 64)
-    return false;
-
   unsigned NumElts = VT.getVectorNumElements();
   unsigned BlockElts = M[0] + 1;
   // If the first shuffle index is UNDEF, be optimistic.
@@ -11418,7 +11480,8 @@ SDValue AArch64TargetLowering::LowerSPLAT_VECTOR(SDValue Op,
                                                  SelectionDAG &DAG) const {
   EVT VT = Op.getValueType();
 
-  if (useSVEForFixedLengthVectorVT(VT))
+  if (useSVEForFixedLengthVectorVT(VT,
+                                   Subtarget->forceStreamingCompatibleSVE()))
     return LowerToScalableOp(Op, DAG);
 
   assert(VT.isScalableVector() && VT.getVectorElementType() == MVT::i1 &&
@@ -12550,7 +12613,7 @@ SDValue AArch64TargetLowering::LowerINSERT_SUBVECTOR(SDValue Op,
     if (Vec0.isUndef())
       return Op;
 
-    Optional<unsigned> PredPattern =
+    std::optional<unsigned> PredPattern =
         getSVEPredPatternFromNumElements(InVT.getVectorNumElements());
     auto PredTy = VT.changeVectorElementType(MVT::i1);
     SDValue PTrue = getPTrue(DAG, DL, PredTy, *PredPattern);
@@ -12736,7 +12799,8 @@ SDValue AArch64TargetLowering::LowerTRUNCATE(SDValue Op,
   if (!VT.isVector() || VT.isScalableVector())
     return SDValue();
 
-  if (useSVEForFixedLengthVectorVT(Op.getOperand(0).getValueType()))
+  if (useSVEForFixedLengthVectorVT(Op.getOperand(0).getValueType(),
+                                   Subtarget->forceStreamingCompatibleSVE()))
     return LowerFixedLengthVectorTruncateToSVE(Op, DAG);
 
   return SDValue();
@@ -13930,7 +13994,9 @@ bool AArch64TargetLowering::hasPairedLoad(EVT LoadedType,
 /// will generate when lowering accesses of the given type.
 unsigned AArch64TargetLowering::getNumInterleavedAccesses(
     VectorType *VecTy, const DataLayout &DL, bool UseScalable) const {
-  unsigned VecSize = UseScalable ? Subtarget->getMinSVEVectorSizeInBits() : 128;
+  unsigned VecSize = 128;
+  if (UseScalable)
+    VecSize = std::max(Subtarget->getMinSVEVectorSizeInBits(), 128u);
   return std::max<unsigned>(1, (DL.getTypeSizeInBits(VecTy) + 127) / VecSize);
 }
 
@@ -13951,6 +14017,10 @@ bool AArch64TargetLowering::isLegalInterleavedAccessType(
 
   UseScalable = false;
 
+  // Ensure that the predicate for this number of elements is available.
+  if (Subtarget->hasSVE() && !getSVEPredPatternFromNumElements(NumElements))
+    return false;
+
   // Ensure the number of vector elements is greater than 1.
   if (NumElements < 2)
     return false;
@@ -13959,10 +14029,11 @@ bool AArch64TargetLowering::isLegalInterleavedAccessType(
   if (ElSize != 8 && ElSize != 16 && ElSize != 32 && ElSize != 64)
     return false;
 
-  if (Subtarget->useSVEForFixedLengthVectors() &&
-      (VecSize % Subtarget->getMinSVEVectorSizeInBits() == 0 ||
-       (VecSize < Subtarget->getMinSVEVectorSizeInBits() &&
-        isPowerOf2_32(NumElements) && VecSize > 128))) {
+  if (Subtarget->forceStreamingCompatibleSVE() ||
+      (Subtarget->useSVEForFixedLengthVectors() &&
+       (VecSize % Subtarget->getMinSVEVectorSizeInBits() == 0 ||
+        (VecSize < Subtarget->getMinSVEVectorSizeInBits() &&
+         isPowerOf2_32(NumElements) && VecSize > 128)))) {
     UseScalable = true;
     return true;
   }
@@ -14093,7 +14164,7 @@ bool AArch64TargetLowering::lowerInterleavedLoad(
 
   Value *PTrue = nullptr;
   if (UseScalable) {
-    Optional<unsigned> PgPattern =
+    std::optional<unsigned> PgPattern =
         getSVEPredPatternFromNumElements(FVTy->getNumElements());
     if (Subtarget->getMinSVEVectorSizeInBits() ==
             Subtarget->getMaxSVEVectorSizeInBits() &&
@@ -14285,7 +14356,7 @@ bool AArch64TargetLowering::lowerInterleavedStore(StoreInst *SI,
 
   Value *PTrue = nullptr;
   if (UseScalable) {
-    Optional<unsigned> PgPattern =
+    std::optional<unsigned> PgPattern =
         getSVEPredPatternFromNumElements(SubVecTy->getNumElements());
     if (Subtarget->getMinSVEVectorSizeInBits() ==
             Subtarget->getMaxSVEVectorSizeInBits() &&
@@ -16945,10 +17016,10 @@ static bool isCMP(SDValue Op) {
 // (CSEL 0 1 CC Cond) => !CC
 static std::optional<AArch64CC::CondCode> getCSETCondCode(SDValue Op) {
   if (Op.getOpcode() != AArch64ISD::CSEL)
-    return None;
+    return std::nullopt;
   auto CC = static_cast<AArch64CC::CondCode>(Op.getConstantOperandVal(2));
   if (CC == AArch64CC::AL || CC == AArch64CC::NV)
-    return None;
+    return std::nullopt;
   SDValue OpLHS = Op.getOperand(0);
   SDValue OpRHS = Op.getOperand(1);
   if (isOneConstant(OpLHS) && isNullConstant(OpRHS))
@@ -16956,7 +17027,7 @@ static std::optional<AArch64CC::CondCode> getCSETCondCode(SDValue Op) {
   if (isNullConstant(OpLHS) && isOneConstant(OpRHS))
     return getInvertedCondCode(CC);
 
-  return None;
+  return std::nullopt;
 }
 
 // (ADC{S} l r (CMP (CSET HS carry) 1)) => (ADC{S} l r carry)
@@ -20254,6 +20325,17 @@ static SDValue performGlobalAddressCombine(SDNode *N, SelectionDAG &DAG,
                      DAG.getConstant(MinOffset, DL, MVT::i64));
 }
 
+static SDValue performCTLZCombine(SDNode *N, SelectionDAG &DAG,
+                                  const AArch64Subtarget *Subtarget) {
+  SDValue BR = N->getOperand(0);
+  if (!Subtarget->hasCSSC() || BR.getOpcode() != ISD::BITREVERSE ||
+      !BR.getValueType().isScalarInteger())
+    return SDValue();
+
+  SDLoc DL(N);
+  return DAG.getNode(ISD::CTTZ, DL, BR.getValueType(), BR.getOperand(0));
+}
+
 // Turns the vector of indices into a vector of byte offstes by scaling Offset
 // by (BitWidth / 8).
 static SDValue getScaledOffsetForBitWidth(SelectionDAG &DAG, SDValue Offset,
@@ -21159,6 +21241,8 @@ SDValue AArch64TargetLowering::PerformDAGCombine(SDNode *N,
     break;
   case ISD::GlobalAddress:
     return performGlobalAddressCombine(N, DAG, Subtarget, getTargetMachine());
+  case ISD::CTLZ:
+    return performCTLZCombine(N, DAG, Subtarget);
   }
   return SDValue();
 }
@@ -21674,6 +21758,25 @@ void AArch64TargetLowering::ReplaceNodeResults(
       return;
     }
     }
+  }
+  case ISD::READ_REGISTER: {
+    SDLoc DL(N);
+    assert(N->getValueType(0) == MVT::i128 &&
+           "READ_REGISTER custom lowering is only for 128-bit sysregs");
+    SDValue Chain = N->getOperand(0);
+    SDValue SysRegName = N->getOperand(1);
+
+    SDValue Result = DAG.getNode(
+        AArch64ISD::MRRS, DL, DAG.getVTList({MVT::i64, MVT::i64, MVT::Other}),
+        Chain, SysRegName);
+
+    // Sysregs are not endian. Result.getValue(0) always contains the lower half
+    // of the 128-bit System Register value.
+    SDValue Pair = DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i128,
+                               Result.getValue(0), Result.getValue(1));
+    Results.push_back(Pair);
+    Results.push_back(Result.getValue(2)); // Chain
+    return;
   }
   }
 }
@@ -22255,7 +22358,7 @@ static SDValue getPredicateForFixedLengthVector(SelectionDAG &DAG, SDLoc &DL,
          DAG.getTargetLoweringInfo().isTypeLegal(VT) &&
          "Expected legal fixed length vector!");
 
-  Optional<unsigned> PgPattern =
+  std::optional<unsigned> PgPattern =
       getSVEPredPatternFromNumElements(VT.getVectorNumElements());
   assert(PgPattern && "Unexpected element count for SVE predicate");
 
@@ -23148,6 +23251,18 @@ SDValue AArch64TargetLowering::LowerFixedLengthVECTOR_SHUFFLEToSVE(
       Op = DAG.getNode(ISD::BITCAST, DL, ContainerVT, Op);
       return convertFromScalableVector(DAG, VT, Op);
     }
+  }
+
+  if (Subtarget->hasSVE2p1() && VT.getScalarSizeInBits() == 64 &&
+      isREVMask(ShuffleMask, VT, 128)) {
+    if (!VT.isFloatingPoint())
+      return LowerToPredicatedOp(Op, DAG, AArch64ISD::REVD_MERGE_PASSTHRU);
+
+    EVT NewVT = getPackedSVEVectorVT(EVT::getIntegerVT(*DAG.getContext(), 64));
+    Op = DAG.getNode(ISD::BITCAST, DL, NewVT, Op1);
+    Op = LowerToPredicatedOp(Op, DAG, AArch64ISD::REVD_MERGE_PASSTHRU);
+    Op = DAG.getNode(ISD::BITCAST, DL, ContainerVT, Op);
+    return convertFromScalableVector(DAG, VT, Op);
   }
 
   unsigned WhichResult;

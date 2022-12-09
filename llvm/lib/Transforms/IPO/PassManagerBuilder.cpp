@@ -311,8 +311,6 @@ void PassManagerBuilder::populateModulePassManager(
     // builds. The function merging pass is
     if (MergeFunctions)
       MPM.add(createMergeFunctionsPass());
-
-    MPM.add(createAnnotationRemarksLegacyPass());
     return;
   }
 
@@ -354,11 +352,6 @@ void PassManagerBuilder::populateModulePassManager(
     Inliner = nullptr;
     RunInliner = true;
   }
-
-  // Try to perform OpenMP specific optimizations. This is a (quick!) no-op if
-  // there are no OpenMP runtime calls present in the module.
-  if (OptLevel > 1)
-    MPM.add(createOpenMPOptCGSCCLegacyPass());
 
   MPM.add(createPostOrderFunctionAttrsLegacyPass());
 
@@ -457,8 +450,6 @@ void PassManagerBuilder::populateModulePassManager(
   // resulted in single-entry-single-exit or empty blocks. Clean up the CFG.
   MPM.add(createCFGSimplificationPass(
       SimplifyCFGOptions().convertSwitchRangeToICmp(true)));
-
-  MPM.add(createAnnotationRemarksLegacyPass());
 }
 
 LLVMPassManagerBuilderRef LLVMPassManagerBuilderCreate() {

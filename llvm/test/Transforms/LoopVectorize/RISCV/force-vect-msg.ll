@@ -1,5 +1,9 @@
 ; REQUIRES: asserts
+<<<<<<< HEAD
 ; RUN: opt < %s -riscv-use-vla-vectorizer=false -loop-vectorize -mtriple riscv64 -riscv-v-vector-bits-min=128 -mattr="+v" -debug-only=loop-vectorize -S 2>&1 | FileCheck %s
+=======
+; RUN: opt < %s -passes=loop-vectorize -mtriple riscv64 -riscv-v-vector-bits-min=128 -mattr="+v" -debug-only=loop-vectorize -S 2>&1 | FileCheck %s
+>>>>>>> upstream/main
 
 ; CHECK: LV: Loop hints: force=enabled
 ; CHECK: LV: Scalar loop costs: 7.

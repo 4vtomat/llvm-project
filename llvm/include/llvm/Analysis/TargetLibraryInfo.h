@@ -11,7 +11,6 @@
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
@@ -239,7 +238,7 @@ class TargetLibraryInfo {
 
 public:
   explicit TargetLibraryInfo(const TargetLibraryInfoImpl &Impl,
-                             std::optional<const Function *> F = None)
+                             std::optional<const Function *> F = std::nullopt)
       : Impl(&Impl), OverrideAsUnavailable(NumLibFuncs) {
     if (!F)
       return;

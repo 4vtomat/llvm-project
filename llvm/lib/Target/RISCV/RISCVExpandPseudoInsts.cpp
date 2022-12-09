@@ -61,12 +61,15 @@ private:
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
+<<<<<<< HEAD
   bool expandVSPILL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVRELOAD(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
 #if SIFIVE_CUSTOMIZATION
   bool removeRedundantVMV(MachineBasicBlock &MBB,
                           MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 };
 
 char RISCVExpandPseudo::ID = 0;
@@ -183,6 +186,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVMSET_M_B64:
     // vmset.m vd => vmxnor.mm vd, vd, vd
     return expandVMSET_VMCLR(MBB, MBBI, RISCV::VMXNOR_MM);
+<<<<<<< HEAD
   case RISCV::PseudoVSPILL2_M1:
   case RISCV::PseudoVSPILL2_M2:
   case RISCV::PseudoVSPILL2_M4:
@@ -219,6 +223,8 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
       return removeRedundantVMV(MBB, MBBI);
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   }
 
   return false;
@@ -449,6 +455,7 @@ bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
   return true;
 }
 
+<<<<<<< HEAD
 bool RISCVExpandPseudo::expandVSPILL(MachineBasicBlock &MBB,
                                      MachineBasicBlock::iterator MBBI) {
   const TargetRegisterInfo *TRI =
@@ -555,6 +562,8 @@ bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
 class RISCVPreRAExpandPseudo : public MachineFunctionPass {
 public:
   const RISCVInstrInfo *TII;

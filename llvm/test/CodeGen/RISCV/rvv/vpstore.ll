@@ -422,6 +422,7 @@ declare void @llvm.vp.store.nxv17f64.p0nxv17f64(<vscale x 17 x double>, <vscale 
 ; Widen to nxv32f64 then split into 4 x nxv8f64, of which 1 is empty.
 
 define void @vpstore_nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double>* %ptr, <vscale x 17 x i1> %m, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; RV32-LABEL: vpstore_nxv17f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    csrr a3, vlenb
@@ -543,6 +544,68 @@ define void @vpstore_nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double
 ; RV64-NEXT:    add sp, sp, a0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
+=======
+; CHECK-LABEL: vpstore_nxv17f64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a4, a3, 1
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    mv a5, a2
+; CHECK-NEXT:    bltu a2, a4, .LBB31_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    mv a5, a4
+; CHECK-NEXT:  .LBB31_2:
+; CHECK-NEXT:    mv a6, a5
+; CHECK-NEXT:    bltu a5, a3, .LBB31_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    mv a6, a3
+; CHECK-NEXT:  .LBB31_4:
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
+; CHECK-NEXT:    csrr a7, vlenb
+; CHECK-NEXT:    slli a7, a7, 3
+; CHECK-NEXT:    sub sp, sp, a7
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
+; CHECK-NEXT:    vl8re64.v v0, (a0)
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vsetvli zero, a6, e64, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v24
+; CHECK-NEXT:    vse64.v v8, (a1), v0.t
+; CHECK-NEXT:    sub a0, a5, a3
+; CHECK-NEXT:    sltu a5, a5, a0
+; CHECK-NEXT:    addi a5, a5, -1
+; CHECK-NEXT:    and a0, a5, a0
+; CHECK-NEXT:    srli a5, a3, 3
+; CHECK-NEXT:    vsetvli a6, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vslidedown.vx v0, v24, a5
+; CHECK-NEXT:    slli a5, a3, 3
+; CHECK-NEXT:    add a5, a1, a5
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    sub a0, a2, a4
+; CHECK-NEXT:    sltu a2, a2, a0
+; CHECK-NEXT:    addi a2, a2, -1
+; CHECK-NEXT:    and a0, a2, a0
+; CHECK-NEXT:    vse64.v v16, (a5), v0.t
+; CHECK-NEXT:    bltu a0, a3, .LBB31_6
+; CHECK-NEXT:  # %bb.5:
+; CHECK-NEXT:    mv a0, a3
+; CHECK-NEXT:  .LBB31_6:
+; CHECK-NEXT:    srli a2, a3, 2
+; CHECK-NEXT:    vsetvli a4, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vx v0, v24, a2
+; CHECK-NEXT:    slli a3, a3, 4
+; CHECK-NEXT:    add a1, a1, a3
+; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vse64.v v8, (a1), v0.t
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    ret
+>>>>>>> upstream/main
   call void @llvm.vp.store.nxv17f64.p0nxv17f64(<vscale x 17 x double> %val, <vscale x 17 x double>* %ptr, <vscale x 17 x i1> %m, i32 %evl)
   ret void
 }

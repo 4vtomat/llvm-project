@@ -574,7 +574,7 @@ BasicAAResult::DecomposeGEPExpression(const Value *V, const DataLayout &DL,
 
     // Track whether we've seen at least one in bounds gep, and if so, whether
     // all geps parsed were in bounds.
-    if (Decomposed.InBounds == None)
+    if (Decomposed.InBounds == std::nullopt)
       Decomposed.InBounds = GEPOp->isInBounds();
     else if (!GEPOp->isInBounds())
       Decomposed.InBounds = false;
@@ -1399,7 +1399,7 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
 
   // In the recursive alias queries below, we may compare values from two
   // different loop iterations.
-  SaveAndRestore<bool> SavedMayBeCrossIteration(AAQI.MayBeCrossIteration, true);
+  SaveAndRestore SavedMayBeCrossIteration(AAQI.MayBeCrossIteration, true);
 
   AliasResult Alias = AAQI.AAR.alias(MemoryLocation(V1Srcs[0], PNSize),
                                      MemoryLocation(V2, V2Size), AAQI);
@@ -1671,7 +1671,8 @@ bool BasicAAResult::isValueEqualInPotentialCycles(const Value *V,
   // block can (non-trivially) reach itself.
   BasicBlock *BB = const_cast<BasicBlock *>(Inst->getParent());
   SmallVector<BasicBlock *> Succs(successors(BB));
-  return !isPotentiallyReachableFromMany(Succs, BB, nullptr, DT);
+  return !Succs.empty() &&
+         !isPotentiallyReachableFromMany(Succs, BB, nullptr, DT);
 }
 
 /// Computes the symbolic difference between two de-composed GEPs.

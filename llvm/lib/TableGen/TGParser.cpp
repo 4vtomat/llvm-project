@@ -12,7 +12,6 @@
 
 #include "TGParser.h"
 #include "llvm/ADT/DenseMapInfo.h"
-#include "llvm/ADT/None.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/Twine.h"
@@ -2823,7 +2822,7 @@ Init *TGParser::ParseDeclaration(Record *CurRec,
     SMLoc ValLoc = Lex.getLoc();
     Init *Val = ParseValue(CurRec, Type);
     if (!Val ||
-        SetValue(CurRec, ValLoc, DeclName, None, Val,
+        SetValue(CurRec, ValLoc, DeclName, std::nullopt, Val,
                  /*AllowSelfAssignment=*/false, /*OverrideDefLoc=*/false)) {
       // Return the name, even if an error is thrown.  This is so that we can
       // continue to make some progress, even without the value having been

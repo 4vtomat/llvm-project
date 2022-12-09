@@ -57,6 +57,7 @@
 #include "llvm/Transforms/Utils/Debugify.h"
 #include <algorithm>
 #include <memory>
+#include <optional>
 using namespace llvm;
 using namespace opt_tool;
 
@@ -85,6 +86,12 @@ static cl::opt<std::string> PassPipeline(
         "available before a certain pass, add 'require<foo-analysis>'."));
 static cl::alias PassPipeline2("p", cl::aliasopt(PassPipeline),
                                    cl::desc("Alias for -passes"));
+
+static cl::opt<bool> TemporarilyAllowOldPassesSyntax(
+    "temporarily-allow-old-pass-syntax",
+    cl::desc("Do not use in new tests. To be removed once all tests have "
+             "migrated."),
+    cl::init(false));
 
 static cl::opt<bool> PrintPasses("print-passes",
                                  cl::desc("Print available passes that can be "
@@ -250,12 +257,12 @@ static cl::opt<bool> RemarksWithHotness(
     cl::desc("With PGO, include profile count in optimization remarks"),
     cl::Hidden);
 
-static cl::opt<Optional<uint64_t>, false, remarks::HotnessThresholdParser>
+static cl::opt<std::optional<uint64_t>, false, remarks::HotnessThresholdParser>
     RemarksHotnessThreshold(
         "pass-remarks-hotness-threshold",
         cl::desc("Minimum profile count required for "
                  "an optimization remark to be output. "
-                 "Use 'auto' to apply the threshold from profile summary."),
+                 "Use 'auto' to apply the threshold from profile summary"),
         cl::value_desc("N or 'auto'"), cl::init(0), cl::Hidden);
 
 static cl::opt<std::string>
@@ -379,7 +386,8 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "dot-regions",          "dot-regions-only",
       "view-regions",         "view-regions-only",
       "select-optimize",      "expand-large-div-rem",
-      "structurizecfg",       "fix-irreducible"};
+      "structurizecfg",       "fix-irreducible",
+      "expand-large-fp-convert"};
   for (const auto &P : PassNamePrefix)
     if (Pass.startswith(P))
       return true;
@@ -426,6 +434,7 @@ int main(int argc, char **argv) {
   // For codegen passes, only passes that do IR to IR transformation are
   // supported.
   initializeExpandLargeDivRemLegacyPassPass(Registry);
+  initializeExpandLargeFpConvertLegacyPassPass(Registry);
   initializeExpandMemCmpPassPass(Registry);
   initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
   initializeSelectOptimizePass(Registry);
@@ -511,9 +520,9 @@ int main(int argc, char **argv) {
   std::unique_ptr<ToolOutputFile> RemarksFile = std::move(*RemarksFileOrErr);
 
   // Load the input module...
-  auto SetDataLayout = [](StringRef) -> Optional<std::string> {
+  auto SetDataLayout = [](StringRef) -> std::optional<std::string> {
     if (ClDataLayout.empty())
-      return None;
+      return std::nullopt;
     return ClDataLayout;
   };
   std::unique_ptr<Module> M;
@@ -675,6 +684,8 @@ int main(int argc, char **argv) {
                 "alias for a more concise version).\n";
       errs() << "See https://llvm.org/docs/NewPassManager.html#invoking-opt "
                 "for more details on the pass pipeline syntax.\n\n";
+      if (!TemporarilyAllowOldPassesSyntax)
+        return 1;
     }
     std::string Pipeline = PassPipeline;
 

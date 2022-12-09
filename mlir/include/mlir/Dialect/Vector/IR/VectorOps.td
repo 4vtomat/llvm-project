@@ -449,6 +449,23 @@ def Vector_BroadcastOp :
     /// Return the dimensions of the result vector that were formerly ones in the
     /// source tensor and thus correspond to "dim-1" broadcasting.
     llvm::SetVector<int64_t> computeBroadcastedUnitDims();
+
+    /// Broadcast `value` to a vector of `dstShape`, knowing that exactly the 
+    /// `broadcastedDims` dimensions in the dstShape are broadcasted.
+    /// This requires (and asserts) that the broadcast is free of dim-1 
+    /// broadcasting.
+    /// Since vector.broadcast only allows expanding leading dimensions, an extra
+    /// vector.transpose may be inserted to make the broadcast possible.
+    /// `value`, `dstShape` and `broadcastedDims` must be properly specified or 
+    /// the helper will assert. This means:
+    ///   1. `dstShape` must not be empty.
+    ///   2. `broadcastedDims` must be confined to [0 .. rank(value.getVectorType)]
+    ///   2. `dstShape` trimmed of the dimensions specified in `broadcastedDims`
+    //       must match the `value` shape.
+    static Value createOrFoldBroadcastOp(
+      OpBuilder &b, Value value,
+      ArrayRef<int64_t> dstShape,
+      const llvm::SetVector<int64_t> &broadcastedDims);
   }];
   let assemblyFormat = "$source attr-dict `:` type($source) `to` type($vector)";
   let hasFolder = 1;
@@ -537,7 +554,7 @@ def Vector_ExtractElementOp :
 
     Note that this instruction resembles vector.extract, but is restricted to
     0-D and 1-D vectors and relaxed to dynamic indices.
-    If the vector is 0-D, the position must be llvm::None.
+    If the vector is 0-D, the position must be std::nullopt.
 
 
     It is meant to be closer to LLVM's version:
@@ -1351,19 +1368,19 @@ def Vector_TransferReadOp :
                    "Value":$source,
                    "ValueRange":$indices,
                    "AffineMap":$permutationMap,
-                   CArg<"Optional<ArrayRef<bool>>", "::llvm::None">:$inBounds)>,
+                   CArg<"Optional<ArrayRef<bool>>", "::std::nullopt">:$inBounds)>,
     /// 3. Builder that sets permutation map to 'getMinorIdentityMap'.
     OpBuilder<(ins "VectorType":$vectorType,
                    "Value":$source,
                    "ValueRange":$indices,
                    "Value":$padding,
-                   CArg<"Optional<ArrayRef<bool>>", "::llvm::None">:$inBounds)>,
+                   CArg<"Optional<ArrayRef<bool>>", "::std::nullopt">:$inBounds)>,
     /// 4. Builder that sets padding to zero and permutation map to
     /// 'getMinorIdentityMap'.
     OpBuilder<(ins "VectorType":$vectorType,
                    "Value":$source,
                    "ValueRange":$indices,
-                   CArg<"Optional<ArrayRef<bool>>", "::llvm::None">:$inBounds)>,
+                   CArg<"Optional<ArrayRef<bool>>", "::std::nullopt">:$inBounds)>,
   ];
 
   let extraClassDeclaration = [{
@@ -1500,13 +1517,13 @@ def Vector_TransferWriteOp :
                    "Value":$dest,
                    "ValueRange":$indices,
                    "AffineMap":$permutationMap,
-                   CArg<"Optional<ArrayRef<bool>>", "::llvm::None">:$inBounds)>,
+                   CArg<"Optional<ArrayRef<bool>>", "::std::nullopt">:$inBounds)>,
     /// 4. Builder with type inference that sets an empty mask and sets permutation
     /// map to 'getMinorIdentityMap'.
     OpBuilder<(ins "Value":$vector,
                    "Value":$dest,
                    "ValueRange":$indices,
-                   CArg<"Optional<ArrayRef<bool>>", "::llvm::None">:$inBounds)>,
+                   CArg<"Optional<ArrayRef<bool>>", "::std::nullopt">:$inBounds)>,
   ];
 
   let extraClassDeclaration = [{

@@ -19,8 +19,13 @@ define double @test_reassoc_fadd1(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fadd2(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fadd2:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fadd.d ft0, fa2, fa3
 ; CHECK-NEXT:    fadd.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fadd.d ft0, fa0, fa1
+; CHECK-NEXT:    fadd.d ft1, fa2, fa3
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fadd.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fadd nsz reassoc double %a0, %a1
@@ -32,8 +37,13 @@ define double @test_reassoc_fadd2(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fadd3(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fadd3:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fadd.d ft0, fa2, fa3
 ; CHECK-NEXT:    fadd.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fadd.d ft0, fa0, fa1
+; CHECK-NEXT:    fadd.d ft1, fa3, fa2
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fadd.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fadd nsz reassoc double %a0, %a1
@@ -45,8 +55,13 @@ define double @test_reassoc_fadd3(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fadd4(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fadd4:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fadd.d ft0, fa2, fa3
 ; CHECK-NEXT:    fadd.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fadd.d ft0, fa0, fa1
+; CHECK-NEXT:    fadd.d ft1, fa3, fa2
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fadd.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fadd nsz reassoc double %a0, %a1
@@ -71,8 +86,13 @@ define double @test_reassoc_fmul1(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fmul2(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fmul2:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fmul.d ft0, fa2, fa3
 ; CHECK-NEXT:    fmul.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fmul.d ft0, fa0, fa1
+; CHECK-NEXT:    fmul.d ft1, fa2, fa3
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fmul.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fmul nsz reassoc double %a0, %a1
@@ -84,8 +104,13 @@ define double @test_reassoc_fmul2(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fmul3(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fmul3:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fmul.d ft0, fa2, fa3
 ; CHECK-NEXT:    fmul.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fmul.d ft0, fa0, fa1
+; CHECK-NEXT:    fmul.d ft1, fa3, fa2
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fmul.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fmul nsz reassoc double %a0, %a1
@@ -97,8 +122,13 @@ define double @test_reassoc_fmul3(double %a0, double %a1, double %a2, double %a3
 define double @test_reassoc_fmul4(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_reassoc_fmul4:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fmul.d ft0, fa2, fa3
 ; CHECK-NEXT:    fmul.d ft1, fa0, fa1
+=======
+; CHECK-NEXT:    fmul.d ft0, fa0, fa1
+; CHECK-NEXT:    fmul.d ft1, fa3, fa2
+>>>>>>> upstream/main
 ; CHECK-NEXT:    fmul.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fmul nsz reassoc double %a0, %a1
@@ -135,12 +165,21 @@ define double @test_reassoc_big2(double %a0, double %a1, i32 %a2, double %a3, i3
 ; CHECK-NEXT:    fmul.d ft1, fa2, ft1
 ; CHECK-NEXT:    fmul.d ft0, ft0, fa1
 ; CHECK-NEXT:    fadd.d ft3, fa2, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    fadd.d ft2, fa2, ft2
 ; CHECK-NEXT:    fmul.d ft0, ft1, ft0
 ; CHECK-NEXT:    fmul.d ft1, fa0, ft3
 ; CHECK-NEXT:    fsub.d ft2, fa3, ft2
 ; CHECK-NEXT:    fmul.d ft0, ft0, ft1
 ; CHECK-NEXT:    fmul.d fa0, ft2, ft0
+=======
+; CHECK-NEXT:    fmul.d ft0, ft1, ft0
+; CHECK-NEXT:    fadd.d ft1, fa2, ft2
+; CHECK-NEXT:    fmul.d ft2, fa0, ft3
+; CHECK-NEXT:    fsub.d ft1, fa3, ft1
+; CHECK-NEXT:    fmul.d ft0, ft0, ft2
+; CHECK-NEXT:    fmul.d fa0, ft1, ft0
+>>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %cvt1 = sitofp i32 %a2 to double
   %cvt2 = sitofp i32 %a4 to double

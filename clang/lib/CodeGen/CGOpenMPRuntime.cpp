@@ -1363,10 +1363,11 @@ static StringRef getIdentStringFromSourceLocation(CodeGenFunction &CGF,
 
 llvm::Value *CGOpenMPRuntime::emitUpdateLocation(CodeGenFunction &CGF,
                                                  SourceLocation Loc,
-                                                 unsigned Flags) {
+                                                 unsigned Flags, bool EmitLoc) {
   uint32_t SrcLocStrSize;
   llvm::Constant *SrcLocStr;
-  if (CGM.getCodeGenOpts().getDebugInfo() == codegenoptions::NoDebugInfo ||
+  if ((!EmitLoc &&
+       CGM.getCodeGenOpts().getDebugInfo() == codegenoptions::NoDebugInfo) ||
       Loc.isInvalid()) {
     SrcLocStr = OMPBuilder.getOrCreateDefaultSrcLocStr(SrcLocStrSize);
   } else {
@@ -2554,6 +2555,22 @@ void CGOpenMPRuntime::emitBarrierCall(CodeGenFunction &CGF, SourceLocation Loc,
   }
   CGF.EmitRuntimeCall(OMPBuilder.getOrCreateRuntimeFunction(
                           CGM.getModule(), OMPRTL___kmpc_barrier),
+                      Args);
+}
+
+void CGOpenMPRuntime::emitErrorCall(CodeGenFunction &CGF, SourceLocation Loc,
+                                    Expr *ME, bool IsFatal) {
+  llvm::Value *MVL =
+      ME ? CGF.EmitStringLiteralLValue(cast<StringLiteral>(ME)).getPointer(CGF)
+         : llvm::ConstantPointerNull::get(CGF.VoidPtrTy);
+  // Build call void __kmpc_error(ident_t *loc, int severity, const char
+  // *message)
+  llvm::Value *Args[] = {
+      emitUpdateLocation(CGF, Loc, /*Flags=*/0, /*GenLoc=*/true),
+      llvm::ConstantInt::get(CGM.Int32Ty, IsFatal ? 2 : 1),
+      CGF.Builder.CreatePointerCast(MVL, CGM.Int8PtrTy)};
+  CGF.EmitRuntimeCall(OMPBuilder.getOrCreateRuntimeFunction(
+                          CGM.getModule(), OMPRTL___kmpc_error),
                       Args);
 }
 
@@ -4739,7 +4756,7 @@ void CGOpenMPRuntime::emitTaskCall(CodeGenFunction &CGF, SourceLocation Loc,
       Region->emitUntiedSwitch(CGF);
   };
 
-  llvm::Value *DepWaitTaskArgs[6];
+  llvm::Value *DepWaitTaskArgs[7];
   if (!Data.Dependences.empty()) {
     DepWaitTaskArgs[0] = UpLoc;
     DepWaitTaskArgs[1] = ThreadID;
@@ -4747,6 +4764,8 @@ void CGOpenMPRuntime::emitTaskCall(CodeGenFunction &CGF, SourceLocation Loc,
     DepWaitTaskArgs[3] = DependenciesArray.getPointer();
     DepWaitTaskArgs[4] = CGF.Builder.getInt32(0);
     DepWaitTaskArgs[5] = llvm::ConstantPointerNull::get(CGF.VoidPtrTy);
+    DepWaitTaskArgs[6] =
+        llvm::ConstantInt::get(CGF.Int32Ty, Data.HasNowaitClause);
   }
   auto &M = CGM.getModule();
   auto &&ElseCodeGen = [this, &M, &TaskArgs, ThreadID, NewTaskNewTaskTTy,
@@ -4758,9 +4777,9 @@ void CGOpenMPRuntime::emitTaskCall(CodeGenFunction &CGF, SourceLocation Loc,
     // ndeps_noalias, kmp_depend_info_t *noalias_dep_list); if dependence info
     // is specified.
     if (!Data.Dependences.empty())
-      CGF.EmitRuntimeCall(
-          OMPBuilder.getOrCreateRuntimeFunction(M, OMPRTL___kmpc_omp_wait_deps),
-          DepWaitTaskArgs);
+      CGF.EmitRuntimeCall(OMPBuilder.getOrCreateRuntimeFunction(
+                              M, OMPRTL___kmpc_omp_taskwait_deps_51),
+                          DepWaitTaskArgs);
     // Call proxy_task_entry(gtid, new_task);
     auto &&CodeGen = [TaskEntry, ThreadID, NewTaskNewTaskTTy,
                       Loc](CodeGenFunction &CGF, PrePostActionTy &Action) {
@@ -5261,7 +5280,7 @@ void CGOpenMPRuntime::emitReduction(CodeGenFunction &CGF, SourceLocation Loc,
   };
   RegionCodeGenTy RCG(CodeGen);
   CommonActionTy Action(
-      nullptr, llvm::None,
+      nullptr, std::nullopt,
       OMPBuilder.getOrCreateRuntimeFunction(
           CGM.getModule(), WithNowait ? OMPRTL___kmpc_end_reduce_nowait
                                       : OMPRTL___kmpc_end_reduce),
@@ -5383,7 +5402,7 @@ void CGOpenMPRuntime::emitReduction(CodeGenFunction &CGF, SourceLocation Loc,
         ThreadId,  // i32 <gtid>
         Lock       // kmp_critical_name *&<lock>
     };
-    CommonActionTy Action(nullptr, llvm::None,
+    CommonActionTy Action(nullptr, std::nullopt,
                           OMPBuilder.getOrCreateRuntimeFunction(
                               CGM.getModule(), OMPRTL___kmpc_end_reduce),
                           EndArgs);
@@ -5799,7 +5818,7 @@ void CGOpenMPRuntime::emitTaskwaitCall(CodeGenFunction &CGF, SourceLocation Loc,
 
   if (CGF.CGM.getLangOpts().OpenMPIRBuilder && Data.Dependences.empty()) {
     // TODO: Need to support taskwait with dependences in the OpenMPIRBuilder.
-    OMPBuilder.createTaskwait(CGF.Builder);
+    OMPBuilder.createTaskwait(CGF.Builder, Data.HasNowaitClause);
   } else {
     llvm::Value *ThreadID = getThreadID(CGF, Loc);
     llvm::Value *UpLoc = emitUpdateLocation(CGF, Loc);
@@ -5808,34 +5827,38 @@ void CGOpenMPRuntime::emitTaskwaitCall(CodeGenFunction &CGF, SourceLocation Loc,
     llvm::Value *NumOfElements;
     std::tie(NumOfElements, DependenciesArray) =
         emitDependClause(CGF, Data.Dependences, Loc);
-    llvm::Value *DepWaitTaskArgs[6];
     if (!Data.Dependences.empty()) {
+      llvm::Value *DepWaitTaskArgs[7];
       DepWaitTaskArgs[0] = UpLoc;
       DepWaitTaskArgs[1] = ThreadID;
       DepWaitTaskArgs[2] = NumOfElements;
       DepWaitTaskArgs[3] = DependenciesArray.getPointer();
       DepWaitTaskArgs[4] = CGF.Builder.getInt32(0);
       DepWaitTaskArgs[5] = llvm::ConstantPointerNull::get(CGF.VoidPtrTy);
+      DepWaitTaskArgs[6] =
+          llvm::ConstantInt::get(CGF.Int32Ty, Data.HasNowaitClause);
 
       CodeGenFunction::RunCleanupsScope LocalScope(CGF);
 
-      // Build void __kmpc_omp_wait_deps(ident_t *, kmp_int32 gtid,
+      // Build void __kmpc_omp_taskwait_deps_51(ident_t *, kmp_int32 gtid,
       // kmp_int32 ndeps, kmp_depend_info_t *dep_list, kmp_int32
-      // ndeps_noalias, kmp_depend_info_t *noalias_dep_list); if dependence info
-      // is specified.
-      CGF.EmitRuntimeCall(
-          OMPBuilder.getOrCreateRuntimeFunction(M, OMPRTL___kmpc_omp_wait_deps),
-          DepWaitTaskArgs);
+      // ndeps_noalias, kmp_depend_info_t *noalias_dep_list,
+      // kmp_int32 has_no_wait); if dependence info is specified.
+      CGF.EmitRuntimeCall(OMPBuilder.getOrCreateRuntimeFunction(
+                              M, OMPRTL___kmpc_omp_taskwait_deps_51),
+                          DepWaitTaskArgs);
 
     } else {
 
       // Build call kmp_int32 __kmpc_omp_taskwait(ident_t *loc, kmp_int32
       // global_tid);
-      llvm::Value *Args[] = {UpLoc, ThreadID};
+      llvm::Value *HasNowaitClauseVal =
+          llvm::ConstantInt::get(CGF.IntTy, Data.HasNowaitClause);
+      llvm::Value *Args[3] = {UpLoc, ThreadID, HasNowaitClauseVal};
       // Ignore return result until untied tasks are supported.
-      CGF.EmitRuntimeCall(
-          OMPBuilder.getOrCreateRuntimeFunction(M, OMPRTL___kmpc_omp_taskwait),
-          Args);
+      CGF.EmitRuntimeCall(OMPBuilder.getOrCreateRuntimeFunction(
+                              M, OMPRTL___kmpc_omp_taskwait_51),
+                          Args);
     }
   }
 
@@ -6095,8 +6118,9 @@ void CGOpenMPRuntime::emitTargetOutlinedFunctionHelper(
   CGOpenMPTargetRegionInfo CGInfo(CS, CodeGen, EntryFnName);
   CodeGenFunction::CGCapturedStmtRAII CapInfoRAII(CGF, &CGInfo);
 
-  if (BuildOutlinedFn)
-    OutlinedFn = CGF.GenerateOpenMPCapturedStmtFunction(CS, D.getBeginLoc());
+  OutlinedFn = BuildOutlinedFn
+                   ? CGF.GenerateOpenMPCapturedStmtFunction(CS, D.getBeginLoc())
+                   : nullptr;
 
   // If this target outline function is not an offload entry, we don't need to
   // register it.
@@ -6114,50 +6138,19 @@ void CGOpenMPRuntime::emitTargetOutlinedFunctionHelper(
   // outlined function to have external linkage in case we are emitting code for
   // the device, because these functions will be entry points to the device.
 
-  if (CGM.getLangOpts().OpenMPIsDevice) {
-    OutlinedFnID = llvm::ConstantExpr::getBitCast(OutlinedFn, CGM.Int8PtrTy);
-    OutlinedFn->setLinkage(llvm::GlobalValue::WeakODRLinkage);
-    OutlinedFn->setDSOLocal(false);
-    OutlinedFn->setVisibility(llvm::GlobalValue::ProtectedVisibility);
-    if (CGM.getTriple().isAMDGCN())
-      OutlinedFn->setCallingConv(llvm::CallingConv::AMDGPU_KERNEL);
-  } else {
-    std::string Name = getName({EntryFnName, "region_id"});
-    OutlinedFnID = new llvm::GlobalVariable(
-        CGM.getModule(), CGM.Int8Ty, /*isConstant=*/true,
-        llvm::GlobalValue::WeakAnyLinkage,
-        llvm::Constant::getNullValue(CGM.Int8Ty), Name);
-  }
-
-  // If we do not allow host fallback we still need a named address to use.
-  llvm::Constant *TargetRegionEntryAddr = OutlinedFn;
-  if (!BuildOutlinedFn) {
-    assert(!CGM.getModule().getGlobalVariable(EntryFnName, true) &&
-           "Named kernel already exists?");
-    TargetRegionEntryAddr = new llvm::GlobalVariable(
-        CGM.getModule(), CGM.Int8Ty, /*isConstant=*/true,
-        llvm::GlobalValue::InternalLinkage,
-        llvm::Constant::getNullValue(CGM.Int8Ty), EntryFnName);
-  }
-
-  // Register the information for the entry associated with this target region.
-  OffloadEntriesInfoManager.registerTargetRegionEntryInfo(
-      EntryInfo, TargetRegionEntryAddr, OutlinedFnID,
-      llvm::OffloadEntriesInfoManager::OMPTargetRegionEntryTargetRegion);
-
-  // Add NumTeams and ThreadLimit attributes to the outlined GPU function
+  // Get NumTeams and ThreadLimit attributes
   int32_t DefaultValTeams = -1;
-  getNumTeamsExprForTargetDirective(CGF, D, DefaultValTeams);
-  if (DefaultValTeams > 0 && OutlinedFn) {
-    OutlinedFn->addFnAttr("omp_target_num_teams",
-                          std::to_string(DefaultValTeams));
-  }
   int32_t DefaultValThreads = -1;
+  getNumTeamsExprForTargetDirective(CGF, D, DefaultValTeams);
   getNumThreadsExprForTargetDirective(CGF, D, DefaultValThreads);
-  if (DefaultValThreads > 0 && OutlinedFn) {
-    OutlinedFn->addFnAttr("omp_target_thread_limit",
-                          std::to_string(DefaultValThreads));
-  }
+
+  std::string EntryFnIDName = CGM.getLangOpts().OpenMPIsDevice
+                                  ? std::string(EntryFnName)
+                                  : getName({EntryFnName, "region_id"});
+
+  OutlinedFnID = OMPBuilder.registerTargetRegionFunction(
+      OffloadEntriesInfoManager, EntryInfo, OutlinedFn, EntryFnName,
+      EntryFnIDName, DefaultValTeams, DefaultValThreads);
 
   if (BuildOutlinedFn)
     CGM.getTargetCodeGenInfo().setTargetAttributes(nullptr, OutlinedFn, CGM);
@@ -7239,7 +7232,7 @@ private:
       const ValueDecl *Mapper = nullptr, bool ForDeviceAddr = false,
       const ValueDecl *BaseDecl = nullptr, const Expr *MapExpr = nullptr,
       ArrayRef<OMPClauseMappableExprCommon::MappableExprComponentListRef>
-          OverlappedElements = llvm::None) const {
+          OverlappedElements = std::nullopt) const {
     // The following summarizes what has to be generated for each map and the
     // types below. The generated information is expressed in this order:
     // base pointer, section pointer, size, flags
@@ -8026,7 +8019,7 @@ private:
       // for map(to: lambda): using user specified map type.
       return getMapTypeBits(
           I->getSecond()->getMapType(), I->getSecond()->getMapTypeModifiers(),
-          /*MotionModifiers=*/llvm::None, I->getSecond()->isImplicit(),
+          /*MotionModifiers=*/std::nullopt, I->getSecond()->isImplicit(),
           /*AddPtrFlag=*/false,
           /*AddIsTargetParamFlag=*/false,
           /*isNonContiguous=*/false);
@@ -8170,7 +8163,7 @@ private:
       for (const auto L : C->component_lists()) {
         const Expr *E = (C->getMapLoc().isValid()) ? *EI : nullptr;
         InfoGen(std::get<0>(L), Kind, std::get<1>(L), C->getMapType(),
-                C->getMapTypeModifiers(), llvm::None,
+                C->getMapTypeModifiers(), std::nullopt,
                 /*ReturnDevicePointer=*/false, C->isImplicit(), std::get<2>(L),
                 E);
         ++EI;
@@ -8186,7 +8179,7 @@ private:
         Kind = Present;
       const auto *EI = C->getVarRefs().begin();
       for (const auto L : C->component_lists()) {
-        InfoGen(std::get<0>(L), Kind, std::get<1>(L), OMPC_MAP_to, llvm::None,
+        InfoGen(std::get<0>(L), Kind, std::get<1>(L), OMPC_MAP_to, std::nullopt,
                 C->getMotionModifiers(), /*ReturnDevicePointer=*/false,
                 C->isImplicit(), std::get<2>(L), *EI);
         ++EI;
@@ -8202,9 +8195,10 @@ private:
         Kind = Present;
       const auto *EI = C->getVarRefs().begin();
       for (const auto L : C->component_lists()) {
-        InfoGen(std::get<0>(L), Kind, std::get<1>(L), OMPC_MAP_from, llvm::None,
-                C->getMotionModifiers(), /*ReturnDevicePointer=*/false,
-                C->isImplicit(), std::get<2>(L), *EI);
+        InfoGen(std::get<0>(L), Kind, std::get<1>(L), OMPC_MAP_from,
+                std::nullopt, C->getMotionModifiers(),
+                /*ReturnDevicePointer=*/false, C->isImplicit(), std::get<2>(L),
+                *EI);
         ++EI;
       }
     }
@@ -8250,8 +8244,8 @@ private:
             // processed. Nonetheless, generateInfoForComponentList must be
             // called to take the pointer into account for the calculation of
             // the range of the partial struct.
-            InfoGen(nullptr, Other, Components, OMPC_MAP_unknown, llvm::None,
-                    llvm::None, /*ReturnDevicePointer=*/false, IsImplicit,
+            InfoGen(nullptr, Other, Components, OMPC_MAP_unknown, std::nullopt,
+                    std::nullopt, /*ReturnDevicePointer=*/false, IsImplicit,
                     nullptr, nullptr, IsDevAddr);
             DeferredInfo[nullptr].emplace_back(IE, VD, IsDevAddr);
           } else {
@@ -8919,7 +8913,7 @@ public:
       ArrayRef<OMPClauseMappableExprCommon::MappableExprComponentListRef>
           OverlappedComponents = Pair.getSecond();
       generateInfoForComponentList(
-          MapType, MapModifiers, llvm::None, Components, CombinedInfo,
+          MapType, MapModifiers, std::nullopt, Components, CombinedInfo,
           PartialStruct, IsFirstComponentList, IsImplicit, Mapper,
           /*ForDeviceAddr=*/false, VD, VarRef, OverlappedComponents);
       IsFirstComponentList = false;
@@ -8936,7 +8930,7 @@ public:
           L;
       auto It = OverlappedData.find(&L);
       if (It == OverlappedData.end())
-        generateInfoForComponentList(MapType, MapModifiers, llvm::None,
+        generateInfoForComponentList(MapType, MapModifiers, std::nullopt,
                                      Components, CombinedInfo, PartialStruct,
                                      IsFirstComponentList, IsImplicit, Mapper,
                                      /*ForDeviceAddr=*/false, VD, VarRef);

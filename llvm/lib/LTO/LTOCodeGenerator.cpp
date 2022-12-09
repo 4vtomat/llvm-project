@@ -62,6 +62,7 @@
 #include "llvm/Transforms/IPO/WholeProgramDevirt.h"
 #include "llvm/Transforms/ObjCARC.h"
 #include "llvm/Transforms/Utils/ModuleUtils.h"
+#include <optional>
 #include <system_error>
 using namespace llvm;
 
@@ -85,7 +86,7 @@ cl::opt<bool> RemarksWithHotness(
     cl::desc("With PGO, include profile count in optimization remarks"),
     cl::Hidden);
 
-cl::opt<Optional<uint64_t>, false, remarks::HotnessThresholdParser>
+cl::opt<std::optional<uint64_t>, false, remarks::HotnessThresholdParser>
     RemarksHotnessThreshold(
         "lto-pass-remarks-hotness-threshold",
         cl::desc("Minimum profile count required for an "
@@ -118,7 +119,15 @@ cl::opt<std::string> AIXSystemAssemblerPath(
     "lto-aix-system-assembler",
     cl::desc("Path to a system assembler, picked up on AIX only"),
     cl::value_desc("path"));
-}
+
+cl::opt<bool>
+    LTORunCSIRInstr("cs-profile-generate",
+                    cl::desc("Perform context sensitive PGO instrumentation"));
+
+cl::opt<std::string>
+    LTOCSIRProfile("cs-profile-path",
+                   cl::desc("Context sensitive profile file path"));
+} // namespace llvm
 
 LTOCodeGenerator::LTOCodeGenerator(LLVMContext &Context)
     : Context(Context), MergedModule(new Module("ld-temp.o", Context)),
@@ -126,11 +135,14 @@ LTOCodeGenerator::LTOCodeGenerator(LLVMContext &Context)
   Context.setDiscardValueNames(LTODiscardValueNames);
   Context.enableDebugTypeODRUniquing();
 
-  Config.CodeModel = None;
+  Config.CodeModel = std::nullopt;
   Config.StatsFile = LTOStatsFile;
   Config.PreCodeGenPassesHook = [](legacy::PassManager &PM) {
     PM.add(createObjCARCContractPass());
   };
+
+  Config.RunCSIRInstr = LTORunCSIRInstr;
+  Config.CSIRProfile = LTOCSIRProfile;
 }
 
 LTOCodeGenerator::~LTOCodeGenerator() = default;
@@ -261,13 +273,18 @@ bool LTOCodeGenerator::runAIXSystemAssembler(SmallString<128> &AssemblyFile) {
     }
   }
 
+  // Setup the LDR_CNTRL variable
+  std::string LDR_CNTRL_var = "LDR_CNTRL=MAXDATA32=0xA0000000@DSA";
+  if (std::optional<std::string> V = sys::Process::GetEnv("LDR_CNTRL"))
+    LDR_CNTRL_var += ("@" + *V);
+
   // Prepare inputs for the assember.
   const auto &Triple = TargetMach->getTargetTriple();
   const char *Arch = Triple.isArch64Bit() ? "-a64" : "-a32";
   std::string ObjectFileName(AssemblyFile);
   ObjectFileName[ObjectFileName.size() - 1] = 'o';
   SmallVector<StringRef, 8> Args = {
-      "/bin/env",     "LDR_CNTRL=MAXDATA32=0x80000000@${LDR_CNTRL}",
+      "/bin/env",     LDR_CNTRL_var,
       AssemblerPath,  Arch,
       "-many",        "-o",
       ObjectFileName, AssemblyFile};
@@ -430,7 +447,7 @@ std::unique_ptr<TargetMachine> LTOCodeGenerator::createTargetMachine() {
   assert(MArch && "MArch is not set!");
   return std::unique_ptr<TargetMachine>(MArch->createTargetMachine(
       TripleStr, Config.CPU, FeatureStr, Config.Options, Config.RelocModel,
-      None, Config.CGOptLevel));
+      std::nullopt, Config.CGOptLevel));
 }
 
 // If a linkonce global is present in the MustPreserveSymbols, we need to make

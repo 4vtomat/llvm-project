@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Support/RISCVISAInfo.h"
-#include "llvm/ADT/None.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/StringExtras.h"
@@ -205,7 +204,7 @@ findDefaultVersion(StringRef ExtName) {
     }
     return ExtensionInfoIterator->Version;
   }
-  return None;
+  return std::nullopt;
 }
 
 void RISCVISAInfo::addExtension(StringRef ExtName, unsigned MajorVersion,
@@ -246,8 +245,13 @@ static StringRef getExtensionType(StringRef Ext) {
 static bool isExperimentalExtension(StringRef Ext) {
   auto ExtIterator =
       llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
+<<<<<<< HEAD
   return ExtIterator != std::end(SupportedExperimentalExtensions);
 }
+=======
+  if (ExtIterator == std::end(SupportedExperimentalExtensions))
+    return std::nullopt;
+>>>>>>> upstream/main
 
 static SmallVector<RISCVExtensionVersion, 4>
 getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {

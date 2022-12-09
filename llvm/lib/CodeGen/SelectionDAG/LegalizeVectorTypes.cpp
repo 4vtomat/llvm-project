@@ -1128,7 +1128,9 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
     break;
   case ISD::FMA: case ISD::VP_FMA:
   case ISD::FSHL:
+  case ISD::VP_FSHL:
   case ISD::FSHR:
+  case ISD::VP_FSHR:
     SplitVecRes_TernaryOp(N, Lo, Hi);
     break;
 
@@ -4259,7 +4261,9 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
     break;
   case ISD::FMA: case ISD::VP_FMA:
   case ISD::FSHL:
+  case ISD::VP_FSHL:
   case ISD::FSHR:
+  case ISD::VP_FSHR:
     Res = WidenVecRes_Ternary(N);
     break;
   }
@@ -6793,7 +6797,7 @@ static Optional<EVT> findMemType(SelectionDAG &DAG, const TargetLowering &TLI,
   // Using element-wise loads and stores for widening operations is not
   // supported for scalable vectors
   if (Scalable)
-    return None;
+    return std::nullopt;
 
   return RetVT;
 }

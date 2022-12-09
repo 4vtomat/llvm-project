@@ -14,7 +14,6 @@
 #define LLVM_ANALYSIS_MEMORYDEPENDENCEANALYSIS_H
 
 #include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerEmbeddedInt.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerSumType.h"
@@ -475,7 +474,7 @@ public:
     const auto Off = ClobberOffsets.find(DepInst);
     if (Off != ClobberOffsets.end())
       return Off->getSecond();
-    return None;
+    return std::nullopt;
   }
 
 private:
