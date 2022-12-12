@@ -40,8 +40,8 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
 #include <optional>
-#include "llvm/Transforms/Scalar.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
 #endif
 using namespace llvm;

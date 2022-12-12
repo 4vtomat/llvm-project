@@ -253,6 +253,7 @@ static bool isExperimentalExtension(StringRef Ext) {
     return std::nullopt;
 >>>>>>> upstream/main
 
+#if SIFIVE_CUSTOMIZATION
 static SmallVector<RISCVExtensionVersion, 4>
 getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
   SmallVector<RISCVExtensionVersion, 4> SupportedVersions;
@@ -267,6 +268,7 @@ getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
   }
   return SupportedVersions;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
   bool IsExperimental = stripExperimentalPrefix(Ext);
