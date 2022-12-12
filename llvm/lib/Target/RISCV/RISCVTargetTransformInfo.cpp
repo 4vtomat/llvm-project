@@ -425,7 +425,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     }
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(Tp) &&
       (!SubTp || isa<ScalableVectorType>(SubTp))) {
@@ -450,7 +449,7 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   if (isa<FixedVectorType>(Tp) && Kind == TargetTransformInfo::SK_Broadcast) {
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
     bool HasScalar = (Args.size() > 0) && (Operator::getOpcode(Args[0]) ==
@@ -488,7 +487,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     // implementation-dependent.
     return LT.first * getLMULCost(LT.second);
   }
->>>>>>> upstream/main
 
   return BaseT::getShuffleCost(Kind, Tp, Mask, CostKind, Index, SubTp);
 }
