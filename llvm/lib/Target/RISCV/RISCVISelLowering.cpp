@@ -10606,6 +10606,12 @@ struct NodeExtensionHelper {
       break;
     }
     default:
+#if SIFIVE_CUSTOMIZATION
+      // We aren't going to modify this operand so it doesn't matter how many
+      // uses it has. This is a workaround for a larger issue described in
+      // https://github.com/llvm/llvm-project/issues/59345
+      EnforceOneUse = false;
+#endif // SIFIVE_CUSTOMIZATION
       break;
     }
   }
