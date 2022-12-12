@@ -303,7 +303,9 @@
 #    define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 40)
 #  endif
 #elif SANITIZER_RISCV64
-#  define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 38)
+// FIXME: Set to 47 to ensure it works with both Sv39 and Sv48; however,
+// this will not work correctly on Sv57.
+#  define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 47)
 #elif defined(__aarch64__)
 #  if SANITIZER_APPLE
 #    if SANITIZER_OSX || SANITIZER_IOSSIM
