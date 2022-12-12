@@ -566,15 +566,11 @@ void RISCVRegisterInfo::getOffsetOpcodes(const StackOffset &Offset,
 
 unsigned
 RISCVRegisterInfo::getRegisterCostTableIndex(const MachineFunction &MF) const {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (DisableCostPerUse)
     return 0;
 #endif
-  return MF.getSubtarget<RISCVSubtarget>().hasStdExtC() ? 1 : 0;
-=======
   return MF.getSubtarget<RISCVSubtarget>().hasStdExtCOrZca() ? 1 : 0;
->>>>>>> upstream/main
 }
 
 // Add two address hints to improve chances of being able to use a compressed
