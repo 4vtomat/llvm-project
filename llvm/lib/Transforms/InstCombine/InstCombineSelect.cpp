@@ -3266,5 +3266,25 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Match (select (X < 0), (sub 1<<C, (zext X)), (zext X)) where C is the bit
+  // width of X. Replace with (zext (abs X)).
+  Value *V;
+  ICmpInst::Predicate Pred;
+  if (match(CondVal, m_ICmp(Pred, m_Value(V), m_ZeroInt())) &&
+      Pred == ICmpInst::ICMP_SLT && match(FalseVal, m_ZExt(m_Specific(V))) &&
+      FalseVal->hasNUses(2)) {
+    unsigned BitWidth = V->getType()->getScalarSizeInBits();
+    unsigned WideWidth = SelType->getScalarSizeInBits();
+    if (match(TrueVal,
+              m_Sub(m_SpecificInt(APInt::getOneBitSet(WideWidth, BitWidth)),
+                    m_Specific(FalseVal)))) {
+      Instruction *Abs = Builder.CreateBinaryIntrinsic(Intrinsic::abs, V,
+                                                       Builder.getInt1(false));
+      return new ZExtInst(Abs, SelType);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   return nullptr;
 }
