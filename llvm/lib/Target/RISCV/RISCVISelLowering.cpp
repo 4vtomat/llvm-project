@@ -7852,21 +7852,6 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
-  // If Shift is equal to RHS size, (1 << RHS) would have widening type.
-  bool CanHoldMulRHS = !ShiftIncSize || EltBitSize < Subtarget.getXLen();
-  // SEW 64 vsmul is only included in V.
-  bool CanUseSmul = (EltBitSize != 64) || Subtarget.hasStdExtV();
-  // Only signed type can use vsmul.
-  CanUseSmul = CanUseSmul && IsSigned;
-  if (CanHoldMulRHS && CanUseSmul) {
-    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Smul = DAG.getNode(
-        RISCVISD::VSMUL_VL, DL, ContainerVT,
-        {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-         convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
-         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
-    return convertFromScalableVector(VT, Smul, DAG, Subtarget);
-  }
   MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
                                  VT.getVectorNumElements());
   // Widening operation is used. Make sure EltBitSize * 2 is smaller than or
@@ -7877,7 +7862,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
       EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
   // For unsigned type, widen algo causes higher register pressure.
   bool UseWidenAlgo = SplatRHS ? true : IsSigned;
-  if (CanHoldMulRHS && CanUseWidenAlgo && UseWidenAlgo) {
+  if (CanUseWidenAlgo && UseWidenAlgo) {
     unsigned WmulOpc;
     unsigned NclipOpc;
     if (IsSigned) {

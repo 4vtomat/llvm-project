@@ -7,10 +7,9 @@ define void @vqrshlq_s8(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    csrrwi a2, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a2
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %src, align 1
@@ -39,10 +38,9 @@ define void @vqrshlq_s16(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
-; CHECK-NEXT:    csrrwi a2, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a2
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %src, align 2
@@ -57,10 +55,9 @@ define void @vqrshl_s16(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    li a0, 2
-; CHECK-NEXT:    csrrwi a2, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a2
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %src, align 2
@@ -76,10 +73,9 @@ define void @vqrshlq_s32(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    csrrwi a2, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a2
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %src, align 4
@@ -95,10 +91,9 @@ define void @vqrshl_s32(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    csrrwi a2, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a2
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %src, align 4

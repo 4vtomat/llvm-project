@@ -20,10 +20,9 @@ define void @vqrshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB0_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -58,10 +57,9 @@ define void @vqrshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB1_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -145,10 +143,9 @@ define void @vqrshl_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-NEXT:    minu a0, a1, a0
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a0, a3, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB3_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -356,10 +353,9 @@ define void @vqrshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signe
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB8_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -394,10 +390,9 @@ define void @vqrshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signe
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a0, a1, .LBB9_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -482,10 +477,9 @@ define void @vqrshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext
 ; CHECK-NEXT:    minu a0, a1, a0
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a0, a3, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v9, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v9, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bgeu a1, a0, .LBB11_4
 ; CHECK-NEXT:  # %bb.3: # %entry
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -685,10 +679,9 @@ define void @vqshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v9, 0
 ; CHECK-NEXT:    bltu a0, a1, .LBB16_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a1, 256
@@ -718,10 +711,9 @@ define void @vqshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v9, 0
 ; CHECK-NEXT:    bltu a0, a1, .LBB17_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a1, 256
@@ -795,10 +787,9 @@ define void @vqshl_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK-NEXT:    minu a0, a1, a0
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a0, a3, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v9, 0
 ; CHECK-NEXT:    bltu a1, a0, .LBB19_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    neg a0, a1
@@ -980,10 +971,9 @@ define void @vqshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bltu a0, a1, .LBB24_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a1, 256
@@ -1013,10 +1003,9 @@ define void @vqshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    minu a1, a0, a1
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a1, a3, a1
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a1
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bltu a0, a1, .LBB25_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a1, 256
@@ -1091,10 +1080,9 @@ define void @vqshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-NEXT:    minu a0, a1, a0
 ; CHECK-NEXT:    li a3, 1
 ; CHECK-NEXT:    sll a0, a3, a0
-; CHECK-NEXT:    csrrwi a3, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v9, v8, a0
+; CHECK-NEXT:    vwmulsu.vx v10, v8, a0
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    csrw vxrm, a3
+; CHECK-NEXT:    vnclip.wi v9, v10, 0
 ; CHECK-NEXT:    bltu a1, a0, .LBB27_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    neg a0, a1
