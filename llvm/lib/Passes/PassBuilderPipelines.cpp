@@ -1787,12 +1787,11 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
                         ThinOrFullLTOPhase::FullLTOPostLink);
   }
 
-<<<<<<< HEAD
-=======
+#if !SIFIVE_CUSTOMIZATION
   // Break up allocas
   FPM.addPass(SROAPass(SROAOptions::ModifyCFG));
+#endif
 
->>>>>>> upstream/main
   // LTO provides additional opportunities for tailcall elimination due to
   // link-time inlining, and visibility of nocapture attribute.
   FPM.addPass(TailCallElimPass());
@@ -1819,8 +1818,10 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
   FunctionPassManager MainFPM;
 
+#if SIFIVE_CUSTOMIZATION
   // Break up allocas
-  MainFPM.addPass(SROAPass());
+  MainFPM.addPass(SROAPass(SROAOptions::ModifyCFG));
+#endif // SIFIVE_CUSTOMIZATION
   MainFPM.addPass(createFunctionToLoopPassAdaptor(
       LICMPass(PTO.LicmMssaOptCap, PTO.LicmMssaNoAccForPromotionCap,
                /*AllowSpeculation=*/true),
