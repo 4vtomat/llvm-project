@@ -1714,6 +1714,12 @@ bool RISCVTargetLowering::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::fma:
   case Intrinsic::vp_fma:
     return Operand == 0 || Operand == 1;
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_gather:
+    return Operand == 0;
+  case Intrinsic::vp_scatter:
+    return Operand == 1;
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_shl:
   case Intrinsic::vp_lshr:
   case Intrinsic::vp_ashr:
@@ -1750,7 +1756,6 @@ bool RISCVTargetLowering::shouldSinkOperands(
   if (!I->getType()->isVectorTy() || !Subtarget.hasVInstructions())
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Don't sink splat operands if the target prefers it. Some targets requires
   // S2V transfer buffers and we can run out of them copying the same value
@@ -1761,74 +1766,6 @@ bool RISCVTargetLowering::shouldSinkOperands(
     return false;
 #endif // SIFIVE_CUSTOMIZATION
 
-  auto IsSinker = [&](Instruction *I, int Operand) {
-    switch (I->getOpcode()) {
-    case Instruction::Add:
-    case Instruction::Sub:
-    case Instruction::Mul:
-    case Instruction::And:
-    case Instruction::Or:
-    case Instruction::Xor:
-    case Instruction::FAdd:
-    case Instruction::FSub:
-    case Instruction::FMul:
-    case Instruction::FDiv:
-    case Instruction::ICmp:
-    case Instruction::FCmp:
-      return true;
-    case Instruction::Shl:
-    case Instruction::LShr:
-    case Instruction::AShr:
-    case Instruction::UDiv:
-    case Instruction::SDiv:
-    case Instruction::URem:
-    case Instruction::SRem:
-      return Operand == 1;
-    case Instruction::Call:
-      if (auto *II = dyn_cast<IntrinsicInst>(I)) {
-        switch (II->getIntrinsicID()) {
-        case Intrinsic::fma:
-        case Intrinsic::vp_fma:
-          return Operand == 0 || Operand == 1;
-#if SIFIVE_CUSTOMIZATION
-        case Intrinsic::vp_gather:
-          return Operand == 0;
-        case Intrinsic::vp_scatter:
-          return Operand == 1;
-#endif // SIFIVE_CUSTOMIZATION
-        case Intrinsic::vp_shl:
-        case Intrinsic::vp_lshr:
-        case Intrinsic::vp_ashr:
-        case Intrinsic::vp_udiv:
-        case Intrinsic::vp_sdiv:
-        case Intrinsic::vp_urem:
-        case Intrinsic::vp_srem:
-          return Operand == 1;
-        // These intrinsics are commutative.
-        case Intrinsic::vp_add:
-        case Intrinsic::vp_mul:
-        case Intrinsic::vp_and:
-        case Intrinsic::vp_or:
-        case Intrinsic::vp_xor:
-        case Intrinsic::vp_fadd:
-        case Intrinsic::vp_fmul:
-        // These intrinsics have 'vr' versions.
-        case Intrinsic::vp_sub:
-        case Intrinsic::vp_fsub:
-        case Intrinsic::vp_fdiv:
-          return Operand == 0 || Operand == 1;
-        default:
-          return false;
-        }
-      }
-      return false;
-    default:
-      return false;
-    }
-  };
-
-=======
->>>>>>> upstream/main
   for (auto OpIdx : enumerate(I->operands())) {
     if (!canSplatOperand(I, OpIdx.index()))
       continue;
