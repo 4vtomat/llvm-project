@@ -194,7 +194,10 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 
   if (ISAInfo->hasExtension("zve32x")) {
     Builder.defineMacro("__riscv_vector");
-<<<<<<< HEAD
+    // Currently we support the v0.10 RISC-V V intrinsics.
+    unsigned Version = (0 * 1000000) + (10 * 1000);
+    Builder.defineMacro("__riscv_v_intrinsic", Twine(Version));
+  }
 
 #if SIFIVE_CUSTOMIZATION
   if (ISAInfo->hasExtension("xsfvfhbfmin"))
@@ -204,12 +207,6 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
   if (SiFiveRecodeTarget == "neon")
     Builder.defineMacro("__sifive_recode_neon");
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // Currently we support the v0.10 RISC-V V intrinsics.
-    unsigned Version = (0 * 1000000) + (10 * 1000);
-    Builder.defineMacro("__riscv_v_intrinsic", Twine(Version));
-  }
->>>>>>> upstream/main
 }
 
 const Builtin::Info RISCVTargetInfo::BuiltinInfo[] = {
