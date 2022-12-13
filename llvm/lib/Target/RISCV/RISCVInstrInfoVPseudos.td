@@ -2200,12 +2200,6 @@ multiclass VPseudoTiedBinary<VReg RetClass,
   }
 }
 
-<<<<<<< HEAD
-multiclass VPseudoBinaryV_VV<string Constraint = ""> {
-  foreach m = MxList in
-    defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRM_V_VV<string Constraint = ""> {
   foreach m = MxList in
@@ -2213,10 +2207,7 @@ multiclass VPseudoBinaryRM_V_VV<string Constraint = ""> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPseudoBinaryV_VV_LMUL<LMULInfo m, string Constraint = ""> {
-=======
 multiclass VPseudoBinaryV_VV<LMULInfo m, string Constraint = ""> {
->>>>>>> upstream/main
   defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
 }
 
@@ -2245,12 +2236,6 @@ multiclass VPseudoVGTR_VV_EEW<int eew, string Constraint = ""> {
   }
 }
 
-<<<<<<< HEAD
-multiclass VPseudoBinaryV_VX<string Constraint = ""> {
-  foreach m = MxList in
-    defm "_VX" : VPseudoBinary<m.vrclass, m.vrclass, GPR, m, Constraint>;
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRM_V_VX<string Constraint = ""> {
   foreach m = MxList in
@@ -2258,10 +2243,7 @@ multiclass VPseudoBinaryRM_V_VX<string Constraint = ""> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPseudoBinaryV_VX_LMUL<LMULInfo m, string Constraint = ""> {
-=======
 multiclass VPseudoBinaryV_VX<LMULInfo m, string Constraint = ""> {
->>>>>>> upstream/main
   defm "_VX" : VPseudoBinary<m.vrclass, m.vrclass, GPR, m, Constraint>;
 }
 
@@ -2297,7 +2279,6 @@ multiclass VPseudoVSLD1_VF<string Constraint = ""> {
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRM_V_VI<Operand ImmType = simm5, string Constraint = ""> {
   foreach m = MxList in
@@ -2305,10 +2286,7 @@ multiclass VPseudoBinaryRM_V_VI<Operand ImmType = simm5, string Constraint = "">
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPseudoBinaryV_VI_LMUL<Operand ImmType = simm5, LMULInfo m, string Constraint = ""> {
-=======
 multiclass VPseudoBinaryV_VI<Operand ImmType = simm5, LMULInfo m, string Constraint = ""> {
->>>>>>> upstream/main
   defm _VI : VPseudoBinary<m.vrclass, m.vrclass, ImmType, m, Constraint>;
 }
 
@@ -2379,13 +2357,6 @@ multiclass VPseudoBinaryV_WX<LMULInfo m> {
                            !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
 
-<<<<<<< HEAD
-multiclass VPseudoBinaryV_WI {
-  foreach m = MxListW in
-    defm _WI : VPseudoBinary<m.vrclass, m.wvrclass, uimm5, m,
-                             !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRM_V_WV {
   foreach m = MxListW in
@@ -2404,10 +2375,7 @@ multiclass VPseudoBinaryRM_V_WI {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPseudoBinaryV_WI_LMUL<LMULInfo m> {
-=======
 multiclass VPseudoBinaryV_WI<LMULInfo m> {
->>>>>>> upstream/main
   defm _WI : VPseudoBinary<m.vrclass, m.wvrclass, uimm5, m,
                            !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
