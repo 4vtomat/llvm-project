@@ -645,7 +645,7 @@ bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
     if (VP->getVectorLengthParam() != EVL)
       return false;
 
-    if (Optional<unsigned> Opt = VP->getFunctionalOpcode())
+    if (std::optional<unsigned> Opt = VP->getFunctionalOpcode())
       BinOpc = Opt.value();
     else
       return false;

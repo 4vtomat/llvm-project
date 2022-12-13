@@ -534,17 +534,13 @@ public:
   }
 
   // Equivalent non-predicated opcode
-<<<<<<< HEAD
-  static Optional<unsigned> getFunctionalOpcodeForVP(Intrinsic::ID ID);
+  static std::optional<unsigned> getFunctionalOpcodeForVP(Intrinsic::ID ID);
 
 #if SIFIVE_CUSTOMIZATION
   // Return the vector prediction id of ID if ID has vp form. Otherwise, return
   // not_intrinsic.
   static Intrinsic::ID getVPIntrinsicID(Intrinsic::ID ID);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  static std::optional<unsigned> getFunctionalOpcodeForVP(Intrinsic::ID ID);
->>>>>>> upstream/main
 };
 
 /// This represents vector predication reduction intrinsics.

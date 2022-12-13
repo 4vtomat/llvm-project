@@ -5425,7 +5425,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
     ElementCount MaxSafeVF = ElementCount::getFixed(MaxSafeElements);
 
     if (UserVF.isScalable()) {
-      Optional<unsigned> MaxVScale = TTI.getMaxVScale();
+      std::optional<unsigned> MaxVScale = TTI.getMaxVScale();
 
       // Scale VF by vscale before checking if it's safe.
       MaxSafeVF = ElementCount::getScalable(

@@ -2304,7 +2304,6 @@ public:
   unsigned getMinVectorRegisterBitWidth() const override {
     return Impl.getMinVectorRegisterBitWidth();
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::pair<ElementCount, ElementCount>
   getFeasibleMaxVFRange(RegisterKind K, unsigned SmallestType,
@@ -2317,10 +2316,7 @@ public:
                                       IsScalable);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  Optional<unsigned> getMaxVScale() const override {
-=======
   std::optional<unsigned> getMaxVScale() const override {
->>>>>>> upstream/main
     return Impl.getMaxVScale();
   }
   std::optional<unsigned> getVScaleForTuning() const override {

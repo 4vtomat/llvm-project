@@ -1265,8 +1265,7 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
   }
   return nullptr;
 }
-
-Optional<Instruction *>
+std::optional<Instruction *>
 RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   if (DisableVectorOpt)
     return None;

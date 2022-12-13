@@ -57,8 +57,8 @@ public:
         TLI(ST->getTargetLowering()) {}
 
 #if SIFIVE_CUSTOMIZATION
-  Optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
-                                               IntrinsicInst &II) const;
+  std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
+                                                    IntrinsicInst &II) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Return the cost of materializing an immediate for a value operand of

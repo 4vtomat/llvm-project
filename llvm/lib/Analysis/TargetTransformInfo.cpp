@@ -661,7 +661,6 @@ unsigned TargetTransformInfo::getMinVectorRegisterBitWidth() const {
   return TTIImpl->getMinVectorRegisterBitWidth();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 std::pair<ElementCount, ElementCount>
 TargetTransformInfo::getFeasibleMaxVFRange(RegisterKind K,
@@ -676,10 +675,7 @@ TargetTransformInfo::getFeasibleMaxVFRange(RegisterKind K,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-Optional<unsigned> TargetTransformInfo::getMaxVScale() const {
-=======
 std::optional<unsigned> TargetTransformInfo::getMaxVScale() const {
->>>>>>> upstream/main
   return TTIImpl->getMaxVScale();
 }
 
