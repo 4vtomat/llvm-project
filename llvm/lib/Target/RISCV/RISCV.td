@@ -1008,6 +1008,19 @@ def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvfwmaccqqq],
                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
+// FIXME: This needs its own scheduler model
+def : ProcessorModel<"sifive-p470", SiFiveP500Model, [Feature64Bit,
+                                                      FeatureStdExtM,
+                                                      FeatureStdExtA,
+                                                      FeatureStdExtF,
+                                                      FeatureStdExtD,
+                                                      FeatureStdExtC,
+                                                      FeatureStdExtZba,
+                                                      FeatureStdExtZbb,
+                                                      FeatureStdExtZbs,
+                                                      FeatureStdExtV],
+                     [TuneSiFiveP500]>;
+
 def : ProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
