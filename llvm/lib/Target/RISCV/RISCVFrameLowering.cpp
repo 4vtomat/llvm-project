@@ -13,11 +13,7 @@
 #include "RISCVFrameLowering.h"
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
-<<<<<<< HEAD
-#include "llvm/BinaryFormat/Dwarf.h" // SIFIVE
-=======
 #include "llvm/BinaryFormat/Dwarf.h"
->>>>>>> upstream/main
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
@@ -25,11 +21,7 @@
 #include "llvm/CodeGen/RegisterScavenging.h"
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/MC/MCDwarf.h"
-<<<<<<< HEAD
-#include "llvm/Support/LEB128.h" // SIFIVE
-=======
 #include "llvm/Support/LEB128.h"
->>>>>>> upstream/main
 
 #include <algorithm>
 
@@ -399,55 +391,6 @@ static MCCFIInstruction createDefCFAExpression(const TargetRegisterInfo &TRI,
                                         Comment.str());
 }
 
-#if SIFIVE_CUSTOMIZATION
-static MCCFIInstruction createDefCFAExpression(const TargetRegisterInfo &TRI,
-                                               Register Reg,
-                                               uint64_t FixedOffset,
-                                               uint64_t ScalableOffset) {
-  assert(ScalableOffset != 0 && "Did not need to adjust CFA for RVV");
-  SmallString<64> Expr;
-  std::string CommentBuffer;
-  llvm::raw_string_ostream Comment(CommentBuffer);
-  // Build up the expression (Reg + FixedOffset + ScalableOffset * VLENB).
-  unsigned DwarfReg = TRI.getDwarfRegNum(Reg, true);
-  Expr.push_back((uint8_t)(dwarf::DW_OP_breg0 + DwarfReg));
-  Expr.push_back(0);
-  if (Reg == RISCV::X2)
-    Comment << "sp";
-  else
-    Comment << printReg(Reg, &TRI);
-
-  uint8_t buffer[16];
-  if (FixedOffset) {
-    Expr.push_back(dwarf::DW_OP_consts);
-    Expr.append(buffer, buffer + encodeSLEB128(FixedOffset, buffer));
-    Expr.push_back((uint8_t)dwarf::DW_OP_plus);
-    Comment << " + " << FixedOffset;
-  }
-
-  Expr.push_back((uint8_t)dwarf::DW_OP_consts);
-  Expr.append(buffer, buffer + encodeSLEB128(ScalableOffset, buffer));
-
-  unsigned DwarfVlenb = TRI.getDwarfRegNum(RISCV::VLENB, true);
-  Expr.push_back((uint8_t)dwarf::DW_OP_bregx);
-  Expr.append(buffer, buffer + encodeULEB128(DwarfVlenb, buffer));
-  Expr.push_back(0);
-
-  Expr.push_back((uint8_t)dwarf::DW_OP_mul);
-  Expr.push_back((uint8_t)dwarf::DW_OP_plus);
-
-  Comment << " + " << ScalableOffset << " * vlenb";
-
-  SmallString<64> DefCfaExpr;
-  DefCfaExpr.push_back(dwarf::DW_CFA_def_cfa_expression);
-  DefCfaExpr.append(buffer, buffer + encodeULEB128(Expr.size(), buffer));
-  DefCfaExpr.append(Expr.str());
-
-  return MCCFIInstruction::createEscape(nullptr, DefCfaExpr.str(),
-                                        Comment.str());
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
                                       MachineBasicBlock &MBB) const {
   MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -611,20 +554,9 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (RVVStackSize) {
-#else
-  if (RVVStackSize)
-#endif // SIFIVE_CUSTOMIZATION
-    adjustStackForRVV(MF, MBB, MBBI, DL, -RVVStackSize,
-                      MachineInstr::FrameSetup);
-#if SIFIVE_CUSTOMIZATION
-=======
   if (RVVStackSize) {
     adjustStackForRVV(MF, MBB, MBBI, DL, -RVVStackSize,
                       MachineInstr::FrameSetup);
->>>>>>> upstream/main
     if (!hasFP(MF)) {
       // Emit .cfi_def_cfa_expression "sp + StackSize + RVVStackSize * vlenb".
       unsigned CFIIndex = MF.addFrameInst(createDefCFAExpression(
@@ -634,10 +566,6 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
           .setMIFlag(MachineInstr::FrameSetup);
     }
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   if (hasFP(MF)) {
     // Realign Stack
