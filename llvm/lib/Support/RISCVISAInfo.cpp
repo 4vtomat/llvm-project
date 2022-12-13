@@ -242,16 +242,23 @@ static StringRef getExtensionType(StringRef Ext) {
   return StringRef();
 }
 
+#if SIFIVE_CUSTOMIZATION
 static bool isExperimentalExtension(StringRef Ext) {
+#else
+static std::optional<RISCVExtensionVersion>
+isExperimentalExtension(StringRef Ext) {
+#endif // SIFIVE_CUSTOMIZATION
   auto ExtIterator =
       llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   return ExtIterator != std::end(SupportedExperimentalExtensions);
-}
-=======
+#else
   if (ExtIterator == std::end(SupportedExperimentalExtensions))
     return std::nullopt;
->>>>>>> upstream/main
+
+  return ExtIterator->Version;
+#endif // SIFIVE_CUSTOMIZATION
+}
 
 #if SIFIVE_CUSTOMIZATION
 static SmallVector<RISCVExtensionVersion, 4>
