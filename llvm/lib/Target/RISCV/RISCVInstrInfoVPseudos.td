@@ -2201,9 +2201,8 @@ multiclass VPseudoTiedBinary<VReg RetClass,
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoBinaryRM_V_VV<string Constraint = ""> {
-  foreach m = MxList in
-    defm _VV : VPseudoBinaryRM<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
+multiclass VPseudoBinaryRM_V_VV<LMULInfo m, string Constraint = ""> {
+  defm _VV : VPseudoBinaryRM<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2237,9 +2236,8 @@ multiclass VPseudoVGTR_VV_EEW<int eew, string Constraint = ""> {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoBinaryRM_V_VX<string Constraint = ""> {
-  foreach m = MxList in
-    defm "_VX" : VPseudoBinaryRM<m.vrclass, m.vrclass, GPR, m, Constraint>;
+multiclass VPseudoBinaryRM_V_VX<LMULInfo m, string Constraint = ""> {
+  defm "_VX" : VPseudoBinaryRM<m.vrclass, m.vrclass, GPR, m, Constraint>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2280,9 +2278,8 @@ multiclass VPseudoVSLD1_VF<string Constraint = ""> {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoBinaryRM_V_VI<Operand ImmType = simm5, string Constraint = ""> {
-  foreach m = MxList in
-    defm _VI : VPseudoBinaryRM<m.vrclass, m.vrclass, ImmType, m, Constraint>;
+multiclass VPseudoBinaryRM_V_VI<Operand ImmType = simm5, LMULInfo m, string Constraint = ""> {
+  defm _VI : VPseudoBinaryRM<m.vrclass, m.vrclass, ImmType, m, Constraint>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2358,20 +2355,17 @@ multiclass VPseudoBinaryV_WX<LMULInfo m> {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoBinaryRM_V_WV {
-  foreach m = MxListW in
-    defm _WV : VPseudoBinaryRM<m.vrclass, m.wvrclass, m.vrclass, m,
-                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+multiclass VPseudoBinaryRM_V_WV<LMULInfo m> {
+  defm _WV : VPseudoBinaryRM<m.vrclass, m.wvrclass, m.vrclass, m,
+                             !if (!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
-multiclass VPseudoBinaryRM_V_WX {
-  foreach m = MxListW in
-    defm _WX : VPseudoBinaryRM<m.vrclass, m.wvrclass, GPR, m,
-                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+multiclass VPseudoBinaryRM_V_WX<LMULInfo m> {
+  defm _WX : VPseudoBinaryRM<m.vrclass, m.wvrclass, GPR, m,
+                             !if (!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
-multiclass VPseudoBinaryRM_V_WI {
-  foreach m = MxListW in
-    defm _WI : VPseudoBinaryRM<m.vrclass, m.wvrclass, uimm5, m,
-                               !if(!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
+multiclass VPseudoBinaryRM_V_WI<LMULInfo m> {
+  defm _WI : VPseudoBinaryRM<m.vrclass, m.wvrclass, uimm5, m,
+                             !if (!ge(m.octuple, 8), "@earlyclobber $rd", "")>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2710,16 +2704,7 @@ multiclass VPseudoVSHT_VV_VX_VI<Operand ImmType = simm5, string Constraint = "">
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSSHT_VV_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
-<<<<<<< HEAD
-  defm "" : VPseudoBinaryRM_V_VV<Constraint>,
-            Sched<[WriteVSShiftV, ReadVSShiftV, ReadVSShiftV, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_VX<Constraint>,
-            Sched<[WriteVSShiftX, ReadVSShiftV, ReadVSShiftX, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_VI<ImmType, Constraint>,
-            Sched<[WriteVSShiftI, ReadVSShiftV, ReadVMask]>;
-=======
   foreach m = MxList in {
     defvar mx = m.MX;
     defvar WriteVSShiftV_MX = !cast<SchedWrite>("WriteVSShiftV_" # mx);
@@ -2734,10 +2719,16 @@ multiclass VPseudoVSSHT_VV_VX_VI<Operand ImmType = simm5, string Constraint = ""
               Sched<[WriteVSShiftX_MX, ReadVSShiftV_MX, ReadVSShiftX_MX, ReadVMask]>;
     defm "" : VPseudoBinaryV_VI<ImmType, m, Constraint>,
               Sched<[WriteVSShiftI_MX, ReadVSShiftV_MX, ReadVMask]>;
-  }
->>>>>>> upstream/main
-}
+#ifdef SIFIVE_CUSTOMIZATION
+    defm "" : VPseudoBinaryRM_V_VV<m, Constraint>,
+              Sched<[WriteVSShiftV_MX, ReadVSShiftV_MX, ReadVSShiftV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_VX<m, Constraint>,
+              Sched<[WriteVSShiftX_MX, ReadVSShiftV_MX, ReadVSShiftX_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_VI<ImmType, m, Constraint>,
+              Sched<[WriteVSShiftI_MX, ReadVSShiftV_MX, ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+  }
+}
 
 multiclass VPseudoVALU_VV_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
   foreach m = MxList in {
@@ -2772,14 +2763,7 @@ multiclass VPseudoVSALU_VV_VX {
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSMUL_VV_VX {
-<<<<<<< HEAD
-  defm "" : VPseudoBinaryRM_V_VV,
-            Sched<[WriteVSMulV, ReadVSMulV, ReadVSMulV, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_VX,
-            Sched<[WriteVSMulX, ReadVSMulV, ReadVSMulX, ReadVMask]>;
-=======
   foreach m = MxList in {
     defvar mx = m.MX;
     defvar WriteVSMulV_MX = !cast<SchedWrite>("WriteVSMulV_" # mx);
@@ -2791,10 +2775,14 @@ multiclass VPseudoVSMUL_VV_VX {
               Sched<[WriteVSMulV_MX, ReadVSMulV_MX, ReadVSMulV_MX, ReadVMask]>;
     defm "" : VPseudoBinaryV_VX<m>,
               Sched<[WriteVSMulX_MX, ReadVSMulV_MX, ReadVSMulX_MX, ReadVMask]>;
-  }
->>>>>>> upstream/main
-}
+#ifdef SIFIVE_CUSTOMIZATION
+    defm "" : VPseudoBinaryRM_V_VV<m>,
+              Sched<[WriteVSMulV_MX, ReadVSMulV_MX, ReadVSMulV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_VX<m>,
+              Sched<[WriteVSMulX_MX, ReadVSMulV_MX, ReadVSMulX_MX, ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+  }
+}
 
 multiclass VPseudoVAALU_VV_VX {
   foreach m = MxList in {
@@ -2813,10 +2801,18 @@ multiclass VPseudoVAALU_VV_VX {
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVAALU_RM_VV_VX {
-  defm "" : VPseudoBinaryRM_V_VV,
-            Sched<[WriteVAALUV, ReadVAALUV, ReadVAALUV, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_VX,
-            Sched<[WriteVAALUX, ReadVAALUV, ReadVAALUX, ReadVMask]>;
+  foreach m = MxList in {
+    defvar mx = m.MX;
+    defvar WriteVAALUV_MX = !cast<SchedWrite>("WriteVAALUV_" #mx);
+    defvar WriteVAALUX_MX = !cast<SchedWrite>("WriteVAALUX_" #mx);
+    defvar ReadVAALUV_MX = !cast<SchedRead>("ReadVAALUV_" #mx);
+    defvar ReadVAALUX_MX = !cast<SchedRead>("ReadVAALUX_" #mx);
+
+    defm "" : VPseudoBinaryRM_V_VV<m>,
+              Sched<[WriteVAALUV_MX, ReadVAALUV_MX, ReadVAALUV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_VX<m>,
+              Sched<[WriteVAALUX_MX, ReadVAALUV_MX, ReadVAALUX_MX, ReadVMask]>;
+  }
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3285,16 +3281,7 @@ multiclass VPseudoVCALUM_V_X<string Constraint> {
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVNCLP_WV_WX_WI {
-<<<<<<< HEAD
-  defm "" : VPseudoBinaryRM_V_WV,
-            Sched<[WriteVNClipV, ReadVNClipV, ReadVNClipV, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_WX,
-            Sched<[WriteVNClipX, ReadVNClipV, ReadVNClipX, ReadVMask]>;
-  defm "" : VPseudoBinaryRM_V_WI,
-            Sched<[WriteVNClipI, ReadVNClipV, ReadVMask]>;
-=======
   foreach m = MxListW in {
     defvar mx = m.MX;
     defvar WriteVNClipV_MX = !cast<SchedWrite>("WriteVNClipV_" # mx);
@@ -3309,10 +3296,16 @@ multiclass VPseudoVNCLP_WV_WX_WI {
               Sched<[WriteVNClipX_MX, ReadVNClipV_MX, ReadVNClipX_MX, ReadVMask]>;
     defm "" : VPseudoBinaryV_WI<m>,
               Sched<[WriteVNClipI_MX, ReadVNClipV_MX, ReadVMask]>;
-  }
->>>>>>> upstream/main
-}
+#ifdef SIFIVE_CUSTOMIZATION
+    defm "" : VPseudoBinaryRM_V_WV<m>,
+              Sched<[WriteVNClipV_MX, ReadVNClipV_MX, ReadVNClipV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_WX<m>,
+              Sched<[WriteVNClipX_MX, ReadVNClipV_MX, ReadVNClipX_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryRM_V_WI<m>,
+              Sched<[WriteVNClipI_MX, ReadVNClipV_MX, ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+  }
+}
 
 multiclass VPseudoVNSHT_WV_WX_WI {
   foreach m = MxListW in {
