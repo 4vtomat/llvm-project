@@ -1434,13 +1434,12 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
                          Sched<[WriteCMOV, ReadCMOV, ReadCMOV, ReadCMOV, ReadCMOV]>;
 }
 
-// This should always expand to a branch+c.mv so the size is 6 or 4 if the
-let Constraints = "$dst = $falsev" in {
 // Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
 // TODO: Can we use DefaultOperands on the regular binop to accomplish this more
 // like how ARM does predication?
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8 in {
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8,
+    Constraints = "$dst = $falsev" in {
 def PseudoCCADD : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
@@ -1542,7 +1541,6 @@ def PseudoCCSRAIW : Pseudo<(outs GPR:$dst),
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
                     Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
 }
-} // Constraints = "$dst = $falsev"
 
 // Macrofusion pseudo for (srli (slli X, $shamt1), $shamt2)
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
