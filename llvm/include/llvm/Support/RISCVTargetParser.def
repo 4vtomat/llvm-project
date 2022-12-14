@@ -33,6 +33,7 @@ PROC(SIFIVE_X280n, {"sifive-x280n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p
 PROC(SIFIVE_X280o, {"sifive-x280o"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq"})
 PROC(SIFIVE_P270, {"sifive-p270"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
 PROC(SIFIVE_P270N, {"sifive-p270n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
+PROC(SIFIVE_P450, {"sifive-p450"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0_zbs1p0"})
 PROC(SIFIVE_P470, {"sifive-p470"}, FK_64BIT, {"rv64gcv_zba1p0_zbb1p0_zbs1p0"})
 PROC(SIFIVE_P550, {"sifive-p550"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_P650, {"sifive-p650"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0_zbs1p0"})
