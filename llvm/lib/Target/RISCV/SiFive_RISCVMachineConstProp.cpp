@@ -228,16 +228,43 @@ static bool tryFoldBinOp(const TargetInstrInfo *TII, MachineInstr &Root) {
             ? 1
             : 2);
 
+    MachineInstr *NewInstr;
     if (Pos == 1)
-      BuildMI(MBB, Root, Root.getDebugLoc(), TII->get(Root.getOpcode()))
-          .add(Root.getOperand(0))
-          .add(ToBePropagated)
-          .add(Root.getOperand(OtherPos));
+      NewInstr =
+          BuildMI(MBB, Root, Root.getDebugLoc(), TII->get(Root.getOpcode()))
+              .add(Root.getOperand(0))
+              .add(ToBePropagated)
+              .add(Root.getOperand(OtherPos))
+              .getInstr();
     else
-      BuildMI(MBB, Root, Root.getDebugLoc(), TII->get(Root.getOpcode()))
-          .add(Root.getOperand(0))
-          .add(Root.getOperand(OtherPos))
-          .add(ToBePropagated);
+      NewInstr =
+          BuildMI(MBB, Root, Root.getDebugLoc(), TII->get(Root.getOpcode()))
+              .add(Root.getOperand(0))
+              .add(Root.getOperand(OtherPos))
+              .add(ToBePropagated)
+              .getInstr();
+
+    // Postpone the kill flag of the register in Inst to the Root
+    // e.g. %0 = ADDI %x2, 0
+    //      %1 = DIV %x1, kill %x2
+    //      %2 = XOR %x3, %0
+    //      can be reduced to:
+    //      %1 = DIV %x1, kill %x2 <- the kill flag needs to be moved to %x2 in next inst.
+    //      %2 = XOR %x3, %x2
+    //      finally:
+    //      %1 = DIV %x1, %x2
+    //      %2 = XOR %x3, kill %x2
+
+    for (MachineInstr &MI :
+         make_range(Root.getReverseIterator(), Inst->getReverseIterator()))
+      for (auto &Op : MI.operands()) {
+        MachineOperand &PropagatedOp = NewInstr->getOperand(Pos);
+        if (Op.isReg() && Op.getReg() == PropagatedOp.getReg() && Op.isKill() &&
+            !PropagatedOp.isDef()) {
+          Op.setIsKill(false);
+          PropagatedOp.setIsKill(true);
+        }
+      }
   }
 
   Inst->eraseFromParent();
