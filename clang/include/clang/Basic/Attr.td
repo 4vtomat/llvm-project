@@ -4096,3 +4096,11 @@ def FunctionReturnThunks : InheritableAttr,
   let Subjects = SubjectList<[Function]>;
   let Documentation = [FunctionReturnThunksDocs];
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+def NeonStructType : InheritableAttr {
+  let Spellings = [Clang<"neon_struct_type">];
+  let Documentation = [Undocumented];
+  let SimpleHandler = 1;
+}
+#endif // SIFIVE_CUSTOMIZATION

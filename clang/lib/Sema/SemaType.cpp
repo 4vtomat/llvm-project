@@ -8601,6 +8601,12 @@ static void processTypeAttrs(TypeProcessingState &state, QualType &type,
       attr.setUsedAsTypeAttr();
       break;
     }
+#if SIFIVE_CUSTOMIZATION
+    case ParsedAttr::AT_NeonStructType:
+      attr.setUsedAsTypeAttr();
+      break;
+#endif // SIFIVE_CUSTOMIZATION
+      break;
     }
 
     // Handle attributes that are defined in a macro. We do not want this to be
