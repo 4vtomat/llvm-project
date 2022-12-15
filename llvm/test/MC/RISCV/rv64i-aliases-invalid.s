@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-# UNSUPPORTED: windows
+# UNSUPPORTED: target={{.*-windows.*}}
 # RUN: not llvm-mc -triple=riscv64 --mattr=+zicsr -riscv-no-aliases < %s -o /dev/null 2>&1 | FileCheck %s
 # RUN: not llvm-mc -triple=riscv64 --mattr=+zicsr < %s 2>&1 -o /dev/null | FileCheck %s
-=======
-# UNSUPPORTED: target={{.*-windows.*}}
-# RUN: not llvm-mc -triple=riscv64 -riscv-no-aliases < %s -o /dev/null 2>&1 | FileCheck %s
-# RUN: not llvm-mc -triple=riscv64 < %s 2>&1 -o /dev/null | FileCheck %s
->>>>>>> upstream/main
 
 li t5, 0x10000000000000000 # CHECK: :[[@LINE]]:8: error: unknown operand
 li t4, foo                 # CHECK: :[[@LINE]]:8: error: operand must be a constant 64-bit integer
