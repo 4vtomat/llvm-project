@@ -70,10 +70,6 @@
 # CHECK-NEXT:   }
 # CHECK-NEXT: }
 
-<<<<<<< HEAD
-.attribute 4, 16
-.attribute 5, "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0"
-=======
 # CHECK2:      BuildAttributes {
 # CHECK2-NEXT:   FormatVersion: 0x41
 # CHECK2-NEXT:   Section 1 {
@@ -162,4 +158,3 @@
 .attribute 22, 1
 #--- unknown22a.s
 .attribute 22, 2
->>>>>>> upstream/main
