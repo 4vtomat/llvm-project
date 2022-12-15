@@ -2331,7 +2331,12 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
 
       const char Mods[] = { static_cast<char>('2' + (NumMembers - 2)), 0};
       Type VT(TS, Mods);
-      OS << "typedef struct " << VT.str() << " {\n";
+#if SIFIVE_CUSTOMIZATION
+      OS << "typedef struct ";
+      if (RecodeMode)
+        OS << "__attribute__ ((__neon_struct_type__)) ";
+      OS << VT.str() << " {\n";
+#endif
       OS << "  " << T.str() << " val";
       OS << "[" << NumMembers << "]";
       OS << ";\n} ";

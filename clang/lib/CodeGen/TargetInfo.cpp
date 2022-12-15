@@ -10943,6 +10943,11 @@ private:
                                       CharUnits &Field1Off,
                                       llvm::Type *&Field2Ty,
                                       CharUnits &Field2Off) const;
+#if SIFIVE_CUSTOMIZATION
+  bool isHomogeneousAggregateBaseType(QualType Ty) const override;
+  bool isHomogeneousAggregateSmallEnough(const Type *Ty,
+                                         uint64_t Members) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   RISCVABIInfo(CodeGen::CodeGenTypes &CGT, unsigned XLen, unsigned FLen)
@@ -10971,6 +10976,26 @@ public:
                                                CharUnits Field2Off) const;
 };
 } // end anonymous namespace
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVABIInfo::isHomogeneousAggregateBaseType(QualType Ty) const {
+  if (const VectorType *VT = Ty->getAs<VectorType>())
+    if (VT->getVectorKind() == VectorType::NeonVector) {
+      unsigned VecSize = getContext().getTypeSize(VT);
+      if (VecSize == 64 || VecSize == 128)
+        return true;
+    }
+  return false;
+}
+
+bool RISCVABIInfo::isHomogeneousAggregateSmallEnough(const Type *Base,
+                                                     uint64_t Members) const {
+  if (const VectorType *VT = Base->getAs<VectorType>())
+    if (VT->getVectorKind() == VectorType::NeonVector)
+      return Members <= 4;
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void RISCVABIInfo::computeInfo(CGFunctionInfo &FI) const {
   QualType RetTy = FI.getReturnType();
@@ -11228,6 +11253,24 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
   if (auto *VectorTy = dyn_cast<VectorType>(Ty.operator->()))
     if (VectorTy->getVectorKind() == VectorType::NeonVector)
       return ABIArgInfo::getDirect();
+  const RecordDecl *RD = Ty->getAsRecordDecl();
+  if (RD && RD->hasAttr<NeonStructTypeAttr>()) {
+    const Type *Base = nullptr;
+    uint64_t Members = 0;
+    if (isHomogeneousAggregate(Ty, Base, Members)) {
+      unsigned Align =
+          getContext().getTypeUnadjustedAlignInChars(Ty).getQuantity();
+      unsigned BaseAlign = getContext().getTypeAlignInChars(Base).getQuantity();
+      Align = (Align > BaseAlign && Align >= 16) ? 16 : 0;
+      return ABIArgInfo::getDirect(
+          llvm::ArrayType::get(CGT.ConvertType(QualType(Base, 0)), Members), 0,
+          nullptr, true, Align);
+    } else {
+      // We need to copy the rest part of AArch64ABIInfo::classifyArgumentType
+      // to here.
+      llvm_unreachable("Cannot apply ABI to NEON struct types");
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Structures with either a non-trivial destructor or a non-trivial
