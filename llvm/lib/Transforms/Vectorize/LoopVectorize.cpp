@@ -6018,7 +6018,7 @@ bool LoopVectorizationCostModel::isMoreProfitable(
   // Currently we focus on constant trip count.
   if ((A.Width.isScalable() || B.Width.isScalable()) && MaxTripCount &&
       (A.Overhead > 0 || B.Overhead > 0)) {
-    auto getCost = [&](const InstructionCost &VectorIterCost,
+    auto GetCost = [&](const InstructionCost &VectorIterCost,
                        const InstructionCost &Overhead, unsigned EstimatedWidth,
                        const ElementCount VF) -> InstructionCost {
       const uint64_t VecIters = divideCeil(MaxTripCount, EstimatedWidth);
@@ -6028,8 +6028,8 @@ bool LoopVectorizationCostModel::isMoreProfitable(
                         << TotalCost << '\n';);
       return TotalCost;
     };
-    auto RTCostA = getCost(CostA, A.Overhead, EstimatedWidthA, A.Width);
-    auto RTCostB = getCost(CostB, B.Overhead, EstimatedWidthB, B.Width);
+    auto RTCostA = GetCost(CostA, A.Overhead, EstimatedWidthA, A.Width);
+    auto RTCostB = GetCost(CostB, B.Overhead, EstimatedWidthB, B.Width);
     return RTCostA < RTCostB;
   }
 #endif
@@ -6141,9 +6141,7 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
                         << " yields an invalid cost. Skipping\n");
       continue;
     }
-    InstructionCost Overhead = 0;
-    if (!VectorizerDisableReduceOverheadEstimation)
-      Overhead = expectedOverhead(i);
+    InstructionCost Overhead = expectedOverhead(i);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
 #else
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
@@ -7192,32 +7190,49 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
 InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
 
   InstructionCost Overhead = 0;
+  if (!Legal->useVLAVectorizer() || VectorizerDisableReduceOverheadEstimation ||
+      !VF.isVector())
+    return 0;
   // For each block.
   for (BasicBlock *BB : TheLoop->blocks()) {
     VectorizationCostTy BlockCost;
     // For each instruction in the old loop.
     for (Instruction &I : BB->instructionsWithoutDebug()) {
       // Skip ignored values.
-      if (ValuesToIgnore.count(&I) ||
-          (VF.isVector() && VecValuesToIgnore.count(&I)))
+      if (ValuesToIgnore.count(&I) || VecValuesToIgnore.count(&I))
         continue;
 
-      if (isa<PHINode>(I) && VF.isVector()) {
-        InstructionCost C = 0;
-        auto Phi = cast<PHINode>(&I);
-        if (Legal->isReductionVariable(Phi)) {
-          auto *VectorTy = ToVectorTy(I.getType(), VF);
-          const RecurrenceDescriptor &RdxDesc =
-              Legal->getReductionVars().find(Phi)->second;
-          TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
-          C = TTI.getArithmeticReductionCost(
-              RdxDesc.getOpcode(), cast<VectorType>(VectorTy),
-              RdxDesc.getFastMathFlags(), CostKind);
-          LLVM_DEBUG(dbgs()
-                     << "LV: Found an estimated overhead of " << C << " for VF "
-                     << VF << " For instruction: " << I << '\n');
-          Overhead += C;
+      auto *PHI = dyn_cast<PHINode>(&I);
+      if (!PHI)
+        continue;
+
+      InstructionCost C = 0;
+      auto Phi = cast<PHINode>(&I);
+      if (Legal->isReductionVariable(Phi)) {
+        VectorType *VectorTy = cast<VectorType>(ToVectorTy(I.getType(), VF));
+        const RecurrenceDescriptor &RdxDesc =
+            Legal->getReductionVars().find(Phi)->second;
+        TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+        RecurKind RdxKind = RdxDesc.getRecurrenceKind();
+        if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
+          bool IsUnsigned =
+              RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
+                  ? false
+                  : (RdxKind == RecurKind::UMax ||
+                     RdxKind == RecurKind::UMin);
+          auto *VecCondTy =
+              cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
+          C = TTI.getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
+                                         CostKind);
+        } else {
+          C = TTI.getArithmeticReductionCost(RdxDesc.getOpcode(), VectorTy,
+                                             RdxDesc.getFastMathFlags(),
+                                             CostKind);
         }
+        LLVM_DEBUG(dbgs()
+                   << "LV: Found an estimated overhead of " << C << " for VF "
+                   << VF << " For instruction: " << I << '\n');
+        Overhead += C;
       }
     }
   }
