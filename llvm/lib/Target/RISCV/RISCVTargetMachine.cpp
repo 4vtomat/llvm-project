@@ -39,11 +39,11 @@
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
-#include <optional>
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
 #endif
+#include <optional>
 using namespace llvm;
 
 static cl::opt<bool> EnableRedundantCopyElimination(
