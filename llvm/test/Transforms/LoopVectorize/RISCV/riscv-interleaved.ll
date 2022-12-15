@@ -1,9 +1,5 @@
 ; REQUIRES: asserts
-<<<<<<< HEAD
-; RUN: opt -riscv-use-vla-vectorizer=false -loop-vectorize -dce -instcombine -mtriple riscv64-linux-gnu \
-=======
-; RUN: opt -passes=loop-vectorize,dce,instcombine -mtriple riscv64-linux-gnu \
->>>>>>> upstream/main
+; RUN: opt -riscv-use-vla-vectorizer=false -passes=loop-vectorize,dce,instcombine -mtriple riscv64-linux-gnu \
 ; RUN:   -mattr=+v -debug-only=loop-vectorize \
 ; RUN:   -riscv-v-vector-bits-min=128 -scalable-vectorization=off -S < %s 2>&1 | FileCheck %s
 

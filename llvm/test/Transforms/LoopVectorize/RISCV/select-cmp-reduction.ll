@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-; RUN: opt -loop-vectorize -force-vector-interleave=1 -force-vector-width=4 \
-; RUN:   -scalable-vectorization=off -S < %s | FileCheck %s
-; RUN: opt -loop-vectorize -force-vector-interleave=1 -force-vector-width=4 \
-=======
-; RUN: opt -passes=loop-vectorize -force-vector-interleave=1 -force-vector-width=4 -S \
-; RUN:   < %s | FileCheck %s
 ; RUN: opt -passes=loop-vectorize -force-vector-interleave=1 -force-vector-width=4 \
->>>>>>> upstream/main
+; RUN:   -scalable-vectorization=off -S < %s | FileCheck %s
+; RUN: opt -passes=loop-vectorize -force-vector-interleave=1 -force-vector-width=4 \
 ; RUN:   -scalable-vectorization=on -S < %s | FileCheck %s -check-prefix=SCALABLE
 
 target triple = "riscv64"
@@ -265,13 +259,9 @@ define i32 @select_i32_from_icmp(i32* nocapture readonly %v, i32 %a, i32 %b, i64
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x i32> poison, i32 [[A]], i32 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x i32> [[DOTSPLATINSERT]], <4 x i32> poison, <4 x i32> zeroinitializer
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne <4 x i32> [[VP_OP_SELECT]], [[DOTSPLAT]]
-=======
-; CHECK-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne <4 x i32> [[TMP5]], [[DOTSPLAT]]
-; CHECK-NEXT:    [[TMP7:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[RDX_SELECT_CMP]])
-; CHECK-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP7]], i32 [[B]], i32 [[A]]
->>>>>>> upstream/main
+; CHECK-NEXT:    [[TMP12:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[RDX_SELECT_CMP]])
+; CHECK-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP12]], i32 [[B]], i32 [[A]]
 ;
 ; SCALABLE-LABEL: @select_i32_from_icmp
 ; SCALABLE:       vector.ph:
