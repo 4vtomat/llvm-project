@@ -1017,7 +1017,8 @@ def : ProcessorModel<"sifive-p450", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtC,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb,
-                                                      FeatureStdExtZbs],
+                                                      FeatureStdExtZbs,
+                                                      FeatureStdExtZfhmin],
                      [TuneSiFiveP500]>;
 
 // FIXME: This needs its own scheduler model
@@ -1030,6 +1031,7 @@ def : ProcessorModel<"sifive-p470", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs,
+                                                      FeatureStdExtZfhmin,
                                                       FeatureStdExtV],
                      [TuneSiFiveP500]>;
 
@@ -1051,7 +1053,8 @@ def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtC,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb,
-                                                      FeatureStdExtZbs],
+                                                      FeatureStdExtZbs,
+                                                      FeatureStdExtZfhmin],
                      [TuneSiFiveP600]>;
 def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtM,
@@ -1062,6 +1065,7 @@ def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs,
+                                                      FeatureStdExtZfhmin,
                                                       FeatureStdExtV],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION

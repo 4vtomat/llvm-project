@@ -235,9 +235,34 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p650 | FileCheck -check-prefix=MCPU-SIFIVE-P650 %s
 // MCPU-SIFIVE-P650: "-target-cpu" "sifive-p650"
 // MCPU-SIFIVE-P650-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P650-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P650-SAME: "-target-feature" "+64bit"
 // MCPU-SIFIVE-P650-SAME: "-target-abi" "lp64d"
+
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p450 | FileCheck -check-prefix=MCPU-SIFIVE-P450 %s
+// MCPU-SIFIVE-P450: "-target-cpu" "sifive-p450"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+64bit"
+// MCPU-SIFIVE-P450-SAME: "-target-abi" "lp64d"
+
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p470 | FileCheck -check-prefix=MCPU-SIFIVE-P470 %s
+// MCPU-SIFIVE-P470: "-target-cpu" "sifive-p470"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+64bit"
+// MCPU-SIFIVE-P470-SAME: "-target-abi" "lp64d"
+
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p670 | FileCheck -check-prefix=MCPU-SIFIVE-P670 %s
+// MCPU-SIFIVE-P670: "-target-cpu" "sifive-p670"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+64bit"
+// MCPU-SIFIVE-P670-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-e66 | FileCheck -check-prefix=MCPU-SIFIVE-E66 %s
 // MCPU-SIFIVE-E66: "-target-cpu" "sifive-e66"
