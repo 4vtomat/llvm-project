@@ -2744,34 +2744,35 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
 
   for (RISCVMatInt::Inst &Inst : Seq) {
     bool LastItem = ++Num == Seq.size();
-    if (Inst.Opc == RISCV::LUI) {
+    if (Inst.getOpcode() == RISCV::LUI) {
       BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
-          .addImm(Inst.Imm);
-    } else if (Inst.Opc == RISCV::ADD_UW) {
+          .addImm(Inst.getImm());
+    } else if (Inst.getOpcode() == RISCV::ADD_UW) {
       BuildMI(MBB, MBBI, DL, get(RISCV::ADD_UW))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(RISCV::X0);
-    } else if (Inst.Opc == RISCV::SH1ADD || Inst.Opc == RISCV::SH2ADD ||
-               Inst.Opc == RISCV::SH3ADD) {
-      BuildMI(MBB, MBBI, DL, get(Inst.Opc))
+    } else if (Inst.getOpcode() == RISCV::SH1ADD ||
+               Inst.getOpcode() == RISCV::SH2ADD ||
+               Inst.getOpcode() == RISCV::SH3ADD) {
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable));
     } else {
-      BuildMI(MBB, MBBI, DL, get(Inst.Opc))
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
-          .addImm(Inst.Imm);
+          .addImm(Inst.getImm());
     }
     // Only the first instruction has X0 as its source.
     SrcReg = DstReg;
