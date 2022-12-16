@@ -977,10 +977,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_umax, 1)                                                     \
   VP_INTRINSIC(vp_umin, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
-  VP_INTRINSIC(vp_ceil, 9)                                                     \
-  VP_INTRINSIC(vp_floor, 9)                                                    \
-  VP_INTRINSIC(vp_round, 9)                                                    \
-  VP_INTRINSIC(vp_roundeven, 9)                                                \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
   VP_INTRINSIC(vp_minnum, 1)                                                   \
   VP_INTRINSIC(vp_maxnum, 1)                                                   \
