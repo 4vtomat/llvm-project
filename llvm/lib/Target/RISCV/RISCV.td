@@ -673,6 +673,13 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt,
                                     TuneJumpIsCheap]>;
+def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
+                                      "SiFive P400-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneCMOVBranchOpt,
+                                       TuneJumpIsCheap,
+                                       TuneLUIADDIFusion,
+                                       TuneDontSinkSplatOperands]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
@@ -720,6 +727,7 @@ include "RISCVSchedSiFive7.td"
 #ifdef SIFIVE_CUSTOMIZATION
 include "RISCVSchedSiFive6.td"
 include "RISCVSchedSiFive7N.td"
+include "SiFive_RISCVSchedSiFiveP400.td"
 include "SiFive_RISCVSchedSiFiveP500.td"
 include "SiFive_RISCVSchedSiFiveP600.td"
 #endif // SIFIVE_CUSTOMIZATION
@@ -752,6 +760,9 @@ def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
 def : ProcessorModel<"sifive-7o-series", SiFive7NModel, [],
                      [TuneSiFive7, TunePseudoLIsimm32]>;
+
+def : ProcessorModel<"sifive-p400-series", SiFiveP400Model, [],
+                     [TuneSiFiveP400]>;
 
 def : ProcessorModel<"sifive-8-series", SiFiveP500Model, [],
                      [TuneSiFiveP500]>;
@@ -1009,7 +1020,7 @@ def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
 // FIXME: This needs its own scheduler model
-def : ProcessorModel<"sifive-p450", SiFiveP500Model, [Feature64Bit,
+def : ProcessorModel<"sifive-p450", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1019,10 +1030,10 @@ def : ProcessorModel<"sifive-p450", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin],
-                     [TuneSiFiveP500]>;
+                     [TuneSiFiveP400]>;
 
 // FIXME: This needs its own scheduler model
-def : ProcessorModel<"sifive-p470", SiFiveP500Model, [Feature64Bit,
+def : ProcessorModel<"sifive-p470", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1033,7 +1044,7 @@ def : ProcessorModel<"sifive-p470", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin,
                                                       FeatureStdExtV],
-                     [TuneSiFiveP500]>;
+                     [TuneSiFiveP400]>;
 
 def : ProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtM,

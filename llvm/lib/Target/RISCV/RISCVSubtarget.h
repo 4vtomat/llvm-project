@@ -41,6 +41,7 @@ public:
     SiFive6, // SIFIVE
     SiFive7,
 #if SIFIVE_CUSTOMIZATION
+    SiFiveP400,
     SiFiveP500,
     SiFiveP600,
 #endif // SIFIVE_CUSTOMIZATION
@@ -193,6 +194,7 @@ public:
     switch (RISCVProcFamily) {
     case RISCVProcFamilyEnum::SiFive6:
     case RISCVProcFamilyEnum::SiFive7:
+    case RISCVProcFamilyEnum::SiFiveP400:
     case RISCVProcFamilyEnum::SiFiveP500:
     case RISCVProcFamilyEnum::SiFiveP600:
       return true;
