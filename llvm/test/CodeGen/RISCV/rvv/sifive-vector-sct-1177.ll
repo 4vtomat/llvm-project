@@ -59,7 +59,7 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    slli a1, a1, 4
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl8re8.v v8, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfwsub.wv v16, v8, v24
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
@@ -70,9 +70,9 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8re8.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8re8.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a0)
 entry:

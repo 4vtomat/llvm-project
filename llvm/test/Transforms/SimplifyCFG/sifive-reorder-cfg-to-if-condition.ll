@@ -4,8 +4,8 @@
 define i32 @test(ptr %arc, i32 %red_cost) {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i32 [[RED_COST:%.*]], 0
-; CHECK-NEXT:    br i1 [[DOTNOT]], label [[IF_END:%.*]], label [[ELSE_IF:%.*]]
+; CHECK-NEXT:    [[CMP2_NOT:%.*]] = icmp eq i32 [[RED_COST:%.*]], 0
+; CHECK-NEXT:    br i1 [[CMP2_NOT]], label [[IF_END:%.*]], label [[ELSE_IF:%.*]]
 ; CHECK:       else.if:
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[RED_COST]], 0
 ; CHECK-NEXT:    [[SPEC_SELECT:%.*]] = select i1 [[CMP]], i32 1, i32 2

@@ -49,14 +49,14 @@ define float @reassociate_adds2(float %x0, float %x1, float %x2, float %x3) {
 ; U74:       # %bb.0:
 ; U74-NEXT:    fadd.s ft0, fa2, fa3
 ; U74-NEXT:    fadd.s ft1, fa0, fa1
-; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    fadd.s fa0, ft0, ft1
 ; U74-NEXT:    ret
 ;
 ; P550-LABEL: reassociate_adds2:
 ; P550:       # %bb.0:
 ; P550-NEXT:    fadd.s ft0, fa0, fa1
 ; P550-NEXT:    fadd.s ft1, fa2, fa3
-; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    fadd.s fa0, ft1, ft0
 ; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %x2, %t0
@@ -67,16 +67,16 @@ define float @reassociate_adds2(float %x0, float %x1, float %x2, float %x3) {
 define float @reassociate_adds3(float %x0, float %x1, float %x2, float %x3) {
 ; U74-LABEL: reassociate_adds3:
 ; U74:       # %bb.0:
-; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft0, fa3, fa2
 ; U74-NEXT:    fadd.s ft1, fa0, fa1
-; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    fadd.s fa0, ft0, ft1
 ; U74-NEXT:    ret
 ;
 ; P550-LABEL: reassociate_adds3:
 ; P550:       # %bb.0:
 ; P550-NEXT:    fadd.s ft0, fa0, fa1
-; P550-NEXT:    fadd.s ft1, fa2, fa3
-; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    fadd.s ft1, fa3, fa2
+; P550-NEXT:    fadd.s fa0, ft1, ft0
 ; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %t0, %x2
@@ -87,16 +87,16 @@ define float @reassociate_adds3(float %x0, float %x1, float %x2, float %x3) {
 define float @reassociate_adds4(float %x0, float %x1, float %x2, float %x3) {
 ; U74-LABEL: reassociate_adds4:
 ; U74:       # %bb.0:
-; U74-NEXT:    fadd.s ft0, fa2, fa3
+; U74-NEXT:    fadd.s ft0, fa3, fa2
 ; U74-NEXT:    fadd.s ft1, fa0, fa1
-; U74-NEXT:    fadd.s fa0, ft1, ft0
+; U74-NEXT:    fadd.s fa0, ft0, ft1
 ; U74-NEXT:    ret
 ;
 ; P550-LABEL: reassociate_adds4:
 ; P550:       # %bb.0:
 ; P550-NEXT:    fadd.s ft0, fa0, fa1
-; P550-NEXT:    fadd.s ft1, fa2, fa3
-; P550-NEXT:    fadd.s fa0, ft0, ft1
+; P550-NEXT:    fadd.s ft1, fa3, fa2
+; P550-NEXT:    fadd.s fa0, ft1, ft0
 ; P550-NEXT:    ret
   %t0 = fadd reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %x2, %t0
@@ -148,8 +148,8 @@ define float @reassociate_adds6(float %x0, float %x1, float %x2, float %x3) {
 ; CHECK-LABEL: reassociate_adds6:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fdiv.s ft0, fa0, fa1
-; CHECK-NEXT:    fadd.s ft1, fa2, fa3
-; CHECK-NEXT:    fadd.s fa0, ft0, ft1
+; CHECK-NEXT:    fadd.s ft1, fa3, fa2
+; CHECK-NEXT:    fadd.s fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fdiv reassoc nsz float %x0, %x1
   %t1 = fadd reassoc nsz float %x2, %t0
@@ -163,8 +163,8 @@ define float @reassociate_muls1(float %x0, float %x1, float %x2, float %x3) {
 ; CHECK-LABEL: reassociate_muls1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fdiv.s ft0, fa0, fa1
-; CHECK-NEXT:    fmul.s ft1, fa2, fa3
-; CHECK-NEXT:    fmul.s fa0, ft0, ft1
+; CHECK-NEXT:    fmul.s ft1, fa3, fa2
+; CHECK-NEXT:    fmul.s fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = fdiv reassoc nsz float %x0, %x1
   %t1 = fmul reassoc nsz float %x2, %t0

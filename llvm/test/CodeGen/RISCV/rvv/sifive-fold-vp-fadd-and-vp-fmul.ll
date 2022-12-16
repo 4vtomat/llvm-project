@@ -55,8 +55,8 @@ define <vscale x 1 x double> @test4(<vscale x 1 x double> %x, <vscale x 1 x doub
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    slli a1, a1, 32
-; CHECK-NEXT:    srli a0, a1, 32
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
+; CHECK-NEXT:    srli a1, a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-NEXT:    vfadd.vv v8, v10, v8, v0.t
 ; CHECK-NEXT:    ret
   %1 = call fast <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> %x, <vscale x 1 x double> %y, <vscale x 1 x i1> %m, i32 %vl1)

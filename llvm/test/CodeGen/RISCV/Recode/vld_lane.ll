@@ -602,8 +602,8 @@ define void @vld3_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -663,8 +663,8 @@ define void @vld3_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    flw ft0, 8(sp)
 ; CHECK-NEXT:    vfmv.s.f v11, ft0
@@ -677,8 +677,8 @@ define void @vld3_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 16(sp)
 ; CHECK-NEXT:    flw ft0, 16(sp)
 ; CHECK-NEXT:    lbu a1, 9(a0)
@@ -727,8 +727,8 @@ define void @vld3_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -780,8 +780,8 @@ define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 0(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -841,8 +841,8 @@ define void @vld3_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    lbu a1, 5(a0)
@@ -854,8 +854,8 @@ define void @vld3_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
 ; CHECK-NEXT:    lbu a1, 9(a0)
@@ -898,8 +898,8 @@ define void @vld3_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -946,8 +946,8 @@ define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    lbu a4, 0(a0)
 ; CHECK-NEXT:    vlseg3e8.v v10, (a1)
 ; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a1, a3, a4
-; CHECK-NEXT:    sh a1, 4(sp)
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    sh a3, 4(sp)
 ; CHECK-NEXT:    lb a0, 2(a0)
 ; CHECK-NEXT:    addi a1, sp, 4
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -1005,8 +1005,8 @@ define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 0(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -1066,8 +1066,8 @@ define void @vld3_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    lbu a1, 5(a0)
@@ -1079,8 +1079,8 @@ define void @vld3_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
 ; CHECK-NEXT:    lbu a1, 9(a0)
@@ -1123,8 +1123,8 @@ define void @vld3_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -1171,8 +1171,8 @@ define void @vld3_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    lbu a4, 0(a0)
 ; CHECK-NEXT:    vlseg3e8.v v8, (a1)
 ; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a1, a3, a4
-; CHECK-NEXT:    sh a1, 4(sp)
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    sh a3, 4(sp)
 ; CHECK-NEXT:    lb a0, 2(a0)
 ; CHECK-NEXT:    addi a1, sp, 4
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -1226,8 +1226,8 @@ define void @vld3q_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 0(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -1291,8 +1291,8 @@ define void @vld3q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1370,8 +1370,8 @@ define void @vld3q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1421,8 +1421,8 @@ define void @vld3q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -1468,8 +1468,8 @@ define void @vld3q_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -1527,8 +1527,8 @@ define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1604,8 +1604,8 @@ define void @vld3q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1653,8 +1653,8 @@ define void @vld3q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -1694,8 +1694,8 @@ define void @vld3q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    lbu a4, 0(a0)
 ; CHECK-NEXT:    vlseg3e8.v v8, (a1)
 ; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a1, a3, a4
-; CHECK-NEXT:    sh a1, 12(sp)
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    sh a3, 12(sp)
 ; CHECK-NEXT:    lb a0, 2(a0)
 ; CHECK-NEXT:    addi a1, sp, 12
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -1751,8 +1751,8 @@ define void @vld3q_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    lb a1, 5(a0)
 ; CHECK-NEXT:    lbu a0, 4(a0)
@@ -1810,8 +1810,8 @@ define void @vld3q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1885,8 +1885,8 @@ define void @vld3q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -1909,8 +1909,8 @@ define void @vld3q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 13(a0)
 ; CHECK-NEXT:    lbu a4, 12(a0)
 ; CHECK-NEXT:    lbu a5, 14(a0)
@@ -1932,8 +1932,8 @@ define void @vld3q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 21(a0)
 ; CHECK-NEXT:    lbu a4, 20(a0)
 ; CHECK-NEXT:    lbu a5, 22(a0)
@@ -1972,8 +1972,8 @@ define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    lbu a4, 0(a0)
 ; CHECK-NEXT:    vlseg3e8.v v8, (a1)
 ; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a1, a3, a4
-; CHECK-NEXT:    sh a1, 12(sp)
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    sh a3, 12(sp)
 ; CHECK-NEXT:    lb a0, 2(a0)
 ; CHECK-NEXT:    addi a1, sp, 12
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -2068,8 +2068,8 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 0(sp)
 ; CHECK-NEXT:    flw ft0, 0(sp)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
@@ -2081,8 +2081,8 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    lbu a1, 9(a0)
 ; CHECK-NEXT:    lbu a3, 8(a0)
@@ -2093,8 +2093,8 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    flw ft1, 8(sp)
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 16(sp)
 ; CHECK-NEXT:    flw ft2, 16(sp)
 ; CHECK-NEXT:    lbu a1, 13(a0)
@@ -2209,8 +2209,8 @@ define void @vld4_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
 ; CHECK-NEXT:    lbu a1, 5(a0)
@@ -2221,8 +2221,8 @@ define void @vld4_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v9, a1
 ; CHECK-NEXT:    lbu a1, 9(a0)
 ; CHECK-NEXT:    lbu a3, 8(a0)
@@ -2232,8 +2232,8 @@ define void @vld4_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v10, a1
 ; CHECK-NEXT:    lbu a1, 13(a0)
 ; CHECK-NEXT:    lbu a3, 12(a0)
@@ -2381,8 +2381,8 @@ define void @vld4_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
 ; CHECK-NEXT:    lbu a1, 5(a0)
@@ -2393,8 +2393,8 @@ define void @vld4_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v9, a1
 ; CHECK-NEXT:    lbu a1, 9(a0)
 ; CHECK-NEXT:    lbu a3, 8(a0)
@@ -2404,8 +2404,8 @@ define void @vld4_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    vmv.s.x v10, a1
 ; CHECK-NEXT:    lbu a1, 13(a0)
 ; CHECK-NEXT:    lbu a3, 12(a0)
@@ -2588,8 +2588,8 @@ define void @vld4q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -2613,8 +2613,8 @@ define void @vld4q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 13(a0)
 ; CHECK-NEXT:    lbu a4, 12(a0)
 ; CHECK-NEXT:    lbu a5, 14(a0)
@@ -2661,8 +2661,8 @@ define void @vld4q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 29(a0)
 ; CHECK-NEXT:    lbu a4, 28(a0)
 ; CHECK-NEXT:    lbu a5, 30(a0)
@@ -2781,8 +2781,8 @@ define void @vld4q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -2805,8 +2805,8 @@ define void @vld4q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 13(a0)
 ; CHECK-NEXT:    lbu a4, 12(a0)
 ; CHECK-NEXT:    lbu a5, 14(a0)
@@ -2854,8 +2854,8 @@ define void @vld4q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 29(a0)
 ; CHECK-NEXT:    lbu a4, 28(a0)
 ; CHECK-NEXT:    lbu a5, 30(a0)
@@ -3007,8 +3007,8 @@ define void @vld4q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    lbu a4, 4(a0)
 ; CHECK-NEXT:    lbu a5, 6(a0)
@@ -3031,8 +3031,8 @@ define void @vld4q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 13(a0)
 ; CHECK-NEXT:    lbu a4, 12(a0)
 ; CHECK-NEXT:    lbu a5, 14(a0)
@@ -3080,8 +3080,8 @@ define void @vld4q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a3, a5, a4
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    lbu a3, 29(a0)
 ; CHECK-NEXT:    lbu a4, 28(a0)
 ; CHECK-NEXT:    lbu a5, 30(a0)

@@ -2,15 +2,11 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zfh -verify-machineinstrs \
 ; RUN:   -target-abi ilp32f < %s | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zfh -verify-machineinstrs \
-<<<<<<< HEAD
 ; RUN:   -target-abi lp64f < %s | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
-=======
-; RUN:   -target-abi lp64f < %s | FileCheck %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zfhmin -verify-machineinstrs < %s \
 ; RUN:   -target-abi=ilp32f | FileCheck -check-prefix=CHECKIZFHMIN %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zfhmin -verify-machineinstrs < %s \
 ; RUN:   -target-abi=lp64f | FileCheck -check-prefix=CHECKIZFHMIN %s
->>>>>>> upstream/main
 
 define half @select_fcmp_false(half %a, half %b) nounwind {
 ; CHECK-LABEL: select_fcmp_false:
@@ -468,27 +464,11 @@ define i32 @select_fcmp_oeq_1_2(half %a, half %b) {
 }
 
 define signext i32 @select_fcmp_uge_negone_zero(half %a, half %b) nounwind {
-<<<<<<< HEAD
 ; CHECK-RV64-LABEL: select_fcmp_uge_negone_zero:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    fle.h a0, fa0, fa1
 ; CHECK-RV64-NEXT:    addiw a0, a0, -1
 ; CHECK-RV64-NEXT:    ret
-=======
-; CHECK-LABEL: select_fcmp_uge_negone_zero:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fle.h a0, fa0, fa1
-; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    ret
-;
-; CHECKIZFHMIN-LABEL: select_fcmp_uge_negone_zero:
-; CHECKIZFHMIN:       # %bb.0:
-; CHECKIZFHMIN-NEXT:    fcvt.s.h ft0, fa1
-; CHECKIZFHMIN-NEXT:    fcvt.s.h ft1, fa0
-; CHECKIZFHMIN-NEXT:    fle.s a0, ft1, ft0
-; CHECKIZFHMIN-NEXT:    addi a0, a0, -1
-; CHECKIZFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %1 = fcmp ugt half %a, %b
   %2 = select i1 %1, i32 -1, i32 0
   ret i32 %2

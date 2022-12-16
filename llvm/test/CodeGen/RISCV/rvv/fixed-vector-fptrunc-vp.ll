@@ -92,7 +92,6 @@ define <15 x float> @vfptrunc_v15f32_v15f64(<15 x double> %a, <15 x i1> %m, i32 
 declare <32 x float> @llvm.vp.fptrunc.v32f64.v32f32(<32 x double>, <32 x i1>, i32)
 
 define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 zeroext %vl) {
-<<<<<<< HEAD
 ; RV32-LABEL: vfptrunc_v32f32_v32f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
@@ -120,7 +119,7 @@ define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 
 ; RV32-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; RV32-NEXT:    vmv1r.v v0, v24
 ; RV32-NEXT:    addi a0, sp, 16
-; RV32-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
+; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vfncvt.f.f.w v16, v24, v0.t
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
@@ -159,7 +158,7 @@ define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 
 ; RV64-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    addi a0, sp, 16
-; RV64-NEXT:    vl8re8.v v24, (a0) # Unknown-size Folded Reload
+; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfncvt.f.f.w v16, v24, v0.t
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
@@ -170,46 +169,6 @@ define <32 x float> @vfptrunc_v32f32_v32f64(<32 x double> %a, <32 x i1> %m, i32 
 ; RV64-NEXT:    add sp, sp, a0
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
-=======
-; CHECK-LABEL: vfptrunc_v32f32_v32f64:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
-; CHECK-NEXT:    vmv1r.v v24, v0
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vi v0, v0, 2
-; CHECK-NEXT:    addi a1, a0, -16
-; CHECK-NEXT:    sltu a2, a0, a1
-; CHECK-NEXT:    addi a2, a2, -1
-; CHECK-NEXT:    and a1, a2, a1
-; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
-; CHECK-NEXT:    li a1, 16
-; CHECK-NEXT:    vfncvt.f.f.w v8, v16, v0.t
-; CHECK-NEXT:    bltu a0, a1, .LBB7_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a0, 16
-; CHECK-NEXT:  .LBB7_2:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v24
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfncvt.f.f.w v16, v24, v0.t
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-; CHECK-NEXT:    vslideup.vi v16, v8, 16
-; CHECK-NEXT:    vmv8r.v v8, v16
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-; CHECK-NEXT:    ret
->>>>>>> upstream/main
   %v = call <32 x float> @llvm.vp.fptrunc.v32f64.v32f32(<32 x double> %a, <32 x i1> %m, i32 %vl)
   ret <32 x float> %v
 }

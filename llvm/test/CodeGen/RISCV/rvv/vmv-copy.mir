@@ -315,7 +315,7 @@ body:             |
     ; CHECK-NEXT: {{  $}}
     ; CHECK-NEXT: $x0 = PseudoVSETVLI $x10, 66 /* e8, m4, ta, mu */, implicit-def $vl, implicit-def $vtype
     ; CHECK-NEXT: early-clobber $v4m4 = PseudoVQMACCUS2x8x2_VV_M4 renamable $v4m4, killed renamable $v13, killed renamable $v16m4, $noreg, 3 /* e8 */, 1 /* ta, mu */, implicit $vl, implicit $vtype
-    ; CHECK-NEXT: $v16m4 = PseudoVMV4R_V $v4m4
+    ; CHECK-NEXT: $v16m4 = VMV4R_V $v4m4
     $x0 = PseudoVSETVLI  $x10, 66, implicit-def $vl, implicit-def $vtype
     $v4m4 = PseudoVQMACCUS2x8x2_VV_M4 renamable $v4m4, killed renamable $v13, killed renamable $v16m4, $noreg, 3, 1, implicit $vl, implicit $vtype
     $v16m4 = COPY renamable $v4m4
@@ -331,7 +331,7 @@ body:             |
     ; CHECK-NEXT: {{  $}}
     ; CHECK-NEXT: $x0 = PseudoVSETVLI $x10, 66 /* e8, m4, ta, mu */, implicit-def $vl, implicit-def $vtype
     ; CHECK-NEXT: early-clobber $v4m4 = PseudoVQMACCUS2x8x2_VV_M4 renamable $v4m4, killed renamable $v13, killed renamable $v16m4, $noreg, 3 /* e8 */, 1 /* ta, mu */, implicit $vl, implicit $vtype
-    ; CHECK-NEXT: $v16m4 = PseudoVMV4R_V $v4m4
+    ; CHECK-NEXT: $v16m4 = VMV4R_V $v4m4
     $x0 = PseudoVSETVLI  $x10, 66, implicit-def $vl, implicit-def $vtype
     $v4m4 = PseudoVQMACCUS2x8x2_VV_M4 renamable $v4m4, killed renamable $v13, killed renamable $v16m4, $noreg, 3, 1, implicit $vl, implicit $vtype
     $v16m4 = COPY renamable $v4m4

@@ -23,8 +23,8 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN:       # %bb.0: # %entry
 ; ALIGN-NEXT:    andi a3, a0, 31
 ; ALIGN-NEXT:    li a4, 32
-; ALIGN-NEXT:    sub a3, a4, a3
-; ALIGN-NEXT:    minu a3, a3, a2
+; ALIGN-NEXT:    sub a4, a4, a3
+; ALIGN-NEXT:    minu a3, a4, a2
 ; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, mu
 ; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    sub a2, a2, a3

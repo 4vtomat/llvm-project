@@ -137,7 +137,7 @@ define void @main() {
 ; CHECK-NEXT:    slli a1, a1, 4
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl4re8.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl4r.v v16, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vaaddu.vv v8, v16, v8, v0.t
 ; CHECK-NEXT:    vmadd.vx v20, a0, v8, v0.t
 ; CHECK-NEXT:    lui a0, 854558
@@ -203,7 +203,7 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    addi a1, sp, 16
-; SUBREG_LIVENESS-NEXT:    vl4re8.v v24, (a1) # Unknown-size Folded Reload
+; SUBREG_LIVENESS-NEXT:    vl4r.v v24, (a1) # Unknown-size Folded Reload
 ; SUBREG_LIVENESS-NEXT:    vaaddu.vv v20, v24, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    vmadd.vx v12, a0, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a0, 854558

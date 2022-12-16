@@ -259,7 +259,7 @@ define i16 @fcvt_si_h_sat(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.l.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft2, ft2
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:
@@ -674,7 +674,7 @@ define i32 @fcvt_w_h_sat(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.w.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:
@@ -952,7 +952,7 @@ define i32 @fcvt_wu_h_sat(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.wu.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a0, a1
 ; CHECK64-IZFHMIN-NEXT:    slli a0, a0, 32
 ; CHECK64-IZFHMIN-NEXT:    srli a0, a0, 32
@@ -1289,7 +1289,7 @@ define i64 @fcvt_l_h_sat(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.l.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 ;
@@ -1591,7 +1591,7 @@ define i64 @fcvt_lu_h_sat(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.lu.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:
@@ -2974,7 +2974,7 @@ define signext i16 @fcvt_w_s_sat_i16(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.l.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft2, ft2
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:
@@ -3434,7 +3434,7 @@ define signext i8 @fcvt_w_s_sat_i8(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.l.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft2, ft2
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:
@@ -3778,7 +3778,7 @@ define zeroext i32 @fcvt_wu_h_sat_zext(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.wu.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a0, a1
 ; CHECK64-IZFHMIN-NEXT:    slli a0, a0, 32
 ; CHECK64-IZFHMIN-NEXT:    srli a0, a0, 32
@@ -3932,7 +3932,7 @@ define signext i32 @fcvt_w_h_sat_sext(half %a) nounwind {
 ; CHECK64-IZFHMIN-NEXT:    fcvt.w.s a0, ft0, rtz
 ; CHECK64-IZFHMIN-NEXT:    feq.s a1, ft0, ft0
 ; CHECK64-IZFHMIN-NEXT:    seqz a1, a1
-; CHECK64-IZFHMIN-NEXT:    addi a1, a1, -1
+; CHECK64-IZFHMIN-NEXT:    addiw a1, a1, -1
 ; CHECK64-IZFHMIN-NEXT:    and a0, a1, a0
 ; CHECK64-IZFHMIN-NEXT:    ret
 start:

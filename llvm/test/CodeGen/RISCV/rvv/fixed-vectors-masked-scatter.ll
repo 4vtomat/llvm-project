@@ -3262,8 +3262,8 @@ define void @mscatter_truemask_v4i64(<4 x i64> %val, <4 x i64*> %ptrs) {
 ; RV64ZVE32F-NEXT:    andi a0, a5, 4
 ; RV64ZVE32F-NEXT:    bnez a0, .LBB39_7
 ; RV64ZVE32F-NEXT:  .LBB39_3: # %else4
-; RV64ZVE32F-NEXT:    andi a0, a5, 8
-; RV64ZVE32F-NEXT:    bnez a0, .LBB39_8
+; RV64ZVE32F-NEXT:    andi a5, a5, 8
+; RV64ZVE32F-NEXT:    bnez a5, .LBB39_8
 ; RV64ZVE32F-NEXT:  .LBB39_4: # %else6
 ; RV64ZVE32F-NEXT:    ret
 ; RV64ZVE32F-NEXT:  .LBB39_5: # %cond.store
@@ -3278,8 +3278,8 @@ define void @mscatter_truemask_v4i64(<4 x i64> %val, <4 x i64*> %ptrs) {
 ; RV64ZVE32F-NEXT:    beqz a0, .LBB39_3
 ; RV64ZVE32F-NEXT:  .LBB39_7: # %cond.store3
 ; RV64ZVE32F-NEXT:    sd a6, 0(a4)
-; RV64ZVE32F-NEXT:    andi a0, a5, 8
-; RV64ZVE32F-NEXT:    beqz a0, .LBB39_4
+; RV64ZVE32F-NEXT:    andi a5, a5, 8
+; RV64ZVE32F-NEXT:    beqz a5, .LBB39_4
 ; RV64ZVE32F-NEXT:  .LBB39_8: # %cond.store5
 ; RV64ZVE32F-NEXT:    sd a3, 0(a2)
 ; RV64ZVE32F-NEXT:    ret

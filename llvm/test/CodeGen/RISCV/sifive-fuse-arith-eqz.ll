@@ -99,16 +99,16 @@ define void @sub_snez(i64 %0, i64 %1, i64 %2, i64 %3) {
 ; NOFUSION-LABEL: sub_snez:
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    mul a2, a1, a2
-; NOFUSION-NEXT:    sub a0, a3, a0
-; NOFUSION-NEXT:    snez a0, a0
+; NOFUSION-NEXT:    sub a3, a3, a0
+; NOFUSION-NEXT:    snez a0, a3
 ; NOFUSION-NEXT:    mul a1, a2, a1
 ; NOFUSION-NEXT:    tail baz@plt
 ;
 ; FUSION-LABEL: sub_snez:
 ; FUSION:       # %bb.0:
 ; FUSION-NEXT:    mul a2, a1, a2
-; FUSION-NEXT:    sub a0, a3, a0
-; FUSION-NEXT:    snez a0, a0
+; FUSION-NEXT:    sub a3, a3, a0
+; FUSION-NEXT:    snez a0, a3
 ; FUSION-NEXT:    mul a1, a2, a1
 ; FUSION-NEXT:    tail baz@plt
   %5 = sub i64 %3, %0
