@@ -1,4 +1,4 @@
-; RUN: opt -loop-vectorize -S -mtriple riscv64-unknown-linux-gnu -mattr=+v -vectorizer-use-vp-strided-load-store < %s | FileCheck %s
+; RUN: opt -passes=loop-vectorize -S -mtriple riscv64-unknown-linux-gnu -mattr=+v -vectorizer-use-vp-strided-load-store < %s | FileCheck %s
 
 @e = global [400 x i32] zeroinitializer
 @board = global [400 x i8] zeroinitializer

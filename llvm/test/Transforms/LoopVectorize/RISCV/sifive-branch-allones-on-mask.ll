@@ -1,4 +1,4 @@
-; RUN: opt < %s -riscv-use-vla-vectorizer=true -loop-vectorize -mtriple riscv64-linux-gnu -mattr=+v,+f -S -debug-only=loop-vectorize 2>&1 | FileCheck %s
+; RUN: opt < %s -riscv-use-vla-vectorizer=true -passes=loop-vectorize -mtriple riscv64-linux-gnu -mattr=+v,+f -S -debug-only=loop-vectorize 2>&1 | FileCheck %s
 ; REQUIRES: asserts
 
 ; CHECK: LV: Scalarizing:  %exitcond.not = icmp eq i64 %iv.next, 1024

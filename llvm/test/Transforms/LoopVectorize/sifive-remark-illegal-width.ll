@@ -1,5 +1,5 @@
 ; REQUIRES: asserts
-; RUN: opt -loop-vectorize -pass-remarks-analysis=loop-vectorize -S < %s 2>&1 | FileCheck %s
+; RUN: opt -passes=loop-vectorize -pass-remarks-analysis=loop-vectorize -S < %s 2>&1 | FileCheck %s
 
 ; CHECK: remark: <unknown>:0:0: loop remark: ignoring invalid vectorize_width value
 define void @test1(i32* %a, i32* %b) {

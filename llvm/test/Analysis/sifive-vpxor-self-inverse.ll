@@ -1,4 +1,4 @@
-; RUN: opt -instsimplify -S -o - < %s | FileCheck %s
+; RUN: opt -passes=instsimplify -S -o - < %s | FileCheck %s
 
 declare <256 x i32> @llvm.vp.xor.v256i32(<256 x i32>, <256 x i32>, <256 x i1>, i32)
 

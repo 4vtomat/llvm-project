@@ -1,5 +1,5 @@
 ; REQUIRES: asserts
-; RUN: opt < %s -loop-vectorize -force-vectorization \
+; RUN: opt < %s -passes=loop-vectorize -force-vectorization \
 ; RUN:   -prefer-predicate-over-epilogue=predicate-dont-vectorize \
 ; RUN:   -scalable-vectorization=only -riscv-use-vla-vectorizer \
 ; RUN:   -mtriple riscv64 -riscv-v-vector-bits-min=128 \

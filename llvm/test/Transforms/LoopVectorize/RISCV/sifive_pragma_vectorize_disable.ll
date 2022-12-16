@@ -1,4 +1,4 @@
-; RUN: opt -S -loop-vectorize -mtriple riscv64-unknown-linux-gnu -prefer-predicate-over-epilogue=predicate-dont-vectorize -scalable-vectorization=only -riscv-use-vla-vectorizer -riscv-v-vector-bits-min=-1 -mattr="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" %s -vector-primary-lmul-max=1 -pass-remarks-missed='loop-vectorize' 2>&1 | FileCheck %s
+; RUN: opt -S -passes=loop-vectorize -mtriple riscv64-unknown-linux-gnu -prefer-predicate-over-epilogue=predicate-dont-vectorize -scalable-vectorization=only -riscv-use-vla-vectorizer -riscv-v-vector-bits-min=-1 -mattr="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" %s -vector-primary-lmul-max=1 -pass-remarks-missed='loop-vectorize' 2>&1 | FileCheck %s
 
 ; CHECK: loop not vectorized: vectorization is explicitly disabled
 
