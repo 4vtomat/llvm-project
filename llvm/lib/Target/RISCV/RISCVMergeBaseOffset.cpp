@@ -14,7 +14,6 @@
 #include "RISCV.h"
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
-#include "llvm/CodeGen/MachineLoopInfo.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/Debug.h"
@@ -26,11 +25,13 @@ using namespace llvm;
 #define DEBUG_TYPE "riscv-merge-base-offset"
 #define RISCV_MERGE_BASE_OFFSET_NAME "RISCV Merge Base Offset"
 
+#if SIFIVE_CUSTOMIZATION
 // Advanced merge base offset optimization allows PseudoLLA has multiple uses.
 // In some cases, this optimziation does not work well.
 static cl::opt<bool> EnableAdvancedMergeBaseOffsetOpt(
     "riscv-enable-advanced-merge-base-offset-opt", cl::init(false), cl::Hidden,
     cl::desc("Enable advanced merge base offset optimization."));
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace {
 
@@ -40,7 +41,6 @@ private:
 
 public:
   static char ID;
-  const MachineFunction *MF;
   bool runOnMachineFunction(MachineFunction &Fn) override;
   bool detectFoldable(MachineInstr &Hi, MachineInstr *&Lo);
 
@@ -54,8 +54,6 @@ public:
 
   bool foldIntoMemoryOps(MachineInstr &Hi, MachineInstr &Lo);
 
-  bool foldPseudoLLA(MachineFunction &MF, MachineInstr &MI);
-
   RISCVMergeBaseOffsetOpt() : MachineFunctionPass(ID) {}
 
   MachineFunctionProperties getRequiredProperties() const override {
@@ -65,7 +63,6 @@ public:
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesCFG();
-    AU.addRequired<MachineLoopInfo>();
     MachineFunctionPass::getAnalysisUsage(AU);
   }
 
@@ -74,9 +71,7 @@ public:
   }
 
 private:
-  MachineLoopInfo *MLI;
   MachineRegisterInfo *MRI;
-  std::set<MachineInstr *> DeadInstrs;
 };
 } // end anonymous namespace
 
@@ -436,90 +431,6 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
   return true;
 }
 
-bool RISCVMergeBaseOffsetOpt::foldPseudoLLA(MachineFunction &MF,
-                                            MachineInstr &MI) {
-  if (MF.getTarget().isPositionIndependent())
-    return false;
-
-  if (MI.getOpcode() != RISCV::PseudoLLA ||
-      MI.getOperand(1).getType() != MachineOperand::MO_GlobalAddress ||
-      MI.getOperand(1).getOffset() != 0)
-    return false;
-
-  // If we don't enable advanced merge base offset opt, make sure we have a single
-  // use PseudoLLA.
-  if (!EnableAdvancedMergeBaseOffsetOpt &&
-      !MRI->hasOneUse(MI.getOperand(0).getReg()))
-    return false;
-
-  Register DestReg = MI.getOperand(0).getReg();
-  bool AllUsesCombined = true;
-  bool MadeChange = false;
-  for (auto UI = MRI->use_instr_begin(DestReg), UE = MRI->use_instr_end(); UI != UE;) {
-    MachineInstr *UseI = &*(UI++);
-
-    // If the memory op and the PseudoLLA aren't in the same loop, don't fold.
-    if (MLI->getLoopFor(UseI->getParent()) != MLI->getLoopFor(MI.getParent())) {
-      AllUsesCombined = false;
-      continue;
-    }
-
-    bool NeedsTmpReg = false;
-    unsigned NewOpc;
-    switch (UseI->getOpcode()) {
-    default:
-      AllUsesCombined = false;
-      continue;
-    case RISCV::SB:  NewOpc = RISCV::PseudoSB; NeedsTmpReg = true; break;
-    case RISCV::SH:  NewOpc = RISCV::PseudoSH; NeedsTmpReg = true; break;
-    case RISCV::SW:  NewOpc = RISCV::PseudoSW; NeedsTmpReg = true; break;
-    case RISCV::SD:  NewOpc = RISCV::PseudoSD; NeedsTmpReg = true; break;
-    case RISCV::LB:  NewOpc = RISCV::PseudoLB;  break;
-    case RISCV::LBU: NewOpc = RISCV::PseudoLBU; break;
-    case RISCV::LH:  NewOpc = RISCV::PseudoLH;  break;
-    case RISCV::LHU: NewOpc = RISCV::PseudoLHU; break;
-    case RISCV::LW:  NewOpc = RISCV::PseudoLW;  break;
-    case RISCV::LWU: NewOpc = RISCV::PseudoLWU; break;
-    case RISCV::LD:  NewOpc = RISCV::PseudoLD;  break;
-    // TODO: Support FP load/store.
-    }
-
-    // Register defined by MI should be used in the base part of the
-    // load\store instruction and the offset must be 0. Otherwise, no folding
-    // possible.
-    if (UseI->getOperand(0).getReg() == DestReg ||
-        !UseI->getOperand(1).isReg() ||
-        DestReg != UseI->getOperand(1).getReg() ||
-        UseI->getOperand(2).getImm() != 0) {
-      AllUsesCombined = false;
-      continue;
-    }
-
-    auto *TII = MF.getSubtarget().getInstrInfo();
-    if (NeedsTmpReg) {
-      Register TempReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
-      BuildMI(*UseI->getParent(), UseI, UseI->getDebugLoc(), TII->get(NewOpc), TempReg)
-        .add(UseI->getOperand(0))
-        .add(MI.getOperand(1));
-    } else {
-      BuildMI(*UseI->getParent(), UseI, UseI->getDebugLoc(), TII->get(NewOpc))
-        .add(UseI->getOperand(0))
-        .add(MI.getOperand(1));
-    }
-
-    UseI->eraseFromParent();
-    MadeChange = true;
-  }
-
-  if (!MadeChange)
-    return false;
-
-  if (AllUsesCombined)
-    DeadInstrs.insert(&MI);
-
-  return true;
-}
-
 bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   if (skipFunction(Fn.getFunction()))
     return false;
@@ -527,10 +438,7 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
   ST = &Fn.getSubtarget<RISCVSubtarget>();
 
   bool MadeChange = false;
-  DeadInstrs.clear();
   MRI = &Fn.getRegInfo();
-  MLI = &getAnalysis<MachineLoopInfo>();
-  MF = &Fn;
   for (MachineBasicBlock &MBB : Fn) {
     LLVM_DEBUG(dbgs() << "MBB: " << MBB.getName() << "\n");
     for (MachineInstr &Hi : MBB) {
@@ -541,14 +449,9 @@ bool RISCVMergeBaseOffsetOpt::runOnMachineFunction(MachineFunction &Fn) {
                         << *Hi.getOperand(1).getGlobal() << "\n");
       MadeChange |= detectAndFoldOffset(Hi, *Lo);
       MadeChange |= foldIntoMemoryOps(Hi, *Lo);
-#if SIFIVE_CUSTOMIZATION
-      MadeChange |= foldPseudoLLA(Fn, Hi);
-#endif // SIFIVE_CUSTOMIZATION
     }
   }
-  // Delete dead instructions.
-  for (auto *MI : DeadInstrs)
-    MI->eraseFromParent();
+
   return MadeChange;
 }
 
