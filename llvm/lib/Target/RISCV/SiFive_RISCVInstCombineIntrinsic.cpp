@@ -687,9 +687,7 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   else
     llvm_unreachable("Unexpected types for scalar comparison.");
 
-  Value *V = IC.Builder.CreateSelect(CmpV, RHS, LHS);
-
-  return IC.replaceInstUsesWith(II, V);
+  return SelectInst::Create(CmpV, RHS, LHS);
 }
 
 // Fold (vmv.x.s (vmv.v.x X, vl)) -> X
