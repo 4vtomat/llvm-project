@@ -3940,6 +3940,18 @@ SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SelectionDAG &DAG,
                      Reciprocal);
 }
 
+SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SDValue Mask,
+                                             SDValue EVL, SelectionDAG &DAG,
+                                             int Enabled, int &Steps,
+                                             bool &UseOneConst,
+                                             bool Reciprocal) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::VFRSQRT7_VL, Operand, DAG, Steps,
+                     Reciprocal, EVL);
+}
+
 SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
                                               SelectionDAG &DAG, int Enabled,
                                               int &Steps) const {

@@ -4789,6 +4789,19 @@ public:
                                    int &RefinementSteps) const {
     return SDValue();
   }
+
+  // Return a reciprocal estimation of square root with vector length and mask.
+  virtual SDValue getSqrtEstimate(SDValue Operand, SDValue Mask, SDValue EVL,
+                                  SelectionDAG &DAG, int Enabled,
+                                  int &RefinementSteps, bool &UseOneConstNR,
+                                  bool Reciprocal) const {
+    return SDValue();
+  }
+
+  // VP version of getSqrtInputTest.
+  virtual SDValue getVPSqrtInputTest(SDValue Operand, SDValue Mask, SDValue EVL,
+                                     SelectionDAG &DAG,
+                                     const DenormalMode &Mode) const;
 #endif
 
   /// Return a target-dependent comparison result if the input operand is

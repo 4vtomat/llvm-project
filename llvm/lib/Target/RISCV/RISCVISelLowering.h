@@ -761,6 +761,9 @@ private:
   SDValue getSqrtEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
                           int &ExtraSteps, bool &UseOneConst,
                           bool Reciprocal) const override;
+  SDValue getSqrtEstimate(SDValue Operand, SDValue Mask, SDValue EVL,
+                          SelectionDAG &DAG, int Enabled, int &ExtraSteps,
+                          bool &UseOneConst, bool Reciprocal) const override;
   SDValue getRecipEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
                            int &ExtraSteps) const override;
   SDValue getRecipEstimate(SDValue Operand, SDValue Mask, SDValue EVL,
