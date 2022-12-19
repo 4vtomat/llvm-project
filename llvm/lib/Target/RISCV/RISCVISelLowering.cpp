@@ -7852,14 +7852,11 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
       MulRHS = DAG.getSelectCC(
           DL, RHS, Zero,
           DAG.getNode(
-              ISD::SHL, DL, VT,
-              DAG.getSplatBuildVector(VT, DL, DAG.getConstant(2, DL, XLenVT)),
+              ISD::SHL, DL, VT, DAG.getConstant(2, DL, VT),
               DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
           Zero, ISD::SETNE);
     } else {
-      MulRHS = DAG.getNode(
-          ISD::SHL, DL, VT,
-          DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
+      MulRHS = DAG.getNode(ISD::SHL, DL, VT, DAG.getConstant(1, DL, VT), RHS);
     }
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
