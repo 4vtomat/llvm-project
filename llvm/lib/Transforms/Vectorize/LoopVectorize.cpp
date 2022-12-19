@@ -7207,11 +7207,10 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
         continue;
 
       InstructionCost C = 0;
-      auto Phi = cast<PHINode>(&I);
-      if (Legal->isReductionVariable(Phi)) {
-        VectorType *VectorTy = cast<VectorType>(ToVectorTy(I.getType(), VF));
+      if (Legal->isReductionVariable(PHI)) {
+        auto *VectorTy = cast<VectorType>(ToVectorTy(I.getType(), VF));
         const RecurrenceDescriptor &RdxDesc =
-            Legal->getReductionVars().find(Phi)->second;
+            Legal->getReductionVars().find(PHI)->second;
         TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
         RecurKind RdxKind = RdxDesc.getRecurrenceKind();
         if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
