@@ -20,7 +20,7 @@ define void @vqrshl_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0
 ; CHECK-NEXT:    vadd.vi v11, v11, -1
 ; CHECK-NEXT:    vmv.v.i v12, 2
-; CHECK-NEXT:    vmv.v.i v13, 0
+; CHECK-NEXT:    vmv.v.i v13, 1
 ; CHECK-NEXT:    vsll.vv v13, v12, v11, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v11, v9, v13
 ; CHECK-NEXT:    csrw vxrm, a0
@@ -58,7 +58,7 @@ define void @vqrshl_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0
 ; CHECK-NEXT:    vadd.vi v11, v11, -1
 ; CHECK-NEXT:    vmv.v.i v12, 2
-; CHECK-NEXT:    vmv.v.i v13, 0
+; CHECK-NEXT:    vmv.v.i v13, 1
 ; CHECK-NEXT:    vsll.vv v13, v12, v11, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v11, v9, v13
 ; CHECK-NEXT:    csrw vxrm, a0
@@ -135,7 +135,7 @@ define void @vqrshl_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    vadd.vi v8, v8, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v8, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v8, v10, v12
 ; CHECK-NEXT:    vnclip.wi v11, v8, 0
@@ -351,7 +351,7 @@ define void @vqrshlq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0
 ; CHECK-NEXT:    vadd.vi v11, v11, -1
 ; CHECK-NEXT:    vmv.v.i v12, 2
-; CHECK-NEXT:    vmv.v.i v13, 0
+; CHECK-NEXT:    vmv.v.i v13, 1
 ; CHECK-NEXT:    vsll.vv v13, v12, v11, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v14, v9, v13
 ; CHECK-NEXT:    csrw vxrm, a0
@@ -389,7 +389,7 @@ define void @vqrshlq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0
 ; CHECK-NEXT:    vadd.vi v11, v11, -1
 ; CHECK-NEXT:    vmv.v.i v12, 2
-; CHECK-NEXT:    vmv.v.i v13, 0
+; CHECK-NEXT:    vmv.v.i v13, 1
 ; CHECK-NEXT:    vsll.vv v13, v12, v11, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v14, v9, v13
 ; CHECK-NEXT:    csrw vxrm, a0
@@ -466,7 +466,7 @@ define void @vqrshlq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    vadd.vi v8, v8, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v8, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v14, v10, v12
 ; CHECK-NEXT:    vnclip.wi v11, v14, 0

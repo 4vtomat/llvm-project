@@ -7847,6 +7847,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
                                                  DAG.getConstant(1, DL, XLenVT),
                                                  SplatRHS));
   } else {
+    SDValue One = DAG.getConstant(1, DL, VT);
     if (ShiftIncSize) {
       // We need to do SHL twice because RHS may be EltBitSize.
       MulRHS = DAG.getSelectCC(
@@ -7854,9 +7855,9 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
           DAG.getNode(
               ISD::SHL, DL, VT, DAG.getConstant(2, DL, VT),
               DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
-          Zero, ISD::SETNE);
+          One, ISD::SETNE);
     } else {
-      MulRHS = DAG.getNode(ISD::SHL, DL, VT, DAG.getConstant(1, DL, VT), RHS);
+      MulRHS = DAG.getNode(ISD::SHL, DL, VT, One, RHS);
     }
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);

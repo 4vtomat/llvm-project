@@ -150,7 +150,7 @@ define void @vqshl_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v10, v10, 0
@@ -184,7 +184,7 @@ define void @vqshl_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v10, v10, 0
@@ -259,7 +259,7 @@ define void @vqshl_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v10, v10, 0
@@ -585,7 +585,7 @@ define void @vqshlq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v12, v10, 0
@@ -619,7 +619,7 @@ define void @vqshlq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v12, v10, 0
@@ -694,7 +694,7 @@ define void @vqshlq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vadd.vi v10, v10, -1
 ; CHECK-NEXT:    vmv.v.i v11, 2
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vsll.vv v12, v11, v10, v0.t
 ; CHECK-NEXT:    vwmulsu.vv v10, v9, v12
 ; CHECK-NEXT:    vnclip.wi v12, v10, 0
