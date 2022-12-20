@@ -361,14 +361,23 @@ END_REGISTER_VP(vp_roundeven, VP_FROUNDEVEN)
 
 // llvm.vp.roundtozero(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_roundtozero, 1, 2, VP_FROUNDTOZERO, -1)
+#if SIFIVE_CUSTOMIZATION
+VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(trunc)
+#endif // SIFIVE_CUSTOMIZATION
 END_REGISTER_VP(vp_roundtozero, VP_FROUNDTOZERO)
 
 // llvm.vp.rint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_rint, 1, 2, VP_FRINT, -1)
+#if SIFIVE_CUSTOMIZATION
+VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(rint)
+#endif // SIFIVE_CUSTOMIZATION
 END_REGISTER_VP(vp_rint, VP_FRINT)
 
 // llvm.vp.nearbyint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_nearbyint, 1, 2, VP_FNEARBYINT, -1)
+#if SIFIVE_CUSTOMIZATION
+VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(nearbyint)
+#endif // SIFIVE_CUSTOMIZATION
 END_REGISTER_VP(vp_nearbyint, VP_FNEARBYINT)
 
 ///// } Floating-Point Arithmetic
