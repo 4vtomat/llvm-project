@@ -208,7 +208,11 @@ public:
     // IEEE 754 FP ops properly, or bad single-to-double promotions.
     // Otherwise, a sequence of vectorized loops, even without reduction,
     // could lead to different end results on the destination vectors.
+#if SIFIVE_CUSTOMIZATION
+    return PotentiallyUnsafe;
+#else
     return getForce() != LoopVectorizeHints::FK_Enabled && PotentiallyUnsafe;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   void setPotentiallyUnsafe() { PotentiallyUnsafe = true; }

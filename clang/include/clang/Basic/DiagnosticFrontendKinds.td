@@ -67,12 +67,12 @@ def remark_fe_backend_optimization_remark_missed : Remark<"%0">, BackendInfo,
 def remark_fe_backend_optimization_remark_analysis : Remark<"%0">, BackendInfo,
     InGroup<BackendOptimizationRemarkAnalysis>;
 def remark_fe_backend_optimization_remark_analysis_fpcommute : Remark<"%0; "
-    "allow reordering by specifying '#pragma clang loop vectorize(enable)' "
-    "before the loop or by providing the compiler option '-ffast-math'.">,
+    "allow reordering by specifying '#pragma clang fp reassociate(on)' "
+    "within the loop or by providing the compiler option '-ffast-math'.">,
     BackendInfo, InGroup<BackendOptimizationRemarkAnalysis>;
 def remark_fe_backend_optimization_remark_analysis_aliasing : Remark<"%0; "
-    "allow reordering by specifying '#pragma clang loop vectorize(enable)' "
-    "before the loop. If the arrays will always be independent specify "
+    "allow reordering by specifying '#pragma clang fp reassociate(on)' "
+    "within the loop. If the arrays will always be independent specify "
     "'#pragma clang loop vectorize(assume_safety)' before the loop or provide "
     "the '__restrict__' qualifier with the independent array arguments. "
     "Erroneous results will occur if these options are incorrectly applied!">,

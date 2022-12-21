@@ -320,8 +320,15 @@ bool LoopVectorizeHints::allowReordering() const {
   // loop hints are provided
   ElementCount EC = getWidth();
   return HintsAllowReordering &&
+#if SIFIVE_CUSTOMIZATION
+         // Don't allow fp reordering if vectorization was enforced.
+         // User need to use `#pragma clang fp reassociate(on)` within the loop
+         // body to allow reassociation
+         (
+#else
          (getForce() == LoopVectorizeHints::FK_Enabled ||
-          EC.getKnownMinValue() > 1);
+#endif // SIFIVE_CUSTOMIZATION
+             EC.getKnownMinValue() > 1);
 }
 
 #if SIFIVE_CUSTOMIZATION

@@ -18,15 +18,15 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 0, [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 3)
 ; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-NEXT:    [[VP_OP_SELECT]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_OP_SELECT]] = call reassoc <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call double @llvm.vector.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_SELECT]])
-; CHECK-NEXT:    [[TMP9:%.*]] = fadd double 0.000000e+00, [[TMP8]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call reassoc double @llvm.vector.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_SELECT]])
+; CHECK-NEXT:    [[TMP9:%.*]] = fadd reassoc double 0.000000e+00, [[TMP8]]
 ; CHECK-NEXT:    br i1 true, label [[FOR_END277_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
@@ -35,7 +35,7 @@ define void @test() {
 ; CHECK:       for.body264:
 ; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP10:%.*]], [[FOR_BODY264]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[TMP10]] = tail call double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
+; CHECK-NEXT:    [[TMP10]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1
 ; CHECK-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 0
 ; CHECK-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT]], label [[FOR_BODY264]], !llvm.loop [[LOOP2:![0-9]+]]
@@ -58,14 +58,14 @@ define void @test() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = sub i64 0, [[INDEX]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 3)
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP5]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call reassoc <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP5]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = call double @llvm.vector.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_SELECT]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = call reassoc double @llvm.vector.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_SELECT]])
 ; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END277_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-NO-POSTSV:       scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
@@ -74,7 +74,7 @@ define void @test() {
 ; CHECK-NO-POSTSV:       for.body264:
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP9:%.*]], [[FOR_BODY264]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-; CHECK-NO-POSTSV-NEXT:    [[TMP9]] = tail call double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP9]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1
 ; CHECK-NO-POSTSV-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 0
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT]], label [[FOR_BODY264]], !llvm.loop [[LOOP2:![0-9]+]]
@@ -88,7 +88,7 @@ for.body264.preheader:
 for.body264:
   %indvars.iv914 = phi i64 [ %indvars.iv.next915, %for.body264 ], [ 0, %for.body264.preheader ]
   %ye.0849 = phi double [ %0, %for.body264 ], [ 0.000000e+00, %for.body264.preheader ]
-  %0 = tail call double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double %ye.0849)
+  %0 = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double %ye.0849)
   %indvars.iv.next915 = add nuw nsw i64 %indvars.iv914, 1
   %exitcond918.not = icmp eq i64 %indvars.iv.next915, 0
   br i1 %exitcond918.not, label %for.end277.loopexit, label %for.body264

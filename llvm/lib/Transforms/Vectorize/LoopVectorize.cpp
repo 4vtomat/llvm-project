@@ -11725,7 +11725,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                                                  ExactFPMathInst->getDebugLoc(),
                                                  ExactFPMathInst->getParent())
              << "loop not vectorized: cannot prove it is safe to reorder "
-                "floating-point operations";
+                "floating-point operations. Consider to use '#pragma clang fp "
+                "reassociate(on)' to enable vectorization";
     });
     LLVM_DEBUG(dbgs() << "LV: loop not vectorized: cannot prove it is safe to "
                          "reorder floating-point operations\n");
