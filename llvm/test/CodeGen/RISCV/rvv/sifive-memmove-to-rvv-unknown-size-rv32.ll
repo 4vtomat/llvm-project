@@ -39,8 +39,8 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i32 si
 ; ALIGN-NEXT:    sub a3, a1, a0
 ; ALIGN-NEXT:    bgeu a3, a2, .LBB0_5
 ; ALIGN-NEXT:  # %bb.1: # %memmove-backward-pre-loop
-; ALIGN-NEXT:    add a3, a0, a2
-; ALIGN-NEXT:    andi a4, a3, 15
+; ALIGN-NEXT:    add a4, a0, a2
+; ALIGN-NEXT:    andi a4, a4, 15
 ; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:    bltu a2, a4, .LBB0_3
 ; ALIGN-NEXT:  # %bb.2: # %memmove-backward-pre-loop

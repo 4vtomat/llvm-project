@@ -27,8 +27,8 @@ entry:
 define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    lui a2, 1
-; CHECK-NEXT:    addi a2, a2, -2048
+; CHECK-NEXT:    li a2, 1
+; CHECK-NEXT:    slli a2, a2, 11
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    vsetvli a1, a2, e8, m8, ta, mu
