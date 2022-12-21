@@ -2756,7 +2756,7 @@ void InnerLoopVectorizer::packScalarIntoVectorValue(VPValue *Def,
 
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::useVLAVectorizer() const {
-  return Cost->foldTailByMasking() && TTI->useVLAVectorizer();
+  return TTI->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3111,8 +3111,18 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     return VectorTripCount;
 
 #if SIFIVE_CUSTOMIZATION
-  if (useVLAVectorizer())
-    return VectorTripCount = getOrCreateTripCount(InsertBlock);
+  if (useVLAVectorizer()) {
+    Value *TC = getOrCreateTripCount(InsertBlock);
+    // Loop has multiple exits. Make sure scalar remainder executes at least 1
+    // scalar iteration to perform correct jump.
+    if (Cost->requiresScalarEpilogue(VF)) {
+
+      IRBuilder<> Builder(InsertBlock->getTerminator());
+      TC = Builder.CreateSub(TC, ConstantInt::get(TC->getType(), 1),
+                             "adj.for.rem.tc");
+    }
+    return VectorTripCount = TC;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   Value *TC = getOrCreateTripCount(InsertBlock);
@@ -3271,8 +3281,15 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULT, LHS, CreateStep());
   }
 #if SIFIVE_CUSTOMIZATION
-  if (!VectorizerDisableProfitableTripCountRTCheck &&
-      Cost->foldTailByMasking() && useVLAVectorizer() &&
+  else if (useVLAVectorizer() && Cost->requiresScalarEpilogue(VF)) {
+    // If RVV VLA vectorization requires scalar remainder loop (for example, the
+    // loop has multiple exits), need to check first that we execute at least 1
+    // iteration.
+    CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULE, Count,
+                                       ConstantInt::get(Count->getType(), 1));
+  }
+
+  if (!VectorizerDisableProfitableTripCountRTCheck && useVLAVectorizer() &&
       !Legal->getReductionVars().empty()) {
     if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
       // FIXME: That should be done during VPlan construction and be aligned
@@ -5741,6 +5758,14 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
       ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
       return computeFeasibleMaxVF(TC, UserVF, false);
     }
+#if SIFIVE_CUSTOMIZATION
+    if (Legal->useVLAVectorizer())
+      // Since we don't really mask the loop body, the problem above is not
+      // applicable to RVV VLA and we can generate similar code as with VLS,
+      // where remainder loop will take care of exits.
+      ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
+    else
+#endif // SIFIVE_CUSTOMIZATION
     return FixedScalableVFPair::getNone();
   }
 
@@ -6499,6 +6524,11 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
   if (!isScalarEpilogueAllowed())
     return 1;
 
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer())
+    return 1;
+#endif // SIFIVE_CUSTOMIZATION
+
   // We used the distance for the interleave count.
   if (Legal->getMaxSafeDepDistBytes() != -1U)
     return 1;
@@ -7182,7 +7212,7 @@ LoopVectorizationCostModel::expectedCost(
   // on the induction variable type, expecting the TTI to result in an
   // "infinitely" high cost if the type is illegal. We also just enable for the
   // case when we are using VP instructions to avoid breaking existing tests.
-  if (Legal->useVLAVectorizer() && foldTailByMasking()) {
+  if (Legal->useVLAVectorizer()) {
     // Add cost of generating a compare instruction to build mask.
     Type *VectorTy = ToVectorTy(Legal->getWidestInductionType(), VF);
     InstructionCost MaskCost = TTI.getCmpSelInstrCost(
@@ -7735,7 +7765,7 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
 }
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
-  if (!foldTailByMasking() || !Legal->useVLAVectorizer())
+  if (!Legal->useVLAVectorizer())
     return false;
 
   StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
@@ -9459,7 +9489,7 @@ bool VPRecipeBuilder::shouldWiden(Instruction *I, VFRange &Range) const {
 
 #if SIFIVE_CUSTOMIZATION
 bool VPRecipeBuilder::preferPredicatedWiden() const {
-  return CM.foldTailByMasking() && Legal->useVLAVectorizer();
+  return Legal->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -10011,7 +10041,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
       *Plan, Legal->getWidestInductionType(),
       DLInst ? DLInst->getDebugLoc() : DebugLoc(), !CM.foldTailByMasking(),
       CM.useActiveLaneMaskForControlFlow(),
-      CM.foldTailByMasking() && Legal->useVLAVectorizer());
+      Legal->useVLAVectorizer());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
@@ -10341,7 +10371,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(), DebugLoc(), true,
       CM.useActiveLaneMaskForControlFlow(),
-      CM.foldTailByMasking() && Legal->useVLAVectorizer());
+      Legal->useVLAVectorizer());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
                         true, CM.useActiveLaneMaskForControlFlow());
@@ -10439,7 +10469,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   // If tail is folded by masking, introduce selects between the phi
   // and the live-out instruction of each reduction, at the beginning of the
   // dedicated latch block.
-  if (CM.foldTailByMasking()) {
+  if (CM.foldTailByMasking() || Legal->useVLAVectorizer()) {
     Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
     for (VPRecipeBase &R :
          Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
