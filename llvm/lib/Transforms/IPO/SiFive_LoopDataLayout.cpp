@@ -38,6 +38,7 @@
 #if SIFIVE_CUSTOMIZATION
 
 #include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
+#include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include "llvm/ADT/SmallBitVector.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/Triple.h"
@@ -201,8 +202,11 @@ static bool matchBaseGEP(GetElementPtrInst *GEP, Type *RefTy, Value *RefPtr,
 static LoopDataLayoutResult detectArrayOfStructDataAccess(
     Loop *L, LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
-        &LocalCandidateMap) {
+        &LocalCandidateMap, bool &IsVectorized) {
   bool FoundArrayOfStructDataAccessor = false;
+
+  if (getBooleanLoopAttribute(L, "llvm.loop.isvectorized"))
+    IsVectorized = true;
 
   // Now search our loop for AoS accesses
   for (BasicBlock *BB : L->blocks()) {
@@ -1383,8 +1387,9 @@ static bool translateReferences(
 static bool runOnLoops(
     LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
-        &LocalCandidateMap) {
+        &LocalCandidateMap, bool &MustNotProceed) {
   bool FoundOpportunities = false;
+  bool IsVectorized = false;
   for (auto &L : LI) {
     LLVM_DEBUG(dbgs() << "Processing Loop for AoS to SoA candidates : "
                       << L->getName() << "\n");
@@ -1400,14 +1405,32 @@ static bool runOnLoops(
           continue;
 
         auto Result = detectArrayOfStructDataAccess(CurL, LI, SE, MaxElements,
-                                                    LocalCandidateMap);
+                                                    LocalCandidateMap,
+                                                    IsVectorized);
+
+        // Override detection if strided vectorization is
+        // not enabled when vectors are present.
+        if (IsVectorized && !AdhocSkipVectorizeInPrelink) {
+          MustNotProceed = true;
+          return false;
+        }
+
         if (Result == LoopDataLayoutResult::HasDataLayoutOpportunities)
           FoundOpportunities |= true;
       }
     }
     // Always process L regardless of loop nest context
     auto Result = detectArrayOfStructDataAccess(L, LI, SE, MaxElements,
-                                                LocalCandidateMap);
+                                                LocalCandidateMap,
+                                                IsVectorized);
+
+    // Override detection if strided vectorization is
+    // not enabled when vectors are present.
+    if (IsVectorized && !AdhocSkipVectorizeInPrelink) {
+      MustNotProceed = true;
+      return false;
+    }
+
     if (Result == LoopDataLayoutResult::HasDataLayoutOpportunities)
       FoundOpportunities |= true;
   }
@@ -2188,11 +2211,12 @@ static LoopDataLayoutResult analyzeWholeProgram(
       return LoopDataLayoutResult::TransformationIsIllegal;
     }
 
+    bool MustNotProceed = false;
     LoopInfo &LI = LookupLoopInfo(F);
     ScalarEvolution &SE = LookupScalarEvolutionInfo(F);
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap = CandidateMap[&F];
-    if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap)) {
+    if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap, MustNotProceed)) {
       FoundOpportunities |= true;
       AAResults &AAR = AARGetter(F);
       SmallVector<Type *> &LocalParamMap = ParamMap[&F];
@@ -2207,6 +2231,8 @@ static LoopDataLayoutResult analyzeWholeProgram(
         UniqueTypeSet.insert(
             {Candididates.first.first->getSourceElementType(),
              Candididates.first.second->getSourceElementType()});
+    } else if (MustNotProceed) {
+      return LoopDataLayoutResult::TransformationIsIllegal;
     }
   }
 

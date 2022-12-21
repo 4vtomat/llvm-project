@@ -10,9 +10,8 @@ define <1 x i8> @sshl_sat_v1i8(<1 x i8> %a, <1 x i8> %b) {
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    ret
   %res = call <1 x i8> @llvm.sshl.sat.v1i8(<1 x i8> %a, <1 x i8> %b)
   ret <1 x i8> %res
@@ -24,9 +23,8 @@ define <1 x i8> @sshl_sat_v1i8_splat(<1 x i8> %a, i8 %b) {
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-NEXT:    ret
   %vec = insertelement <1 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <1 x i8> %vec, <1 x i8> poison, <1 x i32> zeroinitializer
@@ -42,9 +40,8 @@ define <2 x i8> @sshl_sat_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i8:
@@ -52,9 +49,8 @@ define <2 x i8> @sshl_sat_v2i8(<2 x i8> %a, <2 x i8> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i8> @llvm.sshl.sat.v2i8(<2 x i8> %a, <2 x i8> %b)
   ret <2 x i8> %res
@@ -66,9 +62,8 @@ define <2 x i8> @sshl_sat_v2i8_splat(<2 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i8_splat:
@@ -76,9 +71,8 @@ define <2 x i8> @sshl_sat_v2i8_splat(<2 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <2 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <2 x i8> %vec, <2 x i8> poison, <2 x i32> zeroinitializer
@@ -94,9 +88,8 @@ define <4 x i8> @sshl_sat_v4i8(<4 x i8> %a, <4 x i8> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i8:
@@ -104,9 +97,8 @@ define <4 x i8> @sshl_sat_v4i8(<4 x i8> %a, <4 x i8> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <4 x i8> @llvm.sshl.sat.v4i8(<4 x i8> %a, <4 x i8> %b)
   ret <4 x i8> %res
@@ -118,9 +110,8 @@ define <4 x i8> @sshl_sat_v4i8_splat(<4 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i8_splat:
@@ -128,9 +119,8 @@ define <4 x i8> @sshl_sat_v4i8_splat(<4 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <4 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <4 x i8> %vec, <4 x i8> poison, <4 x i32> zeroinitializer
@@ -146,9 +136,8 @@ define <8 x i8> @sshl_sat_v8i8(<8 x i8> %a, <8 x i8> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i8:
@@ -156,9 +145,8 @@ define <8 x i8> @sshl_sat_v8i8(<8 x i8> %a, <8 x i8> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <8 x i8> @llvm.sshl.sat.v8i8(<8 x i8> %a, <8 x i8> %b)
   ret <8 x i8> %res
@@ -170,9 +158,8 @@ define <8 x i8> @sshl_sat_v8i8_splat(<8 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i8_splat:
@@ -180,9 +167,8 @@ define <8 x i8> @sshl_sat_v8i8_splat(<8 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <8 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <8 x i8> %vec, <8 x i8> poison, <8 x i32> zeroinitializer
@@ -198,9 +184,8 @@ define <16 x i8> @sshl_sat_v16i8(<16 x i8> %a, <16 x i8> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i8:
@@ -208,9 +193,8 @@ define <16 x i8> @sshl_sat_v16i8(<16 x i8> %a, <16 x i8> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <16 x i8> @llvm.sshl.sat.v16i8(<16 x i8> %a, <16 x i8> %b)
   ret <16 x i8> %res
@@ -222,9 +206,8 @@ define <16 x i8> @sshl_sat_v16i8_splat(<16 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i8_splat:
@@ -232,9 +215,8 @@ define <16 x i8> @sshl_sat_v16i8_splat(<16 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <16 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <16 x i8> %vec, <16 x i8> poison, <16 x i32> zeroinitializer
@@ -251,9 +233,8 @@ define <32 x i8> @sshl_sat_v32i8(<32 x i8> %a, <32 x i8> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v12
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v16, v8, v12
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v32i8:
@@ -262,9 +243,8 @@ define <32 x i8> @sshl_sat_v32i8(<32 x i8> %a, <32 x i8> %b) {
 ; CHECK-V-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %res = call <32 x i8> @llvm.sshl.sat.v32i8(<32 x i8> %a, <32 x i8> %b)
   ret <32 x i8> %res
@@ -277,9 +257,8 @@ define <32 x i8> @sshl_sat_v32i8_splat(<32 x i8> %a, i8 %b) {
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    li a1, 32
 ; CHECK-ZVE64X-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v16, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v32i8_splat:
@@ -288,9 +267,8 @@ define <32 x i8> @sshl_sat_v32i8_splat(<32 x i8> %a, i8 %b) {
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    li a1, 32
 ; CHECK-V-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <32 x i8> undef, i8 %b, i64 0
   %splat = shufflevector <32 x i8> %vec, <32 x i8> poison, <32 x i32> zeroinitializer
@@ -306,9 +284,8 @@ define <1 x i16> @sshl_sat_v1i16(<1 x i16> %a, <1 x i16> %b) {
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    ret
   %res = call <1 x i16> @llvm.sshl.sat.v1i16(<1 x i16> %a, <1 x i16> %b)
   ret <1 x i16> %res
@@ -320,9 +297,8 @@ define <1 x i16> @sshl_sat_v1i16_splat(<1 x i16> %a, i16 %b) {
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-NEXT:    ret
   %vec = insertelement <1 x i16> undef, i16 %b, i64 0
   %splat = shufflevector <1 x i16> %vec, <1 x i16> poison, <1 x i32> zeroinitializer
@@ -338,9 +314,8 @@ define <2 x i16> @sshl_sat_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i16:
@@ -348,9 +323,8 @@ define <2 x i16> @sshl_sat_v2i16(<2 x i16> %a, <2 x i16> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i16> @llvm.sshl.sat.v2i16(<2 x i16> %a, <2 x i16> %b)
   ret <2 x i16> %res
@@ -362,9 +336,8 @@ define <2 x i16> @sshl_sat_v2i16_splat(<2 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i16_splat:
@@ -372,9 +345,8 @@ define <2 x i16> @sshl_sat_v2i16_splat(<2 x i16> %a, i16 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <2 x i16> undef, i16 %b, i64 0
   %splat = shufflevector <2 x i16> %vec, <2 x i16> poison, <2 x i32> zeroinitializer
@@ -390,9 +362,8 @@ define <4 x i16> @sshl_sat_v4i16(<4 x i16> %a, <4 x i16> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i16:
@@ -400,9 +371,8 @@ define <4 x i16> @sshl_sat_v4i16(<4 x i16> %a, <4 x i16> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <4 x i16> @llvm.sshl.sat.v4i16(<4 x i16> %a, <4 x i16> %b)
   ret <4 x i16> %res
@@ -414,9 +384,8 @@ define <4 x i16> @sshl_sat_v4i16_splat(<4 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e16, m1, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i16_splat:
@@ -424,9 +393,8 @@ define <4 x i16> @sshl_sat_v4i16_splat(<4 x i16> %a, i16 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <4 x i16> undef, i16 %b, i64 0
   %splat = shufflevector <4 x i16> %vec, <4 x i16> poison, <4 x i32> zeroinitializer
@@ -442,9 +410,8 @@ define <8 x i16> @sshl_sat_v8i16(<8 x i16> %a, <8 x i16> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i16:
@@ -452,9 +419,8 @@ define <8 x i16> @sshl_sat_v8i16(<8 x i16> %a, <8 x i16> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <8 x i16> @llvm.sshl.sat.v8i16(<8 x i16> %a, <8 x i16> %b)
   ret <8 x i16> %res
@@ -466,9 +432,8 @@ define <8 x i16> @sshl_sat_v8i16_splat(<8 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e16, m2, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i16_splat:
@@ -476,9 +441,8 @@ define <8 x i16> @sshl_sat_v8i16_splat(<8 x i16> %a, i16 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <8 x i16> undef, i16 %b, i64 0
   %splat = shufflevector <8 x i16> %vec, <8 x i16> poison, <8 x i32> zeroinitializer
@@ -494,9 +458,8 @@ define <16 x i16> @sshl_sat_v16i16(<16 x i16> %a, <16 x i16> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v12
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v16, v8, v12
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i16:
@@ -504,9 +467,8 @@ define <16 x i16> @sshl_sat_v16i16(<16 x i16> %a, <16 x i16> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %res = call <16 x i16> @llvm.sshl.sat.v16i16(<16 x i16> %a, <16 x i16> %b)
   ret <16 x i16> %res
@@ -518,9 +480,8 @@ define <16 x i16> @sshl_sat_v16i16_splat(<16 x i16> %a, i16 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 16, e16, m4, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v16, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v16i16_splat:
@@ -528,9 +489,8 @@ define <16 x i16> @sshl_sat_v16i16_splat(<16 x i16> %a, i16 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <16 x i16> undef, i16 %b, i64 0
   %splat = shufflevector <16 x i16> %vec, <16 x i16> poison, <16 x i32> zeroinitializer
@@ -546,9 +506,8 @@ define <1 x i32> @sshl_sat_v1i32(<1 x i32> %a, <1 x i32> %b) {
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-NEXT:    ret
   %res = call <1 x i32> @llvm.sshl.sat.v1i32(<1 x i32> %a, <1 x i32> %b)
   ret <1 x i32> %res
@@ -560,9 +519,8 @@ define <1 x i32> @sshl_sat_v1i32_splat(<1 x i32> %a, i32 %b) {
 ; CHECK-NEXT:    li a1, 1
 ; CHECK-NEXT:    sll a0, a1, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-NEXT:    ret
   %vec = insertelement <1 x i32> undef, i32 %b, i64 0
   %splat = shufflevector <1 x i32> %vec, <1 x i32> poison, <1 x i32> zeroinitializer
@@ -578,9 +536,8 @@ define <2 x i32> @sshl_sat_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v10, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i32:
@@ -588,9 +545,8 @@ define <2 x i32> @sshl_sat_v2i32(<2 x i32> %a, <2 x i32> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i32> @llvm.sshl.sat.v2i32(<2 x i32> %a, <2 x i32> %b)
   ret <2 x i32> %res
@@ -602,9 +558,8 @@ define <2 x i32> @sshl_sat_v2i32_splat(<2 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i32_splat:
@@ -612,9 +567,8 @@ define <2 x i32> @sshl_sat_v2i32_splat(<2 x i32> %a, i32 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v9, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <2 x i32> undef, i32 %b, i64 0
   %splat = shufflevector <2 x i32> %vec, <2 x i32> poison, <2 x i32> zeroinitializer
@@ -630,9 +584,8 @@ define <4 x i32> @sshl_sat_v4i32(<4 x i32> %a, <4 x i32> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v12, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v10, v12, v10
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i32:
@@ -640,9 +593,8 @@ define <4 x i32> @sshl_sat_v4i32(<4 x i32> %a, <4 x i32> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v10, 1
 ; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v10, v8, v9
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %res = call <4 x i32> @llvm.sshl.sat.v4i32(<4 x i32> %a, <4 x i32> %b)
   ret <4 x i32> %res
@@ -654,9 +606,8 @@ define <4 x i32> @sshl_sat_v4i32_splat(<4 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i32_splat:
@@ -664,9 +615,8 @@ define <4 x i32> @sshl_sat_v4i32_splat(<4 x i32> %a, i32 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v10, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v10, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <4 x i32> undef, i32 %b, i64 0
   %splat = shufflevector <4 x i32> %vec, <4 x i32> poison, <4 x i32> zeroinitializer
@@ -682,9 +632,8 @@ define <8 x i32> @sshl_sat_v8i32(<8 x i32> %a, <8 x i32> %b) {
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; CHECK-ZVE64X-NEXT:    vmv.v.i v16, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v16, v12
-; CHECK-ZVE64X-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vv v8, v8, v12
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a0
+; CHECK-ZVE64X-NEXT:    vwmulsu.vv v16, v8, v12
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i32:
@@ -692,9 +641,8 @@ define <8 x i32> @sshl_sat_v8i32(<8 x i32> %a, <8 x i32> %b) {
 ; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-V-NEXT:    vmv.v.i v12, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v12, v10
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vwmulsu.vv v12, v8, v10
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %res = call <8 x i32> @llvm.sshl.sat.v8i32(<8 x i32> %a, <8 x i32> %b)
   ret <8 x i32> %res
@@ -706,9 +654,8 @@ define <8 x i32> @sshl_sat_v8i32_splat(<8 x i32> %a, i32 %b) {
 ; CHECK-ZVE64X-NEXT:    li a1, 1
 ; CHECK-ZVE64X-NEXT:    sll a0, a1, a0
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
-; CHECK-ZVE64X-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-ZVE64X-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-ZVE64X-NEXT:    csrw vxrm, a1
+; CHECK-ZVE64X-NEXT:    vwmulsu.vx v16, v8, a0
+; CHECK-ZVE64X-NEXT:    vnclip.wi v8, v16, 0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v8i32_splat:
@@ -716,9 +663,8 @@ define <8 x i32> @sshl_sat_v8i32_splat(<8 x i32> %a, i32 %b) {
 ; CHECK-V-NEXT:    li a1, 1
 ; CHECK-V-NEXT:    sll a0, a1, a0
 ; CHECK-V-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-V-NEXT:    csrrwi a1, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vx v8, v8, a0
-; CHECK-V-NEXT:    csrw vxrm, a1
+; CHECK-V-NEXT:    vwmulsu.vx v12, v8, a0
+; CHECK-V-NEXT:    vnclip.wi v8, v12, 0
 ; CHECK-V-NEXT:    ret
   %vec = insertelement <8 x i32> undef, i32 %b, i64 0
   %splat = shufflevector <8 x i32> %vec, <8 x i32> poison, <8 x i32> zeroinitializer
@@ -729,31 +675,21 @@ define <8 x i32> @sshl_sat_v8i32_splat(<8 x i32> %a, i32 %b) {
 declare <1 x i64> @llvm.sshl.sat.v1i64(<1 x i64>, <1 x i64>)
 
 define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
-; CHECK-ZVE64X-LABEL: sshl_sat_v1i64:
-; CHECK-ZVE64X:       # %bb.0:
-; CHECK-ZVE64X-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
-; CHECK-ZVE64X-NEXT:    li a0, -1
-; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
-; CHECK-ZVE64X-NEXT:    vsll.vv v10, v8, v9
-; CHECK-ZVE64X-NEXT:    vsra.vv v9, v10, v9
-; CHECK-ZVE64X-NEXT:    vmsne.vv v8, v8, v9
-; CHECK-ZVE64X-NEXT:    vmv.v.x v9, a1
-; CHECK-ZVE64X-NEXT:    slli a0, a0, 63
-; CHECK-ZVE64X-NEXT:    vmerge.vxm v9, v9, a0, v0
-; CHECK-ZVE64X-NEXT:    vmv.v.v v0, v8
-; CHECK-ZVE64X-NEXT:    vmerge.vvm v8, v10, v9, v0
-; CHECK-ZVE64X-NEXT:    ret
-;
-; CHECK-V-LABEL: sshl_sat_v1i64:
-; CHECK-V:       # %bb.0:
-; CHECK-V-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-V-NEXT:    vmv.v.i v10, 1
-; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
-; CHECK-V-NEXT:    ret
+; CHECK-LABEL: sshl_sat_v1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
+; CHECK-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    srli a1, a0, 1
+; CHECK-NEXT:    vsll.vv v10, v8, v9
+; CHECK-NEXT:    vsra.vv v9, v10, v9
+; CHECK-NEXT:    vmsne.vv v8, v8, v9
+; CHECK-NEXT:    vmv.v.x v9, a1
+; CHECK-NEXT:    slli a0, a0, 63
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
+; CHECK-NEXT:    ret
   %res = call <1 x i64> @llvm.sshl.sat.v1i64(<1 x i64> %a, <1 x i64> %b)
   ret <1 x i64> %res
 }
@@ -780,11 +716,17 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-V-LABEL: sshl_sat_v2i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-V-NEXT:    vmv.v.i v10, 1
-; CHECK-V-NEXT:    vsll.vv v9, v10, v9
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v9
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-V-NEXT:    li a0, -1
+; CHECK-V-NEXT:    srli a1, a0, 1
+; CHECK-V-NEXT:    vsll.vv v10, v8, v9
+; CHECK-V-NEXT:    vsra.vv v9, v10, v9
+; CHECK-V-NEXT:    vmsne.vv v8, v8, v9
+; CHECK-V-NEXT:    vmv.v.x v9, a1
+; CHECK-V-NEXT:    slli a0, a0, 63
+; CHECK-V-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-V-NEXT:    vmv.v.v v0, v8
+; CHECK-V-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i64> @llvm.sshl.sat.v2i64(<2 x i64> %a, <2 x i64> %b)
   ret <2 x i64> %res
@@ -812,11 +754,17 @@ define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ; CHECK-V-LABEL: sshl_sat_v4i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-V-NEXT:    vmv.v.i v12, 1
-; CHECK-V-NEXT:    vsll.vv v10, v12, v10
-; CHECK-V-NEXT:    csrrwi a0, vxrm, 2
-; CHECK-V-NEXT:    vsmul.vv v8, v8, v10
-; CHECK-V-NEXT:    csrw vxrm, a0
+; CHECK-V-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-V-NEXT:    li a0, -1
+; CHECK-V-NEXT:    srli a1, a0, 1
+; CHECK-V-NEXT:    vsll.vv v12, v8, v10
+; CHECK-V-NEXT:    vsra.vv v14, v12, v10
+; CHECK-V-NEXT:    vmsne.vv v10, v8, v14
+; CHECK-V-NEXT:    vmv.v.x v8, a1
+; CHECK-V-NEXT:    slli a0, a0, 63
+; CHECK-V-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-V-NEXT:    vmv1r.v v0, v10
+; CHECK-V-NEXT:    vmerge.vvm v8, v12, v8, v0
 ; CHECK-V-NEXT:    ret
   %res = call <4 x i64> @llvm.sshl.sat.v4i64(<4 x i64> %a, <4 x i64> %b)
   ret <4 x i64> %res

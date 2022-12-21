@@ -977,6 +977,14 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_umax, 1)                                                     \
   VP_INTRINSIC(vp_umin, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
+<<<<<<< HEAD
+=======
+  VP_INTRINSIC(vp_ceil, 9)                                                     \
+  VP_INTRINSIC(vp_floor, 9)                                                    \
+  VP_INTRINSIC(vp_round, 9)                                                    \
+  VP_INTRINSIC(vp_roundeven, 9)                                                \
+  VP_INTRINSIC(vp_roundtozero, 9)                                              \
+>>>>>>> origin/sifive-dev
   VP_INTRINSIC(vp_copysign, 1)                                                 \
   VP_INTRINSIC(vp_minnum, 1)                                                   \
   VP_INTRINSIC(vp_maxnum, 1)                                                   \
@@ -1406,6 +1414,10 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   // In RVV, we could use vslidedown + vmv.x.s to extract element from vector
   // and vslideup + vmv.s.x to insert element to vector.
   unsigned BaseCost = 1;
+#if SIFIVE_CUSTOMIZATION
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
+#endif
   // When insertelement we should add the index with 1 as the input of vslideup.
   unsigned SlideCost = Opcode == Instruction::InsertElement ? 2 : 1;
 
@@ -1447,6 +1459,10 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
 
     // TODO: should we count these special vsetvlis?
     BaseCost = Opcode == Instruction::InsertElement ? 5 : 3;
+#if SIFIVE_CUSTOMIZATION
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
+#endif
   }
   // Extract i64 in the target that has XLEN=32 need more instruction.
   if (Val->getScalarType()->isIntegerTy() &&
@@ -1470,6 +1486,10 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
 
     // TODO: should we count these special vsetvlis?
     BaseCost = Opcode == Instruction::InsertElement ? 3 : 4;
+#if SIFIVE_CUSTOMIZATION
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
+#endif
   }
 
   return BaseCost + SlideCost;

@@ -6724,6 +6724,33 @@ SDValue TargetLowering::getSqrtInputTest(SDValue Op, SelectionDAG &DAG,
   return DAG.getSetCC(DL, CCVT, Op, FPZero, ISD::SETEQ);
 }
 
+#if SIFIVE_CUSTOMIZATION
+SDValue TargetLowering::getVPSqrtInputTest(SDValue Op, SDValue Mask, SDValue EVL,
+                                         SelectionDAG &DAG,
+                                         const DenormalMode &Mode) const {
+  SDLoc DL(Op);
+  EVT VT = Op.getValueType();
+  EVT CCVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
+  SDValue FPZero = DAG.getConstantFP(0.0, DL, VT);
+  // Testing it with denormal inputs to avoid wrong estimate.
+  if (Mode.Input == DenormalMode::IEEE) {
+    // This is specifically a check for the handling of denormal inputs,
+    // not the result.
+
+    // Test = fabs(X) < SmallestNormal
+    const fltSemantics &FltSem = DAG.EVTToAPFloatSemantics(VT);
+    APFloat SmallestNorm = APFloat::getSmallestNormalized(FltSem);
+    SDValue NormC = DAG.getConstantFP(SmallestNorm, DL, VT);
+    SDValue Fabs = DAG.getNode(ISD::VP_FABS, DL, VT, Op, Mask, EVL);
+    return DAG.getNode(ISD::VP_SETCC, DL, CCVT, {Fabs, NormC,
+                       DAG.getCondCode(ISD::SETLT), Mask, EVL});
+  }
+  // Test = X == 0.0
+  return DAG.getNode(ISD::VP_SETCC, DL, CCVT, {Op, FPZero,
+                     DAG.getCondCode(ISD::SETEQ), Mask, EVL});
+}
+#endif
+
 SDValue TargetLowering::getNegatedExpression(SDValue Op, SelectionDAG &DAG,
                                              bool LegalOps, bool OptForSize,
                                              NegatibleCost &Cost,

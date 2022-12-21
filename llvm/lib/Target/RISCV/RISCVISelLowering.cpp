@@ -3989,6 +3989,18 @@ SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SelectionDAG &DAG,
                      Reciprocal);
 }
 
+SDValue RISCVTargetLowering::getSqrtEstimate(SDValue Operand, SDValue Mask,
+                                             SDValue EVL, SelectionDAG &DAG,
+                                             int Enabled, int &Steps,
+                                             bool &UseOneConst,
+                                             bool Reciprocal) const {
+  if (Enabled != ReciprocalEstimate::Enabled)
+    return SDValue();
+
+  return getEstimate(Subtarget, RISCVISD::VFRSQRT7_VL, Operand, DAG, Steps,
+                     Reciprocal, EVL);
+}
+
 SDValue RISCVTargetLowering::getRecipEstimate(SDValue Operand,
                                               SelectionDAG &DAG, int Enabled,
                                               int &Steps) const {
@@ -7885,38 +7897,21 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
                                                  DAG.getConstant(1, DL, XLenVT),
                                                  SplatRHS));
   } else {
+    SDValue One = DAG.getConstant(1, DL, VT);
     if (ShiftIncSize) {
       // We need to do SHL twice because RHS may be EltBitSize.
       MulRHS = DAG.getSelectCC(
           DL, RHS, Zero,
           DAG.getNode(
-              ISD::SHL, DL, VT,
-              DAG.getSplatBuildVector(VT, DL, DAG.getConstant(2, DL, XLenVT)),
+              ISD::SHL, DL, VT, DAG.getConstant(2, DL, VT),
               DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
-          Zero, ISD::SETNE);
+          One, ISD::SETNE);
     } else {
-      MulRHS = DAG.getNode(
-          ISD::SHL, DL, VT,
-          DAG.getSplatBuildVector(VT, DL, DAG.getConstant(1, DL, XLenVT)), RHS);
+      MulRHS = DAG.getNode(ISD::SHL, DL, VT, One, RHS);
     }
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
-  // If Shift is equal to RHS size, (1 << RHS) would have widening type.
-  bool CanHoldMulRHS = !ShiftIncSize || EltBitSize < Subtarget.getXLen();
-  // SEW 64 vsmul is only included in V.
-  bool CanUseSmul = (EltBitSize != 64) || Subtarget.hasStdExtV();
-  // Only signed type can use vsmul.
-  CanUseSmul = CanUseSmul && IsSigned;
-  if (CanHoldMulRHS && CanUseSmul) {
-    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Smul = DAG.getNode(
-        RISCVISD::VSMUL_VL, DL, ContainerVT,
-        {convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-         convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
-         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
-    return convertFromScalableVector(VT, Smul, DAG, Subtarget);
-  }
   MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
                                  VT.getVectorNumElements());
   // Widening operation is used. Make sure EltBitSize * 2 is smaller than or
@@ -7927,7 +7922,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
       EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
   // For unsigned type, widen algo causes higher register pressure.
   bool UseWidenAlgo = SplatRHS ? true : IsSigned;
-  if (CanHoldMulRHS && CanUseWidenAlgo && UseWidenAlgo) {
+  if (CanUseWidenAlgo && UseWidenAlgo) {
     unsigned WmulOpc;
     unsigned NclipOpc;
     if (IsSigned) {
@@ -10673,6 +10668,12 @@ struct NodeExtensionHelper {
       break;
     }
     default:
+#if SIFIVE_CUSTOMIZATION
+      // We aren't going to modify this operand so it doesn't matter how many
+      // uses it has. This is a workaround for a larger issue described in
+      // https://github.com/llvm/llvm-project/issues/59345
+      EnforceOneUse = false;
+#endif // SIFIVE_CUSTOMIZATION
       break;
     }
   }

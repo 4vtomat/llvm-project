@@ -79,6 +79,7 @@ class TargetTransformInfo;
 
 extern cl::opt<bool> EnableLoopInterleaving;
 extern cl::opt<bool> EnableLoopVectorization;
+extern cl::opt<bool> AdhocSkipVectorizeInPrelink;
 
 /// A marker to determine if extra passes after loop vectorization should be
 /// run.

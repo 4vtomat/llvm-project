@@ -744,11 +744,11 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                                  FixedVectorType::getExtendedElementVectorType(
                                      cast<FixedVectorType>(Odd->getType())));
         Value *HalfAdd = Builder.CreateAdd(Even, Odd);
-        HalfAdd = Builder.CreateAdd(
-            Builder.CreateShuffleVector(
-                HalfAdd, increasingSequenceByN(0, 2, VectorNumElements)),
-            Builder.CreateShuffleVector(
-                HalfAdd, increasingSequenceByN(1, 2, VectorNumElements)));
+        Value *Shuf0 = Builder.CreateShuffleVector(
+            HalfAdd, increasingSequenceByN(0, 2, VectorNumElements));
+        Value *Shuf1 = Builder.CreateShuffleVector(
+            HalfAdd, increasingSequenceByN(1, 2, VectorNumElements));
+        HalfAdd = Builder.CreateAdd(Shuf0, Shuf1);
         II->replaceAllUsesWith(
             Builder.CreateAdd(II->getArgOperand(0), HalfAdd));
         break;
@@ -792,9 +792,9 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         break;
       }
       case Intrinsic::aarch64_neon_smull: {
-        II->replaceAllUsesWith(Builder.CreateMul(
-            Builder.CreateSExt(II->getArgOperand(0), II->getType()),
-            Builder.CreateSExt(II->getArgOperand(1), II->getType())));
+        Value *SExt0 = Builder.CreateSExt(II->getArgOperand(0), II->getType());
+        Value *SExt1 = Builder.CreateSExt(II->getArgOperand(1), II->getType());
+        II->replaceAllUsesWith(Builder.CreateMul(SExt0, SExt1));
         break;
       }
       case Intrinsic::aarch64_neon_sqadd:
@@ -830,13 +830,13 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       }
       case Intrinsic::aarch64_neon_sqdmulh:
       case Intrinsic::aarch64_neon_sqrdmulh: {
-        Value *Smull = Builder.CreateMul(
-            Builder.CreateSExt(
-                II->getArgOperand(0),
-                II->getArgOperand(0)->getType()->getExtendedType()),
-            Builder.CreateSExt(
-                II->getArgOperand(1),
-                II->getArgOperand(1)->getType()->getExtendedType()));
+        Value *SExt0 = Builder.CreateSExt(
+            II->getArgOperand(0),
+            II->getArgOperand(0)->getType()->getExtendedType());
+        Value *SExt1 = Builder.CreateSExt(
+            II->getArgOperand(1),
+            II->getArgOperand(1)->getType()->getExtendedType());
+        Value *Smull = Builder.CreateMul(SExt0, SExt1);
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             II->getIntrinsicID() == Intrinsic::aarch64_neon_sqdmulh
                 ? Intrinsic::aarch64_neon_sqshrn
@@ -1031,9 +1031,9 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         break;
       }
       case Intrinsic::aarch64_neon_umull: {
-        II->replaceAllUsesWith(Builder.CreateMul(
-            Builder.CreateZExt(II->getArgOperand(0), II->getType()),
-            Builder.CreateZExt(II->getArgOperand(1), II->getType())));
+        Value *ZExt0 = Builder.CreateZExt(II->getArgOperand(0), II->getType());
+        Value *ZExt1 = Builder.CreateZExt(II->getArgOperand(1), II->getType());
+        II->replaceAllUsesWith(Builder.CreateMul(ZExt0, ZExt1));
         break;
       }
       case Intrinsic::aarch64_neon_vcvtfp2hf: {

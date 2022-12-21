@@ -531,8 +531,18 @@ namespace {
     SDValue visitVPFADDForVPFMACombine(SDNode *N);
     SDValue visitVPXOR(SDNode *N);
     SDValue visitVPFDIV(SDNode *N);
+    SDValue visitVPFSQRT(SDNode *N);
     SDValue BuildVPDivEstimate(SDValue N, SDValue Op, SDValue Mask, SDValue EVL,
                                SDNodeFlags Flags);
+    SDValue buildVPRsqrtEstimate(SDValue Op, SDValue Mask, SDValue EVL,
+                                 SDNodeFlags Flags);
+    SDValue buildVPSqrtEstimate(SDValue Op, SDValue Mask, SDValue EVL,
+                                SDNodeFlags Flags);
+    SDValue buildVPSqrtEstimateImpl(SDValue Op, SDValue Mask, SDValue EVL,
+                                    SDNodeFlags Flags, bool Recip);
+    SDValue buildVPSqrtNRTwoConst(SDValue Arg, SDValue Est, SDValue Mask,
+                                  SDValue EVL, unsigned Iterations,
+                                  SDNodeFlags Flags, bool Reciprocal);
 #endif // SIFIVE_CUSTOMIZATION
 
     SDValue XformToShuffleWithZero(SDNode *N);
@@ -24159,21 +24169,166 @@ SDValue DAGCombiner::BuildVPDivEstimate(SDValue N, SDValue Op, SDValue Mask,
   return SDValue();
 }
 
+/// VP Version of buildVPSqrtNRTwoConst.
+/// Newton iteration for a function: F(X) is X_{i+1} = X_i - F(X_i)/F'(X_i)
+/// For the reciprocal sqrt, we need to find the zero of the function:
+///   F(X) = 1/X^2 - A [which has a zero at X = 1/sqrt(A)]
+///     =>
+///   X_{i+1} = (-0.5 * X_i) * (A * X_i * X_i + (-3.0))
+SDValue DAGCombiner::buildVPSqrtNRTwoConst(SDValue Arg, SDValue Est,
+                                           SDValue Mask, SDValue VL,
+                                           unsigned Iterations,
+                                           SDNodeFlags Flags, bool Reciprocal) {
+  EVT VT = Arg.getValueType();
+  SDLoc DL(Arg);
+  SDValue MinusThree = DAG.getConstantFP(-3.0, DL, VT);
+  SDValue MinusHalf = DAG.getConstantFP(-0.5, DL, VT);
+
+  // This routine must enter the loop below to work correctly
+  // when (Reciprocal == false).
+  assert(Iterations > 0);
+
+  // Newton iterations for reciprocal square root:
+  // E = (E * -0.5) * ((A * E) * E + -3.0)
+  for (unsigned i = 0; i < Iterations; ++i) {
+    SDValue AE = DAG.getNode(ISD::VP_FMUL, DL, VT, {Arg, Est, Mask, VL}, Flags);
+    SDValue AEE = DAG.getNode(ISD::VP_FMUL, DL, VT, {AE, Est, Mask, VL}, Flags);
+    SDValue RHS =
+        DAG.getNode(ISD::VP_FADD, DL, VT, {AEE, MinusThree, Mask, VL}, Flags);
+
+    // When calculating a square root at the last iteration build:
+    // S = ((A * E) * -0.5) * ((A * E) * E + -3.0)
+    // (notice a common subexpression)
+    SDValue LHS;
+    if (Reciprocal || (i + 1) < Iterations) {
+      // RSQRT: LHS = (E * -0.5)
+      LHS =
+          DAG.getNode(ISD::VP_FMUL, DL, VT, {Est, MinusHalf, Mask, VL}, Flags);
+    } else {
+      // SQRT: LHS = (A * E) * -0.5
+      LHS = DAG.getNode(ISD::VP_FMUL, DL, VT, {AE, MinusHalf, Mask, VL}, Flags);
+    }
+
+    Est = DAG.getNode(ISD::VP_FMUL, DL, VT, {LHS, RHS, Mask, VL}, Flags);
+  }
+
+  return Est;
+}
+
+/// VP Version of buildSqrtEstimateImpl.
+/// Build code to calculate either rsqrt(Op) or sqrt(Op). In the latter case
+/// Op*rsqrt(Op) is actually computed, so additional postprocessing is needed if
+/// Op can be zero.
+SDValue DAGCombiner::buildVPSqrtEstimateImpl(SDValue Op, SDValue Mask,
+                                             SDValue VL, SDNodeFlags Flags,
+                                             bool Reciprocal) {
+  if (LegalDAG)
+    return SDValue();
+
+  // TODO: Handle extended types?
+  EVT VT = Op.getValueType();
+  if (VT.getScalarType() != MVT::f16 && VT.getScalarType() != MVT::f32 &&
+      VT.getScalarType() != MVT::f64)
+    return SDValue();
+
+  // If estimates are explicitly disabled for this function, we're done.
+  MachineFunction &MF = DAG.getMachineFunction();
+  int Enabled = TLI.getRecipEstimateSqrtEnabled(VT, MF);
+  if (Enabled == TLI.ReciprocalEstimate::Disabled)
+    return SDValue();
+
+  // Estimates may be explicitly enabled for this type with a custom number of
+  // refinement steps.
+  int Iterations = TLI.getSqrtRefinementSteps(VT, MF);
+
+  bool UseOneConstNR = false;
+  if (SDValue Est = TLI.getSqrtEstimate(Op, Mask, VL, DAG, Enabled, Iterations,
+                                        UseOneConstNR, Reciprocal)) {
+    AddToWorklist(Est.getNode());
+
+    // TODO: Add buildVPSqrtNROneConst for true UseOneConstNR.
+    if (Iterations)
+      Est = buildVPSqrtNRTwoConst(Op, Est, Mask, VL, Iterations, Flags,
+                                  Reciprocal);
+
+    if (!Reciprocal) {
+      SDLoc DL(Op);
+      // Try the target specific test first.
+      SDValue Test =
+          TLI.getVPSqrtInputTest(Op, Mask, VL, DAG, DAG.getDenormalMode(VT));
+
+      // The estimate is now completely wrong if the input was exactly 0.0 or
+      // possibly a denormal. Force the answer to 0.0 or value provided by
+      // target for those cases.
+      Est = DAG.getNode(
+          ISD::VP_SELECT, DL, VT,
+          {Test, TLI.getSqrtResultForDenormInput(Op, DAG), Est, VL});
+    }
+    return Est;
+  }
+
+  return SDValue();
+}
+
+/// VP Version of buildRsqrtEstimate.
+SDValue DAGCombiner::buildVPRsqrtEstimate(SDValue Op, SDValue Mask, SDValue VL,
+                                          SDNodeFlags Flags) {
+  return buildVPSqrtEstimateImpl(Op, Mask, VL, Flags, true);
+}
+
+/// VP Version of buildSqrtEstimate.
+SDValue DAGCombiner::buildVPSqrtEstimate(SDValue Op, SDValue Mask, SDValue VL,
+                                         SDNodeFlags Flags) {
+  return buildVPSqrtEstimateImpl(Op, Mask, VL, Flags, false);
+}
+
 SDValue DAGCombiner::visitVPFDIV(SDNode *N) {
   SDValue N0 = N->getOperand(0);
   SDValue N1 = N->getOperand(1);
   SDValue Mask = N->getOperand(2);
   SDValue EVL = N->getOperand(3);
+  EVT VT = N->getValueType(0);
   const TargetOptions &Options = DAG.getTarget().Options;
+  SDLoc DL(N);
   SDNodeFlags Flags = N->getFlags();
 
   if (Options.UnsafeFPMath || Flags.hasAllowReciprocal()) {
+    // If this FDIV is part of a reciprocal square root, it may be folded
+    // into a target-specific square root estimate instruction.
+    if (N1.getOpcode() == ISD::VP_SQRT) {
+      if (SDValue RV = buildVPRsqrtEstimate(N1.getOperand(0), Mask, EVL, Flags))
+        return DAG.getNode(ISD::VP_FMUL, DL, VT, N0, RV, Mask, EVL);
+    }
     // Fold into a reciprocal estimate and multiply instead of a real divide.
     if (Options.NoInfsFPMath || Flags.hasNoInfs())
       if (SDValue RV = BuildVPDivEstimate(N0, N1, Mask, EVL, Flags))
         return RV;
   }
   return SDValue();
+}
+
+SDValue DAGCombiner::visitVPFSQRT(SDNode *N) {
+  SDNodeFlags Flags = N->getFlags();
+  const TargetOptions &Options = DAG.getTarget().Options;
+
+  // Require 'ninf' flag since sqrt(+Inf) = +Inf, but the estimation goes as:
+  // sqrt(+Inf) == rsqrt(+Inf) * +Inf = 0 * +Inf = NaN
+  if (!Flags.hasApproximateFuncs() ||
+      (!Options.NoInfsFPMath && !Flags.hasNoInfs()))
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  SDValue Mask = N->getOperand(1);
+  SDValue EVL = N->getOperand(2);
+  if (TLI.isFsqrtCheap(N0, DAG))
+    return SDValue();
+
+  // FSQRT nodes have flags that propagate to the created nodes.
+  // TODO: If this is N0/sqrt(N0), and we reach this node before trying to
+  //       transform the fdiv, we may produce a sub-optimal estimate sequence
+  //       because the reciprocal calculation may not have to filter out a
+  //       0.0 input.
+  return buildVPSqrtEstimate(N0, Mask, EVL, Flags);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -24211,6 +24366,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
       return visitVPXOR(N);
     case ISD::VP_FDIV:
       return visitVPFDIV(N);
+    case ISD::VP_SQRT:
+      return visitVPFSQRT(N);
     }
 #endif // SIFIVE_CUSTOMIZATION
     return SDValue();

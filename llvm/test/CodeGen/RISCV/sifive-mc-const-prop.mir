@@ -13,6 +13,7 @@
   define void @case3_fold2() { ret void }
   define void @case3_fold_1() { ret void }
   define void @case3_fold2_1() { ret void }
+  define void @case3_postpone_kill() { ret void }
   define void @case1_followed_by_case2() { ret void }
 ...
 ---
@@ -164,6 +165,26 @@ body:             |
     ; RV32-NEXT: renamable $x13 = ORI killed $x6, 1
     renamable $x10 = ADDI killed $x6, 0
     renamable $x13 = ORI killed renamable $x10, 1
+...
+---
+name: case3_postpone_kill
+tracksRegLiveness: true
+body:             |
+  bb.0:
+    liveins: $x2, $x13
+    ; RV64-LABEL: name: case3_postpone_kill
+    ; RV64: liveins: $x2, $x13
+    ; RV64-NEXT: {{  $}}
+    ; RV64-NEXT: renamable $x11 = DIV $x13, $x2
+    ; RV64-NEXT: renamable $x12 = ADD killed $x2, killed renamable $x11
+    ; RV32-LABEL: name: case3_postpone_kill
+    ; RV32: liveins: $x2, $x13
+    ; RV32-NEXT: {{  $}}
+    ; RV32-NEXT: renamable $x11 = DIV $x13, $x2
+    ; RV32-NEXT: renamable $x12 = ADD killed $x2, killed renamable $x11
+    renamable $x10 = ADD $x0, $x2
+    renamable $x11 = DIV $x13, killed $x2
+    renamable $x12 = ADD killed renamable $x10, killed renamable $x11
 ...
 ---
 name: case1_followed_by_case2

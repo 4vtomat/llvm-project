@@ -7,16 +7,16 @@
 define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
 ; NOALIGN:       # %bb.0: # %entry
-; NOALIGN-NEXT:  .LBB0_1: # %loop-memcpy-expansion
+; NOALIGN-NEXT:  .LBB0_1: # %memcpy-forward-loop
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
 ; NOALIGN-NEXT:    vse8.v v8, (a1)
-; NOALIGN-NEXT:    add a0, a0, a3
 ; NOALIGN-NEXT:    sub a2, a2, a3
+; NOALIGN-NEXT:    add a0, a0, a3
 ; NOALIGN-NEXT:    add a1, a1, a3
-; NOALIGN-NEXT:    bnez a2, .LBB0_1
-; NOALIGN-NEXT:  # %bb.2: # %post-loop-memcpy-expansion
+; NOALIGN-NEXT:    bgtz a2, .LBB0_1
+; NOALIGN-NEXT:  # %bb.2: # %memcpy-post-loop
 ; NOALIGN-NEXT:    ret
 ;
 ; ALIGN-LABEL: UnKnownSize:
@@ -33,7 +33,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:  # %bb.1:
 ; ALIGN-NEXT:    add a0, a0, a3
 ; ALIGN-NEXT:    add a1, a1, a3
-; ALIGN-NEXT:  .LBB0_2: # %loop-memcpy-expansion
+; ALIGN-NEXT:  .LBB0_2: # %memcpy-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
 ; ALIGN-NEXT:    vle8.v v8, (a0)
@@ -41,8 +41,8 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    add a0, a0, a3
 ; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    add a1, a1, a3
-; ALIGN-NEXT:    bnez a2, .LBB0_2
-; ALIGN-NEXT:  .LBB0_3: # %post-loop-memcpy-expansion
+; ALIGN-NEXT:    bgtz a2, .LBB0_2
+; ALIGN-NEXT:  .LBB0_3: # %memcpy-post-loop
 ; ALIGN-NEXT:    ret
 entry:
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 %n, i1 false)
