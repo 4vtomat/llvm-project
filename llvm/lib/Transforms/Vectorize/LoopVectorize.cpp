@@ -3289,8 +3289,11 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
                                        ConstantInt::get(Count->getType(), 1));
   }
 
+  bool ForceVectorization =
+      LoopVectorizeHints(OrigLoop, true, *ORE).getForce() ==
+      LoopVectorizeHints::FK_Enabled;
   if (!VectorizerDisableProfitableTripCountRTCheck && useVLAVectorizer() &&
-      !Legal->getReductionVars().empty()) {
+      !ForceVectorization && !Legal->getReductionVars().empty()) {
     if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
       // FIXME: That should be done during VPlan construction and be aligned
       // with vsetvli that is emitted in the loop. Right now it's aligned, but
