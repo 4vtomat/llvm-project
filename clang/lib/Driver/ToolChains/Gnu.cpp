@@ -2011,11 +2011,12 @@ static bool getRISCVMultilibFromGCC(const Driver &D,
         "Attempt to obtain the multilib configuration from '" + GCCPath + "'\n";
 
   // Ask GCC's multi-lib config via --print-multi-lib.
-  SmallVector<StringRef> GCCArgs({{GCCPath}, {"--print-multi-lib"}});
+  llvm::StringRef GCCArgs[] = {{GCCPath}, {"--print-multi-lib"}};
   std::string MultilibOutput = D.GetTemporaryPath("gcc-output-", "");
-  std::optional<llvm::StringRef> Redirects[] = {None, {MultilibOutput}, {""}};
+  std::optional<llvm::StringRef> Redirects[] = {
+      std::nullopt, {MultilibOutput}, {""}};
 
-  int RC = llvm::sys::ExecuteAndWait(GCCPath, GCCArgs, None, Redirects);
+  int RC = llvm::sys::ExecuteAndWait(GCCPath, GCCArgs, std::nullopt, Redirects);
 
   // Any failed happen? let fallback to built-in multi-lib.
   if (RC != 0) {
