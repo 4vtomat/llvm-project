@@ -104,7 +104,7 @@ define <vscale x 16 x i64> @test_vp_sext_nxv16i64_nxv16i16(<vscale x 16 x i16> %
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    sub a2, a0, a1
 ; CHECK-NEXT:    sltu a3, a0, a2
-; CHECK-NEXT:    addiw a3, a3, -1
+; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a2, a2, a3
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vsext.vf4 v16, v10

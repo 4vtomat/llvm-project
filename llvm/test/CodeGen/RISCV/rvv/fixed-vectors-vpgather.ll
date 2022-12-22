@@ -288,7 +288,7 @@ define <32 x i8> @vpgather_baseidx_v32i8(i8* %base, <32 x i8> %idxs, <32 x i1> %
 ; RV64-NEXT:    vmv1r.v v10, v0
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; RV64-NEXT:    vslidedown.vi v12, v8, 16
@@ -1919,7 +1919,7 @@ define <32 x double> @vpgather_v32f64(<32 x double*> %ptrs, <32 x i1> %m, i32 ze
 ; RV64-NEXT:    vmv1r.v v24, v0
 ; RV64-NEXT:    addi a1, a0, -16
 ; RV64-NEXT:    sltu a2, a0, a1
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a1, a2, a1
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -1978,7 +1978,7 @@ define <32 x double> @vpgather_baseidx_v32i8_v32f64(double* %base, <32 x i8> %id
 ; RV64-NEXT:    vsll.vi v24, v24, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -2038,7 +2038,7 @@ define <32 x double> @vpgather_baseidx_sext_v32i8_v32f64(double* %base, <32 x i8
 ; RV64-NEXT:    vsll.vi v24, v24, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -2099,7 +2099,7 @@ define <32 x double> @vpgather_baseidx_zext_v32i8_v32f64(double* %base, <32 x i8
 ; RV64-NEXT:    vsll.vi v24, v24, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -2160,7 +2160,7 @@ define <32 x double> @vpgather_baseidx_v32i16_v32f64(double* %base, <32 x i16> %
 ; RV64-NEXT:    vsll.vi v24, v24, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -2220,7 +2220,7 @@ define <32 x double> @vpgather_baseidx_sext_v32i16_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vsll.vi v24, v0, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v12, 2
@@ -2281,7 +2281,7 @@ define <32 x double> @vpgather_baseidx_zext_v32i16_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vsll.vi v24, v0, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v12, 2
@@ -2341,7 +2341,7 @@ define <32 x double> @vpgather_baseidx_v32i32_v32f64(double* %base, <32 x i32> %
 ; RV64-NEXT:    vsll.vi v8, v0, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v24, 2
@@ -2409,7 +2409,7 @@ define <32 x double> @vpgather_baseidx_sext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vl1r.v v24, (a2) # Unknown-size Folded Reload
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v24, 2
@@ -2482,7 +2482,7 @@ define <32 x double> @vpgather_baseidx_zext_v32i32_v32f64(double* %base, <32 x i
 ; RV64-NEXT:    vl1r.v v24, (a2) # Unknown-size Folded Reload
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v24, 2
@@ -2546,7 +2546,7 @@ define <32 x double> @vpgather_baseidx_v32f64(double* %base, <32 x i64> %idxs, <
 ; RV64-NEXT:    vsll.vi v16, v16, 3
 ; RV64-NEXT:    addi a2, a1, -16
 ; RV64-NEXT:    sltu a3, a1, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2

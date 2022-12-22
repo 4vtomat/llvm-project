@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+f -verify-machineinstrs < %s \
 ; RUN:   -target-abi=ilp32f | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+f -verify-machineinstrs < %s \
-; RUN:   -target-abi=lp64f | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
+; RUN:   -target-abi=lp64f | FileCheck %s
 
 define float @select_fcmp_false(float %a, float %b) nounwind {
 ; CHECK-LABEL: select_fcmp_false:
@@ -255,11 +255,11 @@ define i32 @select_fcmp_oeq_1_2(float %a, float %b) {
 }
 
 define signext i32 @select_fcmp_uge_negone_zero(float %a, float %b) nounwind {
-; CHECK-RV64-LABEL: select_fcmp_uge_negone_zero:
-; CHECK-RV64:       # %bb.0:
-; CHECK-RV64-NEXT:    fle.s a0, fa0, fa1
-; CHECK-RV64-NEXT:    addiw a0, a0, -1
-; CHECK-RV64-NEXT:    ret
+; CHECK-LABEL: select_fcmp_uge_negone_zero:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    fle.s a0, fa0, fa1
+; CHECK-NEXT:    addi a0, a0, -1
+; CHECK-NEXT:    ret
   %1 = fcmp ugt float %a, %b
   %2 = select i1 %1, i32 -1, i32 0
   ret i32 %2

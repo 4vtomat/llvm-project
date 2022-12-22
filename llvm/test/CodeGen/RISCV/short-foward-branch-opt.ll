@@ -87,7 +87,7 @@ define signext i32 @test4(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test4:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    snez a1, a1
-; NOSFB-NEXT:    addiw a1, a1, -1
+; NOSFB-NEXT:    addi a1, a1, -1
 ; NOSFB-NEXT:    and a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -108,7 +108,7 @@ define signext i32 @test5(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test5:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    seqz a1, a1
-; NOSFB-NEXT:    addiw a1, a1, -1
+; NOSFB-NEXT:    addi a1, a1, -1
 ; NOSFB-NEXT:    and a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -129,7 +129,7 @@ define signext i32 @test6(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test6:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    seqz a1, a1
-; NOSFB-NEXT:    addiw a1, a1, -1
+; NOSFB-NEXT:    addi a1, a1, -1
 ; NOSFB-NEXT:    or a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;
@@ -151,7 +151,7 @@ define signext i32 @test7(i32 signext %x, i32 signext %z) {
 ; NOSFB-LABEL: test7:
 ; NOSFB:       # %bb.0:
 ; NOSFB-NEXT:    snez a1, a1
-; NOSFB-NEXT:    addiw a1, a1, -1
+; NOSFB-NEXT:    addi a1, a1, -1
 ; NOSFB-NEXT:    or a0, a0, a1
 ; NOSFB-NEXT:    ret
 ;

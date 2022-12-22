@@ -415,7 +415,7 @@ define void @test_urem_vec(<3 x i11>* %X) nounwind {
 ; RV64-NEXT:    andi a0, a0, 2047
 ; RV64-NEXT:    sltiu a0, a0, 2
 ; RV64-NEXT:    addiw s3, s3, -1
-; RV64-NEXT:    addiw a0, a0, -1
+; RV64-NEXT:    addi a0, a0, -1
 ; RV64-NEXT:    addiw s2, s2, -1
 ; RV64-NEXT:    andi a1, s3, 2047
 ; RV64-NEXT:    andi a2, s2, 2047
@@ -505,7 +505,7 @@ define void @test_urem_vec(<3 x i11>* %X) nounwind {
 ; RV64M-NEXT:    andi a2, a2, 2047
 ; RV64M-NEXT:    sltiu a2, a2, 2
 ; RV64M-NEXT:    addiw a1, a1, -1
-; RV64M-NEXT:    addiw a2, a2, -1
+; RV64M-NEXT:    addi a2, a2, -1
 ; RV64M-NEXT:    addiw a3, a3, -1
 ; RV64M-NEXT:    andi a1, a1, 2047
 ; RV64M-NEXT:    andi a3, a3, 2047

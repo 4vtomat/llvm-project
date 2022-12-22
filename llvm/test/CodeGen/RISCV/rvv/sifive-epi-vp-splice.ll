@@ -359,14 +359,14 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    vse64.v v8, (a6)
 ; CHECK-NEXT:    sub a0, a2, a4
 ; CHECK-NEXT:    sltu a5, a2, a0
-; CHECK-NEXT:    addiw a5, a5, -1
+; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a0, a5, a0
 ; CHECK-NEXT:    add a5, a6, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a5)
 ; CHECK-NEXT:    sub a0, a3, a4
 ; CHECK-NEXT:    sltu a5, a3, a0
-; CHECK-NEXT:    addiw a5, a5, -1
+; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a0, a5, a0
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    add a2, a6, a2
@@ -427,14 +427,14 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16
 ; CHECK-NEXT:    vse64.v v8, (a6)
 ; CHECK-NEXT:    sub a0, a2, a4
 ; CHECK-NEXT:    sltu a5, a2, a0
-; CHECK-NEXT:    addiw a5, a5, -1
+; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a0, a5, a0
 ; CHECK-NEXT:    add a5, a6, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a5)
 ; CHECK-NEXT:    sub a0, a3, a4
 ; CHECK-NEXT:    sltu a5, a3, a0
-; CHECK-NEXT:    addiw a5, a5, -1
+; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a0, a5, a0
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    add a2, a6, a2

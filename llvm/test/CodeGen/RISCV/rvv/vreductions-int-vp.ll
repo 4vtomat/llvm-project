@@ -1197,7 +1197,7 @@ define signext i32 @vpreduce_umax_nxv32i32(i32 signext %s, <vscale x 32 x i32> %
 ; RV64-NEXT:    vredmaxu.vs v25, v8, v25, v0.t
 ; RV64-NEXT:    sub a0, a1, a0
 ; RV64-NEXT:    sltu a1, a1, a0
-; RV64-NEXT:    addiw a1, a1, -1
+; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
 ; RV64-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; RV64-NEXT:    vmv1r.v v0, v24

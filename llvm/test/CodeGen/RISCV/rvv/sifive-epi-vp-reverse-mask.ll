@@ -250,8 +250,8 @@ define <vscale x 64 x i1> @test_vp_reverse_nxv64i1_masked(<vscale x 64 x i1> %sr
 ; CHECK-NEXT:    vmv.v.i v16, 0
 ; CHECK-NEXT:    vmerge.vim v16, v16, 1, v0
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slliw a2, a1, 2
-; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    slli a2, a1, 2
+; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    vsetvli a3, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vid.v v24
 ; CHECK-NEXT:    vrsub.vx v0, v24, a2
@@ -277,8 +277,8 @@ define <vscale x 64 x i1> @test_vp_reverse_nxv64i1(<vscale x 64 x i1> %src, i32 
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slliw a2, a1, 2
-; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    slli a2, a1, 2
+; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    vsetvli a3, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vid.v v16
 ; CHECK-NEXT:    vrsub.vx v24, v16, a2

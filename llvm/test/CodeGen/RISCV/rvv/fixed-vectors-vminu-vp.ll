@@ -285,47 +285,26 @@ define <16 x i8> @vminu_vx_v16i8_unmasked(<16 x i8> %va, i8 %b, i32 zeroext %evl
 declare <256 x i8> @llvm.vp.umin.v258i8(<256 x i8>, <256 x i8>, <256 x i1>, i32)
 
 define <256 x i8> @vminu_vx_v258i8(<256 x i8> %va, i8 %b, <256 x i1> %m, i32 zeroext %evl) {
-; RV32-LABEL: vminu_vx_v258i8:
-; RV32:       # %bb.0:
-; RV32-NEXT:    vmv1r.v v24, v0
-; RV32-NEXT:    li a3, 128
-; RV32-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; RV32-NEXT:    vlm.v v0, (a1)
-; RV32-NEXT:    addi a1, a2, -128
-; RV32-NEXT:    sltu a4, a2, a1
-; RV32-NEXT:    addi a4, a4, -1
-; RV32-NEXT:    and a1, a4, a1
-; RV32-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; RV32-NEXT:    vminu.vx v16, v16, a0, v0.t
-; RV32-NEXT:    bltu a2, a3, .LBB22_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    li a2, 128
-; RV32-NEXT:  .LBB22_2:
-; RV32-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV32-NEXT:    vmv1r.v v0, v24
-; RV32-NEXT:    vminu.vx v8, v8, a0, v0.t
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: vminu_vx_v258i8:
-; RV64:       # %bb.0:
-; RV64-NEXT:    vmv1r.v v24, v0
-; RV64-NEXT:    li a3, 128
-; RV64-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; RV64-NEXT:    vlm.v v0, (a1)
-; RV64-NEXT:    addi a1, a2, -128
-; RV64-NEXT:    sltu a4, a2, a1
-; RV64-NEXT:    addiw a4, a4, -1
-; RV64-NEXT:    and a1, a4, a1
-; RV64-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; RV64-NEXT:    vminu.vx v16, v16, a0, v0.t
-; RV64-NEXT:    bltu a2, a3, .LBB22_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    li a2, 128
-; RV64-NEXT:  .LBB22_2:
-; RV64-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV64-NEXT:    vmv1r.v v0, v24
-; RV64-NEXT:    vminu.vx v8, v8, a0, v0.t
-; RV64-NEXT:    ret
+; CHECK-LABEL: vminu_vx_v258i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v24, v0
+; CHECK-NEXT:    li a3, 128
+; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
+; CHECK-NEXT:    vlm.v v0, (a1)
+; CHECK-NEXT:    addi a1, a2, -128
+; CHECK-NEXT:    sltu a4, a2, a1
+; CHECK-NEXT:    addi a4, a4, -1
+; CHECK-NEXT:    and a1, a4, a1
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
+; CHECK-NEXT:    vminu.vx v16, v16, a0, v0.t
+; CHECK-NEXT:    bltu a2, a3, .LBB22_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    li a2, 128
+; CHECK-NEXT:  .LBB22_2:
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v0, v24
+; CHECK-NEXT:    vminu.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    ret
   %elt.head = insertelement <256 x i8> poison, i8 %b, i32 0
   %vb = shufflevector <256 x i8> %elt.head, <256 x i8> poison, <256 x i32> zeroinitializer
   %v = call <256 x i8> @llvm.vp.umin.v258i8(<256 x i8> %va, <256 x i8> %vb, <256 x i1> %m, i32 %evl)
@@ -333,41 +312,23 @@ define <256 x i8> @vminu_vx_v258i8(<256 x i8> %va, i8 %b, <256 x i1> %m, i32 zer
 }
 
 define <256 x i8> @vminu_vx_v258i8_unmasked(<256 x i8> %va, i8 %b, i32 zeroext %evl) {
-; RV32-LABEL: vminu_vx_v258i8_unmasked:
-; RV32:       # %bb.0:
-; RV32-NEXT:    li a3, 128
-; RV32-NEXT:    mv a2, a1
-; RV32-NEXT:    bltu a1, a3, .LBB23_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    li a2, 128
-; RV32-NEXT:  .LBB23_2:
-; RV32-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV32-NEXT:    vminu.vx v8, v8, a0
-; RV32-NEXT:    addi a2, a1, -128
-; RV32-NEXT:    sltu a1, a1, a2
-; RV32-NEXT:    addi a1, a1, -1
-; RV32-NEXT:    and a1, a1, a2
-; RV32-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; RV32-NEXT:    vminu.vx v16, v16, a0
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: vminu_vx_v258i8_unmasked:
-; RV64:       # %bb.0:
-; RV64-NEXT:    li a3, 128
-; RV64-NEXT:    mv a2, a1
-; RV64-NEXT:    bltu a1, a3, .LBB23_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    li a2, 128
-; RV64-NEXT:  .LBB23_2:
-; RV64-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV64-NEXT:    vminu.vx v8, v8, a0
-; RV64-NEXT:    addi a2, a1, -128
-; RV64-NEXT:    sltu a1, a1, a2
-; RV64-NEXT:    addiw a1, a1, -1
-; RV64-NEXT:    and a1, a1, a2
-; RV64-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; RV64-NEXT:    vminu.vx v16, v16, a0
-; RV64-NEXT:    ret
+; CHECK-LABEL: vminu_vx_v258i8_unmasked:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    li a3, 128
+; CHECK-NEXT:    mv a2, a1
+; CHECK-NEXT:    bltu a1, a3, .LBB23_2
+; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    li a2, 128
+; CHECK-NEXT:  .LBB23_2:
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; CHECK-NEXT:    vminu.vx v8, v8, a0
+; CHECK-NEXT:    addi a2, a1, -128
+; CHECK-NEXT:    sltu a1, a1, a2
+; CHECK-NEXT:    addi a1, a1, -1
+; CHECK-NEXT:    and a1, a1, a2
+; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
+; CHECK-NEXT:    vminu.vx v16, v16, a0
+; CHECK-NEXT:    ret
   %elt.head = insertelement <256 x i8> poison, i8 %b, i32 0
   %vb = shufflevector <256 x i8> %elt.head, <256 x i8> poison, <256 x i32> zeroinitializer
   %head = insertelement <256 x i1> poison, i1 true, i32 0
@@ -1158,7 +1119,7 @@ define <32 x i64> @vminu_vx_v32i64(<32 x i64> %va, <32 x i1> %m, i32 zeroext %ev
 ; RV64-NEXT:    vslidedown.vi v0, v0, 2
 ; RV64-NEXT:    addi a1, a0, -16
 ; RV64-NEXT:    sltu a2, a0, a1
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a2, a2, a1
 ; RV64-NEXT:    li a1, -1
 ; RV64-NEXT:    vsetvli zero, a2, e64, m8, ta, ma

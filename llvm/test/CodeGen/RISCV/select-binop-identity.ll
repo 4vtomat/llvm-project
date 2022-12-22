@@ -22,7 +22,7 @@ define signext i32 @and_select_all_ones_i32(i1 zeroext %c, i32 signext %x, i32 %
 ;
 ; RV64I-LABEL: and_select_all_ones_i32:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    or a0, a0, a1
 ; RV64I-NEXT:    and a0, a0, a2
 ; RV64I-NEXT:    sext.w a0, a0
@@ -111,7 +111,7 @@ define i64 @or_select_all_zeros_i64(i1 zeroext %c, i64 %x, i64 %y) {
 ;
 ; RV64I-LABEL: or_select_all_zeros_i64:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    or a0, a0, a2
 ; RV64I-NEXT:    ret
@@ -139,7 +139,7 @@ define signext i32 @xor_select_all_zeros_i32(i1 zeroext %c, i32 signext %x, i32 
 ;
 ; RV64I-LABEL: xor_select_all_zeros_i32:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    xor a0, a2, a0
 ; RV64I-NEXT:    ret
@@ -197,7 +197,7 @@ define signext i32 @add_select_all_zeros_i32(i1 zeroext %c, i32 signext %x, i32 
 ;
 ; RV64I-LABEL: add_select_all_zeros_i32:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    addw a0, a2, a0
 ; RV64I-NEXT:    ret
@@ -257,7 +257,7 @@ define signext i32 @sub_select_all_zeros_i32(i1 zeroext %c, i32 signext %x, i32 
 ;
 ; RV64I-LABEL: sub_select_all_zeros_i32:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    subw a0, a2, a0
 ; RV64I-NEXT:    ret

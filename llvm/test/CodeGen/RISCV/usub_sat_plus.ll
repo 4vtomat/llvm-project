@@ -26,7 +26,7 @@ define i32 @func32(i32 %x, i32 %y, i32 %z) nounwind {
 ; RV64I-NEXT:    subw a1, a0, a1
 ; RV64I-NEXT:    sext.w a0, a0
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -72,7 +72,7 @@ define i64 @func64(i64 %x, i64 %y, i64 %z) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    sub a1, a0, a2
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -127,7 +127,7 @@ define i16 @func16(i16 %x, i16 %y, i16 %z) nounwind {
 ; RV64I-NEXT:    and a1, a1, a3
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -172,7 +172,7 @@ define i8 @func8(i8 %x, i8 %y, i8 %z) nounwind {
 ; RV64I-NEXT:    andi a1, a1, 255
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -217,7 +217,7 @@ define i4 @func4(i4 %x, i4 %y, i4 %z) nounwind {
 ; RV64I-NEXT:    andi a1, a1, 15
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;

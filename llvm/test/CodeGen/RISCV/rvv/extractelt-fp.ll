@@ -639,8 +639,8 @@ define double @extractelt_nxv16f64_neg1(<vscale x 16 x double> %v) {
 ; RV64-NEXT:    add a3, a0, a1
 ; RV64-NEXT:    li a1, -1
 ; RV64-NEXT:    srli a1, a1, 32
-; RV64-NEXT:    slliw a2, a2, 1
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    slli a2, a2, 1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    vs8r.v v16, (a3)
 ; RV64-NEXT:    bltu a2, a1, .LBB52_2
 ; RV64-NEXT:  # %bb.1:
@@ -708,8 +708,8 @@ define double @extractelt_nxv16f64_idx(<vscale x 16 x double> %v, i32 zeroext %i
 ; RV64-LABEL: extractelt_nxv16f64_idx:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slliw a2, a1, 1
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    slli a2, a1, 1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    bltu a0, a2, .LBB54_2
 ; RV64-NEXT:  # %bb.1:
 ; RV64-NEXT:    mv a0, a2

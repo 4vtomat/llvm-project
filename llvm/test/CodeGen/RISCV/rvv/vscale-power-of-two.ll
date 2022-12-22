@@ -8,7 +8,7 @@ define i64 @vscale_lshr(i64 %TC) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    srli a1, a1, 6
-; CHECK-NEXT:    addiw a1, a1, -1
+; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    ret
   %vscale = call i64 @llvm.vscale.i64()
@@ -22,7 +22,7 @@ define i64 @vscale(i64 %TC) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    srli a1, a1, 3
-; CHECK-NEXT:    addiw a1, a1, -1
+; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    ret
   %vscale = call i64 @llvm.vscale.i64()
@@ -34,7 +34,7 @@ define i64 @vscale_shl(i64 %TC) {
 ; CHECK-LABEL: vscale_shl:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    addiw a1, a1, -1
+; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    ret
   %vscale = call i64 @llvm.vscale.i64()

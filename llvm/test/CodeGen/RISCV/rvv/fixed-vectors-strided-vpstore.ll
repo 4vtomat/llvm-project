@@ -531,7 +531,7 @@ define void @strided_store_v32f64(<32 x double> %v, double* %ptr, i32 signext %s
 ; CHECK-RV64-NEXT:    add a0, a0, a3
 ; CHECK-RV64-NEXT:    addi a3, a2, -16
 ; CHECK-RV64-NEXT:    sltu a2, a2, a3
-; CHECK-RV64-NEXT:    addiw a2, a2, -1
+; CHECK-RV64-NEXT:    addi a2, a2, -1
 ; CHECK-RV64-NEXT:    and a2, a2, a3
 ; CHECK-RV64-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-RV64-NEXT:    vslidedown.vi v0, v0, 2
@@ -577,7 +577,7 @@ define void @strided_store_v32f64_allones_mask(<32 x double> %v, double *%ptr, i
 ; CHECK-RV64-NEXT:    add a0, a0, a3
 ; CHECK-RV64-NEXT:    addi a3, a2, -16
 ; CHECK-RV64-NEXT:    sltu a2, a2, a3
-; CHECK-RV64-NEXT:    addiw a2, a2, -1
+; CHECK-RV64-NEXT:    addi a2, a2, -1
 ; CHECK-RV64-NEXT:    and a2, a2, a3
 ; CHECK-RV64-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-RV64-NEXT:    vsse64.v v16, (a0), a1

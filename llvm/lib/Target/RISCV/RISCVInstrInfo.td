@@ -1264,10 +1264,6 @@ def fpext_oneuse  : unop_oneuse<any_fpextend>;
 def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
   return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32;
 }]>;
-def nonnegative_33signbits_node : PatLeaf<(i64 GPR:$src), [{
-  return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32 &&
-         CurDAG->computeKnownBits(SDValue(N, 0)).isNonNegative();
-}]>;
 // end SIFIVE
 
 /// Simple arithmetic operations
@@ -1975,15 +1971,6 @@ def : PatGprImm<binop_allwusers<shl>, SLLIW, uimm5>;
 // occurs because SimplifyDemandedBits prefers srl over sra.
 def : Pat<(binop_allwusers<srl> (sext_inreg GPR:$rs1, i32), uimm5:$shamt),
           (SRAIW GPR:$rs1, uimm5:$shamt)>;
-
-// SIFIVE
-// Special case, a non-negative value added to -1 produces at least as many
-// sign bits as the input. If the input has 33 or more sign bits, select to
-// ADDIW. This reverses an optimization enabled by ComputeNumSignBits that
-// removes the sext_inreg that would have been inserted by type legalization.
-// Using a W instruction allows RISCVSExtWRemoval to handle some more cases.
-def : Pat<(add nonnegative_33signbits_node:$rs1, -1), (ADDIW GPR:$rs1, -1)>;
-// end SIFIVE
 
 // Use binop_allwusers to recover immediates that may have been broken by
 // SimplifyDemandedBits.

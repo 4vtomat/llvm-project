@@ -2076,7 +2076,7 @@ define void @vpscatter_nxv16f64(<vscale x 16 x double> %val, <vscale x 16 x doub
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v24, v0.t
 ; RV64-NEXT:    sub a0, a2, a1
 ; RV64-NEXT:    sltu a2, a2, a0
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    srli a1, a1, 3
 ; RV64-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
@@ -2151,7 +2151,7 @@ define void @vpscatter_baseidx_nxv16i16_nxv16f64(<vscale x 16 x double> %val, do
 ; RV64-NEXT:    vsoxei64.v v8, (a0), v24, v0.t
 ; RV64-NEXT:    sub a3, a2, a1
 ; RV64-NEXT:    sltu a2, a2, a3
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a2, a2, a3
 ; RV64-NEXT:    srli a1, a1, 3
 ; RV64-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
@@ -2232,7 +2232,7 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64-NEXT:    vsoxei64.v v8, (a0), v24, v0.t
 ; RV64-NEXT:    sub a3, a2, a1
 ; RV64-NEXT:    sltu a2, a2, a3
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a2, a2, a3
 ; RV64-NEXT:    srli a1, a1, 3
 ; RV64-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
@@ -2314,7 +2314,7 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ; RV64-NEXT:    vsoxei64.v v8, (a0), v24, v0.t
 ; RV64-NEXT:    sub a3, a2, a1
 ; RV64-NEXT:    sltu a2, a2, a3
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a2, a2, a3
 ; RV64-NEXT:    srli a1, a1, 3
 ; RV64-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma

@@ -288,7 +288,7 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(i8* %base, <vscale x 32 x i8
 ; RV64-NEXT:    slli a4, a2, 1
 ; RV64-NEXT:    sub a3, a1, a4
 ; RV64-NEXT:    sltu a5, a1, a3
-; RV64-NEXT:    addiw a5, a5, -1
+; RV64-NEXT:    addi a5, a5, -1
 ; RV64-NEXT:    and a3, a5, a3
 ; RV64-NEXT:    vmv1r.v v17, v0
 ; RV64-NEXT:    mv a5, a3
@@ -310,7 +310,7 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(i8* %base, <vscale x 32 x i8
 ; RV64-NEXT:  .LBB12_4:
 ; RV64-NEXT:    sub a4, a1, a2
 ; RV64-NEXT:    sltu a5, a1, a4
-; RV64-NEXT:    addiw a5, a5, -1
+; RV64-NEXT:    addi a5, a5, -1
 ; RV64-NEXT:    and a5, a5, a4
 ; RV64-NEXT:    srli a4, a2, 3
 ; RV64-NEXT:    vsetvli a6, zero, e8, mf4, ta, ma
@@ -330,7 +330,7 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(i8* %base, <vscale x 32 x i8
 ; RV64-NEXT:    vluxei64.v v12, (a0), v24, v0.t
 ; RV64-NEXT:    sub a1, a3, a2
 ; RV64-NEXT:    sltu a2, a3, a1
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a1, a2, a1
 ; RV64-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslidedown.vx v0, v16, a4
@@ -2314,7 +2314,7 @@ define <vscale x 16 x double> @vpgather_nxv16f64(<vscale x 16 x double*> %ptrs, 
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    sub a2, a0, a1
 ; RV64-NEXT:    sltu a3, a0, a2
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    srli a3, a1, 3
 ; RV64-NEXT:    vsetvli a4, zero, e8, mf4, ta, ma
@@ -2370,7 +2370,7 @@ define <vscale x 16 x double> @vpgather_baseidx_nxv16i16_nxv16f64(double* %base,
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    sub a3, a1, a2
 ; RV64-NEXT:    sltu a4, a1, a3
-; RV64-NEXT:    addiw a4, a4, -1
+; RV64-NEXT:    addi a4, a4, -1
 ; RV64-NEXT:    and a3, a4, a3
 ; RV64-NEXT:    srli a4, a2, 3
 ; RV64-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
@@ -2427,7 +2427,7 @@ define <vscale x 16 x double> @vpgather_baseidx_sext_nxv16i16_nxv16f64(double* %
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    sub a3, a1, a2
 ; RV64-NEXT:    sltu a4, a1, a3
-; RV64-NEXT:    addiw a4, a4, -1
+; RV64-NEXT:    addi a4, a4, -1
 ; RV64-NEXT:    and a3, a4, a3
 ; RV64-NEXT:    srli a4, a2, 3
 ; RV64-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
@@ -2485,7 +2485,7 @@ define <vscale x 16 x double> @vpgather_baseidx_zext_nxv16i16_nxv16f64(double* %
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    sub a3, a1, a2
 ; RV64-NEXT:    sltu a4, a1, a3
-; RV64-NEXT:    addiw a4, a4, -1
+; RV64-NEXT:    addi a4, a4, -1
 ; RV64-NEXT:    and a3, a4, a3
 ; RV64-NEXT:    srli a4, a2, 3
 ; RV64-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma

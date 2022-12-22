@@ -23,7 +23,7 @@ define signext i32 @func(i32 signext %x, i32 signext %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    subw a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -65,7 +65,7 @@ define i64 @func2(i64 %x, i64 %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -109,7 +109,7 @@ define zeroext i16 @func16(i16 zeroext %x, i16 zeroext %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -141,7 +141,7 @@ define zeroext i8 @func8(i8 zeroext %x, i8 zeroext %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -173,7 +173,7 @@ define zeroext i4 @func3(i4 zeroext %x, i4 zeroext %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    sub a1, a0, a1
 ; RV64I-NEXT:    sltu a0, a0, a1
-; RV64I-NEXT:    addiw a0, a0, -1
+; RV64I-NEXT:    addi a0, a0, -1
 ; RV64I-NEXT:    and a0, a0, a1
 ; RV64I-NEXT:    ret
 ;

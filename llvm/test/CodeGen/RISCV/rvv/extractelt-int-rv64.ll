@@ -823,8 +823,8 @@ define i64 @extractelt_nxv16i64_neg1(<vscale x 16 x i64> %v) {
 ; CHECK-NEXT:    add a3, a0, a1
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    srli a1, a1, 32
-; CHECK-NEXT:    slliw a2, a2, 1
-; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    slli a2, a2, 1
+; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    vs8r.v v16, (a3)
 ; CHECK-NEXT:    bltu a2, a1, .LBB72_2
 ; CHECK-NEXT:  # %bb.1:
@@ -857,8 +857,8 @@ define i64 @extractelt_nxv16i64_idx(<vscale x 16 x i64> %v, i32 zeroext %idx) {
 ; CHECK-LABEL: extractelt_nxv16i64_idx:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slliw a2, a1, 1
-; CHECK-NEXT:    addiw a2, a2, -1
+; CHECK-NEXT:    slli a2, a1, 1
+; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    bltu a0, a2, .LBB74_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a0, a2

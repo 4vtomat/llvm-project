@@ -172,8 +172,8 @@ define i1 @extractelt_nxv128i1(<vscale x 128 x i8>* %x, i64 %idx) nounwind {
 ; RV64-LABEL: extractelt_nxv128i1:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    csrr a2, vlenb
-; RV64-NEXT:    slliw a3, a2, 4
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    slli a3, a2, 4
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    bltu a1, a3, .LBB7_2
 ; RV64-NEXT:  # %bb.1:
 ; RV64-NEXT:    mv a1, a3

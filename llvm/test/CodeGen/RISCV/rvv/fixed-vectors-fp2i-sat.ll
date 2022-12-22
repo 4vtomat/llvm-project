@@ -229,14 +229,14 @@ define void @fp2si_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
 ; RV64-NEXT:    feq.d a3, ft0, ft0
 ; RV64-NEXT:    fld ft0, 8(a0)
 ; RV64-NEXT:    seqz a0, a3
-; RV64-NEXT:    addiw a0, a0, -1
+; RV64-NEXT:    addi a0, a0, -1
 ; RV64-NEXT:    and a0, a0, a2
 ; RV64-NEXT:    fmax.d ft1, ft0, ft1
 ; RV64-NEXT:    fmin.d ft1, ft1, ft2
 ; RV64-NEXT:    fcvt.l.d a2, ft1, rtz
 ; RV64-NEXT:    feq.d a3, ft0, ft0
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; RV64-NEXT:    vmv.v.x v8, a2
@@ -401,7 +401,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 15(sp)
 ; RV64-NEXT:    fld ft1, 48(a0)
@@ -410,7 +410,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 14(sp)
 ; RV64-NEXT:    fld ft1, 40(a0)
@@ -419,7 +419,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 13(sp)
 ; RV64-NEXT:    fld ft1, 32(a0)
@@ -428,7 +428,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 12(sp)
 ; RV64-NEXT:    fld ft1, 24(a0)
@@ -437,7 +437,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 11(sp)
 ; RV64-NEXT:    fld ft1, 16(a0)
@@ -446,7 +446,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 10(sp)
 ; RV64-NEXT:    fld ft1, 8(a0)
@@ -455,7 +455,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a2, ft3, rtz
 ; RV64-NEXT:    feq.d a3, ft1, ft1
 ; RV64-NEXT:    seqz a3, a3
-; RV64-NEXT:    addiw a3, a3, -1
+; RV64-NEXT:    addi a3, a3, -1
 ; RV64-NEXT:    and a2, a3, a2
 ; RV64-NEXT:    sb a2, 9(sp)
 ; RV64-NEXT:    fld ft1, 0(a0)
@@ -464,7 +464,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fcvt.l.d a0, ft0, rtz
 ; RV64-NEXT:    feq.d a2, ft1, ft1
 ; RV64-NEXT:    seqz a2, a2
-; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    addi a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    sb a0, 8(sp)
 ; RV64-NEXT:    addi a0, sp, 8
