@@ -1083,9 +1083,9 @@ unsigned getPredicatedOpcode(unsigned Opcode) {
 
 /// Identify instructions that can be folded into a CCMOV instruction, and
 /// return the defining instruction.
-static MachineInstr *canFoldIntoCCMOV(Register Reg,
-                                      const MachineRegisterInfo &MRI,
-                                      const TargetInstrInfo *TII) {
+static MachineInstr *canFoldAsPredicatedOp(Register Reg,
+                                           const MachineRegisterInfo &MRI,
+                                           const TargetInstrInfo *TII) {
   if (!Reg.isVirtual())
     return nullptr;
   if (!MRI.hasOneNonDBGUse(Reg))
@@ -1157,10 +1157,11 @@ RISCVInstrInfo::optimizeSelect(MachineInstr &MI,
     return nullptr;
 
   MachineRegisterInfo &MRI = MI.getParent()->getParent()->getRegInfo();
-  MachineInstr *DefMI = canFoldIntoCCMOV(MI.getOperand(5).getReg(), MRI, this);
+  MachineInstr *DefMI =
+      canFoldAsPredicatedOp(MI.getOperand(5).getReg(), MRI, this);
   bool Invert = !DefMI;
   if (!DefMI)
-    DefMI = canFoldIntoCCMOV(MI.getOperand(4).getReg(), MRI, this);
+    DefMI = canFoldAsPredicatedOp(MI.getOperand(4).getReg(), MRI, this);
   if (!DefMI)
     return nullptr;
 
