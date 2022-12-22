@@ -13364,6 +13364,12 @@ ScalarEvolution::ScalarEvolution(Function &F, TargetLibraryInfo &TLI,
   HasGuards = GuardDecl && !GuardDecl->use_empty();
 }
 
+#if SIFIVE_CUSTOMIZATION
+const TargetTransformInfo *ScalarEvolution::getTTI() const {
+  return AC.getTTI();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 ScalarEvolution::ScalarEvolution(ScalarEvolution &&Arg)
     : F(Arg.F), HasGuards(Arg.HasGuards), TLI(Arg.TLI), AC(Arg.AC), DT(Arg.DT),
       LI(Arg.LI), CouldNotCompute(std::move(Arg.CouldNotCompute)),

@@ -58,7 +58,7 @@ define dso_local void @widget(ptr noundef nonnull align 8 dereferenceable(184) %
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], [[INDEX]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 2)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 6)
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP5]], i64 3, i64 0)
 ; CHECK-NEXT:    [[TMP7:%.*]] = trunc i64 [[TMP6]] to i32
 ; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], 0
