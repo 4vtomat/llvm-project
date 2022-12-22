@@ -35,7 +35,6 @@ define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
 ; ALIGN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-NEXT:    sub a1, a2, a3
 ; ALIGN-NEXT:    add a0, a0, a3
-; ALIGN-NEXT:    vsetvli zero, a1, e8, m8, ta, mu
 ; ALIGN-NEXT:  .LBB0_3: # %memset-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; ALIGN-NEXT:    vsetvli a2, a1, e8, m8, ta, mu
