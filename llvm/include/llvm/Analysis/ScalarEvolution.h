@@ -66,6 +66,9 @@ class TargetLibraryInfo;
 class Type;
 class Value;
 enum SCEVTypes : unsigned short;
+#if SIFIVE_CUSTOMIZATION
+class TargetTransformInfo;
+#endif // SIFIVE_CUSTOMIZATION
 
 extern bool VerifySCEV;
 
@@ -489,6 +492,10 @@ public:
   ~ScalarEvolution();
 
   LLVMContext &getContext() const { return F.getContext(); }
+
+#if SIFIVE_CUSTOMIZATION
+  const TargetTransformInfo *getTTI() const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Test if values of the given type are analyzable within the SCEV
   /// framework. This primarily includes integer types, and it can optionally

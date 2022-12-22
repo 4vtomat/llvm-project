@@ -109,6 +109,9 @@ public:
   AssumptionCache(Function &F, TargetTransformInfo *TTI = nullptr)
       : F(F), TTI(TTI) {}
 
+#if SIFIVE_CUSTOMIZATION
+    const TargetTransformInfo *getTTI() const { return TTI; }
+#endif // SIFIVE_CUSTOMIZATION
   /// This cache is designed to be self-updating and so it should never be
   /// invalidated.
   bool invalidate(Function &, const PreservedAnalyses &,

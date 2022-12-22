@@ -66,6 +66,11 @@
 #include <utility>
 #include <vector>
 
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/Support/TargetParser.h"
+#endif // SIFIVE_CUSTOMIZATION
+
 using namespace llvm;
 using namespace llvm::PatternMatch;
 
@@ -1704,6 +1709,24 @@ bool MemoryDepChecker::couldPreventStoreLoadForward(uint64_t Distance,
   uint64_t MaxVFWithoutSLForwardIssues = std::min(
       VectorizerParams::MaxVectorWidth * TypeByteSize, MaxSafeDepDistBytes);
 
+#if SIFIVE_CUSTOMIZATION
+  if (PSE.getSE()->getTTI() && PSE.getSE()->getTTI()->useVLAVectorizer()) {
+    MaxVFWithoutSLForwardIssues =
+        std::min(RISCV::RVVBitsPerBlock * TypeByteSize, MaxSafeDepDistBytes);
+    // RISCV VLA supports non-power-2 vector factor. So, we iterate in a
+    // backward order to find largest VF, which allows aligned stores-loads or
+    // the number of iterations between conflicting memory addresses is not less
+    // than 8 (NumItersForStoreLoadThroughMemory).
+    for (uint64_t VF = MaxVFWithoutSLForwardIssues, E = 2 * TypeByteSize;
+         VF >= E; VF -= TypeByteSize) {
+      if (Distance % VF == 0 ||
+          Distance / VF >= NumItersForStoreLoadThroughMemory) {
+        MaxVFWithoutSLForwardIssues = VF;
+        break;
+      }
+    }
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   // Compute the smallest VF at which the store and load would be misaligned.
   for (uint64_t VF = 2 * TypeByteSize; VF <= MaxVFWithoutSLForwardIssues;
        VF *= 2) {
