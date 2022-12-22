@@ -1,8 +1,11 @@
 ; RUN: opt < %s -passes=loop-vectorize -mtriple=x86_64-unknown-linux -S -pass-remarks=loop-vectorize -pass-remarks-missed=loop-vectorize -pass-remarks-analysis=loop-vectorize -pass-remarks-with-hotness 2>&1 | FileCheck %s
 
-; CHECK: remark: no_fpmath.c:6:11: loop not vectorized: cannot prove it is safe to reorder floating-point operations (hotness: 300)
+; SIFIVE_CUSTOMIZATION
+; CHECK: remark: no_fpmath.c:6:11: loop not vectorized: cannot prove it is safe to reorder floating-point operations. Consider to use '#pragma clang fp reassociate(on)' to enable vectorization (hotness: 300)
 ; CHECK: remark: no_fpmath.c:6:14: loop not vectorized
-; CHECK: remark: no_fpmath.c:17:14: vectorized loop (vectorization width: 2, interleaved count: 1) (hotness: 300)
+; CHECK: remark: no_fpmath.c:17:11: loop not vectorized: cannot prove it is safe to reorder floating-point operations. Consider to use '#pragma clang fp reassociate(on)' to enable vectorization (hotness: 300)
+; CHECK: remark: no_fpmath.c:17:14: loop not vectorized (Force=true, Interleave Count=1) (hotness: 300)
+; end of SIFIVE_CUSTOMIZATION
 
 target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-apple-macosx10.10.0"
