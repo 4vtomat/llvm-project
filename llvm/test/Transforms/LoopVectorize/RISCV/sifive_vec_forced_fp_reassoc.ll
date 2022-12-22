@@ -1,4 +1,4 @@
-; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -loop-vectorize -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s
+; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s
 
 ;
 ; float reassociate_on_vec_forced(const int32_t n, float *a)
