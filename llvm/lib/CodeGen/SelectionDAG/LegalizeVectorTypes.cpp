@@ -3044,6 +3044,11 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMIN:
     Res = SplitVecOp_VP_REDUCE(N, OpNo);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_FIRST:
+    Res = SplitVecOp_VP_FIRST(N);
+    break;
+#endif
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -3987,6 +3992,37 @@ SDValue DAGTypeLegalizer::SplitVecOp_FP_TO_XINT_SAT(SDNode *N) {
 
   return DAG.getNode(ISD::CONCAT_VECTORS, dl, ResVT, Lo, Hi);
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue DAGTypeLegalizer::SplitVecOp_VP_FIRST(SDNode *N) {
+  EVT ResVT = N->getValueType(0);
+  SDLoc dl(N);
+
+  SDValue Lo, Hi;
+  SDValue VecOp = N->getOperand(0);
+  EVT VecVT = VecOp.getValueType();
+  GetSplitVector(VecOp, Lo, Hi);
+
+  SDValue MaskLo, MaskHi;
+  std::tie(MaskLo, MaskHi) = SplitMask(N->getOperand(1));
+
+  SDValue EVLLo, EVLHi;
+  std::tie(EVLLo, EVLHi) = DAG.SplitEVL(N->getOperand(2), VecVT, dl);
+
+  // The behavior of the split:
+  // If ResLo is not negative, return ResLo.
+  // If ResHi is not negative, return (EVLo + ResHi)
+  // return -1.
+  SDValue ResLo = DAG.getNode(ISD::VP_FIRST, dl, ResVT, Lo, MaskLo, EVLLo);
+  SDValue ResHi = DAG.getNode(ISD::VP_FIRST, dl, ResVT, Hi, MaskHi, EVLHi);
+  SDValue ResMerge = DAG.getNode(ISD::ADD, dl, ResVT, EVLLo, ResHi);
+  SDValue ResTmp =
+      DAG.getSelectCC(dl, ResHi, DAG.getConstant(0, dl, ResVT),
+                      DAG.getConstant(-1, dl, ResVT), ResMerge, ISD::SETLT);
+  return DAG.getSelectCC(dl, ResLo, DAG.getConstant(0, dl, ResVT), ResTmp,
+                         ResLo, ISD::SETLT);
+}
+#endif
 
 //===----------------------------------------------------------------------===//
 //  Result Vector Widening
@@ -5988,6 +6024,11 @@ bool DAGTypeLegalizer::WidenVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMIN:
     Res = WidenVecOp_VP_REDUCE(N);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_FIRST:
+    Res = WidenVecOp_VP_FIRST(N);
+    break;
+#endif
   }
 
   // If Res is null, the sub-method took care of registering the result.
@@ -6725,6 +6766,16 @@ SDValue DAGTypeLegalizer::WidenVecOp_VSELECT(SDNode *N) {
   return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Select,
                      DAG.getVectorIdxConstant(0, DL));
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue DAGTypeLegalizer::WidenVecOp_VP_FIRST(SDNode *N) {
+  EVT ResVT = N->getValueType(0);
+  SDValue Op = GetWidenedVector(N->getOperand(0));
+  SDValue Mask = GetWidenedVector(N->getOperand(1));
+  return DAG.getNode(N->getOpcode(), SDLoc(N), ResVT, Op, Mask,
+                     N->getOperand(2));
+}
+#endif
 
 //===----------------------------------------------------------------------===//
 // Vector Widening Utilities

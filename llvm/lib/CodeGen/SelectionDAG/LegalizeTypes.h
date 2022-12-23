@@ -403,6 +403,7 @@ private:
   SDValue PromoteIntOp_VP_REDUCE(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_SET_ROUNDING(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
+  SDValue PromoteIntRes_VP_FIRST(SDNode *N);
   // Copied from BSC
   SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
 #endif // SIFIVE_CUSTOMIZATION
@@ -910,6 +911,9 @@ private:
   SDValue SplitVecOp_FP_ROUND(SDNode *N);
   SDValue SplitVecOp_FCOPYSIGN(SDNode *N);
   SDValue SplitVecOp_FP_TO_XINT_SAT(SDNode *N);
+#if SIFIVE_CUSTOMIZATION
+  SDValue SplitVecOp_VP_FIRST(SDNode *N);
+#endif
 
   //===--------------------------------------------------------------------===//
   // Vector Widening Support: LegalizeVectorTypes.cpp
@@ -1013,6 +1017,9 @@ private:
   SDValue WidenVecOp_VECREDUCE(SDNode *N);
   SDValue WidenVecOp_VECREDUCE_SEQ(SDNode *N);
   SDValue WidenVecOp_VP_REDUCE(SDNode *N);
+#if SIFIVE_CUSTOMIZATION
+  SDValue WidenVecOp_VP_FIRST(SDNode *N);
+#endif
 
   /// Helper function to generate a set of operations to perform
   /// a vector operation for a wider type.

@@ -274,6 +274,11 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::IS_FPCLASS:
     Res = PromoteIntRes_IS_FPCLASS(N);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_FIRST:
+    Res = PromoteIntRes_VP_FIRST(N);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // If the result is null then the sub-method took care of registering it.
@@ -5486,6 +5491,14 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VP_REDUCE(SDNode *N) {
   return DAG.getNode(N->getOpcode(), DL, Start.getValueType(), Start,
                      N->getOperand(1), N->getOperand(2), N->getOperand(3));
 }
+
+#if SIFIVE_CUSTOMIZATION
+SDValue DAGTypeLegalizer::PromoteIntRes_VP_FIRST(SDNode *N) {
+  SDLoc dl(N);
+  EVT NVT = TLI.getTypeToTransformTo(*DAG.getContext(), N->getValueType(0));
+  return DAG.getNode(N->getOpcode(), dl, NVT, N->ops());
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGTypeLegalizer::PromoteIntOp_EXTRACT_VECTOR_ELT(SDNode *N) {
   SDLoc dl(N);

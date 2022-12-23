@@ -1807,6 +1807,12 @@ let IntrProperties = [IntrNoMem, IntrNoSync, IntrWillReturn] in {
                                llvm_anyvector_ty,
                                LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                llvm_i32_ty]>;
+// SIFIVE_CUSTOMIZATION
+  def int_vp_first : DefaultAttrsIntrinsic<[llvm_i32_ty],
+                             [ llvm_anyvector_ty,
+                               LLVMMatchType<0>,
+                               llvm_i32_ty]>;
+// END OF SIFIVE_CUSTOMIZATION
 }
 
 def int_get_active_lane_mask:

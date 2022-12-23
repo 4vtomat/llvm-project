@@ -657,6 +657,14 @@ END_REGISTER_VP(experimental_vp_reverse, EXPERIMENTAL_VP_REVERSE)
 #endif // SIFIVE_CUSTOMIZATION
 ///// } Shuffles
 
+#if SIFIVE_CUSTOMIZATION
+// llvm.vp.first(x,mask,vlen)
+// Return lowest-numbered active element of the source mask vector that has the
+// value 1. Return -1, if no active element has the value 1.
+BEGIN_REGISTER_VP(vp_first, 1, 2, VP_FIRST, 0)
+END_REGISTER_VP(vp_first, VP_FIRST)
+#endif // SIFIVE_CUSTOMIZATION
+
 #undef BEGIN_REGISTER_VP
 #undef BEGIN_REGISTER_VP_INTRINSIC
 #undef BEGIN_REGISTER_VP_SDNODE
