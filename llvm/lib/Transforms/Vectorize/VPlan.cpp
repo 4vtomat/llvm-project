@@ -720,6 +720,8 @@ VPlan::~VPlan() {
       delete AllTrueMask;
     if (AllFalseMask)
       delete AllFalseMask;
+    for (std::pair<PHINode *, VPCSAState *> &S : CSAStates)
+      delete S.second;
 #endif // SIFIVE_CUSTOMIZATION
   for (auto &P : VPExternalDefs)
     delete P.second;
@@ -1425,15 +1427,29 @@ llvm::computeStrideAccessInfo(PredicatedScalarEvolution &PSE, Instruction *I) {
 }
 
 bool vputils::isPhi(const VPRecipeBase &R) {
-  return isa<VPHeaderPHIRecipe>(&R) || isa<VPBlendRecipe>(&R) ||
-         isa<VPPredInstPHIRecipe>(&R);
+  if (isa<VPHeaderPHIRecipe, VPBlendRecipe, VPPredInstPHIRecipe>(&R))
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
 }
 
 bool vputils::isPhiThatGeneratesBackedge(const VPRecipeBase &R) {
-  return isa<VPWidenPHIRecipe>(&R);
+  if (isa<VPWidenPHIRecipe, VPCSAHeaderPHIRecipe>(&R))
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
 }
 
 bool vputils::isHeaderPhi(const VPRecipeBase &R) {
-  return isa<VPHeaderPHIRecipe>(&R);
+  if (isa<VPHeaderPHIRecipe>(&R))
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
 }
 #endif // SIFIVE_CUSTOMIZATION

@@ -183,6 +183,8 @@ STATISTIC(LoopsVectorized, "Number of loops vectorized");
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
 #if SIFIVE_CUSTOMIZATION
+STATISTIC(CSAsVectorized,
+          "Number of conditional scalar assignments vectorized");
 STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
                                   "from dependence distance information.");
 
@@ -451,6 +453,10 @@ cl::opt<bool> llvm::AdhocSkipVectorizeInPrelink(
 cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
+static cl::opt<bool> DisableRISCVCSA(
+    "sifive-disable-riscv-csa", cl::init(false), cl::Hidden,
+    cl::desc("Control whether the RISCV specific implementation of CSA "
+             "vectorization is disabled."));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -763,6 +769,11 @@ protected:
   /// execution, when trace information is requested.
   virtual void printDebugTracesAtStart(){};
   virtual void printDebugTracesAtEnd(){};
+#if SIFIVE_CUSTOMIZATION
+  /// For all vectorized CSAs, replace uses of live-out scalar from the orignal
+  /// loop with the extracted scalar from the vector loop for.
+  void fixCSALiveOuts(VPTransformState &State, VPlan &Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The original loop.
   Loop *OrigLoop;
@@ -4042,6 +4053,27 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
     }
   }
 }
+#if SIFIVE_CUSTOMIZATION
+void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
+  for (const auto &CSA: Plan.getCSAStates()) {
+    VPCSADataUpdateRecipe *VPDataUpdate = CSA.second->getDataUpdate();
+    assert(VPDataUpdate &&
+           "VPDataUpdate must have been introduced prior to fixing live outs");
+    Value *V = VPDataUpdate->getUnderlyingValue();
+    Value *ExtractedScalar = State.get(CSA.second->getExtractScalarRecipe(), 0);
+    // Fix LCSSAPhis
+    llvm::SmallPtrSet<PHINode *, 2> ToFix;
+    for (User *U : V->users())
+      if (auto *Phi = dyn_cast<PHINode>(U);
+          Phi && Phi->getParent() == LoopExitBlock)
+        ToFix.insert(Phi);
+    for (PHINode *Phi : ToFix) {
+      Phi->addIncoming(ExtractedScalar, LoopMiddleBlock);
+      State.Plan->removeLiveOut(Phi);
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
                                             VPlan &Plan) {
@@ -4081,6 +4113,10 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
                    getOrCreateVectorTripCount(VectorLoop->getLoopPreheader()),
                    IVEndValues[Entry.first], LoopMiddleBlock,
                    VectorLoop->getHeader(), Plan);
+
+#if SIFIVE_CUSTOMIZATION
+    fixCSALiveOuts(State, Plan);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Fix LCSSA phis not already fixed earlier. Extracts may need to be generated
@@ -8834,7 +8870,12 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
 
   // 1. Set up the skeleton for vectorization, including vector pre-header and
   // middle block. The vector loop is created during VPlan execution.
+#if SIFIVE_CUSTOMIZATION
+  VPTransformState State{BestVF,      BestUF, LI,         DT,
+                         ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
+#else
   VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
+#endif // SIFIVE_CUSTOMIZATION
   Value *CanonicalIVStartValue;
   std::tie(State.CFG.PrevBB, CanonicalIVStartValue) =
       ILV.createVectorizedLoopSkeleton();
@@ -9876,9 +9917,11 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       return toVPRecipeResult(Recipe);
 
     VPHeaderPHIRecipe *PhiRecipe = nullptr;
+#ifndef SIFIVE_CUSTOMIZATION
     assert((Legal->isReductionVariable(Phi) ||
             Legal->isFixedOrderRecurrence(Phi)) &&
            "can only widen reductions and fixed-order recurrences here");
+#endif // SIFIVE_CUSTOMIZATION
     VPValue *StartV = Operands[0];
     if (Legal->isReductionVariable(Phi)) {
       const RecurrenceDescriptor &RdxDesc =
@@ -9892,21 +9935,33 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           , CM.postFixStartValue(RdxDesc, Phi)
 #endif // SIFIVE_CUSTOMIZATION
       );
-    } else {
 #if SIFIVE_CUSTOMIZATION
+    } else if (Legal->isFixedOrderRecurrence(Phi)) {
       // Create the node for previous RVL value, required for the splice
       // intrinsic.
       if (Plan->getRVL()) {
         Plan->createPrevRVL();
         Plan->createInitRVL();
       }
+#else
+    } else {
 #endif // SIFIVE_CUSTOMIZATION
       // TODO: Currently fixed-order recurrences are modeled as chains of
       // first-order recurrences. If there are no users of the intermediate
       // recurrences in the chain, the fixed order recurrence should be modeled
       // directly, enabling more efficient codegen.
       PhiRecipe = new VPFirstOrderRecurrencePHIRecipe(Phi, *StartV);
+#if SIFIVE_CUSTOMIZATION
+    } else if (Legal->isCSAPhi(Phi)) {
+      VPCSAState *State = Plan->getCSAStates().find(Phi)->second;
+      VPValue *InitData = State->getVPInitData();
+      PhiRecipe = new VPCSAHeaderPHIRecipe(Phi, InitData);
+      State->setPhiRecipe(cast<VPCSAHeaderPHIRecipe>(PhiRecipe));
+    } else {
+      llvm_unreachable(
+      "can only widen reductions and fixed-order recurrences here");
     }
+#endif // SIFIVE_CUSTOMIZATION
 
     // Record the incoming value from the backedge, so we can add the incoming
     // value from the backedge after all recipes have been created.
@@ -9916,7 +9971,12 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
     if (RecipeIter == Ingredient2Recipe.end())
       recordRecipeOf(Inc);
 
+#if SIFIVE_CUSTOMIZATION
+    if (!Legal->isCSAPhi(Phi))
+      PhisToFix.push_back(PhiRecipe);
+#else
     PhisToFix.push_back(PhiRecipe);
+#endif // SIFIVE_CUSTOMIZATION
     return toVPRecipeResult(PhiRecipe);
   }
 
@@ -9955,6 +10015,20 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
         GEP, make_range(Operands.begin(), Operands.end())));
 
   if (auto *SI = dyn_cast<SelectInst>(Instr)) {
+#if SIFIVE_CUSTOMIZATION
+    auto CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
+      return CSADescriptor::isCSASelect(CSA.second, SI);
+    });
+    if (CSADescIt != Legal->getCSAs().end()) {
+      PHINode *CSAPhi = CSADescIt->first;
+      VPCSAState *State = Plan->getCSAStates().find(CSAPhi)->second;
+      VPValue *VPDataPhi = State->getPhiRecipe();
+      auto *R = new VPCSADataUpdateRecipe(
+          SI, {VPDataPhi, Operands[0], Operands[1], Operands[2]});
+      State->setDataUpdate(R);
+      return toVPRecipeResult(R);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return toVPRecipeResult(new VPWidenSelectRecipe(
         *SI, make_range(Operands.begin(), Operands.end())));
   }
@@ -10104,6 +10178,125 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+#if SIFIVE_CUSTOMIZATION
+/// Add CSA Recipes that can occur before each instruction in the input IR
+/// is processed and introduced into VPlan.
+static void
+addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
+                        Loop *OrigLoop, VPBasicBlock *PreheaderVPBB,
+                        VPBasicBlock *HeaderVPBB, DebugLoc DL, VFRange &Range,
+                        VPlan &Plan) {
+
+  // Don't build full CSA for VF=ElementCount::getFixed(1)
+  bool IsScalarVF = LoopVectorizationPlanner::getDecisionAndClampRange(
+      [&](ElementCount VF) { return VF.isScalar(); }, Range);
+
+  for (const auto &CSA : CSAs) {
+    VPValue *VPInitScalar = Plan.getOrAddVPValue(
+        CSA.first->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
+
+    // Scalar VF builds the scalar version of the loop. In that case,
+    // no maintenence of mask nor extraction in middle block is needed.
+    if (IsScalarVF) {
+      VPCSAState *S = new VPCSAState(VPInitScalar);
+      Plan.addCSAState(CSA.first, S);
+      continue;
+    }
+
+    auto *VPInitMask = new VPInstruction(VPInstruction::CSAInitMask,
+                                         {Plan.getOrCreateAllFalseMask()}, DL,
+                                         "csa.init.mask");
+    auto *VPInitData = new VPInstruction(VPInstruction::CSAInitData,
+                                         {VPInitScalar}, DL, "csa.init.data");
+    PreheaderVPBB->appendRecipe(VPInitMask);
+    PreheaderVPBB->appendRecipe(VPInitData);
+
+    VPInstruction *VPVLPhi = nullptr;
+    if (DisableRISCVCSA) {
+      VPVLPhi =
+          new VPInstruction(VPInstruction::CSAVLPhi, {}, DL, "csa.vl.phi");
+      HeaderVPBB->appendRecipe(VPVLPhi);
+    }
+
+    auto *VPMaskPhi = new VPInstruction(VPInstruction::CSAMaskPhi, {VPInitMask},
+                                        DL, "csa.mask.phi");
+    HeaderVPBB->appendRecipe(VPMaskPhi);
+
+    auto *S = new VPCSAState(VPInitScalar, VPInitMask, VPInitData, VPVLPhi,
+                             VPMaskPhi);
+    Plan.addCSAState(CSA.first, S);
+  }
+}
+
+/// Add CSA Recipes that must occur after each instruction in the input IR
+/// is processed and introduced into VPlan.
+static void
+addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
+                         VPBasicBlock *MiddleVPBB, DebugLoc DL, VFRange &Range,
+                         VPlan &Plan) {
+  // Don't build CSA for VF=ElementCount::getFixed(1)
+  if (LoopVectorizationPlanner::getDecisionAndClampRange(
+          [&](ElementCount VF) { return VF.isScalar(); }, Range))
+    return;
+
+  for (const auto &CSA : CSAs) {
+    VPCSAState *CSAState = Plan.getCSAStates().find(CSA.first)->second;
+    VPCSADataUpdateRecipe *VPDataUpdate = CSAState->getDataUpdate();
+
+    assert(VPDataUpdate &&
+           "VPDataUpdate must have been introduced prior to postprocess");
+    assert(CSA.second.getCond() &&
+           "CSADescriptor must know how to describe the condition");
+    VPValue *WidenedCond = Plan.getVPValue(CSA.second.getCond());
+    VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
+    VPValue *VPInitScalar = CSAState->getVPInitScalar();
+
+    if (Plan.getRVL()) {
+      Plan.createPrevRVL();
+      Plan.createInitRVL();
+    }
+
+    VPCSAExtractScalarRecipe *ExtractScalarRecipe= nullptr;
+    if (DisableRISCVCSA) {
+      auto *VPAnyActive = new VPInstruction(VPInstruction::CSAAnyActive,
+                                            {WidenedCond, AllTrueMask}, DL,
+                                            "csa.cond.anyactive");
+      VPAnyActive->insertBefore(
+          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+
+      VPValue *VLPhi = CSAState->getVPVLPhi();
+      auto *VPVLSel = new VPInstruction(VPInstruction::CSAVLSel,
+                                        {VPAnyActive, VLPhi}, DL, "csa.vl.sel");
+      VPVLSel->insertAfter(VPAnyActive);
+      auto *VPMaskSel = new VPInstruction(
+          VPInstruction::CSAMaskSel,
+          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+           Plan.getOrCreateAllFalseMask(), VPAnyActive},
+          DL, "csa.mask.sel");
+      VPMaskSel->insertAfter(VPVLSel);
+      VPDataUpdate->setVPNewMask(VPMaskSel);
+      VPDataUpdate->setVPAnyActive(VPAnyActive);
+      ExtractScalarRecipe = new VPCSAExtractScalarRecipe(
+          {VPInitScalar, VPMaskSel, VPDataUpdate, VPVLSel});
+    } else {
+      auto *VPMaskSel = new VPInstruction(
+          VPInstruction::CSAMaskSel,
+          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+           Plan.getOrCreateAllFalseMask()},
+          DL, "csa.mask.sel");
+      VPMaskSel->insertBefore(
+          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+      VPDataUpdate->setVPNewMask(VPMaskSel);
+      ExtractScalarRecipe =
+          new VPCSAExtractScalarRecipe({VPInitScalar, VPMaskSel, VPDataUpdate});
+    }
+
+    MiddleVPBB->insert(ExtractScalarRecipe, MiddleVPBB->getFirstNonPhi());
+    CSAState->setExtractScalarRecipe(ExtractScalarRecipe);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
 // original exit block.
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
@@ -10211,10 +10404,23 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
       DLInst ? DLInst->getDebugLoc() : DebugLoc(),
       CM.getTailFoldingStyle(IVUpdateMayOverflow),
       Legal->useVLAVectorizer());
+  addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Preheader, HeaderVPBB,
+                          DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range,
+                          *Plan);
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
                         CM.getTailFoldingStyle(IVUpdateMayOverflow));
+#endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+  // Create the node for previous RVL value, required for the splice
+  // intrinsic of a fixed order recurrence and CSA
+  bool NeedOtherRVLs = Legal->getFixedOrderRecurrences().empty() ||
+                       Legal->getCSAs().empty();
+  if (Plan->getRVL() && NeedOtherRVLs) {
+    Plan->createPrevRVL();
+    Plan->createInitRVL();
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Scan the body of the loop in a topological order to visit each basic block
@@ -10292,6 +10498,12 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
     VPBlockUtils::insertBlockAfter(new VPBasicBlock(), VPBB);
     VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
   }
+
+#if SIFIVE_CUSTOMIZATION
+  addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB,
+                           DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range,
+                           *Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
   // After here, VPBB should not be used.
   VPBB = nullptr;
@@ -12042,6 +12254,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         ++LoopsVectorized;
 
 #if SIFIVE_CUSTOMIZATION
+        CSAsVectorized += LVL.getCSAs().size();
+
         if (LVL.getMaxSafeDepDistBytes() != -1U)
           ++LoopsVectorizedWithDep;
 
@@ -12116,6 +12330,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         ++LoopsVectorized;
 
 #if SIFIVE_CUSTOMIZATION
+        CSAsVectorized += LVL.getCSAs().size();
+
         if (LVL.getMaxSafeDepDistBytes() != -1U)
           ++LoopsVectorizedWithDep;
 

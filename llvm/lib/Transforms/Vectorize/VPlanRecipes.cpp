@@ -29,6 +29,7 @@
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/InjectTLIMappings.h"
+#include "llvm/IR/IntrinsicsRISCV.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
@@ -430,6 +431,146 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     break;
   }
 #if SIFIVE_CUSTOMIZATION
+  case VPInstruction::CSAInitMask: {
+    if (Part == 0) {
+      Value *InitMask = State.get(getOperand(0), 0);
+      State.set(this, InitMask, Part);
+    } else {
+      State.set(this, State.get(this, Part - 1), Part);
+    }
+    break;
+  }
+  case VPInstruction::CSAInitData: {
+    if (Part == 0) {
+      Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
+      Value *Poison = PoisonValue::get(ElemTyp);
+      Value *InitData =
+          State.Builder.CreateVectorSplat(State.VF, Poison, "csa.data.init");
+      State.set(this, InitData, Part);
+    } else {
+      State.set(this, State.get(this, Part - 1), Part);
+    }
+    break;
+  }
+  case VPInstruction::CSAMaskPhi: {
+    if (Part == 0) {
+      IRBuilder<>::InsertPointGuard Guard(State.Builder);
+      State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+      BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+      Value *InitMask = State.get(getOperand(0), Part);
+      PHINode *MaskPhi =
+          State.Builder.CreatePHI(InitMask->getType(), 2, "csa.mask.phi");
+      MaskPhi->addIncoming(InitMask, PreheaderBB);
+      State.set(this, MaskPhi, Part);
+    } else {
+      State.set(this, State.get(this, Part - 1), Part);
+    }
+    break;
+  }
+  case VPInstruction::CSAMaskSel: {
+    if (State.DisableRISCVCSA) {
+      Value *WidenedCond = State.get(getOperand(0), Part);
+      Value *MaskPhi = State.get(getOperand(1), Part);
+      Value *AnyActive = State.get(getOperand(4), Part);
+      // If not the first Part, use the mask from the previous unrolled Part
+      Value *OldMask = Part == 0 ? MaskPhi : State.get(this, Part - 1);
+      Value *MaskSel = State.Builder.CreateSelect(AnyActive, WidenedCond,
+                                                  OldMask, "csa.mask.sel");
+      // MaskPhi wants to use the most recently updated mask. That's the one
+      // that corresponds to the last Part.
+      if (Part == State.UF - 1)
+        cast<PHINode>(MaskPhi)->addIncoming(MaskSel, State.CFG.PrevBB);
+      State.set(this, MaskSel, Part);
+      break;
+    }
+
+    // NewMask can be calculated as (vmsbf(NewMask) & OldMask) | NewMask
+    Value *WidenedCond = State.get(getOperand(0), Part);
+    Value *AllTrue = State.get(getOperand(2), Part);
+    Value *AllFalse = State.get(getOperand(3), Part);
+    Value *RVL =
+        State.Plan->getRVL()
+            ? State.get(State.Plan->getRVL(), Part)
+            : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
+
+    Value *UndistCond = State.Builder.CreateIntrinsic(
+        WidenedCond->getType(), Intrinsic::vp_merge,
+        {AllTrue, WidenedCond, AllFalse, RVL});
+
+    Value *InitRVL =
+        State.Plan->getRVL()
+            ? State.get(State.Plan->getInitRVL(), Part)
+            : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
+
+    Value *InitRVL64 =
+        State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt64Ty());
+    Value *SBF = State.Builder.CreateIntrinsic(WidenedCond->getType(),
+                                               Intrinsic::riscv_vmsbf,
+                                               {UndistCond, InitRVL64});
+    Value *MaskPhi = State.get(getOperand(1), Part);
+    Value *OldMask = Part == 0 ? MaskPhi : State.get(this, Part - 1);
+    Value *InitRVL32 =
+        State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+    Value *VAnd =
+        State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_and,
+                                      {SBF, OldMask, AllTrue, InitRVL32});
+    Value *NewMask =
+        State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_or,
+                                      {VAnd, UndistCond, AllTrue, InitRVL32});
+
+    // MaskPhi wants to use the most recently updated mask. That's the one
+    // that corresponds to the last Part.
+    if (Part == State.UF - 1)
+      cast<PHINode>(MaskPhi)->addIncoming(NewMask, State.CFG.PrevBB);
+
+    State.set(this, NewMask, Part);
+    break;
+  }
+  case VPInstruction::CSAAnyActive: {
+    Value *WidenedCond = State.get(getOperand(0), Part);
+    Value *AllOnesMask = State.get(getOperand(1), Part);
+
+    Value *RVL =
+        State.Plan->getRVL()
+            ? State.get(State.Plan->getRVL(), Part)
+            : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
+
+    Value *StartValue =
+        ConstantInt::get(WidenedCond->getType()->getScalarType(), 0);
+    Value *AnyActive = State.Builder.CreateIntrinsic(
+        WidenedCond->getType()->getScalarType(), Intrinsic::vp_reduce_or,
+        {StartValue, WidenedCond, AllOnesMask, RVL}, nullptr,
+        "csa.cond.anyactive");
+    State.set(this, AnyActive, Part);
+    break;
+  }
+  case VPInstruction::CSAVLPhi: {
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
+    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+    BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+
+    // InitVL can be anything since it won't be used if no mask was active
+    Value *InitVL = ConstantInt::get(State.Builder.getInt32Ty(), 0);
+    PHINode *VLPhi =
+        State.Builder.CreatePHI(InitVL->getType(), 2, "csa.vl.phi");
+    VLPhi->addIncoming(InitVL, PreheaderBB);
+    State.set(this, VLPhi, Part);
+    break;
+  }
+  case VPInstruction::CSAVLSel: {
+    Value *AnyActive = State.get(getOperand(0), Part);
+    Value *VLPhi = State.get(getOperand(1), Part);
+    Value *RVL =
+        State.Plan->getRVL()
+            ? State.get(State.Plan->getRVL(), Part)
+            : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
+
+    Value *VLSel =
+        State.Builder.CreateSelect(AnyActive, RVL, VLPhi, "csa.vl.sel");
+    cast<PHINode>(VLPhi)->addIncoming(VLSel, State.CFG.PrevBB);
+    State.set(this, VLSel, Part);
+    break;
+  }
   // TODO: This case can be removed when support for Call instruction is added
   // to VPlan in upstream. For now it helps catch any use of VPInstruction for
   // Call opcode that is now supported by the new VPCallInstruction recipe.
@@ -504,6 +645,29 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::BranchOnCount:
     O << "branch-on-count ";
     break;
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::CSAInitMask:
+    O << "csa-init-mask";
+    break;
+  case VPInstruction::CSAInitData:
+    O << "csa-init-data";
+    break;
+  case VPInstruction::CSAMaskPhi:
+    O << "csa-mask-phi";
+    break;
+  case VPInstruction::CSAMaskSel:
+    O << "csa-mask-sel";
+    break;
+  case VPInstruction::CSAVLPhi:
+    O << "csa-vl-phi";
+    break;
+  case VPInstruction::CSAVLSel:
+    O << "csa-vl-sel";
+    break;
+  case VPInstruction::CSAAnyActive:
+    O << "csa-anyactive";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     O << Instruction::getOpcodeName(getOpcode());
   }
@@ -1128,6 +1292,128 @@ void VPReplicateRecipe::print(raw_ostream &O, const Twine &Indent,
     O << " (S->V)";
 }
 #endif
+
+#if SIFIVE_CUSTOMIZATION
+void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
+                                 VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = csa-data-phi ";
+  printOperands(O, SlotTracker);
+
+}
+
+void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
+  // PrevBB is this BB
+  IRBuilder<>::InsertPointGuard Guard(State.Builder);
+  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+
+  Value *InitData = State.get(getVPInitData(), 0);
+  PHINode *DataPhi =
+      State.Builder.CreatePHI(InitData->getType(), 2, "csa.data.phi");
+  BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+  DataPhi->addIncoming(InitData, PreheaderBB);
+
+  // Use the same DataPhi for all Parts
+  for (unsigned Part = 0; Part < State.UF; ++Part)
+    State.set(this, DataPhi, Part);
+}
+
+void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
+                                 VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = csa-data-update ";
+  printOperands(O, SlotTracker);
+}
+
+void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
+  if (State.DisableRISCVCSA) {
+    for (unsigned Part = 0; Part < State.UF; ++Part) {
+      Value *AnyActive = State.get(getVPAnyActive(), Part);
+      Value *DataUpdate = isa<PHINode>(State.get(getVPTrue(), Part))
+                              ? State.get(getVPFalse(), Part)
+                              : State.get(getVPTrue(), Part);
+      PHINode *DataPhi = cast<PHINode>(State.get(getVPDataPhi(), Part));
+      // If not the first Part, use the mask from the previous unrolled Part
+      Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
+      Value *DataSel = State.Builder.CreateSelect(AnyActive, DataUpdate,
+                                                  OldData, "csa.data.sel");
+
+      if (Part == State.UF - 1)
+        DataPhi->addIncoming(DataSel, State.CFG.PrevBB);
+      State.set(this, DataSel, Part);
+    }
+    return;
+  }
+
+  for (unsigned Part = 0; Part < State.UF; ++Part) {
+    Value *NewMask = State.get(getVPNewMask(), Part);
+    Value *DataPhi = State.get(getVPDataPhi(), Part);
+    Value *UndistData = isa<PHINode>(State.get(getVPTrue(), Part))
+                            ? State.get(getVPFalse(), Part)
+                            : State.get(getVPTrue(), Part);
+    Value *InitRVL =
+        State.Plan->getRVL()
+            ? State.get(State.Plan->getInitRVL(), Part)
+            : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+    Value *InitRVL32 =
+        State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+
+    Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
+    Value *NewData = State.Builder.CreateIntrinsic(
+        DataPhi->getType(), Intrinsic::vp_merge,
+        {NewMask, UndistData, OldData, InitRVL32});
+    if (Part == State.UF - 1)
+      cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
+    State.set(this, NewData, Part);
+  }
+}
+
+void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
+                                 VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = CSA-EXTRACT-SCALAR ";
+  printOperands(O, SlotTracker);
+}
+
+void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
+  IRBuilder<>::InsertPointGuard Guard(State.Builder);
+  State.Builder.SetInsertPoint(State.CFG.ExitBB->getFirstNonPHI());
+
+  unsigned LastPart = State.UF - 1;
+  Value *MaskSel = State.get(getVPMaskSel(), LastPart);
+  Value *DataSel = State.get(getVPDataSel(), LastPart);
+  Value *InitRVL =
+      State.Plan->getRVL()
+          ? State.get(State.Plan->getRVL(), 0)
+          : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+  Value *VLToUse =
+      State.DisableRISCVCSA ? State.get(getVPCSAVLSel(), LastPart) : InitRVL;
+  Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
+
+  Value *IndexVec = State.Builder.CreateStepVector(
+      VectorType::get(State.Builder.getInt32Ty(), State.VF), "csa.step");
+  Value *NegOneSplat = ConstantInt::get(IndexVec->getType(), -1);
+  Value *ActiveIdx = State.Builder.CreateIntrinsic(
+      Intrinsic::vp_merge, {IndexVec->getType()},
+      {MaskSel, IndexVec, NegOneSplat, VLToUse});
+  Value *LastIdx = State.Builder.CreateIntMaxReduce(ActiveIdx, true);
+  Value *ExtractFromVec =
+      State.Builder.CreateExtractElement(DataSel, LastIdx, "csa.extract");
+  Type *EFVTy = ExtractFromVec->getType();
+  bool IsIntTy = EFVTy->isIntegerTy();
+  Value *Zero =
+      IsIntTy ? ConstantInt::get(EFVTy, 0) : ConstantFP::getZero(EFVTy);
+  Value *LastIdxGEZero =
+      IsIntTy ? State.Builder.CreateICmpSGE(ExtractFromVec, Zero)
+              : State.Builder.CreateFCmpOGE(ExtractFromVec, Zero);
+  Value *ChooseFromVecOrInit =
+      State.Builder.CreateSelect(LastIdxGEZero, ExtractFromVec, InitScalar);
+  State.set(this, ChooseFromVecOrInit, 0);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   assert(State.Instance && "Branch on Mask works only on single instance.");

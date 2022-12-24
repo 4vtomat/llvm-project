@@ -214,14 +214,84 @@ struct VPIteration {
   bool isFirstIteration() const { return Part == 0 && Lane.isFirstLane(); }
 };
 
+#if SIFIVE_CUSTOMIZATION
+class VPInstruction;
+class VPCSAHeaderPHIRecipe;
+class VPCSADataUpdateRecipe;
+class VPCSAExtractScalarRecipe;
+
+/// VPCSAState holds information required to vectorize a conditional scalar
+/// assignment.
+class VPCSAState {
+  VPValue *VPInitScalar = nullptr;
+
+  VPInstruction *VPInitMask = nullptr;
+
+  VPInstruction *VPInitData = nullptr;
+
+  VPInstruction *VPVLPhi= nullptr;
+
+  VPInstruction *VPMaskPhi = nullptr;
+
+  VPCSAHeaderPHIRecipe *PhiRecipe = nullptr;
+
+  VPCSADataUpdateRecipe *DataUpdate = nullptr;
+
+  VPCSAExtractScalarRecipe *ExtractScalarRecipe = nullptr;
+
+public:
+  VPCSAState(VPValue *VPInitScalar, VPInstruction *InitMask,
+             VPInstruction *InitData, VPInstruction *VLPhi,
+             VPInstruction *MaskPhi)
+      : VPInitScalar(VPInitScalar), VPInitMask(InitMask), VPInitData(InitData),
+        VPVLPhi(VLPhi), VPMaskPhi(MaskPhi) {}
+
+  VPCSAState(VPValue *VPInitScalar) : VPInitScalar(VPInitScalar) {}
+
+  VPValue *getVPInitScalar() const { return VPInitScalar; }
+
+  VPInstruction *getVPInitMask() const { return VPInitMask; }
+
+  VPInstruction *getVPInitData() const { return VPInitData; }
+
+  VPInstruction *getVPVLPhi() const { return VPVLPhi; }
+
+  VPInstruction *getVPMaskPhi() const { return VPMaskPhi; }
+
+  VPCSAHeaderPHIRecipe *getPhiRecipe() const { return PhiRecipe; }
+
+  void setPhiRecipe(VPCSAHeaderPHIRecipe *R) { PhiRecipe = R; }
+
+  VPCSADataUpdateRecipe *getDataUpdate() const { return DataUpdate; }
+
+  void setDataUpdate(VPCSADataUpdateRecipe *R) { DataUpdate = R; }
+
+  void setExtractScalarRecipe(VPCSAExtractScalarRecipe *R) {
+    ExtractScalarRecipe = R;
+  }
+
+  VPCSAExtractScalarRecipe *getExtractScalarRecipe() const {
+    return ExtractScalarRecipe;
+  }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
+#if SIFIVE_CUSTOMIZATION
+  VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
+                   DominatorTree *DT, IRBuilderBase &Builder,
+                   InnerLoopVectorizer *ILV, VPlan *Plan, bool DisableRISCVCSA)
+      : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
+        LVer(nullptr), DisableRISCVCSA(DisableRISCVCSA) {}
+#else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
         LVer(nullptr) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The chosen Vectorization and Unroll Factors of the loop being vectorized.
   ElementCount VF;
@@ -417,6 +487,12 @@ struct VPTransformState {
   /// This is currently only used to add no-alias metadata based on the
   /// memchecks.  The actually versioning is performed manually.
   std::unique_ptr<LoopVersioning> LVer;
+
+#if SIFIVE_CUSTOMIZATION
+  /// True if the RISCV specific implementation of CSA vectorization is
+  /// disabled.
+  bool DisableRISCVCSA;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 #if SIFIVE_CUSTOMIZATION
@@ -792,8 +868,7 @@ public:
   /// Returns true if the recipe may have side-effects.
   bool mayHaveSideEffects() const;
 
-#if SIFIVE_CUSTOMIZATION
-#else
+#ifndef SIFIVE_CUSTOMIZATION
    /// Returns true for PHI-like recipes.
    bool isPhi() const {
     return getVPDefID() >= VPFirstPHISC && getVPDefID() <= VPLastPHISC;
@@ -855,7 +930,18 @@ public:
     CanonicalIVIncrementForPart,
     CanonicalIVIncrementForPartNUW,
     BranchOnCount,
+#if SIFIVE_CUSTOMIZATION
+    BranchOnCond,
+    CSAInitMask,
+    CSAInitData,
+    CSAMaskPhi,
+    CSAMaskSel,
+    CSAVLPhi,
+    CSAVLSel,
+    CSAAnyActive,
+#else
     BranchOnCond
+#endif // SIFIVE_CUSTOMIZATION
   };
 
 private:
@@ -1790,6 +1876,83 @@ public:
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+class VPCSAHeaderPHIRecipe final : public VPHeaderPHIRecipe {
+public:
+  VPCSAHeaderPHIRecipe(PHINode *Phi, VPValue *VPInitData)
+      : VPHeaderPHIRecipe(VPDef::VPCSAHeaderPHISC, Phi,
+                          VPInitData) {}
+
+  ~VPCSAHeaderPHIRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VP_CLASSOF_IMPL(VPDef::VPCSAHeaderPHISC)
+
+  static inline bool classof(const VPHeaderPHIRecipe *R) {
+    return R->getVPDefID() == VPDef::VPCSAHeaderPHISC;
+  }
+
+  VPValue *getVPInitData() { return getOperand(0); }
+};
+
+class VPCSADataUpdateRecipe final : public VPRecipeBase, public VPValue {
+public:
+  VPCSADataUpdateRecipe(SelectInst *SI, ArrayRef<VPValue *> Operands)
+      : VPRecipeBase(VPRecipeBase::VPCSADataUpdateSC, Operands),
+        VPValue(this, SI) {}
+
+  ~VPCSADataUpdateRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VPValue *getVPDataPhi() const { return getOperand(0); }
+  VPValue *getVPCond() const { return getOperand(1); }
+  VPValue *getVPTrue() const { return getOperand(2); }
+  VPValue *getVPFalse() const { return getOperand(3); }
+
+  VPValue *getVPNewMask() const { return getOperand(4); }
+  void setVPNewMask(VPValue *NewMask) { addOperand(NewMask); }
+
+  VPValue *getVPAnyActive() const { return getOperand(5); }
+  void setVPAnyActive(VPValue *AnyActive) { addOperand(AnyActive); }
+};
+
+class VPCSAExtractScalarRecipe final : public VPRecipeBase, public VPValue {
+public:
+  VPCSAExtractScalarRecipe(ArrayRef<VPValue *> Operands)
+      : VPRecipeBase(VPRecipeBase::VPCSAExtractScalarSC, Operands),
+        VPValue(this) {}
+
+  ~VPCSAExtractScalarRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VPValue *getVPInitScalar() const { return getOperand(0); }
+  VPValue *getVPMaskSel() const { return getOperand(1); }
+  VPValue *getVPDataSel() const { return getOperand(2); }
+  VPValue *getVPCSAVLSel() const { return getOperand(3); }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPPredInstPHIRecipe is a recipe for generating the phi nodes needed when
 /// control converges back from a Branch-on-Mask. The phi nodes are needed in
 /// order to merge values that are set under such a branch and feed their uses.
@@ -2470,6 +2633,10 @@ class VPlan {
   /// Values used outside the plan.
   MapVector<PHINode *, VPLiveOut *> LiveOuts;
 
+#if SIFIVE_CUSTOMIZATION
+  MapVector<PHINode *, VPCSAState *> CSAStates;
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
   VPlan(VPBlockBase *Entry = nullptr) : Entry(Entry) {
     if (Entry)
@@ -2477,6 +2644,16 @@ public:
   }
 
   ~VPlan();
+
+#if SIFIVE_CUSTOMIZATION
+  void addCSAState(PHINode *Phi, VPCSAState * S) {
+    CSAStates.insert({Phi , S});
+  }
+
+  MapVector<PHINode *, VPCSAState *> const &getCSAStates() const {
+    return CSAStates;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,

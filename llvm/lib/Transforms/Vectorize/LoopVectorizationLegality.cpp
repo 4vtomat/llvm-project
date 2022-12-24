@@ -60,6 +60,9 @@ static cl::opt<bool>
     ForceVectorization("force-vectorization", cl::init(false), cl::Hidden,
                        cl::desc("Force vectorization regardless if "
                                 "vectorization is profitable or not"));
+static cl::opt<bool>
+    DisableCSA("sifive-disable-csa", cl::init(true), cl::Hidden,
+               cl::desc("Control whether CSA loop vectorization is disabled"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<LoopVectorizeHints::ScalableForceKind>
@@ -874,6 +877,18 @@ bool LoopVectorizationLegality::canVectorizeInstrs() {
           addInductionPhi(Phi, ID, AllowedExit);
           continue;
         }
+#if SIFIVE_CUSTOMIZATION
+        if (useVLAVectorizer() && !DisableCSA) {
+          CSADescriptor CSADesc =
+              CSADescriptor::createCSADescriptor(Phi, TheLoop);
+          if (CSADesc.isValidCSA()) {
+            LLVM_DEBUG(dbgs()
+                       << "LV: found legal CSA opportunity" << *Phi << "\n");
+            CSAs.insert({Phi, CSADesc});
+            continue;
+          }
+        }
+#endif // SIFIVE_CUSTOMIZATION
 
         reportVectorizationFailure("Found an unidentified PHI",
             "value that could not be identified as "

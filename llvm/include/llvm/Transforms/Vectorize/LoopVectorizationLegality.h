@@ -31,6 +31,9 @@
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_CSADescriptors.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 class AAResults;
@@ -299,6 +302,12 @@ public:
   /// induction descriptor.
   using InductionList = MapVector<PHINode *, InductionDescriptor>;
 
+#if SIFIVE_CUSTOMIZATION
+  /// CSAList contains the CSA descriptors for all the CSAs that were found
+  /// in the loop, rooted by their phis.
+  using CSAList = MapVector<PHINode *, CSADescriptor>;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// RecurrenceSet contains the phi nodes that are recurrences other than
   /// inductions and reductions.
   using RecurrenceSet = SmallPtrSet<const PHINode *, 8>;
@@ -347,6 +356,13 @@ public:
 
   /// Returns True if V is a Phi node of an induction variable in this loop.
   bool isInductionPhi(const Value *V) const;
+#if SIFIVE_CUSTOMIZATION
+  /// Returns the CSAs found in the loop.
+  const CSAList& getCSAs() const { return CSAs; }
+
+  /// Returns true if Phi is the root of a CSA in the loop.
+  bool isCSAPhi(PHINode *Phi) const { return CSAs.count(Phi) != 0; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns a pointer to the induction descriptor, if \p Phi is an integer or
   /// floating point induction.
@@ -557,6 +573,10 @@ private:
   /// Notice that inductions don't need to start at zero and that induction
   /// variables can be pointers.
   InductionList Inductions;
+#if SIFIVE_CUSTOMIZATION
+  /// Holds the conditional scalar assignments
+  CSAList CSAs;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Holds all the casts that participate in the update chain of the induction
   /// variables, and that have been proven to be redundant (possibly under a
