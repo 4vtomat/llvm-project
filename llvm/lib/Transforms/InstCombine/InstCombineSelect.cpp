@@ -3399,7 +3399,13 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
     }
   }
 
-<<<<<<< HEAD
+  // Match logical variants of the pattern,
+  // and transform them iff that gets rid of inversions.
+  //   (~x) | y  -->  ~(x & (~y))
+  //   (~x) & y  -->  ~(x | (~y))
+  if (sinkNotIntoOtherHandOfLogicalOp(SI))
+    return &SI;
+
 #if SIFIVE_CUSTOMIZATION
   // Match (select (X < 0), (sub 1<<C, (zext X)), (zext X)) where C is the bit
   // width of X. Replace with (zext (abs X)).
@@ -3419,14 +3425,6 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  // Match logical variants of the pattern,
-  // and transform them iff that gets rid of inversions.
-  //   (~x) | y  -->  ~(x & (~y))
-  //   (~x) & y  -->  ~(x | (~y))
-  if (sinkNotIntoOtherHandOfLogicalOp(SI))
-    return &SI;
->>>>>>> upstream/main
 
   return nullptr;
 }
