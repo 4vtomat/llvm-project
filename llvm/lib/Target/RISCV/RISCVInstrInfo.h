@@ -119,10 +119,6 @@ public:
   bool isBranchOffsetInRange(unsigned BranchOpc,
                              int64_t BrOffset) const override;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   bool analyzeSelect(const MachineInstr &MI,
                      SmallVectorImpl<MachineOperand> &Cond, unsigned &TrueOp,
                      unsigned &FalseOp, bool &Optimizable) const override;
@@ -130,10 +126,6 @@ public:
   MachineInstr *optimizeSelect(MachineInstr &MI,
                                SmallPtrSetImpl<MachineInstr *> &SeenMIs,
                                bool) const override;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   bool isAsCheapAsAMove(const MachineInstr &MI) const override;
 
