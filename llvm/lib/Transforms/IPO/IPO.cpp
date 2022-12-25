@@ -40,13 +40,9 @@ void llvm::initializeIPO(PassRegistry &Registry) {
   initializeInferFunctionAttrsLegacyPassPass(Registry);
   initializeInternalizeLegacyPassPass(Registry);
   initializeLoopExtractorLegacyPassPass(Registry);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   initializeLoopDataLayoutLegacyPassPass(Registry);
 #endif
-  initializeBlockExtractorLegacyPassPass(Registry);
-=======
->>>>>>> upstream/main
   initializeSingleLoopExtractorPass(Registry);
   initializeMergeFunctionsLegacyPassPass(Registry);
   initializePartialInlinerLegacyPassPass(Registry);
