@@ -813,13 +813,11 @@ private:
     return false;
   };
 
-<<<<<<< HEAD
   bool isExtFreeImpl(const Instruction *Ext) const override; // SIFIVE
-=======
+
   /// For available scheduling models FDIV + two independent FMULs are much
   /// faster than two FDIVs.
   unsigned combineRepeatedFPDivisors() const override;
->>>>>>> upstream/main
 };
 namespace RISCVVIntrinsicsTable {
 
