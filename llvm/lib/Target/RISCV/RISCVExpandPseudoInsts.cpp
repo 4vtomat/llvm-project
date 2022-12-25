@@ -262,13 +262,6 @@ bool RISCVExpandPseudo::expandLoadStore(MachineBasicBlock &MBB,
 bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
                                    MachineBasicBlock::iterator MBBI,
                                    MachineBasicBlock::iterator &NextMBBI) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#else
-  assert(MBBI->getOpcode() == RISCV::PseudoCCMOVGPR && "Unexpected opcode");
-#endif
-=======
->>>>>>> upstream/main
 
   MachineFunction *MF = MBB.getParent();
   MachineInstr &MI = *MBBI;
