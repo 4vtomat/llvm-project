@@ -233,13 +233,16 @@ void RISCVAsmPrinter::emitAttributes() {
 }
 
 void RISCVAsmPrinter::emitFunctionEntryLabel() {
-<<<<<<< HEAD
-  AsmPrinter::emitFunctionEntryLabel();
-  RISCVTargetStreamer &RTS =
-      static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
-  RTS.setTargetABI(STI->getTargetABI());
+  const auto *RMFI = MF->getInfo<RISCVMachineFunctionInfo>();
+  if (RMFI->isVectorCall()) {
+    auto &RTS =
+        static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
+    RTS.emitDirectiveVariantCC(*CurrentFnSym);
+  }
+  return AsmPrinter::emitFunctionEntryLabel();
 }
 
+#if SIFIVE_CUSTOMIZATION
 void RISCVAsmPrinter::emitCompactStub() {
   StringRef LabelName = "__global_pointer__";
   MCSection *Current = OutStreamer->getCurrentSectionOnly();
@@ -270,16 +273,8 @@ void RISCVAsmPrinter::emitCompactStub() {
   OutStreamer->emitValue(PCRelExpr, 8);
 
   OutStreamer->switchSection(Current);
-=======
-  const auto *RMFI = MF->getInfo<RISCVMachineFunctionInfo>();
-  if (RMFI->isVectorCall()) {
-    auto &RTS =
-        static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
-    RTS.emitDirectiveVariantCC(*CurrentFnSym);
-  }
-  return AsmPrinter::emitFunctionEntryLabel();
->>>>>>> upstream/main
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // Force static initialization.
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVAsmPrinter() {
