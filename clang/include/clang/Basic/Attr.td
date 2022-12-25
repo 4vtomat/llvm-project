@@ -4096,7 +4096,12 @@ def FunctionReturnThunks : InheritableAttr,
   let Subjects = SubjectList<[Function]>;
   let Documentation = [FunctionReturnThunksDocs];
 }
-<<<<<<< HEAD
+
+def ReadOnlyPlacement : InheritableAttr {
+  let Spellings = [Clang<"enforce_read_only_placement">];
+  let Subjects = SubjectList<[Record]>;
+  let Documentation = [ReadOnlyPlacementDocs];
+}
 
 #ifdef SIFIVE_CUSTOMIZATION
 def NeonStructType : InheritableAttr {
@@ -4105,10 +4110,3 @@ def NeonStructType : InheritableAttr {
   let SimpleHandler = 1;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-def ReadOnlyPlacement : InheritableAttr {
-  let Spellings = [Clang<"enforce_read_only_placement">];
-  let Subjects = SubjectList<[Record]>;
-  let Documentation = [ReadOnlyPlacementDocs];
-}
->>>>>>> upstream/main
