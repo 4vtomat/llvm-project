@@ -188,11 +188,7 @@ let TargetPrefix = "riscv" in {
   // For unit stride load
   // Input: (passthru, pointer, vl)
   class RISCVUSLoad
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>,
                      LLVMPointerType<LLVMMatchType<0>>,
                      llvm_anyint_ty],
@@ -420,11 +416,7 @@ let TargetPrefix = "riscv" in {
   // second operand is XLen.
   // Input: (passthru, vector_in, xlen_in, vl)
   class RISCVGatherVXUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
                      LLVMMatchType<1>],
                     [IntrNoMem]>, RISCVVIntrinsic {
@@ -543,11 +535,7 @@ let TargetPrefix = "riscv" in {
   // For destination vector type is the same as first source vector.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryAAXUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
                      llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
@@ -569,11 +557,7 @@ let TargetPrefix = "riscv" in {
   // second source operand must match the destination type or be an XLen scalar.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryAAShiftUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
                      llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
@@ -593,11 +577,7 @@ let TargetPrefix = "riscv" in {
   // For destination vector type is NOT the same as first source vector.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryABXUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, llvm_anyvector_ty, llvm_any_ty,
                      llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
@@ -639,11 +619,7 @@ let TargetPrefix = "riscv" in {
   // For binary operations with V0 as input.
   // Input: (passthru, vector_in, vector_in/scalar_in, V0, vl)
   class RISCVBinaryWithV0
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
                      LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                      llvm_anyint_ty],
@@ -677,11 +653,7 @@ let TargetPrefix = "riscv" in {
   // Output: (mask type output)
   // Input: (vector_in, vector_in/scalar_in, vl)
   class RISCVCompareUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>],
->>>>>>> upstream/main
                     [llvm_anyvector_ty, llvm_any_ty, llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
     let ScalarOperand = 1;
@@ -866,11 +838,7 @@ let TargetPrefix = "riscv" in {
   }
   // Input: (vector_in, vector_in, scalar_in, vl, policy)
   class RVVSlideUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
                      LLVMMatchType<1>, LLVMMatchType<1>],
                     [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
@@ -952,11 +920,7 @@ let TargetPrefix = "riscv" in {
   // Output: (scalar type)
   // Input: (vector_in, vl)
   class RISCVMaskedUnarySOutUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[LLVMMatchType<1>], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[LLVMMatchType<1>],
->>>>>>> upstream/main
                     [llvm_anyvector_ty, llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 1;
@@ -973,11 +937,7 @@ let TargetPrefix = "riscv" in {
   // For destination vector type is NOT the same as source vector.
   // Input: (passthru, vector_in, vl)
   class RISCVUnaryABUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, llvm_anyvector_ty, llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
@@ -1029,11 +989,7 @@ let TargetPrefix = "riscv" in {
   // For Conversion unary operations.
   // Input: (passthru, vector_in, vl)
   class RISCVConversionUnMasked
-<<<<<<< HEAD
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty], // SIFIVE
-=======
         : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
->>>>>>> upstream/main
                     [LLVMMatchType<0>, llvm_anyvector_ty, llvm_anyint_ty],
                     [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
@@ -1518,48 +1474,15 @@ let TargetPrefix = "riscv" in {
   }
   // Output: (vector)
   // Input: (passthru, scalar, vl)
-<<<<<<< HEAD
-  def int_riscv_vmv_v_x : DefaultAttrsIntrinsic<[llvm_anyint_ty], // SIFIVE
-                                    [LLVMMatchType<0>, LLVMVectorElementType<0>,
-                                     llvm_anyint_ty],
-                                    [IntrNoMem]>, RISCVVIntrinsic {
-=======
   def int_riscv_vmv_v_x : DefaultAttrsIntrinsic<[llvm_anyint_ty],
                                                  [LLVMMatchType<0>,
                                                   LLVMVectorElementType<0>,
                                                   llvm_anyint_ty],
                                                  [IntrNoMem]>, RISCVVIntrinsic {
->>>>>>> upstream/main
     let VLOperand = 2;
   }
   // Output: (vector)
   // Input: (passthru, scalar, vl)
-<<<<<<< HEAD
-  def int_riscv_vfmv_v_f : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], // SIFIVE
-                                     [LLVMMatchType<0>, LLVMVectorElementType<0>,
-                                      llvm_anyint_ty],
-                                     [IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 2;
-  }
-
-  def int_riscv_vmv_x_s : DefaultAttrsIntrinsic<[LLVMVectorElementType<0>], // SIFIVE
-                                    [llvm_anyint_ty],
-                                    [IntrNoMem]>, RISCVVIntrinsic;
-  def int_riscv_vmv_s_x : Intrinsic<[llvm_anyint_ty],
-                                    [LLVMMatchType<0>, LLVMVectorElementType<0>,
-                                     llvm_anyint_ty],
-                                    [IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 2;
-  }
-
-  def int_riscv_vfmv_f_s : DefaultAttrsIntrinsic<[LLVMVectorElementType<0>], // SIFIVE
-                                     [llvm_anyfloat_ty],
-                                     [IntrNoMem]>, RISCVVIntrinsic;
-  def int_riscv_vfmv_s_f : Intrinsic<[llvm_anyfloat_ty],
-                                     [LLVMMatchType<0>, LLVMVectorElementType<0>,
-                                      llvm_anyint_ty],
-                                     [IntrNoMem]>, RISCVVIntrinsic {
-=======
   def int_riscv_vfmv_v_f : DefaultAttrsIntrinsic<[llvm_anyfloat_ty],
                                                  [LLVMMatchType<0>,
                                                   LLVMVectorElementType<0>,
@@ -1587,7 +1510,6 @@ let TargetPrefix = "riscv" in {
                                                   LLVMVectorElementType<0>,
                                                   llvm_anyint_ty],
                                                  [IntrNoMem]>, RISCVVIntrinsic {
->>>>>>> upstream/main
     let VLOperand = 2;
   }
 
