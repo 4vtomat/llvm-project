@@ -12632,17 +12632,12 @@ private:
 
 } // end anonymous namespace
 
-<<<<<<< HEAD
-static Optional<unsigned> getAggregateSize(Instruction *InsertInst) {
+static std::optional<unsigned> getAggregateSize(Instruction *InsertInst) {
   if (auto *IE = dyn_cast<InsertElementInst>(InsertInst)) {
 #if SIFIVE_CUSTOMIZATION
     if (isa<ScalableVectorType>(IE->getType()))
-      return None;
+      return std::nullopt;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-static std::optional<unsigned> getAggregateSize(Instruction *InsertInst) {
-  if (auto *IE = dyn_cast<InsertElementInst>(InsertInst))
->>>>>>> upstream/main
     return cast<FixedVectorType>(IE->getType())->getNumElements();
   }
 
