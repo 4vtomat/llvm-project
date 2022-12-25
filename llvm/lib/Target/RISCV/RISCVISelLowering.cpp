@@ -373,19 +373,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // We could use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
 #endif // SIFIVE_CUSTOMIZATION
 
-
-  setOperationAction(ISD::SELECT, XLenVT, Custom);
-=======
   if (!Subtarget.hasVendorXVentanaCondOps())
     setOperationAction(ISD::SELECT, XLenVT, Custom);
->>>>>>> upstream/main
 
   static const unsigned FPLegalNodeTypes[] = {
       ISD::FMINNUM,        ISD::FMAXNUM,       ISD::LRINT,
