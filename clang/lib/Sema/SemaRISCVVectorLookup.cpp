@@ -131,7 +131,7 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
       // Context.getScalableVectorType isn't work for bfloat16 since we didn't
       // support scalar bfloat16, so bfloat16 can't get correct type
       // info like alignment and size, and then can't query right result.
-      switch (Type->getScale().value()) {
+      switch (*Type->getScale()) {
       case 1:
         QT = Context.RvvBFloat16mf4Ty;
         break;
@@ -154,17 +154,13 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
         llvm_unreachable("Unknown scale value!");
       }
     } else {
-      QT = Context.getScalableVectorType(QT, Type->getScale().value());
+      QT = Context.getScalableVectorType(QT, *Type->getScale());
     }
   }
 #else
   if (Type->isVector())
-<<<<<<< HEAD
-    QT = Context.getScalableVectorType(QT, Type->getScale().value());
-#endif
-=======
     QT = Context.getScalableVectorType(QT, *Type->getScale());
->>>>>>> upstream/main
+#endif
 
   if (Type->isConstant())
     QT = Context.getConstType(QT);
