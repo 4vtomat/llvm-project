@@ -52,101 +52,11 @@ private:
 
   RISCVProcFamilyEnum RISCVProcFamily = Others;
 
-<<<<<<< HEAD
-  bool HasStdExtM = false;
-  bool HasStdExtA = false;
-  bool HasStdExtF = false;
-  bool HasStdExtD = false;
-  bool HasStdExtC = false;
-  bool HasStdExtZihintpause = false;
-  bool HasStdExtZicsr = false; // SIFIVE
-  bool HasStdExtZifencei = false; // SIFIVE
-  bool HasStdExtZihintntl = false;
-  bool HasStdExtZba = false;
-  bool HasStdExtZbb = false;
-  bool HasStdExtZbc = false;
-  bool HasStdExtZbs = false;
-  bool HasStdExtZca = false;
-  bool HasStdExtZcd = false;
-  bool HasStdExtZcf = false;
-  bool HasStdExtV = false;
-  bool HasStdExtZve32x = false;
-  bool HasStdExtZve32f = false;
-  bool HasStdExtZve64x = false;
-  bool HasStdExtZve64f = false;
-  bool HasStdExtZve64d = false;
-  bool HasExtXsfvqmaccdod = false; // SIFIVE
-  bool HasExtXsfvqmaccqoq = false; // SIFIVE
-  bool HasExtXsfvfhbfmin = false; // SIFIVE
-  bool HasExtXsfvfwmaccqqq = false; // SIFIVE
-  bool HasExtXsfvfnrclipxfqf = false; // SIFIVE
-  bool HasExtXsfvcp = false; // SIFIVE
-  bool HasStdExtZvfh = false;
-  bool HasStdExtZfhmin = false;
-  bool HasStdExtZfh = false;
-  bool HasStdExtZfinx = false;
-  bool HasStdExtZdinx = false;
-  bool HasStdExtZhinxmin = false;
-  bool HasStdExtZhinx = false;
-  bool HasStdExtZbkb = false;
-  bool HasStdExtZbkc = false;
-  bool HasStdExtZbkx = false;
-  bool HasStdExtZknd = false;
-  bool HasStdExtZkne = false;
-  bool HasStdExtZknh = false;
-  bool HasStdExtZksed = false;
-  bool HasStdExtZksh = false;
-  bool HasStdExtZkr = false;
-  bool HasStdExtZkn = false;
-  bool HasStdExtZks = false;
-  bool HasStdExtZkt = false;
-  bool HasStdExtZk = false;
-  bool HasStdExtZicbom = false;
-  bool HasStdExtZicboz = false;
-  bool HasStdExtZicbop = false;
-  bool HasStdExtZicclsm = false; //SIFIVE
-  bool HasStdExtZiccif = false; //SIFIVE
-  bool HasStdExtZiccamoa = false; //SIFIVE
-  bool HasStdExtZiccrse = false; //SIFIVE
-  bool HasStdExtZa64rs = false; //SIFIVE
-  bool HasStdExtZic64b = false; //SIFIVE
-  bool HasRecodeDotprod = false;  // SIFIVE
-  bool HasRecodeFullfp16 = false; // SIFIVE
-  bool HasStdExtSvnapot = false;
-  bool HasStdExtSvinval = false;
-  bool HasStdExtZmmul = false;
-  bool HasStdExtSscofpmf = false; // SIFIVE
-  bool HasStdExtZawrs = false;
-  bool HasStdExtZtso = false;
-  bool HasVendorXVentanaCondOps = false;
-  bool HasRV32 = false;
-  bool HasRV64 = false;
-  bool IsRV32E = false;
-  bool EnableLinkerRelax = false;
-  bool EnableRVCHintInstrs = true;
-  bool EnableDefaultUnroll = true;
-  bool EnableSaveRestore = false;
-  bool HasCMOVBranchOpt = false; // SIFIVE
-  bool SetJumpIsCheap = false; // SIFIVE
-  bool HasFuseLUILoad = false;        // SIFIVE
-  bool HasFuseIndexedLoad = false;    // SIFIVE
-  bool HasFuseZbaLoad = false;        // SIFIVE
-  bool HasFuseArithEqZ = false;       // SIFIVE
-  bool HasFuseBFX = false;            // SIFIVE
-  bool DontSinkSplatOperands = false; // SIFIVE
-  bool UsePseudoLIsimm32 = false; // SIFIVE
   unsigned DLen = 0; // SIFIVE
-  bool EnableUnalignedScalarMem = false;
-  bool HasShortForwardBranchOpt = false;
-  bool HasLUIADDIFusion = false;
-  bool HasForcedAtomics = false;
-  bool HasOptimizedZeroStrideLoad = true;
-=======
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
   bool ATTRIBUTE = DEFAULT;
 #include "RISCVGenSubtargetInfo.inc"
 
->>>>>>> upstream/main
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
   MVT XLenVT = MVT::i32;
@@ -214,98 +124,21 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-  bool hasStdExtM() const { return HasStdExtM; }
-  bool hasStdExtA() const { return HasStdExtA; }
-  bool hasStdExtF() const { return HasStdExtF; }
-  bool hasStdExtD() const { return HasStdExtD; }
-  bool hasStdExtC() const { return HasStdExtC; }
-#if SIFIVE_CUSTOMIZATION
-  bool hasStdExtZicsr() const { return HasStdExtZicsr; }
-  bool hasStdExtZifencei() const { return HasStdExtZifencei; }
-  bool hasStdExtZicclsm() const { return HasStdExtZicclsm; }
-  bool hasStdExtZiccif() const { return HasStdExtZiccif; }
-  bool hasStdExtZiccamoa() const { return HasStdExtZiccamoa; }
-  bool hasStdExtZiccrse() const { return HasStdExtZiccrse; }
-  bool hasStdExtZa64rs() const { return HasStdExtZa64rs; }
-  bool hasStdExtZic64b() const { return HasStdExtZic64b; }
-#endif // SIFIVE_CUSTOMIZATION
-=======
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
   bool GETTER() const { return ATTRIBUTE; }
 #include "RISCVGenSubtargetInfo.inc"
 
->>>>>>> upstream/main
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
-<<<<<<< HEAD
-  bool hasExtXsfvqmaccqoq() const { return HasExtXsfvqmaccqoq; } // SIFIVE
-  bool hasExtXsfvqmaccdod() const { return HasExtXsfvqmaccdod; } // SIFIVE
-  bool hasExtXsfvfhbfmin() const { return HasExtXsfvfhbfmin; }; // SIFIVE
-  bool hasExtXsfvfwmaccqqq() const { return HasExtXsfvfwmaccqqq; } // SIFIVE
-  bool hasExtXsfvfnrclipxfqf() const { return HasExtXsfvfnrclipxfqf; } // SIFIVE
-  bool hasExtXsfvcp() const { return HasExtXsfvcp; } // SIFIVE
-  bool hasStdExtZvfh() const { return HasStdExtZvfh; }
-  bool hasStdExtZfhmin() const { return HasStdExtZfhmin; }
-  bool hasStdExtZfh() const { return HasStdExtZfh; }
-  bool hasStdExtZfhOrZfhmin() const { return HasStdExtZfh || HasStdExtZfhmin; }
-  bool hasStdExtZfinx() const { return HasStdExtZfinx; }
-  bool hasStdExtZdinx() const { return HasStdExtZdinx; }
-  bool hasStdExtZhinxmin() const { return HasStdExtZhinxmin; }
-  bool hasStdExtZhinx() const { return HasStdExtZhinx; }
-  bool hasStdExtZbkb() const { return HasStdExtZbkb; }
-  bool hasStdExtZbkc() const { return HasStdExtZbkc; }
-  bool hasStdExtZbkx() const { return HasStdExtZbkx; }
-  bool hasStdExtZknd() const { return HasStdExtZknd; }
-  bool hasStdExtZkne() const { return HasStdExtZkne; }
-  bool hasStdExtZknh() const { return HasStdExtZknh; }
-  bool hasStdExtZksed() const { return HasStdExtZksed; }
-  bool hasStdExtZksh() const { return HasStdExtZksh; }
-  bool hasStdExtZkr() const { return HasStdExtZkr; }
-  bool hasStdExtZicbom() const { return HasStdExtZicbom; }
-  bool hasStdExtZicboz() const { return HasStdExtZicboz; }
-  bool hasStdExtZicbop() const { return HasStdExtZicbop; }
-  bool hasStdExtSvnapot() const { return HasStdExtSvnapot; }
-  bool hasStdExtSvinval() const { return HasStdExtSvinval; }
-  bool hasStdExtZawrs() const { return HasStdExtZawrs; }
-  bool hasStdExtZmmul() const { return HasStdExtZmmul; }
-  bool hasStdExtSscofpmf() const { return HasStdExtSscofpmf; } // SIFIVE
-  bool hasStdExtZtso() const { return HasStdExtZtso; }
-  bool hasVendorXVentanaCondOps() const { return HasVendorXVentanaCondOps; }
-  bool is64Bit() const { return HasRV64; }
-  bool isRV32E() const { return IsRV32E; }
-  bool enableLinkerRelax() const { return EnableLinkerRelax; }
-  bool enableRVCHintInstrs() const { return EnableRVCHintInstrs; }
-  bool enableDefaultUnroll() const { return EnableDefaultUnroll; }
-  bool enableSaveRestore() const { return EnableSaveRestore; }
 #if SIFIVE_CUSTOMIZATION
-  bool hasCMOVBranchOpt() const {
-    // U8 can only predicate c.mv so requires the C extension.
-    return HasCMOVBranchOpt && hasStdExtC();
-  }
-  bool setJumpIsCheap() const { return SetJumpIsCheap; }
-  bool hasFuseLUILoad() const { return HasFuseLUILoad; }
-  bool hasFuseIndexedLoad() const { return HasFuseIndexedLoad; }
-  bool hasFuseZbaLoad() const { return HasFuseZbaLoad; }
-  bool hasFuseArithEqZ() const { return HasFuseArithEqZ; }
-  bool hasFuseBFX() const { return HasFuseBFX; }
-  bool dontSinkSplatOperands() const { return DontSinkSplatOperands; }
-  bool usePseudoLIsimm32() const { return UsePseudoLIsimm32; }
   bool hasKnownDLen() const { return DLen != 0; }
   unsigned getDLen() const {
     assert(hasKnownDLen() && "The Datapath length not set");
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
-  bool hasShortForwardBranchOpt() const { return HasShortForwardBranchOpt; }
-  bool enableUnalignedScalarMem() const { return EnableUnalignedScalarMem; }
-  bool hasLUIADDIFusion() const { return HasLUIADDIFusion; }
-  bool hasForcedAtomics() const { return HasForcedAtomics; }
-  bool hasOptimizedZeroStrideLoad() const { return HasOptimizedZeroStrideLoad; }
-=======
   bool hasStdExtZfhOrZfhmin() const { return HasStdExtZfh || HasStdExtZfhmin; }
   bool is64Bit() const { return HasRV64; }
->>>>>>> upstream/main
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
   unsigned getFLen() const {
