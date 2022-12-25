@@ -323,8 +323,6 @@ static bool isSignExtendedW(Register SrcReg, MachineRegisterInfo &MRI,
 
       break;
     }
-<<<<<<< HEAD
-=======
 
     case RISCV::VT_MASKC:
     case RISCV::VT_MASKCN:
@@ -334,7 +332,6 @@ static bool isSignExtendedW(Register SrcReg, MachineRegisterInfo &MRI,
         return false;
       break;
 
->>>>>>> upstream/main
     // With these opcode, we can "fix" them with the W-version
     // if we know all users of the result only rely on bits 31:0
     case RISCV::SLLI:
