@@ -1384,7 +1384,7 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-UNKNOWN-NEXT:    addi s0, sp, 128
 ; RV32-BITS-UNKNOWN-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-UNKNOWN-NEXT:    andi sp, sp, -64
-; RV32-BITS-UNKNOWN-NEXT:    vsetivli zero, 0, e32, mf2, ta, ma
+; RV32-BITS-UNKNOWN-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-UNKNOWN-NEXT:    vmv.x.s a0, v0
 ; RV32-BITS-UNKNOWN-NEXT:    andi a1, a0, 1
 ; RV32-BITS-UNKNOWN-NEXT:    sb a1, 63(sp)
@@ -1480,7 +1480,6 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-UNKNOWN-NEXT:    slli a0, a0, 1
 ; RV32-BITS-UNKNOWN-NEXT:    srli a0, a0, 31
 ; RV32-BITS-UNKNOWN-NEXT:    sb a0, 33(sp)
-; RV32-BITS-UNKNOWN-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-UNKNOWN-NEXT:    vslidedown.vi v8, v0, 1
 ; RV32-BITS-UNKNOWN-NEXT:    vmv.x.s a0, v8
 ; RV32-BITS-UNKNOWN-NEXT:    andi a1, a0, 1
@@ -1600,7 +1599,7 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-256-NEXT:    addi s0, sp, 128
 ; RV32-BITS-256-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-256-NEXT:    andi sp, sp, -64
-; RV32-BITS-256-NEXT:    vsetivli zero, 0, e32, mf2, ta, ma
+; RV32-BITS-256-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-256-NEXT:    vmv.x.s a0, v0
 ; RV32-BITS-256-NEXT:    andi a1, a0, 1
 ; RV32-BITS-256-NEXT:    sb a1, 63(sp)
@@ -1696,7 +1695,6 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-256-NEXT:    slli a0, a0, 1
 ; RV32-BITS-256-NEXT:    srli a0, a0, 31
 ; RV32-BITS-256-NEXT:    sb a0, 33(sp)
-; RV32-BITS-256-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-256-NEXT:    vslidedown.vi v8, v0, 1
 ; RV32-BITS-256-NEXT:    vmv.x.s a0, v8
 ; RV32-BITS-256-NEXT:    andi a1, a0, 1
@@ -1816,7 +1814,7 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-512-NEXT:    addi s0, sp, 128
 ; RV32-BITS-512-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-BITS-512-NEXT:    andi sp, sp, -64
-; RV32-BITS-512-NEXT:    vsetivli zero, 0, e32, mf2, ta, ma
+; RV32-BITS-512-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-512-NEXT:    vmv.x.s a0, v0
 ; RV32-BITS-512-NEXT:    andi a1, a0, 1
 ; RV32-BITS-512-NEXT:    sb a1, 63(sp)
@@ -1912,7 +1910,6 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; RV32-BITS-512-NEXT:    slli a0, a0, 1
 ; RV32-BITS-512-NEXT:    srli a0, a0, 31
 ; RV32-BITS-512-NEXT:    sb a0, 33(sp)
-; RV32-BITS-512-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV32-BITS-512-NEXT:    vslidedown.vi v8, v0, 1
 ; RV32-BITS-512-NEXT:    vmv.x.s a0, v8
 ; RV32-BITS-512-NEXT:    andi a1, a0, 1

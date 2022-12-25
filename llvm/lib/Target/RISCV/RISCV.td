@@ -708,6 +708,11 @@ def FeatureForcedAtomics : SubtargetFeature<
 def HasAtomicLdSt
     : Predicate<"Subtarget->hasStdExtA() || Subtarget->hasForcedAtomics()">;
 
+def FeatureTaggedGlobals : SubtargetFeature<"tagged-globals",
+    "AllowTaggedGlobals",
+    "true", "Use an instruction sequence for taking the address of a global "
+    "that allows a memory tag in the upper address bits">;
+
 //===----------------------------------------------------------------------===//
 // Named operands for CSR instructions.
 //===----------------------------------------------------------------------===//
@@ -725,6 +730,7 @@ include "RISCVInstrInfo.td"
 include "GISel/RISCVRegisterBanks.td"
 include "RISCVSchedRocket.td"
 include "RISCVSchedSiFive7.td"
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 include "RISCVSchedSiFive6.td"
 include "RISCVSchedSiFive7N.td"
@@ -732,6 +738,9 @@ include "SiFive_RISCVSchedSiFiveP400.td"
 include "SiFive_RISCVSchedSiFiveP500.td"
 include "SiFive_RISCVSchedSiFiveP600.td"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+include "RISCVSchedSyntacoreSCR1.td"
+>>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 // RISC-V processors supported.
@@ -909,6 +918,7 @@ def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
                                                   FeatureStdExtC],
                      [TuneSiFive7]>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtM,
@@ -1081,6 +1091,15 @@ def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtV],
                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def : ProcessorModel<"syntacore-scr1-base", SyntacoreSCR1Model,
+                     [Feature32Bit, FeatureStdExtC],
+                     [TuneNoDefaultUnroll]>;
+
+def : ProcessorModel<"syntacore-scr1-max", SyntacoreSCR1Model,
+                     [Feature32Bit, FeatureStdExtM, FeatureStdExtC],
+                     [TuneNoDefaultUnroll]>;
+>>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.

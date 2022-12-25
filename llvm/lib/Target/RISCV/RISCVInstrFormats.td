@@ -205,10 +205,19 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit UsesMaskPolicy = 0;
   let TSFlags{18} = UsesMaskPolicy;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   bit HasRoundModeOp = 0;
   let TSFlags{19} =  HasRoundModeOp;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Indicates that the result can be considered sign extended from bit 31. Some
+  // instructions with this flag aren't W instructions, but are either sign
+  // extended from a smaller size, always outputs a small integer, or put zeros
+  // in bits 63:31. Used by the SExtWRemoval pass.
+  bit IsSignExtendingOpW = 0;
+  let TSFlags{19} = IsSignExtendingOpW;
+>>>>>>> upstream/main
 }
 
 // Pseudo instructions

@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv32 -target-abi=ilp32d -mattr=+v,+zfh,+experimental-zvfh,+f,+d -riscv-v-vector-bits-min=128 -verify-machineinstrs < %s | FileCheck %s --check-prefixes=CHECK,RV32
 ; RUN: llc -mtriple=riscv64 -target-abi=lp64d -mattr=+v,+zfh,+experimental-zvfh,+f,+d -riscv-v-vector-bits-min=128 -verify-machineinstrs < %s | FileCheck %s --check-prefixes=CHECK,RV64
 
-define void @fp2si_v2f32_v2i32(<2 x float>* %x, <2 x i32>* %y) {
+define void @fp2si_v2f32_v2i32(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2si_v2f32_v2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
@@ -12,14 +12,14 @@ define void @fp2si_v2f32_v2i32(<2 x float>* %x, <2 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x float>, <2 x float>* %x
+  %a = load <2 x float>, ptr %x
   %d = call <2 x i32> @llvm.fptosi.sat.v2i32.v2f32(<2 x float> %a)
-  store <2 x i32> %d, <2 x i32>* %y
+  store <2 x i32> %d, ptr %y
   ret void
 }
 declare <2 x i32> @llvm.fptosi.sat.v2i32.v2f32(<2 x float>)
 
-define void @fp2ui_v2f32_v2i32(<2 x float>* %x, <2 x i32>* %y) {
+define void @fp2ui_v2f32_v2i32(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2ui_v2f32_v2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
@@ -29,14 +29,14 @@ define void @fp2ui_v2f32_v2i32(<2 x float>* %x, <2 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x float>, <2 x float>* %x
+  %a = load <2 x float>, ptr %x
   %d = call <2 x i32> @llvm.fptoui.sat.v2i32.v2f32(<2 x float> %a)
-  store <2 x i32> %d, <2 x i32>* %y
+  store <2 x i32> %d, ptr %y
   ret void
 }
 declare <2 x i32> @llvm.fptoui.sat.v2i32.v2f32(<2 x float>)
 
-define void @fp2si_v8f32_v8i32(<8 x float>* %x, <8 x i32>* %y) {
+define void @fp2si_v8f32_v8i32(ptr %x, ptr %y) {
 ;
 ; CHECK-LABEL: fp2si_v8f32_v8i32:
 ; CHECK:       # %bb.0:
@@ -47,14 +47,14 @@ define void @fp2si_v8f32_v8i32(<8 x float>* %x, <8 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <8 x float>, <8 x float>* %x
+  %a = load <8 x float>, ptr %x
   %d = call <8 x i32> @llvm.fptosi.sat.v8i32.v8f32(<8 x float> %a)
-  store <8 x i32> %d, <8 x i32>* %y
+  store <8 x i32> %d, ptr %y
   ret void
 }
 declare <8 x i32> @llvm.fptosi.sat.v8i32.v8f32(<8 x float>)
 
-define void @fp2ui_v8f32_v8i32(<8 x float>* %x, <8 x i32>* %y) {
+define void @fp2ui_v8f32_v8i32(ptr %x, ptr %y) {
 ;
 ; CHECK-LABEL: fp2ui_v8f32_v8i32:
 ; CHECK:       # %bb.0:
@@ -65,14 +65,14 @@ define void @fp2ui_v8f32_v8i32(<8 x float>* %x, <8 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <8 x float>, <8 x float>* %x
+  %a = load <8 x float>, ptr %x
   %d = call <8 x i32> @llvm.fptosi.sat.v8i32.v8f32(<8 x float> %a)
-  store <8 x i32> %d, <8 x i32>* %y
+  store <8 x i32> %d, ptr %y
   ret void
 }
 declare <8 x i32> @llvm.fptoui.sat.v8i32.v8f32(<8 x float>)
 
-define void @fp2si_v2f32_v2i64(<2 x float>* %x, <2 x i64>* %y) {
+define void @fp2si_v2f32_v2i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2si_v2f32_v2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
@@ -83,14 +83,14 @@ define void @fp2si_v2f32_v2i64(<2 x float>* %x, <2 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x float>, <2 x float>* %x
+  %a = load <2 x float>, ptr %x
   %d = call <2 x i64> @llvm.fptosi.sat.v2i64.v2f32(<2 x float> %a)
-  store <2 x i64> %d, <2 x i64>* %y
+  store <2 x i64> %d, ptr %y
   ret void
 }
 declare <2 x i64> @llvm.fptosi.sat.v2i64.v2f32(<2 x float>)
 
-define void @fp2ui_v2f32_v2i64(<2 x float>* %x, <2 x i64>* %y) {
+define void @fp2ui_v2f32_v2i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2ui_v2f32_v2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
@@ -101,14 +101,14 @@ define void @fp2ui_v2f32_v2i64(<2 x float>* %x, <2 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x float>, <2 x float>* %x
+  %a = load <2 x float>, ptr %x
   %d = call <2 x i64> @llvm.fptoui.sat.v2i64.v2f32(<2 x float> %a)
-  store <2 x i64> %d, <2 x i64>* %y
+  store <2 x i64> %d, ptr %y
   ret void
 }
 declare <2 x i64> @llvm.fptoui.sat.v2i64.v2f32(<2 x float>)
 
-define void @fp2si_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
+define void @fp2si_v8f32_v8i64(ptr %x, ptr %y) {
 ;
 ; CHECK-LABEL: fp2si_v8f32_v8i64:
 ; CHECK:       # %bb.0:
@@ -120,14 +120,14 @@ define void @fp2si_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v12, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <8 x float>, <8 x float>* %x
+  %a = load <8 x float>, ptr %x
   %d = call <8 x i64> @llvm.fptosi.sat.v8i64.v8f32(<8 x float> %a)
-  store <8 x i64> %d, <8 x i64>* %y
+  store <8 x i64> %d, ptr %y
   ret void
 }
 declare <8 x i64> @llvm.fptosi.sat.v8i64.v8f32(<8 x float>)
 
-define void @fp2ui_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
+define void @fp2ui_v8f32_v8i64(ptr %x, ptr %y) {
 ;
 ; CHECK-LABEL: fp2ui_v8f32_v8i64:
 ; CHECK:       # %bb.0:
@@ -139,14 +139,14 @@ define void @fp2ui_v8f32_v8i64(<8 x float>* %x, <8 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v12, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <8 x float>, <8 x float>* %x
+  %a = load <8 x float>, ptr %x
   %d = call <8 x i64> @llvm.fptoui.sat.v8i64.v8f32(<8 x float> %a)
-  store <8 x i64> %d, <8 x i64>* %y
+  store <8 x i64> %d, ptr %y
   ret void
 }
 declare <8 x i64> @llvm.fptoui.sat.v8i64.v8f32(<8 x float>)
 
-define void @fp2si_v2f16_v2i64(<2 x half>* %x, <2 x i64>* %y) {
+define void @fp2si_v2f16_v2i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2si_v2f16_v2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -159,14 +159,14 @@ define void @fp2si_v2f16_v2i64(<2 x half>* %x, <2 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x half>, <2 x half>* %x
+  %a = load <2 x half>, ptr %x
   %d = call <2 x i64> @llvm.fptosi.sat.v2i64.v2f16(<2 x half> %a)
-  store <2 x i64> %d, <2 x i64>* %y
+  store <2 x i64> %d, ptr %y
   ret void
 }
 declare <2 x i64> @llvm.fptosi.sat.v2i64.v2f16(<2 x half>)
 
-define void @fp2ui_v2f16_v2i64(<2 x half>* %x, <2 x i64>* %y) {
+define void @fp2ui_v2f16_v2i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2ui_v2f16_v2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
@@ -179,14 +179,14 @@ define void @fp2ui_v2f16_v2i64(<2 x half>* %x, <2 x i64>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x half>, <2 x half>* %x
+  %a = load <2 x half>, ptr %x
   %d = call <2 x i64> @llvm.fptoui.sat.v2i64.v2f16(<2 x half> %a)
-  store <2 x i64> %d, <2 x i64>* %y
+  store <2 x i64> %d, ptr %y
   ret void
 }
 declare <2 x i64> @llvm.fptoui.sat.v2i64.v2f16(<2 x half>)
 
-define void @fp2si_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
+define void @fp2si_v2f64_v2i8(ptr %x, ptr %y) {
 ; RV32-LABEL: fp2si_v2f64_v2i8:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    fld ft0, 0(a0)
@@ -244,14 +244,14 @@ define void @fp2si_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
 ; RV64-NEXT:    vmv.s.x v8, a0
 ; RV64-NEXT:    vse8.v v8, (a1)
 ; RV64-NEXT:    ret
-  %a = load <2 x double>, <2 x double>* %x
+  %a = load <2 x double>, ptr %x
   %d = call <2 x i8> @llvm.fptosi.sat.v2i8.v2f64(<2 x double> %a)
-  store <2 x i8> %d, <2 x i8>* %y
+  store <2 x i8> %d, ptr %y
   ret void
 }
 declare <2 x i8> @llvm.fptosi.sat.v2i8.v2f64(<2 x double>)
 
-define void @fp2ui_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
+define void @fp2ui_v2f64_v2i8(ptr %x, ptr %y) {
 ; RV32-LABEL: fp2ui_v2f64_v2i8:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    fld ft0, 0(a0)
@@ -291,14 +291,14 @@ define void @fp2ui_v2f64_v2i8(<2 x double>* %x, <2 x i8>* %y) {
 ; RV64-NEXT:    vmv.s.x v8, a0
 ; RV64-NEXT:    vse8.v v8, (a1)
 ; RV64-NEXT:    ret
-  %a = load <2 x double>, <2 x double>* %x
+  %a = load <2 x double>, ptr %x
   %d = call <2 x i8> @llvm.fptoui.sat.v2i8.v2f64(<2 x double> %a)
-  store <2 x i8> %d, <2 x i8>* %y
+  store <2 x i8> %d, ptr %y
   ret void
 }
 declare <2 x i8> @llvm.fptoui.sat.v2i8.v2f64(<2 x double>)
 
-define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
+define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV32-LABEL: fp2si_v8f64_v8i8:
 ; RV32:       # %bb.0:
@@ -391,6 +391,7 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
+<<<<<<< HEAD
 ; RV64-NEXT:    fld ft1, 56(a0)
 ; RV64-NEXT:    lui a2, %hi(.LCPI12_0)
 ; RV64-NEXT:    fld ft0, %lo(.LCPI12_0)(a2)
@@ -461,10 +462,92 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    fld ft1, 0(a0)
 ; RV64-NEXT:    fmax.d ft0, ft1, ft0
 ; RV64-NEXT:    fmin.d ft0, ft0, ft2
+=======
+; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; RV64-NEXT:    vle64.v v8, (a0)
+; RV64-NEXT:    lui a0, %hi(.LCPI12_0)
+; RV64-NEXT:    fld ft0, %lo(.LCPI12_0)(a0)
+; RV64-NEXT:    lui a0, %hi(.LCPI12_1)
+; RV64-NEXT:    fld ft1, %lo(.LCPI12_1)(a0)
+; RV64-NEXT:    vfmv.f.s ft2, v8
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 8(sp)
+; RV64-NEXT:    vsetivli zero, 1, e64, m4, ta, ma
+; RV64-NEXT:    vslidedown.vi v12, v8, 7
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 15(sp)
+; RV64-NEXT:    vslidedown.vi v12, v8, 6
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 14(sp)
+; RV64-NEXT:    vslidedown.vi v12, v8, 5
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 13(sp)
+; RV64-NEXT:    vslidedown.vi v12, v8, 4
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 12(sp)
+; RV64-NEXT:    vslidedown.vi v12, v8, 3
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 11(sp)
+; RV64-NEXT:    vslidedown.vi v12, v8, 2
+; RV64-NEXT:    vfmv.f.s ft2, v12
+; RV64-NEXT:    fmax.d ft3, ft2, ft0
+; RV64-NEXT:    fmin.d ft3, ft3, ft1
+; RV64-NEXT:    fcvt.l.d a0, ft3, rtz
+; RV64-NEXT:    feq.d a2, ft2, ft2
+; RV64-NEXT:    seqz a2, a2
+; RV64-NEXT:    addiw a2, a2, -1
+; RV64-NEXT:    and a0, a2, a0
+; RV64-NEXT:    sb a0, 10(sp)
+; RV64-NEXT:    vslidedown.vi v8, v8, 1
+; RV64-NEXT:    vfmv.f.s ft2, v8
+; RV64-NEXT:    fmax.d ft0, ft2, ft0
+; RV64-NEXT:    fmin.d ft0, ft0, ft1
+>>>>>>> upstream/main
 ; RV64-NEXT:    fcvt.l.d a0, ft0, rtz
 ; RV64-NEXT:    feq.d a2, ft1, ft1
 ; RV64-NEXT:    seqz a2, a2
-; RV64-NEXT:    addi a2, a2, -1
+; RV64-NEXT:    addiw a2, a2, -1
 ; RV64-NEXT:    and a0, a2, a0
 ; RV64-NEXT:    sb a0, 8(sp)
 ; RV64-NEXT:    addi a0, sp, 8
@@ -473,14 +556,14 @@ define void @fp2si_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    vse8.v v8, (a1)
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
-  %a = load <8 x double>, <8 x double>* %x
+  %a = load <8 x double>, ptr %x
   %d = call <8 x i8> @llvm.fptosi.sat.v8i8.v8f64(<8 x double> %a)
-  store <8 x i8> %d, <8 x i8>* %y
+  store <8 x i8> %d, ptr %y
   ret void
 }
 declare <8 x i8> @llvm.fptosi.sat.v8i8.v8f64(<8 x double>)
 
-define void @fp2ui_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
+define void @fp2ui_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV32-LABEL: fp2ui_v8f64_v8i8:
 ; RV32:       # %bb.0:
@@ -589,14 +672,14 @@ define void @fp2ui_v8f64_v8i8(<8 x double>* %x, <8 x i8>* %y) {
 ; RV64-NEXT:    vse8.v v8, (a1)
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
-  %a = load <8 x double>, <8 x double>* %x
+  %a = load <8 x double>, ptr %x
   %d = call <8 x i8> @llvm.fptoui.sat.v8i8.v8f64(<8 x double> %a)
-  store <8 x i8> %d, <8 x i8>* %y
+  store <8 x i8> %d, ptr %y
   ret void
 }
 declare <8 x i8> @llvm.fptoui.sat.v8i8.v8f64(<8 x double> %a)
 
-define void @fp2si_v2f64_v2i32(<2 x double>* %x, <2 x i32>* %y) {
+define void @fp2si_v2f64_v2i32(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2si_v2f64_v2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
@@ -607,14 +690,14 @@ define void @fp2si_v2f64_v2i32(<2 x double>* %x, <2 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x double>, <2 x double>* %x
+  %a = load <2 x double>, ptr %x
   %d = call <2 x i32> @llvm.fptosi.sat.v2i32.v2f64(<2 x double> %a)
-  store <2 x i32> %d, <2 x i32>* %y
+  store <2 x i32> %d, ptr %y
   ret void
 }
 declare <2 x i32> @llvm.fptosi.sat.v2i32.v2f64(<2 x double>)
 
-define void @fp2ui_v2f64_v2i32(<2 x double>* %x, <2 x i32>* %y) {
+define void @fp2ui_v2f64_v2i32(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2ui_v2f64_v2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
@@ -625,9 +708,9 @@ define void @fp2ui_v2f64_v2i32(<2 x double>* %x, <2 x i32>* %y) {
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %a = load <2 x double>, <2 x double>* %x
+  %a = load <2 x double>, ptr %x
   %d = call <2 x i32> @llvm.fptoui.sat.v2i32.v2f64(<2 x double> %a)
-  store <2 x i32> %d, <2 x i32>* %y
+  store <2 x i32> %d, ptr %y
   ret void
 }
 declare <2 x i32> @llvm.fptoui.sat.v2i32.v2f64(<2 x double>)

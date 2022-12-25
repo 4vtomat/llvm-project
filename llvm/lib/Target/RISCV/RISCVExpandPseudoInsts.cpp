@@ -131,6 +131,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPRNoX0:
   case RISCV::PseudoCCADD:
@@ -158,6 +159,15 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCSRLIW:
   case RISCV::PseudoCCSRAIW:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::PseudoCCADD:
+  case RISCV::PseudoCCSUB:
+  case RISCV::PseudoCCAND:
+  case RISCV::PseudoCCOR:
+  case RISCV::PseudoCCXOR:
+  case RISCV::PseudoCCADDW:
+  case RISCV::PseudoCCSUBW:
+>>>>>>> upstream/main
     return expandCCOp(MBB, MBBI, NextMBBI);
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
@@ -252,10 +262,13 @@ bool RISCVExpandPseudo::expandLoadStore(MachineBasicBlock &MBB,
 bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
                                    MachineBasicBlock::iterator MBBI,
                                    MachineBasicBlock::iterator &NextMBBI) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #else
   assert(MBBI->getOpcode() == RISCV::PseudoCCMOVGPR && "Unexpected opcode");
 #endif
+=======
+>>>>>>> upstream/main
 
   MachineFunction *MF = MBB.getParent();
   MachineInstr &MI = *MBBI;
@@ -282,9 +295,13 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   Register DestReg = MI.getOperand(0).getReg();
   assert(MI.getOperand(4).getReg() == DestReg);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
       MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
+=======
+  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR) {
+>>>>>>> upstream/main
     // Add MV.
     BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
         .add(MI.getOperand(5))
@@ -296,6 +313,7 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
       llvm_unreachable("Unexpected opcode!");
     case RISCV::PseudoCCADD:   NewOpc = RISCV::ADD;   break;
     case RISCV::PseudoCCSUB:   NewOpc = RISCV::SUB;   break;
+<<<<<<< HEAD
     case RISCV::PseudoCCSLL:   NewOpc = RISCV::SLL;   break;
     case RISCV::PseudoCCSRL:   NewOpc = RISCV::SRL;   break;
     case RISCV::PseudoCCSRA:   NewOpc = RISCV::SRA;   break;
@@ -318,17 +336,27 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
     case RISCV::PseudoCCSLLIW: NewOpc = RISCV::SLLIW; break;
     case RISCV::PseudoCCSRLIW: NewOpc = RISCV::SRLIW; break;
     case RISCV::PseudoCCSRAIW: NewOpc = RISCV::SRAIW; break;
+=======
+    case RISCV::PseudoCCAND:   NewOpc = RISCV::AND;   break;
+    case RISCV::PseudoCCOR:    NewOpc = RISCV::OR;    break;
+    case RISCV::PseudoCCXOR:   NewOpc = RISCV::XOR;   break;
+    case RISCV::PseudoCCADDW:  NewOpc = RISCV::ADDW;  break;
+    case RISCV::PseudoCCSUBW:  NewOpc = RISCV::SUBW;  break;
+>>>>>>> upstream/main
     }
     BuildMI(TrueBB, DL, TII->get(NewOpc), DestReg)
         .add(MI.getOperand(5))
         .add(MI.getOperand(6));
   }
+<<<<<<< HEAD
 #else
   // Add MV.
   BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
       .add(MI.getOperand(5))
       .addImm(0);
 #endif
+=======
+>>>>>>> upstream/main
 
   TrueBB->addSuccessor(MergeBB);
 
@@ -559,8 +587,12 @@ bool RISCVPreRAExpandPseudo::expandLoadAddress(
     MachineBasicBlock::iterator &NextMBBI) {
   MachineFunction *MF = MBB.getParent();
 
-  assert(MF->getTarget().isPositionIndependent());
   const auto &STI = MF->getSubtarget<RISCVSubtarget>();
+  // When HWASAN is used and tagging of global variables is enabled
+  // they should be accessed via the GOT, since the tagged address of a global
+  // is incompatible with existing code models. This also applies to non-pic
+  // mode.
+  assert(MF->getTarget().isPositionIndependent() || STI.allowTaggedGlobals());
   unsigned SecondOpcode = STI.is64Bit() ? RISCV::LD : RISCV::LW;
   return expandAuipcInstPair(MBB, MBBI, NextMBBI, RISCVII::MO_GOT_HI,
                              SecondOpcode);

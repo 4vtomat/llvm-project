@@ -93,4 +93,5 @@ add_llvm_component_library(LLVMTransformUtils
   Analysis
   Core
   Support
+  TargetParser
   )

@@ -407,6 +407,8 @@ public:
 
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 
+  bool preferScalarizeSplat(unsigned Opc) const override;
+
   bool softPromoteHalfType() const override { return true; }
 
   /// Return the register type for a given MVT, ensuring vectors are treated
@@ -811,7 +813,13 @@ private:
     return false;
   };
 
+<<<<<<< HEAD
   bool isExtFreeImpl(const Instruction *Ext) const override; // SIFIVE
+=======
+  /// For available scheduling models FDIV + two independent FMULs are much
+  /// faster than two FDIVs.
+  unsigned combineRepeatedFPDivisors() const override;
+>>>>>>> upstream/main
 };
 namespace RISCVVIntrinsicsTable {
 

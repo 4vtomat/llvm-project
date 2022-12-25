@@ -69,12 +69,14 @@ public:
                            MachineBasicBlock::iterator MBBI, Register SrcReg,
                            bool IsKill, int FrameIndex,
                            const TargetRegisterClass *RC,
-                           const TargetRegisterInfo *TRI) const override;
+                           const TargetRegisterInfo *TRI,
+                           Register VReg) const override;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MBBI, Register DstReg,
                             int FrameIndex, const TargetRegisterClass *RC,
-                            const TargetRegisterInfo *TRI) const override;
+                            const TargetRegisterInfo *TRI,
+                            Register VReg) const override;
 
   using TargetInstrInfo::foldMemoryOperandImpl;
   MachineInstr *foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
@@ -117,7 +119,10 @@ public:
   bool isBranchOffsetInRange(unsigned BranchOpc,
                              int64_t BrOffset) const override;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   bool analyzeSelect(const MachineInstr &MI,
                      SmallVectorImpl<MachineOperand> &Cond, unsigned &TrueOp,
                      unsigned &FalseOp, bool &Optimizable) const override;
@@ -125,7 +130,10 @@ public:
   MachineInstr *optimizeSelect(MachineInstr &MI,
                                SmallPtrSetImpl<MachineInstr *> &SeenMIs,
                                bool) const override;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
   bool isAsCheapAsAMove(const MachineInstr &MI) const override;
 
@@ -249,6 +257,8 @@ public:
   bool isAssociativeAndCommutative(const MachineInstr &Inst,
                                    bool Invert) const override;
 
+  std::optional<unsigned> getInverseOpcode(unsigned Opcode) const override;
+
 protected:
   const RISCVSubtarget &STI;
 };
@@ -278,6 +288,10 @@ bool hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2);
 
 // Special immediate for AVL operand of V pseudo instructions to indicate VLMax.
 static constexpr int64_t VLMaxSentinel = -1LL;
+
+// Returns true if all uses of OrigMI only depend on the lower word of its
+// output, so we can transform OrigMI to the corresponding W-version.
+bool hasAllWUsers(const MachineInstr &MI, MachineRegisterInfo &MRI);
 } // namespace RISCV
 
 namespace RISCVVPseudosTable {

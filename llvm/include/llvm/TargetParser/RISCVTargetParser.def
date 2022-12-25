@@ -1,0 +1,65 @@
+#ifndef PROC
+#define PROC(ENUM, NAME, FEATURES, DEFAULT_MARCH)
+#endif
+
+PROC(INVALID, {"invalid"}, FK_INVALID, {""})
+PROC(GENERIC_RV32, {"generic-rv32"}, FK_NONE, {""})
+PROC(GENERIC_RV64, {"generic-rv64"}, FK_64BIT, {""})
+PROC(ROCKET_RV32, {"rocket-rv32"}, FK_NONE, {""})
+PROC(ROCKET_RV64, {"rocket-rv64"}, FK_64BIT, {""})
+PROC(SIFIVE_E20, {"sifive-e20"}, FK_NONE, {"rv32imc"})
+PROC(SIFIVE_E21, {"sifive-e21"}, FK_NONE, {"rv32imac"})
+PROC(SIFIVE_E24, {"sifive-e24"}, FK_NONE, {"rv32imafc"})
+PROC(SIFIVE_E31, {"sifive-e31"}, FK_NONE, {"rv32imac"})
+PROC(SIFIVE_E34, {"sifive-e34"}, FK_NONE, {"rv32imafc"})
+PROC(SIFIVE_E66, {"sifive-e66"}, FK_NONE, {"rv32imafc_zba1p0_zbb1p0"})
+PROC(SIFIVE_E76, {"sifive-e76"}, FK_NONE, {"rv32imafc"})
+PROC(SIFIVE_E76M, {"sifive-e76m"}, FK_NONE, {"rv32imafc_zba1p0_zbb1p0"})
+PROC(SIFIVE_E76N, {"sifive-e76n"}, FK_NONE, {"rv32imafc_zba1p0_zbb1p0"})
+PROC(SIFIVE_S21, {"sifive-s21"}, FK_64BIT, {"rv64imac"})
+PROC(SIFIVE_S51, {"sifive-s51"}, FK_64BIT, {"rv64imac"})
+PROC(SIFIVE_S54, {"sifive-s54"}, FK_64BIT, {"rv64gc"})
+PROC(SIFIVE_S66, {"sifive-s66"}, FK_64BIT, {"rv64imafdc_zba1p0_zbb1p0"})
+PROC(SIFIVE_S76, {"sifive-s76"}, FK_64BIT, {"rv64gc"})
+PROC(SIFIVE_S76M, {"sifive-s76m"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
+PROC(SIFIVE_S76N, {"sifive-s76n"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
+PROC(SIFIVE_U54, {"sifive-u54"}, FK_64BIT, {"rv64gc"})
+PROC(SIFIVE_U64, {"sifive-u64"}, FK_64BIT, {"rv64imafdc_zba1p0_zbb1p0"})
+PROC(SIFIVE_U74, {"sifive-u74"}, FK_64BIT, {"rv64gc"})
+<<<<<<< HEAD:llvm/include/llvm/Support/RISCVTargetParser.def
+PROC(SIFIVE_U74M, {"sifive-u74m"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
+PROC(SIFIVE_U74N, {"sifive-u74n"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
+PROC(SIFIVE_X280, {"sifive-x280"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq"})
+PROC(SIFIVE_X280n, {"sifive-x280n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq"})
+PROC(SIFIVE_X280o, {"sifive-x280o"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq"})
+PROC(SIFIVE_P270, {"sifive-p270"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
+PROC(SIFIVE_P270N, {"sifive-p270n"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0"})
+PROC(SIFIVE_P450, {"sifive-p450"}, FK_64BIT, {"rv64gc_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
+PROC(SIFIVE_P470, {"sifive-p470"}, FK_64BIT, {"rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
+PROC(SIFIVE_P550, {"sifive-p550"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
+PROC(SIFIVE_P650, {"sifive-p650"}, FK_64BIT, {"rv64gc_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
+PROC(SIFIVE_P670, {"sifive-p670"}, FK_64BIT, {"rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
+=======
+PROC(SYNTACORE_SCR1_BASE, {"syntacore-scr1-base"}, FK_NONE, {"rv32ic"})
+PROC(SYNTACORE_SCR1_MAX, {"syntacore-scr1-max"}, FK_NONE, {"rv32imc"})
+>>>>>>> upstream/main:llvm/include/llvm/TargetParser/RISCVTargetParser.def
+
+#undef PROC
+
+#ifndef TUNE_PROC
+#define TUNE_PROC(ENUM, NAME)
+#endif
+
+TUNE_PROC(GENERIC, "generic")
+TUNE_PROC(ROCKET, "rocket")
+TUNE_PROC(SIFIVE_6, "sifive-6-series")
+TUNE_PROC(SIFIVE_7, "sifive-7-series")
+TUNE_PROC(SIFIVE_7M, "sifive-7m-series")
+TUNE_PROC(SIFIVE_7N, "sifive-7n-series")
+TUNE_PROC(SIFIVE_7O, "sifive-7o-series")
+TUNE_PROC(SIFIVE_8, "sifive-8-series")
+TUNE_PROC(SIFIVE_P400, "sifive-p400-series")
+TUNE_PROC(SIFIVE_P500, "sifive-p500-series")
+TUNE_PROC(SIFIVE_P600, "sifive-p600-series")
+
+#undef TUNE_PROC
