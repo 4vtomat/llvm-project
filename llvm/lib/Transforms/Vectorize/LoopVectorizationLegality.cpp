@@ -234,8 +234,8 @@ void LoopVectorizeHints::setRevectorizeWithoutStrideChecks() {
       {MDString::get(Context, LoopMetaData::NoScevChecks),
        ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
   MDNode *LoopID = TheLoop->getLoopID();
-  MDNode *NewLoopID =
-      makePostTransformationMetadata(Context, LoopID, None, {RevectorizeMD});
+  MDNode *NewLoopID = makePostTransformationMetadata(
+      Context, LoopID, std::nullopt, {RevectorizeMD});
   TheLoop->setLoopID(NewLoopID);
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -596,7 +596,7 @@ LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
   Optional<int64_t> Stride = getPtrStride(PSE, AccessTy, Ptr, TheLoop, Strides,
                                           CanAddPredicate, false);
   if (!Stride.has_value())
-    return None;
+    return std::nullopt;
   if (Stride.value() == 1 || Stride.value() == -1)
     return Stride;
   return 0;

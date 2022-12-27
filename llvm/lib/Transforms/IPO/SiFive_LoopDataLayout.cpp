@@ -1300,11 +1300,10 @@ static void doActionsForMatchedType(
 static bool translateReferences(
     Function *F, function_ref<AAResults &(Function &F)> AARGetter,
     unsigned MaxElements,
-    Optional<function_ref<void(CallBase &OldCS, CallBase &NewCS)>>
+    std::optional<function_ref<void(CallBase &OldCS, CallBase &NewCS)>>
         ReplaceCallSite,
     const TargetTransformInfo &TTI, const TargetLibraryInfo &TLI,
-    SmallDenseMap<std::pair<Instruction *, Type *>, int>
-        &LocalReferenceMap,
+    SmallDenseMap<std::pair<Instruction *, Type *>, int> &LocalReferenceMap,
     const SmallVector<Type *> &LocalParamMap,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap,
@@ -1895,14 +1894,14 @@ static bool legalUseTree(Function *F, Instruction *I, TargetLibraryInfo &TLI) {
   return (NumInstUses == NumLegalUses);
 }
 
-static Optional<Type *> configureParamType(
+static std::optional<Type *> configureParamType(
     TargetLibraryInfo &TLI, Value *Arg, Function *DCallee, Function *F,
     DenseMap<Function *, SmallVector<Type *>> &ParamMap, unsigned i) {
   SmallVector<Type *> &LocalParamMap = ParamMap[DCallee];
   Type *BaseTy = nullptr;
   if (auto *GV = dyn_cast<GlobalVariable>(Arg)) {
     if (GV->isConstant())
-      return None;
+      return std::nullopt;
 
     BaseTy = GV->getValueType();
   } else if (auto *CI = dyn_cast<CallInst>(Arg)) {
@@ -1934,7 +1933,7 @@ static Optional<Type *> configureParamType(
       BaseTy = LocalParamMap[i];
     }
   } else if (isa<Constant>(Arg)) {
-    return None;
+    return std::nullopt;
   } else {
     SmallVector<const Value *, 4> Objects;
     getUnderlyingObjects(Arg, Objects);
@@ -1986,7 +1985,7 @@ static Optional<Type *> configureParamType(
   }
 
   if (!BaseTy)
-    return None;
+    return std::nullopt;
 
   return BaseTy;
 }
@@ -2079,10 +2078,10 @@ static void walkCallGraphToFillParamMap(
         if (auto *PtrTy = dyn_cast<PointerType>(ArgTy)) {
           Type *BaseTy = nullptr;
           Value *Arg = CurCB->getArgOperand(i);
-          Optional<Type *> OptTy =
+          std::optional<Type *> OptTy =
               configureParamType(TLI, Arg, DCallee, F, ParamMap, i);
 
-          if (OptTy != None)
+          if (OptTy.has_value())
             BaseTy = *OptTy;
 
           // Allow for maximally checking type divergence before falling back
@@ -2450,7 +2449,7 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
     // replacing the old function with a modified call signature
     // when necessary.
     Changed =
-        translateReferences(&F, AARGetter, MaxElements, None, TTI, TLI,
+        translateReferences(&F, AARGetter, MaxElements, std::nullopt, TTI, TLI,
                             LocalReferenceMap, LocalParamMap, LocalCandidateMap,
                             UniqueTypeSet, TranslatedTypeSet, GEPTypeToIndices);
   }
@@ -2591,7 +2590,7 @@ bool LoopDataLayoutLegacyPass::runOnModule(Module &M) {
     // replacing the old function with a modified call signature
     // when necessary.
     Changed =
-        translateReferences(&F, AARGetter, MaxElements, None, TTI, TLI,
+        translateReferences(&F, AARGetter, MaxElements, std::nullopt, TTI, TLI,
                             LocalReferenceMap, LocalParamMap, LocalCandidateMap,
                             UniqueTypeSet, TranslatedTypeSet, GEPTypeToIndices);
   }

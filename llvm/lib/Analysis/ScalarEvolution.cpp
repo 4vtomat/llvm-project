@@ -10888,11 +10888,10 @@ ScalarEvolution::evaluatePredicateAt(ICmpInst::Predicate Pred, const SCEV *LHS,
 }
 
 #if SIFIVE_CUSTOMIZATION
-Optional<bool> ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred,
-                                                    const Value *LHS,
-                                                    const Value *RHS,
-                                                    const Instruction *CtxI,
-                                                    ICmpInst *ICmp) {
+std::optional<bool>
+ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
+                                     const Value *RHS, const Instruction *CtxI,
+                                     ICmpInst *ICmp) {
   auto *BB = CtxI->getParent();
 
   if (VerifyIR)
@@ -10901,20 +10900,20 @@ Optional<bool> ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred,
 
   const Loop *ContainingLoop = LI.getLoopFor(BB);
   if (!ContainingLoop)
-    return None;
+    return std::nullopt;
 
   // Now check for trivial equivalence cases with the latch cmp
   ICmpInst *CmpInst = ContainingLoop->getLatchCmpInst();
   if (!CmpInst)
-    return None;
+    return std::nullopt;
 
   // Skip identity comparisons
   if (CmpInst == ICmp)
-    return None;
+    return std::nullopt;
 
   // Only check normalized loops
   if (!ContainingLoop->isLoopSimplifyForm())
-    return None;
+    return std::nullopt;
 
   for (PHINode &IndVar : ContainingLoop->getHeader()->phis()) {
     InductionDescriptor IndDesc;
@@ -10956,7 +10955,7 @@ Optional<bool> ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred,
       }
     }
   }
-  return None;
+  return std::nullopt;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

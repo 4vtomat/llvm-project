@@ -1635,7 +1635,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
   // 1 - Address is consecutive.
   // -1 - Address is consecutive, and decreasing.
   auto IsConsecutiveOrUnknownPtr = [&](Loop *L, Type *AccessTy,
-                                       Value *Ptr) -> Optional<int64_t> {
+                                       Value *Ptr) -> std::optional<int64_t> {
     const LoopAccessInfo *LAI = &GetLAA(*L);
     PredicatedScalarEvolution PSE(SE, *L);
     const ValueToValueMap &Strides = LAI->getSymbolicStrides();
@@ -1647,7 +1647,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
     Optional<int64_t> Stride =
         getPtrStride(PSE, AccessTy, Ptr, L, Strides, CanAddPredicate, false);
     if (!Stride.has_value())
-      return None;
+      return std::nullopt;
     if (Stride.value() == 1 || Stride.value() == -1)
       return Stride;
     return 0;

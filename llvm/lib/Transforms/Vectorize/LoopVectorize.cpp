@@ -1742,11 +1742,11 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Return minimum number of vector iterations required to make execution of
   /// the vector loop profitable.
-  Optional<uint64_t> getProfitableVectorTripCount(void) const {
+  std::optional<uint64_t> getProfitableVectorTripCount(void) const {
     // Use user-given value if it's given and is not 0
     if (VectorizerProfitableVectorTripCount != 0)
       return VectorizerProfitableVectorTripCount.getValue();
-    return None;
+    return std::nullopt;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -12211,7 +12211,7 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
 
         MDNode *LoopID = L->getLoopID();
         MDNode *NewLoopID = makePostTransformationMetadata(
-            Context, LoopID, {LoopMetaData::NoScevChecks}, None);
+            Context, LoopID, {LoopMetaData::NoScevChecks}, std::nullopt);
         L->setLoopID(NewLoopID);
       }
     }

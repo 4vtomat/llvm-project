@@ -543,10 +543,10 @@ static Instruction *foldTernaryOp(InstCombiner &IC, IntrinsicInst &II) {
                          {PassThru, Result, VL});
 }
 
-static Optional<ICmpInst::Predicate> getPredicate(Intrinsic::ID IID) {
+static std::optional<ICmpInst::Predicate> getPredicate(Intrinsic::ID IID) {
   switch (IID) {
   default:
-    return None;
+    return std::nullopt;
   case Intrinsic::riscv_vmseq:
     return ICmpInst::ICMP_EQ;
   case Intrinsic::riscv_vmsne:
@@ -1266,7 +1266,7 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
 std::optional<Instruction *>
 RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   if (DisableVectorOpt)
-    return None;
+    return std::nullopt;
 
   Intrinsic::ID IID = II.getIntrinsicID();
   switch (IID) {
@@ -1751,5 +1751,5 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   }
   }
 
-  return None;
+  return std::nullopt;
 }

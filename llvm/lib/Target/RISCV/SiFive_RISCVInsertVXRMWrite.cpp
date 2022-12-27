@@ -62,11 +62,11 @@ char RISCVInsertVXRMWrite::ID = 0;
 INITIALIZE_PASS(RISCVInsertVXRMWrite, DEBUG_TYPE, RISCV_INSERT_WRITEVXRM_NAME,
                 false, false)
 
-Optional<unsigned>
+std::optional<unsigned>
 RISCVInsertVXRMWrite::getRoundModeIdx(const MCInstrDesc &Desc) const {
   uint64_t TSFlags = Desc.TSFlags;
   if (!RISCVII::hasRoundModeOp(TSFlags))
-    return None;
+    return std::nullopt;
 
   return RISCVII::getRoundModeOpNum(Desc);
 }

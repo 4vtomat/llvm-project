@@ -603,7 +603,7 @@ Optional<PrototypeDescriptor> PrototypeDescriptor::parsePrototypeDescriptor(
       int32_t Log2LMUL;
       if (ComplexTT.second.getAsInteger(10, Log2LMUL)) {
         llvm_unreachable("Invalid MultipleLMUL value!");
-        return None;
+        return std::nullopt;
       }
       if (Log2LMUL == 2 && PType == 'w') {
         VTM = VectorTypeModifier::Widening2XVectorMultipleLMUL2;
