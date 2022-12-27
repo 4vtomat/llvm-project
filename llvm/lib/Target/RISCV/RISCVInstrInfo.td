@@ -1427,7 +1427,6 @@ def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
                      Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // This should always expand to a branch+c.mv so the size is 6 or 4 if the
 // branch is compressible.
@@ -1445,9 +1444,8 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
                                                            GPRNoX0:$falsev))]>,
                          Sched<[WriteCMOV, ReadCMOV, ReadCMOV, ReadCMOV, ReadCMOV]>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 // Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
 // TODO: Can we use DefaultOperands on the regular binop to accomplish this more
