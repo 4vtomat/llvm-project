@@ -1430,7 +1430,7 @@ def PseudoCCMOVGPR : Pseudo<(outs GPR:$dst),
 #ifdef SIFIVE_CUSTOMIZATION
 // This should always expand to a branch+c.mv so the size is 6 or 4 if the
 // branch is compressible.
-let Predicates = [HasCMOVBranchOpt, NoShortForwardBranchOpt],
+let Predicates = [CanUseCMOVBranchOpt, NoShortForwardBranchOpt],
     Constraints = "$dst = $falsev", isCommutable = 1, Size = 6 in {
 // This instruction moves $truev to $dst when the condition is true. It will
 // be expanded to control flow in RISCVExpandPseudoInsts.

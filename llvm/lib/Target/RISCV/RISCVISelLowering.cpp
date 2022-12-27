@@ -5135,7 +5135,7 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-  if (!Subtarget.hasShortForwardBranchOpt() && !Subtarget.hasCMOVBranchOpt()) {
+  if (!Subtarget.hasShortForwardBranchOpt() && !Subtarget.canUseCMOVBranchOpt()) {
 #else
   if (!Subtarget.hasShortForwardBranchOpt()) {
 #endif
@@ -12178,7 +12178,7 @@ static SDValue performSELECTCombine(SDNode *N, SelectionDAG &DAG,
     return SDValue();
 
 #if SIFIVE_CUSTOMIZATION
-  if (Subtarget.hasCMOVBranchOpt())
+  if (Subtarget.canUseCMOVBranchOpt())
     return SDValue();
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -12412,7 +12412,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
 #if SIFIVE_CUSTOMIZATION
     if (!Subtarget.hasShortForwardBranchOpt() &&
-        !Subtarget.hasCMOVBranchOpt()) {
+        !Subtarget.canUseCMOVBranchOpt()) {
 #else
     if (!Subtarget.hasShortForwardBranchOpt()) {
 #endif // SIFIVE_CUSTOMIZATION

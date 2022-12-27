@@ -131,6 +131,10 @@ public:
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
 #if SIFIVE_CUSTOMIZATION
+  bool canUseCMOVBranchOpt() const {
+    // U8 can only predicate c.mv so requires the C extension.
+    return HasCMOVBranchOpt && hasStdExtC();
+  }
   bool hasKnownDLen() const { return DLen != 0; }
   unsigned getDLen() const {
     assert(hasKnownDLen() && "The Datapath length not set");

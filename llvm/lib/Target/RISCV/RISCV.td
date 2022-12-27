@@ -618,7 +618,7 @@ def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()"
 def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
-def HasCMOVBranchOpt : Predicate<"Subtarget->hasCMOVBranchOpt()">;
+def CanUseCMOVBranchOpt : Predicate<"Subtarget->canUseCMOVBranchOpt()">;
 def NoCMOVBranchOpt : Predicate<"!Subtarget->hasCMOVBranchOpt()">;
 
 def TuneJumpIsCheap
