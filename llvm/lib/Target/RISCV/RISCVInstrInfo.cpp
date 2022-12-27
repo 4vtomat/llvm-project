@@ -2717,164 +2717,6 @@ bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
   return FrmOp1.getImm() == FrmOp2.getImm();
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
-  RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
-  Register GlobalBaseReg = RVFI->getGlobalBaseReg();
-  if (GlobalBaseReg)
-    return GlobalBaseReg;
-
-  if (MF->getTarget().isPositionIndependent()) {
-    DebugLoc dl;
-    MachineBasicBlock &FirstMBB = MF->front();
-    MachineBasicBlock::iterator MBBI = FirstMBB.begin();
-    MachineRegisterInfo &MRI = MF->getRegInfo();
-
-    Register TempReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-    Register Temp2Reg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-    GlobalBaseReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-    // Insert a pseudo instruction to set the GlobalBaseReg into the first
-    // MBB of the function.
-    BuildMI(FirstMBB, MBBI, dl, get(RISCV::PseudoLLA), TempReg)
-        .addExternalSymbol("__global_pointer__");
-    BuildMI(FirstMBB, MBBI, dl, get(RISCV::LD), Temp2Reg)
-        .addReg(TempReg)
-        .addImm(0);
-    BuildMI(FirstMBB, MBBI, dl, get(RISCV::ADD), GlobalBaseReg)
-        .addReg(TempReg)
-        .addReg(Temp2Reg);
-  } else {
-    GlobalBaseReg = RISCV::X3;
-  }
-
-  RVFI->setGlobalBaseReg(GlobalBaseReg);
-  return GlobalBaseReg;
-}
-
-void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
-                                    MachineBasicBlock::iterator MBBI) const {
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MBBI->getDebugLoc();
-
-  int64_t Val = MI.getOperand(1).getImm();
-  assert(isInt<32>(Val) && "Unexpected immediate");
-
-  RISCVMatInt::InstSeq Seq = RISCVMatInt::generateInstSeq(
-      Val, MBB.getParent()->getSubtarget().getFeatureBits());
-  assert(!Seq.empty());
-
-  Register SrcReg = RISCV::X0;
-  Register DstReg = MI.getOperand(0).getReg();
-  bool DstIsDead = MI.getOperand(0).isDead();
-  bool Renamable = MI.getOperand(0).isRenamable();
-  bool SrcRenamable = false;
-  unsigned Num = 0;
-
-  for (RISCVMatInt::Inst &Inst : Seq) {
-    bool LastItem = ++Num == Seq.size();
-    if (Inst.getOpcode() == RISCV::LUI) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
-          .addReg(DstReg, RegState::Define |
-                              getDeadRegState(DstIsDead && LastItem) |
-                              getRenamableRegState(Renamable))
-          .addImm(Inst.getImm());
-    } else if (Inst.getOpcode() == RISCV::ADD_UW) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::ADD_UW))
-          .addReg(DstReg, RegState::Define |
-                              getDeadRegState(DstIsDead && LastItem) |
-                              getRenamableRegState(Renamable))
-          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
-          .addReg(RISCV::X0);
-    } else if (Inst.getOpcode() == RISCV::SH1ADD ||
-               Inst.getOpcode() == RISCV::SH2ADD ||
-               Inst.getOpcode() == RISCV::SH3ADD) {
-      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
-          .addReg(DstReg, RegState::Define |
-                              getDeadRegState(DstIsDead && LastItem) |
-                              getRenamableRegState(Renamable))
-          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
-          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable));
-    } else {
-      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
-          .addReg(DstReg, RegState::Define |
-                              getDeadRegState(DstIsDead && LastItem) |
-                              getRenamableRegState(Renamable))
-          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
-          .addImm(Inst.getImm());
-    }
-    // Only the first instruction has X0 as its source.
-    SrcReg = DstReg;
-    SrcRenamable = Renamable;
-  }
-  MI.eraseFromParent();
-}
-
-bool RISCVInstrInfo::getMemOperandsWithOffsetWidth(
-    const MachineInstr &LdSt, SmallVectorImpl<const MachineOperand *> &BaseOps,
-    int64_t &Offset, bool &OffsetIsScalable, unsigned &Width,
-    const TargetRegisterInfo *TRI) const {
-  const MachineOperand *BaseOp;
-  OffsetIsScalable = false;
-  if (!getMemOperandWithOffsetWidth(LdSt, BaseOp, Offset, Width, TRI))
-    return false;
-  BaseOps.push_back(BaseOp);
-  return true;
-}
-
-static bool isPartialStore(const MachineInstr &MI) {
-  switch (MI.getOpcode()) {
-  default:
-    return false;
-  case RISCV::SB:
-  case RISCV::SH:
-  case RISCV::FSH:
-    return true;
-  }
-}
-
-// Only called for LdSt for which getMemOperandsWithOffsetWidth returns true.
-bool RISCVInstrInfo::shouldClusterMemOps(
-    ArrayRef<const MachineOperand *> BaseOps1,
-    ArrayRef<const MachineOperand *> BaseOps2, unsigned NumLoads,
-    unsigned NumBytes) const {
-  assert(BaseOps1.size() == 1 && BaseOps2.size() == 1);
-  const MachineOperand &BaseOp1 = *BaseOps1.front();
-  const MachineOperand &BaseOp2 = *BaseOps2.front();
-  const MachineInstr &FirstLdSt = *BaseOp1.getParent();
-  const MachineInstr &SecondLdSt = *BaseOp2.getParent();
-
-  // Checking BaseOps1 and BaseOps2 have the same base register.
-  if (BaseOp1.isReg() && BaseOp1.getReg() != BaseOp2.getReg())
-    return false;
-
-  // If this is a volatile store, don't mess with it.
-  if (FirstLdSt.hasOrderedMemoryRef() || SecondLdSt.hasOrderedMemoryRef())
-    return false;
-
-  // For Sifive7, we hopy partial store instruction put together.
-  if (!isPartialStore(FirstLdSt) || !isPartialStore(SecondLdSt))
-    return false;
-
-  int64_t Offset1 = FirstLdSt.getOperand(2).getImm();
-  int64_t Offset2 = SecondLdSt.getOperand(2).getImm();
-  int LowOffset = std::min(Offset1, Offset2);
-  int HighOffset = std::max(Offset1, Offset2);
-  // SiFive7 access memory 4 bytes at least,
-  // so checking if they are within 4 bytes.
-  return (LowOffset <= HighOffset) && (HighOffset <= LowOffset + 4);
-}
-
-ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
-RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
-  static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
-      {{MONontemporalBit0, "riscv-non-temporal-domain-bit-0"},
-       {MONontemporalBit1, "riscv-non-temporal-domain-bit-1"}};
-  return makeArrayRef(TargetFlags);
-}
-
-#endif // SIFIVE_CUSTOMIZATION
-=======
 // Checks if all users only demand the lower word of the original instruction's
 // result.
 // TODO: handle multiple interdependent transformations
@@ -3050,4 +2892,160 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
 
   return true;
 }
->>>>>>> upstream/main
+
+#if SIFIVE_CUSTOMIZATION
+Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
+  RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
+  Register GlobalBaseReg = RVFI->getGlobalBaseReg();
+  if (GlobalBaseReg)
+    return GlobalBaseReg;
+
+  if (MF->getTarget().isPositionIndependent()) {
+    DebugLoc dl;
+    MachineBasicBlock &FirstMBB = MF->front();
+    MachineBasicBlock::iterator MBBI = FirstMBB.begin();
+    MachineRegisterInfo &MRI = MF->getRegInfo();
+
+    Register TempReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    Register Temp2Reg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    GlobalBaseReg = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+    // Insert a pseudo instruction to set the GlobalBaseReg into the first
+    // MBB of the function.
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::PseudoLLA), TempReg)
+        .addExternalSymbol("__global_pointer__");
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::LD), Temp2Reg)
+        .addReg(TempReg)
+        .addImm(0);
+    BuildMI(FirstMBB, MBBI, dl, get(RISCV::ADD), GlobalBaseReg)
+        .addReg(TempReg)
+        .addReg(Temp2Reg);
+  } else {
+    GlobalBaseReg = RISCV::X3;
+  }
+
+  RVFI->setGlobalBaseReg(GlobalBaseReg);
+  return GlobalBaseReg;
+}
+
+void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
+                                    MachineBasicBlock::iterator MBBI) const {
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  int64_t Val = MI.getOperand(1).getImm();
+  assert(isInt<32>(Val) && "Unexpected immediate");
+
+  RISCVMatInt::InstSeq Seq = RISCVMatInt::generateInstSeq(
+      Val, MBB.getParent()->getSubtarget().getFeatureBits());
+  assert(!Seq.empty());
+
+  Register SrcReg = RISCV::X0;
+  Register DstReg = MI.getOperand(0).getReg();
+  bool DstIsDead = MI.getOperand(0).isDead();
+  bool Renamable = MI.getOperand(0).isRenamable();
+  bool SrcRenamable = false;
+  unsigned Num = 0;
+
+  for (RISCVMatInt::Inst &Inst : Seq) {
+    bool LastItem = ++Num == Seq.size();
+    if (Inst.getOpcode() == RISCV::LUI) {
+      BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
+          .addReg(DstReg, RegState::Define |
+                              getDeadRegState(DstIsDead && LastItem) |
+                              getRenamableRegState(Renamable))
+          .addImm(Inst.getImm());
+    } else if (Inst.getOpcode() == RISCV::ADD_UW) {
+      BuildMI(MBB, MBBI, DL, get(RISCV::ADD_UW))
+          .addReg(DstReg, RegState::Define |
+                              getDeadRegState(DstIsDead && LastItem) |
+                              getRenamableRegState(Renamable))
+          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
+          .addReg(RISCV::X0);
+    } else if (Inst.getOpcode() == RISCV::SH1ADD ||
+               Inst.getOpcode() == RISCV::SH2ADD ||
+               Inst.getOpcode() == RISCV::SH3ADD) {
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
+          .addReg(DstReg, RegState::Define |
+                              getDeadRegState(DstIsDead && LastItem) |
+                              getRenamableRegState(Renamable))
+          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
+          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable));
+    } else {
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
+          .addReg(DstReg, RegState::Define |
+                              getDeadRegState(DstIsDead && LastItem) |
+                              getRenamableRegState(Renamable))
+          .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
+          .addImm(Inst.getImm());
+    }
+    // Only the first instruction has X0 as its source.
+    SrcReg = DstReg;
+    SrcRenamable = Renamable;
+  }
+  MI.eraseFromParent();
+}
+
+bool RISCVInstrInfo::getMemOperandsWithOffsetWidth(
+    const MachineInstr &LdSt, SmallVectorImpl<const MachineOperand *> &BaseOps,
+    int64_t &Offset, bool &OffsetIsScalable, unsigned &Width,
+    const TargetRegisterInfo *TRI) const {
+  const MachineOperand *BaseOp;
+  OffsetIsScalable = false;
+  if (!getMemOperandWithOffsetWidth(LdSt, BaseOp, Offset, Width, TRI))
+    return false;
+  BaseOps.push_back(BaseOp);
+  return true;
+}
+
+static bool isPartialStore(const MachineInstr &MI) {
+  switch (MI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SB:
+  case RISCV::SH:
+  case RISCV::FSH:
+    return true;
+  }
+}
+
+// Only called for LdSt for which getMemOperandsWithOffsetWidth returns true.
+bool RISCVInstrInfo::shouldClusterMemOps(
+    ArrayRef<const MachineOperand *> BaseOps1,
+    ArrayRef<const MachineOperand *> BaseOps2, unsigned NumLoads,
+    unsigned NumBytes) const {
+  assert(BaseOps1.size() == 1 && BaseOps2.size() == 1);
+  const MachineOperand &BaseOp1 = *BaseOps1.front();
+  const MachineOperand &BaseOp2 = *BaseOps2.front();
+  const MachineInstr &FirstLdSt = *BaseOp1.getParent();
+  const MachineInstr &SecondLdSt = *BaseOp2.getParent();
+
+  // Checking BaseOps1 and BaseOps2 have the same base register.
+  if (BaseOp1.isReg() && BaseOp1.getReg() != BaseOp2.getReg())
+    return false;
+
+  // If this is a volatile store, don't mess with it.
+  if (FirstLdSt.hasOrderedMemoryRef() || SecondLdSt.hasOrderedMemoryRef())
+    return false;
+
+  // For Sifive7, we hopy partial store instruction put together.
+  if (!isPartialStore(FirstLdSt) || !isPartialStore(SecondLdSt))
+    return false;
+
+  int64_t Offset1 = FirstLdSt.getOperand(2).getImm();
+  int64_t Offset2 = SecondLdSt.getOperand(2).getImm();
+  int LowOffset = std::min(Offset1, Offset2);
+  int HighOffset = std::max(Offset1, Offset2);
+  // SiFive7 access memory 4 bytes at least,
+  // so checking if they are within 4 bytes.
+  return (LowOffset <= HighOffset) && (HighOffset <= LowOffset + 4);
+}
+
+ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
+RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
+  static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
+      {{MONontemporalBit0, "riscv-non-temporal-domain-bit-0"},
+       {MONontemporalBit1, "riscv-non-temporal-domain-bit-1"}};
+  return makeArrayRef(TargetFlags);
+}
+
+#endif // SIFIVE_CUSTOMIZATION
