@@ -1045,10 +1045,7 @@ bool RISCVInstrInfo::isBranchOffsetInRange(unsigned BranchOp,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 // If the operation has a predicated pseudo instruction, return the pseudo
 // instruction opcode. Otherwise, return RISCV::INSTRUCTION_LIST_END.
 // TODO: Support more operations.
@@ -1056,17 +1053,13 @@ unsigned getPredicatedOpcode(unsigned Opcode) {
   switch (Opcode) {
   case RISCV::ADD:   return RISCV::PseudoCCADD;   break;
   case RISCV::SUB:   return RISCV::PseudoCCSUB;   break;
-<<<<<<< HEAD
   case RISCV::SLL:   return RISCV::PseudoCCSLL;   break;
   case RISCV::SRL:   return RISCV::PseudoCCSRL;   break;
   case RISCV::SRA:   return RISCV::PseudoCCSRA;   break;
-=======
->>>>>>> upstream/main
   case RISCV::AND:   return RISCV::PseudoCCAND;   break;
   case RISCV::OR:    return RISCV::PseudoCCOR;    break;
   case RISCV::XOR:   return RISCV::PseudoCCXOR;   break;
 
-<<<<<<< HEAD
   case RISCV::ADDI:  return RISCV::PseudoCCADDI;  break;
   case RISCV::SLLI:  return RISCV::PseudoCCSLLI;  break;
   case RISCV::SRLI:  return RISCV::PseudoCCSRLI;  break;
@@ -1085,14 +1078,11 @@ unsigned getPredicatedOpcode(unsigned Opcode) {
   case RISCV::SLLIW: return RISCV::PseudoCCSLLIW; break;
   case RISCV::SRLIW: return RISCV::PseudoCCSRLIW; break;
   case RISCV::SRAIW: return RISCV::PseudoCCSRAIW; break;
-=======
-  case RISCV::ADDW:  return RISCV::PseudoCCADDW;  break;
-  case RISCV::SUBW:  return RISCV::PseudoCCSUBW;  break;
->>>>>>> upstream/main
   }
 
   return RISCV::INSTRUCTION_LIST_END;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Identify instructions that can be folded into a CCMOV instruction, and
 /// return the defining instruction.
@@ -1109,13 +1099,12 @@ static MachineInstr *canFoldAsPredicatedOp(Register Reg,
   // Check if MI can be predicated and folded into the CCMOV.
   if (getPredicatedOpcode(MI->getOpcode()) == RISCV::INSTRUCTION_LIST_END)
     return nullptr;
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   // Don't predicate li idiom.
   if (MI->getOpcode() == RISCV::ADDI && MI->getOperand(1).isReg() &&
       MI->getOperand(1).getReg() == RISCV::X0)
     return nullptr;
-=======
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   // Check if MI has any other defs or physreg uses.
   for (unsigned i = 1, e = MI->getNumOperands(); i != e; ++i) {
     const MachineOperand &MO = MI->getOperand(i);
@@ -1188,10 +1177,6 @@ RISCVInstrInfo::optimizeSelect(MachineInstr &MI,
   if (!MRI.constrainRegClass(DestReg, PreviousClass))
     return nullptr;
 
-<<<<<<< HEAD
-  // TODO: Support more operations.
-=======
->>>>>>> upstream/main
   unsigned PredOpc = getPredicatedOpcode(DefMI->getOpcode());
   assert(PredOpc != RISCV::INSTRUCTION_LIST_END && "Unexpected opcode!");
 
@@ -1232,10 +1217,6 @@ RISCVInstrInfo::optimizeSelect(MachineInstr &MI,
   DefMI->eraseFromParent();
   return NewMI;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   if (MI.isMetaInstruction())
