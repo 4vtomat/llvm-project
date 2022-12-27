@@ -26,7 +26,8 @@ PROC(SIFIVE_S76N, {"sifive-s76n"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_U54, {"sifive-u54"}, FK_64BIT, {"rv64gc"})
 PROC(SIFIVE_U64, {"sifive-u64"}, FK_64BIT, {"rv64imafdc_zba1p0_zbb1p0"})
 PROC(SIFIVE_U74, {"sifive-u74"}, FK_64BIT, {"rv64gc"})
-<<<<<<< HEAD:llvm/include/llvm/Support/RISCVTargetParser.def
+PROC(SYNTACORE_SCR1_BASE, {"syntacore-scr1-base"}, FK_NONE, {"rv32ic"})
+PROC(SYNTACORE_SCR1_MAX, {"syntacore-scr1-max"}, FK_NONE, {"rv32imc"})
 PROC(SIFIVE_U74M, {"sifive-u74m"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_U74N, {"sifive-u74n"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_X280, {"sifive-x280"}, FK_64BIT, {"rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq"})
@@ -39,10 +40,6 @@ PROC(SIFIVE_P470, {"sifive-p470"}, FK_64BIT, {"rv64gcv_zfhmin1p0_zba1p0_zbb1p0_z
 PROC(SIFIVE_P550, {"sifive-p550"}, FK_64BIT, {"rv64gc_zba1p0_zbb1p0"})
 PROC(SIFIVE_P650, {"sifive-p650"}, FK_64BIT, {"rv64gc_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
 PROC(SIFIVE_P670, {"sifive-p670"}, FK_64BIT, {"rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0"})
-=======
-PROC(SYNTACORE_SCR1_BASE, {"syntacore-scr1-base"}, FK_NONE, {"rv32ic"})
-PROC(SYNTACORE_SCR1_MAX, {"syntacore-scr1-max"}, FK_NONE, {"rv32imc"})
->>>>>>> upstream/main:llvm/include/llvm/TargetParser/RISCVTargetParser.def
 
 #undef PROC
 
