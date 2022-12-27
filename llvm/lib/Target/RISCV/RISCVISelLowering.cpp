@@ -12179,6 +12179,11 @@ static SDValue performSELECTCombine(SDNode *N, SelectionDAG &DAG,
   if (Subtarget.hasShortForwardBranchOpt())
     return SDValue();
 
+#if SIFIVE_CUSTOMIZATION
+  if (Subtarget.hasCMOVBranchOpt())
+    return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
+
   // Only support XLenVT.
   if (N->getValueType(0) != Subtarget.getXLenVT())
     return SDValue();
@@ -12376,68 +12381,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (TrueV == FalseV)
       return TrueV;
 
-<<<<<<< HEAD
-    // (select (x in [0,1] == 0), y, (z ^ y) ) -> (-x & z ) ^ y
-    // (select (x in [0,1] != 0), (z ^ y), y ) -> (-x & z ) ^ y
-    // (select (x in [0,1] == 0), y, (z | y) ) -> (-x & z ) | y
-    // (select (x in [0,1] != 0), (z | y), y ) -> (-x & z ) | y
-    // NOTE: We only do this if the target does not have the short forward
-    // branch optimization.
-    APInt Mask = APInt::getBitsSetFrom(LHS.getValueSizeInBits(), 1);
-    if (!Subtarget.hasShortForwardBranchOpt() && isNullConstant(RHS) &&
-#if SIFIVE_CUSTOMIZATION
-        !Subtarget.hasCMOVBranchOpt() &&
-#endif // SIFIVE_CUSTOMIZATION
-        ISD::isIntEqualitySetCC(CCVal) && DAG.MaskedValueIsZero(LHS, Mask)) {
-      unsigned Opcode;
-      SDValue Src1, Src2;
-      // true if FalseV is XOR or OR operator and one of its operands
-      // is equal to Op1
-      // ( a , a op b) || ( b , a op b)
-      auto isOrXorPattern = [&]() {
-        if (CCVal == ISD::SETEQ &&
-            (FalseV.getOpcode() == ISD::XOR || FalseV.getOpcode() == ISD::OR) &&
-            (FalseV.getOperand(0) == TrueV || FalseV.getOperand(1) == TrueV)) {
-          Src1 = FalseV.getOperand(0) == TrueV ?
-            FalseV.getOperand(1) : FalseV.getOperand(0);
-          Src2 = TrueV;
-          Opcode = FalseV.getOpcode();
-          return true;
-        }
-        if (CCVal == ISD::SETNE &&
-            (TrueV.getOpcode() == ISD::XOR || TrueV.getOpcode() == ISD::OR) &&
-            (TrueV.getOperand(0) == FalseV || TrueV.getOperand(1) == FalseV)) {
-          Src1 = TrueV.getOperand(0) == FalseV ?
-            TrueV.getOperand(1) : TrueV.getOperand(0);
-          Src2 = FalseV;
-          Opcode = TrueV.getOpcode();
-          return true;
-        }
-
-        return false;
-      };
-
-      if (isOrXorPattern()) {
-        SDValue Neg;
-        unsigned CmpSz = LHS.getSimpleValueType().getSizeInBits();
-        // We need mask of all zeros or ones with same size of the other
-        // operands.
-        if (CmpSz > VT.getSizeInBits())
-          Neg = DAG.getNode(ISD::TRUNCATE, DL, VT, LHS);
-        else if (CmpSz < VT.getSizeInBits())
-          Neg = DAG.getNode(ISD::AND, DL, VT,
-                            DAG.getNode(ISD::ANY_EXTEND, DL, VT, LHS),
-                            DAG.getConstant(1, DL, VT));
-        else
-          Neg = LHS;
-        SDValue Mask = DAG.getNegative(Neg, DL, VT);               // -x
-        SDValue And = DAG.getNode(ISD::AND, DL, VT, Mask, Src1); // Mask & z
-        return DAG.getNode(Opcode, DL, VT, And, Src2);           // And Op y
-      }
-    }
-
-=======
->>>>>>> upstream/main
     // (select (x < 0), y, z)  -> x >> (XLEN - 1) & (y - z) + z
     // (select (x >= 0), y, z) -> x >> (XLEN - 1) & (z - y) + y
     if (!Subtarget.hasShortForwardBranchOpt() && isa<ConstantSDNode>(TrueV) &&
