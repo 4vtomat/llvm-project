@@ -203,6 +203,15 @@ static bool isSignExtendedW(Register SrcReg, MachineRegisterInfo &MRI,
       break;
     case RISCV::PseudoCCADDW:
     case RISCV::PseudoCCSUBW:
+#if SIFIVE_CUSTOMIZATION
+    case RISCV::PseudoCCSLLW:
+    case RISCV::PseudoCCSRLW:
+    case RISCV::PseudoCCSRAW:
+    case RISCV::PseudoCCADDIW:
+    case RISCV::PseudoCCSLLIW:
+    case RISCV::PseudoCCSRLIW:
+    case RISCV::PseudoCCSRAIW:
+#endif // SIFIVE_CUSTOMIZATION
       // Returns operand 4 or an ADDW/SUBW of operands 5 and 6. We only need to
       // check if operand 4 is sign extended.
       if (!AddRegDefToWorkList(MI->getOperand(4).getReg()))
@@ -286,31 +295,6 @@ static bool isSignExtendedW(Register SrcReg, MachineRegisterInfo &MRI,
         break;
       }
       return false;
-#if SIFIVE_CUSTOMIZATION
-    case RISCV::PseudoCCADDW:
-    case RISCV::PseudoCCSUBW:
-    case RISCV::PseudoCCSLLW:
-    case RISCV::PseudoCCSRLW:
-    case RISCV::PseudoCCSRAW:
-    case RISCV::PseudoCCADDIW:
-    case RISCV::PseudoCCSLLIW:
-    case RISCV::PseudoCCSRLIW:
-    case RISCV::PseudoCCSRAIW: {
-      // These instructions select operand 4 or a binary W instruction formed
-      // from operand 5 and 6. We just need to check if operand 4 is sign
-      // extended.
-      Register SrcReg = MI->getOperand(4).getReg();
-      if (!SrcReg.isVirtual())
-        return false;
-      MachineInstr *SrcMI = MRI.getVRegDef(SrcReg);
-      if (!SrcMI)
-        return false;
-
-      // Add SrcMI to the worklist.
-      Worklist.push_back(SrcMI);
-      break;
-    }
-#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
