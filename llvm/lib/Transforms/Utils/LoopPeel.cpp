@@ -1356,9 +1356,8 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
     }
 
     InsertTop = InsertBot;
-    F->getBasicBlockList().splice(InsertTop->getIterator(),
-                                  F->getBasicBlockList(),
-                                  NewBlocks[0]->getIterator(), F->end());
+    F->splice(InsertTop->getIterator(), F, NewBlocks[0]->getIterator(),
+              F->end());
   }
 
   for (const auto &[Term, Info] : Weights)
