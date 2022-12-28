@@ -16,10 +16,10 @@
 define signext i32 @test1(i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-LABEL: test1:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    bnez a2, .LBB0_2
-; NOCMOV-NEXT:  # %bb.1:
+; NOCMOV-NEXT:    snez a2, a2
+; NOCMOV-NEXT:    addi a2, a2, -1
+; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    xor a0, a0, a1
-; NOCMOV-NEXT:  .LBB0_2:
 ; NOCMOV-NEXT:    ret
 ;
 ; CMOV-LABEL: test1:
@@ -47,10 +47,10 @@ define signext i32 @test1(i32 signext %x, i32 signext %y, i32 signext %z) {
 define signext i32 @test2(i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-LABEL: test2:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    beqz a2, .LBB1_2
-; NOCMOV-NEXT:  # %bb.1:
+; NOCMOV-NEXT:    seqz a2, a2
+; NOCMOV-NEXT:    addi a2, a2, -1
+; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    xor a0, a0, a1
-; NOCMOV-NEXT:  .LBB1_2:
 ; NOCMOV-NEXT:    ret
 ;
 ; CMOV-LABEL: test2:
@@ -80,11 +80,12 @@ define signext i32 @test2(i32 signext %x, i32 signext %y, i32 signext %z) {
 define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-LABEL: test3:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    beqz a4, .LBB2_2
-; NOCMOV-NEXT:  # %bb.1:
+; NOCMOV-NEXT:    seqz a4, a4
+; NOCMOV-NEXT:    addiw a4, a4, -1
+; NOCMOV-NEXT:    and a1, a1, a4
 ; NOCMOV-NEXT:    xor a0, a0, a1
+; NOCMOV-NEXT:    and a3, a3, a4
 ; NOCMOV-NEXT:    xor a2, a2, a3
-; NOCMOV-NEXT:  .LBB2_2:
 ; NOCMOV-NEXT:    addw a0, a0, a2
 ; NOCMOV-NEXT:    ret
 ;
@@ -212,8 +213,8 @@ define i64 @test6(i64 %x) {
 define i16 @select_xor_1(i16 %A, i8 %cond) {
 ; NOCMOV-LABEL: select_xor_1:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a1, a1, 1
-; NOCMOV-NEXT:    negw a1, a1
+; NOCMOV-NEXT:    slli a1, a1, 63
+; NOCMOV-NEXT:    srai a1, a1, 63
 ; NOCMOV-NEXT:    andi a1, a1, 43
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -249,8 +250,8 @@ entry:
 define i16 @select_xor_1b(i16 %A, i8 %cond) {
 ; NOCMOV-LABEL: select_xor_1b:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a1, a1, 1
-; NOCMOV-NEXT:    negw a1, a1
+; NOCMOV-NEXT:    slli a1, a1, 63
+; NOCMOV-NEXT:    srai a1, a1, 63
 ; NOCMOV-NEXT:    andi a1, a1, 43
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -284,8 +285,8 @@ entry:
 define i32 @select_xor_2(i32 %A, i32 %B, i8 %cond) {
 ; NOCMOV-LABEL: select_xor_2:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -312,8 +313,8 @@ entry:
 define i32 @select_xor_2b(i32 %A, i32 %B, i8 %cond) {
 ; NOCMOV-LABEL: select_xor_2b:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -338,8 +339,8 @@ entry:
 define i32 @select_or(i32 %A, i32 %B, i8 %cond) {
 ; NOCMOV-LABEL: select_or:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    or a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -366,8 +367,8 @@ entry:
 define i32 @select_or_b(i32 %A, i32 %B, i8 %cond) {
 ; NOCMOV-LABEL: select_or_b:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    or a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -392,8 +393,8 @@ entry:
 define i32 @select_or_1(i32 %A, i32 %B, i32 %cond) {
 ; NOCMOV-LABEL: select_or_1:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    or a0, a0, a1
 ; NOCMOV-NEXT:    ret
@@ -420,8 +421,8 @@ entry:
 define i32 @select_or_1b(i32 %A, i32 %B, i32 %cond) {
 ; NOCMOV-LABEL: select_or_1b:
 ; NOCMOV:       # %bb.0: # %entry
-; NOCMOV-NEXT:    andi a2, a2, 1
-; NOCMOV-NEXT:    neg a2, a2
+; NOCMOV-NEXT:    slli a2, a2, 63
+; NOCMOV-NEXT:    srai a2, a2, 63
 ; NOCMOV-NEXT:    and a1, a1, a2
 ; NOCMOV-NEXT:    or a0, a0, a1
 ; NOCMOV-NEXT:    ret

@@ -50,46 +50,27 @@ define i32 @add_i16_i32(ptr nocapture readonly %x, i32 %n) {
 ; OUTLOOP-NEXT:    [[TMP22:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
 ; OUTLOOP-NEXT:    br i1 [[TMP22]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; OUTLOOP:       middle.block:
-<<<<<<< HEAD
-; OUTLOOP-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 2 x i32> [[TMP21]], [[TMP20]]
-; OUTLOOP-NEXT:    [[TMP25:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[BIN_RDX]])
-; OUTLOOP-NEXT:    [[TMP26:%.*]] = add i32 0, [[TMP25]]
-=======
 ; OUTLOOP-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 2 x i32> [[TMP19]], [[TMP18]]
 ; OUTLOOP-NEXT:    [[TMP23:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[BIN_RDX]])
->>>>>>> upstream/main
+; OUTLOOP-NEXT:    [[TMP24:%.*]] = add i32 0, [[TMP23]]
 ; OUTLOOP-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[N]], [[N_VEC]]
 ; OUTLOOP-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; OUTLOOP:       scalar.ph:
 ; OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-<<<<<<< HEAD
-; OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ]
-=======
-; OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
->>>>>>> upstream/main
+; OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
 ; OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; OUTLOOP:       for.body:
 ; OUTLOOP-NEXT:    [[I_08:%.*]] = phi i32 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; OUTLOOP-NEXT:    [[R_07:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-<<<<<<< HEAD
-; OUTLOOP-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, i16* [[X]], i32 [[I_08]]
-; OUTLOOP-NEXT:    [[TMP27:%.*]] = load i16, i16* [[ARRAYIDX]], align 2
-; OUTLOOP-NEXT:    [[CONV:%.*]] = sext i16 [[TMP27]] to i32
-=======
 ; OUTLOOP-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[X]], i32 [[I_08]]
-; OUTLOOP-NEXT:    [[TMP24:%.*]] = load i16, ptr [[ARRAYIDX]], align 2
-; OUTLOOP-NEXT:    [[CONV:%.*]] = sext i16 [[TMP24]] to i32
->>>>>>> upstream/main
+; OUTLOOP-NEXT:    [[TMP25:%.*]] = load i16, ptr [[ARRAYIDX]], align 2
+; OUTLOOP-NEXT:    [[CONV:%.*]] = sext i16 [[TMP25]] to i32
 ; OUTLOOP-NEXT:    [[ADD]] = add nsw i32 [[R_07]], [[CONV]]
 ; OUTLOOP-NEXT:    [[INC]] = add nuw nsw i32 [[I_08]], 1
 ; OUTLOOP-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[INC]], [[N]]
 ; OUTLOOP-NEXT:    br i1 [[EXITCOND]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
 ; OUTLOOP:       for.cond.cleanup.loopexit:
-<<<<<<< HEAD
-; OUTLOOP-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ]
-=======
-; OUTLOOP-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
->>>>>>> upstream/main
+; OUTLOOP-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
 ; OUTLOOP-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; OUTLOOP:       for.cond.cleanup:
 ; OUTLOOP-NEXT:    [[R_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]

@@ -474,18 +474,18 @@ define void @sextw_removal_ccaddw(i1 %c, i32 signext %arg, i32 signext %arg1, i3
 ; SFB-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
 ; SFB-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
 ; SFB-NEXT:    sd s1, 8(sp) # 8-byte Folded Spill
-; SFB-NEXT:    mv s0, a1
+; SFB-NEXT:    mv s1, a1
 ; SFB-NEXT:    andi a0, a0, 1
-; SFB-NEXT:    mv s1, a2
+; SFB-NEXT:    mv s0, a2
 ; SFB-NEXT:    beqz a0, .LBB16_4
 ; SFB-NEXT:  # %bb.3: # %bb
-; SFB-NEXT:    addw s0, a1, a3
+; SFB-NEXT:    addw s1, a1, a3
 ; SFB-NEXT:  .LBB16_4: # %bb
 ; SFB-NEXT:  .LBB16_1: # %bb2
 ; SFB-NEXT:    # =>This Inner Loop Header: Depth=1
-; SFB-NEXT:    mv a0, s0
+; SFB-NEXT:    mv a0, s1
 ; SFB-NEXT:    call bar@plt
-; SFB-NEXT:    sllw s0, s0, s1
+; SFB-NEXT:    sllw s1, s1, s0
 ; SFB-NEXT:    bnez a0, .LBB16_1
 ; SFB-NEXT:  # %bb.2: # %bb7
 ; SFB-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload

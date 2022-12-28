@@ -35,8 +35,8 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 6
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[S180_06_LCSSA]], i64 [[TMP7]]
-; CHECK-NEXT:    [[CAST_VTC:%.*]] = trunc i64 [[TMP6]] to i32
-; CHECK-NEXT:    [[IND_END4:%.*]] = sub i32 [[I182_0_LCSSA]], [[CAST_VTC]]
+; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[TMP6]] to i32
+; CHECK-NEXT:    [[IND_END4:%.*]] = sub i32 [[I182_0_LCSSA]], [[DOTCAST]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP6]], i64 0, i64 0)
 ; CHECK-NEXT:    [[TMP9:%.*]] = trunc i64 [[TMP8]] to i32
 ; CHECK-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP8]] to i32
@@ -61,17 +61,16 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.splice.nxv8i32(<vscale x 8 x i32> [[VECTOR_RECUR]], <vscale x 8 x i32> [[VP_CAST]], i32 -1, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[PREV_EVL]], i32 [[TMP14]])
 ; CHECK-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP14]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP19]]
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP6]]
-; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP14]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VP_CAST]], i32 [[TMP21]]
-; CHECK-NEXT:    [[TMP22:%.*]] = sub i32 [[TMP14]], 2
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <vscale x 8 x i32> [[VP_CAST]], i32 [[TMP22]]
-; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i32 [[TMP14]], 1
-; CHECK-NEXT:    [[TMP24:%.*]] = sub i32 [[PREV_EVL]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VECTOR_RECUR]], i32 [[TMP24]]
-; CHECK-NEXT:    [[TMP25:%.*]] = select i1 [[TMP23]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[VECTOR_RECUR_EXTRACT_FOR_PHI]]
+; CHECK-NEXT:    [[TMP20:%.*]] = sub i32 [[TMP14]], 1
+; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VP_CAST]], i32 [[TMP20]]
+; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP14]], 2
+; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <vscale x 8 x i32> [[VP_CAST]], i32 [[TMP21]]
+; CHECK-NEXT:    [[TMP22:%.*]] = icmp eq i32 [[TMP14]], 1
+; CHECK-NEXT:    [[TMP23:%.*]] = sub i32 [[PREV_EVL]], 1
+; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VECTOR_RECUR]], i32 [[TMP23]]
+; CHECK-NEXT:    [[TMP24:%.*]] = select i1 [[TMP22]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[VECTOR_RECUR_EXTRACT_FOR_PHI]]
 ; CHECK-NEXT:    br i1 true, label [[DO_END234:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ 0, [[DO_BODY220_PREHEADER]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
@@ -83,14 +82,14 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[AND228:%.*]], [[DO_BODY220]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[I182_1:%.*]] = phi i32 [ [[DEC232:%.*]], [[DO_BODY220]] ], [ [[BC_RESUME_VAL5]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[FREQ221:%.*]] = getelementptr inbounds [[STRUCT_CPPMD_STATE_19_114_124_235_343_467_495_627_635_651_662_682_701_702_704_722_741_759_778]], ptr [[S180_1]], i64 0, i32 1
-; CHECK-NEXT:    [[TMP26:%.*]] = load i8, ptr [[FREQ221]], align 1
-; CHECK-NEXT:    [[AND228]] = zext i8 [[TMP26]] to i32
+; CHECK-NEXT:    [[TMP25:%.*]] = load i8, ptr [[FREQ221]], align 1
+; CHECK-NEXT:    [[AND228]] = zext i8 [[TMP25]] to i32
 ; CHECK-NEXT:    [[INCDEC_PTR230]] = getelementptr inbounds [[STRUCT_CPPMD_STATE_19_114_124_235_343_467_495_627_635_651_662_682_701_702_704_722_741_759_778]], ptr [[S180_1]], i64 1
 ; CHECK-NEXT:    [[DEC232]] = add i32 [[I182_1]], -1
 ; CHECK-NEXT:    [[TOBOOL233_NOT:%.*]] = icmp eq i32 [[I182_1]], 0
 ; CHECK-NEXT:    br i1 [[TOBOOL233_NOT]], label [[DO_END234]], label [[DO_BODY220]], !llvm.loop [[LOOP2:![0-9]+]]
 ; CHECK:       do.end234:
-; CHECK-NEXT:    [[SUM181_1_LCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], [[DO_BODY220]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[SUM181_1_LCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], [[DO_BODY220]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    store i32 [[SUM181_1_LCSSA]], ptr [[P:%.*]], align 8
 ; CHECK-NEXT:    ret void
 ; CHECK:       do.cond274:

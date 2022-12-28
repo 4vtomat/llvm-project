@@ -59,11 +59,7 @@ define hidden i32 @test2() local_unnamed_addr {
           to label %10 [label %7]
 
 7:                                                ; preds = %3
-<<<<<<< HEAD
-  %8 = call i32 bitcast (i32 (...)* @i to i32 ()*)()
-=======
-  %8 = tail call i32 @i()
->>>>>>> upstream/main
+  %8 = call i32 @i()
   br label %10
 
 9:                                                ; preds = %6

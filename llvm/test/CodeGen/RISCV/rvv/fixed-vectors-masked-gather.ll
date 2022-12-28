@@ -12673,7 +12673,6 @@ define <16 x i8> @mgather_baseidx_v16i8(ptr %base, <16 x i8> %idxs, <16 x i1> %m
 ; RV64ZVE32F-NEXT:    slli a2, a1, 50
 ; RV64ZVE32F-NEXT:    bltz a2, .LBB97_20
 ; RV64ZVE32F-NEXT:    j .LBB97_21
-<<<<<<< HEAD
 ; RV64ZVE32F-NEXT:  .LBB97_31: # %cond.load40
 ; RV64ZVE32F-NEXT:    vmv.x.s a2, v8
 ; RV64ZVE32F-NEXT:    add a2, a0, a2
@@ -12694,12 +12693,8 @@ define <16 x i8> @mgather_baseidx_v16i8(ptr %base, <16 x i8> %idxs, <16 x i1> %m
 ; RV64ZVE32F-NEXT:    vslideup.vi v9, v8, 15
 ; RV64ZVE32F-NEXT:    vmv1r.v v8, v9
 ; RV64ZVE32F-NEXT:    ret
-  %ptrs = getelementptr inbounds i8, i8* %base, <16 x i8> %idxs
-  %v = call <16 x i8> @llvm.masked.gather.v16i8.v16p0i8(<16 x i8*> %ptrs, i32 2, <16 x i1> %m, <16 x i8> %passthru)
-=======
   %ptrs = getelementptr inbounds i8, ptr %base, <16 x i8> %idxs
   %v = call <16 x i8> @llvm.masked.gather.v16i8.v16p0(<16 x ptr> %ptrs, i32 2, <16 x i1> %m, <16 x i8> %passthru)
->>>>>>> upstream/main
   ret <16 x i8> %v
 }
 

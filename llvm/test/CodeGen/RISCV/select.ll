@@ -760,8 +760,7 @@ define i32 @select_and_3(i1 zeroext %cond, i32 %a) {
 ; CONDOPS-LABEL: select_and_3:
 ; CONDOPS:       # %bb.0: # %entry
 ; CONDOPS-NEXT:    vt.maskc a0, a1, a0
-; CONDOPS-NEXT:    li a2, 42
-; CONDOPS-NEXT:    and a1, a1, a2
+; CONDOPS-NEXT:    andi a1, a1, 42
 ; CONDOPS-NEXT:    or a0, a1, a0
 ; CONDOPS-NEXT:    ret
 entry:

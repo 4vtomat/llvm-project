@@ -20,8 +20,8 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[BOUND15:%.*]] = icmp ult ptr [[TMP0]], [[UGLYGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT6:%.*]] = and i1 [[BOUND04]], [[BOUND15]]
 ; CHECK-NEXT:    [[CONFLICT_RDX:%.*]] = or i1 [[FOUND_CONFLICT]], [[FOUND_CONFLICT6]]
-; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr [[UGLYGEP]], getelementptr (i8, ptr null, i64 274877906944)
-; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr getelementptr (i8, ptr null, i64 56), [[UGLYGEP1]]
+; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr [[UGLYGEP]], inttoptr (i64 274877906944 to ptr)
+; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr inttoptr (i64 56 to ptr), [[UGLYGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    [[CONFLICT_RDX10:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT9]]
 ; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]

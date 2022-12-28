@@ -451,9 +451,6 @@ define <vscale x 8 x double> @vpload_nxv8f64(<vscale x 8 x double>* %ptr, <vscal
 declare <vscale x 16 x double> @llvm.vp.load.nxv16f64.p0(<vscale x 16 x double>*, <vscale x 16 x i1>, i32)
 
 define <vscale x 16 x double> @vpload_nxv16f64(<vscale x 16 x double>* %ptr, <vscale x 16 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-  %load = call <vscale x 16 x double> @llvm.vp.load.nxv16f64.p0nxv16f64(<vscale x 16 x double>* %ptr, <vscale x 16 x i1> %m, i32 %evl)
-=======
 ; CHECK-LABEL: vpload_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vmv1r.v v8, v0
@@ -478,7 +475,6 @@ define <vscale x 16 x double> @vpload_nxv16f64(<vscale x 16 x double>* %ptr, <vs
 ; CHECK-NEXT:    vle64.v v8, (a0), v0.t
 ; CHECK-NEXT:    ret
   %load = call <vscale x 16 x double> @llvm.vp.load.nxv16f64.p0(<vscale x 16 x double>* %ptr, <vscale x 16 x i1> %m, i32 %evl)
->>>>>>> upstream/main
   ret <vscale x 16 x double> %load
 }
 
@@ -494,9 +490,6 @@ declare <vscale x 16 x double> @llvm.vector.extract.nxv16f64(<vscale x 17 x doub
 ; Widen to nxv32f64 then split into 4 x nxv8f64, of which 1 is empty.
 
 define <vscale x 16 x double> @vpload_nxv17f64(<vscale x 17 x double>* %ptr, <vscale x 1 x double>* %out, <vscale x 17 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-  %load = call <vscale x 17 x double> @llvm.vp.load.nxv17f64.p0nxv17f64(<vscale x 17 x double>* %ptr, <vscale x 17 x i1> %m, i32 %evl)
-=======
 ; CHECK-LABEL: vpload_nxv17f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a3, vlenb
@@ -543,7 +536,6 @@ define <vscale x 16 x double> @vpload_nxv17f64(<vscale x 17 x double>* %ptr, <vs
 ; CHECK-NEXT:    vs1r.v v24, (a1)
 ; CHECK-NEXT:    ret
   %load = call <vscale x 17 x double> @llvm.vp.load.nxv17f64.p0(<vscale x 17 x double>* %ptr, <vscale x 17 x i1> %m, i32 %evl)
->>>>>>> upstream/main
   %lo = call <vscale x 16 x double> @llvm.vector.extract.nxv16f64(<vscale x 17 x double> %load, i64 0)
   %hi = call <vscale x 1 x double> @llvm.vector.extract.nxv1f64(<vscale x 17 x double> %load, i64 16)
   store <vscale x 1 x double> %hi, <vscale x 1 x double>* %out

@@ -532,11 +532,7 @@ declare void @llvm.masked.scatter.v32i8.v32p0(<32 x i8>, <32 x ptr>, i32 immarg,
 declare void @llvm.masked.scatter.v8i32.v8p0(<8 x i32>, <8 x ptr>, i32 immarg, <8 x i1>)
 
 ; Make sure we don't crash in getTgtMemIntrinsic for a vector of pointers.
-<<<<<<< HEAD
-define void @gather_of_pointers(i32** noalias nocapture %0, i32** noalias nocapture readonly %1) {
-=======
 define void @gather_of_pointers(ptr noalias nocapture %arg, ptr noalias nocapture readonly %arg1) {
->>>>>>> upstream/main
 ; V-LABEL: @gather_of_pointers(
 ; V-NEXT:  bb:
 ; V-NEXT:    br label [[BB2:%.*]]
@@ -613,11 +609,7 @@ bb18:                                             ; preds = %bb2
 declare <2 x ptr> @llvm.masked.gather.v2p0.v2p0(<2 x ptr>, i32 immarg, <2 x i1>, <2 x ptr>)
 
 ; Make sure we don't crash in getTgtMemIntrinsic for a vector of pointers.
-<<<<<<< HEAD
-define void @scatter_of_pointers(i32** noalias nocapture %0, i32** noalias nocapture readonly %1) {
-=======
 define void @scatter_of_pointers(ptr noalias nocapture %arg, ptr noalias nocapture readonly %arg1) {
->>>>>>> upstream/main
 ; V-LABEL: @scatter_of_pointers(
 ; V-NEXT:  bb:
 ; V-NEXT:    br label [[BB2:%.*]]

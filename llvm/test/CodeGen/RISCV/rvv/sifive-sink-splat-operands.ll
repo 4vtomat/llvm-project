@@ -82,7 +82,7 @@ define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    lw a2, 0(a0)
 ; CHECK-NEXT:    addi a3, a3, 1
-; CHECK-NEXT:    addw a2, a2, a1
+; CHECK-NEXT:    add a2, a2, a1
 ; CHECK-NEXT:    sw a2, 0(a0)
 ; CHECK-NEXT:    addi a0, a0, 4
 ; CHECK-NEXT:    bnez a3, .LBB1_6

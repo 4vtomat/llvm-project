@@ -15,7 +15,7 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; NOFUSION-NEXT:    add a0, a0, a2
 ; NOFUSION-NEXT:    lb a1, 0(a1)
 ; NOFUSION-NEXT:    lb a0, 0(a0)
-; NOFUSION-NEXT:    addw a0, a0, a1
+; NOFUSION-NEXT:    add a0, a0, a1
 ; NOFUSION-NEXT:    slli a0, a0, 56
 ; NOFUSION-NEXT:    srai a0, a0, 56
 ; NOFUSION-NEXT:    ret
@@ -26,7 +26,7 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; FUSEADD-NEXT:    lb a1, 0(a1)
 ; FUSEADD-NEXT:    add a0, a0, a2
 ; FUSEADD-NEXT:    lb a0, 0(a0)
-; FUSEADD-NEXT:    addw a0, a0, a1
+; FUSEADD-NEXT:    add a0, a0, a1
 ; FUSEADD-NEXT:    slli a0, a0, 56
 ; FUSEADD-NEXT:    srai a0, a0, 56
 ; FUSEADD-NEXT:    ret
@@ -37,7 +37,7 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; FUSEZBA-NEXT:    lb a1, 0(a1)
 ; FUSEZBA-NEXT:    add a0, a0, a2
 ; FUSEZBA-NEXT:    lb a0, 0(a0)
-; FUSEZBA-NEXT:    addw a0, a0, a1
+; FUSEZBA-NEXT:    add a0, a0, a1
 ; FUSEZBA-NEXT:    slli a0, a0, 56
 ; FUSEZBA-NEXT:    srai a0, a0, 56
 ; FUSEZBA-NEXT:    ret
@@ -56,7 +56,7 @@ define signext i16 @load_i16(ptr %0, ptr %1, i64 %2) {
 ; NOFUSION-NEXT:    sh1add a0, a2, a0
 ; NOFUSION-NEXT:    lh a1, 0(a1)
 ; NOFUSION-NEXT:    lh a0, 0(a0)
-; NOFUSION-NEXT:    addw a0, a0, a1
+; NOFUSION-NEXT:    add a0, a0, a1
 ; NOFUSION-NEXT:    slli a0, a0, 48
 ; NOFUSION-NEXT:    srai a0, a0, 48
 ; NOFUSION-NEXT:    ret
@@ -67,7 +67,7 @@ define signext i16 @load_i16(ptr %0, ptr %1, i64 %2) {
 ; FUSEADD-NEXT:    sh1add a0, a2, a0
 ; FUSEADD-NEXT:    lh a1, 0(a1)
 ; FUSEADD-NEXT:    lh a0, 0(a0)
-; FUSEADD-NEXT:    addw a0, a0, a1
+; FUSEADD-NEXT:    add a0, a0, a1
 ; FUSEADD-NEXT:    slli a0, a0, 48
 ; FUSEADD-NEXT:    srai a0, a0, 48
 ; FUSEADD-NEXT:    ret
@@ -78,7 +78,7 @@ define signext i16 @load_i16(ptr %0, ptr %1, i64 %2) {
 ; FUSEZBA-NEXT:    lh a1, 0(a1)
 ; FUSEZBA-NEXT:    sh1add a0, a2, a0
 ; FUSEZBA-NEXT:    lh a0, 0(a0)
-; FUSEZBA-NEXT:    addw a0, a0, a1
+; FUSEZBA-NEXT:    add a0, a0, a1
 ; FUSEZBA-NEXT:    slli a0, a0, 48
 ; FUSEZBA-NEXT:    srai a0, a0, 48
 ; FUSEZBA-NEXT:    ret

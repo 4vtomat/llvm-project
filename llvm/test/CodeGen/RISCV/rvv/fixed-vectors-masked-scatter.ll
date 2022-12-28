@@ -11030,7 +11030,6 @@ define void @mscatter_baseidx_v16i8(<16 x i8> %val, ptr %base, <16 x i8> %idxs, 
 ; RV64ZVE32F-NEXT:    slli a2, a1, 50
 ; RV64ZVE32F-NEXT:    bltz a2, .LBB91_20
 ; RV64ZVE32F-NEXT:    j .LBB91_21
-<<<<<<< HEAD
 ; RV64ZVE32F-NEXT:  .LBB91_31: # %cond.store27
 ; RV64ZVE32F-NEXT:    vmv.x.s a2, v9
 ; RV64ZVE32F-NEXT:    add a2, a0, a2
@@ -11048,12 +11047,8 @@ define void @mscatter_baseidx_v16i8(<16 x i8> %val, ptr %base, <16 x i8> %idxs, 
 ; RV64ZVE32F-NEXT:    vslidedown.vi v8, v8, 15
 ; RV64ZVE32F-NEXT:    vse8.v v8, (a0)
 ; RV64ZVE32F-NEXT:    ret
-  %ptrs = getelementptr inbounds i8, i8* %base, <16 x i8> %idxs
-  call void @llvm.masked.scatter.v16i8.v16p0i8(<16 x i8> %val, <16 x i8*> %ptrs, i32 1, <16 x i1> %m)
-=======
   %ptrs = getelementptr inbounds i8, ptr %base, <16 x i8> %idxs
   call void @llvm.masked.scatter.v16i8.v16p0(<16 x i8> %val, <16 x ptr> %ptrs, i32 1, <16 x i1> %m)
->>>>>>> upstream/main
   ret void
 }
 

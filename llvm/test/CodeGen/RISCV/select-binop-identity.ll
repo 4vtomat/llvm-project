@@ -35,11 +35,7 @@ define signext i32 @and_select_all_ones_i32(i1 zeroext %c, i32 signext %x, i32 s
 ; SFB64-NEXT:  # %bb.1:
 ; SFB64-NEXT:    and a2, a2, a1
 ; SFB64-NEXT:  .LBB0_2:
-<<<<<<< HEAD
-; SFB64-NEXT:    sext.w a0, a2
-=======
 ; SFB64-NEXT:    mv a0, a2
->>>>>>> upstream/main
 ; SFB64-NEXT:    ret
 ;
 ; CONDOPS64-LABEL: and_select_all_ones_i32:

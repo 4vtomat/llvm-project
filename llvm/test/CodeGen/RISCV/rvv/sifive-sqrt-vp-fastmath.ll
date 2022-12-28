@@ -349,7 +349,6 @@ define <vscale x 8 x double> @sqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 8
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
 ; CHECK-NEXT:    vfmul.vv v16, v8, v24, v0.t
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
@@ -897,7 +896,6 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v24, v0.t
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 24
