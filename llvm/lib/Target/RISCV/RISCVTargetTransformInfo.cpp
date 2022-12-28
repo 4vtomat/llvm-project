@@ -1188,7 +1188,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
 #if SIFIVE_CUSTOMIZATION
   // The vector to scalar move is expensive on x280, give it more cost.
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    BaseCost = 4;
+    BaseCost = BaseCost + 12;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
   if (TTI::requiresOrderedReduction(FMF))
