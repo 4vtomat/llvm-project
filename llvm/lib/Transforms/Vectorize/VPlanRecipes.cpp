@@ -1449,6 +1449,30 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
+                                               VPCostContext &Ctx) {
+  TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+  RecurKind RdxKind = RdxDesc.getRecurrenceKind();
+  auto *VectorTy =
+      cast<VectorType>(ToVectorTy(RdxDesc.getRecurrenceType(), VF));
+  InstructionCost O = 0;
+  if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
+    bool IsUnsigned =
+        RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
+            ? false
+            : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
+    auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
+    O = Ctx.TTI->getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
+                                        CostKind);
+  } else {
+    O = Ctx.TTI->getArithmeticReductionCost(
+        RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+  }
+  return O;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPReductionPHIRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {

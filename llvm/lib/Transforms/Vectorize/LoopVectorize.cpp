@@ -1289,8 +1289,14 @@ public:
   /// This method checks every VF in \p CandidateVFs. If UserVF is not ZERO
   /// then this vectorization factor will be selected if vectorization is
   /// possible.
+#if SIFIVE_CUSTOMIZATION
+  VectorizationFactor
+  selectVectorizationFactor(const VPlanPtr &Plan,
+                            const ElementCountSet &CandidateVFs);
+#else
   VectorizationFactor
   selectVectorizationFactor(const ElementCountSet &CandidateVFs);
+#endif // SIFIVE_CUSTOMIZATION
 
   VectorizationFactor
   selectEpilogueVectorizationFactor(const ElementCount MaxVF,
@@ -6069,6 +6075,9 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
 #endif
 
 VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
+#if SIFIVE_CUSTOMIZATION
+    const VPlanPtr &Plan,
+#endif // SIFIVE_CUSTOMIZATION
     const ElementCountSet &VFCandidates) {
 #if SIFIVE_CUSTOMIZATION
   // Within SiFive, we have AOS to SOA transformation that is only effective
@@ -6141,7 +6150,11 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
                         << " yields an invalid cost. Skipping\n");
       continue;
     }
-    InstructionCost Overhead = expectedOverhead(i);
+    VPCostContext Ctx{&TTI};
+    InstructionCost Overhead = 0;
+    if (Legal->useVLAVectorizer() && !VectorizerDisableReduceOverheadEstimation &&
+        i.isVector())
+      Overhead = Plan->overhead(i, Ctx);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
 #else
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
@@ -8680,7 +8693,13 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     return VectorizationFactor::Disabled();
 
   // Select the optimal vectorization factor.
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Traverse each plan and select the best plan
+  assert(VPlans.size() > 0 && "Must have at leat one plan");
+  VectorizationFactor VF = CM.selectVectorizationFactor(VPlans[0], VFCandidates);
+#else
   VectorizationFactor VF = CM.selectVectorizationFactor(VFCandidates);
+#endif // SIFIVE_CUSTOMIZATION
   assert((VF.Width.isScalar() || VF.ScalarCost > 0) && "when vectorizing, the scalar cost must be non-zero.");
   return VF;
 }

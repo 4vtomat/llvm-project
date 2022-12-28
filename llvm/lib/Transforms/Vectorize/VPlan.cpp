@@ -644,6 +644,37 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
       Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
+InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) {
+  InstructionCost Overhead;
+  for (VPBlockBase *Block : depth_first(Entry)) {
+    InstructionCost O = Block->overhead(VF, Ctx);
+    Overhead += O;
+  }
+  return Overhead;
+}
+
+InstructionCost VPRegionBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
+  ReversePostOrderTraversal<VPBlockBase *> RPOT(Entry);
+  InstructionCost Overhead;
+  for (VPBlockBase *Block : RPOT) {
+    InstructionCost O = Block->overhead(VF, Ctx);
+    Overhead += O;
+  }
+  return Overhead;
+}
+
+InstructionCost VPBasicBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
+  InstructionCost BlockOverhead;
+  VPSlotTracker Tracker(getPlan());
+  for (VPRecipeBase &Recipe : Recipes) {
+    InstructionCost O = Recipe.overhead(VF, Ctx);
+    BlockOverhead += O;
+    LLVM_DEBUG(dbgs() << "LV: Found an estimated overhead of " << O
+                      << " for VF " << VF << " For recipe: ";
+               Recipe.print(dbgs(), "", Tracker); dbgs() << '\n');
+  }
+  return BlockOverhead;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {
