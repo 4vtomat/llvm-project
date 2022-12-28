@@ -1,3 +1,4 @@
+; REQUIRES: asserts
 ; RUN: opt < %s -passes=slp-vectorizer -S -mtriple=riscv64-unknown-linux-gnu \
 ; RUN: -mcpu=sifive-x280o -debug-only=SLP 2>&1 | FileCheck %s
 
