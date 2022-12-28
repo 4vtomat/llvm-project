@@ -6021,7 +6021,6 @@ bool LoopVectorizationCostModel::isMoreProfitable(
 #if SIFIVE_CUSTOMIZATION
   // Taking into account overhead in preheader or postexit requries computing
   // cost not per-lane, but of entire loop.
-  // Currently we focus on constant trip count.
   if ((A.Width.isScalable() || B.Width.isScalable()) && MaxTripCount &&
       (A.Overhead > 0 || B.Overhead > 0)) {
     auto GetCost = [&](const InstructionCost &VectorIterCost,
@@ -6029,9 +6028,10 @@ bool LoopVectorizationCostModel::isMoreProfitable(
                        const ElementCount VF) -> InstructionCost {
       const uint64_t VecIters = divideCeil(MaxTripCount, EstimatedWidth);
       const InstructionCost TotalCost = VecIters * VectorIterCost + Overhead;
-      LLVM_DEBUG(dbgs() << "LV: VF = " << VF << ": cost = " << VecIters << " x "
-                        << VectorIterCost << " + " << Overhead << " = "
-                        << TotalCost << '\n';);
+      LLVM_DEBUG(dbgs() << "LV: VF = " << VF
+                        << ": cost = vec_iters x vec_iter_cost + overhead = "
+                        << VecIters << " x " << VectorIterCost << " + "
+                        << Overhead << " = " << TotalCost << '\n';);
       return TotalCost;
     };
     auto RTCostA = GetCost(CostA, A.Overhead, EstimatedWidthA, A.Width);
@@ -6608,7 +6608,12 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
   // then we calculate the cost of VF here.
   if (LoopCost == 0) {
 #if SIFIVE_CUSTOMIZATION
-    LoopCost = expectedCost(VF).first + expectedOverhead(VF);
+    unsigned MaxTripCount = PSE.getSE()->getSmallConstantMaxTripCount(TheLoop);
+    InstructionCost Overhead = expectedOverhead(VF);
+    if (Overhead > 0)
+      LoopCost = expectedCost(VF).first * MaxTripCount + expectedOverhead(VF);
+    else
+      LoopCost = expectedCost(VF).first;
 #else
     LoopCost = expectedCost(VF).first;
 #endif // SIFIVE_CUSTOMIZATION
