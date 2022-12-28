@@ -81,13 +81,9 @@
 
 // RUN: not %clang_cc1 -triple riscv32 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV32
 // RISCV32: error: unknown target CPU 'not-a-cpu'
-<<<<<<< HEAD
 // RISCV32: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20,
 // RISCV32-SAME: sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e66, sifive-e76,
-// RISCV32-SAME: sifive-e76m, sifive-e76n{{$}}
-=======
-// RISCV32-NEXT: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e76, syntacore-scr1-base, syntacore-scr1-max{{$}}
->>>>>>> upstream/main
+// RISCV32-SAME: sifive-e76m, sifive-e76n, syntacore-scr1-base, syntacore-scr1-max{{$}}
 
 // RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
 // RISCV64: error: unknown target CPU 'not-a-cpu'
@@ -98,15 +94,11 @@
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
 // TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
-<<<<<<< HEAD
 // TUNE-RISCV32: note: valid target CPU values are: generic-rv32, rocket-rv32,
 // TUNE-RISCV32-SAME: sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34,
-// TUNE-RISCV32-SAME: sifive-e66, sifive-e76, sifive-e76m, sifive-e76n, generic, rocket,
+// TUNE-RISCV32-SAME: sifive-e66, sifive-e76, sifive-e76m, sifive-e76n, syntacore-scr1-base, syntacore-scr1-max, generic, rocket,
 // TUNE-RISCV32-SAME: sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series,
 // TUNE-RISCV32-SAME: sifive-8-series, sifive-p400-series, sifive-p500-series, sifive-p600-series{{$}}
-=======
-// TUNE-RISCV32-NEXT: note: valid target CPU values are: generic-rv32, rocket-rv32, sifive-e20, sifive-e21, sifive-e24, sifive-e31, sifive-e34, sifive-e76, syntacore-scr1-base, syntacore-scr1-max, generic, rocket, sifive-7-series{{$}}
->>>>>>> upstream/main
 
 // RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
