@@ -6152,8 +6152,8 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     }
     VPCostContext Ctx{&TTI};
     InstructionCost Overhead = 0;
-    if (Legal->useVLAVectorizer() && !VectorizerDisableReduceOverheadEstimation &&
-        i.isVector())
+    if (Legal->useVLAVectorizer() &&
+        !VectorizerDisableReduceOverheadEstimation && i.isVector())
       Overhead = Plan->overhead(i, Ctx);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
 #else
@@ -6611,7 +6611,7 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
     unsigned MaxTripCount = PSE.getSE()->getSmallConstantMaxTripCount(TheLoop);
     InstructionCost Overhead = expectedOverhead(VF);
     if (Overhead > 0)
-      LoopCost = expectedCost(VF).first * MaxTripCount + expectedOverhead(VF);
+      LoopCost = expectedCost(VF).first * MaxTripCount + Overhead;
     else
       LoopCost = expectedCost(VF).first;
 #else
@@ -7206,6 +7206,7 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
 
 #if SIFIVE_CUSTOMIZATION
 InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
+  // TODO: Reuse VPlan's overhead estimation instead of duplicating the logic
 
   InstructionCost Overhead = 0;
   if (!Legal->useVLAVectorizer() || VectorizerDisableReduceOverheadEstimation ||
@@ -7235,8 +7236,7 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
           bool IsUnsigned =
               RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
                   ? false
-                  : (RdxKind == RecurKind::UMax ||
-                     RdxKind == RecurKind::UMin);
+                  : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
           auto *VecCondTy =
               cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
           C = TTI.getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
@@ -7246,9 +7246,9 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
                                              RdxDesc.getFastMathFlags(),
                                              CostKind);
         }
-        LLVM_DEBUG(dbgs()
-                   << "LV: Found an estimated overhead of " << C << " for VF "
-                   << VF << " For instruction: " << I << '\n');
+        LLVM_DEBUG(dbgs() << "LV: Found an estimated overhead of " << C
+                          << " for VF " << VF << " For instruction: " << I
+                          << '\n');
         Overhead += C;
       }
     }
@@ -8701,7 +8701,8 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
 #if SIFIVE_CUSTOMIZATION
   // TODO: Traverse each plan and select the best plan
   assert(VPlans.size() > 0 && "Must have at leat one plan");
-  VectorizationFactor VF = CM.selectVectorizationFactor(VPlans[0], VFCandidates);
+  VectorizationFactor VF =
+      CM.selectVectorizationFactor(VPlans[0], VFCandidates);
 #else
   VectorizationFactor VF = CM.selectVectorizationFactor(VFCandidates);
 #endif // SIFIVE_CUSTOMIZATION
