@@ -8622,10 +8622,10 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
   }
 
   SDValue SlideDown =
-      DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
-                  DAG.getUNDEF(ContainerVT), Op1, DownOffset, Mask, UpOffset);
-  SDValue Result = DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, ContainerVT,
-                               SlideDown, Op2, UpOffset, Mask, EVL2);
+      getVSlidedown(DAG, Subtarget, DL, ContainerVT, DAG.getUNDEF(ContainerVT),
+                    Op1, DownOffset, Mask, UpOffset);
+  SDValue Result = getVSlideup(DAG, Subtarget, DL, ContainerVT, SlideDown, Op2,
+                               UpOffset, Mask, EVL2, RISCVII::TAIL_AGNOSTIC);
 
   if (IsMaskVector) {
     // Truncate Result back to a mask vector (Result has same EVL as Op2)
@@ -8732,8 +8732,9 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
       SDValue Diff = DAG.getNode(ISD::SUB, DL, XLenVT, VLMax, EVL);
 
       SDValue TrueMask = getAllOnesMask(ContainerVT, EVL, DL, DAG);
-      Result = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, GatherVT,
-                           DAG.getUNDEF(GatherVT), Result, Diff, TrueMask, EVL);
+      Result =
+          getVSlidedown(DAG, Subtarget, DL, GatherVT, DAG.getUNDEF(GatherVT),
+                        Result, Diff, TrueMask, EVL);
 
       if (IsMaskVector) {
         // Truncate Result back to a mask vector
@@ -9112,8 +9113,8 @@ static SDValue lowerSplatPtrVPScatter(SDValue Op, SelectionDAG &DAG,
 
   Mask = getAllOnesMask(ContainerVT, VL, DL, DAG);
 
-  Val = DAG.getNode(RISCVISD::VSLIDEDOWN_VL, DL, ContainerVT,
-                    DAG.getUNDEF(ContainerVT), Val, SlideAmt, Mask, VL);
+  Val = getVSlidedown(DAG, Subtarget, DL, ContainerVT,
+                      DAG.getUNDEF(ContainerVT), Val, SlideAmt, Mask, VL);
 
   SDValue Ops[] = {VPSN->getChain(),
                    DAG.getTargetConstant(Intrinsic::riscv_vse, DL, XLenVT), Val,
@@ -12891,10 +12892,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
             1 < cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue()) &&
             !Slidedown.hasOneUse())
           return SDValue();
-        return DAG.getNode(Slidedown.getOpcode(), DL,
-                           Slidedown.getValueType(), N->getOperand(0),
-                           Slidedown.getOperand(1), Slidedown.getOperand(2),
-                           Slidedown.getOperand(3), Slidedown.getOperand(4));
+        return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
+                             N->getOperand(0), Slidedown.getOperand(1),
+                             Slidedown.getOperand(2), Slidedown.getOperand(3),
+                             Slidedown.getOperand(4));
       }
       MVT VecVT = N->getSimpleValueType(0);
       MVT XLenVT = Subtarget.getXLenVT();
@@ -12903,9 +12904,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
           getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
       SDValue Zero = DAG.getConstant(0, DL, XLenVT);
       SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
-      return DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, VecVT,
-                         N->getOperand(0), Src.getOperand(0), Zero, Mask,
-                         OneVL);
+      return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
+                         Src.getOperand(0), Zero, Mask, OneVL,
+                         RISCVII::TAIL_AGNOSTIC);
     }
     break;
   }

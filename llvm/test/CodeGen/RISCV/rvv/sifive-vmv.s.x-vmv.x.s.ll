@@ -5,7 +5,7 @@
 define <4 x i32> @test_0_0(<4 x i32> %0, <4 x i32> %1) {
 ; CHECK-LABEL: test_0_0:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 0
 ; CHECK-NEXT:    ret
   %3 = extractelement <4 x i32> %1, i64 0

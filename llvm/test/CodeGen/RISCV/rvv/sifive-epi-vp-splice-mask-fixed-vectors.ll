@@ -22,9 +22,8 @@ define <2 x i1> @test_vp_splice_v2i1(<2 x i1> %va, <2 x i1> %vb, i32 zeroext %ev
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v9, v9, 5
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vslideup.vx v9, v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <2 x i1> undef, i1 1, i32 0
@@ -49,9 +48,8 @@ define <2 x i1> @test_vp_splice_v2i1_negative_offset(<2 x i1> %va, <2 x i1> %vb,
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetivli zero, 5, e8, mf8, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v9, v9, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 5
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <2 x i1> undef, i1 1, i32 0
@@ -99,9 +97,8 @@ define <4 x i1> @test_vp_splice_v4i1(<4 x i1> %va, <4 x i1> %vb, i32 zeroext %ev
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v9, v9, 5
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v9, v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <4 x i1> undef, i1 1, i32 0
@@ -126,9 +123,8 @@ define <4 x i1> @test_vp_splice_v4i1_negative_offset(<4 x i1> %va, <4 x i1> %vb,
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetivli zero, 5, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v9, v9, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 5
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <4 x i1> undef, i1 1, i32 0
@@ -176,9 +172,8 @@ define <8 x i1> @test_vp_splice_v8i1(<8 x i1> %va, <8 x i1> %vb, i32 zeroext %ev
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v9, v9, 5
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vx v9, v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <8 x i1> undef, i1 1, i32 0
@@ -203,9 +198,8 @@ define <8 x i1> @test_vp_splice_v8i1_negative_offset(<8 x i1> %va, <8 x i1> %vb,
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetivli zero, 5, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v9, v9, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 5
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <8 x i1> undef, i1 1, i32 0
@@ -253,9 +247,8 @@ define <16 x i1> @test_vp_splice_v16i1(<16 x i1> %va, <16 x i1> %vb, i32 zeroext
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v9, v9, 5
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vx v9, v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <16 x i1> undef, i1 1, i32 0
@@ -280,9 +273,8 @@ define <16 x i1> @test_vp_splice_v16i1_negative_offset(<16 x i1> %va, <16 x i1> 
 ; CHECK-NEXT:    addi a0, a0, -5
 ; CHECK-NEXT:    vsetivli zero, 5, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v9, v9, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 5
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    ret
   %head = insertelement <16 x i1> undef, i1 1, i32 0
