@@ -18,9 +18,8 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine(<vscale x 4 x i64> %x, <vscal
 define <vscale x 4 x i1> @test_vp_xor_icmp_combine_not_allones(<vscale x 4 x i64> %x, <vscale x 4 x i64> %y, <vscale x 4 x i1> %mask, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_icmp_combine_not_allones:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.s.x v18, a1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.i v18, 1
 ; CHECK-NEXT:    vmv.v.i v19, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv1r.v v16, v19
@@ -79,9 +78,8 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine(<vscale x 4 x double> %x, <vs
 define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x double> %x, <vscale x 4 x double> %y, <vscale x 4 x i1> %mask, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_not_allones:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.s.x v18, a1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.i v18, 1
 ; CHECK-NEXT:    vmv.v.i v19, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv1r.v v16, v19
