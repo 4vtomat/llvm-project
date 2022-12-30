@@ -129,18 +129,6 @@ define float @lower_constantpool(float %a) nounwind {
 ; RV32I-SMALL-NEXT:    fadd.s fa0, fa0, ft0
 ; RV32I-SMALL-NEXT:    ret
 ;
-<<<<<<< HEAD
-; RV32I-MEDIUM-ADVANCED-OPT-LABEL: lower_constantpool:
-; RV32I-MEDIUM-ADVANCED-OPT:       # %bb.0:
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:  .Lpcrel_hi3:
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    auipc a1, %pcrel_hi(.LCPI3_0)
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi3)
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    flw ft0, 0(a1)
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fmv.w.x ft1, a0
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fadd.s ft0, ft1, ft0
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    fmv.x.w a0, ft0
-; RV32I-MEDIUM-ADVANCED-OPT-NEXT:    ret
-=======
 ; RV32I-MEDIUM-LABEL: lower_constantpool:
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi3:
@@ -148,7 +136,6 @@ define float @lower_constantpool(float %a) nounwind {
 ; RV32I-MEDIUM-NEXT:    flw ft0, %pcrel_lo(.Lpcrel_hi3)(a0)
 ; RV32I-MEDIUM-NEXT:    fadd.s fa0, fa0, ft0
 ; RV32I-MEDIUM-NEXT:    ret
->>>>>>> upstream/main
   %1 = fadd float %a, 1.0
   ret float %1
 }
