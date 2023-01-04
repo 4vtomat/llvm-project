@@ -92,8 +92,18 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = 1;
     else
       Cost = LMul;
+#if SIFIVE_CUSTOMIZATION
+    // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      Cost = Fractional ? 1 : LMul * 2;
+#endif // SIFIVE_CUSTOMIZATION
   } else {
     Cost = VT.getSizeInBits() / ST->getRealMinVLen();
+#if SIFIVE_CUSTOMIZATION
+    // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      Cost = VT.getSizeInBits() / (ST->getRealMinVLen() / 2);
+#endif // SIFIVE_CUSTOMIZATION
   }
   return std::max<unsigned>(Cost, 1);
 }
