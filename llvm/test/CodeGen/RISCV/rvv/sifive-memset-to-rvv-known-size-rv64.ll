@@ -6,21 +6,33 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 2040
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vsetvli a1, a2, e8, m8, ta, mu
-; CHECK-NEXT:    add a2, a0, a1
-; CHECK-NEXT:    add a3, a2, a1
-; CHECK-NEXT:    add a1, a3, a1
+; CHECK-NEXT:    add a1, a0, a2
+; CHECK-NEXT:    add a3, a1, a2
+; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a2)
+; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    vse8.v v8, (a3)
 ; CHECK-NEXT:    li a0, 504
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 2040, i1 false)
+  ret void
+}
+
+define void @KnownSize1(i8* nocapture %dst, i8 %val) {
+; CHECK-LABEL: KnownSize1:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a2, 384
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    ret
+entry:
+  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 384, i1 false)
   ret void
 }
 
@@ -29,16 +41,15 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    slli a2, a2, 11
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vsetvli a1, a2, e8, m8, ta, mu
-; CHECK-NEXT:    add a2, a0, a1
-; CHECK-NEXT:    add a3, a2, a1
-; CHECK-NEXT:    add a1, a3, a1
+; CHECK-NEXT:    add a1, a0, a2
+; CHECK-NEXT:    add a3, a1, a2
+; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    vse8.v v8, (a3)
 ; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 2048, i1 false)

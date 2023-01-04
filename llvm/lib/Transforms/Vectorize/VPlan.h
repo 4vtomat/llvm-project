@@ -51,6 +51,7 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/ModuleSlotTracker.h"
 #include "llvm/IR/Type.h"
+#include "llvm/Support/InstructionCost.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
@@ -421,6 +422,14 @@ struct VPTransformState {
   std::unique_ptr<LoopVersioning> LVer;
 };
 
+#if SIFIVE_CUSTOMIZATION
+/// A struct to hold the context used during cost calculation.
+struct VPCostContext {
+  /// The TTI to query target costs
+  const TargetTransformInfo *TTI;
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPBlockBase is the building block of the Hierarchical Control-Flow Graph.
 /// A VPBlockBase can be either a VPBasicBlock or a VPRegionBlock.
 class VPBlockBase {
@@ -623,6 +632,12 @@ public:
   /// VPBlockBase, thereby "executing" the VPlan.
   virtual void execute(VPTransformState *State) = 0;
 
+#if SIFIVE_CUSTOMIZATION
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+    return 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Delete all blocks reachable from a given VPBlockBase, inclusive.
   static void deleteCFG(VPBlockBase *Entry);
 
@@ -722,6 +737,12 @@ public:
   /// The method which generates the output IR instructions that correspond to
   /// this VPRecipe, thereby "executing" the VPlan.
   virtual void execute(VPTransformState &State) = 0;
+
+#if SIFIVE_CUSTOMIZATION
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+    return 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Insert an unlinked recipe into a basic block immediately before
   /// the specified recipe.
@@ -1468,6 +1489,9 @@ public:
   /// Generate the phi/select nodes.
   void execute(VPTransformState &State) override;
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+#endif // SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,
@@ -2274,6 +2298,9 @@ public:
   /// this VPBasicBlock, thereby "executing" the VPlan.
   void execute(VPTransformState *State) override;
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+#endif // SIFIVE_CUSTOMIZATION
   /// Return the position of the first non-phi node recipe in the block.
   iterator getFirstNonPhi();
 
@@ -2407,6 +2434,9 @@ public:
   /// this VPRegionBlock, thereby "executing" the VPlan.
   void execute(VPTransformState *State) override;
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+#endif // SIFIVE_CUSTOMIZATION
   void dropAllReferences(VPValue *NewValue) override;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -2786,6 +2816,9 @@ public:
   /// Generate the IR code for this VPlan.
   void execute(VPTransformState *State);
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx);
+#endif // SIFIVE_CUSTOMIZATION
   VPBlockBase *getEntry() { return Entry; }
   const VPBlockBase *getEntry() const { return Entry; }
 

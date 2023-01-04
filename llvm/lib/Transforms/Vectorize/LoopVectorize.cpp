@@ -185,6 +185,11 @@ STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
 STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
                                   "from dependence distance information.");
 
+static cl::opt<bool> VectorizerDisableReduceOverheadEstimation(
+    "vectorizer-disable-reduce-overhead-estimation", cl::init(false),
+    cl::Hidden,
+    cl::desc("Disable estimation of a reduce intrinsic in postexit."));
+
 static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
     "vectorizer-disable-profitable-trip-count-rt-check", cl::init(false),
     cl::Hidden,
@@ -1301,8 +1306,14 @@ public:
   /// This method checks every VF in \p CandidateVFs. If UserVF is not ZERO
   /// then this vectorization factor will be selected if vectorization is
   /// possible.
+#if SIFIVE_CUSTOMIZATION
+  VectorizationFactor
+  selectVectorizationFactor(const VPlanPtr &Plan,
+                            const ElementCountSet &CandidateVFs);
+#else
   VectorizationFactor
   selectVectorizationFactor(const ElementCountSet &CandidateVFs);
+#endif // SIFIVE_CUSTOMIZATION
 
   VectorizationFactor
   selectEpilogueVectorizationFactor(const ElementCount MaxVF,
@@ -1313,7 +1324,12 @@ public:
   bool selectUserVectorizationFactor(ElementCount UserVF) {
     collectUniformsAndScalars(UserVF);
     collectInstsToScalarize(UserVF);
+#if SIFIVE_CUSTOMIZATION
+    return expectedCost(UserVF).first.isValid() &&
+           expectedOverhead(UserVF).isValid();
+#else
     return expectedCost(UserVF).first.isValid();
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// \return The size (in bits) of the smallest and widest types in the code
@@ -1803,6 +1819,9 @@ private:
   VectorizationCostTy
   expectedCost(ElementCount VF,
                SmallVectorImpl<InstructionVFPair> *Invalid = nullptr);
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost expectedOverhead(ElementCount VF);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the execution time cost of an instruction for a given vector
   /// width. Vector width of one means scalar.
@@ -5991,6 +6010,28 @@ bool LoopVectorizationCostModel::isMoreProfitable(
       EstimatedWidthB *= *VScale;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Taking into account overhead in preheader or postexit requries computing
+  // cost not per-lane, but of entire loop.
+  if ((A.Width.isScalable() || B.Width.isScalable()) && MaxTripCount &&
+      (A.Overhead > 0 || B.Overhead > 0)) {
+    auto GetCost = [&](const InstructionCost &VectorIterCost,
+                       const InstructionCost &Overhead, unsigned EstimatedWidth,
+                       const ElementCount VF) -> InstructionCost {
+      const uint64_t VecIters = divideCeil(MaxTripCount, EstimatedWidth);
+      const InstructionCost TotalCost = VecIters * VectorIterCost + Overhead;
+      LLVM_DEBUG(dbgs() << "LV: VF = " << VF
+                        << ": cost = vec_iters x vec_iter_cost + overhead = "
+                        << VecIters << " x " << VectorIterCost << " + "
+                        << Overhead << " = " << TotalCost << '\n';);
+      return TotalCost;
+    };
+    auto RTCostA = GetCost(CostA, A.Overhead, EstimatedWidthA, A.Width);
+    auto RTCostB = GetCost(CostB, B.Overhead, EstimatedWidthB, B.Width);
+    return RTCostA < RTCostB;
+  }
+#endif
+
   // Assume vscale may be larger than 1 (or the value being tuned for),
   // so that scalable vectorization is slightly favorable over fixed-width
   // vectorization.
@@ -6026,6 +6067,9 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
 #endif
 
 VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
+#if SIFIVE_CUSTOMIZATION
+    const VPlanPtr &Plan,
+#endif // SIFIVE_CUSTOMIZATION
     const ElementCountSet &VFCandidates) {
 #if SIFIVE_CUSTOMIZATION
   // Within SiFive, we have AOS to SOA transformation that is only effective
@@ -6098,8 +6142,15 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
                         << " yields an invalid cost. Skipping\n");
       continue;
     }
-#endif // SIFIVE_CUSTOMIZATION
+    VPCostContext Ctx{&TTI};
+    InstructionCost Overhead = 0;
+    if (Legal->useVLAVectorizer() &&
+        !VectorizerDisableReduceOverheadEstimation && i.isVector())
+      Overhead = Plan->overhead(i, Ctx);
+    VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
+#else
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
+#endif // SIFIVE_CUSTOMIZATION
 
 #ifndef NDEBUG
     unsigned AssumedMinimumVscale = 1;
@@ -6540,7 +6591,16 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
   // If we did not calculate the cost for VF (because the user selected the VF)
   // then we calculate the cost of VF here.
   if (LoopCost == 0) {
+#if SIFIVE_CUSTOMIZATION
+    unsigned MaxTripCount = PSE.getSE()->getSmallConstantMaxTripCount(TheLoop);
+    InstructionCost Overhead = expectedOverhead(VF);
+    if (Overhead > 0)
+      LoopCost = expectedCost(VF).first * MaxTripCount + Overhead;
+    else
+      LoopCost = expectedCost(VF).first;
+#else
     LoopCost = expectedCost(VF).first;
+#endif // SIFIVE_CUSTOMIZATION
     assert(LoopCost.isValid() && "Expected to have chosen a VF with valid cost");
 
     // Loop body is free and there is no need for interleaving.
@@ -7127,6 +7187,59 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
 
   return Discount;
 }
+
+#if SIFIVE_CUSTOMIZATION
+InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
+  // TODO: Reuse VPlan's overhead estimation instead of duplicating the logic
+
+  InstructionCost Overhead = 0;
+  if (!Legal->useVLAVectorizer() || VectorizerDisableReduceOverheadEstimation ||
+      !VF.isVector())
+    return 0;
+  // For each block.
+  for (BasicBlock *BB : TheLoop->blocks()) {
+    VectorizationCostTy BlockCost;
+    // For each instruction in the old loop.
+    for (Instruction &I : BB->instructionsWithoutDebug()) {
+      // Skip ignored values.
+      if (ValuesToIgnore.count(&I) || VecValuesToIgnore.count(&I))
+        continue;
+
+      auto *PHI = dyn_cast<PHINode>(&I);
+      if (!PHI)
+        continue;
+
+      InstructionCost C = 0;
+      if (Legal->isReductionVariable(PHI)) {
+        auto *VectorTy = cast<VectorType>(ToVectorTy(I.getType(), VF));
+        const RecurrenceDescriptor &RdxDesc =
+            Legal->getReductionVars().find(PHI)->second;
+        TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+        RecurKind RdxKind = RdxDesc.getRecurrenceKind();
+        if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
+          bool IsUnsigned =
+              RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
+                  ? false
+                  : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
+          auto *VecCondTy =
+              cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
+          C = TTI.getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
+                                         CostKind);
+        } else {
+          C = TTI.getArithmeticReductionCost(RdxDesc.getOpcode(), VectorTy,
+                                             RdxDesc.getFastMathFlags(),
+                                             CostKind);
+        }
+        LLVM_DEBUG(dbgs() << "LV: Found an estimated overhead of " << C
+                          << " for VF " << VF << " For instruction: " << I
+                          << '\n');
+        Overhead += C;
+      }
+    }
+  }
+  return Overhead;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 LoopVectorizationCostModel::VectorizationCostTy
 LoopVectorizationCostModel::expectedCost(
@@ -8569,7 +8682,14 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     return VectorizationFactor::Disabled();
 
   // Select the optimal vectorization factor.
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Traverse each plan and select the best plan
+  assert(VPlans.size() > 0 && "Must have at leat one plan");
+  VectorizationFactor VF =
+      CM.selectVectorizationFactor(VPlans[0], VFCandidates);
+#else
   VectorizationFactor VF = CM.selectVectorizationFactor(VFCandidates);
+#endif // SIFIVE_CUSTOMIZATION
   assert((VF.Width.isScalar() || VF.ScalarCost > 0) && "when vectorizing, the scalar cost must be non-zero.");
   return VF;
 }

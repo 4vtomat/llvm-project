@@ -1134,6 +1134,15 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         // vmerge.vim v8, v8, -1, v0
         return 2;
       }
+#if SIFIVE_CUSTOMIZATION
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
+          const unsigned VL = getEstimatedVLFor(VTy);
+          const unsigned DLen = ST->getRealMinVLen() / 2;
+          return divideCeil(std::max(DLen, VL * Src->getScalarSizeInBits()),
+                            DLen);
+        }
+#endif // SIFIVE_CUSTOMIZATION
       return 1;
     case ISD::TRUNCATE:
       if (Dst->getScalarSizeInBits() == 1) {
@@ -1144,6 +1153,20 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         // vmsne.vi v0, v8, 0
         return 2;
       }
+#if SIFIVE_CUSTOMIZATION
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
+          const unsigned VL = getEstimatedVLFor(VTy);
+          const unsigned DLen = ST->getRealMinVLen() / 2;
+          const unsigned DstEltSize = Dst->getScalarSizeInBits();
+          InstructionCost Cost = 0;
+          for (unsigned SrcEltSize = Src->getScalarSizeInBits();
+               SrcEltSize != DstEltSize; SrcEltSize >>= 1) {
+            Cost += divideCeil(std::max(DLen, VL * SrcEltSize), DLen);
+          }
+          return Cost;
+        }
+#endif // SIFIVE_CUSTOMIZATION
       [[fallthrough]];
     case ISD::FP_EXTEND:
     case ISD::FP_ROUND:
@@ -1258,7 +1281,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
 #if SIFIVE_CUSTOMIZATION
   // The vector to scalar move is expensive on x280, give it more cost.
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    BaseCost = 4;
+    BaseCost = BaseCost + 12;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
   if (TTI::requiresOrderedReduction(FMF))
@@ -1580,7 +1603,7 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
         // [SCT-1962] FIXME: With more precise cost model, change it back to '4'.
         // Currently '4' won't help to make hot loop not profitable to vectorize,
         // thus assume cost of integer division is even higher.
-        NumDivideUnits = 2;
+        NumDivideUnits = 1;
       }
       // 4 elements per cycle
       return divideCeil(VL, NumDivideUnits) * divideCeil(EltSize, 2);

@@ -1015,13 +1015,15 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   Value *LoopCount = CopyLen;
-  Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                      {LoopCount, SEW, LMUL});
+  Value *VL = nullptr;
   // If it already copied(broadcasted) the scalar value into a vector in
   // previous blocks, then we can use it directly, otherwise we have to do it.
-  if (!dyn_cast<ScalableVectorType>(Val->getType()))
+  if (!dyn_cast<ScalableVectorType>(Val->getType())) {
+    VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                 {LoopCount, SEW, LMUL});
     Val = Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
                                   {UndefValue::get(VTy), Val, VL});
+  }
 
   Builder.CreateBr(LoopBody);
 
@@ -1033,6 +1035,8 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
     cast<PHINode>(LoopCount)->addIncoming(CopyLen, PreLoopBB);
     DstIndex = Builder.CreatePHI(DstAddr->getType(), 2, "dst-addr");
     cast<PHINode>(DstIndex)->addIncoming(DstAddr, PreLoopBB);
+    VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                 {LoopCount, SEW, LMUL});
   }
 
   unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
@@ -1040,9 +1044,10 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   Value *NewLoopCount = LoopCount;
   Value *DstIndexTmp = DstIndex;
   SmallVector<Value *> DstIndices;
-  VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                               {NewLoopCount, SEW, LMUL});
   uint64_t TmpUC = UnrollCount;
+  if (!VL)
+    VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                 {LoopCount, SEW, LMUL});
   while (TmpUC--) {
     DstIndices.push_back(DstIndexTmp);
     if (KnownCurrentLen != -MaxCopySize)
@@ -1053,7 +1058,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   while (++TmpUC < UnrollCount) {
     Value *DstCast = Builder.CreatePointerCast(DstIndices[TmpUC],
                                                PointerType::get(VTy, DstAS));
-    if (TmpUC == UnrollCount - 1 &&
+    if (TmpUC == UnrollCount - 1 && UnrollCount != 1 &&
         (KnownCurrentLen != -MaxCopySize && KnownCurrentLen < 0))
       VL = Builder.CreateIntrinsic(
           Intrinsic::riscv_vsetvli, {CopyLenType},

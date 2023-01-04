@@ -206,13 +206,24 @@ struct VectorizationFactor {
   /// Cost of the scalar loop.
   InstructionCost ScalarCost;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Extra Cost when exiting the loop with that width.
+  InstructionCost Overhead;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// The minimum trip count required to make vectorization profitable, e.g. due
   /// to runtime checks.
   ElementCount MinProfitableTripCount;
 
+#if SIFIVE_CUSTOMIZATION
+  VectorizationFactor(ElementCount Width, InstructionCost Cost,
+                      InstructionCost ScalarCost, InstructionCost Overhead = 0)
+      : Width(Width), Cost(Cost), ScalarCost(ScalarCost), Overhead(Overhead) {}
+#else
   VectorizationFactor(ElementCount Width, InstructionCost Cost,
                       InstructionCost ScalarCost)
       : Width(Width), Cost(Cost), ScalarCost(ScalarCost) {}
+#endif
 
   /// Width 1 means no vectorization, cost 0 means uncomputed cost.
   static VectorizationFactor Disabled() {
