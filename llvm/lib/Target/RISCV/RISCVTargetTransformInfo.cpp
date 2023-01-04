@@ -1327,6 +1327,23 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   InstructionCost Cost = 0;
   if (Opcode == Instruction::Store && OpInfo.isConstant())
     Cost += getStoreImmCost(Src, OpInfo, CostKind);
+#if SIFIVE_CUSTOMIZATION
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
+      Cost += BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                     CostKind, OpInfo, I);
+      // Note: vector memory accesses check the L1 D$. On a miss, the access is
+      // forwarded to the L2$.
+      // Based on how the data would be used later, vector store may not be
+      // good in all cases. For vector store which VL < 4, we make the cost
+      // equivalent to VL=4 to discourage the use of vector store on small VL.
+      if (Cost < 4)
+        Cost = 4;
+      return Cost;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                        CostKind, OpInfo, I);
 }
