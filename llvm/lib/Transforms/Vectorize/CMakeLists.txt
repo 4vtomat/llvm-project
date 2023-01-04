@@ -26,5 +26,8 @@ add_llvm_component_library(LLVMVectorize
   Analysis
   Core
   Support
+  # SIFIVE_CUSTOMIZATION
+  TargetParser
+  # end SIFIVE_CUSTOMIZATION
   TransformUtils
   )
