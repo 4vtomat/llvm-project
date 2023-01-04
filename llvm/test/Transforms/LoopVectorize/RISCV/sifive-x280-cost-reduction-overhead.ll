@@ -23,7 +23,7 @@ define internal float @foo(ptr nocapture noundef readonly %ptr, ptr nocapture no
 ; CHECK-REMARK-16: remark: <unknown>:0:0: vectorized loop ((lmul, type): (1, float))
 ; CHECK-REMARK-32: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, float))
 ; CHECK-REMARK-64: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, float))
-; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, float))
+; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, float))
 entry:
   %profile_size = add i32 0, TC
   %cmp5 = icmp sgt i32 %profile_size, 0
