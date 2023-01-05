@@ -1280,6 +1280,10 @@ void RISCVInsertVSETVLI::doLocalPostpass(MachineBasicBlock &MBB) {
             MI.getOperand(1).ChangeToImmediate(NextMI->getOperand(1).getImm());
           else
             MI.getOperand(1).ChangeToRegister(NextMI->getOperand(1).getReg(), false);
+#if SIFIVE_CUSTOMIZATION
+          // SIFIVE: Cherry-picked from D141061.
+          MI.setDesc(NextMI->getDesc());
+#endif
         }
         MI.getOperand(2).setImm(NextMI->getOperand(2).getImm());
         ToDelete.push_back(NextMI);
