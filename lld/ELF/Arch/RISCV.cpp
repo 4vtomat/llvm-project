@@ -95,6 +95,19 @@ static uint32_t setLO12_S(uint32_t insn, uint32_t imm) {
          (extractBits(imm, 4, 0) << 7);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static void checkULEB128LengthNoExtend(uint8_t *loc, const RelType type,
+                                       unsigned oldLength, unsigned newLength) {
+  if (newLength <= oldLength)
+    return;
+
+  ErrorPlace errPlace = getErrorPlace(loc);
+  error(errPlace.loc + " ULEB128 value has extended the length by " +
+        toString(type) + "relocation from " + Twine(oldLength) +
+        " byte to " + Twine(newLength) + " byte");
+}
+#endif
+
 RISCV::RISCV() {
   copyRel = R_RISCV_COPY;
   pltRel = R_RISCV_JUMP_SLOT;
@@ -270,6 +283,10 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
   case R_RISCV_SUB16:
   case R_RISCV_SUB32:
   case R_RISCV_SUB64:
+#if SIFIVE_CUSTOMIZATION
+  case R_RISCV_SET_ULEB128:
+  case R_RISCV_SUB_ULEB128:
+#endif // SIFIVE_CUSTOMIZATION
     return R_RISCV_ADD;
   case R_RISCV_JAL:
   case R_RISCV_BRANCH:
@@ -482,6 +499,26 @@ void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
   case R_RISCV_TLS_DTPREL64:
     write64le(loc, val - dtpOffset);
     break;
+
+#if SIFIVE_CUSTOMIZATION
+  case R_RISCV_SET_ULEB128: {
+    unsigned oldLength;
+    decodeULEB128(loc, &oldLength);
+    unsigned newLength;
+    newLength = encodeULEB128(val, loc, /*PadTo*/ oldLength);
+    checkULEB128LengthNoExtend(loc, rel.type, oldLength, newLength);
+    return;
+  }
+  case R_RISCV_SUB_ULEB128: {
+    unsigned oldLength;
+    uint64_t oldVal = decodeULEB128(loc, &oldLength);
+    uint64_t newVal = oldVal - val;
+    unsigned newLength;
+    newLength = encodeULEB128(newVal, loc, /*PadTo*/ oldLength);
+    checkULEB128LengthNoExtend(loc, rel.type, oldLength, newLength);
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   case R_RISCV_RELAX:
     return; // Ignored (for now)
