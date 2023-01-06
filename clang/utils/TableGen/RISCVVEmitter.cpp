@@ -395,7 +395,7 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
     auto T = TypeCache.computeType(BasicType::BFloat, Log2LMUL,
                                    PrototypeDescriptor::Vector);
     if (T)
-      printType(T.value());
+      printType(*T);
   }
   OS << "#endif\n";
 #endif // SIFIVE_CUSTOMIZATION
