@@ -616,7 +616,6 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   assert(RVL->getType()->isIntegerTy() &&
@@ -678,7 +677,6 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
   return BlockOverhead;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VPlan::~VPlan() {
   clearLiveOuts();
 
@@ -695,10 +693,17 @@ VPlan::~VPlan() {
     delete TripCount;
   if (BackedgeTakenCount)
     delete BackedgeTakenCount;
+#if SIFIVE_CUSTOMIZATION
+    if (EVL)
+      delete EVL;
+    if (PrevEVL)
+      delete PrevEVL;
+    if (AllTrueMask)
+      delete AllTrueMask;
+#endif // SIFIVE_CUSTOMIZATION
   for (auto &P : VPExternalDefs)
     delete P.second;
 }
->>>>>>> upstream/main
 
 VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {
   VPBasicBlock *Header = getVectorLoopRegion()->getEntryBasicBlock();

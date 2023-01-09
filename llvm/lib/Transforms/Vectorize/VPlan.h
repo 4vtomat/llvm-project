@@ -2508,37 +2508,7 @@ public:
       Entry->setPlan(this);
   }
 
-<<<<<<< HEAD
-  ~VPlan() {
-    clearLiveOuts();
-
-    if (Entry) {
-      VPValue DummyValue;
-      for (VPBlockBase *Block : depth_first(Entry))
-        Block->dropAllReferences(&DummyValue);
-
-      VPBlockBase::deleteCFG(Entry);
-    }
-    for (VPValue *VPV : VPValuesToFree)
-      delete VPV;
-    if (TripCount)
-      delete TripCount;
-    if (BackedgeTakenCount)
-      delete BackedgeTakenCount;
-#if SIFIVE_CUSTOMIZATION
-    if (EVL)
-      delete EVL;
-    if (PrevEVL)
-      delete PrevEVL;
-    if (AllTrueMask)
-      delete AllTrueMask;
-#endif // SIFIVE_CUSTOMIZATION
-    for (auto &P : VPExternalDefs)
-      delete P.second;
-  }
-=======
   ~VPlan();
->>>>>>> upstream/main
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
