@@ -127,7 +127,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svpbmt", RISCVExtensionVersion{1, 0}},
     {"svinval", RISCVExtensionVersion{1, 0}},
     {"xventanacondops", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 #if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 
@@ -144,9 +143,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"za64rs", RISCVExtensionVersion{1, 0}},
     {"zic64b", RISCVExtensionVersion{1, 0}},
 #endif // SIFIVE_CUSTOMIZATION
-=======
     {"xtheadvdot", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main:llvm/lib/Support/RISCVISAInfo.cpp
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
@@ -858,7 +855,6 @@ static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
-<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
@@ -866,9 +862,7 @@ static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
->>>>>>> upstream/main:llvm/lib/Support/RISCVISAInfo.cpp
 
 struct ImpliedExtsEntry {
   StringLiteral Name;
@@ -886,15 +880,12 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
-<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
-=======
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
->>>>>>> upstream/main:llvm/lib/Support/RISCVISAInfo.cpp
     {{"zdinx"}, {ImpliedExtsZdinx}},
     {{"zfh"}, {ImpliedExtsZfh}},
     {{"zfhmin"}, {ImpliedExtsZfhmin}},
