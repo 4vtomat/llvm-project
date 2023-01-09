@@ -3027,7 +3027,7 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
   static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
       {{MONontemporalBit0, "riscv-non-temporal-domain-bit-0"},
        {MONontemporalBit1, "riscv-non-temporal-domain-bit-1"}};
-  return makeArrayRef(TargetFlags);
+  return ArrayRef(TargetFlags);
 }
 
 #endif // SIFIVE_CUSTOMIZATION
