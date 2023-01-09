@@ -41,6 +41,9 @@ public:
   RelType getDynRel(RelType type) const override;
   RelExpr getRelExpr(RelType type, const Symbol &s,
                      const uint8_t *loc) const override;
+#if SIFIVE_CUSTOMIZATION
+  void relocateAlloc(InputSectionBase &sec, uint8_t *buf) const override;
+#endif // SIFIVE_CUSTOMIZATION
   void relocate(uint8_t *loc, const Relocation &rel,
                 uint64_t val) const override;
   bool relaxOnce(int pass) const override;
@@ -323,6 +326,60 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+void RISCV::relocateAlloc(InputSectionBase &sec, uint8_t *buf) const {
+  const unsigned bits = config->is64 ? 64 : 32;
+  uint64_t secAddr = sec.getOutputSection()->addr;
+  if (auto *s = dyn_cast<InputSection>(&sec))
+    secAddr += s->outSecOff;
+
+  uint8_t *lastULEB128SetLoc = nullptr;
+  uint64_t lastULEB128SetVal = 0;
+  for (const Relocation &rel : sec.relocs()) {
+    uint8_t *loc = buf + rel.offset;
+    const uint64_t val = SignExtend64(
+        sec.getRelocTargetVA(sec.file, rel.type, rel.addend,
+                             secAddr + rel.offset, *rel.sym, rel.expr),
+        bits);
+
+    if (rel.expr == R_RELAX_HINT)
+      continue;
+
+    switch (rel.type) {
+    case R_RISCV_SET_ULEB128: {
+      if (lastULEB128SetLoc != nullptr) {
+        ErrorPlace errPlace = getErrorPlace(loc);
+        error(errPlace.loc + " More than one R_RISCV_SET_ULEB128 in same location");
+      }
+      lastULEB128SetLoc = loc;
+      lastULEB128SetVal = val;
+      break;
+    }
+    case R_RISCV_SUB_ULEB128: {
+      if (loc != lastULEB128SetLoc) {
+        ErrorPlace errPlace = getErrorPlace(loc);
+        error(errPlace.loc + " R_RISCV_SUB_ULEB128 must come after R_RISCV_SET_ULEB128");
+        break;
+      }
+      unsigned oldLength;
+      decodeULEB128(loc, &oldLength);
+      uint64_t newVal = lastULEB128SetVal - val;
+      unsigned newLength = encodeULEB128(newVal, loc, /*PadTo*/ oldLength);
+      checkULEB128LengthNoExtend(loc, rel.type, oldLength, newLength);
+      lastULEB128SetLoc = nullptr;
+      break;
+    }
+    default:
+      relocate(loc, rel, val);
+    }
+  }
+  if (lastULEB128SetLoc != nullptr) {
+    ErrorPlace errPlace = getErrorPlace(lastULEB128SetLoc);
+    error(errPlace.loc + " Orphan R_RISCV_SET_ULEB128");
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
   const unsigned bits = config->wordsize * 8;
 
@@ -499,26 +556,6 @@ void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
   case R_RISCV_TLS_DTPREL64:
     write64le(loc, val - dtpOffset);
     break;
-
-#if SIFIVE_CUSTOMIZATION
-  case R_RISCV_SET_ULEB128: {
-    unsigned oldLength;
-    decodeULEB128(loc, &oldLength);
-    unsigned newLength;
-    newLength = encodeULEB128(val, loc, /*PadTo*/ oldLength);
-    checkULEB128LengthNoExtend(loc, rel.type, oldLength, newLength);
-    return;
-  }
-  case R_RISCV_SUB_ULEB128: {
-    unsigned oldLength;
-    uint64_t oldVal = decodeULEB128(loc, &oldLength);
-    uint64_t newVal = oldVal - val;
-    unsigned newLength;
-    newLength = encodeULEB128(newVal, loc, /*PadTo*/ oldLength);
-    checkULEB128LengthNoExtend(loc, rel.type, oldLength, newLength);
-    return;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   case R_RISCV_RELAX:
     return; // Ignored (for now)
