@@ -458,13 +458,16 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     case TTI::SK_PermuteTwoSrc:
       // This may seem strange but the more elements out there the more work is
       // for the VPU.
-      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp));
+      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp), nullptr,
+                                       nullptr);
     case TTI::SK_ExtractSubvector:
       return getExtractSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
-                                         cast<ScalableVectorType>(SubTp));
+                                         cast<ScalableVectorType>(SubTp),
+                                         nullptr, nullptr);
     case TTI::SK_InsertSubvector:
       return getInsertSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
-                                        cast<ScalableVectorType>(SubTp));
+                                        cast<ScalableVectorType>(SubTp),
+                                        nullptr, nullptr);
     }
   }
 #endif // SIFIVE_CUSTOMIZATION

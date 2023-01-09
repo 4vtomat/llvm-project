@@ -79,7 +79,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Estimate a cost of shuffle as a sequence of extract and insert
   /// operations.
-  InstructionCost getPermuteShuffleOverhead(ScalableVectorType *VTy) {
+  InstructionCost getPermuteShuffleOverhead(ScalableVectorType *VTy, Value *Op0,
+                                            Value *Op1) {
     InstructionCost MinCost = 0;
     // Shuffle cost is equal to the cost of extracting element from its argument
     // plus the cost of inserting them onto the result vector.
@@ -92,16 +93,20 @@ public:
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
     for (int i = 0, e = VTy->getElementCount().getKnownMinValue(); i < e; ++i) {
-      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, i);
-      MinCost += getVectorInstrCost(Instruction::ExtractElement, VTy, i);
+      MinCost +=
+          getVectorInstrCost(Instruction::InsertElement, VTy, i, Op0, Op1);
+      MinCost +=
+          getVectorInstrCost(Instruction::ExtractElement, VTy, i, Op1, Op1);
     }
     return MinCost;
   }
 
   /// Estimate a cost of subvector extraction as a sequence of extract and
   /// insert operations.
-  InstructionCost getExtractSubvectorOverhead(ScalableVectorType *VTy, int Index,
-                                       ScalableVectorType *SubVTy) {
+  InstructionCost getExtractSubvectorOverhead(ScalableVectorType *VTy,
+                                              int Index,
+                                              ScalableVectorType *SubVTy,
+                                              Value *Op0, Value *Op1) {
     assert(VTy && SubVTy && "Can only extract subvectors from vectors");
     // FIXME: We cannot assert index bounds of SubVTy at compile time.
 
@@ -114,9 +119,10 @@ public:
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
     for (unsigned i = 0; i != NumSubElts; ++i) {
+      MinCost += getVectorInstrCost(Instruction::ExtractElement, VTy, i + Index,
+                                    Op0, Op1);
       MinCost +=
-          getVectorInstrCost(Instruction::ExtractElement, VTy, i + Index);
-      MinCost += getVectorInstrCost(Instruction::InsertElement, SubVTy, i);
+          getVectorInstrCost(Instruction::InsertElement, SubVTy, i, Op0, Op1);
     }
     return MinCost;
   }
@@ -124,7 +130,8 @@ public:
   /// Estimate a cost of subvector insertion as a sequence of extract and
   /// insert operations.
   InstructionCost getInsertSubvectorOverhead(ScalableVectorType *VTy, int Index,
-                                             ScalableVectorType *SubVTy) {
+                                             ScalableVectorType *SubVTy,
+                                             Value *Op0, Value *Op1) {
     assert(VTy && SubVTy && "Can only insert subvectors into vectors");
     // FIXME: We cannot assert index bounds of SubVTy at compile time.
 
@@ -137,8 +144,10 @@ public:
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
     for (unsigned i = 0; i != NumSubElts; ++i) {
-      MinCost += getVectorInstrCost(Instruction::ExtractElement, SubVTy, i);
-      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, i + Index);
+      MinCost +=
+          getVectorInstrCost(Instruction::ExtractElement, SubVTy, i, Op0, Op1);
+      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, i + Index,
+                                    Op0, Op1);
     }
     return MinCost;
   }
