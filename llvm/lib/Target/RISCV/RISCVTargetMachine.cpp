@@ -353,7 +353,7 @@ void RISCVPassConfig::addCodeGenPrepare() {
   if (getOptLevel() != CodeGenOpt::None) {
     addPass(createRISCVLateCodeGenPreparePass());
     addPass(createRISCVTypePromotionPass());
-    addPass(createTypePromotionPass());
+    addPass(createTypePromotionLegacyPass());
   }
   TargetPassConfig::addCodeGenPrepare();
 }
