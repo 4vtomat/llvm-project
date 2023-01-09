@@ -481,8 +481,10 @@ static std::optional<unsigned> getSmallBestKnownTC(ScalarEvolution &SE,
   return std::nullopt;
 }
 
+namespace {
 // Forward declare GeneratedRTChecks.
 class GeneratedRTChecks;
+} // namespace
 
 namespace llvm {
 
@@ -2054,6 +2056,7 @@ public:
 };
 } // end namespace llvm
 
+namespace {
 /// Helper struct to manage generating runtime checks for vectorization.
 ///
 /// The runtime checks are created up-front in temporary blocks to allow better
@@ -2318,6 +2321,7 @@ public:
     return MemCheckBlock;
   }
 };
+} // namespace
 
 // Return true if \p OuterLp is an outer loop annotated with hints for explicit
 // vectorization. The loop needs to be annotated with #pragma omp simd
@@ -8880,9 +8884,7 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     LoopVectorizeHints Hints(L, true, *ORE);
     Hints.setAlreadyVectorized();
   }
-  // Disable runtime unrolling when vectorizing the epilogue loop.
-  if (CanonicalIVStartValue)
-    AddRuntimeUnrollDisableMetaData(L);
+  AddRuntimeUnrollDisableMetaData(L);
 
   // 3. Fix the vectorized code: take care of header phi's, live-outs,
   //    predication, updating analyses.
@@ -10273,11 +10275,6 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
     VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
   }
 
-  HeaderVPBB->setName("vector.body");
-
-  // Fold the last, empty block into its predecessor.
-  VPBB = VPBlockUtils::tryToMergeBlockIntoPredecessor(VPBB);
-  assert(VPBB && "expected to fold last (empty) block");
   // After here, VPBB should not be used.
   VPBB = nullptr;
 
@@ -10446,14 +10443,17 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
 
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::removeDeadRecipes(*Plan);
-  VPlanTransforms::sinkScalarOperands(*Plan);
-  VPlanTransforms::mergeReplicateRegions(*Plan);
-  VPlanTransforms::removeRedundantExpandSCEVRecipes(*Plan);
 
-  // Fold Exit block into its predecessor if possible.
-  // TODO: Fold block earlier once all VPlan transforms properly maintain a
-  // VPBasicBlock as exit.
-  VPBlockUtils::tryToMergeBlockIntoPredecessor(TopRegion->getExiting());
+  bool ShouldSimplify = true;
+  while (ShouldSimplify) {
+    ShouldSimplify = VPlanTransforms::sinkScalarOperands(*Plan);
+    ShouldSimplify |=
+        VPlanTransforms::mergeReplicateRegionsIntoSuccessors(*Plan);
+    ShouldSimplify |= VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
+  }
+
+  VPlanTransforms::removeRedundantExpandSCEVRecipes(*Plan);
+  VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
 
   assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
   return Plan;
@@ -10550,9 +10550,13 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
           R->getOperand(FirstOpId) == Chain ? FirstOpId + 1 : FirstOpId;
       VPValue *VecOp = Plan->getVPValue(R->getOperand(VecOpId));
 
-      auto *CondOp = CM.blockNeedsPredicationForAnyReason(R->getParent())
-                         ? RecipeBuilder.createBlockInMask(R->getParent(), Plan)
-                         : nullptr;
+      VPValue *CondOp = nullptr;
+      if (CM.blockNeedsPredicationForAnyReason(R->getParent())) {
+        VPBuilder::InsertPointGuard Guard(Builder);
+        Builder.setInsertPoint(WidenRecipe->getParent(),
+                               WidenRecipe->getIterator());
+        CondOp = RecipeBuilder.createBlockInMask(R->getParent(), Plan);
+      }
 
       if (IsFMulAdd) {
         // If the instruction is a call to the llvm.fmuladd intrinsic then we

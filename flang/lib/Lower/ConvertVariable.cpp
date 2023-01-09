@@ -38,6 +38,7 @@
 #include "flang/Semantics/runtime-type-info.h"
 #include "flang/Semantics/tools.h"
 #include "llvm/Support/Debug.h"
+#include <optional>
 
 #define DEBUG_TYPE "flang-lower-variable"
 
@@ -170,6 +171,8 @@ static mlir::Type unwrapElementType(mlir::Type type) {
 fir::ExtendedValue Fortran::lower::genExtAddrInInitializer(
     Fortran::lower::AbstractConverter &converter, mlir::Location loc,
     const Fortran::lower::SomeExpr &addr) {
+  if (converter.getLoweringOptions().getLowerToHighLevelFIR())
+    TODO(loc, "generate initializer address in HLFIR");
   Fortran::lower::SymMap globalOpSymMap;
   Fortran::lower::AggregateStoreMap storeMap;
   Fortran::lower::StatementContext stmtCtx;
@@ -193,6 +196,8 @@ mlir::Value Fortran::lower::genInitialDataTarget(
     Fortran::lower::AbstractConverter &converter, mlir::Location loc,
     mlir::Type boxType, const Fortran::lower::SomeExpr &initialTarget,
     bool couldBeInEquivalence) {
+  if (converter.getLoweringOptions().getLowerToHighLevelFIR())
+    TODO(loc, "initial data target in HLFIR");
   Fortran::lower::SymMap globalOpSymMap;
   Fortran::lower::AggregateStoreMap storeMap;
   Fortran::lower::StatementContext stmtCtx;
@@ -1276,9 +1281,9 @@ lowerExplicitCharLen(Fortran::lower::AbstractConverter &converter,
     return mlir::Value{};
   fir::FirOpBuilder &builder = converter.getFirOpBuilder();
   mlir::Type lenTy = builder.getCharacterLengthType();
-  if (llvm::Optional<int64_t> len = box.getCharLenConst())
+  if (std::optional<int64_t> len = box.getCharLenConst())
     return builder.createIntegerConstant(loc, lenTy, *len);
-  if (llvm::Optional<Fortran::lower::SomeExpr> lenExpr = box.getCharLenExpr())
+  if (std::optional<Fortran::lower::SomeExpr> lenExpr = box.getCharLenExpr())
     // If the length expression is negative, the length is zero. See F2018
     // 7.4.4.2 point 5.
     return fir::factory::genMaxWithZero(
@@ -1698,14 +1703,14 @@ void Fortran::lower::mapSymbolAttributes(
       if (arg.getType().isa<fir::BoxCharType>())
         std::tie(addr, len) = charHelp.createUnboxChar(arg);
     }
-    if (llvm::Optional<int64_t> cstLen = ba.getCharLenConst()) {
+    if (std::optional<int64_t> cstLen = ba.getCharLenConst()) {
       // Static length
       len = builder.createIntegerConstant(loc, idxTy, *cstLen);
     } else {
       // Dynamic length
       if (genUnusedEntryPointBox())
         return;
-      if (llvm::Optional<Fortran::lower::SomeExpr> charLenExpr =
+      if (std::optional<Fortran::lower::SomeExpr> charLenExpr =
               ba.getCharLenExpr()) {
         // Explicit length
         mlir::Value rawLen = genValue(*charLenExpr);

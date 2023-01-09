@@ -1620,7 +1620,7 @@ entry:
 define i8 @local_alloca_not_simplifiable_2(i64 %index1, i64 %index2, i1 %cnd) {
 ; TUNIT: Function Attrs: nofree norecurse nosync nounwind willreturn
 ; TUNIT-LABEL: define {{[^@]+}}@local_alloca_not_simplifiable_2
-; TUNIT-SAME: (i64 [[INDEX1:%.*]], i64 [[INDEX2:%.*]], i1 [[CND:%.*]]) #[[ATTR3]] {
+; TUNIT-SAME: (i64 [[INDEX1:%.*]], i64 [[INDEX2:%.*]], i1 noundef [[CND:%.*]]) #[[ATTR3]] {
 ; TUNIT-NEXT:  entry:
 ; TUNIT-NEXT:    [[BYTES:%.*]] = alloca [1024 x i8], align 16
 ; TUNIT-NEXT:    [[GEP0:%.*]] = getelementptr inbounds [1024 x i8], [1024 x i8]* [[BYTES]], i64 0, i64 0
@@ -1640,7 +1640,7 @@ define i8 @local_alloca_not_simplifiable_2(i64 %index1, i64 %index2, i1 %cnd) {
 ;
 ; CGSCC: Function Attrs: nofree norecurse nosync nounwind willreturn
 ; CGSCC-LABEL: define {{[^@]+}}@local_alloca_not_simplifiable_2
-; CGSCC-SAME: (i64 [[INDEX1:%.*]], i64 [[INDEX2:%.*]], i1 [[CND:%.*]]) #[[ATTR5]] {
+; CGSCC-SAME: (i64 [[INDEX1:%.*]], i64 [[INDEX2:%.*]], i1 noundef [[CND:%.*]]) #[[ATTR5]] {
 ; CGSCC-NEXT:  entry:
 ; CGSCC-NEXT:    [[BYTES:%.*]] = alloca [1024 x i8], align 16
 ; CGSCC-NEXT:    [[GEP0:%.*]] = getelementptr inbounds [1024 x i8], [1024 x i8]* [[BYTES]], i64 0, i64 0
@@ -2097,45 +2097,25 @@ define i32 @single_read_of_static_global() {
 }
 
 define i8 @phi_store() {
-; TUNIT: Function Attrs: nofree norecurse nosync nounwind willreturn
-; TUNIT-LABEL: define {{[^@]+}}@phi_store
-; TUNIT-SAME: () #[[ATTR3]] {
-; TUNIT-NEXT:  entry:
-; TUNIT-NEXT:    [[A:%.*]] = alloca i16, align 2
-; TUNIT-NEXT:    [[B:%.*]] = bitcast i16* [[A]] to i8*
-; TUNIT-NEXT:    br label [[LOOP:%.*]]
-; TUNIT:       loop:
-; TUNIT-NEXT:    [[P:%.*]] = phi i8* [ [[B]], [[ENTRY:%.*]] ], [ [[G:%.*]], [[LOOP]] ]
-; TUNIT-NEXT:    [[I:%.*]] = phi i8 [ 0, [[ENTRY]] ], [ [[O:%.*]], [[LOOP]] ]
-; TUNIT-NEXT:    store i8 1, i8* [[P]], align 1
-; TUNIT-NEXT:    [[G]] = getelementptr i8, i8* [[P]], i64 1
-; TUNIT-NEXT:    [[O]] = add nsw i8 [[I]], 1
-; TUNIT-NEXT:    [[C:%.*]] = icmp eq i8 [[O]], 2
-; TUNIT-NEXT:    br i1 [[C]], label [[END:%.*]], label [[LOOP]]
-; TUNIT:       end:
-; TUNIT-NEXT:    [[S:%.*]] = getelementptr i8, i8* [[B]], i64 1
-; TUNIT-NEXT:    [[L:%.*]] = load i8, i8* [[S]], align 1
-; TUNIT-NEXT:    ret i8 [[L]]
-;
-; CGSCC: Function Attrs: nofree norecurse nosync nounwind willreturn
-; CGSCC-LABEL: define {{[^@]+}}@phi_store
-; CGSCC-SAME: () #[[ATTR5]] {
-; CGSCC-NEXT:  entry:
-; CGSCC-NEXT:    [[A:%.*]] = alloca i16, align 2
-; CGSCC-NEXT:    [[B:%.*]] = bitcast i16* [[A]] to i8*
-; CGSCC-NEXT:    br label [[LOOP:%.*]]
-; CGSCC:       loop:
-; CGSCC-NEXT:    [[P:%.*]] = phi i8* [ [[B]], [[ENTRY:%.*]] ], [ [[G:%.*]], [[LOOP]] ]
-; CGSCC-NEXT:    [[I:%.*]] = phi i8 [ 0, [[ENTRY]] ], [ [[O:%.*]], [[LOOP]] ]
-; CGSCC-NEXT:    store i8 1, i8* [[P]], align 1
-; CGSCC-NEXT:    [[G]] = getelementptr i8, i8* [[P]], i64 1
-; CGSCC-NEXT:    [[O]] = add nsw i8 [[I]], 1
-; CGSCC-NEXT:    [[C:%.*]] = icmp eq i8 [[O]], 2
-; CGSCC-NEXT:    br i1 [[C]], label [[END:%.*]], label [[LOOP]]
-; CGSCC:       end:
-; CGSCC-NEXT:    [[S:%.*]] = getelementptr i8, i8* [[B]], i64 1
-; CGSCC-NEXT:    [[L:%.*]] = load i8, i8* [[S]], align 1
-; CGSCC-NEXT:    ret i8 [[L]]
+; CHECK: Function Attrs: nofree norecurse nosync nounwind willreturn memory(none)
+; CHECK-LABEL: define {{[^@]+}}@phi_store
+; CHECK-SAME: () #[[ATTR4]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[A:%.*]] = alloca i16, align 2
+; CHECK-NEXT:    [[B:%.*]] = bitcast i16* [[A]] to i8*
+; CHECK-NEXT:    br label [[LOOP:%.*]]
+; CHECK:       loop:
+; CHECK-NEXT:    [[P:%.*]] = phi i8* [ [[B]], [[ENTRY:%.*]] ], [ [[G:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[I:%.*]] = phi i8 [ 0, [[ENTRY]] ], [ [[O:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    store i8 1, i8* [[P]], align 1
+; CHECK-NEXT:    [[G]] = getelementptr i8, i8* [[P]], i64 1
+; CHECK-NEXT:    [[O]] = add nsw i8 [[I]], 1
+; CHECK-NEXT:    [[C:%.*]] = icmp eq i8 [[O]], 2
+; CHECK-NEXT:    br i1 [[C]], label [[END:%.*]], label [[LOOP]]
+; CHECK:       end:
+; CHECK-NEXT:    [[S:%.*]] = getelementptr i8, i8* [[B]], i64 1
+; CHECK-NEXT:    [[L:%.*]] = load i8, i8* [[S]], align 1
+; CHECK-NEXT:    ret i8 [[L]]
 ;
 entry:
   %a = alloca i16
@@ -3002,7 +2982,7 @@ for.body7:                                        ; preds = %for.cond4
 define internal i1 @alloca_non_unique(i32* %p, i32 %in, i1 %c) {
 ; TUNIT: Function Attrs: nofree nosync nounwind memory(argmem: readwrite)
 ; TUNIT-LABEL: define {{[^@]+}}@alloca_non_unique
-; TUNIT-SAME: (i32* nocapture nofree nonnull readonly align 4 [[P:%.*]], i32 [[IN:%.*]], i1 [[C:%.*]]) #[[ATTR12:[0-9]+]] {
+; TUNIT-SAME: (i32* nocapture nofree nonnull readonly align 4 [[P:%.*]], i32 [[IN:%.*]], i1 noundef [[C:%.*]]) #[[ATTR12:[0-9]+]] {
 ; TUNIT-NEXT:    [[A:%.*]] = alloca i32, align 4
 ; TUNIT-NEXT:    store i32 [[IN]], i32* [[A]], align 4
 ; TUNIT-NEXT:    br i1 [[C]], label [[T:%.*]], label [[F:%.*]]
@@ -3016,7 +2996,7 @@ define internal i1 @alloca_non_unique(i32* %p, i32 %in, i1 %c) {
 ;
 ; CGSCC: Function Attrs: nofree nosync nounwind memory(argmem: readwrite)
 ; CGSCC-LABEL: define {{[^@]+}}@alloca_non_unique
-; CGSCC-SAME: (i32* nocapture nofree nonnull readonly align 4 [[P:%.*]], i32 [[IN:%.*]], i1 [[C:%.*]]) #[[ATTR14:[0-9]+]] {
+; CGSCC-SAME: (i32* nocapture nofree nonnull readonly align 4 [[P:%.*]], i32 [[IN:%.*]], i1 noundef [[C:%.*]]) #[[ATTR14:[0-9]+]] {
 ; CGSCC-NEXT:    [[A:%.*]] = alloca i32, align 4
 ; CGSCC-NEXT:    store i32 [[IN]], i32* [[A]], align 4
 ; CGSCC-NEXT:    br i1 [[C]], label [[T:%.*]], label [[F:%.*]]
@@ -3050,8 +3030,8 @@ define i1 @alloca_non_unique_caller(i32 %in, i1 %c) {
 ;
 ; CGSCC: Function Attrs: nofree nosync nounwind memory(none)
 ; CGSCC-LABEL: define {{[^@]+}}@alloca_non_unique_caller
-; CGSCC-SAME: (i32 [[IN:%.*]], i1 [[C:%.*]]) #[[ATTR15:[0-9]+]] {
-; CGSCC-NEXT:    [[R:%.*]] = call i1 @alloca_non_unique(i32* undef, i32 [[IN]], i1 [[C]]) #[[ATTR23]]
+; CGSCC-SAME: (i32 [[IN:%.*]], i1 noundef [[C:%.*]]) #[[ATTR15:[0-9]+]] {
+; CGSCC-NEXT:    [[R:%.*]] = call i1 @alloca_non_unique(i32* undef, i32 [[IN]], i1 noundef [[C]]) #[[ATTR23]]
 ; CGSCC-NEXT:    ret i1 [[R]]
 ;
   %r = call i1 @alloca_non_unique(i32* undef, i32 %in, i1 %c)
@@ -3160,7 +3140,7 @@ entry:
 define i32 @a(i1 %c) {
 ; TUNIT: Function Attrs: nofree nosync nounwind
 ; TUNIT-LABEL: define {{[^@]+}}@a
-; TUNIT-SAME: (i1 [[C:%.*]]) #[[ATTR14]] {
+; TUNIT-SAME: (i1 noundef [[C:%.*]]) #[[ATTR14]] {
 ; TUNIT-NEXT:    store i32 3, i32* @G, align 4
 ; TUNIT-NEXT:    br i1 [[C]], label [[T:%.*]], label [[F:%.*]]
 ; TUNIT:       t:
@@ -3173,7 +3153,7 @@ define i32 @a(i1 %c) {
 ;
 ; CGSCC: Function Attrs: nofree nosync nounwind
 ; CGSCC-LABEL: define {{[^@]+}}@a
-; CGSCC-SAME: (i1 [[C:%.*]]) #[[ATTR17]] {
+; CGSCC-SAME: (i1 noundef [[C:%.*]]) #[[ATTR17]] {
 ; CGSCC-NEXT:    store i32 3, i32* @G, align 4
 ; CGSCC-NEXT:    br i1 [[C]], label [[T:%.*]], label [[F:%.*]]
 ; CGSCC:       t:

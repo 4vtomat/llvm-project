@@ -3210,9 +3210,10 @@ public:
   /// By default, builds a new default-argument expression, which does not
   /// require any semantic analysis. Subclasses may override this routine to
   /// provide different behavior.
-  ExprResult RebuildCXXDefaultArgExpr(SourceLocation Loc, ParmVarDecl *Param) {
+  ExprResult RebuildCXXDefaultArgExpr(SourceLocation Loc, ParmVarDecl *Param,
+                                      Expr *RewrittenExpr) {
     return CXXDefaultArgExpr::Create(getSema().Context, Loc, Param,
-                                     getSema().CurContext);
+                                     RewrittenExpr, getSema().CurContext);
   }
 
   /// Build a new C++11 default-initialization expression.
@@ -3222,8 +3223,7 @@ public:
   /// routine to provide different behavior.
   ExprResult RebuildCXXDefaultInitExpr(SourceLocation Loc,
                                        FieldDecl *Field) {
-    return CXXDefaultInitExpr::Create(getSema().Context, Loc, Field,
-                                      getSema().CurContext);
+    return getSema().BuildCXXDefaultInitExpr(Loc, Field);
   }
 
   /// Build a new C++ zero-initialization expression.
@@ -3857,16 +3857,6 @@ public:
   ExprResult RebuildEmptyCXXFoldExpr(SourceLocation EllipsisLoc,
                                      BinaryOperatorKind Operator) {
     return getSema().BuildEmptyCXXFoldExpr(EllipsisLoc, Operator);
-  }
-
-  ExprResult RebuildCXXParenListInitExpr(ArrayRef<Expr *> Args, QualType T,
-                                         unsigned NumUserSpecifiedExprs,
-                                         SourceLocation InitLoc,
-                                         SourceLocation LParenLoc,
-                                         SourceLocation RParenLoc) {
-    return CXXParenListInitExpr::Create(getSema().Context, Args, T,
-                                        NumUserSpecifiedExprs, InitLoc,
-                                        LParenLoc, RParenLoc);
   }
 
   /// Build a new atomic operation expression.
@@ -12173,11 +12163,20 @@ TreeTransform<Derived>::TransformCXXDefaultArgExpr(CXXDefaultArgExpr *E) {
   if (!Param)
     return ExprError();
 
+  ExprResult InitRes;
+  if (E->hasRewrittenInit()) {
+    InitRes = getDerived().TransformExpr(E->getRewrittenExpr());
+    if (InitRes.isInvalid())
+      return ExprError();
+  }
+
   if (!getDerived().AlwaysRebuild() && Param == E->getParam() &&
-      E->getUsedContext() == SemaRef.CurContext)
+      E->getUsedContext() == SemaRef.CurContext &&
+      InitRes.get() == E->getRewrittenExpr())
     return E;
 
-  return getDerived().RebuildCXXDefaultArgExpr(E->getUsedLocation(), Param);
+  return getDerived().RebuildCXXDefaultArgExpr(E->getUsedLocation(), Param,
+                                               InitRes.get());
 }
 
 template<typename Derived>
@@ -13244,10 +13243,11 @@ TreeTransform<Derived>::TransformLambdaExpr(LambdaExpr *E) {
   // context that isn't a DeclContext (such as a variable template), or when
   // substituting an unevaluated lambda inside of a function's parameter's type
   // - as parameter types are not instantiated from within a function's DC. We
-  // use isUnevaluatedContext() to distinguish the function parameter case.
+  // use evaluation contexts to distinguish the function parameter case.
   CXXRecordDecl::LambdaDependencyKind DependencyKind =
       CXXRecordDecl::LDK_Unknown;
-  if (getSema().isUnevaluatedContext() &&
+  if ((getSema().isUnevaluatedContext() ||
+       getSema().isConstantEvaluatedContext()) &&
       (getSema().CurContext->isFileContext() ||
        !getSema().CurContext->getParent()->isDependentContext()))
     DependencyKind = CXXRecordDecl::LDK_NeverDependent;
@@ -14035,20 +14035,6 @@ TreeTransform<Derived>::TransformCXXFoldExpr(CXXFoldExpr *E) {
                                                 E->getOperator());
 
   return Result;
-}
-
-template <typename Derived>
-ExprResult
-TreeTransform<Derived>::TransformCXXParenListInitExpr(CXXParenListInitExpr *E) {
-  SmallVector<Expr *, 4> TransformedInits;
-  ArrayRef<Expr *> InitExprs = E->getInitExprs();
-  if (TransformExprs(InitExprs.data(), InitExprs.size(), true,
-                     TransformedInits))
-    return ExprError();
-
-  return getDerived().RebuildCXXParenListInitExpr(
-      TransformedInits, E->getType(), E->getUserSpecifiedInitExprs().size(),
-      E->getInitLoc(), E->getBeginLoc(), E->getEndLoc());
 }
 
 template<typename Derived>

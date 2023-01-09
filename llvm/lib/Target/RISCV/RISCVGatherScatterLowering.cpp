@@ -413,7 +413,7 @@ RISCVGatherScatterLowering::determineBaseAndStride(GetElementPtrInst *GEP,
     Ops[*VecOperand] = Start;
     Type *SourceTy = GEP->getSourceElementType();
     Value *BasePtr =
-      Builder.CreateGEP(SourceTy, Ops[0], makeArrayRef(Ops).drop_front());
+        Builder.CreateGEP(SourceTy, Ops[0], ArrayRef(Ops).drop_front());
 
     // Convert stride to pointer size if needed.
     Type *IntPtrTy = DL->getIntPtrType(BasePtr->getType());
@@ -449,7 +449,7 @@ RISCVGatherScatterLowering::determineBaseAndStride(GetElementPtrInst *GEP,
   Ops[*VecOperand] = BasePhi;
   Type *SourceTy = GEP->getSourceElementType();
   Value *BasePtr =
-      Builder.CreateGEP(SourceTy, Ops[0], makeArrayRef(Ops).drop_front());
+      Builder.CreateGEP(SourceTy, Ops[0], ArrayRef(Ops).drop_front());
 
   // Final adjustments to stride should go in the start block.
   Builder.SetInsertPoint(

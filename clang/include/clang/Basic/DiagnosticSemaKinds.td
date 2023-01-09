@@ -2164,9 +2164,6 @@ def err_init_list_bad_dest_type : Error<
 def warn_cxx20_compat_aggregate_init_with_ctors : Warning<
   "aggregate initialization of type %0 with user-declared constructors "
   "is incompatible with C++20">, DefaultIgnore, InGroup<CXX20Compat>;
-def warn_cxx17_compat_aggregate_init_paren_list : Warning<
-  "aggregate initialization of type %0 from a parenthesized list of values "
-  "is a C++20 extension">, DefaultIgnore, InGroup<CXX20>;
 
 def err_reference_bind_to_bitfield : Error<
   "%select{non-const|volatile}0 reference cannot bind to "
@@ -2649,6 +2646,10 @@ def err_invalid_consteval_take_address : Error<
   " of an immediate invocation">;
 def err_invalid_consteval_call : Error<
   "call to consteval function %q0 is not a constant expression">;
+def note_invalid_consteval_initializer : Note<
+  "in the default initalizer of %0">;
+def note_invalid_consteval_initializer_here : Note<
+  "initialized here %0">;
 def err_invalid_consteval_decl_kind : Error<
   "%0 cannot be declared consteval">;
 def err_invalid_constexpr : Error<
@@ -3056,8 +3057,8 @@ def warn_unsupported_branch_protection_spec : Warning<
 
 def warn_unsupported_target_attribute
     : Warning<"%select{unsupported|duplicate|unknown}0%select{| CPU|"
-              " tune CPU}1 '%2' in the '%select{target|target_clones}3' "
-              "attribute string; '%select{target|target_clones}3' "
+              " tune CPU}1 '%2' in the '%select{target|target_clones|target_version}3' "
+              "attribute string; '%select{target|target_clones|target_version}3' "
               "attribute ignored">,
       InGroup<IgnoredAttributes>;
 def err_attribute_unsupported
@@ -11235,6 +11236,8 @@ def note_not_module_interface_add_export : Note<
   "add 'export' here if this is intended to be a module interface unit">;
 def err_invalid_module_name : Error<
   "%0 is %select{an invalid|a reserved}1 name for a module">;
+def err_extern_def_in_header_unit : Error<
+  "non-inline external definitions are not permitted in C++ header units">;
 
 def ext_equivalent_internal_linkage_decl_in_modules : ExtWarn<
   "ambiguous use of internal linkage declaration %0 defined in multiple modules">,
@@ -11513,7 +11516,7 @@ def note_shadow_field : Note<"declared here">;
 
 def err_multiversion_required_in_redecl : Error<
   "function declaration is missing %select{'target'|'cpu_specific' or "
-  "'cpu_dispatch'}0 attribute in a multiversioned function">;
+  "'cpu_dispatch'|'target_version'}0 attribute in a multiversioned function">;
 def note_multiversioning_caused_here : Note<
   "function multiversioning caused by this declaration">;
 def err_multiversion_after_used : Error<
@@ -11528,7 +11531,7 @@ def err_multiversion_noproto : Error<
   "multiversioned function must have a prototype">;
 def err_multiversion_disallowed_other_attr
     : Error<"attribute "
-            "'%select{|target|cpu_specific|cpu_dispatch|target_clones}0' "
+            "'%select{|target|cpu_specific|cpu_dispatch|target_clones|target_version}0' "
             "multiversioning cannot be combined"
             " with attribute %1">;
 def err_multiversion_diff : Error<
@@ -11537,7 +11540,7 @@ def err_multiversion_diff : Error<
   "language linkage}0">;
 def err_multiversion_doesnt_support
     : Error<"attribute "
-            "'%select{|target|cpu_specific|cpu_dispatch|target_clones}0' "
+            "'%select{|target|cpu_specific|cpu_dispatch|target_clones|target_version}0' "
             "multiversioned functions do not "
             "yet support %select{function templates|virtual functions|"
             "deduced return types|constructors|destructors|deleted functions|"
@@ -11571,6 +11574,9 @@ def warn_target_clone_mixed_values
       InGroup<TargetClonesMixedSpecifiers>;
 def warn_target_clone_duplicate_options
     : Warning<"version list contains duplicate entries">,
+      InGroup<FunctionMultiVersioning>;
+def warn_target_clone_no_impact_options
+    : Warning<"version list contains entries that don't impact code generation">,
       InGroup<FunctionMultiVersioning>;
 
 // three-way comparison operator diagnostics
@@ -11764,4 +11770,6 @@ def warn_unsafe_buffer_expression : Warning<
 def warn_unsafe_buffer_variable : Warning<
   "variable %0 participates in unchecked buffer operations">,
   InGroup<UnsafeBufferUsage>, DefaultIgnore;
+def err_loongarch_builtin_requires_la32 : Error<
+  "this builtin requires target: loongarch32">;
 } // end of sema component.

@@ -8036,12 +8036,11 @@ SDValue ARMTargetLowering::LowerBUILD_VECTOR(SDValue Op, SelectionDAG &DAG,
     SmallVector<SDValue, 64> Ops(Op->op_begin(), Op->op_begin() + NumElts);
     EVT ExtVT = VT.getVectorElementType();
     EVT HVT = EVT::getVectorVT(*DAG.getContext(), ExtVT, NumElts / 2);
-    SDValue Lower =
-        DAG.getBuildVector(HVT, dl, makeArrayRef(&Ops[0], NumElts / 2));
+    SDValue Lower = DAG.getBuildVector(HVT, dl, ArrayRef(&Ops[0], NumElts / 2));
     if (Lower.getOpcode() == ISD::BUILD_VECTOR)
       Lower = LowerBUILD_VECTOR(Lower, DAG, ST);
-    SDValue Upper = DAG.getBuildVector(
-        HVT, dl, makeArrayRef(&Ops[NumElts / 2], NumElts / 2));
+    SDValue Upper =
+        DAG.getBuildVector(HVT, dl, ArrayRef(&Ops[NumElts / 2], NumElts / 2));
     if (Upper.getOpcode() == ISD::BUILD_VECTOR)
       Upper = LowerBUILD_VECTOR(Upper, DAG, ST);
     if (Lower && Upper)
@@ -15853,7 +15852,7 @@ static bool TryCombineBaseUpdate(struct BaseUpdateTarget &Target,
     Tys[n] = AlignedVecTy;
   Tys[n++] = MVT::i32;
   Tys[n] = MVT::Other;
-  SDVTList SDTys = DAG.getVTList(makeArrayRef(Tys, NumResultVecs + 2));
+  SDVTList SDTys = DAG.getVTList(ArrayRef(Tys, NumResultVecs + 2));
 
   // Then, gather the new node's operands.
   SmallVector<SDValue, 8> Ops;
@@ -16164,7 +16163,7 @@ static SDValue PerformMVEVLDCombine(SDNode *N,
       Tys[n] = VecTy;
     Tys[n++] = MVT::i32;
     Tys[n] = MVT::Other;
-    SDVTList SDTys = DAG.getVTList(makeArrayRef(Tys, NumResultVecs + 2));
+    SDVTList SDTys = DAG.getVTList(ArrayRef(Tys, NumResultVecs + 2));
 
     // Then, gather the new node's operands.
     SmallVector<SDValue, 8> Ops;
@@ -16245,7 +16244,7 @@ static bool CombineVLDDUP(SDNode *N, TargetLowering::DAGCombinerInfo &DCI) {
   for (n = 0; n < NumVecs; ++n)
     Tys[n] = VT;
   Tys[n] = MVT::Other;
-  SDVTList SDTys = DAG.getVTList(makeArrayRef(Tys, NumVecs+1));
+  SDVTList SDTys = DAG.getVTList(ArrayRef(Tys, NumVecs + 1));
   SDValue Ops[] = { VLD->getOperand(0), VLD->getOperand(2) };
   MemIntrinsicSDNode *VLDMemInt = cast<MemIntrinsicSDNode>(VLD);
   SDValue VLDDup = DAG.getMemIntrinsicNode(NewOpc, SDLoc(VLD), SDTys,

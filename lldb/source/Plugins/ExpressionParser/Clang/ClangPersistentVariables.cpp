@@ -20,6 +20,7 @@
 #include "clang/AST/Decl.h"
 
 #include "llvm/ADT/StringMap.h"
+#include <optional>
 
 using namespace lldb;
 using namespace lldb_private;
@@ -68,7 +69,7 @@ void ClangPersistentVariables::RemovePersistentVariable(
     m_next_persistent_variable_id--;
 }
 
-llvm::Optional<CompilerType>
+std::optional<CompilerType>
 ClangPersistentVariables::GetCompilerTypeFromPersistentDecl(
     ConstString type_name) {
   PersistentDecl p = m_persistent_decls.lookup(type_name.GetCString());
@@ -116,7 +117,7 @@ std::shared_ptr<ClangModulesDeclVendor>
 ClangPersistentVariables::GetClangModulesDeclVendor() {
   if (!m_modules_decl_vendor_sp) {
     m_modules_decl_vendor_sp.reset(
-        ClangModulesDeclVendor::Create(*m_target_sp.get()));
+        ClangModulesDeclVendor::Create(*m_target_sp));
   }
   return m_modules_decl_vendor_sp;
 }

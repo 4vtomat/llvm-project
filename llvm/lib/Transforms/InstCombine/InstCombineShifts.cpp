@@ -1065,9 +1065,11 @@ Instruction *InstCombinerImpl::visitShl(BinaryOperator &I) {
       return BinaryOperator::CreateLShr(
           ConstantInt::get(Ty, APInt::getSignMask(BitWidth)), X);
 
-    // The only way to shift out the 1 is with an over-shift, and that would
-    // be poison either way.
-    if (!I.hasNoUnsignedWrap()) {
+    // The only way to shift out the 1 is with an over-shift, so that would
+    // be poison with or without "nuw". Undef is excluded because (undef << X)
+    // is not undef (it is zero).
+    Constant *ConstantOne = cast<Constant>(Op0);
+    if (!I.hasNoUnsignedWrap() && !ConstantOne->containsUndefElement()) {
       I.setHasNoUnsignedWrap();
       return &I;
     }
@@ -1089,10 +1091,17 @@ Instruction *InstCombinerImpl::visitLShr(BinaryOperator &I) {
 
   Value *Op0 = I.getOperand(0), *Op1 = I.getOperand(1);
   Type *Ty = I.getType();
+  Value *X;
   const APInt *C;
+  unsigned BitWidth = Ty->getScalarSizeInBits();
+
+  // (iN (~X) u>> (N - 1)) --> zext (X > -1)
+  if (match(Op0, m_OneUse(m_Not(m_Value(X)))) &&
+      match(Op1, m_SpecificIntAllowUndef(BitWidth - 1)))
+    return new ZExtInst(Builder.CreateIsNotNeg(X, "isnotneg"), Ty);
+
   if (match(Op1, m_APInt(C))) {
     unsigned ShAmtC = C->getZExtValue();
-    unsigned BitWidth = Ty->getScalarSizeInBits();
     auto *II = dyn_cast<IntrinsicInst>(Op0);
     if (II && isPowerOf2_32(BitWidth) && Log2_32(BitWidth) == ShAmtC &&
         (II->getIntrinsicID() == Intrinsic::ctlz ||
@@ -1318,7 +1327,6 @@ Instruction *InstCombinerImpl::visitLShr(BinaryOperator &I) {
   }
 
   // Transform  (x << y) >> y  to  x & (-1 >> y)
-  Value *X;
   if (match(Op0, m_OneUse(m_Shl(m_Value(X), m_Specific(Op1))))) {
     Constant *AllOnes = ConstantInt::getAllOnesValue(Ty);
     Value *Mask = Builder.CreateLShr(AllOnes, Op1);

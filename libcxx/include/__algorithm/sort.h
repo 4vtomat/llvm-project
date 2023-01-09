@@ -17,7 +17,9 @@
 #include <__algorithm/partial_sort.h>
 #include <__algorithm/unwrap_iter.h>
 #include <__assert>
-#include <__bits>
+#include <__bit/blsr.h>
+#include <__bit/countl.h>
+#include <__bit/countr.h>
 #include <__config>
 #include <__debug>
 #include <__debug_utils/randomize_range.h>
@@ -26,9 +28,12 @@
 #include <__iterator/iterator_traits.h>
 #include <__memory/destruct_n.h>
 #include <__memory/unique_ptr.h>
+#include <__type_traits/conditional.h>
+#include <__type_traits/is_arithmetic.h>
 #include <__utility/move.h>
 #include <__utility/pair.h>
 #include <climits>
+#include <cstdint>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #  pragma GCC system_header

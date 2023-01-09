@@ -1435,7 +1435,13 @@ bool RISCVInstrInfo::hasReassociableSibling(const MachineInstr &Inst,
   const MachineInstr &Sibling =
       *MRI.getVRegDef(Inst.getOperand(OperandIdx).getReg());
 
-  return RISCV::hasEqualFRM(Inst, Sibling);
+  int16_t InstFrmOpIdx =
+      RISCV::getNamedOperandIdx(Inst.getOpcode(), RISCV::OpName::frm);
+  int16_t SiblingFrmOpIdx =
+      RISCV::getNamedOperandIdx(Sibling.getOpcode(), RISCV::OpName::frm);
+
+  return (InstFrmOpIdx < 0 && SiblingFrmOpIdx < 0) ||
+         RISCV::hasEqualFRM(Inst, Sibling);
 }
 
 bool RISCVInstrInfo::isAssociativeAndCommutative(const MachineInstr &Inst,
@@ -1451,6 +1457,42 @@ bool RISCVInstrInfo::isAssociativeAndCommutative(const MachineInstr &Inst,
   if (isFADD(Opc) || isFMUL(Opc))
     return Inst.getFlag(MachineInstr::MIFlag::FmReassoc) &&
            Inst.getFlag(MachineInstr::MIFlag::FmNsz);
+
+  switch (Opc) {
+  default:
+    return false;
+  case RISCV::ADD:
+  case RISCV::ADDW:
+  case RISCV::AND:
+  case RISCV::OR:
+  case RISCV::XOR:
+  // From RISC-V ISA spec, if both the high and low bits of the same product
+  // are required, then the recommended code sequence is:
+  //
+  // MULH[[S]U] rdh, rs1, rs2
+  // MUL        rdl, rs1, rs2
+  // (source register specifiers must be in same order and rdh cannot be the
+  //  same as rs1 or rs2)
+  //
+  // Microarchitectures can then fuse these into a single multiply operation
+  // instead of performing two separate multiplies.
+  // MachineCombiner may reassociate MUL operands and lose the fusion
+  // opportunity.
+  case RISCV::MUL:
+  case RISCV::MULW:
+  case RISCV::MIN:
+  case RISCV::MINU:
+  case RISCV::MAX:
+  case RISCV::MAXU:
+  case RISCV::FMIN_H:
+  case RISCV::FMIN_S:
+  case RISCV::FMIN_D:
+  case RISCV::FMAX_H:
+  case RISCV::FMAX_S:
+  case RISCV::FMAX_D:
+    return true;
+  }
+
   return false;
 }
 
@@ -1471,6 +1513,14 @@ RISCVInstrInfo::getInverseOpcode(unsigned Opcode) const {
     return RISCV::FADD_S;
   case RISCV::FSUB_D:
     return RISCV::FADD_D;
+  case RISCV::ADD:
+    return RISCV::SUB;
+  case RISCV::SUB:
+    return RISCV::ADD;
+  case RISCV::ADDW:
+    return RISCV::SUBW;
+  case RISCV::SUBW:
+    return RISCV::ADDW;
   }
 }
 
@@ -1877,6 +1927,7 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_TPREL_HI, "riscv-tprel-hi"},
       {MO_TPREL_ADD, "riscv-tprel-add"},
       {MO_TLS_GOT_HI, "riscv-tls-got-hi"},
+<<<<<<< HEAD
       {MO_TLS_GD_HI, "riscv-tls-gd-hi"},
       {MO_TLS_GOT_GPREL_LO, "riscv-tls-got-gprel-lo"},
       {MO_TLS_GOT_GPREL_HI, "riscv-tls-got-gprel-hi"},
@@ -1891,6 +1942,10 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_GOT_GPREL_HI, "riscv-got-gprel-hi"},
       {MO_GOT_GPREL_ADD, "riscv-got-gprel-add"}};
   return makeArrayRef(TargetFlags);
+=======
+      {MO_TLS_GD_HI, "riscv-tls-gd-hi"}};
+  return ArrayRef(TargetFlags);
+>>>>>>> upstream/main
 }
 bool RISCVInstrInfo::isFunctionSafeToOutlineFrom(
     MachineFunction &MF, bool OutlineFromLinkOnceODRs) const {
@@ -2603,134 +2658,24 @@ void RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
   }
 }
 
-// Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
-bool RISCV::isSEXT_W(const MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::ADDIW && MI.getOperand(1).isReg() &&
-         MI.getOperand(2).isImm() && MI.getOperand(2).getImm() == 0;
-}
-
-// Returns true if this is the zext.w pattern, adduw rd, rs1, x0.
-bool RISCV::isZEXT_W(const MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::ADD_UW && MI.getOperand(1).isReg() &&
-         MI.getOperand(2).isReg() && MI.getOperand(2).getReg() == RISCV::X0;
-}
-
-// Returns true if this is the zext.b pattern, andi rd, rs1, 255.
-bool RISCV::isZEXT_B(const MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::ANDI && MI.getOperand(1).isReg() &&
-         MI.getOperand(2).isImm() && MI.getOperand(2).getImm() == 255;
-}
-
-static bool isRVVWholeLoadStore(unsigned Opcode) {
-  switch (Opcode) {
-  default:
-    return false;
-  case RISCV::VS1R_V:
-  case RISCV::VS2R_V:
-  case RISCV::VS4R_V:
-  case RISCV::VS8R_V:
-  case RISCV::VL1RE8_V:
-  case RISCV::VL2RE8_V:
-  case RISCV::VL4RE8_V:
-  case RISCV::VL8RE8_V:
-  case RISCV::VL1RE16_V:
-  case RISCV::VL2RE16_V:
-  case RISCV::VL4RE16_V:
-  case RISCV::VL8RE16_V:
-  case RISCV::VL1RE32_V:
-  case RISCV::VL2RE32_V:
-  case RISCV::VL4RE32_V:
-  case RISCV::VL8RE32_V:
-  case RISCV::VL1RE64_V:
-  case RISCV::VL2RE64_V:
-  case RISCV::VL4RE64_V:
-  case RISCV::VL8RE64_V:
-    return true;
-  }
-}
-
-bool RISCV::isRVVSpill(const MachineInstr &MI) {
-  // RVV lacks any support for immediate addressing for stack addresses, so be
-  // conservative.
-  unsigned Opcode = MI.getOpcode();
-  if (!RISCVVPseudosTable::getPseudoInfo(Opcode) &&
-      !isRVVWholeLoadStore(Opcode) && !isRVVSpillForZvlsseg(Opcode))
-    return false;
-  return true;
-}
-
-std::optional<std::pair<unsigned, unsigned>>
-RISCV::isRVVSpillForZvlsseg(unsigned Opcode) {
-  switch (Opcode) {
-  default:
-    return std::nullopt;
-  case RISCV::PseudoVSPILL2_M1:
-  case RISCV::PseudoVRELOAD2_M1:
-    return std::make_pair(2u, 1u);
-  case RISCV::PseudoVSPILL2_M2:
-  case RISCV::PseudoVRELOAD2_M2:
-    return std::make_pair(2u, 2u);
-  case RISCV::PseudoVSPILL2_M4:
-  case RISCV::PseudoVRELOAD2_M4:
-    return std::make_pair(2u, 4u);
-  case RISCV::PseudoVSPILL3_M1:
-  case RISCV::PseudoVRELOAD3_M1:
-    return std::make_pair(3u, 1u);
-  case RISCV::PseudoVSPILL3_M2:
-  case RISCV::PseudoVRELOAD3_M2:
-    return std::make_pair(3u, 2u);
-  case RISCV::PseudoVSPILL4_M1:
-  case RISCV::PseudoVRELOAD4_M1:
-    return std::make_pair(4u, 1u);
-  case RISCV::PseudoVSPILL4_M2:
-  case RISCV::PseudoVRELOAD4_M2:
-    return std::make_pair(4u, 2u);
-  case RISCV::PseudoVSPILL5_M1:
-  case RISCV::PseudoVRELOAD5_M1:
-    return std::make_pair(5u, 1u);
-  case RISCV::PseudoVSPILL6_M1:
-  case RISCV::PseudoVRELOAD6_M1:
-    return std::make_pair(6u, 1u);
-  case RISCV::PseudoVSPILL7_M1:
-  case RISCV::PseudoVRELOAD7_M1:
-    return std::make_pair(7u, 1u);
-  case RISCV::PseudoVSPILL8_M1:
-  case RISCV::PseudoVRELOAD8_M1:
-    return std::make_pair(8u, 1u);
-  }
-}
-
-bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
-  return MI.getNumExplicitDefs() == 2 && MI.modifiesRegister(RISCV::VL) &&
-         !MI.isInlineAsm();
-}
-
-bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
-  int16_t MI1FrmOpIdx =
-      RISCV::getNamedOperandIdx(MI1.getOpcode(), RISCV::OpName::frm);
-  int16_t MI2FrmOpIdx =
-      RISCV::getNamedOperandIdx(MI2.getOpcode(), RISCV::OpName::frm);
-  if (MI1FrmOpIdx < 0 || MI2FrmOpIdx < 0)
-    return false;
-  MachineOperand FrmOp1 = MI1.getOperand(MI1FrmOpIdx);
-  MachineOperand FrmOp2 = MI2.getOperand(MI2FrmOpIdx);
-  return FrmOp1.getImm() == FrmOp2.getImm();
-}
-
-// Checks if all users only demand the lower word of the original instruction's
-// result.
+// Checks if all users only demand the lower \p OrigBits of the original
+// instruction's result.
 // TODO: handle multiple interdependent transformations
-bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
+bool RISCVInstrInfo::hasAllNBitUsers(const MachineInstr &OrigMI,
+                                     const MachineRegisterInfo &MRI,
+                                     unsigned OrigBits) const {
 
-  SmallPtrSet<const MachineInstr *, 4> Visited;
-  SmallVector<const MachineInstr *, 4> Worklist;
+  SmallSet<std::pair<const MachineInstr *, unsigned>, 4> Visited;
+  SmallVector<std::pair<const MachineInstr *, unsigned>, 4> Worklist;
 
-  Worklist.push_back(&OrigMI);
+  Worklist.push_back(std::make_pair(&OrigMI, OrigBits));
 
   while (!Worklist.empty()) {
-    const MachineInstr *MI = Worklist.pop_back_val();
+    auto P = Worklist.pop_back_val();
+    const MachineInstr *MI = P.first;
+    unsigned Bits = P.second;
 
-    if (!Visited.insert(MI).second)
+    if (!Visited.insert(P).second)
       continue;
 
     // Only handle instructions with one def.
@@ -2766,7 +2711,6 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
       case RISCV::CTZW:
       case RISCV::CPOPW:
       case RISCV::SLLI_UW:
-      case RISCV::FMV_H_X:
       case RISCV::FMV_W_X:
       case RISCV::FCVT_H_W:
       case RISCV::FCVT_H_WU:
@@ -2774,40 +2718,71 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
       case RISCV::FCVT_S_WU:
       case RISCV::FCVT_D_W:
       case RISCV::FCVT_D_WU:
+        if (Bits >= 32)
+          break;
+        return false;
       case RISCV::SEXT_B:
-      case RISCV::SEXT_H:
-      case RISCV::ZEXT_H_RV64:
-      case RISCV::PACK:
       case RISCV::PACKH:
+        if (Bits >= 8)
+          break;
+        return false;
+      case RISCV::SEXT_H:
+      case RISCV::FMV_H_X:
+      case RISCV::ZEXT_H_RV32:
+      case RISCV::ZEXT_H_RV64:
       case RISCV::PACKW:
-        break;
+        if (Bits >= 16)
+          break;
+        return false;
+
+      case RISCV::PACK:
+        if (Bits >= (STI.getXLen() / 2))
+          break;
+        return false;
+
+      case RISCV::SRLI: {
+        // If we are shifting right by less than Bits, and users don't demand
+        // any bits that were shifted into [Bits-1:0], then we can consider this
+        // as an N-Bit user.
+        unsigned ShAmt = UserMI->getOperand(2).getImm();
+        if (Bits > ShAmt) {
+          Worklist.push_back(std::make_pair(UserMI, Bits - ShAmt));
+          break;
+        }
+        return false;
+      }
 
       // these overwrite higher input bits, otherwise the lower word of output
       // depends only on the lower word of input. So check their uses read W.
       case RISCV::SLLI:
-        if (UserMI->getOperand(2).getImm() >= 32)
+        if (Bits >= (STI.getXLen() - UserMI->getOperand(2).getImm()))
           break;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
       case RISCV::ANDI:
-        if (isUInt<11>(UserMI->getOperand(2).getImm()))
+        if (Bits >=
+            (64 - countLeadingZeros((uint64_t)UserMI->getOperand(2).getImm())))
           break;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
       case RISCV::ORI:
-        if (!isUInt<11>(UserMI->getOperand(2).getImm()))
+        if (Bits >=
+            (64 - countLeadingOnes((uint64_t)UserMI->getOperand(2).getImm())))
           break;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
 
       case RISCV::SLL:
       case RISCV::BSET:
       case RISCV::BCLR:
       case RISCV::BINV:
-        // Operand 2 is the shift amount which uses 6 bits.
-        if (OpIdx == 2)
-          break;
-        Worklist.push_back(UserMI);
+        // Operand 2 is the shift amount which uses log2(xlen) bits.
+        if (OpIdx == 2) {
+          if (Bits >= Log2_32(STI.getXLen()))
+            break;
+          return false;
+        }
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
 
       case RISCV::SRA:
@@ -2815,7 +2790,7 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
       case RISCV::ROL:
       case RISCV::ROR:
         // Operand 2 is the shift amount which uses 6 bits.
-        if (OpIdx == 2)
+        if (OpIdx == 2 && Bits >= Log2_32(STI.getXLen()))
           break;
         return false;
 
@@ -2824,23 +2799,31 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
       case RISCV::SH2ADD_UW:
       case RISCV::SH3ADD_UW:
         // Operand 1 is implicitly zero extended.
-        if (OpIdx == 1)
+        if (OpIdx == 1 && Bits >= 32)
           break;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
 
       case RISCV::BEXTI:
-        if (UserMI->getOperand(2).getImm() >= 32)
+        if (UserMI->getOperand(2).getImm() >= Bits)
           return false;
         break;
 
       case RISCV::SB:
+        // The first argument is the value to store.
+        if (OpIdx == 0 && Bits >= 8)
+          break;
+        return false;
       case RISCV::SH:
+        // The first argument is the value to store.
+        if (OpIdx == 0 && Bits >= 16)
+          break;
+        return false;
       case RISCV::SW:
         // The first argument is the value to store.
-        if (OpIdx != 0)
-          return false;
-        break;
+        if (OpIdx == 0 && Bits >= 32)
+          break;
+        return false;
 
       // For these, lower word of output in these operations, depends only on
       // the lower word of input. So, we check all uses only read lower word.
@@ -2868,7 +2851,7 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
       case RISCV::BSETI:
       case RISCV::BCLRI:
       case RISCV::BINVI:
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
 
       case RISCV::PseudoCCMOVGPR:
@@ -2877,14 +2860,14 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
         // of operand 4 and 5 is used.
         if (OpIdx != 4 && OpIdx != 5)
           return false;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
 
       case RISCV::VT_MASKC:
       case RISCV::VT_MASKCN:
         if (OpIdx != 1)
           return false;
-        Worklist.push_back(UserMI);
+        Worklist.push_back(std::make_pair(UserMI, Bits));
         break;
       }
     }
@@ -2893,6 +2876,7 @@ bool RISCV::hasAllWUsers(const MachineInstr &OrigMI, MachineRegisterInfo &MRI) {
   return true;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
@@ -3004,10 +2988,55 @@ static bool isPartialStore(const MachineInstr &MI) {
   case RISCV::SB:
   case RISCV::SH:
   case RISCV::FSH:
+=======
+// Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
+bool RISCV::isSEXT_W(const MachineInstr &MI) {
+  return MI.getOpcode() == RISCV::ADDIW && MI.getOperand(1).isReg() &&
+         MI.getOperand(2).isImm() && MI.getOperand(2).getImm() == 0;
+}
+
+// Returns true if this is the zext.w pattern, adduw rd, rs1, x0.
+bool RISCV::isZEXT_W(const MachineInstr &MI) {
+  return MI.getOpcode() == RISCV::ADD_UW && MI.getOperand(1).isReg() &&
+         MI.getOperand(2).isReg() && MI.getOperand(2).getReg() == RISCV::X0;
+}
+
+// Returns true if this is the zext.b pattern, andi rd, rs1, 255.
+bool RISCV::isZEXT_B(const MachineInstr &MI) {
+  return MI.getOpcode() == RISCV::ANDI && MI.getOperand(1).isReg() &&
+         MI.getOperand(2).isImm() && MI.getOperand(2).getImm() == 255;
+}
+
+static bool isRVVWholeLoadStore(unsigned Opcode) {
+  switch (Opcode) {
+  default:
+    return false;
+  case RISCV::VS1R_V:
+  case RISCV::VS2R_V:
+  case RISCV::VS4R_V:
+  case RISCV::VS8R_V:
+  case RISCV::VL1RE8_V:
+  case RISCV::VL2RE8_V:
+  case RISCV::VL4RE8_V:
+  case RISCV::VL8RE8_V:
+  case RISCV::VL1RE16_V:
+  case RISCV::VL2RE16_V:
+  case RISCV::VL4RE16_V:
+  case RISCV::VL8RE16_V:
+  case RISCV::VL1RE32_V:
+  case RISCV::VL2RE32_V:
+  case RISCV::VL4RE32_V:
+  case RISCV::VL8RE32_V:
+  case RISCV::VL1RE64_V:
+  case RISCV::VL2RE64_V:
+  case RISCV::VL4RE64_V:
+  case RISCV::VL8RE64_V:
+>>>>>>> upstream/main
     return true;
   }
 }
 
+<<<<<<< HEAD
 // Only called for LdSt for which getMemOperandsWithOffsetWidth returns true.
 bool RISCVInstrInfo::shouldClusterMemOps(
     ArrayRef<const MachineOperand *> BaseOps1,
@@ -3049,3 +3078,72 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
 }
 
 #endif // SIFIVE_CUSTOMIZATION
+=======
+bool RISCV::isRVVSpill(const MachineInstr &MI) {
+  // RVV lacks any support for immediate addressing for stack addresses, so be
+  // conservative.
+  unsigned Opcode = MI.getOpcode();
+  if (!RISCVVPseudosTable::getPseudoInfo(Opcode) &&
+      !isRVVWholeLoadStore(Opcode) && !isRVVSpillForZvlsseg(Opcode))
+    return false;
+  return true;
+}
+
+std::optional<std::pair<unsigned, unsigned>>
+RISCV::isRVVSpillForZvlsseg(unsigned Opcode) {
+  switch (Opcode) {
+  default:
+    return std::nullopt;
+  case RISCV::PseudoVSPILL2_M1:
+  case RISCV::PseudoVRELOAD2_M1:
+    return std::make_pair(2u, 1u);
+  case RISCV::PseudoVSPILL2_M2:
+  case RISCV::PseudoVRELOAD2_M2:
+    return std::make_pair(2u, 2u);
+  case RISCV::PseudoVSPILL2_M4:
+  case RISCV::PseudoVRELOAD2_M4:
+    return std::make_pair(2u, 4u);
+  case RISCV::PseudoVSPILL3_M1:
+  case RISCV::PseudoVRELOAD3_M1:
+    return std::make_pair(3u, 1u);
+  case RISCV::PseudoVSPILL3_M2:
+  case RISCV::PseudoVRELOAD3_M2:
+    return std::make_pair(3u, 2u);
+  case RISCV::PseudoVSPILL4_M1:
+  case RISCV::PseudoVRELOAD4_M1:
+    return std::make_pair(4u, 1u);
+  case RISCV::PseudoVSPILL4_M2:
+  case RISCV::PseudoVRELOAD4_M2:
+    return std::make_pair(4u, 2u);
+  case RISCV::PseudoVSPILL5_M1:
+  case RISCV::PseudoVRELOAD5_M1:
+    return std::make_pair(5u, 1u);
+  case RISCV::PseudoVSPILL6_M1:
+  case RISCV::PseudoVRELOAD6_M1:
+    return std::make_pair(6u, 1u);
+  case RISCV::PseudoVSPILL7_M1:
+  case RISCV::PseudoVRELOAD7_M1:
+    return std::make_pair(7u, 1u);
+  case RISCV::PseudoVSPILL8_M1:
+  case RISCV::PseudoVRELOAD8_M1:
+    return std::make_pair(8u, 1u);
+  }
+}
+
+bool RISCV::isFaultFirstLoad(const MachineInstr &MI) {
+  return MI.getNumExplicitDefs() == 2 && MI.modifiesRegister(RISCV::VL) &&
+         !MI.isInlineAsm();
+}
+
+bool RISCV::hasEqualFRM(const MachineInstr &MI1, const MachineInstr &MI2) {
+  int16_t MI1FrmOpIdx =
+      RISCV::getNamedOperandIdx(MI1.getOpcode(), RISCV::OpName::frm);
+  int16_t MI2FrmOpIdx =
+      RISCV::getNamedOperandIdx(MI2.getOpcode(), RISCV::OpName::frm);
+  if (MI1FrmOpIdx < 0 || MI2FrmOpIdx < 0)
+    return false;
+  MachineOperand FrmOp1 = MI1.getOperand(MI1FrmOpIdx);
+  MachineOperand FrmOp2 = MI2.getOperand(MI2FrmOpIdx);
+  return FrmOp1.getImm() == FrmOp2.getImm();
+}
+>>>>>>> upstream/main

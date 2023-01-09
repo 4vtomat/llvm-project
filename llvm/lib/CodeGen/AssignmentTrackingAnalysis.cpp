@@ -278,6 +278,7 @@ static DebugAggregate getAggregate(const DebugVariable &Var) {
   return DebugAggregate(Var.getVariable(), Var.getInlinedAt());
 }
 
+namespace {
 /// In dwarf emission, the following sequence
 ///    1. dbg.value ... Fragment(0, 64)
 ///    2. dbg.value ... Fragment(0, 32)
@@ -1121,6 +1122,7 @@ public:
   /// true if any variable locations have been added to FnVarLocs.
   bool run(FunctionVarLocsBuilder *FnVarLocs);
 };
+} // namespace
 
 void AssignmentTrackingLowering::setLocKind(BlockInfo *LiveSet, VariableID Var,
                                             LocKind K) {
@@ -1215,6 +1217,7 @@ bool AssignmentTrackingLowering::hasVarWithAssignment(VariableID Var,
   return true;
 }
 
+#ifndef NDEBUG
 const char *locStr(AssignmentTrackingLowering::LocKind Loc) {
   using LocKind = AssignmentTrackingLowering::LocKind;
   switch (Loc) {
@@ -1227,6 +1230,7 @@ const char *locStr(AssignmentTrackingLowering::LocKind Loc) {
   };
   llvm_unreachable("unknown LocKind");
 }
+#endif
 
 void AssignmentTrackingLowering::emitDbgValue(
     AssignmentTrackingLowering::LocKind Kind,
@@ -2111,7 +2115,8 @@ bool AssignmentTrackingLowering::emitPromotedVarLocs(
         // operand is nullptr. We also can't handle variadic DIExpressions yet.
         // Some of those conditions don't have a type we can pick for
         // undef. Use i32.
-        if (DVI->isUndef() || DVI->getValue() == nullptr || DVI->hasArgList())
+        if (DVI->isKillLocation() || DVI->getValue() == nullptr ||
+            DVI->hasArgList())
           return UndefValue::get(Type::getInt32Ty(DVI->getContext()));
         return DVI->getValue();
       };
