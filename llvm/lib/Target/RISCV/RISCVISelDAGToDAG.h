@@ -16,11 +16,7 @@
 #include "RISCV.h"
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/SelectionDAGISel.h"
-<<<<<<< HEAD
-#include "llvm/Support/KnownBits.h" // SIFIVE
-=======
 #include "llvm/Support/KnownBits.h"
->>>>>>> upstream/main
 
 // RISCV-specific code to select RISCV machine instructions for
 // SelectionDAG operations.
