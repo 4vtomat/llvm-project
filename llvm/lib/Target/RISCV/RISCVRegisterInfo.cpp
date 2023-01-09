@@ -502,8 +502,6 @@ bool RISCVRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   return false;
 }
 
-<<<<<<< HEAD
-=======
 bool RISCVRegisterInfo::requiresVirtualBaseRegisters(
     const MachineFunction &MF) const {
   return true;
@@ -625,7 +623,6 @@ int64_t RISCVRegisterInfo::getFrameIndexInstrOffset(const MachineInstr *MI,
   return MI->getOperand(Idx + 1).getImm();
 }
 
->>>>>>> upstream/main
 Register RISCVRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
   const TargetFrameLowering *TFI = getFrameLowering(MF);
   return TFI->hasFP(MF) ? RISCV::X8 : RISCV::X2;

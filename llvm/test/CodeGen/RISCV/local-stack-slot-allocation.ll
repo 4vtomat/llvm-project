@@ -5,7 +5,6 @@
 ; This test case test the LocalStackSlotAllocation pass that use a base register
 ; for the frame index that its offset is out-of-range (for RISC-V. the immediate
 ; is 12 bits for the load store instruction (excludes vector load / store))
-; TODO: Enable LocalStackSlotAllocation pass.
 define void @use_frame_base_reg() {
 ; RV32I-LABEL: use_frame_base_reg:
 ; RV32I:       # %bb.0:
