@@ -583,13 +583,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_MERGE,       ISD::VP_SELECT,      ISD::VP_FP_TO_SINT,
         ISD::VP_FP_TO_UINT,  ISD::VP_SETCC,       ISD::VP_SIGN_EXTEND,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
-<<<<<<< HEAD
-        ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX, // SIFIVE
-        ISD::EXPERIMENTAL_VP_REVERSE}; // SIFIVE
-=======
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
+#if SIFIVE_CUSTOMIZATION
+        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
+#else
         ISD::VP_ABS};
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
     static const unsigned FloatingPointVPOps[] = {
         ISD::VP_FADD,        ISD::VP_FSUB,        ISD::VP_FMUL,
@@ -4358,11 +4357,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     if (EltSize > (2 * SrcEltSize)) {
       if (IsInt2FP) {
         // Do a regular integer sign/zero extension then convert to float.
-<<<<<<< HEAD
-        MVT IVecVT = MVT::getVectorVT(MVT::getIntegerVT(EltSize / 2), // SIFIVE
-=======
         MVT IVecVT = MVT::getVectorVT(MVT::getIntegerVT(EltSize / 2),
->>>>>>> upstream/main
                                       VT.getVectorElementCount());
         unsigned ExtOpcode = Op.getOpcode() == ISD::UINT_TO_FP
                                  ? ISD::ZERO_EXTEND
