@@ -16,26 +16,13 @@ define <2 x i1> @reverse_v2i1(<2 x i1> %a) {
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmv.x.s a0, v8
+; CHECK-NEXT:    vfirst.m a0, v0
+; CHECK-NEXT:    seqz a0, a0
 ; CHECK-NEXT:    vmv.v.x v9, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, tu, ma
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vand.vi v8, v9, 1
-=======
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vmv.x.s a0, v8
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vfirst.m a1, v0
-; CHECK-NEXT:    seqz a1, a1
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, tu, ma
-; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, ma
-; CHECK-NEXT:    vand.vi v8, v8, 1
->>>>>>> upstream/main
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    ret
   %res = call <2 x i1> @llvm.experimental.vector.reverse.v2i1(<2 x i1> %a)
