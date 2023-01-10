@@ -1230,6 +1230,11 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.flags |=
         IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
   };
+
+  if (I.getMetadata(LLVMContext::MD_nontemporal) != nullptr)
+    Info.flags |= MachineMemOperand::MONonTemporal;
+
+  Info.flags |= RISCVTargetLowering::getTargetMMOFlags(I);
 #endif // SIFIVE_CUSTOMIZATION
 
   auto &DL = I.getModule()->getDataLayout();

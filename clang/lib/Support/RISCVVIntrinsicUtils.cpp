@@ -26,6 +26,10 @@ const PrototypeDescriptor PrototypeDescriptor::Mask = PrototypeDescriptor(
     BaseTypeModifier::Vector, VectorTypeModifier::MaskVector);
 const PrototypeDescriptor PrototypeDescriptor::VL =
     PrototypeDescriptor(BaseTypeModifier::SizeT);
+#ifdef SIFIVE_CUSTOMIZATION
+const PrototypeDescriptor PrototypeDescriptor::NTLDomainType =
+    PrototypeDescriptor(BaseTypeModifier::SizeT);
+#endif // SIFIVE_CUSTOMIZATION
 const PrototypeDescriptor PrototypeDescriptor::Vector =
     PrototypeDescriptor(BaseTypeModifier::Vector);
 
@@ -1107,8 +1111,23 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   // If HasVL, append PrototypeDescriptor:VL to last operand
   if (HasVL)
     NewPrototype.push_back(PrototypeDescriptor::VL);
+#ifdef SIFIVE_CUSTOMIZATION
+  if (DefaultPolicy.isNTLPolicy())
+    NewPrototype.push_back(PrototypeDescriptor::NTLDomainType);
+#endif // SIFIVE_CUSTOMIZATION
   return NewPrototype;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+void RVVIntrinsic::appendNontemporalInPolicyList(llvm::SmallVector<Policy> &P) {
+  llvm::SmallVector<Policy> NTLPolicy;
+  for (auto CurrPolicy : P) {
+    CurrPolicy.IsNontemporal = true;
+    NTLPolicy.push_back(CurrPolicy);
+  }
+  P.append(NTLPolicy);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 llvm::SmallVector<Policy>
 RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
@@ -1193,6 +1212,11 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
       DefaultPolicy.TailPolicy = Policy::PolicyType::Agnostic;
     }
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  if (DefaultPolicy.isNTLPolicy())
+    appendPolicySuffix("_ntl");
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
@@ -1240,6 +1264,9 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.IsPrototypeDefaultTU << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
+#ifdef SIFIVE_CUSTOMIZATION
+  OS << (int)Record.HasNontemporalOperand << ",";
+#endif // SIFIVE_CUSTOMIZATION
   OS << (int)Record.UnMaskedPolicyScheme << ",";
   OS << (int)Record.MaskedPolicyScheme << ",";
   OS << "},\n";
