@@ -683,9 +683,9 @@ define i64 @test_reassoc_xor_i64(i64 %a0, i64 %a1, i64 %a2, i64 %a3) {
 define i8 @test_reassoc_mul_i8(i8 %a0, i8 %a1, i8 %a2, i8 %a3) {
 ; CHECK-LABEL: test_reassoc_mul_i8:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    mul a2, a2, a3
 ; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    mul a1, a2, a3
-; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    mul a0, a0, a2
 ; CHECK-NEXT:    ret
   %t0 = mul i8 %a0, %a1
   %t1 = mul i8 %t0, %a2
@@ -696,9 +696,9 @@ define i8 @test_reassoc_mul_i8(i8 %a0, i8 %a1, i8 %a2, i8 %a3) {
 define i16 @test_reassoc_mul_i16(i16 %a0, i16 %a1, i16 %a2, i16 %a3) {
 ; CHECK-LABEL: test_reassoc_mul_i16:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    mul a2, a2, a3
 ; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    mul a1, a2, a3
-; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    mul a0, a0, a2
 ; CHECK-NEXT:    ret
   %t0 = mul i16 %a0, %a1
   %t1 = mul i16 %t0, %a2
@@ -709,9 +709,9 @@ define i16 @test_reassoc_mul_i16(i16 %a0, i16 %a1, i16 %a2, i16 %a3) {
 define i32 @test_reassoc_mul_i32(i32 %a0, i32 %a1, i32 %a2, i32 %a3) {
 ; CHECK-LABEL: test_reassoc_mul_i32:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    mulw a2, a2, a3
 ; CHECK-NEXT:    mulw a0, a0, a1
-; CHECK-NEXT:    mulw a1, a2, a3
-; CHECK-NEXT:    mulw a0, a0, a1
+; CHECK-NEXT:    mulw a0, a0, a2
 ; CHECK-NEXT:    ret
   %t0 = mul i32 %a0, %a1
   %t1 = mul i32 %t0, %a2
@@ -722,9 +722,9 @@ define i32 @test_reassoc_mul_i32(i32 %a0, i32 %a1, i32 %a2, i32 %a3) {
 define i64 @test_reassoc_mul_i64(i64 %a0, i64 %a1, i64 %a2, i64 %a3) {
 ; CHECK-LABEL: test_reassoc_mul_i64:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    mul a2, a2, a3
 ; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    mul a1, a2, a3
-; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    mul a0, a0, a2
 ; CHECK-NEXT:    ret
   %t0 = mul i64 %a0, %a1
   %t1 = mul i64 %t0, %a2
@@ -991,9 +991,9 @@ define i64 @test_reassoc_max_i64(i64 %a0, i64 %a1, i64 %a2, i64 %a3) {
 define half @test_fmin_f16(half %a0, half %a1, half %a2, half %a3) {
 ; CHECK-LABEL: test_fmin_f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmin.h ft0, fa0, fa1
-; CHECK-NEXT:    fmin.h ft1, fa2, fa3
-; CHECK-NEXT:    fmin.h fa0, ft0, ft1
+; CHECK-NEXT:    fmin.h ft0, fa2, fa3
+; CHECK-NEXT:    fmin.h ft1, fa0, fa1
+; CHECK-NEXT:    fmin.h fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call half @llvm.minnum.f16(half %a0, half %a1)
   %t1 = call half @llvm.minnum.f16(half %t0, half %a2)
@@ -1004,9 +1004,9 @@ define half @test_fmin_f16(half %a0, half %a1, half %a2, half %a3) {
 define float @test_fmin_f32(float %a0, float %a1, float %a2, float %a3) {
 ; CHECK-LABEL: test_fmin_f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmin.s ft0, fa0, fa1
-; CHECK-NEXT:    fmin.s ft1, fa2, fa3
-; CHECK-NEXT:    fmin.s fa0, ft0, ft1
+; CHECK-NEXT:    fmin.s ft0, fa2, fa3
+; CHECK-NEXT:    fmin.s ft1, fa0, fa1
+; CHECK-NEXT:    fmin.s fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call float @llvm.minnum.f32(float %a0, float %a1)
   %t1 = call float @llvm.minnum.f32(float %t0, float %a2)
@@ -1017,9 +1017,9 @@ define float @test_fmin_f32(float %a0, float %a1, float %a2, float %a3) {
 define double @test_fmin_f64(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_fmin_f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmin.d ft0, fa0, fa1
-; CHECK-NEXT:    fmin.d ft1, fa2, fa3
-; CHECK-NEXT:    fmin.d fa0, ft0, ft1
+; CHECK-NEXT:    fmin.d ft0, fa2, fa3
+; CHECK-NEXT:    fmin.d ft1, fa0, fa1
+; CHECK-NEXT:    fmin.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call double @llvm.minnum.f64(double %a0, double %a1)
   %t1 = call double @llvm.minnum.f64(double %t0, double %a2)
@@ -1030,9 +1030,9 @@ define double @test_fmin_f64(double %a0, double %a1, double %a2, double %a3) {
 define half @test_fmax_f16(half %a0, half %a1, half %a2, half %a3) {
 ; CHECK-LABEL: test_fmax_f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmax.h ft0, fa0, fa1
-; CHECK-NEXT:    fmax.h ft1, fa2, fa3
-; CHECK-NEXT:    fmax.h fa0, ft0, ft1
+; CHECK-NEXT:    fmax.h ft0, fa2, fa3
+; CHECK-NEXT:    fmax.h ft1, fa0, fa1
+; CHECK-NEXT:    fmax.h fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call half @llvm.maxnum.f16(half %a0, half %a1)
   %t1 = call half @llvm.maxnum.f16(half %t0, half %a2)
@@ -1043,9 +1043,9 @@ define half @test_fmax_f16(half %a0, half %a1, half %a2, half %a3) {
 define float @test_fmax_f32(float %a0, float %a1, float %a2, float %a3) {
 ; CHECK-LABEL: test_fmax_f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmax.s ft0, fa0, fa1
-; CHECK-NEXT:    fmax.s ft1, fa2, fa3
-; CHECK-NEXT:    fmax.s fa0, ft0, ft1
+; CHECK-NEXT:    fmax.s ft0, fa2, fa3
+; CHECK-NEXT:    fmax.s ft1, fa0, fa1
+; CHECK-NEXT:    fmax.s fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call float @llvm.maxnum.f32(float %a0, float %a1)
   %t1 = call float @llvm.maxnum.f32(float %t0, float %a2)
@@ -1056,9 +1056,9 @@ define float @test_fmax_f32(float %a0, float %a1, float %a2, float %a3) {
 define double @test_fmax_f64(double %a0, double %a1, double %a2, double %a3) {
 ; CHECK-LABEL: test_fmax_f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fmax.d ft0, fa0, fa1
-; CHECK-NEXT:    fmax.d ft1, fa2, fa3
-; CHECK-NEXT:    fmax.d fa0, ft0, ft1
+; CHECK-NEXT:    fmax.d ft0, fa2, fa3
+; CHECK-NEXT:    fmax.d ft1, fa0, fa1
+; CHECK-NEXT:    fmax.d fa0, ft1, ft0
 ; CHECK-NEXT:    ret
   %t0 = call double @llvm.maxnum.f64(double %a0, double %a1)
   %t1 = call double @llvm.maxnum.f64(double %t0, double %a2)

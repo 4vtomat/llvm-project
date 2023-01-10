@@ -49,7 +49,7 @@ define void @vst2_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e64.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -111,7 +111,7 @@ define void @vst2_lane_s64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e64.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -195,7 +195,7 @@ define void @vst2_lane_u64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e64.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -1381,7 +1381,7 @@ define void @vst4_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vmv2r.v v12, v8
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
@@ -1469,7 +1469,7 @@ define void @vst4_lane_s64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vmv2r.v v12, v8
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
@@ -1587,7 +1587,7 @@ define void @vst4_lane_u64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vmv2r.v v12, v8
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma

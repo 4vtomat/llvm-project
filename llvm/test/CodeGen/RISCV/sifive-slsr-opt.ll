@@ -8,7 +8,7 @@ define void @_Z8rvv_slsrPKammPammm(i8* nocapture  readonly %A, i64  %M, i64  %K,
 ; CHECK-NEXT:    seqz a7, a4
 ; CHECK-NEXT:    seqz t0, a1
 ; CHECK-NEXT:    seqz t1, a6
-; CHECK-NEXT:    or t0, t0, t1
+; CHECK-NEXT:    or a7, t1, a7
 ; CHECK-NEXT:    or a7, t0, a7
 ; CHECK-NEXT:    bnez a7, .LBB0_5
 ; CHECK-NEXT:  # %bb.1: # %for.cond2.preheader.us.preheader

@@ -95,11 +95,11 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[TMP34:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP32]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT17:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[TMP34]], i32 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT18:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT17]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_STRIDED_LOAD]], ptr [[TMP34]], i64 [[TMP27]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP30]]), !alias.scope !2, !noalias !5
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_STRIDED_LOAD]], ptr [[TMP34]], i64 [[TMP27]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP30]]), !alias.scope !3, !noalias !6
 ; CHECK-NEXT:    [[TMP35:%.*]] = zext i32 [[TMP30]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT19]] = add i64 [[INDEX16]], [[TMP35]]
 ; CHECK-NEXT:    [[TMP36:%.*]] = icmp eq i64 [[INDEX_NEXT19]], [[TMP16]]
-; CHECK-NEXT:    br i1 [[TMP36]], label [[MIDDLE_BLOCK11:%.*]], label [[VECTOR_BODY15]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP36]], label [[MIDDLE_BLOCK11:%.*]], label [[VECTOR_BODY15]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block11:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[SCALAR_PH12]]
 ; CHECK:       scalar.ph12:
@@ -114,7 +114,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    store i32 [[TMP38]], ptr [[ARRAYIDX3]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       for.cond.cleanup.loopexit.loopexit:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; CHECK:       for.cond.cleanup.loopexit:
@@ -173,7 +173,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    store i32 [[TMP17]], ptr [[ARRAYIDX3]], align 4
 ; CONSECUTIVE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CONSECUTIVE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CONSECUTIVE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
+; CONSECUTIVE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CONSECUTIVE:       for.cond.cleanup.loopexit.loopexit:
 ; CONSECUTIVE-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; CONSECUTIVE:       for.cond.cleanup.loopexit:
@@ -244,7 +244,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    store i32 [[TMP20]], ptr [[ARRAYIDX3]], align 4
 ; STRIDED-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; STRIDED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; STRIDED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
+; STRIDED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; STRIDED:       for.cond.cleanup.loopexit.loopexit:
 ; STRIDED-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; STRIDED:       for.cond.cleanup.loopexit:
@@ -318,7 +318,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP10]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP18]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -420,12 +420,12 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[TMP74:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP73]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT23:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[TMP74]], i32 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT24:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT23]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_GATHER]], ptr [[TMP74]], i64 [[TMP66]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP69]]), !alias.scope !10, !noalias !13
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_GATHER]], ptr [[TMP74]], i64 [[TMP66]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP69]]), !alias.scope !11, !noalias !14
 ; CHECK-NEXT:    [[TMP75:%.*]] = zext i32 [[TMP69]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT25]] = add i64 [[INDEX17]], [[TMP75]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT21]]
 ; CHECK-NEXT:    [[TMP76:%.*]] = icmp eq i64 [[INDEX_NEXT25]], [[TMP20]]
-; CHECK-NEXT:    br i1 [[TMP76]], label [[MIDDLE_BLOCK12:%.*]], label [[VECTOR_BODY16]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP76]], label [[MIDDLE_BLOCK12:%.*]], label [[VECTOR_BODY16]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       middle.block12:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[SCALAR_PH13]]
 ; CHECK:       scalar.ph13:
@@ -441,7 +441,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    store i32 [[TMP78]], ptr [[ARRAYIDX3]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
 ; CHECK:       for.cond.cleanup.loopexit.loopexit:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; CHECK:       for.cond.cleanup.loopexit:
@@ -489,7 +489,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP10]] to i64
 ; CONSECUTIVE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP18]]
 ; CONSECUTIVE-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
-; CONSECUTIVE-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CONSECUTIVE-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CONSECUTIVE:       middle.block:
 ; CONSECUTIVE-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CONSECUTIVE:       scalar.ph:
@@ -505,7 +505,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    store i32 [[TMP21]], ptr [[ARRAYIDX3]], align 4
 ; CONSECUTIVE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CONSECUTIVE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CONSECUTIVE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CONSECUTIVE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CONSECUTIVE:       for.cond.cleanup.loopexit.loopexit:
 ; CONSECUTIVE-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; CONSECUTIVE:       for.cond.cleanup.loopexit:
@@ -594,12 +594,12 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    [[TMP40:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP39]]
 ; STRIDED-NEXT:    [[BROADCAST_SPLATINSERT9:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[TMP40]], i32 0
 ; STRIDED-NEXT:    [[BROADCAST_SPLAT10:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT9]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
-; STRIDED-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_GATHER]], ptr [[TMP40]], i64 [[TMP32]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP35]]), !alias.scope !8, !noalias !11
+; STRIDED-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VP_GATHER]], ptr [[TMP40]], i64 [[TMP32]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP35]]), !alias.scope !9, !noalias !12
 ; STRIDED-NEXT:    [[TMP41:%.*]] = zext i32 [[TMP35]] to i64
 ; STRIDED-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP41]]
 ; STRIDED-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT7]]
 ; STRIDED-NEXT:    [[TMP42:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
-; STRIDED-NEXT:    br i1 [[TMP42]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
+; STRIDED-NEXT:    br i1 [[TMP42]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; STRIDED:       middle.block:
 ; STRIDED-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; STRIDED:       scalar.ph:
@@ -615,7 +615,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    store i32 [[TMP44]], ptr [[ARRAYIDX3]], align 4
 ; STRIDED-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; STRIDED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; STRIDED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; STRIDED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
 ; STRIDED:       for.cond.cleanup.loopexit.loopexit:
 ; STRIDED-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT]]
 ; STRIDED:       for.cond.cleanup.loopexit:
@@ -679,7 +679,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP7]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP12]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP4]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP7]], 1
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP14]]
@@ -711,7 +711,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP27:%.*]] = zext i32 [[TMP23]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT9]] = add i64 [[INDEX7]], [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT9]], [[TMP19]]
-; CHECK-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK1:%.*]], label [[VECTOR_BODY6]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK1:%.*]], label [[VECTOR_BODY6]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       middle.block1:
 ; CHECK-NEXT:    [[TMP29:%.*]] = sub i32 [[TMP23]], 1
 ; CHECK-NEXT:    [[TMP30:%.*]] = extractelement <vscale x 2 x i32> [[VP_STRIDED_LOAD]], i32 [[TMP29]]
@@ -727,7 +727,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[TMP33:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i64 [[TMP33]], 0
-; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP32]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ], [ [[TMP30]], [[MIDDLE_BLOCK1]] ]
 ; CHECK-NEXT:    br label [[FOR_END]]
@@ -766,7 +766,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CONSECUTIVE-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP7]] to i64
 ; CONSECUTIVE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP12]]
 ; CONSECUTIVE-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP4]]
-; CONSECUTIVE-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CONSECUTIVE-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CONSECUTIVE:       middle.block:
 ; CONSECUTIVE-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP7]], 1
 ; CONSECUTIVE-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP14]]
@@ -782,7 +782,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CONSECUTIVE-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CONSECUTIVE-NEXT:    [[TMP18:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CONSECUTIVE-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i64 [[TMP18]], 0
-; CONSECUTIVE-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CONSECUTIVE-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CONSECUTIVE:       for.end.loopexit:
 ; CONSECUTIVE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP17]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
 ; CONSECUTIVE-NEXT:    br label [[FOR_END]]
@@ -820,7 +820,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; STRIDED-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP8]] to i64
 ; STRIDED-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP12]]
 ; STRIDED-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP4]]
-; STRIDED-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
+; STRIDED-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; STRIDED:       middle.block:
 ; STRIDED-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP8]], 1
 ; STRIDED-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 2 x i32> [[VP_STRIDED_LOAD]], i32 [[TMP14]]
@@ -836,7 +836,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; STRIDED-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; STRIDED-NEXT:    [[TMP18:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; STRIDED-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i64 [[TMP18]], 0
-; STRIDED-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; STRIDED-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
 ; STRIDED:       for.end.loopexit:
 ; STRIDED-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP17]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
 ; STRIDED-NEXT:    br label [[FOR_END]]

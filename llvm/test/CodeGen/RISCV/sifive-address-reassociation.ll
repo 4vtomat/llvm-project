@@ -117,28 +117,28 @@ define i64 @sct_1262([20 x i64]* %x) {
 ; RV32I-NEXT:    lw a4, 1924(a0)
 ; RV32I-NEXT:    mul a3, a2, a3
 ; RV32I-NEXT:    mulhu a5, a2, a1
-; RV32I-NEXT:    add a3, a5, a3
 ; RV32I-NEXT:    mul a4, a4, a1
-; RV32I-NEXT:    lw a5, 156(a0)
-; RV32I-NEXT:    lw a0, 152(a0)
 ; RV32I-NEXT:    add a3, a3, a4
+; RV32I-NEXT:    lw a4, 156(a0)
+; RV32I-NEXT:    lw a0, 152(a0)
+; RV32I-NEXT:    add a3, a5, a3
 ; RV32I-NEXT:    mul a2, a2, a1
-; RV32I-NEXT:    mul a1, a2, a5
+; RV32I-NEXT:    mul a1, a2, a4
 ; RV32I-NEXT:    mulhu a4, a2, a0
-; RV32I-NEXT:    add a1, a4, a1
 ; RV32I-NEXT:    mul a3, a3, a0
 ; RV32I-NEXT:    add a1, a1, a3
+; RV32I-NEXT:    add a1, a4, a1
 ; RV32I-NEXT:    mul a0, a2, a0
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: sct_1262:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    addi a1, a0, 1920
-; RV64I-NEXT:    ld a2, 1920(a0)
 ; RV64I-NEXT:    ld a1, 152(a1)
-; RV64I-NEXT:    ld a0, 152(a0)
-; RV64I-NEXT:    mul a1, a2, a1
-; RV64I-NEXT:    mul a0, a1, a0
+; RV64I-NEXT:    ld a2, 152(a0)
+; RV64I-NEXT:    ld a0, 1920(a0)
+; RV64I-NEXT:    mul a1, a1, a2
+; RV64I-NEXT:    mul a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
 ; RV32ZBA-LABEL: sct_1262:
@@ -150,28 +150,28 @@ define i64 @sct_1262([20 x i64]* %x) {
 ; RV32ZBA-NEXT:    lw a4, 1924(a0)
 ; RV32ZBA-NEXT:    mul a3, a2, a3
 ; RV32ZBA-NEXT:    mulhu a5, a2, a1
-; RV32ZBA-NEXT:    add a3, a5, a3
 ; RV32ZBA-NEXT:    mul a4, a4, a1
-; RV32ZBA-NEXT:    lw a5, 156(a0)
-; RV32ZBA-NEXT:    lw a0, 152(a0)
 ; RV32ZBA-NEXT:    add a3, a3, a4
+; RV32ZBA-NEXT:    lw a4, 156(a0)
+; RV32ZBA-NEXT:    lw a0, 152(a0)
+; RV32ZBA-NEXT:    add a3, a5, a3
 ; RV32ZBA-NEXT:    mul a2, a2, a1
-; RV32ZBA-NEXT:    mul a1, a2, a5
+; RV32ZBA-NEXT:    mul a1, a2, a4
 ; RV32ZBA-NEXT:    mulhu a4, a2, a0
-; RV32ZBA-NEXT:    add a1, a4, a1
 ; RV32ZBA-NEXT:    mul a3, a3, a0
 ; RV32ZBA-NEXT:    add a1, a1, a3
+; RV32ZBA-NEXT:    add a1, a4, a1
 ; RV32ZBA-NEXT:    mul a0, a2, a0
 ; RV32ZBA-NEXT:    ret
 ;
 ; RV64ZBA-LABEL: sct_1262:
 ; RV64ZBA:       # %bb.0: # %entry
 ; RV64ZBA-NEXT:    addi a1, a0, 1920
-; RV64ZBA-NEXT:    ld a2, 1920(a0)
 ; RV64ZBA-NEXT:    ld a1, 152(a1)
-; RV64ZBA-NEXT:    ld a0, 152(a0)
-; RV64ZBA-NEXT:    mul a1, a2, a1
-; RV64ZBA-NEXT:    mul a0, a1, a0
+; RV64ZBA-NEXT:    ld a2, 152(a0)
+; RV64ZBA-NEXT:    ld a0, 1920(a0)
+; RV64ZBA-NEXT:    mul a1, a1, a2
+; RV64ZBA-NEXT:    mul a0, a0, a1
 ; RV64ZBA-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds [20 x i64], [20 x i64]* %x, i64 12
