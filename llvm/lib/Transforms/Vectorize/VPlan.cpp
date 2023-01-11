@@ -58,6 +58,10 @@
 using namespace llvm;
 extern cl::opt<bool> EnableVPlanNativePath;
 
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
+#endif
+
 #define DEBUG_TYPE "vplan"
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -622,15 +626,23 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   Value *RVLArg = State.Builder.CreateZExtOrTrunc(
       RVL, Type::getInt64Ty(State.Builder.getContext()));
 
-  // RVL must be clamped by the number of elements that corresponds to the
-  // maximum safe dependence distance.
   assert(State.MaxSafeNumElems != 0 &&
          "Max safe number of elements that can be vectorized cannot be 0.");
-  if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems) {
-    Constant *MaxSafe =
-        ConstantInt::get(RVLArg->getType(), State.MaxSafeNumElems);
-    RVLArg =
-        State.Builder.CreateBinaryIntrinsic(Intrinsic::umin, RVLArg, MaxSafe);
+  // Clamp RVL for finite dependence distances and user provided upper bounds
+  if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems ||
+      LoopVectorizerVLUpperBound) {
+    uint64_t MaxRVL;
+    if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems &&
+        LoopVectorizerVLUpperBound)
+      MaxRVL = std::min(State.MaxSafeNumElems, LoopVectorizerVLUpperBound.getValue());
+    else
+      MaxRVL = State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems
+                   ? State.MaxSafeNumElems
+                   : LoopVectorizerVLUpperBound;
+
+    Constant *RVLUpperBound = ConstantInt::get(RVLArg->getType(), MaxRVL);
+    RVLArg = State.Builder.CreateBinaryIntrinsic(Intrinsic::umin, RVLArg,
+                                                 RVLUpperBound);
   }
 
   assert(State.LMULExp != 4 && State.LMULExp <= 7 &&

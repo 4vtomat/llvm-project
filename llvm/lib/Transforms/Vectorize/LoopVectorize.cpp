@@ -425,6 +425,10 @@ cl::opt<bool> llvm::AdhocSkipVectorizeInPrelink(
     cl::Hidden,
     cl::desc("Allow the compiler to skip vectorization for loops of non-unit "
              "stride memory access(es)"));
+
+cl::opt<uint64_t> LoopVectorizerVLUpperBound(
+    "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
+    cl::desc("Specify the maximum vl of a vectorized loop"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
