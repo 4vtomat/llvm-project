@@ -225,14 +225,10 @@ struct PrototypeDescriptor {
   static const PrototypeDescriptor Mask;
   static const PrototypeDescriptor Vector;
   static const PrototypeDescriptor VL;
-<<<<<<< HEAD
-  static std::optional<PrototypeDescriptor>
-=======
 #ifdef SIFIVE_CUSTOMIZATION
   static const PrototypeDescriptor NTLDomainType;
 #endif // SIFIVE_CUSTOMIZATION
-  static llvm::Optional<PrototypeDescriptor>
->>>>>>> origin/sifive-dev
+  static std::optional<PrototypeDescriptor>
   parsePrototypeDescriptor(llvm::StringRef PrototypeStr);
 };
 
