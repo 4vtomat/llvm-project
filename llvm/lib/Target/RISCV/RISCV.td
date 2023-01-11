@@ -47,6 +47,11 @@ def FeatureStdExtSs
     : SubtargetFeature<"ss", "HasStdExtSs", "true",
                        "'Ss' (Supervisor Architecture)",
                        []>;
+
+def FeatureStdExtSvbare
+    : SubtargetFeature<"svbare", "HasStdExtSvbare", "true",
+                       "'Svbare'",
+                       []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

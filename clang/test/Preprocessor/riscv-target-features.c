@@ -57,6 +57,7 @@
 // CHECK-NOT: __riscv_zicntr
 // CHECK-NOT: __riscv_zihpm
 // CHECK-NOT: __riscv_ss
+// CHECK-NOT: __riscv_svbare
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __riscv_zvkb
 // CHECK-NOT: __riscv_zvkg
@@ -545,6 +546,12 @@
 // RUN: %clang -target riscv64 -march=rv64iss  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SS-EXT %s
 // CHECK-SS-EXT: __riscv_ss  1012000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32isvbare -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVBARE-EXT %s
+// RUN: %clang -target riscv64 -march=rv64isvbare  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVBARE-EXT %s
+// CHECK-SVBARE-EXT: __riscv_svbare  1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
