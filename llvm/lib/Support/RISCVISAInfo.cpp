@@ -63,6 +63,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zifencei", RISCVExtensionVersion{2, 0}},
     {"zicntr", RISCVExtensionVersion{1, 0}},
     {"zihpm", RISCVExtensionVersion{1, 0}},
+    {"ss", RISCVExtensionVersion{1, 12}},
 #endif // SIFIVE_CUSTOMIZATION
 
     {"zihintpause", RISCVExtensionVersion{2, 0}},

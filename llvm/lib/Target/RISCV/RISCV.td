@@ -42,6 +42,11 @@ def FeatureStdExtZihpm
 def HasStdExtZihpm : Predicate<"Subtarget->hasStdExtZihpm()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZihpm),
                                 "'Zihpm' (Hardware Performance Counters)">;
+
+def FeatureStdExtSs
+    : SubtargetFeature<"ss", "HasStdExtSs", "true",
+                       "'Ss' (Supervisor Architecture)",
+                       []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

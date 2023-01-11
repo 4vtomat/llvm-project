@@ -44,6 +44,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zic64b %s -o - | FileCheck --check-prefix=RV32ZIC64B %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefix=RV32ZICNTR %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV32ZIHPM %s
+; RUN: llc -mtriple=riscv32 -mattr=+ss %s -o - | FileCheck --check-prefix=RV32SS %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV32SVNAPOT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV32SVPBMT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svinval %s -o - | FileCheck --check-prefix=RV32SVINVAL %s
@@ -102,6 +103,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zic64b %s -o - | FileCheck --check-prefix=RV64ZIC64B %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefix=RV64ZICNTR %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV64ZIHPM %s
+; RUN: llc -mtriple=riscv64 -mattr=+ss %s -o - | FileCheck --check-prefix=RV64SS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV64SVNAPOT %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV64SVPBMT %s
@@ -175,6 +177,7 @@
 ; RV32ZVKSH: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
 ; RV32ZICNTR: .attribute 5, "rv32i2p1_zicntr1p0_zicsr2p0"
 ; RV32ZIHPM: .attribute 5, "rv32i2p1_zicsr2p0_zihpm1p0"
+; RV32SS: .attribute 5, "rv32i2p1_ss1p12"
 
 ; RV64M: .attribute 5, "rv64i2p1_m2p0"
 ; RV64ZMMUL: .attribute 5, "rv64i2p1_zmmul1p0"
@@ -220,6 +223,7 @@
 ; RV64ZIC64B: .attribute 5, "rv64i2p1_zic64b1p0"
 ; RV64ZICNTR: .attribute 5, "rv64i2p1_zicntr1p0_zicsr2p0"
 ; RV64ZIHPM: .attribute 5, "rv64i2p1_zicsr2p0_zihpm1p0"
+; RV64SS: .attribute 5, "rv64i2p1_ss1p12"
 ; RV64ZAWRS: .attribute 5, "rv64i2p1_zawrs1p0"
 ; RV64ZICBOP: .attribute 5, "rv64i2p1_zicbop1p0"
 ; RV64SVNAPOT: .attribute 5, "rv64i2p1_svnapot1p0"
