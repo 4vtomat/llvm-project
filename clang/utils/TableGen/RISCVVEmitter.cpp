@@ -185,7 +185,7 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     else
       OS << "IsMasked = false;\n";
 #ifdef SIFIVE_CUSTOMIZATION
-    if (RVVI->getDefaultPolicy().isNTLPolicy())
+    if (RVVI->getPolicyAttrs().isNTLPolicy())
       OS << "  IsNontemporal = true;\n";
     else
       OS << "  IsNontemporal = false;\n";
@@ -196,7 +196,7 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  if (RVVI->getDefaultPolicy().isNTLPolicy() && !RVVI->hasManualCodegen()) {
+  if (RVVI->getPolicyAttrs().isNTLPolicy() && !RVVI->hasManualCodegen()) {
     OS << "// Handle NTL Operand"
        << "\n";
     OS << "{\n";
@@ -262,7 +262,7 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     OS << ", Ops.back()->getType()";
   OS << "};\n";
 #ifdef SIFIVE_CUSTOMIZATION
-  if (RVVI->getDefaultPolicy().isNTLPolicy() && !RVVI->hasManualCodegen()) {
+  if (RVVI->getPolicyAttrs().isNTLPolicy() && !RVVI->hasManualCodegen()) {
     OS << "  llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);\n";
     OS << "  CallInst *NTLCall = Builder.CreateCall(F, Ops, \"\");\n";
     OS << "  "

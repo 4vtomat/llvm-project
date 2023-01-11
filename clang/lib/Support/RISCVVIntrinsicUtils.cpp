@@ -1109,7 +1109,7 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   if (HasVL)
     NewPrototype.push_back(PrototypeDescriptor::VL);
 #ifdef SIFIVE_CUSTOMIZATION
-  if (DefaultPolicy.isNTLPolicy())
+  if (PolicyAttrs.isNTLPolicy())
     NewPrototype.push_back(PrototypeDescriptor::NTLDomainType);
 #endif // SIFIVE_CUSTOMIZATION
   return NewPrototype;
@@ -1211,7 +1211,7 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  if (DefaultPolicy.isNTLPolicy())
+  if (PolicyAttrs.isNTLPolicy())
     appendPolicySuffix("_ntl");
 #endif // SIFIVE_CUSTOMIZATION
 }
