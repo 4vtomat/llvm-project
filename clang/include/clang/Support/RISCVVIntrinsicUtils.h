@@ -115,11 +115,15 @@ struct Policy {
   PolicyType TailPolicy = Omit;
   PolicyType MaskPolicy = Omit;
   bool IntrinsicWithoutMU = false;
-  Policy() : PolicyNone(true) {}
+#ifdef SIFIVE_CUSTOMIZATION
+  bool IsNontemporal = false;
+  Policy(bool _IsNontemporal = false)
+      : PolicyNone(true), IsNontemporal(_IsNontemporal) {}
   Policy(PolicyType _TailPolicy, PolicyType _MaskPolicy,
-         bool _IntrinsicWithoutMU = false)
+         bool _IntrinsicWithoutMU = false, bool IsNontemporal = false)
       : TailPolicy(_TailPolicy), MaskPolicy(_MaskPolicy),
-        IntrinsicWithoutMU(_IntrinsicWithoutMU) {}
+        IntrinsicWithoutMU(_IntrinsicWithoutMU), IsNontemporal(IsNontemporal) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isTAMAPolicy() const {
     return TailPolicy == Agnostic && MaskPolicy == Agnostic;
@@ -163,12 +167,19 @@ struct Policy {
     return MaskPolicy == Undisturbed && TailPolicy == Omit;
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
+  bool isNTLPolicy() const { return IsNontemporal; }
+#endif // SIFIVE_CUSTOMIZATION
+
   bool isPolicyNonePolicy() const { return PolicyNone; }
 
   bool operator==(const Policy &Other) const {
     return PolicyNone == Other.PolicyNone && TailPolicy == Other.TailPolicy &&
            MaskPolicy == Other.MaskPolicy &&
-           IntrinsicWithoutMU == Other.IntrinsicWithoutMU;
+#ifdef SIFIVE_CUSTOMIZATION
+           IntrinsicWithoutMU == Other.IntrinsicWithoutMU &&
+           IsNontemporal == Other.IsNontemporal;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool operator!=(const Policy &Other) const { return !(*this == Other); }
@@ -177,7 +188,11 @@ struct Policy {
     // Just for maintain the old order for quick test.
     if (MaskPolicy != Other.MaskPolicy)
       return Other.MaskPolicy < MaskPolicy;
-    return TailPolicy < Other.TailPolicy;
+#ifdef SIFIVE_CUSTOMIZATION
+    if (TailPolicy != Other.TailPolicy)
+      return TailPolicy < Other.TailPolicy;
+    return IsNontemporal < Other.IsNontemporal;
+#endif // SIFIVE_CUSTOMIZATION
   }
 };
 
@@ -210,7 +225,14 @@ struct PrototypeDescriptor {
   static const PrototypeDescriptor Mask;
   static const PrototypeDescriptor Vector;
   static const PrototypeDescriptor VL;
+<<<<<<< HEAD
   static std::optional<PrototypeDescriptor>
+=======
+#ifdef SIFIVE_CUSTOMIZATION
+  static const PrototypeDescriptor NTLDomainType;
+#endif // SIFIVE_CUSTOMIZATION
+  static llvm::Optional<PrototypeDescriptor>
+>>>>>>> origin/sifive-dev
   parsePrototypeDescriptor(llvm::StringRef PrototypeStr);
 };
 
@@ -495,6 +517,10 @@ public:
   static llvm::SmallVector<Policy>
       getSupportedMaskedPolicies(bool HasTailPolicy, bool HasMaskPolicy);
 
+#ifdef SIFIVE_CUSTOMIZATION
+  static void appendNontemporalInPolicyList(llvm::SmallVector<Policy> &P);
+#endif // SIFIVE_CUSTOMIZATION
+
   static void updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
                                    bool IsPrototypeDefaultTU, std::string &Name,
                                    std::string &BuiltinName,
@@ -567,6 +593,9 @@ struct RVVIntrinsicRecord {
   bool IsPrototypeDefaultTU : 1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
+#ifdef SIFIVE_CUSTOMIZATION
+  bool HasNontemporalOperand : 1;
+#endif // SIFIVE_CUSTOMIZATION
   uint8_t UnMaskedPolicyScheme : 2;
   uint8_t MaskedPolicyScheme : 2;
 };

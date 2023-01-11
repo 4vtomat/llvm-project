@@ -272,11 +272,28 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
             /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
             Record.IsPrototypeDefaultTU, UnMaskedPolicyScheme, Policy());
 
+#ifdef SIFIVE_CUSTOMIZATION
+    llvm::SmallVector<PrototypeDescriptor> NTLProtoSeq =
+        RVVIntrinsic::computeBuiltinTypes(
+            BasicProtoSeq, /*IsMasked=*/false,
+            /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
+            Record.IsPrototypeDefaultTU, UnMaskedPolicyScheme,
+            Policy(/*IsNontemporal*/ true));
+#endif // SIFIVE_CUSTOMIZATION
+
     llvm::SmallVector<PrototypeDescriptor> ProtoMaskSeq =
         RVVIntrinsic::computeBuiltinTypes(
             BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
             Record.HasVL, Record.NF, Record.IsPrototypeDefaultTU,
             MaskedPolicyScheme, Policy());
+
+#ifdef SIFIVE_CUSTOMIZATION
+    llvm::SmallVector<PrototypeDescriptor> NTLProtoMaskSeq =
+        RVVIntrinsic::computeBuiltinTypes(
+            BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
+            Record.HasVL, Record.NF, Record.IsPrototypeDefaultTU,
+            MaskedPolicyScheme, Policy(/*IsNontemporal*/ true));
+#endif // SIFIVE_CUSTOMIZATION
 
     bool UnMaskedHasPolicy = UnMaskedPolicyScheme != PolicyScheme::SchemeNone;
     bool MaskedHasPolicy = MaskedPolicyScheme != PolicyScheme::SchemeNone;
@@ -289,6 +306,13 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
     llvm::SmallVector<Policy> SupportedMaskedPolicies =
         RVVIntrinsic::getSupportedMaskedPolicies(Record.HasTailPolicy,
                                                  Record.HasMaskPolicy);
+
+#ifdef SIFIVE_CUSTOMIZATION
+    if (Record.HasNontemporalOperand) {
+      RVVIntrinsic::appendNontemporalInPolicyList(SupportedUnMaskedPolicies);
+      RVVIntrinsic::appendNontemporalInPolicyList(SupportedMaskedPolicies);
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     for (unsigned int TypeRangeMaskShift = 0;
          TypeRangeMaskShift <= static_cast<unsigned int>(BasicType::MaxOffset);
@@ -343,6 +367,11 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         Optional<RVVTypes> Types =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoSeq);
 
+#if SIFIVE_CUSTOMIZATION
+        Optional<RVVTypes> NTLTypes =
+            TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, NTLProtoSeq);
+#endif // SIFIVE_CUSTOMIZATION
+
         // Ignored to create new intrinsic if there are any illegal types.
         if (!Types.has_value())
           continue;
@@ -356,6 +385,15 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false, *Types,
                          UnMaskedHasPolicy, Policy(),
                          Record.IsPrototypeDefaultTU);
+
+#if SIFIVE_CUSTOMIZATION
+        // Create NTL non-masked intrinsic.
+        if (Record.HasNontemporalOperand)
+          InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false,
+                           *NTLTypes, UnMaskedHasPolicy,
+                           Policy(/*IsNontemporal*/ true),
+                           Record.IsPrototypeDefaultTU);
+#endif // SIFIVE_CUSTOMIZATION
 
         // Create non-masked policy intrinsic.
         if (Record.UnMaskedPolicyScheme != PolicyScheme::SchemeNone) {
@@ -380,6 +418,17 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
                          *MaskTypes, MaskedHasPolicy, Policy(),
                          Record.IsPrototypeDefaultTU);
+#if SIFIVE_CUSTOMIZATION
+        // Create NTL masked intrinsic.
+        Optional<RVVTypes> NTLMaskTypes = TypeCache.computeTypes(
+            BaseType, Log2LMUL, Record.NF, NTLProtoMaskSeq);
+        if (Record.HasNontemporalOperand)
+          InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
+                           *NTLMaskTypes, MaskedHasPolicy,
+                           Policy(/*IsNontemporal*/ true),
+                           Record.IsPrototypeDefaultTU);
+#endif // SIFIVE_CUSTOMIZATION
+
         if (Record.MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         // Create masked policy intrinsic.

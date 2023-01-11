@@ -10,9 +10,8 @@ define <vscale x 2 x i32> @quux(<vscale x 2 x i8> %arg, <vscale x 2 x i32> %arg1
 ; CHECK-NEXT:    srli a0, a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vsext.vf2 v10, v8
-; CHECK-NEXT:    vwadd.wv v8, v9, v10
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, ma
-; CHECK-NEXT:    vadd.vi v9, v8, 0
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, tu, ma
+; CHECK-NEXT:    vwadd.wv v9, v9, v10
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
 bb:

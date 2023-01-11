@@ -19518,6 +19518,33 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   constexpr unsigned TAIL_AGNOSTIC_MASK_AGNOSTIC = 3;
   int PolicyAttrs = TAIL_UNDISTURBED;
   bool IsMasked = false;
+#ifdef SIFIVE_CUSTOMIZATION
+  bool IsNontemporal = false;
+
+  auto createNTLNode = [&Ops, this]() {
+    // Create NTL node from args
+    ConstantInt *NTLDomain =
+        llvm::dyn_cast<llvm::ConstantInt>(Ops[Ops.size() - 1]);
+    assert(NTLDomain != nullptr &&
+           "Domain value must to a constant in compilation-time.");
+    llvm::MDNode *NTLNode = llvm::MDNode::get(
+        getLLVMContext(), llvm::ConstantAsMetadata::get(
+                              Builder.getInt32(NTLDomain->getZExtValue())));
+    Ops.erase(&Ops[Ops.size() - 1]);
+    return NTLNode;
+  };
+
+  auto createNTLCall = [this](SmallVectorImpl<llvm::Value *> &Ops,
+                              Intrinsic::ID ID,
+                              llvm::SmallVector<llvm::Type *, 2> IntrinsicTypes,
+                              llvm::MDNode *NTLNode) {
+    // Set metadata with NTL node
+    llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+    CallInst *NTLCall = Builder.CreateCall(F, Ops, "");
+    NTLCall->setMetadata(CGM.getModule().getMDKindID("nontemporal"), NTLNode);
+    return NTLCall;
+  };
+#endif // SIFIVE_CUSTOMIZATION
 
   // Required for overloaded intrinsics.
   llvm::SmallVector<llvm::Type *, 2> IntrinsicTypes;

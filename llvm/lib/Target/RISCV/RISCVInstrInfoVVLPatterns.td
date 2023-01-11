@@ -546,6 +546,22 @@ multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                      result_reg_class:$rs1,
                      op2_reg_class:$rs2,
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
+#ifdef SIFIVE_CUSTOMIZATION
+  // SIFIVE: Cherry-picked from upstream.
+  // Tail undisturbed
+  def : Pat<(riscv_vp_merge_vl true_mask,
+             (result_type (vop
+                           result_reg_class:$rs1,
+                           (op2_type op2_reg_class:$rs2),
+                           srcvalue,
+                           true_mask,
+                           VLOpFrag)),
+             result_reg_class:$rs1, VLOpFrag),
+            (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_TIED")
+                     result_reg_class:$rs1,
+                     op2_reg_class:$rs2,
+                     GPR:$vl, sew, TAIL_UNDISTURBED_MASK_UNDISTURBED)>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 multiclass VPatBinaryVL_XI<SDNode vop,

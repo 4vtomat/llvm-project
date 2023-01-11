@@ -206,6 +206,10 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // This builtin support mask agnostic and undisturbed policy.
   bit HasMaskPolicy = true;
 
+#ifdef SIFIVE_CUSTOMIZATION
+  bit HasNontemporalOperand = false;
+#endif // SIFIVE_CUSTOMIZATION
+
   // This builtin prototype is tail undisturbed policy. It also means the
   // default polcy without suffix is tail undisturbed.
   bit IsPrototypeDefaultTU = false;
@@ -606,6 +610,9 @@ let SupportOverloading = false,
 }
 
 let SupportOverloading = false,
+#ifdef SIFIVE_CUSTOMIZATION
+    HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
     UnMaskedPolicyScheme = HasPassthruOperand in {
   multiclass RVVVLEBuiltin<list<string> types> {
     let Name = NAME # "_v",
@@ -627,8 +634,16 @@ multiclass RVVVLEFFBuiltin<list<string> types> {
       MaskedIRName = "vleff_mask",
       SupportOverloading = false,
       UnMaskedPolicyScheme = HasPassthruOperand,
+#ifdef SIFIVE_CUSTOMIZATION
+      HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
       {
+#ifdef SIFIVE_CUSTOMIZATION
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
         if (IsMasked) {
           // Move mask to right before vl.
           std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
@@ -645,12 +660,27 @@ multiclass RVVVLEFFBuiltin<list<string> types> {
         Value *NewVL = Ops[2];
         Ops.erase(Ops.begin() + 2);
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-        llvm::Value *LoadValue = Builder.CreateCall(F, Ops, "");
+#ifdef SIFIVE_CUSTOMIZATION
+        llvm::Value *LoadValue;
+        if (IsNontemporal)
+          LoadValue = createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+        else
+          LoadValue = Builder.CreateCall(F, Ops, "");
+#endif // SIFIVE_CUSTOMIZATION
         llvm::Value *V = Builder.CreateExtractValue(LoadValue, {0});
         // Store new_vl.
         clang::CharUnits Align;
+        
+#ifdef SIFIVE_CUSTOMIZATION
+        int NTLoffset = 0;
+        if (IsNontemporal)
+          NTLoffset = 1;
+#endif // SIFIVE_CUSTOMIZATION
+        
         if (IsMasked)
-          Align = CGM.getNaturalPointeeTypeAlignment(E->getArg(E->getNumArgs()-2)->getType());
+#ifdef SIFIVE_CUSTOMIZATION
+          Align = CGM.getNaturalPointeeTypeAlignment(E->getArg(E->getNumArgs()-2-NTLoffset)->getType());
+#endif // SIFIVE_CUSTOMIZATION
         else
           Align = CGM.getNaturalPointeeTypeAlignment(E->getArg(1)->getType());
         llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {1});
@@ -673,6 +703,9 @@ multiclass RVVVLSEBuiltin<list<string> types> {
       IRName = "vlse",
       MaskedIRName ="vlse_mask",
       SupportOverloading = false,
+#ifdef SIFIVE_CUSTOMIZATION
+      HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand in {
     foreach type = types in {
       def : RVVOutBuiltin<"v", "vPCet", type>;
@@ -684,7 +717,10 @@ multiclass RVVVLSEBuiltin<list<string> types> {
 }
 
 multiclass RVVIndexedLoad<string op> {
-  let UnMaskedPolicyScheme = HasPassthruOperand in {
+#ifdef SIFIVE_CUSTOMIZATION
+  let HasNontemporalOperand = true, 
+#endif // SIFIVE_CUSTOMIZATION
+      UnMaskedPolicyScheme = HasPassthruOperand in {
     foreach type = TypeList in {
       foreach eew_list = EEWList[0-2] in {
         defvar eew = eew_list[0];
@@ -711,19 +747,31 @@ multiclass RVVIndexedLoad<string op> {
 
 let HasMaskedOffOperand = false,
     MaskedPolicyScheme = NonePolicy,
+#ifdef SIFIVE_CUSTOMIZATION
+    HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
     ManualCodegen = [{
-      if (IsMasked) {
-        // Builtin: (mask, ptr, value, vl). Intrinsic: (value, ptr, mask, vl)
-        std::swap(Ops[0], Ops[2]);
-      } else {
-        // Builtin: (ptr, value, vl). Intrinsic: (value, ptr, vl)
-        std::swap(Ops[0], Ops[1]);
+#ifdef SIFIVE_CUSTOMIZATION
+      {
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        if (IsMasked) {
+          // Builtin: (mask, ptr, value, vl). Intrinsic: (value, ptr, mask, vl)
+          std::swap(Ops[0], Ops[2]);
+        } else {
+          // Builtin: (ptr, value, vl). Intrinsic: (value, ptr, vl)
+          std::swap(Ops[0], Ops[1]);
+        }
+        Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+        if (IsMasked)
+          IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
+        else
+          IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType()};
+        if(IsNontemporal)
+          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
       }
-      Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-      if (IsMasked)
-        IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
-      else
-        IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType()};
+#endif // SIFIVE_CUSTOMIZATION
     }] in {
   class RVVVSEMaskBuiltin : RVVBuiltin<"m", "0PUem", "c"> {
     let Name = "vsm_v";
@@ -750,19 +798,31 @@ multiclass RVVVSSEBuiltin<list<string> types> {
       MaskedIRName = "vsse_mask",
       HasMaskedOffOperand = false,
       MaskedPolicyScheme = NonePolicy,
+#ifdef SIFIVE_CUSTOMIZATION
+      HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
-        if (IsMasked) {
-          // Builtin: (mask, ptr, stride, value, vl). Intrinsic: (value, ptr, stride, mask, vl)
-          std::swap(Ops[0], Ops[3]);
-        } else {
-          // Builtin: (ptr, stride, value, vl). Intrinsic: (value, ptr, stride, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
+        {
+#ifdef SIFIVE_CUSTOMIZATION
+          llvm::MDNode *NTLNode;
+          if(IsNontemporal)
+            NTLNode = createNTLNode();
+          if (IsMasked) {
+            // Builtin: (mask, ptr, stride, value, vl). Intrinsic: (value, ptr, stride, mask, vl)
+            std::swap(Ops[0], Ops[3]);
+          } else {
+            // Builtin: (ptr, stride, value, vl). Intrinsic: (value, ptr, stride, vl)
+            std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
+          }
+          Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+          if (IsMasked)
+            IntrinsicTypes = {Ops[0]->getType(), Ops[4]->getType()};
+          else
+            IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
+          if(IsNontemporal)
+            return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
         }
-        Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-        if (IsMasked)
-          IntrinsicTypes = {Ops[0]->getType(), Ops[4]->getType()};
-        else
-          IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
       }] in {
     foreach type = types in {
       def : RVVBuiltin<"v", "0Petv", type>;
@@ -776,19 +836,31 @@ multiclass RVVVSSEBuiltin<list<string> types> {
 multiclass RVVIndexedStore<string op> {
   let HasMaskedOffOperand = false,
       MaskedPolicyScheme = NonePolicy,
+#ifdef SIFIVE_CUSTOMIZATION
+      HasNontemporalOperand = true,
+#endif // SIFIVE_CUSTOMIZATION
       ManualCodegen = [{
-        if (IsMasked) {
-          // Builtin: (mask, ptr, index, value, vl). Intrinsic: (value, ptr, index, mask, vl)
-          std::swap(Ops[0], Ops[3]);
-        } else {
-          // Builtin: (ptr, index, value, vl). Intrinsic: (value, ptr, index, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
+        {
+#ifdef SIFIVE_CUSTOMIZATION
+          llvm::MDNode *NTLNode;
+          if(IsNontemporal)
+            NTLNode = createNTLNode();
+          if (IsMasked) {
+            // Builtin: (mask, ptr, index, value, vl). Intrinsic: (value, ptr, index, mask, vl)
+            std::swap(Ops[0], Ops[3]);
+          } else {
+            // Builtin: (ptr, index, value, vl). Intrinsic: (value, ptr, index, vl)
+            std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
+          }
+          Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+          if (IsMasked)
+            IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[4]->getType()};
+          else
+            IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[3]->getType()};
+          if(IsNontemporal)
+            return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
         }
-        Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-        if (IsMasked)
-          IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[4]->getType()};
-        else
-          IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[3]->getType()};
       }] in {
       foreach type = TypeList in {
         foreach eew_list = EEWList[0-2] in {
@@ -917,6 +989,11 @@ multiclass RVVUnitStridedSegLoad<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -944,7 +1021,13 @@ multiclass RVVUnitStridedSegLoad<string op> {
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
       clang::CharUnits Align =
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
       llvm::Value *V;
@@ -982,6 +1065,11 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -1010,7 +1098,13 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
       clang::CharUnits Align =
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
       for (unsigned I = 0; I < NF; ++I) {
@@ -1049,6 +1143,11 @@ multiclass RVVStridedSegLoad<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -1078,7 +1177,13 @@ multiclass RVVStridedSegLoad<string op> {
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
       clang::CharUnits Align =
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
       llvm::Value *V;
@@ -1112,6 +1217,11 @@ multiclass RVVIndexedSegLoad<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
       SmallVector<llvm::Value*, 12> Operands;
 
@@ -1141,7 +1251,13 @@ multiclass RVVIndexedSegLoad<string op> {
       IntrinsicTypes = {ResultType, IndexOperand->getType(), Ops.back()->getType()};
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
       clang::CharUnits Align =
           CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
       llvm::Value *V;
@@ -1192,6 +1308,11 @@ multiclass RVVUnitStridedSegStore<string op> {
             MaskedPolicyScheme = NonePolicy,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       if (IsMasked) {
         // Builtin: (mask, ptr, val0, val1, ..., vl)
         // Intrinsic: (val0, val1, ..., ptr, mask, vl)
@@ -1206,6 +1327,10 @@ multiclass RVVUnitStridedSegStore<string op> {
         IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
         assert(Ops.size() == NF + 2);
       }
+#ifdef SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
     }
             }] in {
           defvar V = VString<nf, /*signed=*/true>.S;
@@ -1237,6 +1362,11 @@ multiclass RVVStridedSegStore<string op> {
             MaskedPolicyScheme = NonePolicy,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       if (IsMasked) {
         // Builtin: (mask, ptr, stride, val0, val1, ..., vl).
         // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
@@ -1250,6 +1380,10 @@ multiclass RVVStridedSegStore<string op> {
         assert(Ops.size() == NF + 3);
       }
       IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
+#ifdef SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
     }
             }] in {
           defvar V = VString<nf, /*signed=*/true>.S;
@@ -1277,6 +1411,11 @@ multiclass RVVIndexedSegStore<string op> {
             MaskedPolicyScheme = NonePolicy,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
+#endif // SIFIVE_CUSTOMIZATION
       if (IsMasked) {
         // Builtin: (mask, ptr, index, val0, val1, ..., vl)
         // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
@@ -1293,6 +1432,10 @@ multiclass RVVIndexedSegStore<string op> {
                           Ops[NF + 1]->getType(), Ops[NF + 2]->getType()};
         assert(Ops.size() == NF + 3);
       }
+#ifdef SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
     }
             }] in {
           defvar V = VString<nf, /*signed=*/true>.S;
@@ -1679,7 +1822,10 @@ defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
 // 7.8 Vector Load/Store Segment Instructions
-let UnMaskedPolicyScheme = HasPassthruOperand in {
+let UnMaskedPolicyScheme = HasPassthruOperand,
+#ifdef SIFIVE_CUSTOMIZATION
+    HasNontemporalOperand = true in {
+#endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegLoad<"vlseg">;
 defm : RVVUnitStridedSegLoadFF<"vlseg">;
 defm : RVVStridedSegLoad<"vlsseg">;
@@ -1687,7 +1833,10 @@ defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
 let UnMaskedPolicyScheme = NonePolicy,
-    MaskedPolicyScheme = NonePolicy in {
+    MaskedPolicyScheme = NonePolicy,
+#ifdef SIFIVE_CUSTOMIZATION
+    HasNontemporalOperand = true in {
+#endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegStore<"vsseg">;
 defm : RVVStridedSegStore<"vssseg">;
 defm : RVVIndexedSegStore<"vsuxseg">;
