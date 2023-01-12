@@ -17,10 +17,6 @@ def riscv_vmv_x_s : SDNode<"RISCVISD::VMV_X_S",
                            SDTypeProfile<1, 1, [SDTCisInt<0>, SDTCisVec<1>,
                                                 SDTCisInt<1>]>>;
 
-def riscv_vfmv_f_s : SDNode<"RISCVISD::VFMV_F_S",
-                            SDTypeProfile<1, 1, [SDTCisFP<0>, SDTCisVec<1>,
-                                                 SDTCisFP<1>]>>;
-
 def riscv_read_vlenb : SDNode<"RISCVISD::READ_VLENB",
                               SDTypeProfile<1, 0, [SDTCisVT<0, XLenVT>]>>;
 
@@ -6956,9 +6952,8 @@ let Predicates = [HasVInstructionsAnyF] in {
 foreach fvti = AllFloatVectors in {
   defvar instr = !cast<Instruction>("PseudoVFMV_"#fvti.ScalarSuffix#"_S_" #
                                     fvti.LMul.MX);
-  def : Pat<(riscv_vfmv_f_s (fvti.Vector fvti.RegClass:$rs2)),
-            (!cast<Instruction>("PseudoVFMV_" # fvti.ScalarSuffix # "_S_" #
-                                fvti.LMul.MX) $rs2, fvti.Log2SEW)>;
+  def : Pat<(fvti.Scalar (int_riscv_vfmv_f_s (fvti.Vector fvti.RegClass:$rs2))),
+                         (instr $rs2, fvti.Log2SEW)>;
 
   def : Pat<(fvti.Vector (int_riscv_vfmv_s_f (fvti.Vector fvti.RegClass:$rs1),
                          (fvti.Scalar fvti.ScalarRegClass:$rs2), VLOpFrag)),
