@@ -91,6 +91,10 @@ def FeatureStdExtSscounterenw
 def FeatureStdExtSsu64xl
     : SubtargetFeature<"ssu64xl", "HasStdExtSsu64xl", "true",
                        "'Ssu64xl' (sstatus.UXL=64)", []>;
+
+def FeatureStdExtSstc
+    : SubtargetFeature<"sstc", "HasStdExtSstc", "true",
+                       "'Sstc' (supervisor-mode timer interrupts.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
