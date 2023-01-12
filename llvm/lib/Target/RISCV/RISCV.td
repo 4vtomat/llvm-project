@@ -100,6 +100,12 @@ def FeatureStdExtSsstateen
     : SubtargetFeature<"ssstateen", "HasStdExtSsstateen", "true",
                        "'Ssstateen' (Supervisor-mode view of the state-enable "
                        "extension.)", []>;
+
+def FeatureStdExtShcounterenw
+    : SubtargetFeature<"shcounterenw", "HasStdExtShcounterenw", "true",
+                       "'Shcounterenw' (For any hpmcounter that is not read-only "
+                       "zero, the corresponding bit in hcounteren must be "
+                       "writable.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
