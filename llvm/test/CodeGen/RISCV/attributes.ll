@@ -55,6 +55,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV32SSTC %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV32SSSTATEEN %s
 ; RUN: llc -mtriple=riscv32 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV32SHCOUNTERENW %s
+; RUN: llc -mtriple=riscv32 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV32SHVSTVALA %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV32SVNAPOT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV32SVPBMT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svinval %s -o - | FileCheck --check-prefix=RV32SVINVAL %s
@@ -124,6 +125,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV64SSTC %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV64SSSTATEEN %s
 ; RUN: llc -mtriple=riscv64 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV64SHCOUNTERENW %s
+; RUN: llc -mtriple=riscv64 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV64SHVSTVALA %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV64SVNAPOT %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV64SVPBMT %s
@@ -208,6 +210,7 @@
 ; RV32SSTC: .attribute 5, "rv32i2p1_sstc1p0"
 ; RV32SSSTATEEN: .attribute 5, "rv32i2p1_ssstateen1p0"
 ; RV32SHCOUNTERENW: .attribute 5, "rv32i2p1_shcounterenw1p0"
+; RV32SHVSTVALA: .attribute 5, "rv32i2p1_shvstvala1p0"
 
 ; RV64M: .attribute 5, "rv64i2p1_m2p0"
 ; RV64ZMMUL: .attribute 5, "rv64i2p1_zmmul1p0"
@@ -264,6 +267,7 @@
 ; RV64SSTC: .attribute 5, "rv64i2p1_sstc1p0"
 ; RV64SSSTATEEN: .attribute 5, "rv64i2p1_ssstateen1p0"
 ; RV64SHCOUNTERENW: .attribute 5, "rv64i2p1_shcounterenw1p0"
+; RV64SHVSTVALA: .attribute 5, "rv64i2p1_shvstvala1p0"
 ; RV64ZAWRS: .attribute 5, "rv64i2p1_zawrs1p0"
 ; RV64ZICBOP: .attribute 5, "rv64i2p1_zicbop1p0"
 ; RV64SVNAPOT: .attribute 5, "rv64i2p1_svnapot1p0"

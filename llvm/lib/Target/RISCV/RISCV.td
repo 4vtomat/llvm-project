@@ -106,6 +106,11 @@ def FeatureStdExtShcounterenw
                        "'Shcounterenw' (For any hpmcounter that is not read-only "
                        "zero, the corresponding bit in hcounteren must be "
                        "writable.)", []>;
+
+def FeatureStdExtShvstvala
+    : SubtargetFeature<"shvstvala", "HasStdExtShvstvala", "true",
+                       "'Shvstvala' (vstval must be written in all cases "
+                       "described above for stval.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
