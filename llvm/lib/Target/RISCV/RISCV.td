@@ -52,6 +52,12 @@ def FeatureStdExtSvbare
     : SubtargetFeature<"svbare", "HasStdExtSvbare", "true",
                        "'Svbare'",
                        []>;
+
+def FeatureStdExtSsptead
+    : SubtargetFeature<"ssptead", "HasStdExtSsptead", "true",
+                       "'Ssptead' (Page-fault exceptions are raised when a page "
+                       "is accessed when A bit is clear, or written when D bit "
+                       "is clear)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
