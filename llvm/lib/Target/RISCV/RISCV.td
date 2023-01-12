@@ -26,6 +26,24 @@ def HasStdExtZifencei : Predicate<"Subtarget->hasStdExtZifencei()">,
                              AssemblerPredicate<(all_of FeatureStdExtZifencei),
                              "'Zifencei' (Instruction-Fetch Fence)">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZicntr
+    : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
+                       "'Zicntr' (Base Counters and Timers)",
+                       [FeatureStdExtZicsr]>;
+def HasStdExtZicntr : Predicate<"Subtarget->hasStdExtZicntr()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZicntr),
+                                "'Zicntr' (Base Counters and Timers)">;
+
+def FeatureStdExtZihpm
+    : SubtargetFeature<"zihpm", "HasStdExtZihpm", "true",
+                       "'Zihpm' (Hardware Performance Counters)",
+                       [FeatureStdExtZicsr]>;
+def HasStdExtZihpm : Predicate<"Subtarget->hasStdExtZihpm()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZihpm),
+                                "'Zihpm' (Hardware Performance Counters)">;
+#endif // SIFIVE_CUSTOMIZATION
+
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
                        "'M' (Integer Multiplication and Division)">;

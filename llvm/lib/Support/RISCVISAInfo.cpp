@@ -61,6 +61,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 #if SIFIVE_CUSTOMIZATION
     {"zicsr", RISCVExtensionVersion{2, 0}},
     {"zifencei", RISCVExtensionVersion{2, 0}},
+    {"zicntr", RISCVExtensionVersion{1, 0}},
+    {"zihpm", RISCVExtensionVersion{1, 0}},
 #endif // SIFIVE_CUSTOMIZATION
 
     {"zihintpause", RISCVExtensionVersion{2, 0}},
@@ -829,6 +831,11 @@ Error RISCVISAInfo::checkDependency() {
         "zvl*b requires v or zve* extension to also be specified");
 
 #if SIFIVE_CUSTOMIZATION
+  if ((Exts.count("zicntr") || Exts.count("zihpm")) && !Exts.count("zicsr"))
+    return createStringError(
+        errc::invalid_argument,
+        "zicntr and zihpm requires zicsr to also be specified");
+
   if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") || Exts.count("zvkns") ||
        Exts.count("zvksed") || Exts.count("zvksh")) && !HasVector)
     return createStringError(

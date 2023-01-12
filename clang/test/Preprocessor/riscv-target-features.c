@@ -54,6 +54,8 @@
 // CHECK-NOT: __riscv_ziccrse
 // CHECK-NOT: __riscv_za64rs
 // CHECK-NOT: __riscv_zic64b
+// CHECK-NOT: __riscv_zicntr
+// CHECK-NOT: __riscv_zihpm
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __riscv_zvkb
 // CHECK-NOT: __riscv_zvkg
@@ -524,6 +526,18 @@
 // RUN: -march=rv64i_zve32x_zvksh0p1 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZVKSH-EXT %s
 // CHECK-ZVKSH-EXT: __riscv_zvksh  1000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32i_zicsr_zicntr -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICNTR-EXT %s
+// RUN: %clang -target riscv64 -march=rv64i_zicsr_zicntr  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZICNTR-EXT %s
+// CHECK-ZICNTR-EXT: __riscv_zicntr  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32i_zicsr_zihpm -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZIHPM-EXT %s
+// RUN: %clang -target riscv64 -march=rv64i_zicsr_zihpm  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZIHPM-EXT %s
+// CHECK-ZIHPM-EXT: __riscv_zihpm  1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
