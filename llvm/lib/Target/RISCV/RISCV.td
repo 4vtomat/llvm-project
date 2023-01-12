@@ -117,6 +117,13 @@ def FeatureStdExtShtvala
                        "'Shtvala' (htval must be written with the faulting "
                        "guest physical address in all circumstances permitted "
                        "by the ISA.)", []>;
+
+def FeatureStdExtShvstvecd
+    : SubtargetFeature<"shvstvecd", "HasStdExtShvstvecd", "true",
+                       "'Shvstvecd' (vstvec.MODE must be capable of holding the "
+                       "value 0 (Direct). When vstvec.MODE=Direct, vstvec.BASE "
+                       "must be capable of holding any valid four-byte-aligned "
+                       "address.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

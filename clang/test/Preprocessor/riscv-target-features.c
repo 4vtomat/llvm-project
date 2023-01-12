@@ -69,6 +69,7 @@
 // CHECK-NOT: __riscv_shcounterenw
 // CHECK-NOT: __riscv_shvstvala
 // CHECK-NOT: __riscv_shtvala
+// CHECK-NOT: __riscv_shvstvecd
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __riscv_zvkb
 // CHECK-NOT: __riscv_zvkg
@@ -629,6 +630,12 @@
 // RUN: %clang -target riscv64 -march=rv64ishtvala  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SHTVALA-EXT %s
 // CHECK-SHTVALA-EXT: __riscv_shtvala  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32ishvstvecd -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SHVSTVECD-EXT %s
+// RUN: %clang -target riscv64 -march=rv64ishvstvecd  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SHVSTVECD-EXT %s
+// CHECK-SHVSTVECD-EXT: __riscv_shvstvecd  1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
