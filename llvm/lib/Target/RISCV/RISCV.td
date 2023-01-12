@@ -58,6 +58,12 @@ def FeatureStdExtSsptead
                        "'Ssptead' (Page-fault exceptions are raised when a page "
                        "is accessed when A bit is clear, or written when D bit "
                        "is clear)", []>;
+
+def FeatureStdExtSsccptr
+    : SubtargetFeature<"ssccptr", "HasStdExtSsccptr", "true",
+                       "'Ssccptr' (Main memory regions with both the "
+                       "cacheability and coherence PMAs must support hardware "
+                       "page-table reads.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
