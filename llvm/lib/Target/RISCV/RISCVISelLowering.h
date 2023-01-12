@@ -144,8 +144,6 @@ enum NodeType : unsigned {
   VMV_X_S,
   // VMV_S_X_VL matches the semantics of vmv.s.x. It carries a VL operand.
   VMV_S_X_VL,
-  // VFMV_F_S matches the semantics of vfmv.f.s.
-  VFMV_F_S,
   // VFMV_S_F_VL matches the semantics of vfmv.s.f. It carries a VL operand.
   VFMV_S_F_VL,
   // Splats an 64-bit value that has been split into two i32 parts. This is

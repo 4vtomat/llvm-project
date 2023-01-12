@@ -6405,9 +6405,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     assert(Op.getValueType() == XLenVT && "Unexpected VT!");
     return DAG.getNode(RISCVISD::VMV_X_S, DL, Op.getValueType(),
                        Op.getOperand(1));
-  case Intrinsic::riscv_vfmv_f_s:
-    return DAG.getNode(RISCVISD::VFMV_F_S, DL, Op.getValueType(),
-                       Op.getOperand(1));
   case Intrinsic::riscv_vmv_v_x:
     return lowerScalarSplat(Op.getOperand(1), Op.getOperand(2),
                             Op.getOperand(3), Op.getSimpleValueType(), DL, DAG,
@@ -12700,8 +12697,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     auto *Store = cast<StoreSDNode>(N);
     SDValue Val = Store->getValue();
     // Combine store of vmv.x.s to vse with VL of 1.
-    if (Val.getOpcode() == RISCVISD::VMV_X_S ||
-        Val.getOpcode() == RISCVISD::VFMV_F_S) {
+    // FIXME: Support FP.
+    if (Val.getOpcode() == RISCVISD::VMV_X_S) {
       SDValue Src = Val.getOperand(0);
       MVT VecVT = Src.getSimpleValueType();
       EVT MemVT = Store->getMemoryVT();
@@ -12963,6 +12960,33 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                          RISCVII::TAIL_AGNOSTIC);
     }
     break;
+  }
+  case RISCVISD::VFMV_S_F_VL: {
+    SDValue Src = N->getOperand(1);
+    // Try to remove vector->scalar->vector if the scalar->vector is inserting
+    // into an undef vector.
+    // TODO: Could use a vslide for non-undef.
+    if (N->getOperand(0).isUndef() &&
+        Src.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
+        isNullConstant(Src.getOperand(1)) &&
+        Src.getOperand(0).getValueType().isScalableVector()) {
+      EVT VT = N->getValueType(0);
+      EVT SrcVT = Src.getOperand(0).getValueType();
+      assert(SrcVT.getVectorElementType() == VT.getVectorElementType());
+      // Widths match, just return the original vector.
+      if (SrcVT == VT)
+        return Src.getOperand(0);
+      SDLoc DL(N);
+      if (SrcVT.getVectorMinNumElements() < VT.getVectorMinNumElements()) {
+        return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT,
+                           DAG.getUNDEF(VT), Src.getOperand(0),
+                           DAG.getConstant(0, DL, Subtarget.getXLenVT()));
+      }
+      return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Src.getOperand(0),
+                         DAG.getConstant(0, DL, Subtarget.getXLenVT()));
+    }
+
+    return SDValue();
   }
   case ISD::EXTRACT_VECTOR_ELT:
     return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);
@@ -15649,7 +15673,6 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VFMV_V_F_VL)
   NODE_NAME_CASE(VMV_X_S)
   NODE_NAME_CASE(VMV_S_X_VL)
-  NODE_NAME_CASE(VFMV_F_S)
   NODE_NAME_CASE(VFMV_S_F_VL)
   NODE_NAME_CASE(SPLAT_VECTOR_SPLIT_I64_VL)
   NODE_NAME_CASE(READ_VLENB)
