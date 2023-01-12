@@ -60,6 +60,7 @@
 // CHECK-NOT: __riscv_svbare
 // CHECK-NOT: __riscv_ssptead
 // CHECK-NOT: __riscv_ssccptr
+// CHECK-NOT: __riscv_sstvecd
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __riscv_zvkb
 // CHECK-NOT: __riscv_zvkg
@@ -566,6 +567,12 @@
 // RUN: %clang -target riscv64 -march=rv64issccptr  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSCCPTR-EXT %s
 // CHECK-SSCCPTR-EXT: __riscv_ssccptr  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32isstvecd -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSTVECD-EXT %s
+// RUN: %clang -target riscv64 -march=rv64isstvecd  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSTVECD-EXT %s
+// CHECK-SSTVECD-EXT: __riscv_sstvecd  1000000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \

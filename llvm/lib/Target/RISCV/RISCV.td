@@ -64,6 +64,13 @@ def FeatureStdExtSsccptr
                        "'Ssccptr' (Main memory regions with both the "
                        "cacheability and coherence PMAs must support hardware "
                        "page-table reads.)", []>;
+
+def FeatureStdExtSstvecd
+    : SubtargetFeature<"sstvecd", "HasStdExtSstvecd", "true",
+                       "'Sstvecd' (stvec.MODE must be capable of holding the "
+                       "value 0 (Direct). When stvec.MODE=Direct, stvec.BASE "
+                       "must be capable of holding any valid four-byte-aligned "
+                       "address.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

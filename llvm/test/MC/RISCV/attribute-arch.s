@@ -129,6 +129,9 @@
 .attribute arch, "rv32issccptr"
 # CHECK: attribute      5, "rv32i2p1_ssccptr1p0"
 
+.attribute arch, "rv32isstvecd"
+# CHECK: attribute      5, "rv32i2p1_sstvecd1p0"
+
 ## SIFIVE_CUSTOMIZATION
 .attribute arch, "rv32i_sscofpmf"
 # CHECK: attribute      5, "rv32i2p1_sscofpmf1p0"
