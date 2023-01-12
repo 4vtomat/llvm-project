@@ -71,6 +71,16 @@ def FeatureStdExtSstvecd
                        "value 0 (Direct). When stvec.MODE=Direct, stvec.BASE "
                        "must be capable of holding any valid four-byte-aligned "
                        "address.)", []>;
+
+def FeatureStdExtSstvala
+    : SubtargetFeature<"sstvala", "HasStdExtSstvala", "true",
+                       "'Sstvala' (stval must be written with the faulting "
+                       "virtual address for load, store, and instruction "
+                       "page-fault, access-fault, and misaligned exceptions, "
+                       "and for breakpoint exceptions other than those caused "
+                       "by execution of the EBREAK or C.EBREAK instructions. "
+                       "For illegal-instruction exceptions, stval must be "
+                       "written with the faulting instruction.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
