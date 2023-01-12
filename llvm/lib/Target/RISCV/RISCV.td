@@ -129,6 +129,13 @@ def FeatureStdExtShvsatpa
     : SubtargetFeature<"shvsatpa", "HasStdExtShvsatpa", "true",
                        "'Shvsatpa' (All translation modes supported in satp "
                        "must be supported in vsatp.)", []>;
+
+def FeatureStdExtShgatpa
+    : SubtargetFeature<"shgatpa", "HasStdExtShgatpa", "true",
+                       "'Shgatpa' (For each supported virtual memory scheme "
+                       "SvNN supported in satp, the corresponding hgatp SvNNx4 "
+                       "mode must be supported. The hgatp mode Bare must also "
+                       "be supported.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
