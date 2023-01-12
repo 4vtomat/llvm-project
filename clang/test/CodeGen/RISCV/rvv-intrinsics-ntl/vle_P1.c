@@ -6,7 +6,7 @@
 #include <riscv_ntlh.h>
 // CHECK-RV64-LABEL: @test_vle8_v_i8mf8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vle8_v_i8mf8_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -14,7 +14,7 @@ vint8mf8_t test_vle8_v_i8mf8_ntl_P1 (const int8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8mf4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vle8_v_i8mf4_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -22,7 +22,7 @@ vint8mf4_t test_vle8_v_i8mf4_ntl_P1 (const int8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vle.nxv4i8.i64(<vscale x 4 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vle.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vle8_v_i8mf2_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -30,7 +30,7 @@ vint8mf2_t test_vle8_v_i8mf2_ntl_P1 (const int8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vle8_v_i8m1_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -38,7 +38,7 @@ vint8m1_t test_vle8_v_i8m1_ntl_P1 (const int8_t *base, size_t vl, int domain) {
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vint8m2_t test_vle8_v_i8m2_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -46,7 +46,7 @@ vint8m2_t test_vle8_v_i8m2_ntl_P1 (const int8_t *base, size_t vl, int domain) {
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vle.nxv32i8.i64(<vscale x 32 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vle.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vint8m4_t test_vle8_v_i8m4_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -54,7 +54,7 @@ vint8m4_t test_vle8_v_i8m4_ntl_P1 (const int8_t *base, size_t vl, int domain) {
 }
 // CHECK-RV64-LABEL: @test_vle8_v_i8m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vle.nxv64i8.i64(<vscale x 64 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vle.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vint8m8_t test_vle8_v_i8m8_ntl_P1 (const int8_t *base, size_t vl, int domain) {
@@ -62,7 +62,7 @@ vint8m8_t test_vle8_v_i8m8_ntl_P1 (const int8_t *base, size_t vl, int domain) {
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16mf4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vint16mf4_t test_vle16_v_i16mf4_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -70,7 +70,7 @@ vint16mf4_t test_vle16_v_i16mf4_ntl_P1 (const int16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vle.nxv2i16.i64(<vscale x 2 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vle.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vint16mf2_t test_vle16_v_i16mf2_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -78,7 +78,7 @@ vint16mf2_t test_vle16_v_i16mf2_ntl_P1 (const int16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vle.nxv4i16.i64(<vscale x 4 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vle.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vint16m1_t test_vle16_v_i16m1_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -86,7 +86,7 @@ vint16m1_t test_vle16_v_i16m1_ntl_P1 (const int16_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vle.nxv8i16.i64(<vscale x 8 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vle.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vint16m2_t test_vle16_v_i16m2_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -94,7 +94,7 @@ vint16m2_t test_vle16_v_i16m2_ntl_P1 (const int16_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.vle.nxv16i16.i64(<vscale x 16 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.vle.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i16> [[TMP0]]
 //
 vint16m4_t test_vle16_v_i16m4_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -102,7 +102,7 @@ vint16m4_t test_vle16_v_i16m4_ntl_P1 (const int16_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle16_v_i16m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.vle.nxv32i16.i64(<vscale x 32 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.vle.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i16> [[TMP0]]
 //
 vint16m8_t test_vle16_v_i16m8_ntl_P1 (const int16_t *base, size_t vl, int domain) {
@@ -110,7 +110,7 @@ vint16m8_t test_vle16_v_i16m8_ntl_P1 (const int16_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_i32mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vle32_v_i32mf2_ntl_P1 (const int32_t *base, size_t vl, int domain) {
@@ -118,7 +118,7 @@ vint32mf2_t test_vle32_v_i32mf2_ntl_P1 (const int32_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_i32m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vle32_v_i32m1_ntl_P1 (const int32_t *base, size_t vl, int domain) {
@@ -126,7 +126,7 @@ vint32m1_t test_vle32_v_i32m1_ntl_P1 (const int32_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_i32m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vle32_v_i32m2_ntl_P1 (const int32_t *base, size_t vl, int domain) {
@@ -134,7 +134,7 @@ vint32m2_t test_vle32_v_i32m2_ntl_P1 (const int32_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_i32m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vle32_v_i32m4_ntl_P1 (const int32_t *base, size_t vl, int domain) {
@@ -142,7 +142,7 @@ vint32m4_t test_vle32_v_i32m4_ntl_P1 (const int32_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_i32m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vint32m8_t test_vle32_v_i32m8_ntl_P1 (const int32_t *base, size_t vl, int domain) {
@@ -150,7 +150,7 @@ vint32m8_t test_vle32_v_i32m8_ntl_P1 (const int32_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle64_v_i64m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vle.nxv1i64.i64(<vscale x 1 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vle.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vint64m1_t test_vle64_v_i64m1_ntl_P1 (const int64_t *base, size_t vl, int domain) {
@@ -158,7 +158,7 @@ vint64m1_t test_vle64_v_i64m1_ntl_P1 (const int64_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle64_v_i64m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vle.nxv2i64.i64(<vscale x 2 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vle.nxv2i64.i64(<vscale x 2 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vint64m2_t test_vle64_v_i64m2_ntl_P1 (const int64_t *base, size_t vl, int domain) {
@@ -166,7 +166,7 @@ vint64m2_t test_vle64_v_i64m2_ntl_P1 (const int64_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle64_v_i64m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vint64m4_t test_vle64_v_i64m4_ntl_P1 (const int64_t *base, size_t vl, int domain) {
@@ -174,7 +174,7 @@ vint64m4_t test_vle64_v_i64m4_ntl_P1 (const int64_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle64_v_i64m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vle.nxv8i64.i64(<vscale x 8 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vle.nxv8i64.i64(<vscale x 8 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vint64m8_t test_vle64_v_i64m8_ntl_P1 (const int64_t *base, size_t vl, int domain) {
@@ -182,7 +182,7 @@ vint64m8_t test_vle64_v_i64m8_ntl_P1 (const int64_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8mf8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vle.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vle8_v_u8mf8_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -190,7 +190,7 @@ vuint8mf8_t test_vle8_v_u8mf8_ntl_P1 (const uint8_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8mf4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vle8_v_u8mf4_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -198,7 +198,7 @@ vuint8mf4_t test_vle8_v_u8mf4_ntl_P1 (const uint8_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vle.nxv4i8.i64(<vscale x 4 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vle.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vle8_v_u8mf2_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -206,7 +206,7 @@ vuint8mf2_t test_vle8_v_u8mf2_ntl_P1 (const uint8_t *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vle8_v_u8m1_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -214,7 +214,7 @@ vuint8m1_t test_vle8_v_u8m1_ntl_P1 (const uint8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vuint8m2_t test_vle8_v_u8m2_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -222,7 +222,7 @@ vuint8m2_t test_vle8_v_u8m2_ntl_P1 (const uint8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vle.nxv32i8.i64(<vscale x 32 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vle.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vuint8m4_t test_vle8_v_u8m4_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -230,7 +230,7 @@ vuint8m4_t test_vle8_v_u8m4_ntl_P1 (const uint8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle8_v_u8m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vle.nxv64i8.i64(<vscale x 64 x i8> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vle.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vuint8m8_t test_vle8_v_u8m8_ntl_P1 (const uint8_t *base, size_t vl, int domain) {
@@ -238,7 +238,7 @@ vuint8m8_t test_vle8_v_u8m8_ntl_P1 (const uint8_t *base, size_t vl, int domain) 
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16mf4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vle.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vuint16mf4_t test_vle16_v_u16mf4_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -246,7 +246,7 @@ vuint16mf4_t test_vle16_v_u16mf4_ntl_P1 (const uint16_t *base, size_t vl, int do
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vle.nxv2i16.i64(<vscale x 2 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vle.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vuint16mf2_t test_vle16_v_u16mf2_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -254,7 +254,7 @@ vuint16mf2_t test_vle16_v_u16mf2_ntl_P1 (const uint16_t *base, size_t vl, int do
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vle.nxv4i16.i64(<vscale x 4 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vle.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vuint16m1_t test_vle16_v_u16m1_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -262,7 +262,7 @@ vuint16m1_t test_vle16_v_u16m1_ntl_P1 (const uint16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vle.nxv8i16.i64(<vscale x 8 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vle.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vuint16m2_t test_vle16_v_u16m2_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -270,7 +270,7 @@ vuint16m2_t test_vle16_v_u16m2_ntl_P1 (const uint16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.vle.nxv16i16.i64(<vscale x 16 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.vle.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i16> [[TMP0]]
 //
 vuint16m4_t test_vle16_v_u16m4_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -278,7 +278,7 @@ vuint16m4_t test_vle16_v_u16m4_ntl_P1 (const uint16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_u16m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.vle.nxv32i16.i64(<vscale x 32 x i16> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.vle.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i16> [[TMP0]]
 //
 vuint16m8_t test_vle16_v_u16m8_ntl_P1 (const uint16_t *base, size_t vl, int domain) {
@@ -286,7 +286,7 @@ vuint16m8_t test_vle16_v_u16m8_ntl_P1 (const uint16_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_u32mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vle32_v_u32mf2_ntl_P1 (const uint32_t *base, size_t vl, int domain) {
@@ -294,7 +294,7 @@ vuint32mf2_t test_vle32_v_u32mf2_ntl_P1 (const uint32_t *base, size_t vl, int do
 }
 // CHECK-RV64-LABEL: @test_vle32_v_u32m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vle32_v_u32m1_ntl_P1 (const uint32_t *base, size_t vl, int domain) {
@@ -302,7 +302,7 @@ vuint32m1_t test_vle32_v_u32m1_ntl_P1 (const uint32_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_u32m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vle32_v_u32m2_ntl_P1 (const uint32_t *base, size_t vl, int domain) {
@@ -310,7 +310,7 @@ vuint32m2_t test_vle32_v_u32m2_ntl_P1 (const uint32_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_u32m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vle32_v_u32m4_ntl_P1 (const uint32_t *base, size_t vl, int domain) {
@@ -318,7 +318,7 @@ vuint32m4_t test_vle32_v_u32m4_ntl_P1 (const uint32_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_u32m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vuint32m8_t test_vle32_v_u32m8_ntl_P1 (const uint32_t *base, size_t vl, int domain) {
@@ -326,7 +326,7 @@ vuint32m8_t test_vle32_v_u32m8_ntl_P1 (const uint32_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle64_v_u64m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vle.nxv1i64.i64(<vscale x 1 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vle.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vuint64m1_t test_vle64_v_u64m1_ntl_P1 (const uint64_t *base, size_t vl, int domain) {
@@ -334,7 +334,7 @@ vuint64m1_t test_vle64_v_u64m1_ntl_P1 (const uint64_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle64_v_u64m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vle.nxv2i64.i64(<vscale x 2 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vle.nxv2i64.i64(<vscale x 2 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vuint64m2_t test_vle64_v_u64m2_ntl_P1 (const uint64_t *base, size_t vl, int domain) {
@@ -342,7 +342,7 @@ vuint64m2_t test_vle64_v_u64m2_ntl_P1 (const uint64_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle64_v_u64m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vuint64m4_t test_vle64_v_u64m4_ntl_P1 (const uint64_t *base, size_t vl, int domain) {
@@ -350,7 +350,7 @@ vuint64m4_t test_vle64_v_u64m4_ntl_P1 (const uint64_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle64_v_u64m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vle.nxv8i64.i64(<vscale x 8 x i64> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vle.nxv8i64.i64(<vscale x 8 x i64> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vuint64m8_t test_vle64_v_u64m8_ntl_P1 (const uint64_t *base, size_t vl, int domain) {
@@ -358,7 +358,7 @@ vuint64m8_t test_vle64_v_u64m8_ntl_P1 (const uint64_t *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16mf4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vle.nxv1f16.i64(<vscale x 1 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vle.nxv1f16.i64(<vscale x 1 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x half> [[TMP0]]
 //
 vfloat16mf4_t test_vle16_v_f16mf4_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -366,7 +366,7 @@ vfloat16mf4_t test_vle16_v_f16mf4_ntl_P1 (const _Float16 *base, size_t vl, int d
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vle.nxv2f16.i64(<vscale x 2 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vle.nxv2f16.i64(<vscale x 2 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x half> [[TMP0]]
 //
 vfloat16mf2_t test_vle16_v_f16mf2_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -374,7 +374,7 @@ vfloat16mf2_t test_vle16_v_f16mf2_ntl_P1 (const _Float16 *base, size_t vl, int d
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vle.nxv4f16.i64(<vscale x 4 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vle.nxv4f16.i64(<vscale x 4 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x half> [[TMP0]]
 //
 vfloat16m1_t test_vle16_v_f16m1_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -382,7 +382,7 @@ vfloat16m1_t test_vle16_v_f16m1_ntl_P1 (const _Float16 *base, size_t vl, int dom
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vle.nxv8f16.i64(<vscale x 8 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vle.nxv8f16.i64(<vscale x 8 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x half> [[TMP0]]
 //
 vfloat16m2_t test_vle16_v_f16m2_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -390,7 +390,7 @@ vfloat16m2_t test_vle16_v_f16m2_ntl_P1 (const _Float16 *base, size_t vl, int dom
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x half> @llvm.riscv.vle.nxv16f16.i64(<vscale x 16 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x half> @llvm.riscv.vle.nxv16f16.i64(<vscale x 16 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x half> [[TMP0]]
 //
 vfloat16m4_t test_vle16_v_f16m4_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -398,7 +398,7 @@ vfloat16m4_t test_vle16_v_f16m4_ntl_P1 (const _Float16 *base, size_t vl, int dom
 }
 // CHECK-RV64-LABEL: @test_vle16_v_f16m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x half> @llvm.riscv.vle.nxv32f16.i64(<vscale x 32 x half> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x half> @llvm.riscv.vle.nxv32f16.i64(<vscale x 32 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 32 x half> [[TMP0]]
 //
 vfloat16m8_t test_vle16_v_f16m8_ntl_P1 (const _Float16 *base, size_t vl, int domain) {
@@ -406,7 +406,7 @@ vfloat16m8_t test_vle16_v_f16m8_ntl_P1 (const _Float16 *base, size_t vl, int dom
 }
 // CHECK-RV64-LABEL: @test_vle32_v_f32mf2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vle32_v_f32mf2_ntl_P1 (const float *base, size_t vl, int domain) {
@@ -414,7 +414,7 @@ vfloat32mf2_t test_vle32_v_f32mf2_ntl_P1 (const float *base, size_t vl, int doma
 }
 // CHECK-RV64-LABEL: @test_vle32_v_f32m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.nxv2f32.i64(<vscale x 2 x float> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.nxv2f32.i64(<vscale x 2 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vle32_v_f32m1_ntl_P1 (const float *base, size_t vl, int domain) {
@@ -422,7 +422,7 @@ vfloat32m1_t test_vle32_v_f32m1_ntl_P1 (const float *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_f32m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vle32_v_f32m2_ntl_P1 (const float *base, size_t vl, int domain) {
@@ -430,7 +430,7 @@ vfloat32m2_t test_vle32_v_f32m2_ntl_P1 (const float *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_f32m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.nxv8f32.i64(<vscale x 8 x float> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.nxv8f32.i64(<vscale x 8 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vle32_v_f32m4_ntl_P1 (const float *base, size_t vl, int domain) {
@@ -438,7 +438,7 @@ vfloat32m4_t test_vle32_v_f32m4_ntl_P1 (const float *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle32_v_f32m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 16 x float> [[TMP0]]
 //
 vfloat32m8_t test_vle32_v_f32m8_ntl_P1 (const float *base, size_t vl, int domain) {
@@ -446,7 +446,7 @@ vfloat32m8_t test_vle32_v_f32m8_ntl_P1 (const float *base, size_t vl, int domain
 }
 // CHECK-RV64-LABEL: @test_vle64_v_f64m1_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64.i64(<vscale x 1 x double> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64.i64(<vscale x 1 x double> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 1 x double> [[TMP0]]
 //
 vfloat64m1_t test_vle64_v_f64m1_ntl_P1 (const double *base, size_t vl, int domain) {
@@ -454,7 +454,7 @@ vfloat64m1_t test_vle64_v_f64m1_ntl_P1 (const double *base, size_t vl, int domai
 }
 // CHECK-RV64-LABEL: @test_vle64_v_f64m2_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vle.nxv2f64.i64(<vscale x 2 x double> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vle.nxv2f64.i64(<vscale x 2 x double> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 2 x double> [[TMP0]]
 //
 vfloat64m2_t test_vle64_v_f64m2_ntl_P1 (const double *base, size_t vl, int domain) {
@@ -462,7 +462,7 @@ vfloat64m2_t test_vle64_v_f64m2_ntl_P1 (const double *base, size_t vl, int domai
 }
 // CHECK-RV64-LABEL: @test_vle64_v_f64m4_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vle.nxv4f64.i64(<vscale x 4 x double> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vle.nxv4f64.i64(<vscale x 4 x double> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 4 x double> [[TMP0]]
 //
 vfloat64m4_t test_vle64_v_f64m4_ntl_P1 (const double *base, size_t vl, int domain) {
@@ -470,7 +470,7 @@ vfloat64m4_t test_vle64_v_f64m4_ntl_P1 (const double *base, size_t vl, int domai
 }
 // CHECK-RV64-LABEL: @test_vle64_v_f64m8_ntl_P1(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vle.nxv8f64.i64(<vscale x 8 x double> undef, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vle.nxv8f64.i64(<vscale x 8 x double> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
 // CHECK-RV64-NEXT:    ret <vscale x 8 x double> [[TMP0]]
 //
 vfloat64m8_t test_vle64_v_f64m8_ntl_P1 (const double *base, size_t vl, int domain) {
