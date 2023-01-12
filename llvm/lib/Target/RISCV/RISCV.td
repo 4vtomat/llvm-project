@@ -87,6 +87,10 @@ def FeatureStdExtSscounterenw
                        "'Sscounterenw' (For any hpmcounter that is not "
                        "read-only zero, the corresponding bit in scounteren "
                        "must be writable.)", []>;
+
+def FeatureStdExtSsu64xl
+    : SubtargetFeature<"ssu64xl", "HasStdExtSsu64xl", "true",
+                       "'Ssu64xl' (sstatus.UXL=64)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
