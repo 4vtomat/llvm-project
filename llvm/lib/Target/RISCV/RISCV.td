@@ -81,6 +81,12 @@ def FeatureStdExtSstvala
                        "by execution of the EBREAK or C.EBREAK instructions. "
                        "For illegal-instruction exceptions, stval must be "
                        "written with the faulting instruction.)", []>;
+
+def FeatureStdExtSscounterenw
+    : SubtargetFeature<"sscounterenw", "HasStdExtSscounterenw", "true",
+                       "'Sscounterenw' (For any hpmcounter that is not "
+                       "read-only zero, the corresponding bit in scounteren "
+                       "must be writable.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
