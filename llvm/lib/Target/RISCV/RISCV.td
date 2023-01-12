@@ -111,6 +111,12 @@ def FeatureStdExtShvstvala
     : SubtargetFeature<"shvstvala", "HasStdExtShvstvala", "true",
                        "'Shvstvala' (vstval must be written in all cases "
                        "described above for stval.)", []>;
+
+def FeatureStdExtShtvala
+    : SubtargetFeature<"shtvala", "HasStdExtShtvala", "true",
+                       "'Shtvala' (htval must be written with the faulting "
+                       "guest physical address in all circumstances permitted "
+                       "by the ISA.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
