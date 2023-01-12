@@ -124,6 +124,11 @@ def FeatureStdExtShvstvecd
                        "value 0 (Direct). When vstvec.MODE=Direct, vstvec.BASE "
                        "must be capable of holding any valid four-byte-aligned "
                        "address.)", []>;
+
+def FeatureStdExtShvsatpa
+    : SubtargetFeature<"shvsatpa", "HasStdExtShvsatpa", "true",
+                       "'Shvsatpa' (All translation modes supported in satp "
+                       "must be supported in vsatp.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
