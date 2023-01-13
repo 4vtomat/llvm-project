@@ -3691,6 +3691,17 @@ multiclass VPseudoVCVTF_V {
   }
 }
 
+multiclass VPseudoVCVTF_RM_V {
+  foreach m = MxListF in {
+    defvar mx = m.MX;
+    defvar WriteVFCvtIToFV_MX = !cast<SchedWrite>("WriteVFCvtIToFV_" # mx);
+    defvar ReadVFCvtIToFV_MX = !cast<SchedRead>("ReadVFCvtIToFV_" # mx);
+
+    defm _V : VPseudoConversionRM<m.vrclass, m.vrclass, m>,
+              Sched<[WriteVFCvtIToFV_MX, ReadVFCvtIToFV_MX, ReadVMask]>;
+  }
+}
+
 multiclass VPseudoConversionW_V {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListW in
@@ -3753,6 +3764,18 @@ multiclass VPseudoVNCVTF_W {
     defvar ReadVFNCvtIToFV_MX = !cast<SchedRead>("ReadVFNCvtIToFV_" # mx);
 
     defm _W : VPseudoConversion<m.vrclass, m.wvrclass, m, constraint>,
+              Sched<[WriteVFNCvtIToFV_MX, ReadVFNCvtIToFV_MX, ReadVMask]>;
+  }
+}
+
+multiclass VPseudoVNCVTF_RM_W {
+  defvar constraint = "@earlyclobber $rd";
+  foreach m = MxListFW in {
+    defvar mx = m.MX;
+    defvar WriteVFNCvtIToFV_MX = !cast<SchedWrite>("WriteVFNCvtIToFV_" # mx);
+    defvar ReadVFNCvtIToFV_MX = !cast<SchedRead>("ReadVFNCvtIToFV_" # mx);
+
+    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint>,
               Sched<[WriteVFNCvtIToFV_MX, ReadVFNCvtIToFV_MX, ReadVMask]>;
   }
 }
@@ -5723,11 +5746,11 @@ defm PseudoVLSEG : VPseudoUSSegLoadFF;
 }
 
 //===----------------------------------------------------------------------===//
-// 12. Vector Integer Arithmetic Instructions
+// 11. Vector Integer Arithmetic Instructions
 //===----------------------------------------------------------------------===//
 
 //===----------------------------------------------------------------------===//
-// 12.1. Vector Single-Width Integer Add and Subtract
+// 11.1. Vector Single-Width Integer Add and Subtract
 //===----------------------------------------------------------------------===//
 defm PseudoVADD   : VPseudoVALU_VV_VX_VI;
 defm PseudoVSUB   : VPseudoVALU_VV_VX;
@@ -5797,7 +5820,7 @@ foreach vti = AllIntegerVectors in {
 }
 
 //===----------------------------------------------------------------------===//
-// 12.2. Vector Widening Integer Add/Subtract
+// 11.2. Vector Widening Integer Add/Subtract
 //===----------------------------------------------------------------------===//
 defm PseudoVWADDU : VPseudoVWALU_VV_VX;
 defm PseudoVWSUBU : VPseudoVWALU_VV_VX;
@@ -5809,7 +5832,7 @@ defm PseudoVWADD  : VPseudoVWALU_WV_WX;
 defm PseudoVWSUB  : VPseudoVWALU_WV_WX;
 
 //===----------------------------------------------------------------------===//
-// 12.3. Vector Integer Extension
+// 11.3. Vector Integer Extension
 //===----------------------------------------------------------------------===//
 defm PseudoVZEXT_VF2 : PseudoVEXT_VF2;
 defm PseudoVZEXT_VF4 : PseudoVEXT_VF4;
@@ -5819,7 +5842,7 @@ defm PseudoVSEXT_VF4 : PseudoVEXT_VF4;
 defm PseudoVSEXT_VF8 : PseudoVEXT_VF8;
 
 //===----------------------------------------------------------------------===//
-// 12.4. Vector Integer Add-with-Carry / Subtract-with-Borrow Instructions
+// 11.4. Vector Integer Add-with-Carry / Subtract-with-Borrow Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVADC  : VPseudoVCALU_VM_XM_IM;
 defm PseudoVMADC : VPseudoVCALUM_VM_XM_IM<"@earlyclobber $rd">;
@@ -5830,27 +5853,27 @@ defm PseudoVMSBC : VPseudoVCALUM_VM_XM<"@earlyclobber $rd">;
 defm PseudoVMSBC : VPseudoVCALUM_V_X<"@earlyclobber $rd">;
 
 //===----------------------------------------------------------------------===//
-// 12.5. Vector Bitwise Logical Instructions
+// 11.5. Vector Bitwise Logical Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVAND : VPseudoVALU_VV_VX_VI;
 defm PseudoVOR  : VPseudoVALU_VV_VX_VI;
 defm PseudoVXOR : VPseudoVALU_VV_VX_VI;
 
 //===----------------------------------------------------------------------===//
-// 12.6. Vector Single-Width Bit Shift Instructions
+// 11.6. Vector Single-Width Bit Shift Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVSLL : VPseudoVSHT_VV_VX_VI<uimm5>;
 defm PseudoVSRL : VPseudoVSHT_VV_VX_VI<uimm5>;
 defm PseudoVSRA : VPseudoVSHT_VV_VX_VI<uimm5>;
 
 //===----------------------------------------------------------------------===//
-// 12.7. Vector Narrowing Integer Right Shift Instructions
+// 11.7. Vector Narrowing Integer Right Shift Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVNSRL : VPseudoVNSHT_WV_WX_WI;
 defm PseudoVNSRA : VPseudoVNSHT_WV_WX_WI;
 
 //===----------------------------------------------------------------------===//
-// 12.8. Vector Integer Comparison Instructions
+// 11.8. Vector Integer Comparison Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMSEQ  : VPseudoVCMPM_VV_VX_VI;
 defm PseudoVMSNE  : VPseudoVCMPM_VV_VX_VI;
@@ -5862,7 +5885,7 @@ defm PseudoVMSGTU : VPseudoVCMPM_VX_VI;
 defm PseudoVMSGT  : VPseudoVCMPM_VX_VI;
 
 //===----------------------------------------------------------------------===//
-// 12.9. Vector Integer Min/Max Instructions
+// 11.9. Vector Integer Min/Max Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMINU : VPseudoVMINMAX_VV_VX;
 defm PseudoVMIN  : VPseudoVMINMAX_VV_VX;
@@ -5870,7 +5893,7 @@ defm PseudoVMAXU : VPseudoVMINMAX_VV_VX;
 defm PseudoVMAX  : VPseudoVMINMAX_VV_VX;
 
 //===----------------------------------------------------------------------===//
-// 12.10. Vector Single-Width Integer Multiply Instructions
+// 11.10. Vector Single-Width Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMUL    : VPseudoVMUL_VV_VX;
 defm PseudoVMULH   : VPseudoVMUL_VV_VX;
@@ -5878,7 +5901,7 @@ defm PseudoVMULHU  : VPseudoVMUL_VV_VX;
 defm PseudoVMULHSU : VPseudoVMUL_VV_VX;
 
 //===----------------------------------------------------------------------===//
-// 12.11. Vector Integer Divide Instructions
+// 11.11. Vector Integer Divide Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVDIVU : VPseudoVDIV_VV_VX;
 defm PseudoVDIV  : VPseudoVDIV_VV_VX;
@@ -5886,14 +5909,14 @@ defm PseudoVREMU : VPseudoVDIV_VV_VX;
 defm PseudoVREM  : VPseudoVDIV_VV_VX;
 
 //===----------------------------------------------------------------------===//
-// 12.12. Vector Widening Integer Multiply Instructions
+// 11.12. Vector Widening Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVWMUL   : VPseudoVWMUL_VV_VX;
 defm PseudoVWMULU  : VPseudoVWMUL_VV_VX;
 defm PseudoVWMULSU : VPseudoVWMUL_VV_VX;
 
 //===----------------------------------------------------------------------===//
-// 12.13. Vector Single-Width Integer Multiply-Add Instructions
+// 11.13. Vector Single-Width Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMACC  : VPseudoVMAC_VV_VX_AAXA;
 defm PseudoVNMSAC : VPseudoVMAC_VV_VX_AAXA;
@@ -5901,7 +5924,7 @@ defm PseudoVMADD  : VPseudoVMAC_VV_VX_AAXA;
 defm PseudoVNMSUB : VPseudoVMAC_VV_VX_AAXA;
 
 //===----------------------------------------------------------------------===//
-// 12.14. Vector Widening Integer Multiply-Add Instructions
+// 11.14. Vector Widening Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVWMACCU  : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACC   : VPseudoVWMAC_VV_VX;
@@ -5909,17 +5932,21 @@ defm PseudoVWMACCSU : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACCUS : VPseudoVWMAC_VX;
 
 //===----------------------------------------------------------------------===//
-// 12.15. Vector Integer Merge Instructions
+// 11.15. Vector Integer Merge Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMERGE : VPseudoVMRG_VM_XM_IM;
 
 //===----------------------------------------------------------------------===//
-// 12.16. Vector Integer Move Instructions
+// 11.16. Vector Integer Move Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVMV_V : VPseudoUnaryVMV_V_X_I;
 
 //===----------------------------------------------------------------------===//
-// 13.1. Vector Single-Width Saturating Add and Subtract
+// 12. Vector Fixed-Point Arithmetic Instructions
+//===----------------------------------------------------------------------===//
+
+//===----------------------------------------------------------------------===//
+// 12.1. Vector Single-Width Saturating Add and Subtract
 //===----------------------------------------------------------------------===//
 let Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVSADDU : VPseudoVSALU_VV_VX_VI;
@@ -5929,7 +5956,7 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 }
 
 //===----------------------------------------------------------------------===//
-// 13.2. Vector Single-Width Averaging Add and Subtract
+// 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
@@ -5942,7 +5969,7 @@ let hasPostISelHook = 1, hasSideEffects = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
+// 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
@@ -5951,7 +5978,7 @@ let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.4. Vector Single-Width Scaling Shift Instructions
+// 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1, hasSideEffects = 1 in {
@@ -5961,7 +5988,7 @@ let hasPostISelHook = 1, hasSideEffects = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.5. Vector Narrowing Fixed-Point Clip Instructions
+// 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
@@ -5972,9 +5999,13 @@ let hasPostISelHook = 1, Defs = [VXSAT], hasSideEffects = 1 in {
 
 } // Predicates = [HasVInstructions]
 
+//===----------------------------------------------------------------------===//
+// 13. Vector Floating-Point Instructions
+//===----------------------------------------------------------------------===//
+
 let Predicates = [HasVInstructionsAnyF] in {
 //===----------------------------------------------------------------------===//
-// 14.2. Vector Single-Width Floating-Point Add/Subtract Instructions
+// 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFADD  : VPseudoVALU_VV_VF;
@@ -5983,7 +6014,7 @@ defm PseudoVFRSUB : VPseudoVALU_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.3. Vector Widening Floating-Point Add/Subtract Instructions
+// 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF;
@@ -5993,7 +6024,7 @@ defm PseudoVFWSUB : VPseudoVFWALU_WV_WF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
+// 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFMUL  : VPseudoVFMUL_VV_VF;
@@ -6002,14 +6033,14 @@ defm PseudoVFRDIV : VPseudoVFRDIV_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.5. Vector Widening Floating-Point Multiply
+// 13.5. Vector Widening Floating-Point Multiply
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFWMUL : VPseudoVWMUL_VV_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
+// 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFMACC  : VPseudoVMAC_VV_VF_AAXA;
@@ -6023,7 +6054,7 @@ defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
+// 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFWMACC  : VPseudoVWMAC_VV_VF;
@@ -6033,25 +6064,25 @@ defm PseudoVFWNMSAC : VPseudoVWMAC_VV_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.8. Vector Floating-Point Square-Root Instruction
+// 13.8. Vector Floating-Point Square-Root Instruction
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in
 defm PseudoVFSQRT : VPseudoVSQR_V;
 
 //===----------------------------------------------------------------------===//
-// 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+// 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in
 defm PseudoVFRSQRT7 : VPseudoVRCP_V;
 
 //===----------------------------------------------------------------------===//
-// 14.10. Vector Floating-Point Reciprocal Estimate Instruction
+// 13.10. Vector Floating-Point Reciprocal Estimate Instruction
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in
 defm PseudoVFREC7 : VPseudoVRCP_V;
 
 //===----------------------------------------------------------------------===//
-// 14.11. Vector Floating-Point Min/Max Instructions
+// 13.11. Vector Floating-Point Min/Max Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 defm PseudoVFMIN : VPseudoVMAX_VV_VF;
@@ -6059,14 +6090,14 @@ defm PseudoVFMAX : VPseudoVMAX_VV_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.12. Vector Floating-Point Sign-Injection Instructions
+// 13.12. Vector Floating-Point Sign-Injection Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVFSGNJ  : VPseudoVSGNJ_VV_VF;
 defm PseudoVFSGNJN : VPseudoVSGNJ_VV_VF;
 defm PseudoVFSGNJX : VPseudoVSGNJ_VV_VF;
 
 //===----------------------------------------------------------------------===//
-// 14.13. Vector Floating-Point Compare Instructions
+// 13.13. Vector Floating-Point Compare Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 defm PseudoVMFEQ : VPseudoVCMPM_VV_VF;
@@ -6078,22 +6109,22 @@ defm PseudoVMFGE : VPseudoVCMPM_VF;
 }
 
 //===----------------------------------------------------------------------===//
-// 14.14. Vector Floating-Point Classify Instruction
+// 13.14. Vector Floating-Point Classify Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVFCLASS : VPseudoVCLS_V;
 
 //===----------------------------------------------------------------------===//
-// 14.15. Vector Floating-Point Merge Instruction
+// 13.15. Vector Floating-Point Merge Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVFMERGE : VPseudoVMRG_FM;
 
 //===----------------------------------------------------------------------===//
-// 14.16. Vector Floating-Point Move Instruction
+// 13.16. Vector Floating-Point Move Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVFMV_V : VPseudoVMV_F;
 
 //===----------------------------------------------------------------------===//
-// 14.17. Single-Width Floating-Point/Integer Type-Convert Instructions
+// 13.17. Single-Width Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 let Uses = [FRM] in {
@@ -6108,10 +6139,11 @@ let Uses = [FRM] in {
 defm PseudoVFCVT_F_XU : VPseudoVCVTF_V;
 defm PseudoVFCVT_F_X : VPseudoVCVTF_V;
 }
+defm PseudoVFCVT_RM_F_XU : VPseudoVCVTF_RM_V;
 } // mayRaiseFPException = true
 
 //===----------------------------------------------------------------------===//
-// 14.18. Widening Floating-Point/Integer Type-Convert Instructions
+// 13.18. Widening Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 let Uses = [FRM] in {
@@ -6126,7 +6158,7 @@ defm PseudoVFWCVT_F_F      : VPseudoVWCVTD_V;
 } // mayRaiseFPException = true
 
 //===----------------------------------------------------------------------===//
-// 14.19. Narrowing Floating-Point/Integer Type-Convert Instructions
+// 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 let Uses = [FRM] in {
@@ -6141,12 +6173,17 @@ defm PseudoVFNCVT_F_X      : VPseudoVNCVTF_W;
 defm PseudoVFNCVT_F_F      : VPseudoVNCVTD_W;
 }
 defm PseudoVFNCVT_ROD_F_F  : VPseudoVNCVTD_W;
+defm PseudoVFNCVT_RM_F_XU  : VPseudoVNCVTF_RM_W;
 } // mayRaiseFPException = true
 } // Predicates = [HasVInstructionsAnyF]
 
+//===----------------------------------------------------------------------===//
+// 14. Vector Reduction Operations
+//===----------------------------------------------------------------------===//
+
 let Predicates = [HasVInstructions] in {
 //===----------------------------------------------------------------------===//
-// 15.1. Vector Single-Width Integer Reduction Instructions
+// 14.1. Vector Single-Width Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVREDSUM  : VPseudoVRED_VS;
 defm PseudoVREDAND  : VPseudoVRED_VS;
@@ -6158,7 +6195,7 @@ defm PseudoVREDMAXU : VPseudoVRED_VS;
 defm PseudoVREDMAX  : VPseudoVRED_VS;
 
 //===----------------------------------------------------------------------===//
-// 15.2. Vector Widening Integer Reduction Instructions
+// 14.2. Vector Widening Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
 let IsRVVWideningReduction = 1 in {
 defm PseudoVWREDSUMU   : VPseudoVWRED_VS;
@@ -6168,7 +6205,7 @@ defm PseudoVWREDSUM    : VPseudoVWRED_VS;
 
 let Predicates = [HasVInstructionsAnyF] in {
 //===----------------------------------------------------------------------===//
-// 15.3. Vector Single-Width Floating-Point Reduction Instructions
+// 14.3. Vector Single-Width Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
 let Uses = [FRM], mayRaiseFPException = true in {
 defm PseudoVFREDOSUM : VPseudoVFREDO_VS;
@@ -6180,7 +6217,7 @@ defm PseudoVFREDMAX  : VPseudoVFRED_VS;
 }
 
 //===----------------------------------------------------------------------===//
-// 15.4. Vector Widening Floating-Point Reduction Instructions
+// 14.4. Vector Widening Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
 let IsRVVWideningReduction = 1,
     Uses = [FRM],
@@ -6192,11 +6229,11 @@ defm PseudoVFWREDOSUM  : VPseudoVFWRED_VS;
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 16. Vector Mask Instructions
+// 15. Vector Mask Instructions
 //===----------------------------------------------------------------------===//
 
 //===----------------------------------------------------------------------===//
-// 16.1 Vector Mask-Register Logical Instructions
+// 15.1 Vector Mask-Register Logical Instructions
 //===----------------------------------------------------------------------===//
 
 defm PseudoVMAND: VPseudoVALU_MM;
@@ -6213,48 +6250,48 @@ defm PseudoVMCLR : VPseudoNullaryPseudoM<"VMXOR">;
 defm PseudoVMSET : VPseudoNullaryPseudoM<"VMXNOR">;
 
 //===----------------------------------------------------------------------===//
-// 16.2. Vector mask population count vcpop
+// 15.2. Vector mask population count vcpop
 //===----------------------------------------------------------------------===//
 
 defm PseudoVCPOP: VPseudoVPOP_M;
 
 //===----------------------------------------------------------------------===//
-// 16.3. vfirst find-first-set mask bit
+// 15.3. vfirst find-first-set mask bit
 //===----------------------------------------------------------------------===//
 
 defm PseudoVFIRST: VPseudoV1ST_M;
 
 //===----------------------------------------------------------------------===//
-// 16.4. vmsbf.m set-before-first mask bit
+// 15.4. vmsbf.m set-before-first mask bit
 //===----------------------------------------------------------------------===//
 defm PseudoVMSBF: VPseudoVSFS_M;
 
 //===----------------------------------------------------------------------===//
-// 16.5. vmsif.m set-including-first mask bit
+// 15.5. vmsif.m set-including-first mask bit
 //===----------------------------------------------------------------------===//
 defm PseudoVMSIF: VPseudoVSFS_M;
 
 //===----------------------------------------------------------------------===//
-// 16.6. vmsof.m set-only-first mask bit
+// 15.6. vmsof.m set-only-first mask bit
 //===----------------------------------------------------------------------===//
 defm PseudoVMSOF: VPseudoVSFS_M;
 
 //===----------------------------------------------------------------------===//
-// 16.8.  Vector Iota Instruction
+// 15.8.  Vector Iota Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVIOTA_M: VPseudoVIOT_M;
 
 //===----------------------------------------------------------------------===//
-// 16.9. Vector Element Index Instruction
+// 15.9. Vector Element Index Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVID : VPseudoVID_V;
 
 //===----------------------------------------------------------------------===//
-// 17. Vector Permutation Instructions
+// 16. Vector Permutation Instructions
 //===----------------------------------------------------------------------===//
 
 //===----------------------------------------------------------------------===//
-// 17.1. Integer Scalar Move Instructions
+// 16.1. Integer Scalar Move Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructions] in {
@@ -6286,7 +6323,7 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
 } // Predicates = [HasVInstructions]
 
 //===----------------------------------------------------------------------===//
-// 17.2. Floating-Point Scalar Move Instructions
+// 16.2. Floating-Point Scalar Move Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructionsAnyF] in {
@@ -6322,7 +6359,7 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 17.3. Vector Slide Instructions
+// 16.3. Vector Slide Instructions
 //===----------------------------------------------------------------------===//
 let Predicates = [HasVInstructions] in {
   defm PseudoVSLIDEUP    : VPseudoVSLD_VX_VI<uimm5, "@earlyclobber $rd">;
@@ -6337,13 +6374,13 @@ let Predicates = [HasVInstructionsAnyF] in {
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 17.4. Vector Register Gather Instructions
+// 16.4. Vector Register Gather Instructions
 //===----------------------------------------------------------------------===//
 defm PseudoVRGATHER     : VPseudoVGTR_VV_VX_VI<uimm5, "@earlyclobber $rd">;
 defm PseudoVRGATHEREI16 : VPseudoVGTR_VV_EEW</* eew */ 16, "@earlyclobber $rd">;
 
 //===----------------------------------------------------------------------===//
-// 17.5. Vector Compress Instruction
+// 16.5. Vector Compress Instruction
 //===----------------------------------------------------------------------===//
 defm PseudoVCOMPRESS : VPseudoVCPR_V;
 
@@ -6433,19 +6470,19 @@ let Predicates = [HasExtXsfvcp] in {
 //===----------------------------------------------------------------------===//
 
 //===----------------------------------------------------------------------===//
-// 12. Vector Integer Arithmetic Instructions
+// 11. Vector Integer Arithmetic Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructions] in {
 //===----------------------------------------------------------------------===//
-// 12.1. Vector Single-Width Integer Add and Subtract
+// 11.1. Vector Single-Width Integer Add and Subtract
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vadd", "PseudoVADD", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vsub", "PseudoVSUB", AllIntegerVectors>;
 defm : VPatBinaryV_VX_VI<"int_riscv_vrsub", "PseudoVRSUB", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.2. Vector Widening Integer Add/Subtract
+// 11.2. Vector Widening Integer Add/Subtract
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryW_VV_VX<"int_riscv_vwaddu", "PseudoVWADDU", AllWidenableIntVectors>;
 defm : VPatBinaryW_VV_VX<"int_riscv_vwsubu", "PseudoVWSUBU", AllWidenableIntVectors>;
@@ -6457,7 +6494,7 @@ defm : VPatBinaryW_WV_WX<"int_riscv_vwadd_w", "PseudoVWADD", AllWidenableIntVect
 defm : VPatBinaryW_WV_WX<"int_riscv_vwsub_w", "PseudoVWSUB", AllWidenableIntVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.3. Vector Integer Extension
+// 11.3. Vector Integer Extension
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_VF<"int_riscv_vzext", "PseudoVZEXT", "VF2",
                      AllFractionableVF2IntVectors>;
@@ -6473,7 +6510,7 @@ defm : VPatUnaryV_VF<"int_riscv_vsext", "PseudoVSEXT", "VF8",
                      AllFractionableVF8IntVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.4. Vector Integer Add-with-Carry / Subtract-with-Borrow Instructions
+// 11.4. Vector Integer Add-with-Carry / Subtract-with-Borrow Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VM_XM_IM<"int_riscv_vadc", "PseudoVADC">;
 defm : VPatBinaryM_VM_XM_IM<"int_riscv_vmadc_carry_in", "PseudoVMADC">;
@@ -6484,14 +6521,14 @@ defm : VPatBinaryM_VM_XM<"int_riscv_vmsbc_borrow_in", "PseudoVMSBC">;
 defm : VPatBinaryM_V_X<"int_riscv_vmsbc", "PseudoVMSBC">;
 
 //===----------------------------------------------------------------------===//
-// 12.5. Vector Bitwise Logical Instructions
+// 11.5. Vector Bitwise Logical Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vand", "PseudoVAND", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vor", "PseudoVOR", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vxor", "PseudoVXOR", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.6. Vector Single-Width Bit Shift Instructions
+// 11.6. Vector Single-Width Bit Shift Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vsll", "PseudoVSLL", AllIntegerVectors,
                             uimm5>;
@@ -6526,13 +6563,13 @@ foreach vti = AllIntegerVectors in {
 }
 
 //===----------------------------------------------------------------------===//
-// 12.7. Vector Narrowing Integer Right Shift Instructions
+// 11.7. Vector Narrowing Integer Right Shift Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_WV_WX_WI<"int_riscv_vnsrl", "PseudoVNSRL", AllWidenableIntVectors>;
 defm : VPatBinaryV_WV_WX_WI<"int_riscv_vnsra", "PseudoVNSRA", AllWidenableIntVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.8. Vector Integer Comparison Instructions
+// 11.8. Vector Integer Comparison Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryM_VV_VX_VI<"int_riscv_vmseq", "PseudoVMSEQ", AllIntegerVectors>;
 defm : VPatBinaryM_VV_VX_VI<"int_riscv_vmsne", "PseudoVMSNE", AllIntegerVectors>;
@@ -6563,7 +6600,7 @@ defm : VPatCompare_VI<"int_riscv_vmsge", "PseudoVMSGT", simm5_plus1>;
 defm : VPatCompare_VI<"int_riscv_vmsgeu", "PseudoVMSGTU", simm5_plus1_nonzero>;
 
 //===----------------------------------------------------------------------===//
-// 12.9. Vector Integer Min/Max Instructions
+// 11.9. Vector Integer Min/Max Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vminu", "PseudoVMINU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vmin", "PseudoVMIN", AllIntegerVectors>;
@@ -6571,7 +6608,7 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vmaxu", "PseudoVMAXU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vmax", "PseudoVMAX", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.10. Vector Single-Width Integer Multiply Instructions
+// 11.10. Vector Single-Width Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vmul", "PseudoVMUL", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vmulh", "PseudoVMULH", AllIntegerVectors>;
@@ -6579,7 +6616,7 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vmulhu", "PseudoVMULHU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vmulhsu", "PseudoVMULHSU", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.11. Vector Integer Divide Instructions
+// 11.11. Vector Integer Divide Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vdivu", "PseudoVDIVU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vdiv", "PseudoVDIV", AllIntegerVectors>;
@@ -6587,14 +6624,14 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vremu", "PseudoVREMU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vrem", "PseudoVREM", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.12. Vector Widening Integer Multiply Instructions
+// 11.12. Vector Widening Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryW_VV_VX<"int_riscv_vwmul", "PseudoVWMUL", AllWidenableIntVectors>;
 defm : VPatBinaryW_VV_VX<"int_riscv_vwmulu", "PseudoVWMULU", AllWidenableIntVectors>;
 defm : VPatBinaryW_VV_VX<"int_riscv_vwmulsu", "PseudoVWMULSU", AllWidenableIntVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.13. Vector Single-Width Integer Multiply-Add Instructions
+// 11.13. Vector Single-Width Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vmadd", "PseudoVMADD", AllIntegerVectors>;
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vnmsub", "PseudoVNMSUB", AllIntegerVectors>;
@@ -6602,7 +6639,7 @@ defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vmacc", "PseudoVMACC", AllIntegerVecto
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vnmsac", "PseudoVNMSAC", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.14. Vector Widening Integer Multiply-Add Instructions
+// 11.14. Vector Widening Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatTernaryW_VV_VX<"int_riscv_vwmaccu", "PseudoVWMACCU", AllWidenableIntVectors>;
 defm : VPatTernaryW_VV_VX<"int_riscv_vwmacc", "PseudoVWMACC", AllWidenableIntVectors>;
@@ -6610,12 +6647,12 @@ defm : VPatTernaryW_VV_VX<"int_riscv_vwmaccsu", "PseudoVWMACCSU", AllWidenableIn
 defm : VPatTernaryW_VX<"int_riscv_vwmaccus", "PseudoVWMACCUS", AllWidenableIntVectors>;
 
 //===----------------------------------------------------------------------===//
-// 12.15. Vector Integer Merge Instructions
+// 11.15. Vector Integer Merge Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VM_XM_IM<"int_riscv_vmerge", "PseudoVMERGE">;
 
 //===----------------------------------------------------------------------===//
-// 12.16. Vector Integer Move Instructions
+// 11.16. Vector Integer Move Instructions
 //===----------------------------------------------------------------------===//
 foreach vti = AllVectors in {
   def : Pat<(vti.Vector (int_riscv_vmv_v_v (vti.Vector undef),
@@ -6633,7 +6670,11 @@ foreach vti = AllVectors in {
 }
 
 //===----------------------------------------------------------------------===//
-// 13.1. Vector Single-Width Saturating Add and Subtract
+// 12. Vector Fixed-Point Arithmetic Instructions
+//===----------------------------------------------------------------------===//
+
+//===----------------------------------------------------------------------===//
+// 12.1. Vector Single-Width Saturating Add and Subtract
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vsaddu", "PseudoVSADDU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX_VI<"int_riscv_vsadd", "PseudoVSADD", AllIntegerVectors>;
@@ -6641,7 +6682,7 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vssubu", "PseudoVSSUBU", AllIntegerVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vssub", "PseudoVSSUB", AllIntegerVectors>;
 
 //===----------------------------------------------------------------------===//
-// 13.2. Vector Single-Width Averaging Add and Subtract
+// 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 defm : VPatBinaryRM_V_VV_VX<"int_riscv_vaaddu", "PseudoVAADDU", AllIntegerVectors>;
@@ -6651,14 +6692,14 @@ defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
+// 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.4. Vector Single-Width Scaling Shift Instructions
+// 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 defm : VPatBinaryRM_V_VV_VX_VI<"int_riscv_vssrl", "PseudoVSSRL", AllIntegerVectors,
@@ -6668,7 +6709,7 @@ defm : VPatBinaryRM_V_VV_VX_VI<"int_riscv_vssra", "PseudoVSSRA", AllIntegerVecto
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
-// 13.5. Vector Narrowing Fixed-Point Clip Instructions
+// 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
 #ifdef SIFIVE_CUSTOMIZATION
 defm : VPatBinaryRM_V_WV_WX_WI<"int_riscv_vnclipu", "PseudoVNCLIPU", AllWidenableIntVectors>;
@@ -6677,16 +6718,20 @@ defm : VPatBinaryRM_V_WV_WX_WI<"int_riscv_vnclip", "PseudoVNCLIP", AllWidenableI
 
 } // Predicates = [HasVInstructions]
 
+//===----------------------------------------------------------------------===//
+// 13. Vector Floating-Point Instructions
+//===----------------------------------------------------------------------===//
+
 let Predicates = [HasVInstructionsAnyF] in {
 //===----------------------------------------------------------------------===//
-// 14.2. Vector Single-Width Floating-Point Add/Subtract Instructions
+// 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vfadd", "PseudoVFADD", AllFloatVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfsub", "PseudoVFSUB", AllFloatVectors>;
 defm : VPatBinaryV_VX<"int_riscv_vfrsub", "PseudoVFRSUB", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.3. Vector Widening Floating-Point Add/Subtract Instructions
+// 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryW_VV_VX<"int_riscv_vfwadd", "PseudoVFWADD", AllWidenableFloatVectors>;
 defm : VPatBinaryW_VV_VX<"int_riscv_vfwsub", "PseudoVFWSUB", AllWidenableFloatVectors>;
@@ -6694,19 +6739,19 @@ defm : VPatBinaryW_WV_WX<"int_riscv_vfwadd_w", "PseudoVFWADD", AllWidenableFloat
 defm : VPatBinaryW_WV_WX<"int_riscv_vfwsub_w", "PseudoVFWSUB", AllWidenableFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
+// 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vfmul", "PseudoVFMUL", AllFloatVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfdiv", "PseudoVFDIV", AllFloatVectors>;
 defm : VPatBinaryV_VX<"int_riscv_vfrdiv", "PseudoVFRDIV", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.5. Vector Widening Floating-Point Multiply
+// 13.5. Vector Widening Floating-Point Multiply
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryW_VV_VX<"int_riscv_vfwmul", "PseudoVFWMUL", AllWidenableFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
+// 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vfmacc", "PseudoVFMACC", AllFloatVectors>;
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vfnmacc", "PseudoVFNMACC", AllFloatVectors>;
@@ -6718,7 +6763,7 @@ defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vfmsub", "PseudoVFMSUB", AllFloatVecto
 defm : VPatTernaryV_VV_VX_AAXA<"int_riscv_vfnmsub", "PseudoVFNMSUB", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
+// 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatTernaryW_VV_VX<"int_riscv_vfwmacc", "PseudoVFWMACC", AllWidenableFloatVectors>;
 defm : VPatTernaryW_VV_VX<"int_riscv_vfwnmacc", "PseudoVFWNMACC", AllWidenableFloatVectors>;
@@ -6726,35 +6771,35 @@ defm : VPatTernaryW_VV_VX<"int_riscv_vfwmsac", "PseudoVFWMSAC", AllWidenableFloa
 defm : VPatTernaryW_VV_VX<"int_riscv_vfwnmsac", "PseudoVFWNMSAC", AllWidenableFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.8. Vector Floating-Point Square-Root Instruction
+// 13.8. Vector Floating-Point Square-Root Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V<"int_riscv_vfsqrt", "PseudoVFSQRT", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+// 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V<"int_riscv_vfrsqrt7", "PseudoVFRSQRT7", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.10. Vector Floating-Point Reciprocal Estimate Instruction
+// 13.10. Vector Floating-Point Reciprocal Estimate Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V<"int_riscv_vfrec7", "PseudoVFREC7", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.11. Vector Floating-Point Min/Max Instructions
+// 13.11. Vector Floating-Point Min/Max Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vfmin", "PseudoVFMIN", AllFloatVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfmax", "PseudoVFMAX", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.12. Vector Floating-Point Sign-Injection Instructions
+// 13.12. Vector Floating-Point Sign-Injection Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnj", "PseudoVFSGNJ", AllFloatVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjn", "PseudoVFSGNJN", AllFloatVectors>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjx", "PseudoVFSGNJX", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.13. Vector Floating-Point Compare Instructions
+// 13.13. Vector Floating-Point Compare Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryM_VV_VX<"int_riscv_vmfeq", "PseudoVMFEQ", AllFloatVectors>;
 defm : VPatBinaryM_VV_VX<"int_riscv_vmfle", "PseudoVMFLE", AllFloatVectors>;
@@ -6766,12 +6811,12 @@ defm : VPatBinarySwappedM_VV<"int_riscv_vmfgt", "PseudoVMFLT", AllFloatVectors>;
 defm : VPatBinarySwappedM_VV<"int_riscv_vmfge", "PseudoVMFLE", AllFloatVectors>;
 
 //===----------------------------------------------------------------------===//
-// 14.14. Vector Floating-Point Classify Instruction
+// 13.14. Vector Floating-Point Classify Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatConversionVI_VF<"int_riscv_vfclass", "PseudoVFCLASS">;
 
 //===----------------------------------------------------------------------===//
-// 14.15. Vector Floating-Point Merge Instruction
+// 13.15. Vector Floating-Point Merge Instruction
 //===----------------------------------------------------------------------===//
 // We can use vmerge.vvm to support vector-vector vfmerge.
 // NOTE: Clang previously used int_riscv_vfmerge for vector-vector, but now uses
@@ -6800,7 +6845,7 @@ foreach fvti = AllFloatVectors in {
 }
 
 //===----------------------------------------------------------------------===//
-// 14.17. Single-Width Floating-Point/Integer Type-Convert Instructions
+// 13.17. Single-Width Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatConversionVI_VF<"int_riscv_vfcvt_xu_f_v", "PseudoVFCVT_XU_F">;
 defm : VPatConversionVI_VF<"int_riscv_vfcvt_rtz_xu_f_v", "PseudoVFCVT_RTZ_XU_F">;
@@ -6810,7 +6855,7 @@ defm : VPatConversionVF_VI<"int_riscv_vfcvt_f_x_v", "PseudoVFCVT_F_X">;
 defm : VPatConversionVF_VI<"int_riscv_vfcvt_f_xu_v", "PseudoVFCVT_F_XU">;
 
 //===----------------------------------------------------------------------===//
-// 14.18. Widening Floating-Point/Integer Type-Convert Instructions
+// 13.18. Widening Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatConversionWI_VF<"int_riscv_vfwcvt_xu_f_v", "PseudoVFWCVT_XU_F">;
 defm : VPatConversionWI_VF<"int_riscv_vfwcvt_x_f_v", "PseudoVFWCVT_X_F">;
@@ -6821,7 +6866,7 @@ defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_x_v", "PseudoVFWCVT_F_X">;
 defm : VPatConversionWF_VF<"int_riscv_vfwcvt_f_f_v", "PseudoVFWCVT_F_F">;
 
 //===----------------------------------------------------------------------===//
-// 14.19. Narrowing Floating-Point/Integer Type-Convert Instructions
+// 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatConversionVI_WF<"int_riscv_vfncvt_xu_f_w", "PseudoVFNCVT_XU_F">;
 defm : VPatConversionVI_WF<"int_riscv_vfncvt_x_f_w", "PseudoVFNCVT_X_F">;
@@ -6833,9 +6878,13 @@ defm : VPatConversionVF_WF<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F">;
 defm : VPatConversionVF_WF<"int_riscv_vfncvt_rod_f_f_w", "PseudoVFNCVT_ROD_F_F">;
 } // Predicates = [HasVInstructionsAnyF]
 
+//===----------------------------------------------------------------------===//
+// 14. Vector Reduction Operations
+//===----------------------------------------------------------------------===//
+
 let Predicates = [HasVInstructions] in {
 //===----------------------------------------------------------------------===//
-// 15.1. Vector Single-Width Integer Reduction Instructions
+// 14.1. Vector Single-Width Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatReductionV_VS<"int_riscv_vredsum", "PseudoVREDSUM">;
 defm : VPatReductionV_VS<"int_riscv_vredand", "PseudoVREDAND">;
@@ -6847,7 +6896,7 @@ defm : VPatReductionV_VS<"int_riscv_vredmaxu", "PseudoVREDMAXU">;
 defm : VPatReductionV_VS<"int_riscv_vredmax", "PseudoVREDMAX">;
 
 //===----------------------------------------------------------------------===//
-// 15.2. Vector Widening Integer Reduction Instructions
+// 14.2. Vector Widening Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatReductionW_VS<"int_riscv_vwredsumu", "PseudoVWREDSUMU">;
 defm : VPatReductionW_VS<"int_riscv_vwredsum", "PseudoVWREDSUM">;
@@ -6855,7 +6904,7 @@ defm : VPatReductionW_VS<"int_riscv_vwredsum", "PseudoVWREDSUM">;
 
 let Predicates = [HasVInstructionsAnyF] in {
 //===----------------------------------------------------------------------===//
-// 15.3. Vector Single-Width Floating-Point Reduction Instructions
+// 14.3. Vector Single-Width Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatReductionV_VS<"int_riscv_vfredosum", "PseudoVFREDOSUM", /*IsFloat=*/1>;
 defm : VPatReductionV_VS<"int_riscv_vfredusum", "PseudoVFREDUSUM", /*IsFloat=*/1>;
@@ -6863,7 +6912,7 @@ defm : VPatReductionV_VS<"int_riscv_vfredmin", "PseudoVFREDMIN", /*IsFloat=*/1>;
 defm : VPatReductionV_VS<"int_riscv_vfredmax", "PseudoVFREDMAX", /*IsFloat=*/1>;
 
 //===----------------------------------------------------------------------===//
-// 15.4. Vector Widening Floating-Point Reduction Instructions
+// 14.4. Vector Widening Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatReductionW_VS<"int_riscv_vfwredusum", "PseudoVFWREDUSUM", /*IsFloat=*/1>;
 defm : VPatReductionW_VS<"int_riscv_vfwredosum", "PseudoVFWREDOSUM", /*IsFloat=*/1>;
@@ -6871,12 +6920,12 @@ defm : VPatReductionW_VS<"int_riscv_vfwredosum", "PseudoVFWREDOSUM", /*IsFloat=*
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 16. Vector Mask Instructions
+// 15. Vector Mask Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructions] in {
 //===----------------------------------------------------------------------===//
-// 16.1 Vector Mask-Register Logical Instructions
+// 15.1 Vector Mask-Register Logical Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryM_MM<"int_riscv_vmand", "PseudoVMAND">;
 defm : VPatBinaryM_MM<"int_riscv_vmnand", "PseudoVMNAND">;
@@ -6892,48 +6941,48 @@ defm : VPatNullaryM<"int_riscv_vmclr", "PseudoVMCLR">;
 defm : VPatNullaryM<"int_riscv_vmset", "PseudoVMSET">;
 
 //===----------------------------------------------------------------------===//
-// 16.2. Vector count population in mask vcpop.m
+// 15.2. Vector count population in mask vcpop.m
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryS_M<"int_riscv_vcpop", "PseudoVCPOP">;
 
 //===----------------------------------------------------------------------===//
-// 16.3. vfirst find-first-set mask bit
+// 15.3. vfirst find-first-set mask bit
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryS_M<"int_riscv_vfirst", "PseudoVFIRST">;
 
 //===----------------------------------------------------------------------===//
-// 16.4. vmsbf.m set-before-first mask bit
+// 15.4. vmsbf.m set-before-first mask bit
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryM_M<"int_riscv_vmsbf", "PseudoVMSBF">;
 
 //===----------------------------------------------------------------------===//
-// 16.5. vmsif.m set-including-first mask bit
+// 15.5. vmsif.m set-including-first mask bit
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryM_M<"int_riscv_vmsif", "PseudoVMSIF">;
 
 //===----------------------------------------------------------------------===//
-// 16.6. vmsof.m set-only-first mask bit
+// 15.6. vmsof.m set-only-first mask bit
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryM_M<"int_riscv_vmsof", "PseudoVMSOF">;
 
 //===----------------------------------------------------------------------===//
-// 16.8.  Vector Iota Instruction
+// 15.8.  Vector Iota Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_M<"int_riscv_viota", "PseudoVIOTA">;
 
 //===----------------------------------------------------------------------===//
-// 16.9. Vector Element Index Instruction
+// 15.9. Vector Element Index Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatNullaryV<"int_riscv_vid", "PseudoVID">;
 
 } // Predicates = [HasVInstructions]
 
 //===----------------------------------------------------------------------===//
-// 17. Vector Permutation Instructions
+// 16. Vector Permutation Instructions
 //===----------------------------------------------------------------------===//
 
 //===----------------------------------------------------------------------===//
-// 17.1. Integer Scalar Move Instructions
+// 16.1. Integer Scalar Move Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructions] in {
@@ -6945,16 +6994,11 @@ foreach vti = AllIntegerVectors in {
 } // Predicates = [HasVInstructions]
 
 //===----------------------------------------------------------------------===//
-// 17.2. Floating-Point Scalar Move Instructions
+// 16.2. Floating-Point Scalar Move Instructions
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructionsAnyF] in {
 foreach fvti = AllFloatVectors in {
-  defvar instr = !cast<Instruction>("PseudoVFMV_"#fvti.ScalarSuffix#"_S_" #
-                                    fvti.LMul.MX);
-  def : Pat<(fvti.Scalar (int_riscv_vfmv_f_s (fvti.Vector fvti.RegClass:$rs2))),
-                         (instr $rs2, fvti.Log2SEW)>;
-
   def : Pat<(fvti.Vector (int_riscv_vfmv_s_f (fvti.Vector fvti.RegClass:$rs1),
                          (fvti.Scalar fvti.ScalarRegClass:$rs2), VLOpFrag)),
             (!cast<Instruction>("PseudoVFMV_S_"#fvti.ScalarSuffix#"_" #
@@ -6971,7 +7015,7 @@ foreach fvti = AllFloatVectors in {
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 17.3. Vector Slide Instructions
+// 16.3. Vector Slide Instructions
 //===----------------------------------------------------------------------===//
 let Predicates = [HasVInstructions] in {
   defm : VPatTernaryV_VX_VI<"int_riscv_vslideup", "PseudoVSLIDEUP", AllIntegerVectors, uimm5>;
@@ -6988,7 +7032,7 @@ let Predicates = [HasVInstructionsAnyF] in {
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 17.4. Vector Register Gather Instructions
+// 16.4. Vector Register Gather Instructions
 //===----------------------------------------------------------------------===//
 let Predicates = [HasVInstructions] in {
   defm : VPatBinaryV_VV_VX_VI_INT<"int_riscv_vrgather", "PseudoVRGATHER",
@@ -7005,7 +7049,7 @@ let Predicates = [HasVInstructionsAnyF] in {
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
-// 17.5. Vector Compress Instruction
+// 16.5. Vector Compress Instruction
 //===----------------------------------------------------------------------===//
 let Predicates = [HasVInstructions] in {
   defm : VPatUnaryV_V_AnyMask<"int_riscv_vcompress", "PseudoVCOMPRESS", AllIntegerVectors>;

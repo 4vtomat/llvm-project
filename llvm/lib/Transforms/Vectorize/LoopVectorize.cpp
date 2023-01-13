@@ -5887,7 +5887,7 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
   // Ensure MaxVF is a power of 2; the dependence distance bound may not be.
   // Note that both WidestRegister and WidestType may not be a powers of 2.
   auto MaxVectorElementCount = ElementCount::get(
-      PowerOf2Floor(WidestRegister.getKnownMinSize() / WidestType),
+      PowerOf2Floor(WidestRegister.getKnownMinValue() / WidestType),
       ComputeScalableMaxVF);
   MaxVectorElementCount = MinVF(MaxVectorElementCount, MaxSafeVF);
   LLVM_DEBUG(dbgs() << "LV: The Widest register safe to use is: "
@@ -5928,7 +5928,7 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
   if (MaximizeBandwidth || (MaximizeBandwidth.getNumOccurrences() == 0 &&
                             TTI.shouldMaximizeVectorBandwidth(RegKind))) {
     auto MaxVectorElementCountMaxBW = ElementCount::get(
-        PowerOf2Floor(WidestRegister.getKnownMinSize() / SmallestType),
+        PowerOf2Floor(WidestRegister.getKnownMinValue() / SmallestType),
         ComputeScalableMaxVF);
     MaxVectorElementCountMaxBW = MinVF(MaxVectorElementCountMaxBW, MaxSafeVF);
 
@@ -6491,9 +6491,9 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
 #else
     for (Type *T : ElementTypesInLoop) {
       MinWidth = std::min<unsigned>(
-          MinWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedSize());
+          MinWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedValue());
       MaxWidth = std::max<unsigned>(
-          MaxWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedSize());
+          MaxWidth, DL.getTypeSizeInBits(T->getScalarType()).getFixedValue());
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -8591,7 +8591,7 @@ LoopVectorizationPlanner::planInVPlanNativePath(ElementCount UserVF) {
     if (UserVF.isZero()) {
       VF = ElementCount::getFixed(determineVPlanVF(
           TTI->getRegisterBitWidth(TargetTransformInfo::RGK_FixedWidthVector)
-              .getFixedSize(),
+              .getFixedValue(),
           CM));
       LLVM_DEBUG(dbgs() << "LV: VPlan computed VF " << VF << ".\n");
 
@@ -12329,6 +12329,7 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
     Changed |= formLCSSARecursively(*L, *DT, LI, SE);
 
     Changed |= CFGChanged |= processLoop(L);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (isRevectorizeWithoutStrideChecks(*L)) {
       if (LoopsTried.insert(L).second) {
@@ -12344,6 +12345,11 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
       }
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+    if (Changed)
+      LAIs->clear();
+>>>>>>> upstream/main
   }
 
   // Process each loop nest in the function.

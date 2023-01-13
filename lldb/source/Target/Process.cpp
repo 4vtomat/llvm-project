@@ -543,7 +543,7 @@ void Process::Finalize() {
   m_notifications.swap(empty_notifications);
   m_image_tokens.clear();
   m_memory_cache.Clear();
-  m_allocated_memory_cache.Clear();
+  m_allocated_memory_cache.Clear(/*deallocate_memory=*/true);
   {
     std::lock_guard<std::recursive_mutex> guard(m_language_runtimes_mutex);
     m_language_runtimes.clear();
@@ -2931,7 +2931,8 @@ void Process::CompleteAttach() {
                                      ArchSpec::CompatibleMatch, nullptr)) {
       ArchSpec platform_arch;
       platform_sp = GetTarget().GetDebugger().GetPlatformList().GetOrCreate(
-          target_arch, process_host_arch, &platform_arch);
+          target_arch, process_host_arch, &platform_arch,
+          /*metadata = */ nullptr);
       if (platform_sp) {
         GetTarget().SetPlatform(platform_sp);
         GetTarget().SetArchitecture(platform_arch);
@@ -5657,7 +5658,9 @@ void Process::DidExec() {
   m_dyld_up.reset();
   m_jit_loaders_up.reset();
   m_image_tokens.clear();
-  m_allocated_memory_cache.Clear();
+  // After an exec, the inferior is a new process and these memory regions are
+  // no longer allocated.
+  m_allocated_memory_cache.Clear(/*deallocte_memory=*/false);
   {
     std::lock_guard<std::recursive_mutex> guard(m_language_runtimes_mutex);
     m_language_runtimes.clear();

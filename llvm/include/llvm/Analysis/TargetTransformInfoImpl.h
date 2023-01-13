@@ -582,7 +582,7 @@ public:
       // trunc to a native type is free (assuming the target has compare and
       // shift-right of the same width).
       TypeSize DstSize = DL.getTypeSizeInBits(Dst);
-      if (!DstSize.isScalable() && DL.isLegalInteger(DstSize.getFixedSize()))
+      if (!DstSize.isScalable() && DL.isLegalInteger(DstSize.getFixedValue()))
         return 0;
       break;
     }
@@ -916,7 +916,7 @@ protected:
 
       // The max required size is the size of the vector element type
       unsigned MaxRequiredSize =
-          VT->getElementType()->getPrimitiveSizeInBits().getFixedSize();
+          VT->getElementType()->getPrimitiveSizeInBits().getFixedValue();
 
       unsigned MinRequiredSize = 0;
       for (unsigned i = 0, e = VT->getNumElements(); i < e; ++i) {
@@ -1036,7 +1036,7 @@ public:
         if (isa<ScalableVectorType>(TargetType))
           return TTI::TCC_Basic;
         int64_t ElementSize =
-            DL.getTypeAllocSize(GTI.getIndexedType()).getFixedSize();
+            DL.getTypeAllocSize(GTI.getIndexedType()).getFixedValue();
         if (ConstIdx) {
           BaseOffset +=
               ConstIdx->getValue().sextOrTrunc(PtrSizeBits) * ElementSize;

@@ -160,11 +160,11 @@ public:
   }
   unsigned getRealMinVLen() const {
     unsigned VLen = getMinRVVVectorSizeInBits();
-    return VLen == 0 ? getArchMinVLen() : VLen;
+    return VLen == 0 ? ZvlLen : VLen;
   }
   unsigned getRealMaxVLen() const {
     unsigned VLen = getMaxRVVVectorSizeInBits();
-    return VLen == 0 ? getArchMaxVLen() : VLen;
+    return VLen == 0 ? 65536 : VLen;
   }
   RISCVABI::ABI getTargetABI() const { return TargetABI; }
   bool isRegisterReservedByUser(Register i) const {
@@ -215,11 +215,6 @@ public:
   // NOTE: Please use getRealMinVLen and getRealMaxVLen instead!
   unsigned getMaxRVVVectorSizeInBits() const;
   unsigned getMinRVVVectorSizeInBits() const;
-
-  // Return the known range for the bit length of RVV data registers as indicated
-  // by -march and -mattr.
-  unsigned getArchMinVLen() const { return ZvlLen; }
-  unsigned getArchMaxVLen() const { return 65536; }
 
 public:
   const CallLowering *getCallLowering() const override;

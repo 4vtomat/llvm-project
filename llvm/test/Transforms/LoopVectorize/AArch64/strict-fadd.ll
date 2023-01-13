@@ -1195,6 +1195,7 @@ for.end:
 
 ; Test to check masking correct, using the "llvm.loop.vectorize.predicate.enable" attribute
 define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
+<<<<<<< HEAD
 ; CHECK-NOT-VECTORIZED-LABEL: @fadd_predicated(
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
@@ -1336,6 +1337,46 @@ define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
 ;
 
 
+=======
+; CHECK-ORDERED-LABEL: @fadd_predicated
+; CHECK-ORDERED: vector.ph
+; CHECK-ORDERED: %[[TRIP_MINUS_ONE:.*]] = sub i64 %n, 1
+; CHECK-ORDERED: %[[BROADCAST_INS:.*]] = insertelement <2 x i64> poison, i64 %[[TRIP_MINUS_ONE]], i64 0
+; CHECK-ORDERED: %[[SPLAT:.*]] = shufflevector <2 x i64> %[[BROADCAST_INS]], <2 x i64> poison, <2 x i32> zeroinitializer
+; CHECK-ORDERED: vector.body
+; CHECK-ORDERED: %[[RDX_PHI:.*]] =  phi float [ 0.000000e+00, %vector.ph ], [ %[[RDX:.*]], %pred.load.continue2 ]
+; CHECK-ORDERED: pred.load.continue2
+; CHECK-ORDERED: %[[PHI:.*]] = phi <2 x float> [ %[[PHI0:.*]], %pred.load.continue ], [ %[[INS_ELT:.*]], %pred.load.if1 ]
+; CHECK-ORDERED: %[[MASK:.*]] = select <2 x i1> %0, <2 x float> %[[PHI]], <2 x float> <float -0.000000e+00, float -0.000000e+00>
+; CHECK-ORDERED: %[[RDX]] = call float @llvm.vector.reduce.fadd.v2f32(float %[[RDX_PHI]], <2 x float> %[[MASK]])
+; CHECK-ORDERED: for.end:
+; CHECK-ORDERED: %[[RES_PHI:.*]] = phi float [ %[[FADD:.*]], %for.body ], [ %[[RDX]], %middle.block ]
+; CHECK-ORDERED: ret float %[[RES_PHI]]
+
+; CHECK-UNORDERED-LABEL: @fadd_predicated
+; CHECK-UNORDERED: vector.ph
+; CHECK-UNORDERED: %[[TRIP_MINUS_ONE:.*]] = sub i64 %n, 1
+; CHECK-UNORDERED: %[[BROADCAST_INS:.*]] = insertelement <2 x i64> poison, i64 %[[TRIP_MINUS_ONE]], i64 0
+; CHECK-UNORDERED: %[[SPLAT:.*]] = shufflevector <2 x i64> %[[BROADCAST_INS]], <2 x i64> poison, <2 x i32> zeroinitializer
+; CHECK-UNORDERED: vector.body
+; CHECK-UNORDERED: %[[RDX_PHI:.*]] =  phi <2 x float> [ <float 0.000000e+00, float -0.000000e+00>, %vector.ph ], [ %[[FADD:.*]], %pred.load.continue2 ]
+; CHECK-UNORDERED: %[[ICMP:.*]] = icmp ule <2 x i64> %vec.ind, %[[SPLAT]]
+; CHECK-UNORDERED: pred.load.continue2
+; CHECK-UNORDERED: %[[FADD]] = fadd <2 x float> %[[RDX_PHI]], {{.*}}
+; CHECK-UNORDERED: %[[MASK:.*]] = select <2 x i1> %[[ICMP]], <2 x float> %[[FADD]], <2 x float> %[[RDX_PHI]]
+; CHECK-UNORDERED-NOT: call float @llvm.vector.reduce.fadd
+; CHECK-UNORDERED: middle.block
+; CHECK-UNORDERED: %[[RDX:.*]] = call float @llvm.vector.reduce.fadd.v2f32(float -0.000000e+00, <2 x float> %[[MASK]])
+; CHECK-UNORDERED: for.body
+; CHECK-UNORDERED: %[[LOAD:.*]] = load float, float*
+; CHECK-UNORDERED: %[[FADD2:.*]] = fadd float {{.*}}, %[[LOAD]]
+; CHECK-UNORDERED: for.end
+; CHECK-UNORDERED: %[[SUM:.*]] = phi float [ %[[FADD2]], %for.body ], [ %[[RDX]], %middle.block ]
+; CHECK-UNORDERED: ret float %[[SUM]]
+
+; CHECK-NOT-VECTORIZED-LABEL: @fadd_predicated
+; CHECK-NOT-VECTORIZED-NOT: vector.body
+>>>>>>> upstream/main
 
 entry:
   br label %for.body

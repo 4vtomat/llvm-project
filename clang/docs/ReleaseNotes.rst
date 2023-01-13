@@ -345,6 +345,9 @@ Bug Fixes
   `Issue 59792 <https://github.com/llvm/llvm-project/issues/59792>`_
 - Fix an issue that makes Clang crash on lambda template parameters. This fixes
   `Issue 57960 <https://github.com/llvm/llvm-project/issues/57960>`_
+- Fix issue that the standard C++ modules importer will call global
+  constructor/destructor for the global varaibles in the importing modules.
+  This fixes `Issue 59765 <https://github.com/llvm/llvm-project/issues/59765>`_
 
 Improvements to Clang's diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -444,6 +447,9 @@ Improvements to Clang's diagnostics
   ``#pragma clang __debug sloc_usage`` can also be used to request this report.
 - Clang no longer permits the keyword 'bool' in a concept declaration as a
   concepts-ts compatibility extension.
+- Clang now diagnoses overflow undefined behavior in a constant expression while
+  evaluating a compound assignment with remainder as operand.
+- Add ``-Wreturn-local-addr``, a GCC alias for ``-Wreturn-stack-address``.
 
 Non-comprehensive list of changes in this release
 -------------------------------------------------
@@ -732,6 +738,12 @@ C++20 Feature Support
 - Do not hide templated base members introduced via using-decl in derived class
   (useful specially for constrained members). Fixes `GH50886 <https://github.com/llvm/llvm-project/issues/50886>`_.
 - Implemented CWG2635 as a Defect Report, which prohibits structured bindings from being constrained.
+- Correctly handle access-checks in requires expression. Fixes `GH53364 <https://github.com/llvm/llvm-project/issues/53364>`_,
+  `GH53334 <https://github.com/llvm/llvm-project/issues/53334>`_.
+
+- Implemented `P0960R3: <https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0960r3.html>`_
+  and `P1975R0: <https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1975r0.html>`_,
+  which allows parenthesized aggregate-initialization.
 
 C++2b Feature Support
 ^^^^^^^^^^^^^^^^^^^^^

@@ -407,14 +407,6 @@ inline bool isBitcode(MemoryBufferRef mb) {
   return identify_magic(mb.getBuffer()) == llvm::file_magic::bitcode;
 }
 
-// Convenience class for initializing a coff_section with specific flags.
-class FakeSection {
-public:
-  FakeSection(int c) { section.Characteristics = c; }
-
-  coff_section section;
-};
-
 std::string replaceThinLTOSuffix(StringRef path, StringRef suffix,
                                  StringRef repl);
 } // namespace coff

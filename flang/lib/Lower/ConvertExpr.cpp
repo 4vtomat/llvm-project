@@ -38,6 +38,7 @@
 #include "flang/Optimizer/Builder/Runtime/Assign.h"
 #include "flang/Optimizer/Builder/Runtime/Character.h"
 #include "flang/Optimizer/Builder/Runtime/Derived.h"
+#include "flang/Optimizer/Builder/Runtime/Inquiry.h"
 #include "flang/Optimizer/Builder/Runtime/RTBuilder.h"
 #include "flang/Optimizer/Builder/Runtime/Ragged.h"
 #include "flang/Optimizer/Builder/Todo.h"
@@ -2111,7 +2112,7 @@ public:
           mlir::ValueRange emptyRange;
           auto boxTy = fir::ClassType::get(value.getType());
           return builder.create<fir::EmboxOp>(loc, boxTy, temp, empty, empty,
-                                              emptyRange, p.getTdesc());
+                                              emptyRange, p.getSourceBox());
         },
         [&](const auto &) -> ExtValue {
           fir::emitFatalError(loc, "expr is not a scalar value");
@@ -2165,14 +2166,8 @@ public:
 
     if (isActualArgBox) {
       // Check at runtime if the argument is contiguous so no copy is needed.
-      mlir::func::FuncOp isContiguousFct =
-          fir::runtime::getRuntimeFunc<mkRTKey(IsContiguous)>(loc, builder);
-      fir::CallOp isContiguous = builder.create<fir::CallOp>(
-          loc, isContiguousFct,
-          mlir::ValueRange{builder.createConvert(
-              loc, isContiguousFct.getFunctionType().getInput(0),
-              fir::getBase(actualArg))});
-      isContiguousResult = isContiguous.getResult(0);
+      isContiguousResult =
+          fir::runtime::genIsContiguous(builder, loc, fir::getBase(actualArg));
     }
 
     auto doCopyIn = [&]() -> ExtValue {
@@ -2598,8 +2593,20 @@ public:
         if (arg.mayBeModifiedByCall())
           mutableModifiedByCall.emplace_back(std::move(mutableBox));
         if (fir::isAllocatableType(argTy) && arg.isIntentOut() &&
-            Fortran::semantics::IsBindCProcedure(*procRef.proc().GetSymbol()))
-          Fortran::lower::genDeallocateBox(converter, mutableBox, loc);
+            Fortran::semantics::IsBindCProcedure(*procRef.proc().GetSymbol())) {
+          if (mutableBox.isDerived() || mutableBox.isPolymorphic() ||
+              mutableBox.isUnlimitedPolymorphic()) {
+            mlir::Value isAlloc = fir::factory::genIsAllocatedOrAssociatedTest(
+                builder, loc, mutableBox);
+            builder.genIfThen(loc, isAlloc)
+                .genThen([&]() {
+                  Fortran::lower::genDeallocateBox(converter, mutableBox, loc);
+                })
+                .end();
+          } else {
+            Fortran::lower::genDeallocateBox(converter, mutableBox, loc);
+          }
+        }
         continue;
       }
       if (arg.passBy == PassBy::BaseAddress || arg.passBy == PassBy::BoxChar ||
@@ -4643,13 +4650,9 @@ private:
         if (fir::isPolymorphicType(argTy)) {
           if (isArray(*expr)) {
             ExtValue exv = asScalarRef(*expr);
-            mlir::Value tdesc;
-            if (fir::isPolymorphicType(fir::getBase(exv).getType())) {
-              mlir::Type tdescType = fir::TypeDescType::get(
-                  mlir::NoneType::get(builder.getContext()));
-              tdesc = builder.create<fir::BoxTypeDescOp>(loc, tdescType,
-                                                         fir::getBase(exv));
-            }
+            mlir::Value sourceBox;
+            if (fir::isPolymorphicType(fir::getBase(exv).getType()))
+              sourceBox = fir::getBase(exv);
             mlir::Type baseTy =
                 fir::dyn_cast_ptrOrBoxEleTy(fir::getBase(exv).getType());
             mlir::Type innerTy = fir::unwrapSequenceType(baseTy);
@@ -4661,7 +4664,7 @@ private:
               mlir::ValueRange emptyRange;
               return builder.create<fir::EmboxOp>(
                   loc, fir::ClassType::get(innerTy), coord, empty, empty,
-                  emptyRange, tdesc);
+                  emptyRange, sourceBox);
             });
           } else {
             ExtValue exv = asScalarRef(*expr);

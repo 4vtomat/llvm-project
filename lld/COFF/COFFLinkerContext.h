@@ -56,8 +56,10 @@ public:
   }
 
   // Fake sections for parsing bitcode files.
-  FakeSectionChunk *ltoTextSectionChunk;
-  FakeSectionChunk *ltoDataSectionChunk;
+  FakeSection ltoTextSection;
+  FakeSection ltoDataSection;
+  FakeSectionChunk ltoTextSectionChunk;
+  FakeSectionChunk ltoDataSectionChunk;
 
   // All timers used in the COFF linker.
   Timer rootTimer;

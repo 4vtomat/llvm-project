@@ -1033,9 +1033,9 @@ void BitcodeFile::parse() {
     Symbol *sym;
     SectionChunk *fakeSC = nullptr;
     if (objSym.isExecutable())
-      fakeSC = &ctx.ltoTextSectionChunk->chunk;
+      fakeSC = &ctx.ltoTextSectionChunk.chunk;
     else
-      fakeSC = &ctx.ltoDataSectionChunk->chunk;
+      fakeSC = &ctx.ltoDataSectionChunk.chunk;
     if (objSym.isUndefined()) {
       sym = ctx.symtab.addUndefined(symName, this, false);
     } else if (objSym.isCommon()) {

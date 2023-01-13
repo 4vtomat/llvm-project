@@ -1671,7 +1671,7 @@ SubstNonTypeTemplateParmPackExpr::getParameterPack() const {
 }
 
 TemplateArgument SubstNonTypeTemplateParmPackExpr::getArgumentPack() const {
-  return TemplateArgument(llvm::makeArrayRef(Arguments, NumArguments));
+  return TemplateArgument(llvm::ArrayRef(Arguments, NumArguments));
 }
 
 FunctionParmPackExpr::FunctionParmPackExpr(QualType T, VarDecl *ParamPack,
@@ -1822,4 +1822,22 @@ CUDAKernelCallExpr *CUDAKernelCallExpr::CreateEmpty(const ASTContext &Ctx,
   void *Mem = Ctx.Allocate(sizeof(CUDAKernelCallExpr) + SizeOfTrailingObjects,
                            alignof(CUDAKernelCallExpr));
   return new (Mem) CUDAKernelCallExpr(NumArgs, HasFPFeatures, Empty);
+}
+
+CXXParenListInitExpr *
+CXXParenListInitExpr::Create(ASTContext &C, ArrayRef<Expr *> Args, QualType T,
+                             unsigned NumUserSpecifiedExprs,
+                             SourceLocation InitLoc, SourceLocation LParenLoc,
+                             SourceLocation RParenLoc) {
+  void *Mem = C.Allocate(totalSizeToAlloc<Expr *>(Args.size()));
+  return new (Mem) CXXParenListInitExpr(Args, T, NumUserSpecifiedExprs, InitLoc,
+                                        LParenLoc, RParenLoc);
+}
+
+CXXParenListInitExpr *CXXParenListInitExpr::CreateEmpty(ASTContext &C,
+                                                        unsigned NumExprs,
+                                                        EmptyShell Empty) {
+  void *Mem = C.Allocate(totalSizeToAlloc<Expr *>(NumExprs),
+                         alignof(CXXParenListInitExpr));
+  return new (Mem) CXXParenListInitExpr(Empty, NumExprs);
 }

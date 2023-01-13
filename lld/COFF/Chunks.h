@@ -276,7 +276,7 @@ public:
   }
 
   ArrayRef<coff_relocation> getRelocs() const {
-    return llvm::makeArrayRef(relocsData, relocsSize);
+    return llvm::ArrayRef(relocsData, relocsSize);
   }
 
   // Reloc setter used by ARM range extension thunk insertion.
@@ -714,6 +714,14 @@ void applyBranch24T(uint8_t *off, int32_t v);
 void applyArm64Addr(uint8_t *off, uint64_t s, uint64_t p, int shift);
 void applyArm64Imm(uint8_t *off, uint64_t imm, uint32_t rangeLimit);
 void applyArm64Branch26(uint8_t *off, int64_t v);
+
+// Convenience class for initializing a coff_section with specific flags.
+class FakeSection {
+public:
+  FakeSection(int c) { section.Characteristics = c; }
+
+  coff_section section;
+};
 
 // Convenience class for initializing a SectionChunk with specific flags.
 class FakeSectionChunk {

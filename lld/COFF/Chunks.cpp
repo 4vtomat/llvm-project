@@ -98,8 +98,7 @@ static void applySecIdx(uint8_t *off, OutputSection *os,
                         unsigned numOutputSections) {
   // numOutputSections is the largest valid section index. Make sure that
   // it fits in 16 bits.
-  assert(sizeof(numOutputSections) <= 0xffff &&
-         "size of outputSections is too big");
+  assert(numOutputSections <= 0xffff && "size of outputSections is too big");
 
   // Absolute symbol doesn't have section index, but section index relocation
   // against absolute symbol should be resolved to one plus the last output
@@ -804,6 +803,7 @@ const uint8_t armThunk[] = {
 
 size_t RangeExtensionThunkARM::getSize() const {
   assert(ctx.config.machine == ARMNT);
+  (void)&ctx;
   return sizeof(armThunk);
 }
 
@@ -824,6 +824,7 @@ const uint8_t arm64Thunk[] = {
 
 size_t RangeExtensionThunkARM64::getSize() const {
   assert(ctx.config.machine == ARM64);
+  (void)&ctx;
   return sizeof(arm64Thunk);
 }
 
