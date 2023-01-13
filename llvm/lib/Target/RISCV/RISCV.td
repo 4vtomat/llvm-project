@@ -788,181 +788,9 @@ def GENERIC_RV64 : RISCVProcessorModel<"generic-rv64",
 // to change to the appropriate rv32/rv64 version.
 def : ProcessorModel<"generic", NoSchedModel, []>;
 
-<<<<<<< HEAD
-def : ProcessorModel<"rocket-rv32", RocketModel, [Feature32Bit]>;
-def : ProcessorModel<"rocket-rv64", RocketModel, [Feature64Bit]>;
-def : ProcessorModel<"rocket", RocketModel, []>;
-
-def : ProcessorModel<"sifive-7-series", SiFive7Model, [],
-                     [TuneSiFive7]>;
-
-#ifdef SIFIVE_CUSTOMIZATION
-
-def : ProcessorModel<"sifive-6-series", SiFive6Model, [],
-                     [TuneSiFive6]>;
-
-def : ProcessorModel<"sifive-7m-series", SiFive7Model, [],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-def : ProcessorModel<"sifive-7n-series", SiFive7NModel, [],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-def : ProcessorModel<"sifive-7o-series", SiFive7NModel, [],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-
-def : ProcessorModel<"sifive-p400-series", SiFiveP400Model, [],
-                     [TuneSiFiveP400]>;
-
-def : ProcessorModel<"sifive-8-series", SiFiveP500Model, [],
-                     [TuneSiFiveP500]>;
-def : ProcessorModel<"sifive-p500-series", SiFiveP500Model, [],
-                     [TuneSiFiveP500]>;
-
-def : ProcessorModel<"sifive-p600-series", SiFiveP600Model, [],
-                     [TuneSiFiveP600]>;
-#endif // SIFIVE_CUSTOMIZATION
-
-def : ProcessorModel<"sifive-e20", RocketModel, [Feature32Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-e21", RocketModel, [Feature32Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-e24", RocketModel, [Feature32Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtF,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-e31", RocketModel, [Feature32Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-e34", RocketModel, [Feature32Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtF,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-e76", SiFive7Model, [Feature32Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtC],
-                     [TuneSiFive7]>;
-
-#ifdef SIFIVE_CUSTOMIZATION
-def : ProcessorModel<"sifive-e66", SiFive6Model, [Feature32Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtC,
-                                                  FeatureStdExtZba,
-                                                  FeatureStdExtZbb],
-                     [TuneSiFive6]>;
-
-def : ProcessorModel<"sifive-e76m", SiFive7Model, [Feature32Bit,
-                                                   FeatureStdExtM,
-                                                   FeatureStdExtA,
-                                                   FeatureStdExtF,
-                                                   FeatureStdExtC,
-                                                   FeatureStdExtZba,
-                                                   FeatureStdExtZbb],
-                     [TuneSiFive7]>;
-
-def : ProcessorModel<"sifive-e76n", SiFive7NModel, [Feature32Bit,
-                                                    FeatureStdExtM,
-                                                    FeatureStdExtA,
-                                                    FeatureStdExtF,
-                                                    FeatureStdExtC,
-                                                    FeatureStdExtZba,
-                                                    FeatureStdExtZbb],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-#endif // SIFIVE_CUSTOMIZATION
-
-def : ProcessorModel<"sifive-s21", RocketModel, [Feature64Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-s51", RocketModel, [Feature64Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-s54", RocketModel, [Feature64Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtF,
-                                                 FeatureStdExtD,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-s76", SiFive7Model, [Feature64Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtD,
-                                                  FeatureStdExtC],
-                     [TuneSiFive7]>;
-
-#ifdef SIFIVE_CUSTOMIZATION
-def : ProcessorModel<"sifive-s66", SiFive6Model, [Feature64Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtD,
-                                                  FeatureStdExtC,
-                                                  FeatureStdExtZba,
-                                                  FeatureStdExtZbb],
-                     [TuneSiFive6]>;
 
 
-def : ProcessorModel<"sifive-s76m", SiFive7Model, [Feature64Bit,
-                                                   FeatureStdExtM,
-                                                   FeatureStdExtA,
-                                                   FeatureStdExtF,
-                                                   FeatureStdExtD,
-                                                   FeatureStdExtC,
-                                                   FeatureStdExtZba,
-                                                   FeatureStdExtZbb],
-                     [TuneSiFive7]>;
 
-def : ProcessorModel<"sifive-s76n", SiFive7NModel, [Feature64Bit,
-                                                    FeatureStdExtM,
-                                                    FeatureStdExtA,
-                                                    FeatureStdExtF,
-                                                    FeatureStdExtD,
-                                                    FeatureStdExtC,
-                                                    FeatureStdExtZba,
-                                                    FeatureStdExtZbb],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
-#endif // SIFIVE_CUSTOMIZATION
-
-def : ProcessorModel<"sifive-u54", RocketModel, [Feature64Bit,
-                                                 FeatureStdExtM,
-                                                 FeatureStdExtA,
-                                                 FeatureStdExtF,
-                                                 FeatureStdExtD,
-                                                 FeatureStdExtC]>;
-
-def : ProcessorModel<"sifive-u74", SiFive7Model, [Feature64Bit,
-                                                  FeatureStdExtM,
-                                                  FeatureStdExtA,
-                                                  FeatureStdExtF,
-                                                  FeatureStdExtD,
-                                                  FeatureStdExtC],
-                     [TuneSiFive7]>;
-
-def : ProcessorModel<"syntacore-scr1-base", SyntacoreSCR1Model,
-                     [Feature32Bit, FeatureStdExtC],
-                     [TuneNoDefaultUnroll]>;
-
-def : ProcessorModel<"syntacore-scr1-max", SyntacoreSCR1Model,
-                     [Feature32Bit, FeatureStdExtM, FeatureStdExtC],
-                     [TuneNoDefaultUnroll]>;
-=======
 def ROCKET_RV32 : RISCVProcessorModel<"rocket-rv32",
                                       RocketModel,
                                       [Feature32Bit]>;
@@ -975,6 +803,29 @@ def ROCKET : RISCVTuneProcessorModel<"rocket",
 def SIFIVE_7 : RISCVTuneProcessorModel<"sifive-7-series",
                                        SiFive7Model,
                                        [TuneSiFive7]>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def SIFIVE_6 : RISCVTuneProcessorModel<"sifive-6-series", SiFive6Model, [TuneSiFive6],
+                                              []>;
+
+def SIFIVE_7M : RISCVTuneProcessorModel<"sifive-7m-series", SiFive7Model, [TuneSiFive7, TunePseudoLIsimm32],
+                                               []>;
+def SIFIVE_7N : RISCVTuneProcessorModel<"sifive-7n-series", SiFive7NModel, [TuneSiFive7, TunePseudoLIsimm32],
+                                               []>;
+def SIFIVE_7O : RISCVTuneProcessorModel<"sifive-7o-series", SiFive7NModel, [TuneSiFive7, TunePseudoLIsimm32],
+                                               []>;
+
+def SIFIVE_P400 : RISCVTuneProcessorModel<"sifive-p400-series", SiFiveP400Model, [TuneSiFiveP400],
+                                                 []>;
+
+def SIFIVE_8 : RISCVTuneProcessorModel<"sifive-8-series", SiFiveP500Model, [TuneSiFiveP500],
+                                              []>;
+def SIFIVE_P500 : RISCVTuneProcessorModel<"sifive-p500-series", SiFiveP500Model, [TuneSiFiveP500],
+                                                 []>;
+
+def SIFIVE_P600 : RISCVTuneProcessorModel<"sifive-p600-series", SiFiveP600Model, [TuneSiFiveP600],
+                                                 []>;
+#endif // SIFIVE_CUSTOMIZATION
 
 def SIFIVE_E20 : RISCVProcessorModel<"sifive-e20",
                                      RocketModel,
@@ -1027,6 +878,37 @@ def SIFIVE_E76 : RISCVProcessorModel<"sifive-e76",
                                      "rv32imafc",
                                      [TuneSiFive7]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def SIFIVE_E66 : RISCVProcessorModel<"sifive-e66", SiFive6Model, [Feature32Bit,
+                                                  FeatureStdExtM,
+                                                  FeatureStdExtA,
+                                                  FeatureStdExtF,
+                                                  FeatureStdExtC,
+                                                  FeatureStdExtZba,
+                                                  FeatureStdExtZbb],
+                                                  "rv32imafc_zba1p0_zbb1p0",
+                                      [TuneSiFive6]>;
+def SIFIVE_E76M : RISCVProcessorModel<"sifive-e76m", SiFive7Model, [Feature32Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                                                   "rv32imafc_zba1p0_zbb1p0",
+                                      [TuneSiFive7]>;
+
+def SIFIVE_E76N : RISCVProcessorModel<"sifive-e76n", SiFive7NModel, [Feature32Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
+                                                    "rv32imafc_zba1p0_zbb1p0",
+                                     [TuneSiFive7, TunePseudoLIsimm32]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SIFIVE_S21 : RISCVProcessorModel<"sifive-s21",
                                      RocketModel,
                                      [Feature64Bit,
@@ -1064,6 +946,42 @@ def SIFIVE_S76 : RISCVProcessorModel<"sifive-s76",
                                      "rv64gc",
                                      [TuneSiFive7]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def SIFIVE_S66 : RISCVProcessorModel<"sifive-s66", SiFive6Model, [Feature64Bit,
+                                                  FeatureStdExtM,
+                                                  FeatureStdExtA,
+                                                  FeatureStdExtF,
+                                                  FeatureStdExtD,
+                                                  FeatureStdExtC,
+                                                  FeatureStdExtZba,
+                                                  FeatureStdExtZbb],
+                                                  "rv64imafdc_zba1p0_zbb1p0",
+                                      [TuneSiFive6]>;
+
+
+def SIFIVE_S76M : RISCVProcessorModel<"sifive-s76m", SiFive7Model, [Feature64Bit,
+                                                   FeatureStdExtM,
+                                                   FeatureStdExtA,
+                                                   FeatureStdExtF,
+                                                   FeatureStdExtD,
+                                                   FeatureStdExtC,
+                                                   FeatureStdExtZba,
+                                                   FeatureStdExtZbb],
+                                                   "rv64gc_zba1p0_zbb1p0",
+                                      [TuneSiFive7]>;
+
+def SIFIVE_S76N : RISCVProcessorModel<"sifive-s76n", SiFive7NModel, [Feature64Bit,
+                                                    FeatureStdExtM,
+                                                    FeatureStdExtA,
+                                                    FeatureStdExtF,
+                                                    FeatureStdExtD,
+                                                    FeatureStdExtC,
+                                                    FeatureStdExtZba,
+                                                    FeatureStdExtZbb],
+                                                    "rv64gc_zba1p0_zbb1p0",
+                                      [TuneSiFive7, TunePseudoLIsimm32]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def SIFIVE_U54 : RISCVProcessorModel<"sifive-u54",
                                      RocketModel,
                                      [Feature64Bit,
@@ -1099,10 +1017,9 @@ def SYNTACORE_SCR1_MAX : RISCVProcessorModel<"syntacore-scr1-max",
                                               FeatureStdExtC],
                                              "rv32imc",
                                              [TuneNoDefaultUnroll]>;
->>>>>>> upstream/main
 
 #ifdef SIFIVE_CUSTOMIZATION
-def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
+def SIFIVE_U64 : RISCVProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtM,
                                                   FeatureStdExtA,
                                                   FeatureStdExtF,
@@ -1110,9 +1027,10 @@ def : ProcessorModel<"sifive-u64", SiFive6Model, [Feature64Bit,
                                                   FeatureStdExtC,
                                                   FeatureStdExtZba,
                                                   FeatureStdExtZbb],
-                     [TuneSiFive6]>;
+                                                  "rv64imafdc_zba1p0_zbb1p0",
+                                      [TuneSiFive6]>;
 
-def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
+def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
                                                    FeatureStdExtF,
@@ -1120,9 +1038,10 @@ def : ProcessorModel<"sifive-u74m", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtC,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
-                     [TuneSiFive7]>;
+                                                   "rv64gc_zba1p0_zbb1p0",
+                                      [TuneSiFive7]>;
 
-def : ProcessorModel<"sifive-u74n", SiFive7NModel, [Feature64Bit,
+def SIFIVE_U74N : RISCVProcessorModel<"sifive-u74n", SiFive7NModel, [Feature64Bit,
                                                     FeatureStdExtM,
                                                     FeatureStdExtA,
                                                     FeatureStdExtF,
@@ -1130,9 +1049,10 @@ def : ProcessorModel<"sifive-u74n", SiFive7NModel, [Feature64Bit,
                                                     FeatureStdExtC,
                                                     FeatureStdExtZba,
                                                     FeatureStdExtZbb],
-                     [TuneSiFive7, TunePseudoLIsimm32]>;
+                                                    "rv64gc_zba1p0_zbb1p0",
+                                      [TuneSiFive7, TunePseudoLIsimm32]>;
 
-def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
+def SIFIVE_P270 : RISCVProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
                                                    FeatureStdExtF,
@@ -1144,9 +1064,10 @@ def : ProcessorModel<"sifive-p270", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZvfh,
                                                    FeatureStdExtZba,
                                                    FeatureStdExtZbb],
-                     [TuneSiFive7, TuneDLen128b]>;
+                                                   "rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0",
+                                       [TuneSiFive7, TuneDLen128b]>;
 
-def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
+def SIFIVE_P270N : RISCVProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
                                                      FeatureStdExtA,
                                                      FeatureStdExtF,
@@ -1158,9 +1079,10 @@ def : ProcessorModel<"sifive-p270n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtZvfh,
                                                      FeatureStdExtZba,
                                                      FeatureStdExtZbb],
-                     [TuneSiFive7, TuneDLen128b, TunePseudoLIsimm32]>;
+                                                     "rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl256b1p0",
+                                      [TuneSiFive7, TuneDLen128b, TunePseudoLIsimm32]>;
 
-def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
+def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtM,
                                                    FeatureStdExtA,
                                                    FeatureStdExtF,
@@ -1174,9 +1096,10 @@ def : ProcessorModel<"sifive-x280", SiFive7Model, [Feature64Bit,
                                                    FeatureStdExtZbb,
                                                    FeatureStdExtXsfvqmaccqoq,
                                                    FeatureStdExtXsfvfhbfmin],
-                     [TuneSiFive7, TuneDLen256b]>;
+                                                   "rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq",
+                                       [TuneSiFive7, TuneDLen256b]>;
 
-def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
+def SIFIVE_X280N : RISCVProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
                                                      FeatureStdExtA,
                                                      FeatureStdExtF,
@@ -1192,9 +1115,10 @@ def : ProcessorModel<"sifive-x280n", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvqmaccqoq,
                                                      FeatureStdExtXsfvfnrclipxfqf,
                                                      FeatureStdExtXsfvfwmaccqqq],
-                     [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
+                                                     "rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq",
+                                       [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
-def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
+def SIFIVE_X280O : RISCVProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtM,
                                                      FeatureStdExtA,
                                                      FeatureStdExtF,
@@ -1210,10 +1134,11 @@ def : ProcessorModel<"sifive-x280o", SiFive7NModel, [Feature64Bit,
                                                      FeatureStdExtXsfvqmaccqoq,
                                                      FeatureStdExtXsfvfnrclipxfqf,
                                                      FeatureStdExtXsfvfwmaccqqq],
-                     [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
+                                                     "rv64gcv1p0_zfh1p0_zvfh0p1_zba1p0_zbb1p0_zvl512b1p0_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq",
+                                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
 // FIXME: This needs its own scheduler model
-def : ProcessorModel<"sifive-p450", SiFiveP400Model, [Feature64Bit,
+def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1223,10 +1148,11 @@ def : ProcessorModel<"sifive-p450", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin],
-                     [TuneSiFiveP400]>;
+                                                      "rv64gc_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                      [TuneSiFiveP400]>;
 
 // FIXME: This needs its own scheduler model
-def : ProcessorModel<"sifive-p470", SiFiveP400Model, [Feature64Bit,
+def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1237,9 +1163,10 @@ def : ProcessorModel<"sifive-p470", SiFiveP400Model, [Feature64Bit,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin,
                                                       FeatureStdExtV],
-                     [TuneSiFiveP400]>;
+                                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                      [TuneSiFiveP400]>;
 
-def : ProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
+def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1247,9 +1174,10 @@ def : ProcessorModel<"sifive-p550", SiFiveP500Model, [Feature64Bit,
                                                       FeatureStdExtC,
                                                       FeatureStdExtZba,
                                                       FeatureStdExtZbb],
-                     [TuneSiFiveP500]>;
+                                                      "rv64gc_zba1p0_zbb1p0",
+                                      [TuneSiFiveP500]>;
 
-def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
+def SIFIVE_P650 : RISCVProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1259,8 +1187,9 @@ def : ProcessorModel<"sifive-p650", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtZbb,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin],
-                     [TuneSiFiveP600]>;
-def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
+                                                      "rv64gc_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                      [TuneSiFiveP600]>;
+def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtM,
                                                       FeatureStdExtA,
                                                       FeatureStdExtF,
@@ -1271,7 +1200,8 @@ def : ProcessorModel<"sifive-p670", SiFiveP600Model, [Feature64Bit,
                                                       FeatureStdExtZbs,
                                                       FeatureStdExtZfhmin,
                                                       FeatureStdExtV],
-                     [TuneSiFiveP600]>;
+                                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                      [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
