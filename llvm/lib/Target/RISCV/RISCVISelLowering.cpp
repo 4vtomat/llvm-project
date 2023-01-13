@@ -4712,7 +4712,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::ABS:
   case ISD::VP_ABS:
     return lowerABS(Op, DAG);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::SSHLSAT:
   case ISD::USHLSAT: {
@@ -4722,9 +4721,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
                        /*ShiftIncSize*/ false);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::CTLZ:
->>>>>>> upstream/main
   case ISD::CTLZ_ZERO_UNDEF:
   case ISD::CTTZ_ZERO_UNDEF:
     return lowerCTLZ_CTTZ_ZERO_UNDEF(Op, DAG);
