@@ -82,7 +82,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[ADD]] = add nuw nsw i32 [[AND]], [[CONV]], !dbg [[DBG19]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1, !dbg [[DBG11]]
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[TMP0]], !dbg [[DBG9]]
-; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP24:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK:       while.end.loopexit:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[WHILE_BODY]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ], !dbg [[DBG19]]
 ; CHECK-NEXT:    [[EXTRACT_T12:%.*]] = trunc i32 [[ADD_LCSSA]] to i16, !dbg [[DBG10]]
@@ -91,7 +91,6 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[SUM_0_LCSSA_OFF0:%.*]] = phi i16 [ [[EXTRACT_T]], [[ENTRY:%.*]] ], [ [[EXTRACT_T12]], [[WHILE_END_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i16 [[SUM_0_LCSSA_OFF0]], !dbg [[DBG26]]
 ;
-; IGNORE-INTERLEAVE-FOR-VLA: LV: Interleaving is disabled for RVV VLA vectorization.
 ; IGNORE-INTERLEAVE-FOR-VLA-LABEL: @foo(
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:  entry:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[CMP_NOT9:%.*]] = icmp eq i32 [[COUNT:%.*]], 0, !dbg [[DBG9:![0-9]+]]
@@ -116,11 +115,11 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i16, i16* [[PTR:%.*]], i64 [[TMP7]], !dbg [[DBG12:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i16, i16* [[TMP8]], i32 0, !dbg [[DBG12]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP10:%.*]] = bitcast i16* [[TMP9]] to <vscale x 4 x i16>*, !dbg [[DBG12]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i16> @llvm.vp.load.nxv4i16.p0nxv4i16(<vscale x 4 x i16>* [[TMP10]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG12]], !tbaa [[TBAA13:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.and.nxv4i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 65535, i32 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG17:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[VP_OP_LOAD]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG18:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP1:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG19:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_SELECT:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP6]])
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i16> @llvm.vp.load.nxv4i16.p0nxv4i16(<vscale x 4 x i16>* [[TMP10]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG12]], !tbaa [[TBAA13:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.and.nxv4i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 65535, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG17:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[VP_OP_LOAD]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG18:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP1:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]]), !dbg [[DBG19:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_SELECT:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP6]]), !dbg [[DBG19]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP6]] to i64, !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP11]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]], !dbg [[DBG11]]
@@ -148,7 +147,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ADD]] = add nuw nsw i32 [[AND]], [[CONV]], !dbg [[DBG19]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1, !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[TMP0]], !dbg [[DBG9]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP24:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP25:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       while.end.loopexit:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[WHILE_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ], !dbg [[DBG19]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[EXTRACT_T12:%.*]] = trunc i32 [[ADD_LCSSA]] to i16, !dbg [[DBG10]]

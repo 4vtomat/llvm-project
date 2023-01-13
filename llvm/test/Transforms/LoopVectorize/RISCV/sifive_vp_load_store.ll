@@ -16,9 +16,9 @@ define void @test() {
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [125 x i32], [125 x i32]* undef, i64 0, i64 [[TMP3]]
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, i32* [[TMP4]], i32 0
 ; SCALABLE-NEXT:    [[TMP6:%.*]] = bitcast i32* [[TMP5]] to <vscale x 2 x i32>*
-; SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0nxv2i32(<vscale x 2 x i32>* [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
+; SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0nxv2i32(<vscale x 2 x i32>* [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; SCALABLE-NEXT:    [[TMP7:%.*]] = bitcast i32* [[TMP5]] to <vscale x 2 x i32>*
-; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0nxv2i32(<vscale x 2 x i32> zeroinitializer, <vscale x 2 x i32>* [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
+; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0nxv2i32(<vscale x 2 x i32> zeroinitializer, <vscale x 2 x i32>* [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; SCALABLE-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
 ; SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
 ; SCALABLE-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 7
@@ -36,7 +36,7 @@ define void @test() {
 ; SCALABLE-NEXT:    store i32 0, i32* [[ARRAYIDX2_I]], align 4
 ; SCALABLE-NEXT:    [[INDVARS_IV_NEXT_I]] = add nuw nsw i64 [[INDVARS_IV_I]], 1
 ; SCALABLE-NEXT:    [[EXITCOND_NOT_I:%.*]] = icmp eq i64 [[INDVARS_IV_I]], 6
-; SCALABLE-NEXT:    br i1 [[EXITCOND_NOT_I]], label [[FOR_COND_PREHEADER]], label [[FOR_BODY_I]], !llvm.loop [[LOOP2:![0-9]+]]
+; SCALABLE-NEXT:    br i1 [[EXITCOND_NOT_I]], label [[FOR_COND_PREHEADER]], label [[FOR_BODY_I]], !llvm.loop [[LOOP3:![0-9]+]]
 ; SCALABLE:       for.cond.preheader:
 ; SCALABLE-NEXT:    ret void
 ;

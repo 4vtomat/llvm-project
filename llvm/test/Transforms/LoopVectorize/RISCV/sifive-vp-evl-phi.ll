@@ -19,8 +19,8 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 100, [[INDEX]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP4]], i64 1, i64 0)
 ; CHECK-NEXT:    [[TMP6]] = trunc i64 [[TMP5]] to i32
-; CHECK-NEXT:    [[VP_GATHER]] = call <vscale x 4 x i16> @llvm.vp.gather.nxv4i16.nxv4p0i16(<vscale x 4 x i16*> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]])
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 4 x i16> @llvm.experimental.vp.splice.nxv4i16(<vscale x 4 x i16> [[VECTOR_RECUR]], <vscale x 4 x i16> [[VP_GATHER]], i32 -1, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[PREV_EVL]], i32 [[TMP6]])
+; CHECK-NEXT:    [[VP_GATHER]] = call <vscale x 4 x i16> @llvm.vp.gather.nxv4i16.nxv4p0i16(<vscale x 4 x i16*> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 4 x i16> @llvm.experimental.vp.splice.nxv4i16(<vscale x 4 x i16> [[VECTOR_RECUR]], <vscale x 4 x i16> [[VP_GATHER]], i32 -1, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[PREV_EVL]], i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
@@ -45,7 +45,7 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP15]] = load i16, i16* null, align 2
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 100
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    ret void
 ;

@@ -58,7 +58,7 @@ define float @fadd_strict(float* noalias nocapture readonly %a, i64 %n) {
 ; CHECK-UNORDERED-NEXT:    [[ADD]] = fadd float [[TMP7]], [[SUM_07]]
 ; CHECK-UNORDERED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-UNORDERED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-UNORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-UNORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-UNORDERED:       for.end:
 ; CHECK-UNORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ]
 ; CHECK-UNORDERED-NEXT:    ret float [[ADD_LCSSA]]
@@ -98,7 +98,7 @@ define float @fadd_strict(float* noalias nocapture readonly %a, i64 %n) {
 ; CHECK-ORDERED-NEXT:    [[ADD]] = fadd float [[TMP6]], [[SUM_07]]
 ; CHECK-ORDERED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-ORDERED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-ORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-ORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-ORDERED:       for.end:
 ; CHECK-ORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP4]], [[MIDDLE_BLOCK]] ]
 ; CHECK-ORDERED-NEXT:    ret float [[ADD_LCSSA]]
@@ -1195,7 +1195,6 @@ for.end:
 
 ; Test to check masking correct, using the "llvm.loop.vectorize.predicate.enable" attribute
 define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
-<<<<<<< HEAD
 ; CHECK-NOT-VECTORIZED-LABEL: @fadd_predicated(
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
@@ -1220,7 +1219,7 @@ define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
 ; CHECK-UNORDERED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], 2
 ; CHECK-UNORDERED-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-UNORDERED-NEXT:    [[TRIP_COUNT_MINUS_1:%.*]] = sub i64 [[N]], 1
-; CHECK-UNORDERED-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <2 x i64> poison, i64 [[TRIP_COUNT_MINUS_1]], i32 0
+; CHECK-UNORDERED-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <2 x i64> poison, i64 [[TRIP_COUNT_MINUS_1]], i64 0
 ; CHECK-UNORDERED-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <2 x i64> [[BROADCAST_SPLATINSERT]], <2 x i64> poison, <2 x i32> zeroinitializer
 ; CHECK-UNORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-UNORDERED:       vector.body:
@@ -1282,7 +1281,7 @@ define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
 ; CHECK-ORDERED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], 2
 ; CHECK-ORDERED-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-ORDERED-NEXT:    [[TRIP_COUNT_MINUS_1:%.*]] = sub i64 [[N]], 1
-; CHECK-ORDERED-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <2 x i64> poison, i64 [[TRIP_COUNT_MINUS_1]], i32 0
+; CHECK-ORDERED-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <2 x i64> poison, i64 [[TRIP_COUNT_MINUS_1]], i64 0
 ; CHECK-ORDERED-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <2 x i64> [[BROADCAST_SPLATINSERT]], <2 x i64> poison, <2 x i32> zeroinitializer
 ; CHECK-ORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-ORDERED:       vector.body:
@@ -1337,46 +1336,6 @@ define float @fadd_predicated(float* noalias nocapture %a, i64 %n) {
 ;
 
 
-=======
-; CHECK-ORDERED-LABEL: @fadd_predicated
-; CHECK-ORDERED: vector.ph
-; CHECK-ORDERED: %[[TRIP_MINUS_ONE:.*]] = sub i64 %n, 1
-; CHECK-ORDERED: %[[BROADCAST_INS:.*]] = insertelement <2 x i64> poison, i64 %[[TRIP_MINUS_ONE]], i64 0
-; CHECK-ORDERED: %[[SPLAT:.*]] = shufflevector <2 x i64> %[[BROADCAST_INS]], <2 x i64> poison, <2 x i32> zeroinitializer
-; CHECK-ORDERED: vector.body
-; CHECK-ORDERED: %[[RDX_PHI:.*]] =  phi float [ 0.000000e+00, %vector.ph ], [ %[[RDX:.*]], %pred.load.continue2 ]
-; CHECK-ORDERED: pred.load.continue2
-; CHECK-ORDERED: %[[PHI:.*]] = phi <2 x float> [ %[[PHI0:.*]], %pred.load.continue ], [ %[[INS_ELT:.*]], %pred.load.if1 ]
-; CHECK-ORDERED: %[[MASK:.*]] = select <2 x i1> %0, <2 x float> %[[PHI]], <2 x float> <float -0.000000e+00, float -0.000000e+00>
-; CHECK-ORDERED: %[[RDX]] = call float @llvm.vector.reduce.fadd.v2f32(float %[[RDX_PHI]], <2 x float> %[[MASK]])
-; CHECK-ORDERED: for.end:
-; CHECK-ORDERED: %[[RES_PHI:.*]] = phi float [ %[[FADD:.*]], %for.body ], [ %[[RDX]], %middle.block ]
-; CHECK-ORDERED: ret float %[[RES_PHI]]
-
-; CHECK-UNORDERED-LABEL: @fadd_predicated
-; CHECK-UNORDERED: vector.ph
-; CHECK-UNORDERED: %[[TRIP_MINUS_ONE:.*]] = sub i64 %n, 1
-; CHECK-UNORDERED: %[[BROADCAST_INS:.*]] = insertelement <2 x i64> poison, i64 %[[TRIP_MINUS_ONE]], i64 0
-; CHECK-UNORDERED: %[[SPLAT:.*]] = shufflevector <2 x i64> %[[BROADCAST_INS]], <2 x i64> poison, <2 x i32> zeroinitializer
-; CHECK-UNORDERED: vector.body
-; CHECK-UNORDERED: %[[RDX_PHI:.*]] =  phi <2 x float> [ <float 0.000000e+00, float -0.000000e+00>, %vector.ph ], [ %[[FADD:.*]], %pred.load.continue2 ]
-; CHECK-UNORDERED: %[[ICMP:.*]] = icmp ule <2 x i64> %vec.ind, %[[SPLAT]]
-; CHECK-UNORDERED: pred.load.continue2
-; CHECK-UNORDERED: %[[FADD]] = fadd <2 x float> %[[RDX_PHI]], {{.*}}
-; CHECK-UNORDERED: %[[MASK:.*]] = select <2 x i1> %[[ICMP]], <2 x float> %[[FADD]], <2 x float> %[[RDX_PHI]]
-; CHECK-UNORDERED-NOT: call float @llvm.vector.reduce.fadd
-; CHECK-UNORDERED: middle.block
-; CHECK-UNORDERED: %[[RDX:.*]] = call float @llvm.vector.reduce.fadd.v2f32(float -0.000000e+00, <2 x float> %[[MASK]])
-; CHECK-UNORDERED: for.body
-; CHECK-UNORDERED: %[[LOAD:.*]] = load float, float*
-; CHECK-UNORDERED: %[[FADD2:.*]] = fadd float {{.*}}, %[[LOAD]]
-; CHECK-UNORDERED: for.end
-; CHECK-UNORDERED: %[[SUM:.*]] = phi float [ %[[FADD2]], %for.body ], [ %[[RDX]], %middle.block ]
-; CHECK-UNORDERED: ret float %[[SUM]]
-
-; CHECK-NOT-VECTORIZED-LABEL: @fadd_predicated
-; CHECK-NOT-VECTORIZED-NOT: vector.body
->>>>>>> upstream/main
 
 entry:
   br label %for.body
@@ -1758,7 +1717,7 @@ define float @fast_induction_and_reduction(float* nocapture readonly %values, fl
 ; CHECK-UNORDERED-NEXT:    [[DOTCAST:%.*]] = sitofp i64 [[N_VEC]] to float
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = fmul fast float 2.000000e+00, [[DOTCAST]]
 ; CHECK-UNORDERED-NEXT:    [[IND_END:%.*]] = fadd fast float [[INIT:%.*]], [[TMP0]]
-; CHECK-UNORDERED-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x float> poison, float [[INIT]], i32 0
+; CHECK-UNORDERED-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x float> poison, float [[INIT]], i64 0
 ; CHECK-UNORDERED-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x float> [[DOTSPLATINSERT]], <4 x float> poison, <4 x i32> zeroinitializer
 ; CHECK-UNORDERED-NEXT:    [[INDUCTION:%.*]] = fadd fast <4 x float> [[DOTSPLAT]], <float 0.000000e+00, float 2.000000e+00, float 4.000000e+00, float 6.000000e+00>
 ; CHECK-UNORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -1816,7 +1775,7 @@ define float @fast_induction_and_reduction(float* nocapture readonly %values, fl
 ; CHECK-ORDERED-NEXT:    [[DOTCAST:%.*]] = sitofp i64 [[N_VEC]] to float
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = fmul fast float 2.000000e+00, [[DOTCAST]]
 ; CHECK-ORDERED-NEXT:    [[IND_END:%.*]] = fadd fast float [[INIT:%.*]], [[TMP0]]
-; CHECK-ORDERED-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x float> poison, float [[INIT]], i32 0
+; CHECK-ORDERED-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x float> poison, float [[INIT]], i64 0
 ; CHECK-ORDERED-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x float> [[DOTSPLATINSERT]], <4 x float> poison, <4 x i32> zeroinitializer
 ; CHECK-ORDERED-NEXT:    [[INDUCTION:%.*]] = fadd fast <4 x float> [[DOTSPLAT]], <float 0.000000e+00, float 2.000000e+00, float 4.000000e+00, float 6.000000e+00>
 ; CHECK-ORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]

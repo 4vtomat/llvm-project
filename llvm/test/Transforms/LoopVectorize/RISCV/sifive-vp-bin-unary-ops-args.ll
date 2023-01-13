@@ -13,8 +13,8 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP1]], i64 0, i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i32 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8*> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -29,7 +29,7 @@ define void @test() {
 ; CHECK-NEXT:    [[AND385681:%.*]] = and i8 0, 0
 ; CHECK-NEXT:    store i8 [[AND385681]], i8* null, align 1
 ; CHECK-NEXT:    [[TOBOOL379_NOT:%.*]] = icmp eq i32 [[DEC378]], 100
-; CHECK-NEXT:    br i1 [[TOBOOL379_NOT]], label [[FINISH_LOOPEXIT]], label [[WHILE_BODY380]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TOBOOL379_NOT]], label [[FINISH_LOOPEXIT]], label [[WHILE_BODY380]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       finish.loopexit:
 ; CHECK-NEXT:    ret void
 ;

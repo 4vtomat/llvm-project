@@ -68,21 +68,21 @@ define dso_local void @widget(ptr noundef nonnull align 8 dereferenceable(184) %
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], -48
 ; CHECK-NEXT:    [[NEXT_GEP5:%.*]] = getelementptr i8, ptr [[T18]], i64 [[TMP11]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP5]], i64 -1, i32 1
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP12]], i32 0
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP12]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 1 x ptr> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.strided.load.nxv1p0.p0.i64(ptr [[TMP12]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.strided.load.nxv1p0.p0.i64(ptr [[TMP12]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP]], i64 -2, i32 1
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT6:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP13]], i32 0
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT6:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP13]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT7:%.*]] = shufflevector <vscale x 1 x ptr> [[BROADCAST_SPLATINSERT6]], <vscale x 1 x ptr> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[VP_STRIDED_LOAD]], ptr [[TMP13]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[VP_STRIDED_LOAD]], ptr [[TMP13]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP5]], i64 -1, i32 2
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT8:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP14]], i32 0
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT8:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP14]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT9:%.*]] = shufflevector <vscale x 1 x ptr> [[BROADCAST_SPLATINSERT8]], <vscale x 1 x ptr> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    [[VP_STRIDED_LOAD10:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.strided.load.nxv1f64.p0.i64(ptr [[TMP14]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD10:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.strided.load.nxv1f64.p0.i64(ptr [[TMP14]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP]], i64 -2, i32 2
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT11:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP15]], i32 0
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT11:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP15]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT12:%.*]] = shufflevector <vscale x 1 x ptr> [[BROADCAST_SPLATINSERT11]], <vscale x 1 x ptr> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1f64.p0.i64(<vscale x 1 x double> [[VP_STRIDED_LOAD10]], ptr [[TMP15]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i32 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1f64.p0.i64(<vscale x 1 x double> [[VP_STRIDED_LOAD10]], ptr [[TMP15]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP7]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP16]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP1]]
@@ -110,7 +110,7 @@ define dso_local void @widget(ptr noundef nonnull align 8 dereferenceable(184) %
 ; CHECK-NEXT:    store double [[T33]], ptr [[T34]], align 8
 ; CHECK-NEXT:    [[T35]] = add nsw i64 [[T24]], -1
 ; CHECK-NEXT:    [[T36:%.*]] = icmp ugt i64 [[T24]], 1
-; CHECK-NEXT:    br i1 [[T36]], label [[BB23]], label [[BB37]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-NEXT:    br i1 [[T36]], label [[BB23]], label [[BB37]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       bb37:
 ; CHECK-NEXT:    ret void
 ;
