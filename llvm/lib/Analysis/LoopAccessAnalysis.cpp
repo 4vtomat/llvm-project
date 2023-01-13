@@ -68,7 +68,7 @@
 
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/TargetTransformInfo.h"
-#include "llvm/Support/TargetParser.h"
+#include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
