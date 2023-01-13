@@ -12329,7 +12329,6 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
     Changed |= formLCSSARecursively(*L, *DT, LI, SE);
 
     Changed |= CFGChanged |= processLoop(L);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (isRevectorizeWithoutStrideChecks(*L)) {
       if (LoopsTried.insert(L).second) {
@@ -12345,11 +12344,9 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
       }
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
     if (Changed)
       LAIs->clear();
->>>>>>> upstream/main
   }
 
   // Process each loop nest in the function.
