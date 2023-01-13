@@ -784,24 +784,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Splice
       setOperationAction(ISD::VECTOR_SPLICE, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       // VP Shuffles
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
 
-      // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if we have a floating point
-      // type that can represent the value exactly.
-      if (VT.getVectorElementType() != MVT::i64) {
-        MVT FloatEltVT =
-            VT.getVectorElementType() == MVT::i32 ? MVT::f64 : MVT::f32;
-        EVT FloatVT = MVT::getVectorVT(FloatEltVT, VT.getVectorElementCount());
-        if (isTypeLegal(FloatVT)) {
-          setOperationAction({ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
-                             Custom);
-        }
-=======
       // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the range
       // of f32.
       EVT FloatVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
@@ -809,7 +797,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(
             {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
             Custom);
->>>>>>> upstream/main
       }
     }
 
@@ -1053,24 +1040,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         setOperationAction(IntegerVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC.
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
 
-        // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if we have a floating point
-        // type that can represent the value exactly.
-        if (VT.getVectorElementType() != MVT::i64) {
-          MVT FloatEltVT =
-              VT.getVectorElementType() == MVT::i32 ? MVT::f64 : MVT::f32;
-          EVT FloatVT =
-              MVT::getVectorVT(FloatEltVT, VT.getVectorElementCount());
-          if (isTypeLegal(FloatVT))
-            setOperationAction({ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
-                               Custom);
-        }
-=======
         // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the
         // range of f32.
         EVT FloatVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
@@ -1078,7 +1052,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           setOperationAction(
               {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
               Custom);
->>>>>>> upstream/main
       }
 
       for (MVT VT : MVT::fp_fixedlen_vector_valuetypes()) {
