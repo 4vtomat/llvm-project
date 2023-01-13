@@ -5443,8 +5443,8 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
     return FixedScalableVFPair::getNone();
   }
 
-  ElementCount FeasibleMaxVFLowerBound = ElementCount::getNull();
-  ElementCount FeasibleMaxVFUpperBound = ElementCount::getNull();
+  ElementCount FeasibleMaxVFLowerBound = ElementCount::get(0, false);
+  ElementCount FeasibleMaxVFUpperBound = ElementCount::get(0, false);
   std::tie(FeasibleMaxVFLowerBound, FeasibleMaxVFUpperBound) =
       TTI.getFeasibleMaxVFRange(TargetTransformInfo::RGK_ScalableVector,
                                 SmallestType, WidestType,
