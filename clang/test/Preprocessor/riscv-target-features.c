@@ -46,7 +46,7 @@
 // CHECK-NOT: __riscv_xventanacondops
 // CHECK-NOT: __riscv_zcd
 // CHECK-NOT: __riscv_zcf
-<<<<<<< HEAD
+// CHECK-NOT: __riscv_h
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicbop
 // CHECK-NOT: __riscv_zicclsm
@@ -57,9 +57,6 @@
 // CHECK-NOT: __riscv_zic64b
 // CHECK-NOT: __sifive_recode_neon
 // end SIFIVE_CUSTOMIZATION
-=======
-// CHECK-NOT: __riscv_h
->>>>>>> upstream/main
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-M-EXT %s
