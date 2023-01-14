@@ -112,6 +112,10 @@ STATISTIC(NumPHIsElim, "Number of trivial PHIs eliminated");
 STATISTIC(NumGEPsElim, "Number of GEPs converted to casts");
 STATISTIC(NumCmpUses, "Number of uses of Cmp expressions replaced with uses of "
                       "sunken Cmps");
+#if SIFIVE_CUSTOMIZATION
+STATISTIC(NumXorUses, "Number of uses of Xor expressions replaced with uses of "
+                      "sunken Xors");
+#endif // SIFIVE_CUSTOMIZATION
 STATISTIC(NumCastUses, "Number of uses of Cast expressions replaced with uses "
                        "of sunken Casts");
 STATISTIC(NumMemoryInsts, "Number of memory instructions whose address "
@@ -1671,6 +1675,93 @@ bool CodeGenPrepare::combineToUSubWithOverflow(CmpInst *Cmp,
   ModifiedDT = ModifyDT::ModifyInstDT;
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Try to sink a not of a compare into its user basic block. This will unblock
+// sinkCmpExpression for the same compare.
+static bool sinkNotOfCmp(BinaryOperator *Xor, const TargetLowering &TLI) {
+  // This matches the check in sinkCmpExpression.
+  if (TLI.hasMultipleConditionRegisters())
+    return false;
+
+  // Should have bool type.
+  if (!Xor->getType()->isIntegerTy(1))
+    return false;
+
+  // RHS should be one.
+  auto *CI = dyn_cast<ConstantInt>(Xor->getOperand(1));
+  if (!CI || !CI->isOne())
+    return false;
+
+  // LHS should be an ICmp.
+  auto *Cmp = dyn_cast<CmpInst>(Xor->getOperand(0));
+  if (!Cmp)
+    return false;
+
+  // Avoid sinking soft-FP comparisons, since this can move them into a loop.
+  // This matches the check in sinkCmpExpression.
+  if (TLI.useSoftFloat() && isa<FCmpInst>(Cmp))
+    return false;
+
+  // Only insert an xor in each block once.
+  DenseMap<BasicBlock *, BinaryOperator *> InsertedXors;
+
+  bool MadeChange = false;
+  for (Value::user_iterator UI = Xor->user_begin(), E = Xor->user_end();
+       UI != E;) {
+    Use &TheUse = UI.getUse();
+    Instruction *User = cast<Instruction>(*UI);
+
+    // Preincrement use iterator so we don't invalidate it.
+    ++UI;
+
+    // Don't bother for PHI nodes.
+    if (isa<PHINode>(User))
+      continue;
+
+    // Only do this for branch or logical users.
+    // FIXME: This is different than sinkCmpExpression.
+    if (!isa<BranchInst>(User) &&
+        !match(User, m_LogicalAnd(m_Value(), m_Value())) &&
+        !match(User, m_LogicalOr(m_Value(), m_Value())))
+      continue;
+
+    // Figure out which BB this xor is used in.
+    BasicBlock *UserBB = User->getParent();
+    BasicBlock *DefBB = Xor->getParent();
+
+    // If this user is in the same block as the xor, don't change the xor.
+    if (UserBB == DefBB)
+      continue;
+
+    // If we have already inserted a xor into this block, use it.
+    BinaryOperator *&InsertedXor = InsertedXors[UserBB];
+
+    if (!InsertedXor) {
+      BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
+      assert(InsertPt != UserBB->end());
+      InsertedXor = BinaryOperator::Create(Xor->getOpcode(),
+                                    Xor->getOperand(0), Xor->getOperand(1), "",
+                                    &*InsertPt);
+      // Propagate the debug info.
+      InsertedXor->setDebugLoc(Xor->getDebugLoc());
+    }
+
+    // Replace a use of the xor with a use of the new xor.
+    TheUse = InsertedXor;
+    MadeChange = true;
+    ++NumXorUses;
+  }
+
+  // If we removed all uses, nuke the xor.
+  if (Xor->use_empty()) {
+    Xor->eraseFromParent();
+    MadeChange = true;
+  }
+
+  return MadeChange;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Sink the given CmpInst into user blocks to reduce the number of virtual
 /// registers that must be created and coalesced. This is a clear win except on
@@ -8116,6 +8207,12 @@ bool CodeGenPrepare::optimizeInst(Instruction *I, ModifyDT &ModifiedDT) {
   if (BinOp && BinOp->getOpcode() == Instruction::And && EnableAndCmpSinking &&
       sinkAndCmp0Expression(BinOp, *TLI, InsertedInsts))
     return true;
+
+#if SIFIVE_CUSTOMIZATION
+  if (BinOp && BinOp->getOpcode() == Instruction::Xor &&
+      sinkNotOfCmp(BinOp, *TLI))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
 
   // TODO: Move this into the switch on opcode - it handles shifts already.
   if (BinOp && (BinOp->getOpcode() == Instruction::AShr ||
