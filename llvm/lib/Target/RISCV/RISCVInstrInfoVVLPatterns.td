@@ -1819,16 +1819,12 @@ defm : VPatBinaryFPVL_R_VF<riscv_fdiv_vl, "PseudoVFRDIV">;
 // 13.5. Vector Widening Floating-Point Multiply Instructions
 defm : VPatWidenBinaryFPVL_VV_VF<riscv_fmul_vl, riscv_fpextend_vl_oneuse, "PseudoVFWMUL">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-// 14.5. Vector Widening Floating-Point Multiply
+// 13.5. Vector Widening Floating-Point Multiply
 defm : VPatBinaryFPWVL_VV_VF<riscv_vfwmul_vl, "PseudoVFWMUL">;
 #endif // SIFIVE_CUSTOMIZATION
 
-// 14.6 Vector Single-Width Floating-Point Fused Multiply-Add Instructions.
-=======
 // 13.6 Vector Single-Width Floating-Point Fused Multiply-Add Instructions.
->>>>>>> upstream/main
 defm : VPatFPMulAddVL_VV_VF<riscv_vfmadd_vl,  "PseudoVFMADD">;
 defm : VPatFPMulAddVL_VV_VF<riscv_vfmsub_vl,  "PseudoVFMSUB">;
 defm : VPatFPMulAddVL_VV_VF<riscv_vfnmadd_vl, "PseudoVFNMADD">;
@@ -1838,7 +1834,6 @@ defm : VPatFPMulAccVL_VV_VF<riscv_vfmsub_vl_oneuse,  "PseudoVFMSAC">;
 defm : VPatFPMulAccVL_VV_VF<riscv_vfnmadd_vl_oneuse, "PseudoVFNMACC">;
 defm : VPatFPMulAccVL_VV_VF<riscv_vfnmsub_vl_oneuse, "PseudoVFNMSAC">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllFloatVectors in {
   defvar suffix = vti.LMul.MX;
@@ -1851,10 +1846,7 @@ foreach vti = AllFloatVectors in {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-// 14.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
-=======
 // 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
->>>>>>> upstream/main
 defm : VPatWidenFPMulAccVL_VV_VF<riscv_vfmadd_vl, "PseudoVFWMACC">;
 defm : VPatWidenFPMulAccVL_VV_VF<riscv_vfnmadd_vl, "PseudoVFWNMACC">;
 defm : VPatWidenFPMulAccVL_VV_VF<riscv_vfmsub_vl, "PseudoVFWMSAC">;
@@ -1885,24 +1877,20 @@ foreach vti = AllFloatVectors in {
                  (vti.Vector (IMPLICIT_DEF)), vti.RegClass:$rs2,
                  (vti.Mask V0), GPR:$vl, vti.Log2SEW, TA_MA)>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-  // 14.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+  // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
   def : Pat<(riscv_vfrsqrt7_vl (vti.Vector vti.RegClass:$rs2),
                                (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
-  // 14.10. Vector Floating-Point Reciprocal Estimate Instruction
+  // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
   def : Pat<(riscv_vfrec7_vl (vti.Vector vti.RegClass:$rs2),
                              (vti.Mask true_mask), VLOpFrag),
             (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-  // 14.12. Vector Floating-Point Sign-Injection Instructions
-=======
   // 13.12. Vector Floating-Point Sign-Injection Instructions
->>>>>>> upstream/main
   def : Pat<(riscv_fabs_vl (vti.Vector vti.RegClass:$rs), (vti.Mask V0),
                            VLOpFrag),
             (!cast<Instruction>("PseudoVFSGNJX_VV_"# vti.LMul.MX #"_MASK")
@@ -2016,7 +2004,6 @@ foreach fvti = AllFloatVectors in {
                  fvti.RegClass:$rs2, fvti.RegClass:$rs2, 0, (fvti.Mask V0),
                  GPR:$vl, fvti.Log2SEW)>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   def : Pat<(fvti.Vector (riscv_vmerge_vl fvti.RegClass:$merge,
                                           (fvti.Mask V0),
@@ -2047,10 +2034,7 @@ foreach fvti = AllFloatVectors in {
                  GPR:$vl, fvti.Log2SEW)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-  // 14.16. Vector Floating-Point Move Instruction
-=======
   // 13.16. Vector Floating-Point Move Instruction
->>>>>>> upstream/main
   // If we're splatting fpimm0, use vmv.v.x vd, x0.
   def : Pat<(fvti.Vector (riscv_vfmv_v_f_vl
                          (fvti.Vector undef), (fvti.Scalar (fpimm0)), VLOpFrag)),
