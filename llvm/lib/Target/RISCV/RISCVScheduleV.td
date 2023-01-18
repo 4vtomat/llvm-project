@@ -81,6 +81,14 @@ multiclass LMULWriteResFW<string name, list<ProcResourceKind> resources> {
   }
 }
 
+// SIFIVE_CUSTOMIZATION
+// Creates WriteRes for (name, mx, resources) tuple
+multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
+                          string mx> {
+ def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
+}
+// END SIFIVE_CUSTOMIZATION
+
 // Creates ReadAdvance for each (name, LMUL, val) tuple for LMUL
 // in SchedMxList
 multiclass LMULReadAdvance<string name, int val, list<SchedWrite> writes = []> {

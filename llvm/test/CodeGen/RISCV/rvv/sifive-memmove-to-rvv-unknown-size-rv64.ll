@@ -76,8 +76,8 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
 ; ALIGN-NEXT:    vle8.v v8, (a0)
-; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    add a0, a0, a3
+; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    add a1, a1, a3
 ; ALIGN-NEXT:    bgtz a2, .LBB0_5
