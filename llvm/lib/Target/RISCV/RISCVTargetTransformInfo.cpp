@@ -1320,6 +1320,12 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
   InstructionCost BaseCost = 2;
+
+#if SIFIVE_CUSTOMIZATION
+  if (CostKind == TTI::TCK_CodeSize)
+    return LT.first + BaseCost;
+#endif // SIFIVE_CUSTOMIZATION
+
   unsigned VL = getEstimatedVLFor(Ty);
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
@@ -1359,6 +1365,9 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
   InstructionCost BaseCost = 2;
 #if SIFIVE_CUSTOMIZATION
+  if (CostKind == TTI::TCK_CodeSize)
+    return LT.first + BaseCost;
+
   // The vector to scalar move is expensive on x280, give it more cost.
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
     BaseCost = BaseCost + 12;
@@ -1464,28 +1473,43 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
                                               TTI::TargetCostKind CostKind,
                                               TTI::OperandValueInfo OpInfo,
                                               const Instruction *I) {
+#if SIFIVE_CUSTOMIZATION
+  EVT VT = TLI->getValueType(DL, Src, true);
+  // Type legalization can't handle structs
+  if (VT == MVT::Other)
+    return BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                  CostKind, OpInfo, I);
+#endif // SIFIVE_CUSTOMIZATION
   InstructionCost Cost = 0;
   if (Opcode == Instruction::Store && OpInfo.isConstant())
     Cost += getStoreImmCost(Src, OpInfo, CostKind);
 #if SIFIVE_CUSTOMIZATION
+  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
+  if (!LT.second.isVector())
+    return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                         CostKind, OpInfo, I);
+  if (CostKind == TTI::TCK_CodeSize)
+    return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                         CostKind, OpInfo, I);
+  Cost += LT.first * getLMULCost(LT.second);
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
     if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
-      Cost += BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                                     CostKind, OpInfo, I);
       // Note: vector memory accesses check the L1 D$. On a miss, the access is
       // forwarded to the L2$.
       // Based on how the data would be used later, vector store may not be
       // good in all cases. For vector store which VL < 4, we make the cost
-      // equivalent to VL=4 to discourage the use of vector store on small VL.
-      if (Cost < 4)
-        Cost = 4;
-      return Cost;
+      // equivalent to LMUL_M1 to discourage the use of vector store on small
+      // VL.
+      if (cast<FixedVectorType>(Src)->getNumElements() < 4)
+        return 2;
     }
   }
-#endif // SIFIVE_CUSTOMIZATION
+  return Cost;
+#else
 
   return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                        CostKind, OpInfo, I);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,

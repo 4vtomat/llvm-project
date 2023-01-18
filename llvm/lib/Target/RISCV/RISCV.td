@@ -26,6 +26,118 @@ def HasStdExtZifencei : Predicate<"Subtarget->hasStdExtZifencei()">,
                              AssemblerPredicate<(all_of FeatureStdExtZifencei),
                              "'Zifencei' (Instruction-Fetch Fence)">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZicntr
+    : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
+                       "'Zicntr' (Base Counters and Timers)",
+                       [FeatureStdExtZicsr]>;
+def HasStdExtZicntr : Predicate<"Subtarget->hasStdExtZicntr()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZicntr),
+                                "'Zicntr' (Base Counters and Timers)">;
+
+def FeatureStdExtZihpm
+    : SubtargetFeature<"zihpm", "HasStdExtZihpm", "true",
+                       "'Zihpm' (Hardware Performance Counters)",
+                       [FeatureStdExtZicsr]>;
+def HasStdExtZihpm : Predicate<"Subtarget->hasStdExtZihpm()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZihpm),
+                                "'Zihpm' (Hardware Performance Counters)">;
+
+def FeatureStdExtSs
+    : SubtargetFeature<"ss", "HasStdExtSs", "true",
+                       "'Ss' (Supervisor Architecture)",
+                       []>;
+
+def FeatureStdExtSvbare
+    : SubtargetFeature<"svbare", "HasStdExtSvbare", "true",
+                       "'Svbare'",
+                       []>;
+
+def FeatureStdExtSsptead
+    : SubtargetFeature<"ssptead", "HasStdExtSsptead", "true",
+                       "'Ssptead' (Page-fault exceptions are raised when a page "
+                       "is accessed when A bit is clear, or written when D bit "
+                       "is clear)", []>;
+
+def FeatureStdExtSsccptr
+    : SubtargetFeature<"ssccptr", "HasStdExtSsccptr", "true",
+                       "'Ssccptr' (Main memory regions with both the "
+                       "cacheability and coherence PMAs must support hardware "
+                       "page-table reads.)", []>;
+
+def FeatureStdExtSstvecd
+    : SubtargetFeature<"sstvecd", "HasStdExtSstvecd", "true",
+                       "'Sstvecd' (stvec.MODE must be capable of holding the "
+                       "value 0 (Direct). When stvec.MODE=Direct, stvec.BASE "
+                       "must be capable of holding any valid four-byte-aligned "
+                       "address.)", []>;
+
+def FeatureStdExtSstvala
+    : SubtargetFeature<"sstvala", "HasStdExtSstvala", "true",
+                       "'Sstvala' (stval must be written with the faulting "
+                       "virtual address for load, store, and instruction "
+                       "page-fault, access-fault, and misaligned exceptions, "
+                       "and for breakpoint exceptions other than those caused "
+                       "by execution of the EBREAK or C.EBREAK instructions. "
+                       "For illegal-instruction exceptions, stval must be "
+                       "written with the faulting instruction.)", []>;
+
+def FeatureStdExtSscounterenw
+    : SubtargetFeature<"sscounterenw", "HasStdExtSscounterenw", "true",
+                       "'Sscounterenw' (For any hpmcounter that is not "
+                       "read-only zero, the corresponding bit in scounteren "
+                       "must be writable.)", []>;
+
+def FeatureStdExtSsu64xl
+    : SubtargetFeature<"ssu64xl", "HasStdExtSsu64xl", "true",
+                       "'Ssu64xl' (sstatus.UXL=64)", []>;
+
+def FeatureStdExtSstc
+    : SubtargetFeature<"sstc", "HasStdExtSstc", "true",
+                       "'Sstc' (supervisor-mode timer interrupts.)", []>;
+
+def FeatureStdExtSsstateen
+    : SubtargetFeature<"ssstateen", "HasStdExtSsstateen", "true",
+                       "'Ssstateen' (Supervisor-mode view of the state-enable "
+                       "extension.)", []>;
+
+def FeatureStdExtShcounterenw
+    : SubtargetFeature<"shcounterenw", "HasStdExtShcounterenw", "true",
+                       "'Shcounterenw' (For any hpmcounter that is not read-only "
+                       "zero, the corresponding bit in hcounteren must be "
+                       "writable.)", []>;
+
+def FeatureStdExtShvstvala
+    : SubtargetFeature<"shvstvala", "HasStdExtShvstvala", "true",
+                       "'Shvstvala' (vstval must be written in all cases "
+                       "described above for stval.)", []>;
+
+def FeatureStdExtShtvala
+    : SubtargetFeature<"shtvala", "HasStdExtShtvala", "true",
+                       "'Shtvala' (htval must be written with the faulting "
+                       "guest physical address in all circumstances permitted "
+                       "by the ISA.)", []>;
+
+def FeatureStdExtShvstvecd
+    : SubtargetFeature<"shvstvecd", "HasStdExtShvstvecd", "true",
+                       "'Shvstvecd' (vstvec.MODE must be capable of holding the "
+                       "value 0 (Direct). When vstvec.MODE=Direct, vstvec.BASE "
+                       "must be capable of holding any valid four-byte-aligned "
+                       "address.)", []>;
+
+def FeatureStdExtShvsatpa
+    : SubtargetFeature<"shvsatpa", "HasStdExtShvsatpa", "true",
+                       "'Shvsatpa' (All translation modes supported in satp "
+                       "must be supported in vsatp.)", []>;
+
+def FeatureStdExtShgatpa
+    : SubtargetFeature<"shgatpa", "HasStdExtShgatpa", "true",
+                       "'Shgatpa' (For each supported virtual memory scheme "
+                       "SvNN supported in satp, the corresponding hgatp SvNNx4 "
+                       "mode must be supported. The hgatp mode Bare must also "
+                       "be supported.)", []>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
                        "'M' (Integer Multiplication and Division)">;
@@ -576,6 +688,54 @@ def FeatureRecodeFullfp16
     : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
                        "fullfp16 (A corresponding feature for NEON fullfp16.)",
                        [FeatureStdExtZfh, FeatureStdExtZvfh]>;
+
+def FeatureStdExtZvkb
+    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
+                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                                "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+
+def FeatureStdExtZvkg
+    : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
+                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZvkg),
+                                "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+
+def FeatureStdExtZvknha
+    : SubtargetFeature<"experimental-zvknha", "HasStdExtZvknha", "true",
+                       "'Zvknha' (Vector SHA-2. (SHA-256 only))">;
+
+def FeatureStdExtZvknhb
+    : SubtargetFeature<"experimental-zvknhb", "HasStdExtZvknhb", "true",
+                       "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))",
+		       [FeatureStdExtZvknha]>;
+def HasStdExtZvknhaOrZvknhb  : Predicate<"Subtarget->hasStdExtZvknha() || Subtarget->hasStdExtZvknhb()">,
+                                AssemblerPredicate<(any_of FeatureStdExtZvknha, FeatureStdExtZvknhb),
+                                "'Zvknha' (Vector SHA-2. (SHA-256 only)) or "
+                                "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))">;
+
+def FeatureStdExtZvkns
+    : SubtargetFeature<"experimental-zvkns", "HasStdExtZvkns", "true",
+                       "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
+def HasStdExtZvkns : Predicate<"Subtarget->hasStdExtZvkns()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZvkns),
+                                "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
+
+def FeatureStdExtZvksed
+    : SubtargetFeature<"experimental-zvksed", "HasStdExtZvksed", "true",
+                       "'Zvksed' (SM4 Block Cipher Instructions.)">;
+def HasStdExtZvksed : Predicate<"Subtarget->hasStdExtZvksed()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZvksed),
+                                "'Zvksed' (SM4 Block Cipher Instructions.)">;
+
+def FeatureStdExtZvksh
+    : SubtargetFeature<"experimental-zvksh", "HasStdExtZvksh", "true",
+                       "'Zvksh' (SM3 Hash Function Instructions.)">;
+def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
+                                "'Zvksh' (SM3 Hash Function Instructions.)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
