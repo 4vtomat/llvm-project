@@ -1927,11 +1927,10 @@ def int_riscv_sm3p1      : ScalarCryptoGprIntrinsicAny;
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 // Vendor extensions
 //===----------------------------------------------------------------------===//
 include "llvm/IR/IntrinsicsRISCVXTHead.td"
-=======
+
 // Vector Cryptography
 //
 // These intrinsics will lower directly into the corresponding instructions
@@ -1973,4 +1972,3 @@ let TargetPrefix = "riscv" in {
   def int_riscv_vsha2ms : RISCVBinaryAAXUnMaskedP;
 #endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
->>>>>>> origin/sifive-dev
