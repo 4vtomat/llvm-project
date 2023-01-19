@@ -19496,27 +19496,6 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin) {
     return EmitAArch64BuiltinExpr(BuiltinID, E, llvm::Triple::aarch64);
   }
-
-  if (BuiltinID == RISCVVector::BI__builtin_rvv_is_splat) {
-    llvm::Type *ResultType = ConvertType(E->getType());
-
-    const Expr *Arg = E->getArg(0);
-    QualType ArgType = Arg->getType();
-
-    if (Arg->HasSideEffects(getContext()))
-      // The argument is unevaluated, so be conservative if it might have
-      // side-effects.
-      return ConstantInt::get(ResultType, 0);
-
-    Value *ArgValue = EmitScalarExpr(Arg);
-
-    Function *F =
-        CGM.getIntrinsic(Intrinsic::riscv_is_splat, ConvertType(ArgType));
-    Value *Result = Builder.CreateCall(F, ArgValue);
-    if (Result->getType() != ResultType)
-      Result = Builder.CreateIntCast(Result, ResultType, /*isSigned*/false);
-    return Result;
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   SmallVector<Value *, 4> Ops;

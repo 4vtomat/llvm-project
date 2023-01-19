@@ -1752,11 +1752,6 @@ let TargetPrefix = "riscv" in {
                                                          [llvm_anyvector_ty],
                                                          [IntrNoMem ]>;
 
-  // This intrinsic decides at compile time if a vector is a splat or not.
-  def int_riscv_is_splat : DefaultAttrsIntrinsic<[llvm_i1_ty],
-                                                 [llvm_anyvector_ty],
-                                                 [IntrNoMem]>;
-
   def int_riscv_sf_vqmaccu_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmacc_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccus_4x8x4 : RISCVSFCustomVQMACC;
