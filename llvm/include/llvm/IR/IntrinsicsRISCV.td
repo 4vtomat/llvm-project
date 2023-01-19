@@ -352,10 +352,11 @@ let TargetPrefix = "riscv" in {
   // For destination vector type is the same as source vector.
   // Input: (passthru, vector_in, vl, policy)
   class RISCVUnaryAAUnMaskedP
-        : Intrinsic<[llvm_anyvector_ty],
-                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
-                     LLVMMatchType<1>],
-                    [ImmArg<ArgIndex<3>>, IntrNoMem]>, RISCVVIntrinsic {
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                                [LLVMMatchType<0>, LLVMMatchType<0>,
+                                 llvm_anyint_ty, LLVMMatchType<1>],
+                                [ImmArg<ArgIndex<3>>, IntrNoMem]>,
+                                RISCVVIntrinsic {
     let VLOperand = 2;
   }
 
@@ -565,10 +566,11 @@ let TargetPrefix = "riscv" in {
   }
 #ifdef SIFIVE_CUSTOMIZATION
   class RISCVBinaryAAXUnMaskedP
-        : Intrinsic<[llvm_anyvector_ty],
-                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_any_ty,
-                     llvm_anyint_ty, LLVMMatchType<2>],
-                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                                [LLVMMatchType<0>, LLVMMatchType<0>,
+                                 llvm_any_ty, llvm_anyint_ty, LLVMMatchType<2>],
+                                [ImmArg<ArgIndex<4>>, IntrNoMem]>,
+                                RISCVVIntrinsic {
     let ScalarOperand = 2;
     let VLOperand = 3;
   }
