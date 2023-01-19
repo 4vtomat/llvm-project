@@ -685,15 +685,15 @@ def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkb),
-                                "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 
 def FeatureStdExtZvkg
     : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
                        "'Zvkg' (Vector GCM instructions for Cryptography.)">;
 def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkg),
-                                "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+                              AssemblerPredicate<(all_of FeatureStdExtZvkg),
+                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
 
 def FeatureStdExtZvknha
     : SubtargetFeature<"experimental-zvknha", "HasStdExtZvknha", "true",
