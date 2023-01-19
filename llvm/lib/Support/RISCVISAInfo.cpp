@@ -852,8 +852,9 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "zicntr and zihpm requires zicsr to also be specified");
 
-  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") || Exts.count("zvkns") ||
-       Exts.count("zvksed") || Exts.count("zvksh")) && !HasVector)
+  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") ||
+       Exts.count("zvkns") || Exts.count("zvksed") || Exts.count("zvksh")) &&
+      !HasVector)
     return createStringError(
         errc::invalid_argument,
         "zvk* requires v or zve* extension to also be specified");
