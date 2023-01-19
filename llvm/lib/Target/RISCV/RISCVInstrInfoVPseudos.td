@@ -3110,7 +3110,7 @@ multiclass VPseudoVALU_VV_VX {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoVALU_VCLMUL<string Constraint = ""> {
+multiclass VPseudoVALU_VCLMUL {
   foreach m = MxList in {
     defvar mx = m.MX;
     defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
@@ -3118,10 +3118,10 @@ multiclass VPseudoVALU_VCLMUL<string Constraint = ""> {
     defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
     defvar ReadVIALUX_MX = !cast<SchedRead>("ReadVIALUX_" # mx);
 
-    defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>,
-               Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-    defm _VX : VPseudoBinary<m.vrclass, m.vrclass, GPR, m, Constraint>,
-               Sched<[WriteVIALUX_MX, ReadVIALUV_MX, ReadVIALUX_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryV_VV<m>,
+              Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryV_VX<m>,
+              Sched<[WriteVIALUX_MX, ReadVIALUV_MX, ReadVIALUX_MX, ReadVMask]>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
