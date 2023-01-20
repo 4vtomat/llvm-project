@@ -1744,14 +1744,6 @@ let TargetPrefix = "riscv" in {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  // These represent bitcasts between scalable and fixed vectors.
-  def int_riscv_vcast_to_fixed : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                       [llvm_anyvector_ty],
-                                                       [IntrNoMem]>;
-  def int_riscv_vcast_from_fixed : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                         [llvm_anyvector_ty],
-                                                         [IntrNoMem ]>;
-
   def int_riscv_sf_vqmaccu_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmacc_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccus_4x8x4 : RISCVSFCustomVQMACC;
