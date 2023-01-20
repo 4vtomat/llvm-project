@@ -5231,6 +5231,16 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       auto *OI = cast<Instruction>(OV);
       if (llvm::all_of(OI->users(), [&](User *U) -> bool {
             auto *J = cast<Instruction>(U);
+#if SIFIVE_CUSTOMIZATION
+            // TODO: Support more han one use and mixed type of uses (vector +
+            // uniform).
+            if (Legal->useVLAVectorizer() && J->hasOneUse() &&
+                (Worklist.count(J->user_back()) ||
+                 isVectorizedMemAccessUse(J->user_back(), J) ||
+                 isa<BranchInst>(J->user_back()) ||
+                 Legal->isInductionVariable(J->user_back())))
+              return true;
+#endif // SIFIVE_CUSTOMIZATION
             return Worklist.count(J) || isVectorizedMemAccessUse(J, OI);
           }))
         addToWorklistIfAllowed(OI);
