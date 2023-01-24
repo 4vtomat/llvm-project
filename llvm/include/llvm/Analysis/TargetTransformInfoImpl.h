@@ -448,7 +448,7 @@ public:
                         unsigned RegWidthFactor = 1,
                         bool IsScalable = false) const {
     unsigned WidestRegister = std::min<unsigned>(
-        getRegisterBitWidth(K).getFixedSize(), MaxSafeRegisterWidth);
+        getRegisterBitWidth(K).getFixedValue(), MaxSafeRegisterWidth);
 
     unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
     ElementCount LowerBoundVF =

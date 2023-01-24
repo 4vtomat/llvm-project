@@ -6479,13 +6479,13 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
   } else {
 #if SIFIVE_CUSTOMIZATION
     for (Type *T : ElementTypesInLoop) {
-      if (MinWidth > DL.getTypeSizeInBits(T->getScalarType()).getFixedSize()) {
+      if (MinWidth > DL.getTypeSizeInBits(T->getScalarType()).getFixedValue()) {
         SmallestType = T;
-        MinWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedSize();
+        MinWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedValue();
       }
-      if (MaxWidth < DL.getTypeSizeInBits(T->getScalarType()).getFixedSize()) {
+      if (MaxWidth < DL.getTypeSizeInBits(T->getScalarType()).getFixedValue()) {
         WidestType = T;
-        MaxWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedSize();
+        MaxWidth = DL.getTypeSizeInBits(T->getScalarType()).getFixedValue();
       }
     }
 #else

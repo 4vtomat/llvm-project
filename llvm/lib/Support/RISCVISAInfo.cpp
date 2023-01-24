@@ -299,8 +299,8 @@ getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
   SmallVector<RISCVExtensionVersion, 4> SupportedVersions;
 
   auto SupportedExtensionInfos =
-      IsExperimental ? makeArrayRef(SupportedExperimentalExtensions)
-                     : makeArrayRef(SupportedExtensions);
+      IsExperimental ? ArrayRef(SupportedExperimentalExtensions)
+                     : ArrayRef(SupportedExtensions);
 
   for (auto ExtInfo : SupportedExtensionInfos) {
     if (ExtInfo.Name == Ext)

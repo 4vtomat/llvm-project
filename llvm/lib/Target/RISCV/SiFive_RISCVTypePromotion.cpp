@@ -59,8 +59,8 @@ public:
       : OrigTy(Ty), PromotedWidth(Width), Visited(visited), Sources(sources),
         Sinks(sinks) {
     ExtTy = IntegerType::get(Ty->getContext(), PromotedWidth);
-    assert(OrigTy->getPrimitiveSizeInBits().getFixedSize() <
-               ExtTy->getPrimitiveSizeInBits().getFixedSize() &&
+    assert(OrigTy->getPrimitiveSizeInBits().getFixedValue() <
+               ExtTy->getPrimitiveSizeInBits().getFixedValue() &&
            "Original type not smaller than extended type");
   }
 

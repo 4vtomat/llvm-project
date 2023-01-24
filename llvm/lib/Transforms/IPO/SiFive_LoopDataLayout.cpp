@@ -839,7 +839,7 @@ static void splitAddressStoresForAllocations(
       // The address we create is the stored value, the GEP is where
       // we write that memory at since this store is writing a ptr value.
       Type *EltTy = ArrayST->getElementType(k);
-      unsigned SizeInBytes = DL.getTypeSizeInBits(EltTy).getFixedSize() >> 3;
+      unsigned SizeInBytes = DL.getTypeSizeInBits(EltTy).getFixedValue() >> 3;
       Value *NewSizeArg = createNewSizeArg(ArrayST, SrcPtr, OrigI, TLIFn, DL,
                                            SizeVal, SizeInBytes);
 
@@ -964,7 +964,7 @@ updateMemSetCall(Instruction *RefInst, Type *RefTy, Type *AltTy, bool IsBaseTy,
       Value *Addr = nullptr;
       Type *EltTy = ArrayST->getElementType(k);
       unsigned SizeInBytes =
-          DL.getTypeSizeInBits(EltTy).getFixedSize() >> 3;
+          DL.getTypeSizeInBits(EltTy).getFixedValue() >> 3;
       if (k > 0) {
         BaseIndices.push_back(ConstantInt::get(FirstTy, 0));
         // The second offset is StartingOffset+k which is a 32bit int.

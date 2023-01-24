@@ -715,7 +715,7 @@ public:
                         unsigned RegWidthFactor = 1,
                         bool IsScalable = false) const {
     unsigned WidestRegister =
-        static_cast<const T *>(this)->getRegisterBitWidth(K).getFixedSize();
+        static_cast<const T *>(this)->getRegisterBitWidth(K).getFixedValue();
     WidestRegister = std::min(WidestRegister, MaxSafeRegisterWidth);
 
     unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
