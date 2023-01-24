@@ -237,8 +237,6 @@ public:
                               &Mutations) const override;
 
 #if SIFIVE_CUSTOMIZATION
-  void adjustSchedDependency(SUnit *Def, int DefOpIdx, SUnit *Use, int UseOpIdx,
-                             SDep &Dep) const override;
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
   bool useAA() const override;

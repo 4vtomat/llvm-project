@@ -21,21 +21,21 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ;
 ; ALIGN-LABEL: UnKnownSize:
 ; ALIGN:       # %bb.0: # %entry
-; ALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; ALIGN-NEXT:    vmv.v.x v8, a1
 ; ALIGN-NEXT:    li a3, 32
-; ALIGN-NEXT:    andi a1, a0, 31
-; ALIGN-NEXT:    sub a3, a3, a1
-; ALIGN-NEXT:    minu a1, a3, a2
-; ALIGN-NEXT:    vsetvli a3, a1, e8, m8, ta, mu
+; ALIGN-NEXT:    andi a4, a0, 31
+; ALIGN-NEXT:    sub a3, a3, a4
+; ALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; ALIGN-NEXT:    minu a3, a3, a2
+; ALIGN-NEXT:    vmv.v.x v8, a1
+; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, mu
 ; ALIGN-NEXT:    sub a1, a2, a3
 ; ALIGN-NEXT:    add a2, a0, a3
 ; ALIGN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-NEXT:  .LBB0_1: # %memset-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; ALIGN-NEXT:    vsetvli a0, a1, e8, m8, ta, mu
-; ALIGN-NEXT:    addi a1, a1, -512
 ; ALIGN-NEXT:    vse8.v v8, (a2)
+; ALIGN-NEXT:    addi a1, a1, -512
 ; ALIGN-NEXT:    add a2, a2, a0
 ; ALIGN-NEXT:    bgtz a1, .LBB0_1
 ; ALIGN-NEXT:  # %bb.2: # %memset-post-loop

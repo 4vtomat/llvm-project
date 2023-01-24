@@ -5236,6 +5236,29 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
     SDValue RHS = CondV.getOperand(1);
     ISD::CondCode CCVal = cast<CondCodeSDNode>(CondV.getOperand(2))->get();
 
+#if SIFIVE_CUSTOMIZATION
+    // Match one variation of a signum or spaceship operator pattern.
+    // (select (X >s Y) ? 1 : (sext_inreg (X != Y), i1)
+    // This returns 1 if X is greater than Y, -1 if X is less than Y or zero if
+    // X is equal to Y.
+    // This can be replaced with (X >s Y) - (X <s Y).
+    // TODO: There are other ways this could be written.
+    if (isOneConstant(TrueV) && CCVal == ISD::SETGT && CondV.hasOneUse() &&
+        FalseV.getOpcode() == ISD::SIGN_EXTEND_INREG && FalseV.hasOneUse() &&
+        cast<VTSDNode>(FalseV.getOperand(1))->getVT() == MVT::i1 &&
+        FalseV.getOperand(0).getOpcode() == ISD::SETCC &&
+        FalseV.getOperand(0).hasOneUse()) {
+      SDValue OtherSetcc = FalseV.getOperand(0);
+      SDValue OtherLHS = OtherSetcc.getOperand(0);
+      SDValue OtherRHS = OtherSetcc.getOperand(1);
+      if (cast<CondCodeSDNode>(OtherSetcc.getOperand(2))->get() == ISD::SETNE &&
+          LHS == OtherLHS && RHS == OtherRHS) {
+        SDValue LT = DAG.getSetCC(DL, XLenVT, LHS, RHS, ISD::SETLT);
+        return DAG.getNode(ISD::SUB, DL, XLenVT, CondV, LT);
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
     // Special case for a select of 2 constants that have a diffence of 1.
     // Normally this is done by DAGCombine, but if the select is introduced by
     // type legalization or op legalization, we miss it. Restricting to SETLT

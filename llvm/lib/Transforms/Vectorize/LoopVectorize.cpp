@@ -2104,13 +2104,20 @@ public:
   /// there is no vector code generation, the check blocks are removed
   /// completely.
   void Create(Loop *L, const LoopAccessInfo &LAI,
-              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC) {
+              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC
+#if SIFIVE_CUSTOMIZATION
+              , bool ForceVectorization
+#endif // SIFIVE_CUSTOMIZATION
+              ) {
 
     // Hard cutoff to limit compile-time increase in case a very large number of
     // runtime checks needs to be generated.
     // TODO: Skip cutoff if the loop is guaranteed to execute, e.g. due to
     // profile info.
     CostTooHigh =
+#if SIFIVE_CUSTOMIZATION
+        !ForceVectorization &&
+#endif // SIFIVE_CUSTOMIZATION
         LAI.getNumRuntimePointerChecks() > VectorizeMemoryCheckThreshold;
     if (CostTooHigh)
       return;
@@ -5231,6 +5238,16 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       auto *OI = cast<Instruction>(OV);
       if (llvm::all_of(OI->users(), [&](User *U) -> bool {
             auto *J = cast<Instruction>(U);
+#if SIFIVE_CUSTOMIZATION
+            // TODO: Support more han one use and mixed type of uses (vector +
+            // uniform).
+            if (Legal->useVLAVectorizer() && J->hasOneUse() &&
+                (Worklist.count(J->user_back()) ||
+                 isVectorizedMemAccessUse(J->user_back(), J) ||
+                 isa<BranchInst>(J->user_back()) ||
+                 Legal->isInductionVariable(J->user_back())))
+              return true;
+#endif // SIFIVE_CUSTOMIZATION
             return Worklist.count(J) || isVectorizedMemAccessUse(J, OI);
           }))
         addToWorklistIfAllowed(OI);
@@ -11910,14 +11927,21 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     IC = CM.selectInterleaveCount(VF.Width, VF.Cost);
 
     unsigned SelectedIC = std::max(IC, UserIC);
-    //  Optimistically generate runtime checks if they are needed. Drop them if
-    //  they turn out to not be profitable.
-    if (VF.Width.isVector() || SelectedIC > 1)
-      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC);
-
+#if SIFIVE_CUSTOMIZATION
     // Check if it is profitable to vectorize with runtime checks.
     bool ForceVectorization =
         Hints.getForce() == LoopVectorizeHints::FK_Enabled;
+#endif // SIFIVE_CUSTOMIZATION
+
+    //  Optimistically generate runtime checks if they are needed. Drop them if
+    //  they turn out to not be profitable.
+    if (VF.Width.isVector() || SelectedIC > 1)
+      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC
+#if SIFIVE_CUSTOMIZATION
+                    ,
+                    ForceVectorization);
+#endif // SIFIVE_CUSTOMIZATION
+
     if (!ForceVectorization &&
         !areRuntimeChecksProfitable(Checks, VF, CM.getVScaleForTuning(), L,
                                     *PSE.getSE())) {

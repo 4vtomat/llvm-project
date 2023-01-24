@@ -73,6 +73,7 @@ class PseudoToVInst<string PseudoInst> {
                  !subst("_MASK", "",
                  !subst("_TIED", "",
                  !subst("_TU", "",
+#ifdef SIFIVE_CUSTOMIZATION
                  !subst("_F16", "_F",
                  !subst("_F32", "_F",
                  !subst("_F64", "_F",
@@ -82,18 +83,19 @@ class PseudoToVInst<string PseudoInst> {
                  !subst("WF16", "WF",
                  !subst("WF32", "WF",
                  !subst("WF64", "WF",
-                 !subst("_SE", "", // SIFIVE
-                 !subst("Pseudo", "", PseudoInst)))))))))))))))))))))))))))); // SIFIVE
+                 !subst("_SE", "",
+                 !subst("Pseudo", "", PseudoInst))))))))))))))))))))))))))));
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // This class describes information associated to the LMUL.
 class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
-               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx,
-               VReg w2regclass> {
+               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx, // SIFIVE
+               VReg w2regclass> { // SIFIVE
   bits<3> value = lmul; // This is encoded as the vlmul field of vtype.
   VReg vrclass = regclass;
   VReg wvrclass = wregclass;
-  VReg w2vrclass = w2regclass;
+  VReg w2vrclass = w2regclass; // SIFIVE
   VReg f8vrclass = f8regclass;
   VReg f4vrclass = f4regclass;
   VReg f2vrclass = f2regclass;
@@ -102,6 +104,7 @@ class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
 }
 
 // Associate LMUL with tablegen records of register classes.
+#ifdef SIFIVE_CUSTOMIZATION
 def V_M1  : LMULInfo<0b000,  8,   VR,        VRM2,   VR,   VR, VR, "M1", VRM4>;
 def V_M2  : LMULInfo<0b001, 16, VRM2,        VRM4,   VR,   VR, VR, "M2", VRM8>;
 def V_M4  : LMULInfo<0b010, 32, VRM4,        VRM8, VRM2,   VR, VR, "M4", /*NoVReg*/VR>;
@@ -110,6 +113,7 @@ def V_M8  : LMULInfo<0b011, 64, VRM8,/*NoVReg*/VR, VRM4, VRM2, VR, "M8", /*NoVRe
 def V_MF8 : LMULInfo<0b101, 1, VR, VR,/*NoVReg*/VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF8", VR>;
 def V_MF4 : LMULInfo<0b110, 2, VR, VR,          VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF4", VR>;
 def V_MF2 : LMULInfo<0b111, 4, VR, VR,          VR,          VR,/*NoVReg*/VR, "MF2", VRM2>;
+#endif // SIFIVE_CUSTOMIZATION
 
 // Used to iterate over all possible LMULs.
 defvar MxList = [V_MF8, V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
@@ -214,7 +218,7 @@ class VTypeInfo<ValueType Vec, ValueType Mas, int Sew, VReg Reg, LMULInfo M,
 
   string ScalarSuffix = !cond(!eq(Scal, XLenVT) : "X",
                               !eq(Scal, f16) : "F16",
-                              !eq(Scal, bf16): "BF16",
+                              !eq(Scal, bf16): "BF16", // SIFIVE
                               !eq(Scal, f32) : "F32",
                               !eq(Scal, f64) : "F64");
 }
@@ -316,6 +320,7 @@ defset list<VTypeInfo> AllVectors = {
     }
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
   defset list<VTypeInfo> AllBFloatVectors = {
     defset list<VTypeInfo> FractionalGroupBFloatVectors = {
       def VBF16MF4: VTypeInfo<vbfloat16mf4_t, vbool64_t, 16, VR, V_MF4, bf16, FPR16>;
@@ -331,6 +336,7 @@ defset list<VTypeInfo> AllVectors = {
                                   VRM8, V_M8, bf16, FPR16>;
     }
   }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // This functor is used to obtain the int vector type that has the same SEW and
@@ -495,6 +501,7 @@ defset list<VTypeInfoToWide> AllWidenableIntToFloatVectors = {
   def : VTypeInfoToWide<VI32M4, VF64M8>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 defset list<VTypeInfoToWide> AllWidenableBFloatToFloatVectors = {
   def : VTypeInfoToWide<VBF16MF4, VF32MF2>;
   def : VTypeInfoToWide<VBF16MF2, VF32M1>;
@@ -510,6 +517,7 @@ defset list<VTypeInfoToWide> AllWidenableBFloatVectors = {
   def : VTypeInfoToWide<VBF16M2, VBF16M4>;
   def : VTypeInfoToWide<VBF16M4, VBF16M8>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // This class holds the record of the RISCVVPseudoTable below.
 // This represents the information we need in codegen for each pseudo.
@@ -3102,7 +3110,7 @@ multiclass VPseudoVALU_VV_VX {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoVALU_VCLMUL<string Constraint = ""> {
+multiclass VPseudoVALU_VCLMUL {
   foreach m = MxList in {
     defvar mx = m.MX;
     defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
@@ -3110,10 +3118,10 @@ multiclass VPseudoVALU_VCLMUL<string Constraint = ""> {
     defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
     defvar ReadVIALUX_MX = !cast<SchedRead>("ReadVIALUX_" # mx);
 
-    defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>,
-               Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-    defm _VX : VPseudoBinary<m.vrclass, m.vrclass, GPR, m, Constraint>,
-               Sched<[WriteVIALUX_MX, ReadVIALUV_MX, ReadVIALUX_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryV_VV<m>,
+              Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
+    defm "" : VPseudoBinaryV_VX<m>,
+              Sched<[WriteVIALUX_MX, ReadVIALUV_MX, ReadVIALUX_MX, ReadVMask]>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4150,6 +4158,7 @@ multiclass VPseudoISegStore<bit Ordered> {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 let usesCustomInserter = 1, hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class VPseudoSelectCC_rrirr<RegisterClass valty, RegisterClass cmpty>
     : Pseudo<(outs valty:$dst),
@@ -4174,6 +4183,7 @@ foreach vti = AllVectors in
 def : VPatSelectCC<vti.Vector, vti.RegClass>;
 foreach mti = AllMasks in
 def : VPatSelectCC<mti.Mask, VR>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Helpers to define the intrinsic patterns.
@@ -4844,7 +4854,7 @@ multiclass VPatUnaryV_V<string intrinsic, string instruction,
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PPatUnaryV_V_NoMask<string intrinsic, string instruction,
-			       list<VTypeInfo> vtilist> {
+                               list<VTypeInfo> vtilist> {
   foreach vti = vtilist in
     def : PPatUnaryNoMask<intrinsic # "_vv", instruction, "VV",
                           vti.Vector, vti.Vector, vti.Log2SEW,
@@ -4860,7 +4870,7 @@ multiclass PPatUnaryV_S_NoMask<string intrinsic, string instruction,
 }
 
 multiclass PPatUnaryV_V_S_NoMask<string intrinsic, string instruction,
-			         list<VTypeInfo> vtilist> {
+                                 list<VTypeInfo> vtilist> {
   defm : PPatUnaryV_V_NoMask<intrinsic, instruction, vtilist>;
   defm : PPatUnaryV_S_NoMask<intrinsic, instruction, vtilist>;
 }
@@ -5887,6 +5897,7 @@ multiclass VPatCompare_VI<string intrinsic, string inst,
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
   foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
   {
@@ -5910,6 +5921,7 @@ multiclass XPatConversionVF_WF <string intrinsic, string instruction> {
                             fvti.LMul, fvti.RegClass, fwti.RegClass>;
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Pseudo instructions

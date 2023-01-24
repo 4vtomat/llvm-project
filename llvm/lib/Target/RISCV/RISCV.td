@@ -693,15 +693,15 @@ def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkb),
-                                "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 
 def FeatureStdExtZvkg
     : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
                        "'Zvkg' (Vector GCM instructions for Cryptography.)">;
 def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkg),
-                                "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+                              AssemblerPredicate<(all_of FeatureStdExtZvkg),
+                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
 
 def FeatureStdExtZvknha
     : SubtargetFeature<"experimental-zvknha", "HasStdExtZvknha", "true",
@@ -1344,8 +1344,16 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
-                                       FeatureStdExtV],
-                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                       FeatureStdExtV,
+                                       FeatureStdExtZvkb,
+                                       FeatureStdExtZvkg,
+                                       FeatureStdExtZvknhb,
+                                       FeatureStdExtZvkns,
+                                       FeatureStdExtZvksed,
+                                       FeatureStdExtZvksh],
+                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0_"
+                                      "zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_"
+                                      "zvksed0p1_zvksh0p1",
                                       [TuneSiFiveP400]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model, 
@@ -1385,8 +1393,16 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
-                                       FeatureStdExtV],
-                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0",
+                                       FeatureStdExtV,
+                                       FeatureStdExtZvkb,
+                                       FeatureStdExtZvkg,
+                                       FeatureStdExtZvknhb,
+                                       FeatureStdExtZvkns,
+                                       FeatureStdExtZvksed,
+                                       FeatureStdExtZvksh],
+                                      "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0_"
+                                      "zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_"
+                                      "zvksed0p1_zvksh0p1",
                                       [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
