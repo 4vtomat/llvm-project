@@ -974,12 +974,12 @@ def SIFIVE_7N : RISCVTuneProcessorModel<"sifive-7n-series", SiFive7NModel,
 def SIFIVE_7O : RISCVTuneProcessorModel<"sifive-7o-series", SiFive7NModel,
                                         [TuneSiFive7, TunePseudoLIsimm32], []>;
 def SIFIVE_P400 : RISCVTuneProcessorModel<"sifive-p400-series",
-                                          SiFiveP400Model, [TuneSiFiveP400], 
+                                          SiFiveP400Model, [TuneSiFiveP400],
                                           []>;
 def SIFIVE_8 : RISCVTuneProcessorModel<"sifive-8-series", SiFiveP500Model,
                                        [TuneSiFiveP500], []>;
 def SIFIVE_P500 : RISCVTuneProcessorModel<"sifive-p500-series",
-                                          SiFiveP500Model, [TuneSiFiveP500], 
+                                          SiFiveP500Model, [TuneSiFiveP500],
                                           []>;
 def SIFIVE_P600 : RISCVTuneProcessorModel<"sifive-p600-series",
                                           SiFiveP600Model, [TuneSiFiveP600],
