@@ -5221,6 +5221,10 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // is added , its users should be already inside Worklist.  It ensures
   // a uniform instruction will only be used by uniform instructions.
   unsigned idx = 0;
+#if SIFIVE_CUSTOMIZATION
+  SmallVector<BasicBlock *> ExitingBlocks;
+  TheLoop->getExitingBlocks(ExitingBlocks);
+#endif // SIFIVE_CUSTOMIZATION
   while (idx != Worklist.size()) {
     Instruction *I = Worklist[idx++];
 
@@ -5241,12 +5245,21 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
 #if SIFIVE_CUSTOMIZATION
             // TODO: Support more han one use and mixed type of uses (vector +
             // uniform).
-            if (Legal->useVLAVectorizer() && J->hasOneUse() &&
-                (Worklist.count(J->user_back()) ||
-                 isVectorizedMemAccessUse(J->user_back(), J) ||
-                 isa<BranchInst>(J->user_back()) ||
-                 Legal->isInductionVariable(J->user_back())))
-              return true;
+            if (Legal->useVLAVectorizer() && J->hasOneUse()) {
+              Instruction *JU = J->user_back();
+              // Assume that use in a branch instruction of a exiting block is
+              // uniform too.
+              // TODO: With search loop vectorization this code must be changed
+              // as the exiting condition is not uniform for this type of loops.
+              if (isa<BranchInst>(JU) &&
+                  llvm::is_contained(ExitingBlocks, JU->getParent()))
+                return true;
+
+              if (Worklist.count(JU) || isVectorizedMemAccessUse(JU, J) ||
+                  Legal->isInductionVariable(JU))
+                return true;
+            }
+
 #endif // SIFIVE_CUSTOMIZATION
             return Worklist.count(J) || isVectorizedMemAccessUse(J, OI);
           }))
