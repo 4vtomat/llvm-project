@@ -1030,8 +1030,8 @@ def err_pragma_loop_precedes_nonloop : Error<
 def err_invalid_lmul_sew_pair : Error <
   "(LMUL, SEW) pair (%0, %1) does not map to a valid VF"
 >;
-def err_require_zve32x_feature : Error<
-  "Require at least zve32x to use the #pragma clang rvv lmul_sew"
+def err_require_vector_support : Error<
+  "Require vector support to use the #pragma clang rvv lmul_sew"
 >;
 def err_require_zve64x_feature : Error<
   "(LMUL, SEW) pair (%0, %1) requires at least zve64x"

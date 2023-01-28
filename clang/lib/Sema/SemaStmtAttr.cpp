@@ -123,9 +123,10 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
     return nullptr;
   }
 
+  const TargetInfo &TI = S.Context.getTargetInfo();
   const TargetOptions &Opts = S.Context.getTargetInfo().getTargetOpts();
-  if (!Opts.FeatureMap.count("zve32x")) {
-    S.Diag(A.getLoc(), diag::err_require_zve32x_feature);
+  if (!TI.hasVectorSupport()) {
+    S.Diag(A.getLoc(), diag::err_require_vector_support);
     return nullptr;
   }
 

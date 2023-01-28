@@ -223,6 +223,7 @@ protected:
   bool HasLongDouble;
   bool HasFPReturn;
   bool HasStrictFP;
+  bool HasVectorSupport; // SIFIVE
 
   unsigned char MaxAtomicPromoteWidth, MaxAtomicInlineWidth;
   unsigned short SimdDefaultAlign;
@@ -663,6 +664,11 @@ public:
 
   /// Determine whether constrained floating point is supported on this target.
   virtual bool hasStrictFP() const { return HasStrictFP; }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Determine whether the target has vector support
+  virtual bool hasVectorSupport() const { return HasVectorSupport; }
+#endif
 
   /// Return the alignment that is the largest alignment ever used for any
   /// scalar/SIMD data type on the target machine you are compiling for
@@ -1618,6 +1624,11 @@ public:
 
   /// Set supported OpenCL extensions and optional core features.
   virtual void setSupportedOpenCLOpts() {}
+
+#ifdef SIFIVE_CUSTOMIZATION
+  /// Set HasVectorSupport depending on target and feature provided
+  virtual void setVectorSupport() {}
+#endif
 
   virtual void supportAllOpenCLOpts(bool V = true) {
 #define OPENCLEXTNAME(Ext)                                                     \

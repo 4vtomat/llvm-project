@@ -55,6 +55,11 @@ public:
     CPU = Name;
     return true;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  void setVectorSupport() override {
+    HasVectorSupport = ISAInfo->hasExtension("zve32x");
+  }
+#endif
 
   StringRef getABI() const override { return ABI; }
   void getTargetDefines(const LangOptions &Opts,
