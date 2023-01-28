@@ -124,7 +124,6 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
   }
 
   const TargetInfo &TI = S.Context.getTargetInfo();
-  const TargetOptions &Opts = S.Context.getTargetInfo().getTargetOpts();
   if (!TI.hasVectorSupport()) {
     S.Diag(A.getLoc(), diag::err_require_vector_support);
     return nullptr;
@@ -134,8 +133,8 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
       Lmul >= 0 ? llvm::RISCV::RVVBitsPerBlock << Lmul
                 : llvm::RISCV::RVVBitsPerBlock >> -Lmul;
   unsigned VF = AssumedMinimalTotalVLen / Sew;
-  if (VF == 1 && !Opts.FeatureMap.count("zve64x")) {
-    S.Diag(A.getLoc(), diag::err_require_zve64x_feature)
+  if (VF == 1 && TI.getMaxVectorElementWidth() < 64) {
+    S.Diag(A.getLoc(), diag::err_require_max_vector_element_width_64)
         << A.getArgAsIdent(2)->Ident->getName()
         << A.getArgAsIdent(3)->Ident->getName();
     return nullptr;

@@ -760,7 +760,10 @@ TargetInfo::CreateTargetInfo(DiagnosticsEngine &Diags,
   Target->setSupportedOpenCLOpts();
   Target->setCommandLineOpenCLOpts();
   Target->setMaxAtomicWidth();
-  Target->setVectorSupport(); // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
+  Target->setVectorSupport();
+  Target->setMaxVectorElementWidth();
+#endif
 
   if (!Opts->DarwinTargetVariantTriple.empty())
     Target->DarwinTargetVariantTriple =

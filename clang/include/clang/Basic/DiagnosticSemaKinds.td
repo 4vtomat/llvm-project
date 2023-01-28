@@ -1033,8 +1033,8 @@ def err_invalid_lmul_sew_pair : Error <
 def err_require_vector_support : Error<
   "Require vector support to use the #pragma clang rvv lmul_sew"
 >;
-def err_require_zve64x_feature : Error<
-  "(LMUL, SEW) pair (%0, %1) requires at least zve64x"
+def err_require_max_vector_element_width_64 : Error<
+  "(LMUL, SEW) pair (%0, %1) requires at max vector element width of more than 64"
 >;
 #endif
 

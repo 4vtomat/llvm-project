@@ -59,6 +59,10 @@ public:
   void setVectorSupport() override {
     HasVectorSupport = ISAInfo->hasExtension("zve32x");
   }
+
+  void setMaxVectorElementWidth() override {
+    MaxVectorElementWidth = ISAInfo->getMaxELen();
+  }
 #endif
 
   StringRef getABI() const override { return ABI; }
