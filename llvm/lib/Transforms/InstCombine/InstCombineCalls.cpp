@@ -2639,6 +2639,22 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     break;
   }
 #if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_add:
+  case Intrinsic::vp_fadd:
+  case Intrinsic::vp_or: {
+    if (auto *FPCI = dyn_cast<FPMathOperator>(II))
+      if (!FPCI->hasNoSignedZeros())
+        break;
+    Value *BO0 = II->getOperand(0);
+    Value *BO1 = II->getOperand(1);
+    std::array<std::pair<Value *, Value *>, 2> Values = {
+        std::make_pair(BO0, BO1), std::make_pair(BO1, BO0)};
+    for (const std::pair<Value *, Value *> &P : Values) {
+      if (match(P.first, m_Zero()))
+        return replaceInstUsesWith(CI, P.second);
+    }
+    break;
+  }
   case Intrinsic::experimental_vp_reverse: {
     Value *BO0, *BO1;
     Value *Vec = II->getArgOperand(0);
