@@ -4424,26 +4424,6 @@ multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    (XLenVT VXRM_DYN), GPR:$vl, sew)>;
 }
-
-class PPatBinaryNoMask<string intrinsic_name,
-                       string inst,
-                       ValueType result_type,
-                       ValueType op1_type,
-                       ValueType op2_type,
-                       int sew,
-                       VReg result_reg_class,
-                       VReg op1_reg_class,
-                       DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag, (XLenVT timm:$policy))),
-                   (!cast<Instruction>(inst)
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   GPR:$vl, sew, (XLenVT timm:$policy))>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Same as above but source operands are swapped.
@@ -5105,9 +5085,9 @@ multiclass VPatBinary_RM_V_VV<string intrinsic, string instruction,
 multiclass VPatBinaryV_VV_NoMask<string intrinsic, string instruction,
                           list<VTypeInfo> vtilist> {
   foreach vti = vtilist in
-    def : PPatBinaryNoMask<intrinsic, instruction # "_VV_" # vti.LMul.MX,
+    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VV",
                            vti.Vector, vti.Vector, vti.Vector,
-                           vti.Log2SEW, vti.RegClass, vti.RegClass,
+                           vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
                            vti.RegClass>;
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5197,9 +5177,9 @@ multiclass VPatBinary_RM_V_VI<string intrinsic, string instruction,
 multiclass VPatBinaryV_VI_NoMask<string intrinsic, string instruction,
                           list<VTypeInfo> vtilist, Operand imm_type = simm5> {
   foreach vti = vtilist in
-    def : PPatBinaryNoMask<intrinsic, instruction # "_VI_" # vti.LMul.MX,
+    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VI",
                            vti.Vector, vti.Vector, XLenVT, vti.Log2SEW,
-                           vti.RegClass, vti.RegClass, imm_type>;
+                           vti.LMul, vti.RegClass, vti.RegClass, imm_type>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
