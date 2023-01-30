@@ -1491,7 +1491,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   if (CostKind == TTI::TCK_CodeSize)
     return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                          CostKind, OpInfo, I);
-  Cost += LT.first * getLMULCost(LT.second);
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
     if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
       // Note: vector memory accesses check the L1 D$. On a miss, the access is
@@ -1501,9 +1500,10 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
       // equivalent to LMUL_M1 to discourage the use of vector store on small
       // VL.
       if (cast<FixedVectorType>(Src)->getNumElements() < 4)
-        return 2;
+        return Cost + 2;
     }
   }
+  Cost += LT.first * getLMULCost(LT.second);
   return Cost;
 #else
 
