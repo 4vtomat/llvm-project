@@ -1345,6 +1345,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
                                        FeatureStdExtV,
+                                       FeatureStdExtZvl128b,
                                        FeatureStdExtZvkb,
                                        FeatureStdExtZvkg,
                                        FeatureStdExtZvknhb,
@@ -1353,7 +1354,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvksh],
                                       "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0_"
                                       "zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_"
-                                      "zvksed0p1_zvksh0p1",
+                                      "zvksed0p1_zvksh0p1_zvl128b1p0",
                                       [TuneSiFiveP400]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model, 
@@ -1394,6 +1395,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
                                        FeatureStdExtV,
+                                       FeatureStdExtZvl128b,
                                        FeatureStdExtZvkb,
                                        FeatureStdExtZvkg,
                                        FeatureStdExtZvknhb,
@@ -1402,7 +1404,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksh],
                                       "rv64gcv_zfhmin1p0_zba1p0_zbb1p0_zbs1p0_"
                                       "zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_"
-                                      "zvksed0p1_zvksh0p1",
+                                      "zvksed0p1_zvksh0p1_zvl128b1p0",
                                       [TuneSiFiveP600]>;
 #endif // SIFIVE_CUSTOMIZATION
 
