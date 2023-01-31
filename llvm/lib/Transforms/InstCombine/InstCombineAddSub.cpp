@@ -975,6 +975,19 @@ Instruction *InstCombinerImpl::foldAddWithConstant(BinaryOperator &Add) {
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Fold (add (zext (add X, -1)), 1) -> (zext X) if X is non-zero.
+  // FIXME: There's a general form for any constant on the outer add.
+  if (C->isOne()) {
+    if (match(Op0, m_ZExt(m_Add(m_Value(X), m_AllOnes())))) {
+      // TODO: Can we use the inner add as the context? Is that better?
+      const SimplifyQuery Q = SQ.getWithInstruction(&Add);
+      if (llvm::isKnownNonZero(X, DL, 0, Q.AC, Q.CxtI, Q.DT))
+        return new ZExtInst(X, Ty);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   return nullptr;
 }
 
