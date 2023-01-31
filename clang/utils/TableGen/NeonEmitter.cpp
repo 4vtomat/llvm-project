@@ -2641,9 +2641,7 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
 
   OS << "#include <stdint.h>\n\n";
 
-  OS << "#ifdef __riscv_zfh\n";
   OS << "typedef __fp16 float16_t;\n";
-  OS << "#endif\n\n";
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
