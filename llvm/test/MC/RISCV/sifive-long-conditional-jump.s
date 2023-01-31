@@ -65,7 +65,7 @@ test:
 .fill 1300, 4, 0
 .L7:
    ret
-# CHECK-INST:         bne     a0, zero, 0x8e8c
+# CHECK-INST:         bne     zero, a0, 0x8e8c
 # CHECK-INST-NEXT:    jal     zero, 0xa2dc
 # CHECK-INST-C:       c.bnez  a0, 0x8e7a
 # CHECK-INST-C-NEXT:  jal     zero, 0xa2ca
