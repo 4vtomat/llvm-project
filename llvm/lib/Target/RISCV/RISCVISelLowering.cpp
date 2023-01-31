@@ -587,6 +587,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
+        ISD::VP_MULHU, ISD::VP_MULHS,
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
 #else
         ISD::VP_ABS};
@@ -4755,6 +4756,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerVPOp(Op, DAG, RISCVISD::SUB_VL, /*HasMergeOp*/ true);
   case ISD::VP_MUL:
     return lowerVPOp(Op, DAG, RISCVISD::MUL_VL, /*HasMergeOp*/ true);
+  case ISD::VP_MULHS:
+    return lowerVPOp(Op, DAG, RISCVISD::MULHS_VL, /*HasMergeOp*/ true);
+  case ISD::VP_MULHU:
+    return lowerVPOp(Op, DAG, RISCVISD::MULHU_VL, /*HasMergeOp*/ true);
   case ISD::VP_SDIV:
     return lowerVPOp(Op, DAG, RISCVISD::SDIV_VL, /*HasMergeOp*/ true);
   case ISD::VP_UDIV:
