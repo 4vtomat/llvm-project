@@ -1975,6 +1975,8 @@ static std::optional<Type *> configureParamType(
         continue;
       } else if (isa<InvokeInst>(UnderlyingObj)) {
         continue;
+      } else if (isa<FreezeInst>(UnderlyingObj)) {
+        continue;
       } else {
         llvm_unreachable("Support needed for unhandled cases!");
       }
