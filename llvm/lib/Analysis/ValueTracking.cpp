@@ -2731,6 +2731,16 @@ bool isKnownNonZero(const Value *V, const APInt &DemandedElts, unsigned Depth,
   case Instruction::Call:
     if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::vscale)
       return true;
+#if SIFIVE_CUSTOMIZATION
+    // vsetvlimax is always non-zero.
+    if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvlimax ||
+        cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvlimax_opt)
+      return true;
+    // vsetvli only returns zero if input is zero.
+    if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvli ||
+        cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvli_opt)
+      return isKnownNonZero(I->getOperand(0), Depth, Q);
+#endif
     break;
   }
 
