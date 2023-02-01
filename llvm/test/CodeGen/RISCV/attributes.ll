@@ -68,6 +68,9 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcb %s -o - | FileCheck --check-prefix=RV32ZCB %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcd %s -o - | FileCheck --check-prefix=RV32ZCD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcf %s -o - | FileCheck --check-prefix=RV32ZCF %s
+; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefix=RV32SMWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefix=RV32SMWGD %s
+; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefix=RV32SSWG %s
 
 ; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefix=RV32ZVKB %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefix=RV32ZVKG %s
@@ -157,6 +160,9 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefix=RV64ZVKNS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV64ZVKSED %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV64ZVKSH %s
+; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefix=RV64SMWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefix=RV64SMWGD %s
+; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefix=RV64SSWG %s
 
 ; SIFIVE_CUSTOMIZATION
 ; RV32M: .attribute 5, "rv32i2p1_m2p0"
@@ -234,6 +240,9 @@
 ; RV32SHVSTVECD: .attribute 5, "rv32i2p1_shvstvecd1p0"
 ; RV32SHVSATPA: .attribute 5, "rv32i2p1_shvsatpa1p0"
 ; RV32SHGATPA: .attribute 5, "rv32i2p1_shgatpa1p0"
+; RV32SMWG: .attribute 5, "rv32i2p1_smwg0p3"
+; RV32SMWGD: .attribute 5, "rv32i2p1_smwg0p3_smwgd0p3"
+; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
 
 ; RV64M: .attribute 5, "rv64i2p1_m2p0"
 ; RV64ZMMUL: .attribute 5, "rv64i2p1_zmmul1p0"
@@ -314,6 +323,9 @@
 ; RV64ZVKNS: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
 ; RV64ZVKSED: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvksed0p1_zvl32b1p0"
 ; RV64ZVKSH: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
+; RV64SMWG: .attribute 5, "rv64i2p1_smwg0p3"
+; RV64SMWGD: .attribute 5, "rv64i2p1_smwg0p3_smwgd0p3"
+; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
 ; end SIFIVE_CUSTOMIZATION
 
 define i32 @addi(i32 %a) {

@@ -411,9 +411,9 @@ def : SysReg<"mnstatus", 0x353>;
 //===-----------------------------------------------
 // World Guard Security CSRs
 //===-----------------------------------------------
-def : SysReg<"mlwid", 0x7e0>;
-def : SysReg<"mwiddeleg", 0x7e1>;
-def : SysReg<"slwid", 0x9e0>;
+def : SysReg<"mlwid", 0x390>;
+def : SysReg<"mwiddeleg", 0x748>;
+def : SysReg<"slwid", 0x190>;
 
 //===-----------------------------------------------
 // Sscofpmf CSRs

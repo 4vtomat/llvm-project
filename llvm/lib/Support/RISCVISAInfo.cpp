@@ -79,6 +79,9 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"shvstvecd", RISCVExtensionVersion{1, 0}},
     {"shvsatpa", RISCVExtensionVersion{1, 0}},
     {"shgatpa", RISCVExtensionVersion{1, 0}},
+    {"smwg", RISCVExtensionVersion{0, 3}},
+    {"smwgd", RISCVExtensionVersion{0, 3}},
+    {"sswg", RISCVExtensionVersion{0, 3}},
 #endif // SIFIVE_CUSTOMIZATION
 
     {"h", RISCVExtensionVersion{1, 0}},
@@ -901,6 +904,11 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "zvknhb requires zve64x extension to also be specified");
+
+  if (Exts.count("smwgd") && !Exts.count("smwg"))
+    return createStringError(
+        errc::invalid_argument,
+        "smwgd requires smwg extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
   // Additional dependency checks.
