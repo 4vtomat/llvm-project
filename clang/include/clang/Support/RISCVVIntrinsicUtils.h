@@ -99,8 +99,8 @@ struct Policy {
     Agnostic,
     Omit, // No policy required.
   };
-  PolicyType TailPolicy = Agnostic;
-  PolicyType MaskPolicy = Undisturbed;
+  PolicyType TailPolicy = Omit;
+  PolicyType MaskPolicy = Omit;
   bool HasTailPolicy, HasMaskPolicy;
   Policy(bool HasTailPolicy, bool HasMaskPolicy)
       : IsUnspecified(true), HasTailPolicy(HasTailPolicy),
