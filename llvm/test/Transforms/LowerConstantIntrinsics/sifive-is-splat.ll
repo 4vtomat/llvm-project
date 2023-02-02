@@ -5,10 +5,10 @@
 define void @test_not_splat(i8* nocapture readonly %in, i8* nocapture readonly %v, i8* nocapture %out) {
 ; CHECK-LABEL: @test_not_splat(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP0]], i64 16)
-; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[V:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP2]], i64 16)
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast ptr [[IN:%.*]] to ptr
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[TMP0]], i64 16)
+; CHECK-NEXT:    [[TMP2:%.*]] = bitcast ptr [[V:%.*]] to ptr
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[TMP2]], i64 16)
 ; CHECK-NEXT:    br label [[IF_ELSE_I:%.*]]
 ; CHECK:       if.else.i:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsgtu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP3]], i8 127, i64 16)
@@ -22,8 +22,8 @@ define void @test_not_splat(i8* nocapture readonly %in, i8* nocapture readonly %
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP7]], <vscale x 16 x i8> [[TMP11]], <vscale x 16 x i1> [[TMP4]], i64 16)
 ; CHECK-NEXT:    br label [[VSHLQ_U8_EXIT:%.*]]
 ; CHECK:       vshlq_u8.exit:
-; CHECK-NEXT:    [[TMP13:%.*]] = bitcast i8* [[OUT:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TMP12]], <vscale x 16 x i8>* [[TMP13]], i64 16)
+; CHECK-NEXT:    [[TMP13:%.*]] = bitcast ptr [[OUT:%.*]] to ptr
+; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TMP12]], ptr [[TMP13]], i64 16)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -63,8 +63,8 @@ vshlq_u8.exit:                                    ; preds = %land.lhs.true.i, %i
 define void @test_splat(i8* nocapture readonly %in, i8 signext %v, i8* nocapture %out) {
 ; CHECK-LABEL: @test_splat(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP0]], i64 16)
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast ptr [[IN:%.*]] to ptr
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[TMP0]], i64 16)
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmv.v.x.nxv16i8.i64(<vscale x 16 x i8> undef, i8 [[V:%.*]], i64 16)
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i8 [[V]], 0
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[VSHLQ_U8_EXIT:%.*]], label [[IF_ELSE_I:%.*]]
@@ -85,8 +85,8 @@ define void @test_splat(i8* nocapture readonly %in, i8 signext %v, i8* nocapture
 ; CHECK-NEXT:    br label [[VSHLQ_U8_EXIT]]
 ; CHECK:       vshlq_u8.exit:
 ; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi <vscale x 16 x i8> [ [[TMP15]], [[IF_ELSE_I]] ], [ [[TMP1]], [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[TMP16:%.*]] = bitcast i8* [[OUT:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], <vscale x 16 x i8>* [[TMP16]], i64 16)
+; CHECK-NEXT:    [[TMP16:%.*]] = bitcast ptr [[OUT:%.*]] to ptr
+; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], ptr [[TMP16]], i64 16)
 ; CHECK-NEXT:    ret void
 ;
 entry:
