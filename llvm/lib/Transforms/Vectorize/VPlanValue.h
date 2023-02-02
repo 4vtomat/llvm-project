@@ -87,40 +87,9 @@ public:
   /// An enumeration for keeping track of the concrete subclass of VPValue that
   /// are actually instantiated.
   enum {
-<<<<<<< HEAD
-    VPValueSC,
-    VPVDerivedIVSC,
-    VPVInstructionSC,
-    VPVMemoryInstructionSC,
-    VPVReductionSC,
-    VPVReplicateSC,
-    VPVWidenSC,
-    VPVWidenCallSC,
-    VPVWidenCanonicalIVSC,
-    VPVWidenGEPSC,
-    VPVWidenSelectSC,
-#if SIFIVE_CUSTOMIZATION
-    VPVPredicatedMemoryInstructionSC,
-#endif // SIFIVE_CUSTOMIZATION
-
-    // Phi-like VPValues. Need to be kept together.
-    VPVBlendSC,
-    VPVPredInstPHI,
-    // Header-phi recipes. Need to be kept together.
-    VPVCanonicalIVPHISC,
-    VPVActiveLaneMaskPHISC,
-    VPVFirstOrderRecurrencePHISC,
-    VPVWidenPHISC,
-    VPVWidenIntOrFpInductionSC,
-    VPVWidenPointerInductionSC,
-    VPVReductionPHISC,
-    VPVFirstHeaderPHISC = VPVCanonicalIVPHISC,
-    VPVLastPHISC = VPVReductionPHISC,
-=======
     VPValueSC, /// A generic VPValue, like live-in values or defined by a recipe
                /// that defines multiple values.
     VPVRecipeSC /// A VPValue sub-class that is a VPRecipeBase.
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   };
 
   /// Create a live-in VPValue.

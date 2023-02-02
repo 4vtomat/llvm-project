@@ -582,7 +582,7 @@ int LoopVectorizationLegality::isConsecutivePtr(Type *AccessTy,
 }
 
 #if SIFIVE_CUSTOMIZATION
-Optional<int64_t>
+std::optional<int64_t>
 LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
                                                      Value *Ptr) const {
   const ValueToValueMap &Strides =
@@ -593,8 +593,8 @@ LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
                     llvm::shouldOptimizeForSize(TheLoop->getHeader(), PSI, BFI,
                                                 PGSOQueryType::IRPass);
   bool CanAddPredicate = !OptForSize;
-  Optional<int64_t> Stride = getPtrStride(PSE, AccessTy, Ptr, TheLoop, Strides,
-                                          CanAddPredicate, false);
+  std::optional<int64_t> Stride = getPtrStride(PSE, AccessTy, Ptr, TheLoop,
+                                               Strides, CanAddPredicate, false);
   if (!Stride.has_value())
     return std::nullopt;
   if (Stride.value() == 1 || Stride.value() == -1)

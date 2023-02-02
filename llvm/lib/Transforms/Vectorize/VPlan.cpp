@@ -1261,7 +1261,6 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
   if (Plan.BackedgeTakenCount)
     assignSlot(Plan.BackedgeTakenCount);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Plan.TripCount)
     assignSlot(Plan.TripCount);
@@ -1275,14 +1274,8 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
     assignSlot(Plan.AllTrueMask);
 #endif // SIFIVE_CUSTOMIZATION
 
-  ReversePostOrderTraversal<
-      VPBlockRecursiveTraversalWrapper<const VPBlockBase *>>
-      RPOT(VPBlockRecursiveTraversalWrapper<const VPBlockBase *>(
-          Plan.getEntry()));
-=======
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<const VPBlockBase *>>
       RPOT(VPBlockDeepTraversalWrapper<const VPBlockBase *>(Plan.getEntry()));
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   for (const VPBasicBlock *VPBB :
        VPBlockUtils::blocksOnly<const VPBasicBlock>(RPOT))
     for (const VPRecipeBase &Recipe : *VPBB)

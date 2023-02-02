@@ -978,17 +978,12 @@ protected:
 public:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       : VPWidenRecipe(I, Operands, VPRecipeBase::VPWidenSC,
-                      VPValue::VPVWidenSC) {}
+                      VPDef::VPWidenSC) {}
 #else
-      : VPRecipeBase(VPRecipeBase::VPWidenSC, Operands),
-        VPValue(VPValue::VPVWidenSC, &I, this) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
       : VPRecipeBase(VPDef::VPWidenSC, Operands), VPValue(this, &I) {}
->>>>>>> revert-rvv-intrinsic-v0.11-patches
+#endif // SIFIVE_CUSTOMIZATION
 
   ~VPWidenRecipe() override = default;
 
@@ -1439,23 +1434,19 @@ public:
   /// RdxDesc.
   VPReductionPHIRecipe(PHINode *Phi, const RecurrenceDescriptor &RdxDesc,
                        VPValue &Start, bool IsInLoop = false,
-<<<<<<< HEAD
                        bool IsOrdered = false
 #if SIFIVE_CUSTOMIZATION
-                       , bool PostFixStartValue = false
+                       ,
+                       bool PostFixStartValue = false
 #endif // SIFIVE_CUSTOMIZATION
                        )
-      : VPHeaderPHIRecipe(VPVReductionPHISC, VPReductionPHISC, Phi, &Start),
-        RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered)
+      : VPHeaderPHIRecipe(VPReductionPHISC, Phi, &Start), RdxDesc(RdxDesc),
+        IsInLoop(IsInLoop), IsOrdered(IsOrdered)
 #if SIFIVE_CUSTOMIZATION
-        , PostFixStartValue(PostFixStartValue)
+        ,
+        PostFixStartValue(PostFixStartValue)
 #endif // SIFIVE_CUSTOMIZATION
   {
-=======
-                       bool IsOrdered = false)
-      : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
-        RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
     assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
 #if SIFIVE_CUSTOMIZATION
     assert((!PostFixStartValue || !IsOrdered || !IsInLoop) &&
@@ -1849,14 +1840,9 @@ public:
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
-<<<<<<< HEAD
-      : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      : VPRecipeBase(VPDef::VPWidenMemoryInstructionSC, {Addr}),
+      : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}),
         Ingredient(Load), Consecutive(Consecutive), Reverse(Reverse) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
+#endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
     new VPValue(this, &Load);
     setMask(Mask);

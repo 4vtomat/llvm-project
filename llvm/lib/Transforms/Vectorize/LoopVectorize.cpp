@@ -6091,7 +6091,7 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
       Value *Ptr = getLoadStorePointerOperand(&I);
       if (!Ptr)
         continue;
-      Optional<int64_t> Stride =
+      std::optional<int64_t> Stride =
           Legal->isConsecutiveOrUnknownPtr(getLoadStoreType(&I), Ptr);
       if (!Stride.has_value())
         continue;
@@ -7238,7 +7238,6 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
     return 0;
   // For each block.
   for (BasicBlock *BB : TheLoop->blocks()) {
-    VectorizationCostTy BlockCost;
     // For each instruction in the old loop.
     for (Instruction &I : BB->instructionsWithoutDebug()) {
       // Skip ignored values.
