@@ -92,22 +92,15 @@ enum class TypeModifier : uint8_t {
   LLVM_MARK_AS_BITMASK_ENUM(LMUL1),
 };
 
-class Policy {
-public:
+struct Policy {
+  bool IsUnspecified = false;
   enum PolicyType {
     Undisturbed,
     Agnostic,
   };
-  bool IsUnspecified = false;
-
-private:
-  // The default assumption for an RVV instruction is TAMA, as an undisturbed
-  // policy generally will affect the performance of an out-of-order core.
-  const PolicyType TailPolicy = Agnostic;
-  const PolicyType MaskPolicy = Agnostic;
+  PolicyType TailPolicy = Agnostic;
+  PolicyType MaskPolicy = Agnostic;
   bool HasTailPolicy, HasMaskPolicy;
-
-public:
   Policy(bool HasTailPolicy, bool HasMaskPolicy)
       : IsUnspecified(true), HasTailPolicy(HasTailPolicy),
         HasMaskPolicy(HasMaskPolicy) {}
