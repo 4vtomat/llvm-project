@@ -423,7 +423,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// Return true if the intrinsic is poly type.
+  /// Return true if the intrinsic has poly type.
   bool hasPolyType() const {
     return llvm::any_of(Types, [](const Type &T) { return T.isPoly(); });
   }
@@ -554,9 +554,6 @@ class NeonEmitter {
   DenseMap<Record *, ClassKind> ClassMap;
   std::map<std::string, std::deque<Intrinsic>> IntrinsicMap;
   unsigned UniqueNumber;
-#if SIFIVE_CUSTOMIZATION
-  bool RecodeMode;
-#endif
 
   void createIntrinsic(Record *R, SmallVectorImpl<Intrinsic *> &Out);
   void genBuiltinsDef(raw_ostream &OS, SmallVectorImpl<Intrinsic *> &Defs);
@@ -609,6 +606,10 @@ public:
   // Emit all the __builtin prototypes used in arm_neon.h, arm_fp16.h and
   // arm_bf16.h
   void runHeader(raw_ostream &o);
+#if SIFIVE_CUSTOMIZATION
+public:
+  bool RecodeMode;
+#endif
 };
 
 } // end anonymous namespace
@@ -1867,6 +1868,29 @@ void Intrinsic::generateImpl(bool ReverseArguments,
 
   initVariables();
 
+#if SIFIVE_CUSTOMIZATION
+  std::set<StringRef> RequiredExtensions;
+  if (Emitter.RecodeMode) {
+    for (const Type &T : Types) {
+      if (T.isVector()) {
+        RequiredExtensions.emplace("__riscv_v");
+        if (T.isHalf())
+          RequiredExtensions.emplace("__riscv_zvfh");
+      } else if (T.isScalar() && T.isHalf()) {
+        RequiredExtensions.emplace("__riscv_zfh");
+      }
+    }
+    if (!RequiredExtensions.empty()) {
+      OS << "#if ";
+      ListSeparator LS(" && ");
+      for (const StringRef &Extension : RequiredExtensions)
+        OS << std::string_view(StringRef(LS)) << "defined("
+           << std::string_view(Extension) << ')';
+      OS << '\n';
+    }
+  }
+#endif
+
   emitPrototype(NamePrefix);
 
   if (IsUnavailable) {
@@ -1886,6 +1910,20 @@ void Intrinsic::generateImpl(bool ReverseArguments,
     emitClosingBrace();
   }
   OS << "\n";
+
+#if SIFIVE_CUSTOMIZATION
+  if (Emitter.RecodeMode && !RequiredExtensions.empty()) {
+    OS << "#else\n";
+    emitPrototype(NamePrefix);
+    OS << " __attribute__((unavailable(\"required extensions: ";
+    ListSeparator LS;
+    for (const StringRef &Extension : RequiredExtensions)
+      OS << std::string_view(StringRef(LS)) << '\''
+         << std::string_view(Extension.substr(8)) << '\'';
+    OS << "\")));\n";
+    OS << "#endif\n";
+  }
+#endif
 
   CurrentRecord = nullptr;
 }
