@@ -974,12 +974,6 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   return NewPrototype;
 }
 
-llvm::SmallVector<Policy> RVVIntrinsic::getSupportedUnMaskedPolicies() {
-  return {
-      Policy(Policy::PolicyType::Undisturbed, Policy::PolicyType::Omit), // TU
-      Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Omit)};   // TA
-}
-
 llvm::SmallVector<Policy>
 RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                                          bool HasMaskPolicy) {

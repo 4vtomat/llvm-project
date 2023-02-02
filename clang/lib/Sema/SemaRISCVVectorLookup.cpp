@@ -205,9 +205,13 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
 
     bool UnMaskedHasPolicy = UnMaskedPolicyScheme != PolicyScheme::SchemeNone;
     bool MaskedHasPolicy = MaskedPolicyScheme != PolicyScheme::SchemeNone;
-    SmallVector<Policy> SupportedUnMaskedPolicies =
-        RVVIntrinsic::getSupportedUnMaskedPolicies();
-    SmallVector<Policy> SupportedMaskedPolicies =
+    // If unmasked builtin supports policy, they should be TU or TA.
+    llvm::SmallVector<Policy> SupportedUnMaskedPolicies;
+    SupportedUnMaskedPolicies.emplace_back(Policy(
+        Policy::PolicyType::Undisturbed, Policy::PolicyType::Omit)); // TU
+    SupportedUnMaskedPolicies.emplace_back(
+        Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Omit)); // TA
+    llvm::SmallVector<Policy> SupportedMaskedPolicies =
         RVVIntrinsic::getSupportedMaskedPolicies(Record.HasTailPolicy,
                                                  Record.HasMaskPolicy);
 

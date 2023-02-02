@@ -472,8 +472,6 @@ public:
                       bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
                       unsigned NF, PolicyScheme DefaultScheme,
                       Policy PolicyAttrs);
-
-  static llvm::SmallVector<Policy> getSupportedUnMaskedPolicies();
   static llvm::SmallVector<Policy>
       getSupportedMaskedPolicies(bool HasTailPolicy, bool HasMaskPolicy);
 
