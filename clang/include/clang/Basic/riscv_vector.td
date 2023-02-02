@@ -2244,7 +2244,7 @@ defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "csil",
 }
 
 // 17.5. Vector Compress Instruction
-let IsPrototypeDefaultTU = false,
+let IsPrototypeDefaultTU = true,
     HasMasked = false,
     UnMaskedPolicyScheme = HasPassthruOperand,
     MaskedPolicyScheme = NonePolicy,
@@ -2256,10 +2256,10 @@ let IsPrototypeDefaultTU = false,
     }] in {
   // signed and floating type
   defm vcompress : RVVOutBuiltinSet<"vcompress", "csilxfd",
-                                    [["vm", "v", "vvm"]]>;
+                                    [["vm", "v", "vvvm"]]>;
   // unsigned type
   defm vcompress : RVVOutBuiltinSet<"vcompress", "csil",
-                                    [["vm", "Uv", "UvUvm"]]>;
+                                    [["vm", "Uv", "UvUvUvm"]]>;
 }
 
 // Miscellaneous
