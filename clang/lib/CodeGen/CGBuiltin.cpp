@@ -19488,11 +19488,10 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
 
   Intrinsic::ID ID = Intrinsic::not_intrinsic;
   unsigned NF = 1;
-  // The 0th bit simulates the `vta` of RVV
-  // The 1st bit simulates the `vma` of RVV
-  constexpr unsigned RVV_VTA = 0x1;
-  constexpr unsigned RVV_VMA = 0x2;
-  int PolicyAttrs = 0;
+  constexpr unsigned TAIL_UNDISTURBED = 0;
+  constexpr unsigned TAIL_AGNOSTIC = 1;
+  constexpr unsigned TAIL_AGNOSTIC_MASK_AGNOSTIC = 3;
+  int PolicyAttrs = TAIL_UNDISTURBED;
   bool IsMasked = false;
 
   // Required for overloaded intrinsics.

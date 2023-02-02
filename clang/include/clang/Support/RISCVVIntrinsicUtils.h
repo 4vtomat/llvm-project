@@ -426,11 +426,12 @@ public:
     return PolicyAttrs;
   }
   unsigned getPolicyAttrsBits() const {
-    // CGBuiltin.cpp
-    // The 0th bit simulates the `vta` of RVV
-    // The 1st bit simulates the `vma` of RVV
-    // int PolicyAttrs = 0;
-
+    // Return following value.
+    // constexpr unsigned TAIL_UNDISTURBED = 0;
+    // constexpr unsigned TAIL_AGNOSTIC = 1;
+    // constexpr unsigned TAIL_AGNOSTIC_MASK_AGNOSTIC = 3;
+    // FIXME: how about value 2
+    // int PolicyAttrs = TAIL_UNDISTURBED;
     assert(PolicyAttrs.IsUnspecified == false);
 
     if (PolicyAttrs.isTUMAPolicy())
@@ -440,6 +441,10 @@ public:
     if (PolicyAttrs.isTUMUPolicy())
       return 0;
     if (PolicyAttrs.isTAMUPolicy())
+      return 1;
+    if (PolicyAttrs.isTUPolicy())
+      return 0;
+    if (PolicyAttrs.isTAPolicy())
       return 1;
 
     llvm_unreachable("unsupport policy");
