@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "flang/Runtime/assign.h"
+#include "assign.h"
 #include "derived.h"
 #include "stat.h"
 #include "terminator.h"
@@ -59,7 +60,15 @@ static void DoElementalDefinedAssignment(const Descriptor &to,
   }
 }
 
-void Assign(Descriptor &to, const Descriptor &from, Terminator &terminator) {
+// Assigns one object to another via intrinsic assignment (F'2018 10.2.1.3) or
+// type-bound (only!) defined assignment (10.2.1.4), as appropriate.  Performs
+// finalization, scalar expansion, & allocatable (re)allocation as needed.
+// Does not perform intrinsic assignment implicit type conversion.  Both
+// descriptors must be initialized.  Recurses as needed to handle components.
+// Do not perform allocatable reallocation if \p skipRealloc is true, which is
+// used for allocate statement with source specifier.
+static void Assign(Descriptor &to, const Descriptor &from,
+    Terminator &terminator, bool skipRealloc = false) {
   DescriptorAddendum *toAddendum{to.Addendum()};
   const typeInfo::DerivedType *toDerived{
       toAddendum ? toAddendum->derivedType() : nullptr};
@@ -69,7 +78,7 @@ void Assign(Descriptor &to, const Descriptor &from, Terminator &terminator) {
   bool wasJustAllocated{false};
   if (to.IsAllocatable()) {
     std::size_t lenParms{fromDerived ? fromDerived->LenParameters() : 0};
-    if (to.IsAllocated()) {
+    if (to.IsAllocated() && !skipRealloc) {
       // Top-level assignments to allocatable variables (*not* components)
       // may first deallocate existing content if there's about to be a
       // change in type or shape; see F'2018 10.2.1.3(3).
@@ -196,7 +205,7 @@ void Assign(Descriptor &to, const Descriptor &from, Terminator &terminator) {
             comp.CreatePointerDescriptor(toCompDesc, to, terminator, toAt);
             comp.CreatePointerDescriptor(
                 fromCompDesc, from, terminator, fromAt);
-            Assign(toCompDesc, fromCompDesc, terminator);
+            Assign(toCompDesc, fromCompDesc, terminator, /*skipRealloc=*/false);
           }
         } else { // Component has intrinsic type; simply copy raw bytes
           std::size_t componentByteSize{comp.SizeInBytes(to)};
@@ -241,7 +250,7 @@ void Assign(Descriptor &to, const Descriptor &from, Terminator &terminator) {
               continue; // F'2018 10.2.1.3(13)(2)
             }
           }
-          Assign(*toDesc, *fromDesc, terminator);
+          Assign(*toDesc, *fromDesc, terminator, /*skipRealloc=*/false);
         }
         break;
       }
@@ -271,6 +280,34 @@ void Assign(Descriptor &to, const Descriptor &from, Terminator &terminator) {
             elementBytes);
       }
     }
+  }
+}
+
+void DoFromSourceAssign(
+    Descriptor &alloc, const Descriptor &source, Terminator &terminator) {
+  if (alloc.rank() > 0 && source.rank() == 0) {
+    // The value of each element of allocate object becomes the value of source.
+    DescriptorAddendum *allocAddendum{alloc.Addendum()};
+    const typeInfo::DerivedType *allocDerived{
+        allocAddendum ? allocAddendum->derivedType() : nullptr};
+    SubscriptValue allocAt[maxRank];
+    alloc.GetLowerBounds(allocAt);
+    if (allocDerived) {
+      for (std::size_t n{alloc.Elements()}; n-- > 0;
+           alloc.IncrementSubscripts(allocAt)) {
+        Descriptor allocElement{*Descriptor::Create(*allocDerived,
+            reinterpret_cast<void *>(alloc.Element<char>(allocAt)), 0)};
+        Assign(allocElement, source, terminator, /*skipRealloc=*/true);
+      }
+    } else { // intrinsic type
+      for (std::size_t n{alloc.Elements()}; n-- > 0;
+           alloc.IncrementSubscripts(allocAt)) {
+        std::memmove(alloc.Element<char>(allocAt), source.raw().base_addr,
+            alloc.ElementBytes());
+      }
+    }
+  } else {
+    Assign(alloc, source, terminator, /*skipRealloc=*/true);
   }
 }
 

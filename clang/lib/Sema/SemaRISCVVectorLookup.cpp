@@ -20,6 +20,7 @@
 #include "clang/Sema/Sema.h"
 #include "clang/Support/RISCVVIntrinsicUtils.h"
 #include "llvm/ADT/SmallVector.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -364,7 +365,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         if (!(Record.Log2LMULMask & (1 << (Log2LMUL + 3))))
           continue;
 
-        Optional<RVVTypes> Types =
+        std::optional<RVVTypes> Types =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoSeq);
 
 #if SIFIVE_CUSTOMIZATION
@@ -403,7 +404,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
                     BasicProtoSeq, /*IsMasked=*/false,
                     /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
                     Record.IsPrototypeDefaultTU, UnMaskedPolicyScheme, P);
-            Optional<RVVTypes> PolicyTypes = TypeCache.computeTypes(
+            std::optional<RVVTypes> PolicyTypes = TypeCache.computeTypes(
                 BaseType, Log2LMUL, Record.NF, PolicyPrototype);
             InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr,
                              /*IsMask=*/false, *PolicyTypes, UnMaskedHasPolicy,
@@ -413,7 +414,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         if (!Record.HasMasked)
           continue;
         // Create masked intrinsic.
-        Optional<RVVTypes> MaskTypes =
+        std::optional<RVVTypes> MaskTypes =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoMaskSeq);
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
                          *MaskTypes, MaskedHasPolicy, Policy(),
@@ -438,7 +439,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
                   BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
                   Record.HasVL, Record.NF, Record.IsPrototypeDefaultTU,
                   MaskedPolicyScheme, P);
-          Optional<RVVTypes> PolicyTypes = TypeCache.computeTypes(
+          std::optional<RVVTypes> PolicyTypes = TypeCache.computeTypes(
               BaseType, Log2LMUL, Record.NF, PolicyPrototype);
           InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr,
                            /*IsMask=*/true, *PolicyTypes, MaskedHasPolicy, P,

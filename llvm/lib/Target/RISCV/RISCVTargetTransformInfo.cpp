@@ -142,7 +142,7 @@ static bool canUseShiftPair(Instruction *Inst, const APInt &Imm) {
   // (and (shl x, c2), c1) will be matched to (srli (slli x, c2+c3), c3) if c1
   // is a mask shifted by c2 bits with c3 leading zeros.
   if (isShiftedMask_64(Mask)) {
-    unsigned Trailing = countTrailingZeros(Mask);
+    unsigned Trailing = llvm::countr_zero(Mask);
     if (ShAmt == Trailing)
       return true;
   }
@@ -381,8 +381,8 @@ std::optional<unsigned> RISCVTTIImpl::getVScaleForTuning() const {
 
 TypeSize
 RISCVTTIImpl::getRegisterBitWidth(TargetTransformInfo::RegisterKind K) const {
-  unsigned LMUL = PowerOf2Floor(
-      std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
+  unsigned LMUL =
+      llvm::bit_floor(std::clamp<unsigned>(RVVRegisterWidthLMUL, 1, 8));
   switch (K) {
   case TargetTransformInfo::RGK_Scalar:
     return TypeSize::getFixed(ST->getXLen());
@@ -1596,13 +1596,14 @@ InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
 }
 
 InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
+                                                 TTI::TargetCostKind CostKind,
                                                  unsigned Index, Value *Op0,
                                                  Value *Op1) {
   assert(Val->isVectorTy() && "This must be a vector type");
 
   if (Opcode != Instruction::ExtractElement &&
       Opcode != Instruction::InsertElement)
-    return BaseT::getVectorInstrCost(Opcode, Val, Index, Op0, Op1);
+    return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
 
   // Legalize the type.
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Val);
@@ -1616,7 +1617,7 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
     return LT.first;
 
   if (!isTypeLegal(Val))
-    return BaseT::getVectorInstrCost(Opcode, Val, Index, Op0, Op1);
+    return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
 
   // In RVV, we could use vslidedown + vmv.x.s to extract element from vector
   // and vslideup + vmv.s.x to insert element to vector.
@@ -1913,6 +1914,7 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
   return SLPMaxVF;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() {
   return InliningThresholdMultiplier;
@@ -1944,3 +1946,15 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
+                                 const TargetTransformInfo::LSRCost &C2) {
+  // RISCV specific here are "instruction number 1st priority".
+  return std::tie(C1.Insns, C1.NumRegs, C1.AddRecCost,
+                  C1.NumIVMuls, C1.NumBaseAdds,
+                  C1.ScaleCost, C1.ImmCost, C1.SetupCost) <
+         std::tie(C2.Insns, C2.NumRegs, C2.AddRecCost,
+                  C2.NumIVMuls, C2.NumBaseAdds,
+                  C2.ScaleCost, C2.ImmCost, C2.SetupCost);
+}
+>>>>>>> revert-rvv-intrinsic-v0.11-patches

@@ -271,6 +271,7 @@
 .attribute arch, "rv32if_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0"
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0"
 
+<<<<<<< HEAD
 .attribute arch, "rv32izca0p70"
 # CHECK: attribute      5, "rv32i2p1_zca0p70"
 
@@ -321,6 +322,19 @@
 
 .attribute arch, "rv32i_zve64x"
 # CHECK: attribute      5, "rv32i2p1_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
+=======
+.attribute arch, "rv32izca1p0"
+# CHECK: attribute      5, "rv32i2p0_zca1p0"
+
+.attribute arch, "rv32izcd1p0"
+# CHECK: attribute      5, "rv32i2p0_zcd1p0"
+
+.attribute arch, "rv32izcf1p0"
+# CHECK: attribute      5, "rv32i2p0_zcf1p0"
+
+.attribute arch, "rv32izcb1p0"
+# CHECK: attribute      5, "rv32i2p0_zca1p0_zcb1p0"
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
 
 .attribute arch, "rv32izawrs1p0"
 # SIFIVE_CUSTOMIZATION

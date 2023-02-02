@@ -85,10 +85,9 @@ public:
   const Value *getUnderlyingValue() const { return UnderlyingVal; }
 
   /// An enumeration for keeping track of the concrete subclass of VPValue that
-  /// are actually instantiated. Values of this enumeration are kept in the
-  /// SubclassID field of the VPValue objects. They are used for concrete
-  /// type identification.
+  /// are actually instantiated.
   enum {
+<<<<<<< HEAD
     VPValueSC,
     VPVDerivedIVSC,
     VPVInstructionSC,
@@ -117,10 +116,19 @@ public:
     VPVReductionPHISC,
     VPVFirstHeaderPHISC = VPVCanonicalIVPHISC,
     VPVLastPHISC = VPVReductionPHISC,
+=======
+    VPValueSC, /// A generic VPValue, like live-in values or defined by a recipe
+               /// that defines multiple values.
+    VPVRecipeSC /// A VPValue sub-class that is a VPRecipeBase.
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
   };
 
-  VPValue(Value *UV = nullptr, VPDef *Def = nullptr)
-      : VPValue(VPValueSC, UV, Def) {}
+  /// Create a live-in VPValue.
+  VPValue(Value *UV = nullptr) : VPValue(VPValueSC, UV, nullptr) {}
+  /// Create a VPValue for a \p Def which is a subclass of VPValue.
+  VPValue(VPDef *Def, Value *UV = nullptr) : VPValue(VPVRecipeSC, UV, Def) {}
+  /// Create a VPValue for a \p Def which defines multiple values.
+  VPValue(Value *UV, VPDef *Def) : VPValue(VPValueSC, UV, Def) {}
   VPValue(const VPValue &) = delete;
   VPValue &operator=(const VPValue &) = delete;
 
@@ -300,9 +308,6 @@ public:
   const_operand_range operands() const {
     return const_operand_range(op_begin(), op_end());
   }
-
-  /// Method to support type inquiry through isa, cast, and dyn_cast.
-  static inline bool classof(const VPDef *Recipe);
 
   /// Returns true if the VPUser uses scalars of operand \p Op. Conservatively
   /// returns if only first (scalar) lane is used, as default.

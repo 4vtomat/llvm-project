@@ -12,6 +12,7 @@ include "llvm/Target/Target.td"
 // RISC-V subtarget features and instruction predicates.
 //===----------------------------------------------------------------------===//
 
+<<<<<<< HEAD
 def FeatureStdExtZicsr
     : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
                        "'Zicsr' (Control and Status Register (CSR) Instructions)">;
@@ -892,6 +893,9 @@ def FeatureTaggedGlobals : SubtargetFeature<"tagged-globals",
     "AllowTaggedGlobals",
     "true", "Use an instruction sequence for taking the address of a global "
     "that allows a memory tag in the upper address bits">;
+=======
+include "RISCVFeatures.td"
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
 
 //===----------------------------------------------------------------------===//
 // Named operands for CSR instructions.
@@ -908,6 +912,11 @@ include "RISCVRegisterInfo.td"
 include "RISCVCallingConv.td"
 include "RISCVInstrInfo.td"
 include "GISel/RISCVRegisterBanks.td"
+
+//===----------------------------------------------------------------------===//
+// RISC-V Scheduling Models
+//===----------------------------------------------------------------------===//
+
 include "RISCVSchedRocket.td"
 include "RISCVSchedSiFive7.td"
 include "RISCVSchedSyntacoreSCR1.td"
@@ -923,6 +932,7 @@ include "SiFive_RISCVSchedSiFiveP600.td"
 // RISC-V processors supported.
 //===----------------------------------------------------------------------===//
 
+<<<<<<< HEAD
 class RISCVProcessorModel<string n,
                           SchedMachineModel m,
                           list<SubtargetFeature> f,
@@ -1181,6 +1191,9 @@ def SYNTACORE_SCR1_MAX : RISCVProcessorModel<"syntacore-scr1-max",
                                               FeatureStdExtC],
                                              "rv32imc",
                                              [TuneNoDefaultUnroll]>;
+=======
+include "RISCVProcessors.td"
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
 
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_U64 : RISCVProcessorModel<"sifive-u64", SiFive6Model,

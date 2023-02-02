@@ -296,8 +296,11 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   // RISCVInstrInfo::getInstSizeInBytes expects that the total size of the
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // SIFIVE: This switch was cherry-picked from upstream to reduce merge effort.
+=======
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
   switch (MI.getOpcode()) {
   default:
     break;
@@ -308,8 +311,13 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     expandFunctionCall(MI, OS, Fixups, STI);
     MCNumEmitted += 2;
     return;
+<<<<<<< HEAD
   case RISCV::PseudoAddRegRel: // SIFIVE
     expandAddRegRel(MI, OS, Fixups, STI); // SIFIVE
+=======
+  case RISCV::PseudoAddTPRel:
+    expandAddTPRel(MI, OS, Fixups, STI);
+>>>>>>> revert-rvv-intrinsic-v0.11-patches
     MCNumEmitted += 1;
     return;
   case RISCV::PseudoLongBEQ:
