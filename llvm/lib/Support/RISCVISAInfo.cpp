@@ -146,8 +146,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svpbmt", RISCVExtensionVersion{1, 0}},
     {"svinval", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-    {"xventanacondops", RISCVExtensionVersion{1, 0}},
 #if SIFIVE_CUSTOMIZATION
     {"sscofpmf", RISCVExtensionVersion{1, 0}},
 
@@ -164,10 +162,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"za64rs", RISCVExtensionVersion{1, 0}},
     {"zic64b", RISCVExtensionVersion{1, 0}},
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
     // vendor-defined ('X') extensions
->>>>>>> revert-rvv-intrinsic-v0.11-patches
     {"xtheadvdot", RISCVExtensionVersion{1, 0}},
     {"xventanacondops", RISCVExtensionVersion{1, 0}},
 };
@@ -808,23 +804,7 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
                                  "invalid extension prefix '" + Ext + "'");
       }
 
-<<<<<<< HEAD
-      if (Name.size() == Type.size()) {
-=======
-      // Check ISA extensions are specified in the canonical order.
-      while (I != E && *I != Type)
-        ++I;
-
-      if (I == E) {
-        if (IgnoreUnknown)
-          continue;
-        return createStringError(errc::invalid_argument,
-                                 "%s not given in canonical order '%s'",
-                                 Desc.str().c_str(), Ext.str().c_str());
-      }
-
       if (!IgnoreUnknown && Name.size() == Type.size()) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
         return createStringError(errc::invalid_argument,
                                  "%s name missing after '%s'",
                                  Desc.str().c_str(), Type.str().c_str());
