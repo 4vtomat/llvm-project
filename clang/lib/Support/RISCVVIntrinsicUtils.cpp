@@ -13,7 +13,6 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
 #include <numeric>
 #include <optional>
@@ -993,18 +992,16 @@ RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                    Policy::PolicyType::Undisturbed), // TUMU
             Policy(Policy::PolicyType::Agnostic,
                    Policy::PolicyType::Undisturbed)}; // TAMU
-  if (HasTailPolicy && !HasMaskPolicy)
+
+  if (HasTailPolicy)
     return {Policy(Policy::PolicyType::Undisturbed,
                    Policy::PolicyType::Agnostic, true), // TUM
             Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
                    true)}; // TAM
-  if (!HasTailPolicy && HasMaskPolicy)
-    return {
-        Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic), // MA
-        Policy(Policy::PolicyType::Omit,
-               Policy::PolicyType::Undisturbed)}; // MU
-  llvm_unreachable("An RVV instruction should not be without both tail policy "
-                   "and mask policy");
+
+  return {
+      Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic),     // MA
+      Policy(Policy::PolicyType::Omit, Policy::PolicyType::Undisturbed)}; // MU
 }
 
 void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
