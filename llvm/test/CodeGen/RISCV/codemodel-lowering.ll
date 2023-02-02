@@ -249,36 +249,34 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 define void @lower_global_loop(i32* %a) {
 ; RV32I-SMALL-LABEL: lower_global_loop:
 ; RV32I-SMALL:       # %bb.0: # %entry
-; RV32I-SMALL-NEXT:    li a1, 0
+; RV32I-SMALL-NEXT:    li a1, 10
 ; RV32I-SMALL-NEXT:    lui a2, %hi(G)
-; RV32I-SMALL-NEXT:    li a3, 40
 ; RV32I-SMALL-NEXT:  .LBB7_1: # %for.body
 ; RV32I-SMALL-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32I-SMALL-NEXT:    lw a4, %lo(G)(a2)
-; RV32I-SMALL-NEXT:    add a5, a0, a1
-; RV32I-SMALL-NEXT:    lw a6, 0(a5)
-; RV32I-SMALL-NEXT:    or a4, a6, a4
-; RV32I-SMALL-NEXT:    addi a1, a1, 4
-; RV32I-SMALL-NEXT:    sw a4, 0(a5)
-; RV32I-SMALL-NEXT:    bne a1, a3, .LBB7_1
+; RV32I-SMALL-NEXT:    lw a3, %lo(G)(a2)
+; RV32I-SMALL-NEXT:    lw a4, 0(a0)
+; RV32I-SMALL-NEXT:    or a3, a4, a3
+; RV32I-SMALL-NEXT:    sw a3, 0(a0)
+; RV32I-SMALL-NEXT:    addi a1, a1, -1
+; RV32I-SMALL-NEXT:    addi a0, a0, 4
+; RV32I-SMALL-NEXT:    bnez a1, .LBB7_1
 ; RV32I-SMALL-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV32I-SMALL-NEXT:    ret
 ;
 ; RV32I-MEDIUM-LABEL: lower_global_loop:
 ; RV32I-MEDIUM:       # %bb.0: # %entry
-; RV32I-MEDIUM-NEXT:    li a1, 0
+; RV32I-MEDIUM-NEXT:    li a1, 10
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi7:
 ; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    li a3, 40
 ; RV32I-MEDIUM-NEXT:  .LBB7_1: # %for.body
 ; RV32I-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32I-MEDIUM-NEXT:    lw a4, %pcrel_lo(.Lpcrel_hi7)(a2)
-; RV32I-MEDIUM-NEXT:    add a5, a0, a1
-; RV32I-MEDIUM-NEXT:    lw a6, 0(a5)
-; RV32I-MEDIUM-NEXT:    or a4, a6, a4
-; RV32I-MEDIUM-NEXT:    addi a1, a1, 4
-; RV32I-MEDIUM-NEXT:    sw a4, 0(a5)
-; RV32I-MEDIUM-NEXT:    bne a1, a3, .LBB7_1
+; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
+; RV32I-MEDIUM-NEXT:    lw a4, 0(a0)
+; RV32I-MEDIUM-NEXT:    or a3, a4, a3
+; RV32I-MEDIUM-NEXT:    sw a3, 0(a0)
+; RV32I-MEDIUM-NEXT:    addi a1, a1, -1
+; RV32I-MEDIUM-NEXT:    addi a0, a0, 4
+; RV32I-MEDIUM-NEXT:    bnez a1, .LBB7_1
 ; RV32I-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV32I-MEDIUM-NEXT:    ret
 entry:

@@ -473,12 +473,7 @@ define zeroext i1 @vreduce_smin_v16i1(<16 x i1> %v) {
 
 declare i1 @llvm.vector.reduce.or.v32i1(<32 x i1>)
 
-<<<<<<< HEAD
-define signext i1 @vreduce_or_v32i1(<32 x i1> %v) {
-;
-=======
 define zeroext i1 @vreduce_or_v32i1(<32 x i1> %v) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 ; LMULMAX1-LABEL: vreduce_or_v32i1:
 ; LMULMAX1:       # %bb.0:
 ; LMULMAX1-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -522,12 +517,7 @@ define zeroext i1 @vreduce_xor_v32i1(<32 x i1> %v) {
 
 declare i1 @llvm.vector.reduce.and.v32i1(<32 x i1>)
 
-<<<<<<< HEAD
-define signext i1 @vreduce_and_v32i1(<32 x i1> %v) {
-;
-=======
 define zeroext i1 @vreduce_and_v32i1(<32 x i1> %v) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 ; LMULMAX1-LABEL: vreduce_and_v32i1:
 ; LMULMAX1:       # %bb.0:
 ; LMULMAX1-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -762,12 +752,7 @@ define zeroext i1 @vreduce_smax_v64i1(<64 x i1> %v) {
 
 declare i1 @llvm.vector.reduce.umin.v64i1(<64 x i1>)
 
-<<<<<<< HEAD
-define signext i1 @vreduce_umin_v64i1(<64 x i1> %v) {
-;
-=======
 define zeroext i1 @vreduce_umin_v64i1(<64 x i1> %v) {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 ; LMULMAX1-LABEL: vreduce_umin_v64i1:
 ; LMULMAX1:       # %bb.0:
 ; LMULMAX1-NEXT:    vsetivli zero, 16, e8, m1, ta, ma

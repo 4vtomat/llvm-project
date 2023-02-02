@@ -13,8 +13,8 @@ define void @test_smax(i32* %arg) {
 ; CHECK:       bb2:
 ; CHECK-NEXT:    [[I3:%.*]] = phi i64 [ 0, [[BB:%.*]] ], [ [[I8:%.*]], [[BB2]] ]
 ; CHECK-NEXT:    [[I4:%.*]] = phi i64 [ -2147483648, [[BB]] ], [ [[I7]], [[BB2]] ]
-; CHECK-NEXT:    [[I5:%.*]] = getelementptr inbounds i32, i32* [[ARG:%.*]], i64 [[I3]]
-; CHECK-NEXT:    [[I6:%.*]] = load i32, i32* [[I5]], align 4
+; CHECK-NEXT:    [[I5:%.*]] = getelementptr inbounds i32, ptr [[ARG:%.*]], i64 [[I3]]
+; CHECK-NEXT:    [[I6:%.*]] = load i32, ptr [[I5]], align 4
 ; CHECK-NEXT:    [[TMP0:%.*]] = sext i32 [[I6]] to i64
 ; CHECK-NEXT:    [[I7]] = tail call i64 @llvm.smax.i64(i64 [[TMP0]], i64 [[I4]])
 ; CHECK-NEXT:    [[I8]] = add nuw nsw i64 [[I3]], 1

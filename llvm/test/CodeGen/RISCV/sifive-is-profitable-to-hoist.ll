@@ -14,13 +14,13 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-NO-HOIST:       for.body:
 ; CHECK-NO-HOIST-NEXT:    [[TMP1:%.*]] = phi i64 [ [[TMP9:%.*]], [[IF_END:%.*]] ], [ [[TMP0]], [[ENTRY:%.*]] ]
 ; CHECK-NO-HOIST-NEXT:    [[ACCV_028:%.*]] = phi <vscale x 16 x float> [ [[ACCV_1:%.*]], [[IF_END]] ], [ undef, [[ENTRY]] ]
-; CHECK-NO-HOIST-NEXT:    [[X_ADDR_027:%.*]] = phi float* [ [[ADD_PTR:%.*]], [[IF_END]] ], [ [[X:%.*]], [[ENTRY]] ]
-; CHECK-NO-HOIST-NEXT:    [[Y_ADDR_026:%.*]] = phi float* [ [[ADD_PTR3:%.*]], [[IF_END]] ], [ [[Y:%.*]], [[ENTRY]] ]
+; CHECK-NO-HOIST-NEXT:    [[X_ADDR_027:%.*]] = phi ptr [ [[ADD_PTR:%.*]], [[IF_END]] ], [ [[X:%.*]], [[ENTRY]] ]
+; CHECK-NO-HOIST-NEXT:    [[Y_ADDR_026:%.*]] = phi ptr [ [[ADD_PTR3:%.*]], [[IF_END]] ], [ [[Y:%.*]], [[ENTRY]] ]
 ; CHECK-NO-HOIST-NEXT:    [[LEFT_025:%.*]] = phi i64 [ [[SUB:%.*]], [[IF_END]] ], [ [[N]], [[ENTRY]] ]
-; CHECK-NO-HOIST-NEXT:    [[TMP2:%.*]] = bitcast float* [[X_ADDR_027]] to <vscale x 16 x float>*
-; CHECK-NO-HOIST-NEXT:    [[TMP3:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float>* [[TMP2]], i64 [[TMP1]])
-; CHECK-NO-HOIST-NEXT:    [[TMP4:%.*]] = bitcast float* [[Y_ADDR_026]] to <vscale x 16 x float>*
-; CHECK-NO-HOIST-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float>* [[TMP4]], i64 [[TMP1]])
+; CHECK-NO-HOIST-NEXT:    [[TMP2:%.*]] = bitcast ptr [[X_ADDR_027]] to ptr
+; CHECK-NO-HOIST-NEXT:    [[TMP3:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[TMP2]], i64 [[TMP1]])
+; CHECK-NO-HOIST-NEXT:    [[TMP4:%.*]] = bitcast ptr [[Y_ADDR_026]] to ptr
+; CHECK-NO-HOIST-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[TMP4]], i64 [[TMP1]])
 ; CHECK-NO-HOIST-NEXT:    [[CMP1:%.*]] = icmp ult i64 [[LEFT_025]], [[N]]
 ; CHECK-NO-HOIST-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK-NO-HOIST:       if.then:
@@ -33,9 +33,9 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-NO-HOIST:       if.end:
 ; CHECK-NO-HOIST-NEXT:    [[ACCV_1]] = phi <vscale x 16 x float> [ [[TMP7]], [[IF_THEN]] ], [ [[TMP8]], [[IF_ELSE]] ]
 ; CHECK-NO-HOIST-NEXT:    [[MUL:%.*]] = mul i64 [[TMP1]], [[INCX:%.*]]
-; CHECK-NO-HOIST-NEXT:    [[ADD_PTR]] = getelementptr inbounds float, float* [[X_ADDR_027]], i64 [[MUL]]
+; CHECK-NO-HOIST-NEXT:    [[ADD_PTR]] = getelementptr inbounds float, ptr [[X_ADDR_027]], i64 [[MUL]]
 ; CHECK-NO-HOIST-NEXT:    [[MUL2:%.*]] = mul i64 [[TMP1]], [[INCY:%.*]]
-; CHECK-NO-HOIST-NEXT:    [[ADD_PTR3]] = getelementptr inbounds float, float* [[Y_ADDR_026]], i64 [[MUL2]]
+; CHECK-NO-HOIST-NEXT:    [[ADD_PTR3]] = getelementptr inbounds float, ptr [[Y_ADDR_026]], i64 [[MUL2]]
 ; CHECK-NO-HOIST-NEXT:    [[SUB]] = sub i64 [[LEFT_025]], [[TMP1]]
 ; CHECK-NO-HOIST-NEXT:    [[TMP9]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[SUB]], i64 2, i64 3)
 ; CHECK-NO-HOIST-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP9]], 0
@@ -58,13 +58,13 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-HOIST:       for.body:
 ; CHECK-HOIST-NEXT:    [[TMP1:%.*]] = phi i64 [ [[TMP8:%.*]], [[IF_END:%.*]] ], [ [[TMP0]], [[ENTRY:%.*]] ]
 ; CHECK-HOIST-NEXT:    [[ACCV_028:%.*]] = phi <vscale x 16 x float> [ [[ACCV_1:%.*]], [[IF_END]] ], [ undef, [[ENTRY]] ]
-; CHECK-HOIST-NEXT:    [[X_ADDR_027:%.*]] = phi float* [ [[ADD_PTR:%.*]], [[IF_END]] ], [ [[X:%.*]], [[ENTRY]] ]
-; CHECK-HOIST-NEXT:    [[Y_ADDR_026:%.*]] = phi float* [ [[ADD_PTR3:%.*]], [[IF_END]] ], [ [[Y:%.*]], [[ENTRY]] ]
+; CHECK-HOIST-NEXT:    [[X_ADDR_027:%.*]] = phi ptr [ [[ADD_PTR:%.*]], [[IF_END]] ], [ [[X:%.*]], [[ENTRY]] ]
+; CHECK-HOIST-NEXT:    [[Y_ADDR_026:%.*]] = phi ptr [ [[ADD_PTR3:%.*]], [[IF_END]] ], [ [[Y:%.*]], [[ENTRY]] ]
 ; CHECK-HOIST-NEXT:    [[LEFT_025:%.*]] = phi i64 [ [[SUB:%.*]], [[IF_END]] ], [ [[N]], [[ENTRY]] ]
-; CHECK-HOIST-NEXT:    [[TMP2:%.*]] = bitcast float* [[X_ADDR_027]] to <vscale x 16 x float>*
-; CHECK-HOIST-NEXT:    [[TMP3:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float>* [[TMP2]], i64 [[TMP1]])
-; CHECK-HOIST-NEXT:    [[TMP4:%.*]] = bitcast float* [[Y_ADDR_026]] to <vscale x 16 x float>*
-; CHECK-HOIST-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float>* [[TMP4]], i64 [[TMP1]])
+; CHECK-HOIST-NEXT:    [[TMP2:%.*]] = bitcast ptr [[X_ADDR_027]] to ptr
+; CHECK-HOIST-NEXT:    [[TMP3:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[TMP2]], i64 [[TMP1]])
+; CHECK-HOIST-NEXT:    [[TMP4:%.*]] = bitcast ptr [[Y_ADDR_026]] to ptr
+; CHECK-HOIST-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[TMP4]], i64 [[TMP1]])
 ; CHECK-HOIST-NEXT:    [[CMP1:%.*]] = icmp ult i64 [[LEFT_025]], [[N]]
 ; CHECK-HOIST-NEXT:    [[TMP6:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 [[TMP1]])
 ; CHECK-HOIST-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[IF_END]]
@@ -74,9 +74,9 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-HOIST:       if.end:
 ; CHECK-HOIST-NEXT:    [[ACCV_1]] = phi <vscale x 16 x float> [ [[TMP7]], [[IF_THEN]] ], [ [[TMP6]], [[FOR_BODY]] ]
 ; CHECK-HOIST-NEXT:    [[MUL:%.*]] = mul i64 [[TMP1]], [[INCX:%.*]]
-; CHECK-HOIST-NEXT:    [[ADD_PTR]] = getelementptr inbounds float, float* [[X_ADDR_027]], i64 [[MUL]]
+; CHECK-HOIST-NEXT:    [[ADD_PTR]] = getelementptr inbounds float, ptr [[X_ADDR_027]], i64 [[MUL]]
 ; CHECK-HOIST-NEXT:    [[MUL2:%.*]] = mul i64 [[TMP1]], [[INCY:%.*]]
-; CHECK-HOIST-NEXT:    [[ADD_PTR3]] = getelementptr inbounds float, float* [[Y_ADDR_026]], i64 [[MUL2]]
+; CHECK-HOIST-NEXT:    [[ADD_PTR3]] = getelementptr inbounds float, ptr [[Y_ADDR_026]], i64 [[MUL2]]
 ; CHECK-HOIST-NEXT:    [[SUB]] = sub i64 [[LEFT_025]], [[TMP1]]
 ; CHECK-HOIST-NEXT:    [[TMP8]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[SUB]], i64 2, i64 3)
 ; CHECK-HOIST-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP8]], 0

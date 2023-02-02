@@ -1225,8 +1225,7 @@ define void @ashr_16bytes(ptr %src.ptr, ptr %byteOff.ptr, ptr %dst) nounwind {
 ; RV32I-NEXT:    sb a3, 18(sp)
 ; RV32I-NEXT:    sb a4, 17(sp)
 ; RV32I-NEXT:    andi a1, a1, 15
-; RV32I-NEXT:    mv a0, sp
-; RV32I-NEXT:    add a0, a0, a1
+; RV32I-NEXT:    add a0, sp, a1
 ; RV32I-NEXT:    lbu a1, 5(a0)
 ; RV32I-NEXT:    lbu a3, 4(a0)
 ; RV32I-NEXT:    lbu a4, 7(a0)

@@ -205,8 +205,7 @@ define i128 @lshr128(i128 %a, i128 %b) nounwind {
 ; RV32I-NEXT:    sb a3, 1(sp)
 ; RV32I-NEXT:    slli a1, a2, 25
 ; RV32I-NEXT:    srli a1, a1, 28
-; RV32I-NEXT:    mv a3, sp
-; RV32I-NEXT:    add a1, a3, a1
+; RV32I-NEXT:    add a1, sp, a1
 ; RV32I-NEXT:    lbu a3, 1(a1)
 ; RV32I-NEXT:    lbu a4, 0(a1)
 ; RV32I-NEXT:    lbu a5, 2(a1)
@@ -352,8 +351,7 @@ define i128 @ashr128(i128 %a, i128 %b) nounwind {
 ; RV32I-NEXT:    sb a4, 17(sp)
 ; RV32I-NEXT:    slli a1, a2, 25
 ; RV32I-NEXT:    srli a1, a1, 28
-; RV32I-NEXT:    mv a3, sp
-; RV32I-NEXT:    add a1, a3, a1
+; RV32I-NEXT:    add a1, sp, a1
 ; RV32I-NEXT:    lbu a3, 1(a1)
 ; RV32I-NEXT:    lbu a4, 0(a1)
 ; RV32I-NEXT:    lbu a5, 2(a1)

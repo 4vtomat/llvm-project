@@ -1042,24 +1042,18 @@ define signext i32 @bug(i32 signext %x) {
 ; CHECK-NEXT:  .LBB18_8: # %if.end
 ; CHECK-NEXT:    addiw a2, a2, -1
 ; CHECK-NEXT:    andi a2, a2, -4
+; CHECK-NEXT:    srli a3, a0, 30
+; CHECK-NEXT:    snez a4, a3
+; CHECK-NEXT:    addiw a4, a4, -1
+; CHECK-NEXT:    andi a4, a4, -2
+; CHECK-NEXT:    add a2, a2, a4
 ; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    srli a2, a0, 30
-; CHECK-NEXT:    snez a3, a2
-; CHECK-NEXT:    addiw a3, a3, -1
-; CHECK-NEXT:    andi a3, a3, -2
-; CHECK-NEXT:    add a1, a1, a3
-; CHECK-NEXT:    bnez a2, .LBB18_10
+; CHECK-NEXT:    bnez a3, .LBB18_10
 ; CHECK-NEXT:  # %bb.9:
 ; CHECK-NEXT:    slliw a0, a0, 2
 ; CHECK-NEXT:  .LBB18_10: # %if.end
-<<<<<<< HEAD
-=======
-; CHECK-NEXT:    addiw a2, a2, -1
-; CHECK-NEXT:    andi a2, a2, -2
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 ; CHECK-NEXT:    not a0, a0
 ; CHECK-NEXT:    srli a0, a0, 31
-; CHECK-NEXT:    add a0, a2, a0
 ; CHECK-NEXT:    addw a0, a1, a0
 ; CHECK-NEXT:  .LBB18_11: # %cleanup
 ; CHECK-NEXT:    ret
@@ -1094,25 +1088,19 @@ define signext i32 @bug(i32 signext %x) {
 ; NOREMOVAL-NEXT:  .LBB18_8: # %if.end
 ; NOREMOVAL-NEXT:    addiw a2, a2, -1
 ; NOREMOVAL-NEXT:    andi a2, a2, -4
+; NOREMOVAL-NEXT:    srli a3, a0, 30
+; NOREMOVAL-NEXT:    snez a4, a3
+; NOREMOVAL-NEXT:    addiw a4, a4, -1
+; NOREMOVAL-NEXT:    andi a4, a4, -2
+; NOREMOVAL-NEXT:    add a2, a2, a4
 ; NOREMOVAL-NEXT:    add a1, a1, a2
-; NOREMOVAL-NEXT:    srli a2, a0, 30
-; NOREMOVAL-NEXT:    snez a3, a2
-; NOREMOVAL-NEXT:    addiw a3, a3, -1
-; NOREMOVAL-NEXT:    andi a3, a3, -2
-; NOREMOVAL-NEXT:    add a1, a1, a3
-; NOREMOVAL-NEXT:    bnez a2, .LBB18_10
+; NOREMOVAL-NEXT:    bnez a3, .LBB18_10
 ; NOREMOVAL-NEXT:  # %bb.9:
 ; NOREMOVAL-NEXT:    slli a0, a0, 2
 ; NOREMOVAL-NEXT:  .LBB18_10: # %if.end
 ; NOREMOVAL-NEXT:    sext.w a0, a0
-<<<<<<< HEAD
-=======
-; NOREMOVAL-NEXT:    addiw a2, a2, -1
-; NOREMOVAL-NEXT:    andi a2, a2, -2
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 ; NOREMOVAL-NEXT:    not a0, a0
 ; NOREMOVAL-NEXT:    srli a0, a0, 31
-; NOREMOVAL-NEXT:    add a0, a2, a0
 ; NOREMOVAL-NEXT:    addw a0, a1, a0
 ; NOREMOVAL-NEXT:  .LBB18_11: # %cleanup
 ; NOREMOVAL-NEXT:    ret

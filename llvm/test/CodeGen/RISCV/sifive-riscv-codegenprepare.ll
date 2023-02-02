@@ -10,14 +10,14 @@ target triple = "riscv64"
 define signext i32 @test1(i32 signext %0, i32* %1, i32* %2, i32 signext %3) {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3:%.*]] to i64
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP14:%.*]], label [[TMP9:%.*]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP10]]
-; CHECK-NEXT:    [[TMP12:%.*]] = load i32, i32* [[TMP11]], align 4
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
 ; CHECK-NEXT:    [[TMP13:%.*]] = add nsw i32 [[TMP12]], [[TMP7]]
 ; CHECK-NEXT:    br label [[TMP14]]
 ; CHECK:       14:
@@ -49,13 +49,13 @@ define void @test2(i32 signext %0, i32* %1, i32* %2, i32 signext %3, i32 signext
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP10:%.*]], label [[TMP7:%.*]]
 ; CHECK:       7:
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP3:%.*]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP8]]
-; CHECK-NEXT:    store i32 [[TMP4:%.*]], i32* [[TMP9]], align 4
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP8]]
+; CHECK-NEXT:    store i32 [[TMP4:%.*]], ptr [[TMP9]], align 4
 ; CHECK-NEXT:    br label [[TMP14:%.*]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
 ; CHECK-NEXT:    tail call void @foo(i32 signext [[TMP13]])
 ; CHECK-NEXT:    br label [[TMP14]]
 ; CHECK:       14:
@@ -86,16 +86,16 @@ declare void @foo(i32 signext)
 define signext i32 @test3(i32 signext %0, i32* %1, i32* %2, i32* %3, i32 signext %4) {
 ; CHECK-LABEL: @test3(
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP4:%.*]] to i64
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load i32, i32* [[TMP7]], align 4
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load i32, ptr [[TMP7]], align 4
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP18:%.*]], label [[TMP10:%.*]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP4]] to i64
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, i32* [[TMP3:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP15:%.*]] = load i32, i32* [[TMP14]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[TMP3:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP15:%.*]] = load i32, ptr [[TMP14]], align 4
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[TMP13]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 [[TMP16]], [[TMP15]]
 ; CHECK-NEXT:    br label [[TMP18]]
@@ -127,15 +127,15 @@ define signext i32 @test3(i32 signext %0, i32* %1, i32* %2, i32* %3, i32 signext
 define signext i32 @test4(i32 signext %0, i32* %1, i32* %2, i32 signext %3) {
 ; CHECK-LABEL: @test4(
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3:%.*]] to i64
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP15:%.*]], label [[TMP9:%.*]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[TMP11:%.*]] = shl i64 [[TMP10]], 1
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
 ; CHECK-NEXT:    [[TMP14:%.*]] = add nsw i32 [[TMP13]], [[TMP7]]
 ; CHECK-NEXT:    br label [[TMP15]]
 ; CHECK:       15:
@@ -169,14 +169,14 @@ declare void @bar(i64)
 define signext i32 @test8(i32 signext %0, i32* %1, i32* %2, i64 %3) {
 ; CHECK-LABEL: @test8(
 ; CHECK-NEXT:    [[TMP5:%.*]] = and i64 [[TMP3:%.*]], 4294967295
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP14:%.*]], label [[TMP9:%.*]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = and i64 [[TMP3]], 4294967295
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP10]]
-; CHECK-NEXT:    [[TMP12:%.*]] = load i32, i32* [[TMP11]], align 4
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
 ; CHECK-NEXT:    [[TMP13:%.*]] = add nsw i32 [[TMP12]], [[TMP7]]
 ; CHECK-NEXT:    br label [[TMP14]]
 ; CHECK:       14:
@@ -208,13 +208,13 @@ define void @test9(i32 signext %0, i32* %1, i32* %2, i64 %3, i32 signext %4) {
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP10:%.*]], label [[TMP7:%.*]]
 ; CHECK:       7:
 ; CHECK-NEXT:    [[TMP8:%.*]] = and i64 [[TMP3:%.*]], 4294967295
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP8]]
-; CHECK-NEXT:    store i32 [[TMP4:%.*]], i32* [[TMP9]], align 4
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP8]]
+; CHECK-NEXT:    store i32 [[TMP4:%.*]], ptr [[TMP9]], align 4
 ; CHECK-NEXT:    br label [[TMP14:%.*]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = and i64 [[TMP3]], 4294967295
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
 ; CHECK-NEXT:    tail call void @foo(i32 signext [[TMP13]])
 ; CHECK-NEXT:    br label [[TMP14]]
 ; CHECK:       14:
@@ -243,16 +243,16 @@ define void @test9(i32 signext %0, i32* %1, i32* %2, i64 %3, i32 signext %4) {
 define signext i32 @test10(i32 signext %0, i32* %1, i32* %2, i32* %3, i64 %4) {
 ; CHECK-LABEL: @test10(
 ; CHECK-NEXT:    [[TMP6:%.*]] = and i64 [[TMP4:%.*]], 4294967295
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load i32, i32* [[TMP7]], align 4
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load i32, ptr [[TMP7]], align 4
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP18:%.*]], label [[TMP10:%.*]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = and i64 [[TMP4]], 4294967295
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, i32* [[TMP3:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP15:%.*]] = load i32, i32* [[TMP14]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[TMP3:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP15:%.*]] = load i32, ptr [[TMP14]], align 4
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[TMP13]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 [[TMP16]], [[TMP15]]
 ; CHECK-NEXT:    br label [[TMP18]]
@@ -284,15 +284,15 @@ define signext i32 @test10(i32 signext %0, i32* %1, i32* %2, i32* %3, i64 %4) {
 define signext i32 @test11(i32 signext %0, i32* %1, i32* %2, i64 %3) {
 ; CHECK-LABEL: @test11(
 ; CHECK-NEXT:    [[TMP5:%.*]] = and i64 [[TMP3:%.*]], 4294967295
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, i32* [[TMP1:%.*]], i64 [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = load i32, i32* [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP1:%.*]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP0:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP15:%.*]], label [[TMP9:%.*]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = and i64 [[TMP3]], 4294967295
 ; CHECK-NEXT:    [[TMP11:%.*]] = shl i64 [[TMP10]], 1
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, i32* [[TMP2:%.*]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load i32, i32* [[TMP12]], align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP2:%.*]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4
 ; CHECK-NEXT:    [[TMP14:%.*]] = add nsw i32 [[TMP13]], [[TMP7]]
 ; CHECK-NEXT:    br label [[TMP15]]
 ; CHECK:       15:
