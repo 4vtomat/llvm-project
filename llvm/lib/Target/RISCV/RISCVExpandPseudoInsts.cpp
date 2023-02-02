@@ -61,12 +61,11 @@ private:
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool removeRedundantVMV(MachineBasicBlock &MBB,
                           MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 #ifndef NDEBUG
   unsigned getInstSizeInBytes(const MachineFunction &MF) const {
     unsigned Size = 0;
@@ -76,7 +75,6 @@ private:
     return Size;
   }
 #endif
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 };
 
 char RISCVExpandPseudo::ID = 0;
