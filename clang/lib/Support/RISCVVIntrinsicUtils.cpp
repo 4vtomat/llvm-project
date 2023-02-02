@@ -842,16 +842,14 @@ std::optional<RVVTypePtr> RVVTypeCache::computeType(BasicType BT, int Log2LMUL,
 //===----------------------------------------------------------------------===//
 // RVVIntrinsic implementation
 //===----------------------------------------------------------------------===//
-RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
-                           StringRef NewOverloadedName,
-                           StringRef OverloadedSuffix, StringRef IRName,
-                           bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
-                           PolicyScheme Scheme, bool SupportOverloading,
-                           bool HasBuiltinAlias, StringRef ManualCodegen,
-                           const RVVTypes &OutInTypes,
-                           const std::vector<int64_t> &NewIntrinsicTypes,
-                           const std::vector<StringRef> &RequiredFeatures,
-                           unsigned NF, Policy NewPolicyAttrs)
+RVVIntrinsic::RVVIntrinsic(
+    StringRef NewName, StringRef Suffix, StringRef NewOverloadedName,
+    StringRef OverloadedSuffix, StringRef IRName, bool IsMasked,
+    bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
+    bool SupportOverloading, bool HasBuiltinAlias, StringRef ManualCodegen,
+    const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
+    const std::vector<StringRef> &RequiredFeatures, unsigned NF,
+    Policy NewPolicyAttrs, bool IsPrototypeDefaultTU)
     : IRName(IRName), IsMasked(IsMasked),
       HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
       SupportOverloading(SupportOverloading), HasBuiltinAlias(HasBuiltinAlias),
@@ -869,8 +867,8 @@ RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
   if (!OverloadedSuffix.empty())
     OverloadedName += "_" + OverloadedSuffix.str();
 
-  updateNamesAndPolicy(IsMasked, hasPolicy(), Name, BuiltinName, OverloadedName,
-                       PolicyAttrs);
+  updateNamesAndPolicy(IsMasked, hasPolicy(), IsPrototypeDefaultTU, Name,
+                       BuiltinName, OverloadedName, PolicyAttrs);
 
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
@@ -880,7 +878,7 @@ RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
   // if there is merge operand (It is always in first operand).
   IntrinsicTypes = NewIntrinsicTypes;
   if ((IsMasked && hasMaskedOffOperand()) ||
-      (!IsMasked && hasPassthruOperand())) {
+      (!IsMasked && hasPassthruOperand() && !IsPrototypeDefaultTU)) {
     for (auto &I : IntrinsicTypes) {
       if (I >= 0)
         I += NF;
@@ -911,7 +909,7 @@ std::string RVVIntrinsic::getSuffixStr(
 llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     llvm::ArrayRef<PrototypeDescriptor> Prototype, bool IsMasked,
     bool HasMaskedOffOperand, bool HasVL, unsigned NF,
-    PolicyScheme DefaultScheme, Policy PolicyAttrs) {
+    bool IsPrototypeDefaultTU, PolicyScheme DefaultScheme, Policy PolicyAttrs) {
   SmallVector<PrototypeDescriptor> NewPrototype(Prototype.begin(),
                                                 Prototype.end());
   // Update PolicyAttrs if need (TA or TAMA) for compute builtin types.
@@ -920,7 +918,10 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   if (PolicyAttrs.isPolicyNonePolicy()) {
     if (!IsMasked) {
       PolicyAttrs.PolicyNone = false;
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic; // TA
+      if (IsPrototypeDefaultTU)
+        PolicyAttrs.TailPolicy = Policy::PolicyType::Undisturbed; // TU
+      else
+        PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic; // TA
     }
   }
   bool HasPassthruOp = DefaultScheme == PolicyScheme::HasPassthruOperand;
@@ -940,6 +941,10 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
         NewPrototype.insert(NewPrototype.begin() + NF + 1, NF, MaskoffType);
       }
     }
+    // Erase passthru operand for TAM
+    if (NF == 1 && IsPrototypeDefaultTU && PolicyAttrs.isTAMAPolicy() &&
+        HasPassthruOp && !HasMaskedOffOperand)
+      NewPrototype.erase(NewPrototype.begin() + 1);
     if (HasMaskedOffOperand && NF > 1) {
       // Convert
       // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
@@ -954,8 +959,11 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     }
   } else {
     if (NF == 1) {
-      if (PolicyAttrs.isTUPolicy() && HasPassthruOp)
+      if (PolicyAttrs.isTUPolicy() && HasPassthruOp && !IsPrototypeDefaultTU)
         NewPrototype.insert(NewPrototype.begin(), NewPrototype[0]);
+      else if (PolicyAttrs.isTAPolicy() && HasPassthruOp &&
+               IsPrototypeDefaultTU)
+        NewPrototype.erase(NewPrototype.begin() + 1);
     } else if (PolicyAttrs.isTUPolicy() && HasPassthruOp) {
       // NF > 1 cases for segment load operations.
       // Convert
@@ -999,6 +1007,7 @@ RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
 }
 
 void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
+                                        bool IsPrototypeDefaultTU,
                                         std::string &Name,
                                         std::string &BuiltinName,
                                         std::string &OverloadedName,
@@ -1022,6 +1031,10 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
         BuiltinName += "_tumu";
       else
         BuiltinName += "_m";
+    } else if (IsPrototypeDefaultTU) {
+      PolicyAttrs.TailPolicy = Policy::PolicyType::Undisturbed;
+      if (HasPolicy)
+        BuiltinName += "_tu";
     } else {
       PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
       if (HasPolicy)
@@ -1096,6 +1109,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.HasMasked << ",";
   OS << (int)Record.HasVL << ",";
   OS << (int)Record.HasMaskedOffOperand << ",";
+  OS << (int)Record.IsPrototypeDefaultTU << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
   OS << (int)Record.UnMaskedPolicyScheme << ",";
