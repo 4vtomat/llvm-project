@@ -969,39 +969,34 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   return NewPrototype;
 }
 
-llvm::SmallVector<Policy>
-RVVIntrinsic::getSupportedUnMaskedPolicies(bool HasTailPolicy,
-                                           bool HasMaskPolicy) {
-  return {Policy(Policy::PolicyType::Undisturbed, Policy::PolicyType::Omit,
-                 HasTailPolicy, HasMaskPolicy), // TU
-          Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Omit,
-                 HasTailPolicy, HasMaskPolicy)}; // TA
+llvm::SmallVector<Policy> RVVIntrinsic::getSupportedUnMaskedPolicies() {
+  return {
+      Policy(Policy::PolicyType::Undisturbed, Policy::PolicyType::Omit), // TU
+      Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Omit)};   // TA
 }
 
 llvm::SmallVector<Policy>
 RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                                          bool HasMaskPolicy) {
   if (HasTailPolicy && HasMaskPolicy)
-    return {
-        Policy(Policy::PolicyType::Undisturbed, Policy::PolicyType::Agnostic,
-               HasTailPolicy, HasMaskPolicy), // TUMA
-        Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
-               HasTailPolicy, HasMaskPolicy), // TAMA
-        Policy(Policy::PolicyType::Undisturbed, Policy::PolicyType::Undisturbed,
-               HasTailPolicy, HasMaskPolicy), // TUMU
-        Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Undisturbed,
-               HasTailPolicy, HasMaskPolicy)}; // TAMU
+    return {Policy(Policy::PolicyType::Undisturbed,
+                   Policy::PolicyType::Agnostic), // TUMA
+            Policy(Policy::PolicyType::Agnostic,
+                   Policy::PolicyType::Agnostic), // TAMA
+            Policy(Policy::PolicyType::Undisturbed,
+                   Policy::PolicyType::Undisturbed), // TUMU
+            Policy(Policy::PolicyType::Agnostic,
+                   Policy::PolicyType::Undisturbed)}; // TAMU
   if (HasTailPolicy && !HasMaskPolicy)
     return {Policy(Policy::PolicyType::Undisturbed,
-                   Policy::PolicyType::Agnostic, HasTailPolicy,
-                   HasMaskPolicy), // TUM
+                   Policy::PolicyType::Agnostic, true), // TUM
             Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
-                   HasTailPolicy, HasMaskPolicy)}; // TAM
+                   true)}; // TAM
   if (!HasTailPolicy && HasMaskPolicy)
-    return {Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic,
-                   HasTailPolicy, HasMaskPolicy), // MA
-            Policy(Policy::PolicyType::Omit, Policy::PolicyType::Undisturbed,
-                   HasTailPolicy, HasMaskPolicy)}; // MU
+    return {
+        Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic), // MA
+        Policy(Policy::PolicyType::Omit,
+               Policy::PolicyType::Undisturbed)}; // MU
   llvm_unreachable("An RVV instruction should not be without both tail policy "
                    "and mask policy");
 }
@@ -1036,9 +1031,9 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
         BuiltinName += "_ta";
     }
   } else {
-    if (PolicyAttrs.isTUMAPolicy() && !PolicyAttrs.hasMaskPolicy())
+    if (PolicyAttrs.isTUMPolicy())
       appendPolicySuffix("_tum");
-    else if (PolicyAttrs.isTAMAPolicy() && !PolicyAttrs.hasMaskPolicy())
+    else if (PolicyAttrs.isTAMPolicy())
       appendPolicySuffix("_tam");
     else if (PolicyAttrs.isTUMUPolicy())
       appendPolicySuffix("_tumu");
@@ -1048,18 +1043,17 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
       appendPolicySuffix("_tuma");
     else if (PolicyAttrs.isTAMAPolicy())
       appendPolicySuffix("_tama");
-    else if (PolicyAttrs.isTUPolicy() && !IsMasked)
+    else if (PolicyAttrs.isTUPolicy())
       appendPolicySuffix("_tu");
-    else if (PolicyAttrs.isTAPolicy() && !IsMasked)
+    else if (PolicyAttrs.isTAPolicy())
       appendPolicySuffix("_ta");
-    else if (PolicyAttrs.isMUPolicy() && !PolicyAttrs.hasTailPolicy()) {
+    else if (PolicyAttrs.isMUPolicy()) {
       appendPolicySuffix("_mu");
       PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
-    } else if (PolicyAttrs.isMAPolicy() && !PolicyAttrs.hasTailPolicy()) {
+    } else if (PolicyAttrs.isMAPolicy()) {
       appendPolicySuffix("_ma");
       PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
-    } else
-      llvm_unreachable("Unhandled policy condition");
+    }
   }
 }
 

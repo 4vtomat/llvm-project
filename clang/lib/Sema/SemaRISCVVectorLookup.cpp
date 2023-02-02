@@ -192,24 +192,21 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
     PolicyScheme MaskedPolicyScheme =
         static_cast<PolicyScheme>(Record.MaskedPolicyScheme);
 
-    const Policy DefaultPolicy(Record.HasTailPolicy, Record.HasMaskPolicy);
-
     llvm::SmallVector<PrototypeDescriptor> ProtoSeq =
         RVVIntrinsic::computeBuiltinTypes(BasicProtoSeq, /*IsMasked=*/false,
                                           /*HasMaskedOffOperand=*/false,
                                           Record.HasVL, Record.NF,
-                                          UnMaskedPolicyScheme, DefaultPolicy);
+                                          UnMaskedPolicyScheme, Policy());
 
     llvm::SmallVector<PrototypeDescriptor> ProtoMaskSeq =
         RVVIntrinsic::computeBuiltinTypes(
             BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
-            Record.HasVL, Record.NF, MaskedPolicyScheme, DefaultPolicy);
+            Record.HasVL, Record.NF, MaskedPolicyScheme, Policy());
 
     bool UnMaskedHasPolicy = UnMaskedPolicyScheme != PolicyScheme::SchemeNone;
     bool MaskedHasPolicy = MaskedPolicyScheme != PolicyScheme::SchemeNone;
     SmallVector<Policy> SupportedUnMaskedPolicies =
-        RVVIntrinsic::getSupportedUnMaskedPolicies(Record.HasTailPolicy,
-                                                   Record.HasMaskPolicy);
+        RVVIntrinsic::getSupportedUnMaskedPolicies();
     SmallVector<Policy> SupportedMaskedPolicies =
         RVVIntrinsic::getSupportedMaskedPolicies(Record.HasTailPolicy,
                                                  Record.HasMaskPolicy);
@@ -262,7 +259,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
 
         // Create non-masked intrinsic.
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false, *Types,
-                         UnMaskedHasPolicy, DefaultPolicy);
+                         UnMaskedHasPolicy, Policy());
 
         // Create non-masked policy intrinsic.
         if (Record.UnMaskedPolicyScheme != PolicyScheme::SchemeNone) {
@@ -285,7 +282,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         std::optional<RVVTypes> MaskTypes =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoMaskSeq);
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
-                         *MaskTypes, MaskedHasPolicy, DefaultPolicy);
+                         *MaskTypes, MaskedHasPolicy, Policy());
         if (Record.MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         // Create masked policy intrinsic.
