@@ -425,7 +425,6 @@ public:
     return MachineMemOperand::MONone;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// This callback is used to inspect load/store SDNode.
   /// The default implementation does nothing.
@@ -435,14 +434,10 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  MachineMemOperand::Flags getLoadMemOperandFlags(const LoadInst &LI,
-                                                  const DataLayout &DL) const;
-=======
   MachineMemOperand::Flags
   getLoadMemOperandFlags(const LoadInst &LI, const DataLayout &DL,
                          AssumptionCache *AC = nullptr,
                          const TargetLibraryInfo *LibInfo = nullptr) const;
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   MachineMemOperand::Flags getStoreMemOperandFlags(const StoreInst &SI,
                                                    const DataLayout &DL) const;
   MachineMemOperand::Flags getAtomicMemOperandFlags(const Instruction &AI,
