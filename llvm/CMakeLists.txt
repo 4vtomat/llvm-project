@@ -16,11 +16,7 @@ include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
 set(CMAKE_BUILD_WITH_INSTALL_NAME_DIR ON)
 
 if(NOT DEFINED LLVM_VERSION_MAJOR)
-<<<<<<< HEAD
   set(LLVM_VERSION_MAJOR 14) # SIFIVE
-=======
-  set(LLVM_VERSION_MAJOR 17)
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 endif()
 if(NOT DEFINED LLVM_VERSION_MINOR)
   set(LLVM_VERSION_MINOR 9) # SIFIVE
