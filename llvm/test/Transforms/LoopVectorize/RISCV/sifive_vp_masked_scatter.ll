@@ -21,12 +21,12 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 0)
 ; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], %struct.quantum_reg_node_struct* [[REG_16_VAL:%.*]], i64 [[TMP6]], i32 1
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64*> poison, i64* [[TMP7]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64*> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64*> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0i64.i64(i64* [[TMP7]], i64 16, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], ptr [[REG_16_VAL:%.*]], i64 [[TMP6]], i32 1
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x ptr> poison, ptr [[TMP7]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 1 x ptr> poison, <vscale x 1 x i32> zeroinitializer
+; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr [[TMP7]], i64 16, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_STRIDED_LOAD]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i64.p0i64.i64(<vscale x 1 x i64> zeroinitializer, i64* [[TMP7]], i64 16, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i64.p0.i64(<vscale x 1 x i64> zeroinitializer, ptr [[TMP7]], i64 16, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
@@ -38,14 +38,14 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
-; CHECK-NEXT:    [[STATE:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT]], %struct.quantum_reg_node_struct* [[REG_16_VAL]], i64 [[INDVARS_IV]], i32 1
-; CHECK-NEXT:    [[TMP10:%.*]] = load i64, i64* [[STATE]], align 8
+; CHECK-NEXT:    [[STATE:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT]], ptr [[REG_16_VAL]], i64 [[INDVARS_IV]], i32 1
+; CHECK-NEXT:    [[TMP10:%.*]] = load i64, ptr [[STATE]], align 8
 ; CHECK-NEXT:    [[TMP11:%.*]] = and i64 0, 1
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[TMP10]], 0
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[IF_THEN9:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then9:
 ; CHECK-NEXT:    [[XOR:%.*]] = xor i64 0, 0
-; CHECK-NEXT:    store i64 0, i64* [[STATE]], align 8
+; CHECK-NEXT:    store i64 0, ptr [[STATE]], align 8
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

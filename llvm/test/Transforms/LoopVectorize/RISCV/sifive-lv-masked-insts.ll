@@ -14,7 +14,7 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 1 x i1> @llvm.vp.xor.nxv1i1(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0i64(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x i64*> zeroinitializer, <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x ptr> zeroinitializer, <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
@@ -29,7 +29,7 @@ define void @test() {
 ; CHECK-NEXT:    [[TOBOOL3_NOT:%.*]] = icmp eq i64 0, 0
 ; CHECK-NEXT:    br i1 [[TOBOOL3_NOT]], label [[FOR_INC]], label [[IF_THEN4:%.*]]
 ; CHECK:       if.then4:
-; CHECK-NEXT:    store i64 0, i64* null, align 8
+; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

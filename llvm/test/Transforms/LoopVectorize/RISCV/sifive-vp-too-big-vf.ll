@@ -18,7 +18,7 @@ define double @foo() {
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 -1, [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 0)
 ; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0i32(<vscale x 1 x i32*> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0(<vscale x 1 x ptr> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VEC_PHI]], <vscale x 1 x double> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 1 x double> @llvm.vp.merge.nxv1f64(<vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[VEC_PHI]], i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64
@@ -39,7 +39,7 @@ define double @foo() {
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM_08:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = load i32, i32* null, align 4
+; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr null, align 4
 ; CHECK-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
@@ -60,7 +60,7 @@ define double @foo() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = sub i64 -1, [[INDEX]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP3]], i64 3, i64 0)
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
-; CHECK-NO-POSTSV-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0i32(<vscale x 1 x i32*> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_GATHER:%.*]] = call <vscale x 1 x i32> @llvm.vp.gather.nxv1i32.nxv1p0(<vscale x 1 x ptr> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VEC_PHI]], <vscale x 1 x double> zeroinitializer, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
 ; CHECK-NO-POSTSV-NEXT:    [[VP_OP_SELECT]] = call fast <vscale x 1 x double> @llvm.vp.merge.nxv1f64(<vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[VEC_PHI]], i32 [[TMP5]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64
@@ -80,7 +80,7 @@ define double @foo() {
 ; CHECK-NO-POSTSV:       for.body:
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[SUM_08:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = load i32, i32* null, align 4
+; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = load i32, ptr null, align 4
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NO-POSTSV-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
