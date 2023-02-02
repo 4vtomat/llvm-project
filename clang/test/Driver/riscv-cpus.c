@@ -98,48 +98,32 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s54 | FileCheck -check-prefix=MCPU-SIFIVE-S54 %s
 // MCPU-SIFIVE-S54: "-nostdsysteminc" "-target-cpu" "sifive-s54"
 // MCPU-SIFIVE-S54: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-<<<<<<< HEAD
-// MCPU-SIFIVE-S54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+64bit"
-=======
-// MCPU-SIFIVE-S54: "-target-feature" "+c"
+// MCPU-SIFIVE-S54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-S54: "-target-feature" "+64bit"
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // MCPU-SIFIVE-S54: "-target-abi" "lp64d"
 
 // mcpu with mabi option
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s76 | FileCheck -check-prefix=MCPU-SIFIVE-S76 %s
 // MCPU-SIFIVE-S76: "-nostdsysteminc" "-target-cpu" "sifive-s76"
 // MCPU-SIFIVE-S76: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-<<<<<<< HEAD
-// MCPU-SIFIVE-S76: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+64bit"
-=======
-// MCPU-SIFIVE-S76: "-target-feature" "+c"
+// MCPU-SIFIVE-S76: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-S76: "-target-feature" "+64bit"
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // MCPU-SIFIVE-S76: "-target-abi" "lp64d"
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u54 | FileCheck -check-prefix=MCPU-SIFIVE-U54 %s
 // MCPU-SIFIVE-U54: "-nostdsysteminc" "-target-cpu" "sifive-u54"
 // MCPU-SIFIVE-U54: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-<<<<<<< HEAD
-// MCPU-SIFIVE-U54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+64bit"
-=======
-// MCPU-SIFIVE-U54: "-target-feature" "+c"
+// MCPU-SIFIVE-U54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-U54: "-target-feature" "+64bit"
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // MCPU-SIFIVE-U54: "-target-abi" "lp64d"
 
 // mcpu with mabi option
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u54 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U54 %s
 // MCPU-ABI-SIFIVE-U54: "-nostdsysteminc" "-target-cpu" "sifive-u54"
 // MCPU-ABI-SIFIVE-U54: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-<<<<<<< HEAD
-// MCPU-ABI-SIFIVE-U54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+64bit"
-=======
-// MCPU-ABI-SIFIVE-U54: "-target-feature" "+c"
+// MCPU-ABI-SIFIVE-U54: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-U54: "-target-feature" "+64bit"
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // MCPU-ABI-SIFIVE-U54: "-target-abi" "lp64"
 
 // mcpu with default march
@@ -161,12 +145,8 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u74 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74 %s
 // MCPU-ABI-SIFIVE-U74: "-nostdsysteminc" "-target-cpu" "sifive-u74"
 // MCPU-ABI-SIFIVE-U74: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-<<<<<<< HEAD
-// MCPU-ABI-SIFIVE-U74: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+64bit"
-=======
-// MCPU-ABI-SIFIVE-U74: "-target-feature" "+c"
+// MCPU-ABI-SIFIVE-U74: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-U74: "-target-feature" "+64bit"
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // MCPU-ABI-SIFIVE-U74: "-target-abi" "lp64"
 
 // mcpu with mabi option
@@ -174,7 +154,8 @@
 // MCPU-ABI-SIFIVE-U74M: "-target-cpu" "sifive-u74m"
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba"
-// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+zbb" "-target-feature" "+64bit"
+// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+zbb"
+// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+64bit"
 // MCPU-ABI-SIFIVE-U74M: "-target-abi" "lp64"
 
 // march overwrite mcpu's default march
@@ -237,7 +218,8 @@
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+zvl512b" "-target-feature" "+zvl64b"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+xsfvfhbfmin"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+xsfvfnrclipxfqf" "-target-feature" "+xsfvfwmaccqqq"
-// MCPU-SIFIVE-X280N-SAME: "-target-feature" "+xsfvqmaccqoq" "-target-feature" "+64bit"
+// MCPU-SIFIVE-X280N-SAME: "-target-feature" "+xsfvqmaccqoq"
+// MCPU-SIFIVE-X280N-SAME: "-target-feature" "+64bit"
 // MCPU-SIFIVE-X280N-SAME: "-target-abi" "lp64d"
 
 // mcpu with default march include experimental extensions
@@ -253,7 +235,8 @@
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zvl512b" "-target-feature" "+zvl64b"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvfhbfmin"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvfnrclipxfqf" "-target-feature" "+xsfvfwmaccqqq"
-// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvqmaccqoq" "-target-feature" "+64bit"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+xsfvqmaccqoq"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+64bit"
 // MCPU-SIFIVE-X280O-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p270 | FileCheck -check-prefix=MCPU-SIFIVE-P270 %s

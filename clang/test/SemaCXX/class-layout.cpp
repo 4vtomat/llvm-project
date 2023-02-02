@@ -5,18 +5,6 @@
 // RUN: %clang_cc1 -triple x86_64-sie-ps5         %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -DCLANG_ABI_COMPAT=6
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=6 -DCLANG_ABI_COMPAT=6
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=14 -DCLANG_ABI_COMPAT=14
-<<<<<<< HEAD
-=======
-// RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple x86_64-unknown-unknown %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=16 -DCLANG_ABI_COMPAT=16
-// RUN: %clang_cc1 -triple powerpc-ibm-aix7.3.0.0 %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple powerpc-ibm-aix7.3.0.0 %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple powerpc64-ibm-aix7.3.0.0 %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple powerpc64-ibm-aix7.3.0.0 %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15
-// RUN: %clang_cc1 -triple s390x-none-zos %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base
-// RUN: %clang_cc1 -triple s390x-none-zos %s -fsyntax-only -verify -std=c++11 -Wno-inaccessible-base -fclang-abi-compat=15 -DCLANG_ABI_COMPAT=15
-
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 // expected-no-diagnostics
 
 #if !defined(__MVS__) && !defined(_AIX)
