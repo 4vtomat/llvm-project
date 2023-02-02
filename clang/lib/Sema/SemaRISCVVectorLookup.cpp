@@ -369,7 +369,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoSeq);
 
 #if SIFIVE_CUSTOMIZATION
-        Optional<RVVTypes> NTLTypes =
+        std::optional<RVVTypes> NTLTypes =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, NTLProtoSeq);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -421,7 +421,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
                          Record.IsPrototypeDefaultTU);
 #if SIFIVE_CUSTOMIZATION
         // Create NTL masked intrinsic.
-        Optional<RVVTypes> NTLMaskTypes = TypeCache.computeTypes(
+        std::optional<RVVTypes> NTLMaskTypes = TypeCache.computeTypes(
             BaseType, Log2LMUL, Record.NF, NTLProtoMaskSeq);
         if (Record.HasNontemporalOperand)
           InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,

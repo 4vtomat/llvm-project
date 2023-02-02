@@ -639,7 +639,7 @@ void RVVEmitter::createRVVIntrinsics(
         std::optional<RVVTypes> Types =
             TypeCache.computeTypes(BT, Log2LMUL, NF, Prototype);
 #ifdef SIFIVE_CUSTOMIZATION
-        Optional<RVVTypes> NTLTypes =
+        std::optional<RVVTypes> NTLTypes =
             TypeCache.computeTypes(BT, Log2LMUL, NF, NTLPrototype);
 #endif // SIFIVE_CUSTOMIZATION
         // Ignored to create new intrinsic if there are any illegal types.
@@ -695,7 +695,7 @@ void RVVEmitter::createRVVIntrinsics(
             Policy(), IsPrototypeDefaultTU));
 
 #ifdef SIFIVE_CUSTOMIZATION
-        Optional<RVVTypes> NTLMaskTypes =
+        std::optional<RVVTypes> NTLMaskTypes =
             TypeCache.computeTypes(BT, Log2LMUL, NF, NTLMaskedPrototype);
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(

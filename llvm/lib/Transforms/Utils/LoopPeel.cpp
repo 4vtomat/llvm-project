@@ -603,7 +603,7 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   unsigned DesiredPeelCount = 0;
   if (PP.PeelProlog) {
     // Store the pre-calculated values here.
-    SmallDenseMap<PHINode *, Optional<unsigned>> IterationsToInvariance;
+    SmallDenseMap<PHINode *, std::optional<unsigned>> IterationsToInvariance;
     // Now go through all Phis to calculate their the number of iterations they
     // need to become invariants.
     // Start the max computation with the PP.PeelCount value set by the target

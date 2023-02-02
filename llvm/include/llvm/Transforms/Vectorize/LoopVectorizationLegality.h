@@ -394,7 +394,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// This function resembles isConsecutivePtr but returns None when stride is
   /// unknown
-  Optional<int64_t> isConsecutiveOrUnknownPtr(Type *AccessTy, Value *Ptr) const;
+  std::optional<int64_t> isConsecutiveOrUnknownPtr(Type *AccessTy,
+                                                   Value *Ptr) const;
 #endif
 
   /// Returns true if the value V is uniform within the loop.

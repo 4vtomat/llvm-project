@@ -1644,7 +1644,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
         F->hasOptSize() || llvm::shouldOptimizeForSize(L->getHeader(), PSI, BFI,
                                                        PGSOQueryType::IRPass);
     bool CanAddPredicate = !OptForSize;
-    Optional<int64_t> Stride =
+    std::optional<int64_t> Stride =
         getPtrStride(PSE, AccessTy, Ptr, L, Strides, CanAddPredicate, false);
     if (!Stride.has_value())
       return std::nullopt;
@@ -1662,7 +1662,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
         Value *Ptr = getLoadStorePointerOperand(&I);
         if (!Ptr)
           continue;
-        Optional<int64_t> Stride =
+        std::optional<int64_t> Stride =
             IsConsecutiveOrUnknownPtr(L, getLoadStoreType(&I), Ptr);
         if (!Stride.has_value())
           continue;
