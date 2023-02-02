@@ -52,7 +52,7 @@ public:
 
 private:
   bool emitWriteVXRM(MachineBasicBlock &MBB);
-  Optional<unsigned> getRoundModeIdx(const MCInstrDesc &Desc) const;
+  std::optional<unsigned> getRoundModeIdx(const MCInstrDesc &Desc) const;
 };
 
 } // end anonymous namespace

@@ -610,7 +610,8 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   if (!ValII)
     return nullptr;
 
-  Optional<ICmpInst::Predicate> Pred = getPredicate(ValII->getIntrinsicID());
+  std::optional<ICmpInst::Predicate> Pred =
+      getPredicate(ValII->getIntrinsicID());
   if (!Pred.has_value())
     return nullptr;
   if (ValII->getArgOperand(2) != VL)
@@ -655,7 +656,8 @@ static Instruction *foldVMergeWithCompare(InstCombiner &IC, IntrinsicInst &II) {
   if (!MaskII)
     return nullptr;
 
-  Optional<ICmpInst::Predicate> Pred = getPredicate(MaskII->getIntrinsicID());
+  std::optional<ICmpInst::Predicate> Pred =
+      getPredicate(MaskII->getIntrinsicID());
   if (!Pred.has_value())
     return nullptr;
   if (MaskII->getArgOperand(2) != VL)

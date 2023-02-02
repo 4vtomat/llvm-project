@@ -1235,7 +1235,6 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   const auto *MF = MI.getMF();
   const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
   const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
-  const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
 
   // PseudoLIsimm32 breaks down to 2 instructions that can each be compressed.
   // Calculate the size taking that into account.
@@ -1280,11 +1279,7 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
     const auto &ST = MF->getSubtarget<RISCVSubtarget>();
     if (ST.hasStdExtZihintntl() && MMO->isNonTemporal()) {
       if (ST.hasStdExtC() && ST.enableRVCHintInstrs()) {
-        const auto &TM =
-            static_cast<const RISCVTargetMachine &>(MF->getTarget());
-        const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
-        const MCSubtargetInfo &STI = *TM.getMCSubtargetInfo();
-        if (isCompressibleInst(MI, &ST, MRI, STI))
+        if (isCompressibleInst(MI, STI))
           return 4; // c.ntl.all + c.load/c.store
         return 6;   // c.ntl.all + load/store
       }

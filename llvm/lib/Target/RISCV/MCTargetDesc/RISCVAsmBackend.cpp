@@ -209,11 +209,12 @@ void RISCVAsmBackend::relaxInstruction(MCInst &Inst,
   case RISCV::C_BEQZ:
   case RISCV::C_BNEZ:
   case RISCV::C_J:
-  case RISCV::C_JAL:
+  case RISCV::C_JAL: { // SIFIVE
     bool Success = RISCVRVC::uncompress(Res, Inst, STI);
     assert(Success && "Can't uncompress instruction");
     (void)Success;
     break;
+  } // SIFIVE
 #if SIFIVE_CUSTOMIZATION
   case RISCV::BEQ:
   case RISCV::BNE:

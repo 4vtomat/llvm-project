@@ -458,16 +458,16 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     case TTI::SK_PermuteTwoSrc:
       // This may seem strange but the more elements out there the more work is
       // for the VPU.
-      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp), nullptr,
-                                       nullptr);
+      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp), CostKind,
+                                       nullptr, nullptr);
     case TTI::SK_ExtractSubvector:
-      return getExtractSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
+      return getExtractSubvectorOverhead(cast<ScalableVectorType>(Tp),
                                          cast<ScalableVectorType>(SubTp),
-                                         nullptr, nullptr);
+                                         CostKind, Index, nullptr, nullptr);
     case TTI::SK_InsertSubvector:
-      return getInsertSubvectorOverhead(cast<ScalableVectorType>(Tp), Index,
+      return getInsertSubvectorOverhead(cast<ScalableVectorType>(Tp),
                                         cast<ScalableVectorType>(SubTp),
-                                        nullptr, nullptr);
+                                        CostKind, Index, nullptr, nullptr);
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1914,7 +1914,6 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
   return SLPMaxVF;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() {
   return InliningThresholdMultiplier;
@@ -1946,7 +1945,6 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                                  const TargetTransformInfo::LSRCost &C2) {
   // RISCV specific here are "instruction number 1st priority".
@@ -1957,4 +1955,3 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                   C2.NumIVMuls, C2.NumBaseAdds,
                   C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
->>>>>>> revert-rvv-intrinsic-v0.11-patches

@@ -198,28 +198,11 @@ bool RISCVELFStreamer::requiresFixups(MCContext &C, const MCExpr *Value,
   if (MBE == nullptr)
     return false;
 
-<<<<<<< HEAD
-  static bool requiresFixups(MCContext &C, const MCExpr *Value,
-                             const MCExpr *&LHS, const MCExpr *&RHS) {
-#if SIFIVE_CUSTOMIZATION
-    auto IsMetadataOrEHFrameSection = [](const MCSection &S) -> bool {
-      // Additionally check .apple_names/.apple_types. They are fixed-size and
-      // do not need fixups. llvm-dwarfdump --apple-names does not process
-      // R_RISCV_{ADD,SUB}32 in them.
-      return S.getKind().isMetadata() || S.getName() == ".eh_frame" ||
-             S.getName() == ".apple_names" || S.getName() == ".apple_types";
-    };
-#endif
-    const auto *MBE = dyn_cast<MCBinaryExpr>(Value);
-    if (MBE == nullptr)
-      return false;
-=======
   MCValue E;
   if (!Value->evaluateAsRelocatable(E, nullptr, nullptr))
     return false;
   if (E.getSymA() == nullptr || E.getSymB() == nullptr)
     return false;
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 
   const auto &A = E.getSymA()->getSymbol();
   const auto &B = E.getSymB()->getSymbol();
@@ -228,18 +211,6 @@ bool RISCVELFStreamer::requiresFixups(MCContext &C, const MCExpr *Value,
                              MCConstantExpr::create(E.getConstant(), C), C);
   RHS = E.getSymB();
 
-<<<<<<< HEAD
-    // TODO: when available, R_RISCV_n_PCREL should be preferred.
-
-    // Avoid pairwise relocations for symbolic difference in debug and .eh_frame
-    if (A.isInSection())
-      return !IsMetadataOrEHFrameSection(A.getSection());
-    if (B.isInSection())
-      return !IsMetadataOrEHFrameSection(B.getSection());
-    // as well as for absolute symbols.
-    return !A.getName().empty() || !B.getName().empty();
-  }
-=======
   // If either symbol is in a text section, we need to delay the relocation
   // evaluation as relaxation may alter the size of the symbol.
   //
@@ -256,7 +227,6 @@ bool RISCVELFStreamer::requiresFixups(MCContext &C, const MCExpr *Value,
   return A.isInSection() && B.isInSection() &&
          A.getSection().getName() != B.getSection().getName();
 }
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 
 void RISCVELFStreamer::reset() {
   static_cast<RISCVTargetStreamer *>(getTargetStreamer())->reset();

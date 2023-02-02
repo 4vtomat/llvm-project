@@ -778,7 +778,7 @@ RISCVGatherScatterLowering::determineScalableBaseAndStride(
   if (!L || !L->getLoopPreheader() || !L->getLoopLatch())
     return std::make_pair(nullptr, nullptr);
 
-  Optional<unsigned> VecOperand;
+  std::optional<unsigned> VecOperand;
   unsigned TypeScale = 0;
 
   // Look for a vector operand and scale.

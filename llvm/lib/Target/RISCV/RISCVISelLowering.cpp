@@ -789,10 +789,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Copied from BSC
       // VP Shuffles
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-
-      // nxvXi64 VP_MULHS/VP_MULHU requires the V extension instead of Zve64*.
-      if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV())
-        setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
 #endif // SIFIVE_CUSTOMIZATION
 
       // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the range
@@ -1048,10 +1044,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC.
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-
-        // vXi64 VP_MULHS/VP_MULHU requires the V extension instead of Zve64*.
-        if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV())
-          setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
 #endif // SIFIVE_CUSTOMIZATION
 
         // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the
@@ -5266,80 +5258,29 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   SDValue LHS = CondV.getOperand(0);
   SDValue RHS = CondV.getOperand(1);
   ISD::CondCode CCVal = cast<CondCodeSDNode>(CondV.getOperand(2))->get();
-
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    // Match one variation of a signum or spaceship operator pattern.
-    // (select (X >s Y) ? 1 : (sext_inreg (X != Y), i1)
-    // This returns 1 if X is greater than Y, -1 if X is less than Y or zero if
-    // X is equal to Y.
-    // This can be replaced with (X >s Y) - (X <s Y).
-    // TODO: There are other ways this could be written.
-    if (isOneConstant(TrueV) && CCVal == ISD::SETGT && CondV.hasOneUse() &&
-        FalseV.getOpcode() == ISD::SIGN_EXTEND_INREG && FalseV.hasOneUse() &&
-        cast<VTSDNode>(FalseV.getOperand(1))->getVT() == MVT::i1 &&
-        FalseV.getOperand(0).getOpcode() == ISD::SETCC &&
-        FalseV.getOperand(0).hasOneUse()) {
-      SDValue OtherSetcc = FalseV.getOperand(0);
-      SDValue OtherLHS = OtherSetcc.getOperand(0);
-      SDValue OtherRHS = OtherSetcc.getOperand(1);
-      if (cast<CondCodeSDNode>(OtherSetcc.getOperand(2))->get() == ISD::SETNE &&
-          LHS == OtherLHS && RHS == OtherRHS) {
-        SDValue LT = DAG.getSetCC(DL, XLenVT, LHS, RHS, ISD::SETLT);
-        return DAG.getNode(ISD::SUB, DL, XLenVT, CondV, LT);
-      }
+  // Match one variation of a signum or spaceship operator pattern.
+  // (select (X >s Y) ? 1 : (sext_inreg (X != Y), i1)
+  // This returns 1 if X is greater than Y, -1 if X is less than Y or zero if
+  // X is equal to Y.
+  // This can be replaced with (X >s Y) - (X <s Y).
+  // TODO: There are other ways this could be written.
+  if (isOneConstant(TrueV) && CCVal == ISD::SETGT && CondV.hasOneUse() &&
+      FalseV.getOpcode() == ISD::SIGN_EXTEND_INREG && FalseV.hasOneUse() &&
+      cast<VTSDNode>(FalseV.getOperand(1))->getVT() == MVT::i1 &&
+      FalseV.getOperand(0).getOpcode() == ISD::SETCC &&
+      FalseV.getOperand(0).hasOneUse()) {
+    SDValue OtherSetcc = FalseV.getOperand(0);
+    SDValue OtherLHS = OtherSetcc.getOperand(0);
+    SDValue OtherRHS = OtherSetcc.getOperand(1);
+    if (cast<CondCodeSDNode>(OtherSetcc.getOperand(2))->get() == ISD::SETNE &&
+        LHS == OtherLHS && RHS == OtherRHS) {
+      SDValue LT = DAG.getSetCC(DL, XLenVT, LHS, RHS, ISD::SETLT);
+      return DAG.getNode(ISD::SUB, DL, XLenVT, CondV, LT);
     }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
-    // Special case for a select of 2 constants that have a diffence of 1.
-    // Normally this is done by DAGCombine, but if the select is introduced by
-    // type legalization or op legalization, we miss it. Restricting to SETLT
-    // case for now because that is what signed saturating add/sub need.
-    // FIXME: We don't need the condition to be SETLT or even a SETCC,
-    // but we would probably want to swap the true/false values if the condition
-    // is SETGE/SETLE to avoid an XORI.
-    if (isa<ConstantSDNode>(TrueV) && isa<ConstantSDNode>(FalseV) &&
-        CCVal == ISD::SETLT) {
-      const APInt &TrueVal = cast<ConstantSDNode>(TrueV)->getAPIntValue();
-      const APInt &FalseVal = cast<ConstantSDNode>(FalseV)->getAPIntValue();
-      if (TrueVal - 1 == FalseVal)
-        return DAG.getNode(ISD::ADD, DL, VT, CondV, FalseV);
-      if (TrueVal + 1 == FalseVal)
-        return DAG.getNode(ISD::SUB, DL, VT, FalseV, CondV);
-    }
-
-    translateSetCCForBranch(DL, LHS, RHS, CCVal, DAG);
-    // 1 < x ? x : 1 -> 0 < x ? x : 1
-    if (isOneConstant(LHS) &&
-        (CCVal == ISD::SETLT || CCVal == ISD::SETULT) && RHS == TrueV &&
-        LHS == FalseV) {
-      LHS = DAG.getConstant(0, DL, VT);
-      // 0 <u x is the same as x != 0.
-      if (CCVal == ISD::SETULT) {
-        std::swap(LHS, RHS);
-        CCVal = ISD::SETNE;
-      }
-    }
-
-    // x <s -1 ? x : -1 -> x <s 0 ? x : -1
-    if (isAllOnesConstant(RHS) && CCVal == ISD::SETLT && LHS == TrueV &&
-        RHS == FalseV) {
-      RHS = DAG.getConstant(0, DL, VT);
-    }
-
-    SDValue TargetCC = DAG.getCondCode(CCVal);
-
-    if (isa<ConstantSDNode>(TrueV) && !isa<ConstantSDNode>(FalseV)) {
-      // (select (setcc lhs, rhs, CC), constant, falsev)
-      // -> (select (setcc lhs, rhs, InverseCC), falsev, constant)
-      std::swap(TrueV, FalseV);
-      TargetCC =
-          DAG.getCondCode(ISD::getSetCCInverse(CCVal, LHS.getValueType()));
-    }
-
-    SDValue Ops[] = {LHS, RHS, TargetCC, TrueV, FalseV};
-    return DAG.getNode(RISCVISD::SELECT_CC, DL, VT, Ops);
-=======
   // Special case for a select of 2 constants that have a diffence of 1.
   // Normally this is done by DAGCombine, but if the select is introduced by
   // type legalization or op legalization, we miss it. Restricting to SETLT
@@ -5355,7 +5296,6 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
       return DAG.getNode(ISD::ADD, DL, VT, CondV, FalseV);
     if (TrueVal + 1 == FalseVal)
       return DAG.getNode(ISD::SUB, DL, VT, FalseV, CondV);
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   }
 
   translateSetCCForBranch(DL, LHS, RHS, CCVal, DAG);
@@ -12948,7 +12888,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     break;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_W_CHAIN: {
     unsigned IntNo = cast<ConstantSDNode>(N->getOperand(1))->getZExtValue();
@@ -12967,7 +12906,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCVISD::VFMV_S_F_VL: {
     SDValue Src = N->getOperand(1);
     // Try to remove vector->scalar->vector if the scalar->vector is inserting
@@ -12983,11 +12921,21 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       // Widths match, just return the original vector.
       if (SrcVT == VT)
         return Src.getOperand(0);
+#if SIFIVE_CUSTOMIZATION
+      SDLoc DL(N);
+      if (SrcVT.getVectorMinNumElements() < VT.getVectorMinNumElements()) {
+        return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT,
+                           DAG.getUNDEF(VT), Src.getOperand(0),
+                           DAG.getConstant(0, DL, Subtarget.getXLenVT()));
+      }
+      return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Src.getOperand(0),
+                         DAG.getConstant(0, DL, Subtarget.getXLenVT()));
+#else
       // TODO: Use insert_subvector/extract_subvector to change widen/narrow?
+#endif // SIFIVE_CUSTOMIZATION
     }
     break;
   }
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntNo = N->getConstantOperandVal(0);
     switch (IntNo) {
@@ -13189,33 +13137,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                          RISCVII::TAIL_AGNOSTIC);
     }
     break;
-  }
-  case RISCVISD::VFMV_S_F_VL: {
-    SDValue Src = N->getOperand(1);
-    // Try to remove vector->scalar->vector if the scalar->vector is inserting
-    // into an undef vector.
-    // TODO: Could use a vslide for non-undef.
-    if (N->getOperand(0).isUndef() &&
-        Src.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
-        isNullConstant(Src.getOperand(1)) &&
-        Src.getOperand(0).getValueType().isScalableVector()) {
-      EVT VT = N->getValueType(0);
-      EVT SrcVT = Src.getOperand(0).getValueType();
-      assert(SrcVT.getVectorElementType() == VT.getVectorElementType());
-      // Widths match, just return the original vector.
-      if (SrcVT == VT)
-        return Src.getOperand(0);
-      SDLoc DL(N);
-      if (SrcVT.getVectorMinNumElements() < VT.getVectorMinNumElements()) {
-        return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT,
-                           DAG.getUNDEF(VT), Src.getOperand(0),
-                           DAG.getConstant(0, DL, Subtarget.getXLenVT()));
-      }
-      return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Src.getOperand(0),
-                         DAG.getConstant(0, DL, Subtarget.getXLenVT()));
-    }
-
-    return SDValue();
   }
   case ISD::EXTRACT_VECTOR_ELT:
     return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);

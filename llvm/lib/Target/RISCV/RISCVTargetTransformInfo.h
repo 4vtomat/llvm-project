@@ -79,8 +79,9 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Estimate a cost of shuffle as a sequence of extract and insert
   /// operations.
-  InstructionCost getPermuteShuffleOverhead(ScalableVectorType *VTy, Value *Op0,
-                                            Value *Op1) {
+  InstructionCost getPermuteShuffleOverhead(ScalableVectorType *VTy,
+                                            TTI::TargetCostKind CostKind,
+                                            Value *Op0, Value *Op1) {
     InstructionCost MinCost = 0;
     // Shuffle cost is equal to the cost of extracting element from its argument
     // plus the cost of inserting them onto the result vector.
@@ -92,11 +93,11 @@ public:
     // FIXME: For scalable vectors for now we compute the MinCost based on Min
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
-    for (int i = 0, e = VTy->getElementCount().getKnownMinValue(); i < e; ++i) {
-      MinCost +=
-          getVectorInstrCost(Instruction::InsertElement, VTy, i, Op0, Op1);
-      MinCost +=
-          getVectorInstrCost(Instruction::ExtractElement, VTy, i, Op1, Op1);
+    for (int I = 0, E = VTy->getElementCount().getKnownMinValue(); I < E; ++I) {
+      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, CostKind,
+                                    I, Op0, Op1);
+      MinCost += getVectorInstrCost(Instruction::ExtractElement, VTy, CostKind,
+                                    I, Op1, Op1);
     }
     return MinCost;
   }
@@ -104,9 +105,10 @@ public:
   /// Estimate a cost of subvector extraction as a sequence of extract and
   /// insert operations.
   InstructionCost getExtractSubvectorOverhead(ScalableVectorType *VTy,
-                                              int Index,
                                               ScalableVectorType *SubVTy,
-                                              Value *Op0, Value *Op1) {
+                                              TTI::TargetCostKind CostKind,
+                                              int Index, Value *Op0,
+                                              Value *Op1) {
     assert(VTy && SubVTy && "Can only extract subvectors from vectors");
     // FIXME: We cannot assert index bounds of SubVTy at compile time.
 
@@ -118,20 +120,22 @@ public:
     // FIXME: For scalable vectors for now we compute the MinCost based on Min
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
-    for (unsigned i = 0; i != NumSubElts; ++i) {
-      MinCost += getVectorInstrCost(Instruction::ExtractElement, VTy, i + Index,
-                                    Op0, Op1);
-      MinCost +=
-          getVectorInstrCost(Instruction::InsertElement, SubVTy, i, Op0, Op1);
+    for (unsigned I = 0; I != NumSubElts; ++I) {
+      MinCost += getVectorInstrCost(Instruction::ExtractElement, VTy, CostKind,
+                                    I + Index, Op0, Op1);
+      MinCost += getVectorInstrCost(Instruction::InsertElement, SubVTy,
+                                    CostKind, I, Op0, Op1);
     }
     return MinCost;
   }
 
   /// Estimate a cost of subvector insertion as a sequence of extract and
   /// insert operations.
-  InstructionCost getInsertSubvectorOverhead(ScalableVectorType *VTy, int Index,
+  InstructionCost getInsertSubvectorOverhead(ScalableVectorType *VTy,
                                              ScalableVectorType *SubVTy,
-                                             Value *Op0, Value *Op1) {
+                                             TTI::TargetCostKind CostKind,
+                                             int Index, Value *Op0,
+                                             Value *Op1) {
     assert(VTy && SubVTy && "Can only insert subvectors into vectors");
     // FIXME: We cannot assert index bounds of SubVTy at compile time.
 
@@ -143,11 +147,11 @@ public:
     // FIXME: For scalable vectors for now we compute the MinCost based on Min
     // number of elements but this does not represent the correct cost. This
     // would be fixed once the cost model has support for scalable vectors.
-    for (unsigned i = 0; i != NumSubElts; ++i) {
-      MinCost +=
-          getVectorInstrCost(Instruction::ExtractElement, SubVTy, i, Op0, Op1);
-      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, i + Index,
-                                    Op0, Op1);
+    for (unsigned I = 0; I != NumSubElts; ++I) {
+      MinCost += getVectorInstrCost(Instruction::ExtractElement, SubVTy,
+                                    CostKind, I, Op0, Op1);
+      MinCost += getVectorInstrCost(Instruction::InsertElement, VTy, CostKind,
+                                    I + Index, Op0, Op1);
     }
     return MinCost;
   }
@@ -426,7 +430,6 @@ public:
     llvm_unreachable("unknown register class");
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier();
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
@@ -435,10 +438,8 @@ public:
 
   Type *getScalableVectorFromFixed(Type *Ty) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 };
 
 } // end namespace llvm
