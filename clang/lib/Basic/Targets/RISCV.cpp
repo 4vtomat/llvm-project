@@ -216,9 +216,14 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 static constexpr Builtin::Info BuiltinInfo[] = {
 #if SIFIVE_CUSTOMIZATION
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
-  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, "64bit,v,zfh,experimental-zvfh"},
+  {#ID,                                                                        \
+   TYPE,                                                                       \
+   ATTRS,                                                                      \
+   "64bit,v,zfh,experimental-zvfh",                                            \
+   HeaderDesc::NO_HEADER,                                                      \
+   ALL_LANGUAGES},
 #define TARGET_BUILTIN(ID, TYPE, ATTRS, FEATURE)                               \
-    {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, FEATURE},
+  {#ID, TYPE, ATTRS, FEATURE, HeaderDesc::NO_HEADER, ALL_LANGUAGES},
 #include "clang/Basic/BuiltinsNEON.def"
 #endif
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
