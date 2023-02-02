@@ -1262,18 +1262,6 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
     return Size;
   }
 
-  // Can CCMOVGPRNoX0 use c.beqz or c.bnez? This instruction is only used when
-  // C extension is enabled so we don't need to check that.
-  if (Opcode == RISCV::PseudoCCMOVGPRNoX0) {
-    auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
-    if ((CC == RISCVCC::COND_EQ || CC == RISCVCC::COND_NE) &&
-        MI.getOperand(2).getReg() == RISCV::X0 &&
-        MRI.getRegClass(RISCV::GPRCRegClassID)
-            .contains(MI.getOperand(1).getReg()))
-      return 4;
-    return 6;
-  }
-
   if (!MI.memoperands_empty()) {
     MachineMemOperand *MMO = *(MI.memoperands_begin());
     const auto &ST = MF->getSubtarget<RISCVSubtarget>();
