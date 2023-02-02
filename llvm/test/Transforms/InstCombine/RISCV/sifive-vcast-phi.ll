@@ -10,7 +10,7 @@ define void @dot_prod_f32(float* nocapture readonly %pSrcA, float* nocapture rea
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    [[I_0:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY:%.*]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = phi <vscale x 4 x float> [ [[TMP0]], [[ENTRY]] ], [ [[TMP12:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = phi <vscale x 4 x float> [ [[TMP0]], [[ENTRY]] ], [ [[TMP10:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i32 [[BLOCKSIZE:%.*]] to i64
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i64 [[I_0]], [[CONV]]
 ; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP:%.*]]
@@ -27,16 +27,14 @@ define void @dot_prod_f32(float* nocapture readonly %pSrcA, float* nocapture rea
 ; CHECK-NEXT:    br label [[VADDVQ_F32_EXIT]]
 ; CHECK:       vaddvq_f32.exit:
 ; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi float [ [[TMP7]], [[IF_THEN_I]] ], [ -0.000000e+00, [[FOR_COND_CLEANUP]] ]
-; CHECK-NEXT:    store float [[TEMP_2_0_I]], float* [[RESULT:%.*]], align 4
+; CHECK-NEXT:    store float [[TEMP_2_0_I]], ptr [[RESULT:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, float* [[PSRCA:%.*]], i64 [[I_0]]
-; CHECK-NEXT:    [[TMP8:%.*]] = bitcast float* [[ARRAYIDX]] to <vscale x 4 x float>*
-; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float>* [[TMP8]], i64 4)
-; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds float, float* [[PSRCB:%.*]], i64 [[I_0]]
-; CHECK-NEXT:    [[TMP10:%.*]] = bitcast float* [[ARRAYIDX4]] to <vscale x 4 x float>*
-; CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float>* [[TMP10]], i64 4)
-; CHECK-NEXT:    [[TMP12]] = call <vscale x 4 x float> @llvm.riscv.vfmacc.nxv4f32.nxv4f32.i64(<vscale x 4 x float> [[TMP1]], <vscale x 4 x float> [[TMP9]], <vscale x 4 x float> [[TMP11]], i64 4, i64 0)
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[PSRCA:%.*]], i64 [[I_0]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, ptr [[ARRAYIDX]], i64 4)
+; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds float, ptr [[PSRCB:%.*]], i64 [[I_0]]
+; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> undef, ptr [[ARRAYIDX4]], i64 4)
+; CHECK-NEXT:    [[TMP10]] = call <vscale x 4 x float> @llvm.riscv.vfmacc.nxv4f32.nxv4f32.i64(<vscale x 4 x float> [[TMP1]], <vscale x 4 x float> [[TMP8]], <vscale x 4 x float> [[TMP9]], i64 4, i64 0)
 ; CHECK-NEXT:    [[ADD]] = add i64 [[I_0]], 4
 ; CHECK-NEXT:    br label [[FOR_COND]]
 ;
@@ -104,17 +102,15 @@ define void @vcast(float* nocapture readonly %in, i64 %size, float* nocapture %o
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x float> @llvm.riscv.vfmv.v.f.nxv1f32.i64(<vscale x 1 x float> undef, float 0.000000e+00, i64 4)
 ; CHECK-NEXT:    br i1 [[CMP_NOT16]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup:
-; CHECK-NEXT:    [[TMP2:%.*]] = phi <vscale x 1 x float> [ [[TMP1]], [[ENTRY:%.*]] ], [ [[TMP7:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast float* [[OUT:%.*]] to <vscale x 1 x float>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f32.i64(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float>* [[TMP3]], i64 4)
+; CHECK-NEXT:    [[TMP2:%.*]] = phi <vscale x 1 x float> [ [[TMP1]], [[ENTRY:%.*]] ], [ [[TMP5:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f32.i64(<vscale x 1 x float> [[TMP2]], ptr [[OUT:%.*]], i64 4)
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 1 x float> [ [[TMP7]], [[FOR_BODY]] ], [ [[TMP0]], [[ENTRY]] ]
+; CHECK-NEXT:    [[TMP3:%.*]] = phi <vscale x 1 x float> [ [[TMP5]], [[FOR_BODY]] ], [ [[TMP0]], [[ENTRY]] ]
 ; CHECK-NEXT:    [[I_017:%.*]] = phi i64 [ [[ADD:%.*]], [[FOR_BODY]] ], [ 0, [[ENTRY]] ]
-; CHECK-NEXT:    [[ADD_PTR:%.*]] = getelementptr inbounds float, float* [[IN:%.*]], i64 [[I_017]]
-; CHECK-NEXT:    [[TMP5:%.*]] = bitcast float* [[ADD_PTR]] to <vscale x 1 x float>*
-; CHECK-NEXT:    [[TMP6:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* [[TMP5]], i64 4)
-; CHECK-NEXT:    [[TMP7]] = tail call <vscale x 1 x float> @llvm.riscv.vfmacc.nxv1f32.nxv1f32.i64(<vscale x 1 x float> [[TMP4]], <vscale x 1 x float> [[TMP6]], <vscale x 1 x float> [[TMP6]], i64 4, i64 0)
+; CHECK-NEXT:    [[ADD_PTR:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], i64 [[I_017]]
+; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[ADD_PTR]], i64 4)
+; CHECK-NEXT:    [[TMP5]] = tail call <vscale x 1 x float> @llvm.riscv.vfmacc.nxv1f32.nxv1f32.i64(<vscale x 1 x float> [[TMP3]], <vscale x 1 x float> [[TMP4]], <vscale x 1 x float> [[TMP4]], i64 4, i64 0)
 ; CHECK-NEXT:    [[ADD]] = add i64 [[I_017]], 4
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[ADD]], [[SIZE]]
 ; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]

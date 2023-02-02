@@ -8,31 +8,29 @@
 define void @test_vshlq_u8(i8* nocapture readonly %in, i8 signext %v, i8* nocapture %out) {
 ; CHECK-LABEL: @test_vshlq_u8(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP0]], i64 16)
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[IN:%.*]], i64 16)
 ; CHECK-NEXT:    br i1 true, label [[LAND_LHS_TRUE_I:%.*]], label [[IF_ELSE_I:%.*]]
 ; CHECK:       land.lhs.true.i:
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i8 [[V:%.*]], 0
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[VSHLQ_U8_EXIT:%.*]], label [[IF_ELSE_I]]
 ; CHECK:       if.else.i:
-; CHECK-NEXT:    [[TMP2:%.*]] = zext i8 [[V]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsll.nxv16i8.i64.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP1]], i64 [[TMP2]], i64 16)
-; CHECK-NEXT:    [[TMP4:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmv.v.x.nxv16i8.i64(<vscale x 16 x i8> undef, i8 0, i64 16)
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp ugt i8 [[V]], 7
-; CHECK-NEXT:    [[TMP6:%.*]] = select i1 [[TMP5]], <vscale x 16 x i8> [[TMP4]], <vscale x 16 x i8> [[TMP3]]
-; CHECK-NEXT:    [[TMP7:%.*]] = sub i8 0, [[V]]
-; CHECK-NEXT:    [[TMP8:%.*]] = zext i8 [[TMP7]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsrl.nxv16i8.i64.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP1]], i64 [[TMP8]], i64 16)
-; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmv.v.x.nxv16i8.i64(<vscale x 16 x i8> undef, i8 0, i64 16)
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp ult i8 [[V]], -7
-; CHECK-NEXT:    [[TMP12:%.*]] = select i1 [[TMP11]], <vscale x 16 x i8> [[TMP10]], <vscale x 16 x i8> [[TMP9]]
-; CHECK-NEXT:    [[TMP13:%.*]] = icmp slt i8 [[V]], 0
-; CHECK-NEXT:    [[TMP14:%.*]] = select i1 [[TMP13]], <vscale x 16 x i8> [[TMP12]], <vscale x 16 x i8> [[TMP6]]
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i8 [[V]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsll.nxv16i8.i64.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP0]], i64 [[TMP1]], i64 16)
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmv.v.x.nxv16i8.i64(<vscale x 16 x i8> undef, i8 0, i64 16)
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp ugt i8 [[V]], 7
+; CHECK-NEXT:    [[TMP5:%.*]] = select i1 [[TMP4]], <vscale x 16 x i8> [[TMP3]], <vscale x 16 x i8> [[TMP2]]
+; CHECK-NEXT:    [[TMP6:%.*]] = sub i8 0, [[V]]
+; CHECK-NEXT:    [[TMP7:%.*]] = zext i8 [[TMP6]] to i64
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsrl.nxv16i8.i64.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP0]], i64 [[TMP7]], i64 16)
+; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmv.v.x.nxv16i8.i64(<vscale x 16 x i8> undef, i8 0, i64 16)
+; CHECK-NEXT:    [[TMP10:%.*]] = icmp ult i8 [[V]], -7
+; CHECK-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], <vscale x 16 x i8> [[TMP9]], <vscale x 16 x i8> [[TMP8]]
+; CHECK-NEXT:    [[TMP12:%.*]] = icmp slt i8 [[V]], 0
+; CHECK-NEXT:    [[TMP13:%.*]] = select i1 [[TMP12]], <vscale x 16 x i8> [[TMP11]], <vscale x 16 x i8> [[TMP5]]
 ; CHECK-NEXT:    br label [[VSHLQ_U8_EXIT]]
 ; CHECK:       vshlq_u8.exit:
-; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi <vscale x 16 x i8> [ [[TMP14]], [[IF_ELSE_I]] ], [ [[TMP1]], [[LAND_LHS_TRUE_I]] ]
-; CHECK-NEXT:    [[TMP15:%.*]] = bitcast i8* [[OUT:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], <vscale x 16 x i8>* [[TMP15]], i64 16)
+; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi <vscale x 16 x i8> [ [[TMP13]], [[IF_ELSE_I]] ], [ [[TMP0]], [[LAND_LHS_TRUE_I]] ]
+; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], ptr [[OUT:%.*]], i64 16)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -77,32 +75,29 @@ vshlq_u8.exit:                                    ; preds = %land.lhs.true.i, %i
 define void @test_vshlq_u8_2(i8* nocapture readonly %in, i8* nocapture readonly %v, i8* nocapture %out) {
 ; CHECK-LABEL: @test_vshlq_u8_2(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP0]], i64 16)
-; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[V:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8>* [[TMP2]], i64 16)
-; CHECK-NEXT:    [[TMP4:%.*]] = call i1 @llvm.riscv.is.splat.nxv16i8(<vscale x 16 x i8> [[TMP3]])
-; CHECK-NEXT:    br i1 [[TMP4]], label [[LAND_LHS_TRUE_I:%.*]], label [[IF_ELSE_I:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[IN:%.*]], i64 16)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vle.nxv16i8.i64(<vscale x 16 x i8> undef, ptr [[V:%.*]], i64 16)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i1 @llvm.riscv.is.splat.nxv16i8(<vscale x 16 x i8> [[TMP1]])
+; CHECK-NEXT:    br i1 [[TMP2]], label [[LAND_LHS_TRUE_I:%.*]], label [[IF_ELSE_I:%.*]]
 ; CHECK:       land.lhs.true.i:
-; CHECK-NEXT:    [[TMP5:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP3]], i8 0, i64 16)
-; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.riscv.vfirst.nxv16i1.i64(<vscale x 16 x i1> [[TMP5]], i64 16)
-; CHECK-NEXT:    [[CMP_I:%.*]] = icmp slt i64 [[TMP6]], 0
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP1]], i8 0, i64 16)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.riscv.vfirst.nxv16i1.i64(<vscale x 16 x i1> [[TMP3]], i64 16)
+; CHECK-NEXT:    [[CMP_I:%.*]] = icmp slt i64 [[TMP4]], 0
 ; CHECK-NEXT:    br i1 [[CMP_I]], label [[VSHLQ_U8_EXIT:%.*]], label [[IF_ELSE_I]]
 ; CHECK:       if.else.i:
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsgtu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP3]], i8 127, i64 16)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsgtu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP3]], i8 7, i64 16)
-; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsll.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP1]], <vscale x 16 x i8> [[TMP3]], i64 16)
-; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP9]], i8 0, <vscale x 16 x i1> [[TMP8]], i64 16)
-; CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsltu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP3]], i8 -7, i64 16)
-; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vrsub.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP3]], i8 0, i64 16)
-; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsrl.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP1]], <vscale x 16 x i8> [[TMP12]], i64 16)
-; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP13]], i8 0, <vscale x 16 x i1> [[TMP11]], i64 16)
-; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP10]], <vscale x 16 x i8> [[TMP14]], <vscale x 16 x i1> [[TMP7]], i64 16)
+; CHECK-NEXT:    [[TMP5:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsgtu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP1]], i8 127, i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsgtu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP1]], i8 7, i64 16)
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsll.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP0]], <vscale x 16 x i8> [[TMP1]], i64 16)
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP7]], i8 0, <vscale x 16 x i1> [[TMP6]], i64 16)
+; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 16 x i1> @llvm.riscv.vmsltu.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP1]], i8 -7, i64 16)
+; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vrsub.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP1]], i8 0, i64 16)
+; CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vsrl.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP0]], <vscale x 16 x i8> [[TMP10]], i64 16)
+; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP11]], i8 0, <vscale x 16 x i1> [[TMP9]], i64 16)
+; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vmerge.nxv16i8.nxv16i8.i64(<vscale x 16 x i8> undef, <vscale x 16 x i8> [[TMP8]], <vscale x 16 x i8> [[TMP12]], <vscale x 16 x i1> [[TMP5]], i64 16)
 ; CHECK-NEXT:    br label [[VSHLQ_U8_EXIT]]
 ; CHECK:       vshlq_u8.exit:
-; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi <vscale x 16 x i8> [ [[TMP15]], [[IF_ELSE_I]] ], [ [[TMP1]], [[LAND_LHS_TRUE_I]] ]
-; CHECK-NEXT:    [[TMP16:%.*]] = bitcast i8* [[OUT:%.*]] to <vscale x 16 x i8>*
-; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], <vscale x 16 x i8>* [[TMP16]], i64 16)
+; CHECK-NEXT:    [[TEMP_2_0_I:%.*]] = phi <vscale x 16 x i8> [ [[TMP13]], [[IF_ELSE_I]] ], [ [[TMP0]], [[LAND_LHS_TRUE_I]] ]
+; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i8.i64(<vscale x 16 x i8> [[TEMP_2_0_I]], ptr [[OUT:%.*]], i64 16)
 ; CHECK-NEXT:    ret void
 ;
 entry:

@@ -4,10 +4,8 @@
 define void @slidedown_slideup_1(i8* nocapture readonly %in, i8* nocapture %out) {
 ; CHECK-LABEL: @slidedown_slideup_1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i8* [[IN:%.*]] to <vscale x 2 x i8>*
-; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> undef, <vscale x 2 x i8>* [[TMP0]], i64 16)
-; CHECK-NEXT:    [[TMP2:%.*]] = bitcast i8* [[OUT:%.*]] to <vscale x 2 x i8>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv2i8.i64(<vscale x 2 x i8> [[TMP1]], <vscale x 2 x i8>* [[TMP2]], i64 16)
+; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 2 x i8> @llvm.riscv.vle.nxv2i8.i64(<vscale x 2 x i8> undef, ptr [[IN:%.*]], i64 16)
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv2i8.i64(<vscale x 2 x i8> [[TMP0]], ptr [[OUT:%.*]], i64 16)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -29,10 +27,8 @@ define void @slidedown_slideup_2(double* nocapture readonly %in, double* nocaptu
 ; CHECK-LABEL: @slidedown_slideup_2(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 8, i64 3, i64 3)
-; CHECK-NEXT:    [[TMP1:%.*]] = bitcast double* [[IN:%.*]] to <vscale x 8 x double>*
-; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 8 x double> @llvm.riscv.vle.nxv8f64.i64(<vscale x 8 x double> undef, <vscale x 8 x double>* [[TMP1]], i64 [[TMP0]])
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast double* [[OUT:%.*]] to <vscale x 8 x double>*
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv8f64.i64(<vscale x 8 x double> [[TMP2]], <vscale x 8 x double>* [[TMP3]], i64 [[TMP0]])
+; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 8 x double> @llvm.riscv.vle.nxv8f64.i64(<vscale x 8 x double> undef, ptr [[IN:%.*]], i64 [[TMP0]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv8f64.i64(<vscale x 8 x double> [[TMP1]], ptr [[OUT:%.*]], i64 [[TMP0]])
 ; CHECK-NEXT:    ret void
 ;
 entry:

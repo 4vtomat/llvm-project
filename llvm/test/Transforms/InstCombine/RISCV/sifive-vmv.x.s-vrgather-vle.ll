@@ -4,9 +4,9 @@
 define void @test1(i8* nocapture readonly %in, i8* nocapture writeonly %out) {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i8, i8* [[IN:%.*]], i64 7
-; CHECK-NEXT:    [[TMP1:%.*]] = load i8, i8* [[TMP0]], align 1
-; CHECK-NEXT:    store i8 [[TMP1]], i8* [[OUT:%.*]], align 1
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[IN:%.*]], i64 7
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[TMP0]], align 1
+; CHECK-NEXT:    store i8 [[TMP1]], ptr [[OUT:%.*]], align 1
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -21,9 +21,9 @@ entry:
 define void @test2(float* nocapture readonly %in, float* nocapture writeonly %out) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr float, float* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP1:%.*]] = load float, float* [[TMP0]], align 4
-; CHECK-NEXT:    store float [[TMP1]], float* [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr float, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP1:%.*]] = load float, ptr [[TMP0]], align 4
+; CHECK-NEXT:    store float [[TMP1]], ptr [[OUT:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -38,10 +38,10 @@ entry:
 define void @test3(i8* nocapture readonly %in, i8* nocapture writeonly %out) {
 ; CHECK-LABEL: @test3(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[IN:%.*]], align 1
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[IN:%.*]], align 1
 ; CHECK-NEXT:    [[IDXPROM:%.*]] = zext i8 [[TMP0]] to i64
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[OUT:%.*]], i64 [[IDXPROM]]
-; CHECK-NEXT:    store i8 0, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[OUT:%.*]], i64 [[IDXPROM]]
+; CHECK-NEXT:    store i8 0, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    ret void
 ;
 entry:

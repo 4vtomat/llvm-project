@@ -4,16 +4,16 @@
 define void @vset_1(i8* nocapture readonly %in, i32* nocapture %out) {
 ; CHECK-LABEL: @vset_1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
-; CHECK-NEXT:    store i32 [[CONV]], i32* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
-; CHECK-NEXT:    store i32 1, i32* [[TMP1]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
-; CHECK-NEXT:    store i32 2, i32* [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
-; CHECK-NEXT:    store i32 3, i32* [[TMP3]], align 4
+; CHECK-NEXT:    store i32 [[CONV]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store i32 1, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store i32 2, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store i32 3, ptr [[TMP3]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -31,19 +31,19 @@ entry:
 define void @vset_2(i8* nocapture readonly %in, i32* nocapture %out) {
 ; CHECK-LABEL: @vset_2(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 2
-; CHECK-NEXT:    [[TMP1:%.*]] = load i8, i8* [[ARRAYIDX2]], align 1
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 2
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
 ; CHECK-NEXT:    [[CONV3:%.*]] = zext i8 [[TMP1]] to i32
-; CHECK-NEXT:    store i32 [[CONV]], i32* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
-; CHECK-NEXT:    store i32 [[CONV3]], i32* [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
-; CHECK-NEXT:    store i32 2, i32* [[TMP3]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
-; CHECK-NEXT:    store i32 3, i32* [[TMP4]], align 4
+; CHECK-NEXT:    store i32 [[CONV]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store i32 [[CONV3]], ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store i32 2, ptr [[TMP3]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store i32 3, ptr [[TMP4]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -66,19 +66,19 @@ entry:
 define void @vset_3(i8* nocapture readonly %in, i32* nocapture %out) {
 ; CHECK-LABEL: @vset_3(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 2
-; CHECK-NEXT:    [[TMP1:%.*]] = load i8, i8* [[ARRAYIDX1]], align 1
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 2
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX1]], align 1
 ; CHECK-NEXT:    [[CONV2:%.*]] = zext i8 [[TMP1]] to i32
-; CHECK-NEXT:    store i32 [[CONV]], i32* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
-; CHECK-NEXT:    store i32 [[CONV2]], i32* [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
-; CHECK-NEXT:    store i32 2, i32* [[TMP3]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
-; CHECK-NEXT:    store i32 3, i32* [[TMP4]], align 4
+; CHECK-NEXT:    store i32 [[CONV]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store i32 [[CONV2]], ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i32, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store i32 2, ptr [[TMP3]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store i32 3, ptr [[TMP4]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -100,24 +100,24 @@ entry:
 define void @vset_4(i8* nocapture readonly %in, i32* nocapture %out) {
 ; CHECK-LABEL: @vset_4(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 2
-; CHECK-NEXT:    [[TMP1:%.*]] = load i8, i8* [[ARRAYIDX2]], align 1
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 2
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
 ; CHECK-NEXT:    [[CONV3:%.*]] = zext i8 [[TMP1]] to i32
-; CHECK-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 1
-; CHECK-NEXT:    [[TMP2:%.*]] = load i8, i8* [[ARRAYIDX7]], align 1
+; CHECK-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 1
+; CHECK-NEXT:    [[TMP2:%.*]] = load i8, ptr [[ARRAYIDX7]], align 1
 ; CHECK-NEXT:    [[CONV8:%.*]] = zext i8 [[TMP2]] to i32
-; CHECK-NEXT:    [[TMP3:%.*]] = load i8, i8* [[IN]], align 1
+; CHECK-NEXT:    [[TMP3:%.*]] = load i8, ptr [[IN]], align 1
 ; CHECK-NEXT:    [[CONV13:%.*]] = zext i8 [[TMP3]] to i32
-; CHECK-NEXT:    store i32 [[CONV]], i32* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
-; CHECK-NEXT:    store i32 [[CONV3]], i32* [[TMP4]], align 4
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
-; CHECK-NEXT:    store i32 [[CONV8]], i32* [[TMP5]], align 4
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
-; CHECK-NEXT:    store i32 [[CONV13]], i32* [[TMP6]], align 4
+; CHECK-NEXT:    store i32 [[CONV]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store i32 [[CONV3]], ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store i32 [[CONV8]], ptr [[TMP5]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store i32 [[CONV13]], ptr [[TMP6]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -149,20 +149,20 @@ entry:
 define void @vset_5(float* nocapture readonly %in, float* nocapture %out) {
 ; CHECK-LABEL: @vset_5(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, float* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load float, float* [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, float* [[IN]], i64 2
-; CHECK-NEXT:    [[TMP1:%.*]] = load float, float* [[ARRAYIDX2]], align 4
-; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds float, float* [[IN]], i64 1
-; CHECK-NEXT:    [[TMP2:%.*]] = load float, float* [[ARRAYIDX6]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = load float, float* [[IN]], align 4
-; CHECK-NEXT:    store float [[TMP0]], float* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr float, float* [[OUT]], i64 1
-; CHECK-NEXT:    store float [[TMP1]], float* [[TMP4]], align 4
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr float, float* [[OUT]], i64 2
-; CHECK-NEXT:    store float [[TMP2]], float* [[TMP5]], align 4
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, float* [[OUT]], i64 3
-; CHECK-NEXT:    store float [[TMP3]], float* [[TMP6]], align 4
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[IN]], i64 2
+; CHECK-NEXT:    [[TMP1:%.*]] = load float, ptr [[ARRAYIDX2]], align 4
+; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds float, ptr [[IN]], i64 1
+; CHECK-NEXT:    [[TMP2:%.*]] = load float, ptr [[ARRAYIDX6]], align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load float, ptr [[IN]], align 4
+; CHECK-NEXT:    store float [[TMP0]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr float, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store float [[TMP1]], ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr float, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store float [[TMP2]], ptr [[TMP5]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store float [[TMP3]], ptr [[TMP6]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -190,24 +190,24 @@ entry:
 define void @vset_6(i8* nocapture readonly %in, i32* nocapture %out) {
 ; CHECK-LABEL: @vset_6(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, i8* [[IN:%.*]], i64 3
-; CHECK-NEXT:    [[TMP0:%.*]] = load i8, i8* [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
-; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 2
-; CHECK-NEXT:    [[TMP1:%.*]] = load i8, i8* [[ARRAYIDX4]], align 1
+; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 2
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX4]], align 1
 ; CHECK-NEXT:    [[CONV5:%.*]] = zext i8 [[TMP1]] to i32
-; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i8, i8* [[IN]], i64 1
-; CHECK-NEXT:    [[TMP2:%.*]] = load i8, i8* [[ARRAYIDX9]], align 1
+; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i8, ptr [[IN]], i64 1
+; CHECK-NEXT:    [[TMP2:%.*]] = load i8, ptr [[ARRAYIDX9]], align 1
 ; CHECK-NEXT:    [[CONV10:%.*]] = zext i8 [[TMP2]] to i32
-; CHECK-NEXT:    [[TMP3:%.*]] = load i8, i8* [[IN]], align 1
+; CHECK-NEXT:    [[TMP3:%.*]] = load i8, ptr [[IN]], align 1
 ; CHECK-NEXT:    [[CONV15:%.*]] = zext i8 [[TMP3]] to i32
-; CHECK-NEXT:    store i32 [[CONV]], i32* [[OUT:%.*]], align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, i32* [[OUT]], i64 1
-; CHECK-NEXT:    store i32 [[CONV5]], i32* [[TMP4]], align 4
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, i32* [[OUT]], i64 2
-; CHECK-NEXT:    store i32 [[CONV10]], i32* [[TMP5]], align 4
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, i32* [[OUT]], i64 3
-; CHECK-NEXT:    store i32 [[CONV15]], i32* [[TMP6]], align 4
+; CHECK-NEXT:    store i32 [[CONV]], ptr [[OUT:%.*]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[OUT]], i64 1
+; CHECK-NEXT:    store i32 [[CONV5]], ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[OUT]], i64 2
+; CHECK-NEXT:    store i32 [[CONV10]], ptr [[TMP5]], align 4
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[OUT]], i64 3
+; CHECK-NEXT:    store i32 [[CONV15]], ptr [[TMP6]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -239,10 +239,9 @@ entry:
 define dso_local void @vset_7(i32* nocapture %out) {
 ; CHECK-LABEL: @vset_7(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i32* [[OUT:%.*]] to <vscale x 1 x i32>*
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vid.nxv1i32.i64(<vscale x 1 x i32> undef, i64 4)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vadd.nxv1i32.i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> [[TMP1]], i32 -2, i64 4)
-; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i32.i64(<vscale x 1 x i32> [[TMP2]], <vscale x 1 x i32>* [[TMP0]], i64 4)
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vid.nxv1i32.i64(<vscale x 1 x i32> undef, i64 4)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vadd.nxv1i32.i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> [[TMP0]], i32 -2, i64 4)
+; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1i32.i64(<vscale x 1 x i32> [[TMP1]], ptr [[OUT:%.*]], i64 4)
 ; CHECK-NEXT:    ret void
 ;
 entry:
