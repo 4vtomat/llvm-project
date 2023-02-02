@@ -99,19 +99,21 @@ define i32 @test_lshr(i32 %v) {
 ; RV64-LABEL: test_lshr:
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    sext.w a1, a0
-; RV64-NEXT:    beqz a1, .LBB2_3
+; RV64-NEXT:    beqz a1, .LBB2_4
 ; RV64-NEXT:  # %bb.1: # %for.body.preheader
-; RV64-NEXT:    li a1, 0
+; RV64-NEXT:    li a0, 0
 ; RV64-NEXT:    li a2, 1
 ; RV64-NEXT:  .LBB2_2: # %for.body
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64-NEXT:    sext.w a3, a0
-; RV64-NEXT:    andi a4, a0, 1
-; RV64-NEXT:    addw a1, a1, a4
-; RV64-NEXT:    srliw a0, a0, 1
+; RV64-NEXT:    mv a3, a1
+; RV64-NEXT:    andi a1, a1, 1
+; RV64-NEXT:    addw a0, a0, a1
+; RV64-NEXT:    srliw a1, a3, 1
 ; RV64-NEXT:    bltu a2, a3, .LBB2_2
-; RV64-NEXT:  .LBB2_3: # %for.end
-; RV64-NEXT:    mv a0, a1
+; RV64-NEXT:  # %bb.3: # %for.end
+; RV64-NEXT:    ret
+; RV64-NEXT:  .LBB2_4:
+; RV64-NEXT:    li a0, 0
 ; RV64-NEXT:    ret
 entry:
   %tobool.not4 = icmp eq i32 %v, 0
