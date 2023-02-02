@@ -193,7 +193,6 @@ def uimmlog2xlen : Operand<XLenVT>, ImmLeaf<XLenVT, [{
   let OperandNamespace = "RISCVOp";
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // The payload and simm5_i32 operands are all marked as ImmArg in the IR
 // intrinsic and will be target constant, so use TImmLeaf rather than ImmLeaf.
@@ -231,10 +230,7 @@ def simm5_i32 : Operand<i32>, TImmLeaf<i32, [{return isInt<5>(Imm);}]> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-def uimm2 : Operand<XLenVT> {
-=======
 def uimm2 : Operand<XLenVT>, ImmLeaf<XLenVT, [{return isUInt<2>(Imm);}]> {
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   let ParserMatchClass = UImmAsmOperand<2>;
   let DecoderMethod = "decodeUImmOperand<2>";
   let OperandType = "OPERAND_UIMM2";
