@@ -915,6 +915,9 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     PolicyScheme DefaultScheme, Policy PolicyAttrs) {
   SmallVector<PrototypeDescriptor> NewPrototype(Prototype.begin(),
                                                 Prototype.end());
+  // Update PolicyAttrs if need (TA or TAMA) for compute builtin types.
+  if (PolicyAttrs.isMAPolicy())
+    PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic; // TAMA
   bool HasPassthruOp = DefaultScheme == PolicyScheme::HasPassthruOperand;
   if (IsMasked) {
     // If HasMaskedOffOperand, insert result type as first input operand if
@@ -995,11 +998,10 @@ RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
             Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
                    HasTailPolicy, HasMaskPolicy)}; // TAM
   if (!HasTailPolicy && HasMaskPolicy)
-    return {Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
+    return {Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic,
                    HasTailPolicy, HasMaskPolicy), // MA
-            Policy(Policy::PolicyType::Agnostic,
-                   Policy::PolicyType::Undisturbed, HasTailPolicy,
-                   HasMaskPolicy)}; // MU
+            Policy(Policy::PolicyType::Omit, Policy::PolicyType::Undisturbed,
+                   HasTailPolicy, HasMaskPolicy)}; // MU
   llvm_unreachable("An RVV instruction should not be without both tail policy "
                    "and mask policy");
 }
@@ -1038,10 +1040,6 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
       appendPolicySuffix("_tum");
     else if (PolicyAttrs.isTAMAPolicy() && !PolicyAttrs.hasMaskPolicy())
       appendPolicySuffix("_tam");
-    else if (PolicyAttrs.isMUPolicy() && !PolicyAttrs.hasTailPolicy())
-      appendPolicySuffix("_mu");
-    else if (PolicyAttrs.isMAPolicy() && !PolicyAttrs.hasTailPolicy())
-      appendPolicySuffix("_ma");
     else if (PolicyAttrs.isTUMUPolicy())
       appendPolicySuffix("_tumu");
     else if (PolicyAttrs.isTAMUPolicy())
@@ -1054,7 +1052,13 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
       appendPolicySuffix("_tu");
     else if (PolicyAttrs.isTAPolicy() && !IsMasked)
       appendPolicySuffix("_ta");
-    else
+    else if (PolicyAttrs.isMUPolicy() && !PolicyAttrs.hasTailPolicy()) {
+      appendPolicySuffix("_mu");
+      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
+    } else if (PolicyAttrs.isMAPolicy() && !PolicyAttrs.hasTailPolicy()) {
+      appendPolicySuffix("_ma");
+      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
+    } else
       llvm_unreachable("Unhandled policy condition");
   }
 }
