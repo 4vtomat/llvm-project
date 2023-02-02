@@ -1182,7 +1182,6 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     addVectorizableFunctions(VecFuncs);
     break;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case SiFive_NF: {
     const VecDesc VecFuncs[] = {
@@ -1193,7 +1192,6 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     break;
   }
 #endif
-=======
   case SLEEFGNUABI: {
     const VecDesc VecFuncs_VF2[] = {
 #define TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS
@@ -1215,7 +1213,6 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     }
     break;
   }
->>>>>>> revert-rvv-intrinsic-v0.11-patches
   case NoLibrary:
     break;
   }

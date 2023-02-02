@@ -466,7 +466,6 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f4", FIXED(4))
 TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f8", FIXED(8))
 TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16))
 
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS)
 
@@ -474,7 +473,6 @@ TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2))
 TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4))
 TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8))
 // end SIFIVE_CUSTOMIZATION
-=======
 #elif defined(TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS)
 
 TLI_DEFINE_VECFUNC( "acos", "_ZGVnN2v_acos", FIXED(2))
@@ -614,7 +612,6 @@ TLI_DEFINE_VECFUNC( "llvm.tanh.f32", "_ZGVnN4v_tanhf", FIXED(4))
 
 TLI_DEFINE_VECFUNC( "tgammaf", "_ZGVnN4v_tgammaf", FIXED(4))
 TLI_DEFINE_VECFUNC( "llvm.tgamma.f32", "_ZGVnN4v_tgammaf", FIXED(4))
->>>>>>> revert-rvv-intrinsic-v0.11-patches
 
 #else
 #error "Must choose which vector library functions are to be defined."
