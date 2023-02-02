@@ -789,6 +789,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Copied from BSC
       // VP Shuffles
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+
+      // nxvXi64 VP_MULHS/VP_MULHU requires the V extension instead of Zve64*.
+      if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV())
+        setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
 #endif // SIFIVE_CUSTOMIZATION
 
       // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the range
@@ -1044,6 +1048,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC.
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+
+        // vXi64 VP_MULHS/VP_MULHU requires the V extension instead of Zve64*.
+        if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV())
+          setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
 #endif // SIFIVE_CUSTOMIZATION
 
         // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the
