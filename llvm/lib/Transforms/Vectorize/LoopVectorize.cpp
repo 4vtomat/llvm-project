@@ -6528,17 +6528,10 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
 #endif // SIFIVE_CUSTOMIZATION
   }
 #if SIFIVE_CUSTOMIZATION
-  // Adjust MinWidth in degenerated cases.
-  if (MinWidth == -1U) {
-    MinWidth = MaxWidth;
-    SmallestType = WidestType;
-  }
-  if (WidestTypePtr) {
+  if (WidestTypePtr)
     *WidestTypePtr = WidestType;
-  }
-  if (SmallestTypePtr) {
+  if (SmallestTypePtr)
     *SmallestTypePtr = SmallestType;
-  }
 #endif // SIFIVE_CUSTOMIZATION
   return {MinWidth, MaxWidth};
 }
@@ -7236,7 +7229,6 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
     return 0;
   // For each block.
   for (BasicBlock *BB : TheLoop->blocks()) {
-    VectorizationCostTy BlockCost;
     // For each instruction in the old loop.
     for (Instruction &I : BB->instructionsWithoutDebug()) {
       // Skip ignored values.
