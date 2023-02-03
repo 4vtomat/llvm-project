@@ -4,14 +4,13 @@
 define void @test([48 x float]* %p, float* noalias %s) {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P:%.*]], i64 0, i64 0
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P]], i64 0, i64 30
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, float* [[S:%.*]], i64 0
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP2:%.*]] = fsub fast <8 x float> [[TMP1]], [[TMP0]]
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast float* [[ARRAYIDX2]] to <8 x float>*
-; CHECK-NEXT:    store <8 x float> [[TMP2]], <8 x float>* [[TMP3]], align 4
+; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -78,15 +77,14 @@ define void @test1([48 x float]* %p, float* noalias %s, i32 %stride) {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[STR:%.*]] = zext i32 [[STRIDE:%.*]] to i64
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P:%.*]], i64 0, i64 0
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P]], i64 0, i64 30
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, float* [[S:%.*]], i64 0
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = mul i64 [[STR]], 4
-; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX]], i64 [[TMP0]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX]], i64 [[TMP0]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP1]]
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast float* [[ARRAYIDX2]] to <8 x float>*
-; CHECK-NEXT:    store <8 x float> [[TMP3]], <8 x float>* [[TMP4]], align 4
+; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -160,16 +158,15 @@ define void @test2([48 x float]* %p, float* noalias %s, i32 %stride) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[STR:%.*]] = zext i32 [[STRIDE:%.*]] to i64
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P:%.*]], i64 0, i64 2
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 2
 ; CHECK-NEXT:    [[ST6:%.*]] = mul i64 [[STR]], 7
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P]], i64 0, i64 [[ST6]]
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, float* [[S:%.*]], i64 0
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST6]]
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[STR]], -4
-; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX1]], i64 [[TMP1]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX1]], i64 [[TMP1]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP0]]
-; CHECK-NEXT:    [[TMP4:%.*]] = bitcast float* [[ARRAYIDX2]] to <8 x float>*
-; CHECK-NEXT:    store <8 x float> [[TMP3]], <8 x float>* [[TMP4]], align 4
+; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -242,14 +239,13 @@ entry:
 define void @test3([48 x float]* %p, float* noalias %s) {
 ; CHECK-LABEL: @test3(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P:%.*]], i64 0, i64 0
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], [48 x float]* [[P]], i64 0, i64 30
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, float* [[S:%.*]], i64 0
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0f32.i64(<8 x float> poison, float* [[ARRAYIDX1]], i64 -4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr [[ARRAYIDX1]], i64 -4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP2:%.*]] = fsub fast <8 x float> [[TMP1]], [[TMP0]]
-; CHECK-NEXT:    [[TMP3:%.*]] = bitcast float* [[ARRAYIDX2]] to <8 x float>*
-; CHECK-NEXT:    store <8 x float> [[TMP2]], <8 x float>* [[TMP3]], align 4
+; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
