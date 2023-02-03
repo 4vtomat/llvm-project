@@ -100,6 +100,12 @@
 #include <utility>
 #include <vector>
 
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/ADT/Triple.h"
+#include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
+#endif // SIFIVE_CUSTOMIZATION
+
 using namespace llvm;
 using namespace llvm::PatternMatch;
 using namespace slpvectorizer;
@@ -176,6 +182,22 @@ static cl::opt<int> RootLookAheadMaxDepth(
 static cl::opt<bool>
     ViewSLPTree("view-slp-tree", cl::Hidden,
                 cl::desc("Display the SLP trees with Graphviz"));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned> SiFiveMaxProfitableUnorderedLoads(
+    "sifive-slp-max-unordered-strided-loads", cl::init(4), cl::Hidden,
+    cl::desc("The maximum size of the non-ordered strided loads, which should "
+             "be treated as strided loads, not masked gathers"));
+
+static cl::opt<unsigned> SiFiveMinProfitableStridedLoads(
+    "sifive-slp-min-strided-loads", cl::init(2), cl::Hidden,
+    cl::desc("The minimum number of loads, which should be considered strided, "
+             "if the stride is > 1 or is runtime value"));
+
+static cl::opt<unsigned> SiFiveMaxProfitableLoadStride(
+    "sifive-slp-max-stride", cl::init(8), cl::Hidden,
+    cl::desc("The maximum stride, considered to be profitable."));
+#endif // SIFIVE_CUSTOMIZATION
 
 // Limit the number of alias checks. The limit is chosen so that
 // it has no negative effect on the llvm benchmarks.
@@ -3672,7 +3694,11 @@ BoUpSLP::findReusedOrderedScalars(const BoUpSLP::TreeEntry &TE) {
 
 namespace {
 /// Tracks the state we can represent the loads in the given sequence.
+#if SIFIVE_CUSTOMIZATION
+enum class LoadsState { Gather, Vectorize, ScatterVectorize, StridedVectorize };
+#else
 enum class LoadsState { Gather, Vectorize, ScatterVectorize };
+#endif // SIFIVE_CUSTOMIZATION
 } // anonymous namespace
 
 static bool arePointersCompatible(Value *Ptr1, Value *Ptr2,
@@ -3692,6 +3718,130 @@ static bool arePointersCompatible(Value *Ptr1, Value *Ptr2,
           !CompareOpcodes ||
           getSameOpcode({GEP1->getOperand(1), GEP2->getOperand(1)}, TLI)
               .getOpcode());
+}
+
+#if SIFIVE_CUSTOMIZATION
+
+
+/// Check if \p Order represents reverse order.
+static bool isReverseOrder(ArrayRef<unsigned> Order) {
+  unsigned Sz = Order.size();
+  return !Order.empty() && all_of(enumerate(Order), [&](const auto &Pair) {
+    return Pair.value() == Sz || Sz - Pair.index() - 1 == Pair.value();
+  });
+}
+
+/// Checks if RISCV-specific vectorization is enabled.
+static bool enabledRISCVExtensions(const Module &M,
+                                   const TargetTransformInfo &TTI) {
+  Triple TargetTriple(M.getTargetTriple());
+  return TargetTriple.isRISCV() &&
+         TTI.getRegisterBitWidth(TTI::RGK_FixedWidthVector).isNonZero();
+}
+
+/// Checks if the provided list of pointers \p Pointers represents the strided
+/// pointers for type ElemTy. If they are not, std::nullopt is returned.
+/// Otherwise, if \p Inst is not specified, just initialized optional value is
+/// returned to show that the pointers represent strided pointers. If \p Inst
+/// specified, the runtime stride is materialized before the given \p Inst.
+/// \returns std::nullopt if the pointers are not pointers with the runtime
+/// stride, nullptr or actual stride value, otherwise.
+static std::optional<Value *>
+calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
+                  const DataLayout &DL, ScalarEvolution &SE,
+                  SmallVectorImpl<unsigned> &SortedIndices,
+                  Instruction *Inst = nullptr) {
+  SmallVector<const SCEV *> SCEVs;
+  const SCEV *PtrSCEVA = nullptr;
+  const SCEV *PtrSCEVB = nullptr;
+  for (Value *Ptr : PointerOps) {
+    const SCEV *PtrSCEV = SE.getSCEV(Ptr);
+    if (!PtrSCEV)
+      return std::nullopt;
+    SCEVs.push_back(PtrSCEV);
+    if (!PtrSCEVA && !PtrSCEVB) {
+      PtrSCEVA = PtrSCEVB = PtrSCEV;
+      continue;
+    }
+    const SCEV *Diff = SE.getMinusSCEV(PtrSCEV, PtrSCEVA);
+    if (!Diff)
+      return std::nullopt;
+    if (Diff->isNonConstantNegative()) {
+      PtrSCEVA = PtrSCEV;
+      continue;
+    }
+    const SCEV *Diff1 = SE.getMinusSCEV(PtrSCEVB, PtrSCEV);
+    if (!Diff1)
+      return std::nullopt;
+    if (Diff1->isNonConstantNegative()) {
+      PtrSCEVB = PtrSCEV;
+      continue;
+    }
+  }
+  const SCEV *Stride = SE.getMinusSCEV(PtrSCEVB, PtrSCEVA);
+  if (!Stride)
+    return std::nullopt;
+  int Size = DL.getTypeStoreSize(ElemTy);
+  Stride = SE.getUDivExactExpr(
+      Stride, SE.getConstant(Stride->getType(), Size * (SCEVs.size() - 1)));
+  if (!Stride || isa<SCEVConstant>(Stride))
+    return std::nullopt;
+  // Iterate through all pointers and check if all distances are
+  // unique multiple of Dist.
+  using DistOrdPair = std::pair<int64_t, int>;
+  auto Compare = llvm::less_first();
+  std::set<DistOrdPair, decltype(Compare)> Offsets(Compare);
+  int Cnt = 0;
+  bool IsConsecutive = true;
+  for (const SCEV *PtrSCEV : SCEVs) {
+    unsigned Dist = 0;
+    if (PtrSCEV != PtrSCEVA) {
+      const SCEV *Diff = SE.getMinusSCEV(PtrSCEV, PtrSCEVA);
+      const SCEV *Coeff = SE.getUDivExactExpr(Diff, Stride);
+      const auto *SC = dyn_cast<SCEVConstant>(Coeff);
+      if (!SC)
+        return std::nullopt;
+      if (!SE.getMinusSCEV(PtrSCEV,
+                           SE.getAddExpr(PtrSCEVA, SE.getMulExpr(Stride, SC)))
+               ->isZero())
+        return std::nullopt;
+      Dist = SC->getAPInt().getZExtValue();
+    }
+    // If the strides are not the same or repeated, we can't vectorize.
+    if ((Dist / Size) * Size != Dist || (Dist / Size) >= SCEVs.size())
+      return std::nullopt;
+    auto Res = Offsets.emplace(Dist, Cnt);
+    if (!Res.second)
+      return std::nullopt;
+    // Consecutive order if the inserted element is the last one.
+    IsConsecutive = IsConsecutive && std::next(Res.first) == Offsets.end();
+    ++Cnt;
+  }
+  if (Offsets.size() != SCEVs.size())
+    return std::nullopt;
+  SortedIndices.clear();
+  if (!IsConsecutive) {
+    // Fill SortedIndices array only if it is non-consecutive.
+    SortedIndices.resize(PointerOps.size());
+    Cnt = 0;
+    for (const std::pair<int64_t, int> &Pair : Offsets) {
+      SortedIndices[Cnt] = Pair.second;
+      ++Cnt;
+    }
+  }
+  if (!Inst)
+    return nullptr;
+  SCEVExpander Expander(SE, DL, "strided-load-vec");
+  return Expander.expandCodeFor(Stride, Stride->getType(), Inst);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
+template <typename T>
+static Align computeCommonAlignment(ArrayRef<Value *> VL) {
+  Align CommonAlignment = cast<T>(VL.front())->getAlign();
+  for (Value *V : VL.drop_front())
+    CommonAlignment = std::min(CommonAlignment, cast<T>(V)->getAlign());
+  return CommonAlignment;
 }
 
 /// Checks if the given array of loads can be represented as a vectorized,
@@ -3729,6 +3879,19 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
   Order.clear();
   // Check the order of pointer operands or that all pointers are the same.
   bool IsSorted = sortPtrAccesses(PointerOps, ScalarTy, DL, SE, Order);
+#if SIFIVE_CUSTOMIZATION
+  Align CommonAlignment = computeCommonAlignment<LoadInst>(VL);
+  auto *VecTy = FixedVectorType::get(ScalarTy, VL.size());
+  if (!IsSorted && VL.size() > SiFiveMinProfitableStridedLoads &&
+      enabledRISCVExtensions(*cast<LoadInst>(VL0)->getModule(), TTI) &&
+      TTI.isTypeLegal(VecTy) &&
+      TTI.isLegalMaskedGather(VecTy, CommonAlignment) &&
+      !TTI.forceScalarizeMaskedGather(VecTy, CommonAlignment) &&
+      calculateRtStride(PointerOps, ScalarTy, DL, SE, Order) &&
+      (Order.empty() || VL.size() <= SiFiveMaxProfitableUnorderedLoads ||
+       isReverseOrder(Order)))
+    return LoadsState::StridedVectorize;
+#endif // SIFIVE_CUSTOMIZATION
   if (IsSorted || all_of(PointerOps, [&](Value *P) {
         return arePointersCompatible(P, PointerOps.front(), TLI);
       })) {
@@ -3747,6 +3910,53 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       // Check that the sorted loads are consecutive.
       if (static_cast<unsigned>(*Diff) == VL.size() - 1)
         return LoadsState::Vectorize;
+#if SIFIVE_CUSTOMIZATION
+      const unsigned Sz = VL.size();
+      // Try to generate strided load node if:
+      // 1. RISCV target with vector support is detected.
+      // 2. The number of loads is greater than SiFiveMinProfitableStridedLoads,
+      // or the potential stride <= SiFiveMaxProfitableLoadStride and the
+      // potential stride is power-of-2 (to avoid perf regressions for the very
+      // small number of loads) and max distance > number of loads, or potential
+      // stride is -1.
+      // 3. The loads are ordered, or number of unordered loads <=
+      // SiFiveMaxProfitableUnorderedLoads, or loads are in reversed order.
+      // (this check is to avoid extra costs for very expensive shuffles).
+      if (enabledRISCVExtensions(*cast<LoadInst>(VL0)->getModule(), TTI) &&
+          (((Sz > SiFiveMinProfitableStridedLoads ||
+             (static_cast<unsigned>(std::abs(*Diff)) <=
+                  SiFiveMaxProfitableLoadStride * Sz &&
+              isPowerOf2_32(std::abs(*Diff)))) &&
+            static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
+           *Diff == -(static_cast<int>(Sz) - 1)) &&
+          (Order.empty() || Sz <= SiFiveMaxProfitableUnorderedLoads ||
+           isReverseOrder(Order))) {
+        int Stride = *Diff / static_cast<int>(Sz - 1);
+        if (*Diff == Stride * static_cast<int>(Sz - 1)) {
+          if (TTI.isTypeLegal(VecTy) &&
+              TTI.isLegalMaskedGather(VecTy, CommonAlignment) &&
+              !TTI.forceScalarizeMaskedGather(VecTy, CommonAlignment)) {
+            // Iterate through all pointers and check if all distances are
+            // unique multiple of Dist.
+            SmallSet<int, 4> Dists;
+            for (Value *Ptr : PointerOps) {
+              int Dist = 0;
+              if (Ptr == PtrN)
+                Dist = *Diff;
+              else if (Ptr != Ptr0)
+                Dist = *getPointersDiff(ScalarTy, Ptr0, ScalarTy, Ptr, DL, SE);
+              // If the strides are not the same or repeated, we can't
+              // vectorize.
+              if (((Dist / Stride) * Stride) != Dist ||
+                  !Dists.insert(Dist).second)
+                break;
+            }
+            if (Dists.size() == Sz)
+              return LoadsState::StridedVectorize;
+          }
+        }
+      }
+#endif // SIFIVE_CUSTOMIZATION
     }
     // TODO: need to improve analysis of the pointers, if not all of them are
     // GEPs or have > 2 operands, we end up with a gather node, which just
@@ -5431,6 +5641,9 @@ void BoUpSLP::buildTree_rec(ArrayRef<Value *> VL, unsigned Depth,
       TreeEntry *TE = nullptr;
       switch (canVectorizeLoads(VL, VL0, *TTI, *DL, *SE, *LI, *TLI,
                                 CurrentOrder, PointerOps)) {
+#if SIFIVE_CUSTOMIZATION
+      case LoadsState::StridedVectorize:
+#endif // SIFIVE_CUSTOMIZATION
       case LoadsState::Vectorize:
         if (CurrentOrder.empty()) {
           // Original loads are consecutive and does not require reordering.
@@ -6799,6 +7012,9 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
                 canVectorizeLoads(Slice, Slice.front(), *TTI, *DL, *SE, *LI,
                                   *TLI, CurrentOrder, PointerOps);
             switch (LS) {
+#if SIFIVE_CUSTOMIZATION
+            case LoadsState::StridedVectorize:
+#endif // SIFIVE_CUSTOMIZATION
             case LoadsState::Vectorize:
             case LoadsState::ScatterVectorize:
               // Mark the vectorized loads so that we don't vectorize them
@@ -7268,6 +7484,39 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
     auto GetVectorCost = [=](InstructionCost CommonCost) {
       InstructionCost VecLdCost;
       if (E->State == TreeEntry::Vectorize) {
+#if SIFIVE_CUSTOMIZATION
+        Value *Ptr0;
+        Value *PtrN;
+        if (E->ReorderIndices.empty()) {
+          Ptr0 = cast<LoadInst>(VL.front())->getPointerOperand();
+          PtrN = cast<LoadInst>(VL.back())->getPointerOperand();
+        } else {
+          Ptr0 = cast<LoadInst>(VL[E->ReorderIndices.front()])
+                     ->getPointerOperand();
+          PtrN =
+              cast<LoadInst>(VL[E->ReorderIndices.back()])->getPointerOperand();
+        }
+        std::optional<int> Diff = getPointersDiff(
+            VL0->getType(), Ptr0, VL0->getType(), PtrN, *DL, *SE);
+        // Consecutive but reversed loads are just strided loads with the stride
+        // -1.
+        int Stride = Diff ? (*Diff / (static_cast<int>(VL.size()) - 1)) : 0;
+        if (enabledRISCVExtensions(*LI0->getModule(), *TTI) && Stride != 1) {
+          Align CommonAlignment = LI0->getAlign();
+          for (Value *V : VL)
+            CommonAlignment =
+                std::min(CommonAlignment, cast<LoadInst>(V)->getAlign());
+          VecLdCost = TTI->getGatherScatterOpCost(
+              Instruction::Load, VecTy, Ptr0,
+              /*VariableMask=*/false, CommonAlignment, CostKind, VL0);
+          if (isReverseOrder(E->ReorderIndices)) {
+            CommonCost = 0;
+            if (NeedToShuffleReuses)
+              CommonCost = TTI->getShuffleCost(
+                  TTI::SK_PermuteSingleSrc, FinalVecTy, E->ReuseShuffleIndices);
+          }
+        } else
+#endif // SIFIVE_CUSTOMIZATION
         VecLdCost = TTI->getMemoryOpCost(
             Instruction::Load, VecTy, LI0->getAlign(),
             LI0->getPointerAddressSpace(), CostKind, TTI::OperandValueInfo());
@@ -8942,6 +9191,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
     return E->VectorizedValue;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Do not need to reorder srided loads, built out of reversed loads.
+  bool IgnoreReorder = false;
+#endif // SIFIVE_CUSTOMIZATION
   auto FinalShuffle = [&](Value *V, const TreeEntry *E) {
     ShuffleInstructionBuilder ShuffleBuilder(Builder, *this);
     if (E->State != TreeEntry::NeedToGather &&
@@ -8951,6 +9204,11 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
                    E->ReorderIndices.size());
       ShuffleBuilder.add(V, Mask);
     } else {
+#if SIFIVE_CUSTOMIZATION
+      if (IgnoreReorder)
+        ShuffleBuilder.addOrdered(V, std::nullopt);
+      else
+#endif // SIFIVE_CUSTOMIZATION
       ShuffleBuilder.addOrdered(V, E->ReorderIndices);
     }
     return ShuffleBuilder.finalize(E->ReuseShuffleIndices);
@@ -9321,6 +9579,67 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       unsigned AS = LI->getPointerAddressSpace();
       Value *PO = LI->getPointerOperand();
       if (E->State == TreeEntry::Vectorize) {
+#if SIFIVE_CUSTOMIZATION
+        Value *Ptr0;
+        Value *PtrN;
+        if (E->ReorderIndices.empty()) {
+          Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
+          PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
+        } else {
+          Ptr0 = cast<LoadInst>(E->Scalars[E->ReorderIndices.front()])
+                     ->getPointerOperand();
+          PtrN = cast<LoadInst>(E->Scalars[E->ReorderIndices.back()])
+                     ->getPointerOperand();
+        }
+        std::optional<int> Diff = getPointersDiff(
+            VL0->getType(), Ptr0, VL0->getType(), PtrN, *DL, *SE);
+        int Stride =
+            Diff ? (*Diff / (static_cast<int>(E->Scalars.size()) - 1)) : 0;
+        if (enabledRISCVExtensions(*LI->getModule(), *TTI) && Stride != 1) {
+          // Do not reorder strided loads.
+          IgnoreReorder = isReverseOrder(E->ReorderIndices);
+          Type *StrideTy = DL->getIndexType(PO->getType());
+          if (Stride != 0) {
+            NewLI = Builder.CreateIntrinsic(
+                Intrinsic::riscv_masked_strided_load,
+                {VecTy, Ptr0->getType(), StrideTy},
+                {PoisonValue::get(VecTy), Ptr0,
+                 ConstantInt::get(StrideTy,
+                                  Stride * DL->getTypeAllocSize(ScalarTy)),
+                 Builder.getTrueVector(VecTy->getElementCount())});
+          } else {
+            SmallVector<Value *> PointerOps(E->Scalars.size(), nullptr);
+            transform(E->Scalars, PointerOps.begin(), [](Value *V) {
+              return cast<LoadInst>(V)->getPointerOperand();
+            });
+            OrdersType Order;
+            std::optional<Value *> Stride =
+                calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order,
+                                  &*Builder.GetInsertPoint());
+            Value *NewStride =
+                Builder.CreateIntCast(*Stride, StrideTy, /*isSigned=*/true);
+            NewStride = Builder.CreateMul(
+                NewStride,
+                ConstantInt::get(
+                    StrideTy,
+                    (IgnoreReorder ? -1 : 1) *
+                        static_cast<int>(DL->getTypeAllocSize(ScalarTy))));
+            NewLI = Builder.CreateIntrinsic(
+                Intrinsic::riscv_masked_strided_load,
+                {VecTy, Ptr0->getType(), StrideTy},
+                {PoisonValue::get(VecTy), Ptr0, NewStride,
+                 Builder.getTrueVector(VecTy->getElementCount())});
+          }
+          // The pointer operand uses an in-tree scalar so we add the new
+          // BitCast or LoadInst to ExternalUses list to make sure that an
+          // extract will be generated in the future.
+          if (TreeEntry *Entry = getTreeEntry(Ptr0)) {
+            // Find which lane we need to extract.
+            unsigned FoundLane = Entry->findLaneForValue(Ptr0);
+            ExternalUses.emplace_back(Ptr0, NewLI, FoundLane);
+          }
+        } else {
+#endif // SIFIVE_CUSTOMIZATION
         Value *VecPtr = Builder.CreateBitCast(PO, VecTy->getPointerTo(AS));
         NewLI = Builder.CreateAlignedLoad(VecTy, VecPtr, LI->getAlign());
 
@@ -9333,6 +9652,9 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
           ExternalUses.emplace_back(
               PO, PO != VecPtr ? cast<User>(VecPtr) : NewLI, FoundLane);
         }
+#if SIFIVE_CUSTOMIZATION
+        }
+#endif // SIFIVE_CUSTOMIZATION
       } else {
         assert(E->State == TreeEntry::ScatterVectorize && "Unhandled state");
         Value *VecPtr = vectorizeOperand(E, 0);
