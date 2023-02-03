@@ -57,7 +57,7 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
   if (IsPCRel) {
     switch (Kind) {
     default:
-      Ctx.reportError(Fixup.getLoc(), "Unsupported relocation type");
+      Ctx.reportError(Fixup.getLoc(), Twine("Unsupported relocation type1 ") + Twine(Kind));
       return ELF::R_RISCV_NONE;
     case FK_Data_4:
     case FK_PCRel_4:
@@ -107,7 +107,7 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
 
   switch (Kind) {
   default:
-    Ctx.reportError(Fixup.getLoc(), "Unsupported relocation type");
+    Ctx.reportError(Fixup.getLoc(), "Unsupported relocation type2");
     return ELF::R_RISCV_NONE;
   case FK_Data_1:
     Ctx.reportError(Fixup.getLoc(), "1-byte data relocations not supported");
