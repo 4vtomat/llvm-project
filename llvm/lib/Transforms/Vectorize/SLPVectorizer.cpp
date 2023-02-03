@@ -3725,8 +3725,6 @@ static bool arePointersCompatible(Value *Ptr1, Value *Ptr2,
 }
 
 #if SIFIVE_CUSTOMIZATION
-
-
 /// Check if \p Order represents reverse order.
 static bool isReverseOrder(ArrayRef<unsigned> Order) {
   unsigned Sz = Order.size();
@@ -3838,8 +3836,8 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
   SCEVExpander Expander(SE, DL, "strided-load-vec");
   return Expander.expandCodeFor(Stride, Stride->getType(), Inst);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
+/// Calculates minimal alignment as a common alignment.
 template <typename T>
 static Align computeCommonAlignment(ArrayRef<Value *> VL) {
   Align CommonAlignment = cast<T>(VL.front())->getAlign();
@@ -3847,6 +3845,15 @@ static Align computeCommonAlignment(ArrayRef<Value *> VL) {
     CommonAlignment = std::min(CommonAlignment, cast<T>(V)->getAlign());
   return CommonAlignment;
 }
+
+/// Checks if reversed stores can be represented as strided stores with stride
+/// -1.
+static bool isAllowedStridedStore(Module &M, ArrayRef<unsigned> ReorderIndices,
+                                  const TargetTransformInfo &TTI) {
+  return ReorderIndices.size() > 2 && enabledRISCVExtensions(M, TTI) &&
+         isReverseOrder(ReorderIndices);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Checks if the given array of loads can be represented as a vectorized,
 /// scatter or just simple gather.
@@ -7588,6 +7595,18 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
     auto *BaseSI =
         cast<StoreInst>(IsReorder ? VL[E->ReorderIndices.front()] : VL0);
     auto GetVectorCost = [=](InstructionCost CommonCost) {
+#if SIFIVE_CUSTOMIZATION
+      // Consecutive but reversed stores are just strided stores with the stride
+      // -1.
+      if (isAllowedStridedStore(*BaseSI->getModule(), E->ReorderIndices,
+                                *TTI)) {
+        Align CommonAlignment = computeCommonAlignment<StoreInst>(VL);
+        // CommonCost can be ignored, no need to reverse before store.
+        return TTI->getGatherScatterOpCost(
+            Instruction::Store, VecTy, BaseSI->getPointerOperand(),
+            /*VariableMask=*/false, CommonAlignment, CostKind, BaseSI);
+      }
+#endif // SIFIVE_CUSTOMIZATION
       // We know that we can merge the stores. Calculate the cost.
       TTI::OperandValueInfo OpInfo = getOperandInfo(VL, 0);
       return TTI->getMemoryOpCost(Instruction::Store, VecTy, BaseSI->getAlign(),
@@ -9909,6 +9928,41 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       setInsertPointAfterBundle(E);
 
       Value *VecValue = vectorizeOperand(E, 0);
+#if SIFIVE_CUSTOMIZATION
+      // Consecutive but reversed stores are just strided stores with the stride
+      // -1.
+      if (isAllowedStridedStore(*SI->getModule(), E->ReorderIndices, *TTI)) {
+        SI = cast<StoreInst>(E->Scalars.back());
+
+        Value *ScalarPtr = SI->getPointerOperand();
+        Value *VecPtr = Builder.CreateBitCast(
+            ScalarPtr, VecValue->getType()->getPointerTo(AS));
+        Type *StrideTy = DL->getIndexType(VecPtr->getType());
+        Instruction *ST = Builder.CreateIntrinsic(
+            Intrinsic::riscv_masked_strided_store,
+            {VecTy, VecPtr->getType(), StrideTy},
+            {VecValue, VecPtr,
+             ConstantInt::get(
+                 StrideTy, -static_cast<int>(DL->getTypeAllocSize(ScalarTy))),
+             Builder.getTrueVector(VecTy->getElementCount())});
+        // The pointer operand uses an in-tree scalar, so add the new BitCast or
+        // StoreInst to ExternalUses to make sure that an extract will be
+        // generated in the future.
+        if (TreeEntry *Entry = getTreeEntry(ScalarPtr)) {
+          // Find which lane we need to extract.
+          unsigned FoundLane = Entry->findLaneForValue(ScalarPtr);
+          ExternalUses.push_back(ExternalUser(
+              ScalarPtr, ScalarPtr != VecPtr ? cast<User>(VecPtr) : ST,
+              FoundLane));
+        }
+
+        Value *V = propagateMetadata(ST, E->Scalars);
+
+        E->VectorizedValue = V;
+        ++NumVectorInstructions;
+        return V;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       VecValue = FinalShuffle(VecValue, E);
 
       Value *ScalarPtr = SI->getPointerOperand();
