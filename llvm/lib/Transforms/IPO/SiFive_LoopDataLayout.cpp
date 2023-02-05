@@ -265,6 +265,11 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
         if (!SrcGEP->hasAllConstantIndices())
           continue;
 
+        // Currently only simple forms of base ptrs
+        // TODO: extend forms of support
+        if (SrcGEP->getNumIndices() > 2)
+          continue;
+
         Type *SrcTy = SrcGEP->getSourceElementType();
         // No recursive references.
         if (SrcTy == Ty)
