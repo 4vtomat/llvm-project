@@ -1071,8 +1071,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, VL);
 
   if (!FullyUnrolled) {
-    NewLoopCount = Builder.CreateSub(
-        NewLoopCount, ConstantInt::get(CopyLenType, UnrollCount * MaxCopySize));
+    NewLoopCount = Builder.CreateSub(NewLoopCount, VL);
     cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, LoopBody);
     cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, LoopBody);
   }
