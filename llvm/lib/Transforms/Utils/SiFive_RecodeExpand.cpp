@@ -336,11 +336,14 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       case Intrinsic::aarch64_neon_fcvtns:
       case Intrinsic::aarch64_neon_fcvtnu:
       case Intrinsic::aarch64_neon_fcvtps:
-      case Intrinsic::aarch64_neon_fcvtpu: {
+      case Intrinsic::aarch64_neon_fcvtpu:
+      case Intrinsic::aarch64_neon_fcvtzs:
+      case Intrinsic::aarch64_neon_fcvtzu: {
         // a: rounding to nearest with ties to Away
         // m: rounding toward minus infinity
         // n: rounding to nearest with ties to even
         // p: rounding toward plus infinity
+        // z: rounding toward zero
         // out of range -> clamp the value and set invalid flag
         // inf -> clamp the value and set invalid flag
         // nan -> 0, set invalid flag
@@ -382,26 +385,24 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
           RoundID = Intrinsic::ceil;
           FPToI = Intrinsic::fptoui_sat;
           break;
+        case Intrinsic::aarch64_neon_fcvtzs:
+          RoundID = Intrinsic::trunc;
+          FPToI = Intrinsic::fptosi_sat;
+          break;
+        case Intrinsic::aarch64_neon_fcvtzu:
+          RoundID = Intrinsic::trunc;
+          FPToI = Intrinsic::fptoui_sat;
+          break;
         }
-        CallInst *Rint = Builder.CreateIntrinsic(
-            RoundID, {II->getArgOperand(0)->getType()}, {II->getArgOperand(0)});
+        Value *Rint;
+        if (RoundID == Intrinsic::trunc)
+          Rint = II->getArgOperand(0);
+        else
+          Rint = Builder.CreateIntrinsic(RoundID,
+                                         {II->getArgOperand(0)->getType()},
+                                         {II->getArgOperand(0)});
         II->replaceAllUsesWith(Builder.CreateIntrinsic(
             FPToI, {II->getType(), Rint->getType()}, {Rint}));
-        break;
-      }
-      case Intrinsic::aarch64_neon_fcvtzs:
-      case Intrinsic::aarch64_neon_fcvtzu: {
-        // rounding towards zero
-        // out of range -> clamp the value and set invalid flag
-        // inf -> clamp the value and set invalid flag
-        // nan -> 0, set invalid flag
-        // Inexact flag may be set.
-        II->replaceAllUsesWith(Builder.CreateIntrinsic(
-            II->getIntrinsicID() == Intrinsic::aarch64_neon_fcvtzs
-                ? Intrinsic::fptosi_sat
-                : Intrinsic::fptoui_sat,
-            {II->getType(), II->getArgOperand(0)->getType()},
-            {II->getArgOperand(0)}));
         break;
       }
       case Intrinsic::aarch64_neon_fmaxp:
