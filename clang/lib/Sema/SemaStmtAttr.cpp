@@ -133,7 +133,7 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
       Lmul >= 0 ? llvm::RISCV::RVVBitsPerBlock << Lmul
                 : llvm::RISCV::RVVBitsPerBlock >> -Lmul;
   unsigned VF = AssumedMinimalTotalVLen / Sew;
-  if (VF == 1 && TI.getMaxVectorElementWidth() < 64) {
+  if (VF == 1 && TI.getMaxVectorElementWidth() < llvm::RISCV::RVVBitsPerBlock) {
     S.Diag(A.getLoc(), diag::err_require_max_vector_element_width_64)
         << A.getArgAsIdent(2)->Ident->getName()
         << A.getArgAsIdent(3)->Ident->getName();

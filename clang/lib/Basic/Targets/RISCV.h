@@ -56,12 +56,12 @@ public:
     return true;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  void setVectorSupport() override {
-    HasVectorSupport = ISAInfo->hasExtension("zve32x");
+  bool hasVectorSupport() const override {
+    return ISAInfo->hasExtension("zve32x");
   }
 
-  void setMaxVectorElementWidth() override {
-    MaxVectorElementWidth = ISAInfo->getMaxELen();
+  unsigned getMaxVectorElementWidth() const override {
+    return ISAInfo->getMaxELen();
   }
 #endif
 

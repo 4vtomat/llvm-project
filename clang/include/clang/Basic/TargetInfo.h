@@ -223,10 +223,8 @@ protected:
   bool HasLongDouble;
   bool HasFPReturn;
   bool HasStrictFP;
-  bool HasVectorSupport; // SIFIVE
 
   unsigned char MaxAtomicPromoteWidth, MaxAtomicInlineWidth;
-  unsigned MaxVectorElementWidth; // SIFIVE
   unsigned short SimdDefaultAlign;
   std::string DataLayoutString;
   const char *UserLabelPrefix;
@@ -668,12 +666,10 @@ public:
 
 #ifdef SIFIVE_CUSTOMIZATION
   /// Determine whether the target has vector support
-  virtual bool hasVectorSupport() const { return HasVectorSupport; }
+  virtual bool hasVectorSupport() const { return false; }
 
   /// Return the maximum element width of the vector unit
-  virtual unsigned getMaxVectorElementWidth() const {
-    return MaxVectorElementWidth;
-  }
+  virtual unsigned getMaxVectorElementWidth() const { return 0; }
 #endif
 
   /// Return the alignment that is the largest alignment ever used for any
@@ -1630,14 +1626,6 @@ public:
 
   /// Set supported OpenCL extensions and optional core features.
   virtual void setSupportedOpenCLOpts() {}
-
-#ifdef SIFIVE_CUSTOMIZATION
-  /// Set HasVectorSupport depending on target and feature provided
-  virtual void setVectorSupport() {}
-
-  /// Set MaxVectorElementWidth depending on target and feature provided
-  virtual void setMaxVectorElementWidth() {}
-#endif
 
   virtual void supportAllOpenCLOpts(bool V = true) {
 #define OPENCLEXTNAME(Ext)                                                     \

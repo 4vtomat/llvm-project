@@ -17,7 +17,7 @@
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Metadata.h"
-#include <cmath> // SIFIVE
+#include "llvm/Support/MathExtras.h" // SIFIVE
 #include <optional>
 
 using namespace clang::CodeGen;
@@ -227,7 +227,7 @@ static std::optional<int> mapLmulSewToVF(const std::pair<int, int> &LmulSew) {
 
   const unsigned AssumedMinimalVLen = 64;
   // MinmumFeasibleLmul = log2(Sew / AssumedMinimalVLen)
-  if (Lmul < log2(Sew) - log2(AssumedMinimalVLen))
+  if (Lmul < (int)llvm::Log2_32(Sew) - (int)llvm::Log2_32(AssumedMinimalVLen))
     return std::nullopt;
 
   const unsigned AssumedMinimalTotalVLen =
