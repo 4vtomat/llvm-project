@@ -3826,10 +3826,7 @@ void CXXNameMangler::mangleType(const VectorType *T) {
 #if SIFIVE_CUSTOMIZATION
     if (((Arch == llvm::Triple::aarch64 || Arch == llvm::Triple::aarch64_be) &&
          !Target.isOSDarwin()) ||
-        (Arch == llvm::Triple::riscv64 &&
-         getASTContext().getTargetInfo().hasFeature("v") &&
-         getASTContext().getTargetInfo().hasFeature("zfh") &&
-         getASTContext().getTargetInfo().hasFeature("experimental-zvfh")))
+        (Arch == llvm::Triple::riscv64))
 #endif
       mangleAArch64NeonVectorType(T);
     else
