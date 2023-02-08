@@ -51,9 +51,9 @@ def FeatureStdExtSvbare
                        "'Svbare'",
                        []>;
 
-def FeatureStdExtSsptead
-    : SubtargetFeature<"ssptead", "HasStdExtSsptead", "true",
-                       "'Ssptead' (Page-fault exceptions are raised when a page "
+def FeatureStdExtSvptead
+    : SubtargetFeature<"svptead", "HasStdExtSvptead", "true",
+                       "'Svptead' (Page-fault exceptions are raised when a page "
                        "is accessed when A bit is clear, or written when D bit "
                        "is clear)", []>;
 

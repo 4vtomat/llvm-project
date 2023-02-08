@@ -47,7 +47,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV32ZIHPM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ss %s -o - | FileCheck --check-prefix=RV32SS %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svbare %s -o - | FileCheck --check-prefix=RV32SVBARE %s
-; RUN: llc -mtriple=riscv32 -mattr=+ssptead %s -o - | FileCheck --check-prefix=RV32SSPTEAD %s
+; RUN: llc -mtriple=riscv32 -mattr=+svptead %s -o - | FileCheck --check-prefix=RV32SVPTEAD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ssccptr %s -o - | FileCheck --check-prefix=RV32SSCCPTR %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sstvecd %s -o - | FileCheck --check-prefix=RV32SSTVECD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sstvala %s -o - | FileCheck --check-prefix=RV32SSTVALA %s
@@ -128,7 +128,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV64ZIHPM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ss %s -o - | FileCheck --check-prefix=RV64SS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svbare %s -o - | FileCheck --check-prefix=RV64SVBARE %s
-; RUN: llc -mtriple=riscv64 -mattr=+ssptead %s -o - | FileCheck --check-prefix=RV64SSPTEAD %s
+; RUN: llc -mtriple=riscv64 -mattr=+svptead %s -o - | FileCheck --check-prefix=RV64SVPTEAD %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ssccptr %s -o - | FileCheck --check-prefix=RV64SSCCPTR %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sstvecd %s -o - | FileCheck --check-prefix=RV64SSTVECD %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sstvala %s -o - | FileCheck --check-prefix=RV64SSTVALA %s
@@ -226,7 +226,7 @@
 ; RV32ZIHPM: .attribute 5, "rv32i2p1_zicsr2p0_zihpm1p0"
 ; RV32SS: .attribute 5, "rv32i2p1_ss1p12"
 ; RV32SVBARE: .attribute 5, "rv32i2p1_svbare1p0"
-; RV32SSPTEAD: .attribute 5, "rv32i2p1_ssptead1p0"
+; RV32SVPTEAD: .attribute 5, "rv32i2p1_svptead1p0"
 ; RV32SSCCPTR: .attribute 5, "rv32i2p1_ssccptr1p0"
 ; RV32SSTVECD: .attribute 5, "rv32i2p1_sstvecd1p0"
 ; RV32SSTVALA: .attribute 5, "rv32i2p1_sstvala1p0"
@@ -291,7 +291,7 @@
 ; RV64ZIHPM: .attribute 5, "rv64i2p1_zicsr2p0_zihpm1p0"
 ; RV64SS: .attribute 5, "rv64i2p1_ss1p12"
 ; RV64SVBARE: .attribute 5, "rv64i2p1_svbare1p0"
-; RV64SSPTEAD: .attribute 5, "rv64i2p1_ssptead1p0"
+; RV64SVPTEAD: .attribute 5, "rv64i2p1_svptead1p0"
 ; RV64SSCCPTR: .attribute 5, "rv64i2p1_ssccptr1p0"
 ; RV64SSTVECD: .attribute 5, "rv64i2p1_sstvecd1p0"
 ; RV64SSTVALA: .attribute 5, "rv64i2p1_sstvala1p0"

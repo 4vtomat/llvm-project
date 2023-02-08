@@ -123,8 +123,8 @@
 .attribute arch, "rv32isvbare"
 # CHECK: attribute      5, "rv32i2p1_svbare1p0"
 
-.attribute arch, "rv32issptead"
-# CHECK: attribute      5, "rv32i2p1_ssptead1p0"
+.attribute arch, "rv32isvptead"
+# CHECK: attribute      5, "rv32i2p1_svptead1p0"
 
 .attribute arch, "rv32issccptr"
 # CHECK: attribute      5, "rv32i2p1_ssccptr1p0"
