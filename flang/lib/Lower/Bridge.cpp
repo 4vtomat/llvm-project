@@ -204,9 +204,11 @@ public:
           info.loc, dtName,
           parent ? Fortran::lower::mangle::mangleName(*parent) : "");
       auto insertPt = builder.saveInsertionPoint();
-
+      const Fortran::semantics::Scope *scope = info.typeSpec->scope();
+      if (!scope)
+        scope = info.typeSpec->typeSymbol().scope();
       Fortran::semantics::SymbolVector bindings =
-          Fortran::semantics::CollectBindings(*info.typeSpec->scope());
+          Fortran::semantics::CollectBindings(*scope);
 
       if (!bindings.empty())
         builder.createBlock(&dt.getRegion());
@@ -2623,6 +2625,42 @@ private:
     Fortran::lower::associateMutableBox(*this, loc, lhs, assign.rhs, lbounds,
                                         stmtCtx);
   }
+
+  // Create the 2 x newRank array with the bounds to be passed to the runtime as
+  // a descriptor.
+  mlir::Value createBoundArray(llvm::ArrayRef<mlir::Value> lbounds,
+                               llvm::ArrayRef<mlir::Value> ubounds,
+                               mlir::Location loc) {
+    assert(lbounds.size() && ubounds.size());
+    mlir::Type indexTy = builder->getIndexType();
+    mlir::Type boundArrayTy = fir::SequenceType::get(
+        {2, static_cast<int64_t>(lbounds.size())}, builder->getI64Type());
+    mlir::Value boundArray = builder->create<fir::AllocaOp>(loc, boundArrayTy);
+    mlir::Value array = builder->create<fir::UndefOp>(loc, boundArrayTy);
+    for (unsigned i = 0; i < lbounds.size(); ++i) {
+      array = builder->create<fir::InsertValueOp>(
+          loc, boundArrayTy, array, lbounds[i],
+          builder->getArrayAttr(
+              {builder->getIntegerAttr(builder->getIndexType(), 0),
+               builder->getIntegerAttr(builder->getIndexType(),
+                                       static_cast<int>(i))}));
+      array = builder->create<fir::InsertValueOp>(
+          loc, boundArrayTy, array, ubounds[i],
+          builder->getArrayAttr(
+              {builder->getIntegerAttr(builder->getIndexType(), 1),
+               builder->getIntegerAttr(builder->getIndexType(),
+                                       static_cast<int>(i))}));
+    }
+    builder->create<fir::StoreOp>(loc, array, boundArray);
+    mlir::Type boxTy = fir::BoxType::get(boundArrayTy);
+    mlir::Value ext =
+        builder->createIntegerConstant(loc, indexTy, lbounds.size());
+    mlir::Value c2 = builder->createIntegerConstant(loc, indexTy, 2);
+    llvm::SmallVector<mlir::Value> shapes = {c2, ext};
+    mlir::Value shapeOp = builder->genShape(loc, shapes);
+    return builder->create<fir::EmboxOp>(loc, boxTy, boundArray, shapeOp);
+  }
+
   // Pointer assignment with bounds-remapping. R1036: a bounds-remapping is a
   // pair, lower bound and upper bound.
   void genPointerAssignment(
@@ -2651,39 +2689,7 @@ private:
 
       mlir::Value lhs = genExprMutableBox(loc, assign.lhs).getAddr();
       mlir::Value rhs = fir::getBase(genExprBox(loc, assign.rhs, stmtCtx));
-
-      // Create the newRank x 2 array with the bounds to be passed to
-      // the runtime as a descriptor.
-      assert(lbounds.size() && ubounds.size());
-      mlir::Type indexTy = builder->getIndexType();
-      mlir::Type boundArrayTy = fir::SequenceType::get(
-          {static_cast<int64_t>(lbounds.size()), 2}, builder->getI64Type());
-      mlir::Value boundArray =
-          builder->create<fir::AllocaOp>(loc, boundArrayTy);
-      mlir::Value array = builder->create<fir::UndefOp>(loc, boundArrayTy);
-      for (unsigned i = 0; i < lbounds.size(); ++i) {
-        array = builder->create<fir::InsertValueOp>(
-            loc, boundArrayTy, array, lbounds[i],
-            builder->getArrayAttr(
-                {builder->getIntegerAttr(builder->getIndexType(),
-                                         static_cast<int>(i)),
-                 builder->getIntegerAttr(builder->getIndexType(), 0)}));
-        array = builder->create<fir::InsertValueOp>(
-            loc, boundArrayTy, array, ubounds[i],
-            builder->getArrayAttr(
-                {builder->getIntegerAttr(builder->getIndexType(),
-                                         static_cast<int>(i)),
-                 builder->getIntegerAttr(builder->getIndexType(), 1)}));
-      }
-      builder->create<fir::StoreOp>(loc, array, boundArray);
-      mlir::Type boxTy = fir::BoxType::get(boundArrayTy);
-      mlir::Value ext =
-          builder->createIntegerConstant(loc, indexTy, lbounds.size());
-      mlir::Value c2 = builder->createIntegerConstant(loc, indexTy, 2);
-      llvm::SmallVector<mlir::Value> shapes = {ext, c2};
-      mlir::Value shapeOp = builder->genShape(loc, shapes);
-      mlir::Value boundsDesc =
-          builder->create<fir::EmboxOp>(loc, boxTy, boundArray, shapeOp);
+      mlir::Value boundsDesc = createBoundArray(lbounds, ubounds, loc);
       Fortran::lower::genPointerAssociateRemapping(*builder, loc, lhs, rhs,
                                                    boundsDesc);
       return;
@@ -2729,12 +2735,15 @@ private:
                 Fortran::lower::StatementContext stmtCtx;
                 if (Fortran::lower::isWholeAllocatable(assign.lhs))
                   TODO(loc, "HLFIR assignment to whole allocatable");
-                hlfir::EntityWithAttributes rhs =
-                    Fortran::lower::convertExprToHLFIR(loc, *this, assign.rhs,
-                                                       localSymbols, stmtCtx);
-                hlfir::EntityWithAttributes lhs =
-                    Fortran::lower::convertExprToHLFIR(loc, *this, assign.lhs,
-                                                       localSymbols, stmtCtx);
+                hlfir::Entity rhs = Fortran::lower::convertExprToHLFIR(
+                    loc, *this, assign.rhs, localSymbols, stmtCtx);
+                // Dereference pointers and allocatables RHS: the target is
+                // being assigned from.
+                rhs = hlfir::derefPointersAndAllocatables(loc, builder, rhs);
+                hlfir::Entity lhs = Fortran::lower::convertExprToHLFIR(
+                    loc, *this, assign.lhs, localSymbols, stmtCtx);
+                // Dereference pointers LHS: the target is being assigned to.
+                lhs = hlfir::derefPointersAndAllocatables(loc, builder, lhs);
                 builder.create<hlfir::AssignOp>(loc, rhs, lhs);
               },
               // [2] User defined assignment. If the context is a scalar
@@ -2811,33 +2820,32 @@ private:
               std::optional<fir::factory::MutableBoxReallocation> lhsRealloc;
               std::optional<fir::MutableBoxValue> lhsMutableBox;
 
-              // Finalize LHS on intrinsic assignment.
-              if (lhsType->IsPolymorphic() ||
-                  lhsType->IsUnlimitedPolymorphic() ||
-                  (isDerivedCategory(lhsType->category()) &&
-                   Fortran::semantics::IsFinalizable(
-                       lhsType->GetDerivedTypeSpec()))) {
-                if (lhsIsWholeAllocatable) {
-                  lhsMutableBox = genExprMutableBox(loc, assign.lhs);
-                  mlir::Value isAllocated =
-                      fir::factory::genIsAllocatedOrAssociatedTest(
-                          *builder, loc, *lhsMutableBox);
-                  builder->genIfThen(loc, isAllocated)
-                      .genThen([&]() {
-                        fir::runtime::genDerivedTypeDestroy(
-                            *builder, loc, fir::getBase(*lhsMutableBox));
-                      })
-                      .end();
-                } else {
-                  fir::ExtendedValue exv = genExprBox(loc, assign.lhs, stmtCtx);
-                  fir::runtime::genDerivedTypeDestroy(*builder, loc,
-                                                      fir::getBase(exv));
-                }
-              }
+              // Set flag to know if the LHS needs finalization. Polymorphic,
+              // unlimited polymorphic assignment will be done with genAssign.
+              // Assign runtime function performs the finalization.
+              bool needFinalization = !lhsType->IsPolymorphic() &&
+                                      !lhsType->IsUnlimitedPolymorphic() &&
+                                      (isDerivedCategory(lhsType->category()) &&
+                                       Fortran::semantics::IsFinalizable(
+                                           lhsType->GetDerivedTypeSpec()));
 
               auto lhs = [&]() -> fir::ExtendedValue {
                 if (lhsIsWholeAllocatable) {
                   lhsMutableBox = genExprMutableBox(loc, assign.lhs);
+                  // Finalize if needed.
+                  if (needFinalization) {
+                    mlir::Value isAllocated =
+                        fir::factory::genIsAllocatedOrAssociatedTest(
+                            *builder, loc, *lhsMutableBox);
+                    builder->genIfThen(loc, isAllocated)
+                        .genThen([&]() {
+                          fir::runtime::genDerivedTypeDestroy(
+                              *builder, loc, fir::getBase(*lhsMutableBox));
+                        })
+                        .end();
+                    needFinalization = false;
+                  }
+
                   llvm::SmallVector<mlir::Value> lengthParams;
                   if (const fir::CharBoxValue *charBox = rhs.getCharBox())
                     lengthParams.push_back(charBox->getLen());
@@ -2880,7 +2888,8 @@ private:
               } else if (isDerivedCategory(lhsType->category())) {
                 // Fortran 2018 10.2.1.3 p13 and p14
                 // Recursively gen an assignment on each element pair.
-                fir::factory::genRecordAssignment(*builder, loc, lhs, rhs);
+                fir::factory::genRecordAssignment(*builder, loc, lhs, rhs,
+                                                  needFinalization);
               } else {
                 llvm_unreachable("unknown category");
               }

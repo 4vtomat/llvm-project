@@ -67,6 +67,10 @@ public:
                         const MCSubtargetInfo &STI) const;
 #endif // SIFIVE_CUSTOMIZATION
 
+  void expandLongCondBr(const MCInst &MI, raw_ostream &OS,
+                        SmallVectorImpl<MCFixup> &Fixups,
+                        const MCSubtargetInfo &STI) const;
+
   /// TableGen'erated function for getting the binary encoding for an
   /// instruction.
   uint64_t getBinaryCodeForInstr(const MCInst &MI,
@@ -286,6 +290,81 @@ void RISCVMCCodeEmitter::expandLongCondBr(const MCInst &MI, raw_ostream &OS,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+static unsigned getInvertedBranchOp(unsigned BrOp) {
+  switch (BrOp) {
+  default:
+    llvm_unreachable("Unexpected branch opcode!");
+  case RISCV::PseudoLongBEQ:
+    return RISCV::BNE;
+  case RISCV::PseudoLongBNE:
+    return RISCV::BEQ;
+  case RISCV::PseudoLongBLT:
+    return RISCV::BGE;
+  case RISCV::PseudoLongBGE:
+    return RISCV::BLT;
+  case RISCV::PseudoLongBLTU:
+    return RISCV::BGEU;
+  case RISCV::PseudoLongBGEU:
+    return RISCV::BLTU;
+  }
+}
+
+// Expand PseudoLongBxx to an inverted conditional branch and an unconditional
+// jump.
+void RISCVMCCodeEmitter::expandLongCondBr(const MCInst &MI, raw_ostream &OS,
+                                          SmallVectorImpl<MCFixup> &Fixups,
+                                          const MCSubtargetInfo &STI) const {
+  MCRegister SrcReg1 = MI.getOperand(0).getReg();
+  MCRegister SrcReg2 = MI.getOperand(1).getReg();
+  MCOperand SrcSymbol = MI.getOperand(2);
+  unsigned Opcode = MI.getOpcode();
+  bool IsEqTest =
+      Opcode == RISCV::PseudoLongBNE || Opcode == RISCV::PseudoLongBEQ;
+
+  bool UseCompressedBr = false;
+  if (IsEqTest && (STI.getFeatureBits()[RISCV::FeatureStdExtC] ||
+                   STI.getFeatureBits()[RISCV::FeatureExtZca])) {
+    if (RISCV::X8 <= SrcReg1.id() && SrcReg1.id() <= RISCV::X15 &&
+        SrcReg2.id() == RISCV::X0) {
+      UseCompressedBr = true;
+    } else if (RISCV::X8 <= SrcReg2.id() && SrcReg2.id() <= RISCV::X15 &&
+               SrcReg1.id() == RISCV::X0) {
+      std::swap(SrcReg1, SrcReg2);
+      UseCompressedBr = true;
+    }
+  }
+
+  uint32_t Offset;
+  if (UseCompressedBr) {
+    unsigned InvOpc =
+        Opcode == RISCV::PseudoLongBNE ? RISCV::C_BEQZ : RISCV::C_BNEZ;
+    MCInst TmpInst = MCInstBuilder(InvOpc).addReg(SrcReg1).addImm(6);
+    uint16_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+    support::endian::write<uint16_t>(OS, Binary, support::little);
+    Offset = 2;
+  } else {
+    unsigned InvOpc = getInvertedBranchOp(Opcode);
+    MCInst TmpInst =
+        MCInstBuilder(InvOpc).addReg(SrcReg1).addReg(SrcReg2).addImm(8);
+    uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+    support::endian::write(OS, Binary, support::little);
+    Offset = 4;
+  }
+
+  // Emit an unconditional jump to the destination.
+  MCInst TmpInst =
+      MCInstBuilder(RISCV::JAL).addReg(RISCV::X0).addOperand(SrcSymbol);
+  uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+  support::endian::write(OS, Binary, support::little);
+
+  Fixups.clear();
+  if (SrcSymbol.isExpr()) {
+    Fixups.push_back(MCFixup::create(Offset, SrcSymbol.getExpr(),
+                                     MCFixupKind(RISCV::fixup_riscv_jal),
+                                     MI.getLoc()));
+  }
+}
+
 void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
                                            SmallVectorImpl<MCFixup> &Fixups,
                                            const MCSubtargetInfo &STI) const {
@@ -310,7 +389,10 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     expandAddRegRel(MI, OS, Fixups, STI); // SIFIVE
     MCNumEmitted += 1;
     return;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
   case RISCV::PseudoLongBEQ:
   case RISCV::PseudoLongBNE:
   case RISCV::PseudoLongBLT:
@@ -320,7 +402,10 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     expandLongCondBr(MI, OS, Fixups, STI);
     MCNumEmitted += 2;
     return;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
   }
 
   switch (Size) {

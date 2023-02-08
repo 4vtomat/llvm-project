@@ -168,7 +168,10 @@ bool RISCVAsmBackend::fixupNeedsRelaxationAdvanced(const MCFixup &Fixup,
                                                    const MCRelaxableFragment *DF,
                                                    const MCAsmLayout &Layout,
                                                    const bool WasForced) const {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
   int64_t Offset = int64_t(Value);
   unsigned Kind = Fixup.getTargetKind();
 
@@ -176,8 +179,12 @@ bool RISCVAsmBackend::fixupNeedsRelaxationAdvanced(const MCFixup &Fixup,
   // For conditional branch, the immediate must be in the range
   // [-4096, 4094].
   if (Kind == RISCV::fixup_riscv_branch)
+<<<<<<< HEAD
     return Resolved && (Offset > 4094 || Offset < -4096);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return Resolved && !isInt<13>(Offset);
+>>>>>>> pub/main
 
   // Return true if the symbol is actually unresolved.
   // Resolved could be always false when shouldForceRelocation return true.
@@ -209,7 +216,11 @@ void RISCVAsmBackend::relaxInstruction(MCInst &Inst,
   case RISCV::C_BEQZ:
   case RISCV::C_BNEZ:
   case RISCV::C_J:
+<<<<<<< HEAD
   case RISCV::C_JAL: { // SIFIVE
+=======
+  case RISCV::C_JAL: {
+>>>>>>> pub/main
     bool Success = RISCVRVC::uncompress(Res, Inst, STI);
     assert(Success && "Can't uncompress instruction");
     (void)Success;
@@ -228,6 +239,18 @@ void RISCVAsmBackend::relaxInstruction(MCInst &Inst,
     Res.addOperand(Inst.getOperand(2));
     break;
 #endif // SIFIVE_CUSTOMIZATION
+  }
+  case RISCV::BEQ:
+  case RISCV::BNE:
+  case RISCV::BLT:
+  case RISCV::BGE:
+  case RISCV::BLTU:
+  case RISCV::BGEU:
+    Res.setOpcode(getRelaxedOpcode(Inst.getOpcode()));
+    Res.addOperand(Inst.getOperand(0));
+    Res.addOperand(Inst.getOperand(1));
+    Res.addOperand(Inst.getOperand(2));
+    break;
   }
   Inst = std::move(Res);
 }
@@ -370,7 +393,10 @@ unsigned RISCVAsmBackend::getRelaxedOpcode(unsigned Op) const {
   case RISCV::C_J:
   case RISCV::C_JAL: // fall through.
     return RISCV::JAL;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
   case RISCV::BEQ:
     return RISCV::PseudoLongBEQ;
   case RISCV::BNE:
@@ -383,7 +409,10 @@ unsigned RISCVAsmBackend::getRelaxedOpcode(unsigned Op) const {
     return RISCV::PseudoLongBLTU;
   case RISCV::BGEU:
     return RISCV::PseudoLongBGEU;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
   }
 }
 

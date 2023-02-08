@@ -435,6 +435,7 @@ namespace {
     SDValue visitMULHU(SDNode *N);
     SDValue visitMULHS(SDNode *N);
     SDValue visitAVG(SDNode *N);
+    SDValue visitABD(SDNode *N);
     SDValue visitSMUL_LOHI(SDNode *N);
     SDValue visitUMUL_LOHI(SDNode *N);
     SDValue visitMULO(SDNode *N);
@@ -1739,6 +1740,8 @@ SDValue DAGCombiner::visit(SDNode *N) {
   case ISD::AVGFLOORU:
   case ISD::AVGCEILS:
   case ISD::AVGCEILU:           return visitAVG(N);
+  case ISD::ABDS:
+  case ISD::ABDU:               return visitABD(N);
   case ISD::SMUL_LOHI:          return visitSMUL_LOHI(N);
   case ISD::UMUL_LOHI:          return visitUMUL_LOHI(N);
   case ISD::SMULO:
@@ -3833,7 +3836,7 @@ SDValue DAGCombiner::visitSUB(SDNode *N) {
         (N0.getOperand(0) != N1.getOperand(1) ||
          N0.getOperand(1) != N1.getOperand(0)))
       return SDValue();
-    if (!TLI.isOperationLegalOrCustom(Abd, VT))
+    if (!hasOperation(Abd, VT))
       return SDValue();
     return DAG.getNode(Abd, DL, VT, N0.getOperand(0), N0.getOperand(1));
   };
@@ -4906,6 +4909,46 @@ SDValue DAGCombiner::visitAVG(SDNode *N) {
     return N0;
 
   // TODO If we use avg for scalars anywhere, we can add (avgfl x, 0) -> x >> 1
+
+  return SDValue();
+}
+
+SDValue DAGCombiner::visitABD(SDNode *N) {
+  unsigned Opcode = N->getOpcode();
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  EVT VT = N->getValueType(0);
+  SDLoc DL(N);
+
+  // fold (abd c1, c2)
+  if (SDValue C = DAG.FoldConstantArithmetic(Opcode, DL, VT, {N0, N1}))
+    return C;
+  // reassociate if possible
+  if (SDValue C = reassociateOps(Opcode, DL, N0, N1, N->getFlags()))
+    return C;
+
+  // canonicalize constant to RHS.
+  if (DAG.isConstantIntBuildVectorOrConstantInt(N0) &&
+      !DAG.isConstantIntBuildVectorOrConstantInt(N1))
+    return DAG.getNode(Opcode, DL, N->getVTList(), N1, N0);
+
+  if (VT.isVector()) {
+    if (SDValue FoldedVOp = SimplifyVBinOp(N, DL))
+      return FoldedVOp;
+
+    // fold (abds x, 0) -> abs x
+    // fold (abdu x, 0) -> x
+    if (ISD::isConstantSplatVectorAllZeros(N1.getNode())) {
+      if (Opcode == ISD::ABDS)
+        return DAG.getNode(ISD::ABS, DL, VT, N0);
+      if (Opcode == ISD::ABDU)
+        return N0;
+    }
+  }
+
+  // fold (abd x, undef) -> 0
+  if (N0.isUndef() || N1.isUndef())
+    return DAG.getConstant(0, DL, VT);
 
   return SDValue();
 }
@@ -10177,13 +10220,23 @@ SDValue DAGCombiner::visitSHLSAT(SDNode *N) {
   return SDValue();
 }
 
-// Given a ABS node, detect the following pattern:
+// Given a ABS node, detect the following patterns:
 // (ABS (SUB (EXTEND a), (EXTEND b))).
+// (TRUNC (ABS (SUB (EXTEND a), (EXTEND b)))).
 // Generates UABD/SABD instruction.
 SDValue DAGCombiner::foldABSToABD(SDNode *N) {
+  EVT SrcVT = N->getValueType(0);
+
+  if (N->getOpcode() == ISD::TRUNCATE)
+    N = N->getOperand(0).getNode();
+
+  if (N->getOpcode() != ISD::ABS)
+    return SDValue();
+
   EVT VT = N->getValueType(0);
   SDValue AbsOp1 = N->getOperand(0);
   SDValue Op0, Op1;
+  SDLoc DL(N);
 
   if (AbsOp1.getOpcode() != ISD::SUB)
     return SDValue();
@@ -10196,9 +10249,12 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N) {
   if (Opc0 != Op1.getOpcode() ||
       (Opc0 != ISD::ZERO_EXTEND && Opc0 != ISD::SIGN_EXTEND)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
+    // Limit this to legal ops to prevent loss of sub_nsw pattern.
     if (AbsOp1->getFlags().hasNoSignedWrap() &&
-        TLI.isOperationLegalOrCustom(ISD::ABDS, VT))
-      return DAG.getNode(ISD::ABDS, SDLoc(N), VT, Op0, Op1);
+        TLI.isOperationLegal(ISD::ABDS, VT)) {
+      SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
+      return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
+    }
     return SDValue();
   }
 
@@ -10209,17 +10265,20 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N) {
   // fold abs(sext(x) - sext(y)) -> zext(abds(x, y))
   // fold abs(zext(x) - zext(y)) -> zext(abdu(x, y))
   // NOTE: Extensions must be equivalent.
-  if (VT1 == VT2 && TLI.isOperationLegalOrCustom(ABDOpcode, VT1)) {
+  if (VT1 == VT2 && hasOperation(ABDOpcode, VT1)) {
     Op0 = Op0.getOperand(0);
     Op1 = Op1.getOperand(0);
-    SDValue ABD = DAG.getNode(ABDOpcode, SDLoc(N), VT1, Op0, Op1);
-    return DAG.getNode(ISD::ZERO_EXTEND, SDLoc(N), VT, ABD);
+    SDValue ABD = DAG.getNode(ABDOpcode, DL, VT1, Op0, Op1);
+    ABD = DAG.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
+    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
   }
 
   // fold abs(sext(x) - sext(y)) -> abds(sext(x), sext(y))
   // fold abs(zext(x) - zext(y)) -> abdu(zext(x), zext(y))
-  if (TLI.isOperationLegalOrCustom(ABDOpcode, VT))
-    return DAG.getNode(ABDOpcode, SDLoc(N), VT, Op0, Op1);
+  if (hasOperation(ABDOpcode, VT)) {
+    SDValue ABD = DAG.getNode(ABDOpcode, DL, VT, Op0, Op1);
+    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
+  }
 
   return SDValue();
 }
@@ -10909,6 +10968,73 @@ SDValue DAGCombiner::visitSELECT(SDNode *N) {
         SDValue UAO = DAG.getNode(ISD::UADDO, DL, VTs, Cond0, N2.getOperand(1));
         return DAG.getSelect(DL, VT, UAO.getValue(1), N1, UAO.getValue(0));
       }
+    }
+
+    // If we have a chain of two selects, which share a true/false value and
+    // both are controlled from the two setcc nodes which cannot produce the
+    // same value, we can fold away N.
+    // select (setcc X), Y, (select (setcc X), Z, Y) -> select (setcc X), Z, Y
+    auto IsSelect = [](SDValue Op) {
+      return Op->getOpcode() == ISD::SELECT;
+    };
+    if ((IsSelect(N1) || IsSelect(N2)) && (N1.getOpcode() != N2.getOpcode())) {
+      auto AreSame = [](SDValue Op0, SDValue Op1) {
+        if (Op0 == Op1)
+          return true;
+        auto *C0 = dyn_cast<ConstantSDNode>(Op0);
+        auto *C1 = dyn_cast<ConstantSDNode>(Op1);
+        return C0 && C1 &&
+               APInt::isSameValue(C0->getAPIntValue(), C1->getAPIntValue());
+      };
+
+      SDValue OtherSelect;
+      bool SelectsShareOp = false;
+      if (IsSelect(N1)) {
+        OtherSelect = N1;
+        SelectsShareOp = AreSame(OtherSelect.getOperand(1), N2);
+      } else {
+        OtherSelect = N2;
+        SelectsShareOp = AreSame(OtherSelect.getOperand(2), N1);
+      }
+
+      auto CanNeverBeEqual = [](SDValue SetCC0, SDValue SetCC1) {
+        if (SetCC0->getOpcode() != ISD::SETCC ||
+            SetCC1->getOpcode() != ISD::SETCC ||
+            SetCC0->getOperand(0) != SetCC1->getOperand(0))
+          return false;
+
+        ISD::CondCode CC0 = cast<CondCodeSDNode>(SetCC0.getOperand(2))->get();
+        ISD::CondCode CC1 = cast<CondCodeSDNode>(SetCC1.getOperand(2))->get();
+        auto *C0 = dyn_cast<ConstantSDNode>(SetCC0.getOperand(1));
+        auto *C1 = dyn_cast<ConstantSDNode>(SetCC1.getOperand(1));
+        if (!C0 || !C1)
+          return false;
+
+        bool ConstantsAreSame =
+          APInt::isSameValue(C0->getAPIntValue(), C1->getAPIntValue());
+        auto IsEqual = [](ISD::CondCode CC) {
+          return CC == ISD::SETEQ;
+        };
+        auto IsNotEqual = [](ISD::CondCode CC) {
+          return CC == ISD::SETLT || CC == ISD::SETULT ||
+                 CC == ISD::SETGT || CC == ISD::SETUGT ||
+                 CC == ISD::SETNE;
+        };
+
+        if (ConstantsAreSame && IsNotEqual(CC0) && IsEqual(CC1))
+          return true;
+        if (ConstantsAreSame && IsNotEqual(CC1) && IsEqual(CC0))
+          return true;
+        if (!ConstantsAreSame && IsEqual(CC0) && IsEqual(CC1))
+          return true;
+
+        return false;
+      };
+
+      SDValue SetCC0 = N0;
+      SDValue SetCC1 = OtherSelect.getOperand(0);
+      if (SelectsShareOp && CanNeverBeEqual(SetCC0, SetCC1))
+        return OtherSelect;
     }
 
     if (TLI.isOperationLegal(ISD::SELECT_CC, VT) ||
@@ -13899,6 +14025,9 @@ SDValue DAGCombiner::visitTRUNCATE(SDNode *N) {
   if (SDValue V = foldSubToUSubSat(VT, N0.getNode()))
     return V;
 
+  if (SDValue ABD = foldABSToABD(N))
+    return ABD;
+
   // Attempt to pre-truncate BUILD_VECTOR sources.
   if (N0.getOpcode() == ISD::BUILD_VECTOR && !LegalOperations &&
       TLI.isTruncateFree(SrcVT.getScalarType(), VT.getScalarType()) &&
@@ -14512,6 +14641,10 @@ SDValue DAGCombiner::visitFREEZE(SDNode *N) {
                              MaybePoisonOperand);
     }
   }
+
+  // This node has been merged with another.
+  if (N->getOpcode() == ISD::DELETED_NODE)
+    return SDValue(N, 0);
 
   // The whole node may have been updated, so the value we were holding
   // may no longer be valid. Re-fetch the operand we're `freeze`ing.

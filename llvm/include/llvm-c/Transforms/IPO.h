@@ -35,12 +35,6 @@ void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM);
 /** See llvm::createConstantMergePass function. */
 void LLVMAddConstantMergePass(LLVMPassManagerRef PM);
 
-/** See llvm::createMergeFunctionsPass function. */
-void LLVMAddMergeFunctionsPass(LLVMPassManagerRef PM);
-
-/** See llvm::createCalledValuePropagationPass function. */
-void LLVMAddCalledValuePropagationPass(LLVMPassManagerRef PM);
-
 /** See llvm::createDeadArgEliminationPass function. */
 void LLVMAddDeadArgEliminationPass(LLVMPassManagerRef PM);
 

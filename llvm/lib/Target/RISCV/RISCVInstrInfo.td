@@ -1666,7 +1666,10 @@ let Predicates = [HasStdExtC, OptForMinSize] in {
   def : BrccCompessOpt<SETNE, BNE>;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
 class LongBccPseudo : Pseudo<(outs),
                              (ins GPR:$rs1, GPR:$rs2, simm21_lsb0_jal:$imm20),
                              []> {
@@ -1686,7 +1689,10 @@ def PseudoLongBLT : LongBccPseudo;
 def PseudoLongBGE : LongBccPseudo;
 def PseudoLongBLTU : LongBccPseudo;
 def PseudoLongBGEU : LongBccPseudo;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> pub/main
 
 let isBarrier = 1, isBranch = 1, isTerminator = 1 in
 def PseudoBR : Pseudo<(outs), (ins simm21_lsb0_jal:$imm20), [(br bb:$imm20)]>,

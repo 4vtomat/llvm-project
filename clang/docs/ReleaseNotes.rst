@@ -60,18 +60,27 @@ Bug Fixes
 - Fix crash when diagnosing incorrect usage of ``_Nullable`` involving alias
   templates. This fixes
   `Issue 60344 <https://github.com/llvm/llvm-project/issues/60344>`_.
+- Fix confusing warning message when ``/clang:-x`` is passed in ``clang-cl``
+  driver mode and emit an error which suggests using ``/TC`` or ``/TP``
+  ``clang-cl`` options instead. This fixes
+  `Issue 59307 <https://github.com/llvm/llvm-project/issues/59307>`_.
 
 Improvements to Clang's diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 - We now generate a diagnostic for signed integer overflow due to unary minus
   in a non-constant expression context. This fixes
   `Issue 31643 <https://github.com/llvm/llvm-project/issues/31643>`_
+- Clang now warns by default for C++20 and later about deprecated capture of
+  ``this`` with a capture default of ``=``. This warning can be disabled with
+  ``-Wno-deprecated-this-capture``.
 
 Non-comprehensive list of changes in this release
 -------------------------------------------------
 - Clang now saves the address of ABI-indirect function parameters on the stack,
   improving the debug information available in programs compiled without
   optimizations.
+- Clang now supports ``__builtin_nondeterministic_value`` that returns a
+  nondeterministic value of the same type as the provided argument.
 
 New Compiler Flags
 ------------------
@@ -121,11 +130,6 @@ C++20 Feature Support
 C++2b Feature Support
 ^^^^^^^^^^^^^^^^^^^^^
 
-- Implemented `P2036R3: Change scope of lambda trailing-return-type <https://wg21.link/P2036R3>`_
-  and `P2579R0 Mitigation strategies for P2036 <https://wg21.link/P2579R0>`_.
-  These proposals modify how variables captured in lambdas can appear in trailing return type
-  expressions and how their types are deduced therein, in all C++ language versions.
-
 CUDA/HIP Language Changes in Clang
 ----------------------------------
 
@@ -153,6 +157,10 @@ LoongArch Support in Clang
 
 RISC-V Support in Clang
 -----------------------
+- Added ``-mrvv-vector-bits=`` option to give an upper and lower bound on vector
+  length. Valid values are powers of 2 between 64 and 65536. A value of 32
+  should eventually be supported. We also accept "zvl" to use the Zvl*b
+  extension from ``-march`` or ``-mcpu`` to the be the upper and lower bound.
 
 X86 Support in Clang
 --------------------
@@ -175,6 +183,7 @@ Arm and AArch64 Support in Clang
 
 Floating Point Support in Clang
 -------------------------------
+- Add ``__builtin_elementwise_log`` builtin for floating point types only.
 
 Internal API Changes
 --------------------
@@ -187,6 +196,11 @@ AST Matchers
 
 clang-format
 ------------
+
+- Add ``NextLineOnly`` style to option ``PackConstructorInitializers``.
+  Compared to ``NextLine`` style, ``NextLineOnly`` style will not try to
+  put the initializers on the current line first, instead, it will try to
+  put the initializers on the next line only.
 
 clang-extdef-mapping
 --------------------
