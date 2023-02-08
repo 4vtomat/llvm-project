@@ -2110,7 +2110,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
       CmdArgs.push_back(A->getValue());
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // SiFive specific options.
   // Check SiFive Recode option.
@@ -2135,7 +2134,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     CmdArgs.append({"-mllvm", "-scalable-vectorization=off"});
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // Handle -mrvv-vector-bits=<bits>
   if (Arg *A = Args.getLastArg(options::OPT_mrvv_vector_bits_EQ)) {
     StringRef Val = A->getValue();
@@ -2179,7 +2177,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
           << A->getSpelling() << Val;
     }
   }
->>>>>>> pub/main
 }
 
 void Clang::AddSparcTargetArgs(const ArgList &Args,
