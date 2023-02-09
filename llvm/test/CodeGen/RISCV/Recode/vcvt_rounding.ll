@@ -33,9 +33,9 @@ define void @vcvtm_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI1_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 2
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -114,9 +114,9 @@ define void @vcvtm_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI4_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 2
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -195,9 +195,9 @@ define void @vcvtmq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI7_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 2
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -276,9 +276,9 @@ define void @vcvtmq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI10_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 2
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -357,9 +357,9 @@ define void @vcvtn_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI13_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI13_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -438,9 +438,9 @@ define void @vcvtn_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI16_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI16_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -519,9 +519,9 @@ define void @vcvtnq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI19_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI19_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -600,9 +600,9 @@ define void @vcvtnq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI22_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI22_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -681,9 +681,9 @@ define void @vcvtp_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI25_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI25_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 3
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -762,9 +762,9 @@ define void @vcvtp_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI28_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI28_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 3
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -843,9 +843,9 @@ define void @vcvtpq_s32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI31_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI31_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 3
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t
@@ -924,9 +924,9 @@ define void @vcvtpq_u32_f32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, %hi(.LCPI34_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI34_0)(a0)
 ; CHECK-NEXT:    vfabs.v v9, v8
+; CHECK-NEXT:    lui a0, 307200
+; CHECK-NEXT:    fmv.w.x ft0, a0
 ; CHECK-NEXT:    vmflt.vf v0, v9, ft0
 ; CHECK-NEXT:    fsrmi a0, 3
 ; CHECK-NEXT:    vfcvt.x.f.v v9, v8, v0.t

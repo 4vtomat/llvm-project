@@ -28,15 +28,14 @@ define void @vmax_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vmax_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vmfne.vv v10, v8, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI1_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmor.mm v0, v11, v10
-; CHECK-NEXT:    vfmax.vv v8, v9, v8
-; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vfmax.vv v10, v8, v9
+; CHECK-NEXT:    vmfne.vv v9, v9, v9
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
+; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    lui a0, 523264
+; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -97,15 +96,14 @@ define void @vmaxq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vmaxq_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vmfne.vv v10, v8, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI4_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmor.mm v0, v11, v10
-; CHECK-NEXT:    vfmax.vv v8, v9, v8
-; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vfmax.vv v10, v8, v9
+; CHECK-NEXT:    vmfne.vv v9, v9, v9
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
+; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    lui a0, 523264
+; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -166,15 +164,14 @@ define void @vmin_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vmin_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vmfne.vv v10, v8, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI7_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmor.mm v0, v11, v10
-; CHECK-NEXT:    vfmin.vv v8, v9, v8
-; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vfmin.vv v10, v8, v9
+; CHECK-NEXT:    vmfne.vv v9, v9, v9
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
+; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    lui a0, 523264
+; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -235,15 +232,14 @@ define void @vminq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vminq_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vmfne.vv v10, v8, v8
-; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
-; CHECK-NEXT:    flw ft0, %lo(.LCPI10_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmor.mm v0, v11, v10
-; CHECK-NEXT:    vfmin.vv v8, v9, v8
-; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vfmin.vv v10, v8, v9
+; CHECK-NEXT:    vmfne.vv v9, v9, v9
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
+; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    lui a0, 523264
+; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

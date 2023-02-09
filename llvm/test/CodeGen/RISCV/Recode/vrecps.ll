@@ -14,10 +14,9 @@ define void @vrecps_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
+; CHECK-NEXT:    lui a0, 4
 ; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vlse16.v v10, (a0), zero
+; CHECK-NEXT:    vmv.v.x v10, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vse16.v v10, (a2)
@@ -43,10 +42,9 @@ define void @vrecps_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI1_0)
+; CHECK-NEXT:    lui a0, 262144
 ; CHECK-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vlse32.v v10, (a0), zero
+; CHECK-NEXT:    vmv.v.x v10, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vse32.v v10, (a2)
@@ -101,10 +99,9 @@ define void @vrecpsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
+; CHECK-NEXT:    lui a0, 4
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vlse16.v v10, (a0), zero
+; CHECK-NEXT:    vmv.v.x v10, a0
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vse16.v v10, (a2)
@@ -130,10 +127,9 @@ define void @vrecpsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI4_0)
+; CHECK-NEXT:    lui a0, 262144
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vlse32.v v10, (a0), zero
+; CHECK-NEXT:    vmv.v.x v10, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vse32.v v10, (a2)
