@@ -234,6 +234,10 @@ defm gnu_unique: BB<"gnu-unique",
   "Enable STB_GNU_UNIQUE symbol binding (default)",
   "Disable STB_GNU_UNIQUE symbol binding">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def gp_relax: F<"gp-relax">, HelpText<"Enable GP relaxation">;
+#endif
+
 defm hash_style: Eq<"hash-style", "Specify hash style (sysv, gnu or both)">;
 
 def help: F<"help">, HelpText<"Print option help">;

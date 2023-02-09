@@ -971,6 +971,15 @@ static unsigned getSectionRank(const OutputSection &osec) {
       rank |= RF_MIPS_NOT_GOT;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (config->emachine == EM_RISCV && config->gpRelax) {
+    if (osec.name != ".sbss")
+      rank |= 2;
+    if (osec.name == ".sdata")
+      rank |= 1;
+  }
+#endif
+
   return rank;
 }
 
@@ -1858,8 +1867,10 @@ template <class ELFT> void Writer<ELFT>::finalizeSections() {
     // st_shndx arbitrarily to 1 (Out::elfHeader).
     if (config->emachine == EM_RISCV && !config->shared) {
       OutputSection *sec = findSection(".sdata");
-      addOptionalRegular("__global_pointer$", sec ? sec : Out::elfHeader, 0x800,
-                         STV_DEFAULT);
+#if SIFIVE_CUSTOMIZATION
+      ElfSym::riscvGlobalPointer = addOptionalRegular(
+          "__global_pointer$", sec ? sec : Out::elfHeader, 0x800, STV_DEFAULT);
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     if (config->emachine == EM_386 || config->emachine == EM_X86_64) {

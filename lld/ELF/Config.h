@@ -217,6 +217,9 @@ struct Config {
   bool gdbIndex;
   bool gnuHash = false;
   bool gnuUnique;
+#if SIFIVE_CUSTOMIZATION
+  bool gpRelax;
+#endif
   bool hasDynSymTab;
   bool ignoreDataAddressEquality;
   bool ignoreFunctionAddressEquality;
