@@ -589,7 +589,7 @@ void m8_e64(int *a, int *b, int *c, int n) {
 //.
 // CHECK: !0 = !{i32 1, !"wchar_size", i32 4}
 // CHECK: !1 = !{i32 1, !"target-abi", !"lp64"}
-// CHECK: !2 = !{i32 1, !"SmallDataLimit", i32 0}
+// CHECK: !2 = !{i32 8, !"SmallDataLimit", i32 0}
 // CHECK: !3 = distinct !{!3, !4, !5, !6}
 // CHECK: !4 = !{!"llvm.loop.mustprogress"}
 // CHECK: !5 = !{!"llvm.loop.vectorize.width", i32 1}
