@@ -59,19 +59,12 @@ void LLVMInitializeIPO(LLVMPassRegistryRef R) {
   initializeIPO(*unwrap(R));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createLoopDataLayoutPass());
 }
 #endif
 
-void LLVMAddCalledValuePropagationPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createCalledValuePropagationPass());
-}
-
-=======
->>>>>>> pub/main
 void LLVMAddConstantMergePass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createConstantMergePass());
 }
