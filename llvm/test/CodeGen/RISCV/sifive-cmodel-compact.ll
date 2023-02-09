@@ -360,15 +360,8 @@ indirectgoto:
 define float @lower_constantpool(float %a) nounwind {
 ; PIC-LABEL: lower_constantpool:
 ; PIC:       # %bb.0:
-; PIC-NEXT:  .Lpcrel_hi9:
-; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi9)
-; PIC-NEXT:    ld a1, 0(a0)
-; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(.LCPI10_0)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(.LCPI10_0)
-; PIC-NEXT:    ld a0, %got_gprel_lo(.LCPI10_0)(a0)
-; PIC-NEXT:    flw ft0, 0(a0)
+; PIC-NEXT:    lui a0, 260096
+; PIC-NEXT:    fmv.w.x ft0, a0
 ; PIC-NEXT:    fadd.s fa0, fa0, ft0
 ; PIC-NEXT:    ret
 ;
@@ -393,9 +386,9 @@ define float @lower_constantpool(float %a) nounwind {
 define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; PIC-LABEL: lower_jumptable:
 ; PIC:       # %bb.0: # %entry
-; PIC-NEXT:  .Lpcrel_hi10:
+; PIC-NEXT:  .Lpcrel_hi9:
 ; PIC-NEXT:    auipc a2, %pcrel_hi(__global_pointer__)
-; PIC-NEXT:    addi a2, a2, %pcrel_lo(.Lpcrel_hi10)
+; PIC-NEXT:    addi a2, a2, %pcrel_lo(.Lpcrel_hi9)
 ; PIC-NEXT:    ld a3, 0(a2)
 ; PIC-NEXT:    sext.w a0, a0
 ; PIC-NEXT:    addi a0, a0, -1

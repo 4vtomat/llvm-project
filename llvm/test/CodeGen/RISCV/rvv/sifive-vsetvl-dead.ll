@@ -6,9 +6,8 @@
 define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* nocapture readonly %3, i64 %4) nounwind {
 ; CHECK-LABEL: blas_dot:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
-; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vsetvli a5, a0, e32, m8, ta, mu
+; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    beqz a5, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    mv a6, a0

@@ -51,14 +51,13 @@ define <2 x float> @recip_v2f32(<2 x float> %a) #0 {
 ; CHECK-LABEL: recip_v2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
-; CHECK-NEXT:    vlse32.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vmv1r.v v11, v10
-; CHECK-NEXT:    vfnmsub.vv v11, v8, v9
-; CHECK-NEXT:    vfmadd.vv v11, v10, v10
-; CHECK-NEXT:    vfnmsub.vv v8, v11, v9
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    lui a0, 260096
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmv1r.v v11, v9
+; CHECK-NEXT:    vfnmsub.vv v11, v8, v10
+; CHECK-NEXT:    vfmadd.vv v11, v9, v9
+; CHECK-NEXT:    vfnmsub.vv v8, v11, v10
 ; CHECK-NEXT:    vfmadd.vv v8, v11, v11
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x float> <float 1.000000e+00, float 1.000000e+00>, %a
@@ -69,14 +68,13 @@ define <4 x float> @recip_v4f32(<4 x float> %a) #0 {
 ; CHECK-LABEL: recip_v4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI4_0)
-; CHECK-NEXT:    vlse32.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vmv.v.v v11, v10
-; CHECK-NEXT:    vfnmsub.vv v11, v8, v9
-; CHECK-NEXT:    vfmadd.vv v11, v10, v10
-; CHECK-NEXT:    vfnmsub.vv v8, v11, v9
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    lui a0, 260096
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmv.v.v v11, v9
+; CHECK-NEXT:    vfnmsub.vv v11, v8, v10
+; CHECK-NEXT:    vfmadd.vv v11, v9, v9
+; CHECK-NEXT:    vfnmsub.vv v8, v11, v10
 ; CHECK-NEXT:    vfmadd.vv v8, v11, v11
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %a
@@ -87,14 +85,13 @@ define <8 x float> @recip_v8f32(<8 x float> %a) #0 {
 ; CHECK-LABEL: recip_v8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
-; CHECK-NEXT:    vlse32.v v10, (a0), zero
-; CHECK-NEXT:    vfrec7.v v12, v8
-; CHECK-NEXT:    vmv.v.v v14, v12
-; CHECK-NEXT:    vfnmsub.vv v14, v8, v10
-; CHECK-NEXT:    vfmadd.vv v14, v12, v12
-; CHECK-NEXT:    vfnmsub.vv v8, v14, v10
+; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a0, 260096
+; CHECK-NEXT:    vmv.v.x v12, a0
+; CHECK-NEXT:    vmv.v.v v14, v10
+; CHECK-NEXT:    vfnmsub.vv v14, v8, v12
+; CHECK-NEXT:    vfmadd.vv v14, v10, v10
+; CHECK-NEXT:    vfnmsub.vv v8, v14, v12
 ; CHECK-NEXT:    vfmadd.vv v8, v14, v14
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, %a
