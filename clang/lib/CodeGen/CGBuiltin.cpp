@@ -6948,7 +6948,12 @@ Value *CodeGenFunction::EmitCommonNeonBuiltinExpr(
   case NEON::BI__builtin_neon_vclzq_v:
     // We generate target-independent intrinsic, which needs a second argument
     // for whether or not clz of zero is undefined; on ARM it isn't.
-    Ops.push_back(Builder.getInt1(getTarget().isCLZForZeroUndef()));
+#if SIFIVE_CUSTOMIZATION
+    if (getTarget().getTriple().getArch() == llvm::Triple::riscv64)
+      Ops.push_back(Builder.getInt1(false));
+    else
+      Ops.push_back(Builder.getInt1(getTarget().isCLZForZeroUndef()));
+#endif
     break;
   case NEON::BI__builtin_neon_vcvt_f32_v:
   case NEON::BI__builtin_neon_vcvtq_f32_v:

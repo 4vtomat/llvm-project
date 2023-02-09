@@ -51,9 +51,9 @@ def FeatureStdExtSvbare
                        "'Svbare'",
                        []>;
 
-def FeatureStdExtSsptead
-    : SubtargetFeature<"ssptead", "HasStdExtSsptead", "true",
-                       "'Ssptead' (Page-fault exceptions are raised when a page "
+def FeatureStdExtSvptead
+    : SubtargetFeature<"svptead", "HasStdExtSvptead", "true",
+                       "'Svptead' (Page-fault exceptions are raised when a page "
                        "is accessed when A bit is clear, or written when D bit "
                        "is clear)", []>;
 
@@ -134,6 +134,25 @@ def FeatureStdExtShgatpa
                        "SvNN supported in satp, the corresponding hgatp SvNNx4 "
                        "mode must be supported. The hgatp mode Bare must also "
                        "be supported.)", []>;
+
+def FeatureStdExtSmwg
+    : SubtargetFeature<"smwg", "HasStdExtSmwg", "true",
+                       "'Smwg' (The Smwg extension adds the mlwid CSR, which is "
+                       "an M-mode read-write CSR, whose least-significant bits "
+                       "set the WID to be used by lower-privilege modes.)", []>;
+
+def FeatureStdExtSmwgd
+    : SubtargetFeature<"smwgd", "HasStdExtSmwgd", "true",
+                       "'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode "
+                       "read-write CSR. The mwiddeleg register represents a set "
+                       "of WIDs as a bit vector with WID i represented by bit i "
+                       "of the register.)", []>;
+
+def FeatureStdExtSswg
+    : SubtargetFeature<"sswg", "HasStdExtSswg", "true",
+                       "'Sswg' (The Sswg extension adds the [H]S-mode read-write "
+                       "slwid CSR, which sets the WID used for modes lower than "
+                       "[H]S-mode.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

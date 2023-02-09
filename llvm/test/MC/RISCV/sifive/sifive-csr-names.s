@@ -129,38 +129,38 @@ csrrs t2, 0x353, zero
 # mlwid
 # name
 # CHECK-INST: csrrs t1, mlwid, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x00,0x7e]
+# CHECK-ENC: encoding: [0x73,0x23,0x00,0x39]
 # CHECK-INST-ALIAS: csrr t1, mlwid
 # uimm12
 # CHECK-INST: csrrs t2, mlwid, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x7e]
+# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x39]
 # CHECK-INST-ALIAS: csrr t2, mlwid
 csrrs t1, mlwid, zero
 # uimm12
-csrrs t2, 0x7e0, zero
+csrrs t2, 0x390, zero
 
 # mwiddeleg
 # name
 # CHECK-INST: csrrs t1, mwiddeleg, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x10,0x7e]
+# CHECK-ENC: encoding: [0x73,0x23,0x80,0x74]
 # CHECK-INST-ALIAS: csrr t1, mwiddeleg
 # uimm12
 # CHECK-INST: csrrs t2, mwiddeleg, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x10,0x7e]
+# CHECK-ENC: encoding: [0xf3,0x23,0x80,0x74]
 # CHECK-INST-ALIAS: csrr t2, mwiddeleg
 csrrs t1, mwiddeleg, zero
 # uimm12
-csrrs t2, 0x7e1, zero
+csrrs t2, 0x748, zero
 
 # slwid
 # name
 # CHECK-INST: csrrs t1, slwid, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x00,0x9e]
+# CHECK-ENC: encoding: [0x73,0x23,0x00,0x19]
 # CHECK-INST-ALIAS: csrr t1, slwid
 # uimm12
 # CHECK-INST: csrrs t2, slwid, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x9e]
+# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x19]
 # CHECK-INST-ALIAS: csrr t2, slwid
 csrrs t1, slwid, zero
 # uimm12
-csrrs t2, 0x9e0, zero
+csrrs t2, 0x190, zero

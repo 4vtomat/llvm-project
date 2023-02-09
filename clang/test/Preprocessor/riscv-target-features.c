@@ -61,7 +61,7 @@
 // CHECK-NOT: __riscv_zihpm
 // CHECK-NOT: __riscv_ss
 // CHECK-NOT: __riscv_svbare
-// CHECK-NOT: __riscv_ssptead
+// CHECK-NOT: __riscv_svptead
 // CHECK-NOT: __riscv_ssccptr
 // CHECK-NOT: __riscv_sstvecd
 // CHECK-NOT: __riscv_sstvala
@@ -83,6 +83,9 @@
 // CHECK-NOT: __riscv_zvkns
 // CHECK-NOT: __riscv_zvksed
 // CHECK-NOT: __riscv_zvksh
+// CHECK-NOT: __riscv_smwg
+// CHECK-NOT: __riscv_smwgd
+// CHECK-NOT: __riscv_sswg
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
@@ -570,11 +573,11 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-SVBARE-EXT %s
 // CHECK-SVBARE-EXT: __riscv_svbare  1000000{{$}}
 
-// RUN: %clang -target riscv32 -march=rv32issptead -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-SSPTEAD-EXT %s
-// RUN: %clang -target riscv64 -march=rv64issptead  -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-SSPTEAD-EXT %s
-// CHECK-SSPTEAD-EXT: __riscv_ssptead  1000000{{$}}
+// RUN: %clang -target riscv32 -march=rv32isvptead -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVPTEAD-EXT %s
+// RUN: %clang -target riscv64 -march=rv64isvptead  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVPTEAD-EXT %s
+// CHECK-SVPTEAD-EXT: __riscv_svptead  1000000{{$}}
 
 // RUN: %clang -target riscv32 -march=rv32issccptr -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSCCPTR-EXT %s
@@ -653,6 +656,24 @@
 // RUN: %clang -target riscv64 -march=rv64ishgatpa  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SHGATPA-EXT %s
 // CHECK-SHGATPA-EXT: __riscv_shgatpa  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32ismwg -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMWG-EXT %s
+// RUN: %clang -target riscv64 -march=rv64ismwg -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMWG-EXT %s
+// CHECK-SMWG-EXT: __riscv_smwg  3000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32i_smwg_smwgd -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMWGD-EXT %s
+// RUN: %clang -target riscv64 -march=rv64i_smwg_smwgd -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMWGD-EXT %s
+// CHECK-SMWGD-EXT: __riscv_smwgd  3000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32isswg -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
+// RUN: %clang -target riscv64 -march=rv64isswg -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
+// CHECK-SSWG-EXT: __riscv_sswg  3000{{$}}
 // end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \

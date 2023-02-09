@@ -123,8 +123,8 @@
 .attribute arch, "rv32isvbare"
 # CHECK: attribute      5, "rv32i2p1_svbare1p0"
 
-.attribute arch, "rv32issptead"
-# CHECK: attribute      5, "rv32i2p1_ssptead1p0"
+.attribute arch, "rv32isvptead"
+# CHECK: attribute      5, "rv32i2p1_svptead1p0"
 
 .attribute arch, "rv32issccptr"
 # CHECK: attribute      5, "rv32i2p1_ssccptr1p0"
@@ -164,6 +164,15 @@
 
 .attribute arch, "rv32ishgatpa"
 # CHECK: attribute      5, "rv32i2p1_shgatpa1p0"
+
+.attribute arch, "rv32ismwg"
+# CHECK: attribute      5, "rv32i2p1_smwg0p3"
+
+.attribute arch, "rv32i_smwg_smwgd"
+# CHECK: attribute      5, "rv32i2p1_smwg0p3_smwgd0p3"
+
+.attribute arch, "rv32i_sswg"
+# CHECK: attribute      5, "rv32i2p1_sswg0p3"
 
 ## SIFIVE_CUSTOMIZATION
 .attribute arch, "rv32i_sscofpmf"
