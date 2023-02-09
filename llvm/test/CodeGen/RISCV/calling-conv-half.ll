@@ -287,8 +287,8 @@ define i32 @caller_half_in_regs() nounwind {
 ; RV32-ZFH-ILP32:       # %bb.0:
 ; RV32-ZFH-ILP32-NEXT:    addi sp, sp, -16
 ; RV32-ZFH-ILP32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
-; RV32-ZFH-ILP32-NEXT:    lui a0, %hi(.LCPI1_0)
-; RV32-ZFH-ILP32-NEXT:    flh ft0, %lo(.LCPI1_0)(a0)
+; RV32-ZFH-ILP32-NEXT:    lui a0, 4
+; RV32-ZFH-ILP32-NEXT:    fmv.h.x ft0, a0
 ; RV32-ZFH-ILP32-NEXT:    fmv.x.h a1, ft0
 ; RV32-ZFH-ILP32-NEXT:    li a0, 1
 ; RV32-ZFH-ILP32-NEXT:    call callee_half_in_regs@plt
@@ -300,8 +300,8 @@ define i32 @caller_half_in_regs() nounwind {
 ; RV32-ZFH-ILP32F:       # %bb.0:
 ; RV32-ZFH-ILP32F-NEXT:    addi sp, sp, -16
 ; RV32-ZFH-ILP32F-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
-; RV32-ZFH-ILP32F-NEXT:    lui a0, %hi(.LCPI1_0)
-; RV32-ZFH-ILP32F-NEXT:    flh fa0, %lo(.LCPI1_0)(a0)
+; RV32-ZFH-ILP32F-NEXT:    lui a0, 4
+; RV32-ZFH-ILP32F-NEXT:    fmv.h.x fa0, a0
 ; RV32-ZFH-ILP32F-NEXT:    li a0, 1
 ; RV32-ZFH-ILP32F-NEXT:    call callee_half_in_regs@plt
 ; RV32-ZFH-ILP32F-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
@@ -312,8 +312,8 @@ define i32 @caller_half_in_regs() nounwind {
 ; RV64-ZFH-LP64:       # %bb.0:
 ; RV64-ZFH-LP64-NEXT:    addi sp, sp, -16
 ; RV64-ZFH-LP64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; RV64-ZFH-LP64-NEXT:    lui a0, %hi(.LCPI1_0)
-; RV64-ZFH-LP64-NEXT:    flh ft0, %lo(.LCPI1_0)(a0)
+; RV64-ZFH-LP64-NEXT:    lui a0, 4
+; RV64-ZFH-LP64-NEXT:    fmv.h.x ft0, a0
 ; RV64-ZFH-LP64-NEXT:    fmv.x.h a1, ft0
 ; RV64-ZFH-LP64-NEXT:    li a0, 1
 ; RV64-ZFH-LP64-NEXT:    call callee_half_in_regs@plt
@@ -325,8 +325,8 @@ define i32 @caller_half_in_regs() nounwind {
 ; RV64-ZFH-LP64F:       # %bb.0:
 ; RV64-ZFH-LP64F-NEXT:    addi sp, sp, -16
 ; RV64-ZFH-LP64F-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; RV64-ZFH-LP64F-NEXT:    lui a0, %hi(.LCPI1_0)
-; RV64-ZFH-LP64F-NEXT:    flh fa0, %lo(.LCPI1_0)(a0)
+; RV64-ZFH-LP64F-NEXT:    lui a0, 4
+; RV64-ZFH-LP64F-NEXT:    fmv.h.x fa0, a0
 ; RV64-ZFH-LP64F-NEXT:    li a0, 1
 ; RV64-ZFH-LP64F-NEXT:    call callee_half_in_regs@plt
 ; RV64-ZFH-LP64F-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
