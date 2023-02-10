@@ -792,10 +792,13 @@ public:
   /// Returns true if the recipe may have side-effects.
   bool mayHaveSideEffects() const;
 
-  /// Returns true for PHI-like recipes.
-  bool isPhi() const {
+#if SIFIVE_CUSTOMIZATION
+#else
+   /// Returns true for PHI-like recipes.
+   bool isPhi() const {
     return getVPDefID() >= VPFirstPHISC && getVPDefID() <= VPLastPHISC;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the recipe may read from memory.
   bool mayReadFromMemory() const;
@@ -3031,6 +3034,18 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return Rep->isUniform();
   return false;
 }
+#if SIFIVE_CUSTOMIZATION
+
+/// Returns true for PHI-like recipes.
+bool isPhi(const VPRecipeBase &R);
+
+/// Returns true for PHI-like recipes that generate their own backedge
+bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
+
+/// Returns true for PHI-like recipes that exists in vector loop header basic
+/// block
+bool isHeaderPhi(const VPRecipeBase &R);
+#endif // SIFIVE_CUSTOMIZATION
 } // end namespace vputils
 
 #if SIFIVE_CUSTOMIZATION

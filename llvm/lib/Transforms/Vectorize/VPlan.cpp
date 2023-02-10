@@ -241,7 +241,11 @@ void VPBlockBase::deleteCFG(VPBlockBase *Entry) {
 
 VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
   iterator It = begin();
+#if SIFIVE_CUSTOMIZATION
+  while (It != end() && vputils::isPhi(*It))
+#else
   while (It != end() && It->isPhi())
+#endif // SIFIVE_CUSTOMIZATION
     It++;
   return It;
 }
@@ -819,8 +823,12 @@ void VPlan::execute(VPTransformState *State) {
   // phis in the vector loop.
   VPBasicBlock *Header = getVectorLoopRegion()->getEntryBasicBlock();
   for (VPRecipeBase &R : Header->phis()) {
+#if SIFIVE_CUSTOMIZATION
+    if (vputils::isPhiThatGeneratesBackedge(R))
+#else
     // Skip phi-like recipes that generate their backedege values themselves.
     if (isa<VPWidenPHIRecipe>(&R))
+#endif // SIFIVE_CUSTOMIZATION
       continue;
 
     if (isa<VPWidenPointerInductionRecipe>(&R) ||
@@ -1235,7 +1243,11 @@ void VPInterleavedAccessInfo::visitBlock(VPBlockBase *Block, Old2NewTy &Old2New,
                                          InterleavedAccessInfo &IAI) {
   if (VPBasicBlock *VPBB = dyn_cast<VPBasicBlock>(Block)) {
     for (VPRecipeBase &VPI : *VPBB) {
+#if SIFIVE_CUSTOMIZATION
+      if (vputils::isHeaderPhi(VPI))
+#else
       if (isa<VPHeaderPHIRecipe>(&VPI))
+#endif // SIFIVE_CUSTOMIZATION
         continue;
       assert(isa<VPInstruction>(&VPI) && "Can only handle VPInstructions");
       auto *VPInst = cast<VPInstruction>(&VPI);
@@ -1410,5 +1422,18 @@ llvm::computeStrideAccessInfo(PredicatedScalarEvolution &PSE, Instruction *I) {
   const SCEV *Stride = cast<SCEVAddRecExpr>(V)->getStepRecurrence(*PSE.getSE());
 
   return StrideAccessInfo(V, Stride);
+}
+
+bool vputils::isPhi(const VPRecipeBase &R) {
+  return isa<VPHeaderPHIRecipe>(&R) || isa<VPBlendRecipe>(&R) ||
+         isa<VPPredInstPHIRecipe>(&R);
+}
+
+bool vputils::isPhiThatGeneratesBackedge(const VPRecipeBase &R) {
+  return isa<VPWidenPHIRecipe>(&R);
+}
+
+bool vputils::isHeaderPhi(const VPRecipeBase &R) {
+  return isa<VPHeaderPHIRecipe>(&R);
 }
 #endif // SIFIVE_CUSTOMIZATION
