@@ -4752,6 +4752,12 @@ public:
                     SmallVectorImpl<SDNode *> &Created) const;
   SDValue BuildUDIV(SDNode *N, SelectionDAG &DAG, bool IsAfterLegalization,
                     SmallVectorImpl<SDNode *> &Created) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue BuildVPSDIV(SDNode *N, SelectionDAG &DAG, bool IsAfterLegalization,
+                      SmallVectorImpl<SDNode *> &Created) const;
+  SDValue BuildVPUDIV(SDNode *N, SelectionDAG &DAG, bool IsAfterLegalization,
+                      SmallVectorImpl<SDNode *> &Created) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Targets may override this function to provide custom SDIV lowering for
   /// power-of-2 denominators.  If the target returns an empty SDValue, LLVM
