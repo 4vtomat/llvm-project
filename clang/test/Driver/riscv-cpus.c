@@ -55,34 +55,34 @@
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e20 | FileCheck -check-prefix=MCPU-SIFIVE-E20 %s
 // MCPU-SIFIVE-E20: "-nostdsysteminc" "-target-cpu" "sifive-e20"
-// MCPU-SIFIVE-E20: "-target-feature" "+m" "-target-feature" "+c"
+// MCPU-SIFIVE-E20: "-target-feature" "+m" "-target-feature" "+c" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E20: "-target-abi" "ilp32"
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e21 | FileCheck -check-prefix=MCPU-SIFIVE-E21 %s
 // MCPU-SIFIVE-E21: "-nostdsysteminc" "-target-cpu" "sifive-e21"
-// MCPU-SIFIVE-E21: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c"
+// MCPU-SIFIVE-E21: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E21: "-target-abi" "ilp32"
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e24 | FileCheck -check-prefix=MCPU-SIFIVE-E24 %s
 // MCPU-SIFIVE-E24: "-nostdsysteminc" "-target-cpu" "sifive-e24"
 // MCPU-SIFIVE-E24: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f"
-// MCPU-SIFIVE-E24: "-target-feature" "+c"
+// MCPU-SIFIVE-E24: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E24: "-target-abi" "ilp32"
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e34 | FileCheck -check-prefix=MCPU-SIFIVE-E34 %s
 // MCPU-SIFIVE-E34: "-nostdsysteminc" "-target-cpu" "sifive-e34"
 // MCPU-SIFIVE-E34: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f"
-// MCPU-SIFIVE-E34: "-target-feature" "+c"
+// MCPU-SIFIVE-E34: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E34: "-target-abi" "ilp32"
 
 // mcpu with mabi option
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s21 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-S21 %s
 // MCPU-ABI-SIFIVE-S21: "-nostdsysteminc" "-target-cpu" "sifive-s21"
 // MCPU-ABI-SIFIVE-S21: "-target-feature" "+m" "-target-feature" "+a"
-// MCPU-ABI-SIFIVE-S21: "-target-feature" "+c"
+// MCPU-ABI-SIFIVE-S21: "-target-feature" "+c" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-S21: "-target-feature" "+64bit"
 // MCPU-ABI-SIFIVE-S21: "-target-abi" "lp64"
 
@@ -90,7 +90,7 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s51 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-S51 %s
 // MCPU-ABI-SIFIVE-S51: "-nostdsysteminc" "-target-cpu" "sifive-s51"
 // MCPU-ABI-SIFIVE-S51: "-target-feature" "+m" "-target-feature" "+a"
-// MCPU-ABI-SIFIVE-S51: "-target-feature" "+c"
+// MCPU-ABI-SIFIVE-S51: "-target-feature" "+c" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-S51: "-target-feature" "+64bit"
 // MCPU-ABI-SIFIVE-S51: "-target-abi" "lp64"
 
@@ -130,15 +130,15 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e76 | FileCheck -check-prefix=MCPU-SIFIVE-E76 %s
 // MCPU-SIFIVE-E76: "-nostdsysteminc" "-target-cpu" "sifive-e76"
 // MCPU-SIFIVE-E76: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f"
-// MCPU-SIFIVE-E76: "-target-feature" "+c"
+// MCPU-SIFIVE-E76: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E76: "-target-abi" "ilp32"
 
 // mcpu with default march
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-e76m | FileCheck -check-prefix=MCPU-SIFIVE-E76M %s
 // MCPU-SIFIVE-E76M: "-target-cpu" "sifive-e76m"
 // MCPU-SIFIVE-E76M: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f"
-// MCPU-SIFIVE-E76M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zba"
-// MCPU-SIFIVE-E76M: "-target-feature" "+zbb"
+// MCPU-SIFIVE-E76M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
+// MCPU-SIFIVE-E76M: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-E76M: "-target-abi" "ilp32"
 
 // mcpu with mabi option
@@ -192,6 +192,7 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280 | FileCheck -check-prefix=MCPU-SIFIVE-X280 %s
 // MCPU-SIFIVE-X280: "-nostdsysteminc" "-target-cpu" "sifive-x280"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+c" "-target-feature" "+v"
+// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+zfh"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+experimental-zvfh"
@@ -210,6 +211,7 @@
 // MCPU-SIFIVE-X280N: "-nostdsysteminc" "-target-cpu" "sifive-x280n"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+c" "-target-feature" "+v"
+// MCPU-SIFIVE-X280N-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+zfh"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+experimental-zvfh"
@@ -227,6 +229,7 @@
 // MCPU-SIFIVE-X280O: "-nostdsysteminc" "-target-cpu" "sifive-x280o"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+c" "-target-feature" "+v"
+// MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zfh"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-X280O-SAME: "-target-feature" "+experimental-zvfh"
@@ -243,6 +246,7 @@
 // MCPU-SIFIVE-P270: "-target-cpu" "sifive-p270"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+c" "-target-feature" "+v"
+// MCPU-SIFIVE-P270-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zfh"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-P270-SAME: "-target-feature" "+experimental-zvfh"
@@ -299,17 +303,18 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-e66 | FileCheck -check-prefix=MCPU-SIFIVE-E66 %s
 // MCPU-SIFIVE-E66: "-target-cpu" "sifive-e66"
 // MCPU-SIFIVE-E66-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+c"
+// MCPU-SIFIVE-E66-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E66-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-E66-SAME: "-target-abi" "ilp32"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-s66 | FileCheck -check-prefix=MCPU-SIFIVE-S66 %s
 // MCPU-SIFIVE-S66: "-target-cpu" "sifive-s66"
 // MCPU-SIFIVE-S66-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-S66-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-S66-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-S66-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64 | FileCheck -check-prefix=MCPU-SIFIVE-U64 %s
 // MCPU-SIFIVE-U64: "-target-cpu" "sifive-u64"
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-U64-SAME: "-target-abi" "lp64d"
