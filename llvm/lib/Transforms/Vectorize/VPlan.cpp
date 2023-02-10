@@ -714,6 +714,8 @@ VPlan::~VPlan() {
       delete PrevRVL;
     if (AllTrueMask)
       delete AllTrueMask;
+    if (AllFalseMask)
+      delete AllFalseMask;
 #endif // SIFIVE_CUSTOMIZATION
   for (auto &P : VPExternalDefs)
     delete P.second;
@@ -780,11 +782,14 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
 #if SIFIVE_CUSTOMIZATION
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
+    Value *True = State.Builder.getTrueVector(State.VF);
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-      State.set(AllTrueMask,
-                State.VF.isScalar() ? State.Builder.getTrue()
-                                    : State.Builder.getTrueVector(State.VF),
-                Part);
+      State.set(AllTrueMask, True, Part);
+  }
+  if (AllFalseMask && AllFalseMask->getNumUsers()) {
+    Value *False = State.Builder.getFalseVector(State.VF);
+    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
+      State.set(AllFalseMask, False, Part);
   }
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -1054,6 +1059,11 @@ void VPlanPrinter::dump() {
     Plan.AllTrueMask->print(OS, SlotTracker);
     OS << " := All-TRUE-MASK";
   }
+  if (Plan.AllFalseMask) {
+    OS << "\\n";
+    Plan.AllFalseMask->print(OS, SlotTracker);
+    OS << " := All-FALSE-MASK";
+  }
 #endif // SIFIVE_CUSTOMIZATION
   OS << "\"]\n";
   OS << "node [shape=rect, fontname=Courier, fontsize=30]\n";
@@ -1288,6 +1298,8 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
     assignSlot(Plan.InitRVL);
   if (Plan.AllTrueMask)
     assignSlot(Plan.AllTrueMask);
+  if (Plan.AllFalseMask)
+    assignSlot(Plan.AllFalseMask);
 #endif // SIFIVE_CUSTOMIZATION
 
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<const VPBlockBase *>>

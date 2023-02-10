@@ -2442,6 +2442,9 @@ class VPlan {
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
 
+  /// Represents constant all false mask.
+  VPValue *AllFalseMask = nullptr;
+
   /// Pair of LMUL and Type's size applicable for this VPlan.
   SmallVector<std::pair<unsigned, Type *>, 1> LMULTypePairs;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2542,6 +2545,13 @@ public:
     if (!AllTrueMask)
       AllTrueMask = new VPValue;
     return AllTrueMask;
+  }
+
+  /// Gets or creates a constant all-false mask VPValue.
+  VPValue *getOrCreateAllFalseMask() {
+    if (!AllFalseMask)
+      AllFalseMask = new VPValue;
+    return AllFalseMask;
   }
 
   void addLMULTypePair(const unsigned LMUL, Type *DType) {
