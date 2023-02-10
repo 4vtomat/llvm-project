@@ -8143,18 +8143,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
                                                  DAG.getConstant(1, DL, XLenVT),
                                                  SplatRHS));
   } else {
-    SDValue One = DAG.getConstant(1, DL, VT);
-    if (ShiftIncSize) {
-      // We need to do SHL twice because RHS may be EltBitSize.
-      MulRHS = DAG.getSelectCC(
-          DL, RHS, Zero,
-          DAG.getNode(
-              ISD::SHL, DL, VT, DAG.getConstant(2, DL, VT),
-              DAG.getNode(ISD::ADD, DL, VT, RHS, DAG.getConstant(-1, DL, VT))),
-          One, ISD::SETNE);
-    } else {
-      MulRHS = DAG.getNode(ISD::SHL, DL, VT, One, RHS);
-    }
+    MulRHS = DAG.getNode(ISD::SHL, DL, VT, DAG.getConstant(1, DL, VT), RHS);
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
   SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
@@ -8166,32 +8155,37 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
   // is not existed.
   bool CanUseWidenAlgo =
       EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
-  // For unsigned type, widen algo causes higher register pressure.
-  bool UseWidenAlgo = SplatRHS ? true : IsSigned;
-  if (CanUseWidenAlgo && UseWidenAlgo) {
-    unsigned WmulOpc;
-    unsigned NclipOpc;
-    if (IsSigned) {
-      WmulOpc = RISCVISD::VWMULSU_VL;
-      NclipOpc = RISCVISD::VNCLIP_VL;
-    } else {
-      WmulOpc = RISCVISD::VWMULU_VL;
-      NclipOpc = RISCVISD::VNCLIPU_VL;
-    }
+  if (CanUseWidenAlgo) {
     MVT WidenContainerVT = getContainerForFixedLengthVector(WidenVT);
-    SDValue Wmul = DAG.getNode(
-        WmulOpc, DL, WidenContainerVT,
-        convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
-        convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
-        DAG.getUNDEF(WidenContainerVT), Mask, VL);
-    // Every rounding modes produces same value if the shift amount is 0.
-    SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
-    SDValue Nclip = DAG.getNode(
-        NclipOpc, DL, ContainerVT,
-        {Wmul,
-         DAG.getSplatVector(ContainerVT, DL, DAG.getConstant(0, DL, XLenVT)),
-         DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
-    return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
+    SDValue WidenShl;
+    if (ShiftIncSize) {
+      WidenShl = convertToScalableVector(
+          WidenContainerVT,
+          DAG.getNode(ISD::SHL, DL, WidenVT,
+                      IsSigned ? DAG.getSExtOrTrunc(LHS, DL, WidenVT)
+                               : DAG.getZExtOrTrunc(LHS, DL, WidenVT),
+                      DAG.getZExtOrTrunc(RHS, DL, WidenVT)),
+          DAG, Subtarget);
+    } else if (SplatRHS || IsSigned) { // For unsigned type, widen algo causes
+                                       // higher register pressure.
+      WidenShl = DAG.getNode(
+          IsSigned ? RISCVISD::VWMULSU_VL : RISCVISD::VWMULU_VL, DL,
+          WidenContainerVT,
+          convertToScalableVector(ContainerVT, LHS, DAG, Subtarget),
+          convertToScalableVector(ContainerVT, MulRHS, DAG, Subtarget),
+          DAG.getUNDEF(WidenContainerVT), Mask, VL);
+    }
+    if (WidenShl) {
+      // Every rounding modes produces same value if the shift amount is 0.
+      SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
+      SDValue Nclip = DAG.getNode(
+          IsSigned ? RISCVISD::VNCLIP_VL : RISCVISD::VNCLIPU_VL, DL,
+          ContainerVT,
+          {WidenShl,
+           DAG.getSplatVector(ContainerVT, DL, DAG.getConstant(0, DL, XLenVT)),
+           DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+      return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
+    }
   }
   MVT SetccVT = MVT::getVectorVT(MVT::i1, VT.getVectorElementCount());
   SDValue MaxShift = DAG.getConstant(EltBitSize - 1, DL, VT);

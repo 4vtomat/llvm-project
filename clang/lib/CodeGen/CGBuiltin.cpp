@@ -6280,7 +6280,9 @@ static const ARMVectorIntrinsicInfo AArch64SIMDIntrinsicMap[] = {
   NEONMAP1(vxarq_u64, aarch64_crypto_xar, 0),
 };
 
-static const ARMVectorIntrinsicInfo AArch64SISDIntrinsicMap[] = {
+#if SIFIVE_CUSTOMIZATION
+static ARMVectorIntrinsicInfo AArch64SISDIntrinsicMap[] = {
+#endif
   NEONMAP1(vabdd_f64, aarch64_sisd_fabd, Add1ArgType),
   NEONMAP1(vabds_f32, aarch64_sisd_fabd, Add1ArgType),
   NEONMAP1(vabsd_s64, aarch64_neon_abs, Add1ArgType),
@@ -6517,6 +6519,18 @@ static const ARMVectorIntrinsicInfo AArch64SISDIntrinsicMap[] = {
   NEONMAP1(vrecpxh_f16, aarch64_neon_frecpx, Add1ArgType),
   NEONMAP1(vrsqrteh_f16, aarch64_neon_frsqrte, Add1ArgType),
   NEONMAP1(vrsqrtsh_f16, aarch64_neon_frsqrts, Add1ArgType),
+#if SIFIVE_CUSTOMIZATION
+  NEONMAP1(vcvtah_u16_f16, aarch64_neon_fcvtau, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtmh_u16_f16, aarch64_neon_fcvtmu, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtnh_u16_f16, aarch64_neon_fcvtnu, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtph_u16_f16, aarch64_neon_fcvtpu, AddRetType | Add1ArgType),
+  NEONMAP1(vcvth_u16_f16, aarch64_neon_fcvtzu, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtah_s16_f16, aarch64_neon_fcvtas, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtmh_s16_f16, aarch64_neon_fcvtms, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtnh_s16_f16, aarch64_neon_fcvtns, AddRetType | Add1ArgType),
+  NEONMAP1(vcvtph_s16_f16, aarch64_neon_fcvtps, AddRetType | Add1ArgType),
+  NEONMAP1(vcvth_s16_f16, aarch64_neon_fcvtzs, AddRetType | Add1ArgType),
+#endif
 };
 
 // Some intrinsics are equivalent for codegen.
@@ -10400,6 +10414,15 @@ Value *CodeGenFunction::EmitAArch64BuiltinExpr(unsigned BuiltinID,
   }
 
   auto SISDMap = ArrayRef(AArch64SISDIntrinsicMap);
+
+#if SIFIVE_CUSTOMIZATION
+  if (getTarget().getTriple().getArch() != llvm::Triple::riscv64)
+    SISDMap = SISDMap.drop_back(10);
+  else
+    sort(std::begin(AArch64SISDIntrinsicMap),
+         std::end(AArch64SISDIntrinsicMap));
+#endif
+
   const ARMVectorIntrinsicInfo *Builtin = findARMVectorIntrinsicInMap(
       SISDMap, BuiltinID, AArch64SISDIntrinsicsProvenSorted);
 

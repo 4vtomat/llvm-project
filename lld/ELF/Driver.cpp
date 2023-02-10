@@ -352,6 +352,11 @@ static void checkOptions() {
   if (config->pcRelOptimize && config->emachine != EM_PPC64)
     error("--pcrel-optimize is only supported on PowerPC64 targets");
 
+#if SIFIVE_CUSTOMIZATION
+  if (config->gpRelax && config->emachine != EM_RISCV)
+    error("--gp-relax is only support on RISC-V targets");
+#endif // SIFIVE_CUSTOMIZATION
+
   if (config->pie && config->shared)
     error("-shared and -pie may not be used together");
 
@@ -1121,6 +1126,9 @@ static void readConfigs(opt::InputArgList &args) {
   config->gcSections = args.hasFlag(OPT_gc_sections, OPT_no_gc_sections, false);
   config->gnuUnique = args.hasFlag(OPT_gnu_unique, OPT_no_gnu_unique, true);
   config->gdbIndex = args.hasFlag(OPT_gdb_index, OPT_no_gdb_index, false);
+#if SIFIVE_CUSTOMIZATION
+  config->gpRelax = args.hasArg(OPT_gp_relax);
+#endif
   config->icf = getICF(args);
   config->ignoreDataAddressEquality =
       args.hasArg(OPT_ignore_data_address_equality);
