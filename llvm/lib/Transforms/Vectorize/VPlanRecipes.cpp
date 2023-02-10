@@ -1254,7 +1254,8 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   // Set RVL
   Value *SetVL = State.Plan->getSetVL(State, RVL);
   RVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
-  State.set(State.Plan->getRVL(), RVL, 0);
+  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
+    State.set(State.Plan->getRVL(), RVL, Part);
   if (State.Plan->getPrevRVL()) {
     auto *PrevRVL = PHINode::Create(RVL->getType(), 2, "prev.rvl",
                                     &*State.CFG.PrevBB->getFirstInsertionPt());
@@ -1264,13 +1265,15 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
     if (!State.hasAnyVectorValue(State.Plan->getInitRVL())) {
       InitRVL = State.Plan->getSetVL(State, TripCount);
       // Record initial RVL in InitRVL VPValue for future use
-      State.set(State.Plan->getInitRVL(), InitRVL, 0);
+      for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
+        State.set(State.Plan->getInitRVL(), InitRVL, Part);
     } else {
       InitRVL = State.get(State.Plan->getInitRVL(), 0);
     }
     InitRVL = State.Builder.CreateTrunc(InitRVL, State.Builder.getInt32Ty());
     PrevRVL->addIncoming(InitRVL, VectorPH);
-    State.set(State.Plan->getPrevRVL(), PrevRVL, 0);
+    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
+      State.set(State.Plan->getPrevRVL(), PrevRVL, Part);
   }
 #endif // SIFIVE_CUSTOMIZATION
 }
