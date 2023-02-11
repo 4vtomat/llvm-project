@@ -99,6 +99,11 @@ def FeatureStdExtSsstateen
                        "'Ssstateen' (Supervisor-mode view of the state-enable "
                        "extension.)", []>;
 
+def FeatureStdExtSmstateen
+    : SubtargetFeature<"smstateen", "HasStdExtSmstateen", "true",
+                       "'Smstateen' (Machine-mode view of the state-enable "
+                       "extension.)", []>;
+
 def FeatureStdExtShcounterenw
     : SubtargetFeature<"shcounterenw", "HasStdExtShcounterenw", "true",
                        "'Shcounterenw' (For any hpmcounter that is not read-only "

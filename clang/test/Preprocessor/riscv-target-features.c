@@ -68,6 +68,7 @@
 // CHECK-NOT: __riscv_sscounterenw
 // CHECK-NOT: __riscv_ssu64xl
 // CHECK-NOT: __riscv_sstc
+// CHECK-NOT: __riscv_smstateen
 // CHECK-NOT: __riscv_ssstateen
 // CHECK-NOT: __riscv_shcounterenw
 // CHECK-NOT: __riscv_shvstvala
@@ -620,6 +621,12 @@
 // RUN: %clang -target riscv64 -march=rv64issstateen  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSSTATEEN-EXT %s
 // CHECK-SSSTATEEN-EXT: __riscv_ssstateen  1000000{{$}}
+
+// RUN: %clang -target riscv32 -march=rv32ismstateen -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMSTATEEN-EXT %s
+// RUN: %clang -target riscv64 -march=rv64ismstateen  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SMSTATEEN-EXT %s
+// CHECK-SMSTATEEN-EXT: __riscv_smstateen  1000000{{$}}
 
 // RUN: %clang -target riscv32 -march=rv32ishcounterenw -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SHCOUNTERENW-EXT %s

@@ -353,8 +353,8 @@ static void checkOptions() {
     error("--pcrel-optimize is only supported on PowerPC64 targets");
 
 #if SIFIVE_CUSTOMIZATION
-  if (config->gpRelax && config->emachine != EM_RISCV)
-    error("--gp-relax is only support on RISC-V targets");
+  if (config->relaxGP && config->emachine != EM_RISCV)
+    error("--relax-gp is only supported on RISC-V targets");
 #endif // SIFIVE_CUSTOMIZATION
 
   if (config->pie && config->shared)
@@ -1126,9 +1126,6 @@ static void readConfigs(opt::InputArgList &args) {
   config->gcSections = args.hasFlag(OPT_gc_sections, OPT_no_gc_sections, false);
   config->gnuUnique = args.hasFlag(OPT_gnu_unique, OPT_no_gnu_unique, true);
   config->gdbIndex = args.hasFlag(OPT_gdb_index, OPT_no_gdb_index, false);
-#if SIFIVE_CUSTOMIZATION
-  config->gpRelax = args.hasArg(OPT_gp_relax);
-#endif
   config->icf = getICF(args);
   config->ignoreDataAddressEquality =
       args.hasArg(OPT_ignore_data_address_equality);
@@ -1195,6 +1192,9 @@ static void readConfigs(opt::InputArgList &args) {
   config->printSymbolOrder =
       args.getLastArgValue(OPT_print_symbol_order);
   config->relax = args.hasFlag(OPT_relax, OPT_no_relax, true);
+#if SIFIVE_CUSTOMIZATION
+  config->relaxGP = args.hasFlag(OPT_relax_gp, OPT_no_relax_gp, false);
+#endif
   config->rpath = getRpath(args);
   config->relocatable = args.hasArg(OPT_relocatable);
 

@@ -55,6 +55,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+ssu64xl %s -o - | FileCheck --check-prefix=RV32SSU64XL %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV32SSTC %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV32SSSTATEEN %s
+; RUN: llc -mtriple=riscv32 -mattr=+smstateen %s -o - | FileCheck --check-prefix=RV32SMSTATEEN %s
 ; RUN: llc -mtriple=riscv32 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV32SHCOUNTERENW %s
 ; RUN: llc -mtriple=riscv32 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV32SHVSTVALA %s
 ; RUN: llc -mtriple=riscv32 -mattr=+shtvala %s -o - | FileCheck --check-prefix=RV32SHTVALA %s
@@ -136,6 +137,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+ssu64xl %s -o - | FileCheck --check-prefix=RV64SSU64XL %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV64SSTC %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV64SSSTATEEN %s
+; RUN: llc -mtriple=riscv64 -mattr=+smstateen %s -o - | FileCheck --check-prefix=RV64SMSTATEEN %s
 ; RUN: llc -mtriple=riscv64 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV64SHCOUNTERENW %s
 ; RUN: llc -mtriple=riscv64 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV64SHVSTVALA %s
 ; RUN: llc -mtriple=riscv64 -mattr=+shtvala %s -o - | FileCheck --check-prefix=RV64SHTVALA %s
@@ -234,6 +236,7 @@
 ; RV32SSU64XL: .attribute 5, "rv32i2p1_ssu64xl1p0"
 ; RV32SSTC: .attribute 5, "rv32i2p1_sstc1p0"
 ; RV32SSSTATEEN: .attribute 5, "rv32i2p1_ssstateen1p0"
+; RV32SMSTATEEN: .attribute 5, "rv32i2p1_smstateen1p0"
 ; RV32SHCOUNTERENW: .attribute 5, "rv32i2p1_shcounterenw1p0"
 ; RV32SHVSTVALA: .attribute 5, "rv32i2p1_shvstvala1p0"
 ; RV32SHTVALA: .attribute 5, "rv32i2p1_shtvala1p0"
@@ -299,6 +302,7 @@
 ; RV64SSU64XL: .attribute 5, "rv64i2p1_ssu64xl1p0"
 ; RV64SSTC: .attribute 5, "rv64i2p1_sstc1p0"
 ; RV64SSSTATEEN: .attribute 5, "rv64i2p1_ssstateen1p0"
+; RV64SMSTATEEN: .attribute 5, "rv64i2p1_smstateen1p0"
 ; RV64SHCOUNTERENW: .attribute 5, "rv64i2p1_shcounterenw1p0"
 ; RV64SHVSTVALA: .attribute 5, "rv64i2p1_shvstvala1p0"
 ; RV64SHTVALA: .attribute 5, "rv64i2p1_shtvala1p0"

@@ -73,6 +73,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"ssu64xl", RISCVExtensionVersion{1, 0}},
     {"sstc", RISCVExtensionVersion{1, 0}},
     {"ssstateen", RISCVExtensionVersion{1, 0}},
+    {"smstateen", RISCVExtensionVersion{1, 0}},
     {"shcounterenw", RISCVExtensionVersion{1, 0}},
     {"shvstvala", RISCVExtensionVersion{1, 0}},
     {"shtvala", RISCVExtensionVersion{1, 0}},

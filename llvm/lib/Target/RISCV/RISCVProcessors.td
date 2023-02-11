@@ -432,7 +432,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvkns,
                                        FeatureStdExtZvksed,
                                        FeatureStdExtZvksh],
-                                      [TuneSiFiveP400]>;
+                                      [TuneSiFiveP400, TuneDLen128b]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                       [Feature64Bit,
@@ -480,5 +480,5 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvkns,
                                        FeatureStdExtZvksed,
                                        FeatureStdExtZvksh],
-                                      [TuneSiFiveP600]>;
+                                      [TuneSiFiveP600, TuneDLen128b]>;
 #endif // SIFIVE_CUSTOMIZATION
