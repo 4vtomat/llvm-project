@@ -972,7 +972,7 @@ static unsigned getSectionRank(const OutputSection &osec) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (config->emachine == EM_RISCV && config->gpRelax) {
+  if (config->emachine == EM_RISCV && config->relaxGP) {
     if (osec.name != ".sbss")
       rank |= 2;
     if (osec.name == ".sdata")

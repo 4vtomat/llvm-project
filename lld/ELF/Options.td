@@ -234,10 +234,6 @@ defm gnu_unique: BB<"gnu-unique",
   "Enable STB_GNU_UNIQUE symbol binding (default)",
   "Disable STB_GNU_UNIQUE symbol binding">;
 
-#ifdef SIFIVE_CUSTOMIZATION
-def gp_relax: F<"gp-relax">, HelpText<"Enable GP relaxation">;
-#endif
-
 defm hash_style: Eq<"hash-style", "Specify hash style (sysv, gnu or both)">;
 
 def help: F<"help">, HelpText<"Print option help">;
@@ -358,6 +354,12 @@ def print_map: F<"print-map">,
 defm relax: BB<"relax",
   "Enable target-specific relaxations if supported (default)",
   "Disable target-specific relaxations">;
+
+#ifdef SIFIVE_CUSTOMIZATION
+defm relax_gp: BB<"relax-gp",
+  "Enable GP relaxation",
+  "Disable GP relaxation (default)">;
+#endif
 
 defm reproduce:
   EEq<"reproduce",

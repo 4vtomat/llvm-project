@@ -516,7 +516,6 @@ void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
   case R_RISCV_GPREL_I:
   case R_RISCV_GPREL_S: {
     Defined *gp = ElfSym::riscvGlobalPointer;
-    assert(gp && "Can't find GP pointer?");
     int64_t displace = val - gp->getVA();
     checkInt(loc, displace, 12, rel);
     uint32_t insn = read32le(loc);
@@ -710,25 +709,25 @@ static void relaxTlsLe(const InputSection &sec, size_t i, uint64_t loc,
 #if SIFIVE_CUSTOMIZATION
 static void relaxHi20Lo12(const InputSection &sec, size_t i, uint64_t loc,
                           Relocation &r, uint32_t &remove) {
-  uint64_t target = r.sym->getVA(r.addend);
   Defined *gp = ElfSym::riscvGlobalPointer;
-  if (gp) {
-    int64_t displace = target - gp->getVA();
+  if (!gp)
+    return;
 
-    if (isInt<12>(displace)) {
-      switch (r.type) {
-      case R_RISCV_HI20:
-        // delete unnecessary instruction
-        sec.relaxAux->relocTypes[i] = R_RISCV_RELAX;
-        remove = 4;
-        break;
-      case R_RISCV_LO12_I:
-        sec.relaxAux->relocTypes[i] = R_RISCV_GPREL_I;
-        break;
-      case R_RISCV_LO12_S:
-        sec.relaxAux->relocTypes[i] = R_RISCV_GPREL_S;
-        break;
-      }
+  int64_t displace = r.sym->getVA(r.addend) - gp->getVA();
+
+  if (isInt<12>(displace)) {
+    switch (r.type) {
+    case R_RISCV_HI20:
+      // delete unnecessary instruction
+      sec.relaxAux->relocTypes[i] = R_RISCV_RELAX;
+      remove = 4;
+      break;
+    case R_RISCV_LO12_I:
+      sec.relaxAux->relocTypes[i] = R_RISCV_GPREL_I;
+      break;
+    case R_RISCV_LO12_S:
+      sec.relaxAux->relocTypes[i] = R_RISCV_GPREL_S;
+      break;
     }
   }
 }
@@ -789,8 +788,7 @@ static bool relax(InputSection &sec) {
     case R_RISCV_HI20:
     case R_RISCV_LO12_I:
     case R_RISCV_LO12_S:
-      if (config->gpRelax &&
-          i + 1 != sec.relocs().size() &&
+      if (config->relaxGP && i + 1 != sec.relocs().size() &&
           sec.relocs()[i + 1].type == R_RISCV_RELAX)
         relaxHi20Lo12(sec, i, loc, r, remove);
       break;

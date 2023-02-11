@@ -217,9 +217,6 @@ struct Config {
   bool gdbIndex;
   bool gnuHash = false;
   bool gnuUnique;
-#if SIFIVE_CUSTOMIZATION
-  bool gpRelax;
-#endif
   bool hasDynSymTab;
   bool ignoreDataAddressEquality;
   bool ignoreFunctionAddressEquality;
@@ -247,6 +244,9 @@ struct Config {
   bool printGcSections;
   bool printIcfSections;
   bool relax;
+#if SIFIVE_CUSTOMIZATION
+  bool relaxGP;
+#endif
   bool relocatable;
   bool relrGlibc = false;
   bool relrPackDynRelocs = false;
