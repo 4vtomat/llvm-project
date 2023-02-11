@@ -299,14 +299,10 @@ define <vscale x 1 x i64> @vpudiv_by_vpshl2_nxv1i64(<vscale x 1 x i64> %va, i64 
 define <vscale x 8 x i8> @vpudiv_by_const_no_add_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_no_add_nxv8i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 5
 ; CHECK-NEXT:    li a1, -51
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 5, i32 0
   %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
@@ -317,15 +313,11 @@ define <vscale x 8 x i8> @vpudiv_by_const_no_add_nxv8i8(<vscale x 8 x i8> %va, <
 define <vscale x 4 x i16> @vpudiv_by_const_no_add_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_no_add_nxv4i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 5
 ; CHECK-NEXT:    lui a1, 1048573
 ; CHECK-NEXT:    addiw a1, a1, -819
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 5, i32 0
   %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
@@ -336,15 +328,11 @@ define <vscale x 4 x i16> @vpudiv_by_const_no_add_nxv4i16(<vscale x 4 x i16> %va
 define <vscale x 2 x i32> @vpudiv_by_const_no_add_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_no_add_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 5
 ; CHECK-NEXT:    lui a1, 838861
 ; CHECK-NEXT:    addiw a1, a1, -819
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 5, i32 0
   %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
@@ -357,13 +345,9 @@ define <vscale x 1 x i64> @vpudiv_by_const_no_add_nxv1i64(<vscale x 1 x i64> %va
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI19_0)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI19_0)(a1)
-; CHECK-NEXT:    vsetvli a2, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 5
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 5, i32 0
   %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -374,18 +358,14 @@ define <vscale x 1 x i64> @vpudiv_by_const_no_add_nxv1i64(<vscale x 1 x i64> %va
 define <vscale x 8 x i8> @vpudiv_by_const_with_add_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_with_add_nxv8i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 7
 ; CHECK-NEXT:    li a1, 37
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsub.vv v11, v8, v10, v0.t
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vmulhu.vx v11, v11, a0, v0.t
-; CHECK-NEXT:    vadd.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 7, i32 0
   %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
@@ -396,19 +376,15 @@ define <vscale x 8 x i8> @vpudiv_by_const_with_add_nxv8i8(<vscale x 8 x i8> %va,
 define <vscale x 4 x i16> @vpudiv_by_const_with_add_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_with_add_nxv4i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 7
 ; CHECK-NEXT:    lui a1, 2
 ; CHECK-NEXT:    addiw a1, a1, 1171
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsub.vv v11, v8, v10, v0.t
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    lui a0, 1048568
-; CHECK-NEXT:    vmulhu.vx v11, v11, a0, v0.t
-; CHECK-NEXT:    vadd.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 7, i32 0
   %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
@@ -419,19 +395,15 @@ define <vscale x 4 x i16> @vpudiv_by_const_with_add_nxv4i16(<vscale x 4 x i16> %
 define <vscale x 2 x i32> @vpudiv_by_const_with_add_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_with_add_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 7
 ; CHECK-NEXT:    lui a1, 149797
 ; CHECK-NEXT:    addiw a1, a1, -1755
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsub.vv v11, v8, v10, v0.t
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    vmulhu.vx v11, v11, a0, v0.t
-; CHECK-NEXT:    vadd.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 7, i32 0
   %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
@@ -444,18 +416,14 @@ define <vscale x 1 x i64> @vpudiv_by_const_with_add_nxv1i64(<vscale x 1 x i64> %
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI23_0)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI23_0)(a1)
-; CHECK-NEXT:    vsetvli a2, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 7
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v10, v8, a1, v0.t
-; CHECK-NEXT:    vsub.vv v11, v8, v10, v0.t
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vmulhu.vx v11, v11, a0, v0.t
-; CHECK-NEXT:    vadd.vv v10, v11, v10, v0.t
-; CHECK-NEXT:    vsrl.vi v10, v10, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v9, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmulhu.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 7, i32 0
   %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -1087,20 +1055,14 @@ define <vscale x 2 x i32> @vpurem_by_max_nxv2i32(<vscale x 2 x i32> %va, <vscale
 define <vscale x 1 x i64> @vpurem_by_const_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpurem_by_const_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    lui a1, %hi(.LCPI56_0)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI56_0)(a1)
-; CHECK-NEXT:    vsetvli a2, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 5
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v11, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v11, v11, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v10, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v10, v11, v8, v0
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
 ; CHECK-NEXT:    li a0, 5
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmul.vx v10, v10, a0, v0.t
-; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    vmul.vx v9, v9, a0, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 5, i32 0
   %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -1111,20 +1073,14 @@ define <vscale x 1 x i64> @vpurem_by_const_nxv1i64(<vscale x 1 x i64> %va, <vsca
 define <vscale x 4 x i16> @vpurem_by_const_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpurem_by_const_nxv4i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 5
 ; CHECK-NEXT:    lui a1, 1048573
 ; CHECK-NEXT:    addiw a1, a1, -819
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v11, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v11, v11, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v10, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v10, v11, v8, v0
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
 ; CHECK-NEXT:    li a0, 5
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmul.vx v10, v10, a0, v0.t
-; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    vmul.vx v9, v9, a0, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 5, i32 0
   %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
@@ -1135,19 +1091,13 @@ define <vscale x 4 x i16> @vpurem_by_const_nxv4i16(<vscale x 4 x i16> %va, <vsca
 define <vscale x 8 x i8> @vpurem_by_const_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpurem_by_const_nxv8i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 5
 ; CHECK-NEXT:    li a1, -51
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v11, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v11, v11, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v10, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v10, v11, v8, v0
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
 ; CHECK-NEXT:    li a0, 5
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmul.vx v10, v10, a0, v0.t
-; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    vmul.vx v9, v9, a0, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 5, i32 0
   %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
@@ -1158,20 +1108,14 @@ define <vscale x 8 x i8> @vpurem_by_const_nxv8i8(<vscale x 8 x i8> %va, <vscale 
 define <vscale x 2 x i32> @vpurem_by_const_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpurem_by_const_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 5
 ; CHECK-NEXT:    lui a1, 838861
 ; CHECK-NEXT:    addiw a1, a1, -819
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vmulhu.vx v11, v8, a1, v0.t
-; CHECK-NEXT:    vsrl.vi v11, v11, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v0, v10, 1, v0.t
-; CHECK-NEXT:    vmerge.vvm v10, v11, v8, v0
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
 ; CHECK-NEXT:    li a0, 5
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmul.vx v10, v10, a0, v0.t
-; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    vmul.vx v9, v9, a0, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 5, i32 0
   %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer

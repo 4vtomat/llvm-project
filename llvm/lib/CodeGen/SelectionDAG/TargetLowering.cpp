@@ -6321,6 +6321,7 @@ SDValue TargetLowering::BuildVPUDIV(SDNode *N, SelectionDAG &DAG,
     return SDValue();
 
   bool UseNPQ = false, UsePreShift = false, UsePostShift = false;
+  bool HasOneDivisor = false;
 
   SmallVector<SDValue, 16> PreShifts, PostShifts, MagicFactors, NPQFactors;
 
@@ -6337,6 +6338,7 @@ SDValue TargetLowering::BuildVPUDIV(SDNode *N, SelectionDAG &DAG,
     if (Divisor.isOne()) {
       PreShift = PostShift = DAG.getUNDEF(ShSVT);
       MagicFactor = NPQFactor = DAG.getUNDEF(SVT);
+      HasOneDivisor = true;
     } else {
       UnsignedDivisionByConstantInfo magics =
           UnsignedDivisionByConstantInfo::get(Divisor);
@@ -6432,6 +6434,9 @@ SDValue TargetLowering::BuildVPUDIV(SDNode *N, SelectionDAG &DAG,
     Q = DAG.getNode(ISD::VP_LSHR, DL, VT, Q, PostShift, Mask, VL);
     Created.push_back(Q.getNode());
   }
+
+  if (!HasOneDivisor)
+    return Q;
 
   EVT SetCCVT =
       EVT::getVectorVT(*DAG.getContext(), MVT::i1, VT.getVectorElementCount());
