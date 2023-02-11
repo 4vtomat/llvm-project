@@ -147,6 +147,9 @@
 .attribute arch, "rv32issstateen"
 # CHECK: attribute      5, "rv32i2p1_ssstateen1p0"
 
+.attribute arch, "rv32ismstateen"
+# CHECK: attribute      5, "rv32i2p1_smstateen1p0"
+
 .attribute arch, "rv32ishcounterenw"
 # CHECK: attribute      5, "rv32i2p1_shcounterenw1p0"
 
