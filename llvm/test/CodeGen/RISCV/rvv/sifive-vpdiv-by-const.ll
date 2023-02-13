@@ -1214,3 +1214,227 @@ define <vscale x 2 x i32> @vpsrem_by_const_nxv2i32(<vscale x 2 x i32> %va, <vsca
   %v = call <vscale x 2 x i32> @llvm.vp.srem.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x i32> %v
 }
+
+define <vscale x 8 x i8> @vpudiv_by_1_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpudiv_by_1_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 8 x i8> undef, i8 1, i32 0
+  %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
+  %v = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %splat, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %v
+}
+
+define <vscale x 4 x i16> @vpudiv_by_1_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpudiv_by_1_nxv4i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 4 x i16> undef, i16 1, i32 0
+  %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
+  %v = call <vscale x 4 x i16> @llvm.vp.sdiv.nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i16> %splat, <vscale x 4 x i1> %m, i32 %evl)
+  ret <vscale x 4 x i16> %v
+}
+
+define <vscale x 2 x i32> @vpudiv_by_1_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpudiv_by_1_nxv2i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 2 x i32> undef, i32 1, i32 0
+  %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
+  %v = call <vscale x 2 x i32> @llvm.vp.sdiv.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
+  ret <vscale x 2 x i32> %v
+}
+
+define <vscale x 1 x i64> @vpudiv_by_1_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpudiv_by_1_nxv1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 1 x i64> undef, i64 1, i32 0
+  %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+  %v = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
+  ret <vscale x 1 x i64> %v
+}
+
+define <vscale x 8 x i8> @vpsdiv_by_1_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsdiv_by_1_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 8 x i8> undef, i8 1, i32 0
+  %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
+  %v = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %splat, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %v
+}
+
+define <vscale x 4 x i16> @vpsdiv_by_1_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsdiv_by_1_nxv4i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 4 x i16> undef, i16 1, i32 0
+  %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
+  %v = call <vscale x 4 x i16> @llvm.vp.sdiv.nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i16> %splat, <vscale x 4 x i1> %m, i32 %evl)
+  ret <vscale x 4 x i16> %v
+}
+
+define <vscale x 2 x i32> @vpsdiv_by_1_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsdiv_by_1_nxv2i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 2 x i32> undef, i32 1, i32 0
+  %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
+  %v = call <vscale x 2 x i32> @llvm.vp.sdiv.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
+  ret <vscale x 2 x i32> %v
+}
+
+define <vscale x 1 x i64> @vpsdiv_by_1_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsdiv_by_1_nxv1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 1 x i64> undef, i64 1, i32 0
+  %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+  %v = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
+  ret <vscale x 1 x i64> %v
+}
+
+define <vscale x 8 x i8> @vpurem_by_1_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpurem_by_1_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 8 x i8> undef, i8 1, i32 0
+  %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
+  %v = call <vscale x 8 x i8> @llvm.vp.urem.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %splat, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %v
+}
+
+define <vscale x 4 x i16> @vpurem_by_1_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpurem_by_1_nxv4i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 4 x i16> undef, i16 1, i32 0
+  %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
+  %v = call <vscale x 4 x i16> @llvm.vp.urem.nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i16> %splat, <vscale x 4 x i1> %m, i32 %evl)
+  ret <vscale x 4 x i16> %v
+}
+
+define <vscale x 2 x i32> @vpurem_by_1_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpurem_by_1_nxv2i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 2 x i32> undef, i32 1, i32 0
+  %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
+  %v = call <vscale x 2 x i32> @llvm.vp.urem.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
+  ret <vscale x 2 x i32> %v
+}
+
+define <vscale x 1 x i64> @vpurem_by_1_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpurem_by_1_nxv1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 1 x i64> undef, i64 1, i32 0
+  %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+  %v = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
+  ret <vscale x 1 x i64> %v
+}
+
+define <vscale x 8 x i8> @vpsrem_by_1_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_1_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 8 x i8> undef, i8 1, i32 0
+  %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
+  %v = call <vscale x 8 x i8> @llvm.vp.srem.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %splat, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %v
+}
+
+define <vscale x 4 x i16> @vpsrem_by_1_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_1_nxv4i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 4 x i16> undef, i16 1, i32 0
+  %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
+  %v = call <vscale x 4 x i16> @llvm.vp.srem.nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i16> %splat, <vscale x 4 x i1> %m, i32 %evl)
+  ret <vscale x 4 x i16> %v
+}
+
+define <vscale x 2 x i32> @vpsrem_by_1_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_1_nxv2i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 2 x i32> undef, i32 1, i32 0
+  %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
+  %v = call <vscale x 2 x i32> @llvm.vp.srem.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
+  ret <vscale x 2 x i32> %v
+}
+
+define <vscale x 1 x i64> @vpsrem_by_1_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_1_nxv1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 1 x i64> undef, i64 1, i32 0
+  %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+  %v = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
+  ret <vscale x 1 x i64> %v
+}
+
+define <vscale x 8 x i8> @vpsrem_by_neg1_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_neg1_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 8 x i8> undef, i8 -1, i32 0
+  %splat = shufflevector <vscale x 8 x i8> %vec, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
+  %v = call <vscale x 8 x i8> @llvm.vp.srem.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %splat, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %v
+}
+
+define <vscale x 4 x i16> @vpsrem_by_neg1_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_neg1_nxv4i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 4 x i16> undef, i16 -1, i32 0
+  %splat = shufflevector <vscale x 4 x i16> %vec, <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
+  %v = call <vscale x 4 x i16> @llvm.vp.srem.nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i16> %splat, <vscale x 4 x i1> %m, i32 %evl)
+  ret <vscale x 4 x i16> %v
+}
+
+define <vscale x 2 x i32> @vpsrem_by_neg1_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_neg1_nxv2i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 2 x i32> undef, i32 -1, i32 0
+  %splat = shufflevector <vscale x 2 x i32> %vec, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
+  %v = call <vscale x 2 x i32> @llvm.vp.srem.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i32> %splat, <vscale x 2 x i1> %m, i32 %evl)
+  ret <vscale x 2 x i32> %v
+}
+
+define <vscale x 1 x i64> @vpsrem_by_neg1_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsrem_by_neg1_nxv1i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    ret
+  %vec = insertelement <vscale x 1 x i64> undef, i64 -1, i32 0
+  %splat = shufflevector <vscale x 1 x i64> %vec, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+  %v = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
+  ret <vscale x 1 x i64> %v
+}

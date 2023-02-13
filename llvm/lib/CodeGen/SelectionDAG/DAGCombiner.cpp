@@ -4759,9 +4759,15 @@ SDValue DAGCombiner::visitVPREM(SDNode *N) {
   bool IsSigned = (Opcode == ISD::VP_SREM);
   SDLoc DL(N);
 
+  ConstantSDNode *N1C = isConstOrConstSplat(N1, /*AllowUndefs*/ false);
+  // fold (vp.u(s)rem X, 1) -> 0
+  // fold (vp.srem X, -1) -> 0
+  if (N1C->isOne() || (IsSigned && N1C->isAllOnes()))
+    return DAG.getConstant(0, DL, VT);
+
   // fold (vp.urem X, -1) -> select(FX == -1, 0, FX)
   // Freeze the numerator to avoid a miscompile with an undefined value.
-  if (!IsSigned && llvm::isAllOnesOrAllOnesSplat(N1, /*AllowUndefs*/ false)) {
+  if (!IsSigned && N1C->isAllOnes()) {
     SDValue F0 = DAG.getFreeze(N0);
     SDValue EqualsNeg1 = DAG.getSetCCVP(DL, CCVT, F0, N1, ISD::SETEQ, Mask, VL);
     return DAG.getNode(ISD::VP_SELECT, DL, VT, EqualsNeg1,
@@ -25530,6 +25536,10 @@ SDValue DAGCombiner::visitVPUDIV(SDNode *N) {
   SDLoc DL(N);
 
   ConstantSDNode *N1C = isConstOrConstSplat(N1);
+  // fold (vp.udiv X, 1) -> X
+  if (N1C && N1C->isOne())
+    return N0;
+
   // fold (vp.udiv X, -1) -> vp.select(X == -1, 1, 0)
   if (N1C && N1C->isAllOnes()) {
     EVT CCVT = EVT::getVectorVT(*DAG.getContext(), MVT::i1,
@@ -25635,8 +25645,12 @@ SDValue DAGCombiner::visitVPSDIV(SDNode *N) {
   EVT VT = N->getValueType(0);
   SDLoc DL(N);
 
-  // fold (vp.sdiv X, -1) -> 0-X
+  // fold (vp.sdiv X, 1) -> X
   ConstantSDNode *N1C = isConstOrConstSplat(N1);
+  if (N1C && N1C->isOne())
+    return N0;
+
+  // fold (vp.sdiv X, -1) -> 0-X
   if (N1C && N1C->isAllOnes())
     return DAG.getNode(ISD::VP_SUB, DL, VT, DAG.getConstant(0, DL, VT), N0,
                        Mask, VL);
