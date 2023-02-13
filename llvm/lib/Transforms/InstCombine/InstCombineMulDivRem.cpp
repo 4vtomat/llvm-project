@@ -614,12 +614,21 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
     }
 
     Value *Z;
-    if (match(&I, m_c_FMul(m_OneUse(m_FDiv(m_Value(X), m_Value(Y))),
-                           m_Value(Z)))) {
-      // Sink division: (X / Y) * Z --> (X * Z) / Y
-      Value *NewFMul = Builder.CreateFMulFMF(X, Z, &I);
+#if SIFIVE_CUSTOMIZATION
+    // Sink division: (X / Y) * Z --> (X * Z) / Y
+    // Don't sink if the fdiv is in a different basic block as this might pull a
+    // division into a loop.
+    if (match(Op0, m_OneUse(m_FDiv(m_Value(X), m_Value(Y)))) &&
+        cast<Instruction>(Op0)->getParent() == I.getParent()) {
+      Value *NewFMul = Builder.CreateFMulFMF(X, Op1, &I);
       return BinaryOperator::CreateFDivFMF(NewFMul, Y, &I);
     }
+    if (match(Op1, m_OneUse(m_FDiv(m_Value(X), m_Value(Y)))) &&
+        cast<Instruction>(Op1)->getParent() == I.getParent()) {
+      Value *NewFMul = Builder.CreateFMulFMF(X, Op0, &I);
+      return BinaryOperator::CreateFDivFMF(NewFMul, Y, &I);
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     // sqrt(X) * sqrt(Y) -> sqrt(X * Y)
     // nnan disallows the possibility of returning a number if both operands are
