@@ -4762,12 +4762,12 @@ SDValue DAGCombiner::visitVPREM(SDNode *N) {
   ConstantSDNode *N1C = isConstOrConstSplat(N1, /*AllowUndefs*/ false);
   // fold (vp.u(s)rem X, 1) -> 0
   // fold (vp.srem X, -1) -> 0
-  if (N1C->isOne() || (IsSigned && N1C->isAllOnes()))
+  if (N1C && (N1C->isOne() || (IsSigned && N1C->isAllOnes())))
     return DAG.getConstant(0, DL, VT);
 
   // fold (vp.urem X, -1) -> select(FX == -1, 0, FX)
   // Freeze the numerator to avoid a miscompile with an undefined value.
-  if (!IsSigned && N1C->isAllOnes()) {
+  if (!IsSigned && N1C && N1C->isAllOnes()) {
     SDValue F0 = DAG.getFreeze(N0);
     SDValue EqualsNeg1 = DAG.getSetCCVP(DL, CCVT, F0, N1, ISD::SETEQ, Mask, VL);
     return DAG.getNode(ISD::VP_SELECT, DL, VT, EqualsNeg1,
