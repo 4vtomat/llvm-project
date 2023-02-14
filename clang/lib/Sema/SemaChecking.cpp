@@ -3022,7 +3022,22 @@ bool Sema::CheckNeonBuiltinFunctionCall(const TargetInfo &TI,
       EltTy = EltTy.withConst();
     QualType LHSTy = Context.getPointerType(EltTy);
     AssignConvertType ConvTy;
-    ConvTy = CheckSingleAssignmentConstraints(LHSTy, RHS);
+#if SIFIVE_CUSTOMIZATION
+    bool IsCompatible = false;
+    // Make 'const __fp16 *' and 'const _Float16 *' are compatible.
+    if (TI.getTriple().getArch() == llvm::Triple::riscv64) {
+      QualType LHSType = Context.getCanonicalType(LHSTy).getUnqualifiedType();
+      QualType RHSType = Context.getCanonicalType(RHSTy).getUnqualifiedType();
+      if (const PointerType *LHSPointer = dyn_cast<PointerType>(LHSType))
+        if (const PointerType *RHSPointer = dyn_cast<PointerType>(RHSType)) {
+          if (LHSPointer->getPointeeType()->isHalfType() &&
+              RHSPointer->getPointeeType()->isFloat16Type())
+            IsCompatible = true;
+        }
+    }
+    ConvTy = IsCompatible ? Compatible
+                          : CheckSingleAssignmentConstraints(LHSTy, RHS);
+#endif // SIFIVE_CUSTOMIZATION
     if (RHS.isInvalid())
       return true;
     if (DiagnoseAssignmentResult(ConvTy, Arg->getBeginLoc(), LHSTy, RHSTy,
