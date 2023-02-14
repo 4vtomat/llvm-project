@@ -750,13 +750,13 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
                                         {LoopCount, Sew8, LmulM8});
 
     Value *SrcCast =
-        Builder.CreatePointerCast(SrcIndexTmp, PointerType::get(VTy, SrcAS));
+        Builder.CreatePointerCast(SrcIndex, PointerType::get(VTy, SrcAS));
     Value *Load =
         Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
                                 {UndefValue::get(VTy), SrcCast, VL});
 
     Value *DstCast =
-        Builder.CreatePointerCast(DstIndexTmp, PointerType::get(VTy, DstAS));
+        Builder.CreatePointerCast(DstIndex, PointerType::get(VTy, DstAS));
     Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
                             {Load, DstCast, VL});
 
@@ -765,8 +765,8 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
     if (IsBackward)
       VL = Builder.CreateNeg(VL);
 
-    SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, VL);
-    DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, VL);
+    SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndex, VL);
+    DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndex, VL);
 
     cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, EpilogBB);
     cast<PHINode>(SrcIndex)->addIncoming(SrcIndexTmp, EpilogBB);
@@ -1098,13 +1098,13 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
                                         {LoopCount, SEW, LMUL});
 
     Value *DstCast =
-        Builder.CreatePointerCast(DstIndexTmp, PointerType::get(VTy, DstAS));
+        Builder.CreatePointerCast(DstIndex, PointerType::get(VTy, DstAS));
     Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
                             {Val, DstCast, VL});
 
     NewLoopCount = Builder.CreateSub(LoopCount, VL);
 
-    DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, VL);
+    DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndex, VL);
 
     cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, EpilogBB);
     cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, EpilogBB);
