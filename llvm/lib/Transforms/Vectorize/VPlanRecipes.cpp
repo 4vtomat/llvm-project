@@ -206,7 +206,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
+    if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
                                        Part);
       return;
@@ -222,7 +222,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getEVL() && A->getType()->isVectorTy()) {
+    if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
                                        Part);
       return;
@@ -235,7 +235,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   case VPInstruction::ICmpULE: {
     Value *IV = State.get(getOperand(0), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getEVL() && IV->getType()->isVectorTy()) {
+    if (State.Plan->getRVL() && IV->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
                                        Part);
       return;
@@ -251,7 +251,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
+    if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
                                        Part);
       return;
@@ -295,10 +295,10 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       State.set(this, PartMinus1, Part);
     } else {
 #if SIFIVE_CUSTOMIZATION
-      if (State.Plan->getEVL()) {
+      if (State.Plan->getRVL()) {
         Value *V2 = State.get(getOperand(1), Part);
-        Value *PrevEVL = State.get(State.Plan->getPrevEVL(), Part);
-        Value *EVL = State.get(State.Plan->getEVL(), Part);
+        Value *PrevRVL = State.get(State.Plan->getPrevRVL(), Part);
+        Value *RVL = State.get(State.Plan->getRVL(), Part);
 
         auto *IdxTy = Builder.getInt32Ty();
         Value *Shift = ConstantInt::get(IdxTy, -1);
@@ -306,7 +306,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 
         Value *Splice = Builder.CreateIntrinsic(
             Intrinsic::experimental_vp_splice, {PartMinus1->getType()},
-            {PartMinus1, V2, Shift, Mask, PrevEVL, EVL}, nullptr);
+            {PartMinus1, V2, Shift, Mask, PrevRVL, RVL}, nullptr);
 
         State.set(this, Splice, Part);
         break;
@@ -328,8 +328,8 @@ void VPInstruction::generateInstruction(VPTransformState &State,
       // elements) times the unroll factor (num of SIMD instructions).
 #if SIFIVE_CUSTOMIZATION
       Value *Step;
-      if (VPValue *EVL = State.Plan->getEVL())
-        Step = Builder.CreateZExtOrTrunc(State.get(EVL, 0), Phi->getType());
+      if (VPValue *RVL = State.Plan->getRVL())
+        Step = Builder.CreateZExtOrTrunc(State.get(RVL, 0), Phi->getType());
       else
         Step = createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
 #else
@@ -513,7 +513,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   State.setDebugLocFromInst(&CI);
 
 #if SIFIVE_CUSTOMIZATION
-  if (State.Plan->getEVL()) {
+  if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
@@ -569,9 +569,9 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
       // Add VL as an explicit final argument to SiFive NF Library functions
       if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
-          State.Plan->getEVL()) {
-        Value *EVL = State.get(State.Plan->getEVL(), Part);
-        Args.push_back(EVL);
+          State.Plan->getRVL()) {
+        Value *RVL = State.get(State.Plan->getRVL(), Part);
+        Args.push_back(RVL);
       }
 #endif
     }
@@ -666,10 +666,10 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
     Value *Op1 = State.get(getOperand(2), Part);
 #if SIFIVE_CUSTOMIZATION
     Value *Sel;
-    if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
-      Value *EVLArg = State.get(State.Plan->getEVL(), Part);
+    if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
+      Value *RVLArg = State.get(State.Plan->getRVL(), Part);
       Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_select, {Op0->getType()},
-                                          {Cond, Op0, Op1, EVLArg}, nullptr,
+                                          {Cond, Op0, Op1, RVLArg}, nullptr,
                                           "vp.widen.select");
     } else {
       Sel = State.Builder.CreateSelect(Cond, Op0, Op1);
@@ -685,7 +685,7 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
 void VPWidenRecipe::execute(VPTransformState &State) {
   auto &I = *cast<Instruction>(getUnderlyingValue());
 #if SIFIVE_CUSTOMIZATION
-  if (State.Plan->getEVL() &&
+  if (State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
@@ -1005,11 +1005,11 @@ void VPBlendRecipe::execute(VPTransformState &State) {
         // based on the incoming mask.
         Value *Cond = State.get(getMask(In), Part);
 #if SIFIVE_CUSTOMIZATION
-        if (State.Plan->getEVL() && Cond->getType()->isVectorTy()) {
-          Value *EVLArg = State.get(State.Plan->getEVL(), Part);
+        if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
+          Value *RVLArg = State.get(State.Plan->getRVL(), Part);
           Entry[Part] = State.Builder.CreateIntrinsic(
               Intrinsic::vp_merge, {In0->getType()},
-              {Cond, In0, Entry[Part], EVLArg}, nullptr, "predphi");
+              {Cond, In0, Entry[Part], RVLArg}, nullptr, "predphi");
         } else
 #endif // SIFIVE_CUSTOMIZATION
         Entry[Part] =
@@ -1198,7 +1198,7 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
     State.set(this, EntryPart, Part);
 #if SIFIVE_CUSTOMIZATION
-  if (!State.Plan->getEVL())
+  if (!State.Plan->getRVL())
     return;
   Value *TripCount = State.get(&State.Plan->getVectorTripCount(), 0);
   // TODO: Restructure this code With an explicit remainder loop, vsetvli can be
@@ -1210,26 +1210,26 @@ void VPCanonicalIVPHIRecipe::execute(VPTransformState &State) {
   // Compute TC - IV as the RVL(requested vector length).
   Value *IV = State.get(this, 0);
   Value *RVL = State.Builder.CreateSub(TripCount, IV);
-  // Set EVL
+  // Set RVL
   Value *SetVL = State.Plan->getSetVL(State, RVL);
-  Value *EVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
-  State.set(State.Plan->getEVL(), EVL, 0);
-  if (State.Plan->getPrevEVL()) {
-    auto *PrevEVL = PHINode::Create(EVL->getType(), 2, "prev.evl",
+  RVL = State.Builder.CreateTrunc(SetVL, State.Builder.getInt32Ty());
+  State.set(State.Plan->getRVL(), RVL, 0);
+  if (State.Plan->getPrevRVL()) {
+    auto *PrevRVL = PHINode::Create(RVL->getType(), 2, "prev.rvl",
                                     &*State.CFG.PrevBB->getFirstInsertionPt());
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    Value *InitEVL;
-    if (!State.hasAnyVectorValue(State.Plan->getInitEVL())) {
-      InitEVL = State.Plan->getSetVL(State, TripCount);
-      // Record initial EVL in InitEVL VPValue for future use
-      State.set(State.Plan->getInitEVL(), InitEVL, 0);
+    Value *InitRVL;
+    if (!State.hasAnyVectorValue(State.Plan->getInitRVL())) {
+      InitRVL = State.Plan->getSetVL(State, TripCount);
+      // Record initial RVL in InitRVL VPValue for future use
+      State.set(State.Plan->getInitRVL(), InitRVL, 0);
     } else {
-      InitEVL = State.get(State.Plan->getInitEVL(), 0);
+      InitRVL = State.get(State.Plan->getInitRVL(), 0);
     }
-    InitEVL = State.Builder.CreateTrunc(InitEVL, State.Builder.getInt32Ty());
-    PrevEVL->addIncoming(InitEVL, VectorPH);
-    State.set(State.Plan->getPrevEVL(), PrevEVL, 0);
+    InitRVL = State.Builder.CreateTrunc(InitRVL, State.Builder.getInt32Ty());
+    PrevRVL->addIncoming(InitRVL, VectorPH);
+    State.set(State.Plan->getPrevRVL(), PrevRVL, 0);
   }
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -1344,12 +1344,12 @@ void VPFirstOrderRecurrencePHIRecipe::execute(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
     Value *RuntimeVF = nullptr;
-    if (State.Plan->getEVL()) {
-      assert(State.Plan->getInitEVL() &&
-             "InitEVL must be constructed to correctly handle "
+    if (State.Plan->getRVL()) {
+      assert(State.Plan->getInitRVL() &&
+             "InitRVL must be constructed to correctly handle "
              "VPFirstOrderRecurrencePHIRecipe");
-      Value *InitEVL = State.get(State.Plan->getInitEVL(), 0);
-      RuntimeVF = State.Builder.CreateTrunc(InitEVL, IdxTy);
+      Value *InitRVL = State.get(State.Plan->getInitRVL(), 0);
+      RuntimeVF = State.Builder.CreateTrunc(InitRVL, IdxTy);
     } else {
       RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
     }

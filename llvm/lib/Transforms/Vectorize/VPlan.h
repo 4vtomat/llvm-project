@@ -167,7 +167,7 @@ public:
   /// runtime.
 #if SIFIVE_CUSTOMIZATION
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF,
-                          Value *EVL = nullptr) const;
+                          Value *RVL = nullptr) const;
 #else
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF) const;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2410,15 +2410,15 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
-  /// Represent EVL for the predicated loop vectorizer.
-  VPValue *EVL = nullptr;
+  /// Represent RVL for the predicated loop vectorizer.
+  VPValue *RVL = nullptr;
 
-  // EVL on the previous iteration. Represented as a PHI.
-  VPValue *PrevEVL = nullptr;
+  // RVL on the previous iteration. Represented as a PHI.
+  VPValue *PrevRVL = nullptr;
 
-  /// Represent initial EVL, i.e. EVL of the first vector iteration for the
+  /// Represent initial RVL, i.e. RVL of the first vector iteration for the
   /// predicated loop vectorizer.
-  VPValue *InitEVL = nullptr;
+  VPValue *InitRVL = nullptr;
 
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
@@ -2488,34 +2488,34 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// Returns VPValue for EVL.
-  VPValue *getEVL() const { return EVL; }
+  /// Returns VPValue for RVL.
+  VPValue *getRVL() const { return RVL; }
 
-  /// Creates EVL VPValue;
-  void createEVL() {
-    if (!EVL)
-      EVL = new VPValue();
+  /// Creates RVL VPValue;
+  void createRVL() {
+    if (!RVL)
+      RVL = new VPValue();
   }
 
   /// Generate vsetvli call.
   Value *getSetVL(VPTransformState &State, Value *RVL);
 
-  /// Returns VPValue for PrevEVL.
-  VPValue *getPrevEVL() const { return PrevEVL; }
+  /// Returns VPValue for PrevRVL.
+  VPValue *getPrevRVL() const { return PrevRVL; }
 
-  /// Creates PrevEVL VPValue;
-  void createPrevEVL() {
-    if (!PrevEVL)
-      PrevEVL = new VPValue();
+  /// Creates PrevRVL VPValue;
+  void createPrevRVL() {
+    if (!PrevRVL)
+      PrevRVL = new VPValue();
   }
 
-  /// Returns VPValue for InitEVL
-  VPValue *getInitEVL() const { return InitEVL; }
+  /// Returns VPValue for InitRVL
+  VPValue *getInitRVL() const { return InitRVL; }
 
-  /// Creates InitEVL VPValue
-  void createInitEVL() {
-    if (!InitEVL)
-      InitEVL = new VPValue();
+  /// Creates InitRVL VPValue
+  void createInitRVL() {
+    if (!InitRVL)
+      InitRVL = new VPValue();
   }
 
   /// Gets or creates a constant all-true mask VPValue.
