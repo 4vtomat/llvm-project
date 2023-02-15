@@ -1914,7 +1914,7 @@ let TargetPrefix = "riscv" in {
   defm vaesdm : RISCVUnaryAAUnMaskedP;
   defm vaesef : RISCVUnaryAAUnMaskedP;
   defm vaesem : RISCVUnaryAAUnMaskedP;
-  def int_riscv_vaeskf1 : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vaeskf1 : RISCVBinaryAAXUnMasked;
   def int_riscv_vaeskf2 : RISCVBinaryAAXUnMaskedP;
   defm vaesz : RISCVUnaryAAUnMaskedP<0>;
 
@@ -1931,12 +1931,12 @@ let TargetPrefix = "riscv" in {
   def int_riscv_vghmac : RISCVBinaryAAXUnMaskedP;
 
   // zvksed
-  def int_riscv_vsm4k : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsm4k : RISCVBinaryAAXUnMasked;
   defm vsm4r : RISCVUnaryAAUnMaskedP;
 
   // zvksh
   def int_riscv_vsm3c : RISCVBinaryAAXUnMaskedP;
-  def int_riscv_vsm3me : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsm3me : RISCVBinaryAAXUnMasked;
 
   // zvknha or zvknhb
   def int_riscv_vsha2ch : RISCVBinaryAAXUnMaskedP;

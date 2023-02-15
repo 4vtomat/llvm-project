@@ -8,22 +8,20 @@ declare <vscale x 1 x i32> @llvm.riscv.vsm4k.nxv1i32.i32(
   <vscale x 1 x i32>,
   <vscale x 1 x i32>,
   i32,
-  iXLen,
   iXLen)
 
-define <vscale x 1 x i32> @intrinsic_vsm4k_vi_nxv1i32_i32(<vscale x 1 x i32> %0, <vscale x 1 x i32> %1, iXLen %2) nounwind {
+define <vscale x 1 x i32> @intrinsic_vsm4k_vi_nxv1i32_i32(<vscale x 1 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vsm4k_vi_nxv1i32_i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
-; CHECK-NEXT:    vsm4k.vi v8, v9, 2
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vsm4k.vi v8, v8, 2
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i32> @llvm.riscv.vsm4k.nxv1i32.i32(
+    <vscale x 1 x i32> undef,
     <vscale x 1 x i32> %0,
-    <vscale x 1 x i32> %1,
     i32 2,
-    iXLen %2,
-    iXLen 2)
+    iXLen %1)
 
   ret <vscale x 1 x i32> %a
 }
@@ -32,22 +30,20 @@ declare <vscale x 2 x i32> @llvm.riscv.vsm4k.nxv2i32.i32(
   <vscale x 2 x i32>,
   <vscale x 2 x i32>,
   i32,
-  iXLen,
   iXLen)
 
-define <vscale x 2 x i32> @intrinsic_vsm4k_vi_nxv2i32_i32(<vscale x 2 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
+define <vscale x 2 x i32> @intrinsic_vsm4k_vi_nxv2i32_i32(<vscale x 2 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vsm4k_vi_nxv2i32_i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
-; CHECK-NEXT:    vsm4k.vi v8, v9, 2
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vsm4k.vi v8, v8, 2
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vsm4k.nxv2i32.i32(
+    <vscale x 2 x i32> undef,
     <vscale x 2 x i32> %0,
-    <vscale x 2 x i32> %1,
     i32 2,
-    iXLen %2,
-    iXLen 2)
+    iXLen %1)
 
   ret <vscale x 2 x i32> %a
 }
@@ -56,22 +52,20 @@ declare <vscale x 4 x i32> @llvm.riscv.vsm4k.nxv4i32.i32(
   <vscale x 4 x i32>,
   <vscale x 4 x i32>,
   i32,
-  iXLen,
   iXLen)
 
-define <vscale x 4 x i32> @intrinsic_vsm4k_vi_nxv4i32_i32(<vscale x 4 x i32> %0, <vscale x 4 x i32> %1, iXLen %2) nounwind {
+define <vscale x 4 x i32> @intrinsic_vsm4k_vi_nxv4i32_i32(<vscale x 4 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vsm4k_vi_nxv4i32_i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, tu, ma
-; CHECK-NEXT:    vsm4k.vi v8, v10, 2
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vsm4k.vi v8, v8, 2
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vsm4k.nxv4i32.i32(
+    <vscale x 4 x i32> undef,
     <vscale x 4 x i32> %0,
-    <vscale x 4 x i32> %1,
     i32 2,
-    iXLen %2,
-    iXLen 2)
+    iXLen %1)
 
   ret <vscale x 4 x i32> %a
 }
@@ -80,22 +74,20 @@ declare <vscale x 8 x i32> @llvm.riscv.vsm4k.nxv8i32.i32(
   <vscale x 8 x i32>,
   <vscale x 8 x i32>,
   i32,
-  iXLen,
   iXLen)
 
-define <vscale x 8 x i32> @intrinsic_vsm4k_vi_nxv8i32_i32(<vscale x 8 x i32> %0, <vscale x 8 x i32> %1, iXLen %2) nounwind {
+define <vscale x 8 x i32> @intrinsic_vsm4k_vi_nxv8i32_i32(<vscale x 8 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vsm4k_vi_nxv8i32_i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m4, tu, ma
-; CHECK-NEXT:    vsm4k.vi v8, v12, 2
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vsm4k.vi v8, v8, 2
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vsm4k.nxv8i32.i32(
+    <vscale x 8 x i32> undef,
     <vscale x 8 x i32> %0,
-    <vscale x 8 x i32> %1,
     i32 2,
-    iXLen %2,
-    iXLen 2)
+    iXLen %1)
 
   ret <vscale x 8 x i32> %a
 }
@@ -104,22 +96,20 @@ declare <vscale x 16 x i32> @llvm.riscv.vsm4k.nxv16i32.i32(
   <vscale x 16 x i32>,
   <vscale x 16 x i32>,
   i32,
-  iXLen,
   iXLen)
 
-define <vscale x 16 x i32> @intrinsic_vsm4k_vi_nxv16i32_i32(<vscale x 16 x i32> %0, <vscale x 16 x i32> %1, iXLen %2) nounwind {
+define <vscale x 16 x i32> @intrinsic_vsm4k_vi_nxv16i32_i32(<vscale x 16 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vsm4k_vi_nxv16i32_i32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-; CHECK-NEXT:    vsm4k.vi v8, v16, 2
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vsm4k.vi v8, v8, 2
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i32> @llvm.riscv.vsm4k.nxv16i32.i32(
+    <vscale x 16 x i32> undef,
     <vscale x 16 x i32> %0,
-    <vscale x 16 x i32> %1,
     i32 2,
-    iXLen %2,
-    iXLen 2)
+    iXLen %1)
 
   ret <vscale x 16 x i32> %a
 }
