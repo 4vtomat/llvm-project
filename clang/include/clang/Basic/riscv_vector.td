@@ -2831,7 +2831,8 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
     defm vaesdm : RVVOutBuiltinSetP;
     defm vaesef : RVVOutBuiltinSetP;
     defm vaesem : RVVOutBuiltinSetP;
-    defm vaeskf1 : RVVOutOp1BuiltinSetP<0>;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vaeskf1 : RVVOutOp1BuiltinSet<"vaeskf1", "i", [["vi", "Uv", "UvUvUe"]]>;
     defm vaeskf2 : RVVOutOp1BuiltinSetP<0>;
     defm vaesz : RVVOutBuiltinSetP<0>;
   }
@@ -2841,12 +2842,14 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
     defm vghmac : RVVOutOp1BuiltinSetP;
 
     // zvksed
-    defm vsm4k : RVVOutOp1BuiltinSetP<0>;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vsm4k : RVVOutOp1BuiltinSet<"vsm4k", "i", [["vi", "Uv", "UvUvUe"]]>;
     defm vsm4r : RVVOutBuiltinSetP;
 
     // zvksh
     defm vsm3c : RVVOutOp1BuiltinSetP<0>;
-    defm vsm3me : RVVOutOp1BuiltinSetP;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vsm3me : RVVOutOp1BuiltinSet<"vsm3me", "i", [["vv", "Uv", "UvUvUv"]]>;
 
     // zvknha or zvknhb
     defm vsha2ch : RVVOutOp1BuiltinSetP<1, "il">;
