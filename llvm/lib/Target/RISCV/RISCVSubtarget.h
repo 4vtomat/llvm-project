@@ -57,6 +57,9 @@ private:
   bool ATTRIBUTE = DEFAULT;
 #include "RISCVGenSubtargetInfo.inc"
 
+#if SIFIVE_CUSTOMIZATION
+  uint8_t VectorToScalarBaseCost = 1;
+#endif // SIFIVE_CUSTOMIZATION
   unsigned XLen = 32;
   unsigned ZvlLen = 0;
   MVT XLenVT = MVT::i32;
@@ -70,6 +73,11 @@ private:
   RISCVRegisterInfo RegInfo;
   RISCVTargetLowering TLInfo;
   SelectionDAGTargetInfo TSInfo;
+
+#if SIFIVE_CUSTOMIZATION
+  /// Initialize properties based on the selected processor family.
+  void initializeProperties();
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Initializes using the passed in CPU and feature strings so that we can
   /// use initializer lists for subtarget initialization.
@@ -110,6 +118,8 @@ public:
   /// initializeProperties().
   RISCVProcFamilyEnum getProcFamily() const { return RISCVProcFamily; }
 #if SIFIVE_CUSTOMIZATION
+  unsigned getVectorToScalarBaseCost() const { return VectorToScalarBaseCost; }
+
   bool isSiFiveCPU() const {
     switch (RISCVProcFamily) {
     case RISCVProcFamilyEnum::SiFive6:
