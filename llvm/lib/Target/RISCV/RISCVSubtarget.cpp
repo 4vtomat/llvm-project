@@ -103,9 +103,14 @@ void RISCVSubtarget::initializeProperties() {
     VectorToScalarBaseCost = 8;
     break;
   case RISCVProcFamilyEnum::SiFive6:
+    break;
   case RISCVProcFamilyEnum::SiFiveP400:
+    VectorToScalarBaseCost = 8;
+    break;
   case RISCVProcFamilyEnum::SiFiveP500:
+    break;
   case RISCVProcFamilyEnum::SiFiveP600:
+    VectorToScalarBaseCost = 8;
     break;
   }
 }

@@ -94,14 +94,14 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = LMul;
 #if SIFIVE_CUSTOMIZATION
     // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    if (ST->isSiFiveCPU())
       Cost = Fractional ? 1 : LMul * 2;
 #endif // SIFIVE_CUSTOMIZATION
   } else {
     Cost = VT.getSizeInBits() / ST->getRealMinVLen();
 #if SIFIVE_CUSTOMIZATION
     // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    if (ST->isSiFiveCPU())
       Cost = VT.getSizeInBits() / (ST->getRealMinVLen() / 2);
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -1218,7 +1218,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         return 2;
       }
 #if SIFIVE_CUSTOMIZATION
-      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      if (ST->isSiFiveCPU())
         if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
           const unsigned VL = getEstimatedVLFor(VTy);
           const unsigned DLen = ST->getRealMinVLen() / 2;
@@ -1237,7 +1237,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         return 2;
       }
 #if SIFIVE_CUSTOMIZATION
-      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      if (ST->isSiFiveCPU())
         if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
           const unsigned VL = getEstimatedVLFor(VTy);
           const unsigned DLen = ST->getRealMinVLen() / 2;
@@ -1372,7 +1372,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return LT.first + BaseCost;
 
   // The vector to scalar move is expensive on x280, give it more cost.
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+  if (ST->isSiFiveCPU())
     BaseCost = BaseCost + 12;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
@@ -1494,7 +1494,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   if (CostKind == TTI::TCK_CodeSize)
     return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                          CostKind, OpInfo, I);
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+  if (ST->isSiFiveCPU()) {
     if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
       // Note: vector memory accesses check the L1 D$. On a miss, the access is
       // forwarded to the L2$.
