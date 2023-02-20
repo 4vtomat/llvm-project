@@ -10997,13 +10997,9 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       if (VPValue *RVL = State.Plan->getRVL()) {
         // If RVL is not nullptr, then RVL must be a valid value set during plan
         // creation and must be used to correctly reverse the address
-<<<<<<< HEAD
-        RunTimeVF = State.get(EVL, Part);
+        RunTimeVF = State.get(RVL, Part);
 	if (RunTimeVF->getType() != IndexTy)
 	  RunTimeVF = Builder.CreateSExtOrTrunc(RunTimeVF, IndexTy);
-=======
-        RunTimeVF = State.get(RVL, Part);
->>>>>>> origin/sifive-dev
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         // If the address is consecutive but reversed, then the
