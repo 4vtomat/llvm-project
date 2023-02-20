@@ -154,9 +154,9 @@
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
-#include "llvm/ADT/Triple.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Support/TypeSize.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Transforms/Utils/Local.h"
 #endif // SIFIVE_CUSTOMIZATION
 

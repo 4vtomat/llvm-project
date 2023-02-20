@@ -101,8 +101,8 @@
 #include <vector>
 
 #if SIFIVE_CUSTOMIZATION
-#include "llvm/ADT/Triple.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #endif // SIFIVE_CUSTOMIZATION
 
