@@ -11483,6 +11483,70 @@ NodeExtensionHelper::getSupportedFoldings(const SDNode *Root) {
 }
 } // End anonymous namespace.
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
+  assert(N != nullptr);
+  bool IsCommutative = N->getOpcode() != RISCVISD::SUB_VL;
+  SDValue A = N->getOperand(0);
+  SDValue B = N->getOperand(1);
+  SDValue C = N->getOperand(2);
+  SDValue OrigMask = N->getOperand(3);
+  SDValue VL = N->getOperand(4);
+  SDValue NewMask, MaskedVal, OtherVal;
+
+  if (!ISD::isConstantSplatVectorAllOnes(OrigMask.getNode()) || !C.isUndef())
+    return SDValue();
+
+  // Check if an SDValue is a vector move operation over constant 0
+  auto IsMvConst0 = [](SDValue V) {
+    return V.getOpcode() == RISCVISD::VMV_V_X_VL && V.getOperand(0).isUndef() &&
+           isNullConstant(V.getOperand(1));
+  };
+
+  // Check if an SDValue is a select operation where one of the
+  // operands IsMvConst0. If true, return the Mask and the
+  // other operand.
+  auto MaskedValFromSelect = [&IsMvConst0](SDValue V, SDValue &Mask,
+                                           SDValue &MaskedVal) {
+    if (V.getOpcode() != RISCVISD::VSELECT_VL)
+      return;
+
+    const SDValue X = V.getOperand(1);
+    const SDValue Y = V.getOperand(2);
+
+    if (IsMvConst0(X))
+      MaskedVal = Y;
+    else if (IsMvConst0(Y))
+      MaskedVal = X;
+
+    if (MaskedVal)
+      Mask = V.getOperand(0);
+  };
+
+  // Check the RHS operand
+  MaskedValFromSelect(B, NewMask, MaskedVal);
+  OtherVal = A;
+
+  // If unsuccessful but the operation commutes, try with the LHS operand for
+  // commutative operations
+  if (!NewMask && IsCommutative) {
+    MaskedValFromSelect(A, NewMask, MaskedVal);
+    OtherVal = B;
+  }
+
+  // If still unsuccessful, return empty SDValue
+  if (!NewMask)
+    return SDValue();
+
+  // If successful, check if the mask is originally all 1s and that
+  // the second operand is undef
+  SDLoc DL(N);
+  EVT VT = N->getValueType(0);
+  return DAG.getNode(N->getOpcode(), DL, VT, MaskedVal, OtherVal, OtherVal,
+                     NewMask, VL);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Combine a binary operation to its equivalent VW or VW_W form.
 /// The supported combines are:
 /// add_vl -> vwadd(u) | vwadd(u)_w
@@ -12840,6 +12904,14 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   }
   case RISCVISD::ADD_VL:
   case RISCVISD::SUB_VL:
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue Result = combineSelectAndBinOp(N, DAG))
+      return Result;
+    return combineBinOp_VLToVWBinOp_VL(N, DCI);   
+  case RISCVISD::OR_VL:
+  case RISCVISD::XOR_VL:
+    return combineSelectAndBinOp(N, DAG);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVISD::VWADD_W_VL:
   case RISCVISD::VWADDU_W_VL:
   case RISCVISD::VWSUB_W_VL:

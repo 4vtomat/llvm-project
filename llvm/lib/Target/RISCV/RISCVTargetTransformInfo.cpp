@@ -94,14 +94,14 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = LMul;
 #if SIFIVE_CUSTOMIZATION
     // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    if (ST->isSiFiveCPU())
       Cost = Fractional ? 1 : LMul * 2;
 #endif // SIFIVE_CUSTOMIZATION
   } else {
     Cost = VT.getSizeInBits() / ST->getRealMinVLen();
 #if SIFIVE_CUSTOMIZATION
     // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    if (ST->isSiFiveCPU())
       Cost = VT.getSizeInBits() / (ST->getRealMinVLen() / 2);
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -1218,7 +1218,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         return 2;
       }
 #if SIFIVE_CUSTOMIZATION
-      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      if (ST->isSiFiveCPU())
         if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
           const unsigned VL = getEstimatedVLFor(VTy);
           const unsigned DLen = ST->getRealMinVLen() / 2;
@@ -1237,7 +1237,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         return 2;
       }
 #if SIFIVE_CUSTOMIZATION
-      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      if (ST->isSiFiveCPU())
         if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
           const unsigned VL = getEstimatedVLFor(VTy);
           const unsigned DLen = ST->getRealMinVLen() / 2;
@@ -1372,7 +1372,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return LT.first + BaseCost;
 
   // The vector to scalar move is expensive on x280, give it more cost.
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+  if (ST->isSiFiveCPU())
     BaseCost = BaseCost + 12;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
@@ -1494,7 +1494,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   if (CostKind == TTI::TCK_CodeSize)
     return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                          CostKind, OpInfo, I);
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+  if (ST->isSiFiveCPU()) {
     if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
       // Note: vector memory accesses check the L1 D$. On a miss, the access is
       // forwarded to the L2$.
@@ -1619,18 +1619,34 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   if (LT.second.isScalableVector() && !LT.first.isValid())
     return LT.first;
 
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Remove this and update InsertElement cost
+  if (!isTypeLegal(Val) && Opcode != Instruction::ExtractElement)
+    return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
+#else
   if (!isTypeLegal(Val))
     return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
+#endif // SIFIVE_CUSTOMIZATION
 
   // In RVV, we could use vslidedown + vmv.x.s to extract element from vector
   // and vslideup + vmv.s.x to insert element to vector.
-  unsigned BaseCost = 1;
 #if SIFIVE_CUSTOMIZATION
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
-#endif
+  InstructionCost BaseCost = 1;
+  InstructionCost V2SCost =
+      (CostKind == TTI::TCK_CodeSize) ? 1 : ST->getVectorToScalarBaseCost();
+  // Model the vector-to-scalar communication cost
+  if (Opcode == Instruction::ExtractElement)
+    BaseCost = V2SCost;
+  // When insertelement we should add the index with 1 as the input of vslideup.
+  InstructionCost SlideCost = Opcode == Instruction::InsertElement ? 2 : 1;
+  if (ST->isSiFiveCPU() && Opcode == Instruction::ExtractElement &&
+      CostKind != TTI::TCK_CodeSize && Index == -1U)
+    SlideCost = 1 + getLMULCost(LT.second);
+#else
+  unsigned BaseCost = 1;
   // When insertelement we should add the index with 1 as the input of vslideup.
   unsigned SlideCost = Opcode == Instruction::InsertElement ? 2 : 1;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (Index != -1U) {
     // The type may be split. For fixed-width vectors we can normalize the
@@ -1671,10 +1687,60 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
     // TODO: should we count these special vsetvlis?
     BaseCost = Opcode == Instruction::InsertElement ? 5 : 3;
 #if SIFIVE_CUSTOMIZATION
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
+    if (ST->isSiFiveCPU() && Opcode == Instruction::ExtractElement) {
+      if (Index == 0) {
+        // To extract the first bit we use vfirst.m:
+        //   vsetvli  a0, zero e8, m8, ta, ma
+        //   vfirst.m a0, v0
+        //   seqz     a0, a0
+        return V2SCost + 1;
+      } else if (LT.first > 1 &&
+                 ((Index == -1U) ||
+                  (Index != 0 && LT.second.isScalableVector()))) {
+        // Expected code sequence is:
+        //   csrr + slli + addi + minu + sh3add
+        //   address calculation for each vstore
+        //   + merge.vim
+        Type *ScalarType = Val->getScalarType();
+        Align VecAlign = DL.getPrefTypeAlign(Val);
+        Align SclAlign = DL.getPrefTypeAlign(ScalarType);
+        BaseCost =
+            5 + LT.first +
+            getMemoryOpCost(Instruction::Store, Val, VecAlign, 0, CostKind) +
+            getMemoryOpCost(Instruction::Load, ScalarType, SclAlign, 0,
+                            CostKind) +
+            ((CostKind == TTI::TCK_CodeSize)
+                 ? LT.first
+                 : LT.first * getLMULCost(LT.second));
+        return BaseCost;
+      } else {
+        InstructionCost LMULCost =
+            (CostKind == TTI::TCK_CodeSize) ? 1 : getLMULCost(LT.second);
+        BaseCost = V2SCost + LMULCost * 2;
+        return BaseCost + SlideCost;
+      }
+    }
 #endif
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Remove this and update InsertElement cost
+  if (Opcode == Instruction::ExtractElement && LT.first > 1 &&
+      ((Index == -1U) || (Index != 0 && LT.second.isScalableVector()))) {
+    Type *ScalarType = Val->getScalarType();
+    Align VecAlign = DL.getPrefTypeAlign(Val);
+    Align SclAlign = DL.getPrefTypeAlign(ScalarType);
+    // Expected code sequence is:
+    //   csrr + slli + addi + minu + sh3add
+    //   address calculation for each vstore
+    BaseCost =
+        5 + LT.first +
+        getMemoryOpCost(Instruction::Store, Val, VecAlign, 0, CostKind) +
+        getMemoryOpCost(Instruction::Load, ScalarType, SclAlign, 0, CostKind);
+    return BaseCost;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Extract i64 in the target that has XLEN=32 need more instruction.
   if (Val->getScalarType()->isIntegerTy() &&
       ST->getXLen() < Val->getScalarSizeInBits()) {
@@ -1698,8 +1764,11 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
     // TODO: should we count these special vsetvlis?
     BaseCost = Opcode == Instruction::InsertElement ? 3 : 4;
 #if SIFIVE_CUSTOMIZATION
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      BaseCost = Opcode == Instruction::InsertElement ? BaseCost : BaseCost + 2;
+    if (Opcode == Instruction::ExtractElement) {
+      InstructionCost LMULCost = 1; // for VL=1
+      BaseCost = V2SCost * 2 + LMULCost * 2;
+      return BaseCost + SlideCost;
+    }
 #endif
   }
 

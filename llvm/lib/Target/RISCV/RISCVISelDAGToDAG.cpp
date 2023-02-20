@@ -2929,11 +2929,15 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-// Try to fold VMERGE_VVM with unmasked intrinsic to masked intrinsic. The
-// peephole only deals with VMERGE_VVM which is TU and has false operand same as
-// its true operand now. E.g. (VMERGE_VVM_M1_TU False, False, (VADD_M1 ...),
-// ...) -> (VADD_VV_M1_MASK)
+#if SIFIVE_CUSTOMIZATION
+// Try to fold VMERGE_VVM with vector intrinsics. Unmasked intrinsics get
+// folded to masked ones. The peephole only deals with VMERGE_VVM, which is
+// TU and has false operand same as true operand, or has a masked intrinsic
+// as its true operand and all ones as the mask.
+// E.g. (VMERGE_VVM_M1_TU False, False, (VADD_M1 ...), ...) -> (VADD_VV_M1_MASK)
+// E.g. (VMERGE_VVM_M1_TU ..., (VADD_VV_M1_MASK), allones, ...) ->
+// (VADD_VV_M1_MASK)
+#endif // SIFIVE_CUSTOMIZATION
 bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
   unsigned Offset = IsTA ? 0 : 1;
   uint64_t Policy = IsTA ? RISCVII::TAIL_AGNOSTIC : /*TUMU*/ 0;
@@ -2957,25 +2961,41 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
 
   // Skip if True has merge operand.
   // TODO: Deal with True having same merge operand with N.
-  if (RISCVII::hasMergeOp(TII->get(TrueOpc).TSFlags))
-    return false;
+#if SIFIVE_CUSTOMIZATION
+  uint64_t TrueTSFlags = TII->get(TrueOpc).TSFlags;
+  bool HasMergeOp = RISCVII::hasMergeOp(TrueTSFlags);
 
+  auto ShouldCombineMasked = [N, IsTA, True]() {
+    SDValue MergeOpN = N->getOperand(0);
+    SDValue MergeOpTrue = True->getOperand(0);
+    return MergeOpN == MergeOpTrue && !IsTA &&
+           usesAllOnesMask(N, /* MaskOpIdx */ 3);
+  };
+
+  if (HasMergeOp && !ShouldCombineMasked())
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
   // Skip if True has side effect.
   // TODO: Support velff and vlsegff.
   if (TII->get(TrueOpc).hasUnmodeledSideEffects())
     return false;
-
-  // Only deal with True when True is unmasked intrinsic now.
+#if SIFIVE_CUSTOMIZATION
   const RISCV::RISCVMaskedPseudoInfo *Info =
-      RISCV::lookupMaskedIntrinsicByUnmaskedTA(TrueOpc);
-
+      HasMergeOp ? RISCV::getMaskedPseudoInfo(TrueOpc)
+                 : RISCV::lookupMaskedIntrinsicByUnmaskedTA(TrueOpc);
+#endif // SIFIVE_CUSTOMIZATION
   if (!Info)
     return false;
+#if SIFIVE_CUSTOMIZATION
+  // The last operand of a masked intrinsic may be glued nodes.
+  bool HasGlueOp = True->getGluedNode() != nullptr;
 
-  // The last operand of unmasked intrinsic should be sew or chain.
+  // The chain operand may exist either before the glued operands or in the last
+  // position.
+  unsigned TrueChainOpIdx = True.getNumOperands() - HasGlueOp - 1;
   bool HasChainOp =
-      True.getOperand(True.getNumOperands() - 1).getValueType() == MVT::Other;
-
+      True.getOperand(TrueChainOpIdx).getValueType() == MVT::Other;
+#endif // SIFIVE_CUSTOMIZATION
   if (HasChainOp) {
     // Avoid creating cycles in the DAG. We must ensure that none of the other
     // operands depend on True through it's Chain.
@@ -2989,9 +3009,12 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
     if (SDNode::hasPredecessorHelper(True.getNode(), Visited, LoopWorklist))
       return false;
   }
-
-  // Need True has same VL with N.
-  unsigned TrueVLIndex = True.getNumOperands() - HasChainOp - 2;
+#if SIFIVE_CUSTOMIZATION
+  // The vector policy operand may be present for masked intrinsics
+  bool HasVecPolicyOp = RISCVII::hasVecPolicyOp(TrueTSFlags);
+  unsigned TrueVLIndex =
+      True.getNumOperands() - HasVecPolicyOp - HasChainOp - HasGlueOp - 2;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue TrueVL = True.getOperand(TrueVLIndex);
 
   auto IsNoFPExcept = [this](SDValue N) {
@@ -3013,18 +3036,28 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N, bool IsTA) {
          "Expected instructions with mask have merge operand.");
 
   SmallVector<SDValue, 8> Ops;
-  Ops.push_back(False);
-  Ops.append(True->op_begin(), True->op_begin() + TrueVLIndex);
-  Ops.append({Mask, VL, /* SEW */ True.getOperand(TrueVLIndex + 1)});
-  Ops.push_back(CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT()));
+#if SIFIVE_CUSTOMIZATION
+  if (HasMergeOp) {
+    Ops.append(True->op_begin(), True->op_begin() + TrueVLIndex);
+    Ops.append({VL, True.getOperand(TrueVLIndex + 1)});
+    Ops.push_back(
+        CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT()));
+    Ops.append(True->op_begin() + TrueVLIndex + 3, True->op_end());
+  } else {
+    Ops.push_back(False);
+    Ops.append(True->op_begin(), True->op_begin() + TrueVLIndex);
+    Ops.append({Mask, VL, /* SEW */ True.getOperand(TrueVLIndex + 1)});
+    Ops.push_back(
+        CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT()));
 
-  // Result node should have chain operand of True.
-  if (HasChainOp)
-    Ops.push_back(True.getOperand(True.getNumOperands() - 1));
+    // Result node should have chain operand of True.
+    if (HasChainOp)
+      Ops.push_back(True.getOperand(TrueChainOpIdx));
 
-  // Result node should take over glued node of N.
-  if (N->getGluedNode())
-    Ops.push_back(N->getOperand(N->getNumOperands() - 1));
+    if (N->getGluedNode())
+      Ops.push_back(N->getOperand(N->getNumOperands() - 1));
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   SDNode *Result =
       CurDAG->getMachineNode(MaskedOpc, DL, True->getVTList(), Ops);

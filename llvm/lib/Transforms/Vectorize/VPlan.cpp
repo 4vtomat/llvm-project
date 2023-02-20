@@ -87,7 +87,7 @@ raw_ostream &llvm::operator<<(raw_ostream &OS, const StrideAccessInfo &SAI) {
 
 Value *VPLane::getAsRuntimeExpr(IRBuilderBase &Builder,
 #if SIFIVE_CUSTOMIZATION
-                                const ElementCount &VF, Value *EVL) const {
+                                const ElementCount &VF, Value *RVL) const {
 #else
                                 const ElementCount &VF) const {
 #endif // SIFIVE_CUSTOMIZATION
@@ -97,9 +97,9 @@ Value *VPLane::getAsRuntimeExpr(IRBuilderBase &Builder,
     // FIXME: The extract should be a part of the VPlan, rather than implicit
     // thing, otherwise code in that function is a ticking bomb and will produce
     // incorrect result if upstream adds another kind to `VPLane`
-    if (EVL) {
-      // Generate EVL - 1
-      return Builder.CreateSub(EVL, Builder.getInt32(1));
+    if (RVL) {
+      // Generate RVL - 1
+      return Builder.CreateSub(RVL, Builder.getInt32(1));
     }
 #endif // SIFIVE_CUSTOMIZATION
     // Lane = RuntimeVF - VF.getKnownMinValue() + Lane
@@ -263,12 +263,12 @@ Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   }
   // TODO: Cache created scalar values.
 #if SIFIVE_CUSTOMIZATION
-  // EVL indicates that we have RVV VLA vectorization. When the first lane
+  // RVL indicates that we have RVV VLA vectorization. When the first lane
   // (0-based) needs to be extracted, there's nothing special needed for RVV
   // VLA, however when the last lane needs to be extracted, we need to use
-  // RuntimeVL (EVL) to extract that element
+  // RuntimeVL (RVL) to extract that element
   Value *Lane = Instance.Lane.getAsRuntimeExpr(
-      Builder, VF, Plan->getEVL() ? get(Plan->getEVL(), 0) : nullptr);
+      Builder, VF, Plan->getRVL() ? get(Plan->getRVL(), 0) : nullptr);
 #else
   Value *Lane = Instance.Lane.getAsRuntimeExpr(Builder, VF);
 #endif // SIFIVE_CUSTOMIZATION
@@ -708,10 +708,10 @@ VPlan::~VPlan() {
   if (BackedgeTakenCount)
     delete BackedgeTakenCount;
 #if SIFIVE_CUSTOMIZATION
-    if (EVL)
-      delete EVL;
-    if (PrevEVL)
-      delete PrevEVL;
+    if (RVL)
+      delete RVL;
+    if (PrevRVL)
+      delete PrevRVL;
     if (AllTrueMask)
       delete AllTrueMask;
 #endif // SIFIVE_CUSTOMIZATION
@@ -861,9 +861,9 @@ void VPlan::execute(VPTransformState *State) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (VPValue *PrevEVL = State->Plan->getPrevEVL()) {
-    Value *Phi = State->get(PrevEVL, 0);
-    Value *Val = State->get(State->Plan->getEVL(), State->UF - 1);
+  if (VPValue *PrevRVL = State->Plan->getPrevRVL()) {
+    Value *Phi = State->get(PrevRVL, 0);
+    Value *Val = State->get(State->Plan->getRVL(), State->UF - 1);
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1021,20 +1021,20 @@ void VPlanPrinter::dump() {
     Plan.TripCount->print(OS, SlotTracker);
     OS << " := TripCount";
   }
-  if (Plan.EVL) {
+  if (Plan.RVL) {
     OS << "\\n";
-    Plan.EVL->print(OS, SlotTracker);
-    OS << " := EVL";
+    Plan.RVL->print(OS, SlotTracker);
+    OS << " := RVL";
   }
-  if (Plan.InitEVL) {
+  if (Plan.InitRVL) {
     OS << "\\n";
-    Plan.InitEVL->print(OS, SlotTracker);
-    OS << " := INIT-EVL";
+    Plan.InitRVL->print(OS, SlotTracker);
+    OS << " := INIT-RVL";
   }
-  if (Plan.PrevEVL) {
+  if (Plan.PrevRVL) {
     OS << "\\n";
-    Plan.PrevEVL->print(OS, SlotTracker);
-    OS << " := PREV-EVL";
+    Plan.PrevRVL->print(OS, SlotTracker);
+    OS << " := PREV-RVL";
   }
   if (Plan.AllTrueMask) {
     OS << "\\n";
@@ -1267,12 +1267,12 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
 #if SIFIVE_CUSTOMIZATION
   if (Plan.TripCount)
     assignSlot(Plan.TripCount);
-  if (Plan.EVL)
-    assignSlot(Plan.EVL);
-  if (Plan.PrevEVL)
-    assignSlot(Plan.PrevEVL);
-  if (Plan.InitEVL)
-    assignSlot(Plan.InitEVL);
+  if (Plan.RVL)
+    assignSlot(Plan.RVL);
+  if (Plan.PrevRVL)
+    assignSlot(Plan.PrevRVL);
+  if (Plan.InitRVL)
+    assignSlot(Plan.InitRVL);
   if (Plan.AllTrueMask)
     assignSlot(Plan.AllTrueMask);
 #endif // SIFIVE_CUSTOMIZATION

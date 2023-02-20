@@ -4167,8 +4167,8 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
 #if SIFIVE_CUSTOMIZATION
-  Value *EVL =
-      State.Plan->getEVL() ? State.get(State.Plan->getEVL(), 0) : nullptr;
+  Value *RVL =
+      State.Plan->getRVL() ? State.get(State.Plan->getRVL(), 0) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
   if (VF.isVector()) {
     auto *One = ConstantInt::get(IdxTy, 1);
@@ -4179,7 +4179,7 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
     // current function in VPLane is it does use different lane kind for fixed
     // and scalable vectors, which makes it hard to use here. Also for RVV VLA
     // we have to provide offset from the last lane.
-    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+    auto *RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
 #endif // SIFIVE_CUSTOMIZATION
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     ExtractForScalar = Builder.CreateExtractElement(ExtractForScalar, LastIdx,
@@ -4193,15 +4193,15 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   Value *ExtractForPhiUsedOutsideLoop = nullptr;
   if (VF.isVector()) {
 #if SIFIVE_CUSTOMIZATION
-    auto *RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
+    auto *RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
 #endif // SIFIVE_CUSTOMIZATION
     auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
     ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
         Incoming, Idx, "vector.recur.extract.for.phi");
 #if SIFIVE_CUSTOMIZATION
-    if (EVL) {
+    if (RVL) {
       // Take care of the corner case when last vector iteration processed just
-      // one element. In this case extract of the `EVL-2` element of the
+      // one element. In this case extract of the `RVL-2` element of the
       // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
       // last iteration.
       //
@@ -4213,7 +4213,7 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       //   vector.body
       //     i = phi [0, vector.ph], [i+4, vector.body]
       //     v1 = phi [v_init, vector.ph], [v2, vector.body]
-      //     prev.evl = phi i32 [ %initial_vl, %vector.ph ], [ %evl, %vector.body ]
+      //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl, %vector.body ]
       //
       //     v2 = a[i, i+1, i+2, i+3];
       //     v3 = vector(v1(3), v2(0, 1, 2))
@@ -4222,11 +4222,11 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       //
       // Take the value of the `PhiR`(`v1`) as it contains value from the
       // previous iteration (or the initial value) and extract last lane using
-      // `PrevEVL`(`prev.evl`)
+      // `PrevRVL`(`prev.rvl`)
       Value *Cond =
-          Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
+          Builder.CreateICmpEQ(RVL, ConstantInt::get(RVL->getType(), 1));
 
-      Idx = Builder.CreateSub(State.get(State.Plan->getPrevEVL(), 0),
+      Idx = Builder.CreateSub(State.get(State.Plan->getPrevRVL(), 0),
                               ConstantInt::get(IdxTy, 1));
       Value *PreviousValue = Builder.CreateExtractElement(
           State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
@@ -8822,7 +8822,7 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
-  if (State.Plan->getEVL()) {
+  if (State.Plan->getRVL()) {
     unsigned SmallestTypeSize, WidestTypeSize;
     Type *WidestType;
     std::tie(SmallestTypeSize, WidestTypeSize) =
@@ -8849,15 +8849,15 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
     if (ILV.InitVL) {
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));
-      if (!State.hasAnyVectorValue(BestVPlan.getInitEVL())) {
+      if (!State.hasAnyVectorValue(BestVPlan.getInitRVL())) {
         Value *RVL = ILV.getOrCreateTripCount(nullptr);
-        Value *InitEVL = BestVPlan.getSetVL(State, RVL);
-        State.set(State.Plan->getInitEVL(), InitEVL, 0);
+        Value *InitRVL = BestVPlan.getSetVL(State, RVL);
+        State.set(State.Plan->getInitRVL(), InitRVL, 0);
       }
-      Value *InitEVL = State.get(BestVPlan.getInitEVL(), 0);
-      ILV.InitVL->replaceAllUsesWith(InitEVL);
+      Value *InitRVL = State.get(BestVPlan.getInitRVL(), 0);
+      ILV.InitVL->replaceAllUsesWith(InitRVL);
       cast<Instruction>(ILV.InitVL)->eraseFromParent();
-      ILV.InitVL = InitEVL;
+      ILV.InitVL = InitRVL;
     }
 
     // FIXME: The list of pairs should be filled outside of this function and
@@ -9900,11 +9900,11 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       );
     } else {
 #if SIFIVE_CUSTOMIZATION
-      // Create the node for previous EVL value, required for the splice
+      // Create the node for previous RVL value, required for the splice
       // intrinsic.
-      if (Plan->getEVL()) {
-        Plan->createPrevEVL();
-        Plan->createInitEVL();
+      if (Plan->getRVL()) {
+        Plan->createPrevRVL();
+        Plan->createInitRVL();
       }
 #endif // SIFIVE_CUSTOMIZATION
       // TODO: Currently fixed-order recurrences are modeled as chains of
@@ -9995,7 +9995,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #if SIFIVE_CUSTOMIZATION
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
                                   TailFoldingStyle Style,
-                                  bool NeedEVL) {
+                                  bool NeedRVL) {
 #else
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
                                   TailFoldingStyle Style) {
@@ -10022,7 +10022,7 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
   EB->appendRecipe(CanonicalIVIncrement);
 
 #if SIFIVE_CUSTOMIZATION
-  if (!NeedEVL && Style == TailFoldingStyle::DataAndControlFlow) {
+  if (!NeedRVL && Style == TailFoldingStyle::DataAndControlFlow) {
 #else
   if (Style == TailFoldingStyle::DataAndControlFlow) {
 #endif // SIFIVE_CUSTOMIZATION
@@ -10080,8 +10080,8 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (NeedEVL)
-    Plan.createEVL();
+  if (NeedRVL)
+    Plan.createRVL();
 #endif // SIFIVE_CUSTOMIZATION
 }
 
@@ -10643,13 +10643,13 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
       State.addMetadata(LastInduction, EntryVal);
 
 #if SIFIVE_CUSTOMIZATION
-    if (VPValue *EVL = State.Plan->getEVL()) {
-      Value *EVLPart = State.get(EVL, Part);
-      Value *EVLPartCast = nullptr;
-      EVLPartCast = StepType->isIntegerTy()
-                        ? Builder.CreateSExtOrTrunc(EVLPart, StepType)
-                        : Builder.CreateUIToFP(EVLPart, StepType);
-      Value *Mul = Builder.CreateBinOp(MulOp, Step, EVLPartCast);
+    if (VPValue *RVL = State.Plan->getRVL()) {
+      Value *RVLPart = State.get(RVL, Part);
+      Value *RVLPartCast = nullptr;
+      RVLPartCast = StepType->isIntegerTy()
+                        ? Builder.CreateSExtOrTrunc(RVLPart, StepType)
+                        : Builder.CreateUIToFP(RVLPart, StepType);
+      Value *Mul = Builder.CreateBinOp(MulOp, Step, RVLPartCast);
       SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
     }
 #endif // SIFIVE_CUSTOMIZATION
@@ -10731,7 +10731,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
 #endif
 #if SIFIVE_CUSTOMIZATION
   auto CurrIP = State.Builder.saveIP();
-  if (State.Plan->getEVL())
+  if (State.Plan->getRVL())
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
 #endif // SIFIVE_CUSTOMIZATION
   Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
@@ -10750,7 +10750,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
       State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
 #if SIFIVE_CUSTOMIZATION
-  if (State.Plan->getEVL())
+  if (State.Plan->getRVL())
     State.Builder.restoreIP(CurrIP);
 #endif // SIFIVE_CUSTOMIZATION
   // Add induction update using an incorrect block temporarily. The phi node
@@ -10766,7 +10766,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
 #if SIFIVE_CUSTOMIZATION
     auto CurrIP = State.Builder.saveIP();
-    if (State.Plan->getEVL())
+    if (State.Plan->getRVL())
       State.Builder.SetInsertPoint(VectorPH->getTerminator());
 #endif // SIFIVE_CUSTOMIZATION
     Type *VecPhiType = VectorType::get(PhiType, State.VF);
@@ -10778,7 +10778,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
     StartOffset = State.Builder.CreateAdd(
         StartOffset, State.Builder.CreateStepVector(VecPhiType));
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getEVL())
+    if (State.Plan->getRVL())
       State.Builder.restoreIP(CurrIP);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -10994,12 +10994,16 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     if (Reverse) {
 #if SIFIVE_CUSTOMIZATION
       Value *RunTimeVF;
-      if (VPValue *EVL = State.Plan->getEVL()) {
-        // If EVL is not nullptr, then EVL must be a valid value set during plan
+      if (VPValue *RVL = State.Plan->getRVL()) {
+        // If RVL is not nullptr, then RVL must be a valid value set during plan
         // creation and must be used to correctly reverse the address
+<<<<<<< HEAD
         RunTimeVF = State.get(EVL, Part);
 	if (RunTimeVF->getType() != IndexTy)
 	  RunTimeVF = Builder.CreateSExtOrTrunc(RunTimeVF, IndexTy);
+=======
+        RunTimeVF = State.get(RVL, Part);
+>>>>>>> origin/sifive-dev
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         // If the address is consecutive but reversed, then the
@@ -11024,7 +11028,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       PartPtr->setIsInBounds(InBounds);
 #if SIFIVE_CUSTOMIZATION
       if (isMaskRequired) { // We reverse the mask only if it is not an all-ones mask.
-        if (VPValue *EVL = State.Plan->getEVL()) {
+        if (VPValue *RVL = State.Plan->getRVL()) {
           Value *Mask = BlockInMaskParts[Part];
           VectorType *MaskTy = cast<VectorType>(Mask->getType());
           BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
@@ -11035,7 +11039,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
               Builder.getTrueVector(MaskTy->getElementCount());
 
           BlockInMaskParts[Part] = Builder.CreateCall(
-              VPIntr, {Mask, BlockInMaskPart, State.get(EVL, Part)});
+              VPIntr, {Mask, BlockInMaskPart, State.get(RVL, Part)});
         } else {
           BlockInMaskParts[Part] =
               Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
@@ -11058,7 +11062,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     VPValue *Mask = getMask();
     assert(Mask && "MaskValue must be called for recipes with set mask");
     // The outermost mask can be lowered as an all ones mask when using
-    // EVL.
+    // RVL.
     if (auto *IMask = dyn_cast<VPInstruction>(Mask))
       if (IMask->getOpcode() == VPInstruction::ICmpULE)
         return Builder.getTrueVector(EC);
@@ -11075,17 +11079,17 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       Instruction *NewSI = nullptr;
       Value *StoredVal = State.get(StoredValue, Part);
 #if SIFIVE_CUSTOMIZATION
-      // If EVL is not nullptr, then EVL must be a valid value set during plan
-      // creation, possibly default value = whole vector register length. EVL is
-      // created only if TTI prefers predicated vectorization, thus if EVL is
+      // If RVL is not nullptr, then RVL must be a valid value set during plan
+      // creation, possibly default value = whole vector register length. RVL is
+      // created only if TTI prefers predicated vectorization, thus if RVL is
       // not nullptr it also implies preference for predicated vectorization.
-      Value *EVLPart = State.Plan->getEVL()
-                           ? State.get(State.Plan->getEVL(), Part)
+      Value *RVLPart = State.Plan->getRVL()
+                           ? State.get(State.Plan->getRVL(), Part)
                            : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
       if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
-        if (EVLPart) {
+        if (RVLPart) {
           NewSI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
                                                          BlockInMaskParts);
         } else {
@@ -11100,7 +11104,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           // If we store to reverse consecutive memory locations, then we need
           // to reverse the order of elements in the stored value.
 #if SIFIVE_CUSTOMIZATION
-          if (EVLPart) {
+          if (RVLPart) {
             auto *StoredValTy = cast<VectorType>(StoredVal->getType());
             BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
             Function *VPIntr = Intrinsic::getDeclaration(
@@ -11110,7 +11114,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                 Builder.getTrueVector(StoredValTy->getElementCount());
 
             StoredVal = Builder.CreateCall(
-                VPIntr, {StoredVal, BlockInMaskPart, EVLPart});
+                VPIntr, {StoredVal, BlockInMaskPart, RVLPart});
           } else {
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
@@ -11125,9 +11129,9 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         auto *VecPtr =
             CreateVecPtr(Part, State.get(getAddr(), VPIteration(0, 0)));
 #if SIFIVE_CUSTOMIZATION
-        // if EVLPart is not null, we can vectorize using predicated
+        // if RVLPart is not null, we can vectorize using predicated
         // intrinsic.
-        if (EVLPart) {
+        if (RVLPart) {
           auto *StoredValTy = cast<VectorType>(StoredVal->getType());
           BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
           Function *VPIntr = Intrinsic::getDeclaration(
@@ -11139,7 +11143,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                   : Builder.getTrueVector(StoredValTy->getElementCount());
 
           NewSI = Builder.CreateCall(
-              VPIntr, {StoredVal, VecPtr, BlockInMaskPart, EVLPart});
+              VPIntr, {StoredVal, VecPtr, BlockInMaskPart, RVLPart});
         } else if (isMaskRequired) {
 #endif // SIFIVE_CUSTOMIZATION
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
@@ -11163,12 +11167,12 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewLI;
 #if SIFIVE_CUSTOMIZATION
-    Value *EVLPart =
-        State.Plan->getEVL() ? State.get(State.Plan->getEVL(), Part) : nullptr;
+    Value *RVLPart =
+        State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
     if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
-      if (EVLPart) {
+      if (RVLPart) {
         NewLI = llvm::widenPredicatedMemoryInstruction(*this, State, Part,
                                                        BlockInMaskParts);
       } else {
@@ -11184,9 +11188,9 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       auto *VecPtr =
           CreateVecPtr(Part, State.get(getAddr(), VPIteration(0, 0)));
 #if SIFIVE_CUSTOMIZATION
-      // if EVLPart is not null, we can vectorize using predicated
+      // if RVLPart is not null, we can vectorize using predicated
       // intrinsic.
-      if (EVLPart) {
+      if (RVLPart) {
         BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
         Function *VPIntr =
             Intrinsic::getDeclaration(VectorPH->getModule(), Intrinsic::vp_load,
@@ -11196,7 +11200,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
             isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
                            : Builder.getTrueVector(DataTy->getElementCount());
 
-        NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, EVLPart},
+        NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
                                    "vp.op.load");
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
@@ -11211,7 +11215,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       State.addMetadata(NewLI, LI);
       if (Reverse) {
 #if SIFIVE_CUSTOMIZATION
-        if (EVLPart) {
+        if (RVLPart) {
           auto *LoadedValTy = cast<VectorType>(NewLI->getType());
           BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
           Function *VPIntr = Intrinsic::getDeclaration(
@@ -11220,7 +11224,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           Value *BlockInMaskPart =
               Builder.getTrueVector(LoadedValTy->getElementCount());
 
-          NewLI = Builder.CreateCall(VPIntr, {NewLI, BlockInMaskPart, EVLPart});
+          NewLI = Builder.CreateCall(VPIntr, {NewLI, BlockInMaskPart, RVLPart});
         } else
 #endif // SIFIVE_CUSTOMIZATION
           NewLI = Builder.CreateVectorReverse(NewLI, "reverse");

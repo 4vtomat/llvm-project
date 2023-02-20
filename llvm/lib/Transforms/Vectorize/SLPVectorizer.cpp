@@ -3766,14 +3766,14 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
       continue;
     }
     const SCEV *Diff = SE.getMinusSCEV(PtrSCEV, PtrSCEVA);
-    if (!Diff)
+    if (!Diff || isa<SCEVCouldNotCompute>(Diff))
       return std::nullopt;
     if (Diff->isNonConstantNegative()) {
       PtrSCEVA = PtrSCEV;
       continue;
     }
     const SCEV *Diff1 = SE.getMinusSCEV(PtrSCEVB, PtrSCEV);
-    if (!Diff1)
+    if (!Diff1 || isa<SCEVCouldNotCompute>(Diff1))
       return std::nullopt;
     if (Diff1->isNonConstantNegative()) {
       PtrSCEVB = PtrSCEV;
@@ -3801,7 +3801,7 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
       const SCEV *Diff = SE.getMinusSCEV(PtrSCEV, PtrSCEVA);
       const SCEV *Coeff = SE.getUDivExactExpr(Diff, Stride);
       const auto *SC = dyn_cast<SCEVConstant>(Coeff);
-      if (!SC)
+      if (!SC || isa<SCEVCouldNotCompute>(SC))
         return std::nullopt;
       if (!SE.getMinusSCEV(PtrSCEV,
                            SE.getAddExpr(PtrSCEVA, SE.getMulExpr(Stride, SC)))

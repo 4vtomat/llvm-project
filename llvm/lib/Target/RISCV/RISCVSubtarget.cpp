@@ -78,6 +78,9 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
     TuneCPU = CPU;
 
   ParseSubtargetFeatures(CPU, TuneCPU, FS);
+#if SIFIVE_CUSTOMIZATION
+  initializeProperties();
+#endif // SIFIVE_CUSTOMIZATION
   if (Is64Bit) {
     XLenVT = MVT::i64;
     XLen = 64;
@@ -87,6 +90,31 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
   RISCVFeatures::validate(TT, getFeatureBits());
   return *this;
 }
+
+#if SIFIVE_CUSTOMIZATION
+void RISCVSubtarget::initializeProperties() {
+  // Initialize CPU specific properties. We should add a tablegen feature for
+  // this in the future so we can specify it together with the subtarget
+  // features.
+  switch (getProcFamily()) {
+  case Others:
+    break;
+  case RISCVSubtarget::SiFive7:
+    VectorToScalarBaseCost = 8;
+    break;
+  case RISCVProcFamilyEnum::SiFive6:
+    break;
+  case RISCVProcFamilyEnum::SiFiveP400:
+    VectorToScalarBaseCost = 8;
+    break;
+  case RISCVProcFamilyEnum::SiFiveP500:
+    break;
+  case RISCVProcFamilyEnum::SiFiveP600:
+    VectorToScalarBaseCost = 8;
+    break;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 RISCVSubtarget::RISCVSubtarget(const Triple &TT, StringRef CPU,
                                StringRef TuneCPU, StringRef FS,

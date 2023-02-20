@@ -55,13 +55,13 @@ static void widenSelectInstruction(VPTransformState &State,
                                    const unsigned VPOpCode, VPValue *Def,
                                    VPUser &User, const unsigned Part,
                                    StringRef Name) {
-  VPValue *EVL = State.Plan->getEVL();
+  VPValue *RVL = State.Plan->getRVL();
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
-  Value *EVLArg = State.get(EVL, Part);
+  Value *RVLArg = State.get(RVL, Part);
   Value *V = State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
-                                           {Cond, Op1, Op2, EVLArg}, nullptr,
+                                           {Cond, Op1, Op2, RVLArg}, nullptr,
                                            "vp.op.select");
   State.set(Def, V, Part);
 }
@@ -70,13 +70,13 @@ namespace llvm {
 void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                 VPTransformState &State, VPValue *BlockInMask,
                                 unsigned Part) {
-  VPValue *EVL = State.Plan->getEVL();
+  VPValue *RVL = State.Plan->getRVL();
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
     if (!BlockInMask)
       return BuilderIR.getTrueVector(State.VF);
-    // The outermost mask can be lowered as an all ones mask when using EVL.
+    // The outermost mask can be lowered as an all ones mask when using RVL.
     if (auto *VPI = dyn_cast<VPInstruction>(BlockInMask))
       if (VPI && VPI->getOpcode() == VPInstruction::ActiveLaneMask)
         return BuilderIR.getTrueVector(EC);
@@ -95,7 +95,7 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     // are enabled.
     // Since LV is targeting RVV, use all-true mask for conversions.
     Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
-    Builder.setEVL(State.get(EVL, Part));
+    Builder.setEVL(State.get(RVL, Part));
     Value *V = Builder.createVectorInstruction(CI->getOpcode(), DestTy,
                                                {SrcVal}, "vp.cast");
     State.set(Def, V, Part);
@@ -107,8 +107,8 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *A = State.get(User.getOperand(0), Part);
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(EVL, Part);
-    Builder.setMask(MaskArg).setEVL(EVLArg);
+    Value *RVLArg = State.get(RVL, Part);
+    Builder.setMask(MaskArg).setEVL(RVLArg);
     Value *V = Builder.createVectorInstruction(Instruction::Xor, PredTy,
                                                {A, MaskArg}, "pred.not");
     State.set(Def, V, Part);
@@ -130,8 +130,8 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *PredArg = MetadataAsValue::get(IV->getContext(), PredicateMDS);
 
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *EVLArg = State.get(EVL, Part);
-    Builder.setMask(MaskArg).setEVL(EVLArg);
+    Value *RVLArg = State.get(RVL, Part);
+    Builder.setMask(MaskArg).setEVL(RVLArg);
     Value *V =
         Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
                                         {IV, TC, PredArg}, "pred.active.lane");
@@ -151,8 +151,8 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(Part, OpTy->getElementCount());
     Builder.setMask(MaskArg);
-    Value *EVLArg = State.get(EVL, Part);
-    Builder.setEVL(EVLArg);
+    Value *RVLArg = State.get(RVL, Part);
+    Builder.setEVL(RVLArg);
 
     StringRef PredicateStr = CmpInst::getPredicateName(Cmp->getPredicate());
     auto *PredicateMDS = MDString::get(Cmp->getContext(), PredicateStr);
@@ -266,7 +266,7 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     else
       MaskArg = BuilderIR.getTrueVector(OpTy->getElementCount());
     Builder.setMask(MaskArg);
-    Builder.setEVL(State.get(EVL, Part));
+    Builder.setEVL(State.get(RVL, Part));
 
     Value *V = Builder.createVectorInstruction(Opcode, OpTy, Ops, "vp.op");
 
@@ -295,7 +295,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   }
 
   Args.push_back(Builder.getTrueVector(State.VF));
-  Args.push_back(State.get(State.Plan->getEVL(), Part));
+  Args.push_back(State.get(State.Plan->getRVL(), Part));
   auto *DestTy = VectorType::get(CI.getType(), State.VF);
   CallInst *V = Builder.CreateIntrinsic(VPID, DestTy, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
@@ -304,7 +304,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
 }
 
 void VPSelectInstruction::execute(VPTransformState &State) {
-  if (!State.Plan->getEVL()) {
+  if (!State.Plan->getRVL()) {
     // For non RVV VLA vectorization, reuse existing mechanism to generate the
     // vector code
     VPInstruction::execute(State);
@@ -335,8 +335,8 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts) {
   assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
-  Value *EVLPart = State.get(State.Plan->getEVL(), Part);
-  assert(EVLPart && "EVL must be set prior to generation of vp-intrinsics");
+  Value *RVLPart = State.get(State.Plan->getRVL(), Part);
+  assert(RVLPart && "RVL must be set prior to generation of vp-intrinsics");
 
   VPValue *VPAddr = VPWMIR.getAddr();
   Value *VectorGep = State.get(VPAddr, Part);
@@ -346,7 +346,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
 
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
     // The outermost mask can be lowered as an all ones mask when using
-    // EVL.
+    // RVL.
     VPValue *Mask = VPWMIR.getMask();
     auto *IMask = dyn_cast_or_null<VPInstruction>(Mask);
     if (!Mask || (IMask && IMask->getOpcode() == VPInstruction::ICmpULE))
@@ -375,14 +375,14 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                  << "Generating strided store for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
       auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
-      Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, EVLPart};
+      Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
       return Builder.CreateIntrinsic(
           Intrinsic::experimental_vp_strided_store,
           {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
     }
     auto *DataTy = cast<VectorType>(StoredVal->getType());
     LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
-    Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, EVLPart};
+    Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, RVLPart};
     return Builder.CreateIntrinsic(Intrinsic::vp_scatter, {DataTy, PtrsTy},
                                    Operands);
   } else {
@@ -402,13 +402,13 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided load for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
-      Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
+      Value *Operands[] = {Ptr, Stride, BlockInMaskPart, RVLPart};
       return Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
                                       {DataTy, PtrTy, Stride->getType()},
                                       Operands, nullptr, "vp.strided.load");
     }
     LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
-    Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
+    Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
     return Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
                                    Operands, nullptr, "vp.gather");
   }
