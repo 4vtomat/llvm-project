@@ -9297,7 +9297,6 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   return EdgeMaskCache[Edge] = EdgeMask;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   IVCacheTy::iterator IVEntryIt = IVCache.find(VPBB);
@@ -9322,10 +9321,7 @@ VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlanPtr &Plan) {
-=======
 VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
->>>>>>> upstream/main
   assert(OrigLoop->contains(BB) && "Block is not a part of a loop");
 
   // Look for cached value.
@@ -9354,17 +9350,12 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
     // constructing the desired canonical IV in the header block as its first
     // non-phi instructions.
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Legal->useVLAVectorizer())
       return BlockMaskCache[BB] = BlockMask;
 #endif // SIFIVE_CUSTOMIZATION
 
-    VPBasicBlock *HeaderVPBB =
-        Plan->getVectorLoopRegion()->getEntryBasicBlock();
-=======
     VPBasicBlock *HeaderVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
->>>>>>> upstream/main
     auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
     auto *IV = new VPWidenCanonicalIVRecipe(Plan.getCanonicalIV());
     HeaderVPBB->insert(IV, HeaderVPBB->getFirstNonPhi());
@@ -9690,8 +9681,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
     // div/rem operation itself.  Otherwise fall through to general handling below.
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands.begin(), Operands.end());
-<<<<<<< HEAD
-      VPValue *Mask = createBlockInMask(I->getParent(), Plan);
+      VPValue *Mask = createBlockInMask(I->getParent(), *Plan);
 
 #if SIFIVE_CUSTOMIZATION
       assert((Mask || Legal->useVLAVectorizer()) &&
@@ -9705,16 +9695,6 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
         Ops[1] = SafeRHS;
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *Mask = createBlockInMask(I->getParent(), *Plan);
-      VPValue *One =
-        Plan->getOrAddExternalDef(ConstantInt::get(I->getType(), 1u, false));
-      auto *SafeRHS =
-         new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
-                           I->getDebugLoc());
-      VPBB->appendRecipe(SafeRHS);
-      Ops[1] = SafeRHS;
->>>>>>> upstream/main
       return new VPWidenRecipe(*I, make_range(Ops.begin(), Ops.end()));
     }
     LLVM_FALLTHROUGH;
@@ -10525,15 +10505,11 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       if (!PhiR || PhiR->isInLoop())
         continue;
       VPValue *Cond =
-<<<<<<< HEAD
-          RecipeBuilder.createBlockInMask(OrigLoop->getHeader(), Plan);
+          RecipeBuilder.createBlockInMask(OrigLoop->getHeader(), *Plan);
 #if SIFIVE_CUSTOMIZATION
       if (!Cond && Legal->useVLAVectorizer())
         Cond = Plan->getOrCreateAllTrueMask();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-          RecipeBuilder.createBlockInMask(OrigLoop->getHeader(), *Plan);
->>>>>>> upstream/main
       VPValue *Red = PhiR->getBackedgeValue();
       assert(Red->getDefiningRecipe()->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
