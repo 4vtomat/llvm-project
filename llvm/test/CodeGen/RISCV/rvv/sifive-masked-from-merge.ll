@@ -4,7 +4,7 @@
 define <vscale x 1 x i64> @add_test(ptr %X, i32 signext %value, i64 %N, <vscale x 1 x i64> %Arg) {
 ; CHECK-LABEL: add_test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
@@ -28,7 +28,7 @@ entry:
 define <vscale x 1 x i64> @sub_test(ptr %X, i32 signext %value, i64 %N, <vscale x 1 x i64> %Arg) {
 ; CHECK-LABEL: sub_test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
@@ -52,7 +52,7 @@ entry:
 define <vscale x 1 x i64> @or_test(ptr %X, i32 signext %value, i64 %N, <vscale x 1 x i64> %Arg) {
 ; CHECK-LABEL: or_test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
@@ -76,7 +76,7 @@ entry:
 define <vscale x 1 x i64> @xor_test(ptr %X, i32 signext %value, i64 %N, <vscale x 1 x i64> %Arg) {
 ; CHECK-LABEL: xor_test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
