@@ -134,18 +134,10 @@ define i1 @ult_rem_zero(i8 %x) {
 }
 
 ; Same as above, but with nsw flag too.
-<<<<<<< HEAD
-; FIXME: This should be optimized like above.
-define i1 @ult_rem_zero_nsw(i8 %x) {
-; CHECK-LABEL: @ult_rem_zero_nsw(
-; CHECK-NEXT:    [[A:%.*]] = mul nuw nsw i8 [[X:%.*]], 7
-; CHECK-NEXT:    [[B:%.*]] = icmp ult i8 [[A]], 21
-=======
 ; This used to not optimize due to nsw being prioritized too much.
 define i1 @ult_rem_zero_nsw(i8 %x) {
 ; CHECK-LABEL: @ult_rem_zero_nsw(
 ; CHECK-NEXT:    [[B:%.*]] = icmp ult i8 [[X:%.*]], 3
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret i1 [[B]]
 ;
   %a = mul nuw nsw i8 %x, 7
@@ -164,18 +156,10 @@ define i1 @ult_rem_nz(i8 %x) {
 }
 
 ; Same as above, but with nsw flag too.
-<<<<<<< HEAD
-; FIXME: This should be optimized like above.
-define i1 @ult_rem_nz_nsw(i8 %x) {
-; CHECK-LABEL: @ult_rem_nz_nsw(
-; CHECK-NEXT:    [[A:%.*]] = mul nuw nsw i8 [[X:%.*]], 5
-; CHECK-NEXT:    [[B:%.*]] = icmp ult i8 [[A]], 21
-=======
 ; This used to not optimize due to nsw being prioritized too much.
 define i1 @ult_rem_nz_nsw(i8 %x) {
 ; CHECK-LABEL: @ult_rem_nz_nsw(
 ; CHECK-NEXT:    [[B:%.*]] = icmp ult i8 [[X:%.*]], 5
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret i1 [[B]]
 ;
   %a = mul nuw nsw i8 %x, 5
@@ -226,18 +210,10 @@ define i1 @ugt_rem_zero(i8 %x) {
 }
 
 ; Same as above, but with nsw flag too.
-<<<<<<< HEAD
-; FIXME: This should be optimized like above.
-define i1 @ugt_rem_zero_nsw(i8 %x) {
-; CHECK-LABEL: @ugt_rem_zero_nsw(
-; CHECK-NEXT:    [[A:%.*]] = mul nuw nsw i8 [[X:%.*]], 7
-; CHECK-NEXT:    [[B:%.*]] = icmp ugt i8 [[A]], 21
-=======
 ; This used to not optimize due to nsw being prioritized too much.
 define i1 @ugt_rem_zero_nsw(i8 %x) {
 ; CHECK-LABEL: @ugt_rem_zero_nsw(
 ; CHECK-NEXT:    [[B:%.*]] = icmp ugt i8 [[X:%.*]], 3
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret i1 [[B]]
 ;
   %a = mul nuw nsw i8 %x, 7
@@ -256,18 +232,10 @@ define i1 @ugt_rem_nz(i8 %x) {
 }
 
 ; Same as above, but with nsw flag too.
-<<<<<<< HEAD
-; FIXME: This should be optimized like above.
-define i1 @ugt_rem_nz_nsw(i8 %x) {
-; CHECK-LABEL: @ugt_rem_nz_nsw(
-; CHECK-NEXT:    [[A:%.*]] = mul nuw nsw i8 [[X:%.*]], 5
-; CHECK-NEXT:    [[B:%.*]] = icmp ugt i8 [[A]], 21
-=======
 ; This used to not optimize due to nsw being prioritized too much.
 define i1 @ugt_rem_nz_nsw(i8 %x) {
 ; CHECK-LABEL: @ugt_rem_nz_nsw(
 ; CHECK-NEXT:    [[B:%.*]] = icmp ugt i8 [[X:%.*]], 4
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret i1 [[B]]
 ;
   %a = mul nuw nsw i8 %x, 5
