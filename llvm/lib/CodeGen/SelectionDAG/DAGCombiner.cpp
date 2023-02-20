@@ -25220,56 +25220,6 @@ SDValue DAGCombiner::visitVECREDUCE(SDNode *N) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-/// Try to perform VP_FMA combining on a given VP_FADD node.
-SDValue DAGCombiner::visitVPFADDForVPFMACombine(SDNode *N) {
-  SDValue N0 = N->getOperand(0);
-  SDValue N1 = N->getOperand(1);
-  SDValue Mask = N->getOperand(2);
-  SDValue VL = N->getOperand(3);
-  EVT VT = N->getValueType(0);
-  SDLoc SL(N);
-
-  const TargetOptions &Options = DAG.getTarget().Options;
-
-  bool HasFMA =
-      TLI.isFMAFasterThanFMulAndFAdd(DAG.getMachineFunction(), VT) &&
-      (!LegalOperations || TLI.isOperationLegalOrCustom(ISD::VP_FMA, VT));
-
-  if (!HasFMA)
-    return SDValue();
-
-  bool AllowFusionGlobally =
-      (Options.AllowFPOpFusion == FPOpFusion::Fast || Options.UnsafeFPMath);
-
-  // If the addition is not contractable, do not combine.
-  if (!AllowFusionGlobally && !N->getFlags().hasAllowContract())
-    return SDValue();
-
-  // Is the node an VP_FMUL and contractable either due to global flags or
-  // SDNodeFlags.
-  auto isContractableVPFMUL = [=](SDValue N) {
-    if (N.getOpcode() != ISD::VP_FMUL)
-      return false;
-    // Check using same mask and vl with VP_ADD node.
-    if (N.getOperand(2) != Mask || N.getOperand(3) != VL)
-      return false;
-    return AllowFusionGlobally || N->getFlags().hasAllowContract();
-  };
-
-  // fold (vp_fadd (vp_fmul x, y), z) -> (vp_fma x, y, z)
-  if (isContractableVPFMUL(N0) && N0->hasOneUse())
-    return DAG.getNode(ISD::VP_FMA, SL, VT, N0.getOperand(0), N0.getOperand(1),
-                       N1, Mask, VL);
-
-  // fold (vp_fadd x, (vp_fmul y, z)) -> (vp_fma y, z, x)
-  // Note: Commutes VP_FADD operands.
-  if (isContractableVPFMUL(N1) && N1->hasOneUse())
-    return DAG.getNode(ISD::VP_FMA, SL, VT, N1.getOperand(0), N1.getOperand(1),
-                       N0, Mask, VL);
-
-  return SDValue();
-}
-
 SDValue DAGCombiner::visitVPXOR(SDNode *N) {
   // Fold:
   //    vp.xor(vp.setcc(X, Y, CC, MASK, VL), ALLONES, MASK, VL) ->
@@ -25939,15 +25889,16 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
 
   // This is the only generic VP combine we support for now.
   if (!AreAllEltsDisabled) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (ISD::isVPBinaryOp(N->getOpcode()))
       if (SDValue Res = foldVPBinOpIntoVPSelect(N, DAG))
         return Res;
+#endif // SIFIVE_CUSTOMIZATION
 
     switch (N->getOpcode()) {
     case ISD::VP_FADD:
-      return visitVPFADDForVPFMACombine(N);
+      return visitVP_FADD(N);
+#if SIFIVE_CUSTOMIZATION
     case ISD::VP_XOR:
       return visitVPXOR(N);
     case ISD::VP_FDIV:
@@ -25961,14 +25912,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     case ISD::VP_UREM:
     case ISD::VP_SREM:
       return visitVPREM(N);
-    }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    switch (N->getOpcode()) {
-    case ISD::VP_FADD:
-      return visitVP_FADD(N);
     }
->>>>>>> upstream/main
     return SDValue();
   }
 
