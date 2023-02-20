@@ -121,12 +121,8 @@ define i16 @add_ext_v32i16(<32 x i8> %a, <16 x i8> %b) {
 ; CHECK-NEXT:    vmv.s.x v11, zero
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vwredsumu.vs v10, v10, v11
-; CHECK-NEXT:    vsetivli zero, 0, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.x.s a0, v10
-; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.s.x v10, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; CHECK-NEXT:    li a0, 32
+; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    vwredsumu.vs v8, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v8

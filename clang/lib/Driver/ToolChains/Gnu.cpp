@@ -28,17 +28,14 @@
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Path.h"
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#include "llvm/Support/Program.h"
-#endif // SIFIVE_CUSTOMIZATION
-#include "llvm/Support/RISCVISAInfo.h"
-#include "llvm/Support/TargetParser.h"
-=======
->>>>>>> upstream/main
 #include "llvm/Support/VirtualFileSystem.h"
 #include "llvm/TargetParser/TargetParser.h"
 #include <system_error>
+
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Support/Program.h"
+#include "llvm/Support/RISCVISAInfo.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace clang::driver;
 using namespace clang::driver::toolchains;

@@ -7158,10 +7158,17 @@ inline bool Type::isRVVType() const {
 inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat) const {
   bool Ret = false;
 #define RVV_TYPE(Name, Id, SingletonId)
+#if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
-                        IsFP)                                                  \
+                        IsFP, IsBF)                                            \
   if (ElBits == Bitwidth && IsFloat == IsFP)                                   \
     Ret |= isSpecificBuiltinType(BuiltinType::Id);
+#else
+#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
+                        IsFP, IsBF)                                            \
+  if (ElBits == Bitwidth && IsFloat == IsFP)                                   \
+    Ret |= isSpecificBuiltinType(BuiltinType::Id);
+#endif // SIFIVE_CUSTOMIZATION
 #include "clang/Basic/RISCVVTypes.def"
   return Ret;
 }

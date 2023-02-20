@@ -327,17 +327,11 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         continue;
 
       // Check requirement.
-<<<<<<< HEAD
-      if (BaseType == BasicType::Float16 && !HasZvfh)
-        continue;
-
 #if SIFIVE_CUSTOMIZATION
       if (BaseType == BasicType::BFloat && !HasBfloat16)
         continue;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
       if (BaseType == BasicType::Float32 && !HasVectorFloat32)
         continue;
 

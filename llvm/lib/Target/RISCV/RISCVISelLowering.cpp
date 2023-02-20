@@ -378,9 +378,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::CTTZ, ISD::CTLZ, ISD::CTPOP}, XLenVT, Expand);
   }
 
-<<<<<<< HEAD
-  if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
-=======
   if (Subtarget.hasVendorXTHeadBb()) {
     setOperationAction(ISD::CTLZ, XLenVT, Legal);
 
@@ -390,8 +387,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF}, MVT::i32, Custom);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
+#else
   if (Subtarget.is64Bit())
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
 #if SIFIVE_CUSTOMIZATION

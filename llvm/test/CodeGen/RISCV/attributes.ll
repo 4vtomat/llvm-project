@@ -1,172 +1,5 @@
 ;; Generate ELF attributes from llc.
 
-<<<<<<< HEAD
-; RUN: llc -mtriple=riscv32 -mattr=+m %s -o - | FileCheck --check-prefix=RV32M %s
-; RUN: llc -mtriple=riscv32 -mattr=+zmmul %s -o - | FileCheck --check-prefix=RV32ZMMUL %s
-; RUN: llc -mtriple=riscv32 -mattr=+m,+zmmul %s -o - | FileCheck --check-prefix=RV32MZMMUL %s
-; RUN: llc -mtriple=riscv32 -mattr=+a %s -o - | FileCheck --check-prefix=RV32A %s
-; RUN: llc -mtriple=riscv32 -mattr=+f %s -o - | FileCheck --check-prefix=RV32F %s
-; RUN: llc -mtriple=riscv32 -mattr=+d %s -o - | FileCheck --check-prefix=RV32D %s
-; RUN: llc -mtriple=riscv32 -mattr=+c %s -o - | FileCheck --check-prefix=RV32C %s
-; RUN: llc -mtriple=riscv32 -mattr=+zihintpause %s -o - | FileCheck --check-prefix=RV32ZIHINTPAUSE %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zihintntl %s -o - | FileCheck --check-prefix=RV32ZIHINTNTL %s
-; RUN: llc -mtriple=riscv32 -mattr=+zfhmin %s -o - | FileCheck --check-prefix=RV32ZFHMIN %s
-; RUN: llc -mtriple=riscv32 -mattr=+zfh %s -o - | FileCheck --check-prefix=RV32ZFH %s
-; RUN: llc -mtriple=riscv32 -mattr=+zba %s -o - | FileCheck --check-prefix=RV32ZBA %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbb %s -o - | FileCheck --check-prefix=RV32ZBB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbc %s -o - | FileCheck --check-prefix=RV32ZBC %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbs %s -o - | FileCheck --check-prefix=RV32ZBS %s
-; RUN: llc -mtriple=riscv32 -mattr=+v %s -o - | FileCheck --check-prefix=RV32V %s
-; RUN: llc -mtriple=riscv32 -mattr=+h %s -o - | FileCheck --check-prefix=RV32H %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbb,+zfh,+v,+f %s -o - | FileCheck --check-prefix=RV32COMBINED %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbkb %s -o - | FileCheck --check-prefix=RV32ZBKB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbkc %s -o - | FileCheck --check-prefix=RV32ZBKC %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbkx %s -o - | FileCheck --check-prefix=RV32ZBKX %s
-; RUN: llc -mtriple=riscv32 -mattr=+zknd %s -o - | FileCheck --check-prefix=RV32ZKND %s
-; RUN: llc -mtriple=riscv32 -mattr=+zkne %s -o - | FileCheck --check-prefix=RV32ZKNE %s
-; RUN: llc -mtriple=riscv32 -mattr=+zknh %s -o - | FileCheck --check-prefix=RV32ZKNH %s
-; RUN: llc -mtriple=riscv32 -mattr=+zksed %s -o - | FileCheck --check-prefix=RV32ZKSED %s
-; RUN: llc -mtriple=riscv32 -mattr=+zksh %s -o - | FileCheck --check-prefix=RV32ZKSH %s
-; RUN: llc -mtriple=riscv32 -mattr=+zkr %s -o - | FileCheck --check-prefix=RV32ZKR %s
-; RUN: llc -mtriple=riscv32 -mattr=+zkn %s -o - | FileCheck --check-prefix=RV32ZKN %s
-; RUN: llc -mtriple=riscv32 -mattr=+zks %s -o - | FileCheck --check-prefix=RV32ZKS %s
-; RUN: llc -mtriple=riscv32 -mattr=+zkt %s -o - | FileCheck --check-prefix=RV32ZKT %s
-; RUN: llc -mtriple=riscv32 -mattr=+zk %s -o - | FileCheck --check-prefix=RV32ZK %s
-; RUN: llc -mtriple=riscv32 -mattr=+zkn,+zkr,+zkt %s -o - | FileCheck --check-prefix=RV32COMBINEINTOZK %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbkb,+zbkc,+zbkx,+zkne,+zknd,+zknh %s -o - | FileCheck --check-prefix=RV32COMBINEINTOZKN %s
-; RUN: llc -mtriple=riscv32 -mattr=+zbkb,+zbkc,+zbkx,+zksed,+zksh %s -o - | FileCheck --check-prefix=RV32COMBINEINTOZKS %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicbom %s -o - | FileCheck --check-prefix=RV32ZICBOM %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicboz %s -o - | FileCheck --check-prefix=RV32ZICBOZ %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV32ZICBOP %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicclsm %s -o - | FileCheck --check-prefix=RV32ZICCLSM %s
-; RUN: llc -mtriple=riscv32 -mattr=+ziccif %s -o - | FileCheck --check-prefix=RV32ZICCIF %s
-; RUN: llc -mtriple=riscv32 -mattr=+ziccamoa %s -o - | FileCheck --check-prefix=RV32ZICCAMOA %s
-; RUN: llc -mtriple=riscv32 -mattr=+ziccrse %s -o - | FileCheck --check-prefix=RV32ZICCRSE %s
-; RUN: llc -mtriple=riscv32 -mattr=+za64rs %s -o - | FileCheck --check-prefix=RV32ZA64RS %s
-; RUN: llc -mtriple=riscv32 -mattr=+zic64b %s -o - | FileCheck --check-prefix=RV32ZIC64B %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefix=RV32ZICNTR %s
-; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV32ZIHPM %s
-; RUN: llc -mtriple=riscv32 -mattr=+ss %s -o - | FileCheck --check-prefix=RV32SS %s
-; RUN: llc -mtriple=riscv32 -mattr=+svbare %s -o - | FileCheck --check-prefix=RV32SVBARE %s
-; RUN: llc -mtriple=riscv32 -mattr=+svptead %s -o - | FileCheck --check-prefix=RV32SVPTEAD %s
-; RUN: llc -mtriple=riscv32 -mattr=+ssccptr %s -o - | FileCheck --check-prefix=RV32SSCCPTR %s
-; RUN: llc -mtriple=riscv32 -mattr=+sstvecd %s -o - | FileCheck --check-prefix=RV32SSTVECD %s
-; RUN: llc -mtriple=riscv32 -mattr=+sstvala %s -o - | FileCheck --check-prefix=RV32SSTVALA %s
-; RUN: llc -mtriple=riscv32 -mattr=+sscounterenw %s -o - | FileCheck --check-prefix=RV32SSCOUNTERENW %s
-; RUN: llc -mtriple=riscv32 -mattr=+ssu64xl %s -o - | FileCheck --check-prefix=RV32SSU64XL %s
-; RUN: llc -mtriple=riscv32 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV32SSTC %s
-; RUN: llc -mtriple=riscv32 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV32SSSTATEEN %s
-; RUN: llc -mtriple=riscv32 -mattr=+smstateen %s -o - | FileCheck --check-prefix=RV32SMSTATEEN %s
-; RUN: llc -mtriple=riscv32 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV32SHCOUNTERENW %s
-; RUN: llc -mtriple=riscv32 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV32SHVSTVALA %s
-; RUN: llc -mtriple=riscv32 -mattr=+shtvala %s -o - | FileCheck --check-prefix=RV32SHTVALA %s
-; RUN: llc -mtriple=riscv32 -mattr=+shvstvecd %s -o - | FileCheck --check-prefix=RV32SHVSTVECD %s
-; RUN: llc -mtriple=riscv32 -mattr=+shvsatpa %s -o - | FileCheck --check-prefix=RV32SHVSATPA %s
-; RUN: llc -mtriple=riscv32 -mattr=+shgatpa %s -o - | FileCheck --check-prefix=RV32SHGATPA %s
-; RUN: llc -mtriple=riscv32 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV32SVNAPOT %s
-; RUN: llc -mtriple=riscv32 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV32SVPBMT %s
-; RUN: llc -mtriple=riscv32 -mattr=+svinval %s -o - | FileCheck --check-prefix=RV32SVINVAL %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zca %s -o - | FileCheck --check-prefix=RV32ZCA %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcb %s -o - | FileCheck --check-prefix=RV32ZCB %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcd %s -o - | FileCheck --check-prefix=RV32ZCD %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcf %s -o - | FileCheck --check-prefix=RV32ZCF %s
-; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefix=RV32SMWG %s
-; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefix=RV32SMWGD %s
-; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefix=RV32SSWG %s
-
-; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefix=RV32ZVKB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefix=RV32ZVKG %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefix=RV32ZVKNHA %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefix=RV32ZVKNHB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefix=RV32ZVKNS %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV32ZVKSED %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV32ZVKSH %s
-; RUN: llc -mtriple=riscv64 -mattr=+m %s -o - | FileCheck --check-prefix=RV64M %s
-; RUN: llc -mtriple=riscv64 -mattr=+zmmul %s -o - | FileCheck --check-prefix=RV64ZMMUL %s
-; RUN: llc -mtriple=riscv64 -mattr=+m,+zmmul %s -o - | FileCheck --check-prefix=RV64MZMMUL %s
-; RUN: llc -mtriple=riscv64 -mattr=+a %s -o - | FileCheck --check-prefix=RV64A %s
-; RUN: llc -mtriple=riscv64 -mattr=+f %s -o - | FileCheck --check-prefix=RV64F %s
-; RUN: llc -mtriple=riscv64 -mattr=+d %s -o - | FileCheck --check-prefix=RV64D %s
-; RUN: llc -mtriple=riscv64 -mattr=+c %s -o - | FileCheck --check-prefix=RV64C %s
-; RUN: llc -mtriple=riscv64 -mattr=+zihintpause %s -o - | FileCheck --check-prefix=RV64ZIHINTPAUSE %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zihintntl %s -o - | FileCheck --check-prefix=RV64ZIHINTNTL %s
-; RUN: llc -mtriple=riscv64 -mattr=+zfhmin %s -o - | FileCheck --check-prefix=RV64ZFHMIN %s
-; RUN: llc -mtriple=riscv64 -mattr=+zfh %s -o - | FileCheck --check-prefix=RV64ZFH %s
-; RUN: llc -mtriple=riscv64 -mattr=+zba %s -o - | FileCheck --check-prefix=RV64ZBA %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbb %s -o - | FileCheck --check-prefix=RV64ZBB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbc %s -o - | FileCheck --check-prefix=RV64ZBC %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbs %s -o - | FileCheck --check-prefix=RV64ZBS %s
-; RUN: llc -mtriple=riscv64 -mattr=+v %s -o - | FileCheck --check-prefix=RV64V %s
-; RUN: llc -mtriple=riscv64 -mattr=+h %s -o - | FileCheck --check-prefix=RV64H %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbb,+zfh,+v,+f %s -o - | FileCheck --check-prefix=RV64COMBINED %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkb %s -o - | FileCheck --check-prefix=RV64ZBKB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkc %s -o - | FileCheck --check-prefix=RV64ZBKC %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkx %s -o - | FileCheck --check-prefix=RV64ZBKX %s
-; RUN: llc -mtriple=riscv64 -mattr=+zknd %s -o - | FileCheck --check-prefix=RV64ZKND %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkn,+zkr,+zkt %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZK %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zkne,+zknd,+zknh %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZKN %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zksed,+zksh %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZKS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkne %s -o - | FileCheck --check-prefix=RV64ZKNE %s
-; RUN: llc -mtriple=riscv64 -mattr=+zknh %s -o - | FileCheck --check-prefix=RV64ZKNH %s
-; RUN: llc -mtriple=riscv64 -mattr=+zksed %s -o - | FileCheck --check-prefix=RV64ZKSED %s
-; RUN: llc -mtriple=riscv64 -mattr=+zksh %s -o - | FileCheck --check-prefix=RV64ZKSH %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkr %s -o - | FileCheck --check-prefix=RV64ZKR %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkn %s -o - | FileCheck --check-prefix=RV64ZKN %s
-; RUN: llc -mtriple=riscv64 -mattr=+zks %s -o - | FileCheck --check-prefix=RV64ZKS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkt %s -o - | FileCheck --check-prefix=RV64ZKT %s
-; RUN: llc -mtriple=riscv64 -mattr=+zk %s -o - | FileCheck --check-prefix=RV64ZK %s
-; RUN: llc -mtriple=riscv64 -mattr=+zkn,+zkr,+zkt %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZK %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zkne,+zknd,+zknh %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZKN %s
-; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zksed,+zksh %s -o - | FileCheck --check-prefix=RV64COMBINEINTOZKS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicbom %s -o - | FileCheck --check-prefix=RV64ZICBOM %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicboz %s -o - | FileCheck --check-prefix=RV64ZICBOZ %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicclsm %s -o - | FileCheck --check-prefix=RV64ZICCLSM %s
-; RUN: llc -mtriple=riscv64 -mattr=+ziccif %s -o - | FileCheck --check-prefix=RV64ZICCIF %s
-; RUN: llc -mtriple=riscv64 -mattr=+ziccamoa %s -o - | FileCheck --check-prefix=RV64ZICCAMOA %s
-; RUN: llc -mtriple=riscv64 -mattr=+ziccrse %s -o - | FileCheck --check-prefix=RV64ZICCRSE %s
-; RUN: llc -mtriple=riscv64 -mattr=+za64rs %s -o - | FileCheck --check-prefix=RV64ZA64RS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zic64b %s -o - | FileCheck --check-prefix=RV64ZIC64B %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefix=RV64ZICNTR %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefix=RV64ZIHPM %s
-; RUN: llc -mtriple=riscv64 -mattr=+ss %s -o - | FileCheck --check-prefix=RV64SS %s
-; RUN: llc -mtriple=riscv64 -mattr=+svbare %s -o - | FileCheck --check-prefix=RV64SVBARE %s
-; RUN: llc -mtriple=riscv64 -mattr=+svptead %s -o - | FileCheck --check-prefix=RV64SVPTEAD %s
-; RUN: llc -mtriple=riscv64 -mattr=+ssccptr %s -o - | FileCheck --check-prefix=RV64SSCCPTR %s
-; RUN: llc -mtriple=riscv64 -mattr=+sstvecd %s -o - | FileCheck --check-prefix=RV64SSTVECD %s
-; RUN: llc -mtriple=riscv64 -mattr=+sstvala %s -o - | FileCheck --check-prefix=RV64SSTVALA %s
-; RUN: llc -mtriple=riscv64 -mattr=+sscounterenw %s -o - | FileCheck --check-prefix=RV64SSCOUNTERENW %s
-; RUN: llc -mtriple=riscv64 -mattr=+ssu64xl %s -o - | FileCheck --check-prefix=RV64SSU64XL %s
-; RUN: llc -mtriple=riscv64 -mattr=+sstc %s -o - | FileCheck --check-prefix=RV64SSTC %s
-; RUN: llc -mtriple=riscv64 -mattr=+ssstateen %s -o - | FileCheck --check-prefix=RV64SSSTATEEN %s
-; RUN: llc -mtriple=riscv64 -mattr=+smstateen %s -o - | FileCheck --check-prefix=RV64SMSTATEEN %s
-; RUN: llc -mtriple=riscv64 -mattr=+shcounterenw %s -o - | FileCheck --check-prefix=RV64SHCOUNTERENW %s
-; RUN: llc -mtriple=riscv64 -mattr=+shvstvala %s -o - | FileCheck --check-prefix=RV64SHVSTVALA %s
-; RUN: llc -mtriple=riscv64 -mattr=+shtvala %s -o - | FileCheck --check-prefix=RV64SHTVALA %s
-; RUN: llc -mtriple=riscv64 -mattr=+shvstvecd %s -o - | FileCheck --check-prefix=RV64SHVSTVECD %s
-; RUN: llc -mtriple=riscv64 -mattr=+shvsatpa %s -o - | FileCheck --check-prefix=RV64SHVSATPA %s
-; RUN: llc -mtriple=riscv64 -mattr=+shgatpa %s -o - | FileCheck --check-prefix=RV64SHGATPA %s
-; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefix=RV64ZICBOP %s
-; RUN: llc -mtriple=riscv64 -mattr=+svnapot %s -o - | FileCheck --check-prefix=RV64SVNAPOT %s
-; RUN: llc -mtriple=riscv64 -mattr=+svpbmt %s -o - | FileCheck --check-prefix=RV64SVPBMT %s
-; RUN: llc -mtriple=riscv64 -mattr=+svinval %s -o - | FileCheck --check-prefix=RV64SVINVAL %s
-; RUN: llc -mtriple=riscv64 -mattr=+xventanacondops %s -o - | FileCheck --check-prefix=RV64XVENTANACONDOPS %s
-; RUN: llc -mtriple=riscv64 -mattr=+xtheadvdot %s -o - | FileCheck --check-prefix=RV64XTHEADVDOT %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zawrs %s -o - | FileCheck --check-prefix=RV64ZAWRS %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-ztso %s -o - | FileCheck --check-prefix=RV64ZTSO %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zca %s -o - | FileCheck --check-prefix=RV64ZCA %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zcb %s -o - | FileCheck --check-prefix=RV64ZCB %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zcd %s -o - | FileCheck --check-prefix=RV64ZCD %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefix=RV64ZVKB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefix=RV64ZVKG %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefix=RV64ZVKNHA %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefix=RV64ZVKNHB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefix=RV64ZVKNS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV64ZVKSED %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV64ZVKSH %s
-; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefix=RV64SMWG %s
-; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefix=RV64SMWGD %s
-; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefix=RV64SSWG %s
-=======
 ; RUN: llc -mtriple=riscv32 %s -o - | FileCheck %s
 ; RUN: llc -mtriple=riscv32 -mattr=+m %s -o - | FileCheck --check-prefixes=CHECK,RV32M %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zmmul %s -o - | FileCheck --check-prefixes=CHECK,RV32ZMMUL %s
@@ -205,6 +38,33 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zicbom %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICBOM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zicboz %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICBOZ %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zicbop %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICBOP %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv32 -mattr=+zicclsm %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCLSM %s
+; RUN: llc -mtriple=riscv32 -mattr=+ziccif %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCIF %s
+; RUN: llc -mtriple=riscv32 -mattr=+ziccamoa %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCAMOA %s
+; RUN: llc -mtriple=riscv32 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCRSE %s
+; RUN: llc -mtriple=riscv32 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV32ZA64RS %s
+; RUN: llc -mtriple=riscv32 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV32ZIC64B %s
+; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICNTR %s
+; RUN: llc -mtriple=riscv32 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefixes=CHECK,RV32ZIHPM %s
+; RUN: llc -mtriple=riscv32 -mattr=+ss %s -o - | FileCheck --check-prefixes=CHECK,RV32SS %s
+; RUN: llc -mtriple=riscv32 -mattr=+svbare %s -o - | FileCheck --check-prefixes=CHECK,RV32SVBARE %s
+; RUN: llc -mtriple=riscv32 -mattr=+svptead %s -o - | FileCheck --check-prefixes=CHECK,RV32SVPTEAD %s
+; RUN: llc -mtriple=riscv32 -mattr=+ssccptr %s -o - | FileCheck --check-prefixes=CHECK,RV32SSCCPTR %s
+; RUN: llc -mtriple=riscv32 -mattr=+sstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV32SSTVECD %s
+; RUN: llc -mtriple=riscv32 -mattr=+sstvala %s -o - | FileCheck --check-prefixes=CHECK,RV32SSTVALA %s
+; RUN: llc -mtriple=riscv32 -mattr=+sscounterenw %s -o - | FileCheck --check-prefixes=CHECK,RV32SSCOUNTERENW %s
+; RUN: llc -mtriple=riscv32 -mattr=+ssu64xl %s -o - | FileCheck --check-prefixes=CHECK,RV32SSU64XL %s
+; RUN: llc -mtriple=riscv32 -mattr=+sstc %s -o - | FileCheck --check-prefixes=CHECK,RV32SSTC %s
+; RUN: llc -mtriple=riscv32 -mattr=+ssstateen %s -o - | FileCheck --check-prefixes=CHECK,RV32SSSTATEEN %s
+; RUN: llc -mtriple=riscv32 -mattr=+smstateen %s -o - | FileCheck --check-prefixes=CHECK,RV32SMSTATEEN %s
+; RUN: llc -mtriple=riscv32 -mattr=+shcounterenw %s -o - | FileCheck --check-prefixes=CHECK,RV32SHCOUNTERENW %s
+; RUN: llc -mtriple=riscv32 -mattr=+shvstvala %s -o - | FileCheck --check-prefixes=CHECK,RV32SHVSTVALA %s
+; RUN: llc -mtriple=riscv32 -mattr=+shtvala %s -o - | FileCheck --check-prefixes=CHECK,RV32SHTVALA %s
+; RUN: llc -mtriple=riscv32 -mattr=+shvstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV32SHVSTVECD %s
+; RUN: llc -mtriple=riscv32 -mattr=+shvsatpa %s -o - | FileCheck --check-prefixes=CHECK,RV32SHVSATPA %s
+; RUN: llc -mtriple=riscv32 -mattr=+shgatpa %s -o - | FileCheck --check-prefixes=CHECK,RV32SHGATPA %s
+; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv32 -mattr=+svnapot %s -o - | FileCheck --check-prefixes=CHECK,RV32SVNAPOT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svpbmt %s -o - | FileCheck --check-prefixes=CHECK,RV32SVPBMT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svinval %s -o - | FileCheck --check-prefixes=CHECK,RV32SVINVAL %s
@@ -212,6 +72,18 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcb %s -o - | FileCheck --check-prefixes=CHECK,RV32ZCB %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcd %s -o - | FileCheck --check-prefixes=CHECK,RV32ZCD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zcf %s -o - | FileCheck --check-prefixes=CHECK,RV32ZCF %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
+; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKB %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKG %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNHA %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNHB %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNS %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKSED %s
+; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKSH %s
+; end SIFIVE_CUSTOMIZATION
 
 ; RUN: llc -mtriple=riscv64 %s -o - | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+m %s -o - | FileCheck --check-prefixes=CHECK,RV64M %s
@@ -236,6 +108,11 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zbkc %s -o - | FileCheck --check-prefixes=CHECK,RV64ZBKC %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zbkx %s -o - | FileCheck --check-prefixes=CHECK,RV64ZBKX %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zknd %s -o - | FileCheck --check-prefixes=CHECK,RV64ZKND %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv64 -mattr=+zkn,+zkr,+zkt %s -o - | FileCheck --check-prefixes=CHECK,RV64COMBINEINTOZK %s
+; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zkne,+zknd,+zknh %s -o - | FileCheck --check-prefixes=CHECK,RV64COMBINEINTOZKN %s
+; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zksed,+zksh %s -o - | FileCheck --check-prefixes=CHECK,RV64COMBINEINTOZKS %s
+; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv64 -mattr=+zkne %s -o - | FileCheck --check-prefixes=CHECK,RV64ZKNE %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zknh %s -o - | FileCheck --check-prefixes=CHECK,RV64ZKNH %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zksed %s -o - | FileCheck --check-prefixes=CHECK,RV64ZKSED %s
@@ -250,6 +127,33 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zbkb,+zbkc,+zbkx,+zksed,+zksh %s -o - | FileCheck --check-prefixes=CHECK,RV64COMBINEINTOZKS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbom %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICBOM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicboz %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICBOZ %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv64 -mattr=+zicclsm %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCLSM %s
+; RUN: llc -mtriple=riscv64 -mattr=+ziccif %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCIF %s
+; RUN: llc -mtriple=riscv64 -mattr=+ziccamoa %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCAMOA %s
+; RUN: llc -mtriple=riscv64 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCRSE %s
+; RUN: llc -mtriple=riscv64 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV64ZA64RS %s
+; RUN: llc -mtriple=riscv64 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV64ZIC64B %s
+; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zicntr %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICNTR %s
+; RUN: llc -mtriple=riscv64 -mattr=+zicsr,+zihpm %s -o - | FileCheck --check-prefixes=CHECK,RV64ZIHPM %s
+; RUN: llc -mtriple=riscv64 -mattr=+ss %s -o - | FileCheck --check-prefixes=CHECK,RV64SS %s
+; RUN: llc -mtriple=riscv64 -mattr=+svbare %s -o - | FileCheck --check-prefixes=CHECK,RV64SVBARE %s
+; RUN: llc -mtriple=riscv64 -mattr=+svptead %s -o - | FileCheck --check-prefixes=CHECK,RV64SVPTEAD %s
+; RUN: llc -mtriple=riscv64 -mattr=+ssccptr %s -o - | FileCheck --check-prefixes=CHECK,RV64SSCCPTR %s
+; RUN: llc -mtriple=riscv64 -mattr=+sstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV64SSTVECD %s
+; RUN: llc -mtriple=riscv64 -mattr=+sstvala %s -o - | FileCheck --check-prefixes=CHECK,RV64SSTVALA %s
+; RUN: llc -mtriple=riscv64 -mattr=+sscounterenw %s -o - | FileCheck --check-prefixes=CHECK,RV64SSCOUNTERENW %s
+; RUN: llc -mtriple=riscv64 -mattr=+ssu64xl %s -o - | FileCheck --check-prefixes=CHECK,RV64SSU64XL %s
+; RUN: llc -mtriple=riscv64 -mattr=+sstc %s -o - | FileCheck --check-prefixes=CHECK,RV64SSTC %s
+; RUN: llc -mtriple=riscv64 -mattr=+ssstateen %s -o - | FileCheck --check-prefixes=CHECK,RV64SSSTATEEN %s
+; RUN: llc -mtriple=riscv64 -mattr=+smstateen %s -o - | FileCheck --check-prefixes=CHECK,RV64SMSTATEEN %s
+; RUN: llc -mtriple=riscv64 -mattr=+shcounterenw %s -o - | FileCheck --check-prefixes=CHECK,RV64SHCOUNTERENW %s
+; RUN: llc -mtriple=riscv64 -mattr=+shvstvala %s -o - | FileCheck --check-prefixes=CHECK,RV64SHVSTVALA %s
+; RUN: llc -mtriple=riscv64 -mattr=+shtvala %s -o - | FileCheck --check-prefixes=CHECK,RV64SHTVALA %s
+; RUN: llc -mtriple=riscv64 -mattr=+shvstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV64SHVSTVECD %s
+; RUN: llc -mtriple=riscv64 -mattr=+shvsatpa %s -o - | FileCheck --check-prefixes=CHECK,RV64SHVSATPA %s
+; RUN: llc -mtriple=riscv64 -mattr=+shgatpa %s -o - | FileCheck --check-prefixes=CHECK,RV64SHGATPA %s
+; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv64 -mattr=+zicbop %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICBOP %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svnapot %s -o - | FileCheck --check-prefixes=CHECK,RV64SVNAPOT %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svpbmt %s -o - | FileCheck --check-prefixes=CHECK,RV64SVPBMT %s
@@ -264,9 +168,20 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zca %s -o - | FileCheck --check-prefixes=CHECK,RV64ZCA %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zcb %s -o - | FileCheck --check-prefixes=CHECK,RV64ZCB %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zcd %s -o - | FileCheck --check-prefixes=CHECK,RV64ZCD %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKB %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKG %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNHA %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNHB %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNS %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKSED %s
+; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKSH %s
+; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
+; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
+; end SIFIVE_CUSTOMIZATION
 
 ; CHECK: .attribute 4, 16
->>>>>>> upstream/main
 
 ; SIFIVE_CUSTOMIZATION
 ; RV32M: .attribute 5, "rv32i2p1_m2p0"
@@ -349,7 +264,6 @@
 ; RV32SMWGD: .attribute 5, "rv32i2p1_smwg0p3_smwgd0p3"
 ; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
 
-<<<<<<< HEAD
 ; RV64M: .attribute 5, "rv64i2p1_m2p0"
 ; RV64ZMMUL: .attribute 5, "rv64i2p1_zmmul1p0"
 ; RV64MZMMUL: .attribute 5, "rv64i2p1_m2p0_zmmul1p0"
@@ -418,6 +332,9 @@
 ; RV64SVPBMT: .attribute 5, "rv64i2p1_svpbmt1p0"
 ; RV64SVINVAL: .attribute 5, "rv64i2p1_svinval1p0"
 ; RV64XVENTANACONDOPS: .attribute 5, "rv64i2p1_xventanacondops1p0"
+; RV64XTHEADBA: .attribute 5, "rv64i2p1_xtheadba1p0"
+; RV64XTHEADBB: .attribute 5, "rv64i2p1_xtheadbb1p0"
+; RV64XTHEADBS: .attribute 5, "rv64i2p1_xtheadbs1p0"
 ; RV64XTHEADVDOT: .attribute 5, "rv64i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0_xtheadvdot1p0"
 ; RV64ZTSO: .attribute 5, "rv64i2p1_ztso0p1"
 ; RV64ZCA: .attribute 5, "rv64i2p1_zca1p0"
@@ -434,58 +351,6 @@
 ; RV64SMWGD: .attribute 5, "rv64i2p1_smwg0p3_smwgd0p3"
 ; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
 ; end SIFIVE_CUSTOMIZATION
-=======
-; RV64M: .attribute 5, "rv64i2p0_m2p0"
-; RV64ZMMUL: .attribute 5, "rv64i2p0_zmmul1p0"
-; RV64MZMMUL: .attribute 5, "rv64i2p0_m2p0_zmmul1p0"
-; RV64A: .attribute 5, "rv64i2p0_a2p0"
-; RV64F: .attribute 5, "rv64i2p0_f2p0"
-; RV64D: .attribute 5, "rv64i2p0_f2p0_d2p0"
-; RV64C: .attribute 5, "rv64i2p0_c2p0"
-; RV64ZIHINTPAUSE: .attribute 5, "rv64i2p0_zihintpause2p0"
-; RV64ZIHINTNTL: .attribute 5, "rv64i2p0_zihintntl0p2"
-; RV64ZFHMIN: .attribute 5, "rv64i2p0_f2p0_zfhmin1p0"
-; RV64ZFH: .attribute 5, "rv64i2p0_f2p0_zfh1p0"
-; RV64ZBA: .attribute 5, "rv64i2p0_zba1p0"
-; RV64ZBB: .attribute 5, "rv64i2p0_zbb1p0"
-; RV64ZBC: .attribute 5, "rv64i2p0_zbc1p0"
-; RV64ZBS: .attribute 5, "rv64i2p0_zbs1p0"
-; RV64V: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64H: .attribute 5, "rv64i2p0_h1p0"
-; RV64COMBINED: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zfh1p0_zbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64ZBKB: .attribute 5, "rv64i2p0_zbkb1p0"
-; RV64ZBKC: .attribute 5, "rv64i2p0_zbkc1p0"
-; RV64ZBKX: .attribute 5, "rv64i2p0_zbkx1p0"
-; RV64ZKND: .attribute 5, "rv64i2p0_zknd1p0"
-; RV64ZKNE: .attribute 5, "rv64i2p0_zkne1p0"
-; RV64ZKNH: .attribute 5, "rv64i2p0_zknh1p0"
-; RV64ZKSED: .attribute 5, "rv64i2p0_zksed1p0"
-; RV64ZKSH: .attribute 5, "rv64i2p0_zksh1p0"
-; RV64ZKR: .attribute 5, "rv64i2p0_zkr1p0"
-; RV64ZKN: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64ZKS: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64ZKT: .attribute 5, "rv64i2p0_zkt1p0"
-; RV64ZK: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZK: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZKN: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64COMBINEINTOZKS: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64ZICBOM: .attribute 5, "rv64i2p0_zicbom1p0"
-; RV64ZICBOZ: .attribute 5, "rv64i2p0_zicboz1p0"
-; RV64ZAWRS: .attribute 5, "rv64i2p0_zawrs1p0"
-; RV64ZICBOP: .attribute 5, "rv64i2p0_zicbop1p0"
-; RV64SVNAPOT: .attribute 5, "rv64i2p0_svnapot1p0"
-; RV64SVPBMT: .attribute 5, "rv64i2p0_svpbmt1p0"
-; RV64SVINVAL: .attribute 5, "rv64i2p0_svinval1p0"
-; RV64XVENTANACONDOPS: .attribute 5, "rv64i2p0_xventanacondops1p0"
-; RV64XTHEADBA: .attribute 5, "rv64i2p0_xtheadba1p0"
-; RV64XTHEADBB: .attribute 5, "rv64i2p0_xtheadbb1p0"
-; RV64XTHEADBS: .attribute 5, "rv64i2p0_xtheadbs1p0"
-; RV64XTHEADVDOT: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0_xtheadvdot1p0"
-; RV64ZTSO: .attribute 5, "rv64i2p0_ztso0p1"
-; RV64ZCA: .attribute 5, "rv64i2p0_zca1p0"
-; RV64ZCB: .attribute 5, "rv64i2p0_zca1p0_zcb1p0"
-; RV64ZCD: .attribute 5, "rv64i2p0_zcd1p0"
->>>>>>> upstream/main
 
 define i32 @addi(i32 %a) {
   %1 = add i32 %a, 1
