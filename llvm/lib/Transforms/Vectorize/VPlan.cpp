@@ -57,7 +57,10 @@
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
+
+namespace llvm {
 extern cl::opt<bool> EnableVPlanNativePath;
+}
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
