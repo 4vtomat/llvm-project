@@ -558,12 +558,12 @@ foreach mx = SchedMxListFW in {
 
 // 15. Vector Reduction Operations
 let Latency = 32 in {
-def : WriteRes<WriteVIRedV, [SiFive7VA]>;
-def : WriteRes<WriteVIWRedV, [SiFive7VA]>;
-def : WriteRes<WriteVFRedV, [SiFive7VA]>;
-def : WriteRes<WriteVFRedOV, [SiFive7VA]>;
-def : WriteRes<WriteVFWRedV, [SiFive7VA]>;
-def : WriteRes<WriteVFWRedOV, [SiFive7VA]>;
+defm "" : LMULWriteRes<"WriteVIRedV_From", [SiFive7VA]>;
+defm "" : LMULWriteRes<"WriteVIWRedV_From", [SiFive7VA]>;
+defm "" : LMULWriteRes<"WriteVFRedV_From", [SiFive7VA]>;
+defm "" : LMULWriteRes<"WriteVFRedOV_From", [SiFive7VA]>;
+defm "" : LMULWriteResFWRed<"WriteVFWRedV_From", [SiFive7VA]>;
+defm "" : LMULWriteResFWRed<"WriteVFWRedOV_From", [SiFive7VA]>;
 }
 
 // 15. Vector Mask Instructions

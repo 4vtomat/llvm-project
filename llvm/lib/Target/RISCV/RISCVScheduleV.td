@@ -45,6 +45,14 @@ multiclass LMULSchedWritesFWRed<string name> {
   }
 }
 
+// SIFIVE_CUSTOMIZATION
+// Creates WriteRes for (name, mx, resources) tuple
+multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
+                          string mx> {
+  def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
+}
+// END SIFIVE_CUSTOMIZATION
+
 // Creates SchedRead for each (name, LMUL) pair for LMUL in SchedMxList
 multiclass LMULSchedReads<string name> {
   foreach mx = SchedMxList in {
@@ -90,15 +98,7 @@ multiclass LMULWriteResFW<string name, list<ProcResourceKind> resources> {
   }
 }
 
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-// Creates WriteRes for (name, mx, resources) tuple
-multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
-                          string mx> {
- def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
-}
-// END SIFIVE_CUSTOMIZATION
-=======
+
 // Creates WriteRes for each (name, LMUL, resources) tuple for LMUL
 // in SchedMxListFWRed
 multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources> {
@@ -106,7 +106,6 @@ multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources> {
     def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
   }
 }
->>>>>>> upstream/main
 
 // Creates ReadAdvance for each (name, LMUL, val) tuple for LMUL
 // in SchedMxList
