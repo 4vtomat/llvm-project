@@ -40,7 +40,7 @@ entry:
 define dso_local void @loop1(i8* nocapture %ptr_dest, i8* nocapture readonly %ptr_op1, i8* nocapture readonly %ptr_op2, i64 %n) {
 ; CHECK-LABEL: loop1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a4, a3, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli a4, a3, e8, m4, ta, ma
 ; CHECK-NEXT:    beqz a4, .LBB1_2
 ; CHECK-NEXT:  .LBB1_1: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -51,7 +51,7 @@ define dso_local void @loop1(i8* nocapture %ptr_dest, i8* nocapture readonly %pt
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    sub a3, a3, a4
-; CHECK-NEXT:    vsetvli a4, a3, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli a4, a3, e8, m4, ta, ma
 ; CHECK-NEXT:    csrw vxrm, a5
 ; CHECK-NEXT:    bnez a4, .LBB1_1
 ; CHECK-NEXT:  .LBB1_2: # %for.end

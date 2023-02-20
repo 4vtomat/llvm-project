@@ -12,7 +12,7 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    addi a2, a0, 2040
 ; CHECK-NEXT:    addi a0, a1, 2040
 ; CHECK-NEXT:    li a1, 2040
-; CHECK-NEXT:    vsetvli a1, a1, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1
@@ -26,14 +26,14 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    li a3, 504
-; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB0_2: # %memmove-forward-loop
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    add a0, a0, a2
@@ -45,7 +45,7 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    li a3, 504
-; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    add a1, a1, a2
@@ -67,7 +67,7 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    slli a2, a2, 11
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    sub a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    sub a1, a1, a2
@@ -88,7 +88,7 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:  .LBB1_2: # %memmove-forward-loop
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    slli a2, a2, 11
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    add a0, a0, a2

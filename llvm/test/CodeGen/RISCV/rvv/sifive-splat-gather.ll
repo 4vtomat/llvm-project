@@ -70,7 +70,7 @@ define void @test_sink_zero(ptr %dst, ptr %arg, i64 zeroext %avl) {
 ; CHECK-NEXT:  .LBB4_1: # %body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    sub a4, a2, a3
-; CHECK-NEXT:    vsetvli a4, a4, e16, m4, ta, mu
+; CHECK-NEXT:    vsetvli a4, a4, e16, m4, ta, ma
 ; CHECK-NEXT:    vlse16.v v8, (a1), zero
 ; CHECK-NEXT:    slli a5, a3, 1
 ; CHECK-NEXT:    add a5, a0, a5

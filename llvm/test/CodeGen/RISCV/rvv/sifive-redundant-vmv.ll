@@ -5,7 +5,7 @@
 define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift, i32* nocapture readonly %bias_data, i32* nocapture %output_data) local_unnamed_addr {
 ; CHECK-LABEL: test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    beq a4, zero, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %while.body.preheader
 ; CHECK-NEXT:    addi a5, zero, 0
@@ -29,7 +29,7 @@ define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift,
 ; CHECK-NEXT:    vse32.v v8, (a6)
 ; CHECK-NEXT:    sub a0, a0, a4
 ; CHECK-NEXT:    add a5, a4, a5
-; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    bne a4, zero, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3: # %while.end
 ; CHECK-NEXT:    jalr zero, 0(ra)

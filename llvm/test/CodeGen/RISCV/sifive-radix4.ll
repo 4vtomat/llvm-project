@@ -10,7 +10,7 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    csrr t0, vlenb
 ; X280-NEXT:    slli t0, t0, 3
 ; X280-NEXT:    sub sp, sp, t0
-; X280-NEXT:    vsetvli t3, zero, e32, m2, tu, mu
+; X280-NEXT:    vsetvli t3, zero, e32, m2, tu, ma
 ; X280-NEXT:    vlseg2e32.v v8, (a2)
 ; X280-NEXT:    csrr a2, vlenb
 ; X280-NEXT:    li t0, 0
@@ -52,7 +52,6 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280-NEXT:    csrr t4, vlenb
 ; X280-NEXT:    addi t3, sp, 16
-; X280-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
 ; X280-NEXT:    vlseg2e32.v v26, (a4)
 ; X280-NEXT:    addi t0, t0, 1
 ; X280-NEXT:    add a4, a4, a0
@@ -125,7 +124,7 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    csrr t0, vlenb
 ; X280N-NEXT:    slli t0, t0, 3
 ; X280N-NEXT:    sub sp, sp, t0
-; X280N-NEXT:    vsetvli t3, zero, e32, m2, tu, mu
+; X280N-NEXT:    vsetvli t3, zero, e32, m2, tu, ma
 ; X280N-NEXT:    vlseg2e32.v v8, (a2)
 ; X280N-NEXT:    csrr a2, vlenb
 ; X280N-NEXT:    li t0, 0
@@ -167,7 +166,6 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280N-NEXT:    csrr t4, vlenb
 ; X280N-NEXT:    addi t3, sp, 16
-; X280N-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
 ; X280N-NEXT:    vlseg2e32.v v26, (a4)
 ; X280N-NEXT:    addi t0, t0, 1
 ; X280N-NEXT:    add a4, a4, a0

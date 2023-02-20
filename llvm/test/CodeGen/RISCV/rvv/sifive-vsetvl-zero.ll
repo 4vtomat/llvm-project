@@ -32,7 +32,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 ;
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vle64.v v8, (a0)
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
@@ -42,7 +42,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 ;
 ; CHECK-O2-LABEL: test_vsetvl_avl:
 ; CHECK-O2:       # %bb.0:
-; CHECK-O2-NEXT:    vsetvli zero, a1, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vle64.v v8, (a0)
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)
@@ -78,7 +78,7 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvl_zero:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vle64.v v8, (a0)
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
@@ -88,7 +88,7 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O2-LABEL: test_vsetvl_zero:
 ; CHECK-O2:       # %bb.0:
-; CHECK-O2-NEXT:    vsetivli zero, 0, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vle64.v v8, (a0)
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)
@@ -124,7 +124,7 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvlmax:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
+; CHECK-O0-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vle64.v v8, (a0)
 ; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
@@ -134,7 +134,7 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O2-LABEL: test_vsetvlmax:
 ; CHECK-O2:       # %bb.0:
-; CHECK-O2-NEXT:    vsetvli a1, zero, e64, m1, ta, mu
+; CHECK-O2-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-O2-NEXT:    vle64.v v8, (a0)
 ; CHECK-O2-NEXT:    vfadd.vv v8, v8, v8
 ; CHECK-O2-NEXT:    lui a0, %hi(scratch)

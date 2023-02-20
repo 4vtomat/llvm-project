@@ -14,7 +14,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; NOALIGN-NEXT:    add a1, a1, a2
 ; NOALIGN-NEXT:  .LBB0_2: # %memmove-backward-loop
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
+; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    sub a0, a0, a3
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
 ; NOALIGN-NEXT:    sub a1, a1, a3
@@ -24,7 +24,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; NOALIGN-NEXT:    j .LBB0_4
 ; NOALIGN-NEXT:  .LBB0_3: # %memmove-forward-loop
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
+; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
 ; NOALIGN-NEXT:    vse8.v v8, (a1)
 ; NOALIGN-NEXT:    sub a2, a2, a3
@@ -42,7 +42,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    add a3, a0, a2
 ; ALIGN-NEXT:    andi a3, a3, 31
 ; ALIGN-NEXT:    minu a3, a3, a2
-; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    add a0, a0, a2
 ; ALIGN-NEXT:    add a1, a1, a2
@@ -51,7 +51,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    beqz a2, .LBB0_6
 ; ALIGN-NEXT:  .LBB0_2: # %memmove-backward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a0, a0, a3
 ; ALIGN-NEXT:    sub a1, a1, a3
 ; ALIGN-NEXT:    sub a2, a2, a3
@@ -64,7 +64,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    li a4, 32
 ; ALIGN-NEXT:    sub a4, a4, a3
 ; ALIGN-NEXT:    minu a3, a4, a2
-; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
 ; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    vse8.v v8, (a1)
@@ -74,7 +74,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    add a1, a1, a3
 ; ALIGN-NEXT:  .LBB0_5: # %memmove-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    add a0, a0, a3
 ; ALIGN-NEXT:    sub a2, a2, a3

@@ -7,11 +7,11 @@
 define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
 ; NOALIGN:       # %bb.0: # %entry
-; NOALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; NOALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    vmv.v.x v8, a1
 ; NOALIGN-NEXT:  .LBB0_1: # %memset-forward-loop
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; NOALIGN-NEXT:    vsetvli a1, a2, e8, m8, ta, mu
+; NOALIGN-NEXT:    vsetvli a1, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    vse8.v v8, (a0)
 ; NOALIGN-NEXT:    sub a2, a2, a1
 ; NOALIGN-NEXT:    add a0, a0, a1
@@ -27,13 +27,13 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; ALIGN-NEXT:    li a3, 32
 ; ALIGN-NEXT:    sub a3, a3, a1
 ; ALIGN-NEXT:    minu a1, a3, a2
-; ALIGN-NEXT:    vsetvli a3, a1, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a3, a1, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a1, a2, a3
 ; ALIGN-NEXT:    add a2, a0, a3
 ; ALIGN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-NEXT:  .LBB0_1: # %memset-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; ALIGN-NEXT:    vsetvli a0, a1, e8, m8, ta, mu
+; ALIGN-NEXT:    vsetvli a0, a1, e8, m8, ta, ma
 ; ALIGN-NEXT:    vse8.v v8, (a2)
 ; ALIGN-NEXT:    add a2, a2, a0
 ; ALIGN-NEXT:    sub a1, a1, a0

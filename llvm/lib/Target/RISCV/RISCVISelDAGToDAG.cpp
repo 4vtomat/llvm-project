@@ -557,16 +557,11 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
   RISCVII::VLMUL VLMul = static_cast<RISCVII::VLMUL>(
       Node->getConstantOperandVal(Offset + 1) & 0x7);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned VTypeI = RISCVVType::encodeVTYPE(
       VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
-      /*MaskAgnostic*/ false);
+      /*MaskAgnostic*/ true);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  unsigned VTypeI = RISCVVType::encodeVTYPE(VLMul, SEW, /*TailAgnostic*/ true,
-                                            /*MaskAgnostic*/ true);
->>>>>>> upstream/main
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
   SmallVector<EVT, 2> VTs = {XLenVT};
