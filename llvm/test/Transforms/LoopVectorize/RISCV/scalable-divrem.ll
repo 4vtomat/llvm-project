@@ -569,9 +569,9 @@ define void @predicated_sdiv_by_minus_one(ptr noalias nocapture %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i8, ptr [[TMP10]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i8>, ptr [[TMP12]], align 1
-; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 8
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[TMP10]], i32 [[TMP14]]
+; CHECK-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP13]], 8
+; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[TMP10]], i64 [[TMP14]]
 ; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 8 x i8>, ptr [[TMP15]], align 1
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp ne <vscale x 8 x i8> [[WIDE_LOAD]], shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 -128, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp ne <vscale x 8 x i8> [[WIDE_LOAD1]], shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 -128, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer)
@@ -584,9 +584,9 @@ define void @predicated_sdiv_by_minus_one(ptr noalias nocapture %a, i64 %n) {
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <vscale x 8 x i1> [[TMP16]], <vscale x 8 x i8> [[TMP20]], <vscale x 8 x i8> [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[PREDPHI2:%.*]] = select <vscale x 8 x i1> [[TMP17]], <vscale x 8 x i8> [[TMP21]], <vscale x 8 x i8> [[WIDE_LOAD1]]
 ; CHECK-NEXT:    store <vscale x 8 x i8> [[PREDPHI]], ptr [[TMP12]], align 1
-; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP25:%.*]] = mul i32 [[TMP24]], 8
-; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i8, ptr [[TMP10]], i32 [[TMP25]]
+; CHECK-NEXT:    [[TMP24:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP25:%.*]] = mul i64 [[TMP24]], 8
+; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i8, ptr [[TMP10]], i64 [[TMP25]]
 ; CHECK-NEXT:    store <vscale x 8 x i8> [[PREDPHI2]], ptr [[TMP26]], align 1
 ; CHECK-NEXT:    [[TMP27:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP28:%.*]] = mul i64 [[TMP27]], 16

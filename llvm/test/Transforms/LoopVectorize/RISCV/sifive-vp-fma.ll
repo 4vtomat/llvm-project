@@ -45,14 +45,14 @@ define void @foo(i32 %n, ptr %a, ptr %b, ptr %c, ptr %d) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds double, ptr [[C]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds double, ptr [[TMP15]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD9:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr [[TMP16]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fma.nxv1f64(<vscale x 1 x double> [[VP_OP_LOAD]], <vscale x 1 x double> [[VP_OP_LOAD8]], <vscale x 1 x double> [[VP_OP_LOAD9]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds double, ptr [[D]], i64 [[TMP10]]
-; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds double, ptr [[TMP17]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv1f64.p0(<vscale x 1 x double> [[VP_OP]], ptr [[TMP18]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP9]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP19]]
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 1 x double> @llvm.fma.nxv1f64(<vscale x 1 x double> [[VP_OP_LOAD]], <vscale x 1 x double> [[VP_OP_LOAD8]], <vscale x 1 x double> [[VP_OP_LOAD9]])
+; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds double, ptr [[D]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds double, ptr [[TMP18]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1f64.p0(<vscale x 1 x double> [[TMP17]], ptr [[TMP19]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
+; CHECK-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP9]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP20]]
+; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -65,14 +65,14 @@ define void @foo(i32 %n, ptr %a, ptr %b, ptr %c, ptr %d) {
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX0:%.*]] = getelementptr inbounds double, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP21:%.*]] = load double, ptr [[ARRAYIDX0]], align 8
+; CHECK-NEXT:    [[TMP22:%.*]] = load double, ptr [[ARRAYIDX0]], align 8
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds double, ptr [[B]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP22:%.*]] = load double, ptr [[ARRAYIDX1]], align 8
+; CHECK-NEXT:    [[TMP23:%.*]] = load double, ptr [[ARRAYIDX1]], align 8
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds double, ptr [[C]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP23:%.*]] = load double, ptr [[ARRAYIDX2]], align 8
-; CHECK-NEXT:    [[TMP24:%.*]] = tail call double @llvm.fma.f64(double [[TMP21]], double [[TMP22]], double [[TMP23]])
+; CHECK-NEXT:    [[TMP24:%.*]] = load double, ptr [[ARRAYIDX2]], align 8
+; CHECK-NEXT:    [[TMP25:%.*]] = tail call double @llvm.fma.f64(double [[TMP22]], double [[TMP23]], double [[TMP24]])
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds double, ptr [[D]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    store double [[TMP24]], ptr [[ARRAYIDX3]], align 8
+; CHECK-NEXT:    store double [[TMP25]], ptr [[ARRAYIDX3]], align 8
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]

@@ -40,13 +40,8 @@ attributes #0 = { nofree norecurse nosync nounwind writeonly "frame-pointer"="no
 !llvm.ident = !{!3}
 
 !0 = !{i32 1, !"wchar_size", i32 4}
-<<<<<<< HEAD
 !1 = !{i32 1, !"target-abi", !"lp64d"} ; SIFIVE
-!2 = !{i32 1, !"SmallDataLimit", i32 8}
-=======
-!1 = !{i32 1, !"target-abi", !"lp64"}
 !2 = !{i32 8, !"SmallDataLimit", i32 8}
->>>>>>> upstream/main
 !3 = !{!"clang version 13.0.0"}
 !4 = !{!5, !5, i64 0}
 !5 = !{!"int", !6, i64 0}

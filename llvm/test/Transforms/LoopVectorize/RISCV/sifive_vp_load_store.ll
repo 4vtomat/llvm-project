@@ -15,7 +15,6 @@ define void @test() {
 ; SCALABLE-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP3]]
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
-; SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> zeroinitializer, ptr [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; SCALABLE-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
 ; SCALABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
