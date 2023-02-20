@@ -10992,30 +10992,24 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     if (auto *gep = dyn_cast<GetElementPtrInst>(Ptr->stripPointerCasts()))
       InBounds = gep->isInBounds();
     if (Reverse) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       Value *RunTimeVF;
       if (VPValue *EVL = State.Plan->getEVL()) {
         // If EVL is not nullptr, then EVL must be a valid value set during plan
         // creation and must be used to correctly reverse the address
         RunTimeVF = State.get(EVL, Part);
+	if (RunTimeVF->getType() != IndexTy)
+	  RunTimeVF = Builder.CreateSExtOrTrunc(RunTimeVF, IndexTy);
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         // If the address is consecutive but reversed, then the
         // wide store needs to start at the last vector element.
         // RunTimeVF =  VScale * VF.getKnownMinValue()
         // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
-        RunTimeVF = getRuntimeVF(Builder, Builder.getInt32Ty(), State.VF);
+        RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
 #if SIFIVE_CUSTOMIZATION
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      // If the address is consecutive but reversed, then the
-      // wide store needs to start at the last vector element.
-      // RunTimeVF =  VScale * VF.getKnownMinValue()
-      // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
-      Value *RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
->>>>>>> upstream/main
       // NumElt = -Part * RunTimeVF
       Value *NumElt =
           Builder.CreateMul(ConstantInt::get(IndexTy, -(int64_t)Part), RunTimeVF);
