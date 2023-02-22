@@ -443,7 +443,7 @@ void RISCVPassConfig::addPreRegAlloc() {
     addPass(createRISCVCleanupVXRMPass()); // SIFIVE
   }
   addPass(createRISCVInsertVSETVLIPass());
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   addPass(createRISCVInsertVXRMWritePass());
 #endif // SIFIVE_CUSTOMIZATION
 }

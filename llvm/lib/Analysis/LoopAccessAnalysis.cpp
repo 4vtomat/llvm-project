@@ -79,7 +79,7 @@ using namespace llvm::PatternMatch;
 static cl::opt<unsigned, true>
 VectorizationFactor("force-vector-width", cl::Hidden,
                     cl::desc("Sets the SIMD width. Zero is autoselect."),
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
                     cl::location(VectorizerParams::VectorizationFactor),
                     cl::init(VectorizerParams::DefaultVectorizationFactor));
 const unsigned VectorizerParams::DefaultVectorizationFactor = 0;

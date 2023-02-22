@@ -115,7 +115,7 @@ struct Policy {
   PolicyType TailPolicy = Omit;
   PolicyType MaskPolicy = Omit;
   bool IntrinsicWithoutMU = false;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   bool IsNontemporal = false;
   Policy(bool _IsNontemporal = false)
       : PolicyNone(true), IsNontemporal(_IsNontemporal) {}
@@ -167,7 +167,7 @@ struct Policy {
     return MaskPolicy == Undisturbed && TailPolicy == Omit;
   }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   bool isNTLPolicy() const { return IsNontemporal; }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -176,7 +176,7 @@ struct Policy {
   bool operator==(const Policy &Other) const {
     return PolicyNone == Other.PolicyNone && TailPolicy == Other.TailPolicy &&
            MaskPolicy == Other.MaskPolicy &&
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
            IntrinsicWithoutMU == Other.IntrinsicWithoutMU &&
            IsNontemporal == Other.IsNontemporal;
 #endif // SIFIVE_CUSTOMIZATION
@@ -188,7 +188,7 @@ struct Policy {
     // Just for maintain the old order for quick test.
     if (MaskPolicy != Other.MaskPolicy)
       return Other.MaskPolicy < MaskPolicy;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     if (TailPolicy != Other.TailPolicy)
       return TailPolicy < Other.TailPolicy;
     return IsNontemporal < Other.IsNontemporal;
@@ -225,7 +225,7 @@ struct PrototypeDescriptor {
   static const PrototypeDescriptor Mask;
   static const PrototypeDescriptor Vector;
   static const PrototypeDescriptor VL;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   static const PrototypeDescriptor NTLDomainType;
 #endif // SIFIVE_CUSTOMIZATION
   static std::optional<PrototypeDescriptor>
@@ -513,7 +513,7 @@ public:
   static llvm::SmallVector<Policy>
       getSupportedMaskedPolicies(bool HasTailPolicy, bool HasMaskPolicy);
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   static void appendNontemporalInPolicyList(llvm::SmallVector<Policy> &P);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -589,7 +589,7 @@ struct RVVIntrinsicRecord {
   bool IsPrototypeDefaultTU : 1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
 #endif // SIFIVE_CUSTOMIZATION
   uint8_t UnMaskedPolicyScheme : 2;

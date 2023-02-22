@@ -40,7 +40,7 @@ struct VectorizerParams {
 
   /// VF as overridden by the user.
   static unsigned VectorizationFactor;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   /// Default VF
   static const unsigned DefaultVectorizationFactor;
 #endif // SIFIVE_CUSTOMIZATION

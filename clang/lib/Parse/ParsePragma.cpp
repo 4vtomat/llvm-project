@@ -361,7 +361,7 @@ private:
   Sema &Actions;
 };
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 struct PragmaRVVHandler final : public PragmaHandler {
   PragmaRVVHandler() : PragmaHandler("rvv") {}
   void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
@@ -520,7 +520,7 @@ void Parser::initializePragmaHandlers() {
     RISCVPragmaHandler = std::make_unique<PragmaRISCVHandler>(Actions);
     PP.AddPragmaHandler("clang", RISCVPragmaHandler.get());
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     RVVPragmaHandler = std::make_unique<PragmaRVVHandler>();
     PP.AddPragmaHandler("clang", RVVPragmaHandler.get());
 #endif // SIFIVE_CUSTOMIZATION
@@ -656,7 +656,7 @@ void Parser::resetPragmaHandlers() {
     PP.RemovePragmaHandler("clang", RISCVPragmaHandler.get());
     RISCVPragmaHandler.reset();
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     PP.RemovePragmaHandler("clang", RVVPragmaHandler.get());
     RVVPragmaHandler.reset();
 #endif // SIFIVE_CUSTOMIZATION
@@ -1511,7 +1511,7 @@ bool Parser::HandlePragmaLoopHint(LoopHint &Hint) {
   return true;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
   assert(Tok.is(tok::annot_pragma_rvv_hint) &&
          "First token should be an annotation token of rvv hint");
@@ -4166,7 +4166,7 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
   Actions.DeclareRISCVVBuiltins = true;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 void PragmaRVVHandler::HandlePragma(Preprocessor &PP,
                                     PragmaIntroducer Introducer, Token &Tok) {
   // Incoming token is rvv

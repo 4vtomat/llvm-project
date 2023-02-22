@@ -203,9 +203,9 @@ VPValue *getPredicatedMask(VPRegionBlock *R) {
       !isa<VPBranchOnMaskRecipe>(EntryBB->begin()))
     return nullptr;
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   return cast<VPBranchOnMaskRecipe>(&*EntryBB->begin())->getMask();
-#else 
+#else
   return cast<VPBranchOnMaskRecipe>(&*EntryBB->begin())->getOperand(0);
 #endif // SIFIVE_CUSTOMIZATION
 }

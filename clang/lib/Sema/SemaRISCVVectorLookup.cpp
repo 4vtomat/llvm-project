@@ -272,7 +272,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
             /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
             Record.IsPrototypeDefaultTU, UnMaskedPolicyScheme, Policy());
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     llvm::SmallVector<PrototypeDescriptor> NTLProtoSeq =
         RVVIntrinsic::computeBuiltinTypes(
             BasicProtoSeq, /*IsMasked=*/false,
@@ -287,7 +287,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
             Record.HasVL, Record.NF, Record.IsPrototypeDefaultTU,
             MaskedPolicyScheme, Policy());
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     llvm::SmallVector<PrototypeDescriptor> NTLProtoMaskSeq =
         RVVIntrinsic::computeBuiltinTypes(
             BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
@@ -307,7 +307,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         RVVIntrinsic::getSupportedMaskedPolicies(Record.HasTailPolicy,
                                                  Record.HasMaskPolicy);
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
     if (Record.HasNontemporalOperand) {
       RVVIntrinsic::appendNontemporalInPolicyList(SupportedUnMaskedPolicies);
       RVVIntrinsic::appendNontemporalInPolicyList(SupportedMaskedPolicies);

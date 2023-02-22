@@ -98,14 +98,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zhinx", RISCVExtensionVersion{1, 0}},
 
     {"zba", RISCVExtensionVersion{1, 0}},
+    {"zba", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbb", RISCVExtensionVersion{1, 0}},
+    {"zbb", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbc", RISCVExtensionVersion{1, 0}},
     {"zbs", RISCVExtensionVersion{1, 0}},
-
-    {"zba", RISCVExtensionVersion{0, 93}}, // SIFIVE
-    {"zbb", RISCVExtensionVersion{0, 93}}, // SIFIVE
-
-    {"v", RISCVExtensionVersion{1, 0}}, // default
 
     {"zbkb", RISCVExtensionVersion{1, 0}},
     {"zbkc", RISCVExtensionVersion{1, 0}},
@@ -123,7 +120,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     {"zmmul", RISCVExtensionVersion{1, 0}},
 
-    {"v", RISCVExtensionVersion{1, 0}}, // default // SIFIVE
+    {"v", RISCVExtensionVersion{1, 0}},
     {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
     {"zvl32b", RISCVExtensionVersion{1, 0}},
     {"zvl64b", RISCVExtensionVersion{1, 0}},
