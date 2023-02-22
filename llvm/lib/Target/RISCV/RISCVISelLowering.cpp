@@ -6628,7 +6628,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VSELECT_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, VL);
   }
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 #define CASE_RVV(Intrin, Opcode)                                               \
   case Intrinsic::riscv_##Intrin:                                              \
     return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ false);           \
@@ -14529,7 +14529,7 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   uint64_t TSFlags = MI.getDesc().TSFlags;
   // Add VXRM dependency to any instructions with dynamic rounding mode.
   if (RISCVII::hasRoundModeOp(TSFlags)) {

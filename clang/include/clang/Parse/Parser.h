@@ -796,7 +796,7 @@ private:
   /// #pragma clang loop and #pragma unroll.
   bool HandlePragmaLoopHint(LoopHint &Hint);
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   /// Handle the annotation token produced for
   /// #pragma clang rvv
   bool HandlePragmaRvvHint(RvvHint &Hint);
@@ -2132,7 +2132,7 @@ private:
   StmtResult ParsePragmaLoopHint(StmtVector &Stmts, ParsedStmtContext StmtCtx,
                                  SourceLocation *TrailingElseLoc,
                                  ParsedAttributes &Attrs);
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   StmtResult ParsePragmaRvvHint(StmtVector &Stmts, ParsedStmtContext StmtCtx,
                                 SourceLocation *TrailingElseLoc,
                                 ParsedAttributes &Attrs);

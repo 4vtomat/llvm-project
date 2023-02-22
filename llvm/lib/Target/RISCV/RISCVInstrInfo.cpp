@@ -1916,7 +1916,7 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_TPREL_HI, "riscv-tprel-hi"},
       {MO_TPREL_ADD, "riscv-tprel-add"},
       {MO_TLS_GOT_HI, "riscv-tls-got-hi"},
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       {MO_TLS_GD_HI, "riscv-tls-gd-hi"},
       {MO_TLS_GOT_GPREL_LO, "riscv-tls-got-gprel-lo"},
       {MO_TLS_GOT_GPREL_HI, "riscv-tls-got-gprel-hi"},

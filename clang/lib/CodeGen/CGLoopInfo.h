@@ -83,7 +83,7 @@ struct LoopAttributes {
   /// Value for whether the loop is required to make progress.
   bool MustProgress;
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   /// Values for llvm.loop.vectorize.rvv.lmul_sew
   /// Valid value of lmul -3 (mf8) to +3 (m8)
   /// Valid value of sew is 8, 16, 32, 64
@@ -293,7 +293,7 @@ public:
   /// Set no progress for the next loop pushed.
   void setMustProgress(bool P) { StagedAttrs.MustProgress = P; }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   /// Add Lmul specified
   void setForceLmulSew(int Lmul, int Sew) {
     assert(-3 <= Lmul && Lmul <= 3 && "value should be between [-3, 3]");

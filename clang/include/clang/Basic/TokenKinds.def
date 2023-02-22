@@ -919,7 +919,7 @@ PRAGMA_ANNOTATION(pragma_openmp_end)
 // handles #pragma loop ... directives.
 PRAGMA_ANNOTATION(pragma_loop_hint)
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 // Annotations for pragma directives of RISC-V Vector extension #pragma clang rvv
 PRAGMA_ANNOTATION(pragma_rvv_hint)
 #endif // SIFIVE_CUSTOMIZATION

@@ -209,7 +209,7 @@ LoopInfo::createUnrollAndJamMetadata(const LoopAttributes &Attrs,
   return LoopID;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 /*
         | LMUL = 1     | LMUL = 2      | LMUL = 4      | LMUL = 8
 --------|--------------|---------------|---------------|--------------
@@ -249,7 +249,7 @@ LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
                                       bool &HasUserTransforms) {
   LLVMContext &Ctx = Header->getContext();
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   SmallVector<Metadata *, 4> NewLoopProperties(LoopProperties.begin(),
                                                LoopProperties.end());
   if (Attrs.RvvForceLmulSew) {
@@ -559,7 +559,7 @@ LoopInfo::LoopInfo(BasicBlock *Header, const LoopAttributes &Attrs,
       Attrs.UnrollEnable == LoopAttributes::Unspecified &&
       Attrs.UnrollAndJamEnable == LoopAttributes::Unspecified &&
       Attrs.DistributeEnable == LoopAttributes::Unspecified && !StartLoc &&
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       !EndLoc && !Attrs.MustProgress && !Attrs.RvvForceLmulSew)
 #else
       !EndLoc && !Attrs.MustProgress)

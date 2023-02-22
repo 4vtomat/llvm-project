@@ -71,7 +71,7 @@ static Attr *handleSuppressAttr(Sema &S, Stmt *St, const ParsedAttr &A,
       S.Context, A, DiagnosticIdentifiers.data(), DiagnosticIdentifiers.size());
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
                                SourceRange) {
   IdentifierLoc *PragmaNameLoc = A.getArgAsIdent(0);
@@ -490,7 +490,7 @@ CheckForIncompatibleAttributes(Sema &S,
     }
   }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   // At this moment, loop hint attributes have been filled into 'HintAttrs'.
   // Check compatibility of RVV hints with them.
   const RvvHintAttr *LmulSewHintAttr = nullptr;
@@ -595,7 +595,7 @@ static Attr *ProcessStmtAttribute(Sema &S, Stmt *St, const ParsedAttr &A,
     return handleFallThroughAttr(S, St, A, Range);
   case ParsedAttr::AT_LoopHint:
     return handleLoopHintAttr(S, St, A, Range);
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   case ParsedAttr::AT_RvvHint:
     return handleRvvHintAttr(S, St, A, Range);
 #endif // SIFIVE_CUSTOMIZATION

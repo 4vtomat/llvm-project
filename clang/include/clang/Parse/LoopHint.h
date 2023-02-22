@@ -39,7 +39,7 @@ struct LoopHint {
         ValueExpr(nullptr) {}
 };
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 /// Target specific RISC-V vectorization hint
 /// #pragma clang rvv lmul_sew(${LMUL}, ${SEW})
 /// LMUL = Length Multiplier

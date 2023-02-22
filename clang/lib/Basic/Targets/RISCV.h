@@ -55,7 +55,7 @@ public:
     CPU = Name;
     return true;
   }
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   bool hasVectorSupport() const override {
     return ISAInfo->hasExtension("zve32x");
   }

@@ -19558,7 +19558,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   constexpr unsigned TAIL_AGNOSTIC_MASK_AGNOSTIC = 3;
   int PolicyAttrs = TAIL_UNDISTURBED;
   bool IsMasked = false;
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   bool IsNontemporal = false;
 
   auto createNTLNode = [&Ops, this]() {

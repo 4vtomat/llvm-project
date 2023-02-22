@@ -664,7 +664,7 @@ public:
   /// Determine whether constrained floating point is supported on this target.
   virtual bool hasStrictFP() const { return HasStrictFP; }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   /// Determine whether the target has vector support
   virtual bool hasVectorSupport() const { return false; }
 

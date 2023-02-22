@@ -83,7 +83,7 @@ LoopHintAttr::getDiagnosticName(const PrintingPolicy &Policy) const {
   return getOptionName(option) + getValueString(Policy);
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 static StringRef lmulToString(const RvvHintAttr::RvvLmulValueType Lmul) {
   switch (Lmul) {
   case RvvHintAttr::RvvLmulValueType::Mf8:

@@ -26,7 +26,7 @@ const PrototypeDescriptor PrototypeDescriptor::Mask = PrototypeDescriptor(
     BaseTypeModifier::Vector, VectorTypeModifier::MaskVector);
 const PrototypeDescriptor PrototypeDescriptor::VL =
     PrototypeDescriptor(BaseTypeModifier::SizeT);
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 const PrototypeDescriptor PrototypeDescriptor::NTLDomainType =
     PrototypeDescriptor(BaseTypeModifier::SizeT);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1108,14 +1108,14 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   // If HasVL, append PrototypeDescriptor:VL to last operand
   if (HasVL)
     NewPrototype.push_back(PrototypeDescriptor::VL);
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   if (PolicyAttrs.isNTLPolicy())
     NewPrototype.push_back(PrototypeDescriptor::NTLDomainType);
 #endif // SIFIVE_CUSTOMIZATION
   return NewPrototype;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
 void RVVIntrinsic::appendNontemporalInPolicyList(llvm::SmallVector<Policy> &P) {
   llvm::SmallVector<Policy> NTLPolicy;
   for (auto CurrPolicy : P) {
@@ -1210,7 +1210,7 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
     }
   }
 
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   if (PolicyAttrs.isNTLPolicy())
     appendPolicySuffix("_ntl");
 #endif // SIFIVE_CUSTOMIZATION
@@ -1261,7 +1261,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.IsPrototypeDefaultTU << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
-#ifdef SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
   OS << (int)Record.HasNontemporalOperand << ",";
 #endif // SIFIVE_CUSTOMIZATION
   OS << (int)Record.UnMaskedPolicyScheme << ",";
