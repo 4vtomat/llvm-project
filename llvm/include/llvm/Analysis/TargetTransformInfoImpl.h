@@ -453,12 +453,13 @@ public:
     unsigned WidestRegister = std::min<unsigned>(
         getRegisterBitWidth(K).getFixedValue(), MaxSafeRegisterWidth);
 
-    unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
+    unsigned LowerBoundVFKnownMin =
+        llvm::bit_floor(WidestRegister / WidestType);
     ElementCount LowerBoundVF =
         ElementCount::get(LowerBoundVFKnownMin, IsScalable);
 
     unsigned UpperBoundVFKnownMin =
-        PowerOf2Floor(WidestRegister / SmallestType);
+        llvm::bit_floor(WidestRegister / SmallestType);
     ElementCount UpperBoundVF =
         ElementCount::get(UpperBoundVFKnownMin, IsScalable);
 

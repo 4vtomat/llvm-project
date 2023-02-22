@@ -309,7 +309,7 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   // valid range of VFs.
   SmallestType = std::max<unsigned>(8, SmallestType);
   WidestType = std::max<unsigned>(8, WidestType);
-  unsigned LMUL = PowerOf2Floor(
+  unsigned LMUL = llvm::bit_floor(
       std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
   unsigned LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
@@ -336,13 +336,13 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   unsigned SmallestRegister = std::min(MinRVVVectorSize, MaxSafeRegisterWidth);
 
   unsigned UpperBoundVFKnownMin =
-      std::min<unsigned>(64, PowerOf2Floor(WidestRegister / WidestType));
+      std::min<unsigned>(64, llvm::bit_floor(WidestRegister / WidestType));
   ElementCount UpperBoundVF =
       ElementCount::get(UpperBoundVFKnownMin, IsScalable);
 
   // UpperBoundVFKnownMin is a safe VF value.
   unsigned LowerBoundVFKnownMin = std::min(
-      std::max<unsigned>(1, PowerOf2Floor(SmallestRegister / SmallestType)),
+      std::max<unsigned>(1, llvm::bit_floor(SmallestRegister / SmallestType)),
       UpperBoundVFKnownMin);
   ElementCount LowerBoundVF =
       ElementCount::get(LowerBoundVFKnownMin, IsScalable);

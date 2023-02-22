@@ -5502,7 +5502,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // value. Otherwise, return as is.
   if (UserVF.isNonZero() && !IgnoreScalableUserVF) {
     unsigned MaxSafeElements =
-        PowerOf2Floor(MaxSafeVectorWidthInBits / WidestType);
+        llvm::bit_floor(MaxSafeVectorWidthInBits / WidestType);
     ElementCount MaxSafeVF = ElementCount::getFixed(MaxSafeElements);
 
     if (UserVF.isScalable()) {
@@ -5560,7 +5560,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // Ensure MaxVF is a power of 2; the dependence distance bound may not be.
   // Note that both WidestRegister and WidestType may not be a powers of 2.
   auto MaxVectorSize =
-      ElementCount::getFixed(PowerOf2Floor(WidestRegister / WidestType));
+      ElementCount::getFixed(llvm::bit_floor(WidestRegister / WidestType));
 
   LLVM_DEBUG(dbgs() << "LV: The Smallest and Widest types: " << SmallestType
                     << " / " << WidestType << " bits.\n");

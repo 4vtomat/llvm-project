@@ -727,12 +727,13 @@ public:
         static_cast<const T *>(this)->getRegisterBitWidth(K).getFixedValue();
     WidestRegister = std::min(WidestRegister, MaxSafeRegisterWidth);
 
-    unsigned LowerBoundVFKnownMin = PowerOf2Floor(WidestRegister / WidestType);
+    unsigned LowerBoundVFKnownMin =
+        llvm::bit_floor(WidestRegister / WidestType);
     ElementCount LowerBoundVF =
         ElementCount::get(LowerBoundVFKnownMin, IsScalable);
 
     unsigned UpperBoundVFKnownMin =
-        PowerOf2Floor(WidestRegister / SmallestType);
+        llvm::bit_floor(WidestRegister / SmallestType);
     ElementCount UpperBoundVF =
         ElementCount::get(UpperBoundVFKnownMin, IsScalable);
 
