@@ -9937,12 +9937,6 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       );
 #if SIFIVE_CUSTOMIZATION
     } else if (Legal->isFixedOrderRecurrence(Phi)) {
-      // Create the node for previous RVL value, required for the splice
-      // intrinsic.
-      if (Plan->getRVL()) {
-        Plan->createPrevRVL();
-        Plan->createInitRVL();
-      }
 #else
     } else {
 #endif // SIFIVE_CUSTOMIZATION
@@ -10251,11 +10245,6 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
-    if (Plan.getRVL()) {
-      Plan.createPrevRVL();
-      Plan.createInitRVL();
-    }
-
     VPCSAExtractScalarRecipe *ExtractScalarRecipe= nullptr;
     if (DisableRISCVCSA) {
       auto *VPAnyActive = new VPInstruction(VPInstruction::CSAAnyActive,
@@ -10415,8 +10404,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
 #if SIFIVE_CUSTOMIZATION
   // Create the node for previous RVL value, required for the splice
   // intrinsic of a fixed order recurrence and CSA
-  bool NeedOtherRVLs = Legal->getFixedOrderRecurrences().empty() ||
-                       Legal->getCSAs().empty();
+  bool NeedOtherRVLs = !Legal->getFixedOrderRecurrences().empty() ||
+                       !Legal->getCSAs().empty();
   if (Plan->getRVL() && NeedOtherRVLs) {
     Plan->createPrevRVL();
     Plan->createInitRVL();
