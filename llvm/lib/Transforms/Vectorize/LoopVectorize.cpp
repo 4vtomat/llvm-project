@@ -10999,7 +10999,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         // creation and must be used to correctly reverse the address
         RunTimeVF = State.get(RVL, Part);
 	if (RunTimeVF->getType() != IndexTy)
-	  RunTimeVF = Builder.CreateSExtOrTrunc(RunTimeVF, IndexTy);
+	  RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         // If the address is consecutive but reversed, then the

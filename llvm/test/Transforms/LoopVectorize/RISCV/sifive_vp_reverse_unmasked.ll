@@ -55,7 +55,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[TMP21:%.*]] = and i64 [[TMP20]], 4294967295
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr i32, ptr [[X:%.*]], i64 [[TMP21]]
 ; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP17]])
-; CHECK-NEXT:    [[TMP23:%.*]] = sext i32 [[TMP17]] to i64
+; CHECK-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP17]] to i64
 ; CHECK-NEXT:    [[TMP24:%.*]] = mul i64 0, [[TMP23]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = sub i64 1, [[TMP23]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr i32, ptr [[TMP22]], i64 [[TMP24]]
@@ -155,7 +155,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[TMP21:%.*]] = and i64 [[TMP20]], 4294967295
 ; CHECK-NO-POSTSV-NEXT:    [[TMP22:%.*]] = getelementptr i32, ptr [[X:%.*]], i64 [[TMP21]]
 ; CHECK-NO-POSTSV-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP17]])
-; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = sext i32 [[TMP17]] to i64
+; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP17]] to i64
 ; CHECK-NO-POSTSV-NEXT:    [[TMP24:%.*]] = mul i64 0, [[TMP23]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP25:%.*]] = sub i64 1, [[TMP23]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP26:%.*]] = getelementptr i32, ptr [[TMP22]], i64 [[TMP24]]
