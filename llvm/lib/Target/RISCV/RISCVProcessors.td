@@ -122,12 +122,11 @@ def SIFIVE_E76 : RISCVProcessorModel<"sifive-e76",
                                      [TuneSiFive7]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def SIFIVE_E66 : RISCVProcessorModel<"sifive-e66", SiFive6Model,
+def SIFIVE_E61 : RISCVProcessorModel<"sifive-e61", SiFive6Model,
                                       [Feature32Bit,
                                        FeatureStdExtZifencei,
                                        FeatureStdExtM,
                                        FeatureStdExtA,
-                                       FeatureStdExtF,
                                        FeatureStdExtC,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb],
@@ -192,13 +191,11 @@ def SIFIVE_S76 : RISCVProcessorModel<"sifive-s76",
                                      [TuneSiFive7]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def SIFIVE_S66 : RISCVProcessorModel<"sifive-s66", SiFive6Model,
+def SIFIVE_S61 : RISCVProcessorModel<"sifive-s61", SiFive6Model,
                                      [Feature64Bit,
                                       FeatureStdExtZifencei,
                                       FeatureStdExtM,
                                       FeatureStdExtA,
-                                      FeatureStdExtF,
-                                      FeatureStdExtD,
                                       FeatureStdExtC,
                                       FeatureStdExtZba,
                                       FeatureStdExtZbb],

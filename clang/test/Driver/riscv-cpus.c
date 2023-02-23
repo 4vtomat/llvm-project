@@ -300,18 +300,17 @@
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+64bit"
 // MCPU-SIFIVE-P670-SAME: "-target-abi" "lp64d"
 
-// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-e66 | FileCheck -check-prefix=MCPU-SIFIVE-E66 %s
-// MCPU-SIFIVE-E66: "-target-cpu" "sifive-e66"
-// MCPU-SIFIVE-E66-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+c"
-// MCPU-SIFIVE-E66-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
-// MCPU-SIFIVE-E66-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
-// MCPU-SIFIVE-E66-SAME: "-target-abi" "ilp32"
+// RUN: %clang -target riscv32 -### -c %s 2>&1 -mcpu=sifive-e61 | FileCheck -check-prefix=MCPU-SIFIVE-E61 %s
+// MCPU-SIFIVE-E61: "-target-cpu" "sifive-e61"
+// MCPU-SIFIVE-E61-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c"
+// MCPU-SIFIVE-E61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-E61-SAME: "-target-abi" "ilp32"
 
-// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-s66 | FileCheck -check-prefix=MCPU-SIFIVE-S66 %s
-// MCPU-SIFIVE-S66: "-target-cpu" "sifive-s66"
-// MCPU-SIFIVE-S66-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-S66-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
-// MCPU-SIFIVE-S66-SAME: "-target-abi" "lp64d"
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-s61 | FileCheck -check-prefix=MCPU-SIFIVE-S61 %s
+// MCPU-SIFIVE-S61: "-target-cpu" "sifive-s61"
+// MCPU-SIFIVE-S61-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c"
+// MCPU-SIFIVE-S61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-S61-SAME: "-target-abi" "lp64"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64 | FileCheck -check-prefix=MCPU-SIFIVE-U64 %s
 // MCPU-SIFIVE-U64: "-target-cpu" "sifive-u64"
