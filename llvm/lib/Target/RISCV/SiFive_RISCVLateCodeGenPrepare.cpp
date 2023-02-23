@@ -684,7 +684,11 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   unsigned SrcAS = SrcAddr->getType()->getPointerAddressSpace();
   unsigned DstAS = DstAddr->getType()->getPointerAddressSpace();
 
-  Value *NewLoopCount = LoopCount;
+  // To support a larger VLEN than the minimum VLEN.
+  // Use minimum VLEN with LMUL8 to setup VLEN.
+  Value *MinLenLmulM8 =
+      ConstantInt::get(CopyLenType, std::min(KnownCurrentLen, MaxCopySize));
+  Value *NewLoopCount = !FullyUnrolled ? LoopCount : MinLenLmulM8;
   Value *SrcIndexTmp = SrcIndex;
   Value *DstIndexTmp = DstIndex;
   Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
@@ -1026,8 +1030,11 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
     assert(UnrollCount == 1);
 
   IRBuilder<> Builder(PreLoopBB->getTerminator());
-
-  Value *LoopCount = CopyLen;
+  // To support a larger VLEN than the minimum VLEN.
+  // Use minimum VLEN with LMUL8 to setup VLEN.
+  Value *MinLenLmulM8 =
+      ConstantInt::get(CopyLenType, std::min(KnownCurrentLen, MaxCopySize));
+  Value *LoopCount = !FullyUnrolled ? CopyLen : MinLenLmulM8;
   Value *VL = nullptr;
   // If it already copied(broadcasted) the scalar value into a vector in
   // previous blocks, then we can use it directly, otherwise we have to do it.
