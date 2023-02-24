@@ -7,7 +7,7 @@ define internal double @vaddvq_f64(<2 x double> noundef %__p0) #8 {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = shufflevector <2 x double> [[__P0:%.*]], <2 x double> poison, <1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP1:%.*]] = shufflevector <2 x double> [[__P0]], <2 x double> poison, <1 x i32> <i32 1>
-; CHECK-NEXT:    [[TMP2:%.*]] = fadd <1 x double> [[TMP0]], [[TMP1]]
+; CHECK-NEXT:    [[TMP2:%.*]] = call <1 x double> @llvm.experimental.constrained.fadd.v1f64(<1 x double> [[TMP0]], <1 x double> [[TMP1]], metadata !"round.dynamic", metadata !"fpexcept.strict") #[[ATTR4:[0-9]+]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <1 x double> [[TMP2]], i64 0
 ; CHECK-NEXT:    ret double [[TMP3]]
 ;
