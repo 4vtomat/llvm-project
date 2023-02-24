@@ -312,7 +312,13 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   unsigned LMUL = PowerOf2Floor(
       std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
-  unsigned LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
+
+  unsigned LMULMax;
+  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && ST->isSiFiveCPU())
+    LMULMax = 4;
+  else
+    LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
+
   assert(LMULMax >= LMULMin && "LMULMax must be greater than or equal to LMUL");
   unsigned MinRVVVectorSize = getRegisterBitWidth(K).getKnownMinValue() / LMUL;
   unsigned MaxRVVVectorSize = MinRVVVectorSize * LMULMax;
