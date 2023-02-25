@@ -5,13 +5,13 @@
 define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    sub a3, a1, a0
-; CHECK-NEXT:    li a2, 2040
-; CHECK-NEXT:    bgeu a3, a2, .LBB0_2
+; CHECK-NEXT:    sub a2, a1, a0
+; CHECK-NEXT:    li a3, 2040
+; CHECK-NEXT:    bgeu a2, a3, .LBB0_2
 ; CHECK-NEXT:  # %bb.1: # %backward-pre-loop
 ; CHECK-NEXT:    addi a2, a0, 2040
 ; CHECK-NEXT:    addi a0, a1, 2040
-; CHECK-NEXT:    li a1, 2040
+; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    vsetvli a1, a1, e8, m4, ta, mu
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    vle8.v v8, (a2)
@@ -49,6 +49,7 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB0_2: # %memmove-forward-loop
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
@@ -99,6 +100,7 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    slli a2, a2, 11
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    add a1, a1, a2
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    sub a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
@@ -134,8 +136,7 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB1_2: # %memmove-forward-loop
-; CHECK-NEXT:    li a2, 1
-; CHECK-NEXT:    slli a2, a2, 11
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)

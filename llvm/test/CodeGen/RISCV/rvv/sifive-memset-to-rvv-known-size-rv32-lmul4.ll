@@ -5,7 +5,7 @@
 define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 2040
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    add a1, a0, a2
@@ -34,7 +34,7 @@ entry:
 define void @KnownSize1(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 384
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    add a2, a0, a2

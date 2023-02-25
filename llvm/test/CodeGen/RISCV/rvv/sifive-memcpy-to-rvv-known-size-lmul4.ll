@@ -5,7 +5,7 @@
 define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 1337
+; CHECK-NEXT:    li a2, 256
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
