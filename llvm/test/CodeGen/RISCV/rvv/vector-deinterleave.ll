@@ -21,8 +21,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>} @vector_deinterleave_nxv16i1_nxv
 ; CHECK-NEXT:    vand.vi v8, v8, 1
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    vnsrl.wi v8, v12, 8
-; CHECK-NEXT:    vand.vi v10, v8, 1
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
+; CHECK-NEXT:    vand.vi v8, v8, 1
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    ret
 %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave2.nxv32i1(<vscale x 32 x i1> %vec)
 ret {<vscale x 16 x i1>, <vscale x 16 x i1>} %retval
@@ -60,8 +60,7 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>} @vector_deinterleave_nxv4i32_nxv
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vnsrl.wx v12, v8, a0
-; CHECK-NEXT:    vnsrl.wi v14, v8, 0
-; CHECK-NEXT:    vmv.v.v v8, v14
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    vmv.v.v v10, v12
 ; CHECK-NEXT:    ret
 %retval = call {<vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.experimental.vector.deinterleave2.nxv8i32(<vscale x 8 x i32> %vec)
@@ -123,8 +122,7 @@ define {<vscale x 2 x float>, <vscale x 2 x float>} @vector_deinterleave_nxv2f32
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wx v10, v8, a0
-; CHECK-NEXT:    vnsrl.wi v11, v8, 0
-; CHECK-NEXT:    vmv.v.v v8, v11
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    vmv.v.v v9, v10
 ; CHECK-NEXT:    ret
 %retval = call {<vscale x 2 x float>, <vscale x 2 x float>} @llvm.experimental.vector.deinterleave2.nxv4f32(<vscale x 4 x float> %vec)
@@ -150,8 +148,7 @@ define {<vscale x 4 x float>, <vscale x 4 x float>} @vector_deinterleave_nxv4f32
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vnsrl.wx v12, v8, a0
-; CHECK-NEXT:    vnsrl.wi v14, v8, 0
-; CHECK-NEXT:    vmv.v.v v8, v14
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    vmv.v.v v10, v12
 ; CHECK-NEXT:    ret
 %retval = call {<vscale x 4 x float>, <vscale x 4 x float>} @llvm.experimental.vector.deinterleave2.nxv8f32(<vscale x 8 x float> %vec)

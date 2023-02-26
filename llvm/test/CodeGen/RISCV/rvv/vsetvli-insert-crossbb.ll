@@ -885,7 +885,6 @@ if.end:                                           ; preds = %if.else, %if.then
 define <vscale x 2 x i32> @test_ratio_only_vmv_s_x(<vscale x 2 x i32>* %x, <vscale x 2 x i16>* %y, i1 %cond) nounwind {
 ; CHECK-LABEL: test_ratio_only_vmv_s_x:
 ; CHECK:       # %bb.0: # %entry
-; SIFIVE
 ; CHECK-NEXT:    andi a2, a2, 1
 ; CHECK-NEXT:    beqz a2, .LBB20_2
 ; CHECK-NEXT:  # %bb.1: # %if
@@ -897,10 +896,11 @@ define <vscale x 2 x i32> @test_ratio_only_vmv_s_x(<vscale x 2 x i32>* %x, <vsca
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:  .LBB20_3: # %if.end
-; end SIFIVE
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    ret
+; SIFIVE
+; end SIFIVE
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %x, i64 2)
   br i1 %cond, label %if, label %if.end
@@ -919,7 +919,6 @@ if.end:
 define <vscale x 2 x i32> @test_ratio_only_vmv_s_x2(<vscale x 2 x i32>* %x, <vscale x 2 x i16>* %y, i1 %cond) nounwind {
 ; CHECK-LABEL: test_ratio_only_vmv_s_x2:
 ; CHECK:       # %bb.0: # %entry
-; SIFIVE
 ; CHECK-NEXT:    andi a2, a2, 1
 ; CHECK-NEXT:    beqz a2, .LBB21_2
 ; CHECK-NEXT:  # %bb.1: # %if
@@ -929,12 +928,13 @@ define <vscale x 2 x i32> @test_ratio_only_vmv_s_x2(<vscale x 2 x i32>* %x, <vsc
 ; CHECK-NEXT:  .LBB21_2:
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; end SIFIVE
 ; CHECK-NEXT:    vwcvt.x.x.v v8, v9
 ; CHECK-NEXT:  .LBB21_3: # %if.end
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    ret
+; SIFIVE
+; end SIFIVE
 entry:
   %b = call <vscale x 2 x i16> @llvm.riscv.vle.nxv2i16(<vscale x 2 x i16> undef, <vscale x 2 x i16>* %y, i64 2)
   %c = call <vscale x 2 x i32> @llvm.riscv.vwadd.nxv2i32(<vscale x 2 x i32> undef, <vscale x 2 x i16> %b, i16 0, i64 2)

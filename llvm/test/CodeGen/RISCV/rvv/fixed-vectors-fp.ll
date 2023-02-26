@@ -443,8 +443,8 @@ define void @copysign_neg_trunc_v4f16_v4f32(ptr %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8
-; CHECK-NEXT:    vfsgnjn.vv v8, v9, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
+; CHECK-NEXT:    vfsgnjn.vv v8, v9, v8
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <4 x half>, ptr %x

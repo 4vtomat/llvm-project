@@ -9,8 +9,7 @@ define <vscale x 1 x half> @vfptrunc_nxv1f32_nxv1f16(<vscale x 1 x float> %va) {
 ; CHECK-LABEL: vfptrunc_nxv1f32_nxv1f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v9, v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 1 x float> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -21,8 +20,7 @@ define <vscale x 2 x half> @vfptrunc_nxv2f32_nxv2f16(<vscale x 2 x float> %va) {
 ; CHECK-LABEL: vfptrunc_nxv2f32_nxv2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v9, v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 2 x float> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
@@ -33,8 +31,7 @@ define <vscale x 4 x half> @vfptrunc_nxv4f32_nxv4f16(<vscale x 4 x float> %va) {
 ; CHECK-LABEL: vfptrunc_nxv4f32_nxv4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 4 x float> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
@@ -45,8 +42,7 @@ define <vscale x 8 x half> @vfptrunc_nxv8f32_nxv8f16(<vscale x 8 x float> %va) {
 ; CHECK-LABEL: vfptrunc_nxv8f32_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v12, v8
-; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 8 x float> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
@@ -57,8 +53,7 @@ define <vscale x 16 x half> @vfptrunc_nxv16f32_nxv16f16(<vscale x 16 x float> %v
 ; CHECK-LABEL: vfptrunc_nxv16f32_nxv16f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v16, v8
-; CHECK-NEXT:    vmv.v.v v8, v16
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 16 x float> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
@@ -69,9 +64,9 @@ define <vscale x 1 x half> @vfptrunc_nxv1f64_nxv1f16(<vscale x 1 x double> %va) 
 ; CHECK-LABEL: vfptrunc_nxv1f64_nxv1f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v9, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v9
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 1 x double> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -82,8 +77,7 @@ define <vscale x 1 x float> @vfptrunc_nxv1f64_nxv1f32(<vscale x 1 x double> %va)
 ; CHECK-LABEL: vfptrunc_nxv1f64_nxv1f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v9, v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 1 x double> %va to <vscale x 1 x float>
   ret <vscale x 1 x float> %evec
@@ -94,9 +88,9 @@ define <vscale x 2 x half> @vfptrunc_nxv2f64_nxv2f16(<vscale x 2 x double> %va) 
 ; CHECK-LABEL: vfptrunc_nxv2f64_nxv2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v10, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 2 x double> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
@@ -107,8 +101,7 @@ define <vscale x 2 x float> @vfptrunc_nxv2f64_nxv2f32(<vscale x 2 x double> %va)
 ; CHECK-LABEL: vfptrunc_nxv2f64_nxv2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 2 x double> %va to <vscale x 2 x float>
   ret <vscale x 2 x float> %evec
@@ -119,9 +112,9 @@ define <vscale x 4 x half> @vfptrunc_nxv4f64_nxv4f16(<vscale x 4 x double> %va) 
 ; CHECK-LABEL: vfptrunc_nxv4f64_nxv4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v12, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v12
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 4 x double> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
@@ -132,8 +125,7 @@ define <vscale x 4 x float> @vfptrunc_nxv4f64_nxv4f32(<vscale x 4 x double> %va)
 ; CHECK-LABEL: vfptrunc_nxv4f64_nxv4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v12, v8
-; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 4 x double> %va to <vscale x 4 x float>
   ret <vscale x 4 x float> %evec
@@ -144,9 +136,9 @@ define <vscale x 8 x half> @vfptrunc_nxv8f64_nxv8f16(<vscale x 8 x double> %va) 
 ; CHECK-LABEL: vfptrunc_nxv8f64_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v16, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v16
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 8 x double> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
@@ -157,8 +149,7 @@ define <vscale x 8 x float> @vfptrunc_nxv8f64_nxv8f32(<vscale x 8 x double> %va)
 ; CHECK-LABEL: vfptrunc_nxv8f64_nxv8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v16, v8
-; CHECK-NEXT:    vmv.v.v v8, v16
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = fptrunc <vscale x 8 x double> %va to <vscale x 8 x float>
   ret <vscale x 8 x float> %evec
