@@ -7439,12 +7439,22 @@ static unsigned getISDForVPIntrinsic(const VPIntrinsic &VPIntrin) {
   std::optional<unsigned> ResOPC;
   switch (VPIntrin.getIntrinsicID()) {
   case Intrinsic::vp_ctlz: {
+#if SIFIVE_CUSTOMIZATION
+    // cherry-picked form upstream.
+    bool IsZeroUndef = cast<ConstantInt>(VPIntrin.getArgOperand(1))->isOne();
+#else
     bool IsZeroUndef = cast<ConstantInt>(VPIntrin.getArgOperand(3))->isOne();
+#endif // SIFIVE_CUSTOMIZATION
     ResOPC = IsZeroUndef ? ISD::VP_CTLZ_ZERO_UNDEF : ISD::VP_CTLZ;
     break;
   }
   case Intrinsic::vp_cttz: {
+#if SIFIVE_CUSTOMIZATION
+    // cherry-picked form upstream.
+    bool IsZeroUndef = cast<ConstantInt>(VPIntrin.getArgOperand(1))->isOne();
+#else
     bool IsZeroUndef = cast<ConstantInt>(VPIntrin.getArgOperand(3))->isOne();
+#endif // SIFIVE_CUSTOMIZATION
     ResOPC = IsZeroUndef ? ISD::VP_CTTZ_ZERO_UNDEF : ISD::VP_CTTZ;
     break;
   }
@@ -7869,10 +7879,12 @@ void SelectionDAGBuilder::visitVectorPredicationIntrinsic(
   case ISD::VP_CTLZ_ZERO_UNDEF:
   case ISD::VP_CTTZ:
   case ISD::VP_CTTZ_ZERO_UNDEF: {
-    // Pop is_zero_poison operand for cp.ctlz/cttz or
-    // is_int_min_poison operand for vp.abs.
-    OpValues.pop_back();
-    SDValue Result = DAG.getNode(Opcode, DL, VTs, OpValues);
+#if SIFIVE_CUSTOMIZATION
+    // cherry-picked form upstream.
+
+    SDValue Result =
+        DAG.getNode(Opcode, DL, VTs, {OpValues[0], OpValues[2], OpValues[3]});
+#endif // SIFIVE_CUSTOMIZATION
     setValue(&VPIntrin, Result);
     break;
   }
