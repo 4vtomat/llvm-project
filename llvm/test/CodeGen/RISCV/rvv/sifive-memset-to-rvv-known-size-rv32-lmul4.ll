@@ -6,7 +6,7 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 256
-; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    add a1, a0, a2
 ; CHECK-NEXT:    add a3, a1, a2
@@ -23,7 +23,7 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    vse8.v v8, (a6)
 ; CHECK-NEXT:    vse8.v v8, (a7)
 ; CHECK-NEXT:    li a0, 248
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -35,12 +35,12 @@ define void @KnownSize1(i8* nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize1:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 256
-; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -53,11 +53,11 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    slli a2, a2, 11
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:  .LBB2_1: # %memset-forward-loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    vsetvli a1, a2, e8, m4, ta, mu
+; CHECK-NEXT:    vsetvli a1, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    add a0, a0, a1

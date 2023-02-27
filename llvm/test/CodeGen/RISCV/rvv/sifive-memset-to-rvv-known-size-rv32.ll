@@ -5,27 +5,10 @@
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=MIN-256
 
 define void @KnownSize(i8* nocapture %dst, i8 %val) {
-<<<<<<< HEAD
-; CHECK-LABEL: KnownSize:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 2040
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    add a1, a0, a2
-; CHECK-NEXT:    add a3, a1, a2
-; CHECK-NEXT:    add a2, a3, a2
-; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a3)
-; CHECK-NEXT:    li a0, 504
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    ret
-=======
 ; MIN-512-LABEL: KnownSize:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
-; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vmv.v.x v8, a1
 ; MIN-512-NEXT:    add a1, a0, a2
 ; MIN-512-NEXT:    add a3, a1, a2
@@ -34,14 +17,14 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    vse8.v v8, (a3)
 ; MIN-512-NEXT:    li a0, 504
-; MIN-512-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; MIN-512-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-512-NEXT:    vse8.v v8, (a2)
 ; MIN-512-NEXT:    ret
 ;
 ; MIN-256-LABEL: KnownSize:
 ; MIN-256:       # %bb.0: # %entry
 ; MIN-256-NEXT:    li a2, 256
-; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
 ; MIN-256-NEXT:    add a3, a1, a2
@@ -58,29 +41,19 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a6)
 ; MIN-256-NEXT:    vse8.v v8, (a7)
 ; MIN-256-NEXT:    li a0, 248
-; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
->>>>>>> origin/sifive-dev
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i32 2040, i1 false)
   ret void
 }
 
 define void @KnownSize1(i8* nocapture %dst, i8 %val) {
-<<<<<<< HEAD
-; CHECK-LABEL: KnownSize1:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 384
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    ret
-=======
 ; MIN-512-LABEL: KnownSize1:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 384
-; MIN-512-NEXT:    vsetvli zero, a2, e8, m8, ta, mu
+; MIN-512-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vmv.v.x v8, a1
 ; MIN-512-NEXT:    vse8.v v8, (a0)
 ; MIN-512-NEXT:    ret
@@ -88,41 +61,24 @@ define void @KnownSize1(i8* nocapture %dst, i8 %val) {
 ; MIN-256-LABEL: KnownSize1:
 ; MIN-256:       # %bb.0: # %entry
 ; MIN-256-NEXT:    li a2, 256
-; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a2, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    li a0, 128
-; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
+; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
->>>>>>> origin/sifive-dev
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i32 384, i1 false)
   ret void
 }
 
 define void @KnownSize2(i8* nocapture %dst, i8 %val) {
-<<<<<<< HEAD
-; CHECK-LABEL: KnownSize2:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 1
-; CHECK-NEXT:    slli a2, a2, 11
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    add a1, a0, a2
-; CHECK-NEXT:    add a3, a1, a2
-; CHECK-NEXT:    add a2, a3, a2
-; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a3)
-; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    ret
-=======
 ; MIN-512-LABEL: KnownSize2:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
-; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vmv.v.x v8, a1
 ; MIN-512-NEXT:    add a2, a0, a2
 ; MIN-512-NEXT:    vse8.v v8, (a0)
@@ -132,7 +88,7 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; MIN-256-LABEL: KnownSize2:
 ; MIN-256:       # %bb.0: # %entry
 ; MIN-256-NEXT:    li a2, 256
-; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, mu
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
 ; MIN-256-NEXT:    add a3, a1, a2
@@ -142,7 +98,6 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a3)
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
->>>>>>> origin/sifive-dev
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i32 1024, i1 false)
   ret void

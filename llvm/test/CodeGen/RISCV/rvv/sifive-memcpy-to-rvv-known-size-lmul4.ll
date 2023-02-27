@@ -5,23 +5,14 @@
 define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
-<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/sifive-memcpy-to-rvv-known-size.ll
-; CHECK-NEXT:    li a2, 1337
-; CHECK-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
-=======
 ; CHECK-NEXT:    li a2, 256
-; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, mu
->>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/rvv/sifive-memcpy-to-rvv-known-size-lmul4.ll
+; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/sifive-memcpy-to-rvv-known-size.ll
-; CHECK-NEXT:    li a3, 313
-; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-=======
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    add a1, a1, a2
@@ -35,8 +26,7 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    li a3, 57
-; CHECK-NEXT:    vsetvli zero, a3, e8, m4, ta, mu
->>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/rvv/sifive-memcpy-to-rvv-known-size-lmul4.ll
+; CHECK-NEXT:    vsetvli zero, a3, e8, m4, ta, ma
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    add a1, a1, a2
