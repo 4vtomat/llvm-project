@@ -7523,23 +7523,16 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
       InstructionCost VecLdCost;
       if (E->State == TreeEntry::Vectorize) {
 #if SIFIVE_CUSTOMIZATION
-        Value *Ptr0;
-        Value *PtrN;
-        if (E->ReorderIndices.empty()) {
-          Ptr0 = cast<LoadInst>(VL.front())->getPointerOperand();
-          PtrN = cast<LoadInst>(VL.back())->getPointerOperand();
-        } else {
-          Ptr0 = cast<LoadInst>(VL[E->ReorderIndices.front()])
-                     ->getPointerOperand();
-          PtrN =
-              cast<LoadInst>(VL[E->ReorderIndices.back()])->getPointerOperand();
-        }
+        Value *Ptr0 = cast<LoadInst>(VL.front())->getPointerOperand();
+        Value *PtrN = cast<LoadInst>(VL.back())->getPointerOperand();
         std::optional<int> Diff = getPointersDiff(
             VL0->getType(), Ptr0, VL0->getType(), PtrN, *DL, *SE);
         // Consecutive but reversed loads are just strided loads with the stride
         // -1.
         int Stride = Diff ? (*Diff / (static_cast<int>(VL.size()) - 1)) : 0;
-        if (enabledRISCVExtensions(*LI0->getModule(), *TTI) && Stride != 1) {
+        bool IsReverse = isReverseOrder(E->ReorderIndices);
+        if (enabledRISCVExtensions(*LI0->getModule(), *TTI) &&
+            (Stride != 1 || IsReverse)) {
           Align CommonAlignment = LI0->getAlign();
           for (Value *V : VL)
             CommonAlignment =
@@ -7547,7 +7540,7 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
           VecLdCost = TTI->getGatherScatterOpCost(
               Instruction::Load, VecTy, Ptr0,
               /*VariableMask=*/false, CommonAlignment, CostKind, VL0);
-          if (isReverseOrder(E->ReorderIndices)) {
+          if (IsReverse) {
             CommonCost = 0;
             if (NeedToShuffleReuses)
               CommonCost = TTI->getShuffleCost(
@@ -9825,30 +9818,27 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       Value *PO = LI->getPointerOperand();
       if (E->State == TreeEntry::Vectorize) {
 #if SIFIVE_CUSTOMIZATION
-        Value *Ptr0;
-        Value *PtrN;
-        if (E->ReorderIndices.empty()) {
-          Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
-          PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
-        } else {
-          Ptr0 = cast<LoadInst>(E->Scalars[E->ReorderIndices.front()])
-                     ->getPointerOperand();
-          PtrN = cast<LoadInst>(E->Scalars[E->ReorderIndices.back()])
-                     ->getPointerOperand();
-        }
+        Value *Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
+        Value *PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
         std::optional<int> Diff = getPointersDiff(
             VL0->getType(), Ptr0, VL0->getType(), PtrN, *DL, *SE);
         int Stride =
             Diff ? (*Diff / (static_cast<int>(E->Scalars.size()) - 1)) : 0;
-        if (enabledRISCVExtensions(*LI->getModule(), *TTI) && Stride != 1) {
+        bool IsReverse = isReverseOrder(E->ReorderIndices);
+        if (enabledRISCVExtensions(*LI->getModule(), *TTI) &&
+            (Stride != 1 || IsReverse)) {
           // Do not reorder strided loads.
-          IgnoreReorder = isReverseOrder(E->ReorderIndices);
+          IgnoreReorder = IsReverse;
           Type *StrideTy = DL->getIndexType(PO->getType());
+          Value *Ptr = IsReverse ? PtrN : Ptr0;
           if (Stride != 0) {
+            // Do not reorder reversed loads, just use -stride instead.
+            if (IsReverse)
+              Stride = -Stride;
             NewLI = Builder.CreateIntrinsic(
                 Intrinsic::riscv_masked_strided_load,
                 {VecTy, Ptr0->getType(), StrideTy},
-                {PoisonValue::get(VecTy), Ptr0,
+                {PoisonValue::get(VecTy), Ptr,
                  ConstantInt::get(StrideTy,
                                   Stride * DL->getTypeAllocSize(ScalarTy)),
                  Builder.getTrueVector(VecTy->getElementCount())});
@@ -9867,21 +9857,21 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
                 NewStride,
                 ConstantInt::get(
                     StrideTy,
-                    (IgnoreReorder ? -1 : 1) *
+                    (IsReverse ? -1 : 1) *
                         static_cast<int>(DL->getTypeAllocSize(ScalarTy))));
             NewLI = Builder.CreateIntrinsic(
                 Intrinsic::riscv_masked_strided_load,
                 {VecTy, Ptr0->getType(), StrideTy},
-                {PoisonValue::get(VecTy), Ptr0, NewStride,
+                {PoisonValue::get(VecTy), Ptr, NewStride,
                  Builder.getTrueVector(VecTy->getElementCount())});
           }
           // The pointer operand uses an in-tree scalar so we add the new
           // BitCast or LoadInst to ExternalUses list to make sure that an
           // extract will be generated in the future.
-          if (TreeEntry *Entry = getTreeEntry(Ptr0)) {
+          if (TreeEntry *Entry = getTreeEntry(Ptr)) {
             // Find which lane we need to extract.
-            unsigned FoundLane = Entry->findLaneForValue(Ptr0);
-            ExternalUses.emplace_back(Ptr0, NewLI, FoundLane);
+            unsigned FoundLane = Entry->findLaneForValue(Ptr);
+            ExternalUses.emplace_back(Ptr, NewLI, FoundLane);
           }
         } else {
 #endif // SIFIVE_CUSTOMIZATION

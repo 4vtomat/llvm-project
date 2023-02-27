@@ -4562,22 +4562,6 @@ bool Sema::CheckRISCVLMUL(CallExpr *TheCall, unsigned ArgNum) {
          << Arg->getSourceRange();
 }
 
-#if SIFIVE_CUSTOMIZATION
-// Is this an RVV vector type.
-static bool CheckRISCVVecTy(QualType T) {
-  if (const BuiltinType *BT = T->getAs<BuiltinType>()) {
-    switch (BT->getKind()) {
-    default: break;
-#define RVV_TYPE(Name, Id, SingletonId) case BuiltinType::Id:
-#include "clang/Basic/RISCVVTypes.def"
-      return true;
-    }
-  }
-
-  return false;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID,
                                          CallExpr *TheCall) {
@@ -4635,22 +4619,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 
   if (FeatureMissing)
     return true;
-
-#if SIFIVE_CUSTOMIZATION
-  if (BuiltinID == RISCVVector::BI__builtin_rvv_is_splat) {
-    if (checkArgCount(*this, TheCall, 1))
-      return true;
-
-    QualType Arg0Ty = TheCall->getArg(0)->getType();
-    if (!CheckRISCVVecTy(Arg0Ty))
-      return Diag(TheCall->getBeginLoc(), diag::err_vec_builtin_non_vector)
-             << TheCall->getDirectCallee()
-             << SourceRange(TheCall->getArg(0)->getBeginLoc(),
-                            TheCall->getArg(0)->getEndLoc());
-
-    return false;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   switch (BuiltinID) {
   case RISCVVector::BI__builtin_rvv_vsetvli:

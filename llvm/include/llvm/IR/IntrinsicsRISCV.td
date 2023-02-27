@@ -335,21 +335,20 @@ let TargetPrefix = "riscv" in {
 #ifdef SIFIVE_CUSTOMIZATION
   // For destination vector type is the same as source vector.
   // Input: (passthru, vector_in, vl, policy)
-  class RISCVUnaryAAUnMaskedP
-        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                [LLVMMatchType<0>, LLVMMatchType<0>,
-                                 llvm_anyint_ty, LLVMMatchType<1>],
-                                [ImmArg<ArgIndex<3>>, IntrNoMem]>,
-                                RISCVVIntrinsic {
+  class RISCVUnaryAAUnMaskedP<bit IsVS>
+        : Intrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, !if(IsVS, llvm_anyvector_ty, LLVMMatchType<0>), llvm_anyint_ty,
+                     !if(IsVS, LLVMMatchType<2>, LLVMMatchType<1>)],
+                    [ImmArg<ArgIndex<3>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
   }
 
   multiclass RISCVUnaryAAUnMaskedP<bit HasVV = 1, bit HasVS = 1> {
     if HasVV then
-      def "int_riscv_" # NAME # "_vv" : RISCVUnaryAAUnMaskedP;
+      def "int_riscv_" # NAME # "_vv" : RISCVUnaryAAUnMaskedP</*IsVS*/0>;
 
     if HasVS then
-      def "int_riscv_" # NAME # "_vs" : RISCVUnaryAAUnMaskedP;
+      def "int_riscv_" # NAME # "_vs" : RISCVUnaryAAUnMaskedP</*IsVS*/1>;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1744,19 +1743,6 @@ let TargetPrefix = "riscv" in {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  // These represent bitcasts between scalable and fixed vectors.
-  def int_riscv_vcast_to_fixed : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                       [llvm_anyvector_ty],
-                                                       [IntrNoMem]>;
-  def int_riscv_vcast_from_fixed : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                         [llvm_anyvector_ty],
-                                                         [IntrNoMem ]>;
-
-  // This intrinsic decides at compile time if a vector is a splat or not.
-  def int_riscv_is_splat : DefaultAttrsIntrinsic<[llvm_i1_ty],
-                                                 [llvm_anyvector_ty],
-                                                 [IntrNoMem]>;
-
   def int_riscv_sf_vqmaccu_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmacc_4x8x4 : RISCVSFCustomVQMACC;
   def int_riscv_sf_vqmaccus_4x8x4 : RISCVSFCustomVQMACC;
@@ -1928,7 +1914,7 @@ let TargetPrefix = "riscv" in {
   defm vaesdm : RISCVUnaryAAUnMaskedP;
   defm vaesef : RISCVUnaryAAUnMaskedP;
   defm vaesem : RISCVUnaryAAUnMaskedP;
-  def int_riscv_vaeskf1 : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vaeskf1 : RISCVBinaryAAXUnMasked;
   def int_riscv_vaeskf2 : RISCVBinaryAAXUnMaskedP;
   defm vaesz : RISCVUnaryAAUnMaskedP<0>;
 
@@ -1945,12 +1931,12 @@ let TargetPrefix = "riscv" in {
   def int_riscv_vghmac : RISCVBinaryAAXUnMaskedP;
 
   // zvksed
-  def int_riscv_vsm4k : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsm4k : RISCVBinaryAAXUnMasked;
   defm vsm4r : RISCVUnaryAAUnMaskedP;
 
   // zvksh
   def int_riscv_vsm3c : RISCVBinaryAAXUnMaskedP;
-  def int_riscv_vsm3me : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vsm3me : RISCVBinaryAAXUnMasked;
 
   // zvknha or zvknhb
   def int_riscv_vsha2ch : RISCVBinaryAAXUnMaskedP;

@@ -312,7 +312,13 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   unsigned LMUL = llvm::bit_floor(
       std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
-  unsigned LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
+
+  unsigned LMULMax;
+  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && ST->isSiFiveCPU())
+    LMULMax = 4;
+  else
+    LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
+
   assert(LMULMax >= LMULMin && "LMULMax must be greater than or equal to LMUL");
   unsigned MinRVVVectorSize = getRegisterBitWidth(K).getKnownMinValue() / LMUL;
   unsigned MaxRVVVectorSize = MinRVVVectorSize * LMULMax;
@@ -1327,8 +1333,29 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
 #if SIFIVE_CUSTOMIZATION
   if (CostKind == TTI::TCK_CodeSize)
     return LT.first + BaseCost;
-#endif // SIFIVE_CUSTOMIZATION
 
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    // Now assume Vector performs better than scalar when
+    // element count >= 19.
+    unsigned CmpOpcode;
+    Type *ScalarTy = Ty->getElementType();
+    Type *ScalarCondTy = CondTy->getElementType();
+    if (Ty->isFPOrFPVectorTy()) {
+      CmpOpcode = Instruction::FCmp;
+    } else {
+      assert(Ty->isIntOrIntVectorTy() &&
+             "expecting floating point or integer type for min/max reduction");
+      CmpOpcode = Instruction::ICmp;
+    }
+    constexpr int ProfitableVF = 19;
+    return getLMULCost(LT.second) +
+           getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
+                              nullptr, nullptr) +
+           ProfitableVF * getCmpSelInstrCost(CmpOpcode, ScalarTy, ScalarCondTy,
+                                             CmpInst::BAD_ICMP_PREDICATE,
+                                             CostKind);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
@@ -1374,6 +1401,16 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   // The vector to scalar move is expensive on x280, give it more cost.
   if (ST->isSiFiveCPU())
     BaseCost = BaseCost + 12;
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    // Now assume Vector performs better than scalar when
+    // element count >= 19.
+    constexpr int ProfitableVF = 19;
+    return getLMULCost(LT.second) +
+           getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
+                              nullptr, nullptr) +
+           ProfitableVF *
+               getArithmeticInstrCost(Opcode, Ty->getElementType(), CostKind);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   unsigned VL = getEstimatedVLFor(Ty);
   if (TTI::requiresOrderedReduction(FMF))

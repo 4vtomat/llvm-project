@@ -2779,21 +2779,31 @@ multiclass RVVOutBuiltinSetP<bit HasVV = 1, bit HasVS = 1, bit HasSigned = 0,
                              string type_range = "i", bit IsZvkb = 0> {
   if HasVV then {
     defvar suffix = !if(!or(HasVS, !eq(NAME, "vsm4r")), "vv", "v");
-    defm "" : RVVOutBuiltinSet<NAME # !if(IsZvkb, "", "_" # suffix), type_range,
-                               !listconcat(!if(HasSigned,
-                                               [[suffix, "v", !if(!eq(type_range, "i"),
-                                                                  "vvv", "vv")]],
-                                               []),
-                                           [[suffix, "Uv", !if(!eq(type_range, "i"),
+    // We don't need suffix in Zvkb extension since it's consider as normal
+    // arithmetic operation such as vadd. So we apply the same rule to this
+    // extension and re-use the APIs that are already defined.
+    defvar name = NAME # !if(IsZvkb, "", "_" # suffix);
+    let OverloadedName = name in
+      defm "" : RVVOutBuiltinSet<name, type_range,
+                                 !listconcat(!if(HasSigned,
+                                                 [[suffix, "v", !if(!eq(type_range, "i"),
+                                                                    "vvv", "vv")]],
+                                                 []),
+                                             [[suffix, "Uv", !if(!eq(type_range, "i"),
                                                                "UvUvUv", "UvUv")]])>;
   }
 
   if HasVS then {
-    defm "" : RVVOutBuiltinSet<NAME # "_vs", type_range,
-                               !listconcat(!if(HasSigned,
-                                               [["vs", "v", "vvv"]],
-                                               []),
-                                           [["vs", "Uv", "UvUvUv"]])>;
+    // vaesz only has 'vs' and does not have ambiguous prototypes like other
+    // zvkns instructions (e.g. vaesdf), so we don't need to encode the operand
+    // mnemonics into its intrinsic function name.
+    defvar name = NAME # !if(!or(IsZvkb, !eq(NAME, "vaesz")), "", "_vs");
+    let OverloadedName = name in
+      defm "" : RVVOutOp1BuiltinSet<NAME # "_vs", type_range,
+                                    !listconcat(!if(HasSigned,
+                                                    [["vs", "v", "vvSv"]],
+                                                    []),
+                                                [["vs", "Uv", "UvUvUSv"]])>;
   }
 }
 
@@ -2821,7 +2831,8 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
     defm vaesdm : RVVOutBuiltinSetP;
     defm vaesef : RVVOutBuiltinSetP;
     defm vaesem : RVVOutBuiltinSetP;
-    defm vaeskf1 : RVVOutOp1BuiltinSetP<0>;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vaeskf1 : RVVOutOp1BuiltinSet<"vaeskf1", "i", [["vi", "Uv", "UvUvUe"]]>;
     defm vaeskf2 : RVVOutOp1BuiltinSetP<0>;
     defm vaesz : RVVOutBuiltinSetP<0>;
   }
@@ -2831,12 +2842,14 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
     defm vghmac : RVVOutOp1BuiltinSetP;
 
     // zvksed
-    defm vsm4k : RVVOutOp1BuiltinSetP<0>;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vsm4k : RVVOutOp1BuiltinSet<"vsm4k", "i", [["vi", "Uv", "UvUvUe"]]>;
     defm vsm4r : RVVOutBuiltinSetP;
 
     // zvksh
     defm vsm3c : RVVOutOp1BuiltinSetP<0>;
-    defm vsm3me : RVVOutOp1BuiltinSetP;
+    let UnMaskedPolicyScheme = HasPassthruOperand in
+      defm vsm3me : RVVOutOp1BuiltinSet<"vsm3me", "i", [["vv", "Uv", "UvUvUv"]]>;
 
     // zvknha or zvknhb
     defm vsha2ch : RVVOutOp1BuiltinSetP<1, "il">;

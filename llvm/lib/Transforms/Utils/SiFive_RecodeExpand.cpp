@@ -270,6 +270,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
     if (II && requireExpand(II)) {
       MadeChange = true;
       IRBuilder<> Builder(II);
+      Builder.setIsFPConstrained(II->isStrictFP());
 
       switch (II->getIntrinsicID()) {
       case Intrinsic::aarch64_neon_abs: {
