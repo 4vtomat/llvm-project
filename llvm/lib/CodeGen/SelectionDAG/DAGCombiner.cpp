@@ -25815,8 +25815,7 @@ SDValue DAGCombiner::visitVPSDIVLike(SDValue N0, SDValue N1, SDNode *N) {
       return SDValue();
 
     // Splat the sign bit into the register
-    EVT VecShiftAmtTy = EVT::getVectorVT(*DAG.getContext(), ScalarShiftAmtTy,
-                                         VT.getVectorElementCount());
+    EVT VecShiftAmtTy = getShiftAmountTy(N0.getValueType());
     SDValue Sign =
         DAG.getNode(ISD::VP_ASHR, DL, VT, N0,
                     DAG.getConstant(BitWidth - 1, DL, VecShiftAmtTy), Mask, VL);
