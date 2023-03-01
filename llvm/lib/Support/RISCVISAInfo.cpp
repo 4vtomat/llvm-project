@@ -920,8 +920,8 @@ Error RISCVISAInfo::checkDependency() {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsF[] = {"zicsr", "f"};
-static const char *ImpliedExtsD[] = {"zicsr"};
+static const char *ImpliedExtsF[] = {"zicsr"};
+static const char *ImpliedExtsD[] = {"f"};
 #endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d", "f", "d"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
