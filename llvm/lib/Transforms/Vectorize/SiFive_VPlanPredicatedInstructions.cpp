@@ -288,7 +288,11 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   SmallVector<Type *, 2> TysForDecl = {CI.getType()};
   SmallVector<Value *, 4> Args;
   for (auto &I : enumerate(ArgOperands.operands())) {
-    Value *Arg = State.get(I.value(), Part);
+    Value *Arg;
+    if (!isVectorIntrinsicWithScalarOpAtArg(VPID, I.index()))
+      Arg = State.get(I.value(), Part);
+    else
+      Arg = State.get(I.value(), VPIteration(0, 0));
     if (isVectorIntrinsicWithOverloadTypeAtArg(VPID, I.index()))
       TysForDecl.push_back(Arg->getType());
     Args.push_back(Arg);
