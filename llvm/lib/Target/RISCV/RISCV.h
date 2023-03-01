@@ -90,6 +90,7 @@ void initializeRISCVInsertNTLHInstsPass(PassRegistry &);
 FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVCleanupVXRMPass();
 void initializeRISCVCleanupVXRMPass(PassRegistry &);
@@ -97,6 +98,11 @@ void initializeRISCVCleanupVXRMPass(PassRegistry &);
 FunctionPass *createRISCVMachineConstPropagationPass();
 void initializeRISCVMachineConstPropagationPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+FunctionPass *createRISCVInitUndefPass();
+void initializeRISCVInitUndefPass(PassRegistry &);
+extern char &RISCVInitUndefID;
+>>>>>>> upstream/main
 
 InstructionSelector *createRISCVInstructionSelector(const RISCVTargetMachine &,
                                                     RISCVSubtarget &,

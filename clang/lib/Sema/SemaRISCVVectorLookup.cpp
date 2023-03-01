@@ -215,8 +215,6 @@ public:
 
 void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   const TargetInfo &TI = Context.getTargetInfo();
-  bool HasVectorFloat32 = TI.hasFeature("zve32f");
-  bool HasVectorFloat64 = TI.hasFeature("zve64d");
   bool HasRV64 = TI.hasFeature("64bit");
   bool HasFullMultiply = TI.hasFeature("v");
 #if SIFIVE_CUSTOMIZATION
@@ -327,6 +325,7 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
         continue;
 
       // Check requirement.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (BaseType == BasicType::BFloat && !HasBfloat16)
         continue;
@@ -345,6 +344,8 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       if (Unsupported)
         continue;
 #else
+=======
+>>>>>>> upstream/main
       if (((Record.RequiredExtensions & RVV_REQ_RV64) == RVV_REQ_RV64) &&
           !HasRV64)
         continue;

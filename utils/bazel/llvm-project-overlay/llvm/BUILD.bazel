@@ -204,6 +204,7 @@ cc_library(
         "lib/Support/BLAKE3/blake3.c",
         "lib/Support/BLAKE3/blake3_dispatch.c",
         "lib/Support/BLAKE3/blake3_portable.c",
+        "lib/Support/BLAKE3/llvm_blake3_prefix.h",
     ] + select({
         "@platforms//cpu:aarch64": [
             "lib/Support/BLAKE3/blake3_neon.c",
@@ -437,6 +438,7 @@ cc_library(
         ":DebugInfoCodeView",
         ":DebugInfoDWARF",
         ":DebugInfoPDB",
+        ":Demangle",
         ":MC",
         ":MCDisassembler",
         ":Object",
@@ -2761,11 +2763,6 @@ cc_library(
         "include/llvm/WindowsManifest/*.h",
     ]),
     copts = llvm_copts,
-    linkopts = [
-        # Libxml2 is required to process Windows manifests. Without this,
-        # lld uses Microsoft mt.exe instead, which is not cross-platform.
-        "-lxml2",
-    ],
     deps = [
         ":Support",
         ":config",

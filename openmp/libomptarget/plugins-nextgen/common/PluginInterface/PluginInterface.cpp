@@ -218,6 +218,25 @@ Error GenericKernelTy::init(GenericDeviceTy &GenericDevice,
   return initImpl(GenericDevice, Image);
 }
 
+Error GenericKernelTy::printLaunchInfo(GenericDeviceTy &GenericDevice,
+                                       KernelArgsTy &KernelArgs,
+                                       uint32_t NumThreads,
+                                       uint64_t NumBlocks) const {
+  INFO(OMP_INFOTYPE_PLUGIN_KERNEL, GenericDevice.getDeviceId(),
+       "Launching kernel %s with %" PRIu64
+       " blocks and %d threads in %s mode\n",
+       getName(), NumBlocks, NumThreads, getExecutionModeName());
+  return printLaunchInfoDetails(GenericDevice, KernelArgs, NumThreads,
+                                NumBlocks);
+}
+
+Error GenericKernelTy::printLaunchInfoDetails(GenericDeviceTy &GenericDevice,
+                                              KernelArgsTy &KernelArgs,
+                                              uint32_t NumThreads,
+                                              uint64_t NumBlocks) const {
+  return Plugin::success();
+}
+
 Error GenericKernelTy::launch(GenericDeviceTy &GenericDevice, void **ArgPtrs,
                               ptrdiff_t *ArgOffsets, KernelArgsTy &KernelArgs,
                               AsyncInfoWrapperTy &AsyncInfoWrapper) const {
@@ -232,10 +251,9 @@ Error GenericKernelTy::launch(GenericDeviceTy &GenericDevice, void **ArgPtrs,
   uint64_t NumBlocks = getNumBlocks(GenericDevice, KernelArgs.NumTeams,
                                     KernelArgs.Tripcount, NumThreads);
 
-  INFO(OMP_INFOTYPE_PLUGIN_KERNEL, GenericDevice.getDeviceId(),
-       "Launching kernel %s with %" PRIu64
-       " blocks and %d threads in %s mode\n",
-       getName(), NumBlocks, NumThreads, getExecutionModeName());
+  if (auto Err =
+          printLaunchInfo(GenericDevice, KernelArgs, NumThreads, NumBlocks))
+    return Err;
 
   return launchImpl(GenericDevice, NumThreads, NumBlocks, KernelArgs,
                     KernelArgsPtr, AsyncInfoWrapper);
@@ -334,15 +352,7 @@ GenericDeviceTy::GenericDeviceTy(int32_t DeviceId, int32_t NumDevices,
       OMPX_InitialNumEvents("LIBOMPTARGET_NUM_INITIAL_EVENTS", 32),
       DeviceId(DeviceId), GridValues(OMPGridValues),
       PeerAccesses(NumDevices, PeerAccessState::PENDING), PeerAccessesLock(),
-      PinnedAllocs(*this) {
-  if (OMP_NumTeams > 0)
-    GridValues.GV_Max_Teams =
-        std::min(GridValues.GV_Max_Teams, uint32_t(OMP_NumTeams));
-
-  if (OMP_TeamsThreadLimit > 0)
-    GridValues.GV_Max_WG_Size =
-        std::min(GridValues.GV_Max_WG_Size, uint32_t(OMP_TeamsThreadLimit));
-}
+      PinnedAllocs(*this) {}
 
 Error GenericDeviceTy::init(GenericPluginTy &Plugin) {
   if (auto Err = initImpl(Plugin))
@@ -366,6 +376,16 @@ Error GenericDeviceTy::init(GenericPluginTy &Plugin) {
   if (!HeapSizeEnvarOrErr)
     return HeapSizeEnvarOrErr.takeError();
   OMPX_TargetHeapSize = std::move(*HeapSizeEnvarOrErr);
+
+  // Update the maximum number of teams and threads after the device
+  // initialization sets the corresponding hardware limit.
+  if (OMP_NumTeams > 0)
+    GridValues.GV_Max_Teams =
+        std::min(GridValues.GV_Max_Teams, uint32_t(OMP_NumTeams));
+
+  if (OMP_TeamsThreadLimit > 0)
+    GridValues.GV_Max_WG_Size =
+        std::min(GridValues.GV_Max_WG_Size, uint32_t(OMP_TeamsThreadLimit));
 
   // Enable the memory manager if required.
   auto [ThresholdMM, EnableMM] = MemoryManagerTy::getSizeThresholdFromEnv();
@@ -518,8 +538,8 @@ Error GenericDeviceTy::registerGlobalOffloadEntry(
     // can access host addresses directly. There is no longer a
     // need for device copies.
     GlobalTy HostGlobal(GlobalEntry);
-    if (auto Err = GHandler.writeGlobalToDevice(*this, Image, HostGlobal,
-                                                DeviceGlobal))
+    if (auto Err =
+            GHandler.writeGlobalToDevice(*this, HostGlobal, DeviceGlobal))
       return Err;
   }
 
@@ -1172,7 +1192,6 @@ __tgt_target_table *__tgt_rtl_load_binary(int32_t DeviceId,
                                           __tgt_device_image *TgtImage) {
   GenericPluginTy &Plugin = Plugin::get();
   GenericDeviceTy &Device = Plugin.getDevice(DeviceId);
-
 
   auto TableOrErr = Device.loadBinary(Plugin, TgtImage);
   if (!TableOrErr) {

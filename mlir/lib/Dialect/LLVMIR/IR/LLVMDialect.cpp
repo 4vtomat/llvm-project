@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 #include "mlir/Dialect/LLVMIR/LLVMDialect.h"
 #include "TypeDetail.h"
+#include "mlir/Dialect/LLVMIR/LLVMInterfaces.h"
 #include "mlir/Dialect/LLVMIR/LLVMTypes.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/BuiltinOps.h"
@@ -45,8 +46,6 @@ using mlir::LLVM::linkage::getMaxEnumValForLinkage;
 #include "mlir/Dialect/LLVMIR/LLVMOpsDialect.cpp.inc"
 
 static constexpr const char kElemTypeAttrName[] = "elem_type";
-
-#include "mlir/Dialect/LLVMIR/LLVMOpsInterfaces.cpp.inc"
 
 static auto processFMFAttr(ArrayRef<NamedAttribute> attrs) {
   SmallVector<NamedAttribute, 8> filteredAttrs(
@@ -214,7 +213,7 @@ ParseResult AllocaOp::parse(OpAsmParser &parser, OperationState &result) {
     if (!alignmentInt)
       return parser.emitError(parser.getNameLoc(),
                               "expected integer alignment");
-    if (alignmentInt.getValue().isNullValue())
+    if (alignmentInt.getValue().isZero())
       result.attributes.erase("alignment");
   }
 
@@ -264,9 +263,40 @@ LogicalResult AllocaOp::verify() {
 // LLVM::BrOp
 //===----------------------------------------------------------------------===//
 
+/// Check if the `loopAttr` references correct symbols.
+static LogicalResult verifyLoopAnnotationAttr(LoopAnnotationAttr loopAttr,
+                                              Operation *op) {
+  if (!loopAttr)
+    return success();
+  // If the `llvm.loop` attribute is present, enforce the following structure,
+  // which the module translation can assume.
+  ArrayRef<SymbolRefAttr> parallelAccesses = loopAttr.getParallelAccesses();
+  if (parallelAccesses.empty())
+    return success();
+  for (SymbolRefAttr accessGroupRef : parallelAccesses) {
+    StringAttr metadataName = accessGroupRef.getRootReference();
+    auto metadataOp = SymbolTable::lookupNearestSymbolFrom<LLVM::MetadataOp>(
+        op->getParentOp(), metadataName);
+    if (!metadataOp)
+      return op->emitOpError() << "expected '" << accessGroupRef
+                               << "' to reference a metadata op";
+    StringAttr accessGroupName = accessGroupRef.getLeafReference();
+    Operation *accessGroupOp =
+        SymbolTable::lookupNearestSymbolFrom(metadataOp, accessGroupName);
+    if (!accessGroupOp)
+      return op->emitOpError() << "expected '" << accessGroupRef
+                               << "' to reference an access_group op";
+  }
+  return success();
+}
+
 SuccessorOperands BrOp::getSuccessorOperands(unsigned index) {
   assert(index == 0 && "invalid successor index");
   return SuccessorOperands(getDestOperandsMutable());
+}
+
+LogicalResult BrOp::verify() {
+  return verifyLoopAnnotationAttr(getLoopAnnotationAttr(), *this);
 }
 
 //===----------------------------------------------------------------------===//
@@ -277,6 +307,24 @@ SuccessorOperands CondBrOp::getSuccessorOperands(unsigned index) {
   assert(index < getNumSuccessors() && "invalid successor index");
   return SuccessorOperands(index == 0 ? getTrueDestOperandsMutable()
                                       : getFalseDestOperandsMutable());
+}
+
+LogicalResult CondBrOp::verify() {
+  return verifyLoopAnnotationAttr(getLoopAnnotationAttr(), *this);
+}
+
+void CondBrOp::build(OpBuilder &builder, OperationState &result,
+                     Value condition, Block *trueDest, ValueRange trueOperands,
+                     Block *falseDest, ValueRange falseOperands,
+                     std::optional<std::pair<uint32_t, uint32_t>> weights) {
+  ElementsAttr weightsAttr;
+  if (weights)
+    weightsAttr =
+        builder.getI32VectorAttr({static_cast<int32_t>(weights->first),
+                                  static_cast<int32_t>(weights->second)});
+
+  build(builder, result, condition, trueOperands, falseOperands, weightsAttr,
+        /*loop_annotation=*/{}, trueDest, falseDest);
 }
 
 //===----------------------------------------------------------------------===//
@@ -666,104 +714,75 @@ Type LLVM::GEPOp::getSourceElementType() {
 // LoadOp
 //===----------------------------------------------------------------------===//
 
-/// Verifies the given array attribute contains symbol references and checks the
-/// referenced symbol types using the provided verification function.
-LogicalResult verifyMemOpSymbolRefs(
-    Operation *op, StringRef name, ArrayAttr symbolRefs,
-    llvm::function_ref<LogicalResult(Operation *, SymbolRefAttr)>
-        verifySymbolType) {
-  assert(symbolRefs && "expected a non-null attribute");
+/// Returns true if the given type is supported by atomic operations. All
+/// integer and float types with limited bit width are supported. Additionally,
+/// depending on the operation pointers may be supported as well.
+static bool isTypeCompatibleWithAtomicOp(Type type, bool isPointerTypeAllowed) {
+  if (type.isa<LLVMPointerType>())
+    return isPointerTypeAllowed;
 
-  // Verify that the attribute is a symbol ref array attribute,
-  // because this constraint is not verified for all attribute
-  // names processed here (e.g. 'tbaa'). This verification
-  // is redundant in some cases.
-  if (!llvm::all_of(symbolRefs, [](Attribute attr) {
-        return attr && attr.isa<SymbolRefAttr>();
-      }))
-    return op->emitOpError("attribute '")
-           << name
-           << "' failed to satisfy constraint: symbol ref array attribute";
-
-  for (SymbolRefAttr symbolRef : symbolRefs.getAsRange<SymbolRefAttr>()) {
-    StringAttr metadataName = symbolRef.getRootReference();
-    StringAttr symbolName = symbolRef.getLeafReference();
-    // We want @metadata::@symbol, not just @symbol
-    if (metadataName == symbolName) {
-      return op->emitOpError() << "expected '" << symbolRef
-                               << "' to specify a fully qualified reference";
-    }
-    auto metadataOp = SymbolTable::lookupNearestSymbolFrom<LLVM::MetadataOp>(
-        op->getParentOp(), metadataName);
-    if (!metadataOp)
-      return op->emitOpError()
-             << "expected '" << symbolRef << "' to reference a metadata op";
-    Operation *symbolOp =
-        SymbolTable::lookupNearestSymbolFrom(metadataOp, symbolName);
-    if (!symbolOp)
-      return op->emitOpError()
-             << "expected '" << symbolRef << "' to be a valid reference";
-    if (failed(verifySymbolType(symbolOp, symbolRef))) {
-      return failure();
-    }
+  std::optional<unsigned> bitWidth = std::nullopt;
+  if (auto floatType = type.dyn_cast<FloatType>()) {
+    if (!isCompatibleFloatingPointType(type))
+      return false;
+    bitWidth = floatType.getWidth();
   }
+  if (auto integerType = type.dyn_cast<IntegerType>())
+    bitWidth = integerType.getWidth();
+  // The type is neither an integer, float, or pointer type.
+  if (!bitWidth)
+    return false;
+  return *bitWidth == 8 || *bitWidth == 16 || *bitWidth == 32 ||
+         *bitWidth == 64;
+}
 
+/// Verifies the attributes and the type of atomic memory access operations.
+template <typename OpTy>
+LogicalResult verifyAtomicMemOp(OpTy memOp, Type valueType,
+                                ArrayRef<AtomicOrdering> unsupportedOrderings) {
+  if (memOp.getOrdering() != AtomicOrdering::not_atomic) {
+    if (!isTypeCompatibleWithAtomicOp(valueType,
+                                      /*isPointerTypeAllowed=*/true))
+      return memOp.emitOpError("unsupported type ")
+             << valueType << " for atomic access";
+    if (llvm::is_contained(unsupportedOrderings, memOp.getOrdering()))
+      return memOp.emitOpError("unsupported ordering '")
+             << stringifyAtomicOrdering(memOp.getOrdering()) << "'";
+    if (!memOp.getAlignment())
+      return memOp.emitOpError("expected alignment for atomic access");
+    return success();
+  }
+  if (memOp.getSyncscope())
+    return memOp.emitOpError(
+        "expected syncscope to be null for non-atomic access");
   return success();
 }
 
-/// Verifies the given array attribute contains symbol references that point to
-/// metadata operations of the given type.
-template <typename OpTy>
-static LogicalResult
-verifyMemOpSymbolRefsPointTo(Operation *op, StringRef name,
-                             std::optional<ArrayAttr> symbolRefs) {
-  if (!symbolRefs)
-    return success();
-
-  auto verifySymbolType = [op](Operation *symbolOp,
-                               SymbolRefAttr symbolRef) -> LogicalResult {
-    if (!isa<OpTy>(symbolOp)) {
-      return op->emitOpError()
-             << "expected '" << symbolRef << "' to resolve to a "
-             << OpTy::getOperationName();
-    }
-    return success();
-  };
-  return verifyMemOpSymbolRefs(op, name, *symbolRefs, verifySymbolType);
+LogicalResult LoadOp::verify() {
+  Type valueType = getResult().getType();
+  return verifyAtomicMemOp(*this, valueType,
+                           {AtomicOrdering::release, AtomicOrdering::acq_rel});
 }
 
-/// Verifies the types of the metadata operations referenced by aliasing and
-/// access group metadata.
-template <typename OpTy>
-LogicalResult verifyMemOpMetadata(OpTy memOp) {
-  if (failed(verifyMemOpSymbolRefsPointTo<LLVM::AccessGroupMetadataOp>(
-          memOp, memOp.getAccessGroupsAttrName(), memOp.getAccessGroups())))
-    return failure();
-
-  if (failed(verifyMemOpSymbolRefsPointTo<LLVM::AliasScopeMetadataOp>(
-          memOp, memOp.getAliasScopesAttrName(), memOp.getAliasScopes())))
-    return failure();
-
-  if (failed(verifyMemOpSymbolRefsPointTo<LLVM::AliasScopeMetadataOp>(
-          memOp, memOp.getNoaliasScopesAttrName(), memOp.getNoaliasScopes())))
-    return failure();
-
-  if (failed(verifyMemOpSymbolRefsPointTo<LLVM::TBAATagOp>(
-          memOp, memOp.getTbaaAttrName(), memOp.getTbaa())))
-    return failure();
-
-  return success();
+void LoadOp::build(OpBuilder &builder, OperationState &state, Value addr,
+                   unsigned alignment, bool isVolatile, bool isNonTemporal) {
+  auto type = addr.getType().cast<LLVMPointerType>().getElementType();
+  assert(type && "must provide explicit element type to the constructor "
+                 "when the pointer type is opaque");
+  build(builder, state, type, addr, alignment, isVolatile, isNonTemporal);
 }
-
-LogicalResult LoadOp::verify() { return verifyMemOpMetadata(*this); }
 
 void LoadOp::build(OpBuilder &builder, OperationState &state, Type type,
                    Value addr, unsigned alignment, bool isVolatile,
-                   bool isNonTemporal) {
-  build(builder, state, type, addr, /*access_groups=*/nullptr,
-        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr, /*tbaa=*/nullptr,
+                   bool isNonTemporal, AtomicOrdering ordering,
+                   StringRef syncscope) {
+  build(builder, state, type, addr,
         alignment ? builder.getI64IntegerAttr(alignment) : nullptr, isVolatile,
-        isNonTemporal);
+        isNonTemporal, ordering,
+        syncscope.empty() ? nullptr : builder.getStringAttr(syncscope),
+        /*access_groups=*/nullptr,
+        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr,
+        /*tbaa=*/nullptr);
 }
 
 // Extract the pointee type from the LLVM pointer type wrapped in MLIR. Return
@@ -815,15 +834,22 @@ static void printLoadType(OpAsmPrinter &printer, Operation *op, Type type,
 // StoreOp
 //===----------------------------------------------------------------------===//
 
-LogicalResult StoreOp::verify() { return verifyMemOpMetadata(*this); }
+LogicalResult StoreOp::verify() {
+  Type valueType = getValue().getType();
+  return verifyAtomicMemOp(*this, valueType,
+                           {AtomicOrdering::acquire, AtomicOrdering::acq_rel});
+}
 
 void StoreOp::build(OpBuilder &builder, OperationState &state, Value value,
                     Value addr, unsigned alignment, bool isVolatile,
-                    bool isNonTemporal) {
-  build(builder, state, value, addr, /*access_groups=*/nullptr,
-        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr, /*tbaa=*/nullptr,
+                    bool isNonTemporal, AtomicOrdering ordering,
+                    StringRef syncscope) {
+  build(builder, state, value, addr,
         alignment ? builder.getI64IntegerAttr(alignment) : nullptr, isVolatile,
-        isNonTemporal);
+        isNonTemporal, ordering,
+        syncscope.empty() ? nullptr : builder.getStringAttr(syncscope),
+        /*access_groups=*/nullptr,
+        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr, /*tbaa=*/nullptr);
 }
 
 /// Parses the StoreOp type either using the typed or opaque pointer format.
@@ -1743,7 +1769,7 @@ ParseResult GlobalOp::parse(OpAsmParser &parser, OperationState &result) {
 
 static bool isZeroAttribute(Attribute value) {
   if (auto intValue = value.dyn_cast<IntegerAttr>())
-    return intValue.getValue().isNullValue();
+    return intValue.getValue().isZero();
   if (auto fpValue = value.dyn_cast<FloatAttr>())
     return fpValue.getValue().isZero();
   if (auto splatValue = value.dyn_cast<SplatElementsAttr>())
@@ -2203,7 +2229,9 @@ void AtomicRMWOp::build(OpBuilder &builder, OperationState &state,
                         unsigned alignment, bool isVolatile) {
   build(builder, state, val.getType(), binOp, ptr, val, ordering,
         !syncscope.empty() ? builder.getStringAttr(syncscope) : nullptr,
-        alignment ? builder.getI64IntegerAttr(alignment) : nullptr, isVolatile);
+        alignment ? builder.getI64IntegerAttr(alignment) : nullptr, isVolatile,
+        /*access_groups=*/nullptr,
+        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr, /*tbaa=*/nullptr);
 }
 
 LogicalResult AtomicRMWOp::verify() {
@@ -2217,12 +2245,7 @@ LogicalResult AtomicRMWOp::verify() {
     if (!mlir::LLVM::isCompatibleFloatingPointType(valType))
       return emitOpError("expected LLVM IR floating point type");
   } else if (getBinOp() == AtomicBinOp::xchg) {
-    auto intType = valType.dyn_cast<IntegerType>();
-    unsigned intBitWidth = intType ? intType.getWidth() : 0;
-    if (intBitWidth != 8 && intBitWidth != 16 && intBitWidth != 32 &&
-        intBitWidth != 64 && !valType.isa<BFloat16Type>() &&
-        !valType.isa<Float16Type>() && !valType.isa<Float32Type>() &&
-        !valType.isa<Float64Type>())
+    if (!isTypeCompatibleWithAtomicOp(valType, /*isPointerTypeAllowed=*/false))
       return emitOpError("unexpected LLVM IR type for 'xchg' bin_op");
   } else {
     auto intType = valType.dyn_cast<IntegerType>();
@@ -2260,7 +2283,8 @@ void AtomicCmpXchgOp::build(OpBuilder &builder, OperationState &state,
         successOrdering, failureOrdering,
         !syncscope.empty() ? builder.getStringAttr(syncscope) : nullptr,
         alignment ? builder.getI64IntegerAttr(alignment) : nullptr, isWeak,
-        isVolatile);
+        isVolatile, /*access_groups=*/nullptr,
+        /*alias_scopes=*/nullptr, /*noalias_scopes=*/nullptr, /*tbaa=*/nullptr);
 }
 
 LogicalResult AtomicCmpXchgOp::verify() {
@@ -2271,12 +2295,8 @@ LogicalResult AtomicCmpXchgOp::verify() {
   if (!ptrType.isOpaque() && valType != ptrType.getElementType())
     return emitOpError("expected LLVM IR element type for operand #0 to "
                        "match type for all other operands");
-  auto intType = valType.dyn_cast<IntegerType>();
-  unsigned intBitWidth = intType ? intType.getWidth() : 0;
-  if (!valType.isa<LLVMPointerType>() && intBitWidth != 8 &&
-      intBitWidth != 16 && intBitWidth != 32 && intBitWidth != 64 &&
-      !valType.isa<BFloat16Type>() && !valType.isa<Float16Type>() &&
-      !valType.isa<Float32Type>() && !valType.isa<Float64Type>())
+  if (!isTypeCompatibleWithAtomicOp(valType,
+                                    /*isPointerTypeAllowed=*/true))
     return emitOpError("unexpected LLVM IR type");
   if (getSuccessOrdering() < AtomicOrdering::monotonic ||
       getFailureOrdering() < AtomicOrdering::monotonic)
@@ -2686,6 +2706,21 @@ LogicalResult TBAATypeDescriptorOp::verify() {
 }
 
 //===----------------------------------------------------------------------===//
+// AliasScopeMetadataOp
+//===----------------------------------------------------------------------===//
+
+LogicalResult AliasScopeMetadataOp::verify() {
+  Operation *domainOp = SymbolTable::lookupNearestSymbolFrom(
+      this->getOperation(), getDomainAttr());
+  if (!isa_and_nonnull<AliasScopeDomainMetadataOp>(domainOp)) {
+    return this->emitOpError()
+           << "expected '" << getDomain()
+           << "' to reference a domain operation in the same region";
+  }
+  return success();
+}
+
+//===----------------------------------------------------------------------===//
 // OpAsmDialectInterface
 //===----------------------------------------------------------------------===//
 
@@ -2695,17 +2730,17 @@ struct LLVMOpAsmDialectInterface : public OpAsmDialectInterface {
 
   AliasResult getAlias(Attribute attr, raw_ostream &os) const override {
     return TypeSwitch<Attribute, AliasResult>(attr)
-        .Case<DIVoidResultTypeAttr, DIBasicTypeAttr, DICompileUnitAttr,
-              DICompositeTypeAttr, DIDerivedTypeAttr, DIFileAttr,
-              DILexicalBlockAttr, DILexicalBlockFileAttr, DILocalVariableAttr,
-              DISubprogramAttr, DISubroutineTypeAttr, LoopAnnotationAttr,
-              LoopVectorizeAttr, LoopInterleaveAttr, LoopUnrollAttr,
-              LoopUnrollAndJamAttr, LoopLICMAttr, LoopDistributeAttr,
-              LoopPipelineAttr, LoopPeeledAttr, LoopUnswitchAttr>(
-            [&](auto attr) {
-              os << decltype(attr)::getMnemonic();
-              return AliasResult::OverridableAlias;
-            })
+        .Case<DIBasicTypeAttr, DICompileUnitAttr, DICompositeTypeAttr,
+              DIDerivedTypeAttr, DIFileAttr, DILexicalBlockAttr,
+              DILexicalBlockFileAttr, DILocalVariableAttr, DINamespaceAttr,
+              DINullTypeAttr, DISubprogramAttr, DISubroutineTypeAttr,
+              LoopAnnotationAttr, LoopVectorizeAttr, LoopInterleaveAttr,
+              LoopUnrollAttr, LoopUnrollAndJamAttr, LoopLICMAttr,
+              LoopDistributeAttr, LoopPipelineAttr, LoopPeeledAttr,
+              LoopUnswitchAttr>([&](auto attr) {
+          os << decltype(attr)::getMnemonic();
+          return AliasResult::OverridableAlias;
+        })
         .Default([](Attribute) { return AliasResult::NoAlias; });
   }
 };
@@ -2801,34 +2836,51 @@ struct LLVMInlinerInterface : public DialectInlinerInterface {
     auto funcOp = dyn_cast<LLVM::LLVMFuncOp>(callable);
     if (!callOp || !funcOp)
       return false;
-    return isLegalToInlineCallAttributes(callOp) &&
-           isLegalToInlineFuncAttributes(funcOp);
+    // TODO: Handle argument and result attributes;
+    if (funcOp.getArgAttrs() || funcOp.getResAttrs())
+      return false;
+    // TODO: Handle exceptions.
+    if (funcOp.getPersonality())
+      return false;
+    if (funcOp.getPassthrough()) {
+      // TODO: Used attributes should not be passthrough.
+      DenseSet<StringAttr> disallowed(
+          {StringAttr::get(funcOp->getContext(), "noduplicate"),
+           StringAttr::get(funcOp->getContext(), "noinline"),
+           StringAttr::get(funcOp->getContext(), "optnone"),
+           StringAttr::get(funcOp->getContext(), "presplitcoroutine"),
+           StringAttr::get(funcOp->getContext(), "returns_twice"),
+           StringAttr::get(funcOp->getContext(), "strictfp")});
+      if (llvm::any_of(*funcOp.getPassthrough(), [&](Attribute attr) {
+            auto stringAttr = dyn_cast<StringAttr>(attr);
+            if (!stringAttr)
+              return false;
+            return disallowed.contains(stringAttr);
+          }))
+        return false;
+    }
+    return true;
   }
 
   bool isLegalToInline(Region *, Region *, bool, IRMapping &) const final {
     return true;
   }
 
-  /// Conservative allowlist-based inlining of operations supported so far.
+  /// Conservative allowlist of operations supported so far.
   bool isLegalToInline(Operation *op, Region *, bool, IRMapping &) const final {
     if (isPure(op))
       return true;
-    return llvm::TypeSwitch<Operation *, bool>(op)
-        .Case<LLVM::LoadOp, LLVM::StoreOp>([&](auto memOp) {
-          // Some attributes on load and store operations require handling
-          // during inlining. Since this is not yet implemented, refuse to
-          // inline memory operations that have any of these attributes.
-          if (memOp.getAccessGroups())
-            return false;
-          if (memOp.getAliasScopes())
-            return false;
-          if (memOp.getNoaliasScopes())
-            return false;
-          return true;
-        })
-        .Case<LLVM::CallOp, LLVM::AllocaOp, LLVM::LifetimeStartOp,
-              LLVM::LifetimeEndOp>([](auto) { return true; })
-        .Default([](auto) { return false; });
+    // Some attributes on memory operations require handling during
+    // inlining. Since this is not yet implemented, refuse to inline memory
+    // operations that have any of these attributes.
+    if (auto iface = dyn_cast<AliasAnalysisOpInterface>(op))
+      if (iface.getAliasScopesOrNull() || iface.getNoAliasScopesOrNull())
+        return false;
+    if (auto iface = dyn_cast<AccessGroupOpInterface>(op))
+      if (iface.getAccessGroupsOrNull())
+        return false;
+    return isa<LLVM::CallOp, LLVM::AllocaOp, LLVM::LifetimeStartOp,
+               LLVM::LifetimeEndOp, LLVM::LoadOp, LLVM::StoreOp>(op);
   }
 
   /// Handle the given inlined return by replacing it with a branch. This
@@ -2869,53 +2921,6 @@ struct LLVMInlinerInterface : public DialectInlinerInterface {
     // This is not implemented as a standalone pattern because we need to know
     // which newly inlined block was previously the entry block of the callee.
     moveConstantAllocasToEntryBlock(inlinedBlocks);
-  }
-
-private:
-  /// Returns true if all attributes of `callOp` are handled during inlining.
-  [[nodiscard]] static bool isLegalToInlineCallAttributes(LLVM::CallOp callOp) {
-    return all_of(callOp.getAttributeNames(), [&](StringRef attrName) {
-      return llvm::StringSwitch<bool>(attrName)
-          // TODO: Propagate and update branch weights.
-          .Case("branch_weights", !callOp.getBranchWeights())
-          .Case("callee", true)
-          .Case("fastmathFlags", true)
-          .Default(false);
-    });
-  }
-
-  /// Returns true if all attributes of `funcOp` are handled during inlining.
-  [[nodiscard]] static bool
-  isLegalToInlineFuncAttributes(LLVM::LLVMFuncOp funcOp) {
-    return all_of(funcOp.getAttributeNames(), [&](StringRef attrName) {
-      return llvm::StringSwitch<bool>(attrName)
-          .Case("CConv", true)
-          .Case("arg_attrs", ([&]() {
-                  if (!funcOp.getArgAttrs())
-                    return true;
-                  return llvm::all_of(funcOp.getArgAttrs().value(),
-                                      [&](Attribute) {
-                                        // TODO: Handle argument attributes.
-                                        return false;
-                                      });
-                })())
-          .Case("dso_local", true)
-          .Case("function_entry_count", true)
-          .Case("function_type", true)
-          // TODO: Once the garbage collector attribute is supported on
-          // LLVM::CallOp, make sure that the garbage collector matches.
-          .Case("garbageCollector", !funcOp.getGarbageCollector())
-          .Case("linkage", true)
-          .Case("memory", true)
-          .Case("passthrough", !funcOp.getPassthrough())
-          // Exception handling is not yet supported, so bail out if the
-          // personality is set.
-          .Case("personality", !funcOp.getPersonality())
-          // TODO: Handle result attributes.
-          .Case("res_attrs", !funcOp.getResAttrs())
-          .Case("sym_name", true)
-          .Default(false);
-    });
   }
 };
 } // end anonymous namespace
@@ -2977,32 +2982,6 @@ LogicalResult LLVMDialect::verifyDataLayoutString(
 /// Verify LLVM dialect attributes.
 LogicalResult LLVMDialect::verifyOperationAttribute(Operation *op,
                                                     NamedAttribute attr) {
-  // If the `llvm.loop` attribute is present, enforce the following structure,
-  // which the module translation can assume.
-  if (attr.getName() == LLVMDialect::getLoopAttrName()) {
-    auto loopAttr = attr.getValue().dyn_cast<LoopAnnotationAttr>();
-    if (!loopAttr)
-      return op->emitOpError() << "expected '" << LLVMDialect::getLoopAttrName()
-                               << "' to be a loop annotation attribute";
-    ArrayRef<SymbolRefAttr> parallelAccesses = loopAttr.getParallelAccesses();
-    if (parallelAccesses.empty())
-      return success();
-    for (SymbolRefAttr accessGroupRef : parallelAccesses) {
-      StringAttr metadataName = accessGroupRef.getRootReference();
-      auto metadataOp = SymbolTable::lookupNearestSymbolFrom<LLVM::MetadataOp>(
-          op->getParentOp(), metadataName);
-      if (!metadataOp)
-        return op->emitOpError() << "expected '" << accessGroupRef
-                                 << "' to reference a metadata op";
-      StringAttr accessGroupName = accessGroupRef.getLeafReference();
-      Operation *accessGroupOp =
-          SymbolTable::lookupNearestSymbolFrom(metadataOp, accessGroupName);
-      if (!accessGroupOp)
-        return op->emitOpError() << "expected '" << accessGroupRef
-                                 << "' to reference an access_group op";
-    }
-  }
-
   // If the data layout attribute is present, it must use the LLVM data layout
   // syntax. Try parsing it and report errors in case of failure. Users of this
   // attribute may assume it is well-formed and can pass it to the (asserting)
@@ -3186,7 +3165,8 @@ LogicalResult LLVMDialect::verifyRegionResultAttribute(Operation *op,
 
 Value mlir::LLVM::createGlobalString(Location loc, OpBuilder &builder,
                                      StringRef name, StringRef value,
-                                     LLVM::Linkage linkage) {
+                                     LLVM::Linkage linkage,
+                                     bool useOpaquePointers) {
   assert(builder.getInsertionBlock() &&
          builder.getInsertionBlock()->getParentOp() &&
          "expected builder to point to a block constrained in an op");
@@ -3202,11 +3182,20 @@ Value mlir::LLVM::createGlobalString(Location loc, OpBuilder &builder,
       loc, type, /*isConstant=*/true, linkage, name,
       builder.getStringAttr(value), /*alignment=*/0);
 
+  LLVMPointerType resultType;
+  LLVMPointerType charPtr;
+  if (!useOpaquePointers) {
+    resultType = LLVMPointerType::get(type);
+    charPtr = LLVMPointerType::get(IntegerType::get(ctx, 8));
+  } else {
+    resultType = charPtr = LLVMPointerType::get(ctx);
+  }
+
   // Get the pointer to the first character in the global string.
-  Value globalPtr = builder.create<LLVM::AddressOfOp>(loc, global);
-  return builder.create<LLVM::GEPOp>(
-      loc, LLVM::LLVMPointerType::get(IntegerType::get(ctx, 8)), globalPtr,
-      ArrayRef<GEPArg>{0, 0});
+  Value globalPtr = builder.create<LLVM::AddressOfOp>(loc, resultType,
+                                                      global.getSymNameAttr());
+  return builder.create<LLVM::GEPOp>(loc, charPtr, type, globalPtr,
+                                     ArrayRef<GEPArg>{0, 0});
 }
 
 bool mlir::LLVM::satisfiesLLVMModule(Operation *op) {

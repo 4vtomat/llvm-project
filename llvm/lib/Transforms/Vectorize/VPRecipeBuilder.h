@@ -106,7 +106,7 @@ class VPRecipeBuilder {
   /// return a new VPWidenCallRecipe. Range.End may be decreased to ensure same
   /// decision from \p Range.Start to \p Range.End.
   VPWidenCallRecipe *tryToWidenCall(CallInst *CI, ArrayRef<VPValue *> Operands,
-                                    VFRange &Range) const;
+                                    VFRange &Range, VPlanPtr &Plan) const;
 
   /// Check if \p I has an opcode that can be widened and return a VPWidenRecipe
   /// if it can. The function should only be called if the cost-model indicates
@@ -185,9 +185,8 @@ public:
   /// Build a VPReplicationRecipe for \p I and enclose it within a Region if it
   /// is predicated. \return \p VPBB augmented with this new recipe if \p I is
   /// not predicated, otherwise \return a new VPBasicBlock that succeeds the new
-  /// Region. Update the packing decision of predicated instructions if they
-  /// feed \p I. Range.End may be decreased to ensure same recipe behavior from
-  /// \p Range.Start to \p Range.End.
+  /// Region. Range.End may be decreased to ensure same recipe behavior from \p
+  /// Range.Start to \p Range.End.
   VPBasicBlock *handleReplication(Instruction *I, VFRange &Range,
                                   VPBasicBlock *VPBB, VPlan &Plan);
 

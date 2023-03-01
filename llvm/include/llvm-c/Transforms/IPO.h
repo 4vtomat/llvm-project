@@ -27,6 +27,7 @@ LLVM_C_EXTERN_C_BEGIN
  * @{
  */
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /** See llvm::create function. */
 void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM);
@@ -35,6 +36,8 @@ void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM);
 /** See llvm::createConstantMergePass function. */
 void LLVMAddConstantMergePass(LLVMPassManagerRef PM);
 
+=======
+>>>>>>> upstream/main
 /** See llvm::createDeadArgEliminationPass function. */
 void LLVMAddDeadArgEliminationPass(LLVMPassManagerRef PM);
 
@@ -43,15 +46,6 @@ void LLVMAddFunctionAttrsPass(LLVMPassManagerRef PM);
 
 /** See llvm::createAlwaysInlinerPass function. */
 void LLVMAddAlwaysInlinerPass(LLVMPassManagerRef PM);
-
-/** See llvm::createGlobalDCEPass function. */
-void LLVMAddGlobalDCEPass(LLVMPassManagerRef PM);
-
-/** See llvm::createGlobalOptimizerPass function. */
-void LLVMAddGlobalOptimizerPass(LLVMPassManagerRef PM);
-
-/** See llvm::createIPSCCPPass function. */
-void LLVMAddIPSCCPPass(LLVMPassManagerRef PM);
 
 /**
  * @}

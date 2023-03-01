@@ -349,4 +349,17 @@
 #end SIFIVE_CUSTOMIZATION
 
 .attribute arch, "rv32iztso0p1"
+<<<<<<< HEAD
 # CHECK: attribute      5, "rv32i2p1_ztso0p1"
+=======
+# CHECK: attribute      5, "rv32i2p0_ztso0p1"
+
+.attribute arch, "rv32izicsr2p0"
+# CHECK: attribute      5, "rv32i2p0_zicsr2p0"
+
+.attribute arch, "rv32izifencei2p0"
+# CHECK: attribute      5, "rv32i2p0_zifencei2p0"
+
+.attribute arch, "rv32izfa0p1"
+# CHECK: attribute      5, "rv32i2p0_f2p0_zfa0p1"
+>>>>>>> upstream/main

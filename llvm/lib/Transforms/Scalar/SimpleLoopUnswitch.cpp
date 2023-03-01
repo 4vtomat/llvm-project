@@ -791,13 +791,23 @@ static bool unswitchTrivialSwitch(Loop &L, SwitchInst &SI, DominatorTree &DT,
   Loop *OuterL = &L;
 
   if (DefaultExitBB) {
-    // Clear out the default destination temporarily to allow accurate
-    // predecessor lists to be examined below.
-    SI.setDefaultDest(nullptr);
     // Check the loop containing this exit.
     Loop *ExitL = LI.getLoopFor(DefaultExitBB);
     if (!ExitL || ExitL->contains(OuterL))
       OuterL = ExitL;
+  }
+
+  if (SE) {
+    if (OuterL)
+      SE->forgetLoop(OuterL);
+    else
+      SE->forgetTopmostLoop(&L);
+  }
+
+  if (DefaultExitBB) {
+    // Clear out the default destination temporarily to allow accurate
+    // predecessor lists to be examined below.
+    SI.setDefaultDest(nullptr);
   }
 
   // Store the exit cases into a separate data structure and remove them from
@@ -820,13 +830,6 @@ static bool unswitchTrivialSwitch(Loop &L, SwitchInst &SI, DominatorTree &DT,
     ExitCases.emplace_back(CaseI->getCaseValue(), CaseI->getCaseSuccessor(), W);
     // Delete the unswitched cases.
     SIW.removeCase(CaseI);
-  }
-
-  if (SE) {
-    if (OuterL)
-      SE->forgetLoop(OuterL);
-    else
-      SE->forgetTopmostLoop(&L);
   }
 
   // Check if after this all of the remaining cases point at the same
@@ -2885,6 +2888,36 @@ static bool collectUnswitchCandidates(
   return !UnswitchCandidates.empty();
 }
 
+/// Tries to canonicalize condition described by:
+///
+///   br (LHS pred RHS), label IfTrue, label IfFalse
+///
+/// into its equivalent where `Pred` is something that we support for injected
+/// invariants (so far it is limited to ult), LHS in canonicalized form is
+/// non-invariant and RHS is an invariant.
+static void canonicalizeForInvariantConditionInjection(
+    ICmpInst::Predicate &Pred, Value *&LHS, Value *&RHS, BasicBlock *&IfTrue,
+    BasicBlock *&IfFalse, const Loop &L) {
+  if (!L.contains(IfTrue)) {
+    Pred = ICmpInst::getInversePredicate(Pred);
+    std::swap(IfTrue, IfFalse);
+  }
+
+  // Move loop-invariant argument to RHS position.
+  if (L.isLoopInvariant(LHS)) {
+    Pred = ICmpInst::getSwappedPredicate(Pred);
+    std::swap(LHS, RHS);
+  }
+
+  if (Pred == ICmpInst::ICMP_SGE && match(RHS, m_Zero())) {
+    // Turn "x >=s 0" into "x <u UMIN_INT"
+    Pred = ICmpInst::ICMP_ULT;
+    RHS = ConstantInt::get(
+        RHS->getContext(),
+        APInt::getSignedMinValue(RHS->getType()->getIntegerBitWidth()));
+  }
+}
+
 /// Returns true, if predicate described by ( \p Pred, \p LHS, \p RHS )
 /// succeeding into blocks ( \p IfTrue, \p IfFalse) can be optimized by
 /// injecting a loop-invariant condition.
@@ -2929,8 +2962,8 @@ bool shouldTryInjectBasingOnMetadata(const BranchInst *BI,
   size_t Idx = BI->getSuccessor(0) == TakenSucc ? 0 : 1;
   auto Num = Weights[Idx];
   auto Denom = Weights[0] + Weights[1];
-  // Degenerate metadata.
-  if (Denom == 0)
+  // Degenerate or overflowed metadata.
+  if (Denom == 0 || Num > Denom)
     return false;
   BranchProbability ActualTaken(Num, Denom);
   if (LikelyTaken > ActualTaken)
@@ -2972,8 +3005,8 @@ injectPendingInvariantConditions(NonTrivialUnswitchCandidate Candidate, Loop &L,
   auto *InLoopSucc = Candidate.PendingInjection->InLoopSucc;
   auto *TI = cast<BranchInst>(Candidate.TI);
   auto *BB = Candidate.TI->getParent();
-  assert(InLoopSucc == TI->getSuccessor(0));
-  auto *OutOfLoopSucc = TI->getSuccessor(1);
+  auto *OutOfLoopSucc = InLoopSucc == TI->getSuccessor(0) ? TI->getSuccessor(1)
+                                                          : TI->getSuccessor(0);
   // FIXME: Remove this once limitation on successors is lifted.
   assert(L.contains(InLoopSucc) && "Not supported yet!");
   assert(!L.contains(OutOfLoopSucc) && "Not supported yet!");
@@ -3121,6 +3154,8 @@ static bool collectUnswitchCandidatesWithInjections(
     if (!match(Term, m_Br(m_ICmp(Pred, m_Value(LHS), m_Value(RHS)),
                           m_BasicBlock(IfTrue), m_BasicBlock(IfFalse))))
       continue;
+    canonicalizeForInvariantConditionInjection(Pred, LHS, RHS, IfTrue, IfFalse,
+                                               L);
     if (!shouldTryInjectInvariantCondition(Pred, LHS, RHS, IfTrue, IfFalse, L))
       continue;
     if (!shouldTryInjectBasingOnMetadata(cast<BranchInst>(Term), IfTrue))
@@ -3551,10 +3586,10 @@ void SimpleLoopUnswitchPass::printPipeline(
   static_cast<PassInfoMixin<SimpleLoopUnswitchPass> *>(this)->printPipeline(
       OS, MapClassName2PassName);
 
-  OS << "<";
+  OS << '<';
   OS << (NonTrivial ? "" : "no-") << "nontrivial;";
   OS << (Trivial ? "" : "no-") << "trivial";
-  OS << ">";
+  OS << '>';
 }
 
 namespace {

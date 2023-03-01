@@ -482,8 +482,14 @@ llvm::SetVector<Value> AnalysisState::findValueInReverseUseDefChain(
 
   while (!workingSet.empty()) {
     Value value = workingSet.pop_back_val();
-    if (condition(value) || value.isa<BlockArgument>()) {
+    if (condition(value)) {
       result.insert(value);
+      continue;
+    }
+
+    if (value.isa<BlockArgument>()) {
+      if (alwaysIncludeLeaves)
+        result.insert(value);
       continue;
     }
 
@@ -505,7 +511,8 @@ llvm::SetVector<Value> AnalysisState::findValueInReverseUseDefChain(
       if (followEquivalentOnly && a.relation != BufferRelation::Equivalent) {
         // Stop iterating if `followEquivalentOnly` is set but the alias is not
         // equivalent.
-        result.insert(value);
+        if (alwaysIncludeLeaves)
+          result.insert(value);
       } else {
         workingSet.insert(a.opOperand->get());
       }

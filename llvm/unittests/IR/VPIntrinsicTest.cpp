@@ -151,7 +151,10 @@ protected:
     Str << " declare i32 @llvm.vp.first.v8i1(<8 x i1>, <8 x i1>, i32) ";
     Str << " declare <8 x i16> @llvm.vp.abs.v8i16"
         << "(<8 x i16>, i1 immarg, <8 x i1>, i32) ";
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
     Str << " declare <8 x i16> @llvm.vp.bitreverse.v8i16"
         << "(<8 x i16>, <8 x i1>, i32) ";
     Str << " declare <8 x i16> @llvm.vp.bswap.v8i16"
@@ -163,7 +166,10 @@ protected:
         << "(<8 x i16>, i1 immarg, <8 x i1>, i32) ";
     Str << " declare <8 x i16> @llvm.vp.cttz.v8i16"
         << "(<8 x i16>, i1 immarg, <8 x i1>, i32) ";
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
     Str << " declare <8 x i16> @llvm.vp.fshl.v8i16"
         << "(<8 x i16>, <8 x i16>, <8 x i16>, <8 x i1>, i32) ";
     Str << " declare <8 x i16> @llvm.vp.fshr.v8i16"

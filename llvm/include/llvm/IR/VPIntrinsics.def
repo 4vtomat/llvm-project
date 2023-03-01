@@ -249,14 +249,20 @@ VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(umax)
 VP_PROPERTY_BINARYOP
 END_REGISTER_VP(vp_umax, VP_UMAX)
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked form upstream.
 
+=======
+>>>>>>> upstream/main
 // llvm.vp.abs(x,is_int_min_poison,mask,vlen)
 BEGIN_REGISTER_VP_INTRINSIC(vp_abs, 2, 3)
 BEGIN_REGISTER_VP_SDNODE(VP_ABS, -1, vp_abs, 1, 2)
 HELPER_MAP_VPID_TO_VPSD(vp_abs, VP_ABS)
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 END_REGISTER_VP(vp_abs, VP_ABS)
 
 // llvm.vp.bswap(x,mask,vlen)
@@ -271,24 +277,34 @@ END_REGISTER_VP(vp_bitreverse, VP_BITREVERSE)
 BEGIN_REGISTER_VP(vp_ctpop, 1, 2, VP_CTPOP, -1)
 END_REGISTER_VP(vp_ctpop, VP_CTPOP)
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked form upstream.
 
 // llvm.vp.ctlz(x,is_zero_poison,mask,vlen)
 BEGIN_REGISTER_VP_INTRINSIC(vp_ctlz, 2, 3)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+// llvm.vp.ctlz(x,is_zero_poison,mask,vlen)
+BEGIN_REGISTER_VP_INTRINSIC(vp_ctlz, 2, 3)
+>>>>>>> upstream/main
 BEGIN_REGISTER_VP_SDNODE(VP_CTLZ, -1, vp_ctlz, 1, 2)
 END_REGISTER_VP_SDNODE(VP_CTLZ)
 BEGIN_REGISTER_VP_SDNODE(VP_CTLZ_ZERO_UNDEF, -1, vp_ctlz_zero_undef, 1, 2)
 END_REGISTER_VP_SDNODE(VP_CTLZ_ZERO_UNDEF)
 END_REGISTER_VP_INTRINSIC(vp_ctlz)
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked form upstream.
 
 // llvm.vp.cttz(x,is_zero_poison,mask,vlen)
 BEGIN_REGISTER_VP_INTRINSIC(vp_cttz, 2, 3)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+// llvm.vp.cttz(x,is_zero_poison,mask,vlen)
+BEGIN_REGISTER_VP_INTRINSIC(vp_cttz, 2, 3)
+>>>>>>> upstream/main
 BEGIN_REGISTER_VP_SDNODE(VP_CTTZ, -1, vp_cttz, 1, 2)
 END_REGISTER_VP_SDNODE(VP_CTTZ)
 BEGIN_REGISTER_VP_SDNODE(VP_CTTZ_ZERO_UNDEF, -1, vp_cttz_zero_undef, 1, 2)

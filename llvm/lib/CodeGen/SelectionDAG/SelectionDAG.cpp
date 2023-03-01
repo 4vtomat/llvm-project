@@ -200,10 +200,10 @@ bool ISD::isConstantSplatVectorAllOnes(const SDNode *N, bool BuildVectorOnly) {
   SDValue NotZero = N->getOperand(i);
   unsigned EltSize = N->getValueType(0).getScalarSizeInBits();
   if (ConstantSDNode *CN = dyn_cast<ConstantSDNode>(NotZero)) {
-    if (CN->getAPIntValue().countTrailingOnes() < EltSize)
+    if (CN->getAPIntValue().countr_one() < EltSize)
       return false;
   } else if (ConstantFPSDNode *CFPN = dyn_cast<ConstantFPSDNode>(NotZero)) {
-    if (CFPN->getValueAPF().bitcastToAPInt().countTrailingOnes() < EltSize)
+    if (CFPN->getValueAPF().bitcastToAPInt().countr_one() < EltSize)
       return false;
   } else
     return false;
@@ -244,10 +244,10 @@ bool ISD::isConstantSplatVectorAllZeros(const SDNode *N, bool BuildVectorOnly) {
     // constants are.
     unsigned EltSize = N->getValueType(0).getScalarSizeInBits();
     if (ConstantSDNode *CN = dyn_cast<ConstantSDNode>(Op)) {
-      if (CN->getAPIntValue().countTrailingZeros() < EltSize)
+      if (CN->getAPIntValue().countr_zero() < EltSize)
         return false;
     } else if (ConstantFPSDNode *CFPN = dyn_cast<ConstantFPSDNode>(Op)) {
-      if (CFPN->getValueAPF().bitcastToAPInt().countTrailingZeros() < EltSize)
+      if (CFPN->getValueAPF().bitcastToAPInt().countr_zero() < EltSize)
         return false;
     } else
       return false;
@@ -2592,7 +2592,7 @@ APInt SelectionDAG::computeVectorKnownZeroElements(SDValue Op,
   unsigned NumElts = VT.getVectorNumElements();
   assert(DemandedElts.getBitWidth() == NumElts && "Unexpected demanded mask.");
 
-  APInt KnownZeroElements = APInt::getNullValue(NumElts);
+  APInt KnownZeroElements = APInt::getZero(NumElts);
   for (unsigned EltIdx = 0; EltIdx != NumElts; ++EltIdx) {
     if (!DemandedElts[EltIdx])
       continue; // Don't query elements that are not demanded.
@@ -2686,8 +2686,8 @@ bool SelectionDAG::isSplatValue(SDValue V, const APInt &DemandedElts,
   }
   case ISD::VECTOR_SHUFFLE: {
     // Check if this is a shuffle node doing a splat or a shuffle of a splat.
-    APInt DemandedLHS = APInt::getNullValue(NumElts);
-    APInt DemandedRHS = APInt::getNullValue(NumElts);
+    APInt DemandedLHS = APInt::getZero(NumElts);
+    APInt DemandedRHS = APInt::getZero(NumElts);
     ArrayRef<int> Mask = cast<ShuffleVectorSDNode>(V)->getMask();
     for (int i = 0; i != (int)NumElts; ++i) {
       int M = Mask[i];
@@ -2714,7 +2714,7 @@ bool SelectionDAG::isSplatValue(SDValue V, const APInt &DemandedElts,
     // TODO: Handle source ops splats with undefs.
     auto CheckSplatSrc = [&](SDValue Src, const APInt &SrcElts) {
       APInt SrcUndefs;
-      return (SrcElts.countPopulation() == 1) ||
+      return (SrcElts.popcount() == 1) ||
              (isSplatValue(Src, SrcElts, SrcUndefs, Depth + 1) &&
               (SrcElts & SrcUndefs).isZero());
     };
@@ -2833,7 +2833,7 @@ SDValue SelectionDAG::getSplatSourceVector(SDValue V, int &SplatIdx) {
           SplatIdx = 0;
           return getUNDEF(VT);
         }
-        SplatIdx = (UndefElts & DemandedElts).countTrailingOnes();
+        SplatIdx = (UndefElts & DemandedElts).countr_one();
       }
       return V;
     }
@@ -5264,15 +5264,15 @@ SDValue SelectionDAG::getNode(unsigned Opcode, const SDLoc &DL, EVT VT,
       return getConstant(Val.byteSwap(), DL, VT, C->isTargetOpcode(),
                          C->isOpaque());
     case ISD::CTPOP:
-      return getConstant(Val.countPopulation(), DL, VT, C->isTargetOpcode(),
+      return getConstant(Val.popcount(), DL, VT, C->isTargetOpcode(),
                          C->isOpaque());
     case ISD::CTLZ:
     case ISD::CTLZ_ZERO_UNDEF:
-      return getConstant(Val.countLeadingZeros(), DL, VT, C->isTargetOpcode(),
+      return getConstant(Val.countl_zero(), DL, VT, C->isTargetOpcode(),
                          C->isOpaque());
     case ISD::CTTZ:
     case ISD::CTTZ_ZERO_UNDEF:
-      return getConstant(Val.countTrailingZeros(), DL, VT, C->isTargetOpcode(),
+      return getConstant(Val.countr_zero(), DL, VT, C->isTargetOpcode(),
                          C->isOpaque());
     case ISD::FP16_TO_FP:
     case ISD::BF16_TO_FP: {
@@ -6721,7 +6721,7 @@ SDValue SelectionDAG::getNode(unsigned Opcode, const SDLoc &DL, EVT VT,
   case ISD::VECTOR_SHUFFLE:
     llvm_unreachable("should use getVectorShuffle constructor!");
   case ISD::VECTOR_SPLICE: {
-    if (cast<ConstantSDNode>(N3)->isNullValue())
+    if (cast<ConstantSDNode>(N3)->isZero())
       return N1;
     break;
   }
@@ -11025,7 +11025,7 @@ bool llvm::isBitwiseNot(SDValue V, bool AllowUndefs) {
   unsigned NumBits = V.getScalarValueSizeInBits();
   ConstantSDNode *C =
       isConstOrConstSplat(V, AllowUndefs, /*AllowTruncation*/ true);
-  return C && (C->getAPIntValue().countTrailingOnes() >= NumBits);
+  return C && (C->getAPIntValue().countr_one() >= NumBits);
 }
 
 ConstantSDNode *llvm::isConstOrConstSplat(SDValue N, bool AllowUndefs,
@@ -11829,7 +11829,7 @@ SDValue BuildVectorSDNode::getSplatValue(const APInt &DemandedElts,
   }
 
   if (!Splatted) {
-    unsigned FirstDemandedIdx = DemandedElts.countTrailingZeros();
+    unsigned FirstDemandedIdx = DemandedElts.countr_zero();
     assert(getOperand(FirstDemandedIdx).isUndef() &&
            "Can only have a splat without a constant for all undefs.");
     return getOperand(FirstDemandedIdx);
@@ -11951,7 +11951,7 @@ bool BuildVectorSDNode::getConstantRawBits(
 
   // Extract raw src bits.
   SmallVector<APInt> SrcBitElements(NumSrcOps,
-                                    APInt::getNullValue(SrcEltSizeInBits));
+                                    APInt::getZero(SrcEltSizeInBits));
   BitVector SrcUndeElements(NumSrcOps, false);
 
   for (unsigned I = 0; I != NumSrcOps; ++I) {
@@ -11989,7 +11989,7 @@ void BuildVectorSDNode::recastRawBits(bool IsLittleEndian,
   unsigned NumDstOps = (NumSrcOps * SrcEltSizeInBits) / DstEltSizeInBits;
   DstUndefElements.clear();
   DstUndefElements.resize(NumDstOps, false);
-  DstBitElements.assign(NumDstOps, APInt::getNullValue(DstEltSizeInBits));
+  DstBitElements.assign(NumDstOps, APInt::getZero(DstEltSizeInBits));
 
   // Concatenate src elements constant bits together into dst element.
   if (SrcEltSizeInBits <= DstEltSizeInBits) {
@@ -12199,10 +12199,37 @@ void SelectionDAG::copyExtraInfo(SDNode *From, SDNode *To) {
   if (I == SDEI.end())
     return;
 
+  // We need to copy NodeExtraInfo to all _new_ nodes that are being introduced
+  // through the replacement of From with To. Otherwise, replacements of a node
+  // (From) with more complex nodes (To and its operands) may result in lost
+  // extra info where the root node (To) is insignificant in further propagating
+  // and using extra info when further lowering to MIR.
+  //
+  // In the first step pre-populate the visited set with the nodes reachable
+  // from the old From node. This avoids copying NodeExtraInfo to parts of the
+  // DAG that is not new and should be left untouched.
+  SmallPtrSet<const SDNode *, 32> Visited;
+  auto VisitFrom = [&Visited](auto &&Self, SDNode *N) {
+    if (!Visited.insert(N).second)
+      return;
+    for (const SDValue &Op : N->op_values())
+      Self(Self, Op.getNode());
+  };
+  VisitFrom(VisitFrom, From);
+
   // Use of operator[] on the DenseMap may cause an insertion, which invalidates
   // the iterator, hence the need to make a copy to prevent a use-after-free.
   NodeExtraInfo Copy = I->second;
-  SDEI[To] = std::move(Copy);
+
+  // Copy extra info to To and all its transitive operands (that are new).
+  auto DeepCopyTo = [this, &Copy, &Visited](auto &&Self, SDNode *To) {
+    if (!Visited.insert(To).second)
+      return;
+    SDEI[To] = Copy;
+    for (const SDValue &Op : To->op_values())
+      Self(Self, Op.getNode());
+  };
+  DeepCopyTo(DeepCopyTo, To);
 }
 
 #ifndef NDEBUG

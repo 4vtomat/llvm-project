@@ -14,6 +14,7 @@
 #ifndef MLIR_TARGET_LLVMIR_MODULETRANSLATION_H
 #define MLIR_TARGET_LLVMIR_MODULETRANSLATION_H
 
+#include "mlir/Dialect/LLVMIR/LLVMInterfaces.h"
 #include "mlir/IR/Operation.h"
 #include "mlir/IR/SymbolTable.h"
 #include "mlir/IR/Value.h"
@@ -121,11 +122,6 @@ public:
   void forgetMapping(Region &region);
 
   /// Returns the LLVM metadata corresponding to a symbol reference to an mlir
-  /// LLVM dialect access group operation.
-  llvm::MDNode *getAccessGroup(Operation *op,
-                               SymbolRefAttr accessGroupRef) const;
-
-  /// Returns the LLVM metadata corresponding to a symbol reference to an mlir
   /// LLVM dialect alias scope operation
   llvm::MDNode *getAliasScope(Operation *op, SymbolRefAttr aliasScopeRef) const;
 
@@ -135,9 +131,8 @@ public:
   // Sets LLVM metadata for memory operations that have alias scope information.
   void setAliasScopeMetadata(Operation *op, llvm::Instruction *inst);
 
-  /// Sets LLVM TBAA metadata for memory operations that have
-  /// TBAA attributes.
-  void setTBAAMetadata(Operation *op, llvm::Instruction *inst);
+  /// Sets LLVM TBAA metadata for memory operations that have TBAA attributes.
+  void setTBAAMetadata(AliasAnalysisOpInterface op, llvm::Instruction *inst);
 
   /// Sets LLVM loop metadata for branch operations that have a loop annotation
   /// attribute.
@@ -331,11 +326,6 @@ private:
   /// they are converted to. This allows for connecting PHI nodes to the source
   /// values after all operations are converted.
   DenseMap<Operation *, llvm::Instruction *> branchMapping;
-
-  /// Mapping from an access group metadata operation to its LLVM metadata.
-  /// This map is populated on module entry and is used to annotate loops (as
-  /// identified via their branches) and contained memory accesses.
-  DenseMap<Operation *, llvm::MDNode *> accessGroupMetadataMapping;
 
   /// Mapping from an alias scope metadata operation to its LLVM metadata.
   /// This map is populated on module entry.

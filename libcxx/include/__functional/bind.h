@@ -30,9 +30,9 @@ struct is_bind_expression : _If<
     is_bind_expression<__remove_cvref_t<_Tp> >
 > {};
 
-#if _LIBCPP_STD_VER > 14
+#if _LIBCPP_STD_VER >= 17
 template <class _Tp>
-inline constexpr size_t is_bind_expression_v = is_bind_expression<_Tp>::value;
+inline constexpr bool is_bind_expression_v = is_bind_expression<_Tp>::value;
 #endif
 
 template<class _Tp>
@@ -42,9 +42,9 @@ struct is_placeholder : _If<
     is_placeholder<__remove_cvref_t<_Tp> >
 > {};
 
-#if _LIBCPP_STD_VER > 14
+#if _LIBCPP_STD_VER >= 17
 template <class _Tp>
-inline constexpr size_t is_placeholder_v = is_placeholder<_Tp>::value;
+inline constexpr int is_placeholder_v = is_placeholder<_Tp>::value;
 #endif
 
 namespace placeholders

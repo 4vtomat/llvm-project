@@ -12,38 +12,21 @@
 defvar UpperBoundLMUL = "UpperBound";
 defvar SchedMxList = ["UpperBound", "M1", "M2", "M4", "M8", "MF2", "MF4", "MF8"];
 // Used for widening and narrowing instructions as it doesn't contain M8.
-defvar SchedMxListW = ["UpperBound", "MF8", "MF4", "MF2", "M1", "M2", "M4"];
-defvar SchedMxListFW = ["UpperBound", "MF4", "MF2", "M1", "M2", "M4"];
+defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
+defvar SchedMxListFW = !listremove(SchedMxList, ["M8", "MF8"]);
 // Used for widening floating-point Reduction as it doesn't contain MF8.
-defvar SchedMxListFWRed = ["UpperBound", "MF4", "MF2", "M1", "M2", "M4", "M8"];
+defvar SchedMxListFWRed = !listremove(SchedMxList, ["MF8"]);
 
-// Creates SchedWrite for each (name, LMUL) pair for LMUL in SchedMxList
-multiclass LMULSchedWrites<string name> {
-  foreach mx = SchedMxList in {
+// Define multiclasses to define SchedWrite, SchedRead,  WriteRes, and
+// ReadAdvance for each (name, LMUL) pair for each LMUL in each of the
+// SchedMxList variants above.
+
+multiclass LMULSchedWritesImpl<string name, list<string> MxList> {
+  foreach mx = MxList in {
     def name # "_" # mx : SchedWrite;
   }
 }
-
-// Creates SchedWrite for each (name, LMUL) pair for LMUL in SchedMxListW
-multiclass LMULSchedWritesW<string name> {
-  foreach mx = SchedMxListW in {
-    def name # "_" # mx : SchedWrite;
-  }
-}
-
-// Creates SchedWrite for each (name, LMUL) pair for LMUL in SchedMxListFW
-multiclass LMULSchedWritesFW<string name> {
-  foreach mx = SchedMxListFW in {
-    def name # "_" # mx : SchedWrite;
-  }
-}
-
-// Creates SchedWrite for each (name, LMUL) pair for LMUL in SchedMxListFWRed
-multiclass LMULSchedWritesFWRed<string name> {
-  foreach mx = SchedMxListFWRed in {
-    def name # "_" # mx : SchedWrite;
-  }
-}
+<<<<<<< HEAD
 
 // SIFIVE_CUSTOMIZATION
 // Creates WriteRes for (name, mx, resources) tuple
@@ -103,33 +86,51 @@ multiclass LMULWriteResFW<string name, list<ProcResourceKind> resources> {
 // in SchedMxListFWRed
 multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources> {
   foreach mx = SchedMxListFWRed in {
+=======
+multiclass LMULSchedReadsImpl<string name, list<string> MxList> {
+  foreach mx = MxList in {
+    def name # "_" # mx : SchedRead;
+  }
+}
+multiclass LMULWriteResImpl<string name, list<string> MxList,
+                            list<ProcResourceKind> resources> {
+  foreach mx = MxList in {
+>>>>>>> upstream/main
     def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
   }
 }
-
-// Creates ReadAdvance for each (name, LMUL, val) tuple for LMUL
-// in SchedMxList
-multiclass LMULReadAdvance<string name, int val, list<SchedWrite> writes = []> {
-  foreach mx = SchedMxList in {
+multiclass LMULReadAdvanceImpl<string name, list<string> MxList, int val,
+                               list<SchedWrite> writes = []> {
+  foreach mx = MxList in {
     def : ReadAdvance<!cast<SchedRead>(name # "_" # mx), val, writes>;
   }
 }
 
-// Creates ReadAdvance for each (name, LMUL, val) tuple for LMUL
-// in SchedMxListW
-multiclass LMULReadAdvanceW<string name, int val, list<SchedWrite> writes = []> {
-  foreach mx = SchedMxListW in {
-    def : ReadAdvance<!cast<SchedRead>(name # "_" # mx), val, writes>;
-  }
-}
+multiclass LMULSchedWrites<string name> : LMULSchedWritesImpl<name, SchedMxList>;
+multiclass LMULSchedReads<string name> : LMULSchedReadsImpl<name, SchedMxList>;
+multiclass LMULWriteRes<string name, list<ProcResourceKind> resources>
+  : LMULWriteResImpl<name, SchedMxList, resources>;
+multiclass LMULReadAdvance<string name, int val, list<SchedWrite> writes = []>
+  : LMULReadAdvanceImpl<name, SchedMxList, val, writes>;
 
-// Creates ReadAdvance for each (name, LMUL, val) tuple for LMUL
-// in SchedMxListFW
-multiclass LMULReadAdvanceFW<string name, int val, list<SchedWrite> writes = []> {
-  foreach mx = SchedMxListFW in {
-    def : ReadAdvance<!cast<SchedRead>(name # "_" # mx), val, writes>;
-  }
-}
+multiclass LMULSchedWritesW<string name> : LMULSchedWritesImpl<name, SchedMxListW>;
+multiclass LMULSchedReadsW<string name> : LMULSchedReadsImpl<name, SchedMxListW>;
+multiclass LMULWriteResW<string name, list<ProcResourceKind> resources>
+  : LMULWriteResImpl<name, SchedMxListW, resources>;
+multiclass LMULReadAdvanceW<string name, int val, list<SchedWrite> writes = []>
+  : LMULReadAdvanceImpl<name, SchedMxListW, val, writes>;
+
+multiclass LMULSchedWritesFW<string name> : LMULSchedWritesImpl<name, SchedMxListFW>;
+multiclass LMULSchedReadsFW<string name> : LMULSchedReadsImpl<name, SchedMxListFW>;
+multiclass LMULWriteResFW<string name, list<ProcResourceKind> resources>
+  : LMULWriteResImpl<name, SchedMxListFW, resources>;
+multiclass LMULReadAdvanceFW<string name, int val, list<SchedWrite> writes = []>
+  : LMULReadAdvanceImpl<name, SchedMxListFW, val, writes>;
+
+multiclass LMULSchedWritesFWRed<string name> : LMULSchedWritesImpl<name, SchedMxListFWRed>;
+multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources>
+  : LMULWriteResImpl<name, SchedMxListFWRed, resources>;
+
 
 // 3.6 Vector Byte Length vlenb
 def WriteRdVLENB      : SchedWrite;

@@ -192,8 +192,13 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI, raw_ostream &OS,
   Fixups.push_back(MCFixup::create(
       0, Expr, MCFixupKind(FixupKind), MI.getLoc()));
 
+<<<<<<< HEAD
   // Emit fixup_riscv_relax where the relax feature is enabled.
   if (STI.getFeatureBits()[RISCV::FeatureRelax] && RelaxCandidate) {
+=======
+  // Emit fixup_riscv_relax for tprel_add where the relax feature is enabled.
+  if (STI.hasFeature(RISCV::FeatureRelax)) {
+>>>>>>> upstream/main
     const MCConstantExpr *Dummy = MCConstantExpr::create(0, Ctx);
     Fixups.push_back(MCFixup::create(
         0, Dummy, MCFixupKind(RISCV::fixup_riscv_relax), MI.getLoc()));
@@ -241,8 +246,8 @@ void RISCVMCCodeEmitter::expandLongCondBr(const MCInst &MI, raw_ostream &OS,
       Opcode == RISCV::PseudoLongBNE || Opcode == RISCV::PseudoLongBEQ;
 
   bool UseCompressedBr = false;
-  if (IsEqTest && (STI.getFeatureBits()[RISCV::FeatureStdExtC] ||
-                   STI.getFeatureBits()[RISCV::FeatureExtZca])) {
+  if (IsEqTest && (STI.hasFeature(RISCV::FeatureStdExtC) ||
+                   STI.hasFeature(RISCV::FeatureExtZca))) {
     if (RISCV::X8 <= SrcReg1.id() && SrcReg1.id() <= RISCV::X15 &&
         SrcReg2.id() == RISCV::X0) {
       UseCompressedBr = true;
@@ -370,7 +375,7 @@ RISCVMCCodeEmitter::getImmOpValueAsr1(const MCInst &MI, unsigned OpNo,
 unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
                                            SmallVectorImpl<MCFixup> &Fixups,
                                            const MCSubtargetInfo &STI) const {
-  bool EnableRelax = STI.getFeatureBits()[RISCV::FeatureRelax];
+  bool EnableRelax = STI.hasFeature(RISCV::FeatureRelax);
   const MCOperand &MO = MI.getOperand(OpNo);
 
   MCInstrDesc const &Desc = MCII.get(MI.getOpcode());

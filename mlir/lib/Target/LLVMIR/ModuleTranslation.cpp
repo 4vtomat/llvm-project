@@ -18,6 +18,7 @@
 #include "LoopAnnotationTranslation.h"
 #include "mlir/Dialect/DLTI/DLTI.h"
 #include "mlir/Dialect/LLVMIR/LLVMDialect.h"
+#include "mlir/Dialect/LLVMIR/LLVMInterfaces.h"
 #include "mlir/Dialect/LLVMIR/Transforms/LegalizeForExport.h"
 #include "mlir/Dialect/OpenMP/OpenMPDialect.h"
 #include "mlir/IR/Attributes.h"
@@ -421,8 +422,8 @@ ModuleTranslation::ModuleTranslation(Operation *module,
     : mlirModule(module), llvmModule(std::move(llvmModule)),
       debugTranslation(
           std::make_unique<DebugTranslation>(module, *this->llvmModule)),
-      loopAnnotationTranslation(
-          std::make_unique<LoopAnnotationTranslation>(*this)),
+      loopAnnotationTranslation(std::make_unique<LoopAnnotationTranslation>(
+          module, *this->llvmModule)),
       typeTranslator(this->llvmModule->getContext()),
       iface(module->getContext()) {
   assert(satisfiesLLVMModule(mlirModule) &&
@@ -449,7 +450,6 @@ void ModuleTranslation::forgetMapping(Region &region) {
           branchMapping.erase(&op);
         if (isa<LLVM::GlobalOp>(op))
           globalsMapping.erase(&op);
-        accessGroupMetadataMapping.erase(&op);
         llvm::append_range(
             toProcess,
             llvm::map_range(op.getRegions(), [](Region &r) { return &r; }));
@@ -994,47 +994,16 @@ LogicalResult ModuleTranslation::convertFunctions() {
   return success();
 }
 
-llvm::MDNode *
-ModuleTranslation::getAccessGroup(Operation *op,
-                                  SymbolRefAttr accessGroupRef) const {
-  auto metadataName = accessGroupRef.getRootReference();
-  auto accessGroupName = accessGroupRef.getLeafReference();
-  auto metadataOp = SymbolTable::lookupNearestSymbolFrom<LLVM::MetadataOp>(
-      op->getParentOp(), metadataName);
-  auto *accessGroupOp =
-      SymbolTable::lookupNearestSymbolFrom(metadataOp, accessGroupName);
-  return accessGroupMetadataMapping.lookup(accessGroupOp);
-}
-
 LogicalResult ModuleTranslation::createAccessGroupMetadata() {
-  mlirModule->walk([&](LLVM::MetadataOp metadatas) {
-    metadatas.walk([&](LLVM::AccessGroupMetadataOp op) {
-      llvm::LLVMContext &ctx = llvmModule->getContext();
-      llvm::MDNode *accessGroup = llvm::MDNode::getDistinct(ctx, {});
-      accessGroupMetadataMapping.insert({op, accessGroup});
-    });
-  });
-  return success();
+  return loopAnnotationTranslation->createAccessGroupMetadata();
 }
 
 void ModuleTranslation::setAccessGroupsMetadata(Operation *op,
                                                 llvm::Instruction *inst) {
   auto populateGroupsMetadata = [&](ArrayAttr groupRefs) {
-    if (!groupRefs || groupRefs.empty())
-      return;
-
-    llvm::Module *module = inst->getModule();
-    SmallVector<llvm::Metadata *> groupMDs;
-    for (SymbolRefAttr groupRef : groupRefs.getAsRange<SymbolRefAttr>())
-      groupMDs.push_back(getAccessGroup(op, groupRef));
-
-    llvm::MDNode *node = nullptr;
-    if (groupMDs.size() == 1)
-      node = llvm::cast<llvm::MDNode>(groupMDs.front());
-    else if (groupMDs.size() >= 2)
-      node = llvm::MDNode::get(module->getContext(), groupMDs);
-
-    inst->setMetadata(llvm::LLVMContext::MD_access_group, node);
+    if (llvm::MDNode *node =
+            loopAnnotationTranslation->getAccessGroups(op, groupRefs))
+      inst->setMetadata(llvm::LLVMContext::MD_access_group, node);
   };
 
   auto groupRefs =
@@ -1123,31 +1092,25 @@ llvm::MDNode *ModuleTranslation::getTBAANode(Operation *op,
   return tbaaMetadataMapping.lookup(tagOp);
 }
 
-void ModuleTranslation::setTBAAMetadata(Operation *op,
+void ModuleTranslation::setTBAAMetadata(AliasAnalysisOpInterface op,
                                         llvm::Instruction *inst) {
-  auto populateTBAAMetadata = [&](std::optional<ArrayAttr> tagRefs) {
-    if (!tagRefs || tagRefs->empty())
-      return;
+  ArrayAttr tagRefs = op.getTBAATagsOrNull();
+  if (!tagRefs || tagRefs.empty())
+    return;
 
-    // LLVM IR currently does not support attaching more than one
-    // TBAA access tag to a memory accessing instruction.
-    // It may be useful to support this in future, but for the time being
-    // just ignore the metadata if MLIR operation has multiple access tags.
-    if (tagRefs->size() > 1) {
-      op->emitWarning() << "TBAA access tags were not translated, because LLVM "
-                           "IR only supports a single tag per instruction";
-      return;
-    }
+  // LLVM IR currently does not support attaching more than one TBAA access tag
+  // to a memory accessing instruction. It may be useful to support this in
+  // future, but for the time being just ignore the metadata if MLIR operation
+  // has multiple access tags.
+  if (tagRefs.size() > 1) {
+    op.emitWarning() << "TBAA access tags were not translated, because LLVM "
+                        "IR only supports a single tag per instruction";
+    return;
+  }
 
-    SymbolRefAttr tagRef = (*tagRefs)[0].cast<SymbolRefAttr>();
-    llvm::MDNode *node = getTBAANode(op, tagRef);
-    inst->setMetadata(llvm::LLVMContext::MD_tbaa, node);
-  };
-
-  llvm::TypeSwitch<Operation *>(op)
-      .Case<LoadOp, StoreOp>(
-          [&](auto memOp) { populateTBAAMetadata(memOp.getTbaa()); })
-      .Default([](auto) { llvm_unreachable("expected LoadOp or StoreOp"); });
+  SymbolRefAttr tagRef = tagRefs[0].cast<SymbolRefAttr>();
+  llvm::MDNode *node = getTBAANode(op, tagRef);
+  inst->setMetadata(llvm::LLVMContext::MD_tbaa, node);
 }
 
 LogicalResult ModuleTranslation::createTBAAMetadata() {
@@ -1244,11 +1207,14 @@ LogicalResult ModuleTranslation::createTBAAMetadata() {
 
 void ModuleTranslation::setLoopMetadata(Operation *op,
                                         llvm::Instruction *inst) {
-  auto attr =
-      op->getAttrOfType<LoopAnnotationAttr>(LLVMDialect::getLoopAttrName());
+  LoopAnnotationAttr attr =
+      TypeSwitch<Operation *, LoopAnnotationAttr>(op)
+          .Case<LLVM::BrOp, LLVM::CondBrOp>(
+              [](auto branchOp) { return branchOp.getLoopAnnotationAttr(); });
   if (!attr)
     return;
-  llvm::MDNode *loopMD = loopAnnotationTranslation->translate(attr, op);
+  llvm::MDNode *loopMD =
+      loopAnnotationTranslation->translateLoopAnnotation(attr, op);
   inst->setMetadata(llvm::LLVMContext::MD_loop, loopMD);
 }
 

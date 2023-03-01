@@ -41,8 +41,7 @@ public:
     unsigned PointerSize;
     support::endianness Endianness;
     jitlink::Edge::Kind EdgeKind;
-    const auto &TT =
-        ENP.getExecutionSession().getExecutorProcessControl().getTargetTriple();
+    const auto &TT = ENP.getExecutionSession().getTargetTriple();
 
     switch (TT.getArch()) {
     case Triple::x86_64:
@@ -102,19 +101,18 @@ private:
 namespace llvm {
 namespace orc {
 
-Expected<std::unique_ptr<ELFNixPlatform>>
-ELFNixPlatform::Create(ExecutionSession &ES,
-                       ObjectLinkingLayer &ObjLinkingLayer,
-                       JITDylib &PlatformJD, const char *OrcRuntimePath,
-                       std::optional<SymbolAliasMap> RuntimeAliases) {
-
-  auto &EPC = ES.getExecutorProcessControl();
+Expected<std::unique_ptr<ELFNixPlatform>> ELFNixPlatform::Create(
+    ExecutionSession &ES, ObjectLinkingLayer &ObjLinkingLayer,
+    JITDylib &PlatformJD, std::unique_ptr<DefinitionGenerator> OrcRuntime,
+    std::optional<SymbolAliasMap> RuntimeAliases) {
 
   // If the target is not supported then bail out immediately.
-  if (!supportedTarget(EPC.getTargetTriple()))
+  if (!supportedTarget(ES.getTargetTriple()))
     return make_error<StringError>("Unsupported ELFNixPlatform triple: " +
-                                       EPC.getTargetTriple().str(),
+                                       ES.getTargetTriple().str(),
                                    inconvertibleErrorCode());
+
+  auto &EPC = ES.getExecutorProcessControl();
 
   // Create default aliases if the caller didn't supply any.
   if (!RuntimeAliases) {
@@ -138,20 +136,30 @@ ELFNixPlatform::Create(ExecutionSession &ES,
              JITSymbolFlags::Exported}}})))
     return std::move(Err);
 
-  // Create a generator for the ORC runtime archive.
-  auto OrcRuntimeArchiveGenerator = StaticLibraryDefinitionGenerator::Load(
-      ObjLinkingLayer, OrcRuntimePath, EPC.getTargetTriple());
-  if (!OrcRuntimeArchiveGenerator)
-    return OrcRuntimeArchiveGenerator.takeError();
-
   // Create the instance.
   Error Err = Error::success();
-  auto P = std::unique_ptr<ELFNixPlatform>(
-      new ELFNixPlatform(ES, ObjLinkingLayer, PlatformJD,
-                         std::move(*OrcRuntimeArchiveGenerator), Err));
+  auto P = std::unique_ptr<ELFNixPlatform>(new ELFNixPlatform(
+      ES, ObjLinkingLayer, PlatformJD, std::move(OrcRuntime), Err));
   if (Err)
     return std::move(Err);
   return std::move(P);
+}
+
+Expected<std::unique_ptr<ELFNixPlatform>>
+ELFNixPlatform::Create(ExecutionSession &ES,
+                       ObjectLinkingLayer &ObjLinkingLayer,
+                       JITDylib &PlatformJD, const char *OrcRuntimePath,
+                       std::optional<SymbolAliasMap> RuntimeAliases) {
+
+  // Create a generator for the ORC runtime archive.
+  auto OrcRuntimeArchiveGenerator = StaticLibraryDefinitionGenerator::Load(
+      ObjLinkingLayer, OrcRuntimePath, ES.getTargetTriple());
+  if (!OrcRuntimeArchiveGenerator)
+    return OrcRuntimeArchiveGenerator.takeError();
+
+  return Create(ES, ObjLinkingLayer, PlatformJD,
+                std::move(*OrcRuntimeArchiveGenerator),
+                std::move(RuntimeAliases));
 }
 
 Error ELFNixPlatform::setupJITDylib(JITDylib &JD) {

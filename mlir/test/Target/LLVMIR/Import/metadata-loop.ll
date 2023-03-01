@@ -27,12 +27,31 @@ define void @access_group(ptr %arg1) {
 
 ; // -----
 
+; CHECK-LABEL: llvm.func @supported_ops
+define void @supported_ops(ptr %arg1, float %arg2, i32 %arg3, i32 %arg4) {
+  ; CHECK: llvm.load {{.*}}access_groups =
+  %1 = load i32, ptr %arg1, !llvm.access.group !0
+  ; CHECK: llvm.store {{.*}}access_groups =
+  store i32 %1, ptr %arg1, !llvm.access.group !0
+  ; CHECK: llvm.atomicrmw {{.*}}access_groups =
+  %2 = atomicrmw fmax ptr %arg1, float %arg2 acquire, !llvm.access.group !0
+  ; CHECK: llvm.cmpxchg {{.*}}access_groups =
+  %3 = cmpxchg ptr %arg1, i32 %arg3, i32 %arg4 monotonic seq_cst, !llvm.access.group !0
+  ret void
+}
+
+!0 = !{!1, !2}
+!1 = distinct !{}
+!2 = distinct !{}
+
+; // -----
+
 ; CHECK: #[[$ANNOT_ATTR:.*]] = #llvm.loop_annotation<disableNonforced = true, mustProgress = true, isVectorized = true>
 
 ; CHECK-LABEL: @simple
 define void @simple(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -52,7 +71,7 @@ end:
 ; CHECK-LABEL: @vectorize
 define void @vectorize(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -78,7 +97,7 @@ end:
 ; CHECK-LABEL: @interleave
 define void @interleave(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -96,7 +115,7 @@ end:
 ; CHECK-LABEL: @unroll
 define void @unroll(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -122,7 +141,7 @@ end:
 ; CHECK-LABEL: @unroll_disable
 define void @unroll_disable(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -140,7 +159,7 @@ end:
 ; CHECK-LABEL: @unroll_and_jam
 define void @unroll_and_jam(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -166,7 +185,7 @@ end:
 ; CHECK-LABEL: @licm
 define void @licm(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -185,7 +204,7 @@ end:
 ; CHECK-LABEL: @distribute
 define void @distribute(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -209,7 +228,7 @@ end:
 ; CHECK-LABEL: @pipeline
 define void @pipeline(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -227,7 +246,7 @@ end:
 ; CHECK-LABEL: @peeled
 define void @peeled(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -244,7 +263,7 @@ end:
 ; CHECK-LABEL: @unswitched
 define void @unswitched(i64 %n, ptr %A) {
 entry:
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -264,7 +283,7 @@ end:
 define void @parallel_accesses(ptr %arg) {
 entry:
   %0 = load i32, ptr %arg, !llvm.access.group !0
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void
@@ -287,7 +306,7 @@ define void @multiple_parallel_accesses(ptr %arg) {
 entry:
   %0 = load i32, ptr %arg, !llvm.access.group !0
   %1 = load i32, ptr %arg, !llvm.access.group !3
-; CHECK: llvm.br ^{{.*}} {llvm.loop = #[[$ANNOT_ATTR]]}
+; CHECK: llvm.br ^{{.*}} {loop_annotation = #[[$ANNOT_ATTR]]}
   br label %end, !llvm.loop !1
 end:
   ret void

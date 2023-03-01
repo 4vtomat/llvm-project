@@ -39,6 +39,7 @@ def hlfir_Dialect : Dialect {
 
   let useDefaultTypePrinterParser = 1;
   let cppNamespace = "hlfir";
+  let dependentDialects = ["fir::FIROpsDialect"];
 }
 
 
@@ -111,6 +112,16 @@ def IsFortranNumericalArrayObjectPred
         : CPred<"::hlfir::isFortranNumericalArrayObject($_self)">;
 def AnyFortranNumericalArrayObject : Type<IsFortranNumericalArrayObjectPred,
     "any array-like object containing a numerical type">;
+
+def IsFortranNumericalOrLogicalArrayObjectPred
+        : CPred<"::hlfir::isFortranNumericalOrLogicalArrayObject($_self)">;
+def AnyFortranNumericalOrLogicalArrayObject : Type<IsFortranNumericalOrLogicalArrayObjectPred,
+    "any array-like object containing a numerical or logical type">;
+
+def IsFortranArrayObjectPred
+        : CPred<"::hlfir::isFortranArrayObject($_self)">;
+def AnyFortranArrayObject : Type<IsFortranArrayObjectPred,
+    "any array-like object">;
 
 def IsPassByRefOrIntegerTypePred
         : CPred<"::hlfir::isPassByRefOrIntegerType($_self)">;

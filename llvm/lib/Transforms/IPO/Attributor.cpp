@@ -395,6 +395,18 @@ static bool getPotentialCopiesOfMemoryValue(
         NullOnly = false;
     };
 
+    auto AdjustWrittenValueType = [&](const AAPointerInfo::Access &Acc,
+                                      Value &V) {
+      Value *AdjV = AA::getWithType(V, *I.getType());
+      if (!AdjV) {
+        LLVM_DEBUG(dbgs() << "Underlying object written but stored value "
+                             "cannot be converted to read type: "
+                          << *Acc.getRemoteInst() << " : " << *I.getType()
+                          << "\n";);
+      }
+      return AdjV;
+    };
+
     auto CheckAccess = [&](const AAPointerInfo::Access &Acc, bool IsExact) {
       if ((IsLoad && !Acc.isWriteOrAssumption()) || (!IsLoad && !Acc.isRead()))
         return true;
@@ -416,7 +428,10 @@ static bool getPotentialCopiesOfMemoryValue(
       if (IsLoad) {
         assert(isa<LoadInst>(I) && "Expected load or store instruction only!");
         if (!Acc.isWrittenValueUnknown()) {
-          NewCopies.push_back(Acc.getWrittenValue());
+          Value *V = AdjustWrittenValueType(Acc, *Acc.getWrittenValue());
+          if (!V)
+            return false;
+          NewCopies.push_back(V);
           NewCopyOrigins.push_back(Acc.getRemoteInst());
           return true;
         }
@@ -427,7 +442,10 @@ static bool getPotentialCopiesOfMemoryValue(
                             << *Acc.getRemoteInst() << "\n";);
           return false;
         }
-        NewCopies.push_back(SI->getValueOperand());
+        Value *V = AdjustWrittenValueType(Acc, *SI->getValueOperand());
+        if (!V)
+          return false;
+        NewCopies.push_back(V);
         NewCopyOrigins.push_back(SI);
       } else {
         assert(isa<StoreInst>(I) && "Expected load or store instruction only!");
@@ -3729,98 +3747,3 @@ template <> struct DOTGraphTraits<AADepGraph *> : public DefaultDOTGraphTraits {
 };
 
 } // end namespace llvm
-
-namespace {
-
-struct AttributorLegacyPass : public ModulePass {
-  static char ID;
-
-  AttributorLegacyPass() : ModulePass(ID) {
-    initializeAttributorLegacyPassPass(*PassRegistry::getPassRegistry());
-  }
-
-  bool runOnModule(Module &M) override {
-    if (skipModule(M))
-      return false;
-
-    AnalysisGetter AG;
-    SetVector<Function *> Functions;
-    for (Function &F : M)
-      Functions.insert(&F);
-
-    CallGraphUpdater CGUpdater;
-    BumpPtrAllocator Allocator;
-    InformationCache InfoCache(M, AG, Allocator, /* CGSCC */ nullptr);
-    return runAttributorOnFunctions(InfoCache, Functions, AG, CGUpdater,
-                                    /* DeleteFns*/ true,
-                                    /* IsModulePass */ true);
-  }
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    // FIXME: Think about passes we will preserve and add them here.
-    AU.addRequired<TargetLibraryInfoWrapperPass>();
-  }
-};
-
-struct AttributorCGSCCLegacyPass : public CallGraphSCCPass {
-  static char ID;
-
-  AttributorCGSCCLegacyPass() : CallGraphSCCPass(ID) {
-    initializeAttributorCGSCCLegacyPassPass(*PassRegistry::getPassRegistry());
-  }
-
-  bool runOnSCC(CallGraphSCC &SCC) override {
-    if (skipSCC(SCC))
-      return false;
-
-    SetVector<Function *> Functions;
-    for (CallGraphNode *CGN : SCC)
-      if (Function *Fn = CGN->getFunction())
-        if (!Fn->isDeclaration())
-          Functions.insert(Fn);
-
-    if (Functions.empty())
-      return false;
-
-    AnalysisGetter AG;
-    CallGraph &CG = const_cast<CallGraph &>(SCC.getCallGraph());
-    CallGraphUpdater CGUpdater;
-    CGUpdater.initialize(CG, SCC);
-    Module &M = *Functions.back()->getParent();
-    BumpPtrAllocator Allocator;
-    InformationCache InfoCache(M, AG, Allocator, /* CGSCC */ &Functions);
-    return runAttributorOnFunctions(InfoCache, Functions, AG, CGUpdater,
-                                    /* DeleteFns */ false,
-                                    /* IsModulePass */ false);
-  }
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    // FIXME: Think about passes we will preserve and add them here.
-    AU.addRequired<TargetLibraryInfoWrapperPass>();
-    CallGraphSCCPass::getAnalysisUsage(AU);
-  }
-};
-
-} // end anonymous namespace
-
-Pass *llvm::createAttributorLegacyPass() { return new AttributorLegacyPass(); }
-Pass *llvm::createAttributorCGSCCLegacyPass() {
-  return new AttributorCGSCCLegacyPass();
-}
-
-char AttributorLegacyPass::ID = 0;
-char AttributorCGSCCLegacyPass::ID = 0;
-
-INITIALIZE_PASS_BEGIN(AttributorLegacyPass, "attributor",
-                      "Deduce and propagate attributes", false, false)
-INITIALIZE_PASS_DEPENDENCY(TargetLibraryInfoWrapperPass)
-INITIALIZE_PASS_END(AttributorLegacyPass, "attributor",
-                    "Deduce and propagate attributes", false, false)
-INITIALIZE_PASS_BEGIN(AttributorCGSCCLegacyPass, "attributor-cgscc",
-                      "Deduce and propagate attributes (CGSCC pass)", false,
-                      false)
-INITIALIZE_PASS_DEPENDENCY(TargetLibraryInfoWrapperPass)
-INITIALIZE_PASS_DEPENDENCY(CallGraphWrapperPass)
-INITIALIZE_PASS_END(AttributorCGSCCLegacyPass, "attributor-cgscc",
-                    "Deduce and propagate attributes (CGSCC pass)", false,
-                    false)

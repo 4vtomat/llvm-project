@@ -23,32 +23,22 @@
 using namespace llvm;
 
 void llvm::initializeIPO(PassRegistry &Registry) {
-  initializeAnnotation2MetadataLegacyPass(Registry);
-  initializeConstantMergeLegacyPassPass(Registry);
   initializeDAEPass(Registry);
   initializeDAHPass(Registry);
-  initializeForceFunctionAttrsLegacyPassPass(Registry);
-  initializeGlobalDCELegacyPassPass(Registry);
-  initializeGlobalOptLegacyPassPass(Registry);
   initializeAlwaysInlinerLegacyPassPass(Registry);
-  initializeInferFunctionAttrsLegacyPassPass(Registry);
   initializeLoopExtractorLegacyPassPass(Registry);
 #if SIFIVE_CUSTOMIZATION
   initializeLoopDataLayoutLegacyPassPass(Registry);
 #endif
   initializeSingleLoopExtractorPass(Registry);
-  initializeAttributorLegacyPassPass(Registry);
-  initializeAttributorCGSCCLegacyPassPass(Registry);
-  initializePostOrderFunctionAttrsLegacyPassPass(Registry);
-  initializeIPSCCPLegacyPassPass(Registry);
   initializeBarrierNoopPass(Registry);
-  initializeEliminateAvailableExternallyLegacyPassPass(Registry);
 }
 
 void LLVMInitializeIPO(LLVMPassRegistryRef R) {
   initializeIPO(*unwrap(R));
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createLoopDataLayoutPass());
@@ -59,26 +49,12 @@ void LLVMAddConstantMergePass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createConstantMergePass());
 }
 
+=======
+>>>>>>> upstream/main
 void LLVMAddDeadArgEliminationPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createDeadArgEliminationPass());
 }
 
-void LLVMAddFunctionAttrsPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createPostOrderFunctionAttrsLegacyPass());
-}
-
 void LLVMAddAlwaysInlinerPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(llvm::createAlwaysInlinerLegacyPass());
-}
-
-void LLVMAddGlobalDCEPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createGlobalDCEPass());
-}
-
-void LLVMAddGlobalOptimizerPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createGlobalOptimizerPass());
-}
-
-void LLVMAddIPSCCPPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createIPSCCPPass());
 }
