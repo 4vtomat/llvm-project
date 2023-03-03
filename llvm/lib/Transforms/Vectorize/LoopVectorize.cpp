@@ -11916,14 +11916,18 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       if (*ExpectedTC <=
           *ProfitableVectorTripCount * LVL.getReductionVars().size() * IC) {
         LLVM_DEBUG(dbgs() << "LV: Found a loop with a very small trip count.");
-        LLVM_DEBUG(dbgs() << " But the target considers the trip count too "
-                             "small to consider vectorizing.\n");
-        reportVectorizationFailure(
-            "The trip count is below the minimal threshold value.",
-            "loop trip count is too low, avoiding vectorization",
-            "LowTripCount", ORE, L);
-        Hints.emitRemarkWithHints();
-        return false;
+        if (Hints.getForce() == LoopVectorizeHints::FK_Enabled)
+          LLVM_DEBUG(dbgs() << " But vectorizing was explicitly forced.\n");
+        else {
+          LLVM_DEBUG(dbgs() << " But the target considers the trip count too "
+                               "small to consider vectorizing.\n");
+          reportVectorizationFailure(
+              "The trip count is below the minimal threshold value.",
+              "loop trip count is too low, avoiding vectorization",
+              "LowTripCount", ORE, L);
+          Hints.emitRemarkWithHints();
+          return false;
+        }
       }
 #endif // SIFIVE_CUSTOMIZATION
 
