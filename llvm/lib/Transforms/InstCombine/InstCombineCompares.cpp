@@ -2038,8 +2038,6 @@ Instruction *InstCombinerImpl::foldICmpMulConstant(ICmpInst &Cmp,
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   // With a matching no-overflow guarantee, fold the constants:
   // (X * MulC) < C --> X < (C / MulC)
   // (X * MulC) > C --> X > (C / MulC)
@@ -2072,45 +2070,6 @@ Instruction *InstCombinerImpl::foldICmpMulConstant(ICmpInst &Cmp,
           MulTy, APIntOps::RoundingUDiv(C, *MulC, APInt::Rounding::DOWN));
     }
   }
-#else // SIFIVE_CUSTOMIZATION
-  if (!Mul->hasNoSignedWrap() && !Mul->hasNoUnsignedWrap())
-    return nullptr;
-
-=======
->>>>>>> upstream/main
-  // With a matching no-overflow guarantee, fold the constants:
-  // (X * MulC) < C --> X < (C / MulC)
-  // (X * MulC) > C --> X > (C / MulC)
-  // TODO: Assert that Pred is not equal to SGE, SLE, UGE, ULE?
-  Constant *NewC = nullptr;
-  if (Mul->hasNoSignedWrap() && ICmpInst::isSigned(Pred)) {
-    // MININT / -1 --> overflow.
-    if (C.isMinSignedValue() && MulC->isAllOnes())
-      return nullptr;
-    if (MulC->isNegative())
-      Pred = ICmpInst::getSwappedPredicate(Pred);
-
-    if (Pred == ICmpInst::ICMP_SLT || Pred == ICmpInst::ICMP_SGE) {
-      NewC = ConstantInt::get(
-          MulTy, APIntOps::RoundingSDiv(C, *MulC, APInt::Rounding::UP));
-    } else {
-      assert((Pred == ICmpInst::ICMP_SLE || Pred == ICmpInst::ICMP_SGT) &&
-             "Unexpected predicate");
-      NewC = ConstantInt::get(
-          MulTy, APIntOps::RoundingSDiv(C, *MulC, APInt::Rounding::DOWN));
-    }
-  } else if (Mul->hasNoUnsignedWrap() && ICmpInst::isUnsigned(Pred)) {
-    if (Pred == ICmpInst::ICMP_ULT || Pred == ICmpInst::ICMP_UGE) {
-      NewC = ConstantInt::get(
-          MulTy, APIntOps::RoundingUDiv(C, *MulC, APInt::Rounding::UP));
-    } else {
-      assert((Pred == ICmpInst::ICMP_ULE || Pred == ICmpInst::ICMP_UGT) &&
-             "Unexpected predicate");
-      NewC = ConstantInt::get(
-          MulTy, APIntOps::RoundingUDiv(C, *MulC, APInt::Rounding::DOWN));
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   return NewC ? new ICmpInst(Pred, X, NewC) : nullptr;
 }
