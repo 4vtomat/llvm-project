@@ -105,13 +105,8 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-<<<<<<< HEAD
 ; CHECK-NEXT:  LV: Loop cost is 25
-; CHECK-NEXT:  LV: IC is 2
-=======
-; CHECK-NEXT:  LV: Loop cost is 23
 ; CHECK-NEXT:  LV: IC is 1
->>>>>>> upstream/main
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
 ; CHECK-NEXT:  LV: Interleaving is not beneficial.
@@ -243,13 +238,8 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-<<<<<<< HEAD
 ; CHECK-NEXT:  LV: Loop cost is 25
-; CHECK-NEXT:  LV: IC is 2
-=======
-; CHECK-NEXT:  LV: Loop cost is 23
 ; CHECK-NEXT:  LV: IC is 1
->>>>>>> upstream/main
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
 ; CHECK-NEXT:  LV: Interleaving is not beneficial.
