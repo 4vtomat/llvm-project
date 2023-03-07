@@ -73,6 +73,7 @@ def SIFIVE_P600 : RISCVTuneProcessorModel<"sifive-p600-series",
 def SIFIVE_E20 : RISCVProcessorModel<"sifive-e20",
                                      RocketModel,
                                      [Feature32Bit,
+                                      FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
                                       FeatureStdExtM,
                                       FeatureStdExtC]>;
@@ -80,6 +81,7 @@ def SIFIVE_E20 : RISCVProcessorModel<"sifive-e20",
 def SIFIVE_E21 : RISCVProcessorModel<"sifive-e21",
                                      RocketModel,
                                      [Feature32Bit,
+                                      FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
                                       FeatureStdExtM,
                                       FeatureStdExtA,
@@ -97,6 +99,7 @@ def SIFIVE_E24 : RISCVProcessorModel<"sifive-e24",
 def SIFIVE_E31 : RISCVProcessorModel<"sifive-e31",
                                      RocketModel,
                                      [Feature32Bit,
+                                      FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
                                       FeatureStdExtM,
                                       FeatureStdExtA,
@@ -124,6 +127,7 @@ def SIFIVE_E76 : RISCVProcessorModel<"sifive-e76",
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_E61 : RISCVProcessorModel<"sifive-e61", SiFive6Model,
                                       [Feature32Bit,
+                                       FeatureStdExtZicsr,
                                        FeatureStdExtZifencei,
                                        FeatureStdExtM,
                                        FeatureStdExtA,
@@ -156,6 +160,7 @@ def SIFIVE_E76N : RISCVProcessorModel<"sifive-e76n", SiFive7NModel,
 def SIFIVE_S21 : RISCVProcessorModel<"sifive-s21",
                                      RocketModel,
                                      [Feature64Bit,
+                                      FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
                                       FeatureStdExtM,
                                       FeatureStdExtA,
@@ -164,6 +169,7 @@ def SIFIVE_S21 : RISCVProcessorModel<"sifive-s21",
 def SIFIVE_S51 : RISCVProcessorModel<"sifive-s51",
                                      RocketModel,
                                      [Feature64Bit,
+                                      FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
                                       FeatureStdExtM,
                                       FeatureStdExtA,
@@ -182,6 +188,7 @@ def SIFIVE_S54 : RISCVProcessorModel<"sifive-s54",
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_S61 : RISCVProcessorModel<"sifive-s61", SiFive6Model,
                                      [Feature64Bit,
+                                      FeatureStdExtZicsr,
                                       FeatureStdExtZifencei,
                                       FeatureStdExtM,
                                       FeatureStdExtA,
