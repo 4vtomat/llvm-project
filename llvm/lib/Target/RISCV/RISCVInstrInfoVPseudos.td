@@ -56,38 +56,6 @@ defvar VXRM_DYN = 4;
 //===----------------------------------------------------------------------===//
 
 class PseudoToVInst<string PseudoInst> {
-<<<<<<< HEAD
-  string VInst = !subst("_M8", "",
-                 !subst("_M4", "",
-                 !subst("_M2", "",
-                 !subst("_M1", "",
-                 !subst("_MF2", "",
-                 !subst("_MF4", "",
-                 !subst("_MF8", "",
-                 !subst("_B1", "",
-                 !subst("_B2", "",
-                 !subst("_B4", "",
-                 !subst("_B8", "",
-                 !subst("_B16", "",
-                 !subst("_B32", "",
-                 !subst("_B64", "",
-                 !subst("_MASK", "",
-                 !subst("_TIED", "",
-                 !subst("_TU", "",
-#ifdef SIFIVE_CUSTOMIZATION
-                 !subst("_F16", "_F",
-                 !subst("_F32", "_F",
-                 !subst("_F64", "_F",
-                 !subst("VF16", "VF",
-                 !subst("VF32", "VF",
-                 !subst("VF64", "VF",
-                 !subst("WF16", "WF",
-                 !subst("WF32", "WF",
-                 !subst("WF64", "WF",
-                 !subst("_SE", "",
-                 !subst("Pseudo", "", PseudoInst))))))))))))))))))))))))))));
-#endif // SIFIVE_CUSTOMIZATION
-=======
   defvar AffixSubsts = [["Pseudo", ""],
                         ["_F64", "_F"],
                         ["_F32", "_F"],
@@ -98,6 +66,9 @@ class PseudoToVInst<string PseudoInst> {
                         ["_WF64", "_WF"],
                         ["_WF32", "_WF"],
                         ["_WF16", "_WF"],
+#ifdef SIFIVE_CUSTOMIZATION
+                        ["_SE", ""],
+#endif // SIFIVE_CUSTOMIZATION
                         ["_TU", ""],
                         ["_TIED", ""],
                         ["_MASK", ""],
@@ -118,7 +89,6 @@ class PseudoToVInst<string PseudoInst> {
                        ];
   string VInst = !foldl(PseudoInst, AffixSubsts, Acc, AffixSubst,
                         !subst(AffixSubst[0], AffixSubst[1], Acc));
->>>>>>> upstream/main
 }
 
 // This class describes information associated to the LMUL.
