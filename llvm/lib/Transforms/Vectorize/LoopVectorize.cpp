@@ -262,7 +262,6 @@ static cl::opt<PreferPredicateTy::Option> PreferPredicateOverEpilogue(
                          "prefers tail-folding, don't attempt vectorization if "
                          "tail-folding fails.")));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UseStridedAccesses(
     "vectorizer-use-vp-strided-load-store",
@@ -276,7 +275,7 @@ static cl::opt<unsigned> VectorRegisterWidthFactor(
              "value by which the vector register width is a multiple of "
              "minimum vector register width."));
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static cl::opt<TailFoldingStyle> ForceTailFoldingStyle(
     "force-tail-folding-style", cl::desc("Force the tail folding style"),
     cl::init(TailFoldingStyle::None),
@@ -295,7 +294,6 @@ static cl::opt<TailFoldingStyle> ForceTailFoldingStyle(
             TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck,
             "data-and-control-without-rt-check",
             "Similar to data-and-control, but remove the runtime check")));
->>>>>>> upstream/main
 
 static cl::opt<bool> MaximizeBandwidth(
     "vectorizer-maximize-bandwidth", cl::init(false), cl::Hidden,
@@ -3391,19 +3389,14 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   if (Style == TailFoldingStyle::None)
     CheckMinIters =
         Builder.CreateICmp(P, Count, CreateStep(), "min.iters.check");
-<<<<<<< HEAD
-  else if (VF.isScalable()
+  else if (VF.isScalable() &&
 #if SIFIVE_CUSTOMIZATION
       // Don't require this overflow check as with VP-intrinsics we don't mask
       // the loop body.
-      && !useVLAVectorizer()
-#endif // SIFIVE_CUSTOMIZATION
-    ) {
-=======
-  else if (VF.isScalable() &&
+           !useVLAVectorizer() &&
+#endif // SIFIVE_CUSTOMIZATION0
            !isIndvarOverflowCheckKnownFalse(Cost, VF, UF) &&
            Style != TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck) {
->>>>>>> upstream/main
     // vscale is not necessarily a power-of-2, which means we cannot guarantee
     // an overflow to zero when updating induction variables and so an
     // additional overflow check is required before entering the vector loop.
@@ -6198,7 +6191,6 @@ bool LoopVectorizationCostModel::isMoreProfitable(
   return (CostA * EstimatedWidthB) < (CostB * EstimatedWidthA);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool
 hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
@@ -6220,7 +6212,6 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
   return HasMemoryAccess;
 }
 #endif
-=======
 static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
                                    OptimizationRemarkEmitter *ORE,
                                    Loop *TheLoop) {
@@ -6284,7 +6275,6 @@ static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
       Subset = Tail.take_front(Subset.size() + 1);
   } while (!Tail.empty());
 }
->>>>>>> upstream/main
 
 VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
 #if SIFIVE_CUSTOMIZATION
@@ -9725,7 +9715,7 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
   bool ShouldUseVectorIntrinsic =
       ID && LoopVectorizationPlanner::getDecisionAndClampRange(
                 [&](ElementCount VF) -> bool {
-                  Function *Variant;
+                  Function *Variant = nullptr;
                   // Is it beneficial to perform intrinsic call compared to lib
                   // call?
                   InstructionCost CallCost =
@@ -9734,7 +9724,7 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
                       CM.getVectorIntrinsicCost(CI, VF);
 #if SIFIVE_CUSTOMIZATION
                   if (Legal->useVLAVectorizer()) {
-                    return (IntrinsicCost <= CallCost) || !NeedToScalarize;
+                    return (IntrinsicCost <= CallCost) || (Variant == nullptr);
                   } else {
                     return IntrinsicCost <= CallCost;
                   }
@@ -10157,17 +10147,12 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
-<<<<<<< HEAD
-  EB->appendRecipe(CanonicalIVIncrement);
 
 #if SIFIVE_CUSTOMIZATION
-  if (!NeedRVL && Style == TailFoldingStyle::DataAndControlFlow) {
+  if (!NeedRVL && useActiveLaneMaskForControlFlow(Style)) {
 #else
-  if (Style == TailFoldingStyle::DataAndControlFlow) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (useActiveLaneMaskForControlFlow(Style)) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     // Create the active lane mask instruction in the vplan preheader.
     VPBasicBlock *Preheader = Plan.getEntry()->getEntryBasicBlock();
 
@@ -10359,17 +10344,14 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
 #if SIFIVE_CUSTOMIZATION
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(),
-      DLInst ? DLInst->getDebugLoc() : DebugLoc(), CM.getTailFoldingStyle(),
+      DLInst ? DLInst->getDebugLoc() : DebugLoc(),
+      CM.getTailFoldingStyle(IVUpdateMayOverflow),
       Legal->useVLAVectorizer());
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
-<<<<<<< HEAD
-                        CM.getTailFoldingStyle());
-#endif // SIFIVE_CUSTOMIZATION
-=======
                         CM.getTailFoldingStyle(IVUpdateMayOverflow));
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   // Scan the body of the loop in a topological order to visit each basic block
   // after having visited its predecessor basic blocks.
