@@ -199,6 +199,11 @@ private:
   /// @{
 
   bool runOnCountableLoop();
+#if SIFIVE_CUSTOMIZATION
+  bool optimizeBitExtractLoop();
+  bool replaceBitExtract(Loop *CurLoop, BinaryOperator *BitOrInst, Value *Val,
+                         Value *Offset, const SCEV *BECount);
+#endif // SIFIVE_CUSTOMIZATION
   bool runOnLoopBlock(BasicBlock *BB, const SCEV *BECount,
                       SmallVectorImpl<BasicBlock *> &ExitBlocks);
 
@@ -374,6 +379,12 @@ bool LoopIdiomRecognize::runOnLoop(Loop *L) {
   HasMemset = TLI->has(LibFunc_memset);
   HasMemsetPattern = TLI->has(LibFunc_memset_pattern16);
   HasMemcpy = TLI->has(LibFunc_memcpy);
+
+#if SIFIVE_CUSTOMIZATION
+  if (SE->hasLoopInvariantBackedgeTakenCount(L))
+    if (optimizeBitExtractLoop())
+      return true;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (HasMemset || HasMemsetPattern || HasMemcpy)
     if (SE->hasLoopInvariantBackedgeTakenCount(L))
@@ -2931,3 +2942,207 @@ bool LoopIdiomRecognize::recognizeShiftUntilZero() {
   ++NumShiftUntilZero;
   return MadeChange;
 }
+
+#if SIFIVE_CUSTOMIZATION
+// We're looking for this pattern witch extracts a contiguous range of bits into
+// 'bits'.
+//
+//  bits = 0;
+//  for (int i = 0; i != tc; ++i)
+//    bits += val & (1 << (i + offset));
+//
+// In IR:
+//   %pat2.0100.us = phi i32 [ 0, %if.end.us ], [ %conv21.us, %for.body11.us ]
+//   %j.099.us = phi i32 [ 0, %if.end.us ], [ %inc23.us, %for.body11.us ]
+//   %add16.us = add nsw i32 %j.099.us, %width
+//   %sh_prom17.us = zext i32 %add16.us to i64
+//   %shl18.us = shl nuw i64 1, %sh_prom17.us
+//   %and.us = and i64 %shl18.us, %4
+//   %5 = trunc i64 %and.us to i32
+//   %conv21.us = add i32 %pat2.0100.us, %5
+//   %inc23.us = add nuw nsw i32 %j.099.us, 1
+//   %cmp9.us = icmp slt i32 %inc23.us, %width
+//   br i1 %cmp9.us, label %for.body11.us, label
+//   %for.cond8.for.end24_crit_edge.us, !llvm.loop !19
+//
+// We want to replace the use of conv21.us outside the loop with a simpler
+// sequence.
+static bool detectBitExtractLoop(Loop *CurLoop, PHINode &PN,
+                                 BinaryOperator *&BitOrInst, Value *&Val,
+                                 Value *&Offset) {
+  using namespace PatternMatch;
+
+  BitOrInst = nullptr;
+  Value *Start = nullptr, *Step = nullptr;
+  // Look for an add recurrence. The add is behaving like an Or, but we don't
+  // know that.
+  if (!matchSimpleRecurrence(&PN, BitOrInst, Start, Step) ||
+      BitOrInst->getOpcode() != Instruction::Add)
+    return false;
+
+  // Start value should be 0.
+  if (!isa<ConstantInt>(Start) || !cast<ConstantInt>(Start)->isZero())
+    return false;
+
+  // There should be a user outside the loop.
+  if (!llvm::any_of(BitOrInst->users(), [&](User *U) {
+        return !CurLoop->contains(cast<Instruction>(U));
+      }))
+    return false;
+
+  // Step must be an And in this loop. It might be truncated.
+  BinaryOperator *StepBO;
+  if (!match(Step, m_TruncOrSelf(m_BinOp(StepBO))) ||
+      StepBO->getOpcode() != Instruction::And ||
+      !CurLoop->contains(StepBO))
+    return false;
+
+  Value *StepBO0 = StepBO->getOperand(0);
+  Value *StepBO1 = StepBO->getOperand(1);
+
+  // Mask should be calculated in this loop. The other value will be loop
+  // invariant.
+  Instruction *Mask;
+  if (isa<BinaryOperator>(StepBO0) &&
+      CurLoop->contains(cast<BinaryOperator>(StepBO0))) {
+    Mask = cast<BinaryOperator>(StepBO0);
+    Val = StepBO1;
+  } else if (isa<BinaryOperator>(StepBO1) &&
+             CurLoop->contains(cast<BinaryOperator>(StepBO1))) {
+    Mask = cast<BinaryOperator>(StepBO1);
+    Val = StepBO0;
+  } else
+    return false;
+
+  // Val must be loop invariant.
+  if (!CurLoop->isLoopInvariant(Val))
+    return false;
+
+  // Mask should be a shift of 1. ShAmt should be an Add in this loop.
+  BinaryOperator *ShAmt;
+  if (!match(Mask, m_Shl(m_SpecificInt(1), m_ZExtOrSelf(m_BinOp(ShAmt)))) ||
+      ShAmt->getOpcode() != Instruction::Add ||
+      !CurLoop->contains(ShAmt))
+    return false;
+
+  Value *ShAmt0 = ShAmt->getOperand(0);
+  Value *ShAmt1 = ShAmt->getOperand(1);
+
+  // ShAmt is another PHI in this loop.
+  PHINode *PN2;
+  if (isa<PHINode>(ShAmt0) &&
+      CurLoop->contains(cast<PHINode>(ShAmt0))) {
+    PN2 = cast<PHINode>(ShAmt0);
+    Offset = ShAmt1;
+  } else if (isa<PHINode>(ShAmt1) &&
+             CurLoop->contains(cast<PHINode>(ShAmt1))) {
+    PN2 = cast<PHINode>(ShAmt1);
+    Offset = ShAmt0;
+  } else
+    return false;
+
+  // Offset should be loop invariant.
+  if (!CurLoop->isLoopInvariant(Offset))
+    return false;
+
+  // The shift amount should be increasing by 1 each loop.
+  BinaryOperator *Add;
+  Value *AddStart, *AddStep;
+  if (!matchSimpleRecurrence(PN2, Add, AddStart, AddStep) ||
+      Add->getOpcode() != Instruction::Add)
+    return false;
+
+  // Step should be 1.
+  if (!isa<ConstantInt>(AddStep) || !cast<ConstantInt>(AddStep)->isOne())
+    return false;
+
+  // Start should be 0.
+  if (!isa<ConstantInt>(AddStart) || !cast<ConstantInt>(AddStart)->isZero())
+    return false;
+
+  return true;
+}
+
+bool LoopIdiomRecognize::replaceBitExtract(Loop *CurLoop,
+                                           BinaryOperator *BitOrInst,
+                                           Value *Val, Value *Offset,
+                                           const SCEV *BECount) {
+  unsigned ValSize = DL->getTypeSizeInBits(Val->getType());
+  unsigned BECountSize = DL->getTypeSizeInBits(BECount->getType());
+
+  // Make should be at least as large as the back edge count.
+  if (ValSize < BECountSize)
+    return false;
+
+  // Make sure we can compute the trip count without overflow.
+  if (!SE->isLoopEntryGuardedByCond(
+          CurLoop, ICmpInst::ICMP_NE, BECount,
+          SE->getNegativeSCEV(SE->getOne(BECount->getType()))))
+    return false;
+
+  // We don't need to extend since we checked for overflow above.
+  const SCEV *TripCount =
+      SE->getTripCountFromExitCount(BECount, /*Extend*/ false);
+  if (ValSize > BECountSize)
+    TripCount = SE->getZeroExtendExpr(TripCount, Val->getType());
+
+  SCEVExpander Expander(*SE, *DL, "loop-idiom");
+
+  if (!Expander.isSafeToExpand(TripCount))
+    return false;
+
+  // The mask width is the trip count of the loop.
+  BasicBlock *Preheader = CurLoop->getLoopPreheader();
+  Value *MaskWidth = Expander.expandCodeFor(TripCount, Val->getType(),
+                                            Preheader->getTerminator());
+
+  IRBuilder<> Builder(Preheader->getTerminator());
+  Builder.SetCurrentDebugLocation(BitOrInst->getDebugLoc());
+
+  Value *Mask =
+      Builder.CreateShl(ConstantInt::getSigned(Val->getType(), -1), MaskWidth);
+  Mask = Builder.CreateNot(Mask);
+
+  // The mask needs to be shifted left by Offset.
+  if (Offset->getType() != Val->getType())
+    Offset = Builder.CreateZExt(Offset, Val->getType());
+  Mask = Builder.CreateShl(Mask, Offset);
+
+  Value *And = Builder.CreateAnd(Val, Mask);
+  if (And->getType() != BitOrInst->getType())
+    And = Builder.CreateTrunc(And, BitOrInst->getType());
+
+  BitOrInst->replaceUsesOutsideBlock(And, BitOrInst->getParent());
+
+  return true;
+}
+
+bool LoopIdiomRecognize::optimizeBitExtractLoop() {
+  const SCEV *BECount = SE->getBackedgeTakenCount(CurLoop);
+  assert(!isa<SCEVCouldNotCompute>(BECount) &&
+         "runOnCountableLoop() called on a loop without a predictable"
+         "backedge-taken count");
+
+  // Give up if the loop has multiple blocks or multiple backedges.
+  if (CurLoop->getNumBackEdges() != 1 || CurLoop->getNumBlocks() != 1)
+    return false;
+
+  // Limit the size of loops we look at to reduce compile time. If the loop is
+  // larger than it is unlikely to be removed after the optimization so may be
+  // less profitable.
+  BasicBlock *LoopBody = *(CurLoop->block_begin());
+  if (LoopBody->size() >= 12)
+    return false;
+
+  BasicBlock *LoopHeaderBB = CurLoop->getHeader();
+  for (PHINode &PN : LoopHeaderBB->phis()) {
+    BinaryOperator *BitOrInst;
+    Value *Val, *Offset;
+    if (detectBitExtractLoop(CurLoop, PN, BitOrInst, Val, Offset) &&
+        replaceBitExtract(CurLoop, BitOrInst, Val, Offset, BECount))
+      return true;
+  }
+
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
