@@ -535,7 +535,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFromInst(&CI);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
@@ -556,8 +555,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
     Tys.push_back(
         ToVectorTy(ArgOperand->getType(), State.VF.getKnownMinValue()));
 
-=======
->>>>>>> upstream/main
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     SmallVector<Type *, 2> TysForDecl = {CI.getType()};
     SmallVector<Value *, 4> Args;
@@ -588,8 +585,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
 #ifndef NDEBUG
       assert(Variant != nullptr && "Can't create vector function.");
 #endif
-<<<<<<< HEAD
-      VectorF = VFDatabase(CI).getVectorizedFunction(Shape);
+      VectorF = Variant;
 #if SIFIVE_CUSTOMIZATION
       // Add VL as an explicit final argument to SiFive NF Library functions
       if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
@@ -598,9 +594,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
         Args.push_back(RVL);
       }
 #endif
-=======
-      VectorF = Variant;
->>>>>>> upstream/main
     }
 
     SmallVector<OperandBundleDef, 1> OpBundles;
