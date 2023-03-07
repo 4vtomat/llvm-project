@@ -2373,11 +2373,6 @@ MachineInstr *RISCVInstrInfo::commuteInstructionImpl(MachineInstr &MI,
   };
 
   switch (MI.getOpcode()) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoCCMOVGPRNoX0:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::TH_MVEQZ:
   case RISCV::TH_MVNEZ: {
     auto &WorkingMI = cloneIfNew(MI);
@@ -2386,7 +2381,9 @@ MachineInstr *RISCVInstrInfo::commuteInstructionImpl(MachineInstr &MI,
     return TargetInstrInfo::commuteInstructionImpl(WorkingMI, false, OpIdx1,
                                                    OpIdx2);
   }
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoCCMOVGPRNoX0:
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPR: {
     // CCMOV can be commuted by inverting the condition.
     auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());
