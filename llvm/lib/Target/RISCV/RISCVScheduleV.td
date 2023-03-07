@@ -26,7 +26,6 @@ multiclass LMULSchedWritesImpl<string name, list<string> MxList> {
     def name # "_" # mx : SchedWrite;
   }
 }
-<<<<<<< HEAD
 
 // SIFIVE_CUSTOMIZATION
 // Creates WriteRes for (name, mx, resources) tuple
@@ -36,57 +35,6 @@ multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
 }
 // END SIFIVE_CUSTOMIZATION
 
-// Creates SchedRead for each (name, LMUL) pair for LMUL in SchedMxList
-multiclass LMULSchedReads<string name> {
-  foreach mx = SchedMxList in {
-    def name # "_" # mx : SchedRead;
-  }
-}
-
-// Creates SchedRead for each (name, LMUL) pair for LMUL in SchedMxListW
-multiclass LMULSchedReadsW<string name> {
-  foreach mx = SchedMxListW in {
-    def name # "_" # mx : SchedRead;
-  }
-}
-
-// Creates SchedRead for each (name, LMUL) pair for LMUL in SchedMxListFW
-multiclass LMULSchedReadsFW<string name> {
-  foreach mx = SchedMxListFW in {
-    def name # "_" # mx : SchedRead;
-  }
-}
-
-// Creates WriteRes for each (name, LMUL, resources) tuple for LMUL
-// in SchedMxList
-multiclass LMULWriteRes<string name, list<ProcResourceKind> resources> {
-  foreach mx = SchedMxList in {
-    def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
-  }
-}
-
-// Creates WriteRes for each (name, LMUL, resources) tuple for LMUL
-// in SchedMxListW
-multiclass LMULWriteResW<string name, list<ProcResourceKind> resources> {
-  foreach mx = SchedMxListW in {
-    def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
-  }
-}
-
-// Creates WriteRes for each (name, LMUL, resources) tuple for LMUL
-// in SchedMxListFW
-multiclass LMULWriteResFW<string name, list<ProcResourceKind> resources> {
-  foreach mx = SchedMxListFW in {
-    def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
-  }
-}
-
-
-// Creates WriteRes for each (name, LMUL, resources) tuple for LMUL
-// in SchedMxListFWRed
-multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources> {
-  foreach mx = SchedMxListFWRed in {
-=======
 multiclass LMULSchedReadsImpl<string name, list<string> MxList> {
   foreach mx = MxList in {
     def name # "_" # mx : SchedRead;
@@ -95,7 +43,6 @@ multiclass LMULSchedReadsImpl<string name, list<string> MxList> {
 multiclass LMULWriteResImpl<string name, list<string> MxList,
                             list<ProcResourceKind> resources> {
   foreach mx = MxList in {
->>>>>>> upstream/main
     def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
   }
 }
