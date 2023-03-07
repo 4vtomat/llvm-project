@@ -105,16 +105,13 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
   initializeRISCVDAGToDAGISelPass(*PR);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVMachineConstPropagationPass(*PR);
   initializeRISCVInsertNTLHInstsPass(*PR);
   initializeRISCVInsertVXRMWritePass(*PR);
   initializeRISCVCleanupVXRMPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   initializeRISCVInitUndefPass(*PR);
->>>>>>> upstream/main
 }
 
 static StringRef computeDataLayout(const Triple &TT) {
