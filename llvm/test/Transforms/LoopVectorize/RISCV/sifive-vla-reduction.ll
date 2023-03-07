@@ -58,22 +58,23 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP6]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP15:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_SELECT]])
-; CHECK-NEXT:    [[TMP16:%.*]] = fadd fast double [[DOTPRE]], [[TMP15]]
-; CHECK-NEXT:    store double [[TMP16]], ptr [[PMADPICTUREC1]], align 8
+; CHECK-NEXT:    [[TMP15:%.*]] = trunc i64 [[TMP7]] to i32
+; CHECK-NEXT:    [[TMP16:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_SELECT]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP15]])
+; CHECK-NEXT:    [[TMP17:%.*]] = fadd fast double [[DOTPRE]], [[TMP16]]
+; CHECK-NEXT:    store double [[TMP17]], ptr [[PMADPICTUREC1]], align 8
 ; CHECK-NEXT:    br i1 true, label [[IF_END831_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[TMP16]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[TMP17:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP18:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]
 ; CHECK-NEXT:    [[MUL805:%.*]] = fmul fast double [[TMP3:%.*]], [[TMP3]]
-; CHECK-NEXT:    [[TMP18:%.*]] = load double, ptr [[FCBUPFMAD]], align 8
-; CHECK-NEXT:    [[ADD808]] = fadd fast double [[TMP17]], [[TMP18]]
+; CHECK-NEXT:    [[TMP19:%.*]] = load double, ptr [[FCBUPFMAD]], align 8
+; CHECK-NEXT:    [[ADD808]] = fadd fast double [[TMP18]], [[TMP19]]
 ; CHECK-NEXT:    store double [[ADD808]], ptr [[PMADPICTUREC1]], align 8
 ; CHECK-NEXT:    [[CMP801_NOT_NOT:%.*]] = icmp sgt i64 [[INDVARS_IV141]], 0
 ; CHECK-NEXT:    br i1 [[CMP801_NOT_NOT]], label [[FOR_BODY]], label [[IF_END831_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
@@ -135,21 +136,22 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP6]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_SELECT]])
-; CHECK-NO-POSTSV-NEXT:    store double [[TMP16]], ptr [[PMADPICTUREC1]], align 8
+; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = trunc i64 [[TMP7]] to i32
+; CHECK-NO-POSTSV-NEXT:    [[TMP17:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_SELECT]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP16]])
+; CHECK-NO-POSTSV-NEXT:    store double [[TMP17]], ptr [[PMADPICTUREC1]], align 8
 ; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[IF_END831_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-NO-POSTSV:       scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[TMP16]], [[MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.body:
-; CHECK-NO-POSTSV-NEXT:    [[TMP17:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]
 ; CHECK-NO-POSTSV-NEXT:    [[MUL805:%.*]] = fmul fast double [[TMP3:%.*]], [[TMP3]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = load double, ptr [[FCBUPFMAD]], align 8
-; CHECK-NO-POSTSV-NEXT:    [[ADD808]] = fadd fast double [[TMP17]], [[TMP18]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP19:%.*]] = load double, ptr [[FCBUPFMAD]], align 8
+; CHECK-NO-POSTSV-NEXT:    [[ADD808]] = fadd fast double [[TMP18]], [[TMP19]]
 ; CHECK-NO-POSTSV-NEXT:    store double [[ADD808]], ptr [[PMADPICTUREC1]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[CMP801_NOT_NOT:%.*]] = icmp sgt i64 [[INDVARS_IV141]], 0
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP801_NOT_NOT]], label [[FOR_BODY]], label [[IF_END831_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]

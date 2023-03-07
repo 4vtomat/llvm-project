@@ -3380,23 +3380,40 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
                                        ConstantInt::get(Count->getType(), 1));
   }
 
-  bool ForceVectorization =
-      Cost->Hints->getForce() == LoopVectorizeHints::FK_Enabled;
-  if (!VectorizerDisableProfitableTripCountRTCheck && useVLAVectorizer() &&
-      !ForceVectorization && !Legal->getReductionVars().empty()) {
-    if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
+  if (useVLAVectorizer() && !Legal->getReductionVars().empty()) {
+    bool ForceVectorization =
+        Cost->Hints->getForce() == LoopVectorizeHints::FK_Enabled;
+    std::optional<uint64_t> ProfitableVectorTripCount =
+        Cost->getProfitableVectorTripCount();
+    bool EnableProfitableCheck = !VectorizerDisableProfitableTripCountRTCheck &&
+                                 !ForceVectorization &&
+                                 ProfitableVectorTripCount;
+    bool IncludeUnorderedReduction =
+        any_of(Legal->getReductionVars(), [&](auto &Reduction) {
+          PHINode *Phi = Reduction.first;
+          return !Cost->isInLoopReduction(Phi);
+        });
+
+    if (IncludeUnorderedReduction)
+      InitVL = Builder.CreateLoad(
+          Count->getType(), UndefValue::get(Count->getType()->getPointerTo()));
+
+    if (EnableProfitableCheck) {
       // FIXME: That should be done during VPlan construction and be aligned
       // with vsetvli that is emitted in the loop. Right now it's aligned, but
       // there's no verification of this.
       // NOTE: In this code we assume that RVV 6.3.2 for our SiFive's HW always
       // returns VLMAX
-      InitVL = Builder.CreateLoad(
-          Count->getType(), UndefValue::get(Count->getType()->getPointerTo()));
+      if (!InitVL)
+        InitVL = Builder.CreateLoad(
+            Count->getType(),
+            UndefValue::get(Count->getType()->getPointerTo()));
+
       Value *RHS = Builder.CreateMul(
           InitVL,
           ConstantInt::get(Count->getType(), *ProfitableVectorTripCount * UF));
-      Value *ProfitableCheck = Builder.CreateICmp(ICmpInst::ICMP_ULE, Count, RHS,
-                                                "prof.min.iters.check");
+      Value *ProfitableCheck = Builder.CreateICmp(ICmpInst::ICMP_ULE, Count,
+                                                  RHS, "prof.min.iters.check");
       CheckMinIters = Builder.CreateOr(CheckMinIters, ProfitableCheck);
     }
   }
@@ -4529,9 +4546,18 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   // Create the reduction after the loop. Note that inloop reductions create the
   // target reduction in the loop using a Reduction recipe.
   if (VF.isVector() && !PhiR->isInLoop()) {
-    ReducedPartRdx =
-        createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
 #if SIFIVE_CUSTOMIZATION
+    if (useVLAVectorizer()) {
+      Value *InitRVL = State.get(State.Plan->getInitRVL(), 0);
+      assert(InitRVL &&
+             "InitRVL must be initialized in emitIterationCountCheck when "
+             "using VP intrinsic to generate unordered reduction");
+      ReducedPartRdx = createTargetReduction(Builder, TTI, RdxDesc,
+                                             ReducedPartRdx, InitRVL, OrigPhi);
+    } else {
+      ReducedPartRdx =
+          createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
+    }
     // Adjust the final scalar result after the loop if the target prefers that.
     // FIXME: Handle situation that the start value and identity are equal.
     if (PhiR->postFixStartValue()) {
@@ -4544,6 +4570,9 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
                                            ReducedPartRdx);
     }
+#else
+    ReducedPartRdx =
+        createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
 #endif // SIFIVE_CUSTOMIZATION
     // If the reduction can be performed in a smaller type, we need to extend
     // the reduction to the wider type before we branch to the original loop.
@@ -11569,6 +11598,10 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
   State.Builder.setFastMathFlags(RdxDesc->getFastMathFlags());
   for (unsigned Part = 0; Part < State.UF; ++Part) {
+#if SIFIVE_CUSTOMIZATION
+    Value *RVLPart =
+        State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
+#endif // SIFIVE_CUSTOMIZATION
     Value *NewVecOp = State.get(getVecOp(), Part);
     if (VPValue *Cond = getCondOp()) {
       Value *NewCond = State.get(Cond, Part);
@@ -11577,23 +11610,55 @@ void VPReductionRecipe::execute(VPTransformState &State) {
           Kind, VecTy->getElementType(), RdxDesc->getFastMathFlags());
       Value *IdenVec =
           State.Builder.CreateVectorSplat(VecTy->getElementCount(), Iden);
+#if SIFIVE_CUSTOMIZATION
+      Value *Select;
+      if (RVLPart)
+        Select = State.Builder.CreateIntrinsic(
+            Intrinsic::vp_select, {NewVecOp->getType()},
+            {NewCond, NewVecOp, IdenVec, RVLPart});
+      else
+        Select = State.Builder.CreateSelect(NewCond, NewVecOp, IdenVec);
+#else
       Value *Select = State.Builder.CreateSelect(NewCond, NewVecOp, IdenVec);
+#endif // SIFIVE_CUSTOMIZATION
       NewVecOp = Select;
     }
     Value *NewRed;
     Value *NextInChain;
     if (IsOrdered) {
+#if SIFIVE_CUSTOMIZATION
+      if (State.VF.isVector()) {
+        if (RVLPart)
+          NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
+                                          PrevInChain, RVLPart);
+        else
+          NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
+                                          PrevInChain);
+      } else {
+#else
       if (State.VF.isVector())
         NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
                                         PrevInChain);
       else
+#endif // SIFIVE_CUSTOMIZATION
         NewRed = State.Builder.CreateBinOp(
             (Instruction::BinaryOps)RdxDesc->getOpcode(Kind), PrevInChain,
             NewVecOp);
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       PrevInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part);
+#if SIFIVE_CUSTOMIZATION
+      if (RVLPart)
+        NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp,
+                                       RVLPart);
+      else
+        NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp);
+#else
       NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp);
+#endif // SIFIVE_CUSTOMIZATION
     }
     if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind)) {
       NextInChain =
