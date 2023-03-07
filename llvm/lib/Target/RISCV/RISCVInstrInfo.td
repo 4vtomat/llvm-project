@@ -2081,14 +2081,13 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def : Pat<(XLenVT (abs GPR:$rs1)),
           (PseudoCCSUB GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
 def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
           (PseudoCCSUBW GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 /// Empty pseudo for RISCVInitUndefPass
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 0, isCodeGenOnly = 1 in {
   def PseudoRVVInitUndefM1     :  Pseudo<(outs VR:$vd), (ins), [], "">;
@@ -2097,7 +2096,6 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 0, isCodeGenOnly = 1 i
   def PseudoRVVInitUndefM8     :  Pseudo<(outs VRM8:$vd), (ins), [], "">;
 }
 
->>>>>>> upstream/main
 //===----------------------------------------------------------------------===//
 // Standard extensions
 //===----------------------------------------------------------------------===//
