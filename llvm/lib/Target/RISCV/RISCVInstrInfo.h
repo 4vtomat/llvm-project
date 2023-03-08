@@ -243,6 +243,7 @@ public:
   ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
   getSerializableMachineMemOperandTargetFlags() const override;
 
+  static int getOverlapConstraintsFromMI(uint16_t RVVPseudoOpcode);
 #endif // SIFIVE_CUSTOMIZATION
   void genAlternativeCodeSequence(
       MachineInstr &Root, MachineCombinerPattern Pattern,
@@ -306,6 +307,9 @@ namespace RISCVVPseudosTable {
 struct PseudoInfo {
   uint16_t Pseudo;
   uint16_t BaseInstr;
+#if SIFIVE_CUSTOMIZATION
+  uint16_t TargetOverlapConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 #define GET_RISCVVPseudosTable_DECL

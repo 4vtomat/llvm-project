@@ -54,6 +54,9 @@ void LiveRegMatrix::getAnalysisUsage(AnalysisUsage &AU) const {
 
 bool LiveRegMatrix::runOnMachineFunction(MachineFunction &MF) {
   TRI = MF.getSubtarget().getRegisterInfo();
+#if SIFIVE_CUSTOMIZATION
+  MRI = &MF.getRegInfo();
+#endif // SIFIVE_CUSTOMIZATION
   LIS = &getAnalysis<LiveIntervals>();
   VRM = &getAnalysis<VirtRegMap>();
 
@@ -75,6 +78,16 @@ void LiveRegMatrix::releaseMemory() {
     // does a std::unique_ptr::reset anyways.
   }
 }
+
+#if SIFIVE_CUSTOMIZATION
+static LiveRange copyLiveRange(const LiveRange &LR) {
+  LiveRange NewLR;
+  for (auto Seg : LR.segments)
+    NewLR.addSegment(Seg);
+  NewLR.valnos.append(LR.vni_begin(), LR.vni_end());
+  return NewLR;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 template <typename Callable>
 static bool foreachUnit(const TargetRegisterInfo *TRI,
@@ -110,7 +123,14 @@ void LiveRegMatrix::assign(const LiveInterval &VirtReg, MCRegister PhysReg) {
   foreachUnit(
       TRI, VirtReg, PhysReg, [&](unsigned Unit, const LiveRange &Range) {
         LLVM_DEBUG(dbgs() << ' ' << printRegUnit(Unit, TRI) << ' ' << Range);
-        Matrix[Unit].unify(VirtReg, Range);
+#if SIFIVE_CUSTOMIZATION
+        LiveRange NewLR;
+        if (TRI->enableTargetInterference() &&
+            TRI->needUpdateECSlot(Range, NewLR = copyLiveRange(Range)))
+          Matrix[Unit].unify(VirtReg, NewLR);
+        else
+          Matrix[Unit].unify(VirtReg, Range);
+#endif // SIFIVE_CUSTOMIZATION
         return false;
       });
 
@@ -127,7 +147,14 @@ void LiveRegMatrix::unassign(const LiveInterval &VirtReg) {
   foreachUnit(TRI, VirtReg, PhysReg,
               [&](unsigned Unit, const LiveRange &Range) {
                 LLVM_DEBUG(dbgs() << ' ' << printRegUnit(Unit, TRI));
-                Matrix[Unit].extract(VirtReg, Range);
+#if SIFIVE_CUSTOMIZATION
+                LiveRange NewLR;
+                if (TRI->enableTargetInterference() &&
+                    TRI->needUpdateECSlot(Range, NewLR = copyLiveRange(Range)))
+                  Matrix[Unit].extract(VirtReg, NewLR);
+                else
+                  Matrix[Unit].extract(VirtReg, Range);
+#endif // SIFIVE_CUSTOMIZATION
                 return false;
               });
 
@@ -142,6 +169,33 @@ bool LiveRegMatrix::isPhysRegUsed(MCRegister PhysReg) const {
   }
   return false;
 }
+
+#if SIFIVE_CUSTOMIZATION
+SmallVector<const LiveInterval *, 8>
+LiveRegMatrix::getTargetInterferenceLiveI(const LiveInterval &VirtReg,
+                                          MCRegister PhysReg) const {
+  SmallVector<const LiveInterval *, 8> LiveIs;
+  if (!TRI->enableTargetInterference())
+    return LiveIs;
+
+  BitVector IntfReg = TRI->getTargetInterferenceReg(VirtReg, PhysReg, MRI, VRM);
+
+  for (auto Reg : IntfReg.set_bits()) {
+    for (MCRegUnitIterator Units(Reg, TRI); Units.isValid(); ++Units) {
+      LiveIntervalUnion LiveUnion = Matrix[*Units];
+      LiveIntervalUnion::ConstSegmentIter LiveUnionI = LiveUnion.begin();
+      while (LiveUnionI != LiveUnion.end()) {
+        const LiveRange *LiveR = *LiveUnionI;
+        LiveRange NewLiveR = copyLiveRange(*LiveR);
+        if (TRI->needUpdateECSlot(LiveR, NewLiveR))
+          LiveIs.push_back(*LiveUnionI);
+        ++LiveUnionI;
+      }
+    }
+  }
+  return LiveIs;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LiveRegMatrix::checkRegMaskInterference(const LiveInterval &VirtReg,
                                              MCRegister PhysReg) {
@@ -170,7 +224,14 @@ bool LiveRegMatrix::checkRegUnitInterference(const LiveInterval &VirtReg,
   bool Result = foreachUnit(TRI, VirtReg, PhysReg, [&](unsigned Unit,
                                                        const LiveRange &Range) {
     const LiveRange &UnitRange = LIS->getRegUnit(Unit);
-    return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
+#if SIFIVE_CUSTOMIZATION
+    LiveRange NewLR;
+    if (TRI->enableTargetInterference() &&
+        TRI->needUpdateECSlot(Range, NewLR = copyLiveRange(Range)))
+      return NewLR.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
+    else
+      return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
+#endif // SIFIVE_CUSTOMIZATION
   });
   return Result;
 }
@@ -196,9 +257,28 @@ LiveRegMatrix::checkInterference(const LiveInterval &VirtReg,
   if (checkRegUnitInterference(VirtReg, PhysReg))
     return IK_RegUnit;
 
+#if SIFIVE_CUSTOMIZATION
+  if (TRI->enableTargetInterference() &&
+      TRI->getTargetInterferenceReg(VirtReg, PhysReg, MRI, VRM).any())
+    return IK_VirtReg;
+#endif // SIFIVE_CUSTOMIZATION
+
   // Check the matrix for virtual register interference.
   bool Interference = foreachUnit(TRI, VirtReg, PhysReg,
                                   [&](MCRegister Unit, const LiveRange &LR) {
+#if SIFIVE_CUSTOMIZATION
+                                    LiveRange NewLR;
+                                    if (TRI->enableTargetInterference() &&
+                                        TRI->needUpdateECSlot(
+                                            LR, NewLR = copyLiveRange(LR))) {
+                                      // Update LiveRange could make cache
+                                      // information stable. Refresh cache to
+                                      // handle it.
+                                      invalidateVirtRegs();
+                                      return query(NewLR, Unit)
+                                          .checkInterference();
+                                    } 
+#endif // SIFIVE_CUSTOMIZATION
                                     return query(LR, Unit).checkInterference();
                                   });
   if (Interference)

@@ -41,6 +41,9 @@ class RegScavenger;
 class VirtRegMap;
 class LiveIntervals;
 class LiveInterval;
+#if SIFIVE_CUSTOMIZATION
+class LiveRange;
+#endif // SIFIVE_CUSTOMIZATION
 
 class TargetRegisterClass {
 public:
@@ -1156,6 +1159,21 @@ public:
   virtual bool isNonallocatableRegisterCalleeSave(MCRegister Reg) const {
     return false;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  virtual bool enableTargetInterference() const { return false; }
+
+  virtual BitVector getTargetInterferenceReg(const LiveInterval &VirtReg,
+                                             MCRegister PhysReg,
+                                             const MachineRegisterInfo *MRI,
+                                             const VirtRegMap *VRM) const {
+    return BitVector();
+  }
+
+  virtual bool needUpdateECSlot(const LiveRange &LR, LiveRange &newLR) const {
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 //===----------------------------------------------------------------------===//

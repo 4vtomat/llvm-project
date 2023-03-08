@@ -497,6 +497,12 @@ void RAGreedy::evictInterference(const LiveInterval &VirtReg,
     Intfs.append(IVR.begin(), IVR.end());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  SmallVector<const LiveInterval *, 8> TargetIntfs =
+      Matrix->getTargetInterferenceLiveI(VirtReg, PhysReg);
+  Intfs.append(TargetIntfs.begin(), TargetIntfs.end());
+#endif // SIFIVE_CUSTOMIZATION
+
   // Evict them second. This will invalidate the queries.
   for (const LiveInterval *Intf : Intfs) {
     // The same VirtReg may be present in multiple RegUnits. Skip duplicates.

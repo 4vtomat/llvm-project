@@ -39,6 +39,9 @@ class VirtRegMap;
 
 class LiveRegMatrix : public MachineFunctionPass {
   const TargetRegisterInfo *TRI;
+#if SIFIVE_CUSTOMIZATION
+  const MachineRegisterInfo *MRI;
+#endif // SIFIVE_CUSTOMIZATION
   LiveIntervals *LIS;
   VirtRegMap *VRM;
 
@@ -107,6 +110,12 @@ public:
   InterferenceKind checkInterference(const LiveInterval &VirtReg,
                                      MCRegister PhysReg);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Check for target interference before assigning VirtReg to PhysReg.
+  SmallVector<const LiveInterval *, 8>
+  getTargetInterferenceLiveI(const LiveInterval &VirtReg,
+                             MCRegister PhysReg) const;
+#endif // SIFIVE_CUSTOMIZATION
   /// Check for interference in the segment [Start, End) that may prevent
   /// assignment to PhysReg. If this function returns true, there is
   /// interference in the segment [Start, End) of some other interval already

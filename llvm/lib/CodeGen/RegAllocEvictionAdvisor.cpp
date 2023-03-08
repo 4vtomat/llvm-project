@@ -205,11 +205,19 @@ bool DefaultEvictionAdvisor::canEvictInterferenceBasedOnCost(
     LiveIntervalUnion::Query &Q = Matrix->query(VirtReg, *Units);
     // If there is 10 or more interferences, chances are one is heavier.
     const auto &Interferences = Q.interferingVRegs(EvictInterferenceCutoff);
-    if (Interferences.size() >= EvictInterferenceCutoff)
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<const LiveInterval *, 8> Intfs =
+        Matrix->getTargetInterferenceLiveI(VirtReg, PhysReg);
+    Intfs.append(Interferences.begin(), Interferences.end());
+
+    if (Intfs.size() >= EvictInterferenceCutoff)
       return false;
+#endif // SIFIVE_CUSTOMIZATION
 
     // Check if any interfering live range is heavier than MaxWeight.
-    for (const LiveInterval *Intf : reverse(Interferences)) {
+#if SIFIVE_CUSTOMIZATION
+    for (const LiveInterval *Intf : reverse(Intfs)) {
+#endif // SIFIVE_CUSTOMIZATION
       assert(Intf->reg().isVirtual() &&
              "Only expecting virtual register interference from query");
 
