@@ -9,87 +9,6 @@
 // CHECK-NOT: __riscv_muldiv {{.*$}}
 // CHECK-NOT: __riscv_a {{.*$}}
 // CHECK-NOT: __riscv_atomic
-<<<<<<< HEAD
-// CHECK-NOT: __riscv_f 2000000{{$}}
-// CHECK-NOT: __riscv_d
-// CHECK-NOT: __riscv_flen
-// CHECK-NOT: __riscv_fdiv
-// CHECK-NOT: __riscv_fsqrt
-// CHECK-NOT: __riscv_c 2000000{{$}}
-// CHECK-NOT: __riscv_compressed
-// CHECK-NOT: __riscv_b
-// CHECK-NOT: __riscv_bitmanip
-// CHECK-NOT: __riscv_zihintntl
-// CHECK-NOT: __riscv_zba
-// CHECK-NOT: __riscv_zbb
-// CHECK-NOT: __riscv_zbc
-// CHECK-NOT: __riscv_zbs
-// CHECK-NOT: __riscv_zfh
-// CHECK-NOT: __riscv_v
-// CHECK-NOT: __riscv_vector
-// CHECK-NOT: __riscv_v_intrinsic
-// CHECK-NOT: __riscv_zbkc
-// CHECK-NOT: __riscv_zbkx
-// CHECK-NOT: __riscv_zbkb
-// CHECK-NOT: __riscv_zkne
-// CHECK-NOT: __riscv_zknd
-// CHECK-NOT: __riscv_zknh
-// CHECK-NOT: __riscv_zksh
-// CHECK-NOT: __riscv_zksed
-// CHECK-NOT: __riscv_zkr
-// CHECK-NOT: __riscv_zkt
-// CHECK-NOT: __riscv_zk
-// CHECK-NOT: __riscv_zicbom
-// CHECK-NOT: __riscv_zicboz
-// CHECK-NOT: __riscv_svnapot
-// CHECK-NOT: __riscv_svpbmt
-// CHECK-NOT: __riscv_svinval
-// CHECK-NOT: __riscv_xventanacondops
-// CHECK-NOT: __riscv_zca
-// CHECK-NOT: __riscv_zcb
-// CHECK-NOT: __riscv_zcd
-// CHECK-NOT: __riscv_zcf
-// CHECK-NOT: __riscv_h
-// SIFIVE_CUSTOMIZATION
-// CHECK-NOT: __riscv_zicbop
-// CHECK-NOT: __riscv_zicclsm
-// CHECK-NOT: __riscv_ziccif
-// CHECK-NOT: __riscv_ziccamoa
-// CHECK-NOT: __riscv_ziccrse
-// CHECK-NOT: __riscv_za64rs
-// CHECK-NOT: __riscv_zic64b
-// CHECK-NOT: __riscv_zicntr
-// CHECK-NOT: __riscv_zihpm
-// CHECK-NOT: __riscv_ss
-// CHECK-NOT: __riscv_svbare
-// CHECK-NOT: __riscv_svptead
-// CHECK-NOT: __riscv_ssccptr
-// CHECK-NOT: __riscv_sstvecd
-// CHECK-NOT: __riscv_sstvala
-// CHECK-NOT: __riscv_sscounterenw
-// CHECK-NOT: __riscv_ssu64xl
-// CHECK-NOT: __riscv_sstc
-// CHECK-NOT: __riscv_smstateen
-// CHECK-NOT: __riscv_ssstateen
-// CHECK-NOT: __riscv_shcounterenw
-// CHECK-NOT: __riscv_shvstvala
-// CHECK-NOT: __riscv_shtvala
-// CHECK-NOT: __riscv_shvstvecd
-// CHECK-NOT: __riscv_shvsatpa
-// CHECK-NOT: __riscv_shgatpa
-// CHECK-NOT: __sifive_recode_neon
-// CHECK-NOT: __riscv_zvkb
-// CHECK-NOT: __riscv_zvkg
-// CHECK-NOT: __riscv_zvknha
-// CHECK-NOT: __riscv_zvknhb
-// CHECK-NOT: __riscv_zvkns
-// CHECK-NOT: __riscv_zvksed
-// CHECK-NOT: __riscv_zvksh
-// CHECK-NOT: __riscv_smwg
-// CHECK-NOT: __riscv_smwgd
-// CHECK-NOT: __riscv_sswg
-// end SIFIVE_CUSTOMIZATION
-=======
 // CHECK-NOT: __riscv_f {{.*$}}
 // CHECK-NOT: __riscv_d {{.*$}}
 // CHECK-NOT: __riscv_flen {{.*$}}
@@ -130,13 +49,50 @@
 // CHECK-NOT: __riscv_zcd {{.*$}}
 // CHECK-NOT: __riscv_zcf {{.*$}}
 // CHECK-NOT: __riscv_h {{.*$}}
+// SIFIVE_CUSTOMIZATION
+// CHECK-NOT: __riscv_zicclsm
+// CHECK-NOT: __riscv_ziccif
+// CHECK-NOT: __riscv_ziccamoa
+// CHECK-NOT: __riscv_ziccrse
+// CHECK-NOT: __riscv_za64rs
+// CHECK-NOT: __riscv_zic64b
+// CHECK-NOT: __riscv_zicntr
+// CHECK-NOT: __riscv_zihpm
+// CHECK-NOT: __riscv_ss
+// CHECK-NOT: __riscv_svbare
+// CHECK-NOT: __riscv_svptead
+// CHECK-NOT: __riscv_ssccptr
+// CHECK-NOT: __riscv_sstvecd
+// CHECK-NOT: __riscv_sstvala
+// CHECK-NOT: __riscv_sscounterenw
+// CHECK-NOT: __riscv_ssu64xl
+// CHECK-NOT: __riscv_sstc
+// CHECK-NOT: __riscv_smstateen
+// CHECK-NOT: __riscv_ssstateen
+// CHECK-NOT: __riscv_shcounterenw
+// CHECK-NOT: __riscv_shvstvala
+// CHECK-NOT: __riscv_shtvala
+// CHECK-NOT: __riscv_shvstvecd
+// CHECK-NOT: __riscv_shvsatpa
+// CHECK-NOT: __riscv_shgatpa
+// CHECK-NOT: __sifive_recode_neon
+// CHECK-NOT: __riscv_zvkb
+// CHECK-NOT: __riscv_zvkg
+// CHECK-NOT: __riscv_zvknha
+// CHECK-NOT: __riscv_zvknhb
+// CHECK-NOT: __riscv_zvkns
+// CHECK-NOT: __riscv_zvksed
+// CHECK-NOT: __riscv_zvksh
+// CHECK-NOT: __riscv_smwg
+// CHECK-NOT: __riscv_smwgd
+// CHECK-NOT: __riscv_sswg
+// end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32i -x c -E -dM %s \
 // RUN: -o - | FileCheck %s
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv64i -x c -E -dM %s \
 // RUN: -o - | FileCheck %s
-// CHECK: __riscv_i 2000000{{$}}
->>>>>>> upstream/main
+// CHECK: __riscv_i 2001000{{$}}
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32im -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-M-EXT %s
@@ -488,7 +444,6 @@
 // RUN: | FileCheck --check-prefix=CHECK-COMBINE-INTO-ZKS %s
 // CHECK-COMBINE-INTO-ZKS: __riscv_zks 1
 
-// SIFIVE_CUSTOMIZATION
 // RUN: %clang -target riscv32 -march=rv32izicbom -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOM-EXT %s
 // RUN: %clang -target riscv64 -march=rv64izicbom -x c -E -dM %s \
@@ -507,7 +462,7 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICBOP-EXT %s
 // CHECK-ZICBOP-EXT: __riscv_zicbop 1000000{{$}}
 
-<<<<<<< HEAD
+// SIFIVE_CUSTOMIZATION
 // RUN: %clang -target riscv32 -march=rv32izicclsm -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICCLSM-EXT %s
 // RUN: %clang -target riscv64 -march=rv64izicclsm  -x c -E -dM %s \
@@ -731,7 +686,6 @@
 // RUN: %clang -target riscv64 -march=rv64isswg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
 // CHECK-SSWG-EXT: __riscv_sswg  3000{{$}}
-// end SIFIVE_CUSTOMIZATION
 //
 // RUN: %clang -target riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
 // RUN:   -msifive-recode=neon -o - \
@@ -741,13 +695,10 @@
 // RUN:   -msifive-recode=off -o - \
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
 // CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
+// end SIFIVE_CUSTOMIZATION
 
-// RUN: %clang -target riscv32-unknown-linux-gnu -menable-experimental-extensions \
-// RUN: -march=rv32izawrs1p0 -x c -E -dM %s \
-=======
 // RUN: %clang -target riscv32-unknown-linux-gnu \
 // RUN: -march=rv32izawrs -x c -E -dM %s \
->>>>>>> upstream/main
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZAWRS-EXT %s
 // RUN: %clang -target riscv64-unknown-linux-gnu \
 // RUN: -march=rv64izawrs -x c -E -dM %s \
