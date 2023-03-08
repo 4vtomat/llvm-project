@@ -426,7 +426,6 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
       printType(*T);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OS << "#if defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)\n";
   for (int Log2LMUL : Log2LMULs) {
@@ -438,9 +437,6 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   OS << "#endif\n";
 #endif // SIFIVE_CUSTOMIZATION
 
-  OS << "#if (__riscv_v_elen_fp >= 32)\n";
-=======
->>>>>>> upstream/main
   for (int Log2LMUL : Log2LMULs) {
     auto T = TypeCache.computeType(BasicType::Float32, Log2LMUL,
                                    PrototypeDescriptor::Vector);
