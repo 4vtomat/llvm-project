@@ -1096,10 +1096,10 @@ declare double @llvm.maxnum.f64(double, double)
 define double @test_fmadd_strategy(double %a0, double %a1, double %a2, double %a3, i64 %flag) {
 ; CHECK_LOCAL-LABEL: test_fmadd_strategy:
 ; CHECK_LOCAL:       # %bb.0: # %entry
-; CHECK_LOCAL-NEXT:    fmv.d ft0, fa0
 ; CHECK_LOCAL-NEXT:    fsub.d ft1, fa0, fa1
-; CHECK_LOCAL-NEXT:    fmul.d fa0, ft1, fa2
 ; CHECK_LOCAL-NEXT:    andi a0, a0, 1
+; CHECK_LOCAL-NEXT:    fmv.d ft0, fa0
+; CHECK_LOCAL-NEXT:    fmul.d fa0, ft1, fa2
 ; CHECK_LOCAL-NEXT:    beqz a0, .LBB76_2
 ; CHECK_LOCAL-NEXT:  # %bb.1: # %entry
 ; CHECK_LOCAL-NEXT:    fmul.d ft1, ft0, fa1
@@ -1110,10 +1110,10 @@ define double @test_fmadd_strategy(double %a0, double %a1, double %a2, double %a
 ;
 ; CHECK_GLOBAL-LABEL: test_fmadd_strategy:
 ; CHECK_GLOBAL:       # %bb.0: # %entry
-; CHECK_GLOBAL-NEXT:    fmv.d ft0, fa0
 ; CHECK_GLOBAL-NEXT:    fsub.d ft1, fa0, fa1
-; CHECK_GLOBAL-NEXT:    fmul.d fa0, ft1, fa2
 ; CHECK_GLOBAL-NEXT:    andi a0, a0, 1
+; CHECK_GLOBAL-NEXT:    fmv.d ft0, fa0
+; CHECK_GLOBAL-NEXT:    fmul.d fa0, ft1, fa2
 ; CHECK_GLOBAL-NEXT:    beqz a0, .LBB76_2
 ; CHECK_GLOBAL-NEXT:  # %bb.1: # %entry
 ; CHECK_GLOBAL-NEXT:    fmul.d ft0, ft0, fa1
