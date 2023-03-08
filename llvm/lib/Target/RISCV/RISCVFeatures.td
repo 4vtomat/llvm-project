@@ -10,21 +10,15 @@
 // RISC-V subtarget features and instruction predicates.
 //===----------------------------------------------------------------------===//
 
-#ifdef SIFIVE_CUSTOMIZATION
+
 def FeatureStdExtZicsr
     : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
-                       "'Zicsr' (Control and Status Register (CSR) Instructions)">;
+                       "'zicsr' (CSRs)">;
 def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
-                             AssemblerPredicate<(all_of FeatureStdExtZicsr),
-                             "'Zicsr' (Control and Status Register (CSR) Instructions)">;
+                                AssemblerPredicate<(all_of FeatureStdExtZicsr),
+                                "'Zicsr' (CSRs)">;
 
-def FeatureStdExtZifencei
-    : SubtargetFeature<"zifencei", "HasStdExtZifencei", "true",
-                       "'Zifencei' (Instruction-Fetch Fence)">;
-def HasStdExtZifencei : Predicate<"Subtarget->hasStdExtZifencei()">,
-                             AssemblerPredicate<(all_of FeatureStdExtZifencei),
-                             "'Zifencei' (Instruction-Fetch Fence)">;
-
+#ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZicntr
     : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
                        "'Zicntr' (Base Counters and Timers)",
@@ -221,13 +215,6 @@ def FeatureStdExtZihintntl
 def HasStdExtZihintntl : Predicate<"Subtarget->hasStdExtZihintntl()">,
                                     AssemblerPredicate<(all_of FeatureStdExtZihintntl),
                                     "'Zihintntl' (Non-Temporal Locality Hints)">;
-
-def FeatureStdExtZicsr
-    : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
-                       "'zicsr' (CSRs)">;
-def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZicsr),
-                                "'Zicsr' (CSRs)">;
 
 def FeatureStdExtZifencei
     : SubtargetFeature<"zifencei", "HasStdExtZifencei", "true",
