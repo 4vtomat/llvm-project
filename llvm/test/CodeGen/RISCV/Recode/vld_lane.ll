@@ -33,12 +33,13 @@ define void @vld2_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v11, v8, v10
 ; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a1, 1
-; CHECK-NEXT:    vmv.s.x v0, a1
 ; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    li a0, 1
+; CHECK-NEXT:    vmv.s.x v0, a0
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmerge.vvm v12, v10, v9, v0
 ; CHECK-NEXT:    vsseg2e32.v v11, (a2)
 ; CHECK-NEXT:    ret

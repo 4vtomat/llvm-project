@@ -30,6 +30,7 @@ define void @vst2_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
@@ -92,6 +93,7 @@ define void @vst2_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
@@ -131,12 +133,13 @@ define void @vst2_lane_s8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlseg2e8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vslidedown.vi v8, v9, 2
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vwaddu.vv v9, v10, v8
+; CHECK-NEXT:    vslidedown.vi v10, v9, 2
+; CHECK-NEXT:    vslidedown.vi v8, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; CHECK-NEXT:    vwaddu.vv v9, v8, v10
 ; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    vwmaccu.vx v9, a1, v8
+; CHECK-NEXT:    vwmaccu.vx v9, a1, v10
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vse8.v v9, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -176,6 +179,7 @@ define void @vst2_lane_u32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
@@ -214,10 +218,11 @@ define void @vst2_lane_u8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vlseg2e8.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vse8.v v10, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -254,7 +259,7 @@ define void @vst2q_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
@@ -294,7 +299,7 @@ define void @vst2q_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e16.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v10, a1, v9
@@ -315,12 +320,12 @@ define void @vst2q_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vslidedown.vi v8, v9, 2
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v9, v10, v8
+; CHECK-NEXT:    vslidedown.vi v10, v9, 2
+; CHECK-NEXT:    vslidedown.vi v8, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v9, v8, v10
 ; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    vwmaccu.vx v9, a1, v8
+; CHECK-NEXT:    vwmaccu.vx v9, a1, v10
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v9, (a0)
 ; CHECK-NEXT:    ret
@@ -358,12 +363,13 @@ define void @vst2q_lane_s8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 4
-; CHECK-NEXT:    vslidedown.vi v8, v9, 4
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vwaddu.vv v9, v10, v8
+; CHECK-NEXT:    vslidedown.vi v10, v9, 4
+; CHECK-NEXT:    vslidedown.vi v8, v8, 4
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; CHECK-NEXT:    vwaddu.vv v9, v8, v10
 ; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    vwmaccu.vx v9, a1, v8
+; CHECK-NEXT:    vwmaccu.vx v9, a1, v10
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vse8.v v9, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -445,12 +451,13 @@ define void @vst2q_lane_u8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlseg2e8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 12
-; CHECK-NEXT:    vslidedown.vi v8, v9, 12
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vwaddu.vv v9, v10, v8
+; CHECK-NEXT:    vslidedown.vi v10, v9, 12
+; CHECK-NEXT:    vslidedown.vi v8, v8, 12
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; CHECK-NEXT:    vwaddu.vv v9, v8, v10
 ; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    vwmaccu.vx v9, a1, v8
+; CHECK-NEXT:    vwmaccu.vx v9, a1, v10
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
 ; CHECK-NEXT:    vse8.v v9, (a0)
 ; CHECK-NEXT:    ret
 entry:
@@ -509,13 +516,13 @@ define void @vst3_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
-; CHECK-NEXT:    vwaddu.vv v11, v8, v9
-; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    vwmaccu.vx v11, a1, v9
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    addi a1, sp, 8
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v10, (a1)
 ; CHECK-NEXT:    lw a1, 8(sp)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
+; CHECK-NEXT:    li a2, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a2, v9
 ; CHECK-NEXT:    sb a1, 8(a0)
 ; CHECK-NEXT:    srli a2, a1, 24
 ; CHECK-NEXT:    sb a2, 11(a0)
@@ -523,6 +530,7 @@ define void @vst3_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    sb a2, 10(a0)
 ; CHECK-NEXT:    srli a1, a1, 8
 ; CHECK-NEXT:    sb a1, 9(a0)
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    sb a1, 0(a0)
 ; CHECK-NEXT:    srli a2, a1, 56
@@ -593,7 +601,7 @@ define void @vst3_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    vmv.x.s a1, v10
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    li a2, -1
 ; CHECK-NEXT:    vwmaccu.vx v11, a2, v9
@@ -772,6 +780,7 @@ define void @vst3_lane_u32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v11, a1, v9
@@ -1049,7 +1058,7 @@ define void @vst3q_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
 ; CHECK-NEXT:    vmv.x.s a1, v10
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    li a2, -1
 ; CHECK-NEXT:    vwmaccu.vx v11, a2, v9
@@ -1345,6 +1354,7 @@ define void @vst4_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
@@ -1433,6 +1443,7 @@ define void @vst4_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
@@ -1551,6 +1562,7 @@ define void @vst4_lane_u32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
@@ -1739,7 +1751,7 @@ define void @vst4q_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 0
 ; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v13, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v13, a1, v9
@@ -1896,7 +1908,7 @@ define void @vst4q_lane_u32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
-; CHECK-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
