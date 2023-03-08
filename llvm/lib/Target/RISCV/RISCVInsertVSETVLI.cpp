@@ -46,6 +46,9 @@ static cl::opt<bool> UseStrictAsserts(
 cl::opt<bool> ForceTailUndisturbed(
     "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
     cl::desc("Force to use tail undisturbed for all vector intrinsics."));
+cl::opt<bool> ForceMaskUndisturbed(
+    "riscv-force-mask-undisturbed", cl::init(false), cl::Hidden,
+    cl::desc("Force to use mask undisturbed for all vector intrinsics."));
 #endif // SIFIVE_CUSTOMIZATION
 
 namespace {
@@ -687,6 +690,8 @@ static VSETVLIInfo computeInfoForInstr(const MachineInstr &MI, uint64_t TSFlags,
   // CPUs that treat them the same.
   if (ForceTailUndisturbed)
     TailAgnostic = false;
+  if (ForceMaskUndisturbed)
+    MaskAgnostic = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);

@@ -28,7 +28,10 @@ using namespace llvm;
 #define DEBUG_TYPE "riscv-isel"
 #define PASS_NAME "RISCV DAG->DAG Pattern Instruction Selection"
 
-extern cl::opt<bool> ForceTailUndisturbed; // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<bool> ForceTailUndisturbed;
+extern cl::opt<bool> ForceMaskUndisturbed;
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm::RISCV {
 #define GET_RISCVVSSEGTable_IMPL
@@ -560,7 +563,7 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
 #if SIFIVE_CUSTOMIZATION
   unsigned VTypeI = RISCVVType::encodeVTYPE(
       VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
-      /*MaskAgnostic*/ true);
+      /*MaskAgnostic*/ !ForceMaskUndisturbed);
 #endif // SIFIVE_CUSTOMIZATION
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
