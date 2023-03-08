@@ -105,24 +105,34 @@ enum class TypeModifier : uint8_t {
   LLVM_MARK_AS_BITMASK_ENUM(Float32), // SIFIVE
 };
 
-struct Policy {
-  bool PolicyNone = false;
+class Policy {
+public:
   enum PolicyType {
     Undisturbed,
     Agnostic,
-    Omit, // No policy required.
   };
-  PolicyType TailPolicy = Omit;
-  PolicyType MaskPolicy = Omit;
-  bool IntrinsicWithoutMU = false;
+
+private:
+  // The default assumption for an RVV instruction is TAMA, as an undisturbed
+  // policy generally will affect the performance of an out-of-order core.
+  const PolicyType TailPolicy = Agnostic;
+  const PolicyType MaskPolicy = Agnostic;
+
+public:
 #if SIFIVE_CUSTOMIZATION
   bool IsNontemporal = false;
-  Policy(bool _IsNontemporal = false)
-      : PolicyNone(true), IsNontemporal(_IsNontemporal) {}
-  Policy(PolicyType _TailPolicy, PolicyType _MaskPolicy,
-         bool _IntrinsicWithoutMU = false, bool IsNontemporal = false)
-      : TailPolicy(_TailPolicy), MaskPolicy(_MaskPolicy),
-        IntrinsicWithoutMU(_IntrinsicWithoutMU), IsNontemporal(IsNontemporal) {}
+  Policy(bool IsNontemporal = false) : IsNontemporal(IsNontemporal) {}
+  Policy(PolicyType TailPolicy, bool IsNontemporal = false)
+      : TailPolicy(TailPolicy), IsNontemporal(IsNontemporal) {}
+  Policy(PolicyType TailPolicy, PolicyType MaskPolicy,
+         bool IsNontemporal = false)
+      : TailPolicy(TailPolicy), MaskPolicy(MaskPolicy),
+        IsNontemporal(IsNontemporal) {}
+#else
+  Policy() = default;
+  Policy(PolicyType TailPolicy) : TailPolicy(TailPolicy) {}
+  Policy(PolicyType TailPolicy, PolicyType MaskPolicy)
+      : TailPolicy(TailPolicy), MaskPolicy(MaskPolicy) {}
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isTAMAPolicy() const {
@@ -141,43 +151,21 @@ struct Policy {
     return TailPolicy == Undisturbed && MaskPolicy == Undisturbed;
   }
 
-  bool isTUMPolicy() const {
-    return TailPolicy == Undisturbed && MaskPolicy == Agnostic &&
-           IntrinsicWithoutMU;
-  }
+  bool isTAPolicy() const { return TailPolicy == Agnostic; }
 
-  bool isTAMPolicy() const {
-    return TailPolicy == Agnostic && MaskPolicy == Agnostic &&
-           IntrinsicWithoutMU;
-  }
+  bool isTUPolicy() const { return TailPolicy == Undisturbed; }
 
-  bool isTAPolicy() const {
-    return TailPolicy == Agnostic && MaskPolicy == Omit;
-  }
+  bool isMAPolicy() const { return MaskPolicy == Agnostic; }
 
-  bool isTUPolicy() const {
-    return TailPolicy == Undisturbed && MaskPolicy == Omit;
-  }
-
-  bool isMAPolicy() const {
-    return MaskPolicy == Agnostic && TailPolicy == Omit;
-  }
-
-  bool isMUPolicy() const {
-    return MaskPolicy == Undisturbed && TailPolicy == Omit;
-  }
+  bool isMUPolicy() const { return MaskPolicy == Undisturbed; }
 
 #if SIFIVE_CUSTOMIZATION
   bool isNTLPolicy() const { return IsNontemporal; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool isPolicyNonePolicy() const { return PolicyNone; }
-
   bool operator==(const Policy &Other) const {
-    return PolicyNone == Other.PolicyNone && TailPolicy == Other.TailPolicy &&
-           MaskPolicy == Other.MaskPolicy &&
+    return TailPolicy == Other.TailPolicy && MaskPolicy == Other.MaskPolicy &&
 #if SIFIVE_CUSTOMIZATION
-           IntrinsicWithoutMU == Other.IntrinsicWithoutMU &&
            IsNontemporal == Other.IsNontemporal;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -401,9 +389,6 @@ enum PolicyScheme : uint8_t {
   // Passthru operand is at first parameter in C builtin.
   HasPassthruOperand,
   HasPolicyOperand,
-  // Special case for vmerge, the passthru operand is second
-  // parameter in C builtin.
-  HasPassthruOperandAtIdx1,
 };
 
 // TODO refactor RVVIntrinsic class design after support all intrinsic
@@ -440,7 +425,7 @@ public:
                const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
                const std::vector<llvm::StringRef> &RequiredFeatures,
-               unsigned NF, Policy PolicyAttrs, bool IsPrototypeDefaultTU);
+               unsigned NF, Policy PolicyAttrs);
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }
@@ -469,17 +454,13 @@ public:
     return IntrinsicTypes;
   }
   Policy getPolicyAttrs() const {
-    assert(PolicyAttrs.PolicyNone == false);
     return PolicyAttrs;
   }
   unsigned getPolicyAttrsBits() const {
-    // Return following value.
-    // constexpr unsigned TAIL_UNDISTURBED = 0;
-    // constexpr unsigned TAIL_AGNOSTIC = 1;
-    // constexpr unsigned TAIL_AGNOSTIC_MASK_AGNOSTIC = 3;
-    // FIXME: how about value 2
-    // int PolicyAttrs = TAIL_UNDISTURBED;
-    assert(PolicyAttrs.PolicyNone == false);
+    // CGBuiltin.cpp
+    // The 0th bit simulates the `vta` of RVV
+    // The 1st bit simulates the `vma` of RVV
+    // int PolicyAttrs = 0;
 
     if (PolicyAttrs.isTUMAPolicy())
       return 2;
@@ -488,10 +469,6 @@ public:
     if (PolicyAttrs.isTUMUPolicy())
       return 0;
     if (PolicyAttrs.isTAMUPolicy())
-      return 1;
-    if (PolicyAttrs.isTUPolicy())
-      return 0;
-    if (PolicyAttrs.isTAPolicy())
       return 1;
 
     llvm_unreachable("unsupport policy");
@@ -508,8 +485,10 @@ public:
   static llvm::SmallVector<PrototypeDescriptor>
   computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> Prototype,
                       bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
-                      unsigned NF, bool IsPrototypeDefaultTU,
-                      PolicyScheme DefaultScheme, Policy PolicyAttrs);
+                      unsigned NF, PolicyScheme DefaultScheme,
+                      Policy PolicyAttrs);
+
+  static llvm::SmallVector<Policy> getSupportedUnMaskedPolicies();
   static llvm::SmallVector<Policy>
       getSupportedMaskedPolicies(bool HasTailPolicy, bool HasMaskPolicy);
 
@@ -518,8 +497,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   static void updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
-                                   bool IsPrototypeDefaultTU, std::string &Name,
-                                   std::string &BuiltinName,
+                                   std::string &Name, std::string &BuiltinName,
                                    std::string &OverloadedName,
                                    Policy &PolicyAttrs);
 };
@@ -586,7 +564,6 @@ struct RVVIntrinsicRecord {
   bool HasMasked : 1;
   bool HasVL : 1;
   bool HasMaskedOffOperand : 1;
-  bool IsPrototypeDefaultTU : 1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
 #if SIFIVE_CUSTOMIZATION

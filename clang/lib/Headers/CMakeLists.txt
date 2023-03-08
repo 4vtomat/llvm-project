@@ -102,6 +102,10 @@ set(ppc_htm_files
 set(riscv_files
   riscv_ntlh.h
   )
+
+set(rvv_v0p10_compatible_header_file
+  rvv_v0p10_compatible/riscv_vector.h
+)
 #end SIFIVE_CUSTOMIZATION
 
 set(systemz_files
@@ -251,6 +255,7 @@ set(files
   ${ppc_htm_files}
 # SIFIVE_CUSTOMIZATION
   ${riscv_files}
+  ${rvv_v0p10_compatible_header_file}
 #end SIFIVE_CUSTOMIZATION
   ${systemz_files}
   ${ve_files}
@@ -451,7 +456,7 @@ add_header_target("mips-resource-headers" "${mips_msa_files}")
 add_header_target("ppc-resource-headers" "${ppc_files};${ppc_wrapper_files}")
 add_header_target("ppc-htm-resource-headers" "${ppc_htm_files}")
 # SIFIVE_CUSTOMIZATION
-add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files}")
+add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files};${rvv_v0p10_compatible_header_file};")
 #end SIFIVE_CUSTOMIZATION
 add_header_target("systemz-resource-headers" "${systemz_files}")
 add_header_target("ve-resource-headers" "${ve_files}")
@@ -493,6 +498,11 @@ install(
 install(
   FILES ${sifive_wrapper_files}
   DESTINATION ${header_install_dir}/sifive_wrappers
+  COMPONENT clang-resource-headers)
+
+install(
+  FILES ${rvv_v0p10_compatible_header_file}
+  DESTINATION ${header_install_dir}/rvv_v0p10_compatible
   COMPONENT clang-resource-headers)
 #end SIFIVE
 
@@ -587,6 +597,11 @@ install(
   FILES ${riscv_files}
   DESTINATION ${header_install_dir}
   EXCLUDE_FROM_ALL
+  COMPONENT riscv-resource-headers)
+
+install(
+  FILES ${rvv_v0p10_compatible_header_file}
+  DESTINATION ${header_install_dir}/rvv_v0p10_compatible
   COMPONENT riscv-resource-headers)
 
 install(

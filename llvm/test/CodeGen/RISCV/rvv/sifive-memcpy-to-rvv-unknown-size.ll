@@ -15,7 +15,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; NOALIGN-NEXT:    sub a2, a2, a3
 ; NOALIGN-NEXT:    add a0, a0, a3
 ; NOALIGN-NEXT:    add a1, a1, a3
-; NOALIGN-NEXT:    bgtz a2, .LBB0_1
+; NOALIGN-NEXT:    bnez a2, .LBB0_1
 ; NOALIGN-NEXT:  # %bb.2: # %memcpy-post-loop
 ; NOALIGN-NEXT:    ret
 ;
@@ -41,7 +41,7 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    add a1, a1, a3
-; ALIGN-NEXT:    bgtz a2, .LBB0_2
+; ALIGN-NEXT:    bnez a2, .LBB0_2
 ; ALIGN-NEXT:  .LBB0_3: # %memcpy-post-loop
 ; ALIGN-NEXT:    ret
 entry:

@@ -13,6 +13,7 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/Twine.h"
+#include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
 #include <numeric>
 #include <optional>
@@ -962,14 +963,16 @@ std::optional<RVVTypePtr> RVVTypeCache::computeType(BasicType BT, int Log2LMUL,
 //===----------------------------------------------------------------------===//
 // RVVIntrinsic implementation
 //===----------------------------------------------------------------------===//
-RVVIntrinsic::RVVIntrinsic(
-    StringRef NewName, StringRef Suffix, StringRef NewOverloadedName,
-    StringRef OverloadedSuffix, StringRef IRName, bool IsMasked,
-    bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
-    bool SupportOverloading, bool HasBuiltinAlias, StringRef ManualCodegen,
-    const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
-    const std::vector<StringRef> &RequiredFeatures, unsigned NF,
-    Policy NewPolicyAttrs, bool IsPrototypeDefaultTU)
+RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
+                           StringRef NewOverloadedName,
+                           StringRef OverloadedSuffix, StringRef IRName,
+                           bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
+                           PolicyScheme Scheme, bool SupportOverloading,
+                           bool HasBuiltinAlias, StringRef ManualCodegen,
+                           const RVVTypes &OutInTypes,
+                           const std::vector<int64_t> &NewIntrinsicTypes,
+                           const std::vector<StringRef> &RequiredFeatures,
+                           unsigned NF, Policy NewPolicyAttrs)
     : IRName(IRName), IsMasked(IsMasked),
       HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
       SupportOverloading(SupportOverloading), HasBuiltinAlias(HasBuiltinAlias),
@@ -987,8 +990,8 @@ RVVIntrinsic::RVVIntrinsic(
   if (!OverloadedSuffix.empty())
     OverloadedName += "_" + OverloadedSuffix.str();
 
-  updateNamesAndPolicy(IsMasked, hasPolicy(), IsPrototypeDefaultTU, Name,
-                       BuiltinName, OverloadedName, PolicyAttrs);
+  updateNamesAndPolicy(IsMasked, hasPolicy(), Name, BuiltinName, OverloadedName,
+                       PolicyAttrs);
 
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
@@ -998,7 +1001,7 @@ RVVIntrinsic::RVVIntrinsic(
   // if there is merge operand (It is always in first operand).
   IntrinsicTypes = NewIntrinsicTypes;
   if ((IsMasked && hasMaskedOffOperand()) ||
-      (!IsMasked && hasPassthruOperand() && !IsPrototypeDefaultTU)) {
+      (!IsMasked && hasPassthruOperand())) {
     for (auto &I : IntrinsicTypes) {
       if (I >= 0)
         I += NF;
@@ -1029,21 +1032,9 @@ std::string RVVIntrinsic::getSuffixStr(
 llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     llvm::ArrayRef<PrototypeDescriptor> Prototype, bool IsMasked,
     bool HasMaskedOffOperand, bool HasVL, unsigned NF,
-    bool IsPrototypeDefaultTU, PolicyScheme DefaultScheme, Policy PolicyAttrs) {
+    PolicyScheme DefaultScheme, Policy PolicyAttrs) {
   SmallVector<PrototypeDescriptor> NewPrototype(Prototype.begin(),
                                                 Prototype.end());
-  // Update PolicyAttrs if need (TA or TAMA) for compute builtin types.
-  if (PolicyAttrs.isMAPolicy())
-    PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic; // TAMA
-  if (PolicyAttrs.isPolicyNonePolicy()) {
-    if (!IsMasked) {
-      PolicyAttrs.PolicyNone = false;
-      if (IsPrototypeDefaultTU)
-        PolicyAttrs.TailPolicy = Policy::PolicyType::Undisturbed; // TU
-      else
-        PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic; // TA
-    }
-  }
   bool HasPassthruOp = DefaultScheme == PolicyScheme::HasPassthruOperand;
   if (IsMasked) {
     // If HasMaskedOffOperand, insert result type as first input operand if
@@ -1061,10 +1052,6 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
         NewPrototype.insert(NewPrototype.begin() + NF + 1, NF, MaskoffType);
       }
     }
-    // Erase passthru operand for TAM
-    if (NF == 1 && IsPrototypeDefaultTU && PolicyAttrs.isTAMAPolicy() &&
-        HasPassthruOp && !HasMaskedOffOperand)
-      NewPrototype.erase(NewPrototype.begin() + 1);
     if (HasMaskedOffOperand && NF > 1) {
       // Convert
       // (void, op0 address, op1 address, ..., maskedoff0, maskedoff1, ...)
@@ -1079,20 +1066,8 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
     }
   } else {
     if (NF == 1) {
-      if (PolicyAttrs.isTUPolicy() && HasPassthruOp && !IsPrototypeDefaultTU)
+      if (PolicyAttrs.isTUPolicy() && HasPassthruOp)
         NewPrototype.insert(NewPrototype.begin(), NewPrototype[0]);
-      else if (PolicyAttrs.isTAPolicy() && HasPassthruOp &&
-               IsPrototypeDefaultTU)
-        NewPrototype.erase(NewPrototype.begin() + 1);
-      if (DefaultScheme == PolicyScheme::HasPassthruOperandAtIdx1) {
-        if (PolicyAttrs.isTUPolicy() && !IsPrototypeDefaultTU) {
-          // Insert undisturbed output to index 1
-          NewPrototype.insert(NewPrototype.begin() + 2, NewPrototype[0]);
-        } else if (PolicyAttrs.isTAPolicy() && IsPrototypeDefaultTU) {
-          // Erase passthru for TA policy
-          NewPrototype.erase(NewPrototype.begin() + 2);
-        }
-      }
     } else if (PolicyAttrs.isTUPolicy() && HasPassthruOp) {
       // NF > 1 cases for segment load operations.
       // Convert
@@ -1126,32 +1101,31 @@ void RVVIntrinsic::appendNontemporalInPolicyList(llvm::SmallVector<Policy> &P) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+llvm::SmallVector<Policy> RVVIntrinsic::getSupportedUnMaskedPolicies() {
+  return {Policy(Policy::PolicyType::Undisturbed)}; // TU
+}
+
 llvm::SmallVector<Policy>
 RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                                          bool HasMaskPolicy) {
   if (HasTailPolicy && HasMaskPolicy)
     return {Policy(Policy::PolicyType::Undisturbed,
-                   Policy::PolicyType::Agnostic), // TUMA
-            Policy(Policy::PolicyType::Agnostic,
-                   Policy::PolicyType::Agnostic), // TAMA
+                   Policy::PolicyType::Agnostic), // TUM
             Policy(Policy::PolicyType::Undisturbed,
                    Policy::PolicyType::Undisturbed), // TUMU
             Policy(Policy::PolicyType::Agnostic,
-                   Policy::PolicyType::Undisturbed)}; // TAMU
-
-  if (HasTailPolicy)
+                   Policy::PolicyType::Undisturbed)}; // MU
+  if (HasTailPolicy && !HasMaskPolicy)
     return {Policy(Policy::PolicyType::Undisturbed,
-                   Policy::PolicyType::Agnostic, true), // TUM
-            Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Agnostic,
-                   true)}; // TAM
-
-  return {
-      Policy(Policy::PolicyType::Omit, Policy::PolicyType::Agnostic),     // MA
-      Policy(Policy::PolicyType::Omit, Policy::PolicyType::Undisturbed)}; // MU
+                   Policy::PolicyType::Agnostic)}; // TU
+  if (!HasTailPolicy && HasMaskPolicy)
+    return {Policy(Policy::PolicyType::Agnostic,
+                   Policy::PolicyType::Undisturbed)}; // MU
+  llvm_unreachable("An RVV instruction should not be without both tail policy "
+                   "and mask policy");
 }
 
 void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
-                                        bool IsPrototypeDefaultTU,
                                         std::string &Name,
                                         std::string &BuiltinName,
                                         std::string &OverloadedName,
@@ -1163,51 +1137,34 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
     OverloadedName += suffix;
   };
 
-  if (PolicyAttrs.isPolicyNonePolicy()) {
-    PolicyAttrs.PolicyNone = false;
-    if (IsMasked) {
+  // This follows the naming guideline under riscv-c-api-doc to add the
+  // `__riscv_` suffix for all RVV intrinsics.
+  Name = "__riscv_" + Name;
+  OverloadedName = "__riscv_" + OverloadedName;
+
+  if (IsMasked) {
+    if (PolicyAttrs.isTUMUPolicy())
+      appendPolicySuffix("_tumu");
+    else if (PolicyAttrs.isTUMAPolicy())
+      appendPolicySuffix("_tum");
+    else if (PolicyAttrs.isTAMUPolicy())
+      appendPolicySuffix("_mu");
+    else if (PolicyAttrs.isTAMAPolicy()) {
       Name += "_m";
-      // FIXME: Currently _m default policy implementation is different with
-      // RVV intrinsic spec (TUMA)
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Undisturbed;
-      PolicyAttrs.MaskPolicy = Policy::PolicyType::Undisturbed;
       if (HasPolicy)
-        BuiltinName += "_tumu";
+        BuiltinName += "_tama";
       else
         BuiltinName += "_m";
-    } else if (IsPrototypeDefaultTU) {
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Undisturbed;
-      if (HasPolicy)
-        BuiltinName += "_tu";
-    } else {
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
+    } else
+      llvm_unreachable("Unhandled policy condition");
+  } else {
+    if (PolicyAttrs.isTUPolicy())
+      appendPolicySuffix("_tu");
+    else if (PolicyAttrs.isTAPolicy()) {
       if (HasPolicy)
         BuiltinName += "_ta";
-    }
-  } else {
-    if (PolicyAttrs.isTUMPolicy())
-      appendPolicySuffix("_tum");
-    else if (PolicyAttrs.isTAMPolicy())
-      appendPolicySuffix("_tam");
-    else if (PolicyAttrs.isTUMUPolicy())
-      appendPolicySuffix("_tumu");
-    else if (PolicyAttrs.isTAMUPolicy())
-      appendPolicySuffix("_tamu");
-    else if (PolicyAttrs.isTUMAPolicy())
-      appendPolicySuffix("_tuma");
-    else if (PolicyAttrs.isTAMAPolicy())
-      appendPolicySuffix("_tama");
-    else if (PolicyAttrs.isTUPolicy())
-      appendPolicySuffix("_tu");
-    else if (PolicyAttrs.isTAPolicy())
-      appendPolicySuffix("_ta");
-    else if (PolicyAttrs.isMUPolicy()) {
-      appendPolicySuffix("_mu");
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
-    } else if (PolicyAttrs.isMAPolicy()) {
-      appendPolicySuffix("_ma");
-      PolicyAttrs.TailPolicy = Policy::PolicyType::Agnostic;
-    }
+    } else
+      llvm_unreachable("Unhandled policy condition");
   }
 
 #if SIFIVE_CUSTOMIZATION
@@ -1258,7 +1215,6 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.HasMasked << ",";
   OS << (int)Record.HasVL << ",";
   OS << (int)Record.HasMaskedOffOperand << ",";
-  OS << (int)Record.IsPrototypeDefaultTU << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
 #if SIFIVE_CUSTOMIZATION

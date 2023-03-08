@@ -2160,7 +2160,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     const RISCV::VLEPseudo *P = RISCV::getVLEPseudo(
         /*IsMasked*/ false, /*IsTU*/ false, /*IsStrided*/ true, /*FF*/ false,
         Log2SEW, static_cast<unsigned>(LMUL));
-#if SIFIVE_CUSTOMIZATION
     MachineSDNode *Load =
         CurDAG->getMachineNode(P->Pseudo, DL, {VT, MVT::Other}, Operands);
     // Update the chain.
@@ -2169,7 +2168,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     CurDAG->setNodeMemRefs(Load, {Ld->getMemOperand()});
     // Replace the splat with the vlse.
     ReplaceNode(Node, Load);
-#endif // SIFIVE_CUSTOMIZATION
     return;
   }
   }

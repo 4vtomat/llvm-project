@@ -66,7 +66,6 @@ struct SemaRecord {
   bool HasMasked :1;
   bool HasVL :1;
   bool HasMaskedOffOperand :1;
-  bool IsPrototypeDefaultTU : 1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
 #if SIFIVE_CUSTOMIZATION
@@ -172,23 +171,14 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     OS << "  ID = Intrinsic::riscv_" + RVVI->getIRName() + ";\n";
   if (RVVI->getNF() >= 2)
     OS << "  NF = " + utostr(RVVI->getNF()) + ";\n";
-  // We had initialized PolicyAttrs as TU/TUMU in CodeGen function.
-  if (!RVVI->getPolicyAttrs().isTUPolicy() &&
-      !RVVI->getPolicyAttrs().isTUMUPolicy() && !RVVI->hasPassthruOperand() &&
-      !RVVI->hasManualCodegen() && RVVI->hasVL())
-    OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
+
+  OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
 
   if (RVVI->hasManualCodegen()) {
     OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
-    if (RVVI->isMasked())
-      OS << "IsMasked = true;\n";
-    else
-      OS << "IsMasked = false;\n";
+    OS << "IsMasked = " << (RVVI->isMasked() ? "true" : "false") << ";\n";
 #if SIFIVE_CUSTOMIZATION
-    if (RVVI->getPolicyAttrs().isNTLPolicy())
-      OS << "  IsNontemporal = true;\n";
-    else
-      OS << "  IsNontemporal = false;\n";
+    OS << "  IsNontemporal = " << RVVI->getPolicyAttrs().isNTLPolicy() << ";\n";
 #endif // SIFIVE_CUSTOMIZATION
     OS << RVVI->getManualCodegen();
     OS << "break;\n";
@@ -569,7 +559,6 @@ void RVVEmitter::createRVVIntrinsics(
 #if SIFIVE_CUSTOMIZATION
     bool HasNontemporalOperand = R->getValueAsBit("HasNontemporalOperand");
 #endif // SIFIVE_CUSTOMIZATION
-    bool IsPrototypeDefaultTU = R->getValueAsBit("IsPrototypeDefaultTU");
     bool SupportOverloading = R->getValueAsBit("SupportOverloading");
     bool HasBuiltinAlias = R->getValueAsBit("HasBuiltinAlias");
     StringRef ManualCodegen = R->getValueAsString("ManualCodegen");
@@ -581,12 +570,12 @@ void RVVEmitter::createRVVIntrinsics(
     StringRef MaskedIRName = R->getValueAsString("MaskedIRName");
     unsigned NF = R->getValueAsInt("NF");
 
-    // If unmasked builtin supports policy, they should be TU or TA.
-    llvm::SmallVector<Policy> SupportedUnMaskedPolicies;
-    SupportedUnMaskedPolicies.emplace_back(Policy(
-        Policy::PolicyType::Undisturbed, Policy::PolicyType::Omit)); // TU
-    SupportedUnMaskedPolicies.emplace_back(
-        Policy(Policy::PolicyType::Agnostic, Policy::PolicyType::Omit)); // TA
+    const Policy DefaultPolicy;
+#ifdef SIFIVE_CUSTOMIZATION
+    const Policy NonTemporalDefaultPolicy(/* IsNontemporal*/ true);
+#endif
+    SmallVector<Policy> SupportedUnMaskedPolicies =
+        RVVIntrinsic::getSupportedUnMaskedPolicies();
     SmallVector<Policy> SupportedMaskedPolicies =
         RVVIntrinsic::getSupportedMaskedPolicies(HasTailPolicy, HasMaskPolicy);
 
@@ -609,22 +598,21 @@ void RVVEmitter::createRVVIntrinsics(
     // Compute Builtin types
     auto Prototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/false,
-        /*HasMaskedOffOperand=*/false, HasVL, NF, IsPrototypeDefaultTU,
-        UnMaskedPolicyScheme, Policy());
+        /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
+        DefaultPolicy);
 #if SIFIVE_CUSTOMIZATION
     auto NTLPrototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/false,
-        /*HasMaskedOffOperand=*/false, HasVL, NF, IsPrototypeDefaultTU,
-        UnMaskedPolicyScheme, Policy(/*IsNontemporal*/ true));
+        /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
+        NonTemporalDefaultPolicy);
 #endif // SIFIVE_CUSTOMIZATION
     auto MaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
-        IsPrototypeDefaultTU, MaskedPolicyScheme, Policy());
+        MaskedPolicyScheme, DefaultPolicy);
 #if SIFIVE_CUSTOMIZATION
     auto NTLMaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
-        IsPrototypeDefaultTU, MaskedPolicyScheme,
-        Policy(/*IsNontemporal*/ true));
+        MaskedPolicyScheme, NonTemporalDefaultPolicy);
 #endif // SIFIVE_CUSTOMIZATION
 
     // Create Intrinsics for each type and LMUL.
@@ -651,7 +639,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
-            Policy(), IsPrototypeDefaultTU));
+            DefaultPolicy));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
@@ -659,7 +647,7 @@ void RVVEmitter::createRVVIntrinsics(
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
-              Policy(/*IsNontemporal*/ true), IsPrototypeDefaultTU));
+              NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
@@ -667,27 +655,26 @@ void RVVEmitter::createRVVIntrinsics(
                 RVVIntrinsic::computeBuiltinTypes(
                     BasicPrototype, /*IsMasked=*/false,
                     /*HasMaskedOffOperand=*/false, HasVL, NF,
-                    IsPrototypeDefaultTU, UnMaskedPolicyScheme, P);
+                    UnMaskedPolicyScheme, P);
             std::optional<RVVTypes> PolicyTypes =
                 TypeCache.computeTypes(BT, Log2LMUL, NF, PolicyPrototype);
             Out.push_back(std::make_unique<RVVIntrinsic>(
                 Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-                ManualCodegen, *PolicyTypes, IntrinsicTypes,
-                RequiredFeatures, NF, P, IsPrototypeDefaultTU));
+                ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures,
+                NF, P));
           }
         if (!HasMasked)
           continue;
         // Create a masked intrinsic
         std::optional<RVVTypes> MaskTypes =
-            TypeCache.computeTypes(BT, Log2LMUL, NF, Prototype);
+            TypeCache.computeTypes(BT, Log2LMUL, NF, MaskedPrototype);
         Out.push_back(std::make_unique<RVVIntrinsic>(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
-            SupportOverloading, HasBuiltinAlias, ManualCodegen,
-            *MaskTypes, IntrinsicTypes, RequiredFeatures, NF,
-            Policy(), IsPrototypeDefaultTU));
+            SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
+            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy));
 
 #if SIFIVE_CUSTOMIZATION
         std::optional<RVVTypes> NTLMaskTypes =
@@ -698,8 +685,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
-              IntrinsicTypes, RequiredFeatures, NF,
-              Policy(/*IsNontemporal*/ true), IsPrototypeDefaultTU));
+              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
 
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
@@ -708,15 +694,15 @@ void RVVEmitter::createRVVIntrinsics(
           SmallVector<PrototypeDescriptor> PolicyPrototype =
               RVVIntrinsic::computeBuiltinTypes(
                   BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
-                  NF, IsPrototypeDefaultTU, MaskedPolicyScheme, P);
+                  NF, MaskedPolicyScheme, P);
           std::optional<RVVTypes> PolicyTypes =
               TypeCache.computeTypes(BT, Log2LMUL, NF, PolicyPrototype);
           Out.push_back(std::make_unique<RVVIntrinsic>(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr,
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-              ManualCodegen, *PolicyTypes, IntrinsicTypes,
-              RequiredFeatures, NF, P, IsPrototypeDefaultTU));
+              ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures, NF,
+              P));
         }
       } // End for Log2LMULList
     }   // End for TypeRange
@@ -770,7 +756,6 @@ void RVVEmitter::createRVVIntrinsics(
     SR.HasMasked = HasMasked;
     SR.HasVL = HasVL;
     SR.HasMaskedOffOperand = HasMaskedOffOperand;
-    SR.IsPrototypeDefaultTU = IsPrototypeDefaultTU;
     SR.HasTailPolicy = HasTailPolicy;
     SR.HasMaskPolicy = HasMaskPolicy;
 #if SIFIVE_CUSTOMIZATION
@@ -818,7 +803,6 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
     R.HasMasked = SR.HasMasked;
     R.HasVL = SR.HasVL;
     R.HasMaskedOffOperand = SR.HasMaskedOffOperand;
-    R.IsPrototypeDefaultTU = SR.IsPrototypeDefaultTU;
     R.HasTailPolicy = SR.HasTailPolicy;
     R.HasMaskPolicy = SR.HasMaskPolicy;
 #if SIFIVE_CUSTOMIZATION

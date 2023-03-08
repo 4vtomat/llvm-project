@@ -61,7 +61,7 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    bgtz a2, .LBB2_1
+; CHECK-NEXT:    bnez a2, .LBB2_1
 ; CHECK-NEXT:  # %bb.2: # %memset-post-loop
 ; CHECK-NEXT:    ret
 entry:

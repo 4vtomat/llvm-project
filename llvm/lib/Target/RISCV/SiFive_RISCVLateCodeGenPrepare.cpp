@@ -743,7 +743,7 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   if (FullyUnrolled)
     Builder.CreateBr(PostLoopBB);
   else
-    Builder.CreateCondBr(Builder.CreateICmpSGT(NewLoopCount, Zero), LoopBody,
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewLoopCount, Zero), LoopBody,
                          EpilogLen ? EpilogBB : PostLoopBB);
 
   // Create epilog
@@ -783,7 +783,7 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
     cast<PHINode>(SrcIndex)->addIncoming(SrcIndexTmp, EpilogBB);
     cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, EpilogBB);
 
-    Builder.CreateCondBr(Builder.CreateICmpUGT(NewLoopCount, Zero), EpilogBB,
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewLoopCount, Zero), EpilogBB,
                          PostLoopBB);
   }
 }
@@ -1102,7 +1102,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   if (FullyUnrolled)
     Builder.CreateBr(PostLoopBB);
   else
-    Builder.CreateCondBr(Builder.CreateICmpSGT(NewLoopCount, Zero), LoopBody,
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewLoopCount, Zero), LoopBody,
                          EpilogLen ? EpilogBB : PostLoopBB);
 
   // Create epilog
@@ -1129,7 +1129,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
     cast<PHINode>(LoopCount)->addIncoming(NewLoopCount, EpilogBB);
     cast<PHINode>(DstIndex)->addIncoming(DstIndexTmp, EpilogBB);
 
-    Builder.CreateCondBr(Builder.CreateICmpUGT(NewLoopCount, Zero), EpilogBB,
+    Builder.CreateCondBr(Builder.CreateICmpNE(NewLoopCount, Zero), EpilogBB,
                          PostLoopBB);
   }
 }
