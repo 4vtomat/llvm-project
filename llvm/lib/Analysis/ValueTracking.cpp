@@ -2805,18 +2805,6 @@ bool isKnownNonZero(const Value *V, const APInt &DemandedElts, unsigned Depth,
            isGuaranteedNotToBePoison(I->getOperand(0), Q.AC, Q.CxtI, Q.DT,
                                      Depth);
   case Instruction::Call:
-<<<<<<< HEAD
-    if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::vscale)
-      return true;
-#if SIFIVE_CUSTOMIZATION
-    // vsetvlimax is always non-zero.
-    if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvlimax)
-      return true;
-    // vsetvli only returns zero if input is zero.
-    if (cast<CallInst>(I)->getIntrinsicID() == Intrinsic::riscv_vsetvli)
-      return isKnownNonZero(I->getOperand(0), Depth, Q);
-#endif
-=======
     if (auto *II = dyn_cast<IntrinsicInst>(I)) {
       switch (II->getIntrinsicID()) {
       case Intrinsic::abs:
@@ -2833,11 +2821,16 @@ bool isKnownNonZero(const Value *V, const APInt &DemandedElts, unsigned Depth,
         break;
       case Intrinsic::vscale:
         return true;
+#if SIFIVE_CUSTOMIZATION
+      case Intrinsic::riscv_vsetvlimax:
+        return true;
+      case Intrinsic::riscv_vsetvli:
+        return isKnownNonZero(I->getOperand(0), Depth, Q);
+#endif
       default:
         break;
       }
     }
->>>>>>> upstream/main
     break;
   }
 
