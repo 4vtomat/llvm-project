@@ -317,35 +317,22 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
          ++TypeRangeMaskShift) {
       unsigned int BaseTypeI = 1 << TypeRangeMaskShift;
       BaseType = static_cast<BasicType>(BaseTypeI);
-#if SIFIVE_CUSTOMIZATION
-      bool Unsupported = false;
-#endif // SIFIVE_CUSTOMIZATION
 
       if ((BaseTypeI & Record.TypeRangeMask) != BaseTypeI)
         continue;
 
       // Check requirement.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+      bool Unsupported = false;
       if (BaseType == BasicType::BFloat && !HasBfloat16)
         continue;
-#endif // SIFIVE_CUSTOMIZATION
 
-      if (BaseType == BasicType::Float32 && !HasVectorFloat32)
-        continue;
-
-      if (BaseType == BasicType::Float64 && !HasVectorFloat64)
-        continue;
-
-#if SIFIVE_CUSTOMIZATION
       Unsupported = llvm::any_of(FeatureCheckList,
                                  [&](auto &FC) { return !FC.Check(Record); });
 
       if (Unsupported)
         continue;
 #else
-=======
->>>>>>> upstream/main
       if (((Record.RequiredExtensions & RVV_REQ_RV64) == RVV_REQ_RV64) &&
           !HasRV64)
         continue;
