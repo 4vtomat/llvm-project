@@ -204,14 +204,9 @@ void initializeLocalStackSlotPassPass(PassRegistry&);
 void initializeLocalizerPass(PassRegistry&);
 void initializeLoopAccessLegacyAnalysisPass(PassRegistry&);
 void initializeLoopDataPrefetchLegacyPassPass(PassRegistry&);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void initializeLoopDataLayoutLegacyPassPass(PassRegistry &);
 #endif
-void initializeLoopDeletionLegacyPassPass(PassRegistry&);
-void initializeLoopDistributeLegacyPass(PassRegistry&);
-=======
->>>>>>> upstream/main
 void initializeLoopExtractorLegacyPassPass(PassRegistry &);
 void initializeLoopGuardWideningLegacyPassPass(PassRegistry&);
 void initializeLoopInfoWrapperPassPass(PassRegistry&);
