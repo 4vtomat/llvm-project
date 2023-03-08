@@ -61,10 +61,31 @@ public:
   /// Get the flags that indicate or contraindicate this multilib's use
   /// All elements begin with either '+' or '-'
   const flags_list &flags() const { return Flags; }
+#if SIFIVE_CUSTOMIZATION
+  flags_list &flags() { return Flags; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the multilib priority. When more than one multilib matches flags,
   /// the one with the highest priority is selected, with 0 being the default.
   int priority() const { return Priority; }
+
+#if SIFIVE_CUSTOMIZATION
+  /// Add a flag to the flags list
+  /// \p Flag must be a flag accepted by the driver with its leading '-' removed,
+  ///     and replaced with either:
+  ///       '-' which contraindicates using this multilib with that flag
+  ///     or:
+  ///       '+' which promotes using this multilib in the presence of that flag
+  ///     otherwise '-print-multi-lib' will not emit them correctly.
+  Multilib &flag(StringRef F) {
+    assert(F.front() == '+' || F.front() == '-');
+    Flags.push_back(std::string(F));
+    return *this;
+  }
+
+  /// Check whether any of the 'against' flags contradict the 'for' flags.
+  bool isValid() const;
+#endif // SIFIVE_CUSTOMIZATION
 
   LLVM_DUMP_METHOD void dump() const;
   /// print summary of the Multilib
@@ -96,6 +117,10 @@ private:
 public:
   MultilibSet() = default;
   MultilibSet(multilib_list &&Multilibs) : Multilibs(Multilibs) {}
+
+#if SIFIVE_CUSTOMIZATION
+  MultilibSet &Either(ArrayRef<Multilib> Ms);
+#endif
 
   const multilib_list &getMultilibs() { return Multilibs; }
 

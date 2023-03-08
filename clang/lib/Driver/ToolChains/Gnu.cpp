@@ -1068,21 +1068,14 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
   return Arch == llvm::Triple::msp430;
 }
 
-<<<<<<< HEAD
-static Multilib makeMultilib(StringRef commonSuffix
 #if SIFIVE_CUSTOMIZATION
-                             , int Priority = 0
-#endif // SIFIVE_CUSTOMIZATION
-                             ) {
-  return Multilib(commonSuffix, commonSuffix, commonSuffix
-#if SIFIVE_CUSTOMIZATION
-                  , Priority
-#endif // SIFIVE_CUSTOMIZATION
-                  );
+static Multilib makeMultilib(StringRef commonSuffix,
+                             int Priority = 0) {
+  return Multilib(commonSuffix, commonSuffix, commonSuffix,
+                  Priority);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 static bool findMipsCsMultilibs(const Multilib::flags_list &Flags,
                                 FilterNonExistent &NonExistent,
                                 DetectedMultilibs &Result) {
@@ -1834,8 +1827,8 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
     bool Skip = false;
 
     Multilib NewMultilib =
-        Multilib(M.gccSuffix(), M.osSuffix(), M.includeSuffix(), Priority++);
-    NewMultilib.flags() = Multilib::flags_list();
+        Multilib(M.gccSuffix(), M.osSuffix(), M.includeSuffix(), Priority++,
+                 Multilib::flags_list());
     for (StringRef Flag : M.flags()) {
       // Add back the all option except -march.
       if (!Flag.startswith("+march=")) {

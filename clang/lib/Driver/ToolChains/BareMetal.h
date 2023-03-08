@@ -35,9 +35,6 @@ protected:
 
 public:
   bool useIntegratedAs() const override { return true; }
-#if SIFIVE_CUSTOMIZATION
-  bool HasNativeLLVMSupport() const override { return true; }
-#endif // SIFIVE_CUSTOMIZATION
   bool isBareMetal() const override { return true; }
   bool isCrossCompiling() const override { return true; }
   bool HasNativeLLVMSupport() const override { return true; }
