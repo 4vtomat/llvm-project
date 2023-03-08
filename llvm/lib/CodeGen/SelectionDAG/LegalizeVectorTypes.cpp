@@ -2799,7 +2799,6 @@ void DAGTypeLegalizer::SplitVecRes_VECTOR_SPLICE(SDNode *N, SDValue &Lo,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
                                               SDValue &Hi) {
@@ -2922,7 +2921,7 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
 #endif
-=======
+
 void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
 
   SDValue Op0Lo, Op0Hi, Op1Lo, Op1Hi;
@@ -2953,7 +2952,6 @@ void DAGTypeLegalizer::SplitVecRes_VECTOR_INTERLEAVE(SDNode *N) {
   SetSplitVector(SDValue(N, 0), Res[0].getValue(0), Res[0].getValue(1));
   SetSplitVector(SDValue(N, 1), Res[1].getValue(0), Res[1].getValue(1));
 }
->>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 //  Operand Vector Splitting
