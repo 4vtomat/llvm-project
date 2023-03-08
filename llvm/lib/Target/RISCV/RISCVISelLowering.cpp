@@ -347,18 +347,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // We could use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!Subtarget.hasVendorXVentanaCondOps())
-=======
   if (!Subtarget.hasVendorXVentanaCondOps() &&
       !Subtarget.hasVendorXTHeadCondMov())
->>>>>>> upstream/main
     setOperationAction(ISD::SELECT, XLenVT, Custom);
 
   static const unsigned FPLegalNodeTypes[] = {
@@ -1145,9 +1141,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         XLenVT, Expand);
   }
 
-<<<<<<< HEAD
-  EnableExtLdPromotion = true; // SIFIVE
-=======
   if (Subtarget.hasVendorXTHeadMemIdx()) {
     for (unsigned im = (unsigned)ISD::PRE_INC; im != (unsigned)ISD::POST_DEC;
          ++im) {
@@ -1164,7 +1157,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       }
     }
   }
->>>>>>> upstream/main
+
+  EnableExtLdPromotion = true; // SIFIVE
 
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtCOrZca() ? 2 : 4);
@@ -1208,19 +1202,15 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasVInstructions())
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
-<<<<<<< HEAD
-                         ISD::SHL, ISD::STORE,
+                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
                          ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
                          ISD::VP_STORE,                // SIFIVE
                          ISD::SPLAT_VECTOR,            // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
                          ISD::INTRINSIC_W_CHAIN});     // SIFIVE
 #endif
-=======
-                         ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR});
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
->>>>>>> upstream/main
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
 
