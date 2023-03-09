@@ -62,9 +62,13 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
       return ELF::R_RISCV_NONE;
     case FK_Data_4:
     case FK_PCRel_4:
+#if SIFIVE_CUSTOMIZATION
+      return ELF::R_RISCV_32_PCREL;
+#else
       return Target.getAccessVariant() == MCSymbolRefExpr::VK_PLT
                  ? ELF::R_RISCV_PLT32
                  : ELF::R_RISCV_32_PCREL;
+#endif
     case RISCV::fixup_riscv_pcrel_hi20:
       return ELF::R_RISCV_PCREL_HI20;
     case RISCV::fixup_riscv_pcrel_lo12_i:
