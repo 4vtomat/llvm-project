@@ -55,13 +55,13 @@
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e20 | FileCheck -check-prefix=MCPU-SIFIVE-E20 %s
 // MCPU-SIFIVE-E20: "-nostdsysteminc" "-target-cpu" "sifive-e20"
-// MCPU-SIFIVE-E20: "-target-feature" "+m" "-target-feature" "+c" "-target-feature" "+zifencei"
+// MCPU-SIFIVE-E20: "-target-feature" "+m" "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E20: "-target-abi" "ilp32"
 
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-e21 | FileCheck -check-prefix=MCPU-SIFIVE-E21 %s
 // MCPU-SIFIVE-E21: "-nostdsysteminc" "-target-cpu" "sifive-e21"
-// MCPU-SIFIVE-E21: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c" "-target-feature" "+zifencei"
+// MCPU-SIFIVE-E21: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E21: "-target-abi" "ilp32"
 
 // mcpu with default march
@@ -82,7 +82,7 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s21 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-S21 %s
 // MCPU-ABI-SIFIVE-S21: "-nostdsysteminc" "-target-cpu" "sifive-s21"
 // MCPU-ABI-SIFIVE-S21: "-target-feature" "+m" "-target-feature" "+a"
-// MCPU-ABI-SIFIVE-S21: "-target-feature" "+c" "-target-feature" "+zifencei"
+// MCPU-ABI-SIFIVE-S21: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-S21: "-target-feature" "+64bit"
 // MCPU-ABI-SIFIVE-S21: "-target-abi" "lp64"
 
@@ -90,7 +90,7 @@
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s51 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-S51 %s
 // MCPU-ABI-SIFIVE-S51: "-nostdsysteminc" "-target-cpu" "sifive-s51"
 // MCPU-ABI-SIFIVE-S51: "-target-feature" "+m" "-target-feature" "+a"
-// MCPU-ABI-SIFIVE-S51: "-target-feature" "+c" "-target-feature" "+zifencei"
+// MCPU-ABI-SIFIVE-S51: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-ABI-SIFIVE-S51: "-target-feature" "+64bit"
 // MCPU-ABI-SIFIVE-S51: "-target-abi" "lp64"
 

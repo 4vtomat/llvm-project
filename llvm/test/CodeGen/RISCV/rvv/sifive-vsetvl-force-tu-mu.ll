@@ -5,6 +5,11 @@
 ; RUN:    < %s | FileCheck --check-prefix=CHECK-O2 %s
 ; RUN: llc -mtriple=riscv64 -mattr=+v,+f,+d -verify-machineinstrs -O2 \
 ; RUN:   -riscv-force-tail-undisturbed < %s | FileCheck --check-prefix=FORCE-TU %s
+; RUN: llc -mtriple=riscv64 -mattr=+v,+f,+d -verify-machineinstrs -O2 \
+; RUN:   -riscv-force-mask-undisturbed < %s | FileCheck --check-prefix=FORCE-MU %s
+; RUN: llc -mtriple=riscv64 -mattr=+v,+f,+d -verify-machineinstrs -O2 \
+; RUN:   -riscv-force-tail-undisturbed -riscv-force-mask-undisturbed < %s | \
+; RUN:   FileCheck --check-prefix=FORCE-TUMU %s
 
 @scratch = global i8 0, align 16
 
@@ -63,6 +68,28 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
 ; FORCE-TU-NEXT:    addi a0, a0, %lo(scratch)
 ; FORCE-TU-NEXT:    vse64.v v8, (a0)
 ; FORCE-TU-NEXT:    ret
+;
+; FORCE-MU-LABEL: test_vsetvl_avl:
+; FORCE-MU:       # %bb.0:
+; FORCE-MU-NEXT:    vsetvli a1, a1, e64, m1, ta, mu
+; FORCE-MU-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; FORCE-MU-NEXT:    vle64.v v8, (a0), v0.t
+; FORCE-MU-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
+; FORCE-MU-NEXT:    vfadd.vv v8, v8, v8
+; FORCE-MU-NEXT:    lui a0, %hi(scratch)
+; FORCE-MU-NEXT:    addi a0, a0, %lo(scratch)
+; FORCE-MU-NEXT:    vse64.v v8, (a0)
+; FORCE-MU-NEXT:    ret
+;
+; FORCE-TUMU-LABEL: test_vsetvl_avl:
+; FORCE-TUMU:       # %bb.0:
+; FORCE-TUMU-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
+; FORCE-TUMU-NEXT:    vle64.v v8, (a0), v0.t
+; FORCE-TUMU-NEXT:    vfadd.vv v8, v8, v8
+; FORCE-TUMU-NEXT:    lui a0, %hi(scratch)
+; FORCE-TUMU-NEXT:    addi a0, a0, %lo(scratch)
+; FORCE-TUMU-NEXT:    vse64.v v8, (a0)
+; FORCE-TUMU-NEXT:    ret
   %gvl = call i64 @llvm.riscv.vsetvli(
     i64 %avl, i64 3, i64 0)
 
