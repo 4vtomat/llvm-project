@@ -348,11 +348,11 @@
 # CHECK: attribute      5, "rv32i2p1_zawrs1p0"
 #end SIFIVE_CUSTOMIZATION
 
-.attribute arch, "rv64iztso0p1"
-# CHECK: attribute      5, "rv64i2p1_ztso0p1"
+.attribute arch, "rv32iztso0p1"
+# CHECK: attribute      5, "rv32i2p1_ztso0p1"
 
-.attribute arch, "rv64izicsr2p0"
-# CHECK: attribute      5, "rv64i2p1_zicsr2p0"
+.attribute arch, "rv32izicsr2p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0"
 
 .attribute arch, "rv32izifencei2p0"
 # CHECK: attribute      5, "rv32i2p1_zifencei2p0"
