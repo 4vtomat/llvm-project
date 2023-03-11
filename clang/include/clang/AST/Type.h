@@ -2282,7 +2282,11 @@ public:
 
   bool isRVVType() const;
 
+#if SIFIVE_CUSTOMIZATION
+  bool isRVVType(unsigned Bitwidth, bool IsFloat, bool IsBFloat = false) const;
+#else
   bool isRVVType(unsigned Bitwidth, bool IsFloat) const;
+#endif
 
   /// Return the implicit lifetime for this type, which must not be dependent.
   Qualifiers::ObjCLifetime getObjCARCImplicitLifetime() const;
@@ -7165,13 +7169,14 @@ inline bool Type::isRVVType() const {
     false; // end of boolean or operation.
 }
 
-inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat) const {
+inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat,
+                            bool IsBFloat) const {
   bool Ret = false;
 #define RVV_TYPE(Name, Id, SingletonId)
 #if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
-  if (ElBits == Bitwidth && IsFloat == IsFP)                                   \
+  if (ElBits == Bitwidth && IsFloat == IsFP && IsBFloat == IsBF)               \
     Ret |= isSpecificBuiltinType(BuiltinType::Id);
 #else
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \

@@ -417,14 +417,12 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  OS << "#if defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)\n";
   for (int Log2LMUL : Log2LMULs) {
     auto T = TypeCache.computeType(BasicType::BFloat, Log2LMUL,
                                    PrototypeDescriptor::Vector);
     if (T)
       printType(*T);
   }
-  OS << "#endif\n";
 #endif // SIFIVE_CUSTOMIZATION
 
   for (int Log2LMUL : Log2LMULs) {

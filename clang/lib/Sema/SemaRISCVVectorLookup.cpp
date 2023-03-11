@@ -217,9 +217,6 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
   bool HasRV64 = TI.hasFeature("64bit");
   bool HasFullMultiply = TI.hasFeature("v");
 #if SIFIVE_CUSTOMIZATION
-  bool HasBfloat16 =
-      TI.hasFeature("xsfvfwmaccqqq") || TI.hasFeature("xsfvfhbfmin");
-
   struct FeatureCheckInfo {
     bool HasFeature;
     unsigned RequireFeatureMask;
@@ -322,8 +319,6 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
       // Check requirement.
 #if SIFIVE_CUSTOMIZATION
       bool Unsupported = false;
-      if (BaseType == BasicType::BFloat && !HasBfloat16)
-        continue;
 
       Unsupported = llvm::any_of(FeatureCheckList,
                                  [&](auto &FC) { return !FC.Check(Record); });

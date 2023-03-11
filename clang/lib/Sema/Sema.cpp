@@ -2049,6 +2049,14 @@ void Sema::checkTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D) {
     if (Ty->isRVVType(/* Bitwidth */ 64, /* IsFloat */ true) &&
         !Context.getTargetInfo().hasFeature("zve64d"))
       Diag(Loc, diag::err_riscv_type_requires_extension, FD) << Ty << "zve64d";
+#if SIFIVE_CUSTOMIZATION
+    if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
+                      /* IsBFloat */ true) &&
+        !Context.getTargetInfo().hasFeature("xsfvfhbfmin") &&
+        !Context.getTargetInfo().hasFeature("xsfvfwmaccqqq"))
+      Diag(Loc, diag::err_riscv_type_requires_extension, FD)
+          << Ty << "xsfvfhbfmin' or 'xsfvfwmaccqqq";
+#endif
 
     // Don't allow SVE types in functions without a SVE target.
     if (Ty->isSVESizelessBuiltinType() && FD && FD->hasBody()) {
