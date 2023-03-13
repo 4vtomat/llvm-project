@@ -8,11 +8,8 @@
 
 #include "RISCVTargetTransformInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
-<<<<<<< HEAD
 #include "RISCVISelLowering.h"
-=======
 #include "llvm/ADT/STLExtras.h"
->>>>>>> upstream/main
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
@@ -1364,11 +1361,10 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
   InstructionCost BaseCost = 2;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (CostKind == TTI::TCK_CodeSize)
-    return LT.first + BaseCost;
+    return (LT.first - 1) + BaseCost;
 
+#if SIFIVE_CUSTOMIZATION
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
     // Now assume Vector performs better than scalar when
     // element count >= 19.
@@ -1391,11 +1387,6 @@ RISCVTTIImpl::getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy,
                                              CostKind);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  if (CostKind == TTI::TCK_CodeSize)
-    return (LT.first - 1) + BaseCost;
-
->>>>>>> upstream/main
   unsigned VL = getEstimatedVLFor(Ty);
   return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
 }
@@ -1434,11 +1425,11 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
   InstructionCost BaseCost = 2;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (CostKind == TTI::TCK_CodeSize)
-    return LT.first + BaseCost;
 
+  if (CostKind == TTI::TCK_CodeSize)
+    return (LT.first - 1) + BaseCost;
+
+#if SIFIVE_CUSTOMIZATION
   // The vector to scalar move is expensive on x280, give it more cost.
   if (ST->isSiFiveCPU())
     BaseCost = BaseCost + 12;
@@ -1453,12 +1444,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                getArithmeticInstrCost(Opcode, Ty->getElementType(), CostKind);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
-  if (CostKind == TTI::TCK_CodeSize)
-    return (LT.first - 1) + BaseCost;
-
->>>>>>> upstream/main
   unsigned VL = getEstimatedVLFor(Ty);
   if (TTI::requiresOrderedReduction(FMF))
     return (LT.first - 1) + BaseCost + VL;
