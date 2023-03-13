@@ -576,23 +576,14 @@ public:
     return IsConstantImm && isUInt<N>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  bool isUImm1() { return IsUImm<1>(); }
+  bool isUImm1() const { return IsUImm<1>(); }
+  bool isUImm6() const { return IsUImm<6>(); }
 #endif // SIFIVE_CUSTOMIZATION
-  bool isUImm2() { return IsUImm<2>(); }
-  bool isUImm3() { return IsUImm<3>(); }
-  bool isUImm5() { return IsUImm<5>(); }
-#if SIFIVE_CUSTOMIZATION
-  bool isUImm6() { return IsUImm<6>(); }
-#endif // SIFIVE_CUSTOMIZATION
-  bool isUImm7() { return IsUImm<7>(); }
-=======
   bool isUImm2() const { return IsUImm<2>(); }
   bool isUImm3() const { return IsUImm<3>(); }
   bool isUImm5() const { return IsUImm<5>(); }
   bool isUImm7() const { return IsUImm<7>(); }
->>>>>>> upstream/main
 
   bool isRnumArg() const {
     int64_t Imm;
