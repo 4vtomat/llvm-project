@@ -36,20 +36,9 @@ void llvm::initializeIPO(PassRegistry &Registry) {
 void LLVMInitializeIPO(LLVMPassRegistryRef R) {
   initializeIPO(*unwrap(R));
 }
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
 void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createLoopDataLayoutPass());
 }
 #endif
-
-void LLVMAddDeadArgEliminationPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createDeadArgEliminationPass());
-}
-
-void LLVMAddAlwaysInlinerPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(llvm::createAlwaysInlinerLegacyPass());
-}
-=======
->>>>>>> upstream/main
