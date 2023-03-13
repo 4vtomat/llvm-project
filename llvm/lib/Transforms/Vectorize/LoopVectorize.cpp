@@ -2452,73 +2452,6 @@ static void collectSupportedLoops(Loop &L, LoopInfo *LI,
     collectSupportedLoops(*InnerL, LI, ORE, V);
 }
 
-<<<<<<< HEAD
-namespace {
-
-/// The LoopVectorize Pass.
-struct LoopVectorize : public FunctionPass {
-  /// Pass identification, replacement for typeid
-  static char ID;
-
-  LoopVectorizePass Impl;
-
-  explicit LoopVectorize(bool InterleaveOnlyWhenForced = false,
-                         bool VectorizeOnlyWhenForced = false)
-      : FunctionPass(ID),
-        Impl({InterleaveOnlyWhenForced, VectorizeOnlyWhenForced}) {
-    initializeLoopVectorizePass(*PassRegistry::getPassRegistry());
-  }
-
-  bool runOnFunction(Function &F) override {
-    if (skipFunction(F))
-      return false;
-
-    auto *SE = &getAnalysis<ScalarEvolutionWrapperPass>().getSE();
-    auto *LI = &getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
-    auto *TTI = &getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
-    auto *DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-    auto *BFI = &getAnalysis<BlockFrequencyInfoWrapperPass>().getBFI();
-    auto *TLIP = getAnalysisIfAvailable<TargetLibraryInfoWrapperPass>();
-    auto *TLI = TLIP ? &TLIP->getTLI(F) : nullptr;
-    auto *AC = &getAnalysis<AssumptionCacheTracker>().getAssumptionCache(F);
-    auto &LAIs = getAnalysis<LoopAccessLegacyAnalysis>().getLAIs();
-    auto *DB = &getAnalysis<DemandedBitsWrapperPass>().getDemandedBits();
-    auto *ORE = &getAnalysis<OptimizationRemarkEmitterWrapperPass>().getORE();
-    auto *PSI = &getAnalysis<ProfileSummaryInfoWrapperPass>().getPSI();
-
-    return Impl
-        .runImpl(F, *SE, *LI, *TTI, *DT, BFI, TLI, *DB, *AC, LAIs, *ORE, PSI)
-        .MadeAnyChange;
-  }
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addRequired<AssumptionCacheTracker>();
-    AU.addRequired<BlockFrequencyInfoWrapperPass>();
-    AU.addRequired<DominatorTreeWrapperPass>();
-    AU.addRequired<LoopInfoWrapperPass>();
-    AU.addRequired<ScalarEvolutionWrapperPass>();
-    AU.addRequired<TargetTransformInfoWrapperPass>();
-    AU.addRequired<LoopAccessLegacyAnalysis>();
-    AU.addRequired<DemandedBitsWrapperPass>();
-    AU.addRequired<OptimizationRemarkEmitterWrapperPass>();
-    AU.addRequired<InjectTLIMappingsLegacy>();
-
-    // We currently do not preserve loopinfo/dominator analyses with outer loop
-    // vectorization. Until this is addressed, mark these analyses as preserved
-    // only for non-VPlan-native path.
-    // TODO: Preserve Loop and Dominator analyses for VPlan-native path.
-    if (!EnableVPlanNativePath) {
-      AU.addPreserved<LoopInfoWrapperPass>();
-      AU.addPreserved<DominatorTreeWrapperPass>();
-    }
-
-    AU.addPreserved<BasicAAWrapperPass>();
-    AU.addPreserved<GlobalsAAWrapperPass>();
-    AU.addRequired<ProfileSummaryInfoWrapperPass>();
-  }
-};
-
-} // end anonymous namespace
 #if SIFIVE_CUSTOMIZATION
 namespace {
 
@@ -2576,8 +2509,6 @@ inline raw_ostream &operator<<(raw_ostream &OS, const LMULType &LMUL) {
 } // namespace llvm
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 //===----------------------------------------------------------------------===//
 // Implementation of LoopVectorizationLegality, InnerLoopVectorizer and
 // LoopVectorizationCostModel and LoopVectorizationPlanner.
