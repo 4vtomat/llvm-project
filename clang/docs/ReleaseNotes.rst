@@ -13,7 +13,7 @@ Written by the `LLVM Team <https://llvm.org/>`_
   .. warning::
      These are in-progress notes for the upcoming Clang |version| release.
      Release notes for previous releases can be found on
-     `the Releases Page <https://llvm.org/releases>`_.
+     `the Releases Page <https://llvm.org/releases/>`_.
 
 Introduction
 ============
@@ -78,9 +78,16 @@ C++ Language Changes
 
 C++20 Feature Support
 ^^^^^^^^^^^^^^^^^^^^^
+- Support for out-of-line definitions of constrained templates has been improved.
+  This partially fixes `#49620 <https://github.com/llvm/llvm-project/issues/49620>`_.
 
 C++2b Feature Support
 ^^^^^^^^^^^^^^^^^^^^^
+
+- Implemented `P2036R3: Change scope of lambda trailing-return-type <https://wg21.link/P2036R3>`_
+  and `P2579R0 Mitigation strategies for P2036 <https://wg21.link/P2579R0>`_.
+  These proposals modify how variables captured in lambdas can appear in trailing return type
+  expressions and how their types are deduced therein, in all C++ language versions.
 
 Resolutions to C++ Defect Reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -88,8 +95,7 @@ Resolutions to C++ Defect Reports
 C Language Changes
 ------------------
 - Support for outputs from asm goto statements along indirect edges has been
-  added. This fixes
-  `Issue 53562 <https://github.com/llvm/llvm-project/issues/53562>`_.
+  added. (`#53562 <https://github.com/llvm/llvm-project/issues/53562>`_)
 
 C2x Feature Support
 ^^^^^^^^^^^^^^^^^^^
@@ -146,10 +152,17 @@ Improvements to Clang's diagnostics
 -----------------------------------
 - We now generate a diagnostic for signed integer overflow due to unary minus
   in a non-constant expression context.
-  (`#31643 <https://github.com/llvm/llvm-project/issues/31643>`)
+  (`#31643 <https://github.com/llvm/llvm-project/issues/31643>`_)
 - Clang now warns by default for C++20 and later about deprecated capture of
   ``this`` with a capture default of ``=``. This warning can be disabled with
   ``-Wno-deprecated-this-capture``.
+- Clang had failed to emit some ``-Wundefined-internal`` for members of a local
+  class if that class was first introduced with a forward declaration.
+- Diagnostic notes and fix-its are now generated for ``ifunc``/``alias`` attributes
+  which point to functions whose names are mangled.
+- Diagnostics relating to macros on the command line of a preprocessed assembly
+  file are now reported as coming from the file ``<command line>`` instead of
+  ``<built-in>``.
 
 Bug Fixes in This Version
 -------------------------
@@ -169,6 +182,10 @@ Bug Fixes in This Version
   (`#60268 <https://github.com/llvm/llvm-project/issues/60268>`_)
 - Fix crash when taking the address of a consteval lambda call operator.
   (`#57682 <https://github.com/llvm/llvm-project/issues/57682>`_)
+- Clang now support export declarations in the language linkage.
+  (`#60405 <https://github.com/llvm/llvm-project/issues/60405>`_)
+- Fix aggregate initialization inside lambda constexpr.
+  (`#60936 <https://github.com/llvm/llvm-project/issues/60936>`_)
 
 Bug Fixes to Compiler Builtins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -254,6 +271,8 @@ Floating Point Support in Clang
 - Add ``__builtin_elementwise_log`` builtin for floating point types only.
 - Add ``__builtin_elementwise_log10`` builtin for floating point types only.
 - Add ``__builtin_elementwise_log2`` builtin for floating point types only.
+- Add ``__builtin_elementwise_exp`` builtin for floating point types only.
+- Add ``__builtin_elementwise_exp2`` builtin for floating point types only.
 
 AST Matchers
 ------------
@@ -278,11 +297,19 @@ libclang
   which identifies whether a constructor or conversion function cursor
   was marked with the explicit identifier.
 
+- Introduced the new ``CXIndex`` constructor function
+  ``clang_createIndexWithOptions``, which allows overriding precompiled preamble
+  storage path.
+
+- Deprecated two functions ``clang_CXIndex_setGlobalOptions`` and
+  ``clang_CXIndex_setInvocationEmissionPathOption`` in favor of the new
+  function ``clang_createIndexWithOptions`` in order to improve thread safety.
+
 Static Analyzer
 ---------------
 - Fix incorrect alignment attribute on the this parameter of certain
   non-complete destructors when using the Microsoft ABI.
-  `Issue 60465 <https://github.com/llvm/llvm-project/issues/60465>`_.
+  (`#60465 <https://github.com/llvm/llvm-project/issues/60465>`_)
 
 .. _release-notes-sanitizers:
 

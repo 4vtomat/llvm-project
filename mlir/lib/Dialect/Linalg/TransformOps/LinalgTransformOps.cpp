@@ -266,6 +266,7 @@ transform::DecomposeOp::applyToOne(LinalgOp target,
   DOWNSCALE_NORMAL(PoolingNhwcMinUnsignedOp, PoolingNwcMinUnsignedOp)
   DOWNSCALE_NORMAL(PoolingNchwMaxOp, PoolingNcwMaxOp)
   DOWNSCALE(DownscaleDepthwiseConv2DNhwcHwcOp)
+  DOWNSCALE(DownscaleConv2DOp)
 #undef DOWNSCALE_NORMAL
 #undef DOWNSCALE_CALL
 #undef DOWNSCALE
@@ -1692,14 +1693,16 @@ transform::PadOp::applyToOne(LinalgOp target,
     Type elementType = getElementTypeOrSelf(std::get<1>(it));
     // Try to parse string attributes to obtain an attribute of element type.
     if (auto stringAttr = attr.dyn_cast<StringAttr>()) {
-      paddingValues.push_back(
-          parseAttribute(attr.cast<StringAttr>(), elementType));
-      if (!paddingValues.back()) {
+      auto parsedAttr = dyn_cast_if_present<TypedAttr>(
+          parseAttribute(stringAttr, getContext(), elementType,
+                         /*numRead=*/nullptr, /*isKnownNullTerminated=*/true));
+      if (!parsedAttr || parsedAttr.getType() != elementType) {
         auto diag = this->emitOpError("expects a padding that parses to ")
                     << elementType << ", got " << std::get<0>(it);
         diag.attachNote(target.getLoc()) << "when applied to this op";
         return DiagnosedSilenceableFailure::definiteFailure();
       }
+      paddingValues.push_back(parsedAttr);
       continue;
     }
     // Otherwise, add the attribute directly.

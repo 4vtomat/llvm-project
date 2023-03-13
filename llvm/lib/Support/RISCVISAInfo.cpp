@@ -938,27 +938,34 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "standard user-level extension 'e' requires 'rv32'");
 
+<<<<<<< HEAD
+=======
+  if (HasF && HasZfinx)
+    return createStringError(errc::invalid_argument,
+                             "'f' and 'zfinx' extensions are incompatible");
+
+>>>>>>> upstream/main
   if (HasZve32f && !HasF && !HasZfinx)
     return createStringError(
         errc::invalid_argument,
-        "zve32f requires f or zfinx extension to also be specified");
+        "'zve32f' requires 'f' or 'zfinx' extension to also be specified");
 
   if (HasZve64d && !HasD && !HasZdinx)
     return createStringError(
         errc::invalid_argument,
-        "zve64d requires d or zdinx extension to also be specified");
+        "'zve64d' requires 'd' or 'zdinx' extension to also be specified");
 
   if (Exts.count("zvfh") && !Exts.count("zfh") && !Exts.count("zfhmin") &&
       !Exts.count("zhinx") && !Exts.count("zhinxmin"))
     return createStringError(
         errc::invalid_argument,
-        "zvfh requires zfh, zfhmin, zhinx or zhinxmin extension to also be "
-        "specified");
+        "'zvfh' requires 'zfh', 'zfhmin', 'zhinx' or 'zhinxmin' extension to "
+        "also be specified");
 
   if (HasZvl && !HasVector)
     return createStringError(
         errc::invalid_argument,
-        "zvl*b requires v or zve* extension to also be specified");
+        "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
 #if SIFIVE_CUSTOMIZATION
   if ((Exts.count("zicntr") || Exts.count("zihpm")) && !Exts.count("zicsr"))
@@ -991,10 +998,14 @@ Error RISCVISAInfo::checkDependency() {
   return Error::success();
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsF[] = {"zicsr"};
 static const char *ImpliedExtsD[] = {"f"};
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static const char *ImpliedExtsD[] = {"f"};
+>>>>>>> upstream/main
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d", "f", "d"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
 static const char *ImpliedExtsZfh[] = {"f"};
@@ -1047,7 +1058,10 @@ struct ImpliedExtsEntry {
 // Note: The table needs to be sorted by name.
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
+<<<<<<< HEAD
     {{"f"}, {ImpliedExtsF}},
+=======
+>>>>>>> upstream/main
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE

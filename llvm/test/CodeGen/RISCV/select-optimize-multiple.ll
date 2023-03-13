@@ -267,7 +267,6 @@ define i32 @cmovccdep(i32 signext %a, i32 %b, i32 %c, i32 %d) nounwind {
 ; RV32I-NEXT:    ret
 ; RV32I-NEXT:  .LBB6_3: # %entry
 ; RV32I-NEXT:    mv a1, a2
-; RV32I-NEXT:    mv a2, a1
 ; RV32I-NEXT:    beq a0, a4, .LBB6_2
 ; RV32I-NEXT:  .LBB6_4: # %entry
 ; RV32I-NEXT:    add a0, a1, a3
@@ -285,7 +284,6 @@ define i32 @cmovccdep(i32 signext %a, i32 %b, i32 %c, i32 %d) nounwind {
 ; RV64I-NEXT:    ret
 ; RV64I-NEXT:  .LBB6_3: # %entry
 ; RV64I-NEXT:    mv a1, a2
-; RV64I-NEXT:    mv a2, a1
 ; RV64I-NEXT:    beq a0, a4, .LBB6_2
 ; RV64I-NEXT:  .LBB6_4: # %entry
 ; RV64I-NEXT:    addw a0, a1, a3

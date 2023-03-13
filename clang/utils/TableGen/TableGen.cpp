@@ -65,6 +65,7 @@ enum ActionType {
   GenClangCommentCommandInfo,
   GenClangCommentCommandList,
   GenClangOpenCLBuiltins,
+  GenClangOpenCLBuiltinHeader,
   GenClangOpenCLBuiltinTests,
   GenArmNeon,
 #if SIFIVE_CUSTOMIZATION
@@ -206,6 +207,9 @@ cl::opt<ActionType> Action(
                    "documentation comments"),
         clEnumValN(GenClangOpenCLBuiltins, "gen-clang-opencl-builtins",
                    "Generate OpenCL builtin declaration handlers"),
+        clEnumValN(GenClangOpenCLBuiltinHeader,
+                   "gen-clang-opencl-builtin-header",
+                   "Generate OpenCL builtin header"),
         clEnumValN(GenClangOpenCLBuiltinTests, "gen-clang-opencl-builtin-tests",
                    "Generate OpenCL builtin declaration tests"),
         clEnumValN(GenArmNeon, "gen-arm-neon", "Generate arm_neon.h for clang"),
@@ -397,6 +401,9 @@ bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
     break;
   case GenClangOpenCLBuiltins:
     EmitClangOpenCLBuiltins(Records, OS);
+    break;
+  case GenClangOpenCLBuiltinHeader:
+    EmitClangOpenCLBuiltinHeader(Records, OS);
     break;
   case GenClangOpenCLBuiltinTests:
     EmitClangOpenCLBuiltinTests(Records, OS);

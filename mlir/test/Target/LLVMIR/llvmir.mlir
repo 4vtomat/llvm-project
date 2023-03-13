@@ -110,6 +110,17 @@ llvm.mlir.global weak_odr @weak_odr(42 : i32) : i32
 // CHECK: @external = external global i32
 llvm.mlir.global external @external() : i32
 
+
+//
+// Visibility attribute.
+//
+
+// CHECK: @hidden = hidden constant [6 x i8] c"string"
+llvm.mlir.global external hidden constant @hidden("string")
+
+// CHECK: @protected = protected constant i64 42
+llvm.mlir.global external protected constant @protected(42 : i64) : i64
+
 //
 // UnnamedAddr attribute.
 //
@@ -481,6 +492,20 @@ llvm.func @more_imperfectly_nested_loops() {
 
 // CHECK: define internal void @func_internal
 llvm.func internal @func_internal() {
+  llvm.return
+}
+
+//
+// Visibility attribute.
+//
+
+// CHECK-LABEL: define hidden void @hidden_func()
+llvm.func hidden @hidden_func() {
+  llvm.return
+}
+
+// CHECK-LABEL: define protected void @protected_func()
+llvm.func protected @protected_func() {
   llvm.return
 }
 
@@ -944,6 +969,11 @@ llvm.func @vector_splat_nonzero_scalable() -> vector<[4]xf32> {
   llvm.return %0 : vector<[4]xf32>
 }
 
+// CHECK-LABEL: @f8_ptrs(ptr {{%.*}}, ptr {{%.*}})
+llvm.func @f8_ptrs(%arg0: !llvm.ptr<f8E5M2>, %arg1: !llvm.ptr<f8E4M3FN>) {
+  llvm.return
+}
+
 // CHECK-LABEL: @ops
 llvm.func @ops(%arg0: f32, %arg1: f32, %arg2: i32, %arg3: i32) -> !llvm.struct<(f32, i32)> {
 // CHECK-NEXT: fsub float %0, %1
@@ -1353,6 +1383,8 @@ llvm.func @alloca(%size : i64) {
   llvm.alloca %size x i32 {alignment = 8} : (i64) -> (!llvm.ptr<i32>)
   // CHECK-NEXT: alloca {{.*}} addrspace(3)
   llvm.alloca %size x i32 {alignment = 0} : (i64) -> (!llvm.ptr<i32, 3>)
+  // CHECK-NEXT: alloca inalloca {{.*}} align 4
+  llvm.alloca inalloca %size x i32 : (i64) -> !llvm.ptr
   llvm.return
 }
 
@@ -1864,7 +1896,7 @@ llvm.func @useInlineAsm(%arg0: i32) {
 llvm.func @fastmathFlagsFunc(f32) -> f32
 
 // CHECK-LABEL: @fastmathFlags
-llvm.func @fastmathFlags(%arg0: f32) {
+llvm.func @fastmathFlags(%arg0: f32, %arg1 : vector<2xf32>) {
 // CHECK: {{.*}} = fadd nnan ninf float {{.*}}, {{.*}}
 // CHECK: {{.*}} = fsub nnan ninf float {{.*}}, {{.*}}
 // CHECK: {{.*}} = fmul nnan ninf float {{.*}}, {{.*}}
@@ -1911,6 +1943,12 @@ llvm.func @fastmathFlags(%arg0: f32) {
   %19 = "llvm.intr.powi"(%arg0, %exp) {fastmathFlags = #llvm.fastmath<fast>} : (f32, i32) -> f32
 // CHECK: call afn float @llvm.powi.f32.i32(float {{.*}}, i32 {{.*}})
   %20 = "llvm.intr.powi"(%arg0, %exp) {fastmathFlags = #llvm.fastmath<afn>} : (f32, i32) -> f32
+
+// CHECK: call nnan float @llvm.vector.reduce.fmax.v2f32(<2 x float> {{.*}})
+// CHECK: call nnan float @llvm.vector.reduce.fmin.v2f32(<2 x float> {{.*}})
+  %21 = llvm.intr.vector.reduce.fmax(%arg1) {fastmathFlags = #llvm.fastmath<nnan>} : (vector<2xf32>) -> f32
+  %22 = llvm.intr.vector.reduce.fmin(%arg1) {fastmathFlags = #llvm.fastmath<nnan>} : (vector<2xf32>) -> f32
+
   llvm.return
 }
 
@@ -1981,6 +2019,10 @@ module {
       %1 = llvm.load %arg1 {alias_scopes = [@metadata::@scope2], noalias_scopes = [@metadata::@scope1, @metadata::@scope3]} : !llvm.ptr -> i32
       %2 = llvm.atomicrmw add %arg1, %0 monotonic {alias_scopes = [@metadata::@scope3], noalias_scopes = [@metadata::@scope1, @metadata::@scope2]} : !llvm.ptr, i32
       %3 = llvm.cmpxchg %arg1, %1, %2 acq_rel monotonic {alias_scopes = [@metadata::@scope3]} : !llvm.ptr, i32
+      %4 = llvm.mlir.constant(0 : i1) : i1
+      %5 = llvm.mlir.constant(42 : i8) : i8
+      "llvm.intr.memcpy"(%arg1, %arg1, %0, %4) {alias_scopes = [@metadata::@scope3]} : (!llvm.ptr, !llvm.ptr, i32, i1) -> ()
+      "llvm.intr.memset"(%arg1, %5, %0, %4) {noalias_scopes = [@metadata::@scope3]} : (!llvm.ptr, i8, i32, i1) -> ()
       llvm.return
   }
 
@@ -1998,6 +2040,8 @@ module {
 // CHECK:  load {{.*}}, !alias.scope ![[SCOPES2:[0-9]+]], !noalias ![[SCOPES13:[0-9]+]]
 // CHECK:  atomicrmw {{.*}}, !alias.scope ![[SCOPES3:[0-9]+]], !noalias ![[SCOPES12:[0-9]+]]
 // CHECK:  cmpxchg {{.*}}, !alias.scope ![[SCOPES3]]
+// CHECK:  llvm.memcpy{{.*}}, !alias.scope ![[SCOPES3]]
+// CHECK:  llvm.memset{{.*}}, !noalias ![[SCOPES3]]
 
 // Metadata
 // CHECK-DAG: ![[DOMAIN:[0-9]+]] = distinct !{![[DOMAIN]], !"The domain"}

@@ -175,11 +175,13 @@ linalg::rewriteAsPaddedOp(RewriterBase &rewriter, LinalgOp opToPad,
                           ArrayRef<int64_t> paddingDimensions,
                           ArrayRef<Attribute> paddingValues,
                           ArrayRef<bool> packPaddings, LinalgOp &paddedOp) {
+  LLVM_DEBUG(DBGS() << "Start rewriteAsPaddedOp : " << opToPad << "\n");
   Location loc = opToPad->getLoc();
 
   // TODO: there are cases where we may still want to pad to larger sizes.
-  assert(opToPad.hasTensorSemantics() &&
-         "expected operation to have tensor semantics");
+  if (!opToPad.hasTensorSemantics())
+    return rewriter.notifyMatchFailure(opToPad,
+                                       "expected operation on tensors");
 
   OpBuilder::InsertionGuard g(rewriter);
   // Set IP after op because we also take the dims of the original output.
@@ -193,15 +195,21 @@ linalg::rewriteAsPaddedOp(RewriterBase &rewriter, LinalgOp opToPad,
         rewriter, opToPad, &opOperand, paddingDimensions, paddingValues,
         packPaddings);
     // Exit if `paddingDimensions` cannot be bounded statically.
-    if (failed(paddedOperand))
-      return failure();
+    if (failed(paddedOperand)) {
+      LLVM_DEBUG(DBGS() << "--operand cannot be bound statically : "
+                        << opOperand.get() << " -> FAIL\n");
+      return rewriter.notifyMatchFailure(opToPad,
+                                         "operand cannot be bound statically");
+    }
     newOperands.push_back(*paddedOperand);
   }
 
-  SmallVector<SmallVector<Value>> reifiedResultShapes;
-  if (failed(cast<ReifyRankedShapedTypeOpInterface>(opToPad.getOperation())
-                 .reifyResultShapes(rewriter, reifiedResultShapes)))
-    return failure();
+  ReifiedRankedShapedTypeDims reifiedResultShapes;
+  if (failed(reifyResultShapes(rewriter, opToPad, reifiedResultShapes))) {
+    LLVM_DEBUG(DBGS() << "--failed to reify result shapes -> FAIL\n");
+    return rewriter.notifyMatchFailure(opToPad,
+                                       "failed to reify result shapes");
+  }
   assert(reifiedResultShapes.size() == opToPad->getNumResults() &&
          "expected same number of results");
 
@@ -210,6 +218,7 @@ linalg::rewriteAsPaddedOp(RewriterBase &rewriter, LinalgOp opToPad,
       ValueRange(newOperands).take_back(opToPad.getNumDpsInits()).getTypes();
   // clone **should** properly notify the rewriter.
   paddedOp = clone(rewriter, opToPad, resultTensorTypes, newOperands);
+  LLVM_DEBUG(DBGS() << "--cloned padded op: " << paddedOp << "\n");
 
   // Recover the slice out of the new static results. This keeps the original
   // linalg op around because it uses the dims of the original results.
@@ -221,11 +230,10 @@ linalg::rewriteAsPaddedOp(RewriterBase &rewriter, LinalgOp opToPad,
     int64_t rank = paddedResult.getType().cast<RankedTensorType>().getRank();
     SmallVector<OpFoldResult> offsets(rank, rewriter.getIndexAttr(0));
     SmallVector<OpFoldResult> sizes;
-    for (Value v : reifiedResultShapes[resultNumber])
-      sizes.push_back(getAsOpFoldResult(v));
     SmallVector<OpFoldResult> strides(rank, rewriter.getIndexAttr(1));
     paddedSubtensorResults.push_back(rewriter.create<tensor::ExtractSliceOp>(
-        loc, paddedResult, offsets, sizes, strides));
+        loc, paddedResult, offsets, reifiedResultShapes[resultNumber],
+        strides));
   }
   return paddedSubtensorResults;
 }
@@ -1352,14 +1360,71 @@ DownscaleDepthwiseConv2DNhwcHwcOp::returningMatchAndRewrite(
   return conv1DOp;
 }
 
+FailureOr<Conv1DOp>
+DownscaleConv2DOp::returningMatchAndRewrite(Conv2DOp convOp,
+                                            PatternRewriter &rewriter) const {
+  if (convOp.hasBufferSemantics())
+    return failure(); // To be implemented.
+
+  Value input = convOp.getInputs().front();
+  Value kernel = convOp.getInputs().back();
+  Value output = convOp.getOutputs().front();
+
+  auto inputType = input.getType().dyn_cast<RankedTensorType>();
+  auto kernelType = kernel.getType().dyn_cast<RankedTensorType>();
+  auto outputType = output.getType().dyn_cast<RankedTensorType>();
+
+  auto kernelShape = kernelType.getShape();
+  auto outputShape = outputType.getShape();
+
+  // Only handle the case where at least one of the window dimensions is
+  // of size 1. Other cases can rely on tiling to reduce to such cases.
+  int64_t khSize = kernelShape[0], kwSize = kernelShape[1];
+  int64_t ohSize = outputShape[0], owSize = outputShape[1];
+  bool removeH = (khSize == 1 && ohSize == 1);
+  bool removeW = (kwSize == 1 && owSize == 1);
+  if (!removeH && !removeW)
+    return failure();
+
+  // Get new shapes and types for all operands by removing the size-1
+  // dimension.
+  using RTTBuilder = RankedTensorType::Builder;
+  RankedTensorType newInputType =
+      RTTBuilder(inputType).dropDim((removeH ? 0 : 1));
+  RankedTensorType newKernelType =
+      RTTBuilder(kernelType).dropDim((removeH ? 0 : 1));
+  RankedTensorType newOutputType =
+      RTTBuilder(outputType).dropDim(removeH ? 0 : 1);
+
+  // Rank-reduce operands.
+  Location loc = convOp.getLoc();
+  Value newInput = tensor::createCanonicalRankReducingExtractSliceOp(
+      rewriter, loc, input, newInputType);
+  Value newKernel = tensor::createCanonicalRankReducingExtractSliceOp(
+      rewriter, loc, kernel, newKernelType);
+  Value newOutput = tensor::createCanonicalRankReducingExtractSliceOp(
+      rewriter, loc, output, newOutputType);
+
+  auto conv1DOp = rewriter.create<Conv1DOp>(loc, newOutputType,
+                                            ValueRange{newInput, newKernel},
+                                            ValueRange{newOutput});
+
+  // Insert back.
+  Value inserted = tensor::createCanonicalRankReducingInsertSliceOp(
+      rewriter, loc, conv1DOp.getResult(0), output);
+  rewriter.replaceOp(convOp, inserted);
+
+  return conv1DOp;
+}
+
 void linalg::populateDecomposeConvolutionPatterns(RewritePatternSet &patterns,
                                                   PatternBenefit benefit) {
   patterns.add<DownscaleSizeOneWindowed2DConvolution<linalg::Conv2DNhwcHwcfOp,
                                                      Conv1DNwcWcfOp>,
                DownscaleSizeOneWindowed2DConvolution<linalg::Conv2DNchwFchwOp,
                                                      Conv1DNcwFcwOp>,
-               DownscaleDepthwiseConv2DNhwcHwcOp>(patterns.getContext(),
-                                                  benefit);
+               DownscaleDepthwiseConv2DNhwcHwcOp, DownscaleConv2DOp>(
+      patterns.getContext(), benefit);
   patterns.add<
       DownscaleSizeOneWindowed2DConvolution<PoolingNhwcSumOp, PoolingNwcSumOp>,
       DownscaleSizeOneWindowed2DConvolution<PoolingNchwSumOp, PoolingNcwSumOp>,

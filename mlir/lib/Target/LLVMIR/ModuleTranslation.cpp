@@ -706,6 +706,8 @@ LogicalResult ModuleTranslation::convertGlobals() {
     if (alignment.has_value())
       var->setAlignment(llvm::MaybeAlign(alignment.value()));
 
+    var->setVisibility(convertVisibilityToLLVM(op.getVisibility_()));
+
     globalsMapping.try_emplace(op, var);
   }
 
@@ -975,6 +977,9 @@ LogicalResult ModuleTranslation::convertFunctionSignatures() {
     if (failed(forwardPassthroughAttributes(
             function.getLoc(), function.getPassthrough(), llvmFunc)))
       return failure();
+
+    // Convert visibility attribute.
+    llvmFunc->setVisibility(convertVisibilityToLLVM(function.getVisibility_()));
   }
 
   return success();
@@ -998,17 +1003,10 @@ LogicalResult ModuleTranslation::createAccessGroupMetadata() {
   return loopAnnotationTranslation->createAccessGroupMetadata();
 }
 
-void ModuleTranslation::setAccessGroupsMetadata(Operation *op,
+void ModuleTranslation::setAccessGroupsMetadata(AccessGroupOpInterface op,
                                                 llvm::Instruction *inst) {
-  auto populateGroupsMetadata = [&](ArrayAttr groupRefs) {
-    if (llvm::MDNode *node =
-            loopAnnotationTranslation->getAccessGroups(op, groupRefs))
-      inst->setMetadata(llvm::LLVMContext::MD_access_group, node);
-  };
-
-  auto groupRefs =
-      op->getAttrOfType<ArrayAttr>(LLVMDialect::getAccessGroupsAttrName());
-  populateGroupsMetadata(groupRefs);
+  if (llvm::MDNode *node = loopAnnotationTranslation->getAccessGroups(op))
+    inst->setMetadata(llvm::LLVMContext::MD_access_group, node);
 }
 
 LogicalResult ModuleTranslation::createAliasScopeMetadata() {
@@ -1060,7 +1058,7 @@ ModuleTranslation::getAliasScope(Operation *op,
   return aliasScopeMetadataMapping.lookup(aliasScopeOp);
 }
 
-void ModuleTranslation::setAliasScopeMetadata(Operation *op,
+void ModuleTranslation::setAliasScopeMetadata(AliasAnalysisOpInterface op,
                                               llvm::Instruction *inst) {
   auto populateScopeMetadata = [&](ArrayAttr scopeRefs, unsigned kind) {
     if (!scopeRefs || scopeRefs.empty())
@@ -1073,13 +1071,10 @@ void ModuleTranslation::setAliasScopeMetadata(Operation *op,
     inst->setMetadata(kind, node);
   };
 
-  auto aliasScopeRefs =
-      op->getAttrOfType<ArrayAttr>(LLVMDialect::getAliasScopesAttrName());
-  populateScopeMetadata(aliasScopeRefs, llvm::LLVMContext::MD_alias_scope);
-
-  auto noaliasScopeRefs =
-      op->getAttrOfType<ArrayAttr>(LLVMDialect::getNoAliasScopesAttrName());
-  populateScopeMetadata(noaliasScopeRefs, llvm::LLVMContext::MD_noalias);
+  populateScopeMetadata(op.getAliasScopesOrNull(),
+                        llvm::LLVMContext::MD_alias_scope);
+  populateScopeMetadata(op.getNoAliasScopesOrNull(),
+                        llvm::LLVMContext::MD_noalias);
 }
 
 llvm::MDNode *ModuleTranslation::getTBAANode(Operation *op,

@@ -150,9 +150,13 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32ID %s
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // RV32ID: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
+=======
+// RV32ID: "-target-feature" "+f" "-target-feature" "+d"
+>>>>>>> upstream/main
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32L %s
@@ -180,9 +184,13 @@
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64ID %s
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // RV64ID: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
+=======
+// RV64ID: "-target-feature" "+f" "-target-feature" "+d"
+>>>>>>> upstream/main
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64L %s
@@ -232,26 +240,29 @@
 // RV64-EER: error: invalid arch name 'rv64e',
 // RV64-EER: standard user-level extension 'e' requires 'rv32'
 
+<<<<<<< HEAD
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
 // SIFIVE_CUSTOMIZATION
 // RV32-DER: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izve32f -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVE32F-ER %s
 // RV32-ZVE32F-ER: error: invalid arch name 'rv32izve32f',
-// RV32-ZVE32F-ER: zve32f requires f or zfinx extension to also be specified
+// RV32-ZVE32F-ER: 'zve32f' requires 'f' or 'zfinx' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzve64d -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVE64D-ER %s
 // RV32-ZVE64D-ER: error: invalid arch name 'rv32ifzve64d',
-// RV32-ZVE64D-ER: zve64d requires d or zdinx extension to also be specified
+// RV32-ZVE64D-ER: 'zve64d' requires 'd' or 'zdinx' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVL64B-ER %s
 // RV32-ZVL64B-ER: error: invalid arch name 'rv32izvl64b',
-// RV32-ZVL64B-ER: zvl*b requires v or zve* extension to also be specified
+// RV32-ZVL64B-ER: 'zvl*b' requires 'v' or 'zve*' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32imw -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-STD-INVAL %s
@@ -540,7 +551,7 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izve32f -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE32F-REQUIRE-F %s
-// RV32-ZVE32F-REQUIRE-F: error: invalid arch name 'rv32izve32f', zve32f requires f or zfinx extension to also be specified
+// RV32-ZVE32F-REQUIRE-F: error: invalid arch name 'rv32izve32f', 'zve32f' requires 'f' or 'zfinx' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzve32f -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE32F-GOOD %s
@@ -552,7 +563,7 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izve64f -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE64F-REQUIRE-F %s
-// RV32-ZVE64F-REQUIRE-F: error: invalid arch name 'rv32izve64f', zve32f requires f or zfinx extension to also be specified
+// RV32-ZVE64F-REQUIRE-F: error: invalid arch name 'rv32izve64f', 'zve32f' requires 'f' or 'zfinx' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzve64f -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE64F-GOOD %s
@@ -560,7 +571,7 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzve64d -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE64D-REQUIRE-D %s
-// RV32-ZVE64D-REQUIRE-D: error: invalid arch name 'rv32ifzve64d', zve64d requires d or zdinx extension to also be specified
+// RV32-ZVE64D-REQUIRE-D: error: invalid arch name 'rv32ifzve64d', 'zve64d' requires 'd' or 'zdinx' extension to also be specified
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ifdzve64d -### %s -c 2>&1 | \
 // RUN:   FileCheck -check-prefix=RV32-ZVE64D-GOOD %s
@@ -595,3 +606,13 @@
 // RUN: %clang -target riscv32-unknown-elf -march=rv32i_zmmul1p0 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZMMUL-GOODVERS %s
 // RV32-ZMMUL-GOODVERS: "-target-feature" "+zmmul"
+
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzfinx -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-F-ZFINX-ER %s
+// RV32-F-ZFINX-ER: error: invalid arch name 'rv32ifzfinx',
+// RV32-F-ZFINX-ER: 'f' and 'zfinx' extensions are incompatible
+
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32idzdinx -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-D-ZDINX-ER %s
+// RV32-D-ZDINX-ER: error: invalid arch name 'rv32idzdinx',
+// RV32-D-ZFINX-ER: 'f' and 'zfinx' extensions are incompatible

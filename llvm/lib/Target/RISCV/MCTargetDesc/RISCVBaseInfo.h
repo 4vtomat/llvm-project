@@ -14,6 +14,8 @@
 #define LLVM_LIB_TARGET_RISCV_MCTARGETDESC_RISCVBASEINFO_H
 
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/APInt.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/MC/MCInstrDesc.h"
@@ -405,6 +407,7 @@ inline static bool isValidRoundingMode(unsigned Mode) {
 }
 } // namespace RISCVFPRndMode
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 namespace RISCVVXRndMode {
 enum RoundingMode {
@@ -417,6 +420,31 @@ enum RoundingMode {
 
 } // namespace RISCVVXRndMode
 #endif // SIFIVE_CUSTOMIZATION
+=======
+//===----------------------------------------------------------------------===//
+// Floating-point Immediates
+//
+
+namespace RISCVLoadFPImm {
+int getLoadFPImm(bool Sign, uint8_t Exp, uint8_t Mantissa);
+float getFPImm(unsigned Imm);
+
+/// getLoadFP32Imm - Return a 5-bit binary encoding of the 32-bit
+/// floating-point immediate value. If the value cannot be represented as a
+/// 5-bit binary encoding, then return -1.
+int getLoadFP32Imm(const APFloat &FPImm);
+
+/// getLoadFP64Imm - Return a 5-bit binary encoding of the 64-bit
+/// floating-point immediate value. If the value cannot be represented as a
+/// 5-bit binary encoding, then return -1.
+int getLoadFP64Imm(const APFloat &FPImm);
+
+/// getLoadFP16Imm - Return a 5-bit binary encoding of the 16-bit
+/// floating-point immediate value. If the value cannot be represented as a
+/// 5-bit binary encoding, then return -1.
+int getLoadFP16Imm(const APFloat &FPImm);
+} // namespace RISCVLoadFPImm
+>>>>>>> upstream/main
 
 namespace RISCVSysReg {
 struct SysReg {

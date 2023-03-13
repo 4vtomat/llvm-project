@@ -145,6 +145,12 @@ Changes to the C API
 
 * ``LLVMContextSetOpaquePointers``, a temporary API to pin to legacy typed
   pointer, has been removed.
+* Functions for adding legacy passes like ``LLVMAddInstructionCombiningPass``
+  have been removed.
+* Removed ``LLVMPassManagerBuilderRef`` and functions interacting with it.
+  These belonged to the no longer supported legacy pass manager.
+* As part of the opaque pointer transition, ``LLVMGetElementType`` no longer
+  gives the pointee type of a pointer type.
 
 Changes to the FastISel infrastructure
 --------------------------------------
@@ -161,22 +167,30 @@ Changes to the Metadata Info
 Changes to the Debug Info
 ---------------------------------
 
-* The DWARFv5 feature of attaching `DW_AT_default_value` to defaulted template
+* The DWARFv5 feature of attaching ``DW_AT_default_value`` to defaulted template
   parameters will now be available in any non-strict DWARF mode and in a wider
-  range of cases than previously. (`D139953 <https://reviews.llvm.org/D139953>`_, `D139988 <https://reviews.llvm.org/D139988>`_)
+  range of cases than previously.
+  (`D139953 <https://reviews.llvm.org/D139953>`_,
+  `D139988 <https://reviews.llvm.org/D139988>`_)
 
-* The `DW_AT_name` on `DW_AT_typedef`s for alias templates will now omit defaulted
-  template parameters. (`D142268 <https://reviews.llvm.org/D142268>`_)
+* The ``DW_AT_name`` on ``DW_AT_typedef``\ s for alias templates will now omit
+  defaulted template parameters. (`D142268 <https://reviews.llvm.org/D142268>`_)
+
+* The experimental ``@llvm.dbg.addr`` intrinsic has been removed (`D144801
+  <https://reviews.llvm.org/D144801>`_). IR inputs with this intrinsic are
+  auto-upgraded to ``@llvm.dbg.value`` with ``DW_OP_deref`` appended to the
+  ``DIExpression`` (`D144793 <https://reviews.llvm.org/D144793>`_).
 
 Changes to the LLVM tools
 ---------------------------------
+* llvm-lib now supports the /def option for generating a Windows import library from a definition file.
 
 Changes to LLDB
 ---------------------------------
 
-* In the results of commands such as `expr` and `frame var`, type summaries will now
+* In the results of commands such as ``expr`` and ``frame var``, type summaries will now
   omit defaulted template parameters. The full template parameter list can still be
-  viewed with `expr --raw-output`/`frame var --raw-output`. (`D141828 <https://reviews.llvm.org/D141828>`_)
+  viewed with ``expr --raw-output``/``frame var --raw-output``. (`D141828 <https://reviews.llvm.org/D141828>`_)
 
 Changes to Sanitizers
 ---------------------
