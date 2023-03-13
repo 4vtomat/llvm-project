@@ -1346,6 +1346,7 @@ public:
   /// All other expressions are good and won't prevent SCEV expansion in the
   /// vector loop
   bool visitConstant(const SCEVConstant *S) { return true; }
+  bool visitVScale(const SCEVVScale *S) { return true; }
   bool visitPtrToIntExpr(const SCEVPtrToIntExpr *S) { return visitExpr(S); }
   bool visitTruncateExpr(const SCEVTruncateExpr *S) { return visitExpr(S); }
   bool visitZeroExtendExpr(const SCEVZeroExtendExpr *S) { return visitExpr(S); }
