@@ -973,16 +973,6 @@ static unsigned getSectionRank(const OutputSection &osec) {
       rank |= RF_MIPS_NOT_GOT;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (config->emachine == EM_RISCV && config->relaxGP) {
-    if (osec.name != ".sbss")
-      rank |= 2;
-    if (osec.name == ".sdata")
-      rank |= 1;
-  }
-#endif
-=======
   if (config->emachine == EM_RISCV) {
     // .sdata and .sbss are placed closer to make GP relaxation more profitable
     // and match GNU ld.
@@ -990,7 +980,6 @@ static unsigned getSectionRank(const OutputSection &osec) {
     if (name == ".sdata" || (osec.type == SHT_NOBITS && name != ".sbss"))
       rank |= RF_RISCV_SDATA;
   }
->>>>>>> upstream/main
 
   return rank;
 }
