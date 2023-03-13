@@ -938,13 +938,10 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "standard user-level extension 'e' requires 'rv32'");
 
-<<<<<<< HEAD
-=======
   if (HasF && HasZfinx)
     return createStringError(errc::invalid_argument,
                              "'f' and 'zfinx' extensions are incompatible");
 
->>>>>>> upstream/main
   if (HasZve32f && !HasF && !HasZfinx)
     return createStringError(
         errc::invalid_argument,
@@ -998,14 +995,10 @@ Error RISCVISAInfo::checkDependency() {
   return Error::success();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsF[] = {"zicsr"};
-static const char *ImpliedExtsD[] = {"f"};
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static const char *ImpliedExtsD[] = {"f"};
->>>>>>> upstream/main
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d", "f", "d"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
 static const char *ImpliedExtsZfh[] = {"f"};
@@ -1058,10 +1051,7 @@ struct ImpliedExtsEntry {
 // Note: The table needs to be sorted by name.
 static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
-<<<<<<< HEAD
     {{"f"}, {ImpliedExtsF}},
-=======
->>>>>>> upstream/main
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
