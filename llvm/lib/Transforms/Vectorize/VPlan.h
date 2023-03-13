@@ -1157,8 +1157,10 @@ public:
   void execute(VPTransformState &State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  bool getIsPtrLoopInvariant() const { return IsPtrLoopInvariant; }
-  bool getIsIndexLoopInvariantr(int Idx) const { return IsIndexLoopInvariant[Idx]; }
+  bool getIsPtrLoopInvariant() const { return isPointerLoopInvariant(); }
+  bool getIsIndexLoopInvariantr(int Idx) const {
+    return isIndexLoopInvariant(Idx);
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
