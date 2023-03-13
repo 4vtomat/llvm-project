@@ -150,13 +150,7 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32ID %s
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-// RV32ID: "-target-feature" "+d"
-// end SIFIVE_CUSTOMIZATION
-=======
 // RV32ID: "-target-feature" "+f" "-target-feature" "+d"
->>>>>>> upstream/main
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32L %s
@@ -184,13 +178,7 @@
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64ID %s
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-// RV64ID: "-target-feature" "+d"
-// end SIFIVE_CUSTOMIZATION
-=======
 // RV64ID: "-target-feature" "+f" "-target-feature" "+d"
->>>>>>> upstream/main
 
 // RUN: %clang --target=riscv64-unknown-elf -march=rv64l -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64L %s
