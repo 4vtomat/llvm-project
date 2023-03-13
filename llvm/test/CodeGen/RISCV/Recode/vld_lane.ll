@@ -10,8 +10,8 @@ define void @vld2_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vmerge.vvm v11, v8, v10, v0
-; CHECK-NEXT:    vid.v v13
-; CHECK-NEXT:    vrgather.vv v12, v9, v13
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v12, v9, v8
 ; CHECK-NEXT:    vrgather.vi v12, v10, 1, v0.t
 ; CHECK-NEXT:    vsseg2e16.v v11, (a2)
 ; CHECK-NEXT:    ret
@@ -83,8 +83,8 @@ define void @vld2_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vmerge.vvm v11, v8, v10, v0
-; CHECK-NEXT:    vid.v v13
-; CHECK-NEXT:    vrgather.vv v12, v9, v13
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v12, v9, v8
 ; CHECK-NEXT:    vrgather.vi v12, v10, 1, v0.t
 ; CHECK-NEXT:    vsseg2e16.v v11, (a2)
 ; CHECK-NEXT:    ret
@@ -277,19 +277,19 @@ define void @vld2q_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld2q_lane_f16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vlseg2e16.v v9, (a1)
+; CHECK-NEXT:    vlseg2e16.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vrgather.vv v12, v9, v8
+; CHECK-NEXT:    vid.v v11
+; CHECK-NEXT:    vrgather.vv v12, v8, v11
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    li a0, 253
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v12, v10, 0, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v13, v11, v10, v0
+; CHECK-NEXT:    vmerge.vvm v13, v10, v9, v0
 ; CHECK-NEXT:    vsseg2e16.v v12, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -307,19 +307,19 @@ define void @vld2q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld2q_lane_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg2e32.v v9, (a1)
+; CHECK-NEXT:    vlseg2e32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vrgather.vv v12, v9, v8
+; CHECK-NEXT:    vid.v v11
+; CHECK-NEXT:    vrgather.vv v12, v8, v11
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v12, v10, 0, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v13, v11, v10, v0
+; CHECK-NEXT:    vmerge.vvm v13, v10, v9, v0
 ; CHECK-NEXT:    vsseg2e32.v v12, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -391,19 +391,19 @@ define void @vld2q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld2q_lane_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg2e32.v v9, (a1)
+; CHECK-NEXT:    vlseg2e32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vrgather.vv v12, v9, v8
+; CHECK-NEXT:    vid.v v11
+; CHECK-NEXT:    vrgather.vv v12, v8, v11
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v12, v10, 0, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v13, v11, v10, v0
+; CHECK-NEXT:    vmerge.vvm v13, v10, v9, v0
 ; CHECK-NEXT:    vsseg2e32.v v12, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -533,19 +533,19 @@ define void @vld2q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld2q_lane_u64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vlseg2e64.v v9, (a1)
+; CHECK-NEXT:    vlseg2e64.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vrgather.vi v12, v9, 0
+; CHECK-NEXT:    vrgather.vi v11, v8, 0
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v11, v10, 0, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v13, v11, v10, v0
-; CHECK-NEXT:    vsseg2e64.v v12, (a2)
+; CHECK-NEXT:    vmerge.vvm v12, v10, v9, v0
+; CHECK-NEXT:    vsseg2e64.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld2 = tail call { <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld2.v2i64.p0(ptr %in_1)
@@ -771,7 +771,7 @@ define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vlseg3e16.v v10, (a1)
+; CHECK-NEXT:    vlseg3e16.v v9, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 2(a0)
@@ -798,21 +798,21 @@ define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vse16.v v8, (a3)
 ; CHECK-NEXT:    sh a0, 12(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v13, (a1)
-; CHECK-NEXT:    vid.v v14
-; CHECK-NEXT:    vrgather.vv v15, v10, v14
+; CHECK-NEXT:    vle16.v v12, (a1)
+; CHECK-NEXT:    vid.v v13
+; CHECK-NEXT:    vrgather.vv v14, v9, v13
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v16, v13, v11, v0
-; CHECK-NEXT:    vrgather.vv v17, v12, v14
+; CHECK-NEXT:    vmerge.vvm v15, v12, v10, v0
+; CHECK-NEXT:    vrgather.vv v16, v11, v13
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v17, v13, 2, v0.t
-; CHECK-NEXT:    vsseg3e16.v v15, (a2)
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
+; CHECK-NEXT:    vsseg3e16.v v14, (a2)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
@@ -943,7 +943,7 @@ define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    lb a3, 1(a0)
 ; CHECK-NEXT:    lbu a4, 0(a0)
-; CHECK-NEXT:    vlseg3e8.v v10, (a1)
+; CHECK-NEXT:    vlseg3e8.v v9, (a1)
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    sh a3, 4(sp)
@@ -959,21 +959,21 @@ define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vse8.v v8, (a3)
 ; CHECK-NEXT:    sb a0, 10(sp)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v13, (a1)
-; CHECK-NEXT:    vid.v v14
-; CHECK-NEXT:    vrgather.vv v15, v10, v14
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vid.v v13
+; CHECK-NEXT:    vrgather.vv v14, v9, v13
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    li a0, 253
 ; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v16, v13, v11, v0
-; CHECK-NEXT:    vrgather.vv v17, v12, v14
+; CHECK-NEXT:    vmerge.vvm v15, v12, v10, v0
+; CHECK-NEXT:    vrgather.vv v16, v11, v13
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v17, v13, 2, v0.t
-; CHECK-NEXT:    vsseg3e8.v v15, (a2)
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
+; CHECK-NEXT:    vsseg3e8.v v14, (a2)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
@@ -995,7 +995,7 @@ define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vlseg3e16.v v10, (a1)
+; CHECK-NEXT:    vlseg3e16.v v9, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 2(a0)
@@ -1022,21 +1022,21 @@ define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vse16.v v8, (a3)
 ; CHECK-NEXT:    sh a0, 12(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vle16.v v13, (a1)
-; CHECK-NEXT:    vid.v v14
-; CHECK-NEXT:    vrgather.vv v15, v10, v14
+; CHECK-NEXT:    vle16.v v12, (a1)
+; CHECK-NEXT:    vid.v v13
+; CHECK-NEXT:    vrgather.vv v14, v9, v13
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v16, v13, v11, v0
-; CHECK-NEXT:    vrgather.vv v17, v12, v14
+; CHECK-NEXT:    vmerge.vvm v15, v12, v10, v0
+; CHECK-NEXT:    vrgather.vv v16, v11, v13
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v17, v13, 2, v0.t
-; CHECK-NEXT:    vsseg3e16.v v15, (a2)
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
+; CHECK-NEXT:    vsseg3e16.v v14, (a2)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
@@ -1215,7 +1215,7 @@ define void @vld3q_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vlseg3e16.v v10, (a1)
+; CHECK-NEXT:    vlseg3e16.v v9, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 2(a0)
@@ -1244,21 +1244,21 @@ define void @vld3q_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    fsh ft0, 20(sp)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v13, (a0)
-; CHECK-NEXT:    vid.v v14
-; CHECK-NEXT:    vrgather.vv v15, v10, v14
+; CHECK-NEXT:    vle16.v v12, (a0)
+; CHECK-NEXT:    vid.v v13
+; CHECK-NEXT:    vrgather.vv v14, v9, v13
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    li a0, 253
 ; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v16, v13, v11, v0
-; CHECK-NEXT:    vrgather.vv v17, v12, v14
+; CHECK-NEXT:    vmerge.vvm v15, v12, v10, v0
+; CHECK-NEXT:    vrgather.vv v16, v11, v13
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vrgather.vi v17, v13, 2, v0.t
-; CHECK-NEXT:    vsseg3e16.v v15, (a2)
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
+; CHECK-NEXT:    vsseg3e16.v v14, (a2)
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
 entry:
@@ -1280,7 +1280,7 @@ define void @vld3q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    addi sp, sp, -48
 ; CHECK-NEXT:    .cfi_def_cfa_offset 48
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg3e32.v v9, (a1)
+; CHECK-NEXT:    vlseg3e32.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 2(a0)
@@ -1317,28 +1317,28 @@ define void @vld3q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    sw a0, 8(sp)
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle64.v v11, (a0)
 ; CHECK-NEXT:    flw ft0, 8(sp)
 ; CHECK-NEXT:    addi a0, sp, 32
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
+; CHECK-NEXT:    vse32.v v11, (a0)
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
 ; CHECK-NEXT:    addi a1, sp, 36
-; CHECK-NEXT:    vse32.v v8, (a1)
+; CHECK-NEXT:    vse32.v v11, (a1)
 ; CHECK-NEXT:    fsw ft0, 40(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v12, (a0)
-; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vle32.v v11, (a0)
+; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    li a0, 4
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vv v13, v9, v8
-; CHECK-NEXT:    vrgather.vi v13, v12, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v14, v10, v8
+; CHECK-NEXT:    vrgather.vv v13, v8, v12
+; CHECK-NEXT:    vrgather.vi v13, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v14, v9, v12
 ; CHECK-NEXT:    li a0, 11
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v11, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v15, v12, v11, v0
+; CHECK-NEXT:    vmerge.vvm v15, v11, v10, v0
 ; CHECK-NEXT:    vsseg3e32.v v13, (a2)
 ; CHECK-NEXT:    addi sp, sp, 48
 ; CHECK-NEXT:    ret
@@ -1515,7 +1515,7 @@ define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg3e32.v v9, (a1)
+; CHECK-NEXT:    vlseg3e32.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 2(a0)
@@ -1550,28 +1550,28 @@ define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    mv a3, sp
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a3)
+; CHECK-NEXT:    vle64.v v11, (a3)
 ; CHECK-NEXT:    or a0, a0, a1
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
+; CHECK-NEXT:    vse32.v v11, (a1)
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
 ; CHECK-NEXT:    addi a3, sp, 20
-; CHECK-NEXT:    vse32.v v8, (a3)
+; CHECK-NEXT:    vse32.v v11, (a3)
 ; CHECK-NEXT:    sw a0, 24(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v12, (a1)
-; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vle32.v v11, (a1)
+; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    li a0, 4
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vv v13, v9, v8
-; CHECK-NEXT:    vrgather.vi v13, v12, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v14, v10, v8
+; CHECK-NEXT:    vrgather.vv v13, v8, v12
+; CHECK-NEXT:    vrgather.vi v13, v11, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v14, v9, v12
 ; CHECK-NEXT:    li a0, 11
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
+; CHECK-NEXT:    vrgather.vi v14, v11, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v15, v12, v11, v0
+; CHECK-NEXT:    vmerge.vvm v15, v11, v10, v0
 ; CHECK-NEXT:    vsseg3e32.v v13, (a2)
 ; CHECK-NEXT:    addi sp, sp, 32
 ; CHECK-NEXT:    ret
@@ -1988,10 +1988,10 @@ define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vmerge.vvm v12, v8, v11, v0
-; CHECK-NEXT:    vid.v v15
-; CHECK-NEXT:    vrgather.vv v13, v9, v15
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v13, v9, v8
 ; CHECK-NEXT:    vrgather.vi v13, v11, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v14, v10, v15
+; CHECK-NEXT:    vrgather.vv v14, v10, v8
 ; CHECK-NEXT:    vrgather.vi v14, v11, 2, v0.t
 ; CHECK-NEXT:    vsseg3e8.v v12, (a2)
 ; CHECK-NEXT:    addi sp, sp, 32
@@ -2013,26 +2013,26 @@ define void @vld4_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-LABEL: vld4_lane_f16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vlseg4e16.v v10, (a1)
+; CHECK-NEXT:    vlseg4e16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v14, (a0)
+; CHECK-NEXT:    vle8.v v13, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vid.v v15
+; CHECK-NEXT:    vid.v v14
 ; CHECK-NEXT:    li a0, 4
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vv v16, v10, v15
+; CHECK-NEXT:    vrgather.vv v15, v9, v14
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v16, v14, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v17, v11, v15
+; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v16, v10, v14
 ; CHECK-NEXT:    li a0, 11
 ; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vrgather.vi v17, v14, 1, v0.t
+; CHECK-NEXT:    vrgather.vi v16, v13, 1, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v18, v14, v12, v0
-; CHECK-NEXT:    vrgather.vv v19, v13, v15
+; CHECK-NEXT:    vmerge.vvm v17, v13, v11, v0
+; CHECK-NEXT:    vrgather.vv v18, v12, v14
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v19, v14, 3, v0.t
-; CHECK-NEXT:    vsseg4e16.v v16, (a2)
+; CHECK-NEXT:    vrgather.vi v18, v13, 3, v0.t
+; CHECK-NEXT:    vsseg4e16.v v15, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <4 x half>, <4 x half>, <4 x half>, <4 x half> } @llvm.aarch64.neon.ld4.v4f16.p0(ptr %in_1)
@@ -2168,12 +2168,12 @@ define void @vld4_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vmerge.vvm v13, v8, v12, v0
-; CHECK-NEXT:    vid.v v17
-; CHECK-NEXT:    vrgather.vv v14, v9, v17
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v14, v9, v8
 ; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v15, v10, v17
+; CHECK-NEXT:    vrgather.vv v15, v10, v8
 ; CHECK-NEXT:    vrgather.vi v15, v12, 2, v0.t
-; CHECK-NEXT:    vrgather.vv v16, v11, v17
+; CHECK-NEXT:    vrgather.vv v16, v11, v8
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
 ; CHECK-NEXT:    vsseg4e16.v v13, (a2)
 ; CHECK-NEXT:    ret
@@ -2300,12 +2300,12 @@ define void @vld4_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmerge.vvm v13, v8, v12, v0
-; CHECK-NEXT:    vid.v v17
-; CHECK-NEXT:    vrgather.vv v14, v9, v17
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v14, v9, v8
 ; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v15, v10, v17
+; CHECK-NEXT:    vrgather.vv v15, v10, v8
 ; CHECK-NEXT:    vrgather.vi v15, v12, 2, v0.t
-; CHECK-NEXT:    vrgather.vv v16, v11, v17
+; CHECK-NEXT:    vrgather.vv v16, v11, v8
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
 ; CHECK-NEXT:    vsseg4e8.v v13, (a2)
 ; CHECK-NEXT:    ret
@@ -2328,26 +2328,26 @@ define void @vld4_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-LABEL: vld4_lane_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vlseg4e16.v v10, (a1)
+; CHECK-NEXT:    vlseg4e16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v14, (a0)
+; CHECK-NEXT:    vle8.v v13, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vid.v v15
-; CHECK-NEXT:    vrgather.vv v16, v10, v15
+; CHECK-NEXT:    vid.v v14
+; CHECK-NEXT:    vrgather.vv v15, v9, v14
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v8, a0
 ; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v16, v14, 0, v0.t
+; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v17, v14, v11, v0
-; CHECK-NEXT:    vrgather.vv v18, v12, v15
+; CHECK-NEXT:    vmerge.vvm v16, v13, v10, v0
+; CHECK-NEXT:    vrgather.vv v17, v11, v14
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vrgather.vi v18, v14, 2, v0.t
-; CHECK-NEXT:    vrgather.vv v19, v13, v15
-; CHECK-NEXT:    vrgather.vi v19, v14, 3, v0.t
-; CHECK-NEXT:    vsseg4e16.v v16, (a2)
+; CHECK-NEXT:    vrgather.vi v17, v13, 2, v0.t
+; CHECK-NEXT:    vrgather.vv v18, v12, v14
+; CHECK-NEXT:    vrgather.vi v18, v13, 3, v0.t
+; CHECK-NEXT:    vsseg4e16.v v15, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <4 x i16>, <4 x i16>, <4 x i16>, <4 x i16> } @llvm.aarch64.neon.ld4.v4i16.p0(ptr %in_1)
@@ -2465,23 +2465,23 @@ define void @vld4_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-LABEL: vld4_lane_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vlseg4e8.v v9, (a1)
+; CHECK-NEXT:    vlseg4e8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vle8.v v13, (a0)
+; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vv v14, v9, v8
-; CHECK-NEXT:    vrgather.vi v14, v13, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v15, v10, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v16, v11, v8
+; CHECK-NEXT:    vrgather.vv v14, v8, v13
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v15, v9, v13
+; CHECK-NEXT:    vrgather.vi v15, v12, 1, v0.t
+; CHECK-NEXT:    vrgather.vv v16, v10, v13
 ; CHECK-NEXT:    li a0, 247
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v16, v13, 2, v0.t
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v17, v13, v12, v0
+; CHECK-NEXT:    vmerge.vvm v17, v12, v11, v0
 ; CHECK-NEXT:    vsseg4e8.v v14, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2537,23 +2537,23 @@ define void @vld4q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld4q_lane_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg4e32.v v9, (a1)
+; CHECK-NEXT:    vlseg4e32.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v13, (a0)
+; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vv v14, v9, v8
-; CHECK-NEXT:    vrgather.vi v14, v13, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v15, v10, v8
-; CHECK-NEXT:    vrgather.vi v15, v13, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v16, v11, v8
+; CHECK-NEXT:    vrgather.vv v14, v8, v13
+; CHECK-NEXT:    vrgather.vi v14, v12, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v15, v9, v13
+; CHECK-NEXT:    vrgather.vi v15, v12, 1, v0.t
+; CHECK-NEXT:    vrgather.vv v16, v10, v13
 ; CHECK-NEXT:    li a0, 7
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vi v16, v13, 2, v0.t
+; CHECK-NEXT:    vrgather.vi v16, v12, 2, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v17, v13, v12, v0
+; CHECK-NEXT:    vmerge.vvm v17, v12, v11, v0
 ; CHECK-NEXT:    vsseg4e32.v v14, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2728,26 +2728,26 @@ define void @vld4q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-LABEL: vld4q_lane_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vlseg4e32.v v10, (a1)
+; CHECK-NEXT:    vlseg4e32.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v14, (a0)
+; CHECK-NEXT:    vle8.v v13, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vid.v v15
+; CHECK-NEXT:    vid.v v14
 ; CHECK-NEXT:    li a0, 4
 ; CHECK-NEXT:    vmv.s.x v8, a0
-; CHECK-NEXT:    vrgather.vv v16, v10, v15
+; CHECK-NEXT:    vrgather.vv v15, v9, v14
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vrgather.vi v16, v14, 0, v0.t
-; CHECK-NEXT:    vrgather.vv v17, v11, v15
+; CHECK-NEXT:    vrgather.vi v15, v13, 0, v0.t
+; CHECK-NEXT:    vrgather.vv v16, v10, v14
 ; CHECK-NEXT:    li a0, 11
 ; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vrgather.vi v17, v14, 1, v0.t
+; CHECK-NEXT:    vrgather.vi v16, v13, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v18, v14, v12, v0
-; CHECK-NEXT:    vrgather.vv v19, v13, v15
+; CHECK-NEXT:    vmerge.vvm v17, v13, v11, v0
+; CHECK-NEXT:    vrgather.vv v18, v12, v14
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vrgather.vi v19, v14, 3, v0.t
-; CHECK-NEXT:    vsseg4e32.v v16, (a2)
+; CHECK-NEXT:    vrgather.vi v18, v13, 3, v0.t
+; CHECK-NEXT:    vsseg4e32.v v15, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <4 x i32>, <4 x i32>, <4 x i32>, <4 x i32> } @llvm.aarch64.neon.ld4.v4i32.p0(ptr %in_1)
@@ -2965,12 +2965,12 @@ define void @vld4q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vmerge.vvm v13, v8, v12, v0
-; CHECK-NEXT:    vid.v v17
-; CHECK-NEXT:    vrgather.vv v14, v9, v17
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vrgather.vv v14, v9, v8
 ; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
-; CHECK-NEXT:    vrgather.vv v15, v10, v17
+; CHECK-NEXT:    vrgather.vv v15, v10, v8
 ; CHECK-NEXT:    vrgather.vi v15, v12, 2, v0.t
-; CHECK-NEXT:    vrgather.vv v16, v11, v17
+; CHECK-NEXT:    vrgather.vv v16, v11, v8
 ; CHECK-NEXT:    vrgather.vi v16, v12, 3, v0.t
 ; CHECK-NEXT:    vsseg4e32.v v13, (a2)
 ; CHECK-NEXT:    ret

@@ -982,9 +982,9 @@ define void @vtbl3_s8(ptr noundef %in_0, ptr nocapture noundef readonly %in_1, p
 ; CHECK-NEXT:    vle64.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vmv.v.i v14, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    vslideup.vi v10, v9, 8
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
@@ -1045,9 +1045,9 @@ define void @vtbl3_u8(ptr noundef %in_0, ptr nocapture noundef readonly %in_1, p
 ; CHECK-NEXT:    vle64.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    vmv.v.i v14, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    vslideup.vi v10, v9, 8
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
@@ -1230,9 +1230,9 @@ define void @vtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vle64.v v10, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a2)
-; CHECK-NEXT:    vmv.v.i v14, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    vslideup.vi v10, v9, 8
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
@@ -1300,9 +1300,9 @@ define void @vtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vle64.v v10, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a2)
-; CHECK-NEXT:    vmv.v.i v14, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v14, 8
+; CHECK-NEXT:    vslideup.vi v10, v9, 8
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
