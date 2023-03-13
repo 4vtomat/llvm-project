@@ -874,14 +874,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       setOperationAction(FloatingPointVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
       setOperationAction(ISD::STRICT_FP_EXTEND, VT, Custom);
->>>>>>> upstream/main
     };
 
     // Sets common extload/truncstore actions on RVV floating-point vector
@@ -1117,14 +1115,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         setOperationAction(FloatingPointVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
         setOperationAction(ISD::STRICT_FP_EXTEND, VT, Custom);
->>>>>>> upstream/main
       }
 
       // Custom-legalize bitcasts from fixed-length vectors to scalar types.
@@ -1326,7 +1322,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOLoad;
     return true;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // FIXME: Add indexed loads.
   // TODO: Add stores?
@@ -1495,7 +1490,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                         /* NF */ 8);
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -1514,7 +1508,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |= MachineMemOperand::MOStore;
     return true;
->>>>>>> upstream/main
   }
 }
 
@@ -7235,7 +7228,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
                                    Ops, Store->getMemoryVT(),
                                    Store->getMemOperand());
   }
-<<<<<<< HEAD
   // SIFIVE
   case Intrinsic::riscv_vsetvxrm: {
     SDLoc DL(Op);
@@ -7246,7 +7238,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
     return SDValue(
         DAG.getMachineNode(RISCV::WriteVXRM, DL, MVT::Other, RoundMode, Chain),
         0);
-=======
+  }
+  // end SIFIVE
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -7282,9 +7275,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
         ISD::INTRINSIC_VOID, DL, DAG.getVTList(MVT::Other), Ops,
         FixedIntrinsic->getMemoryVT(), FixedIntrinsic->getMemOperand());
   }
->>>>>>> upstream/main
-  }
-  // end SIFIVE
   }
 
 #if SIFIVE_CUSTOMIZATION
