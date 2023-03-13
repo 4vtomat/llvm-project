@@ -280,8 +280,12 @@ static bool runIPSCCP(
 
     // If there is a known constant range for the return value, add !range
     // metadata to the function's call sites.
-    if (ReturnValue.isConstantRange() &&
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: The change was cherry-picked from upstrem.
+    // It should be removed for the next pull down merge.
+    if (F->getReturnType()->isIntegerTy() && ReturnValue.isConstantRange() &&
         !ReturnValue.getConstantRange().isSingleElement()) {
+#endif // SIFIVE_CUSTOMIZATION
       // Do not add range metadata if the return value may include undef.
       if (ReturnValue.isConstantRangeIncludingUndef())
         continue;
