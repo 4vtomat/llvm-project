@@ -407,7 +407,6 @@ inline static bool isValidRoundingMode(unsigned Mode) {
 }
 } // namespace RISCVFPRndMode
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 namespace RISCVVXRndMode {
 enum RoundingMode {
@@ -420,7 +419,7 @@ enum RoundingMode {
 
 } // namespace RISCVVXRndMode
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 //===----------------------------------------------------------------------===//
 // Floating-point Immediates
 //
@@ -444,7 +443,6 @@ int getLoadFP64Imm(const APFloat &FPImm);
 /// 5-bit binary encoding, then return -1.
 int getLoadFP16Imm(const APFloat &FPImm);
 } // namespace RISCVLoadFPImm
->>>>>>> upstream/main
 
 namespace RISCVSysReg {
 struct SysReg {
