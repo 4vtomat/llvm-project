@@ -371,6 +371,12 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   OS << "#error \"Vector intrinsics require the vector extension.\"\n";
   OS << "#endif\n\n";
 
+#if SIFIVE_CUSTOMIZATION
+  OS << "#ifdef __rvv_0p10_compatible_intrinsics\n";
+  OS << "#include <rvv_v0p10_compatible/riscv_vector.h>\n";
+  OS << "#endif\n";
+#endif
+
   OS << "#ifdef __cplusplus\n";
   OS << "extern \"C\" {\n";
   OS << "#endif\n\n";
