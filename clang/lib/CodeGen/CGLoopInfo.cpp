@@ -274,6 +274,9 @@ LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
     NewLoopProperties.push_back(MDNode::get(Ctx, VectorizeScalableMD));
 
     LoopProperties = NewLoopProperties;
+
+    const_cast<LoopAttributes &>(Attrs).VectorizeEnable =
+        LoopAttributes::Enable;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
