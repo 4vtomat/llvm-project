@@ -1237,18 +1237,20 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              const CallInst &I,
                                              MachineFunction &MF,
                                              unsigned Intrinsic) const {
+  auto &DL = I.getModule()->getDataLayout();
+
 #if SIFIVE_CUSTOMIZATION
-  auto SetRVVLoadStoreInfo = [](IntrinsicInfo &Info, const CallInst &I,
-                                bool IsStore, bool IsUnitStrided,
-                                unsigned NF = 1) {
+  auto SetRVVLoadStoreInfo = [&](bool IsStore, bool IsUnitStrided,
+                                 unsigned NF = 1) {
     Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
     Info.ptrVal = I.getArgOperand(NF);
     Type *MemTy = I.getArgOperand(0)->getType();
     if (!IsUnitStrided)
       MemTy = MemTy->getScalarType();
-    Info.memVT = MVT::getVT(MemTy);
-    Info.align =
-        Align(I.getArgOperand(0)->getType()->getScalarSizeInBits() / 8);
+    Info.memVT = getValueType(DL, MemTy);
+    Info.align = Align(
+        DL.getTypeSizeInBits(I.getArgOperand(0)->getType()->getScalarType()) /
+        8);
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |=
         IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
@@ -1260,7 +1262,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   Info.flags |= RISCVTargetLowering::getTargetMMOFlags(I);
 #endif // SIFIVE_CUSTOMIZATION
 
-  auto &DL = I.getModule()->getDataLayout();
   switch (Intrinsic) {
   default:
     return false;
@@ -1326,7 +1327,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vleff:
   case Intrinsic::riscv_vleff_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ true);
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ true);
     return true;
   case Intrinsic::riscv_vlse:
   case Intrinsic::riscv_vlse_mask:
@@ -1334,7 +1335,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxei_mask:
   case Intrinsic::riscv_vluxei:
   case Intrinsic::riscv_vluxei_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false,
                         /* IsUnitStrided */ false);
     return true;
   case Intrinsic::riscv_vlseg2:
@@ -1345,7 +1346,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg2_mask:
   case Intrinsic::riscv_vluxseg2:
   case Intrinsic::riscv_vluxseg2_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 2);
     return true;
   case Intrinsic::riscv_vlseg3:
@@ -1356,7 +1357,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg3_mask:
   case Intrinsic::riscv_vluxseg3:
   case Intrinsic::riscv_vluxseg3_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 3);
     return true;
   case Intrinsic::riscv_vlseg4:
@@ -1367,7 +1368,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg4_mask:
   case Intrinsic::riscv_vluxseg4:
   case Intrinsic::riscv_vluxseg4_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 4);
     return true;
   case Intrinsic::riscv_vlseg5:
@@ -1378,7 +1379,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg5_mask:
   case Intrinsic::riscv_vluxseg5:
   case Intrinsic::riscv_vluxseg5_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 5);
     return true;
   case Intrinsic::riscv_vlseg6:
@@ -1389,7 +1390,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg6_mask:
   case Intrinsic::riscv_vluxseg6:
   case Intrinsic::riscv_vluxseg6_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 6);
     return true;
   case Intrinsic::riscv_vlseg7:
@@ -1400,7 +1401,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg7_mask:
   case Intrinsic::riscv_vluxseg7:
   case Intrinsic::riscv_vluxseg7_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 7);
     return true;
   case Intrinsic::riscv_vlseg8:
@@ -1411,16 +1412,16 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vloxseg8_mask:
   case Intrinsic::riscv_vluxseg8:
   case Intrinsic::riscv_vluxseg8_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ false, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
                         /* NF */ 8);
     return true;
   case Intrinsic::riscv_vse:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ true);
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ true);
     return true;
   case Intrinsic::riscv_vsse:
   case Intrinsic::riscv_vsoxei:
   case Intrinsic::riscv_vsuxei:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false);
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false);
     return true;
   case Intrinsic::riscv_vsseg2:
   case Intrinsic::riscv_vsseg2_mask:
@@ -1428,7 +1429,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg2_mask:
   case Intrinsic::riscv_vsuxseg2:
   case Intrinsic::riscv_vsuxseg2_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 2);
     return true;
   case Intrinsic::riscv_vsseg3:
@@ -1437,7 +1438,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg3_mask:
   case Intrinsic::riscv_vsuxseg3:
   case Intrinsic::riscv_vsuxseg3_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 3);
     return true;
   case Intrinsic::riscv_vsseg4:
@@ -1446,7 +1447,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg4_mask:
   case Intrinsic::riscv_vsuxseg4:
   case Intrinsic::riscv_vsuxseg4_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 4);
     return true;
   case Intrinsic::riscv_vsseg5:
@@ -1455,7 +1456,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg5_mask:
   case Intrinsic::riscv_vsuxseg5:
   case Intrinsic::riscv_vsuxseg5_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 5);
     return true;
   case Intrinsic::riscv_vsseg6:
@@ -1464,7 +1465,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg6_mask:
   case Intrinsic::riscv_vsuxseg6:
   case Intrinsic::riscv_vsuxseg6_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 6);
     return true;
   case Intrinsic::riscv_vsseg7:
@@ -1473,7 +1474,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg7_mask:
   case Intrinsic::riscv_vsuxseg7:
   case Intrinsic::riscv_vsuxseg7_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 7);
     return true;
   case Intrinsic::riscv_vsseg8:
@@ -1482,7 +1483,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsoxseg8_mask:
   case Intrinsic::riscv_vsuxseg8:
   case Intrinsic::riscv_vsuxseg8_mask:
-    SetRVVLoadStoreInfo(Info, I, /* IsStore */ true, /* IsUnitStrided */ false,
+    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
                         /* NF */ 8);
     return true;
 #endif // SIFIVE_CUSTOMIZATION
