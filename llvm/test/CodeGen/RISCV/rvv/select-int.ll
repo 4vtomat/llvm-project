@@ -19,9 +19,9 @@ define <vscale x 1 x i1> @select_nxv1i1(i1 zeroext %c, <vscale x 1 x i1> %a, <vs
 define <vscale x 1 x i1> @selectcc_nxv1i1(i1 signext %a, i1 signext %b, <vscale x 1 x i1> %c, <vscale x 1 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv1i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB1_2
+; CHECK-NEXT:    bne a0, a1, .LBB1_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB1_2:
@@ -46,9 +46,9 @@ define <vscale x 2 x i1> @select_nxv2i1(i1 zeroext %c, <vscale x 2 x i1> %a, <vs
 define <vscale x 2 x i1> @selectcc_nxv2i1(i1 signext %a, i1 signext %b, <vscale x 2 x i1> %c, <vscale x 2 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv2i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB3_2
+; CHECK-NEXT:    bne a0, a1, .LBB3_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB3_2:
@@ -73,9 +73,9 @@ define <vscale x 4 x i1> @select_nxv4i1(i1 zeroext %c, <vscale x 4 x i1> %a, <vs
 define <vscale x 4 x i1> @selectcc_nxv4i1(i1 signext %a, i1 signext %b, <vscale x 4 x i1> %c, <vscale x 4 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv4i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB5_2
+; CHECK-NEXT:    bne a0, a1, .LBB5_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB5_2:
@@ -100,9 +100,9 @@ define <vscale x 8 x i1> @select_nxv8i1(i1 zeroext %c, <vscale x 8 x i1> %a, <vs
 define <vscale x 8 x i1> @selectcc_nxv8i1(i1 signext %a, i1 signext %b, <vscale x 8 x i1> %c, <vscale x 8 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv8i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB7_2
+; CHECK-NEXT:    bne a0, a1, .LBB7_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB7_2:
@@ -127,9 +127,9 @@ define <vscale x 16 x i1> @select_nxv16i1(i1 zeroext %c, <vscale x 16 x i1> %a, 
 define <vscale x 16 x i1> @selectcc_nxv16i1(i1 signext %a, i1 signext %b, <vscale x 16 x i1> %c, <vscale x 16 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv16i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB9_2
+; CHECK-NEXT:    bne a0, a1, .LBB9_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB9_2:
@@ -154,9 +154,9 @@ define <vscale x 32 x i1> @select_nxv32i1(i1 zeroext %c, <vscale x 32 x i1> %a, 
 define <vscale x 32 x i1> @selectcc_nxv32i1(i1 signext %a, i1 signext %b, <vscale x 32 x i1> %c, <vscale x 32 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv32i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB11_2
+; CHECK-NEXT:    bne a0, a1, .LBB11_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB11_2:
@@ -181,9 +181,9 @@ define <vscale x 64 x i1> @select_nxv64i1(i1 zeroext %c, <vscale x 64 x i1> %a, 
 define <vscale x 64 x i1> @selectcc_nxv64i1(i1 signext %a, i1 signext %b, <vscale x 64 x i1> %c, <vscale x 64 x i1> %d) {
 ; CHECK-LABEL: selectcc_nxv64i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB13_2
+; CHECK-NEXT:    bne a0, a1, .LBB13_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB13_2:
