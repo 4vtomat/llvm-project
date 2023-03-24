@@ -7964,7 +7964,7 @@ bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
   if (!Legal->useVLAVectorizer())
     return false;
 
-  StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
+  StrideAccessInfo SAI = computeStrideAccessInfo(PSE, I);
   if (!isSafeStrideAccessInfo(TheLoop, SAI))
     return false;
 
@@ -9441,7 +9441,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
 #if SIFIVE_CUSTOMIZATION
   const SCEV *Stride = nullptr;
   if (Decision == LoopVectorizationCostModel::CM_Strided) {
-    StrideAccessInfo SAI = computeStrideAccessInfo(PSE.getSE(), I);
+    StrideAccessInfo SAI = computeStrideAccessInfo(PSE, I);
     Stride = SAI.getSCEVStride();
   }
 #endif // SIFIVE_CUSTOMIZATION

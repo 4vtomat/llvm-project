@@ -1375,14 +1375,14 @@ bool llvm::isSafeStrideAccessInfo(const Loop *L,
   return StrideChecker.visit(SAI.getSCEVStride());
 }
 
-llvm::StrideAccessInfo llvm::computeStrideAccessInfo(ScalarEvolution *SE,
-                                                     Instruction *I) {
+llvm::StrideAccessInfo
+llvm::computeStrideAccessInfo(PredicatedScalarEvolution &PSE, Instruction *I) {
   Value *Ptr = getLoadStorePointerOperand(I);
-  const SCEV *V = isStridedAddressing(Ptr, SE);
+  const SCEV *V = isStridedAddressing(Ptr, PSE);
   if (!V)
     return llvm::StrideAccessInfo();
 
-  const SCEV *Stride = cast<SCEVAddRecExpr>(V)->getStepRecurrence(*SE);
+  const SCEV *Stride = cast<SCEVAddRecExpr>(V)->getStepRecurrence(*PSE.getSE());
 
   return StrideAccessInfo(V, Stride);
 }
