@@ -26,9 +26,6 @@ void llvm::initializeIPO(PassRegistry &Registry) {
   initializeDAHPass(Registry);
   initializeAlwaysInlinerLegacyPassPass(Registry);
   initializeLoopExtractorLegacyPassPass(Registry);
-#if SIFIVE_CUSTOMIZATION
-  initializeLoopDataLayoutLegacyPassPass(Registry);
-#endif
   initializeSingleLoopExtractorPass(Registry);
   initializeBarrierNoopPass(Registry);
 }
@@ -36,9 +33,3 @@ void llvm::initializeIPO(PassRegistry &Registry) {
 void LLVMInitializeIPO(LLVMPassRegistryRef R) {
   initializeIPO(*unwrap(R));
 }
-
-#if SIFIVE_CUSTOMIZATION
-void LLVMAddLoopDataLayoutPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createLoopDataLayoutPass());
-}
-#endif

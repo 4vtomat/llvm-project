@@ -143,9 +143,6 @@ namespace {
       (void) llvm::createGVNPass();
       (void) llvm::createNewGVNPass();
       (void) llvm::createMemCpyOptPass();
-#if SIFIVE_CUSTOMIZATION
-      (void) llvm::createLoopDataLayoutPass();
-#endif
       (void) llvm::createPostDomTree();
       (void) llvm::createInstructionNamerPass();
       (void) llvm::createMetaRenamerPass();
