@@ -309,7 +309,12 @@ static bool sinkLoopInvariantInstructions(Loop &L, AAResults &AA, LoopInfo &LI,
     // No need to check for instruction's operands are loop invariant.
     assert(L.hasLoopInvariantOperands(&I) &&
            "Insts in a loop's preheader should have loop invariant operands!");
+#if SIFIVE_CUSTOMIZATION
+    if (!canSinkOrHoistInst(I, &AA, &DT, &L, MSSAU, false, LICMFlags,
+                            /*NewStructTBAAPtrHoisting=*/false))
+#else
     if (!canSinkOrHoistInst(I, &AA, &DT, &L, MSSAU, false, LICMFlags))
+#endif // SIFIVE_CUSTOMIZATION
       continue;
     if (sinkInstruction(L, I, ColdLoopBBs, LoopBlockNumber, LI, DT, BFI,
                         &MSSAU)) {
