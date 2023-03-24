@@ -48,9 +48,6 @@ private:
   bool expandMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
 #if SIFIVE_CUSTOMIZATION
-  bool expandLoadStore(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
-                       MachineBasicBlock::iterator &NextMBBI,
-                       unsigned SecondOpcode, bool HasTmpReg);
   bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandBitfieldExtract(MachineBasicBlock &MBB,
                              MachineBasicBlock::iterator MBBI,
@@ -118,31 +115,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   // tablegen definition for the pseudo.
   switch (MBBI->getOpcode()) {
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoSB:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::SB, /*HasTmpReg=*/true);
-  case RISCV::PseudoSH:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::SH, /*HasTmpReg=*/true);
-  case RISCV::PseudoSW:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::SW, /*HasTmpReg=*/true);
-  case RISCV::PseudoSD:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::SD, /*HasTmpReg=*/true);
-  case RISCV::PseudoLBU:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LBU,
-                           /*HasTmpReg=*/false);
-  case RISCV::PseudoLHU:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LHU,
-                           /*HasTmpReg=*/false);
-  case RISCV::PseudoLWU:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LWU,
-                           /*HasTmpReg=*/false);
-  case RISCV::PseudoLB:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LB, /*HasTmpReg=*/false);
-  case RISCV::PseudoLH:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LH, /*HasTmpReg=*/false);
-  case RISCV::PseudoLW:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LW, /*HasTmpReg=*/false);
-  case RISCV::PseudoLD:
-    return expandLoadStore(MBB, MBBI, NextMBBI, RISCV::LD, /*HasTmpReg=*/false);
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
   case RISCV::PseudoUBFX:
@@ -217,57 +189,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
 
   return false;
 }
-
-#if SIFIVE_CUSTOMIZATION
-// TODO: This shares a lot of similarities with expandAuipcInstPair we may be
-// able to merge them if we make interface changes to expandAuipcInstPair.
-bool RISCVExpandPseudo::expandLoadStore(MachineBasicBlock &MBB,
-                                        MachineBasicBlock::iterator MBBI,
-                                        MachineBasicBlock::iterator &NextMBBI,
-                                        unsigned SecondOpcode, bool HasTmpReg) {
-  MachineFunction *MF = MBB.getParent();
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MI.getDebugLoc();
-
-  Register TmpReg = MI.getOperand(0).getReg();
-  const MachineOperand &Symbol = MI.getOperand(HasTmpReg ? 2 : 1);
-
-  MachineBasicBlock *NewMBB = MF->CreateMachineBasicBlock(MBB.getBasicBlock());
-
-  // Tell AsmPrinter that we unconditionally want the symbol of this label to be
-  // emitted.
-  NewMBB->setLabelMustBeEmitted();
-
-  MF->insert(++MBB.getIterator(), NewMBB);
-
-  if (Symbol.isSymbol())
-    BuildMI(NewMBB, DL, TII->get(RISCV::AUIPC), TmpReg)
-        .addExternalSymbol(Symbol.getSymbolName(), RISCVII::MO_PCREL_HI);
-  else
-    BuildMI(NewMBB, DL, TII->get(RISCV::AUIPC), TmpReg)
-        .addDisp(Symbol, 0, RISCVII::MO_PCREL_HI);
-
-  BuildMI(NewMBB, DL, TII->get(SecondOpcode))
-      .add(MI.getOperand(HasTmpReg ? 1 : 0))
-      .addReg(TmpReg)
-      .addMBB(NewMBB, RISCVII::MO_PCREL_LO);
-
-  // Move all the rest of the instructions to NewMBB.
-  NewMBB->splice(NewMBB->end(), &MBB, std::next(MBBI), MBB.end());
-  // Update machine-CFG edges.
-  NewMBB->transferSuccessorsAndUpdatePHIs(&MBB);
-  // Make the original basic block fall-through to the new.
-  MBB.addSuccessor(NewMBB);
-
-  // Make sure live-ins are correctly attached to this new basic block.
-  LivePhysRegs LiveRegs;
-  computeAndAddLiveIns(LiveRegs, *NewMBB);
-
-  NextMBBI = MBB.end();
-  MI.eraseFromParent();
-  return true;
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
                                    MachineBasicBlock::iterator MBBI,
