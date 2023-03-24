@@ -201,6 +201,10 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_vector");
     // Currently we support the v0.11 RISC-V V intrinsics.
     Builder.defineMacro("__riscv_v_intrinsic", Twine(getVersionValue(0, 11)));
+#if SIFIVE_CUSTOMIZATION
+    // Enable the inclusion of the compatible header by default.
+    Builder.defineMacro("__rvv_0p10_compatible_intrinsics");
+#endif
   }
 
 #if SIFIVE_CUSTOMIZATION

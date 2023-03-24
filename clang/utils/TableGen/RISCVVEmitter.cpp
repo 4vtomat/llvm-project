@@ -371,6 +371,12 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   OS << "#error \"Vector intrinsics require the vector extension.\"\n";
   OS << "#endif\n\n";
 
+#if SIFIVE_CUSTOMIZATION
+  OS << "#ifdef __rvv_0p10_compatible_intrinsics\n";
+  OS << "#include <rvv_v0p10_compatible/riscv_vector.h>\n";
+  OS << "#endif\n";
+#endif
+
   OS << "#ifdef __cplusplus\n";
   OS << "extern \"C\" {\n";
   OS << "#endif\n\n";
@@ -417,14 +423,12 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  OS << "#if defined(__riscv_xsfvfhbfmin) || (__riscv_xsfvfwmaccqqq)\n";
   for (int Log2LMUL : Log2LMULs) {
     auto T = TypeCache.computeType(BasicType::BFloat, Log2LMUL,
                                    PrototypeDescriptor::Vector);
     if (T)
       printType(*T);
   }
-  OS << "#endif\n";
 #endif // SIFIVE_CUSTOMIZATION
 
   for (int Log2LMUL : Log2LMULs) {

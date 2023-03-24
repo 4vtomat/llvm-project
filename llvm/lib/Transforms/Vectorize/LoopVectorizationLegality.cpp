@@ -143,15 +143,14 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
 #if SIFIVE_CUSTOMIZATION
   // force-vector-width should be ignored if VLA is enabled
   if (TTI && TTI->useVLAVectorizer() && Width.Value) {
-      auto VectorizationFactor = Width.Value;
-      Width.Value = VectorizerParams::DefaultVectorizationFactor;
-      ORE.emit([&]() {
-        return OptimizationRemarkMissed(DEBUG_TYPE, "IgnoreUserVF",
-                                        L->getStartLoc(),
-                                        L->getHeader())
-               << "Ignoring UserVF=" << ore::NV("UserVF", VectorizationFactor)
-               << " because VLA was enabled.";
-       });
+    Width.Value = VectorizerParams::DefaultVectorizationFactor;
+    ORE.emit([&]() {
+      return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
+                                               L->getStartLoc(), L->getHeader())
+             << "ignoring user-specified vector width because RVV VLA "
+                "vectorization was enabled. Consider to use '#pragma clang rvv "
+                "lmul_sew(LMUL, SEW)' instead";
+    });
   }
 #endif // SIFIVE_CUSTOMIZATION
 

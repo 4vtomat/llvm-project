@@ -2637,3 +2637,35 @@ entry:
 
   ret void
 }
+
+declare { <vscale x 1 x ptr>, iXLen } @llvm.riscv.vleff.nxv1p0(
+  <vscale x 1 x ptr>,
+  <vscale x 1 x ptr>*,
+  iXLen);
+
+define <vscale x 1 x ptr> @intrinsic_vleff_v_nxv1p0_nxv1p0(<vscale x 1 x ptr>* %0, iXLen %1, iXLen* %2) nounwind {
+; RV32-LABEL: intrinsic_vleff_v_nxv1p0_nxv1p0:
+; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV32-NEXT:    vle32ff.v v8, (a0)
+; RV32-NEXT:    csrr a0, vl
+; RV32-NEXT:    sw a0, 0(a2)
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: intrinsic_vleff_v_nxv1p0_nxv1p0:
+; RV64:       # %bb.0: # %entry
+; RV64-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
+; RV64-NEXT:    vle64ff.v v8, (a0)
+; RV64-NEXT:    csrr a0, vl
+; RV64-NEXT:    sd a0, 0(a2)
+; RV64-NEXT:    ret
+entry:
+  %a = call { <vscale x 1 x ptr>, iXLen } @llvm.riscv.vleff.nxv1p0(
+    <vscale x 1 x ptr> undef,
+    <vscale x 1 x ptr>* %0,
+    iXLen %1)
+  %b = extractvalue { <vscale x 1 x ptr>, iXLen } %a, 0
+  %c = extractvalue { <vscale x 1 x ptr>, iXLen } %a, 1
+  store iXLen %c, iXLen* %2
+  ret <vscale x 1 x ptr> %b
+}

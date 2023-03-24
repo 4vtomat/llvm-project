@@ -290,8 +290,8 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
   case R_RISCV_SUB32:
   case R_RISCV_SUB64:
 #if SIFIVE_CUSTOMIZATION
-  case R_RISCV_SET_ULEB128:
-  case R_RISCV_SUB_ULEB128:
+  case R_RISCV_SIFIVE_SET_ULEB128:
+  case R_RISCV_SIFIVE_SUB_ULEB128:
 #endif // SIFIVE_CUSTOMIZATION
     return R_RISCV_ADD;
   case R_RISCV_JAL:
@@ -349,19 +349,19 @@ void RISCV::relocateAlloc(InputSectionBase &sec, uint8_t *buf) const {
       continue;
 
     switch (rel.type) {
-    case R_RISCV_SET_ULEB128: {
+    case R_RISCV_SIFIVE_SET_ULEB128: {
       if (lastULEB128SetLoc != nullptr) {
         ErrorPlace errPlace = getErrorPlace(loc);
-        error(errPlace.loc + " More than one R_RISCV_SET_ULEB128 in same location");
+        error(errPlace.loc + " More than one R_RISCV_SIFIVE_SET_ULEB128 in same location");
       }
       lastULEB128SetLoc = loc;
       lastULEB128SetVal = val;
       break;
     }
-    case R_RISCV_SUB_ULEB128: {
+    case R_RISCV_SIFIVE_SUB_ULEB128: {
       if (loc != lastULEB128SetLoc) {
         ErrorPlace errPlace = getErrorPlace(loc);
-        error(errPlace.loc + " R_RISCV_SUB_ULEB128 must come after R_RISCV_SET_ULEB128");
+        error(errPlace.loc + " R_RISCV_SIFIVE_SUB_ULEB128 must come after R_RISCV_SIFIVE_SET_ULEB128");
         break;
       }
       unsigned oldLength;
@@ -378,7 +378,7 @@ void RISCV::relocateAlloc(InputSectionBase &sec, uint8_t *buf) const {
   }
   if (lastULEB128SetLoc != nullptr) {
     ErrorPlace errPlace = getErrorPlace(lastULEB128SetLoc);
-    error(errPlace.loc + " Orphan R_RISCV_SET_ULEB128");
+    error(errPlace.loc + " Orphan R_RISCV_SIFIVE_SET_ULEB128");
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
