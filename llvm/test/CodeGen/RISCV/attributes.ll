@@ -82,21 +82,6 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zicsr %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICSR %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zifencei %s -o - | FileCheck --check-prefixes=CHECK,RV32ZIFENCEI %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zfa %s -o - | FileCheck --check-prefixes=CHECK,RV32ZFA %s
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
-; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
-; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKG %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNHA %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNHB %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKNS %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKSED %s
-; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefixes=CHECK,RV32ZVKSH %s
-; end SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
 ; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefix=RV32ZVKB %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefix=RV32ZVKG %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve64x -mattr=+experimental-zvkn %s -o - | FileCheck --check-prefix=RV32ZVKN %s
@@ -106,7 +91,11 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvks %s -o - | FileCheck --check-prefix=RV32ZVKS %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV32ZVKSED %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV32ZVKSH %s
->>>>>>> upstream/main
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
+; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
+; end SIFIVE_CUSTOMIZATION
 
 ; RUN: llc -mtriple=riscv64 %s -o - | FileCheck %s
 ; RUN: llc -mtriple=riscv64 -mattr=+m %s -o - | FileCheck --check-prefixes=CHECK,RV64M %s
@@ -201,21 +190,6 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zicsr %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICSR %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zifencei %s -o - | FileCheck --check-prefixes=CHECK,RV64ZIFENCEI %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zfa %s -o - | FileCheck --check-prefixes=CHECK,RV64ZFA %s
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKG %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvknha %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNHA %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvknhb %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNHB %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkns %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKNS %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKSED %s
-; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefixes=CHECK,RV64ZVKSH %s
-; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
-; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
-; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
-; end SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
 ; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvkb %s -o - | FileCheck --check-prefix=RV64ZVKB %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvkg %s -o - | FileCheck --check-prefix=RV64ZVKG %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve64x -mattr=+experimental-zvkn %s -o - | FileCheck --check-prefix=RV64ZVKN %s
@@ -225,156 +199,14 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvks %s -o - | FileCheck --check-prefix=RV64ZVKS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV64ZVKSED %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV64ZVKSH %s
->>>>>>> upstream/main
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
+; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
+; end SIFIVE_CUSTOMIZATION
 
 ; CHECK: .attribute 4, 16
 
-<<<<<<< HEAD
-; RV32M: .attribute 5, "rv32i2p1_m2p0"
-; RV32ZMMUL: .attribute 5, "rv32i2p1_zmmul1p0"
-; RV32MZMMUL: .attribute 5, "rv32i2p1_m2p0_zmmul1p0"
-; RV32A: .attribute 5, "rv32i2p1_a2p1"
-; RV32F: .attribute 5, "rv32i2p1_f2p2_zicsr2p0"
-; RV32D: .attribute 5, "rv32i2p1_f2p2_d2p2_zicsr2p0"
-; RV32C: .attribute 5, "rv32i2p1_c2p0"
-; RV32ZIHINTPAUSE: .attribute 5, "rv32i2p1_zihintpause2p0"
-; RV32ZIHINTNTL: .attribute 5, "rv32i2p1_zihintntl0p2"
-; RV32ZFHMIN: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfhmin1p0"
-; RV32ZFH: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfh1p0"
-; RV32ZBA: .attribute 5, "rv32i2p1_zba1p0"
-; RV32ZBB: .attribute 5, "rv32i2p1_zbb1p0"
-; RV32ZBC: .attribute 5, "rv32i2p1_zbc1p0"
-; RV32ZBS: .attribute 5, "rv32i2p1_zbs1p0"
-; RV32V: .attribute 5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV32H: .attribute 5, "rv32i2p1_h1p0"
-; RV32COMBINED: .attribute 5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zfh1p0_zbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV32ZBKB: .attribute 5, "rv32i2p1_zbkb1p0"
-; RV32ZBKC: .attribute 5, "rv32i2p1_zbkc1p0"
-; RV32ZBKX: .attribute 5, "rv32i2p1_zbkx1p0"
-; RV32ZKND: .attribute 5, "rv32i2p1_zknd1p0"
-; RV32ZKNE: .attribute 5, "rv32i2p1_zkne1p0"
-; RV32ZKNH: .attribute 5, "rv32i2p1_zknh1p0"
-; RV32ZKSED: .attribute 5, "rv32i2p1_zksed1p0"
-; RV32ZKSH: .attribute 5, "rv32i2p1_zksh1p0"
-; RV32ZKR: .attribute 5, "rv32i2p1_zkr1p0"
-; RV32ZKN: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV32ZKS: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV32ZKT: .attribute 5, "rv32i2p1_zkt1p0"
-; RV32ZK: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV32COMBINEINTOZK: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV32COMBINEINTOZKN: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV32COMBINEINTOZKS: .attribute 5, "rv32i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV32ZICBOM: .attribute 5, "rv32i2p1_zicbom1p0"
-; RV32ZICBOZ: .attribute 5, "rv32i2p1_zicboz1p0"
-; RV32ZICBOP: .attribute 5, "rv32i2p1_zicbop1p0"
-; RV32SVNAPOT: .attribute 5, "rv32i2p1_svnapot1p0"
-; RV32SVPBMT: .attribute 5, "rv32i2p1_svpbmt1p0"
-; RV32SVINVAL: .attribute 5, "rv32i2p1_svinval1p0"
-; RV32XTHEADCMO: .attribute 5, "rv32i2p1_xtheadcmo1p0"
-; RV32XTHEADCONDMOV: .attribute	5, "rv32i2p1_xtheadcondmov1p0"
-; RV32XTHEADFMEMIDX: .attribute	5, "rv32i2p1_f2p2_zicsr2p0_xtheadfmemidx1p0"
-; RV32XTHEADMAC: .attribute 5, "rv32i2p1_xtheadmac1p0"
-; RV32XTHEADMEMIDX: .attribute	5, "rv32i2p1_xtheadmemidx1p0"
-; RV32XTHEADMEMPAIR: .attribute	5, "rv32i2p1_xtheadmempair1p0"
-; RV32XTHEADSYNC: .attribute	5, "rv32i2p1_xtheadsync1p0"
-; RV32ZCA: .attribute 5, "rv32i2p1_zca1p0"
-; RV32ZCB: .attribute 5, "rv32i2p1_zca1p0_zcb1p0"
-; RV32ZCD: .attribute 5, "rv32i2p1_zcd1p0"
-; RV32ZCF: .attribute 5, "rv32i2p1_zcf1p0"
-; RV32ZICSR: .attribute	5, "rv32i2p1_zicsr2p0"
-; RV32ZIFENCEI: .attribute 5, "rv32i2p1_zifencei2p0"
-; RV32ZFA: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfa0p1"
-; RV32ZICCLSM: .attribute 5, "rv32i2p1_zicclsm1p0"
-; RV32ZICCIF: .attribute 5, "rv32i2p1_ziccif1p0"
-; RV32ZICCAMOA: .attribute 5, "rv32i2p1_ziccamoa1p0"
-; RV32ZICCRSE: .attribute 5, "rv32i2p1_ziccrse1p0"
-; RV32ZA64RS: .attribute 5, "rv32i2p1_za64rs1p0"
-; RV32ZIC64B: .attribute 5, "rv32i2p1_zic64b1p0"
-; RV32ZVKB: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p1_zvl32b1p0_zvl64b1p0"
-; RV32ZVKG: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg0p1_zvl32b1p0"
-; RV32ZVKNHA: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha0p1_zvl32b1p0"
-; RV32ZVKNHB: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha0p1_zvknhb0p1_zvl32b1p0_zvl64b1p0"
-; RV32ZVKNS: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
-; RV32ZVKSED: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed0p1_zvl32b1p0"
-; RV32ZVKSH: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
-; RV32ZICNTR: .attribute 5, "rv32i2p1_zicntr1p0_zicsr2p0"
-; RV32ZIHPM: .attribute 5, "rv32i2p1_zicsr2p0_zihpm1p0"
-; RV32SS: .attribute 5, "rv32i2p1_ss1p12"
-; RV32SVBARE: .attribute 5, "rv32i2p1_svbare1p0"
-; RV32SVPTEAD: .attribute 5, "rv32i2p1_svptead1p0"
-; RV32SSCCPTR: .attribute 5, "rv32i2p1_ssccptr1p0"
-; RV32SSTVECD: .attribute 5, "rv32i2p1_sstvecd1p0"
-; RV32SSTVALA: .attribute 5, "rv32i2p1_sstvala1p0"
-; RV32SSCOUNTERENW: .attribute 5, "rv32i2p1_sscounterenw1p0"
-; RV32SSU64XL: .attribute 5, "rv32i2p1_ssu64xl1p0"
-; RV32SSTC: .attribute 5, "rv32i2p1_sstc1p0"
-; RV32SSSTATEEN: .attribute 5, "rv32i2p1_ssstateen1p0"
-; RV32SMSTATEEN: .attribute 5, "rv32i2p1_smstateen1p0"
-; RV32SHCOUNTERENW: .attribute 5, "rv32i2p1_shcounterenw1p0"
-; RV32SHVSTVALA: .attribute 5, "rv32i2p1_shvstvala1p0"
-; RV32SHTVALA: .attribute 5, "rv32i2p1_shtvala1p0"
-; RV32SHVSTVECD: .attribute 5, "rv32i2p1_shvstvecd1p0"
-; RV32SHVSATPA: .attribute 5, "rv32i2p1_shvsatpa1p0"
-; RV32SHGATPA: .attribute 5, "rv32i2p1_shgatpa1p0"
-; RV32SMWG: .attribute 5, "rv32i2p1_smwg0p3"
-; RV32SMWGD: .attribute 5, "rv32i2p1_smwg0p3_smwgd0p3"
-; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
-||||||| a8cd84d32843
-; RV32M: .attribute 5, "rv32i2p0_m2p0"
-; RV32ZMMUL: .attribute 5, "rv32i2p0_zmmul1p0"
-; RV32MZMMUL: .attribute 5, "rv32i2p0_m2p0_zmmul1p0"
-; RV32A: .attribute 5, "rv32i2p0_a2p0"
-; RV32F: .attribute 5, "rv32i2p0_f2p0"
-; RV32D: .attribute 5, "rv32i2p0_f2p0_d2p0"
-; RV32C: .attribute 5, "rv32i2p0_c2p0"
-; RV32ZIHINTPAUSE: .attribute 5, "rv32i2p0_zihintpause2p0"
-; RV32ZIHINTNTL: .attribute 5, "rv32i2p0_zihintntl0p2"
-; RV32ZFHMIN: .attribute 5, "rv32i2p0_f2p0_zfhmin1p0"
-; RV32ZFH: .attribute 5, "rv32i2p0_f2p0_zfh1p0"
-; RV32ZBA: .attribute 5, "rv32i2p0_zba1p0"
-; RV32ZBB: .attribute 5, "rv32i2p0_zbb1p0"
-; RV32ZBC: .attribute 5, "rv32i2p0_zbc1p0"
-; RV32ZBS: .attribute 5, "rv32i2p0_zbs1p0"
-; RV32V: .attribute 5, "rv32i2p0_f2p0_d2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV32H: .attribute 5, "rv32i2p0_h1p0"
-; RV32COMBINED: .attribute 5, "rv32i2p0_f2p0_d2p0_v1p0_zfh1p0_zbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV32ZBKB: .attribute 5, "rv32i2p0_zbkb1p0"
-; RV32ZBKC: .attribute 5, "rv32i2p0_zbkc1p0"
-; RV32ZBKX: .attribute 5, "rv32i2p0_zbkx1p0"
-; RV32ZKND: .attribute 5, "rv32i2p0_zknd1p0"
-; RV32ZKNE: .attribute 5, "rv32i2p0_zkne1p0"
-; RV32ZKNH: .attribute 5, "rv32i2p0_zknh1p0"
-; RV32ZKSED: .attribute 5, "rv32i2p0_zksed1p0"
-; RV32ZKSH: .attribute 5, "rv32i2p0_zksh1p0"
-; RV32ZKR: .attribute 5, "rv32i2p0_zkr1p0"
-; RV32ZKN: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV32ZKS: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV32ZKT: .attribute 5, "rv32i2p0_zkt1p0"
-; RV32ZK: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV32COMBINEINTOZK: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV32COMBINEINTOZKN: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV32COMBINEINTOZKS: .attribute 5, "rv32i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV32ZICBOM: .attribute 5, "rv32i2p0_zicbom1p0"
-; RV32ZICBOZ: .attribute 5, "rv32i2p0_zicboz1p0"
-; RV32ZICBOP: .attribute 5, "rv32i2p0_zicbop1p0"
-; RV32SVNAPOT: .attribute 5, "rv32i2p0_svnapot1p0"
-; RV32SVPBMT: .attribute 5, "rv32i2p0_svpbmt1p0"
-; RV32SVINVAL: .attribute 5, "rv32i2p0_svinval1p0"
-; RV32XTHEADCMO: .attribute 5, "rv32i2p0_xtheadcmo1p0"
-; RV32XTHEADCONDMOV: .attribute 5, "rv32i2p0_xtheadcondmov1p0"
-; RV32XTHEADFMEMIDX: .attribute 5, "rv32i2p0_f2p0_xtheadfmemidx1p0"
-; RV32XTHEADMAC: .attribute 5, "rv32i2p0_xtheadmac1p0"
-; RV32XTHEADMEMIDX: .attribute 5, "rv32i2p0_xtheadmemidx1p0"
-; RV32XTHEADMEMPAIR: .attribute 5, "rv32i2p0_xtheadmempair1p0"
-; RV32XTHEADSYNC: .attribute 5, "rv32i2p0_xtheadsync1p0"
-; RV32ZCA: .attribute 5, "rv32i2p0_zca1p0"
-; RV32ZCB: .attribute 5, "rv32i2p0_zca1p0_zcb1p0"
-; RV32ZCD: .attribute 5, "rv32i2p0_zcd1p0"
-; RV32ZCF: .attribute 5, "rv32i2p0_zcf1p0"
-; RV32ZICSR: .attribute 5, "rv32i2p0_zicsr2p0"
-; RV32ZIFENCEI: .attribute 5, "rv32i2p0_zifencei2p0"
-; RV32ZFA: .attribute 5, "rv32i2p0_f2p0_zfa0p1"
-=======
 ; RV32M: .attribute 5, "rv32i2p0_m2p0"
 ; RV32ZMMUL: .attribute 5, "rv32i2p0_zmmul1p0"
 ; RV32MZMMUL: .attribute 5, "rv32i2p0_m2p0_zmmul1p0"
@@ -438,167 +270,12 @@
 ; RV32ZVKS: .attribute 5, "rv32i2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
 ; RV32ZVKSED: .attribute 5, "rv32i2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
 ; RV32ZVKSH: .attribute 5, "rv32i2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
->>>>>>> upstream/main
+; SIFIVE_CUSTOMIZATION
+; RV32SMWG: .attribute 5, "rv32i2p1_smwg0p3"
+; RV32SMWGD: .attribute 5, "rv32i2p1_smwg0p3_smwgd0p3"
+; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
+; end SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-; RV64M: .attribute 5, "rv64i2p1_m2p0"
-; RV64ZMMUL: .attribute 5, "rv64i2p1_zmmul1p0"
-; RV64MZMMUL: .attribute 5, "rv64i2p1_m2p0_zmmul1p0"
-; RV64A: .attribute 5, "rv64i2p1_a2p1"
-; RV64F: .attribute 5, "rv64i2p1_f2p2_zicsr2p0"
-; RV64D: .attribute 5, "rv64i2p1_f2p2_d2p2_zicsr2p0"
-; RV64C: .attribute 5, "rv64i2p1_c2p0"
-; RV64ZIHINTPAUSE: .attribute 5, "rv64i2p1_zihintpause2p0"
-; RV64ZIHINTNTL: .attribute 5, "rv64i2p1_zihintntl0p2"
-; RV64ZFHMIN: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfhmin1p0"
-; RV64ZFH: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfh1p0"
-; RV64ZBA: .attribute 5, "rv64i2p1_zba1p0"
-; RV64ZBB: .attribute 5, "rv64i2p1_zbb1p0"
-; RV64ZBC: .attribute 5, "rv64i2p1_zbc1p0"
-; RV64ZBS: .attribute 5, "rv64i2p1_zbs1p0"
-; RV64V: .attribute 5, "rv64i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64H: .attribute 5, "rv64i2p1_h1p0"
-; RV64COMBINED: .attribute 5, "rv64i2p1_f2p2_d2p2_v1p0_zicsr2p0_zfh1p0_zbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64ZBKB: .attribute 5, "rv64i2p1_zbkb1p0"
-; RV64ZBKC: .attribute 5, "rv64i2p1_zbkc1p0"
-; RV64ZBKX: .attribute 5, "rv64i2p1_zbkx1p0"
-; RV64ZKND: .attribute 5, "rv64i2p1_zknd1p0"
-; RV64ZKNE: .attribute 5, "rv64i2p1_zkne1p0"
-; RV64ZKNH: .attribute 5, "rv64i2p1_zknh1p0"
-; RV64ZKSED: .attribute 5, "rv64i2p1_zksed1p0"
-; RV64ZKSH: .attribute 5, "rv64i2p1_zksh1p0"
-; RV64ZKR: .attribute 5, "rv64i2p1_zkr1p0"
-; RV64ZKN: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64ZKS: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64ZKT: .attribute 5, "rv64i2p1_zkt1p0"
-; RV64ZK: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZK: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZKN: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64COMBINEINTOZKS: .attribute 5, "rv64i2p1_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64XSFQMACC: .attribute 5, "rv64i2p1_f2p0_d2p0_v0p10_zve32f0p10_zve32x0p10_zve64d0p10_zve64f0p10_zve64x0p10_xsfvqmaccdod0p1_xsfvqmaccqoq0p1"
-; RV64ZICBOM: .attribute 5, "rv64i2p1_zicbom1p0"
-; RV64ZICBOZ: .attribute 5, "rv64i2p1_zicboz1p0"
-; RV64ZICCLSM: .attribute 5, "rv64i2p1_zicclsm1p0"
-; RV64ZICCIF: .attribute 5, "rv64i2p1_ziccif1p0"
-; RV64ZICCAMOA: .attribute 5, "rv64i2p1_ziccamoa1p0"
-; RV64ZICCRSE: .attribute 5, "rv64i2p1_ziccrse1p0"
-; RV64ZA64RS: .attribute 5, "rv64i2p1_za64rs1p0"
-; RV64ZIC64B: .attribute 5, "rv64i2p1_zic64b1p0"
-; RV64ZICNTR: .attribute 5, "rv64i2p1_zicntr1p0_zicsr2p0"
-; RV64ZIHPM: .attribute 5, "rv64i2p1_zicsr2p0_zihpm1p0"
-; RV64SS: .attribute 5, "rv64i2p1_ss1p12"
-; RV64SVBARE: .attribute 5, "rv64i2p1_svbare1p0"
-; RV64SVPTEAD: .attribute 5, "rv64i2p1_svptead1p0"
-; RV64SSCCPTR: .attribute 5, "rv64i2p1_ssccptr1p0"
-; RV64SSTVECD: .attribute 5, "rv64i2p1_sstvecd1p0"
-; RV64SSTVALA: .attribute 5, "rv64i2p1_sstvala1p0"
-; RV64SSCOUNTERENW: .attribute 5, "rv64i2p1_sscounterenw1p0"
-; RV64SSU64XL: .attribute 5, "rv64i2p1_ssu64xl1p0"
-; RV64SSTC: .attribute 5, "rv64i2p1_sstc1p0"
-; RV64SSSTATEEN: .attribute 5, "rv64i2p1_ssstateen1p0"
-; RV64SMSTATEEN: .attribute 5, "rv64i2p1_smstateen1p0"
-; RV64SHCOUNTERENW: .attribute 5, "rv64i2p1_shcounterenw1p0"
-; RV64SHVSTVALA: .attribute 5, "rv64i2p1_shvstvala1p0"
-; RV64SHTVALA: .attribute 5, "rv64i2p1_shtvala1p0"
-; RV64SHVSTVECD: .attribute 5, "rv64i2p1_shvstvecd1p0"
-; RV64SHVSATPA: .attribute 5, "rv64i2p1_shvsatpa1p0"
-; RV64SHGATPA: .attribute 5, "rv64i2p1_shgatpa1p0"
-; RV64ZAWRS: .attribute 5, "rv64i2p1_zawrs1p0"
-; RV64ZICBOP: .attribute 5, "rv64i2p1_zicbop1p0"
-; RV64SVNAPOT: .attribute 5, "rv64i2p1_svnapot1p0"
-; RV64SVPBMT: .attribute 5, "rv64i2p1_svpbmt1p0"
-; RV64SVINVAL: .attribute 5, "rv64i2p1_svinval1p0"
-; RV64XVENTANACONDOPS: .attribute 5, "rv64i2p1_xventanacondops1p0"
-; RV64XTHEADBA: .attribute 5, "rv64i2p1_xtheadba1p0"
-; RV64XTHEADBB: .attribute 5, "rv64i2p1_xtheadbb1p0"
-; RV64XTHEADBS: .attribute 5, "rv64i2p1_xtheadbs1p0"
-; RV64XTHEADCMO: .attribute 5, "rv64i2p1_xtheadcmo1p0"
-; RV64XTHEADCONDMOV: .attribute	5, "rv64i2p1_xtheadcondmov1p0"
-; RV64XTHEADFMEMIDX: .attribute	5, "rv64i2p1_f2p2_zicsr2p0_xtheadfmemidx1p0"
-; RV64XTHEADMAC: .attribute 5, "rv64i2p1_xtheadmac1p0"
-; RV64XTHEADMEMIDX: .attribute 5, "rv64i2p1_xtheadmemidx1p0"
-; RV64XTHEADMEMPAIR: .attribute	5, "rv64i2p1_xtheadmempair1p0"
-; RV64XTHEADSYNC: .attribute 5, "rv64i2p1_xtheadsync1p0"
-; RV64XTHEADVDOT: .attribute 5, "rv64i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0_xtheadvdot1p0"
-; RV64ZTSO: .attribute 5, "rv64i2p1_ztso0p1"
-; RV64ZCA: .attribute 5, "rv64i2p1_zca1p0"
-; RV64ZCB: .attribute 5, "rv64i2p1_zca1p0_zcb1p0"
-; RV64ZCD: .attribute 5, "rv64i2p1_zcd1p0"
-; RV64ZICSR: .attribute	5, "rv64i2p1_zicsr2p0"
-; RV64ZIFENCEI: .attribute 5, "rv64i2p1_zifencei2p0"
-; RV64ZFA: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfa0p1"
-; RV64ZVKB: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p1_zvl32b1p0_zvl64b1p0"
-; RV64ZVKG: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvkg0p1_zvl32b1p0"
-; RV64ZVKNHA: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvknha0p1_zvl32b1p0"
-; RV64ZVKNHB: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha0p1_zvknhb0p1_zvl32b1p0_zvl64b1p0"
-; RV64ZVKNS: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
-; RV64ZVKSED: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvksed0p1_zvl32b1p0"
-; RV64ZVKSH: .attribute 5, "rv64i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
-; RV64SMWG: .attribute 5, "rv64i2p1_smwg0p3"
-; RV64SMWGD: .attribute 5, "rv64i2p1_smwg0p3_smwgd0p3"
-; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
-||||||| a8cd84d32843
-; RV64M: .attribute 5, "rv64i2p0_m2p0"
-; RV64ZMMUL: .attribute 5, "rv64i2p0_zmmul1p0"
-; RV64MZMMUL: .attribute 5, "rv64i2p0_m2p0_zmmul1p0"
-; RV64A: .attribute 5, "rv64i2p0_a2p0"
-; RV64F: .attribute 5, "rv64i2p0_f2p0"
-; RV64D: .attribute 5, "rv64i2p0_f2p0_d2p0"
-; RV64C: .attribute 5, "rv64i2p0_c2p0"
-; RV64ZIHINTPAUSE: .attribute 5, "rv64i2p0_zihintpause2p0"
-; RV64ZIHINTNTL: .attribute 5, "rv64i2p0_zihintntl0p2"
-; RV64ZFHMIN: .attribute 5, "rv64i2p0_f2p0_zfhmin1p0"
-; RV64ZFH: .attribute 5, "rv64i2p0_f2p0_zfh1p0"
-; RV64ZBA: .attribute 5, "rv64i2p0_zba1p0"
-; RV64ZBB: .attribute 5, "rv64i2p0_zbb1p0"
-; RV64ZBC: .attribute 5, "rv64i2p0_zbc1p0"
-; RV64ZBS: .attribute 5, "rv64i2p0_zbs1p0"
-; RV64V: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64H: .attribute 5, "rv64i2p0_h1p0"
-; RV64COMBINED: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zfh1p0_zbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0"
-; RV64ZBKB: .attribute 5, "rv64i2p0_zbkb1p0"
-; RV64ZBKC: .attribute 5, "rv64i2p0_zbkc1p0"
-; RV64ZBKX: .attribute 5, "rv64i2p0_zbkx1p0"
-; RV64ZKND: .attribute 5, "rv64i2p0_zknd1p0"
-; RV64ZKNE: .attribute 5, "rv64i2p0_zkne1p0"
-; RV64ZKNH: .attribute 5, "rv64i2p0_zknh1p0"
-; RV64ZKSED: .attribute 5, "rv64i2p0_zksed1p0"
-; RV64ZKSH: .attribute 5, "rv64i2p0_zksh1p0"
-; RV64ZKR: .attribute 5, "rv64i2p0_zkr1p0"
-; RV64ZKN: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64ZKS: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64ZKT: .attribute 5, "rv64i2p0_zkt1p0"
-; RV64ZK: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZK: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zk1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0_zkr1p0_zkt1p0"
-; RV64COMBINEINTOZKN: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zkn1p0_zknd1p0_zkne1p0_zknh1p0"
-; RV64COMBINEINTOZKS: .attribute 5, "rv64i2p0_zbkb1p0_zbkc1p0_zbkx1p0_zks1p0_zksed1p0_zksh1p0"
-; RV64ZICBOM: .attribute 5, "rv64i2p0_zicbom1p0"
-; RV64ZICBOZ: .attribute 5, "rv64i2p0_zicboz1p0"
-; RV64ZAWRS: .attribute 5, "rv64i2p0_zawrs1p0"
-; RV64ZICBOP: .attribute 5, "rv64i2p0_zicbop1p0"
-; RV64SVNAPOT: .attribute 5, "rv64i2p0_svnapot1p0"
-; RV64SVPBMT: .attribute 5, "rv64i2p0_svpbmt1p0"
-; RV64SVINVAL: .attribute 5, "rv64i2p0_svinval1p0"
-; RV64XVENTANACONDOPS: .attribute 5, "rv64i2p0_xventanacondops1p0"
-; RV64XTHEADBA: .attribute 5, "rv64i2p0_xtheadba1p0"
-; RV64XTHEADBB: .attribute 5, "rv64i2p0_xtheadbb1p0"
-; RV64XTHEADBS: .attribute 5, "rv64i2p0_xtheadbs1p0"
-; RV64XTHEADCMO: .attribute 5, "rv64i2p0_xtheadcmo1p0"
-; RV64XTHEADCONDMOV: .attribute 5, "rv64i2p0_xtheadcondmov1p0"
-; RV64XTHEADFMEMIDX: .attribute 5, "rv64i2p0_f2p0_xtheadfmemidx1p0"
-; RV64XTHEADMAC: .attribute 5, "rv64i2p0_xtheadmac1p0"
-; RV64XTHEADMEMIDX: .attribute 5, "rv64i2p0_xtheadmemidx1p0"
-; RV64XTHEADMEMPAIR: .attribute 5, "rv64i2p0_xtheadmempair1p0"
-; RV64XTHEADSYNC: .attribute 5, "rv64i2p0_xtheadsync1p0"
-; RV64XTHEADVDOT: .attribute 5, "rv64i2p0_f2p0_d2p0_v1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl32b1p0_zvl64b1p0_xtheadvdot1p0"
-; RV64ZTSO: .attribute 5, "rv64i2p0_ztso0p1"
-; RV64ZCA: .attribute 5, "rv64i2p0_zca1p0"
-; RV64ZCB: .attribute 5, "rv64i2p0_zca1p0_zcb1p0"
-; RV64ZCD: .attribute 5, "rv64i2p0_zcd1p0"
-; RV64ZICSR: .attribute 5, "rv64i2p0_zicsr2p0"
-; RV64ZIFENCEI: .attribute 5, "rv64i2p0_zifencei2p0"
-; RV64ZFA: .attribute 5, "rv64i2p0_f2p0_zfa0p1"
-=======
 ; RV64M: .attribute 5, "rv64i2p0_m2p0"
 ; RV64ZMMUL: .attribute 5, "rv64i2p0_zmmul1p0"
 ; RV64MZMMUL: .attribute 5, "rv64i2p0_m2p0_zmmul1p0"
@@ -668,7 +345,11 @@
 ; RV64ZVKS: .attribute 5, "rv64i2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
 ; RV64ZVKSED: .attribute 5, "rv64i2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
 ; RV64ZVKSH: .attribute 5, "rv64i2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
->>>>>>> upstream/main
+; SIFIVE_CUSTOMIZATION
+; RV64SMWG: .attribute 5, "rv64i2p1_smwg0p3"
+; RV64SMWGD: .attribute 5, "rv64i2p1_smwg0p3_smwgd0p3"
+; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
+; end SIFIVE_CUSTOMIZATION
 
 define i32 @addi(i32 %a) {
   %1 = add i32 %a, 1
