@@ -558,6 +558,17 @@ CheckForIncompatibleAttributes(Sema &S,
                  Policy)
           << RH->getDiagnosticName(Policy);
     }
+    if (HintAttrs[CategoryType::Vectorize].StateAttr &&
+        HintAttrs[CategoryType::Vectorize].StateAttr->getState() ==
+            LoopHintAttr::Disable) {
+      // Cannot specify lmul specification if also specifying to disable the
+      // vectorizer
+      S.Diag(OptionLoc, diag::err_pragma_loop_compatibility)
+          << /*Duplicate=*/false
+          << HintAttrs[CategoryType::Vectorize].StateAttr->getDiagnosticName(
+                 Policy)
+          << RH->getDiagnosticName(Policy);
+    }
 
     // Record attribute to check for duplication
     LmulSewHintAttr = RH;

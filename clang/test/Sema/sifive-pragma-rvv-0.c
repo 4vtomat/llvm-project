@@ -14,6 +14,10 @@ void foo (int *a, int *b, int *c, int n) {
 #pragma clang loop interleave_count(4)
   DUMMY_LOOP;
 
+#pragma clang rvv lmul_sew(m1, e32) /* expected-error {{incompatible directives 'vectorize(disable)' and 'lmul_sew(m1, e32)}} */
+#pragma clang loop vectorize(disable)
+  DUMMY_LOOP;
+
 #pragma clang rvv lmul_sew(m1, e32)
 #pragma clang rvv lmul_sew(m2, e32) /* expected-error {{duplicate directives 'lmul_sew(m1, e32)' and 'lmul_sew(m2, e32)'}} */
   DUMMY_LOOP;
