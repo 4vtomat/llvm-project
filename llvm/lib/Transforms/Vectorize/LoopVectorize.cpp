@@ -3353,8 +3353,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   }
 
   bool ForceVectorization =
-      LoopVectorizeHints(OrigLoop, true, *ORE).getForce() ==
-      LoopVectorizeHints::FK_Enabled;
+      Cost->Hints->getForce() == LoopVectorizeHints::FK_Enabled;
   if (!VectorizerDisableProfitableTripCountRTCheck && useVLAVectorizer() &&
       !ForceVectorization && !Legal->getReductionVars().empty()) {
     if (auto ProfitableVectorTripCount = Cost->getProfitableVectorTripCount()) {
