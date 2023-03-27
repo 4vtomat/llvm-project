@@ -49,7 +49,15 @@
 // CHECK-NOT: __riscv_zcd {{.*$}}
 // CHECK-NOT: __riscv_zcf {{.*$}}
 // CHECK-NOT: __riscv_h {{.*$}}
-<<<<<<< HEAD
+// CHECK-NOT: __riscv_zvkb {{.*$}}
+// CHECK-NOT: __riscv_zvkg {{.*$}}
+// CHECK-NOT: __riscv_zvkn {{.*$}}
+// CHECK-NOT: __riscv_zvknha {{.*$}}
+// CHECK-NOT: __riscv_zvknhb {{.*$}}
+// CHECK-NOT: __riscv_zvkned {{.*$}}
+// CHECK-NOT: __riscv_zvks {{.*$}}
+// CHECK-NOT: __riscv_zvksed {{.*$}}
+// CHECK-NOT: __riscv_zvksh {{.*$}}
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicclsm
 // CHECK-NOT: __riscv_ziccif
@@ -77,29 +85,11 @@
 // CHECK-NOT: __riscv_shvsatpa
 // CHECK-NOT: __riscv_shgatpa
 // CHECK-NOT: __sifive_recode_neon
-// CHECK-NOT: __riscv_zvkb
-// CHECK-NOT: __riscv_zvkg
-// CHECK-NOT: __riscv_zvknha
-// CHECK-NOT: __riscv_zvknhb
 // CHECK-NOT: __riscv_zvkns
-// CHECK-NOT: __riscv_zvksed
-// CHECK-NOT: __riscv_zvksh
 // CHECK-NOT: __riscv_smwg
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // end SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
-// CHECK-NOT: __riscv_zvkb {{.*$}}
-// CHECK-NOT: __riscv_zvkg {{.*$}}
-// CHECK-NOT: __riscv_zvkn {{.*$}}
-// CHECK-NOT: __riscv_zvknha {{.*$}}
-// CHECK-NOT: __riscv_zvknhb {{.*$}}
-// CHECK-NOT: __riscv_zvkned {{.*$}}
-// CHECK-NOT: __riscv_zvks {{.*$}}
-// CHECK-NOT: __riscv_zvksed {{.*$}}
-// CHECK-NOT: __riscv_zvksh {{.*$}}
->>>>>>> upstream/main
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32i -x c -E -dM %s \
 // RUN: -o - | FileCheck %s
