@@ -4192,10 +4192,6 @@ def FunctionReturnThunks : InheritableAttr,
   let Subjects = SubjectList<[Function]>;
   let Documentation = [FunctionReturnThunksDocs];
 }
-<<<<<<< HEAD
-
-||||||| a8cd84d32843
-=======
 
 def WebAssemblyFuncref : TypeAttr, TargetSpecificAttr<TargetWebAssembly> {
   let Spellings = [Keyword<"__funcref">];
@@ -4203,7 +4199,6 @@ def WebAssemblyFuncref : TypeAttr, TargetSpecificAttr<TargetWebAssembly> {
   let Subjects = SubjectList<[FunctionPointer], ErrorDiag>;
 }
 
->>>>>>> upstream/main
 def ReadOnlyPlacement : InheritableAttr {
   let Spellings = [Clang<"enforce_read_only_placement">];
   let Subjects = SubjectList<[Record]>;
