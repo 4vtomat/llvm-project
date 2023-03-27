@@ -1724,11 +1724,11 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
                                        StringRef &ErrInfo) const {
   MCInstrDesc const &Desc = MI.getDesc();
 
-  for (auto &OI : enumerate(Desc.operands())) {
-    unsigned OpType = OI.value().OperandType;
+  for (const auto &[Index, Operand] : enumerate(Desc.operands())) {
+    unsigned OpType = Operand.OperandType;
     if (OpType >= RISCVOp::OPERAND_FIRST_RISCV_IMM &&
         OpType <= RISCVOp::OPERAND_LAST_RISCV_IMM) {
-      const MachineOperand &MO = MI.getOperand(OI.index());
+      const MachineOperand &MO = MI.getOperand(Index);
       if (MO.isImm()) {
         int64_t Imm = MO.getImm();
         bool Ok;
@@ -1811,6 +1811,7 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_RVKRNUM:
           Ok = Imm >= 0 && Imm <= 10;
           break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_UIMM1:
           Ok = isUInt<1>(Imm);
@@ -1825,6 +1826,18 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
           Ok = Imm >= 2 && Imm <= 14;
           break;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| a8cd84d32843
+=======
+        case RISCVOp::OPERAND_RVKRNUM_0_7:
+          Ok = Imm >= 0 && Imm <= 7;
+          break;
+        case RISCVOp::OPERAND_RVKRNUM_1_10:
+          Ok = Imm >= 1 && Imm <= 10;
+          break;
+        case RISCVOp::OPERAND_RVKRNUM_2_14:
+          Ok = Imm >= 2 && Imm <= 14;
+          break;
+>>>>>>> upstream/main
         }
         if (!Ok) {
           ErrInfo = "Invalid immediate";
@@ -2028,7 +2041,8 @@ bool RISCVInstrInfo::shouldOutlineFromFunctionByDefault(
   return MF.getFunction().hasMinSize();
 }
 
-outliner::OutlinedFunction RISCVInstrInfo::getOutliningCandidateInfo(
+std::optional<outliner::OutlinedFunction>
+RISCVInstrInfo::getOutliningCandidateInfo(
     std::vector<outliner::Candidate> &RepeatedSequenceLocs) const {
 
   // First we need to filter out candidates where the X5 register (IE t0) can't
@@ -2042,7 +2056,7 @@ outliner::OutlinedFunction RISCVInstrInfo::getOutliningCandidateInfo(
 
   // If the sequence doesn't have enough candidates left, then we're done.
   if (RepeatedSequenceLocs.size() < 2)
-    return outliner::OutlinedFunction();
+    return std::nullopt;
 
   unsigned SequenceSize = 0;
 

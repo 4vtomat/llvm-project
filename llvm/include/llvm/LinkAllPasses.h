@@ -138,14 +138,19 @@ namespace {
       (void) llvm::createConstantHoistingPass();
       (void) llvm::createCodeGenPreparePass();
       (void) llvm::createEarlyCSEPass();
-      (void) llvm::createGVNHoistPass();
       (void) llvm::createMergedLoadStoreMotionPass();
       (void) llvm::createGVNPass();
+<<<<<<< HEAD
       (void) llvm::createNewGVNPass();
       (void) llvm::createMemCpyOptPass();
 #if SIFIVE_CUSTOMIZATION
       (void) llvm::createLoopDataLayoutPass();
 #endif
+||||||| a8cd84d32843
+      (void) llvm::createNewGVNPass();
+      (void) llvm::createMemCpyOptPass();
+=======
+>>>>>>> upstream/main
       (void) llvm::createPostDomTree();
       (void) llvm::createInstructionNamerPass();
       (void) llvm::createMetaRenamerPass();
@@ -173,7 +178,6 @@ namespace {
       (void) llvm::createMemDerefPrinter();
       (void) llvm::createMustExecutePrinter();
       (void) llvm::createMustBeExecutedContextPrinter();
-      (void) llvm::createFloat2IntPass();
       (void)llvm::createScalarizeMaskedMemIntrinLegacyPass();
       (void) llvm::createHardwareLoopsLegacyPass();
       (void) llvm::createInjectTLIMappingsLegacyPass();

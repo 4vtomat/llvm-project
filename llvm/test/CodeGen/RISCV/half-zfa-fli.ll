@@ -139,7 +139,7 @@ define half @loadfpimm9() {
 define half @loadfpimm10() {
 ; CHECK-LABEL: loadfpimm10:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fli.h fa0, 3.0517578125e-05
+; CHECK-NEXT:    fli.h fa0, 1.52587890625e-05
 ; CHECK-NEXT:    ret
 ;
 ; ZFHMIN-LABEL: loadfpimm10:
@@ -154,7 +154,7 @@ define half @loadfpimm10() {
 define half @loadfpimm11() {
 ; CHECK-LABEL: loadfpimm11:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fli.h fa0, 1.52587890625e-05
+; CHECK-NEXT:    fli.h fa0, 3.0517578125e-05
 ; CHECK-NEXT:    ret
 ;
 ; ZFHMIN-LABEL: loadfpimm11:
@@ -163,4 +163,20 @@ define half @loadfpimm11() {
 ; ZFHMIN-NEXT:    fmv.h.x fa0, a0
 ; ZFHMIN-NEXT:    ret
   ret half 0xH0200
+}
+
+; Negative test. This is an snan with payload of 1.
+define half @loadfpimm12() {
+; CHECK-LABEL: loadfpimm12:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    lui a0, %hi(.LCPI11_0)
+; CHECK-NEXT:    flh fa0, %lo(.LCPI11_0)(a0)
+; CHECK-NEXT:    ret
+;
+; ZFHMIN-LABEL: loadfpimm12:
+; ZFHMIN:       # %bb.0:
+; ZFHMIN-NEXT:    lui a0, %hi(.LCPI11_0)
+; ZFHMIN-NEXT:    flh fa0, %lo(.LCPI11_0)(a0)
+; ZFHMIN-NEXT:    ret
+  ret half 0xH7c01
 }

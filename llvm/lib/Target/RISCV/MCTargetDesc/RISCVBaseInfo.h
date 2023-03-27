@@ -301,9 +301,14 @@ enum OperandType : unsigned {
   OPERAND_UIMM3,
   OPERAND_UIMM4,
   OPERAND_UIMM5,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OPERAND_UIMM6,
 #endif // SIFIVE_CUSTOMIZATION
+||||||| a8cd84d32843
+=======
+  OPERAND_UIMM6,
+>>>>>>> upstream/main
   OPERAND_UIMM7,
   OPERAND_UIMM7_LSB00,
   OPERAND_UIMM8_LSB00,
@@ -326,6 +331,7 @@ enum OperandType : unsigned {
   OPERAND_VTYPEI10,
   OPERAND_VTYPEI11,
   OPERAND_RVKRNUM,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OPERAND_UIMM1,
   OPERAND_RVKRNUM_0_7,
@@ -333,6 +339,14 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_2_14,
 #endif // SIFIVE_CUSTOMIZATION
   OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM,
+||||||| a8cd84d32843
+  OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM,
+=======
+  OPERAND_RVKRNUM_0_7,
+  OPERAND_RVKRNUM_1_10,
+  OPERAND_RVKRNUM_2_14,
+  OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM_2_14,
+>>>>>>> upstream/main
   // Operand is either a register or uimm5, this is used by V extension pseudo
   // instructions to represent a value that be passed as AVL to either vsetvli
   // or vsetivli.
@@ -425,23 +439,12 @@ enum RoundingMode {
 //
 
 namespace RISCVLoadFPImm {
-int getLoadFPImm(bool Sign, uint8_t Exp, uint8_t Mantissa);
 float getFPImm(unsigned Imm);
 
-/// getLoadFP32Imm - Return a 5-bit binary encoding of the 32-bit
-/// floating-point immediate value. If the value cannot be represented as a
-/// 5-bit binary encoding, then return -1.
-int getLoadFP32Imm(const APFloat &FPImm);
-
-/// getLoadFP64Imm - Return a 5-bit binary encoding of the 64-bit
-/// floating-point immediate value. If the value cannot be represented as a
-/// 5-bit binary encoding, then return -1.
-int getLoadFP64Imm(const APFloat &FPImm);
-
-/// getLoadFP16Imm - Return a 5-bit binary encoding of the 16-bit
-/// floating-point immediate value. If the value cannot be represented as a
-/// 5-bit binary encoding, then return -1.
-int getLoadFP16Imm(const APFloat &FPImm);
+/// getLoadFPImm - Return a 5-bit binary encoding of the floating-point
+/// immediate value. If the value cannot be represented as a 5-bit binary
+/// encoding, then return -1.
+int getLoadFPImm(APFloat FPImm);
 } // namespace RISCVLoadFPImm
 
 namespace RISCVSysReg {
@@ -498,6 +501,7 @@ enum ABI {
   ABI_LP64,
   ABI_LP64F,
   ABI_LP64D,
+  ABI_LP64E,
   ABI_Unknown
 };
 

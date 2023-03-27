@@ -264,6 +264,7 @@ def InsnDirectiveOpcode : AsmOperandClass {
   let PredicateMethod = "isImm";
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def uimm6 : Operand<XLenVT> {
   let ParserMatchClass = UImmAsmOperand<6>;
@@ -273,6 +274,16 @@ def uimm6 : Operand<XLenVT> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+||||||| a8cd84d32843
+=======
+def uimm6 : Operand<XLenVT> {
+  let ParserMatchClass = UImmAsmOperand<6>;
+  let DecoderMethod = "decodeUImmOperand<6>";
+  let OperandType = "OPERAND_UIMM6";
+  let OperandNamespace = "RISCVOp";
+}
+
+>>>>>>> upstream/main
 def uimm7_opcode : Operand<XLenVT> {
   let ParserMatchClass = InsnDirectiveOpcode;
   let DecoderMethod = "decodeUImmOperand<7>";
@@ -1145,6 +1156,17 @@ def : InstAlias<"zext.b $rd, $rs", (ANDI GPR:$rd, GPR:$rs, 0xFF), 0>;
 // .insn directive instructions
 //===----------------------------------------------------------------------===//
 
+def AnyRegOperand : AsmOperandClass {
+  let Name = "AnyRegOperand";
+  let RenderMethod = "addRegOperands";
+  let PredicateMethod = "isAnyReg";
+}
+
+def AnyReg : Operand<XLenVT> {
+  let OperandType = "OPERAND_REGISTER";
+  let ParserMatchClass = AnyRegOperand;
+}
+
 // isCodeGenOnly = 1 to hide them from the tablegened assembly parser.
 let isCodeGenOnly = 1, hasSideEffects = 1, mayLoad = 1, mayStore = 1,
     hasNoSchedulingInfo = 1 in {
@@ -1830,7 +1852,7 @@ multiclass LdPat<PatFrag LoadOp, RVInst Inst, ValueType vt = XLenVT> {
 }
 
 defm : LdPat<sextloadi8, LB>;
-defm : LdPat<extloadi8, LB>;
+defm : LdPat<extloadi8, LBU>; // Prefer unsigned due to no c.lb in Zcb.
 defm : LdPat<sextloadi16, LH>;
 defm : LdPat<extloadi16, LH>;
 defm : LdPat<load, LW, i32>, Requires<[IsRV32]>;
@@ -2081,6 +2103,7 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def : Pat<(XLenVT (abs GPR:$rs1)),
           (PseudoCCSUB GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
@@ -2096,6 +2119,17 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 0, isCodeGenOnly = 1 i
   def PseudoRVVInitUndefM8     :  Pseudo<(outs VRM8:$vd), (ins), [], "">;
 }
 
+||||||| a8cd84d32843
+/// Empty pseudo for RISCVInitUndefPass
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 0, isCodeGenOnly = 1 in {
+  def PseudoRVVInitUndefM1     :  Pseudo<(outs VR:$vd), (ins), [], "">;
+  def PseudoRVVInitUndefM2     :  Pseudo<(outs VRM2:$vd), (ins), [], "">;
+  def PseudoRVVInitUndefM4     :  Pseudo<(outs VRM4:$vd), (ins), [], "">;
+  def PseudoRVVInitUndefM8     :  Pseudo<(outs VRM8:$vd), (ins), [], "">;
+}
+
+=======
+>>>>>>> upstream/main
 //===----------------------------------------------------------------------===//
 // Standard extensions
 //===----------------------------------------------------------------------===//

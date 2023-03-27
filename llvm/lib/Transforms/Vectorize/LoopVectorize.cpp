@@ -1088,14 +1088,12 @@ namespace llvm {
 Value *createStepForVF(IRBuilderBase &B, Type *Ty, ElementCount VF,
                        int64_t Step) {
   assert(Ty->isIntegerTy() && "Expected an integer step");
-  Constant *StepVal = ConstantInt::get(Ty, Step * VF.getKnownMinValue());
-  return VF.isScalable() ? B.CreateVScale(StepVal) : StepVal;
+  return B.CreateElementCount(Ty, VF.multiplyCoefficientBy(Step));
 }
 
 /// Return the runtime value for VF.
 Value *getRuntimeVF(IRBuilderBase &B, Type *Ty, ElementCount VF) {
-  Constant *EC = ConstantInt::get(Ty, VF.getKnownMinValue());
-  return VF.isScalable() ? B.CreateVScale(EC) : EC;
+  return B.CreateElementCount(Ty, VF);
 }
 
 const SCEV *createTripCountSCEV(Type *IdxTy, PredicatedScalarEvolution &PSE) {
@@ -1464,7 +1462,7 @@ public:
     auto Scalars = InstsToScalarize.find(VF);
     assert(Scalars != InstsToScalarize.end() &&
            "VF not yet analyzed for scalarization profitability");
-    return Scalars->second.find(I) != Scalars->second.end();
+    return Scalars->second.contains(I);
   }
 
   /// Returns true if \p I is known to be uniform after vectorization.
@@ -1508,7 +1506,7 @@ public:
   /// \returns True if instruction \p I can be truncated to a smaller bitwidth
   /// for vectorization factor \p VF.
   bool canTruncateToMinimalBitwidth(Instruction *I, ElementCount VF) const {
-    return VF.isVector() && MinBWs.find(I) != MinBWs.end() &&
+    return VF.isVector() && MinBWs.contains(I) &&
            !isProfitableToScalarize(I, VF) &&
            !isScalarAfterVectorization(I, VF);
   }
@@ -1574,7 +1572,7 @@ public:
   InstructionCost getWideningCost(Instruction *I, ElementCount VF) {
     assert(VF.isVector() && "Expected VF >=2");
     std::pair<Instruction *, ElementCount> InstOnVF = std::make_pair(I, VF);
-    assert(WideningDecisions.find(InstOnVF) != WideningDecisions.end() &&
+    assert(WideningDecisions.contains(InstOnVF) &&
            "The cost is not calculated");
     return WideningDecisions[InstOnVF].second;
   }
@@ -1614,7 +1612,7 @@ public:
   /// that may be vectorized as interleave, gather-scatter or scalarized.
   void collectUniformsAndScalars(ElementCount VF) {
     // Do the analysis once.
-    if (VF.isScalar() || Uniforms.find(VF) != Uniforms.end())
+    if (VF.isScalar() || Uniforms.contains(VF))
       return;
     setCostBasedWideningDecision(VF);
     collectLoopUniforms(VF);
@@ -2017,8 +2015,7 @@ private:
     // the scalars are collected. That should be a safe assumption in most
     // cases, because we check if the operands have vectorizable types
     // beforehand in LoopVectorizationLegality.
-    return Scalars.find(VF) == Scalars.end() ||
-           !isScalarAfterVectorization(I, VF);
+    return !Scalars.contains(VF) || !isScalarAfterVectorization(I, VF);
   };
 
   /// Returns a range containing only operands needing to be extracted.
@@ -2927,8 +2924,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(AddrPart->stripPointerCasts()))
       InBounds = gep->isInBounds();
-    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index));
-    cast<GetElementPtrInst>(AddrPart)->setIsInBounds(InBounds);
+    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index),
+                                 "", InBounds);
 
     // Cast to the vector pointer type.
     unsigned AddressSpace = AddrPart->getType()->getPointerAddressSpace();
@@ -3238,12 +3235,24 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
 Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
                                                    const DataLayout &DL) {
   // Verify that V is a vector type with same number of elements as DstVTy.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   ElementCount VF = DstVTy->getElementCount();
   VectorType *SrcVecTy = cast<VectorType>(V->getType());
   assert((VF == SrcVecTy->getElementCount()) &&
          "Vector dimensions do not match");
 #endif // SIFIVE_CUSTOMIZATION
+||||||| a8cd84d32843
+  auto *DstFVTy = cast<FixedVectorType>(DstVTy);
+  unsigned VF = DstFVTy->getNumElements();
+  auto *SrcVecTy = cast<FixedVectorType>(V->getType());
+  assert((VF == SrcVecTy->getNumElements()) && "Vector dimensions do not match");
+=======
+  auto *DstFVTy = cast<VectorType>(DstVTy);
+  auto VF = DstFVTy->getElementCount();
+  auto *SrcVecTy = cast<VectorType>(V->getType());
+  assert(VF == SrcVecTy->getElementCount() && "Vector dimensions do not match");
+>>>>>>> upstream/main
   Type *SrcElemTy = SrcVecTy->getElementType();
 #if SIFIVE_CUSTOMIZATION
   Type *DstElemTy = DstVTy->getElementType();
@@ -3267,9 +3276,15 @@ Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
          "Only one type should be a floating point type");
   Type *IntTy =
       IntegerType::getIntNTy(V->getContext(), DL.getTypeSizeInBits(SrcElemTy));
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   auto *VecIntTy = VectorType::get(IntTy, VF);
 #endif // SIFIVE_CUSTOMIZATION
+||||||| a8cd84d32843
+  auto *VecIntTy = FixedVectorType::get(IntTy, VF);
+=======
+  auto *VecIntTy = VectorType::get(IntTy, VF);
+>>>>>>> upstream/main
   Value *CastVal = Builder.CreateBitOrPointerCast(V, VecIntTy);
 #if SIFIVE_CUSTOMIZATION
   return Builder.CreateBitOrPointerCast(CastVal, DstVTy);
@@ -4673,7 +4688,7 @@ void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
   // function is called from collectUniformsAndScalars(), which already does
   // this check. Collecting Scalars for VF=1 does not make any sense.
-  assert(VF.isVector() && Scalars.find(VF) == Scalars.end() &&
+  assert(VF.isVector() && !Scalars.contains(VF) &&
          "This function should not be visited twice for the same VF");
 
   // This avoids any chances of creating a REPLICATE recipe during planning
@@ -5106,7 +5121,7 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // already does this check. Collecting Uniforms for VF=1 does not make any
   // sense.
 
-  assert(VF.isVector() && Uniforms.find(VF) == Uniforms.end() &&
+  assert(VF.isVector() && !Uniforms.contains(VF) &&
          "This function should not be visited twice for the same VF");
 
   // Visit the list of Uniforms. If we'll not find any uniform value, we'll
@@ -5190,11 +5205,17 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
             WideningDecision == CM_Interleave);
   };
 
-
   // Returns true if Ptr is the pointer operand of a memory access instruction
-  // I, and I is known to not require scalarization.
+  // I, I is known to not require scalarization, and the pointer is not also
+  // stored.
   auto isVectorizedMemAccessUse = [&](Instruction *I, Value *Ptr) -> bool {
-    return getLoadStorePointerOperand(I) == Ptr && isUniformDecision(I, VF);
+    auto GetStoredValue = [I]() -> Value * {
+      if (!isa<StoreInst>(I))
+        return nullptr;
+      return I->getOperand(0);
+    };
+    return getLoadStorePointerOperand(I) == Ptr && isUniformDecision(I, VF) &&
+           GetStoredValue() != Ptr;
   };
 
   // Holds a list of values which are known to have at least one uniform use.
@@ -5244,8 +5265,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
 #endif // SIFIVE_CUSTOMIZATION
         addToWorklistIfAllowed(&I);
 
-      if (isUniformDecision(&I, VF)) {
-        assert(isVectorizedMemAccessUse(&I, Ptr) && "consistency check");
+      if (isVectorizedMemAccessUse(&I, Ptr)) {
+        assert(isUniformDecision(&I, VF) && "consistency check");
         HasUniformUse.insert(Ptr);
       }
     }
@@ -5882,16 +5903,26 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   }
 
   FixedScalableVFPair MaxFactors = computeFeasibleMaxVF(TC, UserVF, true);
+
   // Avoid tail folding if the trip count is known to be a multiple of any VF
-  // we chose.
-  // FIXME: The condition below pessimises the case for fixed-width vectors,
-  // when scalable VFs are also candidates for vectorization.
-  if (MaxFactors.FixedVF.isVector() && !MaxFactors.ScalableVF) {
-    ElementCount MaxFixedVF = MaxFactors.FixedVF;
-    assert((UserVF.isNonZero() || isPowerOf2_32(MaxFixedVF.getFixedValue())) &&
+  // we choose.
+  std::optional<unsigned> MaxPowerOf2RuntimeVF =
+      MaxFactors.FixedVF.getFixedValue();
+  if (MaxFactors.ScalableVF) {
+    std::optional<unsigned> MaxVScale = getMaxVScale(*TheFunction, TTI);
+    if (MaxVScale && TTI.isVScaleKnownToBeAPowerOfTwo()) {
+      MaxPowerOf2RuntimeVF = std::max<unsigned>(
+          *MaxPowerOf2RuntimeVF,
+          *MaxVScale * MaxFactors.ScalableVF.getKnownMinValue());
+    } else
+      MaxPowerOf2RuntimeVF = std::nullopt; // Stick with tail-folding for now.
+  }
+
+  if (MaxPowerOf2RuntimeVF) {
+    assert((UserVF.isNonZero() || isPowerOf2_32(*MaxPowerOf2RuntimeVF)) &&
            "MaxFixedVF must be a power of 2");
-    unsigned MaxVFtimesIC = UserIC ? MaxFixedVF.getFixedValue() * UserIC
-                                   : MaxFixedVF.getFixedValue();
+    unsigned MaxVFtimesIC =
+        UserIC ? *MaxPowerOf2RuntimeVF * UserIC : *MaxPowerOf2RuntimeVF;
     ScalarEvolution *SE = PSE.getSE();
     const SCEV *BackedgeTakenCount = PSE.getBackedgeTakenCount();
     const SCEV *ExitCount = SE->getAddExpr(
@@ -7121,8 +7152,7 @@ void LoopVectorizationCostModel::collectInstsToScalarize(ElementCount VF) {
   // instructions to scalarize, there's nothing to do. Collection may already
   // have occurred if we have a user-selected VF and are now computing the
   // expected cost for interleaving.
-  if (VF.isScalar() || VF.isZero() ||
-      InstsToScalarize.find(VF) != InstsToScalarize.end())
+  if (VF.isScalar() || VF.isZero() || InstsToScalarize.contains(VF))
     return;
 
   // Initialize a mapping for VF in InstsToScalalarize. If we find that it's
@@ -7211,7 +7241,7 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
     Instruction *I = Worklist.pop_back_val();
 
     // If we've already analyzed the instruction, there's nothing to do.
-    if (ScalarCosts.find(I) != ScalarCosts.end())
+    if (ScalarCosts.contains(I))
       continue;
 
     // Compute the cost of the vector instruction. Note that this cost already
@@ -9851,41 +9881,6 @@ VPRecipeOrVPValueTy VPRecipeBuilder::handleReplication(Instruction *I,
   return toVPRecipeResult(Recipe);
 }
 
-VPRegionBlock *
-VPRecipeBuilder::createReplicateRegion(VPReplicateRecipe *PredRecipe,
-                                       VPlan &Plan) {
-  Instruction *Instr = PredRecipe->getUnderlyingInstr();
-  // Build the triangular if-then region.
-  std::string RegionName = (Twine("pred.") + Instr->getOpcodeName()).str();
-  assert(Instr->getParent() && "Predicated instruction not in any basic block");
-  auto *BlockInMask = PredRecipe->getMask();
-  // Replace predicated replicate recipe with a replicate recipe without a
-  // mask but in the replicate region.
-  auto *RecipeWithoutMask = new VPReplicateRecipe(
-      PredRecipe->getUnderlyingInstr(),
-      make_range(PredRecipe->op_begin(), std::prev(PredRecipe->op_end())),
-      PredRecipe->isUniform());
-  VPPredInstPHIRecipe *PHIRecipe = nullptr;
-  if (PredRecipe->getNumUsers() != 0) {
-    PHIRecipe = new VPPredInstPHIRecipe(RecipeWithoutMask);
-    PredRecipe->replaceAllUsesWith(PHIRecipe);
-    PHIRecipe->setOperand(0, RecipeWithoutMask);
-  }
-  PredRecipe->eraseFromParent();
-  auto *Exiting = new VPBasicBlock(Twine(RegionName) + ".continue", PHIRecipe);
-  auto *Pred = new VPBasicBlock(Twine(RegionName) + ".if", RecipeWithoutMask);
-  auto *BOMRecipe = new VPBranchOnMaskRecipe(BlockInMask);
-  auto *Entry = new VPBasicBlock(Twine(RegionName) + ".entry", BOMRecipe);
-  VPRegionBlock *Region = new VPRegionBlock(Entry, Exiting, RegionName, true);
-
-  // Note: first set Entry as region entry and then connect successors starting
-  // from it in order, to propagate the "parent" of each VPBasicBlock.
-  VPBlockUtils::insertTwoBlocksAfter(Pred, Exiting, Entry);
-  VPBlockUtils::connectBlocks(Pred, Exiting);
-
-  return Region;
-}
-
 VPRecipeOrVPValueTy
 VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
                                         ArrayRef<VPValue *> Operands,
@@ -10393,16 +10388,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::removeDeadRecipes(*Plan);
 
-  // Convert masked VPReplicateRecipes to if-then region blocks.
-  VPlanTransforms::addReplicateRegions(*Plan, RecipeBuilder);
-
-  bool ShouldSimplify = true;
-  while (ShouldSimplify) {
-    ShouldSimplify = VPlanTransforms::sinkScalarOperands(*Plan);
-    ShouldSimplify |=
-        VPlanTransforms::mergeReplicateRegionsIntoSuccessors(*Plan);
-    ShouldSimplify |= VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
-  }
+  VPlanTransforms::createAndOptimizeReplicateRegions(*Plan);
 
   VPlanTransforms::removeRedundantExpandSCEVRecipes(*Plan);
   VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
@@ -11025,7 +11011,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
   const auto CreateVecPtr = [&](unsigned Part, Value *Ptr) -> Value * {
     // Calculate the pointer for the specific unroll-part.
-    GetElementPtrInst *PartPtr = nullptr;
+    Value *PartPtr = nullptr;
 
     // Use i32 for the gep index type when the value is constant,
     // or query DataLayout for a more suitable index type otherwise.
@@ -11062,7 +11048,9 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // LastLane = 1 - RunTimeVF
       Value *LastLane =
           Builder.CreateSub(ConstantInt::get(IndexTy, 1), RunTimeVF);
+      PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, NumElt, "", InBounds);
       PartPtr =
+<<<<<<< HEAD
           cast<GetElementPtrInst>(Builder.CreateGEP(ScalarDataTy, Ptr, NumElt));
       PartPtr->setIsInBounds(InBounds);
       PartPtr = cast<GetElementPtrInst>(
@@ -11088,11 +11076,24 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         }
       }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| a8cd84d32843
+          cast<GetElementPtrInst>(Builder.CreateGEP(ScalarDataTy, Ptr, NumElt));
+      PartPtr->setIsInBounds(InBounds);
+      PartPtr = cast<GetElementPtrInst>(
+          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane));
+      PartPtr->setIsInBounds(InBounds);
+      if (isMaskRequired) // Reverse of a null all-one mask is a null mask.
+        BlockInMaskParts[Part] =
+            Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
+=======
+          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane, "", InBounds);
+      if (isMaskRequired) // Reverse of a null all-one mask is a null mask.
+        BlockInMaskParts[Part] =
+            Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
+>>>>>>> upstream/main
     } else {
       Value *Increment = createStepForVF(Builder, IndexTy, State.VF, Part);
-      PartPtr = cast<GetElementPtrInst>(
-          Builder.CreateGEP(ScalarDataTy, Ptr, Increment));
-      PartPtr->setIsInBounds(InBounds);
+      PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, Increment, "", InBounds);
     }
 
     unsigned AddressSpace = Ptr->getType()->getPointerAddressSpace();

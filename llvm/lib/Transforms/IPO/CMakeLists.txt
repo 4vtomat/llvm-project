@@ -28,11 +28,11 @@ add_llvm_component_library(LLVMipo
   LoopExtractor.cpp
   SiFive_LoopDataLayout.cpp
   LowerTypeTests.cpp
+  MemProfContextDisambiguation.cpp
   MergeFunctions.cpp
   ModuleInliner.cpp
   OpenMPOpt.cpp
   PartialInlining.cpp
-  PassManagerBuilder.cpp
   SampleContextTracker.cpp
   SampleProfile.cpp
   SampleProfileProbe.cpp

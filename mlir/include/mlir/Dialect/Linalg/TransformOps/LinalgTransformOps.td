@@ -83,8 +83,10 @@ def BufferizeToAllocationOp : Op<Transform_Dialect,
 //===----------------------------------------------------------------------===//
 
 def DecomposeOp : Op<Transform_Dialect, "structured.decompose",
-    [FunctionalStyleTransformOpTrait, MemoryEffectsOpInterface,
-     TransformOpInterface, TransformEachOpTrait]> {
+    [FunctionalStyleTransformOpTrait, 
+     MemoryEffectsOpInterface,
+     TransformOpInterface, 
+     TransformEachOpTrait]> {
   let description = [{
     Decomposes named complex operations, such as higher-dimensional
     (depthwise) convolutions, into combinations of lower-dimensional equivalents
@@ -588,14 +590,14 @@ def PackGreedilyOp : Op<Transform_Dialect, "structured.pack_greedily", [
 
     Different packing strategies are applied in order, when one applies
     successfully, the transform returns:
-      1. Gemm packing: Try to infer a gemm operation embedded in the target op.
+      1. Matmul packing: Try to infer a matmul operation embedded in the target op.
          Specifically, this looks for 2 parallel dimensions that participate in
          an outer-product and 1 reduction dimension.
-         These dimensions are referred as (m, n, k) to match canonical gemm
+         These dimensions are referred as (m, n, k) to match canonical matmul
          terminology.
-         The packed sizes for (m, n, k) are specified by `gemm_packed_sizes`.
+         The packed sizes for (m, n, k) are specified by `matmul_packed_sizes`.
          The ordering of the packed dimensions (mm, nn, kk) is specified by the
-         `gemm_inner_dims_order` attribute.
+         `matmul_inner_dims_order` attribute.
 
     Packing occurs as follows:
       1. Find the dimensions to pack according to the strategy.
@@ -622,25 +624,25 @@ def PackGreedilyOp : Op<Transform_Dialect, "structured.pack_greedily", [
 
   // TODO: Transform_ConcreteOpType<linalg::LinalgOp> needs interface.
   let arguments = (ins TransformHandleTypeInterface:$target,
-                   Variadic<PDL_Operation>:$gemm_packed_sizes,
+                   Variadic<PDL_Operation>:$matmul_packed_sizes,
                    DefaultValuedAttr<DenseI64ArrayAttr, "{}">
-                     :$static_gemm_packed_sizes,
+                     :$static_matmul_packed_sizes,
                    DefaultValuedAttr<DenseI64ArrayAttr, "{}">
-                     :$gemm_inner_dims_order);
+                     :$matmul_inner_dims_order);
   let results = (outs Transform_ConcreteOpType<"linalg.generic">:$packed_op);
 
   let builders = [
     OpBuilder<(ins "Value":$target,
-                   "ArrayRef<OpFoldResult>":$mixedGemmPackedSizes,
-                   CArg<"ArrayRef<int64_t>", "{}">:$gemmDimsInnerDimsOrder)>
+                   "ArrayRef<OpFoldResult>":$mixedMatmulPackedSizes,
+                   CArg<"ArrayRef<int64_t>", "{}">:$matmulDimsInnerDimsOrder)>
   ];
 
   let assemblyFormat = [{
     $target
     oilist(
-      `gemm_packed_sizes` `=` custom<DynamicIndexList>($gemm_packed_sizes,
-                                                       $static_gemm_packed_sizes)
-      `gemm_inner_dims_order` `=` $gemm_inner_dims_order
+      `matmul_packed_sizes` `=` custom<DynamicIndexList>($matmul_packed_sizes,
+                                                       $static_matmul_packed_sizes)
+      `matmul_inner_dims_order` `=` $matmul_inner_dims_order
     )
     attr-dict
     `:` functional-type($target, results)
@@ -650,7 +652,7 @@ def PackGreedilyOp : Op<Transform_Dialect, "structured.pack_greedily", [
   let extraClassDeclaration = [{
     /// Returns the list of tile sizes, which may be static (Attribute) or
     /// dynamic (Value).
-    SmallVector<OpFoldResult> getMixedGemmPackedSizes();
+    SmallVector<OpFoldResult> getMixedMatmulPackedSizes();
   }];
 }
 
@@ -932,9 +934,10 @@ def ScalarizeOp : Op<Transform_Dialect, "structured.scalarize",
 
 def RewriteInDestinationPassingStyleOp : Op<
     Transform_Dialect, "structured.rewrite_in_destination_passing_style",
-    [MemoryEffectsOpInterface,
-     NavigationTransformOpTrait,
-     DeclareOpInterfaceMethods<TransformOpInterface>]> {
+    [FunctionalStyleTransformOpTrait, 
+     MemoryEffectsOpInterface,
+     TransformOpInterface, 
+     TransformEachOpTrait]> {
   let description = [{
     Rewrite a supported tensor operation that is not in destination-passing style
     into a form that is in destination-passing style.
@@ -962,6 +965,13 @@ def RewriteInDestinationPassingStyleOp : Op<
   let assemblyFormat = [{
     $target attr-dict
     `:` functional-type($target, results)
+  }];
+
+  let extraClassDeclaration = [{
+    ::mlir::DiagnosedSilenceableFailure applyToOne(
+        ::mlir::Operation *target,
+        ::mlir::transform::ApplyToEachResultList &results,
+        ::mlir::transform::TransformState &state);
   }];
 }
 

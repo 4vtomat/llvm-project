@@ -4938,6 +4938,8 @@ public:
 
   bool isMSTypeSpec() const;
 
+  bool isWebAssemblyFuncrefSpec() const;
+
   bool isCallingConv() const;
 
   std::optional<NullabilityKind> getImmediateNullability() const;

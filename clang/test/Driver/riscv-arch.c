@@ -198,11 +198,6 @@
 
 // Testing specific messages and unsupported extensions.
 
-// RUN: %clang --target=riscv64-unknown-elf -march=rv64e -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64E %s
-// RV64E: error: invalid arch name 'rv64e',
-// RV64E: standard user-level extension 'e' requires 'rv32'
-
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32imC -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-LOWER %s
 // RV32-LOWER: error: invalid arch name 'rv32imC',
@@ -211,7 +206,7 @@
 // RUN: %clang --target=riscv32-unknown-elf -march=unknown -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-STR %s
 // RV32-STR: error: invalid arch name 'unknown',
-// RV32-STR: string must begin with rv32{i,e,g} or rv64{i,g}
+// RV32-STR: string must begin with rv32{i,e,g} or rv64{i,e,g}
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32q -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-LETTER %s
@@ -223,6 +218,7 @@
 // RV32-ORDER: error: invalid arch name 'rv32imcq',
 // RV32-ORDER: standard user-level extension not given in canonical order 'q'
 
+<<<<<<< HEAD
 // RUN: %clang --target=riscv32-unknown-elf -march=rv64e -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64-EER %s
 // RV64-EER: error: invalid arch name 'rv64e',
@@ -234,6 +230,14 @@
 // SIFIVE_CUSTOMIZATION
 // RV32-DER: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
+
+=======
+>>>>>>> upstream/main
+||||||| a8cd84d32843
+// RUN: %clang --target=riscv32-unknown-elf -march=rv64e -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV64-EER %s
+// RV64-EER: error: invalid arch name 'rv64e',
+// RV64-EER: standard user-level extension 'e' requires 'rv32'
 
 =======
 >>>>>>> upstream/main

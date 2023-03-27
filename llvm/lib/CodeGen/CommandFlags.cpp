@@ -81,7 +81,6 @@ CGOPT(bool, StackSymbolOrdering)
 CGOPT(bool, StackRealign)
 CGOPT(std::string, TrapFuncName)
 CGOPT(bool, UseCtors)
-CGOPT(bool, LowerGlobalDtorsViaCxaAtExit)
 CGOPT(bool, RelaxELFRelocations)
 CGOPT_EXP(bool, DataSections)
 CGOPT_EXP(bool, FunctionSections)
@@ -104,6 +103,7 @@ CGOPT(bool, XRayOmitFunctionIndex)
 CGOPT(bool, DebugStrictDwarf)
 CGOPT(unsigned, AlignLoops)
 CGOPT(bool, JMCInstrument)
+CGOPT(bool, XCOFFReadOnlyPointers)
 
 codegen::RegisterCodeGenFlags::RegisterCodeGenFlags() {
 #define CGBINDOPT(NAME)                                                        \
@@ -350,12 +350,6 @@ codegen::RegisterCodeGenFlags::RegisterCodeGenFlags() {
                                 cl::init(false));
   CGBINDOPT(UseCtors);
 
-  static cl::opt<bool> LowerGlobalDtorsViaCxaAtExit(
-      "lower-global-dtors-via-cxa-atexit",
-      cl::desc("Lower llvm.global_dtors (global destructors) via __cxa_atexit"),
-      cl::init(true));
-  CGBINDOPT(LowerGlobalDtorsViaCxaAtExit);
-
   static cl::opt<bool> RelaxELFRelocations(
       "relax-elf-relocations",
       cl::desc(
@@ -486,6 +480,13 @@ codegen::RegisterCodeGenFlags::RegisterCodeGenFlags() {
       cl::init(false));
   CGBINDOPT(JMCInstrument);
 
+  static cl::opt<bool> XCOFFReadOnlyPointers(
+      "mroptr",
+      cl::desc("When set to true, const objects with relocatable address "
+               "values are put into the RO data section."),
+      cl::init(false));
+  CGBINDOPT(XCOFFReadOnlyPointers);
+
 #undef CGBINDOPT
 
   mc::RegisterMCTargetOptionsFlags();
@@ -539,7 +540,6 @@ codegen::InitTargetOptionsFromCodeGenFlags(const Triple &TheTriple) {
   Options.GuaranteedTailCallOpt = getEnableGuaranteedTailCallOpt();
   Options.StackSymbolOrdering = getStackSymbolOrdering();
   Options.UseInitArray = !getUseCtors();
-  Options.LowerGlobalDtorsViaCxaAtExit = getLowerGlobalDtorsViaCxaAtExit();
   Options.RelaxELFRelocations = getRelaxELFRelocations();
   Options.DataSections =
       getExplicitDataSections().value_or(TheTriple.hasDefaultDataSections());
@@ -563,6 +563,7 @@ codegen::InitTargetOptionsFromCodeGenFlags(const Triple &TheTriple) {
   Options.DebugStrictDwarf = getDebugStrictDwarf();
   Options.LoopAlignment = getAlignLoops();
   Options.JMCInstrument = getJMCInstrument();
+  Options.XCOFFReadOnlyPointers = getXCOFFReadOnlyPointers();
 
   Options.MCOptions = mc::InitMCTargetOptionsFromFlags();
 

@@ -133,6 +133,13 @@ New checks
   Checks that all implicit and explicit inline functions in header files are
   tagged with the ``LIBC_INLINE`` macro.
 
+- New :doc:`readability-avoid-unconditional-preprocessor-if
+  <clang-tidy/checks/readability/avoid-unconditional-preprocessor-if>` check.
+
+  Finds code blocks that are constantly enabled or disabled in preprocessor
+  directives by analyzing ``#if`` conditions, such as ``#if 0`` and
+  ``#if 1``, etc.
+
 New check aliases
 ^^^^^^^^^^^^^^^^^
 
@@ -149,7 +156,8 @@ Changes in existing checks
 - Improved :doc:`readability-redundant-string-cstr
   <clang-tidy/checks/readability/redundant-string-cstr>` check to recognise
   unnecessary ``std::string::c_str()`` and ``std::string::data()`` calls in
-  arguments to ``std::print`` and ``std::format``.
+  arguments to ``std::print``, ``std::format`` or other functions listed in
+  the ``StringParameterFunction`` check option.
 
 - Deprecated check-local options `HeaderFileExtensions`
   in :doc:`bugprone-dynamic-static-initializers
@@ -160,6 +168,10 @@ Changes in existing checks
   in :doc:`bugprone-suspicious-include
   <clang-tidy/checks/bugprone/suspicious-include>` check.
   Global options of the same name should be used instead.
+
+- Improved :doc:`bugprone-use-after-move
+  <clang-tidy/checks/bugprone/use-after-move>` check to also cover constructor
+  initializers.
 
 - Deprecated check-local options `HeaderFileExtensions`
   in :doc:`google-build-namespaces
@@ -191,6 +203,11 @@ Changes in existing checks
   constructors toward hand written constructors so that they are skipped if more
   than one exists.
 
+- Fixed false positive in :doc:`modernize-use-equals-default
+  <clang-tidy/checks/modernize/use-equals-default>` check for special member
+  functions containing macros or preprocessor directives, and out-of-line special
+  member functions in unions.
+
 - Fixed reading `HungarianNotation.CString.*` options in
   :doc:`readability-identifier-naming
   <clang-tidy/checks/readability/identifier-naming>` check.
@@ -199,6 +216,15 @@ Changes in existing checks
   `WideCharPrinter` to `CharPointer` and `WideCharPointer` respectively in
   :doc:`readability-identifier-naming
   <clang-tidy/checks/readability/identifier-naming>` check.
+
+- Updated the Hungarian prefixes for enums in C files to match those used in C++
+  files for improved readability, as checked by :doc:`readability-identifier-naming
+  <clang-tidy/checks/readability/identifier-naming>`. To preserve the previous
+  behavior of using `i` as the prefix for enum tags, set the `EnumConstantPrefix`
+  option to `i` instead of using `EnumConstantHungarianPrefix`.
+
+- Added support to optionally ignore user-defined literals in
+  :doc:`readability-magic-numbers<clang-tidy/checks/readability/magic-numbers>`.
 
 - Fixed a false positive in :doc:`readability-container-size-empty
   <clang-tidy/checks/readability/container-size-empty>` check when comparing
@@ -217,6 +243,19 @@ Changes in existing checks
 - Fixed a false positive in :doc:`cppcoreguidelines-slicing
   <clang-tidy/checks/cppcoreguidelines/slicing>` check when warning would be
   emitted in constructor for virtual base class initialization.
+
+- Improved :doc:`bugprone-use-after-move
+  <clang-tidy/checks/bugprone/use-after-move>` to understand that there is a
+  sequence point between designated initializers.
+
+- Fixed an issue in :doc:`readability-identifier-naming
+  <clang-tidy/checks/readability/identifier-naming>` when specifying an empty
+  string for ``Prefix`` or ``Suffix`` options could result in the style not
+  being used.
+
+- Fixed an issue in :doc:`google-readability-avoid-underscore-in-googletest-name
+  <clang-tidy/checks/google/readability-avoid-underscore-in-googletest-name>` when using
+  ``DISABLED_`` in the test suite name.
 
 Removed checks
 ^^^^^^^^^^^^^^

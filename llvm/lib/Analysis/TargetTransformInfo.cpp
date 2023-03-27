@@ -220,6 +220,14 @@ TargetTransformInfo::getGEPCost(Type *PointeeType, const Value *Ptr,
   return TTIImpl->getGEPCost(PointeeType, Ptr, Operands, CostKind);
 }
 
+InstructionCost TargetTransformInfo::getPointersChainCost(
+    ArrayRef<const Value *> Ptrs, const Value *Base,
+    const TTI::PointersChainInfo &Info, TTI::TargetCostKind CostKind) const {
+  assert((Base || !Info.isSameBase()) &&
+         "If pointers have same base address it has to be provided.");
+  return TTIImpl->getPointersChainCost(Ptrs, Base, Info, CostKind);
+}
+
 unsigned TargetTransformInfo::getEstimatedNumberOfCaseClusters(
     const SwitchInst &SI, unsigned &JTSize, ProfileSummaryInfo *PSI,
     BlockFrequencyInfo *BFI) const {
@@ -690,6 +698,10 @@ std::optional<unsigned> TargetTransformInfo::getMaxVScale() const {
 
 std::optional<unsigned> TargetTransformInfo::getVScaleForTuning() const {
   return TTIImpl->getVScaleForTuning();
+}
+
+bool TargetTransformInfo::isVScaleKnownToBeAPowerOfTwo() const {
+  return TTIImpl->isVScaleKnownToBeAPowerOfTwo();
 }
 
 bool TargetTransformInfo::shouldMaximizeVectorBandwidth(

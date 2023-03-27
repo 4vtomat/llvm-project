@@ -175,6 +175,7 @@
 ; CHECK-NEXT:       RISCV Machine Constant Propagation
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISCV Make Compressible
+; CHECK-NEXT:       Machine Copy Propagation Pass
 ; CHECK-NEXT:       Contiguously Lay Out Funclets
 ; CHECK-NEXT:       StackMap Liveness Analysis
 ; CHECK-NEXT:       Live DEBUG_VALUE analysis
@@ -185,8 +186,13 @@
 ; CHECK-NEXT:       Machine Optimization Remark Emitter
 ; CHECK-NEXT:       Stack Frame Layout Analysis
 ; CHECK-NEXT:       RISCV pseudo instruction expansion pass
+<<<<<<< HEAD
 ; CHECK-NEXT:       RISCV insert NTLH instruction pass
 ; CHECK-NEXT:       Machine Copy Propagation Pass
+||||||| a8cd84d32843
+; CHECK-NEXT:       Machine Copy Propagation Pass
+=======
+>>>>>>> upstream/main
 ; CHECK-NEXT:       RISCV atomic pseudo instruction expansion pass
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine Optimization Remark Emitter

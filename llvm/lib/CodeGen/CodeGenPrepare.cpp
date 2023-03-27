@@ -2370,7 +2370,8 @@ bool CodeGenPrepare::optimizeCallInst(CallInst *CI, ModifyDT &ModifiedDT) {
       if (!Arg->getType()->isPointerTy())
         continue;
       unsigned AS = Arg->getType()->getPointerAddressSpace();
-      return optimizeMemoryInst(CI, Arg, Arg->getType(), AS);
+      if (optimizeMemoryInst(CI, Arg, Arg->getType(), AS))
+        return true;
     }
 
   IntrinsicInst *II = dyn_cast<IntrinsicInst>(CI);
@@ -3944,17 +3945,17 @@ private:
                         SimplificationTracker &ST) {
     while (!TraverseOrder.empty()) {
       Value *Current = TraverseOrder.pop_back_val();
-      assert(Map.find(Current) != Map.end() && "No node to fill!!!");
+      assert(Map.contains(Current) && "No node to fill!!!");
       Value *V = Map[Current];
 
       if (SelectInst *Select = dyn_cast<SelectInst>(V)) {
         // CurrentValue also must be Select.
         auto *CurrentSelect = cast<SelectInst>(Current);
         auto *TrueValue = CurrentSelect->getTrueValue();
-        assert(Map.find(TrueValue) != Map.end() && "No True Value!");
+        assert(Map.contains(TrueValue) && "No True Value!");
         Select->setTrueValue(ST.Get(Map[TrueValue]));
         auto *FalseValue = CurrentSelect->getFalseValue();
-        assert(Map.find(FalseValue) != Map.end() && "No False Value!");
+        assert(Map.contains(FalseValue) && "No False Value!");
         Select->setFalseValue(ST.Get(Map[FalseValue]));
       } else {
         // Must be a Phi node then.
@@ -3962,7 +3963,7 @@ private:
         // Fill the Phi node with values from predecessors.
         for (auto *B : predecessors(PHI->getParent())) {
           Value *PV = cast<PHINode>(Current)->getIncomingValueForBlock(B);
-          assert(Map.find(PV) != Map.end() && "No predecessor Value!");
+          assert(Map.contains(PV) && "No predecessor Value!");
           PHI->addIncoming(ST.Get(Map[PV]), B);
         }
       }
@@ -3986,7 +3987,7 @@ private:
     while (!Worklist.empty()) {
       Value *Current = Worklist.pop_back_val();
       // if it is already visited or it is an ending value then skip it.
-      if (Map.find(Current) != Map.end())
+      if (Map.contains(Current))
         continue;
       TraverseOrder.push_back(Current);
 

@@ -19,8 +19,8 @@
 #include "SIRegisterInfo.h"
 #include "llvm/ADT/FloatingPointMode.h"
 #include "llvm/ADT/Statistic.h"
-#include "llvm/Analysis/LegacyDivergenceAnalysis.h"
 #include "llvm/Analysis/OptimizationRemarkEmitter.h"
+#include "llvm/Analysis/UniformityAnalysis.h"
 #include "llvm/BinaryFormat/ELF.h"
 #include "llvm/CodeGen/Analysis.h"
 #include "llvm/CodeGen/FunctionLoweringInfo.h"
@@ -35,8 +35,8 @@
 #include "llvm/IR/IntrinsicsAMDGPU.h"
 #include "llvm/IR/IntrinsicsR600.h"
 #include "llvm/Support/CommandLine.h"
-#include "llvm/Support/ModRef.h"
 #include "llvm/Support/KnownBits.h"
+#include "llvm/Support/ModRef.h"
 
 using namespace llvm;
 
@@ -7246,10 +7246,8 @@ SDValue SITargetLowering::lowerRawBufferAtomicIntrin(SDValue Op,
 
 // Return a value to use for the idxen operand by examining the vindex operand.
 static unsigned getIdxEn(SDValue VIndex) {
-  if (auto VIndexC = dyn_cast<ConstantSDNode>(VIndex))
-    // No need to set idxen if vindex is known to be zero.
-    return VIndexC->getZExtValue() != 0;
-  return 1;
+  // No need to set idxen if vindex is known to be zero.
+  return isNullConstant(VIndex) ? 0 : 1;
 }
 
 SDValue
@@ -11287,8 +11285,8 @@ SDValue SITargetLowering::performAddCombine(SDNode *N,
   }
   case ISD::ADDCARRY: {
     // add x, (addcarry y, 0, cc) => addcarry x, y, cc
-    auto C = dyn_cast<ConstantSDNode>(RHS.getOperand(1));
-    if (!C || C->getZExtValue() != 0) break;
+    if (!isNullConstant(RHS.getOperand(1)))
+      break;
     SDValue Args[] = { LHS, RHS.getOperand(0), RHS.getOperand(2) };
     return DAG.getNode(ISD::ADDCARRY, SDLoc(N), RHS->getVTList(), Args);
   }
@@ -12871,9 +12869,9 @@ static bool isCopyFromRegOfInlineAsm(const SDNode *N) {
   return false;
 }
 
-bool SITargetLowering::isSDNodeSourceOfDivergence(
-    const SDNode *N, FunctionLoweringInfo *FLI,
-    LegacyDivergenceAnalysis *KDA) const {
+bool SITargetLowering::isSDNodeSourceOfDivergence(const SDNode *N,
+                                                  FunctionLoweringInfo *FLI,
+                                                  UniformityInfo *UA) const {
   switch (N->getOpcode()) {
   case ISD::CopyFromReg: {
     const RegisterSDNode *R = cast<RegisterSDNode>(N->getOperand(1));
@@ -12886,7 +12884,7 @@ bool SITargetLowering::isSDNodeSourceOfDivergence(
       return !TRI->isSGPRReg(MRI, Reg);
 
     if (const Value *V = FLI->getValueFromVirtualReg(R->getReg()))
-      return KDA->isDivergent(V);
+      return UA->isDivergent(V);
 
     assert(Reg == FLI->DemoteRegister || isCopyFromRegOfInlineAsm(N));
     return !TRI->isSGPRReg(MRI, Reg);
@@ -13167,6 +13165,8 @@ SITargetLowering::getRegClassFor(MVT VT, bool isDivergent) const {
 // uniform values (as produced by the mask results of control flow intrinsics)
 // used outside of divergent blocks. The phi users need to also be treated as
 // always uniform.
+//
+// FIXME: DA is no longer in-use. Does this still apply to UniformityAnalysis?
 static bool hasCFUser(const Value *V, SmallPtrSet<const Value *, 16> &Visited,
                       unsigned WaveSize) {
   // FIXME: We assume we never cast the mask results of a control flow
