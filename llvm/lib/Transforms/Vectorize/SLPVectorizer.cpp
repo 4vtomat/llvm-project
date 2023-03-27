@@ -10009,13 +10009,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
     return E->VectorizedValue;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Do not need to reorder srided loads, built out of reversed loads.
-  bool IgnoreReorder = false;
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
   if (E->State == TreeEntry::NeedToGather) {
     if (E->getMainOp() && E->Idx == 0)
       setInsertPointAfterBundle(E);
@@ -10024,7 +10017,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
     return Vec;
   }
 
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+  // Do not need to reorder srided loads, built out of reversed loads.
+  bool IgnoreReorder = false;
+#endif // SIFIVE_CUSTOMIZATION
   auto FinalShuffle = [&](Value *V, const TreeEntry *E) {
     ShuffleInstructionBuilder ShuffleBuilder(Builder, *this);
     if (E->getOpcode() == Instruction::Store) {
