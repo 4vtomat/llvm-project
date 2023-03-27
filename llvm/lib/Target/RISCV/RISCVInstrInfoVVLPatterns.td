@@ -151,7 +151,6 @@ def riscv_fcopysign_vl : SDNode<"RISCVISD::FCOPYSIGN_VL", SDT_RISCVCopySign_VL>;
 def riscv_fminnum_vl   : SDNode<"RISCVISD::FMINNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 def riscv_fmaxnum_vl   : SDNode<"RISCVISD::FMAXNUM_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfclass_vl : SDNode<"RISCVISD::VFCLASS_VL",
                               SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
@@ -162,8 +161,6 @@ def riscv_vfclass_vl : SDNode<"RISCVISD::VFCLASS_VL",
                                                    SDTCisVT<3, XLenVT>]>>;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 def riscv_strict_fadd_vl  : SDNode<"RISCVISD::STRICT_FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative, SDNPHasChain]>;
 def riscv_strict_fsub_vl  : SDNode<"RISCVISD::STRICT_FSUB_VL",  SDT_RISCVFPBinOp_VL, [SDNPHasChain]>;
 def riscv_strict_fmul_vl  : SDNode<"RISCVISD::STRICT_FMUL_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative, SDNPHasChain]>;
@@ -186,7 +183,6 @@ def any_riscv_fsqrt_vl : PatFrags<(ops node:$src, node:$mask, node:$vl),
                         [(riscv_fsqrt_vl node:$src, node:$mask, node:$vl),
                          (riscv_strict_fsqrt_vl node:$src, node:$mask, node:$vl)]>;
 
->>>>>>> upstream/main
 def SDT_RISCVVecFMA_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                               SDTCisSameAs<0, 2>,
                                               SDTCisSameAs<0, 3>,
@@ -544,7 +540,6 @@ multiclass VPatBinaryVL_V<SDPatternOperator vop,
                      (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_V<SDNode vop,
                              string instruction_name,
@@ -576,8 +571,6 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPatBinaryVL_V_E<SDPatternOperator vop,
                             string instruction_name,
                             string suffix,
@@ -604,7 +597,6 @@ multiclass VPatBinaryVL_V_E<SDPatternOperator vop,
                      (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 }
 
->>>>>>> upstream/main
 multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                                     string instruction_name,
                                     string suffix,
@@ -665,7 +657,6 @@ multiclass VPatBinaryVL_XI<SDPatternOperator vop,
                      (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_XI<SDNode vop,
                               string instruction_name,
@@ -698,10 +689,6 @@ multiclass VPatBinaryRM_VL_XI<SDNode vop,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPatBinaryVL_VV_VX<SDNode vop, string instruction_name> {
-||||||| a8cd84d32843
-multiclass VPatBinaryVL_VV_VX<SDNode vop, string instruction_name> {
-=======
 multiclass VPatBinaryVL_XI_E<SDPatternOperator vop,
                              string instruction_name,
                              string suffix,
@@ -730,7 +717,6 @@ multiclass VPatBinaryVL_XI_E<SDPatternOperator vop,
 }
 
 multiclass VPatBinaryVL_VV_VX<SDPatternOperator vop, string instruction_name> {
->>>>>>> upstream/main
   foreach vti = AllIntegerVectors in {
     defm : VPatBinaryVL_V<vop, instruction_name, "VV",
                            vti.Vector, vti.Vector, vti.Vector, vti.Mask,
@@ -743,7 +729,6 @@ multiclass VPatBinaryVL_VV_VX<SDPatternOperator vop, string instruction_name> {
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_VV_VX<SDNode vop, string instruction_name> {
   foreach vti = AllIntegerVectors in {
@@ -771,10 +756,6 @@ multiclass VPatBinaryRM_VL_VV_VX_VI<SDNode vop, string instruction_name,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPatBinaryVL_VV_VX_VI<SDNode vop, string instruction_name,
-||||||| a8cd84d32843
-multiclass VPatBinaryVL_VV_VX_VI<SDNode vop, string instruction_name,
-=======
 multiclass VPatBinaryVL_VV_VX_E<SDPatternOperator vop,
                                 string instruction_name> {
   foreach vti = AllIntegerVectors in {
@@ -790,7 +771,6 @@ multiclass VPatBinaryVL_VV_VX_E<SDPatternOperator vop,
 }
 
 multiclass VPatBinaryVL_VV_VX_VI<SDPatternOperator vop, string instruction_name,
->>>>>>> upstream/main
                                  Operand ImmType = simm5>
     : VPatBinaryVL_VV_VX<vop, instruction_name> {
   foreach vti = AllIntegerVectors in {
@@ -856,7 +836,6 @@ multiclass VPatBinaryNVL_WV_WX_WI<SDPatternOperator vop, string instruction_name
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableIntVectors in {
@@ -877,12 +856,7 @@ multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPatBinaryVL_VF<SDNode vop,
-||||||| a8cd84d32843
-multiclass VPatBinaryVL_VF<SDNode vop,
-=======
 multiclass VPatBinaryVL_VF<SDPatternOperator vop,
->>>>>>> upstream/main
                            string instruction_name,
                            ValueType result_type,
                            ValueType vop_type,
@@ -968,7 +942,6 @@ multiclass VPatBinaryFPVL_R_VF<SDPatternOperator vop, string instruction_name> {
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryFPWVL_VV_VF<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableFloatVectors in {
@@ -984,8 +957,6 @@ multiclass VPatBinaryFPWVL_VV_VF<SDNode vop, string instruction_name> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPatBinaryFPVL_R_VF_E<SDPatternOperator vop,
                                  string instruction_name> {
   foreach fvti = AllFloatVectors in {
@@ -1001,7 +972,6 @@ multiclass VPatBinaryFPVL_R_VF_E<SDPatternOperator vop,
   }
 }
 
->>>>>>> upstream/main
 multiclass VPatIntegerSetCCVL_VV<VTypeInfo vti, string instruction_name,
                                  CondCode cc> {
   def : Pat<(vti.Mask (riscv_setcc_vl (vti.Vector vti.RegClass:$rs1),
