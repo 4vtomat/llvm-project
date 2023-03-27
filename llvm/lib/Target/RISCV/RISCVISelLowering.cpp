@@ -32,14 +32,10 @@
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/IR/DiagnosticPrinter.h"
 #include "llvm/IR/IRBuilder.h"
-<<<<<<< HEAD
+#include "llvm/IR/Instructions.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsAArch64.h"
 #endif
-||||||| a8cd84d32843
-=======
-#include "llvm/IR/Instructions.h"
->>>>>>> upstream/main
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Support/CommandLine.h"
