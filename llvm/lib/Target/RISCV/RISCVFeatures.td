@@ -771,8 +771,7 @@ def HasVendorXTHeadVdot : Predicate<"Subtarget->hasVendorXTHeadVdot()">,
 // Feature32Bit exists to mark CPUs that support RV32 to distinquish them from
 // tuning CPU names.
 def Feature32Bit
-<<<<<<< HEAD
-    : SubtargetFeature<"32bit", "HasRV32", "true", "Implements RV32">;
+    : SubtargetFeature<"32bit", "IsRV32", "true", "Implements RV32">;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSscofpmf
@@ -911,11 +910,6 @@ def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
                                 "'Zvksh' (SM3 Hash Function Instructions.)">;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-    : SubtargetFeature<"32bit", "HasRV32", "true", "Implements RV32">;
-=======
-    : SubtargetFeature<"32bit", "IsRV32", "true", "Implements RV32">;
->>>>>>> upstream/main
 def Feature64Bit
     : SubtargetFeature<"64bit", "IsRV64", "true", "Implements RV64">;
 def IsRV64 : Predicate<"Subtarget->is64Bit()">,
