@@ -422,17 +422,6 @@ void RISCVPassConfig::addPreEmitPass() {
 #endif // SIFIVE_CUSTOMIZATION
   addPass(&BranchRelaxationPassID);
   addPass(createRISCVMakeCompressibleOptPass());
-
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE: Cherry-picked from upstream.
-  // TODO: It would potentially be better to schedule copy propagation after
-  // expanding pseudos (in addPreEmitPass2). However, performing copy
-  // propagation after the machine outliner (which runs after addPreEmitPass)
-  // currently leads to incorrect code-gen, where copies to registers within
-  // outlined functions are removed erroneously.
-  if (TM->getOptLevel() >= CodeGenOpt::Default && EnableRISCVCopyPropagation)
-    addPass(createMachineCopyPropagationPass(true));
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 void RISCVPassConfig::addPreEmitPass2() {
@@ -441,14 +430,10 @@ void RISCVPassConfig::addPreEmitPass2() {
   addPass(createRISCVInsertNTLHInstsPass());
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
- // SIFIVE: Deletion cherry-picked from upstream.
-#else
   // Do the copy propagation after expanding pseudos because we may produce some
   // MVs when expanding.
   if (TM->getOptLevel() >= CodeGenOpt::Default && EnableRISCVCopyPropagation)
     addPass(createMachineCopyPropagationPass(true));
-#endif // SIFIVE_CUSTOMIZATION
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
   // possibility for other passes to break the requirements for forward
