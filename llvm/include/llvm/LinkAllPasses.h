@@ -140,17 +140,9 @@ namespace {
       (void) llvm::createEarlyCSEPass();
       (void) llvm::createMergedLoadStoreMotionPass();
       (void) llvm::createGVNPass();
-<<<<<<< HEAD
-      (void) llvm::createNewGVNPass();
-      (void) llvm::createMemCpyOptPass();
 #if SIFIVE_CUSTOMIZATION
       (void) llvm::createLoopDataLayoutPass();
 #endif
-||||||| a8cd84d32843
-      (void) llvm::createNewGVNPass();
-      (void) llvm::createMemCpyOptPass();
-=======
->>>>>>> upstream/main
       (void) llvm::createPostDomTree();
       (void) llvm::createInstructionNamerPass();
       (void) llvm::createMetaRenamerPass();
