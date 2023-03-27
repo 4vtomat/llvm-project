@@ -14,12 +14,7 @@
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
-<<<<<<< HEAD
-#include "llvm/IR/DerivedTypes.h"
-||||||| a8cd84d32843
-=======
 #include "llvm/IR/Instructions.h"
->>>>>>> upstream/main
 #include <cmath>
 #include <optional>
 using namespace llvm;
@@ -417,23 +412,15 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
                                              TTI::TargetCostKind CostKind,
                                              int Index, VectorType *SubTp,
                                              ArrayRef<const Value *> Args) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   Kind = improveShuffleKindFromMask(Kind, Mask);
 #endif // SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(Tp)) {
-    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
-||||||| a8cd84d32843
-  if (isa<ScalableVectorType>(Tp)) {
-    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
-=======
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
 
   // First, handle cases where having a fixed length vector enables us to
   // give a more accurate cost than falling back to generic scalable codegen.
   // TODO: Each of these cases hints at a modeling gap around scalable vectors.
   if (isa<FixedVectorType>(Tp)) {
->>>>>>> upstream/main
     switch (Kind) {
     default:
       break;
@@ -465,41 +452,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     }
   };
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(Tp) &&
-      (!SubTp || isa<ScalableVectorType>(SubTp))) {
-    switch (Kind) {
-    case TTI::SK_Broadcast:
-    case TTI::SK_Splice:
-      llvm_unreachable("Handled earlier");
-    case TTI::SK_Select:
-    case TTI::SK_Reverse:
-    case TTI::SK_Transpose:
-    case TTI::SK_PermuteSingleSrc:
-    case TTI::SK_PermuteTwoSrc:
-      // This may seem strange but the more elements out there the more work is
-      // for the VPU.
-      return getPermuteShuffleOverhead(cast<ScalableVectorType>(Tp), CostKind,
-                                       nullptr, nullptr);
-    case TTI::SK_ExtractSubvector:
-      return getExtractSubvectorOverhead(cast<ScalableVectorType>(Tp),
-                                         cast<ScalableVectorType>(SubTp),
-                                         CostKind, Index, nullptr, nullptr);
-    case TTI::SK_InsertSubvector:
-      return getInsertSubvectorOverhead(cast<ScalableVectorType>(Tp),
-                                        cast<ScalableVectorType>(SubTp),
-                                        CostKind, Index, nullptr, nullptr);
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  if (isa<FixedVectorType>(Tp) && Kind == TargetTransformInfo::SK_Broadcast) {
-    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
-||||||| a8cd84d32843
-  if (isa<FixedVectorType>(Tp) && Kind == TargetTransformInfo::SK_Broadcast) {
-    std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
-=======
   // Handle scalable vectors (and fixed vectors legalized to scalable vectors).
   switch (Kind) {
   default:
@@ -521,7 +473,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
     return LT.first * 3 * getLMULCost(LT.second);
   }
   case TTI::SK_Broadcast: {
->>>>>>> upstream/main
     bool HasScalar = (Args.size() > 0) && (Operator::getOpcode(Args[0]) ==
                                            Instruction::InsertElement);
     if (LT.second.getScalarSizeInBits() == 1) {
