@@ -2222,7 +2222,6 @@ multiclass VPseudoBinary<VReg RetClass,
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRM<VReg RetClass,
                            VReg Op1Class,
@@ -2248,8 +2247,6 @@ multiclass VPseudoBinaryRM<VReg RetClass,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPseudoBinary_E<VReg RetClass,
                            VReg Op1Class,
                            DAGOperand Op2Class,
@@ -2268,7 +2265,6 @@ multiclass VPseudoBinary_E<VReg RetClass,
   }
 }
 
->>>>>>> upstream/main
 multiclass VPseudoBinaryM<VReg RetClass,
                           VReg Op1Class,
                           DAGOperand Op2Class,
@@ -2342,7 +2338,6 @@ multiclass VPseudoBinaryV_VV<LMULInfo m, string Constraint = ""> {
   defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PPseudoBinaryNoMask<VReg RetClass,
                                VReg Op1Class,
@@ -2382,13 +2377,10 @@ multiclass PPseudoUnaryV_S_NoMask<LMULInfo m, string Constraint = ""> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPseudoBinaryV_VV_E<LMULInfo m, int sew, string Constraint = ""> {
   defm _VV : VPseudoBinary_E<m.vrclass, m.vrclass, m.vrclass, m, sew, Constraint>;
 }
 
->>>>>>> upstream/main
 // Similar to VPseudoBinaryV_VV, but uses MxListF.
 multiclass VPseudoBinaryFV_VV<LMULInfo m, string Constraint = ""> {
   defm _VV : VPseudoBinary<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
@@ -4455,7 +4447,6 @@ class VPatUnaryNoMaskTU<string intrinsic_name,
                    (op2_type op2_reg_class:$rs2),
                    GPR:$vl, sew)>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 class PPatUnaryNoMask<string intrinsic_name,
                       string inst,
@@ -4476,8 +4467,6 @@ class PPatUnaryNoMask<string intrinsic_name,
                    GPR:$vl, sew, (XLenVT timm:$policy))>;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 class VPatUnaryNoMaskTU_E<string intrinsic_name,
                           string inst,
                           string kind,
@@ -4497,7 +4486,6 @@ class VPatUnaryNoMaskTU_E<string intrinsic_name,
                    (op2_type op2_reg_class:$rs2),
                    GPR:$vl, log2sew)>;
 
->>>>>>> upstream/main
 class VPatUnaryMask<string intrinsic_name,
                     string inst,
                     string kind,
@@ -5003,7 +4991,6 @@ class VPatTernaryMaskPolicy<string intrinsic,
                     (mask_type V0),
                     GPR:$vl, sew, (XLenVT timm:$policy))>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 class VPatVC_OP4<string intrinsic_name,
                  string inst,
@@ -5073,8 +5060,6 @@ class VPatVC_V_OP3<string intrinsic_name,
                     GPR:$vl, sew)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 class VPatTernaryMaskTA<string intrinsic,
                         string inst,
                         string kind,
@@ -5100,7 +5085,6 @@ class VPatTernaryMaskTA<string intrinsic,
                     (mask_type V0),
                     GPR:$vl, sew, TAIL_AGNOSTIC)>;
 
->>>>>>> upstream/main
 multiclass VPatUnaryS_M<string intrinsic_name,
                              string inst>
 {
@@ -5191,7 +5175,6 @@ multiclass VPatUnaryV_V<string intrinsic, string instruction,
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PPatUnaryV_V_NoMask<string intrinsic, string instruction,
                                list<VTypeInfo> vtilist> {
@@ -5218,8 +5201,6 @@ multiclass PPatUnaryV_V_S_NoMask<string intrinsic, string instruction,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPatUnaryV_V_E<string intrinsic, string instruction,
                         list<VTypeInfo> vtilist> {
   foreach vti = vtilist in {
@@ -5237,7 +5218,6 @@ multiclass VPatUnaryV_V_E<string intrinsic, string instruction,
   }
 }
 
->>>>>>> upstream/main
 multiclass VPatNullaryV<string intrinsic, string instruction>
 {
   foreach vti = AllIntegerVectors in {
@@ -5470,7 +5450,6 @@ multiclass VPatBinaryV_VV<string intrinsic, string instruction,
                         vti.RegClass, vti.RegClass>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinary_RM_V_VV<string intrinsic, string instruction,
                               list<VTypeInfo> vtilist> {
@@ -5491,10 +5470,6 @@ multiclass VPatBinaryV_VV_NoMask<string intrinsic, string instruction,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-multiclass VPatBinaryV_VV_INT<string intrinsic, string instruction,
-||||||| a8cd84d32843
-multiclass VPatBinaryV_VV_INT<string intrinsic, string instruction,
-=======
 multiclass VPatBinaryV_VV_E<string intrinsic, string instruction,
                             list<VTypeInfo> vtilist> {
   foreach vti = vtilist in
@@ -5506,7 +5481,6 @@ multiclass VPatBinaryV_VV_E<string intrinsic, string instruction,
 }
 
 multiclass VPatBinaryV_VV_INT_E<string intrinsic, string instruction,
->>>>>>> upstream/main
                           list<VTypeInfo> vtilist> {
   foreach vti = vtilist in {
     defvar ivti = GetIntVTypeInfo<vti>.Vti;
@@ -5548,7 +5522,6 @@ multiclass VPatBinaryV_VX<string intrinsic, string instruction,
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinary_RM_V_VX<string intrinsic, string instruction,
                               list<VTypeInfo> vtilist> {
@@ -5562,8 +5535,6 @@ multiclass VPatBinary_RM_V_VX<string intrinsic, string instruction,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPatBinaryV_VX_E<string intrinsic, string instruction,
                             list<VTypeInfo> vtilist> {
   foreach vti = vtilist in {
@@ -5576,7 +5547,6 @@ multiclass VPatBinaryV_VX_E<string intrinsic, string instruction,
   }
 }
 
->>>>>>> upstream/main
 multiclass VPatBinaryV_VX_INT<string intrinsic, string instruction,
                           list<VTypeInfo> vtilist> {
   foreach vti = vtilist in
@@ -5947,7 +5917,6 @@ multiclass VPatBinaryV_VV_VX<string intrinsic, string instruction,
     : VPatBinaryV_VV<intrinsic, instruction, vtilist>,
       VPatBinaryV_VX<intrinsic, instruction, vtilist>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_V_VV_VX<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
@@ -5961,14 +5930,11 @@ multiclass VPatBinaryRM_V_WV_WX_WI<string intrinsic, string instruction,
       VPatBinaryRM_V_WI<intrinsic, instruction, vtilist>;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-=======
 multiclass VPatBinaryV_VV_VX_E<string intrinsic, string instruction,
                                list<VTypeInfo> vtilist>
     : VPatBinaryV_VV_E<intrinsic, instruction, vtilist>,
       VPatBinaryV_VX_E<intrinsic, instruction, vtilist>;
 
->>>>>>> upstream/main
 multiclass VPatBinaryV_VX_VI<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist>
     : VPatBinaryV_VX<intrinsic, instruction, vtilist>,
