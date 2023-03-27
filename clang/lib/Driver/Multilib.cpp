@@ -55,18 +55,12 @@ static void normalizePathSegment(std::string &Segment) {
 Multilib::Multilib(StringRef GCCSuffix, StringRef OSSuffix,
                    StringRef IncludeSuffix, const flags_list &Flags)
     : GCCSuffix(GCCSuffix), OSSuffix(OSSuffix), IncludeSuffix(IncludeSuffix),
-<<<<<<< HEAD
-      Flags(Flags), Priority(Priority) {
+      Flags(Flags) {
 #if SIFIVE_CUSTOMIZATION
   normalizePathSegment(this->GCCSuffix);
   normalizePathSegment(this->OSSuffix);
   normalizePathSegment(this->IncludeSuffix);
 #else
-||||||| a8cd84d32843
-      Flags(Flags), Priority(Priority) {
-=======
-      Flags(Flags) {
->>>>>>> upstream/main
   assert(GCCSuffix.empty() ||
          (StringRef(GCCSuffix).front() == '/' && GCCSuffix.size() > 1));
   assert(OSSuffix.empty() ||
