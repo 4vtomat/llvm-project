@@ -3235,36 +3235,18 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
 Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
                                                    const DataLayout &DL) {
   // Verify that V is a vector type with same number of elements as DstVTy.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  ElementCount VF = DstVTy->getElementCount();
-  VectorType *SrcVecTy = cast<VectorType>(V->getType());
-  assert((VF == SrcVecTy->getElementCount()) &&
-         "Vector dimensions do not match");
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-  auto *DstFVTy = cast<FixedVectorType>(DstVTy);
-  unsigned VF = DstFVTy->getNumElements();
-  auto *SrcVecTy = cast<FixedVectorType>(V->getType());
-  assert((VF == SrcVecTy->getNumElements()) && "Vector dimensions do not match");
-=======
   auto *DstFVTy = cast<VectorType>(DstVTy);
   auto VF = DstFVTy->getElementCount();
   auto *SrcVecTy = cast<VectorType>(V->getType());
   assert(VF == SrcVecTy->getElementCount() && "Vector dimensions do not match");
->>>>>>> upstream/main
   Type *SrcElemTy = SrcVecTy->getElementType();
-#if SIFIVE_CUSTOMIZATION
   Type *DstElemTy = DstVTy->getElementType();
-#endif // SIFIVE_CUSTOMIZATION
   assert((DL.getTypeSizeInBits(SrcElemTy) == DL.getTypeSizeInBits(DstElemTy)) &&
          "Vector elements must have same size");
 
   // Do a direct cast if element types are castable.
   if (CastInst::isBitOrNoopPointerCastable(SrcElemTy, DstElemTy, DL)) {
-#if SIFIVE_CUSTOMIZATION
     return Builder.CreateBitOrPointerCast(V, DstVTy);
-#endif // SIFIVE_CUSTOMIZATION
   }
   // V cannot be directly casted to desired vector type.
   // May happen when V is a floating point vector but DstVTy is a vector of
@@ -3276,19 +3258,9 @@ Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
          "Only one type should be a floating point type");
   Type *IntTy =
       IntegerType::getIntNTy(V->getContext(), DL.getTypeSizeInBits(SrcElemTy));
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   auto *VecIntTy = VectorType::get(IntTy, VF);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-  auto *VecIntTy = FixedVectorType::get(IntTy, VF);
-=======
-  auto *VecIntTy = VectorType::get(IntTy, VF);
->>>>>>> upstream/main
   Value *CastVal = Builder.CreateBitOrPointerCast(V, VecIntTy);
-#if SIFIVE_CUSTOMIZATION
   return Builder.CreateBitOrPointerCast(CastVal, DstVTy);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
@@ -11050,12 +11022,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           Builder.CreateSub(ConstantInt::get(IndexTy, 1), RunTimeVF);
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, NumElt, "", InBounds);
       PartPtr =
-<<<<<<< HEAD
-          cast<GetElementPtrInst>(Builder.CreateGEP(ScalarDataTy, Ptr, NumElt));
-      PartPtr->setIsInBounds(InBounds);
-      PartPtr = cast<GetElementPtrInst>(
-          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane));
-      PartPtr->setIsInBounds(InBounds);
+          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane, "", InBounds);
 #if SIFIVE_CUSTOMIZATION
       if (isMaskRequired) { // We reverse the mask only if it is not an all-ones mask.
         if (VPValue *RVL = State.Plan->getRVL()) {
@@ -11076,21 +11043,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         }
       }
 #endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-          cast<GetElementPtrInst>(Builder.CreateGEP(ScalarDataTy, Ptr, NumElt));
-      PartPtr->setIsInBounds(InBounds);
-      PartPtr = cast<GetElementPtrInst>(
-          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane));
-      PartPtr->setIsInBounds(InBounds);
-      if (isMaskRequired) // Reverse of a null all-one mask is a null mask.
-        BlockInMaskParts[Part] =
-            Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
-=======
-          Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane, "", InBounds);
-      if (isMaskRequired) // Reverse of a null all-one mask is a null mask.
-        BlockInMaskParts[Part] =
-            Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
->>>>>>> upstream/main
     } else {
       Value *Increment = createStepForVF(Builder, IndexTy, State.VF, Part);
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, Increment, "", InBounds);
