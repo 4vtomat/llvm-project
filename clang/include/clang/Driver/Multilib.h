@@ -64,11 +64,6 @@ public:
   flags_list &flags() { return Flags; }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-  /// Returns the multilib priority. When more than one multilib matches flags,
-  /// the one with the highest priority is selected, with 0 being the default.
-  int priority() const { return Priority; }
-
 #if SIFIVE_CUSTOMIZATION
   /// Add a flag to the flags list
   /// \p Flag must be a flag accepted by the driver with its leading '-' removed,
@@ -87,13 +82,6 @@ public:
   bool isValid() const;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| a8cd84d32843
-  /// Returns the multilib priority. When more than one multilib matches flags,
-  /// the one with the highest priority is selected, with 0 being the default.
-  int priority() const { return Priority; }
-
-=======
->>>>>>> upstream/main
   LLVM_DUMP_METHOD void dump() const;
   /// print summary of the Multilib
   void print(raw_ostream &OS) const;
