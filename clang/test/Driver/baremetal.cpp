@@ -133,19 +133,9 @@
 // CHECK-RV64-SAME: "-x" "c++" "{{.*}}baremetal.cpp"
 // CHECK-RV64-NEXT: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
 // CHECK-RV64-SAME: "-Lsome{{[/\\]+}}directory{{[/\\]+}}user{{[/\\]+}}asked{{[/\\]+}}for"
-<<<<<<< HEAD
 // CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
 // CHECK-RV64-SAME: "-L[[RESOURCE_DIR:[^"]+]]{{[/\\]+}}lib{{[/\\]+}}baremetal{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d"
-// CHECK-RV64-SAME: "-lc" "-lm" "-lclang_rt.builtins-riscv64" "-o" "{{.*}}.tmp.out"
-||||||| a8cd84d32843
-// CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}lib"
-// CHECK-RV64-SAME: "-L[[RESOURCE_DIR:[^"]+]]{{[/\\]+}}lib{{[/\\]+}}baremetal"
-// CHECK-RV64-SAME: "-lc" "-lm" "-lclang_rt.builtins-riscv64" "-o" "{{.*}}.tmp.out"
-=======
-// CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}lib"
-// CHECK-RV64-SAME: "-L[[RESOURCE_DIR:[^"]+]]{{[/\\]+}}lib{{[/\\]+}}baremetal"
 // CHECK-RV64-SAME: "-lc" "-lm" "-lclang_rt.builtins-riscv64" "-X" "-o" "{{.*}}.tmp.out"
->>>>>>> upstream/main
 
 // RUN: %clangxx %s -### --target=riscv64-unknown-elf 2>&1 \
 // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf \
