@@ -410,19 +410,6 @@ class VALUVs2<bits<6> funct6, bits<5> vs1, RISCVVFormat opv, string opcodestr>
     : RVInstV<funct6, vs1, opv, (outs VR:$vd),
                (ins VR:$vs2, VMaskOp:$vm),
                opcodestr, "$vd, $vs2$vm">;
-<<<<<<< HEAD
-
-#ifdef SIFIVE_CUSTOMIZATION
-// op vd, vs2 (use vs1 as instruction encoding)
-class VALUVs2NoVm<bits<6> funct6, bits<5> vs1, RISCVVFormat opv, string opcodestr>
-    : RVInstV<funct6, vs1, opv, (outs VR:$vd),
-              (ins VR:$vs2), opcodestr,
-              "$vd, $vs2"> {
-  let vm = 1;
-}
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
 
 // op vd, vs2 (use vs1 as instruction encoding)
 class VALUVs2NoVm<bits<6> funct6, bits<5> vs1, RISCVVFormat opv, string opcodestr>
@@ -431,7 +418,6 @@ class VALUVs2NoVm<bits<6> funct6, bits<5> vs1, RISCVVFormat opv, string opcodest
               "$vd, $vs2"> {
   let vm = 1;
 }
->>>>>>> upstream/main
 } // hasSideEffects = 0, mayLoad = 0, mayStore = 0
 
 //===----------------------------------------------------------------------===//
@@ -1795,13 +1781,6 @@ let Predicates = [HasVInstructionsI64, IsRV64] in {
   }
 } // Predicates = [HasVInstructionsI64, IsRV64]
 
-<<<<<<< HEAD
 include "SiFive_RISCVInstrInfoXsf.td" // SIFIVE
-#ifdef SIFIVE_CUSTOMIZATION
-include "RISCVInstrInfoZvk.td" // SIFIVE
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
 include "RISCVInstrInfoZvk.td"
->>>>>>> upstream/main
 include "RISCVInstrInfoVPseudos.td"
