@@ -13,28 +13,14 @@
 .attribute arch, "rv32i2p1_m2"
 # CHECK: attribute      5, "rv32i2p1_m2p0"
 
-<<<<<<< HEAD
 .attribute arch, "rv32i2p1_ma"
 # CHECK: attribute      5, "rv32i2p1_m2p0_a2p1"
-||||||| a8cd84d32843
-.attribute arch, "rv32i2_m2"
-# CHECK: attribute      5, "rv32i2p0_m2p0"
 
-.attribute arch, "rv32i2_ma"
-# CHECK: attribute      5, "rv32i2p0_m2p0_a2p0"
-=======
 .attribute arch, "rv32e"
 # CHECK: attribute      5, "rv32e2p0"
 
 .attribute arch, "rv64e"
 # CHECK-RV64: attribute      5, "rv64e2p0"
-
-.attribute arch, "rv32i2_m2"
-# CHECK: attribute      5, "rv32i2p0_m2p0"
-
-.attribute arch, "rv32i2_ma"
-# CHECK: attribute      5, "rv32i2p0_m2p0_a2p0"
->>>>>>> upstream/main
 
 .attribute arch, "rv32g"
 # CHECK: attribute      5, "rv32i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0"
