@@ -1165,31 +1165,13 @@ define signext i32 @vpreduce_umax_nxv32i32(i32 signext %s, <vscale x 32 x i32> %
 ; RV32-NEXT:  # %bb.1:
 ; RV32-NEXT:    mv a0, a2
 ; RV32-NEXT:  .LBB67_2:
-<<<<<<< HEAD
-; RV32-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-||||||| a8cd84d32843
-; RV32-NEXT:    vsetvli zero, a1, e32, m8, tu, ma
-=======
-; RV32-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
->>>>>>> upstream/main
+; RV32-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; RV32-NEXT:    vredmaxu.vs v25, v8, v25, v0.t
-<<<<<<< HEAD
 ; RV32-NEXT:    sub a0, a1, a2
 ; RV32-NEXT:    sltu a1, a1, a0
 ; RV32-NEXT:    addi a1, a1, -1
 ; RV32-NEXT:    and a0, a1, a0
-; RV32-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-||||||| a8cd84d32843
-; RV32-NEXT:    vmv.x.s a0, v25
-; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; RV32-NEXT:    vmv.s.x v8, a0
-; RV32-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
-=======
-; RV32-NEXT:    vmv.x.s a0, v25
-; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; RV32-NEXT:    vmv.s.x v8, a0
-; RV32-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
->>>>>>> upstream/main
+; RV32-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; RV32-NEXT:    vmv1r.v v0, v24
 ; RV32-NEXT:    vredmaxu.vs v25, v16, v25, v0.t
 ; RV32-NEXT:    vmv.x.s a0, v25
@@ -1210,34 +1192,14 @@ define signext i32 @vpreduce_umax_nxv32i32(i32 signext %s, <vscale x 32 x i32> %
 ; RV64-NEXT:    mv a2, a0
 ; RV64-NEXT:  .LBB67_2:
 ; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-<<<<<<< HEAD
 ; RV64-NEXT:    vmv.s.x v25, a3
-; RV64-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
-||||||| a8cd84d32843
-; RV64-NEXT:    vmv.s.x v25, a2
-; RV64-NEXT:    vsetvli zero, a1, e32, m8, tu, ma
-=======
-; RV64-NEXT:    vmv.s.x v25, a2
-; RV64-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
->>>>>>> upstream/main
+; RV64-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
 ; RV64-NEXT:    vredmaxu.vs v25, v8, v25, v0.t
-<<<<<<< HEAD
 ; RV64-NEXT:    sub a0, a1, a0
 ; RV64-NEXT:    sltu a1, a1, a0
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    and a0, a1, a0
-; RV64-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-||||||| a8cd84d32843
-; RV64-NEXT:    vmv.x.s a1, v25
-; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; RV64-NEXT:    vmv.s.x v8, a1
-; RV64-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
-=======
-; RV64-NEXT:    vmv.x.s a1, v25
-; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; RV64-NEXT:    vmv.s.x v8, a1
 ; RV64-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
->>>>>>> upstream/main
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vredmaxu.vs v25, v16, v25, v0.t
 ; RV64-NEXT:    vmv.x.s a0, v25
