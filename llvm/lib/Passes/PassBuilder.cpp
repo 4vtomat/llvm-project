@@ -117,14 +117,10 @@
 #include "llvm/Transforms/IPO/Internalize.h"
 #include "llvm/Transforms/IPO/LoopExtractor.h"
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
 #endif
-||||||| a8cd84d32843
-=======
 #include "llvm/Transforms/IPO/MemProfContextDisambiguation.h"
->>>>>>> upstream/main
 #include "llvm/Transforms/IPO/MergeFunctions.h"
 #include "llvm/Transforms/IPO/ModuleInliner.h"
 #include "llvm/Transforms/IPO/OpenMPOpt.h"
