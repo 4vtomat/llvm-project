@@ -301,14 +301,7 @@ enum OperandType : unsigned {
   OPERAND_UIMM3,
   OPERAND_UIMM4,
   OPERAND_UIMM5,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   OPERAND_UIMM6,
-#endif // SIFIVE_CUSTOMIZATION
-||||||| a8cd84d32843
-=======
-  OPERAND_UIMM6,
->>>>>>> upstream/main
   OPERAND_UIMM7,
   OPERAND_UIMM7_LSB00,
   OPERAND_UIMM8_LSB00,
@@ -331,22 +324,13 @@ enum OperandType : unsigned {
   OPERAND_VTYPEI10,
   OPERAND_VTYPEI11,
   OPERAND_RVKRNUM,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OPERAND_UIMM1,
-  OPERAND_RVKRNUM_0_7,
-  OPERAND_RVKRNUM_1_10,
-  OPERAND_RVKRNUM_2_14,
 #endif // SIFIVE_CUSTOMIZATION
-  OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM,
-||||||| a8cd84d32843
-  OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM,
-=======
   OPERAND_RVKRNUM_0_7,
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
   OPERAND_LAST_RISCV_IMM = OPERAND_RVKRNUM_2_14,
->>>>>>> upstream/main
   // Operand is either a register or uimm5, this is used by V extension pseudo
   // instructions to represent a value that be passed as AVL to either vsetvli
   // or vsetivli.
