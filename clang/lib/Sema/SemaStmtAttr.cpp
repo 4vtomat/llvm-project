@@ -19,6 +19,7 @@
 #include "clang/Sema/ScopeInfo.h"
 #include "clang/Sema/SemaInternal.h"
 #include "llvm/ADT/StringExtras.h"
+#include "llvm/Support/CommandLine.h"            // SIFIVE
 #include "llvm/Support/MathExtras.h"             // SIFIVE
 #include "llvm/TargetParser/RISCVTargetParser.h" // SIFIVE
 #include <optional>
@@ -405,10 +406,12 @@ static Attr *handleUnlikely(Sema &S, Stmt *St, const ParsedAttr &A,
 static void
 CheckForIncompatibleAttributes(Sema &S,
                                const SmallVectorImpl<const Attr *> &Attrs) {
+#ifndef SIFIVE_CUSTOMIZATION
   // The vast majority of attributed statements will only have one attribute
   // on them, so skip all of the checking in the common case.
   if (Attrs.size() < 2)
     return;
+#endif
 
   // First, check for the easy cases that are table-generated for us.
   if (!DiagnoseMutualExclusions(S, Attrs))
@@ -572,6 +575,15 @@ CheckForIncompatibleAttributes(Sema &S,
 
     // Record attribute to check for duplication
     LmulSewHintAttr = RH;
+  }
+
+  if (!LmulSewHintAttr && HintAttrs[CategoryType::Vectorize].NumericAttr &&
+      S.Context.getTargetInfo().hasRISCVVTypes()) {
+    // Emit warning for use of vectorize_width if RISC-V is supported, suggest
+    // to use pragma lmul_sew hint instead.
+    SourceLocation OptionLoc =
+        HintAttrs[CategoryType::Vectorize].NumericAttr->getLocation();
+    S.Diag(OptionLoc, diag::warn_use_lmul_sew_pragma);
   }
 #endif // SIFIVE_CUSTOMIZATION
 }

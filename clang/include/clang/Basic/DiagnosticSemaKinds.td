@@ -1038,6 +1038,9 @@ def err_require_vector_support : Error<
 def err_require_max_vector_element_width_64 : Error<
   "(LMUL, SEW) pair (%0, %1) requires a max vector element width of at least 64"
 >;
+def warn_use_lmul_sew_pragma : Warning<
+  "Use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors"
+>, InGroup<RISCVVectorPragma>;
 #endif
 
 def err_pragma_attribute_matcher_subrule_contradicts_rule : Error<
