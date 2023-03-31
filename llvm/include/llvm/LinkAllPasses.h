@@ -140,8 +140,6 @@ namespace {
       (void) llvm::createEarlyCSEPass();
       (void) llvm::createMergedLoadStoreMotionPass();
       (void) llvm::createGVNPass();
-      (void) llvm::createNewGVNPass();
-      (void) llvm::createMemCpyOptPass();
       (void) llvm::createPostDomTree();
       (void) llvm::createInstructionNamerPass();
       (void) llvm::createMetaRenamerPass();
