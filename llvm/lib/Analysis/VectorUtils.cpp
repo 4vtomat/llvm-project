@@ -1627,12 +1627,13 @@ bool VFShape::hasValidParameterList() const {
 
 #if SIFIVE_CUSTOMIZATION
 // Reorganise this
-const SCEV *llvm::isStridedAddressing(Value *Ptr, ScalarEvolution *SE) {
+const SCEV *llvm::isStridedAddressing(Value *Ptr,
+                                      PredicatedScalarEvolution &PSE) {
   auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
   if (!PtrTy || PtrTy->isAggregateType())
     return nullptr;
 
-  const SCEV *V = SE->getSCEV(Ptr);
+  const SCEV *V = PSE.getSCEV(Ptr);
 
   const SCEVAddRecExpr *S = dyn_cast<SCEVAddRecExpr>(V);
   if (!S)

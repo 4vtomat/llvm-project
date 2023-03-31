@@ -70,6 +70,7 @@
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/MDBuilder.h"
 #include "llvm/IR/Metadata.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/PredIteratorCache.h"
@@ -166,6 +167,9 @@ static bool isSafeToExecuteUnconditionally(
     AssumptionCache *AC, bool AllowSpeculation);
 static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
                                      Loop *CurLoop, Instruction &I,
+#if SIFIVE_CUSTOMIZATION
+                                     bool NewStructTBAAPtrContext,
+#endif // SIFIVE_CUSTOMIZATION
                                      SinkAndHoistLICMFlags &Flags,
                                      bool InvariantGroup);
 static bool pointerInvalidatedByBlock(BasicBlock &BB, MemorySSA &MSSA,
@@ -587,7 +591,12 @@ bool llvm::sinkRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       if (!I.mayHaveSideEffects() &&
           isNotUsedOrFreeInLoop(I, LoopNestMode ? OutermostLoop : CurLoop,
                                 SafetyInfo, TTI, FreeInLoop, LoopNestMode) &&
+#if SIFIVE_CUSTOMIZATION
+          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
+                             /* NewStructTBAAPtrHoisting */ false, ORE)) {
+#else
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE)) {
+#endif // SIFIVE_CUSTOMIZATION
         if (sink(I, LI, DT, CurLoop, SafetyInfo, MSSAU, ORE)) {
           if (!FreeInLoop) {
             ++II;
@@ -911,8 +920,17 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       // TODO: It may be safe to hoist if we are hoisting to a conditional block
       // and we have accurately duplicated the control flow from the loop header
       // to that block.
+#if SIFIVE_CUSTOMIZATION
+      bool NewStructTBAAPtrHoisting =
+          (isGuaranteedToExecuteForEveryIteration(&I, CurLoop) &&
+           AllowSpeculation);
+      if (CurLoop->hasLoopInvariantOperands(&I) &&
+          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
+                             NewStructTBAAPtrHoisting, ORE) &&
+#else
       if (CurLoop->hasLoopInvariantOperands(&I) &&
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE) &&
+#endif // SIFIVE_CUSTOMIZATION
           isSafeToExecuteUnconditionally(
               I, DT, TLI, CurLoop, SafetyInfo, ORE,
               CurLoop->getLoopPreheader()->getTerminator(), AC,
@@ -1155,12 +1173,68 @@ bool isOnlyMemoryAccess(const Instruction *I, const Loop *L,
     }
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool isNewStructTBAAPointerCandidate(LoadInst *LI, Loop *CurLoop,
+                                     bool NewStructTBAAPtrHoisting) {
+  if (!NewStructTBAAPtrHoisting)
+    return false;
+
+  // Check for NewStructPathTBAA ptr depth markers
+  if (MDNode *MD = LI->getMetadata(LLVMContext::MD_tbaa)) {
+    bool IsGlobalVal = isa<GlobalValue>(LI->getPointerOperand());
+    bool IsStructPathTBAA =
+        (isa<MDNode>(MD->getOperand(0)) && MD->getNumOperands() >= 3);
+    // For StructPathTBAA metadata, examine the pointer name of the AccessType.
+    // If the AccessType name is in qualifying NextStructPathTBAA format it is a
+    // hoist candidate.
+    // TODO : Add call based modref tests for any global candidates.
+    if (IsStructPathTBAA && CurLoop->isInnermost() && !IsGlobalVal) {
+      MDNode *AccessType = dyn_cast_or_null<MDNode>(MD->getOperand(1));
+      // Only support new TBAA format.
+      if (AccessType && (AccessType->getNumOperands() >= 3) &&
+          isa_and_nonnull<MDNode>(AccessType->getOperand(0))) {
+        Metadata *NameMD = AccessType->getOperand(2).get();
+        // Look for NewStructPathTBAA pointer names having the form:
+        //   p<depth> {struct|class} <type name>
+        // Note: Ignore other forms, deferring processing to legacy Alias
+        //       Analysis queries.
+        if (isa<MDString>(NameMD)) {
+          StringRef PtrName = cast<MDString>(NameMD)->getString();
+          if (PtrName.startswith("p")) {
+            StringRef PtrLevel = PtrName.split(' ').first;
+            StringRef PointeeName = PtrName.split(' ').second;
+            bool IsClassStruct =
+                PointeeName.contains("class") ||
+                PointeeName.contains("struct");
+            if ((PtrLevel.size() > 1) && (IsClassStruct)) {
+              StringRef PtrDepthStr = PtrLevel.split('p').second;
+              APInt Result;
+              PtrDepthStr.getAsInteger(10, Result);
+              uint64_t PtrDepth = Result.getZExtValue();
+              // For single indirect candidates, it is complicated
+              // to disambiguate incorrect/correct cases, only
+              // consider depth 2 and greater.
+              if (PtrDepth > 1)
+                return true;
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                               Loop *CurLoop, MemorySSAUpdater &MSSAU,
                               bool TargetExecutesOncePerLoop,
                               SinkAndHoistLICMFlags &Flags,
+#if SIFIVE_CUSTOMIZATION
+                              bool NewStructTBAAPtrHoisting,
+#endif // SIFIVE_CUSTOMIZATION
                               OptimizationRemarkEmitter *ORE) {
   // If we don't understand the instruction, bail early.
   if (!isHoistableAndSinkableInst(I))
@@ -1191,7 +1265,11 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
     bool InvariantGroup = LI->hasMetadata(LLVMContext::MD_invariant_group);
 
     bool Invalidated = pointerInvalidatedByLoop(
-        MSSA, MU, CurLoop, I, Flags, InvariantGroup);
+        MSSA, MU, CurLoop, I,
+#if SIFIVE_CUSTOMIZATION
+        isNewStructTBAAPointerCandidate(LI, CurLoop, NewStructTBAAPtrHoisting),
+#endif // SIFIVE_CUSTOMIZATION
+	Flags, InvariantGroup);
     // Check loop-invariant address because this may also be a sinkable load
     // whose address is not necessarily loop-invariant.
     if (ORE && Invalidated && CurLoop->isLoopInvariant(LI->getPointerOperand()))
@@ -1238,7 +1316,10 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
           if (Op->getType()->isPointerTy() &&
               pointerInvalidatedByLoop(
                   MSSA, cast<MemoryUse>(MSSA->getMemoryAccess(CI)), CurLoop, I,
-                  Flags, /*InvariantGroup=*/false))
+#if SIFIVE_CUSTOMIZATION
+                  /*NewStructTBAAPtrContext=*/false,
+#endif // SIFIVE_CUSTOMIZATION
+		  Flags, /*InvariantGroup=*/false))
             return false;
         return true;
       }
@@ -2340,6 +2421,9 @@ collectPromotionCandidates(MemorySSA *MSSA, AliasAnalysis *AA, Loop *L) {
 
 static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
                                      Loop *CurLoop, Instruction &I,
+#if SIFIVE_CUSTOMIZATION
+                                     bool NewStructTBAAPtrContext,
+#endif // SIFIVE_CUSTOMIZATION
                                      SinkAndHoistLICMFlags &Flags,
                                      bool InvariantGroup) {
   // For hoisting, use the walker to determine safety
@@ -2360,7 +2444,17 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
     // 1) if the memoryaccess is outside the loop
     // 2) the earliest access is at the loop header,
     // if the memory loaded is the phi node
-
+#if SIFIVE_CUSTOMIZATION
+    if (NewStructTBAAPtrContext) {
+      if (!MSSA->isLiveOnEntryDef(Source) &&
+          CurLoop->contains(Source->getBlock()) &&
+          !(InvariantGroup && Source->getBlock() == CurLoop->getHeader() &&
+            isa<MemoryPhi>(Source))) {
+        return isa<MemoryDef>(Source);
+      }
+      return false;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return !MSSA->isLiveOnEntryDef(Source) &&
            CurLoop->contains(Source->getBlock()) &&
            !(InvariantGroup && Source->getBlock() == CurLoop->getHeader() && isa<MemoryPhi>(Source));

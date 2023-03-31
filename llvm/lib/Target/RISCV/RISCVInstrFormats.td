@@ -246,7 +246,6 @@ class PseudoLoad<string opcodestr, RegisterClass rdty = GPR>
   let mayStore = 0;
   let isCodeGenOnly = 0;
   let isAsmParserOnly = 1;
-  let Size = 8; // SIFIVE
 }
 
 class PseudoFloatLoad<string opcodestr, RegisterClass rdty = GPR>
@@ -256,7 +255,6 @@ class PseudoFloatLoad<string opcodestr, RegisterClass rdty = GPR>
   let mayStore = 0;
   let isCodeGenOnly = 0;
   let isAsmParserOnly = 1;
-  let Size = 8; // SIFIVE
 }
 
 // Pseudo store instructions.
@@ -268,7 +266,6 @@ class PseudoStore<string opcodestr, RegisterClass rsty = GPR>
   let isCodeGenOnly = 0;
   let isAsmParserOnly = 1;
   let Constraints = "@earlyclobber $tmp";
-  let Size = 8; // SIFIVE
 }
 
 // Instruction formats are listed in the order they appear in the RISC-V

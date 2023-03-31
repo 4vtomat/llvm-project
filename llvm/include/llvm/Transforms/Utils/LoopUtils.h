@@ -351,6 +351,9 @@ bool canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                         Loop *CurLoop, MemorySSAUpdater &MSSAU,
                         bool TargetExecutesOncePerLoop,
                         SinkAndHoistLICMFlags &LICMFlags,
+#if SIFIVE_CUSTOMIZATION
+                        bool NewStructTBAAPtrHoisting,
+#endif // SIFIVE_CUSTOMIZATION
                         OptimizationRemarkEmitter *ORE = nullptr);
 
 /// Returns the comparison predicate used when expanding a min/max reduction.

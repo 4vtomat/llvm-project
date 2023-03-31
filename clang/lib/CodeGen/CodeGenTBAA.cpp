@@ -112,6 +112,54 @@ static bool isValidBaseType(QualType QTy) {
   return false;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool isMayAliasType(const RecordType *TTy, bool &IsClass,
+		           ASTContext &Ctx, unsigned PtrDepth) {
+  const RecordDecl *RD = TTy->getDecl()->getDefinition();
+  // Be pesimistic if we cannot get the layout of the given RecordDecl.
+  if (!RD)
+    return true;
+
+  // Unions are auto aliased.
+  if (RD->isUnion())
+    return true;
+
+  if (!RD->isStruct() && !RD->isClass())
+    return false;
+
+  IsClass = RD->isClass();
+
+  if (const CXXRecordDecl *CXXRD = dyn_cast<CXXRecordDecl>(RD)) {
+    // Handle C++ base classes. Non-virtual bases can treated a kind of
+    // field. Virtual bases are more complex and omitted, but avoid an
+    // incomplete view for NewStructPathTBAA.
+    if (CXXRD->getNumVBases() != 0)
+      return true;
+  }
+
+  // Examine Struct/Class fields.
+  for (FieldDecl *Field : RD->fields()) {
+    if (Field->isZeroSize(Ctx) || Field->isUnnamedBitfield())
+      continue;
+    QualType FieldQTy = Field->getType();
+    const Type *FieldTy = Ctx.getCanonicalType(FieldQTy).getTypePtr();
+    if (FieldTy->isPointerType()) {
+      FieldTy = FieldTy->getPointeeType().getTypePtr();
+    }
+    if (auto *FieldTTy = dyn_cast<RecordType>(FieldTy)) {
+      const RecordDecl *FieldRD = FieldTTy->getDecl();
+      // Unions are auto aliased.
+      if (FieldRD->isUnion())
+        return true;
+    }
+    // Single indirects may alias on self references.
+    if ((PtrDepth == 1) && (FieldTy == TTy))
+      return true;
+  }
+  return false;
+}
+#endif //SIFIVE_CUSTOMIZATION
+
 llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
   uint64_t Size = Context.getTypeSizeInChars(Ty).getQuantity();
 
@@ -184,10 +232,59 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     return getChar();
 
   // Handle pointers and references.
-  // TODO: Implement C++'s type "similarity" and consider dis-"similar"
-  // pointers distinct.
-  if (Ty->isPointerType() || Ty->isReferenceType())
-    return createScalarTypeNode("any pointer", getChar(), Size);
+#if SIFIVE_CUSTOMIZATION
+  // The enclosed change is based on a pending upstream patch
+  // https://reviews.llvm.org/D122573 with its correctness issue addressed.
+  if (Ty->isPointerType() || Ty->isReferenceType()) {
+    llvm::MDNode *AnyPtr = createScalarTypeNode("any pointer", getChar(), Size);
+    if (CodeGenOpts.NewStructPathTBAA) {
+      // Compute the depth of the pointer and generate a tag of the form "p<depth>
+      // <base type tag>".
+      unsigned PtrDepth = 0;
+      do {
+        PtrDepth++;
+        Ty = Ty->getPointeeType().getTypePtr();
+      } while (Ty->isPointerType() || Ty->isReferenceType());
+      // Implement C++'s type "similarity" and consider dis-"similar"
+      // pointers distinct.
+      if (isa<BuiltinType>(Ty)) {
+        // Void types are generic placeholders, use
+        // default functionality as these commonly alias.
+        if (Ty->isVoidType())
+          return AnyPtr;
+
+        llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
+        StringRef Name =
+            cast<llvm::MDString>(ScalarMD->getOperand(2))->getString();
+        SmallString<256> OutName("p");
+        OutName += std::to_string(PtrDepth);
+        OutName += " ";
+        OutName += Name;
+        return createScalarTypeNode(OutName, AnyPtr, Size);
+      } else if (auto *TTy = dyn_cast<RecordType>(Ty)) {
+        bool IsClass;
+        if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
+          return AnyPtr;
+
+        SmallString<256> OutName("p");
+        OutName += std::to_string(PtrDepth);
+        OutName += " ";
+        if (Features.CPlusPlus) {
+          SmallString<256> Name;
+          // Don't use the mangler for C code.
+          OutName += (IsClass) ? "class " : "struct ";
+          llvm::raw_svector_ostream Out(Name);
+          MContext.mangleTypeName(QualType(Ty, 0), Out);
+          OutName += Name;
+        } else {
+          OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
+        }
+        return createScalarTypeNode(OutName, AnyPtr, Size);
+      }
+    }
+    return AnyPtr;
+  }
+#endif //SIFIVE_CUSTOMIZATION
 
   // Accesses to arrays are accesses to objects of their element types.
   if (CodeGenOpts.NewStructPathTBAA && Ty->isArrayType())

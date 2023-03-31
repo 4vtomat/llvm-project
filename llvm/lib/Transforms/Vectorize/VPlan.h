@@ -3070,7 +3070,8 @@ struct StridedAccessValues {
 
 bool isSafeStrideAccessInfo(const Loop *L, const llvm::StrideAccessInfo &SAI);
 
-StrideAccessInfo computeStrideAccessInfo(ScalarEvolution *SE, Instruction *I);
+StrideAccessInfo computeStrideAccessInfo(PredicatedScalarEvolution &PSE,
+                                         Instruction *I);
 #endif // SIFIVE_CUSTOMIZATION
 } // end namespace llvm
 
