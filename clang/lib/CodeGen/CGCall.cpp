@@ -3663,7 +3663,7 @@ void CodeGenFunction::EmitFunctionEpilog(const CGFunctionInfo &FI,
       // If the retval alloca isn't used and the type is integer, return
       // poison.
       } else if (ReturnValue.getPointer()->use_empty() &&
-                 RetTy->isIntegerType()) {
+                 RetTy->isIntegerType() && Target.getTriple().isRISCV()) {
         RV = llvm::PoisonValue::get(ConvertType(RetTy));
 #endif
       // Otherwise, we have to do a simple load.

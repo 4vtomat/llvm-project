@@ -1072,10 +1072,8 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static Multilib makeMultilib(StringRef commonSuffix,
-                             int Priority = 0) {
-  return Multilib(commonSuffix, commonSuffix, commonSuffix,
-                  Priority);
+static Multilib makeMultilib(StringRef commonSuffix) {
+  return Multilib(commonSuffix, commonSuffix, commonSuffix);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1775,7 +1773,6 @@ static std::string getGCCPath(const Driver &D, const ArgList &Args) {
     return GCCPath;
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 /// Extend the multi-lib re-use selection mechanism for RISC-V.
 /// This funciton will try to re-use multi-lib if they are compatible.
@@ -1823,15 +1820,13 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   }
 
   llvm::StringSet<> AllArchExts;
-  int Priority = 0;
   // Reconstruct multi-lib list, and break march option into seperated
   // extension. e.g. march=rv32im -> +i +m
   for (auto M : RISCVMultilibSet) {
     bool Skip = false;
 
-    Multilib NewMultilib =
-        Multilib(M.gccSuffix(), M.osSuffix(), M.includeSuffix(), Priority++,
-                 Multilib::flags_list());
+    Multilib NewMultilib = Multilib(M.gccSuffix(), M.osSuffix(),
+                                    M.includeSuffix(), Multilib::flags_list());
     for (StringRef Flag : M.flags()) {
       // Add back the all option except -march.
       if (!Flag.startswith("+march=")) {
@@ -1906,7 +1901,6 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   return false;
 }
 
-#if SIFIVE_CUSTOMIZATION
 static bool scanRISCVGCCMultilibConfig(const Driver &D,
                                        const llvm::Triple &TargetTriple,
                                        StringRef Path, const ArgList &Args,
@@ -1972,7 +1966,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
     SmallVector<StringRef, 2> OptionList;
     Options.split(OptionList, '@');
     // multilib path rule is ${march}/${mabi}
-    auto Multilib = makeMultilib(Path, OptionList.size());
+    auto Multilib = makeMultilib(Path);
     for (StringRef Option : OptionList) {
       Multilib.flag(Twine("+", Option).str());
 
