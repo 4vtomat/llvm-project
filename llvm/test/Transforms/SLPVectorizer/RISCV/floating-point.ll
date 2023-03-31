@@ -3,7 +3,7 @@
 ; RUN:     -riscv-v-vector-bits-min=-1 -riscv-v-slp-max-vf=0 \
 ; RUN:     | FileCheck %s
 ; RUN: opt < %s -passes=slp-vectorizer -S -mtriple=riscv64 -mattr=+v,+f \
-; RUN:     | FileCheck %s --check-prefix=DEFAULT
+; RUN:     -riscv-v-slp-max-vf=1 | FileCheck %s --check-prefix=DEFAULT
 
 define void @fp_add(ptr %dst, ptr %p, ptr %q) {
 ; CHECK-LABEL: define void @fp_add
