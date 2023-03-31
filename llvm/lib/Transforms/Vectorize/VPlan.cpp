@@ -1280,8 +1280,6 @@ void VPSlotTracker::assignSlots(const VPlan &Plan) {
     assignSlot(Plan.TripCount);
 
 #if SIFIVE_CUSTOMIZATION
-  if (Plan.TripCount)
-    assignSlot(Plan.TripCount);
   if (Plan.RVL)
     assignSlot(Plan.RVL);
   if (Plan.PrevRVL)

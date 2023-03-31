@@ -5889,6 +5889,10 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     } else
       MaxPowerOf2RuntimeVF = std::nullopt; // Stick with tail-folding for now.
   }
+#if SIFIVE_CUSTOMIZATION
+  else if (!MaxFactors.FixedVF.isVector())
+    MaxPowerOf2RuntimeVF = std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (MaxPowerOf2RuntimeVF) {
     assert((UserVF.isNonZero() || isPowerOf2_32(*MaxPowerOf2RuntimeVF)) &&

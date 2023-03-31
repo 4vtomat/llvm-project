@@ -1,6 +1,6 @@
 ; RUN: opt -mtriple=riscv64 -mattr=+m,+v -passes=loop-vectorize \
 ; RUN:   -riscv-v-vector-bits-max=512 -S -scalable-vectorization=on < %s 2>&1 \
-; RUN:   | FileCheck %s
+; RUN:   -riscv-use-vla-vectorizer=false | FileCheck %s
 
 ; void test(int *a, int *b, int N) {
 ;   #pragma clang loop vectorize(enable) vectorize_width(2, scalable)

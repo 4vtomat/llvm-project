@@ -287,7 +287,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   IRBuilderBase &Builder = State.Builder;
   SmallVector<Type *, 2> TysForDecl = {CI.getType()};
   SmallVector<Value *, 4> Args;
-  for (auto &I : enumerate(ArgOperands.operands())) {
+  for (auto I : enumerate(ArgOperands.operands())) {
     Value *Arg;
     if (!isVectorIntrinsicWithScalarOpAtArg(VPID, I.index()))
       Arg = State.get(I.value(), Part);

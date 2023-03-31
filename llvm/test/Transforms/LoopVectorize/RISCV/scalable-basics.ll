@@ -426,7 +426,7 @@ define i64 @indexed_load(ptr noalias nocapture %a, ptr noalias nocapture %b, i64
 ; VLENUNK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; VLENUNK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; VLENUNK:       middle.block:
-; VLENUNK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vector.reduce.add.nxv1i64(<vscale x 2 x i64> [[TMP8]])
+; VLENUNK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[TMP8]])
 ; VLENUNK-NEXT:    [[TMP13:%.*]] = add i64 0, [[TMP12]]
 ; VLENUNK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
 ; VLENUNK-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
@@ -477,7 +477,7 @@ define i64 @indexed_load(ptr noalias nocapture %a, ptr noalias nocapture %b, i64
 ; VLEN128-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; VLEN128-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; VLEN128:       middle.block:
-; VLEN128-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vector.reduce.add.nxv1i64(<vscale x 2 x i64> [[TMP8]])
+; VLEN128-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[TMP8]])
 ; VLEN128-NEXT:    [[TMP13:%.*]] = add i64 0, [[TMP12]]
 ; VLEN128-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
 ; VLEN128-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]

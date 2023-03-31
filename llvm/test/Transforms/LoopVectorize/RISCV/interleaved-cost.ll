@@ -1,9 +1,10 @@
 ; REQUIRES: asserts
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=2 -debug-only=loop-vectorize -disable-output < %s 2>&1 | FileCheck %s --check-prefix=VF_2
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=4 -debug-only=loop-vectorize -disable-output < %s 2>&1 | FileCheck %s --check-prefix=VF_4
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=8 -debug-only=loop-vectorize -disable-output < %s 2>&1 | FileCheck %s --check-prefix=VF_8
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=16 -debug-only=loop-vectorize -disable-output < %s 2>&1 | FileCheck %s --check-prefix=VF_16
+; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=2 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_2
+; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=4 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_4
+; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=8 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_8
+; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=16 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_16
 
+; SIFIVE: our cost model has different costs.
 %i8.2 = type {i8, i8}
 define void @i8_factor_2(ptr %data, i64 %n) {
 entry:
@@ -24,10 +25,10 @@ entry:
 ; VF_8:       Found an estimated cost of 0 for VF 8 For instruction:   store i8 %a0, ptr %p0, align 1
 ; VF_8-NEXT:  Found an estimated cost of 3 for VF 8 For instruction:   store i8 %a1, ptr %p1, align 1
 ; VF_16-LABEL: Checking a loop in 'i8_factor_2'
-; VF_16:       Found an estimated cost of 3 for VF 16 For instruction:   %l0 = load i8, ptr %p0, align 1
+; VF_16:       Found an estimated cost of 4 for VF 16 For instruction:   %l0 = load i8, ptr %p0, align 1
 ; VF_16-NEXT:  Found an estimated cost of 0 for VF 16 For instruction:   %l1 = load i8, ptr %p1, align 1
 ; VF_16:       Found an estimated cost of 0 for VF 16 For instruction:   store i8 %a0, ptr %p0, align 1
-; VF_16-NEXT:  Found an estimated cost of 5 for VF 16 For instruction:   store i8 %a1, ptr %p1, align 1
+; VF_16-NEXT:  Found an estimated cost of 6 for VF 16 For instruction:   store i8 %a1, ptr %p1, align 1
 for.body:
   %i = phi i64 [ 0, %entry ], [ %i.next, %for.body ]
   %p0 = getelementptr inbounds %i8.2, ptr %data, i64 %i, i32 0
