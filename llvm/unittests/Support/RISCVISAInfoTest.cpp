@@ -276,7 +276,7 @@ TEST(ParseArchString, RejectsUnrecognizedExtensionVersionsByDefault) {
       "unsupported version number 0.1 for extension 'm' (this compiler supports 2.0)"); // SIFIVE
   EXPECT_EQ(toString(RISCVISAInfo::parseArchString("rv32izifencei10p10", true)
                          .takeError()),
-            "unsupported version number 10.10 for extension 'zifencei' (this compiler supports 2.0, 2.0)"); // SIFIVE
+            "unsupported version number 10.10 for extension 'zifencei' (this compiler supports 2.0)"); // SIFIVE
 }
 
 TEST(ParseArchString,
