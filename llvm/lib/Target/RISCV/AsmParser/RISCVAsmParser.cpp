@@ -584,7 +584,6 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   bool isUImm1() const { return IsUImm<1>(); }
-  bool isUImm6() const { return IsUImm<6>(); }
 #endif // SIFIVE_CUSTOMIZATION
   bool isUImm2() const { return IsUImm<2>(); }
   bool isUImm3() const { return IsUImm<3>(); }

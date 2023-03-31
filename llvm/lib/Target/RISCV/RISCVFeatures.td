@@ -617,6 +617,7 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
                                AssemblerPredicate<(all_of FeatureStdExtZawrs),
                                "'Zawrs' (Wait on Reservation Set)">;
 
+#ifndef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
@@ -673,7 +674,7 @@ def FeatureStdExtZvksh
 def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
                                "'Zvksh' (SM3 Hash Function Instructions.)">;
-
+#endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//

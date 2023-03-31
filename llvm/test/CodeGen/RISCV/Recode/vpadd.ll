@@ -283,11 +283,10 @@ define void @vpaddq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v9, 0, v0.t
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vfadd.vv v8, v10, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vfadd.vv v8, v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -362,11 +361,10 @@ define void @vpaddq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v9, 0, v0.t
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vadd.vv v8, v10, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -472,11 +470,10 @@ define void @vpaddq_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v9, 0, v0.t
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vadd.vv v8, v10, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

@@ -4,7 +4,7 @@
 define i8 @extractelement_i8(ptr %in) {
 ; CHECK-LABEL: extractelement_i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 1(a0)
+; CHECK-NEXT:    lbu a0, 1(a0)
 ; CHECK-NEXT:    ret
   %1 = load <2 x i8>, ptr %in, align 1
   %2 = extractelement <2 x i8> %1, i64 1

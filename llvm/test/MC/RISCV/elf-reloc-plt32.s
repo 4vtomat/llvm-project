@@ -11,6 +11,8 @@ func:
 .word func@PLT - . + 8
 
 # CHECK:      Section ({{.*}}) .rela.data {
-# CHECK-NEXT:   0x0 R_RISCV_PLT32 extern_func 0x4
-# CHECK-NEXT:   0x4 R_RISCV_PLT32 func 0x8
+#SIFIVE_CUSTOMIZATION
+# CHECK-NEXT:   0x0 R_RISCV_32_PCREL extern_func 0x4
+# CHECK-NEXT:   0x4 R_RISCV_32_PCREL func 0x8
+#end SIFIVE_CUSTOMIZATION
 # CHECK-NEXT: }

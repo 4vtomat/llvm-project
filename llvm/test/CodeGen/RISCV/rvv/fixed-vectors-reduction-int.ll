@@ -7,7 +7,7 @@ declare i8 @llvm.vector.reduce.add.v1i8(<1 x i8>)
 define i8 @vreduce_add_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_add_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.add.v1i8(<1 x i8> %v)
@@ -1714,7 +1714,7 @@ declare i8 @llvm.vector.reduce.and.v1i8(<1 x i8>)
 define i8 @vreduce_and_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_and_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.and.v1i8(<1 x i8> %v)
@@ -2367,7 +2367,7 @@ declare i8 @llvm.vector.reduce.or.v1i8(<1 x i8>)
 define i8 @vreduce_or_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_or_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.or.v1i8(<1 x i8> %v)
@@ -2974,7 +2974,7 @@ declare i8 @llvm.vector.reduce.xor.v1i8(<1 x i8>)
 define i8 @vreduce_xor_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_xor_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.xor.v1i8(<1 x i8> %v)
@@ -3581,7 +3581,7 @@ declare i8 @llvm.vector.reduce.smin.v1i8(<1 x i8>)
 define i8 @vreduce_smin_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_smin_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.smin.v1i8(<1 x i8> %v)
@@ -4453,7 +4453,7 @@ declare i8 @llvm.vector.reduce.smax.v1i8(<1 x i8>)
 define i8 @vreduce_smax_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_smax_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.smax.v1i8(<1 x i8> %v)
@@ -5146,7 +5146,7 @@ declare i8 @llvm.vector.reduce.umin.v1i8(<1 x i8>)
 define i8 @vreduce_umin_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_umin_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.umin.v1i8(<1 x i8> %v)
@@ -5799,7 +5799,7 @@ declare i8 @llvm.vector.reduce.umax.v1i8(<1 x i8>)
 define i8 @vreduce_umax_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_umax_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.umax.v1i8(<1 x i8> %v)
@@ -6406,7 +6406,7 @@ declare i8 @llvm.vector.reduce.mul.v1i8(<1 x i8>)
 define i8 @vreduce_mul_v1i8(ptr %x) {
 ; CHECK-LABEL: vreduce_mul_v1i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %v = load <1 x i8>, ptr %x
   %red = call i8 @llvm.vector.reduce.mul.v1i8(<1 x i8> %v)

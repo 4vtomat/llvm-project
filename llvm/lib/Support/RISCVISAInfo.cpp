@@ -195,6 +195,15 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     // vector crypto
+#if SIFIVE_CUSTOMIZATION
+    {"zvkb", RISCVExtensionVersion{0, 1}},
+    {"zvkg", RISCVExtensionVersion{0, 1}},
+    {"zvknha", RISCVExtensionVersion{0, 1}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}},
+    {"zvkns", RISCVExtensionVersion{0, 1}},
+    {"zvksed", RISCVExtensionVersion{0, 1}},
+    {"zvksh", RISCVExtensionVersion{0, 1}},
+#else // SIFIVE_CUSTOMIZATION
     {"zvkb", RISCVExtensionVersion{0, 3}},
     {"zvkg", RISCVExtensionVersion{0, 3}},
     {"zvkn", RISCVExtensionVersion{0, 3}},
@@ -204,6 +213,7 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvks", RISCVExtensionVersion{0, 3}},
     {"zvksed", RISCVExtensionVersion{0, 3}},
     {"zvksh", RISCVExtensionVersion{0, 3}},
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 static bool stripExperimentalPrefix(StringRef &Ext) {
@@ -970,11 +980,23 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "zicntr and zihpm requires zicsr to also be specified");
 
+  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") ||
+       Exts.count("zvkns") || Exts.count("zvksed") || Exts.count("zvksh")) &&
+      !HasVector)
+    return createStringError(
+        errc::invalid_argument,
+        "zvk* requires v or zve* extension to also be specified");
+
+  if (Exts.count("zvknhb") && !Exts.count("zve64x"))
+    return createStringError(
+        errc::invalid_argument,
+        "zvknhb requires zve64x extension to also be specified");
+
   if (Exts.count("smwgd") && !Exts.count("smwg"))
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
-#endif // SIFIVE_CUSTOMIZATION
+#else // SIFIVE_CUSTOMIZATION
 
   if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
        Exts.count("zvknha") || Exts.count("zvkned") || Exts.count("zvks") ||
@@ -988,6 +1010,7 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "'zvknhb' requires 'v' or 'zve64*' extension to also be specified");
+#endif // SIFIVE_CUSTOMIZATION
 
   // Additional dependency checks.
   // TODO: The 'q' extension requires rv64.
@@ -1033,10 +1056,11 @@ static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
-#endif // SIFIVE_CUSTOMIZATION
+#else // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb", "zvkb"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
+#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZfa[] = {"f"};
@@ -1079,9 +1103,11 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zve64f"}, {ImpliedExtsZve64f}},
     {{"zve64x"}, {ImpliedExtsZve64x}},
     {{"zvfh"}, {ImpliedExtsZvfh}},
+#ifndef SIFIVE_CUSTOMIZATION
     {{"zvkn"}, {ImpliedExtsZvkn}},
     {{"zvknhb"}, {ImpliedExtsZvknhb}},
     {{"zvks"}, {ImpliedExtsZvks}},
+#endif // SIFIVE_CUSTOMIZATION
     {{"zvl1024b"}, {ImpliedExtsZvl1024b}},
     {{"zvl128b"}, {ImpliedExtsZvl128b}},
     {{"zvl16384b"}, {ImpliedExtsZvl16384b}},

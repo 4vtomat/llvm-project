@@ -38,10 +38,25 @@ multiclass LMULSchedWritesImpl<string name, list<string> MxList> {
 }
 
 // SIFIVE_CUSTOMIZATION
+defvar SchedMxListWithWorst = !listconcat(SchedMxList, ["WorstCase"]);
+defvar SchedMxListWWithWorst = !listconcat(SchedMxListW, ["WorstCase"]);
+defvar SchedMxListFWWithWorst = !listconcat(SchedMxListFW, ["WorstCase"]);
+defvar SchedMxListFWRedWithWorst = !listconcat(SchedMxListFWRed, ["WorstCase"]);
+
 // Creates WriteRes for (name, mx, resources) tuple
 multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
                           string mx> {
   def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
+}
+multiclass LMULSEWWriteResMX<string name, list<ProcResourceKind> resources,
+                          string mx> {
+  if !eq(mx, "WorstCase") then {
+    if !exists<SchedWrite>(name # "_WorstCase") then
+      def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
+  } else {
+    foreach sew = SchedSEWSet<mx>.val in
+      def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
+  }
 }
 // END SIFIVE_CUSTOMIZATION
 

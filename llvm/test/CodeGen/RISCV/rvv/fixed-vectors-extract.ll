@@ -7,7 +7,7 @@
 define i8 @extractelt_v16i8(ptr %x) nounwind {
 ; CHECK-LABEL: extractelt_v16i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 7(a0)
+; CHECK-NEXT:    lbu a0, 7(a0)
 ; CHECK-NEXT:    ret
   %a = load <16 x i8>, ptr %x
   %b = extractelement <16 x i8> %a, i32 7
@@ -84,7 +84,7 @@ define double @extractelt_v2f64(ptr %x) nounwind {
 define i8 @extractelt_v32i8(ptr %x) nounwind {
 ; CHECK-LABEL: extractelt_v32i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 7(a0)
+; CHECK-NEXT:    lbu a0, 7(a0)
 ; CHECK-NEXT:    ret
   %a = load <32 x i8>, ptr %x
   %b = extractelement <32 x i8> %a, i32 7
@@ -184,7 +184,7 @@ define i8 @extractelt_v16i8_idx(ptr %x, i32 zeroext %idx) nounwind {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a1, a1, 15
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %a = load <16 x i8>, ptr %x
   %b = extractelement <16 x i8> %a, i32 %idx
@@ -302,7 +302,7 @@ define i8 @extractelt_v32i8_idx(ptr %x, i32 zeroext %idx) nounwind {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a1, a1, 31
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    lb a0, 0(a0)
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ret
   %a = load <32 x i8>, ptr %x
   %b = extractelement <32 x i8> %a, i32 %idx
@@ -452,7 +452,7 @@ define i64 @extractelt_v3i64_idx(ptr %x, i32 zeroext %idx) nounwind {
 define void @store_extractelt_v16i8(ptr %x, ptr %p) nounwind {
 ; CHECK-LABEL: store_extractelt_v16i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lb a0, 7(a0)
+; CHECK-NEXT:    lbu a0, 7(a0)
 ; CHECK-NEXT:    sb a0, 0(a1)
 ; CHECK-NEXT:    ret
   %a = load <16 x i8>, ptr %x

@@ -13,8 +13,8 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    add a1, a1, a2
 ; NOFUSION-NEXT:    add a0, a0, a2
-; NOFUSION-NEXT:    lb a1, 0(a1)
-; NOFUSION-NEXT:    lb a0, 0(a0)
+; NOFUSION-NEXT:    lbu a1, 0(a1)
+; NOFUSION-NEXT:    lbu a0, 0(a0)
 ; NOFUSION-NEXT:    add a0, a0, a1
 ; NOFUSION-NEXT:    slli a0, a0, 56
 ; NOFUSION-NEXT:    srai a0, a0, 56
@@ -23,9 +23,9 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; FUSEADD-LABEL: load_i8:
 ; FUSEADD:       # %bb.0:
 ; FUSEADD-NEXT:    add a1, a1, a2
-; FUSEADD-NEXT:    lb a1, 0(a1)
+; FUSEADD-NEXT:    lbu a1, 0(a1)
 ; FUSEADD-NEXT:    add a0, a0, a2
-; FUSEADD-NEXT:    lb a0, 0(a0)
+; FUSEADD-NEXT:    lbu a0, 0(a0)
 ; FUSEADD-NEXT:    add a0, a0, a1
 ; FUSEADD-NEXT:    slli a0, a0, 56
 ; FUSEADD-NEXT:    srai a0, a0, 56
@@ -34,9 +34,9 @@ define signext i8 @load_i8(ptr %0, ptr %1, i64 %2) {
 ; FUSEZBA-LABEL: load_i8:
 ; FUSEZBA:       # %bb.0:
 ; FUSEZBA-NEXT:    add a1, a1, a2
-; FUSEZBA-NEXT:    lb a1, 0(a1)
+; FUSEZBA-NEXT:    lbu a1, 0(a1)
 ; FUSEZBA-NEXT:    add a0, a0, a2
-; FUSEZBA-NEXT:    lb a0, 0(a0)
+; FUSEZBA-NEXT:    lbu a0, 0(a0)
 ; FUSEZBA-NEXT:    add a0, a0, a1
 ; FUSEZBA-NEXT:    slli a0, a0, 56
 ; FUSEZBA-NEXT:    srai a0, a0, 56

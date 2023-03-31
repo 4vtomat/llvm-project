@@ -60,13 +60,13 @@ define i8 @test_nontemporal_load_i8(i8* %p) {
 ; CHECK-RV64-LABEL: test_nontemporal_load_i8:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    lb a0, 0(a0)
+; CHECK-RV64-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_load_i8:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    lb a0, 0(a0)
+; CHECK-RV32-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load i8, i8* %p, align 8, !nontemporal !0
@@ -552,13 +552,13 @@ define i8 @test_nontemporal_P1_load_i8(i8* %p) {
 ; CHECK-RV64-LABEL: test_nontemporal_P1_load_i8:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.p1
-; CHECK-RV64-NEXT:    lb a0, 0(a0)
+; CHECK-RV64-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_P1_load_i8:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.p1
-; CHECK-RV32-NEXT:    lb a0, 0(a0)
+; CHECK-RV32-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load i8, i8* %p, align 8, !nontemporal !1
@@ -1044,13 +1044,13 @@ define i8 @test_nontemporal_PALL_load_i8(i8* %p) {
 ; CHECK-RV64-LABEL: test_nontemporal_PALL_load_i8:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.pall
-; CHECK-RV64-NEXT:    lb a0, 0(a0)
+; CHECK-RV64-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_PALL_load_i8:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.pall
-; CHECK-RV32-NEXT:    lb a0, 0(a0)
+; CHECK-RV32-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load i8, i8* %p, align 8, !nontemporal !2
@@ -1536,13 +1536,13 @@ define i8 @test_nontemporal_S1_load_i8(i8* %p) {
 ; CHECK-RV64-LABEL: test_nontemporal_S1_load_i8:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.s1
-; CHECK-RV64-NEXT:    lb a0, 0(a0)
+; CHECK-RV64-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_S1_load_i8:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.s1
-; CHECK-RV32-NEXT:    lb a0, 0(a0)
+; CHECK-RV32-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load i8, i8* %p, align 8, !nontemporal !3
@@ -2028,13 +2028,13 @@ define i8 @test_nontemporal_ALL_load_i8(i8* %p) {
 ; CHECK-RV64-LABEL: test_nontemporal_ALL_load_i8:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    lb a0, 0(a0)
+; CHECK-RV64-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_ALL_load_i8:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    lb a0, 0(a0)
+; CHECK-RV32-NEXT:    lbu a0, 0(a0)
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load i8, i8* %p, align 8, !nontemporal !4

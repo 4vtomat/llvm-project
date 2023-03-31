@@ -1,7 +1,7 @@
 ## Arch string without version.
 
-# RUN: llvm-mc %s -triple=riscv32 -filetype=asm | FileCheck %s
-# RUN: llvm-mc %s -triple=riscv64 -filetype=asm \
+# RUN: not llvm-mc %s -triple=riscv32 -filetype=asm | FileCheck %s
+# RUN: not llvm-mc %s -triple=riscv64 -filetype=asm \
 # RUN:     | FileCheck --check-prefixes=CHECK,CHECK-RV64 %s
 
 .attribute arch, "rv32i"
@@ -221,32 +221,34 @@
 .attribute arch, "rv32i_zve32x_zvksh0p1"
 # CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvksh0p1_zvl32b1p0"
 
+## SIFIVE_CUSTOMIZATION
 .attribute arch, "rv32i_zve64x_zvkb0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvl32b1p0_zvl64b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32i_zve32x_zvkg0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvkg0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkg0p3_zvl32b1p0"
 
 .attribute arch, "rv32i_zve64x_zvkn0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvkn0p3_zvkned0p3_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvkn0p3_zvkned0p3_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32i_zve32x_zvknha0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvknha0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvknha0p3_zvl32b1p0"
 
 .attribute arch, "rv32i_zve64x_zvknhb0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32i_zve32x_zvkned0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvkned0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkned0p3_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvks0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvksed0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvksh0p3"
-# CHECK: attribute      5, "rv32i2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
+# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
+#end SIFIVE_CUSTOMIZATION
 
 .attribute arch, "rv32izbs1p0"
 # CHECK: attribute      5, "rv32i2p1_zbs1p0"

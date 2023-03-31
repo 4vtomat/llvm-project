@@ -337,6 +337,11 @@ public:
   }
 
   bool isVScaleKnownToBeAPowerOfTwo() const {
+#if SIFIVE_CUSTOMIZATION
+    // Return false to avoid SVE-specific VF computations in LoopVectorizer.
+    if (useVLAVectorizer())
+      return false;
+#endif // SIFIVE_CUSTOMIZATION
     return TLI->isVScaleKnownToBeAPowerOfTwo();
   }
 

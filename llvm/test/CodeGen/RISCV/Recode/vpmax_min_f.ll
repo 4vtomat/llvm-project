@@ -141,16 +141,15 @@ define void @vpmaxq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v9, 0, v0.t
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vmfne.vv v8, v11, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vmfne.vv v9, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI4_0)(a0)
-; CHECK-NEXT:    vmfne.vv v9, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v9, v8
-; CHECK-NEXT:    vfmax.vv v8, v10, v11
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmor.mm v0, v9, v11
+; CHECK-NEXT:    vfmax.vv v8, v8, v10
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -302,16 +301,15 @@ define void @vpminq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v9, 0, v0.t
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vmfne.vv v8, v11, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vmfne.vv v9, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
 ; CHECK-NEXT:    fld ft0, %lo(.LCPI9_0)(a0)
-; CHECK-NEXT:    vmfne.vv v9, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v9, v8
-; CHECK-NEXT:    vfmin.vv v8, v10, v11
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmor.mm v0, v9, v11
+; CHECK-NEXT:    vfmin.vv v8, v8, v10
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, ft0, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

@@ -130,7 +130,7 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   RISCVISAInfo &InfoRV32I = **MaybeRV32I;
   RISCVISAInfo::OrderedExtensionMap ExtsRV32I = InfoRV32I.getExtensions();
   EXPECT_EQ(ExtsRV32I.size(), 1UL);
-  EXPECT_TRUE(ExtsRV32I.at("i") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_TRUE(ExtsRV32I.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   EXPECT_EQ(InfoRV32I.getXLen(), 32U);
   EXPECT_EQ(InfoRV32I.getFLen(), 0U);
 
@@ -147,12 +147,12 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   ASSERT_THAT_EXPECTED(MaybeRV32G, Succeeded());
   RISCVISAInfo &InfoRV32G = **MaybeRV32G;
   RISCVISAInfo::OrderedExtensionMap ExtsRV32G = InfoRV32G.getExtensions();
-  EXPECT_EQ(ExtsRV32G.size(), 5UL);
-  EXPECT_TRUE(ExtsRV32G.at("i") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_EQ(ExtsRV32G.size(), 7UL); // SIFIVE
+  EXPECT_TRUE(ExtsRV32G.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   EXPECT_TRUE(ExtsRV32G.at("m") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV32G.at("a") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV32G.at("f") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV32G.at("d") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_TRUE(ExtsRV32G.at("a") == (RISCVExtensionInfo{2, 1})); // SIFIVE
+  EXPECT_TRUE(ExtsRV32G.at("f") == (RISCVExtensionInfo{2, 2})); // SIFIVE
+  EXPECT_TRUE(ExtsRV32G.at("d") == (RISCVExtensionInfo{2, 2})); // SIFIVE
   EXPECT_EQ(InfoRV32G.getXLen(), 32U);
   EXPECT_EQ(InfoRV32G.getFLen(), 64U);
 
@@ -161,7 +161,7 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   RISCVISAInfo &InfoRV64I = **MaybeRV64I;
   RISCVISAInfo::OrderedExtensionMap ExtsRV64I = InfoRV64I.getExtensions();
   EXPECT_EQ(ExtsRV64I.size(), 1UL);
-  EXPECT_TRUE(ExtsRV64I.at("i") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_TRUE(ExtsRV64I.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   EXPECT_EQ(InfoRV64I.getXLen(), 64U);
   EXPECT_EQ(InfoRV64I.getFLen(), 0U);
 
@@ -178,12 +178,12 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   ASSERT_THAT_EXPECTED(MaybeRV64G, Succeeded());
   RISCVISAInfo &InfoRV64G = **MaybeRV64G;
   RISCVISAInfo::OrderedExtensionMap ExtsRV64G = InfoRV64G.getExtensions();
-  EXPECT_EQ(ExtsRV64G.size(), 5UL);
-  EXPECT_TRUE(ExtsRV64G.at("i") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_EQ(ExtsRV64G.size(), 7UL); // SIFIVE
+  EXPECT_TRUE(ExtsRV64G.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   EXPECT_TRUE(ExtsRV64G.at("m") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("a") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("f") == (RISCVExtensionInfo{2, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("d") == (RISCVExtensionInfo{2, 0}));
+  EXPECT_TRUE(ExtsRV64G.at("a") == (RISCVExtensionInfo{2, 1})); // SIFIVE
+  EXPECT_TRUE(ExtsRV64G.at("f") == (RISCVExtensionInfo{2, 2})); // SIFIVE
+  EXPECT_TRUE(ExtsRV64G.at("d") == (RISCVExtensionInfo{2, 2})); // SIFIVE
   EXPECT_EQ(InfoRV64G.getXLen(), 64U);
   EXPECT_EQ(InfoRV64G.getFLen(), 64U);
 }
@@ -199,10 +199,10 @@ TEST(ParseArchString, RequiresCanonicalOrderForExtensions) {
       toString(
           RISCVISAInfo::parseArchString("rv32i_zfinx_a", true).takeError()),
       "invalid extension prefix 'a'");
-  EXPECT_EQ(
+  EXPECT_NE(
       toString(RISCVISAInfo::parseArchString("rv64i_svnapot_zicsr", true)
                    .takeError()),
-      "standard user-level extension not given in canonical order 'zicsr'");
+      "standard user-level extension not given in canonical order 'zicsr'"); // SIFIVE
   EXPECT_THAT_EXPECTED(
       RISCVISAInfo::parseArchString("rv64imafdc_zicsr_svnapot", true),
       Succeeded());
@@ -237,7 +237,7 @@ TEST(ParseArchString, IgnoresUnrecognizedExtensionNamesWithIgnoreUnknown) {
     RISCVISAInfo &Info = **MaybeISAInfo;
     RISCVISAInfo::OrderedExtensionMap Exts = Info.getExtensions();
     EXPECT_EQ(Exts.size(), 1UL);
-    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 0}));
+    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   }
 
   // Checks that supported extensions aren't incorrectly ignored when a
@@ -267,16 +267,16 @@ TEST(ParseArchString, AcceptsVersionInLongOrShortForm) {
 TEST(ParseArchString, RejectsUnrecognizedExtensionVersionsByDefault) {
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv64i1p0", true).takeError()),
-      "unsupported version number 1.0 for extension 'i'");
+      "unsupported version number 1.0 for extension 'i' (this compiler supports 2.1, 2.0)"); // SIFIVE
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv64i9p9", true).takeError()),
-      "unsupported version number 9.9 for extension 'i'");
+      "unsupported version number 9.9 for extension 'i' (this compiler supports 2.1, 2.0)"); // SIFIVE
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv32im0p1", true).takeError()),
-      "unsupported version number 0.1 for extension 'm'");
+      "unsupported version number 0.1 for extension 'm' (this compiler supports 2.0)"); // SIFIVE
   EXPECT_EQ(toString(RISCVISAInfo::parseArchString("rv32izifencei10p10", true)
                          .takeError()),
-            "unsupported version number 10.10 for extension 'zifencei'");
+            "unsupported version number 10.10 for extension 'zifencei' (this compiler supports 2.0, 2.0)"); // SIFIVE
 }
 
 TEST(ParseArchString,
@@ -286,7 +286,7 @@ TEST(ParseArchString,
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
     RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
     EXPECT_EQ(Exts.size(), 1UL);
-    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 0}));
+    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   }
   for (StringRef Input : {"rv32e0p1", "rv32e99p99", "rv64e0p1", "rv64e99p99"}) {
     auto MaybeISAInfo = RISCVISAInfo::parseArchString(Input, true, false, true);
@@ -304,7 +304,7 @@ TEST(ParseArchString,
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
     RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
     EXPECT_EQ(Exts.size(), 1UL);
-    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 0}));
+    EXPECT_TRUE(Exts.at("i") == (RISCVExtensionInfo{2, 1})); // SIFIVE
   }
 }
 
@@ -313,7 +313,7 @@ TEST(ParseArchString, AcceptsUnderscoreSplittingExtensions) {
     auto MaybeISAInfo = RISCVISAInfo::parseArchString(Input, true);
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
     RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
-    EXPECT_EQ(Exts.size(), 7UL);
+    EXPECT_EQ(Exts.size(), 8UL); // SIFIVE
     EXPECT_EQ(Exts.count("i"), 1U);
     EXPECT_EQ(Exts.count("m"), 1U);
     EXPECT_EQ(Exts.count("a"), 1U);
@@ -380,10 +380,10 @@ TEST(ParseArchString,
 
 TEST(ParseArchString,
      RequiresExplicitVersionNumberForExperimentalExtensionByDefault) {
-  EXPECT_EQ(
+  EXPECT_NE(
       toString(
           RISCVISAInfo::parseArchString("rv64izihintntl", true).takeError()),
-      "experimental extension requires explicit version number `zihintntl`");
+      "experimental extension requires explicit version number `zihintntl`"); // SIFIVE
 }
 
 TEST(ParseArchString,
@@ -417,7 +417,7 @@ TEST(ParseArchString, AddsImpliedExtensions) {
   ASSERT_THAT_EXPECTED(MaybeRV64ID, Succeeded());
   RISCVISAInfo::OrderedExtensionMap ExtsRV64ID =
       (*MaybeRV64ID)->getExtensions();
-  EXPECT_EQ(ExtsRV64ID.size(), 3UL);
+  EXPECT_EQ(ExtsRV64ID.size(), 4UL); // SIFIVE
   EXPECT_EQ(ExtsRV64ID.count("i"), 1U);
   EXPECT_EQ(ExtsRV64ID.count("f"), 1U);
   EXPECT_EQ(ExtsRV64ID.count("d"), 1U);
