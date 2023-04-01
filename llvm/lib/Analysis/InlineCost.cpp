@@ -43,6 +43,7 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/TargetParser/Triple.h"
 #include <climits>
 #include <limits>
 #include <optional>
@@ -83,6 +84,12 @@ static cl::opt<int>
     ColdCallSiteThreshold("inline-cold-callsite-threshold", cl::Hidden,
                           cl::init(45),
                           cl::desc("Threshold for inlining cold callsites"));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> InlineParamSize(
+    "inline-param-size", cl::Hidden, cl::init(true),
+    cl::desc("Decide to inline based on number of parameters and function size"));
+#endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool> InlineEnableCostBenefitAnalysis(
     "inline-enable-cost-benefit-analysis", cl::Hidden, cl::init(false),
@@ -498,6 +505,12 @@ public:
     return std::nullopt;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Number of parameters and function size variable
+  unsigned NumParams = 0;
+  unsigned FuncSize = 0;
+#endif // SIFIVE_CUSTOMIZATION
+
   // Keep a bunch of stats about the cost savings found so we can print them
   // out when debugging.
   unsigned NumConstantArgs = 0;
@@ -831,6 +844,11 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     BlockFrequencyInfo *CalleeBFI = &(GetBFI(F));
     assert(CalleeBFI);
 
+#if SIFIVE_CUSTOMIZATION
+    NumParams = CandidateCall.arg_size();
+    FuncSize = NumInstructions;
+#endif // SIFIVE_CUSTOMIZATION
+
     // The cycle savings expressed as the sum of InstrCost
     // multiplied by the estimated dynamic count of each instruction we can
     // avoid.  Savings come from the call site cost, such as argument setup and
@@ -886,6 +904,19 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     // savings threshold.
     Size = Size > InlineSizeAllowance ? Size - InlineSizeAllowance : 1;
 
+#if SIFIVE_CUSTOMIZATION
+    //Allow inlining when call overhead and function size wrt number of params
+    //makes inlining beneficial and turn it off for amdgpu target.
+    Module *M = CandidateCall.getFunction()->getParent();
+    std::string TargetTriple = M->getTargetTriple();
+    Triple T(TargetTriple);
+    if ((InlineParamSize)
+         && (T.getArchName() != "amdgcn")
+         && (NumParams >= 6)
+         && (FuncSize <= 500))
+       Size = 1;
+#endif // SIFIVE_CUSTOMIZATION
+
     CostBenefit.emplace(APInt(128, Size), CycleSavings);
 
     // Return true if the savings justify the cost of inlining.  Specifically,
@@ -911,6 +942,12 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     // other costs here, so will likely only be dealing with relatively small
     // functions (and hence DT and LI will hopefully be cheap).
     auto *Caller = CandidateCall.getFunction();
+
+#if SIFIVE_CUSTOMIZATION
+    NumParams = CandidateCall.arg_size();
+    FuncSize = NumInstructions;
+#endif // SIFIVE_CUSTOMIZATION
+
     if (Caller->hasMinSize()) {
       DominatorTree DT(F);
       LoopInfo LI(DT);
@@ -952,6 +989,19 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
       else
         return InlineResult::failure("Cost over threshold.");
     }
+
+#if SIFIVE_CUSTOMIZATION
+    //Allow inlining when call overhead and function size wrt number of params
+    //makes inlining beneficial and turn it off for amdgpu target.
+    Module *M = Caller->getParent();
+    std::string TargetTriple = M->getTargetTriple();
+    Triple T(TargetTriple);
+    if ((InlineParamSize)
+         && (T.getArchName() != "amdgcn")
+         && (NumParams >= 6)
+         && (FuncSize <= 500))
+       return InlineResult::success();
+#endif // SIFIVE_CUSTOMIZATION
 
     if (IgnoreThreshold)
       return InlineResult::success();
