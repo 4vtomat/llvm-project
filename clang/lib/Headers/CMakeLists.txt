@@ -255,7 +255,6 @@ set(files
   ${ppc_htm_files}
 # SIFIVE_CUSTOMIZATION
   ${riscv_files}
-  ${rvv_v0p10_compatible_header_file}
 #end SIFIVE_CUSTOMIZATION
   ${systemz_files}
   ${ve_files}
@@ -330,7 +329,7 @@ endfunction(clang_generate_header)
 
 
 # Copy header files from the source directory to the build directory
-foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files})
+foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files} ${rvv_v0p10_compatible_header_file}) # SIFIVE
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
