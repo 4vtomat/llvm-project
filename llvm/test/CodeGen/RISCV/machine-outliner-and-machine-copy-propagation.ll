@@ -194,5 +194,4 @@ declare void @exit(i32 signext) noreturn
 ; RV64I-NEXT:    lui s0, 524288
 ; RV64I-NEXT:    addiw s0, s0, -1
 ; RV64I-NEXT:    lui a0, 524288
-; RV64I-NEXT:    mv a1, s0
 ; RV64I-NEXT:    jr t0

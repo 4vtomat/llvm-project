@@ -438,14 +438,10 @@ void RISCVPassConfig::addPreEmitPass2() {
   addPass(createRISCVInsertNTLHInstsPass());
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
- // SIFIVE: Deletion cherry-picked from upstream.
-#else
   // Do the copy propagation after expanding pseudos because we may produce some
   // MVs when expanding.
   if (TM->getOptLevel() >= CodeGenOpt::Default && EnableRISCVCopyPropagation)
     addPass(createMachineCopyPropagationPass(true));
-#endif // SIFIVE_CUSTOMIZATION
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
   // possibility for other passes to break the requirements for forward
