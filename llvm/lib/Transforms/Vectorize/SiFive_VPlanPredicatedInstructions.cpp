@@ -54,7 +54,7 @@ static bool canUnaryOrBinaryOpBeUnmasked(const unsigned Opcode, Type *ElementTyp
 static void widenSelectInstruction(VPTransformState &State,
                                    const unsigned VPOpCode, VPValue *Def,
                                    VPUser &User, const unsigned Part,
-                                   StringRef Name) {
+                                   const Twine &Name) {
   VPValue *RVL = State.Plan->getRVL();
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
@@ -244,12 +244,6 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
 
   //===------------------- Other Binary and Unary Ops ---------------------===//
   if (Instruction::isBinaryOp(Opcode) || Instruction::isUnaryOp(Opcode)) {
-    assert(((Instruction::isBinaryOp(Opcode) &&
-             (!Op || Op->getNumOperands() == 2)) ||
-            (Instruction::isUnaryOp(Opcode) &&
-             (!Op || Op->getNumOperands() == 1))) &&
-           "Invalid number of operands.");
-
     // Just widen unops and binops.
 
     SmallVector<Value *, 4> Ops;
@@ -260,15 +254,11 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     }
 
     VectorType *OpTy = cast<VectorType>(Ops[0]->getType());
-    Value *MaskArg;
+    Value *MaskArg = nullptr;
     if (Op && !canUnaryOrBinaryOpBeUnmasked(Opcode, OpTy->getElementType()))
       MaskArg = MaskValue(Part, OpTy->getElementCount());
-    else
-      MaskArg = BuilderIR.getTrueVector(OpTy->getElementCount());
-    Builder.setMask(MaskArg);
-    Builder.setEVL(State.get(RVL, Part));
-
-    Value *V = Builder.createVectorInstruction(Opcode, OpTy, Ops, "vp.op");
+    Value *V =
+        widenPredicatedArithmeticOp(State, Opcode, Ops, Part, MaskArg, "vp.op");
 
     if (Op)
       if (auto *VecOp = dyn_cast<Instruction>(V))
@@ -418,4 +408,20 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   }
 }
 
+Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
+                                         unsigned Opcode, ArrayRef<Value *> Ops,
+                                         unsigned Part, Value *Mask,
+                                         const Twine &Name) {
+  assert(((Instruction::isBinaryOp(Opcode) && (Ops.size() == 2)) ||
+          (Instruction::isUnaryOp(Opcode) && (Ops.size() == 1))) &&
+         "Invalid number of operands.");
+  VectorBuilder VBuilder(State.Builder);
+  VPValue *RVL = State.Plan->getRVL();
+  Value *RVLPart = State.get(RVL, Part);
+  if (!Mask)
+    Mask = State.Builder.getTrueVector(State.VF);
+  VBuilder.setMask(Mask).setEVL(RVLPart);
+  return cast<Instruction>(
+      VBuilder.createVectorInstruction(Opcode, Ops[0]->getType(), Ops, Name));
+}
 } // namespace llvm
