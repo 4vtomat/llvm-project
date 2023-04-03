@@ -10018,7 +10018,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Do not need to reorder srided loads, built out of reversed loads.
+  // Do not need to reorder strided loads, built out of reversed loads.
   bool IgnoreReorder = false;
 #endif // SIFIVE_CUSTOMIZATION
   auto FinalShuffle = [&](Value *V, const TreeEntry *E) {
