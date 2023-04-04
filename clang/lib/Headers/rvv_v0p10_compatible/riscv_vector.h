@@ -111,7 +111,6 @@
 #define vle64_v_u64m2(...) __riscv_vle64_v_u64m2(__VA_ARGS__)
 #define vle64_v_u64m4(...) __riscv_vle64_v_u64m4(__VA_ARGS__)
 #define vle64_v_u64m8(...) __riscv_vle64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vle16_v_f16mf4_m(...) __riscv_vle16_v_f16mf4_tumu(__VA_ARGS__)
 #define vle16_v_f16mf2_m(...) __riscv_vle16_v_f16mf2_tumu(__VA_ARGS__)
 #define vle16_v_f16m1_m(...) __riscv_vle16_v_f16m1_tumu(__VA_ARGS__)
@@ -230,7 +229,6 @@
 #define vse64_v_u64m2(...) __riscv_vse64_v_u64m2(__VA_ARGS__)
 #define vse64_v_u64m4(...) __riscv_vse64_v_u64m4(__VA_ARGS__)
 #define vse64_v_u64m8(...) __riscv_vse64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vse16_v_f16mf4_m(...) __riscv_vse16_v_f16mf4_m(__VA_ARGS__)
 #define vse16_v_f16mf2_m(...) __riscv_vse16_v_f16mf2_m(__VA_ARGS__)
 #define vse16_v_f16m1_m(...) __riscv_vse16_v_f16m1_m(__VA_ARGS__)
@@ -349,7 +347,6 @@
 #define vlse64_v_u64m2(...) __riscv_vlse64_v_u64m2(__VA_ARGS__)
 #define vlse64_v_u64m4(...) __riscv_vlse64_v_u64m4(__VA_ARGS__)
 #define vlse64_v_u64m8(...) __riscv_vlse64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vlse16_v_f16mf4_m(...) __riscv_vlse16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlse16_v_f16mf2_m(...) __riscv_vlse16_v_f16mf2_tumu(__VA_ARGS__)
 #define vlse16_v_f16m1_m(...) __riscv_vlse16_v_f16m1_tumu(__VA_ARGS__)
@@ -468,7 +465,6 @@
 #define vsse64_v_u64m2(...) __riscv_vsse64_v_u64m2(__VA_ARGS__)
 #define vsse64_v_u64m4(...) __riscv_vsse64_v_u64m4(__VA_ARGS__)
 #define vsse64_v_u64m8(...) __riscv_vsse64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vsse16_v_f16mf4_m(...) __riscv_vsse16_v_f16mf4_m(__VA_ARGS__)
 #define vsse16_v_f16mf2_m(...) __riscv_vsse16_v_f16mf2_m(__VA_ARGS__)
 #define vsse16_v_f16m1_m(...) __riscv_vsse16_v_f16m1_m(__VA_ARGS__)
@@ -952,7 +948,6 @@
 #define vluxei64_v_u64m2(...) __riscv_vluxei64_v_u64m2(__VA_ARGS__)
 #define vluxei64_v_u64m4(...) __riscv_vluxei64_v_u64m4(__VA_ARGS__)
 #define vluxei64_v_u64m8(...) __riscv_vluxei64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vloxei8_v_f16mf4_m(...) __riscv_vloxei8_v_f16mf4_tumu(__VA_ARGS__)
 #define vloxei8_v_f16mf2_m(...) __riscv_vloxei8_v_f16mf2_tumu(__VA_ARGS__)
 #define vloxei8_v_f16m1_m(...) __riscv_vloxei8_v_f16m1_tumu(__VA_ARGS__)
@@ -1801,7 +1796,6 @@
 #define vsuxei64_v_u64m2(...) __riscv_vsuxei64_v_u64m2(__VA_ARGS__)
 #define vsuxei64_v_u64m4(...) __riscv_vsuxei64_v_u64m4(__VA_ARGS__)
 #define vsuxei64_v_u64m8(...) __riscv_vsuxei64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vsoxei8_v_f16mf4_m(...) __riscv_vsoxei8_v_f16mf4_m(__VA_ARGS__)
 #define vsoxei8_v_f16mf2_m(...) __riscv_vsoxei8_v_f16mf2_m(__VA_ARGS__)
 #define vsoxei8_v_f16m1_m(...) __riscv_vsoxei8_v_f16m1_m(__VA_ARGS__)
@@ -2285,7 +2279,6 @@
 #define vle64ff_v_u64m2(...) __riscv_vle64ff_v_u64m2(__VA_ARGS__)
 #define vle64ff_v_u64m4(...) __riscv_vle64ff_v_u64m4(__VA_ARGS__)
 #define vle64ff_v_u64m8(...) __riscv_vle64ff_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vle16ff_v_f16mf4_m(...) __riscv_vle16ff_v_f16mf4_tumu(__VA_ARGS__)
 #define vle16ff_v_f16mf2_m(...) __riscv_vle16ff_v_f16mf2_tumu(__VA_ARGS__)
 #define vle16ff_v_f16m1_m(...) __riscv_vle16ff_v_f16m1_tumu(__VA_ARGS__)
@@ -2797,7 +2790,6 @@
 #define vlseg3e64ff_v_u64m2(...) __riscv_vlseg3e64ff_v_u64m2(__VA_ARGS__)
 #define vlseg4e64ff_v_u64m2(...) __riscv_vlseg4e64ff_v_u64m2(__VA_ARGS__)
 #define vlseg2e64ff_v_u64m4(...) __riscv_vlseg2e64ff_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_v_f16mf4_m(...) __riscv_vlseg2e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlseg3e16_v_f16mf4_m(...) __riscv_vlseg3e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlseg4e16_v_f16mf4_m(...) __riscv_vlseg4e16_v_f16mf4_tumu(__VA_ARGS__)
@@ -3539,7 +3531,6 @@
 #define vsseg3e64_v_u64m2(...) __riscv_vsseg3e64_v_u64m2(__VA_ARGS__)
 #define vsseg4e64_v_u64m2(...) __riscv_vsseg4e64_v_u64m2(__VA_ARGS__)
 #define vsseg2e64_v_u64m4(...) __riscv_vsseg2e64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vsseg2e16_v_f16mf4_m(...) __riscv_vsseg2e16_v_f16mf4_m(__VA_ARGS__)
 #define vsseg3e16_v_f16mf4_m(...) __riscv_vsseg3e16_v_f16mf4_m(__VA_ARGS__)
 #define vsseg4e16_v_f16mf4_m(...) __riscv_vsseg4e16_v_f16mf4_m(__VA_ARGS__)
@@ -3992,7 +3983,6 @@
 #define vlsseg3e64_v_u64m2(...) __riscv_vlsseg3e64_v_u64m2(__VA_ARGS__)
 #define vlsseg4e64_v_u64m2(...) __riscv_vlsseg4e64_v_u64m2(__VA_ARGS__)
 #define vlsseg2e64_v_u64m4(...) __riscv_vlsseg2e64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_v_f16mf4_m(...) __riscv_vlsseg2e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlsseg3e16_v_f16mf4_m(...) __riscv_vlsseg3e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlsseg4e16_v_f16mf4_m(...) __riscv_vlsseg4e16_v_f16mf4_tumu(__VA_ARGS__)
@@ -4445,7 +4435,6 @@
 #define vssseg3e64_v_u64m2(...) __riscv_vssseg3e64_v_u64m2(__VA_ARGS__)
 #define vssseg4e64_v_u64m2(...) __riscv_vssseg4e64_v_u64m2(__VA_ARGS__)
 #define vssseg2e64_v_u64m4(...) __riscv_vssseg2e64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vssseg2e16_v_f16mf4_m(...) __riscv_vssseg2e16_v_f16mf4_m(__VA_ARGS__)
 #define vssseg3e16_v_f16mf4_m(...) __riscv_vssseg3e16_v_f16mf4_m(__VA_ARGS__)
 #define vssseg4e16_v_f16mf4_m(...) __riscv_vssseg4e16_v_f16mf4_m(__VA_ARGS__)
@@ -6454,7 +6443,6 @@
 #define vluxseg3ei64_v_u64m2(...) __riscv_vluxseg3ei64_v_u64m2(__VA_ARGS__)
 #define vluxseg4ei64_v_u64m2(...) __riscv_vluxseg4ei64_v_u64m2(__VA_ARGS__)
 #define vluxseg2ei64_v_u64m4(...) __riscv_vluxseg2ei64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_v_f16mf4_m(...)                                            \
   __riscv_vloxseg2ei8_v_f16mf4_tumu(__VA_ARGS__)
 #define vloxseg3ei8_v_f16mf4_m(...)                                            \
@@ -11363,7 +11351,6 @@
 #define vsuxseg3ei64_v_u64m2(...) __riscv_vsuxseg3ei64_v_u64m2(__VA_ARGS__)
 #define vsuxseg4ei64_v_u64m2(...) __riscv_vsuxseg4ei64_v_u64m2(__VA_ARGS__)
 #define vsuxseg2ei64_v_u64m4(...) __riscv_vsuxseg2ei64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vsoxseg2ei8_v_f16mf4_m(...) __riscv_vsoxseg2ei8_v_f16mf4_m(__VA_ARGS__)
 #define vsoxseg3ei8_v_f16mf4_m(...) __riscv_vsoxseg3ei8_v_f16mf4_m(__VA_ARGS__)
 #define vsoxseg4ei8_v_f16mf4_m(...) __riscv_vsoxseg4ei8_v_f16mf4_m(__VA_ARGS__)
@@ -13766,7 +13753,6 @@
 #define vrsub_vx_u64m2(...) __riscv_vrsub_vx_u64m2(__VA_ARGS__)
 #define vrsub_vx_u64m4(...) __riscv_vrsub_vx_u64m4(__VA_ARGS__)
 #define vrsub_vx_u64m8(...) __riscv_vrsub_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vadd_vv_i8mf8_m(...) __riscv_vadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vadd_vx_i8mf8_m(...) __riscv_vadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vadd_vv_i8mf4_m(...) __riscv_vadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -14249,7 +14235,6 @@
 #define vwsubu_vx_u64m8(...) __riscv_vwsubu_vx_u64m8(__VA_ARGS__)
 #define vwsubu_wv_u64m8(...) __riscv_vwsubu_wv_u64m8(__VA_ARGS__)
 #define vwsubu_wx_u64m8(...) __riscv_vwsubu_wx_u64m8(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_i16mf4_m(...) __riscv_vwadd_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwadd_vx_i16mf4_m(...) __riscv_vwadd_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwadd_wv_i16mf4_m(...) __riscv_vwadd_wv_i16mf4_tumu(__VA_ARGS__)
@@ -14546,7 +14531,6 @@
 #define vzext_vf2_u64m2(...) __riscv_vzext_vf2_u64m2(__VA_ARGS__)
 #define vzext_vf2_u64m4(...) __riscv_vzext_vf2_u64m4(__VA_ARGS__)
 #define vzext_vf2_u64m8(...) __riscv_vzext_vf2_u64m8(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_i16mf4_m(...) __riscv_vsext_vf2_i16mf4_tumu(__VA_ARGS__)
 #define vsext_vf2_i16mf2_m(...) __riscv_vsext_vf2_i16mf2_tumu(__VA_ARGS__)
 #define vsext_vf2_i16m1_m(...) __riscv_vsext_vf2_i16m1_tumu(__VA_ARGS__)
@@ -15395,7 +15379,6 @@
 #define vxor_vx_u64m4(...) __riscv_vxor_vx_u64m4(__VA_ARGS__)
 #define vxor_vv_u64m8(...) __riscv_vxor_vv_u64m8(__VA_ARGS__)
 #define vxor_vx_u64m8(...) __riscv_vxor_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vand_vv_i8mf8_m(...) __riscv_vand_vv_i8mf8_tumu(__VA_ARGS__)
 #define vand_vx_i8mf8_m(...) __riscv_vand_vx_i8mf8_tumu(__VA_ARGS__)
 #define vand_vv_i8mf4_m(...) __riscv_vand_vv_i8mf4_tumu(__VA_ARGS__)
@@ -15704,7 +15687,6 @@
 #define vnot_v_u64m2(...) __riscv_vnot_v_u64m2(__VA_ARGS__)
 #define vnot_v_u64m4(...) __riscv_vnot_v_u64m4(__VA_ARGS__)
 #define vnot_v_u64m8(...) __riscv_vnot_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vnot_v_i8mf8_m(...) __riscv_vnot_v_i8mf8_tumu(__VA_ARGS__)
 #define vnot_v_i8mf4_m(...) __riscv_vnot_v_i8mf4_tumu(__VA_ARGS__)
 #define vnot_v_i8mf2_m(...) __riscv_vnot_v_i8mf2_tumu(__VA_ARGS__)
@@ -15925,7 +15907,6 @@
 #define vsrl_vx_u64m4(...) __riscv_vsrl_vx_u64m4(__VA_ARGS__)
 #define vsrl_vv_u64m8(...) __riscv_vsrl_vv_u64m8(__VA_ARGS__)
 #define vsrl_vx_u64m8(...) __riscv_vsrl_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vsll_vv_i8mf8_m(...) __riscv_vsll_vv_i8mf8_tumu(__VA_ARGS__)
 #define vsll_vx_i8mf8_m(...) __riscv_vsll_vx_i8mf8_tumu(__VA_ARGS__)
 #define vsll_vv_i8mf4_m(...) __riscv_vsll_vv_i8mf4_tumu(__VA_ARGS__)
@@ -16162,7 +16143,6 @@
 #define vnsrl_wx_u32m2(...) __riscv_vnsrl_wx_u32m2(__VA_ARGS__)
 #define vnsrl_wv_u32m4(...) __riscv_vnsrl_wv_u32m4(__VA_ARGS__)
 #define vnsrl_wx_u32m4(...) __riscv_vnsrl_wx_u32m4(__VA_ARGS__)
-// masked functions
 #define vnsra_wv_i8mf8_m(...) __riscv_vnsra_wv_i8mf8_tumu(__VA_ARGS__)
 #define vnsra_wx_i8mf8_m(...) __riscv_vnsra_wx_i8mf8_tumu(__VA_ARGS__)
 #define vnsra_wv_i8mf4_m(...) __riscv_vnsra_wv_i8mf4_tumu(__VA_ARGS__)
@@ -16751,7 +16731,6 @@
 #define vmsgeu_vx_u64m4_b16(...) __riscv_vmsgeu_vx_u64m4_b16(__VA_ARGS__)
 #define vmsgeu_vv_u64m8_b8(...) __riscv_vmsgeu_vv_u64m8_b8(__VA_ARGS__)
 #define vmsgeu_vx_u64m8_b8(...) __riscv_vmsgeu_vx_u64m8_b8(__VA_ARGS__)
-// masked functions
 #define vmseq_vv_i8mf8_b64_m(...) __riscv_vmseq_vv_i8mf8_b64_mu(__VA_ARGS__)
 #define vmseq_vx_i8mf8_b64_m(...) __riscv_vmseq_vx_i8mf8_b64_mu(__VA_ARGS__)
 #define vmseq_vv_i8mf4_b32_m(...) __riscv_vmseq_vv_i8mf4_b32_mu(__VA_ARGS__)
@@ -17456,7 +17435,6 @@
 #define vmaxu_vx_u64m4(...) __riscv_vmaxu_vx_u64m4(__VA_ARGS__)
 #define vmaxu_vv_u64m8(...) __riscv_vmaxu_vv_u64m8(__VA_ARGS__)
 #define vmaxu_vx_u64m8(...) __riscv_vmaxu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vmin_vv_i8mf8_m(...) __riscv_vmin_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmin_vx_i8mf8_m(...) __riscv_vmin_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmin_vv_i8mf4_m(...) __riscv_vmin_vv_i8mf4_tumu(__VA_ARGS__)
@@ -17853,7 +17831,6 @@
 #define vmulhu_vx_u64m4(...) __riscv_vmulhu_vx_u64m4(__VA_ARGS__)
 #define vmulhu_vv_u64m8(...) __riscv_vmulhu_vv_u64m8(__VA_ARGS__)
 #define vmulhu_vx_u64m8(...) __riscv_vmulhu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vmul_vv_i8mf8_m(...) __riscv_vmul_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmul_vx_i8mf8_m(...) __riscv_vmul_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmul_vv_i8mf4_m(...) __riscv_vmul_vv_i8mf4_tumu(__VA_ARGS__)
@@ -18250,7 +18227,6 @@
 #define vremu_vx_u64m4(...) __riscv_vremu_vx_u64m4(__VA_ARGS__)
 #define vremu_vv_u64m8(...) __riscv_vremu_vv_u64m8(__VA_ARGS__)
 #define vremu_vx_u64m8(...) __riscv_vremu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vdiv_vv_i8mf8_m(...) __riscv_vdiv_vv_i8mf8_tumu(__VA_ARGS__)
 #define vdiv_vx_i8mf8_m(...) __riscv_vdiv_vx_i8mf8_tumu(__VA_ARGS__)
 #define vdiv_vv_i8mf4_m(...) __riscv_vdiv_vv_i8mf4_tumu(__VA_ARGS__)
@@ -18517,7 +18493,6 @@
 #define vwmulu_vx_u64m4(...) __riscv_vwmulu_vx_u64m4(__VA_ARGS__)
 #define vwmulu_vv_u64m8(...) __riscv_vwmulu_vv_u64m8(__VA_ARGS__)
 #define vwmulu_vx_u64m8(...) __riscv_vwmulu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vwmul_vv_i16mf4_m(...) __riscv_vwmul_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwmul_vx_i16mf4_m(...) __riscv_vwmul_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwmul_vv_i16mf2_m(...) __riscv_vwmul_vv_i16mf2_tumu(__VA_ARGS__)
@@ -18960,7 +18935,6 @@
 #define vnmsub_vx_u64m4(...) __riscv_vnmsub_vx_u64m4_tu(__VA_ARGS__)
 #define vnmsub_vv_u64m8(...) __riscv_vnmsub_vv_u64m8_tu(__VA_ARGS__)
 #define vnmsub_vx_u64m8(...) __riscv_vnmsub_vx_u64m8_tu(__VA_ARGS__)
-// masked functions
 #define vmacc_vv_i8mf8_m(...) __riscv_vmacc_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmacc_vx_i8mf8_m(...) __riscv_vmacc_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmacc_vv_i8mf4_m(...) __riscv_vmacc_vv_i8mf4_tumu(__VA_ARGS__)
@@ -19418,7 +19392,6 @@
 #define vwmaccu_vx_u64m4(...) __riscv_vwmaccu_vx_u64m4_tu(__VA_ARGS__)
 #define vwmaccu_vv_u64m8(...) __riscv_vwmaccu_vv_u64m8_tu(__VA_ARGS__)
 #define vwmaccu_vx_u64m8(...) __riscv_vwmaccu_vx_u64m8_tu(__VA_ARGS__)
-// masked functions
 #define vwmacc_vv_i16mf4_m(...) __riscv_vwmacc_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwmacc_vx_i16mf4_m(...) __riscv_vwmacc_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwmacc_vv_i16mf2_m(...) __riscv_vwmacc_vv_i16mf2_tumu(__VA_ARGS__)
@@ -19964,7 +19937,6 @@
 #define vssubu_vx_u64m4(...) __riscv_vssubu_vx_u64m4(__VA_ARGS__)
 #define vssubu_vv_u64m8(...) __riscv_vssubu_vv_u64m8(__VA_ARGS__)
 #define vssubu_vx_u64m8(...) __riscv_vssubu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vsadd_vv_i8mf8_m(...) __riscv_vsadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vsadd_vx_i8mf8_m(...) __riscv_vsadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vsadd_vv_i8mf4_m(...) __riscv_vsadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -20317,7 +20289,6 @@
 #define vasubu_vx_u64m4(...) __riscv_vasubu_vx_u64m4(__VA_ARGS__)
 #define vasubu_vv_u64m8(...) __riscv_vasubu_vv_u64m8(__VA_ARGS__)
 #define vasubu_vx_u64m8(...) __riscv_vasubu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vaadd_vv_i8mf8_m(...) __riscv_vaadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vaadd_vx_i8mf8_m(...) __riscv_vaadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vaadd_vv_i8mf4_m(...) __riscv_vaadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -20538,7 +20509,6 @@
 #define vsmul_vx_i64m4(...) __riscv_vsmul_vx_i64m4(__VA_ARGS__)
 #define vsmul_vv_i64m8(...) __riscv_vsmul_vv_i64m8(__VA_ARGS__)
 #define vsmul_vx_i64m8(...) __riscv_vsmul_vx_i64m8(__VA_ARGS__)
-// masked functions
 #define vsmul_vv_i8mf8_m(...) __riscv_vsmul_vv_i8mf8_mu(__VA_ARGS__)
 #define vsmul_vx_i8mf8_m(...) __riscv_vsmul_vx_i8mf8_mu(__VA_ARGS__)
 #define vsmul_vv_i8mf4_m(...) __riscv_vsmul_vv_i8mf4_mu(__VA_ARGS__)
@@ -20671,7 +20641,6 @@
 #define vssrl_vx_u64m4(...) __riscv_vssrl_vx_u64m4(__VA_ARGS__)
 #define vssrl_vv_u64m8(...) __riscv_vssrl_vv_u64m8(__VA_ARGS__)
 #define vssrl_vx_u64m8(...) __riscv_vssrl_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vssra_vv_i8mf8_m(...) __riscv_vssra_vv_i8mf8_tumu(__VA_ARGS__)
 #define vssra_vx_i8mf8_m(...) __riscv_vssra_vx_i8mf8_tumu(__VA_ARGS__)
 #define vssra_vv_i8mf4_m(...) __riscv_vssra_vv_i8mf4_tumu(__VA_ARGS__)
@@ -20820,7 +20789,6 @@
 #define vnclipu_wx_u32m2(...) __riscv_vnclipu_wx_u32m2(__VA_ARGS__)
 #define vnclipu_wv_u32m4(...) __riscv_vnclipu_wv_u32m4(__VA_ARGS__)
 #define vnclipu_wx_u32m4(...) __riscv_vnclipu_wx_u32m4(__VA_ARGS__)
-// masked functions
 #define vnclip_wv_i8mf8_m(...) __riscv_vnclip_wv_i8mf8_tumu(__VA_ARGS__)
 #define vnclip_wx_i8mf8_m(...) __riscv_vnclip_wx_i8mf8_tumu(__VA_ARGS__)
 #define vnclip_wv_i8mf4_m(...) __riscv_vnclip_wv_i8mf4_tumu(__VA_ARGS__)
@@ -20971,7 +20939,6 @@
 #define vfneg_v_f64m2(...) __riscv_vfneg_v_f64m2(__VA_ARGS__)
 #define vfneg_v_f64m4(...) __riscv_vfneg_v_f64m4(__VA_ARGS__)
 #define vfneg_v_f64m8(...) __riscv_vfneg_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfadd_vv_f16mf4_m(...) __riscv_vfadd_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfadd_vf_f16mf4_m(...) __riscv_vfadd_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfadd_vv_f16mf2_m(...) __riscv_vfadd_vv_f16mf2_tumu(__VA_ARGS__)
@@ -21134,7 +21101,6 @@
 #define vfwsub_vf_f64m8(...) __riscv_vfwsub_vf_f64m8(__VA_ARGS__)
 #define vfwsub_wv_f64m8(...) __riscv_vfwsub_wv_f64m8(__VA_ARGS__)
 #define vfwsub_wf_f64m8(...) __riscv_vfwsub_wf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_f32mf2_m(...) __riscv_vfwadd_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwadd_vf_f32mf2_m(...) __riscv_vfwadd_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwadd_wv_f32mf2_m(...) __riscv_vfwadd_wv_f32mf2_tumu(__VA_ARGS__)
@@ -21282,7 +21248,6 @@
 #define vfrdiv_vf_f64m2(...) __riscv_vfrdiv_vf_f64m2(__VA_ARGS__)
 #define vfrdiv_vf_f64m4(...) __riscv_vfrdiv_vf_f64m4(__VA_ARGS__)
 #define vfrdiv_vf_f64m8(...) __riscv_vfrdiv_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfmul_vv_f16mf4_m(...) __riscv_vfmul_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmul_vf_f16mf4_m(...) __riscv_vfmul_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmul_vv_f16mf2_m(...) __riscv_vfmul_vv_f16mf2_tumu(__VA_ARGS__)
@@ -21376,7 +21341,6 @@
 #define vfwmul_vf_f64m4(...) __riscv_vfwmul_vf_f64m4(__VA_ARGS__)
 #define vfwmul_vv_f64m8(...) __riscv_vfwmul_vv_f64m8(__VA_ARGS__)
 #define vfwmul_vf_f64m8(...) __riscv_vfwmul_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfwmul_vv_f32mf2_m(...) __riscv_vfwmul_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwmul_vf_f32mf2_m(...) __riscv_vfwmul_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwmul_vv_f32m1_m(...) __riscv_vfwmul_vv_f32m1_tumu(__VA_ARGS__)
@@ -21635,7 +21599,6 @@
 #define vfnmsub_vf_f64m4(...) __riscv_vfnmsub_vf_f64m4_tu(__VA_ARGS__)
 #define vfnmsub_vv_f64m8(...) __riscv_vfnmsub_vv_f64m8_tu(__VA_ARGS__)
 #define vfnmsub_vf_f64m8(...) __riscv_vfnmsub_vf_f64m8_tu(__VA_ARGS__)
-// masked functions
 #define vfmacc_vv_f16mf4_m(...) __riscv_vfmacc_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmacc_vf_f16mf4_m(...) __riscv_vfmacc_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmacc_vv_f16mf2_m(...) __riscv_vfmacc_vv_f16mf2_tumu(__VA_ARGS__)
@@ -21948,7 +21911,6 @@
 #define vfwnmsac_vf_f64m4(...) __riscv_vfwnmsac_vf_f64m4_tu(__VA_ARGS__)
 #define vfwnmsac_vv_f64m8(...) __riscv_vfwnmsac_vv_f64m8_tu(__VA_ARGS__)
 #define vfwnmsac_vf_f64m8(...) __riscv_vfwnmsac_vf_f64m8_tu(__VA_ARGS__)
-// masked functions
 #define vfwmacc_vv_f32mf2_m(...) __riscv_vfwmacc_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwmacc_vf_f32mf2_m(...) __riscv_vfwmacc_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwmacc_vv_f32m1_m(...) __riscv_vfwmacc_vv_f32m1_tumu(__VA_ARGS__)
@@ -22036,7 +21998,6 @@
 #define vfsqrt_v_f64m2(...) __riscv_vfsqrt_v_f64m2(__VA_ARGS__)
 #define vfsqrt_v_f64m4(...) __riscv_vfsqrt_v_f64m4(__VA_ARGS__)
 #define vfsqrt_v_f64m8(...) __riscv_vfsqrt_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfsqrt_v_f16mf4_m(...) __riscv_vfsqrt_v_f16mf4_tumu(__VA_ARGS__)
 #define vfsqrt_v_f16mf2_m(...) __riscv_vfsqrt_v_f16mf2_tumu(__VA_ARGS__)
 #define vfsqrt_v_f16m1_m(...) __riscv_vfsqrt_v_f16m1_tumu(__VA_ARGS__)
@@ -22067,7 +22028,6 @@
 #define vfrsqrt7_v_f64m2(...) __riscv_vfrsqrt7_v_f64m2(__VA_ARGS__)
 #define vfrsqrt7_v_f64m4(...) __riscv_vfrsqrt7_v_f64m4(__VA_ARGS__)
 #define vfrsqrt7_v_f64m8(...) __riscv_vfrsqrt7_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_v_f16mf4_m(...) __riscv_vfrsqrt7_v_f16mf4_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f16mf2_m(...) __riscv_vfrsqrt7_v_f16mf2_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f16m1_m(...) __riscv_vfrsqrt7_v_f16m1_tumu(__VA_ARGS__)
@@ -22098,7 +22058,6 @@
 #define vfrec7_v_f64m2(...) __riscv_vfrec7_v_f64m2(__VA_ARGS__)
 #define vfrec7_v_f64m4(...) __riscv_vfrec7_v_f64m4(__VA_ARGS__)
 #define vfrec7_v_f64m8(...) __riscv_vfrec7_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfrec7_v_f16mf4_m(...) __riscv_vfrec7_v_f16mf4_tumu(__VA_ARGS__)
 #define vfrec7_v_f16mf2_m(...) __riscv_vfrec7_v_f16mf2_tumu(__VA_ARGS__)
 #define vfrec7_v_f16m1_m(...) __riscv_vfrec7_v_f16m1_tumu(__VA_ARGS__)
@@ -22174,7 +22133,6 @@
 #define vfmax_vf_f64m4(...) __riscv_vfmax_vf_f64m4(__VA_ARGS__)
 #define vfmax_vv_f64m8(...) __riscv_vfmax_vv_f64m8(__VA_ARGS__)
 #define vfmax_vf_f64m8(...) __riscv_vfmax_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfmin_vv_f16mf4_m(...) __riscv_vfmin_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmin_vf_f16mf4_m(...) __riscv_vfmin_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmin_vv_f16mf2_m(...) __riscv_vfmin_vv_f16mf2_tumu(__VA_ARGS__)
@@ -22325,7 +22283,6 @@
 #define vfsgnjx_vf_f64m4(...) __riscv_vfsgnjx_vf_f64m4(__VA_ARGS__)
 #define vfsgnjx_vv_f64m8(...) __riscv_vfsgnjx_vv_f64m8(__VA_ARGS__)
 #define vfsgnjx_vf_f64m8(...) __riscv_vfsgnjx_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfsgnj_vv_f16mf4_m(...) __riscv_vfsgnj_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfsgnj_vf_f16mf4_m(...) __riscv_vfsgnj_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfsgnj_vv_f16mf2_m(...) __riscv_vfsgnj_vv_f16mf2_tumu(__VA_ARGS__)
@@ -22431,7 +22388,6 @@
 #define vfabs_v_f64m2(...) __riscv_vfabs_v_f64m2(__VA_ARGS__)
 #define vfabs_v_f64m4(...) __riscv_vfabs_v_f64m4(__VA_ARGS__)
 #define vfabs_v_f64m8(...) __riscv_vfabs_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfabs_v_f16mf4_m(...) __riscv_vfabs_v_f16mf4_tumu(__VA_ARGS__)
 #define vfabs_v_f16mf2_m(...) __riscv_vfabs_v_f16mf2_tumu(__VA_ARGS__)
 #define vfabs_v_f16m1_m(...) __riscv_vfabs_v_f16m1_tumu(__VA_ARGS__)
@@ -22627,7 +22583,6 @@
 #define vmfge_vf_f64m4_b16(...) __riscv_vmfge_vf_f64m4_b16(__VA_ARGS__)
 #define vmfge_vv_f64m8_b8(...) __riscv_vmfge_vv_f64m8_b8(__VA_ARGS__)
 #define vmfge_vf_f64m8_b8(...) __riscv_vmfge_vf_f64m8_b8(__VA_ARGS__)
-// masked functions
 #define vmfeq_vv_f16mf4_b64_m(...) __riscv_vmfeq_vv_f16mf4_b64_mu(__VA_ARGS__)
 #define vmfeq_vf_f16mf4_b64_m(...) __riscv_vmfeq_vf_f16mf4_b64_mu(__VA_ARGS__)
 #define vmfeq_vv_f16mf2_b32_m(...) __riscv_vmfeq_vv_f16mf2_b32_mu(__VA_ARGS__)
@@ -22823,7 +22778,6 @@
 #define vfclass_v_u64m2(...) __riscv_vfclass_v_u64m2(__VA_ARGS__)
 #define vfclass_v_u64m4(...) __riscv_vfclass_v_u64m4(__VA_ARGS__)
 #define vfclass_v_u64m8(...) __riscv_vfclass_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vfclass_v_u16mf4_m(...) __riscv_vfclass_v_u16mf4_tumu(__VA_ARGS__)
 #define vfclass_v_u16mf2_m(...) __riscv_vfclass_v_u16mf2_tumu(__VA_ARGS__)
 #define vfclass_v_u16m1_m(...) __riscv_vfclass_v_u16m1_tumu(__VA_ARGS__)
@@ -23022,7 +22976,6 @@
 #define vfcvt_f_xu_v_f64m2(...) __riscv_vfcvt_f_xu_v_f64m2(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m4(...) __riscv_vfcvt_f_xu_v_f64m4(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m8(...) __riscv_vfcvt_f_xu_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_f_v_i16mf4_m(...) __riscv_vfcvt_x_f_v_i16mf4_tumu(__VA_ARGS__)
 #define vfcvt_rtz_x_f_v_i16mf4_m(...)                                          \
   __riscv_vfcvt_rtz_x_f_v_i16mf4_tumu(__VA_ARGS__)
@@ -23258,7 +23211,6 @@
 #define vfwcvt_f_f_v_f64m2(...) __riscv_vfwcvt_f_f_v_f64m2(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m4(...) __riscv_vfwcvt_f_f_v_f64m4(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m8(...) __riscv_vfwcvt_f_f_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_x_v_i16mf4_m(...) __riscv_vwcvt_x_x_v_i16mf4_tumu(__VA_ARGS__)
 #define vwcvt_x_x_v_i16mf2_m(...) __riscv_vwcvt_x_x_v_i16mf2_tumu(__VA_ARGS__)
 #define vwcvt_x_x_v_i16m1_m(...) __riscv_vwcvt_x_x_v_i16m1_tumu(__VA_ARGS__)
@@ -23530,7 +23482,6 @@
 #define vfncvt_rod_f_f_w_f32m2(...) __riscv_vfncvt_rod_f_f_w_f32m2(__VA_ARGS__)
 #define vfncvt_f_f_w_f32m4(...) __riscv_vfncvt_f_f_w_f32m4(__VA_ARGS__)
 #define vfncvt_rod_f_f_w_f32m4(...) __riscv_vfncvt_rod_f_f_w_f32m4(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_f_w_i8mf8_m(...) __riscv_vfncvt_x_f_w_i8mf8_tumu(__VA_ARGS__)
 #define vfncvt_rtz_x_f_w_i8mf8_m(...)                                          \
   __riscv_vfncvt_rtz_x_f_w_i8mf8_tumu(__VA_ARGS__)
@@ -24128,7 +24079,6 @@
   __riscv_vredxor_vs_u64m4_u64m1_tu(__VA_ARGS__)
 #define vredxor_vs_u64m8_u64m1(...)                                            \
   __riscv_vredxor_vs_u64m8_u64m1_tu(__VA_ARGS__)
-// masked functions
 #define vredsum_vs_i8mf8_i8m1_m(...)                                           \
   __riscv_vredsum_vs_i8mf8_i8m1_tum(__VA_ARGS__)
 #define vredsum_vs_i8mf4_i8m1_m(...)                                           \
@@ -24721,7 +24671,6 @@
   __riscv_vwredsumu_vs_u32m4_u64m1_tu(__VA_ARGS__)
 #define vwredsumu_vs_u32m8_u64m1(...)                                          \
   __riscv_vwredsumu_vs_u32m8_u64m1_tu(__VA_ARGS__)
-// masked functions
 #define vwredsum_vs_i8mf8_i16m1_m(...)                                         \
   __riscv_vwredsum_vs_i8mf8_i16m1_tum(__VA_ARGS__)
 #define vwredsum_vs_i8mf4_i16m1_m(...)                                         \
@@ -24914,7 +24863,6 @@
   __riscv_vfredmin_vs_f64m4_f64m1_tu(__VA_ARGS__)
 #define vfredmin_vs_f64m8_f64m1(...)                                           \
   __riscv_vfredmin_vs_f64m8_f64m1_tu(__VA_ARGS__)
-// masked functions
 #define vfredosum_vs_f16mf4_f16m1_m(...)                                       \
   __riscv_vfredosum_vs_f16mf4_f16m1_tum(__VA_ARGS__)
 #define vfredosum_vs_f16mf2_f16m1_m(...)                                       \
@@ -25079,7 +25027,6 @@
   __riscv_vfwredusum_vs_f32m4_f64m1_tu(__VA_ARGS__)
 #define vfwredusum_vs_f32m8_f64m1(...)                                         \
   __riscv_vfwredusum_vs_f32m8_f64m1_tu(__VA_ARGS__)
-// masked functions
 #define vfwredosum_vs_f16mf4_f32m1_m(...)                                      \
   __riscv_vfwredosum_vs_f16mf4_f32m1_tum(__VA_ARGS__)
 #define vfwredosum_vs_f16mf2_f32m1_m(...)                                      \
@@ -25229,7 +25176,6 @@
 #define vcpop_m_b16(...) __riscv_vcpop_m_b16(__VA_ARGS__)
 #define vcpop_m_b32(...) __riscv_vcpop_m_b32(__VA_ARGS__)
 #define vcpop_m_b64(...) __riscv_vcpop_m_b64(__VA_ARGS__)
-// masked functions
 #define vcpop_m_b1_m(...) __riscv_vcpop_m_b1_m(__VA_ARGS__)
 #define vcpop_m_b2_m(...) __riscv_vcpop_m_b2_m(__VA_ARGS__)
 #define vcpop_m_b4_m(...) __riscv_vcpop_m_b4_m(__VA_ARGS__)
@@ -25244,7 +25190,6 @@
 #define vfirst_m_b16(...) __riscv_vfirst_m_b16(__VA_ARGS__)
 #define vfirst_m_b32(...) __riscv_vfirst_m_b32(__VA_ARGS__)
 #define vfirst_m_b64(...) __riscv_vfirst_m_b64(__VA_ARGS__)
-// masked functions
 #define vfirst_m_b1_m(...) __riscv_vfirst_m_b1_m(__VA_ARGS__)
 #define vfirst_m_b2_m(...) __riscv_vfirst_m_b2_m(__VA_ARGS__)
 #define vfirst_m_b4_m(...) __riscv_vfirst_m_b4_m(__VA_ARGS__)
@@ -25259,7 +25204,6 @@
 #define vmsbf_m_b16(...) __riscv_vmsbf_m_b16(__VA_ARGS__)
 #define vmsbf_m_b32(...) __riscv_vmsbf_m_b32(__VA_ARGS__)
 #define vmsbf_m_b64(...) __riscv_vmsbf_m_b64(__VA_ARGS__)
-// masked functions
 #define vmsbf_m_b1_m(...) __riscv_vmsbf_m_b1_mu(__VA_ARGS__)
 #define vmsbf_m_b2_m(...) __riscv_vmsbf_m_b2_mu(__VA_ARGS__)
 #define vmsbf_m_b4_m(...) __riscv_vmsbf_m_b4_mu(__VA_ARGS__)
@@ -25274,7 +25218,6 @@
 #define vmsif_m_b16(...) __riscv_vmsif_m_b16(__VA_ARGS__)
 #define vmsif_m_b32(...) __riscv_vmsif_m_b32(__VA_ARGS__)
 #define vmsif_m_b64(...) __riscv_vmsif_m_b64(__VA_ARGS__)
-// masked functions
 #define vmsif_m_b1_m(...) __riscv_vmsif_m_b1_mu(__VA_ARGS__)
 #define vmsif_m_b2_m(...) __riscv_vmsif_m_b2_mu(__VA_ARGS__)
 #define vmsif_m_b4_m(...) __riscv_vmsif_m_b4_mu(__VA_ARGS__)
@@ -25289,7 +25232,6 @@
 #define vmsof_m_b16(...) __riscv_vmsof_m_b16(__VA_ARGS__)
 #define vmsof_m_b32(...) __riscv_vmsof_m_b32(__VA_ARGS__)
 #define vmsof_m_b64(...) __riscv_vmsof_m_b64(__VA_ARGS__)
-// masked functions
 #define vmsof_m_b1_m(...) __riscv_vmsof_m_b1_mu(__VA_ARGS__)
 #define vmsof_m_b2_m(...) __riscv_vmsof_m_b2_mu(__VA_ARGS__)
 #define vmsof_m_b4_m(...) __riscv_vmsof_m_b4_mu(__VA_ARGS__)
@@ -25319,7 +25261,6 @@
 #define viota_m_u64m2(...) __riscv_viota_m_u64m2(__VA_ARGS__)
 #define viota_m_u64m4(...) __riscv_viota_m_u64m4(__VA_ARGS__)
 #define viota_m_u64m8(...) __riscv_viota_m_u64m8(__VA_ARGS__)
-// masked functions
 #define viota_m_u8mf8_m(...) __riscv_viota_m_u8mf8_tumu(__VA_ARGS__)
 #define viota_m_u8mf4_m(...) __riscv_viota_m_u8mf4_tumu(__VA_ARGS__)
 #define viota_m_u8mf2_m(...) __riscv_viota_m_u8mf2_tumu(__VA_ARGS__)
@@ -25364,7 +25305,6 @@
 #define vid_v_u64m2(...) __riscv_vid_v_u64m2(__VA_ARGS__)
 #define vid_v_u64m4(...) __riscv_vid_v_u64m4(__VA_ARGS__)
 #define vid_v_u64m8(...) __riscv_vid_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vid_v_u8mf8_m(...) __riscv_vid_v_u8mf8_tumu(__VA_ARGS__)
 #define vid_v_u8mf4_m(...) __riscv_vid_v_u8mf4_tumu(__VA_ARGS__)
 #define vid_v_u8mf2_m(...) __riscv_vid_v_u8mf2_tumu(__VA_ARGS__)
@@ -25564,7 +25504,6 @@
 #define vslideup_vx_u64m2(...) __riscv_vslideup_vx_u64m2_tu(__VA_ARGS__)
 #define vslideup_vx_u64m4(...) __riscv_vslideup_vx_u64m4_tu(__VA_ARGS__)
 #define vslideup_vx_u64m8(...) __riscv_vslideup_vx_u64m8_tu(__VA_ARGS__)
-// masked functions
 #define vslideup_vx_f16mf4_m(...) __riscv_vslideup_vx_f16mf4_tumu(__VA_ARGS__)
 #define vslideup_vx_f16mf2_m(...) __riscv_vslideup_vx_f16mf2_tumu(__VA_ARGS__)
 #define vslideup_vx_f16m1_m(...) __riscv_vslideup_vx_f16m1_tumu(__VA_ARGS__)
@@ -25683,7 +25622,6 @@
 #define vslidedown_vx_u64m2(...) __riscv_vslidedown_vx_u64m2_tu(__VA_ARGS__)
 #define vslidedown_vx_u64m4(...) __riscv_vslidedown_vx_u64m4_tu(__VA_ARGS__)
 #define vslidedown_vx_u64m8(...) __riscv_vslidedown_vx_u64m8_tu(__VA_ARGS__)
-// masked functions
 #define vslidedown_vx_f16mf4_m(...)                                            \
   __riscv_vslidedown_vx_f16mf4_tumu(__VA_ARGS__)
 #define vslidedown_vx_f16mf2_m(...)                                            \
@@ -25870,7 +25808,6 @@
 #define vslide1down_vx_u64m2(...) __riscv_vslide1down_vx_u64m2(__VA_ARGS__)
 #define vslide1down_vx_u64m4(...) __riscv_vslide1down_vx_u64m4(__VA_ARGS__)
 #define vslide1down_vx_u64m8(...) __riscv_vslide1down_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vfslide1up_vf_f16mf4_m(...)                                            \
   __riscv_vfslide1up_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfslide1up_vf_f16mf2_m(...)                                            \
@@ -26218,7 +26155,6 @@
 #define vrgatherei16_vv_u64m2(...) __riscv_vrgatherei16_vv_u64m2(__VA_ARGS__)
 #define vrgatherei16_vv_u64m4(...) __riscv_vrgatherei16_vv_u64m4(__VA_ARGS__)
 #define vrgatherei16_vv_u64m8(...) __riscv_vrgatherei16_vv_u64m8(__VA_ARGS__)
-// masked functions
 #define vrgather_vv_f16mf4_m(...) __riscv_vrgather_vv_f16mf4_tumu(__VA_ARGS__)
 #define vrgather_vx_f16mf4_m(...) __riscv_vrgather_vx_f16mf4_tumu(__VA_ARGS__)
 #define vrgather_vv_f16mf2_m(...) __riscv_vrgather_vv_f16mf2_tumu(__VA_ARGS__)
@@ -26569,7 +26505,6 @@
   __riscv_vcompress_vm_u64m4_tu((dest), (src), (mask), (vl))
 #define vcompress_vm_u64m8(mask, dest, src, vl)                                \
   __riscv_vcompress_vm_u64m8_tu((dest), (src), (mask), (vl))
-// Reinterpret between different type under the same SEW/LMUL
 #define vreinterpret_v_i8mf8_u8mf8(...)                                        \
   __riscv_vreinterpret_v_i8mf8_u8mf8(__VA_ARGS__)
 #define vreinterpret_v_i8mf4_u8mf4(...)                                        \
@@ -26778,7 +26713,6 @@
   __riscv_vreinterpret_v_f64m4_u64m4(__VA_ARGS__)
 #define vreinterpret_v_f64m8_u64m8(...)                                        \
   __riscv_vreinterpret_v_f64m8_u64m8(__VA_ARGS__)
-// Reinterpret between different SEW under the same LMUL
 #define vreinterpret_v_i8mf4_i16mf4(...)                                       \
   __riscv_vreinterpret_v_i8mf4_i16mf4(__VA_ARGS__)
 #define vreinterpret_v_i8mf2_i16mf2(...)                                       \
@@ -27702,13 +27636,6 @@
 #ifndef __RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_POLICY_H
 #define __RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_POLICY_H
 
-#if __has_include("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
-
 #define vle16_v_f16mf4_tu(...) __riscv_vle16_v_f16mf4_tu(__VA_ARGS__)
 #define vle16_v_f16mf2_tu(...) __riscv_vle16_v_f16mf2_tu(__VA_ARGS__)
 #define vle16_v_f16m1_tu(...) __riscv_vle16_v_f16m1_tu(__VA_ARGS__)
@@ -27827,7 +27754,6 @@
 #define vle64_v_u64m2_ta(...) __riscv_vle64_v_u64m2(__VA_ARGS__)
 #define vle64_v_u64m4_ta(...) __riscv_vle64_v_u64m4(__VA_ARGS__)
 #define vle64_v_u64m8_ta(...) __riscv_vle64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vle16_v_f16mf4_tuma(...) __riscv_vle16_v_f16mf4_tum(__VA_ARGS__)
 #define vle16_v_f16mf2_tuma(...) __riscv_vle16_v_f16mf2_tum(__VA_ARGS__)
 #define vle16_v_f16m1_tuma(...) __riscv_vle16_v_f16m1_tum(__VA_ARGS__)
@@ -27887,7 +27813,6 @@
 #define vle64_v_u64m2_tuma(...) __riscv_vle64_v_u64m2_tum(__VA_ARGS__)
 #define vle64_v_u64m4_tuma(...) __riscv_vle64_v_u64m4_tum(__VA_ARGS__)
 #define vle64_v_u64m8_tuma(...) __riscv_vle64_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vle16_v_f16mf4_tumu(...) __riscv_vle16_v_f16mf4_tumu(__VA_ARGS__)
 #define vle16_v_f16mf2_tumu(...) __riscv_vle16_v_f16mf2_tumu(__VA_ARGS__)
 #define vle16_v_f16m1_tumu(...) __riscv_vle16_v_f16m1_tumu(__VA_ARGS__)
@@ -27947,7 +27872,6 @@
 #define vle64_v_u64m2_tumu(...) __riscv_vle64_v_u64m2_tumu(__VA_ARGS__)
 #define vle64_v_u64m4_tumu(...) __riscv_vle64_v_u64m4_tumu(__VA_ARGS__)
 #define vle64_v_u64m8_tumu(...) __riscv_vle64_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vle16_v_f16mf4_tama(...) __riscv_vle16_v_f16mf4_m(__VA_ARGS__)
 #define vle16_v_f16mf2_tama(...) __riscv_vle16_v_f16mf2_m(__VA_ARGS__)
 #define vle16_v_f16m1_tama(...) __riscv_vle16_v_f16m1_m(__VA_ARGS__)
@@ -28007,7 +27931,6 @@
 #define vle64_v_u64m2_tama(...) __riscv_vle64_v_u64m2_m(__VA_ARGS__)
 #define vle64_v_u64m4_tama(...) __riscv_vle64_v_u64m4_m(__VA_ARGS__)
 #define vle64_v_u64m8_tama(...) __riscv_vle64_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vle16_v_f16mf4_tamu(...) __riscv_vle16_v_f16mf4_mu(__VA_ARGS__)
 #define vle16_v_f16mf2_tamu(...) __riscv_vle16_v_f16mf2_mu(__VA_ARGS__)
 #define vle16_v_f16m1_tamu(...) __riscv_vle16_v_f16m1_mu(__VA_ARGS__)
@@ -28185,7 +28108,6 @@
 #define vlse64_v_u64m2_ta(...) __riscv_vlse64_v_u64m2(__VA_ARGS__)
 #define vlse64_v_u64m4_ta(...) __riscv_vlse64_v_u64m4(__VA_ARGS__)
 #define vlse64_v_u64m8_ta(...) __riscv_vlse64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vlse16_v_f16mf4_tuma(...) __riscv_vlse16_v_f16mf4_tum(__VA_ARGS__)
 #define vlse16_v_f16mf2_tuma(...) __riscv_vlse16_v_f16mf2_tum(__VA_ARGS__)
 #define vlse16_v_f16m1_tuma(...) __riscv_vlse16_v_f16m1_tum(__VA_ARGS__)
@@ -28245,7 +28167,6 @@
 #define vlse64_v_u64m2_tuma(...) __riscv_vlse64_v_u64m2_tum(__VA_ARGS__)
 #define vlse64_v_u64m4_tuma(...) __riscv_vlse64_v_u64m4_tum(__VA_ARGS__)
 #define vlse64_v_u64m8_tuma(...) __riscv_vlse64_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vlse16_v_f16mf4_tumu(...) __riscv_vlse16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlse16_v_f16mf2_tumu(...) __riscv_vlse16_v_f16mf2_tumu(__VA_ARGS__)
 #define vlse16_v_f16m1_tumu(...) __riscv_vlse16_v_f16m1_tumu(__VA_ARGS__)
@@ -28305,7 +28226,6 @@
 #define vlse64_v_u64m2_tumu(...) __riscv_vlse64_v_u64m2_tumu(__VA_ARGS__)
 #define vlse64_v_u64m4_tumu(...) __riscv_vlse64_v_u64m4_tumu(__VA_ARGS__)
 #define vlse64_v_u64m8_tumu(...) __riscv_vlse64_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vlse16_v_f16mf4_tama(...) __riscv_vlse16_v_f16mf4_m(__VA_ARGS__)
 #define vlse16_v_f16mf2_tama(...) __riscv_vlse16_v_f16mf2_m(__VA_ARGS__)
 #define vlse16_v_f16m1_tama(...) __riscv_vlse16_v_f16m1_m(__VA_ARGS__)
@@ -28365,7 +28285,6 @@
 #define vlse64_v_u64m2_tama(...) __riscv_vlse64_v_u64m2_m(__VA_ARGS__)
 #define vlse64_v_u64m4_tama(...) __riscv_vlse64_v_u64m4_m(__VA_ARGS__)
 #define vlse64_v_u64m8_tama(...) __riscv_vlse64_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vlse16_v_f16mf4_tamu(...) __riscv_vlse16_v_f16mf4_mu(__VA_ARGS__)
 #define vlse16_v_f16mf2_tamu(...) __riscv_vlse16_v_f16mf2_mu(__VA_ARGS__)
 #define vlse16_v_f16m1_tamu(...) __riscv_vlse16_v_f16m1_mu(__VA_ARGS__)
@@ -29273,7 +29192,6 @@
 #define vluxei64_v_u64m2_ta(...) __riscv_vluxei64_v_u64m2(__VA_ARGS__)
 #define vluxei64_v_u64m4_ta(...) __riscv_vluxei64_v_u64m4(__VA_ARGS__)
 #define vluxei64_v_u64m8_ta(...) __riscv_vluxei64_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vloxei8_v_f16mf4_tuma(...) __riscv_vloxei8_v_f16mf4_tum(__VA_ARGS__)
 #define vloxei8_v_f16mf2_tuma(...) __riscv_vloxei8_v_f16mf2_tum(__VA_ARGS__)
 #define vloxei8_v_f16m1_tuma(...) __riscv_vloxei8_v_f16m1_tum(__VA_ARGS__)
@@ -29698,7 +29616,6 @@
 #define vluxei64_v_u64m2_tuma(...) __riscv_vluxei64_v_u64m2_tum(__VA_ARGS__)
 #define vluxei64_v_u64m4_tuma(...) __riscv_vluxei64_v_u64m4_tum(__VA_ARGS__)
 #define vluxei64_v_u64m8_tuma(...) __riscv_vluxei64_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vloxei8_v_f16mf4_tumu(...) __riscv_vloxei8_v_f16mf4_tumu(__VA_ARGS__)
 #define vloxei8_v_f16mf2_tumu(...) __riscv_vloxei8_v_f16mf2_tumu(__VA_ARGS__)
 #define vloxei8_v_f16m1_tumu(...) __riscv_vloxei8_v_f16m1_tumu(__VA_ARGS__)
@@ -30123,7 +30040,6 @@
 #define vluxei64_v_u64m2_tumu(...) __riscv_vluxei64_v_u64m2_tumu(__VA_ARGS__)
 #define vluxei64_v_u64m4_tumu(...) __riscv_vluxei64_v_u64m4_tumu(__VA_ARGS__)
 #define vluxei64_v_u64m8_tumu(...) __riscv_vluxei64_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vloxei8_v_f16mf4_tama(...) __riscv_vloxei8_v_f16mf4_m(__VA_ARGS__)
 #define vloxei8_v_f16mf2_tama(...) __riscv_vloxei8_v_f16mf2_m(__VA_ARGS__)
 #define vloxei8_v_f16m1_tama(...) __riscv_vloxei8_v_f16m1_m(__VA_ARGS__)
@@ -30548,7 +30464,6 @@
 #define vluxei64_v_u64m2_tama(...) __riscv_vluxei64_v_u64m2_m(__VA_ARGS__)
 #define vluxei64_v_u64m4_tama(...) __riscv_vluxei64_v_u64m4_m(__VA_ARGS__)
 #define vluxei64_v_u64m8_tama(...) __riscv_vluxei64_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vloxei8_v_f16mf4_tamu(...) __riscv_vloxei8_v_f16mf4_mu(__VA_ARGS__)
 #define vloxei8_v_f16mf2_tamu(...) __riscv_vloxei8_v_f16mf2_mu(__VA_ARGS__)
 #define vloxei8_v_f16m1_tamu(...) __riscv_vloxei8_v_f16m1_mu(__VA_ARGS__)
@@ -31091,7 +31006,6 @@
 #define vle64ff_v_u64m2_ta(...) __riscv_vle64ff_v_u64m2(__VA_ARGS__)
 #define vle64ff_v_u64m4_ta(...) __riscv_vle64ff_v_u64m4(__VA_ARGS__)
 #define vle64ff_v_u64m8_ta(...) __riscv_vle64ff_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vle16ff_v_f16mf4_tuma(...) __riscv_vle16ff_v_f16mf4_tum(__VA_ARGS__)
 #define vle16ff_v_f16mf2_tuma(...) __riscv_vle16ff_v_f16mf2_tum(__VA_ARGS__)
 #define vle16ff_v_f16m1_tuma(...) __riscv_vle16ff_v_f16m1_tum(__VA_ARGS__)
@@ -31151,7 +31065,6 @@
 #define vle64ff_v_u64m2_tuma(...) __riscv_vle64ff_v_u64m2_tum(__VA_ARGS__)
 #define vle64ff_v_u64m4_tuma(...) __riscv_vle64ff_v_u64m4_tum(__VA_ARGS__)
 #define vle64ff_v_u64m8_tuma(...) __riscv_vle64ff_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vle16ff_v_f16mf4_tumu(...) __riscv_vle16ff_v_f16mf4_tumu(__VA_ARGS__)
 #define vle16ff_v_f16mf2_tumu(...) __riscv_vle16ff_v_f16mf2_tumu(__VA_ARGS__)
 #define vle16ff_v_f16m1_tumu(...) __riscv_vle16ff_v_f16m1_tumu(__VA_ARGS__)
@@ -31211,7 +31124,6 @@
 #define vle64ff_v_u64m2_tumu(...) __riscv_vle64ff_v_u64m2_tumu(__VA_ARGS__)
 #define vle64ff_v_u64m4_tumu(...) __riscv_vle64ff_v_u64m4_tumu(__VA_ARGS__)
 #define vle64ff_v_u64m8_tumu(...) __riscv_vle64ff_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vle16ff_v_f16mf4_tama(...) __riscv_vle16ff_v_f16mf4_m(__VA_ARGS__)
 #define vle16ff_v_f16mf2_tama(...) __riscv_vle16ff_v_f16mf2_m(__VA_ARGS__)
 #define vle16ff_v_f16m1_tama(...) __riscv_vle16ff_v_f16m1_m(__VA_ARGS__)
@@ -31271,7 +31183,6 @@
 #define vle64ff_v_u64m2_tama(...) __riscv_vle64ff_v_u64m2_m(__VA_ARGS__)
 #define vle64ff_v_u64m4_tama(...) __riscv_vle64ff_v_u64m4_m(__VA_ARGS__)
 #define vle64ff_v_u64m8_tama(...) __riscv_vle64ff_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vle16ff_v_f16mf4_tamu(...) __riscv_vle16ff_v_f16mf4_mu(__VA_ARGS__)
 #define vle16ff_v_f16mf2_tamu(...) __riscv_vle16ff_v_f16mf2_mu(__VA_ARGS__)
 #define vle16ff_v_f16m1_tamu(...) __riscv_vle16ff_v_f16m1_mu(__VA_ARGS__)
@@ -32298,7 +32209,6 @@
 #define vlseg3e64ff_v_u64m2_ta(...) __riscv_vlseg3e64ff_v_u64m2(__VA_ARGS__)
 #define vlseg4e64ff_v_u64m2_ta(...) __riscv_vlseg4e64ff_v_u64m2(__VA_ARGS__)
 #define vlseg2e64ff_v_u64m4_ta(...) __riscv_vlseg2e64ff_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_v_f16mf4_tuma(...) __riscv_vlseg2e16_v_f16mf4_tum(__VA_ARGS__)
 #define vlseg3e16_v_f16mf4_tuma(...) __riscv_vlseg3e16_v_f16mf4_tum(__VA_ARGS__)
 #define vlseg4e16_v_f16mf4_tuma(...) __riscv_vlseg4e16_v_f16mf4_tum(__VA_ARGS__)
@@ -32913,7 +32823,6 @@
   __riscv_vlseg4e64ff_v_u64m2_tum(__VA_ARGS__)
 #define vlseg2e64ff_v_u64m4_tuma(...)                                          \
   __riscv_vlseg2e64ff_v_u64m4_tum(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_v_f16mf4_tumu(...)                                           \
   __riscv_vlseg2e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlseg3e16_v_f16mf4_tumu(...)                                           \
@@ -33633,7 +33542,6 @@
   __riscv_vlseg4e64ff_v_u64m2_tumu(__VA_ARGS__)
 #define vlseg2e64ff_v_u64m4_tumu(...)                                          \
   __riscv_vlseg2e64ff_v_u64m4_tumu(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_v_f16mf4_tama(...) __riscv_vlseg2e16_v_f16mf4_m(__VA_ARGS__)
 #define vlseg3e16_v_f16mf4_tama(...) __riscv_vlseg3e16_v_f16mf4_m(__VA_ARGS__)
 #define vlseg4e16_v_f16mf4_tama(...) __riscv_vlseg4e16_v_f16mf4_m(__VA_ARGS__)
@@ -34149,7 +34057,6 @@
 #define vlseg3e64ff_v_u64m2_tama(...) __riscv_vlseg3e64ff_v_u64m2_m(__VA_ARGS__)
 #define vlseg4e64ff_v_u64m2_tama(...) __riscv_vlseg4e64ff_v_u64m2_m(__VA_ARGS__)
 #define vlseg2e64ff_v_u64m4_tama(...) __riscv_vlseg2e64ff_v_u64m4_m(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_v_f16mf4_tamu(...) __riscv_vlseg2e16_v_f16mf4_mu(__VA_ARGS__)
 #define vlseg3e16_v_f16mf4_tamu(...) __riscv_vlseg3e16_v_f16mf4_mu(__VA_ARGS__)
 #define vlseg4e16_v_f16mf4_tamu(...) __riscv_vlseg4e16_v_f16mf4_mu(__VA_ARGS__)
@@ -35216,7 +35123,6 @@
 #define vlsseg3e64_v_u64m2_ta(...) __riscv_vlsseg3e64_v_u64m2(__VA_ARGS__)
 #define vlsseg4e64_v_u64m2_ta(...) __riscv_vlsseg4e64_v_u64m2(__VA_ARGS__)
 #define vlsseg2e64_v_u64m4_ta(...) __riscv_vlsseg2e64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_v_f16mf4_tuma(...)                                          \
   __riscv_vlsseg2e16_v_f16mf4_tum(__VA_ARGS__)
 #define vlsseg3e16_v_f16mf4_tuma(...)                                          \
@@ -35506,7 +35412,6 @@
 #define vlsseg3e64_v_u64m2_tuma(...) __riscv_vlsseg3e64_v_u64m2_tum(__VA_ARGS__)
 #define vlsseg4e64_v_u64m2_tuma(...) __riscv_vlsseg4e64_v_u64m2_tum(__VA_ARGS__)
 #define vlsseg2e64_v_u64m4_tuma(...) __riscv_vlsseg2e64_v_u64m4_tum(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_v_f16mf4_tumu(...)                                          \
   __riscv_vlsseg2e16_v_f16mf4_tumu(__VA_ARGS__)
 #define vlsseg3e16_v_f16mf4_tumu(...)                                          \
@@ -35895,7 +35800,6 @@
   __riscv_vlsseg4e64_v_u64m2_tumu(__VA_ARGS__)
 #define vlsseg2e64_v_u64m4_tumu(...)                                           \
   __riscv_vlsseg2e64_v_u64m4_tumu(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_v_f16mf4_tama(...) __riscv_vlsseg2e16_v_f16mf4_m(__VA_ARGS__)
 #define vlsseg3e16_v_f16mf4_tama(...) __riscv_vlsseg3e16_v_f16mf4_m(__VA_ARGS__)
 #define vlsseg4e16_v_f16mf4_tama(...) __riscv_vlsseg4e16_v_f16mf4_m(__VA_ARGS__)
@@ -36122,7 +36026,6 @@
 #define vlsseg3e64_v_u64m2_tama(...) __riscv_vlsseg3e64_v_u64m2_m(__VA_ARGS__)
 #define vlsseg4e64_v_u64m2_tama(...) __riscv_vlsseg4e64_v_u64m2_m(__VA_ARGS__)
 #define vlsseg2e64_v_u64m4_tama(...) __riscv_vlsseg2e64_v_u64m4_m(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_v_f16mf4_tamu(...)                                          \
   __riscv_vlsseg2e16_v_f16mf4_mu(__VA_ARGS__)
 #define vlsseg3e16_v_f16mf4_tamu(...)                                          \
@@ -41320,7 +41223,6 @@
 #define vluxseg3ei64_v_u64m2_ta(...) __riscv_vluxseg3ei64_v_u64m2(__VA_ARGS__)
 #define vluxseg4ei64_v_u64m2_ta(...) __riscv_vluxseg4ei64_v_u64m2(__VA_ARGS__)
 #define vluxseg2ei64_v_u64m4_ta(...) __riscv_vluxseg2ei64_v_u64m4(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_v_f16mf4_tuma(...)                                         \
   __riscv_vloxseg2ei8_v_f16mf4_tum(__VA_ARGS__)
 #define vloxseg3ei8_v_f16mf4_tuma(...)                                         \
@@ -44841,7 +44743,6 @@
   __riscv_vluxseg4ei64_v_u64m2_tum(__VA_ARGS__)
 #define vluxseg2ei64_v_u64m4_tuma(...)                                         \
   __riscv_vluxseg2ei64_v_u64m4_tum(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_v_f16mf4_tumu(...)                                         \
   __riscv_vloxseg2ei8_v_f16mf4_tumu(__VA_ARGS__)
 #define vloxseg3ei8_v_f16mf4_tumu(...)                                         \
@@ -48406,7 +48307,6 @@
   __riscv_vluxseg4ei64_v_u64m2_tumu(__VA_ARGS__)
 #define vluxseg2ei64_v_u64m4_tumu(...)                                         \
   __riscv_vluxseg2ei64_v_u64m4_tumu(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_v_f16mf4_tama(...)                                         \
   __riscv_vloxseg2ei8_v_f16mf4_m(__VA_ARGS__)
 #define vloxseg3ei8_v_f16mf4_tama(...)                                         \
@@ -51533,7 +51433,6 @@
   __riscv_vluxseg4ei64_v_u64m2_m(__VA_ARGS__)
 #define vluxseg2ei64_v_u64m4_tama(...)                                         \
   __riscv_vluxseg2ei64_v_u64m4_m(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_v_f16mf4_tamu(...)                                         \
   __riscv_vloxseg2ei8_v_f16mf4_mu(__VA_ARGS__)
 #define vloxseg3ei8_v_f16mf4_tamu(...)                                         \
@@ -55538,7 +55437,6 @@
 #define vrsub_vx_u64m2_ta(...) __riscv_vrsub_vx_u64m2(__VA_ARGS__)
 #define vrsub_vx_u64m4_ta(...) __riscv_vrsub_vx_u64m4(__VA_ARGS__)
 #define vrsub_vx_u64m8_ta(...) __riscv_vrsub_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vadd_vv_i8mf8_tuma(...) __riscv_vadd_vv_i8mf8_tum(__VA_ARGS__)
 #define vadd_vx_i8mf8_tuma(...) __riscv_vadd_vx_i8mf8_tum(__VA_ARGS__)
 #define vadd_vv_i8mf4_tuma(...) __riscv_vadd_vv_i8mf4_tum(__VA_ARGS__)
@@ -55781,7 +55679,6 @@
 #define vrsub_vx_u64m2_tuma(...) __riscv_vrsub_vx_u64m2_tum(__VA_ARGS__)
 #define vrsub_vx_u64m4_tuma(...) __riscv_vrsub_vx_u64m4_tum(__VA_ARGS__)
 #define vrsub_vx_u64m8_tuma(...) __riscv_vrsub_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vadd_vv_i8mf8_tumu(...) __riscv_vadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vadd_vx_i8mf8_tumu(...) __riscv_vadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vadd_vv_i8mf4_tumu(...) __riscv_vadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -56024,7 +55921,6 @@
 #define vrsub_vx_u64m2_tumu(...) __riscv_vrsub_vx_u64m2_tumu(__VA_ARGS__)
 #define vrsub_vx_u64m4_tumu(...) __riscv_vrsub_vx_u64m4_tumu(__VA_ARGS__)
 #define vrsub_vx_u64m8_tumu(...) __riscv_vrsub_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vadd_vv_i8mf8_tama(...) __riscv_vadd_vv_i8mf8_m(__VA_ARGS__)
 #define vadd_vx_i8mf8_tama(...) __riscv_vadd_vx_i8mf8_m(__VA_ARGS__)
 #define vadd_vv_i8mf4_tama(...) __riscv_vadd_vv_i8mf4_m(__VA_ARGS__)
@@ -56267,7 +56163,6 @@
 #define vrsub_vx_u64m2_tama(...) __riscv_vrsub_vx_u64m2_m(__VA_ARGS__)
 #define vrsub_vx_u64m4_tama(...) __riscv_vrsub_vx_u64m4_m(__VA_ARGS__)
 #define vrsub_vx_u64m8_tama(...) __riscv_vrsub_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vadd_vv_i8mf8_tamu(...) __riscv_vadd_vv_i8mf8_mu(__VA_ARGS__)
 #define vadd_vx_i8mf8_tamu(...) __riscv_vadd_vx_i8mf8_mu(__VA_ARGS__)
 #define vadd_vv_i8mf4_tamu(...) __riscv_vadd_vv_i8mf4_mu(__VA_ARGS__)
@@ -56990,7 +56885,6 @@
 #define vwsubu_vx_u64m8_ta(...) __riscv_vwsubu_vx_u64m8(__VA_ARGS__)
 #define vwsubu_wv_u64m8_ta(...) __riscv_vwsubu_wv_u64m8(__VA_ARGS__)
 #define vwsubu_wx_u64m8_ta(...) __riscv_vwsubu_wx_u64m8(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_i16mf4_tuma(...) __riscv_vwadd_vv_i16mf4_tum(__VA_ARGS__)
 #define vwadd_vx_i16mf4_tuma(...) __riscv_vwadd_vx_i16mf4_tum(__VA_ARGS__)
 #define vwadd_wv_i16mf4_tuma(...) __riscv_vwadd_wv_i16mf4_tum(__VA_ARGS__)
@@ -57231,7 +57125,6 @@
 #define vwsubu_vx_u64m8_tuma(...) __riscv_vwsubu_vx_u64m8_tum(__VA_ARGS__)
 #define vwsubu_wv_u64m8_tuma(...) __riscv_vwsubu_wv_u64m8_tum(__VA_ARGS__)
 #define vwsubu_wx_u64m8_tuma(...) __riscv_vwsubu_wx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_i16mf4_tumu(...) __riscv_vwadd_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwadd_vx_i16mf4_tumu(...) __riscv_vwadd_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwadd_wv_i16mf4_tumu(...) __riscv_vwadd_wv_i16mf4_tumu(__VA_ARGS__)
@@ -57472,7 +57365,6 @@
 #define vwsubu_vx_u64m8_tumu(...) __riscv_vwsubu_vx_u64m8_tumu(__VA_ARGS__)
 #define vwsubu_wv_u64m8_tumu(...) __riscv_vwsubu_wv_u64m8_tumu(__VA_ARGS__)
 #define vwsubu_wx_u64m8_tumu(...) __riscv_vwsubu_wx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_i16mf4_tama(...) __riscv_vwadd_vv_i16mf4_m(__VA_ARGS__)
 #define vwadd_vx_i16mf4_tama(...) __riscv_vwadd_vx_i16mf4_m(__VA_ARGS__)
 #define vwadd_wv_i16mf4_tama(...) __riscv_vwadd_wv_i16mf4_m(__VA_ARGS__)
@@ -57713,7 +57605,6 @@
 #define vwsubu_vx_u64m8_tama(...) __riscv_vwsubu_vx_u64m8_m(__VA_ARGS__)
 #define vwsubu_wv_u64m8_tama(...) __riscv_vwsubu_wv_u64m8_m(__VA_ARGS__)
 #define vwsubu_wx_u64m8_tama(...) __riscv_vwsubu_wx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_i16mf4_tamu(...) __riscv_vwadd_vv_i16mf4_mu(__VA_ARGS__)
 #define vwadd_vx_i16mf4_tamu(...) __riscv_vwadd_vx_i16mf4_mu(__VA_ARGS__)
 #define vwadd_wv_i16mf4_tamu(...) __riscv_vwadd_wv_i16mf4_mu(__VA_ARGS__)
@@ -58066,7 +57957,6 @@
 #define vzext_vf2_u64m2_ta(...) __riscv_vzext_vf2_u64m2(__VA_ARGS__)
 #define vzext_vf2_u64m4_ta(...) __riscv_vzext_vf2_u64m4(__VA_ARGS__)
 #define vzext_vf2_u64m8_ta(...) __riscv_vzext_vf2_u64m8(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_i16mf4_tuma(...) __riscv_vsext_vf2_i16mf4_tum(__VA_ARGS__)
 #define vsext_vf2_i16mf2_tuma(...) __riscv_vsext_vf2_i16mf2_tum(__VA_ARGS__)
 #define vsext_vf2_i16m1_tuma(...) __riscv_vsext_vf2_i16m1_tum(__VA_ARGS__)
@@ -58123,7 +58013,6 @@
 #define vzext_vf2_u64m2_tuma(...) __riscv_vzext_vf2_u64m2_tum(__VA_ARGS__)
 #define vzext_vf2_u64m4_tuma(...) __riscv_vzext_vf2_u64m4_tum(__VA_ARGS__)
 #define vzext_vf2_u64m8_tuma(...) __riscv_vzext_vf2_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_i16mf4_tumu(...) __riscv_vsext_vf2_i16mf4_tumu(__VA_ARGS__)
 #define vsext_vf2_i16mf2_tumu(...) __riscv_vsext_vf2_i16mf2_tumu(__VA_ARGS__)
 #define vsext_vf2_i16m1_tumu(...) __riscv_vsext_vf2_i16m1_tumu(__VA_ARGS__)
@@ -58180,7 +58069,6 @@
 #define vzext_vf2_u64m2_tumu(...) __riscv_vzext_vf2_u64m2_tumu(__VA_ARGS__)
 #define vzext_vf2_u64m4_tumu(...) __riscv_vzext_vf2_u64m4_tumu(__VA_ARGS__)
 #define vzext_vf2_u64m8_tumu(...) __riscv_vzext_vf2_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_i16mf4_tama(...) __riscv_vsext_vf2_i16mf4_m(__VA_ARGS__)
 #define vsext_vf2_i16mf2_tama(...) __riscv_vsext_vf2_i16mf2_m(__VA_ARGS__)
 #define vsext_vf2_i16m1_tama(...) __riscv_vsext_vf2_i16m1_m(__VA_ARGS__)
@@ -58237,7 +58125,6 @@
 #define vzext_vf2_u64m2_tama(...) __riscv_vzext_vf2_u64m2_m(__VA_ARGS__)
 #define vzext_vf2_u64m4_tama(...) __riscv_vzext_vf2_u64m4_m(__VA_ARGS__)
 #define vzext_vf2_u64m8_tama(...) __riscv_vzext_vf2_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_i16mf4_tamu(...) __riscv_vsext_vf2_i16mf4_mu(__VA_ARGS__)
 #define vsext_vf2_i16mf2_tamu(...) __riscv_vsext_vf2_i16mf2_mu(__VA_ARGS__)
 #define vsext_vf2_i16m1_tamu(...) __riscv_vsext_vf2_i16m1_mu(__VA_ARGS__)
@@ -59174,7 +59061,6 @@
 #define vxor_vx_u64m4_ta(...) __riscv_vxor_vx_u64m4(__VA_ARGS__)
 #define vxor_vv_u64m8_ta(...) __riscv_vxor_vv_u64m8(__VA_ARGS__)
 #define vxor_vx_u64m8_ta(...) __riscv_vxor_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vand_vv_i8mf8_tuma(...) __riscv_vand_vv_i8mf8_tum(__VA_ARGS__)
 #define vand_vx_i8mf8_tuma(...) __riscv_vand_vx_i8mf8_tum(__VA_ARGS__)
 #define vand_vv_i8mf4_tuma(...) __riscv_vand_vv_i8mf4_tum(__VA_ARGS__)
@@ -59439,7 +59325,6 @@
 #define vxor_vx_u64m4_tuma(...) __riscv_vxor_vx_u64m4_tum(__VA_ARGS__)
 #define vxor_vv_u64m8_tuma(...) __riscv_vxor_vv_u64m8_tum(__VA_ARGS__)
 #define vxor_vx_u64m8_tuma(...) __riscv_vxor_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vand_vv_i8mf8_tumu(...) __riscv_vand_vv_i8mf8_tumu(__VA_ARGS__)
 #define vand_vx_i8mf8_tumu(...) __riscv_vand_vx_i8mf8_tumu(__VA_ARGS__)
 #define vand_vv_i8mf4_tumu(...) __riscv_vand_vv_i8mf4_tumu(__VA_ARGS__)
@@ -59704,7 +59589,6 @@
 #define vxor_vx_u64m4_tumu(...) __riscv_vxor_vx_u64m4_tumu(__VA_ARGS__)
 #define vxor_vv_u64m8_tumu(...) __riscv_vxor_vv_u64m8_tumu(__VA_ARGS__)
 #define vxor_vx_u64m8_tumu(...) __riscv_vxor_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vand_vv_i8mf8_tama(...) __riscv_vand_vv_i8mf8_m(__VA_ARGS__)
 #define vand_vx_i8mf8_tama(...) __riscv_vand_vx_i8mf8_m(__VA_ARGS__)
 #define vand_vv_i8mf4_tama(...) __riscv_vand_vv_i8mf4_m(__VA_ARGS__)
@@ -59969,7 +59853,6 @@
 #define vxor_vx_u64m4_tama(...) __riscv_vxor_vx_u64m4_m(__VA_ARGS__)
 #define vxor_vv_u64m8_tama(...) __riscv_vxor_vv_u64m8_m(__VA_ARGS__)
 #define vxor_vx_u64m8_tama(...) __riscv_vxor_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vand_vv_i8mf8_tamu(...) __riscv_vand_vv_i8mf8_mu(__VA_ARGS__)
 #define vand_vx_i8mf8_tamu(...) __riscv_vand_vx_i8mf8_mu(__VA_ARGS__)
 #define vand_vv_i8mf4_tamu(...) __riscv_vand_vv_i8mf4_mu(__VA_ARGS__)
@@ -60322,7 +60205,6 @@
 #define vnot_v_u64m2_ta(...) __riscv_vnot_v_u64m2(__VA_ARGS__)
 #define vnot_v_u64m4_ta(...) __riscv_vnot_v_u64m4(__VA_ARGS__)
 #define vnot_v_u64m8_ta(...) __riscv_vnot_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vnot_v_i8mf8_tuma(...) __riscv_vnot_v_i8mf8_tum(__VA_ARGS__)
 #define vnot_v_i8mf4_tuma(...) __riscv_vnot_v_i8mf4_tum(__VA_ARGS__)
 #define vnot_v_i8mf2_tuma(...) __riscv_vnot_v_i8mf2_tum(__VA_ARGS__)
@@ -60367,7 +60249,6 @@
 #define vnot_v_u64m2_tuma(...) __riscv_vnot_v_u64m2_tum(__VA_ARGS__)
 #define vnot_v_u64m4_tuma(...) __riscv_vnot_v_u64m4_tum(__VA_ARGS__)
 #define vnot_v_u64m8_tuma(...) __riscv_vnot_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vnot_v_i8mf8_tumu(...) __riscv_vnot_v_i8mf8_tumu(__VA_ARGS__)
 #define vnot_v_i8mf4_tumu(...) __riscv_vnot_v_i8mf4_tumu(__VA_ARGS__)
 #define vnot_v_i8mf2_tumu(...) __riscv_vnot_v_i8mf2_tumu(__VA_ARGS__)
@@ -60412,7 +60293,6 @@
 #define vnot_v_u64m2_tumu(...) __riscv_vnot_v_u64m2_tumu(__VA_ARGS__)
 #define vnot_v_u64m4_tumu(...) __riscv_vnot_v_u64m4_tumu(__VA_ARGS__)
 #define vnot_v_u64m8_tumu(...) __riscv_vnot_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vnot_v_i8mf8_tama(...) __riscv_vnot_v_i8mf8_m(__VA_ARGS__)
 #define vnot_v_i8mf4_tama(...) __riscv_vnot_v_i8mf4_m(__VA_ARGS__)
 #define vnot_v_i8mf2_tama(...) __riscv_vnot_v_i8mf2_m(__VA_ARGS__)
@@ -60457,7 +60337,6 @@
 #define vnot_v_u64m2_tama(...) __riscv_vnot_v_u64m2_m(__VA_ARGS__)
 #define vnot_v_u64m4_tama(...) __riscv_vnot_v_u64m4_m(__VA_ARGS__)
 #define vnot_v_u64m8_tama(...) __riscv_vnot_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vnot_v_i8mf8_tamu(...) __riscv_vnot_v_i8mf8_mu(__VA_ARGS__)
 #define vnot_v_i8mf4_tamu(...) __riscv_vnot_v_i8mf4_mu(__VA_ARGS__)
 #define vnot_v_i8mf2_tamu(...) __riscv_vnot_v_i8mf2_mu(__VA_ARGS__)
@@ -60854,7 +60733,6 @@
 #define vsrl_vx_u64m4_ta(...) __riscv_vsrl_vx_u64m4(__VA_ARGS__)
 #define vsrl_vv_u64m8_ta(...) __riscv_vsrl_vv_u64m8(__VA_ARGS__)
 #define vsrl_vx_u64m8_ta(...) __riscv_vsrl_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vsll_vv_i8mf8_tuma(...) __riscv_vsll_vv_i8mf8_tum(__VA_ARGS__)
 #define vsll_vx_i8mf8_tuma(...) __riscv_vsll_vx_i8mf8_tum(__VA_ARGS__)
 #define vsll_vv_i8mf4_tuma(...) __riscv_vsll_vv_i8mf4_tum(__VA_ARGS__)
@@ -61031,7 +60909,6 @@
 #define vsrl_vx_u64m4_tuma(...) __riscv_vsrl_vx_u64m4_tum(__VA_ARGS__)
 #define vsrl_vv_u64m8_tuma(...) __riscv_vsrl_vv_u64m8_tum(__VA_ARGS__)
 #define vsrl_vx_u64m8_tuma(...) __riscv_vsrl_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vsll_vv_i8mf8_tumu(...) __riscv_vsll_vv_i8mf8_tumu(__VA_ARGS__)
 #define vsll_vx_i8mf8_tumu(...) __riscv_vsll_vx_i8mf8_tumu(__VA_ARGS__)
 #define vsll_vv_i8mf4_tumu(...) __riscv_vsll_vv_i8mf4_tumu(__VA_ARGS__)
@@ -61208,7 +61085,6 @@
 #define vsrl_vx_u64m4_tumu(...) __riscv_vsrl_vx_u64m4_tumu(__VA_ARGS__)
 #define vsrl_vv_u64m8_tumu(...) __riscv_vsrl_vv_u64m8_tumu(__VA_ARGS__)
 #define vsrl_vx_u64m8_tumu(...) __riscv_vsrl_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vsll_vv_i8mf8_tama(...) __riscv_vsll_vv_i8mf8_m(__VA_ARGS__)
 #define vsll_vx_i8mf8_tama(...) __riscv_vsll_vx_i8mf8_m(__VA_ARGS__)
 #define vsll_vv_i8mf4_tama(...) __riscv_vsll_vv_i8mf4_m(__VA_ARGS__)
@@ -61385,7 +61261,6 @@
 #define vsrl_vx_u64m4_tama(...) __riscv_vsrl_vx_u64m4_m(__VA_ARGS__)
 #define vsrl_vv_u64m8_tama(...) __riscv_vsrl_vv_u64m8_m(__VA_ARGS__)
 #define vsrl_vx_u64m8_tama(...) __riscv_vsrl_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vsll_vv_i8mf8_tamu(...) __riscv_vsll_vv_i8mf8_mu(__VA_ARGS__)
 #define vsll_vx_i8mf8_tamu(...) __riscv_vsll_vx_i8mf8_mu(__VA_ARGS__)
 #define vsll_vv_i8mf4_tamu(...) __riscv_vsll_vv_i8mf4_mu(__VA_ARGS__)
@@ -61682,7 +61557,6 @@
 #define vnsrl_wx_u32m2_ta(...) __riscv_vnsrl_wx_u32m2(__VA_ARGS__)
 #define vnsrl_wv_u32m4_ta(...) __riscv_vnsrl_wv_u32m4(__VA_ARGS__)
 #define vnsrl_wx_u32m4_ta(...) __riscv_vnsrl_wx_u32m4(__VA_ARGS__)
-// masked functions
 #define vnsra_wv_i8mf8_tuma(...) __riscv_vnsra_wv_i8mf8_tum(__VA_ARGS__)
 #define vnsra_wx_i8mf8_tuma(...) __riscv_vnsra_wx_i8mf8_tum(__VA_ARGS__)
 #define vnsra_wv_i8mf4_tuma(...) __riscv_vnsra_wv_i8mf4_tum(__VA_ARGS__)
@@ -61743,7 +61617,6 @@
 #define vnsrl_wx_u32m2_tuma(...) __riscv_vnsrl_wx_u32m2_tum(__VA_ARGS__)
 #define vnsrl_wv_u32m4_tuma(...) __riscv_vnsrl_wv_u32m4_tum(__VA_ARGS__)
 #define vnsrl_wx_u32m4_tuma(...) __riscv_vnsrl_wx_u32m4_tum(__VA_ARGS__)
-// masked functions
 #define vnsra_wv_i8mf8_tumu(...) __riscv_vnsra_wv_i8mf8_tumu(__VA_ARGS__)
 #define vnsra_wx_i8mf8_tumu(...) __riscv_vnsra_wx_i8mf8_tumu(__VA_ARGS__)
 #define vnsra_wv_i8mf4_tumu(...) __riscv_vnsra_wv_i8mf4_tumu(__VA_ARGS__)
@@ -61804,7 +61677,6 @@
 #define vnsrl_wx_u32m2_tumu(...) __riscv_vnsrl_wx_u32m2_tumu(__VA_ARGS__)
 #define vnsrl_wv_u32m4_tumu(...) __riscv_vnsrl_wv_u32m4_tumu(__VA_ARGS__)
 #define vnsrl_wx_u32m4_tumu(...) __riscv_vnsrl_wx_u32m4_tumu(__VA_ARGS__)
-// masked functions
 #define vnsra_wv_i8mf8_tama(...) __riscv_vnsra_wv_i8mf8_m(__VA_ARGS__)
 #define vnsra_wx_i8mf8_tama(...) __riscv_vnsra_wx_i8mf8_m(__VA_ARGS__)
 #define vnsra_wv_i8mf4_tama(...) __riscv_vnsra_wv_i8mf4_m(__VA_ARGS__)
@@ -61865,7 +61737,6 @@
 #define vnsrl_wx_u32m2_tama(...) __riscv_vnsrl_wx_u32m2_m(__VA_ARGS__)
 #define vnsrl_wv_u32m4_tama(...) __riscv_vnsrl_wv_u32m4_m(__VA_ARGS__)
 #define vnsrl_wx_u32m4_tama(...) __riscv_vnsrl_wx_u32m4_m(__VA_ARGS__)
-// masked functions
 #define vnsra_wv_i8mf8_tamu(...) __riscv_vnsra_wv_i8mf8_mu(__VA_ARGS__)
 #define vnsra_wx_i8mf8_tamu(...) __riscv_vnsra_wx_i8mf8_mu(__VA_ARGS__)
 #define vnsra_wv_i8mf4_tamu(...) __riscv_vnsra_wv_i8mf4_mu(__VA_ARGS__)
@@ -61926,7 +61797,6 @@
 #define vnsrl_wx_u32m2_tamu(...) __riscv_vnsrl_wx_u32m2_mu(__VA_ARGS__)
 #define vnsrl_wv_u32m4_tamu(...) __riscv_vnsrl_wv_u32m4_mu(__VA_ARGS__)
 #define vnsrl_wx_u32m4_tamu(...) __riscv_vnsrl_wx_u32m4_mu(__VA_ARGS__)
-// masked functions
 #define vmseq_vv_i8mf8_b64_ma(...) __riscv_vmseq_vv_i8mf8_b64_m(__VA_ARGS__)
 #define vmseq_vx_i8mf8_b64_ma(...) __riscv_vmseq_vx_i8mf8_b64_m(__VA_ARGS__)
 #define vmseq_vv_i8mf4_b32_ma(...) __riscv_vmseq_vv_i8mf4_b32_m(__VA_ARGS__)
@@ -62455,7 +62325,6 @@
 #define vmsgeu_vx_u64m4_b16_ma(...) __riscv_vmsgeu_vx_u64m4_b16_m(__VA_ARGS__)
 #define vmsgeu_vv_u64m8_b8_ma(...) __riscv_vmsgeu_vv_u64m8_b8_m(__VA_ARGS__)
 #define vmsgeu_vx_u64m8_b8_ma(...) __riscv_vmsgeu_vx_u64m8_b8_m(__VA_ARGS__)
-// masked functions
 #define vmseq_vv_i8mf8_b64_mu(...) __riscv_vmseq_vv_i8mf8_b64_mu(__VA_ARGS__)
 #define vmseq_vx_i8mf8_b64_mu(...) __riscv_vmseq_vx_i8mf8_b64_mu(__VA_ARGS__)
 #define vmseq_vv_i8mf4_b32_mu(...) __riscv_vmseq_vv_i8mf4_b32_mu(__VA_ARGS__)
@@ -63360,7 +63229,6 @@
 #define vmaxu_vx_u64m4_ta(...) __riscv_vmaxu_vx_u64m4(__VA_ARGS__)
 #define vmaxu_vv_u64m8_ta(...) __riscv_vmaxu_vv_u64m8(__VA_ARGS__)
 #define vmaxu_vx_u64m8_ta(...) __riscv_vmaxu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vmin_vv_i8mf8_tuma(...) __riscv_vmin_vv_i8mf8_tum(__VA_ARGS__)
 #define vmin_vx_i8mf8_tuma(...) __riscv_vmin_vx_i8mf8_tum(__VA_ARGS__)
 #define vmin_vv_i8mf4_tuma(...) __riscv_vmin_vv_i8mf4_tum(__VA_ARGS__)
@@ -63537,7 +63405,6 @@
 #define vmaxu_vx_u64m4_tuma(...) __riscv_vmaxu_vx_u64m4_tum(__VA_ARGS__)
 #define vmaxu_vv_u64m8_tuma(...) __riscv_vmaxu_vv_u64m8_tum(__VA_ARGS__)
 #define vmaxu_vx_u64m8_tuma(...) __riscv_vmaxu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vmin_vv_i8mf8_tumu(...) __riscv_vmin_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmin_vx_i8mf8_tumu(...) __riscv_vmin_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmin_vv_i8mf4_tumu(...) __riscv_vmin_vv_i8mf4_tumu(__VA_ARGS__)
@@ -63714,7 +63581,6 @@
 #define vmaxu_vx_u64m4_tumu(...) __riscv_vmaxu_vx_u64m4_tumu(__VA_ARGS__)
 #define vmaxu_vv_u64m8_tumu(...) __riscv_vmaxu_vv_u64m8_tumu(__VA_ARGS__)
 #define vmaxu_vx_u64m8_tumu(...) __riscv_vmaxu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vmin_vv_i8mf8_tama(...) __riscv_vmin_vv_i8mf8_m(__VA_ARGS__)
 #define vmin_vx_i8mf8_tama(...) __riscv_vmin_vx_i8mf8_m(__VA_ARGS__)
 #define vmin_vv_i8mf4_tama(...) __riscv_vmin_vv_i8mf4_m(__VA_ARGS__)
@@ -63891,7 +63757,6 @@
 #define vmaxu_vx_u64m4_tama(...) __riscv_vmaxu_vx_u64m4_m(__VA_ARGS__)
 #define vmaxu_vv_u64m8_tama(...) __riscv_vmaxu_vv_u64m8_m(__VA_ARGS__)
 #define vmaxu_vx_u64m8_tama(...) __riscv_vmaxu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vmin_vv_i8mf8_tamu(...) __riscv_vmin_vv_i8mf8_mu(__VA_ARGS__)
 #define vmin_vx_i8mf8_tamu(...) __riscv_vmin_vx_i8mf8_mu(__VA_ARGS__)
 #define vmin_vv_i8mf4_tamu(...) __riscv_vmin_vv_i8mf4_mu(__VA_ARGS__)
@@ -64508,7 +64373,6 @@
 #define vmulhu_vx_u64m4_ta(...) __riscv_vmulhu_vx_u64m4(__VA_ARGS__)
 #define vmulhu_vv_u64m8_ta(...) __riscv_vmulhu_vv_u64m8(__VA_ARGS__)
 #define vmulhu_vx_u64m8_ta(...) __riscv_vmulhu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vmul_vv_i8mf8_tuma(...) __riscv_vmul_vv_i8mf8_tum(__VA_ARGS__)
 #define vmul_vx_i8mf8_tuma(...) __riscv_vmul_vx_i8mf8_tum(__VA_ARGS__)
 #define vmul_vv_i8mf4_tuma(...) __riscv_vmul_vv_i8mf4_tum(__VA_ARGS__)
@@ -64729,7 +64593,6 @@
 #define vmulhu_vx_u64m4_tuma(...) __riscv_vmulhu_vx_u64m4_tum(__VA_ARGS__)
 #define vmulhu_vv_u64m8_tuma(...) __riscv_vmulhu_vv_u64m8_tum(__VA_ARGS__)
 #define vmulhu_vx_u64m8_tuma(...) __riscv_vmulhu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vmul_vv_i8mf8_tumu(...) __riscv_vmul_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmul_vx_i8mf8_tumu(...) __riscv_vmul_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmul_vv_i8mf4_tumu(...) __riscv_vmul_vv_i8mf4_tumu(__VA_ARGS__)
@@ -64950,7 +64813,6 @@
 #define vmulhu_vx_u64m4_tumu(...) __riscv_vmulhu_vx_u64m4_tumu(__VA_ARGS__)
 #define vmulhu_vv_u64m8_tumu(...) __riscv_vmulhu_vv_u64m8_tumu(__VA_ARGS__)
 #define vmulhu_vx_u64m8_tumu(...) __riscv_vmulhu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vmul_vv_i8mf8_tama(...) __riscv_vmul_vv_i8mf8_m(__VA_ARGS__)
 #define vmul_vx_i8mf8_tama(...) __riscv_vmul_vx_i8mf8_m(__VA_ARGS__)
 #define vmul_vv_i8mf4_tama(...) __riscv_vmul_vv_i8mf4_m(__VA_ARGS__)
@@ -65171,7 +65033,6 @@
 #define vmulhu_vx_u64m4_tama(...) __riscv_vmulhu_vx_u64m4_m(__VA_ARGS__)
 #define vmulhu_vv_u64m8_tama(...) __riscv_vmulhu_vv_u64m8_m(__VA_ARGS__)
 #define vmulhu_vx_u64m8_tama(...) __riscv_vmulhu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vmul_vv_i8mf8_tamu(...) __riscv_vmul_vv_i8mf8_mu(__VA_ARGS__)
 #define vmul_vx_i8mf8_tamu(...) __riscv_vmul_vx_i8mf8_mu(__VA_ARGS__)
 #define vmul_vv_i8mf4_tamu(...) __riscv_vmul_vv_i8mf4_mu(__VA_ARGS__)
@@ -65744,7 +65605,6 @@
 #define vremu_vx_u64m4_ta(...) __riscv_vremu_vx_u64m4(__VA_ARGS__)
 #define vremu_vv_u64m8_ta(...) __riscv_vremu_vv_u64m8(__VA_ARGS__)
 #define vremu_vx_u64m8_ta(...) __riscv_vremu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vdiv_vv_i8mf8_tuma(...) __riscv_vdiv_vv_i8mf8_tum(__VA_ARGS__)
 #define vdiv_vx_i8mf8_tuma(...) __riscv_vdiv_vx_i8mf8_tum(__VA_ARGS__)
 #define vdiv_vv_i8mf4_tuma(...) __riscv_vdiv_vv_i8mf4_tum(__VA_ARGS__)
@@ -65921,7 +65781,6 @@
 #define vremu_vx_u64m4_tuma(...) __riscv_vremu_vx_u64m4_tum(__VA_ARGS__)
 #define vremu_vv_u64m8_tuma(...) __riscv_vremu_vv_u64m8_tum(__VA_ARGS__)
 #define vremu_vx_u64m8_tuma(...) __riscv_vremu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vdiv_vv_i8mf8_tumu(...) __riscv_vdiv_vv_i8mf8_tumu(__VA_ARGS__)
 #define vdiv_vx_i8mf8_tumu(...) __riscv_vdiv_vx_i8mf8_tumu(__VA_ARGS__)
 #define vdiv_vv_i8mf4_tumu(...) __riscv_vdiv_vv_i8mf4_tumu(__VA_ARGS__)
@@ -66098,7 +65957,6 @@
 #define vremu_vx_u64m4_tumu(...) __riscv_vremu_vx_u64m4_tumu(__VA_ARGS__)
 #define vremu_vv_u64m8_tumu(...) __riscv_vremu_vv_u64m8_tumu(__VA_ARGS__)
 #define vremu_vx_u64m8_tumu(...) __riscv_vremu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vdiv_vv_i8mf8_tama(...) __riscv_vdiv_vv_i8mf8_m(__VA_ARGS__)
 #define vdiv_vx_i8mf8_tama(...) __riscv_vdiv_vx_i8mf8_m(__VA_ARGS__)
 #define vdiv_vv_i8mf4_tama(...) __riscv_vdiv_vv_i8mf4_m(__VA_ARGS__)
@@ -66275,7 +66133,6 @@
 #define vremu_vx_u64m4_tama(...) __riscv_vremu_vx_u64m4_m(__VA_ARGS__)
 #define vremu_vv_u64m8_tama(...) __riscv_vremu_vv_u64m8_m(__VA_ARGS__)
 #define vremu_vx_u64m8_tama(...) __riscv_vremu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vdiv_vv_i8mf8_tamu(...) __riscv_vdiv_vv_i8mf8_mu(__VA_ARGS__)
 #define vdiv_vx_i8mf8_tamu(...) __riscv_vdiv_vx_i8mf8_mu(__VA_ARGS__)
 #define vdiv_vv_i8mf4_tamu(...) __riscv_vdiv_vv_i8mf4_mu(__VA_ARGS__)
@@ -66632,7 +66489,6 @@
 #define vwmulu_vx_u64m4_ta(...) __riscv_vwmulu_vx_u64m4(__VA_ARGS__)
 #define vwmulu_vv_u64m8_ta(...) __riscv_vwmulu_vv_u64m8(__VA_ARGS__)
 #define vwmulu_vx_u64m8_ta(...) __riscv_vwmulu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vwmul_vv_i16mf4_tuma(...) __riscv_vwmul_vv_i16mf4_tum(__VA_ARGS__)
 #define vwmul_vx_i16mf4_tuma(...) __riscv_vwmul_vx_i16mf4_tum(__VA_ARGS__)
 #define vwmul_vv_i16mf2_tuma(...) __riscv_vwmul_vv_i16mf2_tum(__VA_ARGS__)
@@ -66723,7 +66579,6 @@
 #define vwmulu_vx_u64m4_tuma(...) __riscv_vwmulu_vx_u64m4_tum(__VA_ARGS__)
 #define vwmulu_vv_u64m8_tuma(...) __riscv_vwmulu_vv_u64m8_tum(__VA_ARGS__)
 #define vwmulu_vx_u64m8_tuma(...) __riscv_vwmulu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vwmul_vv_i16mf4_tumu(...) __riscv_vwmul_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwmul_vx_i16mf4_tumu(...) __riscv_vwmul_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwmul_vv_i16mf2_tumu(...) __riscv_vwmul_vv_i16mf2_tumu(__VA_ARGS__)
@@ -66814,7 +66669,6 @@
 #define vwmulu_vx_u64m4_tumu(...) __riscv_vwmulu_vx_u64m4_tumu(__VA_ARGS__)
 #define vwmulu_vv_u64m8_tumu(...) __riscv_vwmulu_vv_u64m8_tumu(__VA_ARGS__)
 #define vwmulu_vx_u64m8_tumu(...) __riscv_vwmulu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vwmul_vv_i16mf4_tama(...) __riscv_vwmul_vv_i16mf4_m(__VA_ARGS__)
 #define vwmul_vx_i16mf4_tama(...) __riscv_vwmul_vx_i16mf4_m(__VA_ARGS__)
 #define vwmul_vv_i16mf2_tama(...) __riscv_vwmul_vv_i16mf2_m(__VA_ARGS__)
@@ -66905,7 +66759,6 @@
 #define vwmulu_vx_u64m4_tama(...) __riscv_vwmulu_vx_u64m4_m(__VA_ARGS__)
 #define vwmulu_vv_u64m8_tama(...) __riscv_vwmulu_vv_u64m8_m(__VA_ARGS__)
 #define vwmulu_vx_u64m8_tama(...) __riscv_vwmulu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vwmul_vv_i16mf4_tamu(...) __riscv_vwmul_vv_i16mf4_mu(__VA_ARGS__)
 #define vwmul_vx_i16mf4_tamu(...) __riscv_vwmul_vx_i16mf4_mu(__VA_ARGS__)
 #define vwmul_vv_i16mf2_tamu(...) __riscv_vwmul_vv_i16mf2_mu(__VA_ARGS__)
@@ -67700,7 +67553,6 @@
 #define vnmsub_vx_u64m4_ta(...) __riscv_vnmsub_vx_u64m4(__VA_ARGS__)
 #define vnmsub_vv_u64m8_ta(...) __riscv_vnmsub_vv_u64m8(__VA_ARGS__)
 #define vnmsub_vx_u64m8_ta(...) __riscv_vnmsub_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vmacc_vv_i8mf8_tuma(...) __riscv_vmacc_vv_i8mf8_tum(__VA_ARGS__)
 #define vmacc_vx_i8mf8_tuma(...) __riscv_vmacc_vx_i8mf8_tum(__VA_ARGS__)
 #define vmacc_vv_i8mf4_tuma(...) __riscv_vmacc_vv_i8mf4_tum(__VA_ARGS__)
@@ -68053,7 +67905,6 @@
 #define vnmsub_vx_u64m4_tuma(...) __riscv_vnmsub_vx_u64m4_tum(__VA_ARGS__)
 #define vnmsub_vv_u64m8_tuma(...) __riscv_vnmsub_vv_u64m8_tum(__VA_ARGS__)
 #define vnmsub_vx_u64m8_tuma(...) __riscv_vnmsub_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vmacc_vv_i8mf8_tumu(...) __riscv_vmacc_vv_i8mf8_tumu(__VA_ARGS__)
 #define vmacc_vx_i8mf8_tumu(...) __riscv_vmacc_vx_i8mf8_tumu(__VA_ARGS__)
 #define vmacc_vv_i8mf4_tumu(...) __riscv_vmacc_vv_i8mf4_tumu(__VA_ARGS__)
@@ -68406,7 +68257,6 @@
 #define vnmsub_vx_u64m4_tumu(...) __riscv_vnmsub_vx_u64m4_tumu(__VA_ARGS__)
 #define vnmsub_vv_u64m8_tumu(...) __riscv_vnmsub_vv_u64m8_tumu(__VA_ARGS__)
 #define vnmsub_vx_u64m8_tumu(...) __riscv_vnmsub_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vmacc_vv_i8mf8_tama(...) __riscv_vmacc_vv_i8mf8_m(__VA_ARGS__)
 #define vmacc_vx_i8mf8_tama(...) __riscv_vmacc_vx_i8mf8_m(__VA_ARGS__)
 #define vmacc_vv_i8mf4_tama(...) __riscv_vmacc_vv_i8mf4_m(__VA_ARGS__)
@@ -68759,7 +68609,6 @@
 #define vnmsub_vx_u64m4_tama(...) __riscv_vnmsub_vx_u64m4_m(__VA_ARGS__)
 #define vnmsub_vv_u64m8_tama(...) __riscv_vnmsub_vv_u64m8_m(__VA_ARGS__)
 #define vnmsub_vx_u64m8_tama(...) __riscv_vnmsub_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vmacc_vv_i8mf8_tamu(...) __riscv_vmacc_vv_i8mf8_mu(__VA_ARGS__)
 #define vmacc_vx_i8mf8_tamu(...) __riscv_vmacc_vx_i8mf8_mu(__VA_ARGS__)
 #define vmacc_vv_i8mf4_tamu(...) __riscv_vmacc_vv_i8mf4_mu(__VA_ARGS__)
@@ -69322,7 +69171,6 @@
 #define vwmaccu_vx_u64m4_ta(...) __riscv_vwmaccu_vx_u64m4(__VA_ARGS__)
 #define vwmaccu_vv_u64m8_ta(...) __riscv_vwmaccu_vv_u64m8(__VA_ARGS__)
 #define vwmaccu_vx_u64m8_ta(...) __riscv_vwmaccu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vwmacc_vv_i16mf4_tuma(...) __riscv_vwmacc_vv_i16mf4_tum(__VA_ARGS__)
 #define vwmacc_vx_i16mf4_tuma(...) __riscv_vwmacc_vx_i16mf4_tum(__VA_ARGS__)
 #define vwmacc_vv_i16mf2_tuma(...) __riscv_vwmacc_vv_i16mf2_tum(__VA_ARGS__)
@@ -69428,7 +69276,6 @@
 #define vwmaccu_vx_u64m4_tuma(...) __riscv_vwmaccu_vx_u64m4_tum(__VA_ARGS__)
 #define vwmaccu_vv_u64m8_tuma(...) __riscv_vwmaccu_vv_u64m8_tum(__VA_ARGS__)
 #define vwmaccu_vx_u64m8_tuma(...) __riscv_vwmaccu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vwmacc_vv_i16mf4_tumu(...) __riscv_vwmacc_vv_i16mf4_tumu(__VA_ARGS__)
 #define vwmacc_vx_i16mf4_tumu(...) __riscv_vwmacc_vx_i16mf4_tumu(__VA_ARGS__)
 #define vwmacc_vv_i16mf2_tumu(...) __riscv_vwmacc_vv_i16mf2_tumu(__VA_ARGS__)
@@ -69543,7 +69390,6 @@
 #define vwmaccu_vx_u64m4_tumu(...) __riscv_vwmaccu_vx_u64m4_tumu(__VA_ARGS__)
 #define vwmaccu_vv_u64m8_tumu(...) __riscv_vwmaccu_vv_u64m8_tumu(__VA_ARGS__)
 #define vwmaccu_vx_u64m8_tumu(...) __riscv_vwmaccu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vwmacc_vv_i16mf4_tama(...) __riscv_vwmacc_vv_i16mf4_m(__VA_ARGS__)
 #define vwmacc_vx_i16mf4_tama(...) __riscv_vwmacc_vx_i16mf4_m(__VA_ARGS__)
 #define vwmacc_vv_i16mf2_tama(...) __riscv_vwmacc_vv_i16mf2_m(__VA_ARGS__)
@@ -69649,7 +69495,6 @@
 #define vwmaccu_vx_u64m4_tama(...) __riscv_vwmaccu_vx_u64m4_m(__VA_ARGS__)
 #define vwmaccu_vv_u64m8_tama(...) __riscv_vwmaccu_vv_u64m8_m(__VA_ARGS__)
 #define vwmaccu_vx_u64m8_tama(...) __riscv_vwmaccu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vwmacc_vv_i16mf4_tamu(...) __riscv_vwmacc_vv_i16mf4_mu(__VA_ARGS__)
 #define vwmacc_vx_i16mf4_tamu(...) __riscv_vwmacc_vx_i16mf4_mu(__VA_ARGS__)
 #define vwmacc_vv_i16mf2_tamu(...) __riscv_vwmacc_vv_i16mf2_mu(__VA_ARGS__)
@@ -70635,7 +70480,6 @@
 #define vssubu_vx_u64m4_ta(...) __riscv_vssubu_vx_u64m4(__VA_ARGS__)
 #define vssubu_vv_u64m8_ta(...) __riscv_vssubu_vv_u64m8(__VA_ARGS__)
 #define vssubu_vx_u64m8_ta(...) __riscv_vssubu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vsadd_vv_i8mf8_tuma(...) __riscv_vsadd_vv_i8mf8_tum(__VA_ARGS__)
 #define vsadd_vx_i8mf8_tuma(...) __riscv_vsadd_vx_i8mf8_tum(__VA_ARGS__)
 #define vsadd_vv_i8mf4_tuma(...) __riscv_vsadd_vv_i8mf4_tum(__VA_ARGS__)
@@ -70812,7 +70656,6 @@
 #define vssubu_vx_u64m4_tuma(...) __riscv_vssubu_vx_u64m4_tum(__VA_ARGS__)
 #define vssubu_vv_u64m8_tuma(...) __riscv_vssubu_vv_u64m8_tum(__VA_ARGS__)
 #define vssubu_vx_u64m8_tuma(...) __riscv_vssubu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vsadd_vv_i8mf8_tumu(...) __riscv_vsadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vsadd_vx_i8mf8_tumu(...) __riscv_vsadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vsadd_vv_i8mf4_tumu(...) __riscv_vsadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -70989,7 +70832,6 @@
 #define vssubu_vx_u64m4_tumu(...) __riscv_vssubu_vx_u64m4_tumu(__VA_ARGS__)
 #define vssubu_vv_u64m8_tumu(...) __riscv_vssubu_vv_u64m8_tumu(__VA_ARGS__)
 #define vssubu_vx_u64m8_tumu(...) __riscv_vssubu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vsadd_vv_i8mf8_tama(...) __riscv_vsadd_vv_i8mf8_m(__VA_ARGS__)
 #define vsadd_vx_i8mf8_tama(...) __riscv_vsadd_vx_i8mf8_m(__VA_ARGS__)
 #define vsadd_vv_i8mf4_tama(...) __riscv_vsadd_vv_i8mf4_m(__VA_ARGS__)
@@ -71166,7 +71008,6 @@
 #define vssubu_vx_u64m4_tama(...) __riscv_vssubu_vx_u64m4_m(__VA_ARGS__)
 #define vssubu_vv_u64m8_tama(...) __riscv_vssubu_vv_u64m8_m(__VA_ARGS__)
 #define vssubu_vx_u64m8_tama(...) __riscv_vssubu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vsadd_vv_i8mf8_tamu(...) __riscv_vsadd_vv_i8mf8_mu(__VA_ARGS__)
 #define vsadd_vx_i8mf8_tamu(...) __riscv_vsadd_vx_i8mf8_mu(__VA_ARGS__)
 #define vsadd_vv_i8mf4_tamu(...) __riscv_vsadd_vv_i8mf4_mu(__VA_ARGS__)
@@ -71695,7 +71536,6 @@
 #define vasubu_vx_u64m4_ta(...) __riscv_vasubu_vx_u64m4(__VA_ARGS__)
 #define vasubu_vv_u64m8_ta(...) __riscv_vasubu_vv_u64m8(__VA_ARGS__)
 #define vasubu_vx_u64m8_ta(...) __riscv_vasubu_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vaadd_vv_i8mf8_tuma(...) __riscv_vaadd_vv_i8mf8_tum(__VA_ARGS__)
 #define vaadd_vx_i8mf8_tuma(...) __riscv_vaadd_vx_i8mf8_tum(__VA_ARGS__)
 #define vaadd_vv_i8mf4_tuma(...) __riscv_vaadd_vv_i8mf4_tum(__VA_ARGS__)
@@ -71872,7 +71712,6 @@
 #define vasubu_vx_u64m4_tuma(...) __riscv_vasubu_vx_u64m4_tum(__VA_ARGS__)
 #define vasubu_vv_u64m8_tuma(...) __riscv_vasubu_vv_u64m8_tum(__VA_ARGS__)
 #define vasubu_vx_u64m8_tuma(...) __riscv_vasubu_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vaadd_vv_i8mf8_tumu(...) __riscv_vaadd_vv_i8mf8_tumu(__VA_ARGS__)
 #define vaadd_vx_i8mf8_tumu(...) __riscv_vaadd_vx_i8mf8_tumu(__VA_ARGS__)
 #define vaadd_vv_i8mf4_tumu(...) __riscv_vaadd_vv_i8mf4_tumu(__VA_ARGS__)
@@ -72049,7 +71888,6 @@
 #define vasubu_vx_u64m4_tumu(...) __riscv_vasubu_vx_u64m4_tumu(__VA_ARGS__)
 #define vasubu_vv_u64m8_tumu(...) __riscv_vasubu_vv_u64m8_tumu(__VA_ARGS__)
 #define vasubu_vx_u64m8_tumu(...) __riscv_vasubu_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vaadd_vv_i8mf8_tama(...) __riscv_vaadd_vv_i8mf8_m(__VA_ARGS__)
 #define vaadd_vx_i8mf8_tama(...) __riscv_vaadd_vx_i8mf8_m(__VA_ARGS__)
 #define vaadd_vv_i8mf4_tama(...) __riscv_vaadd_vv_i8mf4_m(__VA_ARGS__)
@@ -72226,7 +72064,6 @@
 #define vasubu_vx_u64m4_tama(...) __riscv_vasubu_vx_u64m4_m(__VA_ARGS__)
 #define vasubu_vv_u64m8_tama(...) __riscv_vasubu_vv_u64m8_m(__VA_ARGS__)
 #define vasubu_vx_u64m8_tama(...) __riscv_vasubu_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vaadd_vv_i8mf8_tamu(...) __riscv_vaadd_vv_i8mf8_mu(__VA_ARGS__)
 #define vaadd_vx_i8mf8_tamu(...) __riscv_vaadd_vx_i8mf8_mu(__VA_ARGS__)
 #define vaadd_vv_i8mf4_tamu(...) __riscv_vaadd_vv_i8mf4_mu(__VA_ARGS__)
@@ -72491,7 +72328,6 @@
 #define vsmul_vx_i64m4_ta(...) __riscv_vsmul_vx_i64m4(__VA_ARGS__)
 #define vsmul_vv_i64m8_ta(...) __riscv_vsmul_vv_i64m8(__VA_ARGS__)
 #define vsmul_vx_i64m8_ta(...) __riscv_vsmul_vx_i64m8(__VA_ARGS__)
-// masked functions
 #define vsmul_vv_i8mf8_tuma(...) __riscv_vsmul_vv_i8mf8_tum(__VA_ARGS__)
 #define vsmul_vx_i8mf8_tuma(...) __riscv_vsmul_vx_i8mf8_tum(__VA_ARGS__)
 #define vsmul_vv_i8mf4_tuma(...) __riscv_vsmul_vv_i8mf4_tum(__VA_ARGS__)
@@ -72536,7 +72372,6 @@
 #define vsmul_vx_i64m4_tuma(...) __riscv_vsmul_vx_i64m4_tum(__VA_ARGS__)
 #define vsmul_vv_i64m8_tuma(...) __riscv_vsmul_vv_i64m8_tum(__VA_ARGS__)
 #define vsmul_vx_i64m8_tuma(...) __riscv_vsmul_vx_i64m8_tum(__VA_ARGS__)
-// masked functions
 #define vsmul_vv_i8mf8_tumu(...) __riscv_vsmul_vv_i8mf8_tumu(__VA_ARGS__)
 #define vsmul_vx_i8mf8_tumu(...) __riscv_vsmul_vx_i8mf8_tumu(__VA_ARGS__)
 #define vsmul_vv_i8mf4_tumu(...) __riscv_vsmul_vv_i8mf4_tumu(__VA_ARGS__)
@@ -72581,7 +72416,6 @@
 #define vsmul_vx_i64m4_tumu(...) __riscv_vsmul_vx_i64m4_tumu(__VA_ARGS__)
 #define vsmul_vv_i64m8_tumu(...) __riscv_vsmul_vv_i64m8_tumu(__VA_ARGS__)
 #define vsmul_vx_i64m8_tumu(...) __riscv_vsmul_vx_i64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vsmul_vv_i8mf8_tama(...) __riscv_vsmul_vv_i8mf8_m(__VA_ARGS__)
 #define vsmul_vx_i8mf8_tama(...) __riscv_vsmul_vx_i8mf8_m(__VA_ARGS__)
 #define vsmul_vv_i8mf4_tama(...) __riscv_vsmul_vv_i8mf4_m(__VA_ARGS__)
@@ -72626,7 +72460,6 @@
 #define vsmul_vx_i64m4_tama(...) __riscv_vsmul_vx_i64m4_m(__VA_ARGS__)
 #define vsmul_vv_i64m8_tama(...) __riscv_vsmul_vv_i64m8_m(__VA_ARGS__)
 #define vsmul_vx_i64m8_tama(...) __riscv_vsmul_vx_i64m8_m(__VA_ARGS__)
-// masked functions
 #define vsmul_vv_i8mf8_tamu(...) __riscv_vsmul_vv_i8mf8_mu(__VA_ARGS__)
 #define vsmul_vx_i8mf8_tamu(...) __riscv_vsmul_vx_i8mf8_mu(__VA_ARGS__)
 #define vsmul_vv_i8mf4_tamu(...) __riscv_vsmul_vv_i8mf4_mu(__VA_ARGS__)
@@ -72847,7 +72680,6 @@
 #define vssrl_vx_u64m4_ta(...) __riscv_vssrl_vx_u64m4(__VA_ARGS__)
 #define vssrl_vv_u64m8_ta(...) __riscv_vssrl_vv_u64m8(__VA_ARGS__)
 #define vssrl_vx_u64m8_ta(...) __riscv_vssrl_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vssra_vv_i8mf8_tuma(...) __riscv_vssra_vv_i8mf8_tum(__VA_ARGS__)
 #define vssra_vx_i8mf8_tuma(...) __riscv_vssra_vx_i8mf8_tum(__VA_ARGS__)
 #define vssra_vv_i8mf4_tuma(...) __riscv_vssra_vv_i8mf4_tum(__VA_ARGS__)
@@ -72936,7 +72768,6 @@
 #define vssrl_vx_u64m4_tuma(...) __riscv_vssrl_vx_u64m4_tum(__VA_ARGS__)
 #define vssrl_vv_u64m8_tuma(...) __riscv_vssrl_vv_u64m8_tum(__VA_ARGS__)
 #define vssrl_vx_u64m8_tuma(...) __riscv_vssrl_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vssra_vv_i8mf8_tumu(...) __riscv_vssra_vv_i8mf8_tumu(__VA_ARGS__)
 #define vssra_vx_i8mf8_tumu(...) __riscv_vssra_vx_i8mf8_tumu(__VA_ARGS__)
 #define vssra_vv_i8mf4_tumu(...) __riscv_vssra_vv_i8mf4_tumu(__VA_ARGS__)
@@ -73025,7 +72856,6 @@
 #define vssrl_vx_u64m4_tumu(...) __riscv_vssrl_vx_u64m4_tumu(__VA_ARGS__)
 #define vssrl_vv_u64m8_tumu(...) __riscv_vssrl_vv_u64m8_tumu(__VA_ARGS__)
 #define vssrl_vx_u64m8_tumu(...) __riscv_vssrl_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vssra_vv_i8mf8_tama(...) __riscv_vssra_vv_i8mf8_m(__VA_ARGS__)
 #define vssra_vx_i8mf8_tama(...) __riscv_vssra_vx_i8mf8_m(__VA_ARGS__)
 #define vssra_vv_i8mf4_tama(...) __riscv_vssra_vv_i8mf4_m(__VA_ARGS__)
@@ -73114,7 +72944,6 @@
 #define vssrl_vx_u64m4_tama(...) __riscv_vssrl_vx_u64m4_m(__VA_ARGS__)
 #define vssrl_vv_u64m8_tama(...) __riscv_vssrl_vv_u64m8_m(__VA_ARGS__)
 #define vssrl_vx_u64m8_tama(...) __riscv_vssrl_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vssra_vv_i8mf8_tamu(...) __riscv_vssra_vv_i8mf8_mu(__VA_ARGS__)
 #define vssra_vx_i8mf8_tamu(...) __riscv_vssra_vx_i8mf8_mu(__VA_ARGS__)
 #define vssra_vv_i8mf4_tamu(...) __riscv_vssra_vv_i8mf4_mu(__VA_ARGS__)
@@ -73323,7 +73152,6 @@
 #define vnclipu_wx_u32m2_ta(...) __riscv_vnclipu_wx_u32m2(__VA_ARGS__)
 #define vnclipu_wv_u32m4_ta(...) __riscv_vnclipu_wv_u32m4(__VA_ARGS__)
 #define vnclipu_wx_u32m4_ta(...) __riscv_vnclipu_wx_u32m4(__VA_ARGS__)
-// masked functions
 #define vnclip_wv_i8mf8_tuma(...) __riscv_vnclip_wv_i8mf8_tum(__VA_ARGS__)
 #define vnclip_wx_i8mf8_tuma(...) __riscv_vnclip_wx_i8mf8_tum(__VA_ARGS__)
 #define vnclip_wv_i8mf4_tuma(...) __riscv_vnclip_wv_i8mf4_tum(__VA_ARGS__)
@@ -73384,7 +73212,6 @@
 #define vnclipu_wx_u32m2_tuma(...) __riscv_vnclipu_wx_u32m2_tum(__VA_ARGS__)
 #define vnclipu_wv_u32m4_tuma(...) __riscv_vnclipu_wv_u32m4_tum(__VA_ARGS__)
 #define vnclipu_wx_u32m4_tuma(...) __riscv_vnclipu_wx_u32m4_tum(__VA_ARGS__)
-// masked functions
 #define vnclip_wv_i8mf8_tumu(...) __riscv_vnclip_wv_i8mf8_tumu(__VA_ARGS__)
 #define vnclip_wx_i8mf8_tumu(...) __riscv_vnclip_wx_i8mf8_tumu(__VA_ARGS__)
 #define vnclip_wv_i8mf4_tumu(...) __riscv_vnclip_wv_i8mf4_tumu(__VA_ARGS__)
@@ -73445,7 +73272,6 @@
 #define vnclipu_wx_u32m2_tumu(...) __riscv_vnclipu_wx_u32m2_tumu(__VA_ARGS__)
 #define vnclipu_wv_u32m4_tumu(...) __riscv_vnclipu_wv_u32m4_tumu(__VA_ARGS__)
 #define vnclipu_wx_u32m4_tumu(...) __riscv_vnclipu_wx_u32m4_tumu(__VA_ARGS__)
-// masked functions
 #define vnclip_wv_i8mf8_tama(...) __riscv_vnclip_wv_i8mf8_m(__VA_ARGS__)
 #define vnclip_wx_i8mf8_tama(...) __riscv_vnclip_wx_i8mf8_m(__VA_ARGS__)
 #define vnclip_wv_i8mf4_tama(...) __riscv_vnclip_wv_i8mf4_m(__VA_ARGS__)
@@ -73506,7 +73332,6 @@
 #define vnclipu_wx_u32m2_tama(...) __riscv_vnclipu_wx_u32m2_m(__VA_ARGS__)
 #define vnclipu_wv_u32m4_tama(...) __riscv_vnclipu_wv_u32m4_m(__VA_ARGS__)
 #define vnclipu_wx_u32m4_tama(...) __riscv_vnclipu_wx_u32m4_m(__VA_ARGS__)
-// masked functions
 #define vnclip_wv_i8mf8_tamu(...) __riscv_vnclip_wv_i8mf8_mu(__VA_ARGS__)
 #define vnclip_wx_i8mf8_tamu(...) __riscv_vnclip_wx_i8mf8_mu(__VA_ARGS__)
 #define vnclip_wv_i8mf4_tamu(...) __riscv_vnclip_wv_i8mf4_mu(__VA_ARGS__)
@@ -73747,7 +73572,6 @@
 #define vfneg_v_f64m2_ta(...) __riscv_vfneg_v_f64m2(__VA_ARGS__)
 #define vfneg_v_f64m4_ta(...) __riscv_vfneg_v_f64m4(__VA_ARGS__)
 #define vfneg_v_f64m8_ta(...) __riscv_vfneg_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfadd_vv_f16mf4_tuma(...) __riscv_vfadd_vv_f16mf4_tum(__VA_ARGS__)
 #define vfadd_vf_f16mf4_tuma(...) __riscv_vfadd_vf_f16mf4_tum(__VA_ARGS__)
 #define vfadd_vv_f16mf2_tuma(...) __riscv_vfadd_vv_f16mf2_tum(__VA_ARGS__)
@@ -73838,7 +73662,6 @@
 #define vfneg_v_f64m2_tuma(...) __riscv_vfneg_v_f64m2_tum(__VA_ARGS__)
 #define vfneg_v_f64m4_tuma(...) __riscv_vfneg_v_f64m4_tum(__VA_ARGS__)
 #define vfneg_v_f64m8_tuma(...) __riscv_vfneg_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfadd_vv_f16mf4_tumu(...) __riscv_vfadd_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfadd_vf_f16mf4_tumu(...) __riscv_vfadd_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfadd_vv_f16mf2_tumu(...) __riscv_vfadd_vv_f16mf2_tumu(__VA_ARGS__)
@@ -73929,7 +73752,6 @@
 #define vfneg_v_f64m2_tumu(...) __riscv_vfneg_v_f64m2_tumu(__VA_ARGS__)
 #define vfneg_v_f64m4_tumu(...) __riscv_vfneg_v_f64m4_tumu(__VA_ARGS__)
 #define vfneg_v_f64m8_tumu(...) __riscv_vfneg_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfadd_vv_f16mf4_tama(...) __riscv_vfadd_vv_f16mf4_m(__VA_ARGS__)
 #define vfadd_vf_f16mf4_tama(...) __riscv_vfadd_vf_f16mf4_m(__VA_ARGS__)
 #define vfadd_vv_f16mf2_tama(...) __riscv_vfadd_vv_f16mf2_m(__VA_ARGS__)
@@ -74020,7 +73842,6 @@
 #define vfneg_v_f64m2_tama(...) __riscv_vfneg_v_f64m2_m(__VA_ARGS__)
 #define vfneg_v_f64m4_tama(...) __riscv_vfneg_v_f64m4_m(__VA_ARGS__)
 #define vfneg_v_f64m8_tama(...) __riscv_vfneg_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfadd_vv_f16mf4_tamu(...) __riscv_vfadd_vv_f16mf4_mu(__VA_ARGS__)
 #define vfadd_vf_f16mf4_tamu(...) __riscv_vfadd_vf_f16mf4_mu(__VA_ARGS__)
 #define vfadd_vv_f16mf2_tamu(...) __riscv_vfadd_vv_f16mf2_mu(__VA_ARGS__)
@@ -74255,7 +74076,6 @@
 #define vfwsub_vf_f64m8_ta(...) __riscv_vfwsub_vf_f64m8(__VA_ARGS__)
 #define vfwsub_wv_f64m8_ta(...) __riscv_vfwsub_wv_f64m8(__VA_ARGS__)
 #define vfwsub_wf_f64m8_ta(...) __riscv_vfwsub_wf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_f32mf2_tuma(...) __riscv_vfwadd_vv_f32mf2_tum(__VA_ARGS__)
 #define vfwadd_vf_f32mf2_tuma(...) __riscv_vfwadd_vf_f32mf2_tum(__VA_ARGS__)
 #define vfwadd_wv_f32mf2_tuma(...) __riscv_vfwadd_wv_f32mf2_tum(__VA_ARGS__)
@@ -74328,7 +74148,6 @@
 #define vfwsub_vf_f64m8_tuma(...) __riscv_vfwsub_vf_f64m8_tum(__VA_ARGS__)
 #define vfwsub_wv_f64m8_tuma(...) __riscv_vfwsub_wv_f64m8_tum(__VA_ARGS__)
 #define vfwsub_wf_f64m8_tuma(...) __riscv_vfwsub_wf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_f32mf2_tumu(...) __riscv_vfwadd_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwadd_vf_f32mf2_tumu(...) __riscv_vfwadd_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwadd_wv_f32mf2_tumu(...) __riscv_vfwadd_wv_f32mf2_tumu(__VA_ARGS__)
@@ -74401,7 +74220,6 @@
 #define vfwsub_vf_f64m8_tumu(...) __riscv_vfwsub_vf_f64m8_tumu(__VA_ARGS__)
 #define vfwsub_wv_f64m8_tumu(...) __riscv_vfwsub_wv_f64m8_tumu(__VA_ARGS__)
 #define vfwsub_wf_f64m8_tumu(...) __riscv_vfwsub_wf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_f32mf2_tama(...) __riscv_vfwadd_vv_f32mf2_m(__VA_ARGS__)
 #define vfwadd_vf_f32mf2_tama(...) __riscv_vfwadd_vf_f32mf2_m(__VA_ARGS__)
 #define vfwadd_wv_f32mf2_tama(...) __riscv_vfwadd_wv_f32mf2_m(__VA_ARGS__)
@@ -74474,7 +74292,6 @@
 #define vfwsub_vf_f64m8_tama(...) __riscv_vfwsub_vf_f64m8_m(__VA_ARGS__)
 #define vfwsub_wv_f64m8_tama(...) __riscv_vfwsub_wv_f64m8_m(__VA_ARGS__)
 #define vfwsub_wf_f64m8_tama(...) __riscv_vfwsub_wf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_f32mf2_tamu(...) __riscv_vfwadd_vv_f32mf2_mu(__VA_ARGS__)
 #define vfwadd_vf_f32mf2_tamu(...) __riscv_vfwadd_vf_f32mf2_mu(__VA_ARGS__)
 #define vfwadd_wv_f32mf2_tamu(...) __riscv_vfwadd_wv_f32mf2_mu(__VA_ARGS__)
@@ -74697,7 +74514,6 @@
 #define vfrdiv_vf_f64m2_ta(...) __riscv_vfrdiv_vf_f64m2(__VA_ARGS__)
 #define vfrdiv_vf_f64m4_ta(...) __riscv_vfrdiv_vf_f64m4(__VA_ARGS__)
 #define vfrdiv_vf_f64m8_ta(...) __riscv_vfrdiv_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfmul_vv_f16mf4_tuma(...) __riscv_vfmul_vv_f16mf4_tum(__VA_ARGS__)
 #define vfmul_vf_f16mf4_tuma(...) __riscv_vfmul_vf_f16mf4_tum(__VA_ARGS__)
 #define vfmul_vv_f16mf2_tuma(...) __riscv_vfmul_vv_f16mf2_tum(__VA_ARGS__)
@@ -74773,7 +74589,6 @@
 #define vfrdiv_vf_f64m2_tuma(...) __riscv_vfrdiv_vf_f64m2_tum(__VA_ARGS__)
 #define vfrdiv_vf_f64m4_tuma(...) __riscv_vfrdiv_vf_f64m4_tum(__VA_ARGS__)
 #define vfrdiv_vf_f64m8_tuma(...) __riscv_vfrdiv_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfmul_vv_f16mf4_tumu(...) __riscv_vfmul_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmul_vf_f16mf4_tumu(...) __riscv_vfmul_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmul_vv_f16mf2_tumu(...) __riscv_vfmul_vv_f16mf2_tumu(__VA_ARGS__)
@@ -74849,7 +74664,6 @@
 #define vfrdiv_vf_f64m2_tumu(...) __riscv_vfrdiv_vf_f64m2_tumu(__VA_ARGS__)
 #define vfrdiv_vf_f64m4_tumu(...) __riscv_vfrdiv_vf_f64m4_tumu(__VA_ARGS__)
 #define vfrdiv_vf_f64m8_tumu(...) __riscv_vfrdiv_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfmul_vv_f16mf4_tama(...) __riscv_vfmul_vv_f16mf4_m(__VA_ARGS__)
 #define vfmul_vf_f16mf4_tama(...) __riscv_vfmul_vf_f16mf4_m(__VA_ARGS__)
 #define vfmul_vv_f16mf2_tama(...) __riscv_vfmul_vv_f16mf2_m(__VA_ARGS__)
@@ -74925,7 +74739,6 @@
 #define vfrdiv_vf_f64m2_tama(...) __riscv_vfrdiv_vf_f64m2_m(__VA_ARGS__)
 #define vfrdiv_vf_f64m4_tama(...) __riscv_vfrdiv_vf_f64m4_m(__VA_ARGS__)
 #define vfrdiv_vf_f64m8_tama(...) __riscv_vfrdiv_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfmul_vv_f16mf4_tamu(...) __riscv_vfmul_vv_f16mf4_mu(__VA_ARGS__)
 #define vfmul_vf_f16mf4_tamu(...) __riscv_vfmul_vf_f16mf4_mu(__VA_ARGS__)
 #define vfmul_vv_f16mf2_tamu(...) __riscv_vfmul_vv_f16mf2_mu(__VA_ARGS__)
@@ -75037,7 +74850,6 @@
 #define vfwmul_vf_f64m4_ta(...) __riscv_vfwmul_vf_f64m4(__VA_ARGS__)
 #define vfwmul_vv_f64m8_ta(...) __riscv_vfwmul_vv_f64m8(__VA_ARGS__)
 #define vfwmul_vf_f64m8_ta(...) __riscv_vfwmul_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfwmul_vv_f32mf2_tuma(...) __riscv_vfwmul_vv_f32mf2_tum(__VA_ARGS__)
 #define vfwmul_vf_f32mf2_tuma(...) __riscv_vfwmul_vf_f32mf2_tum(__VA_ARGS__)
 #define vfwmul_vv_f32m1_tuma(...) __riscv_vfwmul_vv_f32m1_tum(__VA_ARGS__)
@@ -75056,7 +74868,6 @@
 #define vfwmul_vf_f64m4_tuma(...) __riscv_vfwmul_vf_f64m4_tum(__VA_ARGS__)
 #define vfwmul_vv_f64m8_tuma(...) __riscv_vfwmul_vv_f64m8_tum(__VA_ARGS__)
 #define vfwmul_vf_f64m8_tuma(...) __riscv_vfwmul_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfwmul_vv_f32mf2_tumu(...) __riscv_vfwmul_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwmul_vf_f32mf2_tumu(...) __riscv_vfwmul_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwmul_vv_f32m1_tumu(...) __riscv_vfwmul_vv_f32m1_tumu(__VA_ARGS__)
@@ -75075,7 +74886,6 @@
 #define vfwmul_vf_f64m4_tumu(...) __riscv_vfwmul_vf_f64m4_tumu(__VA_ARGS__)
 #define vfwmul_vv_f64m8_tumu(...) __riscv_vfwmul_vv_f64m8_tumu(__VA_ARGS__)
 #define vfwmul_vf_f64m8_tumu(...) __riscv_vfwmul_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfwmul_vv_f32mf2_tama(...) __riscv_vfwmul_vv_f32mf2_m(__VA_ARGS__)
 #define vfwmul_vf_f32mf2_tama(...) __riscv_vfwmul_vf_f32mf2_m(__VA_ARGS__)
 #define vfwmul_vv_f32m1_tama(...) __riscv_vfwmul_vv_f32m1_m(__VA_ARGS__)
@@ -75094,7 +74904,6 @@
 #define vfwmul_vf_f64m4_tama(...) __riscv_vfwmul_vf_f64m4_m(__VA_ARGS__)
 #define vfwmul_vv_f64m8_tama(...) __riscv_vfwmul_vv_f64m8_m(__VA_ARGS__)
 #define vfwmul_vf_f64m8_tama(...) __riscv_vfwmul_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfwmul_vv_f32mf2_tamu(...) __riscv_vfwmul_vv_f32mf2_mu(__VA_ARGS__)
 #define vfwmul_vf_f32mf2_tamu(...) __riscv_vfwmul_vf_f32mf2_mu(__VA_ARGS__)
 #define vfwmul_vv_f32m1_tamu(...) __riscv_vfwmul_vv_f32m1_mu(__VA_ARGS__)
@@ -75593,7 +75402,6 @@
 #define vfnmsub_vf_f64m4_ta(...) __riscv_vfnmsub_vf_f64m4(__VA_ARGS__)
 #define vfnmsub_vv_f64m8_ta(...) __riscv_vfnmsub_vv_f64m8(__VA_ARGS__)
 #define vfnmsub_vf_f64m8_ta(...) __riscv_vfnmsub_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfmacc_vv_f16mf4_tuma(...) __riscv_vfmacc_vv_f16mf4_tum(__VA_ARGS__)
 #define vfmacc_vf_f16mf4_tuma(...) __riscv_vfmacc_vf_f16mf4_tum(__VA_ARGS__)
 #define vfmacc_vv_f16mf2_tuma(...) __riscv_vfmacc_vv_f16mf2_tum(__VA_ARGS__)
@@ -75834,7 +75642,6 @@
 #define vfnmsub_vf_f64m4_tuma(...) __riscv_vfnmsub_vf_f64m4_tum(__VA_ARGS__)
 #define vfnmsub_vv_f64m8_tuma(...) __riscv_vfnmsub_vv_f64m8_tum(__VA_ARGS__)
 #define vfnmsub_vf_f64m8_tuma(...) __riscv_vfnmsub_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfmacc_vv_f16mf4_tumu(...) __riscv_vfmacc_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmacc_vf_f16mf4_tumu(...) __riscv_vfmacc_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmacc_vv_f16mf2_tumu(...) __riscv_vfmacc_vv_f16mf2_tumu(__VA_ARGS__)
@@ -76075,7 +75882,6 @@
 #define vfnmsub_vf_f64m4_tumu(...) __riscv_vfnmsub_vf_f64m4_tumu(__VA_ARGS__)
 #define vfnmsub_vv_f64m8_tumu(...) __riscv_vfnmsub_vv_f64m8_tumu(__VA_ARGS__)
 #define vfnmsub_vf_f64m8_tumu(...) __riscv_vfnmsub_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfmacc_vv_f16mf4_tama(...) __riscv_vfmacc_vv_f16mf4_m(__VA_ARGS__)
 #define vfmacc_vf_f16mf4_tama(...) __riscv_vfmacc_vf_f16mf4_m(__VA_ARGS__)
 #define vfmacc_vv_f16mf2_tama(...) __riscv_vfmacc_vv_f16mf2_m(__VA_ARGS__)
@@ -76316,7 +76122,6 @@
 #define vfnmsub_vf_f64m4_tama(...) __riscv_vfnmsub_vf_f64m4_m(__VA_ARGS__)
 #define vfnmsub_vv_f64m8_tama(...) __riscv_vfnmsub_vv_f64m8_m(__VA_ARGS__)
 #define vfnmsub_vf_f64m8_tama(...) __riscv_vfnmsub_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfmacc_vv_f16mf4_tamu(...) __riscv_vfmacc_vv_f16mf4_mu(__VA_ARGS__)
 #define vfmacc_vf_f16mf4_tamu(...) __riscv_vfmacc_vf_f16mf4_mu(__VA_ARGS__)
 #define vfmacc_vv_f16mf2_tamu(...) __riscv_vfmacc_vv_f16mf2_mu(__VA_ARGS__)
@@ -76701,7 +76506,6 @@
 #define vfwnmsac_vf_f64m4_ta(...) __riscv_vfwnmsac_vf_f64m4(__VA_ARGS__)
 #define vfwnmsac_vv_f64m8_ta(...) __riscv_vfwnmsac_vv_f64m8(__VA_ARGS__)
 #define vfwnmsac_vf_f64m8_ta(...) __riscv_vfwnmsac_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfwmacc_vv_f32mf2_tuma(...) __riscv_vfwmacc_vv_f32mf2_tum(__VA_ARGS__)
 #define vfwmacc_vf_f32mf2_tuma(...) __riscv_vfwmacc_vf_f32mf2_tum(__VA_ARGS__)
 #define vfwmacc_vv_f32m1_tuma(...) __riscv_vfwmacc_vv_f32m1_tum(__VA_ARGS__)
@@ -76774,7 +76578,6 @@
 #define vfwnmsac_vf_f64m4_tuma(...) __riscv_vfwnmsac_vf_f64m4_tum(__VA_ARGS__)
 #define vfwnmsac_vv_f64m8_tuma(...) __riscv_vfwnmsac_vv_f64m8_tum(__VA_ARGS__)
 #define vfwnmsac_vf_f64m8_tuma(...) __riscv_vfwnmsac_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfwmacc_vv_f32mf2_tumu(...) __riscv_vfwmacc_vv_f32mf2_tumu(__VA_ARGS__)
 #define vfwmacc_vf_f32mf2_tumu(...) __riscv_vfwmacc_vf_f32mf2_tumu(__VA_ARGS__)
 #define vfwmacc_vv_f32m1_tumu(...) __riscv_vfwmacc_vv_f32m1_tumu(__VA_ARGS__)
@@ -76851,7 +76654,6 @@
 #define vfwnmsac_vf_f64m4_tumu(...) __riscv_vfwnmsac_vf_f64m4_tumu(__VA_ARGS__)
 #define vfwnmsac_vv_f64m8_tumu(...) __riscv_vfwnmsac_vv_f64m8_tumu(__VA_ARGS__)
 #define vfwnmsac_vf_f64m8_tumu(...) __riscv_vfwnmsac_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfwmacc_vv_f32mf2_tama(...) __riscv_vfwmacc_vv_f32mf2_m(__VA_ARGS__)
 #define vfwmacc_vf_f32mf2_tama(...) __riscv_vfwmacc_vf_f32mf2_m(__VA_ARGS__)
 #define vfwmacc_vv_f32m1_tama(...) __riscv_vfwmacc_vv_f32m1_m(__VA_ARGS__)
@@ -76924,7 +76726,6 @@
 #define vfwnmsac_vf_f64m4_tama(...) __riscv_vfwnmsac_vf_f64m4_m(__VA_ARGS__)
 #define vfwnmsac_vv_f64m8_tama(...) __riscv_vfwnmsac_vv_f64m8_m(__VA_ARGS__)
 #define vfwnmsac_vf_f64m8_tama(...) __riscv_vfwnmsac_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfwmacc_vv_f32mf2_tamu(...) __riscv_vfwmacc_vv_f32mf2_mu(__VA_ARGS__)
 #define vfwmacc_vf_f32mf2_tamu(...) __riscv_vfwmacc_vf_f32mf2_mu(__VA_ARGS__)
 #define vfwmacc_vv_f32m1_tamu(...) __riscv_vfwmacc_vv_f32m1_mu(__VA_ARGS__)
@@ -77027,7 +76828,6 @@
 #define vfsqrt_v_f64m2_ta(...) __riscv_vfsqrt_v_f64m2(__VA_ARGS__)
 #define vfsqrt_v_f64m4_ta(...) __riscv_vfsqrt_v_f64m4(__VA_ARGS__)
 #define vfsqrt_v_f64m8_ta(...) __riscv_vfsqrt_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfsqrt_v_f16mf4_tuma(...) __riscv_vfsqrt_v_f16mf4_tum(__VA_ARGS__)
 #define vfsqrt_v_f16mf2_tuma(...) __riscv_vfsqrt_v_f16mf2_tum(__VA_ARGS__)
 #define vfsqrt_v_f16m1_tuma(...) __riscv_vfsqrt_v_f16m1_tum(__VA_ARGS__)
@@ -77043,7 +76843,6 @@
 #define vfsqrt_v_f64m2_tuma(...) __riscv_vfsqrt_v_f64m2_tum(__VA_ARGS__)
 #define vfsqrt_v_f64m4_tuma(...) __riscv_vfsqrt_v_f64m4_tum(__VA_ARGS__)
 #define vfsqrt_v_f64m8_tuma(...) __riscv_vfsqrt_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfsqrt_v_f16mf4_tumu(...) __riscv_vfsqrt_v_f16mf4_tumu(__VA_ARGS__)
 #define vfsqrt_v_f16mf2_tumu(...) __riscv_vfsqrt_v_f16mf2_tumu(__VA_ARGS__)
 #define vfsqrt_v_f16m1_tumu(...) __riscv_vfsqrt_v_f16m1_tumu(__VA_ARGS__)
@@ -77059,7 +76858,6 @@
 #define vfsqrt_v_f64m2_tumu(...) __riscv_vfsqrt_v_f64m2_tumu(__VA_ARGS__)
 #define vfsqrt_v_f64m4_tumu(...) __riscv_vfsqrt_v_f64m4_tumu(__VA_ARGS__)
 #define vfsqrt_v_f64m8_tumu(...) __riscv_vfsqrt_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfsqrt_v_f16mf4_tama(...) __riscv_vfsqrt_v_f16mf4_m(__VA_ARGS__)
 #define vfsqrt_v_f16mf2_tama(...) __riscv_vfsqrt_v_f16mf2_m(__VA_ARGS__)
 #define vfsqrt_v_f16m1_tama(...) __riscv_vfsqrt_v_f16m1_m(__VA_ARGS__)
@@ -77075,7 +76873,6 @@
 #define vfsqrt_v_f64m2_tama(...) __riscv_vfsqrt_v_f64m2_m(__VA_ARGS__)
 #define vfsqrt_v_f64m4_tama(...) __riscv_vfsqrt_v_f64m4_m(__VA_ARGS__)
 #define vfsqrt_v_f64m8_tama(...) __riscv_vfsqrt_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfsqrt_v_f16mf4_tamu(...) __riscv_vfsqrt_v_f16mf4_mu(__VA_ARGS__)
 #define vfsqrt_v_f16mf2_tamu(...) __riscv_vfsqrt_v_f16mf2_mu(__VA_ARGS__)
 #define vfsqrt_v_f16m1_tamu(...) __riscv_vfsqrt_v_f16m1_mu(__VA_ARGS__)
@@ -77121,7 +76918,6 @@
 #define vfrsqrt7_v_f64m2_ta(...) __riscv_vfrsqrt7_v_f64m2(__VA_ARGS__)
 #define vfrsqrt7_v_f64m4_ta(...) __riscv_vfrsqrt7_v_f64m4(__VA_ARGS__)
 #define vfrsqrt7_v_f64m8_ta(...) __riscv_vfrsqrt7_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_v_f16mf4_tuma(...) __riscv_vfrsqrt7_v_f16mf4_tum(__VA_ARGS__)
 #define vfrsqrt7_v_f16mf2_tuma(...) __riscv_vfrsqrt7_v_f16mf2_tum(__VA_ARGS__)
 #define vfrsqrt7_v_f16m1_tuma(...) __riscv_vfrsqrt7_v_f16m1_tum(__VA_ARGS__)
@@ -77137,7 +76933,6 @@
 #define vfrsqrt7_v_f64m2_tuma(...) __riscv_vfrsqrt7_v_f64m2_tum(__VA_ARGS__)
 #define vfrsqrt7_v_f64m4_tuma(...) __riscv_vfrsqrt7_v_f64m4_tum(__VA_ARGS__)
 #define vfrsqrt7_v_f64m8_tuma(...) __riscv_vfrsqrt7_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_v_f16mf4_tumu(...) __riscv_vfrsqrt7_v_f16mf4_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f16mf2_tumu(...) __riscv_vfrsqrt7_v_f16mf2_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f16m1_tumu(...) __riscv_vfrsqrt7_v_f16m1_tumu(__VA_ARGS__)
@@ -77153,7 +76948,6 @@
 #define vfrsqrt7_v_f64m2_tumu(...) __riscv_vfrsqrt7_v_f64m2_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f64m4_tumu(...) __riscv_vfrsqrt7_v_f64m4_tumu(__VA_ARGS__)
 #define vfrsqrt7_v_f64m8_tumu(...) __riscv_vfrsqrt7_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_v_f16mf4_tama(...) __riscv_vfrsqrt7_v_f16mf4_m(__VA_ARGS__)
 #define vfrsqrt7_v_f16mf2_tama(...) __riscv_vfrsqrt7_v_f16mf2_m(__VA_ARGS__)
 #define vfrsqrt7_v_f16m1_tama(...) __riscv_vfrsqrt7_v_f16m1_m(__VA_ARGS__)
@@ -77169,7 +76963,6 @@
 #define vfrsqrt7_v_f64m2_tama(...) __riscv_vfrsqrt7_v_f64m2_m(__VA_ARGS__)
 #define vfrsqrt7_v_f64m4_tama(...) __riscv_vfrsqrt7_v_f64m4_m(__VA_ARGS__)
 #define vfrsqrt7_v_f64m8_tama(...) __riscv_vfrsqrt7_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_v_f16mf4_tamu(...) __riscv_vfrsqrt7_v_f16mf4_mu(__VA_ARGS__)
 #define vfrsqrt7_v_f16mf2_tamu(...) __riscv_vfrsqrt7_v_f16mf2_mu(__VA_ARGS__)
 #define vfrsqrt7_v_f16m1_tamu(...) __riscv_vfrsqrt7_v_f16m1_mu(__VA_ARGS__)
@@ -77215,7 +77008,6 @@
 #define vfrec7_v_f64m2_ta(...) __riscv_vfrec7_v_f64m2(__VA_ARGS__)
 #define vfrec7_v_f64m4_ta(...) __riscv_vfrec7_v_f64m4(__VA_ARGS__)
 #define vfrec7_v_f64m8_ta(...) __riscv_vfrec7_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfrec7_v_f16mf4_tuma(...) __riscv_vfrec7_v_f16mf4_tum(__VA_ARGS__)
 #define vfrec7_v_f16mf2_tuma(...) __riscv_vfrec7_v_f16mf2_tum(__VA_ARGS__)
 #define vfrec7_v_f16m1_tuma(...) __riscv_vfrec7_v_f16m1_tum(__VA_ARGS__)
@@ -77231,7 +77023,6 @@
 #define vfrec7_v_f64m2_tuma(...) __riscv_vfrec7_v_f64m2_tum(__VA_ARGS__)
 #define vfrec7_v_f64m4_tuma(...) __riscv_vfrec7_v_f64m4_tum(__VA_ARGS__)
 #define vfrec7_v_f64m8_tuma(...) __riscv_vfrec7_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfrec7_v_f16mf4_tumu(...) __riscv_vfrec7_v_f16mf4_tumu(__VA_ARGS__)
 #define vfrec7_v_f16mf2_tumu(...) __riscv_vfrec7_v_f16mf2_tumu(__VA_ARGS__)
 #define vfrec7_v_f16m1_tumu(...) __riscv_vfrec7_v_f16m1_tumu(__VA_ARGS__)
@@ -77247,7 +77038,6 @@
 #define vfrec7_v_f64m2_tumu(...) __riscv_vfrec7_v_f64m2_tumu(__VA_ARGS__)
 #define vfrec7_v_f64m4_tumu(...) __riscv_vfrec7_v_f64m4_tumu(__VA_ARGS__)
 #define vfrec7_v_f64m8_tumu(...) __riscv_vfrec7_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfrec7_v_f16mf4_tama(...) __riscv_vfrec7_v_f16mf4_m(__VA_ARGS__)
 #define vfrec7_v_f16mf2_tama(...) __riscv_vfrec7_v_f16mf2_m(__VA_ARGS__)
 #define vfrec7_v_f16m1_tama(...) __riscv_vfrec7_v_f16m1_m(__VA_ARGS__)
@@ -77263,7 +77053,6 @@
 #define vfrec7_v_f64m2_tama(...) __riscv_vfrec7_v_f64m2_m(__VA_ARGS__)
 #define vfrec7_v_f64m4_tama(...) __riscv_vfrec7_v_f64m4_m(__VA_ARGS__)
 #define vfrec7_v_f64m8_tama(...) __riscv_vfrec7_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfrec7_v_f16mf4_tamu(...) __riscv_vfrec7_v_f16mf4_mu(__VA_ARGS__)
 #define vfrec7_v_f16mf2_tamu(...) __riscv_vfrec7_v_f16mf2_mu(__VA_ARGS__)
 #define vfrec7_v_f16m1_tamu(...) __riscv_vfrec7_v_f16m1_mu(__VA_ARGS__)
@@ -77399,7 +77188,6 @@
 #define vfmax_vf_f64m4_ta(...) __riscv_vfmax_vf_f64m4(__VA_ARGS__)
 #define vfmax_vv_f64m8_ta(...) __riscv_vfmax_vv_f64m8(__VA_ARGS__)
 #define vfmax_vf_f64m8_ta(...) __riscv_vfmax_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfmin_vv_f16mf4_tuma(...) __riscv_vfmin_vv_f16mf4_tum(__VA_ARGS__)
 #define vfmin_vf_f16mf4_tuma(...) __riscv_vfmin_vf_f16mf4_tum(__VA_ARGS__)
 #define vfmin_vv_f16mf2_tuma(...) __riscv_vfmin_vv_f16mf2_tum(__VA_ARGS__)
@@ -77460,7 +77248,6 @@
 #define vfmax_vf_f64m4_tuma(...) __riscv_vfmax_vf_f64m4_tum(__VA_ARGS__)
 #define vfmax_vv_f64m8_tuma(...) __riscv_vfmax_vv_f64m8_tum(__VA_ARGS__)
 #define vfmax_vf_f64m8_tuma(...) __riscv_vfmax_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfmin_vv_f16mf4_tumu(...) __riscv_vfmin_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfmin_vf_f16mf4_tumu(...) __riscv_vfmin_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfmin_vv_f16mf2_tumu(...) __riscv_vfmin_vv_f16mf2_tumu(__VA_ARGS__)
@@ -77521,7 +77308,6 @@
 #define vfmax_vf_f64m4_tumu(...) __riscv_vfmax_vf_f64m4_tumu(__VA_ARGS__)
 #define vfmax_vv_f64m8_tumu(...) __riscv_vfmax_vv_f64m8_tumu(__VA_ARGS__)
 #define vfmax_vf_f64m8_tumu(...) __riscv_vfmax_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfmin_vv_f16mf4_tama(...) __riscv_vfmin_vv_f16mf4_m(__VA_ARGS__)
 #define vfmin_vf_f16mf4_tama(...) __riscv_vfmin_vf_f16mf4_m(__VA_ARGS__)
 #define vfmin_vv_f16mf2_tama(...) __riscv_vfmin_vv_f16mf2_m(__VA_ARGS__)
@@ -77582,7 +77368,6 @@
 #define vfmax_vf_f64m4_tama(...) __riscv_vfmax_vf_f64m4_m(__VA_ARGS__)
 #define vfmax_vv_f64m8_tama(...) __riscv_vfmax_vv_f64m8_m(__VA_ARGS__)
 #define vfmax_vf_f64m8_tama(...) __riscv_vfmax_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfmin_vv_f16mf4_tamu(...) __riscv_vfmin_vv_f16mf4_mu(__VA_ARGS__)
 #define vfmin_vf_f16mf4_tamu(...) __riscv_vfmin_vf_f16mf4_mu(__VA_ARGS__)
 #define vfmin_vv_f16mf2_tamu(...) __riscv_vfmin_vv_f16mf2_mu(__VA_ARGS__)
@@ -77823,7 +77608,6 @@
 #define vfsgnjx_vf_f64m4_ta(...) __riscv_vfsgnjx_vf_f64m4(__VA_ARGS__)
 #define vfsgnjx_vv_f64m8_ta(...) __riscv_vfsgnjx_vv_f64m8(__VA_ARGS__)
 #define vfsgnjx_vf_f64m8_ta(...) __riscv_vfsgnjx_vf_f64m8(__VA_ARGS__)
-// masked functions
 #define vfsgnj_vv_f16mf4_tuma(...) __riscv_vfsgnj_vv_f16mf4_tum(__VA_ARGS__)
 #define vfsgnj_vf_f16mf4_tuma(...) __riscv_vfsgnj_vf_f16mf4_tum(__VA_ARGS__)
 #define vfsgnj_vv_f16mf2_tuma(...) __riscv_vfsgnj_vv_f16mf2_tum(__VA_ARGS__)
@@ -77914,7 +77698,6 @@
 #define vfsgnjx_vf_f64m4_tuma(...) __riscv_vfsgnjx_vf_f64m4_tum(__VA_ARGS__)
 #define vfsgnjx_vv_f64m8_tuma(...) __riscv_vfsgnjx_vv_f64m8_tum(__VA_ARGS__)
 #define vfsgnjx_vf_f64m8_tuma(...) __riscv_vfsgnjx_vf_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfsgnj_vv_f16mf4_tumu(...) __riscv_vfsgnj_vv_f16mf4_tumu(__VA_ARGS__)
 #define vfsgnj_vf_f16mf4_tumu(...) __riscv_vfsgnj_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfsgnj_vv_f16mf2_tumu(...) __riscv_vfsgnj_vv_f16mf2_tumu(__VA_ARGS__)
@@ -78005,7 +77788,6 @@
 #define vfsgnjx_vf_f64m4_tumu(...) __riscv_vfsgnjx_vf_f64m4_tumu(__VA_ARGS__)
 #define vfsgnjx_vv_f64m8_tumu(...) __riscv_vfsgnjx_vv_f64m8_tumu(__VA_ARGS__)
 #define vfsgnjx_vf_f64m8_tumu(...) __riscv_vfsgnjx_vf_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfsgnj_vv_f16mf4_tama(...) __riscv_vfsgnj_vv_f16mf4_m(__VA_ARGS__)
 #define vfsgnj_vf_f16mf4_tama(...) __riscv_vfsgnj_vf_f16mf4_m(__VA_ARGS__)
 #define vfsgnj_vv_f16mf2_tama(...) __riscv_vfsgnj_vv_f16mf2_m(__VA_ARGS__)
@@ -78096,7 +77878,6 @@
 #define vfsgnjx_vf_f64m4_tama(...) __riscv_vfsgnjx_vf_f64m4_m(__VA_ARGS__)
 #define vfsgnjx_vv_f64m8_tama(...) __riscv_vfsgnjx_vv_f64m8_m(__VA_ARGS__)
 #define vfsgnjx_vf_f64m8_tama(...) __riscv_vfsgnjx_vf_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfsgnj_vv_f16mf4_tamu(...) __riscv_vfsgnj_vv_f16mf4_mu(__VA_ARGS__)
 #define vfsgnj_vf_f16mf4_tamu(...) __riscv_vfsgnj_vf_f16mf4_mu(__VA_ARGS__)
 #define vfsgnj_vv_f16mf2_tamu(...) __riscv_vfsgnj_vv_f16mf2_mu(__VA_ARGS__)
@@ -78217,7 +77998,6 @@
 #define vfabs_v_f64m2_ta(...) __riscv_vfabs_v_f64m2(__VA_ARGS__)
 #define vfabs_v_f64m4_ta(...) __riscv_vfabs_v_f64m4(__VA_ARGS__)
 #define vfabs_v_f64m8_ta(...) __riscv_vfabs_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfabs_v_f16mf4_tuma(...) __riscv_vfabs_v_f16mf4_tum(__VA_ARGS__)
 #define vfabs_v_f16mf2_tuma(...) __riscv_vfabs_v_f16mf2_tum(__VA_ARGS__)
 #define vfabs_v_f16m1_tuma(...) __riscv_vfabs_v_f16m1_tum(__VA_ARGS__)
@@ -78233,7 +78013,6 @@
 #define vfabs_v_f64m2_tuma(...) __riscv_vfabs_v_f64m2_tum(__VA_ARGS__)
 #define vfabs_v_f64m4_tuma(...) __riscv_vfabs_v_f64m4_tum(__VA_ARGS__)
 #define vfabs_v_f64m8_tuma(...) __riscv_vfabs_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfabs_v_f16mf4_tumu(...) __riscv_vfabs_v_f16mf4_tumu(__VA_ARGS__)
 #define vfabs_v_f16mf2_tumu(...) __riscv_vfabs_v_f16mf2_tumu(__VA_ARGS__)
 #define vfabs_v_f16m1_tumu(...) __riscv_vfabs_v_f16m1_tumu(__VA_ARGS__)
@@ -78249,7 +78028,6 @@
 #define vfabs_v_f64m2_tumu(...) __riscv_vfabs_v_f64m2_tumu(__VA_ARGS__)
 #define vfabs_v_f64m4_tumu(...) __riscv_vfabs_v_f64m4_tumu(__VA_ARGS__)
 #define vfabs_v_f64m8_tumu(...) __riscv_vfabs_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfabs_v_f16mf4_tama(...) __riscv_vfabs_v_f16mf4_m(__VA_ARGS__)
 #define vfabs_v_f16mf2_tama(...) __riscv_vfabs_v_f16mf2_m(__VA_ARGS__)
 #define vfabs_v_f16m1_tama(...) __riscv_vfabs_v_f16m1_m(__VA_ARGS__)
@@ -78265,7 +78043,6 @@
 #define vfabs_v_f64m2_tama(...) __riscv_vfabs_v_f64m2_m(__VA_ARGS__)
 #define vfabs_v_f64m4_tama(...) __riscv_vfabs_v_f64m4_m(__VA_ARGS__)
 #define vfabs_v_f64m8_tama(...) __riscv_vfabs_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfabs_v_f16mf4_tamu(...) __riscv_vfabs_v_f16mf4_mu(__VA_ARGS__)
 #define vfabs_v_f16mf2_tamu(...) __riscv_vfabs_v_f16mf2_mu(__VA_ARGS__)
 #define vfabs_v_f16m1_tamu(...) __riscv_vfabs_v_f16m1_mu(__VA_ARGS__)
@@ -78281,7 +78058,6 @@
 #define vfabs_v_f64m2_tamu(...) __riscv_vfabs_v_f64m2_mu(__VA_ARGS__)
 #define vfabs_v_f64m4_tamu(...) __riscv_vfabs_v_f64m4_mu(__VA_ARGS__)
 #define vfabs_v_f64m8_tamu(...) __riscv_vfabs_v_f64m8_mu(__VA_ARGS__)
-// masked functions
 #define vmfeq_vv_f16mf4_b64_ma(...) __riscv_vmfeq_vv_f16mf4_b64_m(__VA_ARGS__)
 #define vmfeq_vf_f16mf4_b64_ma(...) __riscv_vmfeq_vf_f16mf4_b64_m(__VA_ARGS__)
 #define vmfeq_vv_f16mf2_b32_ma(...) __riscv_vmfeq_vv_f16mf2_b32_m(__VA_ARGS__)
@@ -78462,7 +78238,6 @@
 #define vmfge_vf_f64m4_b16_ma(...) __riscv_vmfge_vf_f64m4_b16_m(__VA_ARGS__)
 #define vmfge_vv_f64m8_b8_ma(...) __riscv_vmfge_vv_f64m8_b8_m(__VA_ARGS__)
 #define vmfge_vf_f64m8_b8_ma(...) __riscv_vmfge_vf_f64m8_b8_m(__VA_ARGS__)
-// masked functions
 #define vmfeq_vv_f16mf4_b64_mu(...) __riscv_vmfeq_vv_f16mf4_b64_mu(__VA_ARGS__)
 #define vmfeq_vf_f16mf4_b64_mu(...) __riscv_vmfeq_vf_f16mf4_b64_mu(__VA_ARGS__)
 #define vmfeq_vv_f16mf2_b32_mu(...) __riscv_vmfeq_vv_f16mf2_b32_mu(__VA_ARGS__)
@@ -78673,7 +78448,6 @@
 #define vfclass_v_u64m2_ta(...) __riscv_vfclass_v_u64m2(__VA_ARGS__)
 #define vfclass_v_u64m4_ta(...) __riscv_vfclass_v_u64m4(__VA_ARGS__)
 #define vfclass_v_u64m8_ta(...) __riscv_vfclass_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vfclass_v_u16mf4_tuma(...) __riscv_vfclass_v_u16mf4_tum(__VA_ARGS__)
 #define vfclass_v_u16mf2_tuma(...) __riscv_vfclass_v_u16mf2_tum(__VA_ARGS__)
 #define vfclass_v_u16m1_tuma(...) __riscv_vfclass_v_u16m1_tum(__VA_ARGS__)
@@ -78689,7 +78463,6 @@
 #define vfclass_v_u64m2_tuma(...) __riscv_vfclass_v_u64m2_tum(__VA_ARGS__)
 #define vfclass_v_u64m4_tuma(...) __riscv_vfclass_v_u64m4_tum(__VA_ARGS__)
 #define vfclass_v_u64m8_tuma(...) __riscv_vfclass_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfclass_v_u16mf4_tumu(...) __riscv_vfclass_v_u16mf4_tumu(__VA_ARGS__)
 #define vfclass_v_u16mf2_tumu(...) __riscv_vfclass_v_u16mf2_tumu(__VA_ARGS__)
 #define vfclass_v_u16m1_tumu(...) __riscv_vfclass_v_u16m1_tumu(__VA_ARGS__)
@@ -78705,7 +78478,6 @@
 #define vfclass_v_u64m2_tumu(...) __riscv_vfclass_v_u64m2_tumu(__VA_ARGS__)
 #define vfclass_v_u64m4_tumu(...) __riscv_vfclass_v_u64m4_tumu(__VA_ARGS__)
 #define vfclass_v_u64m8_tumu(...) __riscv_vfclass_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfclass_v_u16mf4_tama(...) __riscv_vfclass_v_u16mf4_m(__VA_ARGS__)
 #define vfclass_v_u16mf2_tama(...) __riscv_vfclass_v_u16mf2_m(__VA_ARGS__)
 #define vfclass_v_u16m1_tama(...) __riscv_vfclass_v_u16m1_m(__VA_ARGS__)
@@ -78721,7 +78493,6 @@
 #define vfclass_v_u64m2_tama(...) __riscv_vfclass_v_u64m2_m(__VA_ARGS__)
 #define vfclass_v_u64m4_tama(...) __riscv_vfclass_v_u64m4_m(__VA_ARGS__)
 #define vfclass_v_u64m8_tama(...) __riscv_vfclass_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vfclass_v_u16mf4_tamu(...) __riscv_vfclass_v_u16mf4_mu(__VA_ARGS__)
 #define vfclass_v_u16mf2_tamu(...) __riscv_vfclass_v_u16mf2_mu(__VA_ARGS__)
 #define vfclass_v_u16m1_tamu(...) __riscv_vfclass_v_u16m1_mu(__VA_ARGS__)
@@ -79145,7 +78916,6 @@
 #define vfcvt_f_xu_v_f64m2_ta(...) __riscv_vfcvt_f_xu_v_f64m2(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m4_ta(...) __riscv_vfcvt_f_xu_v_f64m4(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m8_ta(...) __riscv_vfcvt_f_xu_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_f_v_i16mf4_tuma(...) __riscv_vfcvt_x_f_v_i16mf4_tum(__VA_ARGS__)
 #define vfcvt_rtz_x_f_v_i16mf4_tuma(...)                                       \
   __riscv_vfcvt_rtz_x_f_v_i16mf4_tum(__VA_ARGS__)
@@ -79272,7 +79042,6 @@
 #define vfcvt_f_xu_v_f64m2_tuma(...) __riscv_vfcvt_f_xu_v_f64m2_tum(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m4_tuma(...) __riscv_vfcvt_f_xu_v_f64m4_tum(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m8_tuma(...) __riscv_vfcvt_f_xu_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_f_v_i16mf4_tumu(...)                                           \
   __riscv_vfcvt_x_f_v_i16mf4_tumu(__VA_ARGS__)
 #define vfcvt_rtz_x_f_v_i16mf4_tumu(...)                                       \
@@ -79429,7 +79198,6 @@
   __riscv_vfcvt_f_xu_v_f64m4_tumu(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m8_tumu(...)                                           \
   __riscv_vfcvt_f_xu_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_f_v_i16mf4_tama(...) __riscv_vfcvt_x_f_v_i16mf4_m(__VA_ARGS__)
 #define vfcvt_rtz_x_f_v_i16mf4_tama(...)                                       \
   __riscv_vfcvt_rtz_x_f_v_i16mf4_m(__VA_ARGS__)
@@ -79550,7 +79318,6 @@
 #define vfcvt_f_xu_v_f64m2_tama(...) __riscv_vfcvt_f_xu_v_f64m2_m(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m4_tama(...) __riscv_vfcvt_f_xu_v_f64m4_m(__VA_ARGS__)
 #define vfcvt_f_xu_v_f64m8_tama(...) __riscv_vfcvt_f_xu_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_f_v_i16mf4_tamu(...) __riscv_vfcvt_x_f_v_i16mf4_mu(__VA_ARGS__)
 #define vfcvt_rtz_x_f_v_i16mf4_tamu(...)                                       \
   __riscv_vfcvt_rtz_x_f_v_i16mf4_mu(__VA_ARGS__)
@@ -79927,7 +79694,6 @@
 #define vfwcvt_f_f_v_f64m2_ta(...) __riscv_vfwcvt_f_f_v_f64m2(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m4_ta(...) __riscv_vfwcvt_f_f_v_f64m4(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m8_ta(...) __riscv_vfwcvt_f_f_v_f64m8(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_x_v_i16mf4_tuma(...) __riscv_vwcvt_x_x_v_i16mf4_tum(__VA_ARGS__)
 #define vwcvt_x_x_v_i16mf2_tuma(...) __riscv_vwcvt_x_x_v_i16mf2_tum(__VA_ARGS__)
 #define vwcvt_x_x_v_i16m1_tuma(...) __riscv_vwcvt_x_x_v_i16m1_tum(__VA_ARGS__)
@@ -80083,7 +79849,6 @@
 #define vfwcvt_f_f_v_f64m2_tuma(...) __riscv_vfwcvt_f_f_v_f64m2_tum(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m4_tuma(...) __riscv_vfwcvt_f_f_v_f64m4_tum(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m8_tuma(...) __riscv_vfwcvt_f_f_v_f64m8_tum(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_x_v_i16mf4_tumu(...)                                           \
   __riscv_vwcvt_x_x_v_i16mf4_tumu(__VA_ARGS__)
 #define vwcvt_x_x_v_i16mf2_tumu(...)                                           \
@@ -80282,7 +80047,6 @@
   __riscv_vfwcvt_f_f_v_f64m4_tumu(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m8_tumu(...)                                           \
   __riscv_vfwcvt_f_f_v_f64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_x_v_i16mf4_tama(...) __riscv_vwcvt_x_x_v_i16mf4_m(__VA_ARGS__)
 #define vwcvt_x_x_v_i16mf2_tama(...) __riscv_vwcvt_x_x_v_i16mf2_m(__VA_ARGS__)
 #define vwcvt_x_x_v_i16m1_tama(...) __riscv_vwcvt_x_x_v_i16m1_m(__VA_ARGS__)
@@ -80410,7 +80174,6 @@
 #define vfwcvt_f_f_v_f64m2_tama(...) __riscv_vfwcvt_f_f_v_f64m2_m(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m4_tama(...) __riscv_vfwcvt_f_f_v_f64m4_m(__VA_ARGS__)
 #define vfwcvt_f_f_v_f64m8_tama(...) __riscv_vfwcvt_f_f_v_f64m8_m(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_x_v_i16mf4_tamu(...) __riscv_vwcvt_x_x_v_i16mf4_mu(__VA_ARGS__)
 #define vwcvt_x_x_v_i16mf2_tamu(...) __riscv_vwcvt_x_x_v_i16mf2_mu(__VA_ARGS__)
 #define vwcvt_x_x_v_i16m1_tamu(...) __riscv_vwcvt_x_x_v_i16m1_mu(__VA_ARGS__)
@@ -80899,7 +80662,6 @@
 #define vfncvt_f_f_w_f32m4_ta(...) __riscv_vfncvt_f_f_w_f32m4(__VA_ARGS__)
 #define vfncvt_rod_f_f_w_f32m4_ta(...)                                         \
   __riscv_vfncvt_rod_f_f_w_f32m4(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_f_w_i8mf8_tuma(...) __riscv_vfncvt_x_f_w_i8mf8_tum(__VA_ARGS__)
 #define vfncvt_rtz_x_f_w_i8mf8_tuma(...)                                       \
   __riscv_vfncvt_rtz_x_f_w_i8mf8_tum(__VA_ARGS__)
@@ -81095,7 +80857,6 @@
 #define vfncvt_f_f_w_f32m4_tuma(...) __riscv_vfncvt_f_f_w_f32m4_tum(__VA_ARGS__)
 #define vfncvt_rod_f_f_w_f32m4_tuma(...)                                       \
   __riscv_vfncvt_rod_f_f_w_f32m4_tum(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_f_w_i8mf8_tumu(...)                                           \
   __riscv_vfncvt_x_f_w_i8mf8_tumu(__VA_ARGS__)
 #define vfncvt_rtz_x_f_w_i8mf8_tumu(...)                                       \
@@ -81321,7 +81082,6 @@
   __riscv_vfncvt_f_f_w_f32m4_tumu(__VA_ARGS__)
 #define vfncvt_rod_f_f_w_f32m4_tumu(...)                                       \
   __riscv_vfncvt_rod_f_f_w_f32m4_tumu(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_f_w_i8mf8_tama(...) __riscv_vfncvt_x_f_w_i8mf8_m(__VA_ARGS__)
 #define vfncvt_rtz_x_f_w_i8mf8_tama(...)                                       \
   __riscv_vfncvt_rtz_x_f_w_i8mf8_m(__VA_ARGS__)
@@ -81493,7 +81253,6 @@
 #define vfncvt_f_f_w_f32m4_tama(...) __riscv_vfncvt_f_f_w_f32m4_m(__VA_ARGS__)
 #define vfncvt_rod_f_f_w_f32m4_tama(...)                                       \
   __riscv_vfncvt_rod_f_f_w_f32m4_m(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_f_w_i8mf8_tamu(...) __riscv_vfncvt_x_f_w_i8mf8_mu(__VA_ARGS__)
 #define vfncvt_rtz_x_f_w_i8mf8_tamu(...)                                       \
   __riscv_vfncvt_rtz_x_f_w_i8mf8_mu(__VA_ARGS__)
@@ -82635,7 +82394,6 @@
   __riscv_vredxor_vs_u64m4_u64m1(__VA_ARGS__)
 #define vredxor_vs_u64m8_u64m1_ta(...)                                         \
   __riscv_vredxor_vs_u64m8_u64m1(__VA_ARGS__)
-// masked functions
 #define vredsum_vs_i8mf8_i8m1_tum(...)                                         \
   __riscv_vredsum_vs_i8mf8_i8m1_tum(__VA_ARGS__)
 #define vredsum_vs_i8mf4_i8m1_tum(...)                                         \
@@ -83164,7 +82922,6 @@
   __riscv_vredxor_vs_u64m4_u64m1_tum(__VA_ARGS__)
 #define vredxor_vs_u64m8_u64m1_tum(...)                                        \
   __riscv_vredxor_vs_u64m8_u64m1_tum(__VA_ARGS__)
-// masked functions
 #define vredsum_vs_i8mf8_i8m1_tam(...)                                         \
   __riscv_vredsum_vs_i8mf8_i8m1_m(__VA_ARGS__)
 #define vredsum_vs_i8mf4_i8m1_tam(...)                                         \
@@ -83829,7 +83586,6 @@
   __riscv_vwredsumu_vs_u32m4_u64m1(__VA_ARGS__)
 #define vwredsumu_vs_u32m8_u64m1_ta(...)                                       \
   __riscv_vwredsumu_vs_u32m8_u64m1(__VA_ARGS__)
-// masked functions
 #define vwredsum_vs_i8mf8_i16m1_tum(...)                                       \
   __riscv_vwredsum_vs_i8mf8_i16m1_tum(__VA_ARGS__)
 #define vwredsum_vs_i8mf4_i16m1_tum(...)                                       \
@@ -83902,7 +83658,6 @@
   __riscv_vwredsumu_vs_u32m4_u64m1_tum(__VA_ARGS__)
 #define vwredsumu_vs_u32m8_u64m1_tum(...)                                      \
   __riscv_vwredsumu_vs_u32m8_u64m1_tum(__VA_ARGS__)
-// masked functions
 #define vwredsum_vs_i8mf8_i16m1_tam(...)                                       \
   __riscv_vwredsum_vs_i8mf8_i16m1_m(__VA_ARGS__)
 #define vwredsum_vs_i8mf4_i16m1_tam(...)                                       \
@@ -84215,7 +83970,6 @@
   __riscv_vfredmin_vs_f64m4_f64m1(__VA_ARGS__)
 #define vfredmin_vs_f64m8_f64m1_ta(...)                                        \
   __riscv_vfredmin_vs_f64m8_f64m1(__VA_ARGS__)
-// masked functions
 #define vfredosum_vs_f16mf4_f16m1_tum(...)                                     \
   __riscv_vfredosum_vs_f16mf4_f16m1_tum(__VA_ARGS__)
 #define vfredosum_vs_f16mf2_f16m1_tum(...)                                     \
@@ -84336,7 +84090,6 @@
   __riscv_vfredmin_vs_f64m4_f64m1_tum(__VA_ARGS__)
 #define vfredmin_vs_f64m8_f64m1_tum(...)                                       \
   __riscv_vfredmin_vs_f64m8_f64m1_tum(__VA_ARGS__)
-// masked functions
 #define vfredosum_vs_f16mf4_f16m1_tam(...)                                     \
   __riscv_vfredosum_vs_f16mf4_f16m1_m(__VA_ARGS__)
 #define vfredosum_vs_f16mf2_f16m1_tam(...)                                     \
@@ -84545,7 +84298,6 @@
   __riscv_vfwredusum_vs_f32m4_f64m1(__VA_ARGS__)
 #define vfwredusum_vs_f32m8_f64m1_ta(...)                                      \
   __riscv_vfwredusum_vs_f32m8_f64m1(__VA_ARGS__)
-// masked functions
 #define vfwredosum_vs_f16mf4_f32m1_tum(...)                                    \
   __riscv_vfwredosum_vs_f16mf4_f32m1_tum(__VA_ARGS__)
 #define vfwredosum_vs_f16mf2_f32m1_tum(...)                                    \
@@ -84590,7 +84342,6 @@
   __riscv_vfwredusum_vs_f32m4_f64m1_tum(__VA_ARGS__)
 #define vfwredusum_vs_f32m8_f64m1_tum(...)                                     \
   __riscv_vfwredusum_vs_f32m8_f64m1_tum(__VA_ARGS__)
-// masked functions
 #define vfwredosum_vs_f16mf4_f32m1_tam(...)                                    \
   __riscv_vfwredosum_vs_f16mf4_f32m1_m(__VA_ARGS__)
 #define vfwredosum_vs_f16mf2_f32m1_tam(...)                                    \
@@ -84635,7 +84386,6 @@
   __riscv_vfwredusum_vs_f32m4_f64m1_m(__VA_ARGS__)
 #define vfwredusum_vs_f32m8_f64m1_tam(...)                                     \
   __riscv_vfwredusum_vs_f32m8_f64m1_m(__VA_ARGS__)
-// masked functions
 #define vmsbf_m_b1_ma(...) __riscv_vmsbf_m_b1_m(__VA_ARGS__)
 #define vmsbf_m_b2_ma(...) __riscv_vmsbf_m_b2_m(__VA_ARGS__)
 #define vmsbf_m_b4_ma(...) __riscv_vmsbf_m_b4_m(__VA_ARGS__)
@@ -84643,7 +84393,6 @@
 #define vmsbf_m_b16_ma(...) __riscv_vmsbf_m_b16_m(__VA_ARGS__)
 #define vmsbf_m_b32_ma(...) __riscv_vmsbf_m_b32_m(__VA_ARGS__)
 #define vmsbf_m_b64_ma(...) __riscv_vmsbf_m_b64_m(__VA_ARGS__)
-// masked functions
 #define vmsbf_m_b1_mu(...) __riscv_vmsbf_m_b1_mu(__VA_ARGS__)
 #define vmsbf_m_b2_mu(...) __riscv_vmsbf_m_b2_mu(__VA_ARGS__)
 #define vmsbf_m_b4_mu(...) __riscv_vmsbf_m_b4_mu(__VA_ARGS__)
@@ -84651,7 +84400,6 @@
 #define vmsbf_m_b16_mu(...) __riscv_vmsbf_m_b16_mu(__VA_ARGS__)
 #define vmsbf_m_b32_mu(...) __riscv_vmsbf_m_b32_mu(__VA_ARGS__)
 #define vmsbf_m_b64_mu(...) __riscv_vmsbf_m_b64_mu(__VA_ARGS__)
-// masked functions
 #define vmsif_m_b1_ma(...) __riscv_vmsif_m_b1_m(__VA_ARGS__)
 #define vmsif_m_b2_ma(...) __riscv_vmsif_m_b2_m(__VA_ARGS__)
 #define vmsif_m_b4_ma(...) __riscv_vmsif_m_b4_m(__VA_ARGS__)
@@ -84659,7 +84407,6 @@
 #define vmsif_m_b16_ma(...) __riscv_vmsif_m_b16_m(__VA_ARGS__)
 #define vmsif_m_b32_ma(...) __riscv_vmsif_m_b32_m(__VA_ARGS__)
 #define vmsif_m_b64_ma(...) __riscv_vmsif_m_b64_m(__VA_ARGS__)
-// masked functions
 #define vmsif_m_b1_mu(...) __riscv_vmsif_m_b1_mu(__VA_ARGS__)
 #define vmsif_m_b2_mu(...) __riscv_vmsif_m_b2_mu(__VA_ARGS__)
 #define vmsif_m_b4_mu(...) __riscv_vmsif_m_b4_mu(__VA_ARGS__)
@@ -84667,7 +84414,6 @@
 #define vmsif_m_b16_mu(...) __riscv_vmsif_m_b16_mu(__VA_ARGS__)
 #define vmsif_m_b32_mu(...) __riscv_vmsif_m_b32_mu(__VA_ARGS__)
 #define vmsif_m_b64_mu(...) __riscv_vmsif_m_b64_mu(__VA_ARGS__)
-// masked functions
 #define vmsof_m_b1_ma(...) __riscv_vmsof_m_b1_m(__VA_ARGS__)
 #define vmsof_m_b2_ma(...) __riscv_vmsof_m_b2_m(__VA_ARGS__)
 #define vmsof_m_b4_ma(...) __riscv_vmsof_m_b4_m(__VA_ARGS__)
@@ -84675,7 +84421,6 @@
 #define vmsof_m_b16_ma(...) __riscv_vmsof_m_b16_m(__VA_ARGS__)
 #define vmsof_m_b32_ma(...) __riscv_vmsof_m_b32_m(__VA_ARGS__)
 #define vmsof_m_b64_ma(...) __riscv_vmsof_m_b64_m(__VA_ARGS__)
-// masked functions
 #define vmsof_m_b1_mu(...) __riscv_vmsof_m_b1_mu(__VA_ARGS__)
 #define vmsof_m_b2_mu(...) __riscv_vmsof_m_b2_mu(__VA_ARGS__)
 #define vmsof_m_b4_mu(...) __riscv_vmsof_m_b4_mu(__VA_ARGS__)
@@ -84727,7 +84472,6 @@
 #define viota_m_u64m2_ta(...) __riscv_viota_m_u64m2(__VA_ARGS__)
 #define viota_m_u64m4_ta(...) __riscv_viota_m_u64m4(__VA_ARGS__)
 #define viota_m_u64m8_ta(...) __riscv_viota_m_u64m8(__VA_ARGS__)
-// masked functions
 #define viota_m_u8mf8_tuma(...) __riscv_viota_m_u8mf8_tum(__VA_ARGS__)
 #define viota_m_u8mf4_tuma(...) __riscv_viota_m_u8mf4_tum(__VA_ARGS__)
 #define viota_m_u8mf2_tuma(...) __riscv_viota_m_u8mf2_tum(__VA_ARGS__)
@@ -84750,7 +84494,6 @@
 #define viota_m_u64m2_tuma(...) __riscv_viota_m_u64m2_tum(__VA_ARGS__)
 #define viota_m_u64m4_tuma(...) __riscv_viota_m_u64m4_tum(__VA_ARGS__)
 #define viota_m_u64m8_tuma(...) __riscv_viota_m_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define viota_m_u8mf8_tumu(...) __riscv_viota_m_u8mf8_tumu(__VA_ARGS__)
 #define viota_m_u8mf4_tumu(...) __riscv_viota_m_u8mf4_tumu(__VA_ARGS__)
 #define viota_m_u8mf2_tumu(...) __riscv_viota_m_u8mf2_tumu(__VA_ARGS__)
@@ -84773,7 +84516,6 @@
 #define viota_m_u64m2_tumu(...) __riscv_viota_m_u64m2_tumu(__VA_ARGS__)
 #define viota_m_u64m4_tumu(...) __riscv_viota_m_u64m4_tumu(__VA_ARGS__)
 #define viota_m_u64m8_tumu(...) __riscv_viota_m_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define viota_m_u8mf8_tama(...) __riscv_viota_m_u8mf8_m(__VA_ARGS__)
 #define viota_m_u8mf4_tama(...) __riscv_viota_m_u8mf4_m(__VA_ARGS__)
 #define viota_m_u8mf2_tama(...) __riscv_viota_m_u8mf2_m(__VA_ARGS__)
@@ -84796,7 +84538,6 @@
 #define viota_m_u64m2_tama(...) __riscv_viota_m_u64m2_m(__VA_ARGS__)
 #define viota_m_u64m4_tama(...) __riscv_viota_m_u64m4_m(__VA_ARGS__)
 #define viota_m_u64m8_tama(...) __riscv_viota_m_u64m8_m(__VA_ARGS__)
-// masked functions
 #define viota_m_u8mf8_tamu(...) __riscv_viota_m_u8mf8_mu(__VA_ARGS__)
 #define viota_m_u8mf4_tamu(...) __riscv_viota_m_u8mf4_mu(__VA_ARGS__)
 #define viota_m_u8mf2_tamu(...) __riscv_viota_m_u8mf2_mu(__VA_ARGS__)
@@ -84863,7 +84604,6 @@
 #define vid_v_u64m2_ta(...) __riscv_vid_v_u64m2(__VA_ARGS__)
 #define vid_v_u64m4_ta(...) __riscv_vid_v_u64m4(__VA_ARGS__)
 #define vid_v_u64m8_ta(...) __riscv_vid_v_u64m8(__VA_ARGS__)
-// masked functions
 #define vid_v_u8mf8_tuma(...) __riscv_vid_v_u8mf8_tum(__VA_ARGS__)
 #define vid_v_u8mf4_tuma(...) __riscv_vid_v_u8mf4_tum(__VA_ARGS__)
 #define vid_v_u8mf2_tuma(...) __riscv_vid_v_u8mf2_tum(__VA_ARGS__)
@@ -84886,7 +84626,6 @@
 #define vid_v_u64m2_tuma(...) __riscv_vid_v_u64m2_tum(__VA_ARGS__)
 #define vid_v_u64m4_tuma(...) __riscv_vid_v_u64m4_tum(__VA_ARGS__)
 #define vid_v_u64m8_tuma(...) __riscv_vid_v_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vid_v_u8mf8_tumu(...) __riscv_vid_v_u8mf8_tumu(__VA_ARGS__)
 #define vid_v_u8mf4_tumu(...) __riscv_vid_v_u8mf4_tumu(__VA_ARGS__)
 #define vid_v_u8mf2_tumu(...) __riscv_vid_v_u8mf2_tumu(__VA_ARGS__)
@@ -84909,7 +84648,6 @@
 #define vid_v_u64m2_tumu(...) __riscv_vid_v_u64m2_tumu(__VA_ARGS__)
 #define vid_v_u64m4_tumu(...) __riscv_vid_v_u64m4_tumu(__VA_ARGS__)
 #define vid_v_u64m8_tumu(...) __riscv_vid_v_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vid_v_u8mf8_tama(...) __riscv_vid_v_u8mf8_m(__VA_ARGS__)
 #define vid_v_u8mf4_tama(...) __riscv_vid_v_u8mf4_m(__VA_ARGS__)
 #define vid_v_u8mf2_tama(...) __riscv_vid_v_u8mf2_m(__VA_ARGS__)
@@ -84932,7 +84670,6 @@
 #define vid_v_u64m2_tama(...) __riscv_vid_v_u64m2_m(__VA_ARGS__)
 #define vid_v_u64m4_tama(...) __riscv_vid_v_u64m4_m(__VA_ARGS__)
 #define vid_v_u64m8_tama(...) __riscv_vid_v_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vid_v_u8mf8_tamu(...) __riscv_vid_v_u8mf8_mu(__VA_ARGS__)
 #define vid_v_u8mf4_tamu(...) __riscv_vid_v_u8mf4_mu(__VA_ARGS__)
 #define vid_v_u8mf2_tamu(...) __riscv_vid_v_u8mf2_mu(__VA_ARGS__)
@@ -85191,7 +84928,6 @@
 #define vslideup_vx_u64m2_ta(...) __riscv_vslideup_vx_u64m2(__VA_ARGS__)
 #define vslideup_vx_u64m4_ta(...) __riscv_vslideup_vx_u64m4(__VA_ARGS__)
 #define vslideup_vx_u64m8_ta(...) __riscv_vslideup_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vslideup_vx_f16mf4_tuma(...) __riscv_vslideup_vx_f16mf4_tum(__VA_ARGS__)
 #define vslideup_vx_f16mf2_tuma(...) __riscv_vslideup_vx_f16mf2_tum(__VA_ARGS__)
 #define vslideup_vx_f16m1_tuma(...) __riscv_vslideup_vx_f16m1_tum(__VA_ARGS__)
@@ -85251,7 +84987,6 @@
 #define vslideup_vx_u64m2_tuma(...) __riscv_vslideup_vx_u64m2_tum(__VA_ARGS__)
 #define vslideup_vx_u64m4_tuma(...) __riscv_vslideup_vx_u64m4_tum(__VA_ARGS__)
 #define vslideup_vx_u64m8_tuma(...) __riscv_vslideup_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vslideup_vx_f16mf4_tumu(...)                                           \
   __riscv_vslideup_vx_f16mf4_tumu(__VA_ARGS__)
 #define vslideup_vx_f16mf2_tumu(...)                                           \
@@ -85320,7 +85055,6 @@
 #define vslideup_vx_u64m2_tumu(...) __riscv_vslideup_vx_u64m2_tumu(__VA_ARGS__)
 #define vslideup_vx_u64m4_tumu(...) __riscv_vslideup_vx_u64m4_tumu(__VA_ARGS__)
 #define vslideup_vx_u64m8_tumu(...) __riscv_vslideup_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vslideup_vx_f16mf4_tama(...) __riscv_vslideup_vx_f16mf4_m(__VA_ARGS__)
 #define vslideup_vx_f16mf2_tama(...) __riscv_vslideup_vx_f16mf2_m(__VA_ARGS__)
 #define vslideup_vx_f16m1_tama(...) __riscv_vslideup_vx_f16m1_m(__VA_ARGS__)
@@ -85380,7 +85114,6 @@
 #define vslideup_vx_u64m2_tama(...) __riscv_vslideup_vx_u64m2_m(__VA_ARGS__)
 #define vslideup_vx_u64m4_tama(...) __riscv_vslideup_vx_u64m4_m(__VA_ARGS__)
 #define vslideup_vx_u64m8_tama(...) __riscv_vslideup_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vslideup_vx_f16mf4_tamu(...) __riscv_vslideup_vx_f16mf4_mu(__VA_ARGS__)
 #define vslideup_vx_f16mf2_tamu(...) __riscv_vslideup_vx_f16mf2_mu(__VA_ARGS__)
 #define vslideup_vx_f16m1_tamu(...) __riscv_vslideup_vx_f16m1_mu(__VA_ARGS__)
@@ -85567,7 +85300,6 @@
 #define vslidedown_vx_u64m2_ta(...) __riscv_vslidedown_vx_u64m2(__VA_ARGS__)
 #define vslidedown_vx_u64m4_ta(...) __riscv_vslidedown_vx_u64m4(__VA_ARGS__)
 #define vslidedown_vx_u64m8_ta(...) __riscv_vslidedown_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vslidedown_vx_f16mf4_tuma(...)                                         \
   __riscv_vslidedown_vx_f16mf4_tum(__VA_ARGS__)
 #define vslidedown_vx_f16mf2_tuma(...)                                         \
@@ -85678,7 +85410,6 @@
   __riscv_vslidedown_vx_u64m4_tum(__VA_ARGS__)
 #define vslidedown_vx_u64m8_tuma(...)                                          \
   __riscv_vslidedown_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vslidedown_vx_f16mf4_tumu(...)                                         \
   __riscv_vslidedown_vx_f16mf4_tumu(__VA_ARGS__)
 #define vslidedown_vx_f16mf2_tumu(...)                                         \
@@ -85797,7 +85528,6 @@
   __riscv_vslidedown_vx_u64m4_tumu(__VA_ARGS__)
 #define vslidedown_vx_u64m8_tumu(...)                                          \
   __riscv_vslidedown_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vslidedown_vx_f16mf4_tama(...)                                         \
   __riscv_vslidedown_vx_f16mf4_m(__VA_ARGS__)
 #define vslidedown_vx_f16mf2_tama(...)                                         \
@@ -85866,7 +85596,6 @@
 #define vslidedown_vx_u64m2_tama(...) __riscv_vslidedown_vx_u64m2_m(__VA_ARGS__)
 #define vslidedown_vx_u64m4_tama(...) __riscv_vslidedown_vx_u64m4_m(__VA_ARGS__)
 #define vslidedown_vx_u64m8_tama(...) __riscv_vslidedown_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vslidedown_vx_f16mf4_tamu(...)                                         \
   __riscv_vslidedown_vx_f16mf4_mu(__VA_ARGS__)
 #define vslidedown_vx_f16mf2_tamu(...)                                         \
@@ -86270,7 +85999,6 @@
 #define vslide1down_vx_u64m2_ta(...) __riscv_vslide1down_vx_u64m2(__VA_ARGS__)
 #define vslide1down_vx_u64m4_ta(...) __riscv_vslide1down_vx_u64m4(__VA_ARGS__)
 #define vslide1down_vx_u64m8_ta(...) __riscv_vslide1down_vx_u64m8(__VA_ARGS__)
-// masked functions
 #define vfslide1up_vf_f16mf4_tuma(...)                                         \
   __riscv_vfslide1up_vf_f16mf4_tum(__VA_ARGS__)
 #define vfslide1up_vf_f16mf2_tuma(...)                                         \
@@ -86469,7 +86197,6 @@
   __riscv_vslide1down_vx_u64m4_tum(__VA_ARGS__)
 #define vslide1down_vx_u64m8_tuma(...)                                         \
   __riscv_vslide1down_vx_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vfslide1up_vf_f16mf4_tumu(...)                                         \
   __riscv_vfslide1up_vf_f16mf4_tumu(__VA_ARGS__)
 #define vfslide1up_vf_f16mf2_tumu(...)                                         \
@@ -86698,7 +86425,6 @@
   __riscv_vslide1down_vx_u64m4_tumu(__VA_ARGS__)
 #define vslide1down_vx_u64m8_tumu(...)                                         \
   __riscv_vslide1down_vx_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vfslide1up_vf_f16mf4_tama(...)                                         \
   __riscv_vfslide1up_vf_f16mf4_m(__VA_ARGS__)
 #define vfslide1up_vf_f16mf2_tama(...)                                         \
@@ -86871,7 +86597,6 @@
   __riscv_vslide1down_vx_u64m4_m(__VA_ARGS__)
 #define vslide1down_vx_u64m8_tama(...)                                         \
   __riscv_vslide1down_vx_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vfslide1up_vf_f16mf4_tamu(...)                                         \
   __riscv_vfslide1up_vf_f16mf4_mu(__VA_ARGS__)
 #define vfslide1up_vf_f16mf2_tamu(...)                                         \
@@ -87486,7 +87211,6 @@
 #define vrgatherei16_vv_u64m2_ta(...) __riscv_vrgatherei16_vv_u64m2(__VA_ARGS__)
 #define vrgatherei16_vv_u64m4_ta(...) __riscv_vrgatherei16_vv_u64m4(__VA_ARGS__)
 #define vrgatherei16_vv_u64m8_ta(...) __riscv_vrgatherei16_vv_u64m8(__VA_ARGS__)
-// masked functions
 #define vrgather_vv_f16mf4_tuma(...) __riscv_vrgather_vv_f16mf4_tum(__VA_ARGS__)
 #define vrgather_vx_f16mf4_tuma(...) __riscv_vrgather_vx_f16mf4_tum(__VA_ARGS__)
 #define vrgather_vv_f16mf2_tuma(...) __riscv_vrgather_vv_f16mf2_tum(__VA_ARGS__)
@@ -87719,7 +87443,6 @@
   __riscv_vrgatherei16_vv_u64m4_tum(__VA_ARGS__)
 #define vrgatherei16_vv_u64m8_tuma(...)                                        \
   __riscv_vrgatherei16_vv_u64m8_tum(__VA_ARGS__)
-// masked functions
 #define vrgather_vv_f16mf4_tumu(...)                                           \
   __riscv_vrgather_vv_f16mf4_tumu(__VA_ARGS__)
 #define vrgather_vx_f16mf4_tumu(...)                                           \
@@ -87970,7 +87693,6 @@
   __riscv_vrgatherei16_vv_u64m4_tumu(__VA_ARGS__)
 #define vrgatherei16_vv_u64m8_tumu(...)                                        \
   __riscv_vrgatherei16_vv_u64m8_tumu(__VA_ARGS__)
-// masked functions
 #define vrgather_vv_f16mf4_tama(...) __riscv_vrgather_vv_f16mf4_m(__VA_ARGS__)
 #define vrgather_vx_f16mf4_tama(...) __riscv_vrgather_vx_f16mf4_m(__VA_ARGS__)
 #define vrgather_vv_f16mf2_tama(...) __riscv_vrgather_vv_f16mf2_m(__VA_ARGS__)
@@ -88203,7 +87925,6 @@
   __riscv_vrgatherei16_vv_u64m4_m(__VA_ARGS__)
 #define vrgatherei16_vv_u64m8_tama(...)                                        \
   __riscv_vrgatherei16_vv_u64m8_m(__VA_ARGS__)
-// masked functions
 #define vrgather_vv_f16mf4_tamu(...) __riscv_vrgather_vv_f16mf4_mu(__VA_ARGS__)
 #define vrgather_vx_f16mf4_tamu(...) __riscv_vrgather_vx_f16mf4_mu(__VA_ARGS__)
 #define vrgather_vv_f16mf2_tamu(...) __riscv_vrgather_vv_f16mf2_mu(__VA_ARGS__)
@@ -88683,13 +88404,6 @@
 #define _GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13,  \
                       _14, _15, _16, _17, _18, _19, _20, NAME, ...)            \
   NAME
-
-#if __has_include("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
 
 #define vmerge(mask, op1, op2, vl) __riscv_vmerge((op1), (op2), (mask), (vl))
 #define vfmerge(mask, op1, op2, vl) __riscv_vfmerge((op1), (op2), (mask), (vl))
@@ -90566,29 +90280,18 @@
 #ifndef __RVV_0P10_COMPATIBLE_HEADERS_OVERLOADED_POLICY_H
 #define __RVV_0P10_COMPATIBLE_HEADERS_OVERLOADED_POLICY_H
 
-#if __has_include("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
-
 #define vle16_tu(...) __riscv_vle16_tu(__VA_ARGS__)
 #define vle32_tu(...) __riscv_vle32_tu(__VA_ARGS__)
 #define vle64_tu(...) __riscv_vle64_tu(__VA_ARGS__)
 #define vle8_tu(...) __riscv_vle8_tu(__VA_ARGS__)
-// masked functions
 #define vle16_tuma(...) __riscv_vle16_tum(__VA_ARGS__)
 #define vle32_tuma(...) __riscv_vle32_tum(__VA_ARGS__)
 #define vle64_tuma(...) __riscv_vle64_tum(__VA_ARGS__)
 #define vle8_tuma(...) __riscv_vle8_tum(__VA_ARGS__)
-// masked functions
 #define vle16_tumu(...) __riscv_vle16_tumu(__VA_ARGS__)
 #define vle32_tumu(...) __riscv_vle32_tumu(__VA_ARGS__)
 #define vle64_tumu(...) __riscv_vle64_tumu(__VA_ARGS__)
 #define vle8_tumu(...) __riscv_vle8_tumu(__VA_ARGS__)
-// masked functions
-// masked functions
 #define vle16_tamu(...) __riscv_vle16_mu(__VA_ARGS__)
 #define vle32_tamu(...) __riscv_vle32_mu(__VA_ARGS__)
 #define vle64_tamu(...) __riscv_vle64_mu(__VA_ARGS__)
@@ -90597,18 +90300,14 @@
 #define vlse32_tu(...) __riscv_vlse32_tu(__VA_ARGS__)
 #define vlse64_tu(...) __riscv_vlse64_tu(__VA_ARGS__)
 #define vlse8_tu(...) __riscv_vlse8_tu(__VA_ARGS__)
-// masked functions
 #define vlse16_tuma(...) __riscv_vlse16_tum(__VA_ARGS__)
 #define vlse32_tuma(...) __riscv_vlse32_tum(__VA_ARGS__)
 #define vlse64_tuma(...) __riscv_vlse64_tum(__VA_ARGS__)
 #define vlse8_tuma(...) __riscv_vlse8_tum(__VA_ARGS__)
-// masked functions
 #define vlse16_tumu(...) __riscv_vlse16_tumu(__VA_ARGS__)
 #define vlse32_tumu(...) __riscv_vlse32_tumu(__VA_ARGS__)
 #define vlse64_tumu(...) __riscv_vlse64_tumu(__VA_ARGS__)
 #define vlse8_tumu(...) __riscv_vlse8_tumu(__VA_ARGS__)
-// masked functions
-// masked functions
 #define vlse16_tamu(...) __riscv_vlse16_mu(__VA_ARGS__)
 #define vlse32_tamu(...) __riscv_vlse32_mu(__VA_ARGS__)
 #define vlse64_tamu(...) __riscv_vlse64_mu(__VA_ARGS__)
@@ -90629,7 +90328,6 @@
 #define vluxei16_ta(...) __riscv_vluxei16(__VA_ARGS__)
 #define vluxei32_ta(...) __riscv_vluxei32(__VA_ARGS__)
 #define vluxei64_ta(...) __riscv_vluxei64(__VA_ARGS__)
-// masked functions
 #define vloxei8_tuma(...) __riscv_vloxei8_tum(__VA_ARGS__)
 #define vloxei16_tuma(...) __riscv_vloxei16_tum(__VA_ARGS__)
 #define vloxei32_tuma(...) __riscv_vloxei32_tum(__VA_ARGS__)
@@ -90638,7 +90336,6 @@
 #define vluxei16_tuma(...) __riscv_vluxei16_tum(__VA_ARGS__)
 #define vluxei32_tuma(...) __riscv_vluxei32_tum(__VA_ARGS__)
 #define vluxei64_tuma(...) __riscv_vluxei64_tum(__VA_ARGS__)
-// masked functions
 #define vloxei8_tumu(...) __riscv_vloxei8_tumu(__VA_ARGS__)
 #define vloxei16_tumu(...) __riscv_vloxei16_tumu(__VA_ARGS__)
 #define vloxei32_tumu(...) __riscv_vloxei32_tumu(__VA_ARGS__)
@@ -90647,7 +90344,6 @@
 #define vluxei16_tumu(...) __riscv_vluxei16_tumu(__VA_ARGS__)
 #define vluxei32_tumu(...) __riscv_vluxei32_tumu(__VA_ARGS__)
 #define vluxei64_tumu(...) __riscv_vluxei64_tumu(__VA_ARGS__)
-// masked functions
 #define vloxei8_tama(...) __riscv_vloxei8(__VA_ARGS__)
 #define vloxei16_tama(...) __riscv_vloxei16(__VA_ARGS__)
 #define vloxei32_tama(...) __riscv_vloxei32(__VA_ARGS__)
@@ -90656,7 +90352,6 @@
 #define vluxei16_tama(...) __riscv_vluxei16(__VA_ARGS__)
 #define vluxei32_tama(...) __riscv_vluxei32(__VA_ARGS__)
 #define vluxei64_tama(...) __riscv_vluxei64(__VA_ARGS__)
-// masked functions
 #define vloxei8_tamu(...) __riscv_vloxei8_mu(__VA_ARGS__)
 #define vloxei16_tamu(...) __riscv_vloxei16_mu(__VA_ARGS__)
 #define vloxei32_tamu(...) __riscv_vloxei32_mu(__VA_ARGS__)
@@ -90669,18 +90364,14 @@
 #define vle32ff_tu(...) __riscv_vle32ff_tu(__VA_ARGS__)
 #define vle64ff_tu(...) __riscv_vle64ff_tu(__VA_ARGS__)
 #define vle8ff_tu(...) __riscv_vle8ff_tu(__VA_ARGS__)
-// masked functions
 #define vle16ff_tuma(...) __riscv_vle16ff_tum(__VA_ARGS__)
 #define vle32ff_tuma(...) __riscv_vle32ff_tum(__VA_ARGS__)
 #define vle64ff_tuma(...) __riscv_vle64ff_tum(__VA_ARGS__)
 #define vle8ff_tuma(...) __riscv_vle8ff_tum(__VA_ARGS__)
-// masked functions
 #define vle16ff_tumu(...) __riscv_vle16ff_tumu(__VA_ARGS__)
 #define vle32ff_tumu(...) __riscv_vle32ff_tumu(__VA_ARGS__)
 #define vle64ff_tumu(...) __riscv_vle64ff_tumu(__VA_ARGS__)
 #define vle8ff_tumu(...) __riscv_vle8ff_tumu(__VA_ARGS__)
-// masked functions
-// masked functions
 #define vle16ff_tamu(...) __riscv_vle16ff_mu(__VA_ARGS__)
 #define vle32ff_tamu(...) __riscv_vle32ff_mu(__VA_ARGS__)
 #define vle64ff_tamu(...) __riscv_vle64ff_mu(__VA_ARGS__)
@@ -90741,7 +90432,6 @@
 #define vlseg6e8ff_tu(...) __riscv_vlseg6e8ff_tu(__VA_ARGS__)
 #define vlseg7e8ff_tu(...) __riscv_vlseg7e8ff_tu(__VA_ARGS__)
 #define vlseg8e8ff_tu(...) __riscv_vlseg8e8ff_tu(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_tuma(...) __riscv_vlseg2e16_tum(__VA_ARGS__)
 #define vlseg3e16_tuma(...) __riscv_vlseg3e16_tum(__VA_ARGS__)
 #define vlseg4e16_tuma(...) __riscv_vlseg4e16_tum(__VA_ARGS__)
@@ -90798,7 +90488,6 @@
 #define vlseg6e8ff_tuma(...) __riscv_vlseg6e8ff_tum(__VA_ARGS__)
 #define vlseg7e8ff_tuma(...) __riscv_vlseg7e8ff_tum(__VA_ARGS__)
 #define vlseg8e8ff_tuma(...) __riscv_vlseg8e8ff_tum(__VA_ARGS__)
-// masked functions
 #define vlseg2e16_tumu(...) __riscv_vlseg2e16_tumu(__VA_ARGS__)
 #define vlseg3e16_tumu(...) __riscv_vlseg3e16_tumu(__VA_ARGS__)
 #define vlseg4e16_tumu(...) __riscv_vlseg4e16_tumu(__VA_ARGS__)
@@ -90855,8 +90544,6 @@
 #define vlseg6e8ff_tumu(...) __riscv_vlseg6e8ff_tumu(__VA_ARGS__)
 #define vlseg7e8ff_tumu(...) __riscv_vlseg7e8ff_tumu(__VA_ARGS__)
 #define vlseg8e8ff_tumu(...) __riscv_vlseg8e8ff_tumu(__VA_ARGS__)
-// masked functions
-// masked functions
 #define vlseg2e16_tamu(...) __riscv_vlseg2e16_mu(__VA_ARGS__)
 #define vlseg3e16_tamu(...) __riscv_vlseg3e16_mu(__VA_ARGS__)
 #define vlseg4e16_tamu(...) __riscv_vlseg4e16_mu(__VA_ARGS__)
@@ -90941,7 +90628,6 @@
 #define vlsseg6e8_tu(...) __riscv_vlsseg6e8_tu(__VA_ARGS__)
 #define vlsseg7e8_tu(...) __riscv_vlsseg7e8_tu(__VA_ARGS__)
 #define vlsseg8e8_tu(...) __riscv_vlsseg8e8_tu(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_tuma(...) __riscv_vlsseg2e16_tum(__VA_ARGS__)
 #define vlsseg3e16_tuma(...) __riscv_vlsseg3e16_tum(__VA_ARGS__)
 #define vlsseg4e16_tuma(...) __riscv_vlsseg4e16_tum(__VA_ARGS__)
@@ -90970,7 +90656,6 @@
 #define vlsseg6e8_tuma(...) __riscv_vlsseg6e8_tum(__VA_ARGS__)
 #define vlsseg7e8_tuma(...) __riscv_vlsseg7e8_tum(__VA_ARGS__)
 #define vlsseg8e8_tuma(...) __riscv_vlsseg8e8_tum(__VA_ARGS__)
-// masked functions
 #define vlsseg2e16_tumu(...) __riscv_vlsseg2e16_tumu(__VA_ARGS__)
 #define vlsseg3e16_tumu(...) __riscv_vlsseg3e16_tumu(__VA_ARGS__)
 #define vlsseg4e16_tumu(...) __riscv_vlsseg4e16_tumu(__VA_ARGS__)
@@ -90999,8 +90684,6 @@
 #define vlsseg6e8_tumu(...) __riscv_vlsseg6e8_tumu(__VA_ARGS__)
 #define vlsseg7e8_tumu(...) __riscv_vlsseg7e8_tumu(__VA_ARGS__)
 #define vlsseg8e8_tumu(...) __riscv_vlsseg8e8_tumu(__VA_ARGS__)
-// masked functions
-// masked functions
 #define vlsseg2e16_tamu(...) __riscv_vlsseg2e16_mu(__VA_ARGS__)
 #define vlsseg3e16_tamu(...) __riscv_vlsseg3e16_mu(__VA_ARGS__)
 #define vlsseg4e16_tamu(...) __riscv_vlsseg4e16_mu(__VA_ARGS__)
@@ -91141,7 +90824,6 @@
 #define vluxseg6ei64_ta(...) __riscv_vluxseg6ei64(__VA_ARGS__)
 #define vluxseg7ei64_ta(...) __riscv_vluxseg7ei64(__VA_ARGS__)
 #define vluxseg8ei64_ta(...) __riscv_vluxseg8ei64(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_tuma(...) __riscv_vloxseg2ei8_tum(__VA_ARGS__)
 #define vloxseg3ei8_tuma(...) __riscv_vloxseg3ei8_tum(__VA_ARGS__)
 #define vloxseg4ei8_tuma(...) __riscv_vloxseg4ei8_tum(__VA_ARGS__)
@@ -91198,7 +90880,6 @@
 #define vluxseg6ei64_tuma(...) __riscv_vluxseg6ei64_tum(__VA_ARGS__)
 #define vluxseg7ei64_tuma(...) __riscv_vluxseg7ei64_tum(__VA_ARGS__)
 #define vluxseg8ei64_tuma(...) __riscv_vluxseg8ei64_tum(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_tumu(...) __riscv_vloxseg2ei8_tumu(__VA_ARGS__)
 #define vloxseg3ei8_tumu(...) __riscv_vloxseg3ei8_tumu(__VA_ARGS__)
 #define vloxseg4ei8_tumu(...) __riscv_vloxseg4ei8_tumu(__VA_ARGS__)
@@ -91255,7 +90936,6 @@
 #define vluxseg6ei64_tumu(...) __riscv_vluxseg6ei64_tumu(__VA_ARGS__)
 #define vluxseg7ei64_tumu(...) __riscv_vluxseg7ei64_tumu(__VA_ARGS__)
 #define vluxseg8ei64_tumu(...) __riscv_vluxseg8ei64_tumu(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_tama(...) __riscv_vloxseg2ei8(__VA_ARGS__)
 #define vloxseg3ei8_tama(...) __riscv_vloxseg3ei8(__VA_ARGS__)
 #define vloxseg4ei8_tama(...) __riscv_vloxseg4ei8(__VA_ARGS__)
@@ -91312,7 +90992,6 @@
 #define vluxseg6ei64_tama(...) __riscv_vluxseg6ei64(__VA_ARGS__)
 #define vluxseg7ei64_tama(...) __riscv_vluxseg7ei64(__VA_ARGS__)
 #define vluxseg8ei64_tama(...) __riscv_vluxseg8ei64(__VA_ARGS__)
-// masked functions
 #define vloxseg2ei8_tamu(...) __riscv_vloxseg2ei8_mu(__VA_ARGS__)
 #define vloxseg3ei8_tamu(...) __riscv_vloxseg3ei8_mu(__VA_ARGS__)
 #define vloxseg4ei8_tamu(...) __riscv_vloxseg4ei8_mu(__VA_ARGS__)
@@ -91377,22 +91056,18 @@
 #define vsub_ta(...) __riscv_vsub(__VA_ARGS__)
 #define vrsub_ta(...) __riscv_vrsub(__VA_ARGS__)
 #define vneg_ta(...) __riscv_vneg(__VA_ARGS__)
-// masked functions
 #define vadd_tuma(...) __riscv_vadd_tum(__VA_ARGS__)
 #define vsub_tuma(...) __riscv_vsub_tum(__VA_ARGS__)
 #define vrsub_tuma(...) __riscv_vrsub_tum(__VA_ARGS__)
 #define vneg_tuma(...) __riscv_vneg_tum(__VA_ARGS__)
-// masked functions
 #define vadd_tumu(...) __riscv_vadd_tumu(__VA_ARGS__)
 #define vsub_tumu(...) __riscv_vsub_tumu(__VA_ARGS__)
 #define vrsub_tumu(...) __riscv_vrsub_tumu(__VA_ARGS__)
 #define vneg_tumu(...) __riscv_vneg_tumu(__VA_ARGS__)
-// masked functions
 #define vadd_tama(...) __riscv_vadd(__VA_ARGS__)
 #define vsub_tama(...) __riscv_vsub(__VA_ARGS__)
 #define vrsub_tama(...) __riscv_vrsub(__VA_ARGS__)
 #define vneg_tama(...) __riscv_vneg(__VA_ARGS__)
-// masked functions
 #define vadd_tamu(...) __riscv_vadd_mu(__VA_ARGS__)
 #define vsub_tamu(...) __riscv_vsub_mu(__VA_ARGS__)
 #define vrsub_tamu(...) __riscv_vrsub_mu(__VA_ARGS__)
@@ -91429,7 +91104,6 @@
 #define vwsubu_vx_ta(...) __riscv_vwsubu_vx(__VA_ARGS__)
 #define vwsubu_wv_ta(...) __riscv_vwsubu_wv(__VA_ARGS__)
 #define vwsubu_wx_ta(...) __riscv_vwsubu_wx(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_tuma(...) __riscv_vwadd_vv_tum(__VA_ARGS__)
 #define vwadd_vx_tuma(...) __riscv_vwadd_vx_tum(__VA_ARGS__)
 #define vwadd_wv_tuma(...) __riscv_vwadd_wv_tum(__VA_ARGS__)
@@ -91446,7 +91120,6 @@
 #define vwsubu_vx_tuma(...) __riscv_vwsubu_vx_tum(__VA_ARGS__)
 #define vwsubu_wv_tuma(...) __riscv_vwsubu_wv_tum(__VA_ARGS__)
 #define vwsubu_wx_tuma(...) __riscv_vwsubu_wx_tum(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_tumu(...) __riscv_vwadd_vv_tumu(__VA_ARGS__)
 #define vwadd_vx_tumu(...) __riscv_vwadd_vx_tumu(__VA_ARGS__)
 #define vwadd_wv_tumu(...) __riscv_vwadd_wv_tumu(__VA_ARGS__)
@@ -91463,7 +91136,6 @@
 #define vwsubu_vx_tumu(...) __riscv_vwsubu_vx_tumu(__VA_ARGS__)
 #define vwsubu_wv_tumu(...) __riscv_vwsubu_wv_tumu(__VA_ARGS__)
 #define vwsubu_wx_tumu(...) __riscv_vwsubu_wx_tumu(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_tama(...) __riscv_vwadd_vv(__VA_ARGS__)
 #define vwadd_vx_tama(...) __riscv_vwadd_vx(__VA_ARGS__)
 #define vwadd_wv_tama(...) __riscv_vwadd_wv(__VA_ARGS__)
@@ -91480,7 +91152,6 @@
 #define vwsubu_vx_tama(...) __riscv_vwsubu_vx(__VA_ARGS__)
 #define vwsubu_wv_tama(...) __riscv_vwsubu_wv(__VA_ARGS__)
 #define vwsubu_wx_tama(...) __riscv_vwsubu_wx(__VA_ARGS__)
-// masked functions
 #define vwadd_vv_tamu(...) __riscv_vwadd_vv_mu(__VA_ARGS__)
 #define vwadd_vx_tamu(...) __riscv_vwadd_vx_mu(__VA_ARGS__)
 #define vwadd_wv_tamu(...) __riscv_vwadd_wv_mu(__VA_ARGS__)
@@ -91509,28 +91180,24 @@
 #define vzext_vf2_ta(...) __riscv_vzext_vf2(__VA_ARGS__)
 #define vzext_vf4_ta(...) __riscv_vzext_vf4(__VA_ARGS__)
 #define vzext_vf8_ta(...) __riscv_vzext_vf8(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_tuma(...) __riscv_vsext_vf2_tum(__VA_ARGS__)
 #define vsext_vf4_tuma(...) __riscv_vsext_vf4_tum(__VA_ARGS__)
 #define vsext_vf8_tuma(...) __riscv_vsext_vf8_tum(__VA_ARGS__)
 #define vzext_vf2_tuma(...) __riscv_vzext_vf2_tum(__VA_ARGS__)
 #define vzext_vf4_tuma(...) __riscv_vzext_vf4_tum(__VA_ARGS__)
 #define vzext_vf8_tuma(...) __riscv_vzext_vf8_tum(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_tumu(...) __riscv_vsext_vf2_tumu(__VA_ARGS__)
 #define vsext_vf4_tumu(...) __riscv_vsext_vf4_tumu(__VA_ARGS__)
 #define vsext_vf8_tumu(...) __riscv_vsext_vf8_tumu(__VA_ARGS__)
 #define vzext_vf2_tumu(...) __riscv_vzext_vf2_tumu(__VA_ARGS__)
 #define vzext_vf4_tumu(...) __riscv_vzext_vf4_tumu(__VA_ARGS__)
 #define vzext_vf8_tumu(...) __riscv_vzext_vf8_tumu(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_tama(...) __riscv_vsext_vf2(__VA_ARGS__)
 #define vsext_vf4_tama(...) __riscv_vsext_vf4(__VA_ARGS__)
 #define vsext_vf8_tama(...) __riscv_vsext_vf8(__VA_ARGS__)
 #define vzext_vf2_tama(...) __riscv_vzext_vf2(__VA_ARGS__)
 #define vzext_vf4_tama(...) __riscv_vzext_vf4(__VA_ARGS__)
 #define vzext_vf8_tama(...) __riscv_vzext_vf8(__VA_ARGS__)
-// masked functions
 #define vsext_vf2_tamu(...) __riscv_vsext_vf2_mu(__VA_ARGS__)
 #define vsext_vf4_tamu(...) __riscv_vsext_vf4_mu(__VA_ARGS__)
 #define vsext_vf8_tamu(...) __riscv_vsext_vf8_mu(__VA_ARGS__)
@@ -91547,31 +91214,23 @@
 #define vand_ta(...) __riscv_vand(__VA_ARGS__)
 #define vor_ta(...) __riscv_vor(__VA_ARGS__)
 #define vxor_ta(...) __riscv_vxor(__VA_ARGS__)
-// masked functions
 #define vand_tuma(...) __riscv_vand_tum(__VA_ARGS__)
 #define vor_tuma(...) __riscv_vor_tum(__VA_ARGS__)
 #define vxor_tuma(...) __riscv_vxor_tum(__VA_ARGS__)
-// masked functions
 #define vand_tumu(...) __riscv_vand_tumu(__VA_ARGS__)
 #define vor_tumu(...) __riscv_vor_tumu(__VA_ARGS__)
 #define vxor_tumu(...) __riscv_vxor_tumu(__VA_ARGS__)
-// masked functions
 #define vand_tama(...) __riscv_vand(__VA_ARGS__)
 #define vor_tama(...) __riscv_vor(__VA_ARGS__)
 #define vxor_tama(...) __riscv_vxor(__VA_ARGS__)
-// masked functions
 #define vand_tamu(...) __riscv_vand_mu(__VA_ARGS__)
 #define vor_tamu(...) __riscv_vor_mu(__VA_ARGS__)
 #define vxor_tamu(...) __riscv_vxor_mu(__VA_ARGS__)
 #define vnot_tu(...) __riscv_vnot_tu(__VA_ARGS__)
 #define vnot_ta(...) __riscv_vnot(__VA_ARGS__)
-// masked functions
 #define vnot_tuma(...) __riscv_vnot_tum(__VA_ARGS__)
-// masked functions
 #define vnot_tumu(...) __riscv_vnot_tumu(__VA_ARGS__)
-// masked functions
 #define vnot_tama(...) __riscv_vnot(__VA_ARGS__)
-// masked functions
 #define vnot_tamu(...) __riscv_vnot_mu(__VA_ARGS__)
 #define vsll_tu(...) __riscv_vsll_tu(__VA_ARGS__)
 #define vsra_tu(...) __riscv_vsra_tu(__VA_ARGS__)
@@ -91579,19 +91238,15 @@
 #define vsll_ta(...) __riscv_vsll(__VA_ARGS__)
 #define vsra_ta(...) __riscv_vsra(__VA_ARGS__)
 #define vsrl_ta(...) __riscv_vsrl(__VA_ARGS__)
-// masked functions
 #define vsll_tuma(...) __riscv_vsll_tum(__VA_ARGS__)
 #define vsra_tuma(...) __riscv_vsra_tum(__VA_ARGS__)
 #define vsrl_tuma(...) __riscv_vsrl_tum(__VA_ARGS__)
-// masked functions
 #define vsll_tumu(...) __riscv_vsll_tumu(__VA_ARGS__)
 #define vsra_tumu(...) __riscv_vsra_tumu(__VA_ARGS__)
 #define vsrl_tumu(...) __riscv_vsrl_tumu(__VA_ARGS__)
-// masked functions
 #define vsll_tama(...) __riscv_vsll(__VA_ARGS__)
 #define vsra_tama(...) __riscv_vsra(__VA_ARGS__)
 #define vsrl_tama(...) __riscv_vsrl(__VA_ARGS__)
-// masked functions
 #define vsll_tamu(...) __riscv_vsll_mu(__VA_ARGS__)
 #define vsra_tamu(...) __riscv_vsra_mu(__VA_ARGS__)
 #define vsrl_tamu(...) __riscv_vsrl_mu(__VA_ARGS__)
@@ -91599,19 +91254,14 @@
 #define vnsrl_tu(...) __riscv_vnsrl_tu(__VA_ARGS__)
 #define vnsra_ta(...) __riscv_vnsra(__VA_ARGS__)
 #define vnsrl_ta(...) __riscv_vnsrl(__VA_ARGS__)
-// masked functions
 #define vnsra_tuma(...) __riscv_vnsra_tum(__VA_ARGS__)
 #define vnsrl_tuma(...) __riscv_vnsrl_tum(__VA_ARGS__)
-// masked functions
 #define vnsra_tumu(...) __riscv_vnsra_tumu(__VA_ARGS__)
 #define vnsrl_tumu(...) __riscv_vnsrl_tumu(__VA_ARGS__)
-// masked functions
 #define vnsra_tama(...) __riscv_vnsra(__VA_ARGS__)
 #define vnsrl_tama(...) __riscv_vnsrl(__VA_ARGS__)
-// masked functions
 #define vnsra_tamu(...) __riscv_vnsra_mu(__VA_ARGS__)
 #define vnsrl_tamu(...) __riscv_vnsrl_mu(__VA_ARGS__)
-// masked functions
 #define vmseq_ma(...) __riscv_vmseq(__VA_ARGS__)
 #define vmsne_ma(...) __riscv_vmsne(__VA_ARGS__)
 #define vmslt_ma(...) __riscv_vmslt(__VA_ARGS__)
@@ -91622,7 +91272,6 @@
 #define vmsleu_ma(...) __riscv_vmsleu(__VA_ARGS__)
 #define vmsgtu_ma(...) __riscv_vmsgtu(__VA_ARGS__)
 #define vmsgeu_ma(...) __riscv_vmsgeu(__VA_ARGS__)
-// masked functions
 #define vmseq_mu(...) __riscv_vmseq_mu(__VA_ARGS__)
 #define vmsne_mu(...) __riscv_vmsne_mu(__VA_ARGS__)
 #define vmslt_mu(...) __riscv_vmslt_mu(__VA_ARGS__)
@@ -91641,22 +91290,18 @@
 #define vmax_ta(...) __riscv_vmax(__VA_ARGS__)
 #define vminu_ta(...) __riscv_vminu(__VA_ARGS__)
 #define vmaxu_ta(...) __riscv_vmaxu(__VA_ARGS__)
-// masked functions
 #define vmin_tuma(...) __riscv_vmin_tum(__VA_ARGS__)
 #define vmax_tuma(...) __riscv_vmax_tum(__VA_ARGS__)
 #define vminu_tuma(...) __riscv_vminu_tum(__VA_ARGS__)
 #define vmaxu_tuma(...) __riscv_vmaxu_tum(__VA_ARGS__)
-// masked functions
 #define vmin_tumu(...) __riscv_vmin_tumu(__VA_ARGS__)
 #define vmax_tumu(...) __riscv_vmax_tumu(__VA_ARGS__)
 #define vminu_tumu(...) __riscv_vminu_tumu(__VA_ARGS__)
 #define vmaxu_tumu(...) __riscv_vmaxu_tumu(__VA_ARGS__)
-// masked functions
 #define vmin_tama(...) __riscv_vmin(__VA_ARGS__)
 #define vmax_tama(...) __riscv_vmax(__VA_ARGS__)
 #define vminu_tama(...) __riscv_vminu(__VA_ARGS__)
 #define vmaxu_tama(...) __riscv_vmaxu(__VA_ARGS__)
-// masked functions
 #define vmin_tamu(...) __riscv_vmin_mu(__VA_ARGS__)
 #define vmax_tamu(...) __riscv_vmax_mu(__VA_ARGS__)
 #define vminu_tamu(...) __riscv_vminu_mu(__VA_ARGS__)
@@ -91669,22 +91314,18 @@
 #define vmulh_ta(...) __riscv_vmulh(__VA_ARGS__)
 #define vmulhsu_ta(...) __riscv_vmulhsu(__VA_ARGS__)
 #define vmulhu_ta(...) __riscv_vmulhu(__VA_ARGS__)
-// masked functions
 #define vmul_tuma(...) __riscv_vmul_tum(__VA_ARGS__)
 #define vmulh_tuma(...) __riscv_vmulh_tum(__VA_ARGS__)
 #define vmulhsu_tuma(...) __riscv_vmulhsu_tum(__VA_ARGS__)
 #define vmulhu_tuma(...) __riscv_vmulhu_tum(__VA_ARGS__)
-// masked functions
 #define vmul_tumu(...) __riscv_vmul_tumu(__VA_ARGS__)
 #define vmulh_tumu(...) __riscv_vmulh_tumu(__VA_ARGS__)
 #define vmulhsu_tumu(...) __riscv_vmulhsu_tumu(__VA_ARGS__)
 #define vmulhu_tumu(...) __riscv_vmulhu_tumu(__VA_ARGS__)
-// masked functions
 #define vmul_tama(...) __riscv_vmul(__VA_ARGS__)
 #define vmulh_tama(...) __riscv_vmulh(__VA_ARGS__)
 #define vmulhsu_tama(...) __riscv_vmulhsu(__VA_ARGS__)
 #define vmulhu_tama(...) __riscv_vmulhu(__VA_ARGS__)
-// masked functions
 #define vmul_tamu(...) __riscv_vmul_mu(__VA_ARGS__)
 #define vmulh_tamu(...) __riscv_vmulh_mu(__VA_ARGS__)
 #define vmulhsu_tamu(...) __riscv_vmulhsu_mu(__VA_ARGS__)
@@ -91697,22 +91338,18 @@
 #define vrem_ta(...) __riscv_vrem(__VA_ARGS__)
 #define vdivu_ta(...) __riscv_vdivu(__VA_ARGS__)
 #define vremu_ta(...) __riscv_vremu(__VA_ARGS__)
-// masked functions
 #define vdiv_tuma(...) __riscv_vdiv_tum(__VA_ARGS__)
 #define vrem_tuma(...) __riscv_vrem_tum(__VA_ARGS__)
 #define vdivu_tuma(...) __riscv_vdivu_tum(__VA_ARGS__)
 #define vremu_tuma(...) __riscv_vremu_tum(__VA_ARGS__)
-// masked functions
 #define vdiv_tumu(...) __riscv_vdiv_tumu(__VA_ARGS__)
 #define vrem_tumu(...) __riscv_vrem_tumu(__VA_ARGS__)
 #define vdivu_tumu(...) __riscv_vdivu_tumu(__VA_ARGS__)
 #define vremu_tumu(...) __riscv_vremu_tumu(__VA_ARGS__)
-// masked functions
 #define vdiv_tama(...) __riscv_vdiv(__VA_ARGS__)
 #define vrem_tama(...) __riscv_vrem(__VA_ARGS__)
 #define vdivu_tama(...) __riscv_vdivu(__VA_ARGS__)
 #define vremu_tama(...) __riscv_vremu(__VA_ARGS__)
-// masked functions
 #define vdiv_tamu(...) __riscv_vdiv_mu(__VA_ARGS__)
 #define vrem_tamu(...) __riscv_vrem_mu(__VA_ARGS__)
 #define vdivu_tamu(...) __riscv_vdivu_mu(__VA_ARGS__)
@@ -91723,19 +91360,15 @@
 #define vwmul_ta(...) __riscv_vwmul(__VA_ARGS__)
 #define vwmulsu_ta(...) __riscv_vwmulsu(__VA_ARGS__)
 #define vwmulu_ta(...) __riscv_vwmulu(__VA_ARGS__)
-// masked functions
 #define vwmul_tuma(...) __riscv_vwmul_tum(__VA_ARGS__)
 #define vwmulsu_tuma(...) __riscv_vwmulsu_tum(__VA_ARGS__)
 #define vwmulu_tuma(...) __riscv_vwmulu_tum(__VA_ARGS__)
-// masked functions
 #define vwmul_tumu(...) __riscv_vwmul_tumu(__VA_ARGS__)
 #define vwmulsu_tumu(...) __riscv_vwmulsu_tumu(__VA_ARGS__)
 #define vwmulu_tumu(...) __riscv_vwmulu_tumu(__VA_ARGS__)
-// masked functions
 #define vwmul_tama(...) __riscv_vwmul(__VA_ARGS__)
 #define vwmulsu_tama(...) __riscv_vwmulsu(__VA_ARGS__)
 #define vwmulu_tama(...) __riscv_vwmulu(__VA_ARGS__)
-// masked functions
 #define vwmul_tamu(...) __riscv_vwmul_mu(__VA_ARGS__)
 #define vwmulsu_tamu(...) __riscv_vwmulsu_mu(__VA_ARGS__)
 #define vwmulu_tamu(...) __riscv_vwmulu_mu(__VA_ARGS__)
@@ -91747,22 +91380,18 @@
 #define vnmsac_ta(...) __riscv_vnmsac(__VA_ARGS__)
 #define vmadd_ta(...) __riscv_vmadd(__VA_ARGS__)
 #define vnmsub_ta(...) __riscv_vnmsub(__VA_ARGS__)
-// masked functions
 #define vmacc_tuma(...) __riscv_vmacc_tum(__VA_ARGS__)
 #define vnmsac_tuma(...) __riscv_vnmsac_tum(__VA_ARGS__)
 #define vmadd_tuma(...) __riscv_vmadd_tum(__VA_ARGS__)
 #define vnmsub_tuma(...) __riscv_vnmsub_tum(__VA_ARGS__)
-// masked functions
 #define vmacc_tumu(...) __riscv_vmacc_tumu(__VA_ARGS__)
 #define vnmsac_tumu(...) __riscv_vnmsac_tumu(__VA_ARGS__)
 #define vmadd_tumu(...) __riscv_vmadd_tumu(__VA_ARGS__)
 #define vnmsub_tumu(...) __riscv_vnmsub_tumu(__VA_ARGS__)
-// masked functions
 #define vmacc_tama(...) __riscv_vmacc(__VA_ARGS__)
 #define vnmsac_tama(...) __riscv_vnmsac(__VA_ARGS__)
 #define vmadd_tama(...) __riscv_vmadd(__VA_ARGS__)
 #define vnmsub_tama(...) __riscv_vnmsub(__VA_ARGS__)
-// masked functions
 #define vmacc_tamu(...) __riscv_vmacc_mu(__VA_ARGS__)
 #define vnmsac_tamu(...) __riscv_vnmsac_mu(__VA_ARGS__)
 #define vmadd_tamu(...) __riscv_vmadd_mu(__VA_ARGS__)
@@ -91775,22 +91404,18 @@
 #define vwmaccsu_ta(...) __riscv_vwmaccsu(__VA_ARGS__)
 #define vwmaccus_ta(...) __riscv_vwmaccus(__VA_ARGS__)
 #define vwmaccu_ta(...) __riscv_vwmaccu(__VA_ARGS__)
-// masked functions
 #define vwmacc_tuma(...) __riscv_vwmacc_tum(__VA_ARGS__)
 #define vwmaccsu_tuma(...) __riscv_vwmaccsu_tum(__VA_ARGS__)
 #define vwmaccus_tuma(...) __riscv_vwmaccus_tum(__VA_ARGS__)
 #define vwmaccu_tuma(...) __riscv_vwmaccu_tum(__VA_ARGS__)
-// masked functions
 #define vwmacc_tumu(...) __riscv_vwmacc_tumu(__VA_ARGS__)
 #define vwmaccsu_tumu(...) __riscv_vwmaccsu_tumu(__VA_ARGS__)
 #define vwmaccus_tumu(...) __riscv_vwmaccus_tumu(__VA_ARGS__)
 #define vwmaccu_tumu(...) __riscv_vwmaccu_tumu(__VA_ARGS__)
-// masked functions
 #define vwmacc_tama(...) __riscv_vwmacc(__VA_ARGS__)
 #define vwmaccsu_tama(...) __riscv_vwmaccsu(__VA_ARGS__)
 #define vwmaccus_tama(...) __riscv_vwmaccus(__VA_ARGS__)
 #define vwmaccu_tama(...) __riscv_vwmaccu(__VA_ARGS__)
-// masked functions
 #define vwmacc_tamu(...) __riscv_vwmacc_mu(__VA_ARGS__)
 #define vwmaccsu_tamu(...) __riscv_vwmaccsu_mu(__VA_ARGS__)
 #define vwmaccus_tamu(...) __riscv_vwmaccus_mu(__VA_ARGS__)
@@ -91808,22 +91433,18 @@
 #define vssub_ta(...) __riscv_vssub(__VA_ARGS__)
 #define vsaddu_ta(...) __riscv_vsaddu(__VA_ARGS__)
 #define vssubu_ta(...) __riscv_vssubu(__VA_ARGS__)
-// masked functions
 #define vsadd_tuma(...) __riscv_vsadd_tum(__VA_ARGS__)
 #define vssub_tuma(...) __riscv_vssub_tum(__VA_ARGS__)
 #define vsaddu_tuma(...) __riscv_vsaddu_tum(__VA_ARGS__)
 #define vssubu_tuma(...) __riscv_vssubu_tum(__VA_ARGS__)
-// masked functions
 #define vsadd_tumu(...) __riscv_vsadd_tumu(__VA_ARGS__)
 #define vssub_tumu(...) __riscv_vssub_tumu(__VA_ARGS__)
 #define vsaddu_tumu(...) __riscv_vsaddu_tumu(__VA_ARGS__)
 #define vssubu_tumu(...) __riscv_vssubu_tumu(__VA_ARGS__)
-// masked functions
 #define vsadd_tama(...) __riscv_vsadd(__VA_ARGS__)
 #define vssub_tama(...) __riscv_vssub(__VA_ARGS__)
 #define vsaddu_tama(...) __riscv_vsaddu(__VA_ARGS__)
 #define vssubu_tama(...) __riscv_vssubu(__VA_ARGS__)
-// masked functions
 #define vsadd_tamu(...) __riscv_vsadd_mu(__VA_ARGS__)
 #define vssub_tamu(...) __riscv_vssub_mu(__VA_ARGS__)
 #define vsaddu_tamu(...) __riscv_vsaddu_mu(__VA_ARGS__)
@@ -91836,66 +91457,50 @@
 #define vasub_ta(...) __riscv_vasub(__VA_ARGS__)
 #define vaaddu_ta(...) __riscv_vaaddu(__VA_ARGS__)
 #define vasubu_ta(...) __riscv_vasubu(__VA_ARGS__)
-// masked functions
 #define vaadd_tuma(...) __riscv_vaadd_tum(__VA_ARGS__)
 #define vasub_tuma(...) __riscv_vasub_tum(__VA_ARGS__)
 #define vaaddu_tuma(...) __riscv_vaaddu_tum(__VA_ARGS__)
 #define vasubu_tuma(...) __riscv_vasubu_tum(__VA_ARGS__)
-// masked functions
 #define vaadd_tumu(...) __riscv_vaadd_tumu(__VA_ARGS__)
 #define vasub_tumu(...) __riscv_vasub_tumu(__VA_ARGS__)
 #define vaaddu_tumu(...) __riscv_vaaddu_tumu(__VA_ARGS__)
 #define vasubu_tumu(...) __riscv_vasubu_tumu(__VA_ARGS__)
-// masked functions
 #define vaadd_tama(...) __riscv_vaadd(__VA_ARGS__)
 #define vasub_tama(...) __riscv_vasub(__VA_ARGS__)
 #define vaaddu_tama(...) __riscv_vaaddu(__VA_ARGS__)
 #define vasubu_tama(...) __riscv_vasubu(__VA_ARGS__)
-// masked functions
 #define vaadd_tamu(...) __riscv_vaadd_mu(__VA_ARGS__)
 #define vasub_tamu(...) __riscv_vasub_mu(__VA_ARGS__)
 #define vaaddu_tamu(...) __riscv_vaaddu_mu(__VA_ARGS__)
 #define vasubu_tamu(...) __riscv_vasubu_mu(__VA_ARGS__)
 #define vsmul_tu(...) __riscv_vsmul_tu(__VA_ARGS__)
 #define vsmul_ta(...) __riscv_vsmul(__VA_ARGS__)
-// masked functions
 #define vsmul_tuma(...) __riscv_vsmul_tum(__VA_ARGS__)
-// masked functions
 #define vsmul_tumu(...) __riscv_vsmul_tumu(__VA_ARGS__)
-// masked functions
 #define vsmul_tama(...) __riscv_vsmul(__VA_ARGS__)
-// masked functions
 #define vsmul_tamu(...) __riscv_vsmul_mu(__VA_ARGS__)
 #define vssra_tu(...) __riscv_vssra_tu(__VA_ARGS__)
 #define vssrl_tu(...) __riscv_vssrl_tu(__VA_ARGS__)
 #define vssra_ta(...) __riscv_vssra(__VA_ARGS__)
 #define vssrl_ta(...) __riscv_vssrl(__VA_ARGS__)
-// masked functions
 #define vssra_tuma(...) __riscv_vssra_tum(__VA_ARGS__)
 #define vssrl_tuma(...) __riscv_vssrl_tum(__VA_ARGS__)
-// masked functions
 #define vssra_tumu(...) __riscv_vssra_tumu(__VA_ARGS__)
 #define vssrl_tumu(...) __riscv_vssrl_tumu(__VA_ARGS__)
-// masked functions
 #define vssra_tama(...) __riscv_vssra(__VA_ARGS__)
 #define vssrl_tama(...) __riscv_vssrl(__VA_ARGS__)
-// masked functions
 #define vssra_tamu(...) __riscv_vssra_mu(__VA_ARGS__)
 #define vssrl_tamu(...) __riscv_vssrl_mu(__VA_ARGS__)
 #define vnclip_tu(...) __riscv_vnclip_tu(__VA_ARGS__)
 #define vnclipu_tu(...) __riscv_vnclipu_tu(__VA_ARGS__)
 #define vnclip_ta(...) __riscv_vnclip(__VA_ARGS__)
 #define vnclipu_ta(...) __riscv_vnclipu(__VA_ARGS__)
-// masked functions
 #define vnclip_tuma(...) __riscv_vnclip_tum(__VA_ARGS__)
 #define vnclipu_tuma(...) __riscv_vnclipu_tum(__VA_ARGS__)
-// masked functions
 #define vnclip_tumu(...) __riscv_vnclip_tumu(__VA_ARGS__)
 #define vnclipu_tumu(...) __riscv_vnclipu_tumu(__VA_ARGS__)
-// masked functions
 #define vnclip_tama(...) __riscv_vnclip(__VA_ARGS__)
 #define vnclipu_tama(...) __riscv_vnclipu(__VA_ARGS__)
-// masked functions
 #define vnclip_tamu(...) __riscv_vnclip_mu(__VA_ARGS__)
 #define vnclipu_tamu(...) __riscv_vnclipu_mu(__VA_ARGS__)
 #define vfadd_tu(...) __riscv_vfadd_tu(__VA_ARGS__)
@@ -91906,22 +91511,18 @@
 #define vfsub_ta(...) __riscv_vfsub(__VA_ARGS__)
 #define vfrsub_ta(...) __riscv_vfrsub(__VA_ARGS__)
 #define vfneg_ta(...) __riscv_vfneg(__VA_ARGS__)
-// masked functions
 #define vfadd_tuma(...) __riscv_vfadd_tum(__VA_ARGS__)
 #define vfsub_tuma(...) __riscv_vfsub_tum(__VA_ARGS__)
 #define vfrsub_tuma(...) __riscv_vfrsub_tum(__VA_ARGS__)
 #define vfneg_tuma(...) __riscv_vfneg_tum(__VA_ARGS__)
-// masked functions
 #define vfadd_tumu(...) __riscv_vfadd_tumu(__VA_ARGS__)
 #define vfsub_tumu(...) __riscv_vfsub_tumu(__VA_ARGS__)
 #define vfrsub_tumu(...) __riscv_vfrsub_tumu(__VA_ARGS__)
 #define vfneg_tumu(...) __riscv_vfneg_tumu(__VA_ARGS__)
-// masked functions
 #define vfadd_tama(...) __riscv_vfadd(__VA_ARGS__)
 #define vfsub_tama(...) __riscv_vfsub(__VA_ARGS__)
 #define vfrsub_tama(...) __riscv_vfrsub(__VA_ARGS__)
 #define vfneg_tama(...) __riscv_vfneg(__VA_ARGS__)
-// masked functions
 #define vfadd_tamu(...) __riscv_vfadd_mu(__VA_ARGS__)
 #define vfsub_tamu(...) __riscv_vfsub_mu(__VA_ARGS__)
 #define vfrsub_tamu(...) __riscv_vfrsub_mu(__VA_ARGS__)
@@ -91942,7 +91543,6 @@
 #define vfwsub_vf_ta(...) __riscv_vfwsub_vf(__VA_ARGS__)
 #define vfwsub_wv_ta(...) __riscv_vfwsub_wv(__VA_ARGS__)
 #define vfwsub_wf_ta(...) __riscv_vfwsub_wf(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_tuma(...) __riscv_vfwadd_vv_tum(__VA_ARGS__)
 #define vfwadd_vf_tuma(...) __riscv_vfwadd_vf_tum(__VA_ARGS__)
 #define vfwadd_wv_tuma(...) __riscv_vfwadd_wv_tum(__VA_ARGS__)
@@ -91951,7 +91551,6 @@
 #define vfwsub_vf_tuma(...) __riscv_vfwsub_vf_tum(__VA_ARGS__)
 #define vfwsub_wv_tuma(...) __riscv_vfwsub_wv_tum(__VA_ARGS__)
 #define vfwsub_wf_tuma(...) __riscv_vfwsub_wf_tum(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_tumu(...) __riscv_vfwadd_vv_tumu(__VA_ARGS__)
 #define vfwadd_vf_tumu(...) __riscv_vfwadd_vf_tumu(__VA_ARGS__)
 #define vfwadd_wv_tumu(...) __riscv_vfwadd_wv_tumu(__VA_ARGS__)
@@ -91960,7 +91559,6 @@
 #define vfwsub_vf_tumu(...) __riscv_vfwsub_vf_tumu(__VA_ARGS__)
 #define vfwsub_wv_tumu(...) __riscv_vfwsub_wv_tumu(__VA_ARGS__)
 #define vfwsub_wf_tumu(...) __riscv_vfwsub_wf_tumu(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_tama(...) __riscv_vfwadd_vv(__VA_ARGS__)
 #define vfwadd_vf_tama(...) __riscv_vfwadd_vf(__VA_ARGS__)
 #define vfwadd_wv_tama(...) __riscv_vfwadd_wv(__VA_ARGS__)
@@ -91969,7 +91567,6 @@
 #define vfwsub_vf_tama(...) __riscv_vfwsub_vf(__VA_ARGS__)
 #define vfwsub_wv_tama(...) __riscv_vfwsub_wv(__VA_ARGS__)
 #define vfwsub_wf_tama(...) __riscv_vfwsub_wf(__VA_ARGS__)
-// masked functions
 #define vfwadd_vv_tamu(...) __riscv_vfwadd_vv_mu(__VA_ARGS__)
 #define vfwadd_vf_tamu(...) __riscv_vfwadd_vf_mu(__VA_ARGS__)
 #define vfwadd_wv_tamu(...) __riscv_vfwadd_wv_mu(__VA_ARGS__)
@@ -91984,31 +91581,23 @@
 #define vfmul_ta(...) __riscv_vfmul(__VA_ARGS__)
 #define vfdiv_ta(...) __riscv_vfdiv(__VA_ARGS__)
 #define vfrdiv_ta(...) __riscv_vfrdiv(__VA_ARGS__)
-// masked functions
 #define vfmul_tuma(...) __riscv_vfmul_tum(__VA_ARGS__)
 #define vfdiv_tuma(...) __riscv_vfdiv_tum(__VA_ARGS__)
 #define vfrdiv_tuma(...) __riscv_vfrdiv_tum(__VA_ARGS__)
-// masked functions
 #define vfmul_tumu(...) __riscv_vfmul_tumu(__VA_ARGS__)
 #define vfdiv_tumu(...) __riscv_vfdiv_tumu(__VA_ARGS__)
 #define vfrdiv_tumu(...) __riscv_vfrdiv_tumu(__VA_ARGS__)
-// masked functions
 #define vfmul_tama(...) __riscv_vfmul(__VA_ARGS__)
 #define vfdiv_tama(...) __riscv_vfdiv(__VA_ARGS__)
 #define vfrdiv_tama(...) __riscv_vfrdiv(__VA_ARGS__)
-// masked functions
 #define vfmul_tamu(...) __riscv_vfmul_mu(__VA_ARGS__)
 #define vfdiv_tamu(...) __riscv_vfdiv_mu(__VA_ARGS__)
 #define vfrdiv_tamu(...) __riscv_vfrdiv_mu(__VA_ARGS__)
 #define vfwmul_tu(...) __riscv_vfwmul_tu(__VA_ARGS__)
 #define vfwmul_ta(...) __riscv_vfwmul(__VA_ARGS__)
-// masked functions
 #define vfwmul_tuma(...) __riscv_vfwmul_tum(__VA_ARGS__)
-// masked functions
 #define vfwmul_tumu(...) __riscv_vfwmul_tumu(__VA_ARGS__)
-// masked functions
 #define vfwmul_tama(...) __riscv_vfwmul(__VA_ARGS__)
-// masked functions
 #define vfwmul_tamu(...) __riscv_vfwmul_mu(__VA_ARGS__)
 #define vfmacc_tu(...) __riscv_vfmacc_tu(__VA_ARGS__)
 #define vfnmacc_tu(...) __riscv_vfnmacc_tu(__VA_ARGS__)
@@ -92026,7 +91615,6 @@
 #define vfnmadd_ta(...) __riscv_vfnmadd(__VA_ARGS__)
 #define vfmsub_ta(...) __riscv_vfmsub(__VA_ARGS__)
 #define vfnmsub_ta(...) __riscv_vfnmsub(__VA_ARGS__)
-// masked functions
 #define vfmacc_tuma(...) __riscv_vfmacc_tum(__VA_ARGS__)
 #define vfnmacc_tuma(...) __riscv_vfnmacc_tum(__VA_ARGS__)
 #define vfmsac_tuma(...) __riscv_vfmsac_tum(__VA_ARGS__)
@@ -92035,7 +91623,6 @@
 #define vfnmadd_tuma(...) __riscv_vfnmadd_tum(__VA_ARGS__)
 #define vfmsub_tuma(...) __riscv_vfmsub_tum(__VA_ARGS__)
 #define vfnmsub_tuma(...) __riscv_vfnmsub_tum(__VA_ARGS__)
-// masked functions
 #define vfmacc_tumu(...) __riscv_vfmacc_tumu(__VA_ARGS__)
 #define vfnmacc_tumu(...) __riscv_vfnmacc_tumu(__VA_ARGS__)
 #define vfmsac_tumu(...) __riscv_vfmsac_tumu(__VA_ARGS__)
@@ -92044,7 +91631,6 @@
 #define vfnmadd_tumu(...) __riscv_vfnmadd_tumu(__VA_ARGS__)
 #define vfmsub_tumu(...) __riscv_vfmsub_tumu(__VA_ARGS__)
 #define vfnmsub_tumu(...) __riscv_vfnmsub_tumu(__VA_ARGS__)
-// masked functions
 #define vfmacc_tama(...) __riscv_vfmacc(__VA_ARGS__)
 #define vfnmacc_tama(...) __riscv_vfnmacc(__VA_ARGS__)
 #define vfmsac_tama(...) __riscv_vfmsac(__VA_ARGS__)
@@ -92053,7 +91639,6 @@
 #define vfnmadd_tama(...) __riscv_vfnmadd(__VA_ARGS__)
 #define vfmsub_tama(...) __riscv_vfmsub(__VA_ARGS__)
 #define vfnmsub_tama(...) __riscv_vfnmsub(__VA_ARGS__)
-// masked functions
 #define vfmacc_tamu(...) __riscv_vfmacc_mu(__VA_ARGS__)
 #define vfnmacc_tamu(...) __riscv_vfnmacc_mu(__VA_ARGS__)
 #define vfmsac_tamu(...) __riscv_vfmsac_mu(__VA_ARGS__)
@@ -92070,70 +91655,50 @@
 #define vfwnmacc_ta(...) __riscv_vfwnmacc(__VA_ARGS__)
 #define vfwmsac_ta(...) __riscv_vfwmsac(__VA_ARGS__)
 #define vfwnmsac_ta(...) __riscv_vfwnmsac(__VA_ARGS__)
-// masked functions
 #define vfwmacc_tuma(...) __riscv_vfwmacc_tum(__VA_ARGS__)
 #define vfwnmacc_tuma(...) __riscv_vfwnmacc_tum(__VA_ARGS__)
 #define vfwmsac_tuma(...) __riscv_vfwmsac_tum(__VA_ARGS__)
 #define vfwnmsac_tuma(...) __riscv_vfwnmsac_tum(__VA_ARGS__)
-// masked functions
 #define vfwmacc_tumu(...) __riscv_vfwmacc_tumu(__VA_ARGS__)
 #define vfwnmacc_tumu(...) __riscv_vfwnmacc_tumu(__VA_ARGS__)
 #define vfwmsac_tumu(...) __riscv_vfwmsac_tumu(__VA_ARGS__)
 #define vfwnmsac_tumu(...) __riscv_vfwnmsac_tumu(__VA_ARGS__)
-// masked functions
 #define vfwmacc_tama(...) __riscv_vfwmacc(__VA_ARGS__)
 #define vfwnmacc_tama(...) __riscv_vfwnmacc(__VA_ARGS__)
 #define vfwmsac_tama(...) __riscv_vfwmsac(__VA_ARGS__)
 #define vfwnmsac_tama(...) __riscv_vfwnmsac(__VA_ARGS__)
-// masked functions
 #define vfwmacc_tamu(...) __riscv_vfwmacc_mu(__VA_ARGS__)
 #define vfwnmacc_tamu(...) __riscv_vfwnmacc_mu(__VA_ARGS__)
 #define vfwmsac_tamu(...) __riscv_vfwmsac_mu(__VA_ARGS__)
 #define vfwnmsac_tamu(...) __riscv_vfwnmsac_mu(__VA_ARGS__)
 #define vfsqrt_tu(...) __riscv_vfsqrt_tu(__VA_ARGS__)
 #define vfsqrt_ta(...) __riscv_vfsqrt(__VA_ARGS__)
-// masked functions
 #define vfsqrt_tuma(...) __riscv_vfsqrt_tum(__VA_ARGS__)
-// masked functions
 #define vfsqrt_tumu(...) __riscv_vfsqrt_tumu(__VA_ARGS__)
-// masked functions
 #define vfsqrt_tama(...) __riscv_vfsqrt(__VA_ARGS__)
-// masked functions
 #define vfsqrt_tamu(...) __riscv_vfsqrt_mu(__VA_ARGS__)
 #define vfrsqrt7_tu(...) __riscv_vfrsqrt7_tu(__VA_ARGS__)
 #define vfrsqrt7_ta(...) __riscv_vfrsqrt7(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_tuma(...) __riscv_vfrsqrt7_tum(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_tumu(...) __riscv_vfrsqrt7_tumu(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_tama(...) __riscv_vfrsqrt7(__VA_ARGS__)
-// masked functions
 #define vfrsqrt7_tamu(...) __riscv_vfrsqrt7_mu(__VA_ARGS__)
 #define vfrec7_tu(...) __riscv_vfrec7_tu(__VA_ARGS__)
 #define vfrec7_ta(...) __riscv_vfrec7(__VA_ARGS__)
-// masked functions
 #define vfrec7_tuma(...) __riscv_vfrec7_tum(__VA_ARGS__)
-// masked functions
 #define vfrec7_tumu(...) __riscv_vfrec7_tumu(__VA_ARGS__)
-// masked functions
 #define vfrec7_tama(...) __riscv_vfrec7(__VA_ARGS__)
-// masked functions
 #define vfrec7_tamu(...) __riscv_vfrec7_mu(__VA_ARGS__)
 #define vfmin_tu(...) __riscv_vfmin_tu(__VA_ARGS__)
 #define vfmax_tu(...) __riscv_vfmax_tu(__VA_ARGS__)
 #define vfmin_ta(...) __riscv_vfmin(__VA_ARGS__)
 #define vfmax_ta(...) __riscv_vfmax(__VA_ARGS__)
-// masked functions
 #define vfmin_tuma(...) __riscv_vfmin_tum(__VA_ARGS__)
 #define vfmax_tuma(...) __riscv_vfmax_tum(__VA_ARGS__)
-// masked functions
 #define vfmin_tumu(...) __riscv_vfmin_tumu(__VA_ARGS__)
 #define vfmax_tumu(...) __riscv_vfmax_tumu(__VA_ARGS__)
-// masked functions
 #define vfmin_tama(...) __riscv_vfmin(__VA_ARGS__)
 #define vfmax_tama(...) __riscv_vfmax(__VA_ARGS__)
-// masked functions
 #define vfmin_tamu(...) __riscv_vfmin_mu(__VA_ARGS__)
 #define vfmax_tamu(...) __riscv_vfmax_mu(__VA_ARGS__)
 #define vfsgnj_tu(...) __riscv_vfsgnj_tu(__VA_ARGS__)
@@ -92142,40 +91707,30 @@
 #define vfsgnj_ta(...) __riscv_vfsgnj(__VA_ARGS__)
 #define vfsgnjn_ta(...) __riscv_vfsgnjn(__VA_ARGS__)
 #define vfsgnjx_ta(...) __riscv_vfsgnjx(__VA_ARGS__)
-// masked functions
 #define vfsgnj_tuma(...) __riscv_vfsgnj_tum(__VA_ARGS__)
 #define vfsgnjn_tuma(...) __riscv_vfsgnjn_tum(__VA_ARGS__)
 #define vfsgnjx_tuma(...) __riscv_vfsgnjx_tum(__VA_ARGS__)
-// masked functions
 #define vfsgnj_tumu(...) __riscv_vfsgnj_tumu(__VA_ARGS__)
 #define vfsgnjn_tumu(...) __riscv_vfsgnjn_tumu(__VA_ARGS__)
 #define vfsgnjx_tumu(...) __riscv_vfsgnjx_tumu(__VA_ARGS__)
-// masked functions
 #define vfsgnj_tama(...) __riscv_vfsgnj(__VA_ARGS__)
 #define vfsgnjn_tama(...) __riscv_vfsgnjn(__VA_ARGS__)
 #define vfsgnjx_tama(...) __riscv_vfsgnjx(__VA_ARGS__)
-// masked functions
 #define vfsgnj_tamu(...) __riscv_vfsgnj_mu(__VA_ARGS__)
 #define vfsgnjn_tamu(...) __riscv_vfsgnjn_mu(__VA_ARGS__)
 #define vfsgnjx_tamu(...) __riscv_vfsgnjx_mu(__VA_ARGS__)
 #define vfabs_tu(...) __riscv_vfabs_tu(__VA_ARGS__)
 #define vfabs_ta(...) __riscv_vfabs(__VA_ARGS__)
-// masked functions
 #define vfabs_tuma(...) __riscv_vfabs_tum(__VA_ARGS__)
-// masked functions
 #define vfabs_tumu(...) __riscv_vfabs_tumu(__VA_ARGS__)
-// masked functions
 #define vfabs_tama(...) __riscv_vfabs(__VA_ARGS__)
-// masked functions
 #define vfabs_tamu(...) __riscv_vfabs_mu(__VA_ARGS__)
-// masked functions
 #define vmfeq_ma(...) __riscv_vmfeq(__VA_ARGS__)
 #define vmfne_ma(...) __riscv_vmfne(__VA_ARGS__)
 #define vmflt_ma(...) __riscv_vmflt(__VA_ARGS__)
 #define vmfle_ma(...) __riscv_vmfle(__VA_ARGS__)
 #define vmfgt_ma(...) __riscv_vmfgt(__VA_ARGS__)
 #define vmfge_ma(...) __riscv_vmfge(__VA_ARGS__)
-// masked functions
 #define vmfeq_mu(...) __riscv_vmfeq_mu(__VA_ARGS__)
 #define vmfne_mu(...) __riscv_vmfne_mu(__VA_ARGS__)
 #define vmflt_mu(...) __riscv_vmflt_mu(__VA_ARGS__)
@@ -92184,13 +91739,9 @@
 #define vmfge_mu(...) __riscv_vmfge_mu(__VA_ARGS__)
 #define vfclass_tu(...) __riscv_vfclass_tu(__VA_ARGS__)
 #define vfclass_ta(...) __riscv_vfclass(__VA_ARGS__)
-// masked functions
 #define vfclass_tuma(...) __riscv_vfclass_tum(__VA_ARGS__)
-// masked functions
 #define vfclass_tumu(...) __riscv_vfclass_tumu(__VA_ARGS__)
-// masked functions
 #define vfclass_tama(...) __riscv_vfclass(__VA_ARGS__)
-// masked functions
 #define vfclass_tamu(...) __riscv_vfclass_mu(__VA_ARGS__)
 #define vfmerge_tu(mask, maskedoff, op1, op2, vl)                              \
   __riscv_vfmerge_tu((maskedoff), (op1), (op2), (mask), (vl))
@@ -92207,25 +91758,21 @@
 #define vfcvt_xu_ta(...) __riscv_vfcvt_xu(__VA_ARGS__)
 #define vfcvt_rtz_xu_ta(...) __riscv_vfcvt_rtz_xu(__VA_ARGS__)
 #define vfcvt_f_ta(...) __riscv_vfcvt_f(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_tuma(...) __riscv_vfcvt_x_tum(__VA_ARGS__)
 #define vfcvt_rtz_x_tuma(...) __riscv_vfcvt_rtz_x_tum(__VA_ARGS__)
 #define vfcvt_xu_tuma(...) __riscv_vfcvt_xu_tum(__VA_ARGS__)
 #define vfcvt_rtz_xu_tuma(...) __riscv_vfcvt_rtz_xu_tum(__VA_ARGS__)
 #define vfcvt_f_tuma(...) __riscv_vfcvt_f_tum(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_tumu(...) __riscv_vfcvt_x_tumu(__VA_ARGS__)
 #define vfcvt_rtz_x_tumu(...) __riscv_vfcvt_rtz_x_tumu(__VA_ARGS__)
 #define vfcvt_xu_tumu(...) __riscv_vfcvt_xu_tumu(__VA_ARGS__)
 #define vfcvt_rtz_xu_tumu(...) __riscv_vfcvt_rtz_xu_tumu(__VA_ARGS__)
 #define vfcvt_f_tumu(...) __riscv_vfcvt_f_tumu(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_tama(...) __riscv_vfcvt_x(__VA_ARGS__)
 #define vfcvt_rtz_x_tama(...) __riscv_vfcvt_rtz_x(__VA_ARGS__)
 #define vfcvt_xu_tama(...) __riscv_vfcvt_xu(__VA_ARGS__)
 #define vfcvt_rtz_xu_tama(...) __riscv_vfcvt_rtz_xu(__VA_ARGS__)
 #define vfcvt_f_tama(...) __riscv_vfcvt_f(__VA_ARGS__)
-// masked functions
 #define vfcvt_x_tamu(...) __riscv_vfcvt_x_mu(__VA_ARGS__)
 #define vfcvt_rtz_x_tamu(...) __riscv_vfcvt_rtz_x_mu(__VA_ARGS__)
 #define vfcvt_xu_tamu(...) __riscv_vfcvt_xu_mu(__VA_ARGS__)
@@ -92245,7 +91792,6 @@
 #define vfwcvt_rtz_x_ta(...) __riscv_vfwcvt_rtz_x(__VA_ARGS__)
 #define vfwcvt_xu_ta(...) __riscv_vfwcvt_xu(__VA_ARGS__)
 #define vfwcvt_rtz_xu_ta(...) __riscv_vfwcvt_rtz_xu(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_tuma(...) __riscv_vwcvt_x_tum(__VA_ARGS__)
 #define vwcvtu_x_tuma(...) __riscv_vwcvtu_x_tum(__VA_ARGS__)
 #define vfwcvt_f_tuma(...) __riscv_vfwcvt_f_tum(__VA_ARGS__)
@@ -92253,7 +91799,6 @@
 #define vfwcvt_rtz_x_tuma(...) __riscv_vfwcvt_rtz_x_tum(__VA_ARGS__)
 #define vfwcvt_xu_tuma(...) __riscv_vfwcvt_xu_tum(__VA_ARGS__)
 #define vfwcvt_rtz_xu_tuma(...) __riscv_vfwcvt_rtz_xu_tum(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_tumu(...) __riscv_vwcvt_x_tumu(__VA_ARGS__)
 #define vwcvtu_x_tumu(...) __riscv_vwcvtu_x_tumu(__VA_ARGS__)
 #define vfwcvt_f_tumu(...) __riscv_vfwcvt_f_tumu(__VA_ARGS__)
@@ -92261,7 +91806,6 @@
 #define vfwcvt_rtz_x_tumu(...) __riscv_vfwcvt_rtz_x_tumu(__VA_ARGS__)
 #define vfwcvt_xu_tumu(...) __riscv_vfwcvt_xu_tumu(__VA_ARGS__)
 #define vfwcvt_rtz_xu_tumu(...) __riscv_vfwcvt_rtz_xu_tumu(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_tama(...) __riscv_vwcvt_x(__VA_ARGS__)
 #define vwcvtu_x_tama(...) __riscv_vwcvtu_x(__VA_ARGS__)
 #define vfwcvt_f_tama(...) __riscv_vfwcvt_f(__VA_ARGS__)
@@ -92269,7 +91813,6 @@
 #define vfwcvt_rtz_x_tama(...) __riscv_vfwcvt_rtz_x(__VA_ARGS__)
 #define vfwcvt_xu_tama(...) __riscv_vfwcvt_xu(__VA_ARGS__)
 #define vfwcvt_rtz_xu_tama(...) __riscv_vfwcvt_rtz_xu(__VA_ARGS__)
-// masked functions
 #define vwcvt_x_tamu(...) __riscv_vwcvt_x_mu(__VA_ARGS__)
 #define vwcvtu_x_tamu(...) __riscv_vwcvtu_x_mu(__VA_ARGS__)
 #define vfwcvt_f_tamu(...) __riscv_vfwcvt_f_mu(__VA_ARGS__)
@@ -92291,7 +91834,6 @@
 #define vfncvt_rtz_xu_ta(...) __riscv_vfncvt_rtz_xu(__VA_ARGS__)
 #define vfncvt_f_ta(...) __riscv_vfncvt_f(__VA_ARGS__)
 #define vfncvt_rod_f_ta(...) __riscv_vfncvt_rod_f(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_tuma(...) __riscv_vfncvt_x_tum(__VA_ARGS__)
 #define vfncvt_rtz_x_tuma(...) __riscv_vfncvt_rtz_x_tum(__VA_ARGS__)
 #define vncvt_x_tuma(...) __riscv_vncvt_x_tum(__VA_ARGS__)
@@ -92299,7 +91841,6 @@
 #define vfncvt_rtz_xu_tuma(...) __riscv_vfncvt_rtz_xu_tum(__VA_ARGS__)
 #define vfncvt_f_tuma(...) __riscv_vfncvt_f_tum(__VA_ARGS__)
 #define vfncvt_rod_f_tuma(...) __riscv_vfncvt_rod_f_tum(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_tumu(...) __riscv_vfncvt_x_tumu(__VA_ARGS__)
 #define vfncvt_rtz_x_tumu(...) __riscv_vfncvt_rtz_x_tumu(__VA_ARGS__)
 #define vncvt_x_tumu(...) __riscv_vncvt_x_tumu(__VA_ARGS__)
@@ -92307,7 +91848,6 @@
 #define vfncvt_rtz_xu_tumu(...) __riscv_vfncvt_rtz_xu_tumu(__VA_ARGS__)
 #define vfncvt_f_tumu(...) __riscv_vfncvt_f_tumu(__VA_ARGS__)
 #define vfncvt_rod_f_tumu(...) __riscv_vfncvt_rod_f_tumu(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_tama(...) __riscv_vfncvt_x(__VA_ARGS__)
 #define vfncvt_rtz_x_tama(...) __riscv_vfncvt_rtz_x(__VA_ARGS__)
 #define vncvt_x_tama(...) __riscv_vncvt_x(__VA_ARGS__)
@@ -92315,7 +91855,6 @@
 #define vfncvt_rtz_xu_tama(...) __riscv_vfncvt_rtz_xu(__VA_ARGS__)
 #define vfncvt_f_tama(...) __riscv_vfncvt_f(__VA_ARGS__)
 #define vfncvt_rod_f_tama(...) __riscv_vfncvt_rod_f(__VA_ARGS__)
-// masked functions
 #define vfncvt_x_tamu(...) __riscv_vfncvt_x_mu(__VA_ARGS__)
 #define vfncvt_rtz_x_tamu(...) __riscv_vfncvt_rtz_x_mu(__VA_ARGS__)
 #define vncvt_x_tamu(...) __riscv_vncvt_x_mu(__VA_ARGS__)
@@ -92339,7 +91878,6 @@
 #define vredxor_ta(...) __riscv_vredxor(__VA_ARGS__)
 #define vredmaxu_ta(...) __riscv_vredmaxu(__VA_ARGS__)
 #define vredminu_ta(...) __riscv_vredminu(__VA_ARGS__)
-// masked functions
 #define vredsum_tum(...) __riscv_vredsum_tum(__VA_ARGS__)
 #define vredmax_tum(...) __riscv_vredmax_tum(__VA_ARGS__)
 #define vredmin_tum(...) __riscv_vredmin_tum(__VA_ARGS__)
@@ -92348,7 +91886,6 @@
 #define vredxor_tum(...) __riscv_vredxor_tum(__VA_ARGS__)
 #define vredmaxu_tum(...) __riscv_vredmaxu_tum(__VA_ARGS__)
 #define vredminu_tum(...) __riscv_vredminu_tum(__VA_ARGS__)
-// masked functions
 #define vredsum_tam(...) __riscv_vredsum(__VA_ARGS__)
 #define vredmax_tam(...) __riscv_vredmax(__VA_ARGS__)
 #define vredmin_tam(...) __riscv_vredmin(__VA_ARGS__)
@@ -92361,10 +91898,8 @@
 #define vwredsumu_tu(...) __riscv_vwredsumu_tu(__VA_ARGS__)
 #define vwredsum_ta(...) __riscv_vwredsum(__VA_ARGS__)
 #define vwredsumu_ta(...) __riscv_vwredsumu(__VA_ARGS__)
-// masked functions
 #define vwredsum_tum(...) __riscv_vwredsum_tum(__VA_ARGS__)
 #define vwredsumu_tum(...) __riscv_vwredsumu_tum(__VA_ARGS__)
-// masked functions
 #define vwredsum_tam(...) __riscv_vwredsum(__VA_ARGS__)
 #define vwredsumu_tam(...) __riscv_vwredsumu(__VA_ARGS__)
 #define vfredosum_tu(...) __riscv_vfredosum_tu(__VA_ARGS__)
@@ -92375,12 +91910,10 @@
 #define vfredusum_ta(...) __riscv_vfredusum(__VA_ARGS__)
 #define vfredmax_ta(...) __riscv_vfredmax(__VA_ARGS__)
 #define vfredmin_ta(...) __riscv_vfredmin(__VA_ARGS__)
-// masked functions
 #define vfredosum_tum(...) __riscv_vfredosum_tum(__VA_ARGS__)
 #define vfredusum_tum(...) __riscv_vfredusum_tum(__VA_ARGS__)
 #define vfredmax_tum(...) __riscv_vfredmax_tum(__VA_ARGS__)
 #define vfredmin_tum(...) __riscv_vfredmin_tum(__VA_ARGS__)
-// masked functions
 #define vfredosum_tam(...) __riscv_vfredosum(__VA_ARGS__)
 #define vfredusum_tam(...) __riscv_vfredusum(__VA_ARGS__)
 #define vfredmax_tam(...) __riscv_vfredmax(__VA_ARGS__)
@@ -92389,41 +91922,25 @@
 #define vfwredusum_tu(...) __riscv_vfwredusum_tu(__VA_ARGS__)
 #define vfwredosum_ta(...) __riscv_vfwredosum(__VA_ARGS__)
 #define vfwredusum_ta(...) __riscv_vfwredusum(__VA_ARGS__)
-// masked functions
 #define vfwredosum_tum(...) __riscv_vfwredosum_tum(__VA_ARGS__)
 #define vfwredusum_tum(...) __riscv_vfwredusum_tum(__VA_ARGS__)
-// masked functions
 #define vfwredosum_tam(...) __riscv_vfwredosum(__VA_ARGS__)
 #define vfwredusum_tam(...) __riscv_vfwredusum(__VA_ARGS__)
-// masked functions
 #define vmsbf_ma(...) __riscv_vmsbf(__VA_ARGS__)
-// masked functions
 #define vmsbf_mu(...) __riscv_vmsbf_mu(__VA_ARGS__)
-// masked functions
 #define vmsif_ma(...) __riscv_vmsif(__VA_ARGS__)
-// masked functions
 #define vmsif_mu(...) __riscv_vmsif_mu(__VA_ARGS__)
-// masked functions
 #define vmsof_ma(...) __riscv_vmsof(__VA_ARGS__)
-// masked functions
 #define vmsof_mu(...) __riscv_vmsof_mu(__VA_ARGS__)
 #define viota_tu(...) __riscv_viota_tu(__VA_ARGS__)
-// masked functions
 #define viota_tuma(...) __riscv_viota_tum(__VA_ARGS__)
-// masked functions
 #define viota_tumu(...) __riscv_viota_tumu(__VA_ARGS__)
-// masked functions
 #define viota_tama(...) __riscv_viota(__VA_ARGS__)
-// masked functions
 #define viota_tamu(...) __riscv_viota_mu(__VA_ARGS__)
 #define vid_tu(...) __riscv_vid_tu(__VA_ARGS__)
-// masked functions
 #define vid_tuma(...) __riscv_vid_tum(__VA_ARGS__)
-// masked functions
 #define vid_tumu(...) __riscv_vid_tumu(__VA_ARGS__)
-// masked functions
 #define vid_tama(...) __riscv_vid(__VA_ARGS__)
-// masked functions
 #define vid_tamu(...) __riscv_vid_mu(__VA_ARGS__)
 #define vfmv_s_tu(...) __riscv_vfmv_s_tu(__VA_ARGS__)
 #define vmv_s_tu(...) __riscv_vmv_s_tu(__VA_ARGS__)
@@ -92431,23 +91948,15 @@
 #define vmv_s_ta(...) __riscv_vmv_s(__VA_ARGS__)
 #define vslideup_tu(...) __riscv_vslideup_tu(__VA_ARGS__)
 #define vslideup_ta(...) __riscv_vslideup(__VA_ARGS__)
-// masked functions
 #define vslideup_tuma(...) __riscv_vslideup_tum(__VA_ARGS__)
-// masked functions
 #define vslideup_tumu(...) __riscv_vslideup_tumu(__VA_ARGS__)
-// masked functions
 #define vslideup_tama(...) __riscv_vslideup(__VA_ARGS__)
-// masked functions
 #define vslideup_tamu(...) __riscv_vslideup_mu(__VA_ARGS__)
 #define vslidedown_tu(...) __riscv_vslidedown_tu(__VA_ARGS__)
 #define vslidedown_ta(...) __riscv_vslidedown(__VA_ARGS__)
-// masked functions
 #define vslidedown_tuma(...) __riscv_vslidedown_tum(__VA_ARGS__)
-// masked functions
 #define vslidedown_tumu(...) __riscv_vslidedown_tumu(__VA_ARGS__)
-// masked functions
 #define vslidedown_tama(...) __riscv_vslidedown(__VA_ARGS__)
-// masked functions
 #define vslidedown_tamu(...) __riscv_vslidedown_mu(__VA_ARGS__)
 #define vfslide1up_tu(...) __riscv_vfslide1up_tu(__VA_ARGS__)
 #define vfslide1down_tu(...) __riscv_vfslide1down_tu(__VA_ARGS__)
@@ -92457,22 +91966,18 @@
 #define vfslide1down_ta(...) __riscv_vfslide1down(__VA_ARGS__)
 #define vslide1up_ta(...) __riscv_vslide1up(__VA_ARGS__)
 #define vslide1down_ta(...) __riscv_vslide1down(__VA_ARGS__)
-// masked functions
 #define vfslide1up_tuma(...) __riscv_vfslide1up_tum(__VA_ARGS__)
 #define vfslide1down_tuma(...) __riscv_vfslide1down_tum(__VA_ARGS__)
 #define vslide1up_tuma(...) __riscv_vslide1up_tum(__VA_ARGS__)
 #define vslide1down_tuma(...) __riscv_vslide1down_tum(__VA_ARGS__)
-// masked functions
 #define vfslide1up_tumu(...) __riscv_vfslide1up_tumu(__VA_ARGS__)
 #define vfslide1down_tumu(...) __riscv_vfslide1down_tumu(__VA_ARGS__)
 #define vslide1up_tumu(...) __riscv_vslide1up_tumu(__VA_ARGS__)
 #define vslide1down_tumu(...) __riscv_vslide1down_tumu(__VA_ARGS__)
-// masked functions
 #define vfslide1up_tama(...) __riscv_vfslide1up(__VA_ARGS__)
 #define vfslide1down_tama(...) __riscv_vfslide1down(__VA_ARGS__)
 #define vslide1up_tama(...) __riscv_vslide1up(__VA_ARGS__)
 #define vslide1down_tama(...) __riscv_vslide1down(__VA_ARGS__)
-// masked functions
 #define vfslide1up_tamu(...) __riscv_vfslide1up_mu(__VA_ARGS__)
 #define vfslide1down_tamu(...) __riscv_vfslide1down_mu(__VA_ARGS__)
 #define vslide1up_tamu(...) __riscv_vslide1up_mu(__VA_ARGS__)
@@ -92481,16 +91986,12 @@
 #define vrgatherei16_tu(...) __riscv_vrgatherei16_tu(__VA_ARGS__)
 #define vrgather_ta(...) __riscv_vrgather(__VA_ARGS__)
 #define vrgatherei16_ta(...) __riscv_vrgatherei16(__VA_ARGS__)
-// masked functions
 #define vrgather_tuma(...) __riscv_vrgather_tum(__VA_ARGS__)
 #define vrgatherei16_tuma(...) __riscv_vrgatherei16_tum(__VA_ARGS__)
-// masked functions
 #define vrgather_tumu(...) __riscv_vrgather_tumu(__VA_ARGS__)
 #define vrgatherei16_tumu(...) __riscv_vrgatherei16_tumu(__VA_ARGS__)
-// masked functions
 #define vrgather_tama(...) __riscv_vrgather(__VA_ARGS__)
 #define vrgatherei16_tama(...) __riscv_vrgatherei16(__VA_ARGS__)
-// masked functions
 #define vrgather_tamu(...) __riscv_vrgather_mu(__VA_ARGS__)
 #define vrgatherei16_tamu(...) __riscv_vrgatherei16_mu(__VA_ARGS__)
 #define vcompress_tu(mask, dest, src, vl)                                      \
@@ -92499,13 +92000,6 @@
 #endif
 #ifndef __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
 #define __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
-
-#if __has_include ("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
 
 #define sf_vqmacc_4x8x4_i32m1(...) __riscv_sf_vqmacc_4x8x4_i32m1_tu(__VA_ARGS__)
 #define sf_vqmacc_4x8x4_i32m2(...) __riscv_sf_vqmacc_4x8x4_i32m2_tu(__VA_ARGS__)
@@ -92583,7 +92077,6 @@
   __riscv_sf_vfnrclip_xu_f_qf_u8m1(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_u8m2(...)                                          \
   __riscv_sf_vfnrclip_xu_f_qf_u8m2(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_i8mf8_m(...)                                        \
   __riscv_sf_vfnrclip_x_f_qf_i8mf8_tumu(__VA_ARGS__)
 #define sf_vfnrclip_x_f_qf_i8mf4_m(...)                                        \
@@ -92614,7 +92107,6 @@
   __riscv_sf_vfwcvt_f_bf16_v_f32m4(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m8(...)                                          \
   __riscv_sf_vfwcvt_f_bf16_v_f32m8(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_bf16_v_f32mf2_m(...)                                       \
   __riscv_sf_vfwcvt_f_bf16_v_f32mf2_tumu(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m1_m(...)                                        \
@@ -92635,7 +92127,6 @@
   __riscv_sf_vfncvt_bf16_f_w_bf16m2(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16m4(...)                                         \
   __riscv_sf_vfncvt_bf16_f_w_bf16m4(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_f_w_bf16mf4_m(...)                                      \
   __riscv_sf_vfncvt_bf16_f_w_bf16mf4_tumu(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16mf2_m(...)                                      \
@@ -92656,7 +92147,6 @@
   __riscv_sf_vfwmacc_4x4x4_f32m4_tu(__VA_ARGS__)
 #define sf_vfwmacc_4x4x4_f32m8(...)                                            \
   __riscv_sf_vfwmacc_4x4x4_f32m8_tu(__VA_ARGS__)
-// Reinterpret between different type under the same SEW/LMUL
 #define vreinterpret_v_u16mf4_bf16mf4(...)                                     \
   __riscv_vreinterpret_v_u16mf4_bf16mf4(__VA_ARGS__)
 #define vreinterpret_v_u16mf2_bf16mf2(...)                                     \
@@ -93465,13 +92955,6 @@
 #ifndef __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_POLICY_H
 #define __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_POLICY_H
 
-#if __has_include ("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
-
 #define sf_vqmacc_4x8x4_i32m1_tu(...)                                          \
   __riscv_sf_vqmacc_4x8x4_i32m1_tu(__VA_ARGS__)
 #define sf_vqmacc_4x8x4_i32m2_tu(...)                                          \
@@ -93556,7 +93039,6 @@
   __riscv_sf_vfnrclip_xu_f_qf_u8m1_tu(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_u8m2_tu(...)                                       \
   __riscv_sf_vfnrclip_xu_f_qf_u8m2_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_i8mf8_tum(...)                                      \
   __riscv_sf_vfnrclip_x_f_qf_i8mf8_tum(__VA_ARGS__)
 #define sf_vfnrclip_x_f_qf_i8mf4_tum(...)                                      \
@@ -93577,7 +93059,6 @@
   __riscv_sf_vfnrclip_xu_f_qf_u8m1_tum(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_u8m2_tum(...)                                      \
   __riscv_sf_vfnrclip_xu_f_qf_u8m2_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_i8mf8_tumu(...)                                     \
   __riscv_sf_vfnrclip_x_f_qf_i8mf8_tumu(__VA_ARGS__)
 #define sf_vfnrclip_x_f_qf_i8mf4_tumu(...)                                     \
@@ -93598,7 +93079,6 @@
   __riscv_sf_vfnrclip_xu_f_qf_u8m1_tumu(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_u8m2_tumu(...)                                     \
   __riscv_sf_vfnrclip_xu_f_qf_u8m2_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_i8mf8_mu(...)                                       \
   __riscv_sf_vfnrclip_x_f_qf_i8mf8_mu(__VA_ARGS__)
 #define sf_vfnrclip_x_f_qf_i8mf4_mu(...)                                       \
@@ -93629,7 +93109,6 @@
   __riscv_sf_vfwcvt_f_bf16_v_f32m4_tu(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m8_tu(...)                                       \
   __riscv_sf_vfwcvt_f_bf16_v_f32m8_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_bf16_v_f32mf2_tum(...)                                     \
   __riscv_sf_vfwcvt_f_bf16_v_f32mf2_tum(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m1_tum(...)                                      \
@@ -93640,7 +93119,6 @@
   __riscv_sf_vfwcvt_f_bf16_v_f32m4_tum(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m8_tum(...)                                      \
   __riscv_sf_vfwcvt_f_bf16_v_f32m8_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_bf16_v_f32mf2_tumu(...)                                    \
   __riscv_sf_vfwcvt_f_bf16_v_f32mf2_tumu(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m1_tumu(...)                                     \
@@ -93651,7 +93129,6 @@
   __riscv_sf_vfwcvt_f_bf16_v_f32m4_tumu(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m8_tumu(...)                                     \
   __riscv_sf_vfwcvt_f_bf16_v_f32m8_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_bf16_v_f32mf2_mu(...)                                      \
   __riscv_sf_vfwcvt_f_bf16_v_f32mf2_mu(__VA_ARGS__)
 #define sf_vfwcvt_f_bf16_v_f32m1_mu(...)                                       \
@@ -93672,7 +93149,6 @@
   __riscv_sf_vfncvt_bf16_f_w_bf16m2_tu(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16m4_tu(...)                                      \
   __riscv_sf_vfncvt_bf16_f_w_bf16m4_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_f_w_bf16mf4_tum(...)                                    \
   __riscv_sf_vfncvt_bf16_f_w_bf16mf4_tum(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16mf2_tum(...)                                    \
@@ -93683,7 +93159,6 @@
   __riscv_sf_vfncvt_bf16_f_w_bf16m2_tum(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16m4_tum(...)                                     \
   __riscv_sf_vfncvt_bf16_f_w_bf16m4_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_f_w_bf16mf4_tumu(...)                                   \
   __riscv_sf_vfncvt_bf16_f_w_bf16mf4_tumu(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16mf2_tumu(...)                                   \
@@ -93694,7 +93169,6 @@
   __riscv_sf_vfncvt_bf16_f_w_bf16m2_tumu(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16m4_tumu(...)                                    \
   __riscv_sf_vfncvt_bf16_f_w_bf16m4_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_f_w_bf16mf4_mu(...)                                     \
   __riscv_sf_vfncvt_bf16_f_w_bf16mf4_mu(__VA_ARGS__)
 #define sf_vfncvt_bf16_f_w_bf16mf2_mu(...)                                     \
@@ -93727,17 +93201,6 @@
                       _14, _15, _16, _17, _18, _19, _20, NAME, ...)            \
   NAME
 
-#if __has_include("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
-
-// masked functions
-// masked functions
-// masked functions
-// Reinterpret between different type under the same SEW/LMUL
 #define sf_vqmacc_4x8x4(...) __riscv_sf_vqmacc_4x8x4_tu(__VA_ARGS__)
 #define sf_vqmaccus_4x8x4(...) __riscv_sf_vqmaccus_4x8x4_tu(__VA_ARGS__)
 #define sf_vqmaccsu_4x8x4(...) __riscv_sf_vqmaccsu_4x8x4_tu(__VA_ARGS__)
@@ -93818,13 +93281,6 @@
 #ifndef __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_OVERLOADED_POLICY_H
 #define __SIFIVE_RVV_0P10_COMPATIBLE_HEADERS_OVERLOADED_POLICY_H
 
-#if __has_include("riscv_vector.h")
-#include <riscv_vector.h>
-#endif
-#ifndef __RISCV_VECTOR_H
-#include_next <riscv_vector.h>
-#endif
-
 #define sf_vqmacc_4x8x4_tu(...) __riscv_sf_vqmacc_4x8x4_tu(__VA_ARGS__)
 #define sf_vqmaccus_4x8x4_tu(...) __riscv_sf_vqmaccus_4x8x4_tu(__VA_ARGS__)
 #define sf_vqmaccsu_4x8x4_tu(...) __riscv_sf_vqmaccsu_4x8x4_tu(__VA_ARGS__)
@@ -93835,32 +93291,23 @@
 #define sf_vqmaccu_2x8x2_tu(...) __riscv_sf_vqmaccu_2x8x2_tu(__VA_ARGS__)
 #define sf_vfnrclip_x_f_qf_tu(...) __riscv_sf_vfnrclip_x_f_qf_tu(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_tu(...) __riscv_sf_vfnrclip_xu_f_qf_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_tuma(...) __riscv_sf_vfnrclip_x_f_qf_tum(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_tuma(...)                                          \
   __riscv_sf_vfnrclip_xu_f_qf_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_tumu(...)                                           \
   __riscv_sf_vfnrclip_x_f_qf_tumu(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_tumu(...)                                          \
   __riscv_sf_vfnrclip_xu_f_qf_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfnrclip_x_f_qf_tamu(...) __riscv_sf_vfnrclip_x_f_qf_mu(__VA_ARGS__)
 #define sf_vfnrclip_xu_f_qf_tamu(...)                                          \
   __riscv_sf_vfnrclip_xu_f_qf_mu(__VA_ARGS__)
 #define sf_vfwcvt_f_tu(...) __riscv_sf_vfwcvt_f_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_tuma(...) __riscv_sf_vfwcvt_f_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_tumu(...) __riscv_sf_vfwcvt_f_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfwcvt_f_tamu(...) __riscv_sf_vfwcvt_f_mu(__VA_ARGS__)
 #define sf_vfncvt_bf16_tu(...) __riscv_sf_vfncvt_bf16_tu(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_tuma(...) __riscv_sf_vfncvt_bf16_tum(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_tumu(...) __riscv_sf_vfncvt_bf16_tumu(__VA_ARGS__)
-// masked functions
 #define sf_vfncvt_bf16_tamu(...) __riscv_sf_vfncvt_bf16_mu(__VA_ARGS__)
 #define sf_vfwmacc_4x4x4_tu(...) __riscv_sf_vfwmacc_4x4x4_tu(__VA_ARGS__)
 #endif

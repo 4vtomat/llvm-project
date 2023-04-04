@@ -10662,7 +10662,10 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
                         : Builder.CreateUIToFP(RVLPart, StepType);
       Value *Mul = Builder.CreateBinOp(MulOp, Step, RVLPartCast);
       SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
-    }
+      LastInduction = widenPredicatedArithmeticOp(
+          State, AddOp, {LastInduction, SplatVF}, Part,
+          /*Mask=*/nullptr, "step.add");
+    } else
 #endif // SIFIVE_CUSTOMIZATION
     LastInduction = cast<Instruction>(
         Builder.CreateBinOp(AddOp, LastInduction, SplatVF, "step.add"));

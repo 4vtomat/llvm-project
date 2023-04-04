@@ -31,4 +31,11 @@ Instruction *
 widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts);
+
+/// Build and return vp-intrinsic that corresponds to arithmetic operation \p
+/// Op.
+Instruction *widenPredicatedArithmeticOp(VPTransformState &State, unsigned Op,
+                                         ArrayRef<Value *> Ops, unsigned Part,
+                                         Value *Mask = nullptr,
+                                         const Twine &Name = "");
 } // namespace llvm
