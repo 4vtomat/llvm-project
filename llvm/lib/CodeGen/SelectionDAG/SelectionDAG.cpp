@@ -8414,6 +8414,36 @@ SDValue SelectionDAG::getLoadVP(EVT VT, const SDLoc &dl, SDValue Chain,
                    Mask, EVL, VT, MMO, IsExpanding);
 }
 
+#if SIFIVE_CUSTOMIZATION
+SDValue SelectionDAG::getLoadFFVP(EVT VT, const SDLoc &dl, SDValue Chain,
+                                  SDValue Ptr, SDValue Mask, SDValue EVL,
+                                  MachineMemOperand *MMO) {
+  SDVTList VTs = getVTList(VT, EVL.getValueType(), MVT::Other);
+  SDValue Ops[] = {Chain, Ptr, Mask, EVL};
+  FoldingSetNodeID ID;
+  AddNodeIDNode(ID, ISD::VP_LOAD_FF, VTs, Ops);
+  ID.AddInteger(VT.getRawBits());
+  ID.AddInteger(getSyntheticNodeSubclassData<VPLoadFFSDNode>(dl.getIROrder(),
+                                                             VTs, VT, MMO));
+  ID.AddInteger(MMO->getPointerInfo().getAddrSpace());
+  ID.AddInteger(MMO->getFlags());
+  void *IP = nullptr;
+  if (SDNode *E = FindNodeOrInsertPos(ID, dl, IP)) {
+    cast<VPLoadFFSDNode>(E)->refineAlignment(MMO);
+    return SDValue(E, 0);
+  }
+  auto *N = newSDNode<VPLoadFFSDNode>(dl.getIROrder(), dl.getDebugLoc(), VTs,
+                                      VT, MMO);
+  createOperands(N, Ops);
+
+  CSEMap.InsertNode(N, IP);
+  InsertNode(N);
+  SDValue V(N, 0);
+  NewSDValueDbgMsg(V, "Creating new node: ", this);
+  return V;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue SelectionDAG::getExtLoadVP(ISD::LoadExtType ExtType, const SDLoc &dl,
                                    EVT VT, SDValue Chain, SDValue Ptr,
                                    SDValue Mask, SDValue EVL,

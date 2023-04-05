@@ -622,6 +622,10 @@ private:
   void visitConstrainedFPIntrinsic(const ConstrainedFPIntrinsic &FPI);
   void visitVPLoad(const VPIntrinsic &VPIntrin, EVT VT,
                    SmallVector<SDValue, 7> &OpValues);
+#if SIFIVE_CUSTOMIZATION
+  void visitVPLoadFF(const VPIntrinsic &VPIntrin, EVT VT, EVT EVLVT,
+                     const SmallVectorImpl<SDValue> &OpValues);
+#endif // SIFIVE_CUSTOMIZATION
   void visitVPStore(const VPIntrinsic &VPIntrin,
                     SmallVector<SDValue, 7> &OpValues);
   void visitVPGather(const VPIntrinsic &VPIntrin, EVT VT,

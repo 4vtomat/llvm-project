@@ -776,6 +776,9 @@ private:
                       bool ShiftIncSize) const;
 #endif // SIFIVE_CUSTOMIZATION
   SDValue lowerMaskedLoad(SDValue Op, SelectionDAG &DAG) const;
+#if SIFIVE_CUSTOMIZATION
+  SDValue lowerLoadFF(SDValue Op, SelectionDAG &DAG) const;
+#endif // SIFIVE_CUSTOMIZATION
   SDValue lowerMaskedStore(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFixedLengthVectorFCOPYSIGNToRVV(SDValue Op,
                                                SelectionDAG &DAG) const;
