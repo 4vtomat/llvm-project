@@ -631,6 +631,12 @@ Function *VPIntrinsic::getDeclarationForParams(Module *M, Intrinsic::ID VPID,
     VPFunc = Intrinsic::getDeclaration(
         M, VPID, {ReturnType, Params[0]->getType()});
     break;
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_load_ff:
+    VPFunc = Intrinsic::getDeclaration(
+        M, VPID, {ReturnType->getStructElementType(0), Params[0]->getType()});
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vp_strided_load:
     VPFunc = Intrinsic::getDeclaration(
         M, VPID, {ReturnType, Params[0]->getType(), Params[1]->getType()});

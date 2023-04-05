@@ -1454,6 +1454,10 @@ public:
   SDValue getLoadVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
                     SDValue Mask, SDValue EVL, MachineMemOperand *MMO,
                     bool IsExpanding = false);
+#if SIFIVE_CUSTOMIZATION
+  SDValue getLoadFFVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
+                      SDValue Mask, SDValue EVL, MachineMemOperand *MMO);
+#endif
   SDValue getExtLoadVP(ISD::LoadExtType ExtType, const SDLoc &dl, EVT VT,
                        SDValue Chain, SDValue Ptr, SDValue Mask, SDValue EVL,
                        MachinePointerInfo PtrInfo, EVT MemVT,
