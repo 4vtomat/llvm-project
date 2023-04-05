@@ -35,11 +35,12 @@ include "GISel/RISCVRegisterBanks.td"
 //===----------------------------------------------------------------------===//
 
 include "RISCVSchedRocket.td"
-include "RISCVSchedSiFive7.td"
+//include "RISCVSchedSiFive7.td" // SIFIVE
 include "RISCVSchedSyntacoreSCR1.td"
 #ifdef SIFIVE_CUSTOMIZATION
-include "RISCVSchedSiFive6.td"
-include "RISCVSchedSiFive7N.td"
+include "SiFive_RISCVSchedSiFive6.td"
+include "SiFive_RISCVSchedSiFive7.td"
+include "SiFive_RISCVSchedSiFive7N.td"
 include "SiFive_RISCVSchedSiFiveP400.td"
 include "SiFive_RISCVSchedSiFiveP500.td"
 include "SiFive_RISCVSchedSiFiveP600.td"
