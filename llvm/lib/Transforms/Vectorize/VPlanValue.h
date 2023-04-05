@@ -296,6 +296,22 @@ public:
            "Op must be an operand of the recipe");
     return false;
   }
+#if SIFIVE_CUSTOMIZATION
+  virtual bool usesAnyScalars(const VPValue *Op) const {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    for (unsigned I = 0, E = getNumOperands(); I != E; I++) {
+      if (onlyFirstLaneUsed(Op, I))
+        return true;
+    }
+    return false;
+  }
+  virtual bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// This class augments a recipe with a set of VPValues defined by the recipe.

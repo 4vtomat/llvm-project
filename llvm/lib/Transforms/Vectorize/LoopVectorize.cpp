@@ -11287,6 +11287,9 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   Plan->disableValue2VPValue();
 
 #if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer())
+    VPlanTransforms::optimizeGEPs(*Plan);
+
   // Skip optimizeInductions as it has a dependency on canonical IV.
   if (!Legal->isVectorizableUncountable())
 #endif // SIFIVE_CUSTOMIZATION

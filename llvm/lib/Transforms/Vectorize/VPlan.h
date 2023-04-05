@@ -2451,6 +2451,14 @@ public:
     return Op == getAddr() && isConsecutive() &&
            (!isStore() || Op != getStoredValue());
   }
+#if SIFIVE_CUSTOMIZATION
+  bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+
+    return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   Instruction &getIngredient() const { return Ingredient; }
 

@@ -492,6 +492,39 @@ void VPlanTransforms::removeDeadRecipes(VPlan &Plan) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
+  ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
+      Plan.getEntry());
+  for (VPBasicBlock *VPBB : (VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT))) {
+    for (VPRecipeBase &R: *VPBB) {
+      auto *WideGEP = dyn_cast<VPWidenGEPRecipe>(&R);
+      if (!WideGEP)
+        continue;
+      auto *Inst = cast<Instruction>(WideGEP->getUnderlyingValue());
+      if (none_of(WideGEP->users(), [WideGEP](VPUser *U) {
+            return U->usesAnyScalars(WideGEP);
+          }))
+        continue;
+
+      auto *Recipe = new VPReplicateRecipe(Inst, WideGEP->operands(), /*IsUniform*/ true);
+      VPValue *V = Recipe->getVPValue(0);
+
+      Recipe->insertBefore(WideGEP);
+      for (VPUser *U : WideGEP->users()) {
+        for (unsigned I = 0, E = U->getNumOperands(); I != E; I++) {
+          if (U->getOperand(I) != WideGEP)
+            continue;
+          if (!U->onlyFirstLaneUsed(WideGEP, I))
+            continue;
+          U->setOperand(I, V);
+        }
+      }
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void VPlanTransforms::optimizeInductions(VPlan &Plan, ScalarEvolution &SE) {
   SmallVector<VPRecipeBase *> ToRemove;
   VPBasicBlock *HeaderVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
