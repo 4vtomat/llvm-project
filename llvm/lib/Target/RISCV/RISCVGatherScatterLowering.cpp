@@ -74,21 +74,6 @@ private:
   bool matchStridedRecurrence(Value *Index, Loop *L, Value *&Stride,
                               PHINode *&BasePtr, BinaryOperator *&Inc,
                               IRBuilder<> &Builder);
-
-#if SIFIVE_CUSTOMIZATION
-  bool tryCreateVPStridedLoadStore(IntrinsicInst *II, Type *DataType,
-                                   Value *Ptr);
-
-  std::pair<Value *, Value *>
-  determineScalableBaseAndStride(GetElementPtrInst *GEP, Value *EVL,
-                                 IRBuilder<> &Builder);
-
-  bool matchScalableStridedRecurrence(Value *Index, Loop *L, Value *EVL,
-                                      Value *&Stride, PHINode *&BasePtr,
-                                      BinaryOperator *&Inc,
-                                      IRBuilder<> &Builderi,
-                                      bool CanReusePhi = true);
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // end anonymous namespace
@@ -104,12 +89,6 @@ FunctionPass *llvm::createRISCVGatherScatterLoweringPass() {
 
 bool RISCVGatherScatterLowering::isLegalTypeAndAlignment(Type *DataType,
                                                          Value *AlignOp) {
-#if SIFIVE_CUSTOMIZATION
-  // Moved from the runOnMachineFunction to support scalable vectors.
-  if (isa<FixedVectorType>(DataType) && !ST->useRVVForFixedLengthVectors())
-    return false;
-#endif // SIFIVE_CUSTOMIZATION
-
   Type *ScalarType = DataType->getScalarType();
   if (!TLI->isLegalElementTypeForRVV(ScalarType))
     return false;
@@ -513,394 +492,6 @@ bool RISCVGatherScatterLowering::tryCreateStridedLoadStore(IntrinsicInst *II,
   return true;
 }
 
-#if SIFIVE_CUSTOMIZATION
-static std::pair<Value *, Value *> matchStepVector(IntrinsicInst *II) {
-  if (II->getIntrinsicID() != Intrinsic::experimental_stepvector)
-    return std::make_pair(nullptr, nullptr);
-
-  return std::make_pair(ConstantInt::get(II->getType()->getScalarType(), 0),
-                        ConstantInt::get(II->getType()->getScalarType(), 1));
-}
-
-static std::pair<Value *, Value *>
-matchScalableStridedStart(Value *Start, IRBuilder<> &Builder) {
-  // Base case, start is a strided constant.
-  auto *StartC = dyn_cast<IntrinsicInst>(Start);
-  if (StartC)
-    return matchStepVector(StartC);
-
-  // Not a constant, maybe it's a strided constant with a splat added to it.
-  auto *BO = dyn_cast<BinaryOperator>(Start);
-  if (!BO || BO->getOpcode() != Instruction::Add)
-    return std::make_pair(nullptr, nullptr);
-
-  // Look for an operand that is splatted.
-  unsigned OtherIndex = 1;
-  Value *Splat = getSplatValue(BO->getOperand(0));
-  if (!Splat) {
-    Splat = getSplatValue(BO->getOperand(1));
-    OtherIndex = 0;
-  }
-  if (!Splat)
-    return std::make_pair(nullptr, nullptr);
-
-  Value *Stride;
-  std::tie(Start, Stride) =
-      matchScalableStridedStart(BO->getOperand(OtherIndex), Builder);
-  if (!Start)
-    return std::make_pair(nullptr, nullptr);
-
-  // Add the splat value to the start.
-  Builder.SetInsertPoint(BO);
-  Builder.SetCurrentDebugLocation(DebugLoc());
-  Start = Builder.CreateAdd(Start, Splat);
-  return std::make_pair(Start, Stride);
-}
-
-/// Find an existing add recurrence with a phi in \p BB with \p DesiredStart and
-/// \p DesiredStep value. Returns true if found and places the phi and add in
-/// \p BasePtr and \p Inc respectively.
-static bool findExistingAddRecurrence(BasicBlock *BB, Value *DesiredStart,
-                                      Value *DesiredStep, PHINode *&BasePtr,
-                                      BinaryOperator *&Inc) {
-  for (PHINode &PN : BB->phis()) {
-    Value *Step, *Start;
-    if (!matchSimpleRecurrence(&PN, Inc, Start, Step) ||
-        Inc->getOpcode() != Instruction::Add || Step != DesiredStep ||
-        Start != DesiredStart)
-      continue;
-
-    // Found a match.
-    BasePtr = &PN;
-    return true;
-  }
-
-  return false;
-}
-
-// Recursively, walk about the use-def chain until we find a Phi with a strided
-// start value. Build and update a scalar recurrence as we unwind the recursion.
-// We also update the Stride as we unwind. Our goal is to move all of the
-// arithmetic out of the loop.
-bool RISCVGatherScatterLowering::matchScalableStridedRecurrence(
-    Value *Index, Loop *L, Value *EVL, Value *&Stride, PHINode *&BasePtr,
-    BinaryOperator *&Inc, IRBuilder<> &Builder, bool CanReusePhi) {
-  // Our base case is a Phi.
-  if (auto *Phi = dyn_cast<PHINode>(Index)) {
-    // A phi node we want to perform this function on should be from the
-    // loop header.
-    if (Phi->getParent() != L->getHeader())
-      return false;
-
-    Value *Step, *Start;
-    if (!matchSimpleRecurrence(Phi, Inc, Start, Step) ||
-        Inc->getOpcode() != Instruction::Add)
-      return false;
-    assert(Phi->getNumIncomingValues() == 2 && "Expected 2 operand phi.");
-    unsigned IncrementingBlock = Phi->getIncomingValue(0) == Inc ? 0 : 1;
-    assert(Phi->getIncomingValue(IncrementingBlock) == Inc &&
-           "Expected one operand of phi to be Inc");
-
-    // Step should be a splat.
-    Step = getSplatValue(Step);
-    if (!Step)
-      return false;
-
-    std::tie(Start, Stride) = matchScalableStridedStart(Start, Builder);
-    if (!Start)
-      return false;
-    assert(Stride != nullptr && "Non-null start with null stride?");
-
-    // We found a strided recurrence, see if the scalar version of this
-    // recurrence already exists. Unless we were told not reuse. We should
-    // only reuse if the start value is 0. If we looked through a shift or mul
-    // we may need scale the start value if it is non-zero.
-    if (!CanReusePhi || !findExistingAddRecurrence(Phi->getParent(), Start,
-                                                   Step, BasePtr, Inc)) {
-      // Build scalar phi and increment.
-      BasePtr =
-          PHINode::Create(Start->getType(), 2, Phi->getName() + ".scalar", Phi);
-      Inc = BinaryOperator::CreateAdd(BasePtr, Step, Inc->getName() + ".scalar",
-                                      Inc);
-      BasePtr->addIncoming(Start, Phi->getIncomingBlock(1 - IncrementingBlock));
-      BasePtr->addIncoming(Inc, Phi->getIncomingBlock(IncrementingBlock));
-    }
-
-    // Note that this Phi might be eligible for removal.
-    MaybeDeadPHIs.push_back(Phi);
-    return true;
-  }
-
-  // Otherwise look for binary operator.
-  auto *BO = dyn_cast<Instruction>(Index);
-  if (!BO)
-    return false;
-
-  unsigned BinOpc = BO->getOpcode();
-  if (auto *VP = dyn_cast<VPIntrinsic>(BO)) {
-    const auto *Mask = dyn_cast_or_null<Constant>(VP->getMaskParam());
-    if (!Mask || !Mask->isAllOnesValue())
-      return false;
-
-    if (VP->getVectorLengthParam() != EVL)
-      return false;
-
-    if (std::optional<unsigned> Opt = VP->getFunctionalOpcode())
-      BinOpc = Opt.value();
-    else
-      return false;
-  }
-
-  if (BinOpc != Instruction::Add &&
-      BinOpc != Instruction::Or &&
-      BinOpc != Instruction::Mul &&
-      BinOpc != Instruction::Shl)
-    return false;
-
-  // Only support shift by constant.
-  if (BinOpc == Instruction::Shl && !isa<Constant>(BO->getOperand(1)))
-    return false;
-
-  // We need to be able to treat Or as Add.
-  if (BinOpc == Instruction::Or &&
-      !haveNoCommonBitsSet(BO->getOperand(0), BO->getOperand(1), *DL))
-    return false;
-
-  // We should have one operand in the loop and one splat.
-  Value *OtherOp;
-  if (isa<Instruction>(BO->getOperand(0)) &&
-      L->contains(cast<Instruction>(BO->getOperand(0)))) {
-    Index = cast<Instruction>(BO->getOperand(0));
-    OtherOp = BO->getOperand(1);
-  } else if (isa<Instruction>(BO->getOperand(1)) &&
-             L->contains(cast<Instruction>(BO->getOperand(1)))) {
-    Index = cast<Instruction>(BO->getOperand(1));
-    OtherOp = BO->getOperand(0);
-  } else {
-    return false;
-  }
-
-  // Make sure other op is loop invariant.
-  if (!L->isLoopInvariant(OtherOp))
-    return false;
-
-  // Make sure we have a splat.
-  Value *SplatOp = getSplatValue(OtherOp);
-  if (!SplatOp)
-    return false;
-
-  // Recurse up the use-def chain.
-  if (!matchScalableStridedRecurrence(Index, L, EVL, Stride, BasePtr, Inc,
-                                      Builder, /*CanReusePhi*/ false))
-    return false;
-
-  // Locate the Step and Start values from the recurrence.
-  unsigned StepIndex = Inc->getOperand(0) == BasePtr ? 1 : 0;
-  unsigned StartBlock = BasePtr->getOperand(0) == Inc ? 1 : 0;
-  Value *Step = Inc->getOperand(StepIndex);
-  Value *Start = BasePtr->getOperand(StartBlock);
-
-  // We need to adjust the start value in the preheader.
-  Builder.SetInsertPoint(
-      BasePtr->getIncomingBlock(StartBlock)->getTerminator());
-  Builder.SetCurrentDebugLocation(DebugLoc());
-
-  auto *StepI = dyn_cast<Instruction>(Step);
-  bool StepInLoop = StepI && L->contains(cast<Instruction>(Step));
-
-  switch (BinOpc) {
-  default:
-    llvm_unreachable("Unexpected opcode!");
-  case Instruction::Add:
-  case Instruction::Or: {
-    // An add only affects the start value. It's ok to do this for Or because
-    // we already checked that there are no common set bits.
-
-    // If the start value is Zero, just take the SplatOp.
-    if (isa<ConstantInt>(Start) && cast<ConstantInt>(Start)->isZero())
-      Start = SplatOp;
-    else
-      Start = Builder.CreateAdd(Start, SplatOp, "start");
-    BasePtr->setIncomingValue(StartBlock, Start);
-    break;
-  }
-  case Instruction::Mul: {
-    // If the start is zero we don't need to multiply.
-    if (!isa<ConstantInt>(Start) || !cast<ConstantInt>(Start)->isZero())
-      Start = Builder.CreateMul(Start, SplatOp, "start");
-
-    // If the Stride is 1 just take the SplatOpt.
-    if (isa<ConstantInt>(Stride) && cast<ConstantInt>(Stride)->isOne())
-      Stride = SplatOp;
-    else
-      Stride = Builder.CreateMul(Stride, SplatOp, "stride");
-
-    if (StepInLoop)
-      Builder.SetInsertPoint(StepI->getNextNonDebugInstruction());
-    Step = Builder.CreateMul(Step, SplatOp, "step");
-    Inc->setOperand(StepIndex, Step);
-    BasePtr->setIncomingValue(StartBlock, Start);
-    break;
-  }
-  case Instruction::Shl: {
-    // If the start is zero we don't need to shift.
-    if (!isa<ConstantInt>(Start) || !cast<ConstantInt>(Start)->isZero())
-      Start = Builder.CreateShl(Start, SplatOp, "start");
-    Stride = Builder.CreateShl(Stride, SplatOp, "stride");
-
-    if (StepInLoop)
-      Builder.SetInsertPoint(StepI->getNextNonDebugInstruction());
-    Step = Builder.CreateShl(Step, SplatOp, "step");
-    Inc->setOperand(StepIndex, Step);
-    BasePtr->setIncomingValue(StartBlock, Start);
-    break;
-  }
-  }
-
-  return true;
-}
-
-std::pair<Value *, Value *>
-RISCVGatherScatterLowering::determineScalableBaseAndStride(
-    GetElementPtrInst *GEP, Value *EVL, IRBuilder<> &Builder) {
-  auto I = StridedAddrs.find(GEP);
-  if (I != StridedAddrs.end())
-    return I->second;
-
-  SmallVector<Value *, 2> Ops(GEP->operands());
-
-  // Base pointer needs to be a scalar.
-  if (Ops[0]->getType()->isVectorTy())
-    return std::make_pair(nullptr, nullptr);
-
-  // Make sure we're in a loop and that it has a pre-header and a single latch.
-  Loop *L = LI->getLoopFor(GEP->getParent());
-  if (!L || !L->getLoopPreheader() || !L->getLoopLatch())
-    return std::make_pair(nullptr, nullptr);
-
-  std::optional<unsigned> VecOperand;
-  unsigned TypeScale = 0;
-
-  // Look for a vector operand and scale.
-  gep_type_iterator GTI = gep_type_begin(GEP);
-  for (unsigned i = 1, e = GEP->getNumOperands(); i != e; ++i, ++GTI) {
-    if (!Ops[i]->getType()->isVectorTy())
-      continue;
-
-    if (VecOperand)
-      return std::make_pair(nullptr, nullptr);
-
-    VecOperand = i;
-
-    TypeSize TS = DL->getTypeAllocSize(GTI.getIndexedType());
-    if (TS.isScalable())
-      return std::make_pair(nullptr, nullptr);
-
-    TypeScale = TS.getFixedValue();
-  }
-
-  // We need to find a vector index to simplify.
-  if (!VecOperand)
-    return std::make_pair(nullptr, nullptr);
-
-  // We can't extract the stride if the arithmetic is done at a different size
-  // than the pointer type. Adding the stride later may not wrap correctly.
-  // Technically we could handle wider indices, but I don't expect that in
-  // practice.
-  Value *VecIndex = Ops[*VecOperand];
-  Type *VecIntPtrTy = DL->getIntPtrType(GEP->getType());
-  if (VecIndex->getType() != VecIntPtrTy)
-    return std::make_pair(nullptr, nullptr);
-
-  Value *Stride;
-  BinaryOperator *Inc;
-  PHINode *BasePhi;
-  if (!matchScalableStridedRecurrence(VecIndex, L, EVL, Stride, BasePhi, Inc,
-                                      Builder))
-    return std::make_pair(nullptr, nullptr);
-
-  assert(BasePhi->getNumIncomingValues() == 2 && "Expected 2 operand phi.");
-  unsigned IncrementingBlock = BasePhi->getOperand(0) == Inc ? 0 : 1;
-  assert(BasePhi->getIncomingValue(IncrementingBlock) == Inc &&
-         "Expected one operand of phi to be Inc");
-
-  Builder.SetInsertPoint(GEP);
-
-  // Replace the vector index with the scalar phi and build a scalar GEP.
-  Ops[*VecOperand] = BasePhi;
-  Type *SourceTy = GEP->getSourceElementType();
-  Value *BasePtr =
-      Builder.CreateGEP(SourceTy, Ops[0], ArrayRef(Ops).drop_front());
-
-  // Final adjustments to stride should go in the start block.
-  Builder.SetInsertPoint(
-      BasePhi->getIncomingBlock(1 - IncrementingBlock)->getTerminator());
-
-  // Convert stride to pointer size if needed.
-  Type *IntPtrTy = DL->getIntPtrType(BasePtr->getType());
-  assert(Stride->getType() == IntPtrTy && "Unexpected type");
-
-  // Scale the stride by the size of the indexed type.
-  if (TypeScale != 1)
-    Stride = Builder.CreateMul(Stride, ConstantInt::get(IntPtrTy, TypeScale));
-
-  auto P = std::make_pair(BasePtr, Stride);
-  StridedAddrs[GEP] = P;
-  return P;
-}
-
-bool RISCVGatherScatterLowering::tryCreateVPStridedLoadStore(IntrinsicInst *II,
-                                                             Type *DataType,
-                                                             Value *Ptr) {
-  if (!TLI->isLegalElementTypeForRVV(DataType->getScalarType()))
-    return false;
-
-  // FIXME: Let the backend type legalize by splitting/widening?
-  if (!TLI->isTypeLegal(TLI->getValueType(*DL, DataType)))
-    return false;
-
-  // Pointer should be a GEP.
-  auto *GEP = dyn_cast<GetElementPtrInst>(Ptr);
-  if (!GEP)
-    return false;
-
-  assert(isa<VPIntrinsic>(II) && "II should be vp intrinisc.");
-  Value *EVL = cast<VPIntrinsic>(II)->getVectorLengthParam();
-
-  IRBuilder<> Builder(GEP);
-
-  Value *BasePtr, *Stride;
-  std::tie(BasePtr, Stride) = determineScalableBaseAndStride(GEP, EVL, Builder);
-  if (!BasePtr)
-    return false;
-  assert(Stride != nullptr);
-
-  Builder.SetInsertPoint(II);
-
-  CallInst *Call;
-  if (II->getIntrinsicID() == Intrinsic::vp_gather)
-    Call = Builder.CreateIntrinsic(
-        Intrinsic::experimental_vp_strided_load,
-        {DataType, BasePtr->getType(), Stride->getType()},
-        {BasePtr, Stride, II->getArgOperand(1), II->getArgOperand(2)});
-  else
-    Call = Builder.CreateIntrinsic(
-        Intrinsic::experimental_vp_strided_store,
-        {DataType, BasePtr->getType(), Stride->getType()},
-        {II->getArgOperand(0), BasePtr, Stride, II->getArgOperand(2),
-         II->getArgOperand(3)});
-
-  Call->takeName(II);
-  II->replaceAllUsesWith(Call);
-  II->eraseFromParent();
-
-  if (GEP->use_empty())
-    RecursivelyDeleteTriviallyDeadInstructions(GEP);
-
-  return true;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 bool RISCVGatherScatterLowering::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
@@ -908,11 +499,7 @@ bool RISCVGatherScatterLowering::runOnFunction(Function &F) {
   auto &TPC = getAnalysis<TargetPassConfig>();
   auto &TM = TPC.getTM<RISCVTargetMachine>();
   ST = &TM.getSubtarget<RISCVSubtarget>(F);
-#if SIFIVE_CUSTOMIZATION
-  if (!ST->hasVInstructions())
-#else
   if (!ST->hasVInstructions() || !ST->useRVVForFixedLengthVectors())
-#endif // SIFIVE_CUSTOMIZATION
     return false;
 
   TLI = ST->getTargetLowering();
@@ -923,10 +510,6 @@ bool RISCVGatherScatterLowering::runOnFunction(Function &F) {
 
   SmallVector<IntrinsicInst *, 4> Gathers;
   SmallVector<IntrinsicInst *, 4> Scatters;
-#if SIFIVE_CUSTOMIZATION
-  SmallVector<IntrinsicInst *, 4> VPGathers;
-  SmallVector<IntrinsicInst *, 4> VPScatters;
-#endif // SIFIVE_CUSTOMIZATION
 
   bool Changed = false;
 
@@ -937,14 +520,6 @@ bool RISCVGatherScatterLowering::runOnFunction(Function &F) {
         Gathers.push_back(II);
       } else if (II && II->getIntrinsicID() == Intrinsic::masked_scatter) {
         Scatters.push_back(II);
-#if SIFIVE_CUSTOMIZATION
-      } else if (II && II->getIntrinsicID() == Intrinsic::vp_gather &&
-                 isa<ScalableVectorType>(II->getType())) {
-        VPGathers.push_back(II);
-      } else if (II && II->getIntrinsicID() == Intrinsic::vp_scatter &&
-                 isa<ScalableVectorType>(II->getArgOperand(0)->getType())) {
-        VPScatters.push_back(II);
-#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -957,14 +532,6 @@ bool RISCVGatherScatterLowering::runOnFunction(Function &F) {
     Changed |=
         tryCreateStridedLoadStore(II, II->getArgOperand(0)->getType(),
                                   II->getArgOperand(1), II->getArgOperand(2));
-#if SIFIVE_CUSTOMIZATION
-  for (auto *II : VPGathers)
-    Changed |=
-        tryCreateVPStridedLoadStore(II, II->getType(), II->getArgOperand(0));
-  for (auto *II : VPScatters)
-    Changed |= tryCreateVPStridedLoadStore(II, II->getArgOperand(0)->getType(),
-                                           II->getArgOperand(1));
-#endif
 
   // Remove any dead phis.
   while (!MaybeDeadPHIs.empty()) {
