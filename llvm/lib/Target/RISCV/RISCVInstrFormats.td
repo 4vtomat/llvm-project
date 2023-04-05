@@ -221,8 +221,10 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   let TSFlags{19} = IsSignExtendingOpW;
 
 #ifdef SIFIVE_CUSTOMIZATION
+  // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
+  // collisions when new TSFlags are added upstream
   bit HasRoundModeOp = 0;
-  let TSFlags{20} =  HasRoundModeOp;
+  let TSFlags{63} =  HasRoundModeOp;
 #endif // SIFIVE_CUSTOMIZATION
 }
 

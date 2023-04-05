@@ -111,8 +111,10 @@ enum {
   IsSignExtendingOpWMask = 1ULL << IsSignExtendingOpWShift,
 
 #if SIFIVE_CUSTOMIZATION
-  HasRoundModeOpShift = IsSignExtendingOpWShift + 1,
-  HasRoundModeOpMask = 1 << HasRoundModeOpShift,
+  // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
+  // each subsequent TSFlag.
+  HasRoundModeOpShift = 63,
+  HasRoundModeOpMask = 1ULL << HasRoundModeOpShift,
 #endif // SIFIVE_CUSTOMIZATION
 };
 
