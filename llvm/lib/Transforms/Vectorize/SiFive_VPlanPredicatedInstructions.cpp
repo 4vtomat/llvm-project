@@ -333,9 +333,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   assert(RVLPart && "RVL must be set prior to generation of vp-intrinsics");
 
   VPValue *VPAddr = VPWMIR.getAddr();
-  Value *VectorGep = State.get(VPAddr, Part);
-  auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-  ElementCount NumElts = PtrsTy->getElementCount();
+  ElementCount NumElts = State.VF;
   auto &Builder = State.Builder;
 
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
@@ -368,7 +366,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided store for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
-      auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
+      auto *PtrTy = cast<PointerType>(Ptr->getType());
       Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
       return Builder.CreateIntrinsic(
           Intrinsic::experimental_vp_strided_store,
@@ -376,7 +374,9 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     }
     auto *DataTy = cast<VectorType>(StoredVal->getType());
     LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
+    Value *VectorGep = State.get(VPAddr, Part);
     Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, RVLPart};
+    auto *PtrsTy = cast<VectorType>(VectorGep->getType());
     return Builder.CreateIntrinsic(Intrinsic::vp_scatter, {DataTy, PtrsTy},
                                    Operands);
   } else {
@@ -392,7 +392,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
              "not caught by isSafeStrideAccessInfo.");
       Value *Stride =
           Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
-      auto *PtrTy = cast<PointerType>(PtrsTy->getElementType());
+      auto *PtrTy = cast<PointerType>(Ptr->getType());
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided load for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
@@ -402,7 +402,9 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                       Operands, nullptr, "vp.strided.load");
     }
     LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
+    Value *VectorGep = State.get(VPAddr, Part);
     Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
+    auto *PtrsTy = cast<VectorType>(VectorGep->getType());
     return Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
                                    Operands, nullptr, "vp.gather");
   }
