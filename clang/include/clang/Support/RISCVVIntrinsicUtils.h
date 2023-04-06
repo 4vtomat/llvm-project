@@ -70,6 +70,7 @@ enum class VectorTypeModifier : uint8_t {
   // for workaround.
   SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
+  Tuple2,
 };
 
 // Similar to basic type but used to describe what's kind of type related to
@@ -285,6 +286,8 @@ class RVVType {
   unsigned ElementBitwidth = 0;
   VScaleVal Scale = 0;
   bool Valid;
+  bool IsTuple = false;
+  unsigned NF = 0;
 
   std::string BuiltinStr;
   std::string ClangBuiltinStr;
@@ -335,10 +338,15 @@ public:
   }
   bool isConstant() const { return IsConstant; }
   bool isPointer() const { return IsPointer; }
+  bool isTuple() const { return IsTuple; }
   unsigned getElementBitwidth() const { return ElementBitwidth; }
 
   ScalarTypeKind getScalarType() const { return ScalarType; }
   VScaleVal getScale() const { return Scale; }
+  unsigned getNF() const {
+    assert(NF > 1 && NF < 8 && "Only legal NF should be fetched");
+    return NF;
+  }
 
 private:
   // Verify RVV vector type and set Valid.
@@ -426,7 +434,7 @@ public:
                const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
                const std::vector<llvm::StringRef> &RequiredFeatures,
-               unsigned NF, Policy PolicyAttrs);
+               unsigned NF, Policy PolicyAttrs, bool IsTuple);
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }
@@ -487,7 +495,7 @@ public:
   computeBuiltinTypes(llvm::ArrayRef<PrototypeDescriptor> Prototype,
                       bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
                       unsigned NF, PolicyScheme DefaultScheme,
-                      Policy PolicyAttrs);
+                      Policy PolicyAttrs, bool IsTuple);
 
   static llvm::SmallVector<Policy> getSupportedUnMaskedPolicies();
   static llvm::SmallVector<Policy>
@@ -570,6 +578,7 @@ struct RVVIntrinsicRecord {
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
 #endif // SIFIVE_CUSTOMIZATION
+  bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;
   uint8_t MaskedPolicyScheme : 2;
 };
