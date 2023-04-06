@@ -29,9 +29,7 @@ define <vscale x 8 x i8> @vpudiv_by_max_nxv8i8(<vscale x 8 x i8> %va, <vscale x 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, -1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 255, i32 0
@@ -45,9 +43,7 @@ define <vscale x 4 x i16> @vpudiv_by_max_nxv4i16(<vscale x 4 x i16> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, -1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 65535, i32 0
@@ -61,9 +57,7 @@ define <vscale x 2 x i32> @vpudiv_by_max_nxv2i32(<vscale x 2 x i32> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, -1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 4294967295, i32 0
@@ -77,9 +71,7 @@ define <vscale x 1 x i64> @vpudiv_by_max_nxv1i64(<vscale x 1 x i64> %va, <vscale
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, -1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 18446744073709551615, i32 0
@@ -488,9 +480,7 @@ define <vscale x 8 x i8> @vpsdiv_by_min_nxv8i8(<vscale x 8 x i8> %va, <vscale x 
 ; CHECK-NEXT:    li a1, -128
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v8, a1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 -128, i32 0
@@ -506,9 +496,7 @@ define <vscale x 1 x i64> @vpsdiv_by_min_nxv1i64(<vscale x 1 x i64> %va, <vscale
 ; CHECK-NEXT:    slli a1, a1, 63
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v8, a1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 -9223372036854775808, i32 0
@@ -523,9 +511,7 @@ define <vscale x 4 x i16> @vpsdiv_by_min_nxv4i16(<vscale x 4 x i16> %va, <vscale
 ; CHECK-NEXT:    lui a1, 1048568
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v8, a1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 -32768, i32 0
@@ -540,9 +526,7 @@ define <vscale x 2 x i32> @vpsdiv_by_min_nxv2i32(<vscale x 2 x i32> %va, <vscale
 ; CHECK-NEXT:    lui a1, 524288
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmseq.vx v0, v8, a1, v0.t
-; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 -2147483648, i32 0

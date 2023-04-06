@@ -48,6 +48,7 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetTransformInfo.cpp
   SiFive_RISCVPostRAExpandPseudoInsts.cpp
   SiFive_RISCVTypePromotion.cpp
+  SiFive_RISCVVLOptimizer.cpp
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp

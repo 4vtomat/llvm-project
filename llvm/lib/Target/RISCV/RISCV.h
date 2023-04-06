@@ -88,6 +88,9 @@ void initializeRISCVCleanupVXRMPass(PassRegistry &);
 
 FunctionPass *createRISCVMachineConstPropagationPass();
 void initializeRISCVMachineConstPropagationPass(PassRegistry &);
+
+FunctionPass *createRISCVVLOptimizerPass();
+void initializeRISCVVLOptimizerPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVInitUndefPass();
