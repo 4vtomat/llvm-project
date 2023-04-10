@@ -373,6 +373,8 @@ void RVVType::initShortStr() {
   }
   if (isVector())
     ShortStr += LMUL.str();
+  if (isTuple())
+    ShortStr += "x" + utostr(NF);
 }
 
 void RVVType::applyBasicType() {
