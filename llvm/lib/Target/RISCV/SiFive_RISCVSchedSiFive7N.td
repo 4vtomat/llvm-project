@@ -104,6 +104,36 @@ class SiFive7NGetCyclesSegmented<string mx, int nf> {
   );
 }
 
+class SiFive7NGetCyclesOnePerElement<string mx, int sew> {
+  // FIXME: On SiFive7N, VLEN is 512. Although a user can request the compiler
+  // to use a different VLEN, this model will not make scheduling decisions
+  // based on the user specified VLEN.
+  // c = ceil(VLEN / SEW) * LMUL
+  // Note: c >= 1 since the smallest VLUpperBound is 512 / 8 = 8, and the
+  // largest division performed on  VLUpperBound is in MF8 case with division
+  // by 8. Therefore, there is no need to ceil the result.
+  int VLUpperBound = !div(512, sew);
+  int c = !cond(
+    !eq(mx, "M1") :        VLUpperBound,
+    !eq(mx, "M2") :        !mul(VLUpperBound, 2),
+    !eq(mx, "M4") :        !mul(VLUpperBound, 4),
+    !eq(mx, "M8") :        !mul(VLUpperBound, 8),
+    !eq(mx, "MF2") :       !div(VLUpperBound, 2),
+    !eq(mx, "MF4") :       !div(VLUpperBound, 4),
+    !eq(mx, "MF8") :       !div(VLUpperBound, 8)
+  );
+}
+
+class SiFive7NGetDivOrSqrtFactor<int sew> {
+  int c = !cond(
+    // TODO: Add SchedSEWSetFP upstream and remove the SEW=8 case.
+    !eq(sew, 8) : 15,
+    !eq(sew, 16) : 15,
+    !eq(sew, 32) : 28,
+    !eq(sew, 64) : 57
+  );
+}
+
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
 def SiFive7NModel : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
@@ -453,14 +483,16 @@ foreach mx = SchedMxList in {
 }
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
+    defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
+                         !div(SiFive7NGetCyclesOnePerElement<mx, sew>.c, 4));
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 16, ResourceCycles = [Cycles] in {
-      defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV",     [SiFive7NVA], mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX",     [SiFive7NVA], mx, sew, IsWorstCase>;
+    let Latency = Cycles, ResourceCycles = [Cycles] in {
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [SiFive7NVA], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX", [SiFive7NVA], mx, sew, IsWorstCase>;
     }
   }
 }
+
 // Widening
 foreach mx = SchedMxListW in {
   defvar Cycles = SiFive7NGetCyclesWidening<mx>.c;
@@ -539,15 +571,17 @@ foreach mx = SchedMxList in {
 }
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
+    defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
+                         !div(SiFive7NGetCyclesOnePerElement<mx, sew>.c, 4));
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 16, ResourceCycles = [Cycles] in {
+    let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFSqrtV", [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivF",  [SiFive7NVA], mx, sew, IsWorstCase>;
     }
   }
 }
+
 // Widening
 foreach mx = SchedMxListW in {
   defvar Cycles = SiFive7NGetCyclesWidening<mx>.c;
@@ -630,16 +664,18 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVRGatherVI",    [SiFive7NVA], mx, IsWorstCase>;
   }
 }
+
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-  defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
+    defvar Cycles = SiFive7NGetCyclesOnePerElement<mx, sew>.c;
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 8, ResourceCycles = [Cycles] in {
+    let Latency = !add(Cycles, 3), ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7NVA], mx, sew, IsWorstCase>;
     }
   }
 }
+
 foreach mx = SchedMxList in {
   defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
   defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxList>.c;

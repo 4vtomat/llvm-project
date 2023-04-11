@@ -9,7 +9,11 @@
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with def operands.
 
+#ifdef SIFIVE_CUSTOMIZATION
+defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
+#else
 defvar SchedMxList = ["M1", "M2", "M4", "M8", "MF2", "MF4", "MF8"];
+#endif // SIFIVE_CUSTOMIZATION
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
 defvar SchedMxListFW = !listremove(SchedMxList, ["M8", "MF8"]);
