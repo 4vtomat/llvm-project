@@ -2117,12 +2117,8 @@ include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZfa.td"
 include "RISCVInstrInfoZfh.td"
 include "RISCVInstrInfoZicbo.td"
-<<<<<<< HEAD
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
-include "SiFive_RISCVInstrInfoZihintntl.td" // SIFIVE
-=======
 include "RISCVInstrInfoZicond.td"
->>>>>>> eopXD/eopc/for-pulldown
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
