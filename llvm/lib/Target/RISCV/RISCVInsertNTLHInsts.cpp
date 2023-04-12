@@ -68,10 +68,31 @@ bool RISCVInsertNTLHInsts::runOnMachineFunction(MachineFunction &MF) {
       MachineMemOperand *MMO = *(MBBI.memoperands_begin());
       if (MMO->isNonTemporal()) {
         DebugLoc DL = MBBI.getDebugLoc();
+#if SIFIVE_CUSTOMIZATION
+        uint64_t NontemporalMode = 0;
+        if (MMO->getFlags() & MONontemporalBit0)
+          NontemporalMode += 0b1;
+        if (MMO->getFlags() & MONontemporalBit1)
+          NontemporalMode += 0b10;
+
+        static const uint16_t NTLOpc[] = {
+            RISCV::PseudoNTLP1, RISCV::PseudoNTLPALL, RISCV::PseudoNTLS1,
+            RISCV::PseudoNTLALL};
+        static const uint16_t CNTLOpc[] = {
+            RISCV::PseudoCNTLP1, RISCV::PseudoCNTLPALL, RISCV::PseudoCNTLS1,
+            RISCV::PseudoCNTLALL};
+        unsigned CurrNTLOpc;
+        if (ST.hasStdExtC() && ST.enableRVCHintInstrs())
+          CurrNTLOpc = CNTLOpc[NontemporalMode];
+        else
+          CurrNTLOpc = NTLOpc[NontemporalMode];
+        BuildMI(MBB, MBBI, DL, TII->get(CurrNTLOpc));
+#else
         if (ST.hasStdExtCOrZca() && ST.enableRVCHintInstrs())
           BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoCNTLALL));
         else
           BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoNTLALL));
+#endif
         Changed = true;
       }
     }
