@@ -7526,7 +7526,6 @@ void SelectionDAGBuilder::visitVPLoad(
   setValue(&VPIntrin, LD);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void SelectionDAGBuilder::visitVPLoadFF(
     const VPIntrinsic &VPIntrin, EVT VT, EVT EVLVT,
@@ -7558,13 +7557,9 @@ void SelectionDAGBuilder::visitVPLoadFF(
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-void SelectionDAGBuilder::visitVPGather(const VPIntrinsic &VPIntrin, EVT VT,
-                                        SmallVector<SDValue, 7> &OpValues) {
-=======
 void SelectionDAGBuilder::visitVPGather(
     const VPIntrinsic &VPIntrin, EVT VT,
     const SmallVectorImpl<SDValue> &OpValues) {
->>>>>>> eopXD/eopc/for-pulldown
   SDLoc DL = getCurSDLoc();
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
   Value *PtrOperand = VPIntrin.getArgOperand(0);
