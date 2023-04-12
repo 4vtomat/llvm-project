@@ -117,7 +117,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svinval", RISCVExtensionVersion{1, 0}},
 
     // vendor-defined ('X') extensions
-    {"xsfvcp", RISCVExtensionVersion{1, 0}},
     {"xtheadba", RISCVExtensionVersion{1, 0}},
     {"xtheadbb", RISCVExtensionVersion{1, 0}},
     {"xtheadbs", RISCVExtensionVersion{1, 0}},
@@ -936,7 +935,6 @@ static const char *ImpliedExtsZvfh[] = {"zve32f"};
 static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb", "zvkb"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
-static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZfa[] = {"f"};
@@ -957,7 +955,6 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
-    {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
     {{"zcb"}, {ImpliedExtsZcb}},
     {{"zdinx"}, {ImpliedExtsZdinx}},
