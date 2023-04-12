@@ -2453,7 +2453,9 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
     // 1) if the memoryaccess is outside the loop
     // 2) the earliest access is at the loop header,
     // if the memory loaded is the phi node
-<<<<<<< HEAD
+
+    BatchAAResults BAA(MSSA->getAA());
+    MemoryAccess *Source = getClobberingMemoryAccess(*MSSA, BAA, Flags, MU);
 #if SIFIVE_CUSTOMIZATION
     if (NewStructTBAAPtrContext) {
       if (!MSSA->isLiveOnEntryDef(Source) &&
@@ -2465,11 +2467,6 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
       return false;
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
-    BatchAAResults BAA(MSSA->getAA());
-    MemoryAccess *Source = getClobberingMemoryAccess(*MSSA, BAA, Flags, MU);
->>>>>>> eopXD/eopc/for-pulldown
     return !MSSA->isLiveOnEntryDef(Source) &&
            CurLoop->contains(Source->getBlock()) &&
            !(InvariantGroup && Source->getBlock() == CurLoop->getHeader() && isa<MemoryPhi>(Source));
