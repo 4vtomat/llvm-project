@@ -4992,7 +4992,6 @@ class VPatTernaryMaskPolicy<string intrinsic,
                     (mask_type V0),
                     GPR:$vl, sew, (XLenVT timm:$policy))>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 class VPatVC_OP4<string intrinsic_name,
                  string inst,
@@ -5062,19 +5061,6 @@ class VPatVC_V_OP3<string intrinsic_name,
                     GPR:$vl, sew)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-class VPatTernaryMaskTA<string intrinsic,
-                        string inst,
-                        string kind,
-                        ValueType result_type,
-                        ValueType op1_type,
-                        ValueType op2_type,
-                        ValueType mask_type,
-                        int sew,
-                        LMULInfo vlmul,
-                        VReg result_reg_class,
-                        RegisterClass op1_reg_class,
-                        DAGOperand op2_kind> :
-=======
 class VPatTernaryMaskTA_E<string intrinsic,
                           string inst,
                           string kind,
@@ -5088,7 +5074,6 @@ class VPatTernaryMaskTA_E<string intrinsic,
                           VReg result_reg_class,
                           RegisterClass op1_reg_class,
                           DAGOperand op2_kind> :
->>>>>>> eopXD/eopc/for-pulldown
   Pat<(result_type (!cast<Intrinsic>(intrinsic#"_mask")
                     (result_type result_reg_class:$rs3),
                     (op1_type op1_reg_class:$rs1),
