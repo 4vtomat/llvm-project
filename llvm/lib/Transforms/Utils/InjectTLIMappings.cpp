@@ -122,22 +122,14 @@ static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
          ElementCount::isKnownLE(VF, WidestFixedVF); VF *= 2)
       AddVariantDecl(VF, Predicated);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  for (ElementCount VF = ElementCount::getScalable(1);
-       ElementCount::isKnownLE(VF, WidestScalableVF); VF *= 2)
-    AddVariantDecl(VF);
+    for (ElementCount VF = ElementCount::getScalable(1);
 #else
-  // TODO: Add scalable variants once we're able to test them.
-  assert(WidestScalableVF.isZero() &&
-         "Scalable vector mappings not yet supported");
-#endif
-=======
     for (ElementCount VF = ElementCount::getScalable(2);
+#endif
          ElementCount::isKnownLE(VF, WidestScalableVF); VF *= 2)
       AddVariantDecl(VF, Predicated);
   }
->>>>>>> eopXD/eopc/for-pulldown
 
   VFABI::setVectorVariantNames(&CI, Mappings);
 }
