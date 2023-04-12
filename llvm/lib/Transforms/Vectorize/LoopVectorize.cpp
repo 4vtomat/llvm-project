@@ -4206,11 +4206,11 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   Value *Incoming = State.get(PreviousDef, UF - 1);
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   Value *RVL =
       State.Plan->getRVL() ? State.get(State.Plan->getRVL(), 0) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
+  Value *RuntimeVF = nullptr;
   if (VF.isVector()) {
     auto *One = ConstantInt::get(IdxTy, 1);
     Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
@@ -4220,15 +4220,8 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
     // current function in VPLane is it does use different lane kind for fixed
     // and scalable vectors, which makes it hard to use here. Also for RVV VLA
     // we have to provide offset from the last lane.
-    auto *RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
+    RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Value *RuntimeVF = nullptr;
-  if (VF.isVector()) {
-    auto *One = ConstantInt::get(IdxTy, 1);
-    Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
-    RuntimeVF = getRuntimeVF(Builder, IdxTy, VF);
->>>>>>> eopXD/eopc/for-pulldown
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     ExtractForScalar =
         Builder.CreateExtractElement(Incoming, LastIdx, "vector.recur.extract");
@@ -4255,6 +4248,42 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
       ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
           Incoming, Idx, "vector.recur.extract.for.phi");
+#if SIFIVE_CUSTOMIZATION
+      if (RVL) {
+        // Take care of the corner case when last vector iteration processed just
+        // one element. In this case extract of the `RVL-2` element of the
+        // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
+        // last iteration.
+        //
+        //   vector.ph:
+        //     v_init = vector(..., ..., ..., a[-1])
+        //     initial_vl = vsetvli tripcount
+        //     br vector.body
+        //
+        //   vector.body
+        //     i = phi [0, vector.ph], [i+4, vector.body]
+        //     v1 = phi [v_init, vector.ph], [v2, vector.body]
+        //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl, %vector.body ]
+        //
+        //     v2 = a[i, i+1, i+2, i+3];
+        //     v3 = vector(v1(3), v2(0, 1, 2))
+        //     b[i, i+1, i+2, i+3] = v2 - v3
+        //     br cond, vector.body, middle.block
+        //
+        // Take the value of the `PhiR`(`v1`) as it contains value from the
+        // previous iteration (or the initial value) and extract last lane using
+        // `PrevRVL`(`prev.rvl`)
+        Value *Cond =
+            Builder.CreateICmpEQ(RVL, ConstantInt::get(RVL->getType(), 1));
+
+        Idx = Builder.CreateSub(State.get(State.Plan->getPrevRVL(), 0),
+                                ConstantInt::get(IdxTy, 1));
+        Value *PreviousValue = Builder.CreateExtractElement(
+            State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
+        ExtractForPhiUsedOutsideLoop =
+            Builder.CreateSelect(Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
+      }
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       assert(UF > 1 && "VF and UF cannot both be 1");
       // When loop is unrolled without vectorizing, initialize
@@ -4271,64 +4300,6 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       State.Plan->removeLiveOut(LCSSAPhi);
     }
   }
-<<<<<<< HEAD
-  // Extract the second last element in the middle block if the
-  // Phi is used outside the loop. We need to extract the phi itself
-  // and not the last element (the phi update in the current iteration). This
-  // will be the value when jumping to the exit block from the LoopMiddleBlock,
-  // when the scalar loop is not run at all.
-  Value *ExtractForPhiUsedOutsideLoop = nullptr;
-  if (VF.isVector()) {
-#if SIFIVE_CUSTOMIZATION
-    auto *RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
-#endif // SIFIVE_CUSTOMIZATION
-    auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
-    ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
-        Incoming, Idx, "vector.recur.extract.for.phi");
-#if SIFIVE_CUSTOMIZATION
-    if (RVL) {
-      // Take care of the corner case when last vector iteration processed just
-      // one element. In this case extract of the `RVL-2` element of the
-      // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
-      // last iteration.
-      //
-      //   vector.ph:
-      //     v_init = vector(..., ..., ..., a[-1])
-      //     initial_vl = vsetvli tripcount
-      //     br vector.body
-      //
-      //   vector.body
-      //     i = phi [0, vector.ph], [i+4, vector.body]
-      //     v1 = phi [v_init, vector.ph], [v2, vector.body]
-      //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl, %vector.body ]
-      //
-      //     v2 = a[i, i+1, i+2, i+3];
-      //     v3 = vector(v1(3), v2(0, 1, 2))
-      //     b[i, i+1, i+2, i+3] = v2 - v3
-      //     br cond, vector.body, middle.block
-      //
-      // Take the value of the `PhiR`(`v1`) as it contains value from the
-      // previous iteration (or the initial value) and extract last lane using
-      // `PrevRVL`(`prev.rvl`)
-      Value *Cond =
-          Builder.CreateICmpEQ(RVL, ConstantInt::get(RVL->getType(), 1));
-
-      Idx = Builder.CreateSub(State.get(State.Plan->getPrevRVL(), 0),
-                              ConstantInt::get(IdxTy, 1));
-      Value *PreviousValue = Builder.CreateExtractElement(
-          State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
-      ExtractForPhiUsedOutsideLoop =
-          Builder.CreateSelect(Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-  } else if (UF > 1)
-    // When loop is unrolled without vectorizing, initialize
-    // ExtractForPhiUsedOutsideLoop with the value just prior to unrolled value
-    // of `Incoming`. This is analogous to the vectorized case above: extracting
-    // the second last element when VF > 1.
-    ExtractForPhiUsedOutsideLoop = State.get(PreviousDef, UF - 2);
-=======
->>>>>>> eopXD/eopc/for-pulldown
 
   // Fix the initial value of the original recurrence in the scalar loop.
   Builder.SetInsertPoint(&*LoopScalarPreHeader->begin());
