@@ -26,11 +26,7 @@ add_llvm_target(RISCVCodeGen
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
-<<<<<<< HEAD
-  SiFive_RISCVInsertNTLHInsts.cpp
-=======
   RISCVInsertNTLHInsts.cpp
->>>>>>> eopXD/eopc/for-pulldown
   RISCVInsertVSETVLI.cpp
   SiFive_RISCVInsertVXRMWrite.cpp
   SiFive_RISCVCleanupVXRM.cpp
