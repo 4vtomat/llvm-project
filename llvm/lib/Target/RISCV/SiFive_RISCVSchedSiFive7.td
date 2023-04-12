@@ -744,12 +744,12 @@ def : ReadAdvance<ReadVSETVLI, 2>;
 def : ReadAdvance<ReadVSETVL, 2>;
 
 // 7. Vector Loads and Stores
-defm "" : LMULReadAdvance<"ReadVLDX", 0>;
-defm "" : LMULReadAdvance<"ReadVSTX", 0>;
+def : ReadAdvance<ReadVLDX, 0>;
+def : ReadAdvance<ReadVSTX, 0>;
 defm "" : LMULReadAdvance<"ReadVSTEV", 0>;
 defm "" : LMULReadAdvance<"ReadVSTM", 0>;
-defm "" : LMULReadAdvance<"ReadVLDSX", 0>;
-defm "" : LMULReadAdvance<"ReadVSTSX", 0>;
+def : ReadAdvance<ReadVLDSX, 0>;
+def : ReadAdvance<ReadVSTSX, 0>;
 defm "" : LMULReadAdvance<"ReadVSTS8V", 0>;
 defm "" : LMULReadAdvance<"ReadVSTS16V", 0>;
 defm "" : LMULReadAdvance<"ReadVSTS32V", 0>;
