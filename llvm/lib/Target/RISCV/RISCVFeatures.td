@@ -10,10 +10,6 @@
 // RISC-V subtarget features and instruction predicates.
 //===----------------------------------------------------------------------===//
 
-<<<<<<< HEAD
-
-=======
->>>>>>> eopXD/eopc/for-pulldown
 def FeatureStdExtZicsr
     : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
                        "'zicsr' (CSRs)">;
@@ -21,7 +17,6 @@ def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicsr),
                                 "'Zicsr' (CSRs)">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZicntr
     : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
@@ -158,8 +153,6 @@ def FeatureStdExtSswg
                        "[H]S-mode.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> eopXD/eopc/for-pulldown
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
                        "'M' (Integer Multiplication and Division)">;
@@ -516,11 +509,7 @@ def FeatureStdExtZve32x
     : SubtargetFeature<"zve32x", "HasStdExtZve32x", "true",
                        "'Zve32x' (Vector Extensions for Embedded Processors "
                        "with maximal 32 EEW)",
-<<<<<<< HEAD
-                       [FeatureStdExtZicsr, FeatureStdExtZvl32b]>; // SIFIVE
-=======
                        [FeatureStdExtZicsr, FeatureStdExtZvl32b]>;
->>>>>>> eopXD/eopc/for-pulldown
 
 def FeatureStdExtZve32f
     : SubtargetFeature<"zve32f", "HasStdExtZve32f", "true",
@@ -685,9 +674,7 @@ def FeatureStdExtZvksh
 def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
                                "'Zvksh' (SM3 Hash Function Instructions.)">;
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
 def FeatureStdExtZicond
     : SubtargetFeature<"experimental-zicond", "HasStdExtZicond", "true",
@@ -696,7 +683,6 @@ def HasStdExtZicond : Predicate<"Subtarget->hasStdExtZicond()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicond),
                                 "'Zicond' (Integer Conditional Operations)">;
 
->>>>>>> eopXD/eopc/for-pulldown
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//
