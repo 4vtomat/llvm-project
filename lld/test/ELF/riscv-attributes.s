@@ -80,7 +80,11 @@
 # CHECK-NEXT:       Attribute {
 # CHECK-NEXT:         Tag: 5
 # CHECK-NEXT:         TagName: arch
+<<<<<<< HEAD
 # CHECK-NEXT:         Value: rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0_zicsr2p0
+=======
+# CHECK-NEXT:         Value: rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0{{$}}
+>>>>>>> eopXD/eopc/for-pulldown
 # CHECK-NEXT:       }
 # CHECK-NEXT:     }
 # CHECK-NEXT:   }
@@ -119,7 +123,11 @@
 # CHECK2-NEXT:       Attribute {
 # CHECK2-NEXT:         Tag: 5
 # CHECK2-NEXT:         TagName: arch
+<<<<<<< HEAD
 # CHECK2-NEXT:         Value: rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0_zicsr2p0_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0
+=======
+# CHECK2-NEXT:         Value: rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0{{$}}
+>>>>>>> eopXD/eopc/for-pulldown
 # CHECK2-NEXT:       }
 # CHECK2-NEXT:     }
 # CHECK2-NEXT:   }
@@ -136,7 +144,7 @@
 # CHECK3-NEXT:       Attribute {
 # CHECK3-NEXT:         Tag: 5
 # CHECK3-NEXT:         TagName: arch
-# CHECK3-NEXT:         Value: rv64i99p0
+# CHECK3-NEXT:         Value: rv64i99p0{{$}}
 # CHECK3-NEXT:       }
 # CHECK3-NEXT:     }
 # CHECK3-NEXT:   }
@@ -144,18 +152,18 @@
 
 #--- a.s
 .attribute stack_align, 16
-.attribute arch, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+.attribute arch, "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0"
 .attribute unaligned_access, 0
 
 #--- b.s
 .attribute stack_align, 16
-.attribute arch, "rv64i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+.attribute arch, "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0"
 .attribute priv_spec, 2
 .attribute priv_spec_minor, 2
 
 #--- c.s
 .attribute stack_align, 16
-.attribute arch, "rv64i2p0_f2p0_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0"
+.attribute arch, "rv64i2p1_f2p2_zkt1p0_zve32f1p0_zve32x1p0_zvl32b1p0"
 .attribute unaligned_access, 1
 .attribute priv_spec, 2
 .attribute priv_spec_minor, 2
@@ -172,7 +180,7 @@
 # UNRECOGNIZED_EXT1-NEXT:       Attribute {
 # UNRECOGNIZED_EXT1-NEXT:         Tag: 5
 # UNRECOGNIZED_EXT1-NEXT:         TagName: arch
-# UNRECOGNIZED_EXT1-NEXT:         Value: rv64i2p0_y2p0
+# UNRECOGNIZED_EXT1-NEXT:         Value: rv64i2p1_y2p0{{$}}
 # UNRECOGNIZED_EXT1-NEXT:       }
 # UNRECOGNIZED_EXT1-NEXT:     }
 # UNRECOGNIZED_EXT1-NEXT:   }
@@ -185,7 +193,7 @@
 .byte 1  # Tag_File
 .long .Lend-.Lbegin
 .byte 5  # Tag_RISCV_arch
-.asciz "rv64i2p0_y2p0"
+.asciz "rv64i2p1_y2p0"
 .Lend:
 
 #--- unrecognized_ext2.s
@@ -200,7 +208,7 @@
 # UNRECOGNIZED_EXT2-NEXT:       Attribute {
 # UNRECOGNIZED_EXT2-NEXT:         Tag: 5
 # UNRECOGNIZED_EXT2-NEXT:         TagName: arch
-# UNRECOGNIZED_EXT2-NEXT:         Value: rv64i2p0_zmadeup1p0
+# UNRECOGNIZED_EXT2-NEXT:         Value: rv64i2p1_zmadeup1p0{{$}}
 # UNRECOGNIZED_EXT2-NEXT:       }
 # UNRECOGNIZED_EXT2-NEXT:     }
 # UNRECOGNIZED_EXT2-NEXT:   }
@@ -213,7 +221,7 @@
 .byte 1  # Tag_File
 .long .Lend-.Lbegin
 .byte 5  # Tag_RISCV_arch
-.asciz "rv64i2p0_zmadeup1p0"
+.asciz "rv64i2p1_zmadeup1p0"
 .Lend:
 
 #--- unrecognized_version.s

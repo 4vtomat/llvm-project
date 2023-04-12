@@ -28,8 +28,9 @@
 ; CHECK-NEXT:       Expand Atomic instructions
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
-; CHECK-NEXT:       RISCV gather/scatter lowering
-; CHECK-NEXT:       RISCV CodeGenPrepare
+; CHECK-NEXT:       RISC-V gather/scatter lowering
+; CHECK-NEXT:       Interleaved Access Pass
+; CHECK-NEXT:       RISC-V CodeGenPrepare
 ; CHECK-NEXT:       Module Verifier
 ; CHECK-NEXT:       Basic Alias Analysis (stateless AA impl)
 ; CHECK-NEXT:       Canonicalize natural loops
@@ -84,7 +85,7 @@
 ; CHECK-NEXT:       Assignment Tracking Analysis
 ; CHECK-NEXT:       Lazy Branch Probability Analysis
 ; CHECK-NEXT:       Lazy Block Frequency Analysis
-; CHECK-NEXT:       RISCV DAG->DAG Pattern Instruction Selection
+; CHECK-NEXT:       RISC-V DAG->DAG Pattern Instruction Selection
 ; CHECK-NEXT:       Finalize ISel and expand pseudo-instructions
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Early Tail Duplication
@@ -108,6 +109,7 @@
 ; CHECK-NEXT:       Machine Trace Metrics
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine InstCombiner
+<<<<<<< HEAD
 ; RV64-NEXT:        RISCV sext.w Removal
 ; RV64-NEXT:        RISCV Strip W Suffix
 ; CHECK-NEXT:       RISCV Pre-RA pseudo instruction expansion pass
@@ -115,8 +117,14 @@
 ; CHECK-NEXT:       RISCV Cleanup VXRM pass
 ; CHECK-NEXT:       RISCV Insert VSETVLI pass
 ; CHECK-NEXT:       RISCV Insert required VXRM values
+=======
+; RV64-NEXT:        RISC-V Optimize W Instructions
+; CHECK-NEXT:       RISC-V Pre-RA pseudo instruction expansion pass
+; CHECK-NEXT:       RISC-V Merge Base Offset
+; CHECK-NEXT:       RISC-V Insert VSETVLI pass
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:       Detect Dead Lanes
-; CHECK-NEXT:       RISCV init undef pass
+; CHECK-NEXT:       RISC-V init undef pass
 ; CHECK-NEXT:       Process Implicit Definitions
 ; CHECK-NEXT:       Remove unreachable machine basic blocks
 ; CHECK-NEXT:       Live Variable Analysis
@@ -143,7 +151,7 @@
 ; CHECK-NEXT:       Stack Slot Coloring
 ; CHECK-NEXT:       Machine Copy Propagation Pass
 ; CHECK-NEXT:       Machine Loop Invariant Code Motion
-; CHECK-NEXT:       RISCV Redundant Copy Elimination
+; CHECK-NEXT:       RISC-V Redundant Copy Elimination
 ; CHECK-NEXT:       Remove Redundant DEBUG_VALUE analysis
 ; CHECK-NEXT:       Fixup Statepoint Caller Saved
 ; CHECK-NEXT:       PostRA Machine Sink
@@ -174,7 +182,7 @@
 ; CHECK-NEXT:       Implement the 'patchable-function' attribute
 ; CHECK-NEXT:       RISCV Machine Constant Propagation
 ; CHECK-NEXT:       Branch relaxation pass
-; CHECK-NEXT:       RISCV Make Compressible
+; CHECK-NEXT:       RISC-V Make Compressible
 ; CHECK-NEXT:       Machine Copy Propagation Pass
 ; CHECK-NEXT:       Contiguously Lay Out Funclets
 ; CHECK-NEXT:       StackMap Liveness Analysis
@@ -185,10 +193,16 @@
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine Optimization Remark Emitter
 ; CHECK-NEXT:       Stack Frame Layout Analysis
+<<<<<<< HEAD
 ; CHECK-NEXT:       RISCV pseudo instruction expansion pass
 ; CHECK-NEXT:       RISCV insert NTLH instruction pass
 ; CHECK-NEXT:       RISCV atomic pseudo instruction expansion pass
+=======
+; CHECK-NEXT:       RISC-V pseudo instruction expansion pass
+; CHECK-NEXT:       RISC-V insert NTLH instruction pass
+; CHECK-NEXT:       RISC-V atomic pseudo instruction expansion pass
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine Optimization Remark Emitter
-; CHECK-NEXT:       RISCV Assembly Printer
+; CHECK-NEXT:       RISC-V Assembly Printer
 ; CHECK-NEXT:       Free MachineFunction

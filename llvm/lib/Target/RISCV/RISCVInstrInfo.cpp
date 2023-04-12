@@ -1,4 +1,4 @@
-//===-- RISCVInstrInfo.cpp - RISCV Instruction Information ------*- C++ -*-===//
+//===-- RISCVInstrInfo.cpp - RISC-V Instruction Information -----*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the RISCV implementation of the TargetInstrInfo class.
+// This file contains the RISC-V implementation of the TargetInstrInfo class.
 //
 //===----------------------------------------------------------------------===//
 
@@ -951,7 +951,7 @@ unsigned RISCVInstrInfo::insertBranch(
   // Shouldn't be a fall through.
   assert(TBB && "insertBranch must not be told to insert a fallthrough");
   assert((Cond.size() == 3 || Cond.size() == 0) &&
-         "RISCV branch conditions have two components!");
+         "RISC-V branch conditions have two components!");
 
   // Unconditional branch.
   if (Cond.empty()) {
@@ -1270,6 +1270,7 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
                               *TM.getMCAsmInfo());
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const auto *MF = MI.getMF();
   const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
@@ -1306,6 +1307,14 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
     const auto &ST = MF->getSubtarget<RISCVSubtarget>();
     if (ST.hasStdExtZihintntl() && MMO->isNonTemporal()) {
       if (ST.hasStdExtC() && ST.enableRVCHintInstrs()) {
+=======
+  if (!MI.memoperands_empty()) {
+    MachineMemOperand *MMO = *(MI.memoperands_begin());
+    const MachineFunction &MF = *MI.getParent()->getParent();
+    const auto &ST = MF.getSubtarget<RISCVSubtarget>();
+    if (ST.hasStdExtZihintntl() && MMO->isNonTemporal()) {
+      if (ST.hasStdExtCOrZca() && ST.enableRVCHintInstrs()) {
+>>>>>>> eopXD/eopc/for-pulldown
         if (isCompressibleInst(MI, STI))
           return 4; // c.ntl.all + c.load/c.store
         return 6;   // c.ntl.all + load/store
@@ -1314,8 +1323,11 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
     }
   }
 
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
   if (MI.getParent() && MI.getParent()->getParent()) {
     if (isCompressibleInst(MI, STI))
       return 2;
@@ -1745,7 +1757,9 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         CASE_OPERAND_UIMM(3)
         CASE_OPERAND_UIMM(4)
         CASE_OPERAND_UIMM(5)
+        CASE_OPERAND_UIMM(6)
         CASE_OPERAND_UIMM(7)
+        CASE_OPERAND_UIMM(8)
         CASE_OPERAND_UIMM(12)
         CASE_OPERAND_UIMM(20)
           // clang-format on
@@ -2712,6 +2726,7 @@ void RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
   }
 }
 
+<<<<<<< HEAD
 // Checks if all users only demand the lower \p OrigBits of the original
 // instruction's result.
 // TODO: handle multiple interdependent transformations
@@ -3089,6 +3104,8 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
 
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
 // Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
 bool RISCV::isSEXT_W(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::ADDIW && MI.getOperand(1).isReg() &&

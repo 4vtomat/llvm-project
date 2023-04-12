@@ -436,12 +436,28 @@ public:
     return ConditionalAssumes;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
   bool useVLAVectorizer() const {
     return TTI->useVLAVectorizer();
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
+    return &PSE;
+  }
+
+  Loop *getLoop() const { return TheLoop; }
+
+  LoopInfo *getLoopInfo() const { return LI; }
+
+  AssumptionCache *getAssumptionCache() const { return AC; }
+
+  ScalarEvolution *getScalarEvolution() const { return PSE.getSE(); }
+
+  DominatorTree *getDominatorTree() const { return DT; }
+>>>>>>> eopXD/eopc/for-pulldown
 
 private:
   /// Return true if the pre-header, exiting and latch blocks of \p Lp and all
@@ -503,16 +519,6 @@ private:
   /// better choice for the main induction than the existing one.
   void addInductionPhi(PHINode *Phi, const InductionDescriptor &ID,
                        SmallPtrSetImpl<Value *> &AllowedExit);
-
-  /// If an access has a symbolic strides, this maps the pointer value to
-  /// the stride symbol.
-  const ValueToValueMap *getSymbolicStrides() const {
-    // FIXME: Currently, the set of symbolic strides is sometimes queried before
-    // it's collected.  This happens from canVectorizeWithIfConvert, when the
-    // pointer is checked to reference consecutive elements suitable for a
-    // masked access.
-    return LAI ? &LAI->getSymbolicStrides() : nullptr;
-  }
 
   /// The loop that we evaluate.
   Loop *TheLoop;

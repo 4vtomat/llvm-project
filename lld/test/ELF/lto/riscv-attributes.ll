@@ -30,7 +30,11 @@
 ; CHECK-NEXT:       Attribute {
 ; CHECK-NEXT:         Tag: 5
 ; CHECK-NEXT:         TagName: arch
+<<<<<<< HEAD
 ; CHECK-NEXT:         Value: rv32i2p1_m2p0_a2p0_f2p0_d2p0_c2p0_zicsr2p0_zbb1p0
+=======
+; CHECK-NEXT:         Value: rv32i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0_zbb1p0{{$}}
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:       }
 ; CHECK-NEXT:     }
 ; CHECK-NEXT:   }
@@ -38,10 +42,10 @@
 
 ;--- 1.s
 .attribute 4, 16
-.attribute 5, "rv32i2p0_m2p0_a2p0_f2p0_d2p0_c2p0"
+.attribute 5, "rv32i2p1_m2p0_a2p1_f2p2_d2p2_c2p0"
 ;--- 2.s
 .attribute 4, 16
-.attribute 5, "rv32i2p0_m2p0_f2p0_d2p0_zbb1p0"
+.attribute 5, "rv32i2p1_m2p0_f2p2_d2p2_zbb1p0"
 .attribute 6, 1
 
 ;--- a.ll

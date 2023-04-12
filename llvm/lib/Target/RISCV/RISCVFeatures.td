@@ -1,4 +1,4 @@
-//===-- RISCVFeatures.td - RISCV Features and Extensions ---*- tablegen -*-===//
+//===-- RISCVFeatures.td - RISC-V Features and Extensions --*- tablegen -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -10,7 +10,10 @@
 // RISC-V subtarget features and instruction predicates.
 //===----------------------------------------------------------------------===//
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
 def FeatureStdExtZicsr
     : SubtargetFeature<"zicsr", "HasStdExtZicsr", "true",
                        "'zicsr' (CSRs)">;
@@ -18,6 +21,7 @@ def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicsr),
                                 "'Zicsr' (CSRs)">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZicntr
     : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
@@ -154,6 +158,8 @@ def FeatureStdExtSswg
                        "[H]S-mode.)", []>;
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
                        "'M' (Integer Multiplication and Division)">;
@@ -241,14 +247,15 @@ def HasStdExtZfh : Predicate<"Subtarget->hasStdExtZfh()">,
 def NoStdExtZfh : Predicate<"!Subtarget->hasStdExtZfh()">;
 
 def HasStdExtZfhOrZfhmin
-    : Predicate<"Subtarget->hasStdExtZfh() || Subtarget->hasStdExtZfhmin()">,
+    : Predicate<"Subtarget->hasStdExtZfhOrZfhmin()">,
                 AssemblerPredicate<(any_of FeatureStdExtZfh, FeatureStdExtZfhmin),
                                    "'Zfh' (Half-Precision Floating-Point) or "
                                    "'Zfhmin' (Half-Precision Floating-Point Minimal)">;
 
 def FeatureStdExtZfinx
     : SubtargetFeature<"zfinx", "HasStdExtZfinx", "true",
-                       "'Zfinx' (Float in Integer)">;
+                       "'Zfinx' (Float in Integer)",
+                       [FeatureStdExtZicsr]>;
 def HasStdExtZfinx : Predicate<"Subtarget->hasStdExtZfinx()">,
                                AssemblerPredicate<(all_of FeatureStdExtZfinx),
                                "'Zfinx' (Float in Integer)">;
@@ -447,43 +454,43 @@ def FeatureStdExtZk
                         FeatureStdExtZkr,
                         FeatureStdExtZkt]>;
 
-def FeatureExtZca
+def FeatureStdExtZca
     : SubtargetFeature<"experimental-zca", "HasStdExtZca", "true",
                        "'Zca' (part of the C extension, excluding compressed "
                        "floating point loads/stores)">;
 
 def HasStdExtCOrZca
-    : Predicate<"Subtarget->hasStdExtC() || Subtarget->hasStdExtZca()">,
-                AssemblerPredicate<(any_of FeatureStdExtC, FeatureExtZca),
+    : Predicate<"Subtarget->hasStdExtCOrZca()">,
+                AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZca),
                                    "'C' (Compressed Instructions) or "
                                    "'Zca' (part of the C extension, excluding "
                                    "compressed floating point loads/stores)">;
 
-def FeatureExtZcb
+def FeatureStdExtZcb
     : SubtargetFeature<"experimental-zcb", "HasStdExtZcb", "true",
                        "'Zcb' (Compressed basic bit manipulation instructions)",
-                       [FeatureExtZca]>;
+                       [FeatureStdExtZca]>;
 def HasStdExtZcb : Predicate<"Subtarget->hasStdExtZcb()">,
-                             AssemblerPredicate<(all_of FeatureExtZcb),
+                             AssemblerPredicate<(all_of FeatureStdExtZcb),
                              "'Zcb' (Compressed basic bit manipulation instructions)">;
 
-def FeatureExtZcd
+def FeatureStdExtZcd
     : SubtargetFeature<"experimental-zcd", "HasStdExtZcd", "true",
                        "'Zcd' (Compressed Double-Precision Floating-Point Instructions)">;
 
 def HasStdExtCOrZcd
     : Predicate<"Subtarget->hasStdExtC() || Subtarget->hasStdExtZcd()">,
-                AssemblerPredicate<(any_of FeatureStdExtC, FeatureExtZcd),
+                AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZcd),
                                    "'C' (Compressed Instructions) or "
                                    "'Zcd' (Compressed Double-Precision Floating-Point Instructions)">;
 
-def FeatureExtZcf
+def FeatureStdExtZcf
     : SubtargetFeature<"experimental-zcf", "HasStdExtZcf", "true",
                        "'Zcf' (Compressed Single-Precision Floating-Point Instructions)">;
 
 def HasStdExtCOrZcf
     : Predicate<"Subtarget->hasStdExtC() || Subtarget->hasStdExtZcf()">,
-                AssemblerPredicate<(any_of FeatureStdExtC, FeatureExtZcf),
+                AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZcf),
                                    "'C' (Compressed Instructions) or "
                                    "'Zcf' (Compressed Single-Precision Floating-Point Instructions)">;
 
@@ -509,7 +516,11 @@ def FeatureStdExtZve32x
     : SubtargetFeature<"zve32x", "HasStdExtZve32x", "true",
                        "'Zve32x' (Vector Extensions for Embedded Processors "
                        "with maximal 32 EEW)",
+<<<<<<< HEAD
                        [FeatureStdExtZicsr, FeatureStdExtZvl32b]>; // SIFIVE
+=======
+                       [FeatureStdExtZicsr, FeatureStdExtZvl32b]>;
+>>>>>>> eopXD/eopc/for-pulldown
 
 def FeatureStdExtZve32f
     : SubtargetFeature<"zve32f", "HasStdExtZve32f", "true",
@@ -674,7 +685,18 @@ def FeatureStdExtZvksh
 def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
                                "'Zvksh' (SM3 Hash Function Instructions.)">;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+def FeatureStdExtZicond
+    : SubtargetFeature<"experimental-zicond", "HasStdExtZicond", "true",
+                       "'Zicond' (Integer Conditional Operations)">;
+def HasStdExtZicond : Predicate<"Subtarget->hasStdExtZicond()">,
+                                AssemblerPredicate<(all_of FeatureStdExtZicond),
+                                "'Zicond' (Integer Conditional Operations)">;
+
+>>>>>>> eopXD/eopc/for-pulldown
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//

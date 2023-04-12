@@ -196,6 +196,10 @@ std::optional<Value *> InstCombiner::targetSimplifyDemandedVectorEltsIntrinsic(
   return std::nullopt;
 }
 
+bool InstCombiner::isValidAddrSpaceCast(unsigned FromAS, unsigned ToAS) const {
+  return TTI.isValidAddrSpaceCast(FromAS, ToAS);
+}
+
 Value *InstCombinerImpl::EmitGEPOffset(User *GEP) {
   return llvm::emitGEPOffset(&Builder, DL, GEP);
 }
@@ -1039,7 +1043,7 @@ static Constant *constantFoldOperationIntoSelectOperand(
     else if (auto *C = dyn_cast<Constant>(Op))
       ConstOps.push_back(C);
     else
-      llvm_unreachable("Operands should be select or constant");
+      return nullptr;
   }
   return ConstantFoldInstOperands(&I, ConstOps, I.getModule()->getDataLayout());
 }
@@ -1080,45 +1084,6 @@ Instruction *InstCombinerImpl::FoldOpIntoSelect(Instruction &Op, SelectInst *SI,
     // If vectors, verify that they have the same number of elements.
     if (SrcTy && SrcTy->getElementCount() != DestTy->getElementCount())
       return nullptr;
-  }
-
-  // Test if a CmpInst instruction is used exclusively by a select as
-  // part of a minimum or maximum operation. If so, refrain from doing
-  // any other folding. This helps out other analyses which understand
-  // non-obfuscated minimum and maximum idioms, such as ScalarEvolution
-  // and CodeGen. And in this case, at least one of the comparison
-  // operands has at least one user besides the compare (the select),
-  // which would often largely negate the benefit of folding anyway.
-  if (auto *CI = dyn_cast<CmpInst>(SI->getCondition())) {
-    if (CI->hasOneUse()) {
-      Value *Op0 = CI->getOperand(0), *Op1 = CI->getOperand(1);
-
-      // FIXME: This is a hack to avoid infinite looping with min/max patterns.
-      //        We have to ensure that vector constants that only differ with
-      //        undef elements are treated as equivalent.
-      auto areLooselyEqual = [](Value *A, Value *B) {
-        if (A == B)
-          return true;
-
-        // Test for vector constants.
-        Constant *ConstA, *ConstB;
-        if (!match(A, m_Constant(ConstA)) || !match(B, m_Constant(ConstB)))
-          return false;
-
-        // TODO: Deal with FP constants?
-        if (!A->getType()->isIntOrIntVectorTy() || A->getType() != B->getType())
-          return false;
-
-        // Compare for equality including undefs as equal.
-        auto *Cmp = ConstantExpr::getCompare(ICmpInst::ICMP_EQ, ConstA, ConstB);
-        const APInt *C;
-        return match(Cmp, m_APIntAllowUndef(C)) && C->isOne();
-      };
-
-      if ((areLooselyEqual(TV, Op0) && areLooselyEqual(FV, Op1)) ||
-          (areLooselyEqual(FV, Op0) && areLooselyEqual(TV, Op1)))
-        return nullptr;
-    }
   }
 
   // Make sure that one of the select arms constant folds successfully.
@@ -1379,6 +1344,7 @@ Instruction *InstCombinerImpl::foldBinOpIntoSelectOrPhi(BinaryOperator &I) {
   return nullptr;
 }
 
+<<<<<<< HEAD
 /// Given a pointer type and a constant offset, determine whether or not there
 /// is a sequence of GEP indices into the pointed type that will land us at the
 /// specified offset. If so, fill them into NewIndices and return the resultant
@@ -1407,6 +1373,8 @@ static Type *findElementAtOffset(PointerType *PtrTy, int64_t IntOffset,
   return Ty;
 }
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
 static bool shouldMergeGEPs(GEPOperator &GEP, GEPOperator &Src) {
   // If this GEP has only 0 indices, it is the same pointer as
   // Src. If Src is not a trivial GEP too, don't combine
@@ -2043,9 +2011,8 @@ Instruction *InstCombinerImpl::visitGEPOfGEP(GetElementPtrInst &GEP,
       return nullptr;   // Wait until our source is folded to completion.
 
   // For constant GEPs, use a more general offset-based folding approach.
-  // Only do this for opaque pointers, as the result element type may change.
   Type *PtrTy = Src->getType()->getScalarType();
-  if (PtrTy->isOpaquePointerTy() && GEP.hasAllConstantIndices() &&
+  if (GEP.hasAllConstantIndices() &&
       (Src->hasOneUse() || Src->hasAllConstantIndices())) {
     // Split Src into a variable part and a constant suffix.
     gep_type_iterator GTI = gep_type_begin(*Src);
@@ -2088,13 +2055,11 @@ Instruction *InstCombinerImpl::visitGEPOfGEP(GetElementPtrInst &GEP,
       // If both GEP are constant-indexed, and cannot be merged in either way,
       // convert them to a GEP of i8.
       if (Src->hasAllConstantIndices())
-        return isMergedGEPInBounds(*Src, *cast<GEPOperator>(&GEP))
-            ? GetElementPtrInst::CreateInBounds(
-                Builder.getInt8Ty(), Src->getOperand(0),
-                Builder.getInt(OffsetOld), GEP.getName())
-            : GetElementPtrInst::Create(
-                Builder.getInt8Ty(), Src->getOperand(0),
-                Builder.getInt(OffsetOld), GEP.getName());
+        return replaceInstUsesWith(
+            GEP, Builder.CreateGEP(
+                     Builder.getInt8Ty(), Src->getOperand(0),
+                     Builder.getInt(OffsetOld), "",
+                     isMergedGEPInBounds(*Src, *cast<GEPOperator>(&GEP))));
       return nullptr;
     }
 
@@ -2111,13 +2076,9 @@ Instruction *InstCombinerImpl::visitGEPOfGEP(GetElementPtrInst &GEP,
       IsInBounds &= Idx.isNonNegative() == ConstIndices[0].isNonNegative();
     }
 
-    return IsInBounds
-               ? GetElementPtrInst::CreateInBounds(Src->getSourceElementType(),
-                                                   Src->getOperand(0), Indices,
-                                                   GEP.getName())
-               : GetElementPtrInst::Create(Src->getSourceElementType(),
-                                           Src->getOperand(0), Indices,
-                                           GEP.getName());
+    return replaceInstUsesWith(
+        GEP, Builder.CreateGEP(Src->getSourceElementType(), Src->getOperand(0),
+                               Indices, "", IsInBounds));
   }
 
   if (Src->getResultElementType() != GEP.getSourceElementType())
@@ -2171,118 +2132,10 @@ Instruction *InstCombinerImpl::visitGEPOfGEP(GetElementPtrInst &GEP,
   }
 
   if (!Indices.empty())
-    return isMergedGEPInBounds(*Src, *cast<GEPOperator>(&GEP))
-               ? GetElementPtrInst::CreateInBounds(
-                     Src->getSourceElementType(), Src->getOperand(0), Indices,
-                     GEP.getName())
-               : GetElementPtrInst::Create(Src->getSourceElementType(),
-                                           Src->getOperand(0), Indices,
-                                           GEP.getName());
-
-  return nullptr;
-}
-
-// Note that we may have also stripped an address space cast in between.
-Instruction *InstCombinerImpl::visitGEPOfBitcast(BitCastInst *BCI,
-                                                 GetElementPtrInst &GEP) {
-  // With opaque pointers, there is no pointer element type we can use to
-  // adjust the GEP type.
-  PointerType *SrcType = cast<PointerType>(BCI->getSrcTy());
-  if (SrcType->isOpaque())
-    return nullptr;
-
-  Type *GEPEltType = GEP.getSourceElementType();
-  Type *SrcEltType = SrcType->getNonOpaquePointerElementType();
-  Value *SrcOp = BCI->getOperand(0);
-
-  // GEP directly using the source operand if this GEP is accessing an element
-  // of a bitcasted pointer to vector or array of the same dimensions:
-  // gep (bitcast <c x ty>* X to [c x ty]*), Y, Z --> gep X, Y, Z
-  // gep (bitcast [c x ty]* X to <c x ty>*), Y, Z --> gep X, Y, Z
-  auto areMatchingArrayAndVecTypes = [](Type *ArrTy, Type *VecTy,
-                                        const DataLayout &DL) {
-    auto *VecVTy = cast<FixedVectorType>(VecTy);
-    return ArrTy->getArrayElementType() == VecVTy->getElementType() &&
-           ArrTy->getArrayNumElements() == VecVTy->getNumElements() &&
-           DL.getTypeAllocSize(ArrTy) == DL.getTypeAllocSize(VecTy);
-  };
-  if (GEP.getNumOperands() == 3 &&
-      ((GEPEltType->isArrayTy() && isa<FixedVectorType>(SrcEltType) &&
-        areMatchingArrayAndVecTypes(GEPEltType, SrcEltType, DL)) ||
-       (isa<FixedVectorType>(GEPEltType) && SrcEltType->isArrayTy() &&
-        areMatchingArrayAndVecTypes(SrcEltType, GEPEltType, DL)))) {
-
-    // Create a new GEP here, as using `setOperand()` followed by
-    // `setSourceElementType()` won't actually update the type of the
-    // existing GEP Value. Causing issues if this Value is accessed when
-    // constructing an AddrSpaceCastInst
-    SmallVector<Value *, 8> Indices(GEP.indices());
-    Value *NGEP =
-        Builder.CreateGEP(SrcEltType, SrcOp, Indices, "", GEP.isInBounds());
-    NGEP->takeName(&GEP);
-
-    // Preserve GEP address space to satisfy users
-    if (NGEP->getType()->getPointerAddressSpace() != GEP.getAddressSpace())
-      return new AddrSpaceCastInst(NGEP, GEP.getType());
-
-    return replaceInstUsesWith(GEP, NGEP);
-  }
-
-  // See if we can simplify:
-  //   X = bitcast A* to B*
-  //   Y = gep X, <...constant indices...>
-  // into a gep of the original struct. This is important for SROA and alias
-  // analysis of unions. If "A" is also a bitcast, wait for A/X to be merged.
-  unsigned OffsetBits = DL.getIndexTypeSizeInBits(GEP.getType());
-  APInt Offset(OffsetBits, 0);
-
-  // If the bitcast argument is an allocation, The bitcast is for convertion
-  // to actual type of allocation. Removing such bitcasts, results in having
-  // GEPs with i8* base and pure byte offsets. That means GEP is not aware of
-  // struct or array hierarchy.
-  // By avoiding such GEPs, phi translation and MemoryDependencyAnalysis have
-  // a better chance to succeed.
-  if (!isa<BitCastInst>(SrcOp) && GEP.accumulateConstantOffset(DL, Offset) &&
-      !isAllocationFn(SrcOp, &TLI)) {
-    // If this GEP instruction doesn't move the pointer, just replace the GEP
-    // with a bitcast of the real input to the dest type.
-    if (!Offset) {
-      // If the bitcast is of an allocation, and the allocation will be
-      // converted to match the type of the cast, don't touch this.
-      if (isa<AllocaInst>(SrcOp)) {
-        // See if the bitcast simplifies, if so, don't nuke this GEP yet.
-        if (Instruction *I = visitBitCast(*BCI)) {
-          if (I != BCI) {
-            I->takeName(BCI);
-            I->insertInto(BCI->getParent(), BCI->getIterator());
-            replaceInstUsesWith(*BCI, I);
-          }
-          return &GEP;
-        }
-      }
-
-      if (SrcType->getPointerAddressSpace() != GEP.getAddressSpace())
-        return new AddrSpaceCastInst(SrcOp, GEP.getType());
-      return new BitCastInst(SrcOp, GEP.getType());
-    }
-
-    // Otherwise, if the offset is non-zero, we need to find out if there is a
-    // field at Offset in 'A's type.  If so, we can pull the cast through the
-    // GEP.
-    SmallVector<Value *, 8> NewIndices;
-    if (findElementAtOffset(SrcType, Offset.getSExtValue(), NewIndices, DL)) {
-      Value *NGEP = Builder.CreateGEP(SrcEltType, SrcOp, NewIndices, "",
-                                      GEP.isInBounds());
-
-      if (NGEP->getType() == GEP.getType())
-        return replaceInstUsesWith(GEP, NGEP);
-      NGEP->takeName(&GEP);
-
-      if (NGEP->getType()->getPointerAddressSpace() != GEP.getAddressSpace())
-        return new AddrSpaceCastInst(NGEP, GEP.getType());
-      return new BitCastInst(NGEP, GEP.getType());
-    }
-  }
+    return replaceInstUsesWith(
+        GEP, Builder.CreateGEP(
+                 Src->getSourceElementType(), Src->getOperand(0), Indices, "",
+                 isMergedGEPInBounds(*Src, *cast<GEPOperator>(&GEP))));
 
   return nullptr;
 }
@@ -2508,6 +2361,7 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   if (GEPType->isVectorTy())
     return nullptr;
 
+<<<<<<< HEAD
   // Handle gep(bitcast x) and gep(gep x, 0, 0, 0).
   Value *StrippedPtr = PtrOp->stripPointerCasts();
   PointerType *StrippedPtrTy = cast<PointerType>(StrippedPtr->getType());
@@ -2699,6 +2553,8 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
     if (Instruction *I = visitGEPOfBitcast(BCI, GEP))
       return I;
 
+=======
+>>>>>>> eopXD/eopc/for-pulldown
   if (!GEP.isInBounds()) {
     unsigned IdxWidth =
         DL.getIndexSizeInBits(PtrOp->getType()->getPointerAddressSpace());

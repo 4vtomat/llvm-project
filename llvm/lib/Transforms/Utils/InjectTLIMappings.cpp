@@ -40,7 +40,7 @@ STATISTIC(NumCompUsedAdded,
 /// CI (other than void) need to be widened to a VectorType of VF
 /// lanes.
 static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
-                                  const StringRef VFName) {
+                                  bool Predicate, const StringRef VFName) {
   Module *M = CI.getModule();
 
   // Add function declaration.
@@ -56,6 +56,8 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
 
   assert(!CI.getFunctionType()->isVarArg() &&
          "VarArg functions are not supported.");
+  if (Predicate)
+    Tys.push_back(ToVectorTy(Type::getInt1Ty(RetTy->getContext()), VF));
   FunctionType *FTy = FunctionType::get(RetTy, Tys, /*isVarArg=*/false);
   Function *VectorF =
       Function::Create(FTy, Function::ExternalLinkage, VFName, M);
@@ -95,19 +97,19 @@ static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
   const SetVector<StringRef> OriginalSetOfMappings(Mappings.begin(),
                                                    Mappings.end());
 
-  auto AddVariantDecl = [&](const ElementCount &VF) {
+  auto AddVariantDecl = [&](const ElementCount &VF, bool Predicate) {
     const std::string TLIName =
-        std::string(TLI.getVectorizedFunction(ScalarName, VF));
+        std::string(TLI.getVectorizedFunction(ScalarName, VF, Predicate));
     if (!TLIName.empty()) {
-      std::string MangledName =
-          VFABI::mangleTLIVectorName(TLIName, ScalarName, CI.arg_size(), VF);
+      std::string MangledName = VFABI::mangleTLIVectorName(
+          TLIName, ScalarName, CI.arg_size(), VF, Predicate);
       if (!OriginalSetOfMappings.count(MangledName)) {
         Mappings.push_back(MangledName);
         ++NumCallInjected;
       }
       Function *VariantF = M->getFunction(TLIName);
       if (!VariantF)
-        addVariantDeclaration(CI, VF, TLIName);
+        addVariantDeclaration(CI, VF, Predicate, TLIName);
     }
   };
 
@@ -115,10 +117,12 @@ static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
   ElementCount WidestFixedVF, WidestScalableVF;
   TLI.getWidestVF(ScalarName, WidestFixedVF, WidestScalableVF);
 
-  for (ElementCount VF = ElementCount::getFixed(2);
-       ElementCount::isKnownLE(VF, WidestFixedVF); VF *= 2)
-    AddVariantDecl(VF);
+  for (bool Predicated : {false, true}) {
+    for (ElementCount VF = ElementCount::getFixed(2);
+         ElementCount::isKnownLE(VF, WidestFixedVF); VF *= 2)
+      AddVariantDecl(VF, Predicated);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   for (ElementCount VF = ElementCount::getScalable(1);
        ElementCount::isKnownLE(VF, WidestScalableVF); VF *= 2)
@@ -128,6 +132,12 @@ static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
   assert(WidestScalableVF.isZero() &&
          "Scalable vector mappings not yet supported");
 #endif
+=======
+    for (ElementCount VF = ElementCount::getScalable(2);
+         ElementCount::isKnownLE(VF, WidestScalableVF); VF *= 2)
+      AddVariantDecl(VF, Predicated);
+  }
+>>>>>>> eopXD/eopc/for-pulldown
 
   VFABI::setVectorVariantNames(&CI, Mappings);
 }

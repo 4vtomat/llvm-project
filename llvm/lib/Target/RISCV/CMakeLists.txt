@@ -26,7 +26,11 @@ add_llvm_target(RISCVCodeGen
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
+<<<<<<< HEAD
   SiFive_RISCVInsertNTLHInsts.cpp
+=======
+  RISCVInsertNTLHInsts.cpp
+>>>>>>> eopXD/eopc/for-pulldown
   RISCVInsertVSETVLI.cpp
   SiFive_RISCVInsertVXRMWrite.cpp
   SiFive_RISCVCleanupVXRM.cpp
@@ -40,11 +44,10 @@ add_llvm_target(RISCVCodeGen
   RISCVMacroFusion.cpp
   RISCVMCInstLower.cpp
   RISCVMergeBaseOffset.cpp
+  RISCVOptWInstrs.cpp
   RISCVRedundantCopyElimination.cpp
   RISCVRegisterInfo.cpp
   RISCVRVVInitUndef.cpp
-  RISCVSExtWRemoval.cpp
-  RISCVStripWSuffix.cpp
   RISCVSubtarget.cpp
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp

@@ -49,10 +49,11 @@ class WebAssemblyAsmTypeCheck final {
   bool getTable(SMLoc ErrorLoc, const MCInst &Inst, wasm::ValType &Type);
 
 public:
-  WebAssemblyAsmTypeCheck(MCAsmParser &Parser, const MCInstrInfo &MII, bool is64);
+  WebAssemblyAsmTypeCheck(MCAsmParser &Parser, const MCInstrInfo &MII,
+                          bool is64);
 
   void funcDecl(const wasm::WasmSignature &Sig);
-  void localDecl(const SmallVector<wasm::ValType, 4> &Locals);
+  void localDecl(const SmallVectorImpl<wasm::ValType> &Locals);
   void setLastSig(const wasm::WasmSignature &Sig) { LastSig = Sig; }
   bool endOfFunction(SMLoc ErrorLoc);
   bool typeCheck(SMLoc ErrorLoc, const MCInst &Inst, OperandVector &Operands);
@@ -68,4 +69,4 @@ public:
 
 } // end namespace llvm
 
-#endif  // LLVM_LIB_TARGET_WEBASSEMBLY_ASMPARSER_TYPECHECK_H
+#endif // LLVM_LIB_TARGET_WEBASSEMBLY_ASMPARSER_TYPECHECK_H

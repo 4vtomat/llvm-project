@@ -23,6 +23,7 @@
 using namespace llvm;
 
 #define DEBUG_TYPE "riscv-merge-base-offset"
+<<<<<<< HEAD
 #define RISCV_MERGE_BASE_OFFSET_NAME "RISCV Merge Base Offset"
 
 #if SIFIVE_CUSTOMIZATION
@@ -33,6 +34,9 @@ static cl::opt<bool> EnableAdvancedMergeBaseOffsetOpt(
     cl::desc("Enable advanced merge base offset optimization."));
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+#define RISCV_MERGE_BASE_OFFSET_NAME "RISC-V Merge Base Offset"
+>>>>>>> eopXD/eopc/for-pulldown
 namespace {
 
 class RISCVMergeBaseOffsetOpt : public MachineFunctionPass {

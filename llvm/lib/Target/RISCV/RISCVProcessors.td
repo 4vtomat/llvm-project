@@ -1,4 +1,4 @@
-//===-- RISCVProcessors.td - RISCV Processors --------------*- tablegen -*-===//
+//===-- RISCVProcessors.td - RISC-V Processors -------------*- tablegen -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -37,10 +37,14 @@ def : ProcessorModel<"generic", NoSchedModel, []>;
 
 def ROCKET_RV32 : RISCVProcessorModel<"rocket-rv32",
                                       RocketModel,
-                                      [Feature32Bit]>;
+                                      [Feature32Bit,
+                                       FeatureStdExtZifencei,
+                                       FeatureStdExtZicsr]>;
 def ROCKET_RV64 : RISCVProcessorModel<"rocket-rv64",
                                       RocketModel,
-                                      [Feature64Bit]>;
+                                      [Feature64Bit,
+                                       FeatureStdExtZifencei,
+                                       FeatureStdExtZicsr]>;
 def ROCKET : RISCVTuneProcessorModel<"rocket",
                                      RocketModel>;
 
@@ -73,16 +77,26 @@ def SIFIVE_P600 : RISCVTuneProcessorModel<"sifive-p600-series",
 def SIFIVE_E20 : RISCVProcessorModel<"sifive-e20",
                                      RocketModel,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZicsr,
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtC]>;
 
 def SIFIVE_E21 : RISCVProcessorModel<"sifive-e21",
                                      RocketModel,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZicsr,
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtC]>;
@@ -90,7 +104,11 @@ def SIFIVE_E21 : RISCVProcessorModel<"sifive-e21",
 def SIFIVE_E24 : RISCVProcessorModel<"sifive-e24",
                                      RocketModel,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -99,8 +117,13 @@ def SIFIVE_E24 : RISCVProcessorModel<"sifive-e24",
 def SIFIVE_E31 : RISCVProcessorModel<"sifive-e31",
                                      RocketModel,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+                                      FeatureStdExtZicsr,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtC]>;
@@ -108,7 +131,11 @@ def SIFIVE_E31 : RISCVProcessorModel<"sifive-e31",
 def SIFIVE_E34 : RISCVProcessorModel<"sifive-e34",
                                      RocketModel,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -117,7 +144,11 @@ def SIFIVE_E34 : RISCVProcessorModel<"sifive-e34",
 def SIFIVE_E76 : RISCVProcessorModel<"sifive-e76",
                                      SiFive7Model,
                                      [Feature32Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -160,8 +191,13 @@ def SIFIVE_E76N : RISCVProcessorModel<"sifive-e76n", SiFive7NModel,
 def SIFIVE_S21 : RISCVProcessorModel<"sifive-s21",
                                      RocketModel,
                                      [Feature64Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZicsr,
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtC]>;
@@ -169,8 +205,13 @@ def SIFIVE_S21 : RISCVProcessorModel<"sifive-s21",
 def SIFIVE_S51 : RISCVProcessorModel<"sifive-s51",
                                      RocketModel,
                                      [Feature64Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZicsr, // SIFIVE
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZicsr,
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtC]>;
@@ -178,7 +219,11 @@ def SIFIVE_S51 : RISCVProcessorModel<"sifive-s51",
 def SIFIVE_S54 : RISCVProcessorModel<"sifive-s54",
                                       RocketModel,
                                       [Feature64Bit,
+<<<<<<< HEAD
                                        FeatureStdExtZifencei, // SIFIVE
+=======
+                                       FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                        FeatureStdExtM,
                                        FeatureStdExtA,
                                        FeatureStdExtF,
@@ -201,7 +246,11 @@ def SIFIVE_S61 : RISCVProcessorModel<"sifive-s61", SiFive6Model,
 def SIFIVE_S76 : RISCVProcessorModel<"sifive-s76",
                                      SiFive7Model,
                                      [Feature64Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -238,7 +287,11 @@ def SIFIVE_S76N : RISCVProcessorModel<"sifive-s76n", SiFive7NModel,
 def SIFIVE_U54 : RISCVProcessorModel<"sifive-u54",
                                      RocketModel,
                                      [Feature64Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -262,7 +315,11 @@ def SIFIVE_U64 : RISCVProcessorModel<"sifive-u64", SiFive6Model,
 def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                      SiFive7Model,
                                      [Feature64Bit,
+<<<<<<< HEAD
                                       FeatureStdExtZifencei, // SIFIVE
+=======
+                                      FeatureStdExtZifencei,
+>>>>>>> eopXD/eopc/for-pulldown
                                       FeatureStdExtM,
                                       FeatureStdExtA,
                                       FeatureStdExtF,
@@ -480,12 +537,16 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,
                                               [Feature32Bit,
+                                               FeatureStdExtZicsr,
+                                               FeatureStdExtZifencei,
                                                FeatureStdExtC],
                                               [TuneNoDefaultUnroll]>;
 
 def SYNTACORE_SCR1_MAX : RISCVProcessorModel<"syntacore-scr1-max",
                                              SyntacoreSCR1Model,
                                              [Feature32Bit,
+                                              FeatureStdExtZicsr,
+                                              FeatureStdExtZifencei,
                                               FeatureStdExtM,
                                               FeatureStdExtC],
                                              [TuneNoDefaultUnroll]>;

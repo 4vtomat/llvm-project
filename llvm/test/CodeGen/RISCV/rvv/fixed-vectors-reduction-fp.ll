@@ -7,8 +7,15 @@ declare half @llvm.vector.reduce.fadd.v1f16(half, <1 x half>)
 define half @vreduce_fadd_v1f16(ptr %x, half %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f16:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    flh ft0, 0(a0)
 ; CHECK-NEXT:    fadd.h fa0, fa0, ft0
+=======
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    fadd.h fa0, fa0, fa5
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:    ret
   %v = load <1 x half>, ptr %x
   %red = call reassoc half @llvm.vector.reduce.fadd.v1f16(half %s, <1 x half> %v)
@@ -256,8 +263,15 @@ declare float @llvm.vector.reduce.fadd.v1f32(float, <1 x float>)
 define float @vreduce_fadd_v1f32(ptr %x, float %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    flw ft0, 0(a0)
 ; CHECK-NEXT:    fadd.s fa0, fa0, ft0
+=======
+; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    fadd.s fa0, fa0, fa5
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:    ret
   %v = load <1 x float>, ptr %x
   %red = call reassoc float @llvm.vector.reduce.fadd.v1f32(float %s, <1 x float> %v)
@@ -285,8 +299,8 @@ define float @vreduce_fwadd_v1f32(ptr %x, float %s) {
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fadd.s fa0, fa0, ft0
+; CHECK-NEXT:    vfmv.f.s fa5, v9
+; CHECK-NEXT:    fadd.s fa0, fa0, fa5
 ; CHECK-NEXT:    ret
   %v = load <1 x half>, ptr %x
   %e = fpext <1 x half> %v to <1 x float>
@@ -730,8 +744,15 @@ declare double @llvm.vector.reduce.fadd.v1f64(double, <1 x double>)
 define double @vreduce_fadd_v1f64(ptr %x, double %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f64:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    fld ft0, 0(a0)
 ; CHECK-NEXT:    fadd.d fa0, fa0, ft0
+=======
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    fadd.d fa0, fa0, fa5
+>>>>>>> eopXD/eopc/for-pulldown
 ; CHECK-NEXT:    ret
   %v = load <1 x double>, ptr %x
   %red = call reassoc double @llvm.vector.reduce.fadd.v1f64(double %s, <1 x double> %v)
@@ -759,8 +780,8 @@ define double @vreduce_fwadd_v1f64(ptr %x, double %s) {
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmv.f.s ft0, v9
-; CHECK-NEXT:    fadd.d fa0, fa0, ft0
+; CHECK-NEXT:    vfmv.f.s fa5, v9
+; CHECK-NEXT:    fadd.d fa0, fa0, fa5
 ; CHECK-NEXT:    ret
   %v = load <1 x float>, ptr %x
   %e = fpext <1 x float> %v to <1 x double>
@@ -1133,9 +1154,9 @@ define half @vreduce_fmin_v2f16(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI68_0)
-; RV32-NEXT:    flh ft0, %lo(.LCPI68_0)(a1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI68_0)(a1)
 ; RV32-NEXT:    vle16.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1143,10 +1164,10 @@ define half @vreduce_fmin_v2f16(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v2f16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI68_0)
-; RV64-NEXT:    flh ft0, %lo(.LCPI68_0)(a1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI68_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; RV64-NEXT:    vle16.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1162,9 +1183,9 @@ define half @vreduce_fmin_v4f16(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI69_0)
-; RV32-NEXT:    flh ft0, %lo(.LCPI69_0)(a1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI69_0)(a1)
 ; RV32-NEXT:    vle16.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1172,10 +1193,10 @@ define half @vreduce_fmin_v4f16(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI69_0)
-; RV64-NEXT:    flh ft0, %lo(.LCPI69_0)(a1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI69_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV64-NEXT:    vle16.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1189,9 +1210,9 @@ define half @vreduce_fmin_v4f16_nonans(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI70_0)
-; RV32-NEXT:    flh ft0, %lo(.LCPI70_0)(a1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI70_0)(a1)
 ; RV32-NEXT:    vle16.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1199,10 +1220,10 @@ define half @vreduce_fmin_v4f16_nonans(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f16_nonans:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI70_0)
-; RV64-NEXT:    flh ft0, %lo(.LCPI70_0)(a1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI70_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV64-NEXT:    vle16.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1216,9 +1237,9 @@ define half @vreduce_fmin_v4f16_nonans_noinfs(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI71_0)
-; RV32-NEXT:    flh ft0, %lo(.LCPI71_0)(a1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI71_0)(a1)
 ; RV32-NEXT:    vle16.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1226,10 +1247,10 @@ define half @vreduce_fmin_v4f16_nonans_noinfs(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f16_nonans_noinfs:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI71_0)
-; RV64-NEXT:    flh ft0, %lo(.LCPI71_0)(a1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI71_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; RV64-NEXT:    vle16.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1248,9 +1269,9 @@ define half @vreduce_fmin_v128f16(ptr %x) {
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    lui a1, %hi(.LCPI72_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI72_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI72_0)(a1)
 ; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    vfmv.s.f v24, ft0
+; CHECK-NEXT:    vfmv.s.f v24, fa5
 ; CHECK-NEXT:    vfmin.vv v8, v8, v16
 ; CHECK-NEXT:    vfredmin.vs v8, v8, v24
 ; CHECK-NEXT:    vfmv.f.s fa0, v8
@@ -1314,9 +1335,9 @@ define float @vreduce_fmin_v4f32_nonans_noinfs(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI76_0)
-; RV32-NEXT:    flw ft0, %lo(.LCPI76_0)(a1)
+; RV32-NEXT:    flw fa5, %lo(.LCPI76_0)(a1)
 ; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1324,10 +1345,10 @@ define float @vreduce_fmin_v4f32_nonans_noinfs(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f32_nonans_noinfs:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI76_0)
-; RV64-NEXT:    flw ft0, %lo(.LCPI76_0)(a1)
+; RV64-NEXT:    flw fa5, %lo(.LCPI76_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV64-NEXT:    vle32.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1370,9 +1391,9 @@ define double @vreduce_fmin_v2f64(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI78_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI78_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI78_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1380,10 +1401,10 @@ define double @vreduce_fmin_v2f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v2f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI78_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI78_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI78_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1399,9 +1420,9 @@ define double @vreduce_fmin_v4f64(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI79_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI79_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI79_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1409,10 +1430,10 @@ define double @vreduce_fmin_v4f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI79_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI79_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI79_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1426,9 +1447,9 @@ define double @vreduce_fmin_v4f64_nonans(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI80_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI80_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI80_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1436,10 +1457,10 @@ define double @vreduce_fmin_v4f64_nonans(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f64_nonans:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI80_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI80_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI80_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1453,9 +1474,9 @@ define double @vreduce_fmin_v4f64_nonans_noinfs(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI81_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI81_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI81_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmin.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1463,10 +1484,10 @@ define double @vreduce_fmin_v4f64_nonans_noinfs(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v4f64_nonans_noinfs:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI81_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI81_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI81_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmin.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1484,9 +1505,9 @@ define double @vreduce_fmin_v32f64(ptr %x) {
 ; RV32-NEXT:    vle64.v v8, (a0)
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    lui a1, %hi(.LCPI82_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI82_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI82_0)(a1)
 ; RV32-NEXT:    vle64.v v16, (a0)
-; RV32-NEXT:    vfmv.s.f v24, ft0
+; RV32-NEXT:    vfmv.s.f v24, fa5
 ; RV32-NEXT:    vfmin.vv v8, v8, v16
 ; RV32-NEXT:    vfredmin.vs v8, v8, v24
 ; RV32-NEXT:    vfmv.f.s fa0, v8
@@ -1495,12 +1516,12 @@ define double @vreduce_fmin_v32f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmin_v32f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI82_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI82_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI82_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
 ; RV64-NEXT:    addi a0, a0, 128
 ; RV64-NEXT:    vle64.v v16, (a0)
-; RV64-NEXT:    vfmv.s.f v24, ft0
+; RV64-NEXT:    vfmv.s.f v24, fa5
 ; RV64-NEXT:    vfmin.vv v8, v8, v16
 ; RV64-NEXT:    vfredmin.vs v8, v8, v24
 ; RV64-NEXT:    vfmv.f.s fa0, v8
@@ -1649,9 +1670,9 @@ define float @vreduce_fmax_v4f32_nonans_noinfs(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI91_0)
-; RV32-NEXT:    flw ft0, %lo(.LCPI91_0)(a1)
+; RV32-NEXT:    flw fa5, %lo(.LCPI91_0)(a1)
 ; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmax.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1659,10 +1680,10 @@ define float @vreduce_fmax_v4f32_nonans_noinfs(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v4f32_nonans_noinfs:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI91_0)
-; RV64-NEXT:    flw ft0, %lo(.LCPI91_0)(a1)
+; RV64-NEXT:    flw fa5, %lo(.LCPI91_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV64-NEXT:    vle32.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmax.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1705,9 +1726,9 @@ define double @vreduce_fmax_v2f64(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI93_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI93_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI93_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v9, ft0
+; RV32-NEXT:    vfmv.s.f v9, fa5
 ; RV32-NEXT:    vfredmax.vs v8, v8, v9
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1715,10 +1736,10 @@ define double @vreduce_fmax_v2f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v2f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI93_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI93_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI93_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v9, ft0
+; RV64-NEXT:    vfmv.s.f v9, fa5
 ; RV64-NEXT:    vfredmax.vs v8, v8, v9
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1734,9 +1755,9 @@ define double @vreduce_fmax_v4f64(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI94_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI94_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI94_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmax.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1744,10 +1765,10 @@ define double @vreduce_fmax_v4f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v4f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI94_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI94_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI94_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmax.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1761,9 +1782,9 @@ define double @vreduce_fmax_v4f64_nonans(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI95_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI95_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI95_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmax.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1771,10 +1792,10 @@ define double @vreduce_fmax_v4f64_nonans(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v4f64_nonans:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI95_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI95_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI95_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmax.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1788,9 +1809,9 @@ define double @vreduce_fmax_v4f64_nonans_noinfs(ptr %x) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    lui a1, %hi(.LCPI96_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI96_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI96_0)(a1)
 ; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vfmv.s.f v10, ft0
+; RV32-NEXT:    vfmv.s.f v10, fa5
 ; RV32-NEXT:    vfredmax.vs v8, v8, v10
 ; RV32-NEXT:    vfmv.f.s fa0, v8
 ; RV32-NEXT:    ret
@@ -1798,10 +1819,10 @@ define double @vreduce_fmax_v4f64_nonans_noinfs(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v4f64_nonans_noinfs:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI96_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI96_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI96_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    vfmv.s.f v10, ft0
+; RV64-NEXT:    vfmv.s.f v10, fa5
 ; RV64-NEXT:    vfredmax.vs v8, v8, v10
 ; RV64-NEXT:    vfmv.f.s fa0, v8
 ; RV64-NEXT:    ret
@@ -1819,9 +1840,9 @@ define double @vreduce_fmax_v32f64(ptr %x) {
 ; RV32-NEXT:    vle64.v v8, (a0)
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    lui a1, %hi(.LCPI97_0)
-; RV32-NEXT:    fld ft0, %lo(.LCPI97_0)(a1)
+; RV32-NEXT:    fld fa5, %lo(.LCPI97_0)(a1)
 ; RV32-NEXT:    vle64.v v16, (a0)
-; RV32-NEXT:    vfmv.s.f v24, ft0
+; RV32-NEXT:    vfmv.s.f v24, fa5
 ; RV32-NEXT:    vfmax.vv v8, v8, v16
 ; RV32-NEXT:    vfredmax.vs v8, v8, v24
 ; RV32-NEXT:    vfmv.f.s fa0, v8
@@ -1830,12 +1851,12 @@ define double @vreduce_fmax_v32f64(ptr %x) {
 ; RV64-LABEL: vreduce_fmax_v32f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lui a1, %hi(.LCPI97_0)
-; RV64-NEXT:    fld ft0, %lo(.LCPI97_0)(a1)
+; RV64-NEXT:    fld fa5, %lo(.LCPI97_0)(a1)
 ; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
 ; RV64-NEXT:    addi a0, a0, 128
 ; RV64-NEXT:    vle64.v v16, (a0)
-; RV64-NEXT:    vfmv.s.f v24, ft0
+; RV64-NEXT:    vfmv.s.f v24, fa5
 ; RV64-NEXT:    vfmax.vv v8, v8, v16
 ; RV64-NEXT:    vfredmax.vs v8, v8, v24
 ; RV64-NEXT:    vfmv.f.s fa0, v8
