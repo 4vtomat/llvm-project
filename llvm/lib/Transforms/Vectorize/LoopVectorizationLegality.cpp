@@ -594,7 +594,7 @@ std::optional<int64_t>
 LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
                                                      Value *Ptr) const {
   const ValueToValueMap &Strides =
-      getSymbolicStrides() ? *getSymbolicStrides() : ValueToValueMap();
+      LAI ? LAI->getSymbolicStrides() : ValueToValueMap();
 
   Function *F = TheLoop->getHeader()->getParent();
   bool OptForSize = F->hasOptSize() ||
