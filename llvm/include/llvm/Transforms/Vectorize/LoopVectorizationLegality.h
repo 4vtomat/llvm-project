@@ -436,14 +436,13 @@ public:
     return ConditionalAssumes;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
   bool useVLAVectorizer() const {
     return TTI->useVLAVectorizer();
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
     return &PSE;
   }
@@ -457,7 +456,6 @@ public:
   ScalarEvolution *getScalarEvolution() const { return PSE.getSE(); }
 
   DominatorTree *getDominatorTree() const { return DT; }
->>>>>>> eopXD/eopc/for-pulldown
 
 private:
   /// Return true if the pre-header, exiting and latch blocks of \p Lp and all
