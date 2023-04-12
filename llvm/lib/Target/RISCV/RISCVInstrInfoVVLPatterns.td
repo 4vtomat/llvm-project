@@ -195,11 +195,10 @@ def riscv_vfnmadd_vl : SDNode<"RISCVISD::VFNMADD_VL", SDT_RISCVVecFMA_VL, [SDNPC
 def riscv_vfmsub_vl : SDNode<"RISCVISD::VFMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 def riscv_vfnmsub_vl : SDNode<"RISCVISD::VFNMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfnmsac_vl : SDNode<"RISCVISD::VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 def riscv_strict_vfmadd_vl : SDNode<"RISCVISD::STRICT_VFMADD_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative, SDNPHasChain]>;
 def riscv_strict_vfnmadd_vl : SDNode<"RISCVISD::STRICT_VFNMADD_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative, SDNPHasChain]>;
 def riscv_strict_vfmsub_vl : SDNode<"RISCVISD::STRICT_VFMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative, SDNPHasChain]>;
@@ -217,7 +216,6 @@ def any_riscv_vfmsub_vl : PatFrags<(ops node:$rs1, node:$rs2, node:$rs3, node:$m
 def any_riscv_vfnmsub_vl : PatFrags<(ops node:$rs1, node:$rs2, node:$rs3, node:$mask, node:$vl),
                         [(riscv_vfnmsub_vl node:$rs1, node:$rs2, node:$rs3, node:$mask, node:$vl),
                          (riscv_strict_vfnmsub_vl node:$rs1, node:$rs2, node:$rs3, node:$mask, node:$vl)]>;
->>>>>>> eopXD/eopc/for-pulldown
 
 def SDT_RISCVFPRoundOp_VL  : SDTypeProfile<1, 3, [
   SDTCisFP<0>, SDTCisFP<1>, SDTCisOpSmallerThanOp<0, 1>, SDTCisSameNumEltsAs<0, 1>,
