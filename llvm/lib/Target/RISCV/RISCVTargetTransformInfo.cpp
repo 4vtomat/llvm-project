@@ -1648,21 +1648,17 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
                                               TTI::TargetCostKind CostKind,
                                               TTI::OperandValueInfo OpInfo,
                                               const Instruction *I) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> eopXD/eopc/for-pulldown
   EVT VT = TLI->getValueType(DL, Src, true);
   // Type legalization can't handle structs
   if (VT == MVT::Other)
     return BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                   CostKind, OpInfo, I);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
+
   InstructionCost Cost = 0;
   if (Opcode == Instruction::Store && OpInfo.isConstant())
     Cost += getStoreImmCost(Src, OpInfo, CostKind);
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: Mege with upstream code?
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
   if (!LT.second.isVector())
     return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
@@ -1685,15 +1681,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   Cost += LT.first * getLMULCost(LT.second);
   return Cost;
 #else
-
-  return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                                       CostKind, OpInfo, I);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-
-  InstructionCost Cost = 0;
-  if (Opcode == Instruction::Store && OpInfo.isConstant())
-    Cost += getStoreImmCost(Src, OpInfo, CostKind);
   InstructionCost BaseCost =
     BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                            CostKind, OpInfo, I);
@@ -1705,7 +1692,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
     BaseCost *= getLMULCost(LT.second);
   return Cost + BaseCost;
 
->>>>>>> eopXD/eopc/for-pulldown
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 InstructionCost RISCVTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
