@@ -39,26 +39,6 @@ struct RISCVSupportedExtension {
 
 static constexpr StringLiteral AllStdExts = "mafdqlcbkjtpvnh";
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static const char *RISCVGImplications[] = {
-  "i", "m", "a", "f", "d", "zicsr", "zifencei"
-};
-#endif // SIFIVE_CUSTOMIZATION
-
-// The first definition of extension info is default version.
-static const RISCVSupportedExtension SupportedExtensions[] = {
-    {"i", RISCVExtensionVersion{2, 1}}, // default // SIFIVE
-    {"i", RISCVExtensionVersion{2, 0}},
-    {"e", RISCVExtensionVersion{2, 0}},
-    {"m", RISCVExtensionVersion{2, 0}},
-    {"a", RISCVExtensionVersion{2, 1}}, // default // SIFIVE
-    {"a", RISCVExtensionVersion{2, 0}},
-    {"f", RISCVExtensionVersion{2, 2}}, // default // SIFIVE
-    {"f", RISCVExtensionVersion{2, 0}},
-    {"d", RISCVExtensionVersion{2, 2}}, // default // SIFIVE
-    {"d", RISCVExtensionVersion{2, 0}},
-=======
 static const char *RISCVGImplications[] = {
   "i", "m", "a", "f", "d", "zicsr", "zifencei"
 };
@@ -70,7 +50,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"a", RISCVExtensionVersion{2, 1}},
     {"f", RISCVExtensionVersion{2, 2}},
     {"d", RISCVExtensionVersion{2, 2}},
->>>>>>> eopXD/eopc/for-pulldown
     {"c", RISCVExtensionVersion{2, 0}},
 #if SIFIVE_CUSTOMIZATION
     {"zicntr", RISCVExtensionVersion{1, 0}},
@@ -777,11 +756,7 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
     // No matter which version is given to `g`, we always set imafd to default
     // version since the we don't have clear version scheme for that on
     // ISA spec.
-<<<<<<< HEAD
-    for (const auto *Ext : RISCVGImplications) // SIFIVE
-=======
     for (const auto *Ext : RISCVGImplications) {
->>>>>>> eopXD/eopc/for-pulldown
       if (auto Version = findDefaultVersion(Ext))
         ISAInfo->addExtension(Ext, Version->Major, Version->Minor);
       else
@@ -1037,13 +1012,7 @@ Error RISCVISAInfo::checkDependency() {
   return Error::success();
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsF[] = {"zicsr"};
-#endif // SIFIVE_CUSTOMIZATION
-=======
-static const char *ImpliedExtsF[] = {"zicsr"};
->>>>>>> eopXD/eopc/for-pulldown
 static const char *ImpliedExtsD[] = {"f"};
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d", "f", "d"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
