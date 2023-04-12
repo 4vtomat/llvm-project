@@ -349,17 +349,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // We could use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!Subtarget.hasVendorXVentanaCondOps() &&
-=======
   if (!Subtarget.hasStdExtZicond() && !Subtarget.hasVendorXVentanaCondOps() &&
->>>>>>> eopXD/eopc/for-pulldown
       !Subtarget.hasVendorXTHeadCondMov())
     setOperationAction(ISD::SELECT, XLenVT, Custom);
 
@@ -891,17 +887,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       setOperationAction(FloatingPointVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
 
-      setOperationAction(ISD::STRICT_FP_EXTEND, VT, Custom);
-=======
       setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                          Custom);
->>>>>>> eopXD/eopc/for-pulldown
       setOperationAction({ISD::STRICT_FADD, ISD::STRICT_FSUB, ISD::STRICT_FMUL,
                           ISD::STRICT_FDIV, ISD::STRICT_FSQRT, ISD::STRICT_FMA},
                          VT, Legal);
@@ -1157,17 +1149,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         setOperationAction(FloatingPointVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
 
-        setOperationAction(ISD::STRICT_FP_EXTEND, VT, Custom);
-=======
         setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                            Custom);
->>>>>>> eopXD/eopc/for-pulldown
         setOperationAction({ISD::STRICT_FADD, ISD::STRICT_FSUB,
                             ISD::STRICT_FMUL, ISD::STRICT_FDIV,
                             ISD::STRICT_FSQRT, ISD::STRICT_FMA},
@@ -1294,23 +1282,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              unsigned Intrinsic) const {
   auto &DL = I.getModule()->getDataLayout();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  auto SetRVVLoadStoreInfo = [&](bool IsStore, bool IsUnitStrided,
-                                 unsigned NF = 1) {
-    Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(NF);
-    Type *MemTy = I.getArgOperand(0)->getType();
-    if (!IsUnitStrided)
-      MemTy = MemTy->getScalarType();
-    Info.memVT = getValueType(DL, MemTy);
-    Info.align = Align(
-        DL.getTypeSizeInBits(I.getArgOperand(0)->getType()->getScalarType()) /
-        8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |=
-        IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
-=======
   auto SetRVVLoadStoreInfo = [&](unsigned PtrOp, bool IsStore,
                                  bool IsUnitStrided) {
     Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
@@ -1334,18 +1305,12 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     Info.flags |=
         IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
     return true;
->>>>>>> eopXD/eopc/for-pulldown
   };
 
   if (I.getMetadata(LLVMContext::MD_nontemporal) != nullptr)
     Info.flags |= MachineMemOperand::MONonTemporal;
 
   Info.flags |= RISCVTargetLowering::getTargetMMOFlags(I);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> eopXD/eopc/for-pulldown
   switch (Intrinsic) {
   default:
     return false;
@@ -1379,190 +1344,8 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_seg6_load:
   case Intrinsic::riscv_seg7_load:
   case Intrinsic::riscv_seg8_load:
-<<<<<<< HEAD
-    Info.opc = ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(0);
-    Info.memVT =
-        getValueType(DL, I.getType()->getStructElementType(0)->getScalarType());
-    Info.align =
-        Align(DL.getTypeSizeInBits(
-                  I.getType()->getStructElementType(0)->getScalarType()) /
-              8);
-    Info.size = MemoryLocation::UnknownSize;
-    Info.flags |= MachineMemOperand::MOLoad;
-    return true;
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: Add indexed loads.
-  // TODO: Add stores?
-  // TODO: We should upstream all of this.
-  case Intrinsic::riscv_vle:
-  case Intrinsic::riscv_vle_mask:
-  case Intrinsic::riscv_vleff:
-  case Intrinsic::riscv_vleff_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ true);
-    return true;
-  case Intrinsic::riscv_vlse:
-  case Intrinsic::riscv_vlse_mask:
-  case Intrinsic::riscv_vloxei:
-  case Intrinsic::riscv_vloxei_mask:
-  case Intrinsic::riscv_vluxei:
-  case Intrinsic::riscv_vluxei_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false,
-                        /* IsUnitStrided */ false);
-    return true;
-  case Intrinsic::riscv_vlseg2:
-  case Intrinsic::riscv_vlseg2ff:
-  case Intrinsic::riscv_vlseg2_mask:
-  case Intrinsic::riscv_vlseg2ff_mask:
-  case Intrinsic::riscv_vloxseg2:
-  case Intrinsic::riscv_vloxseg2_mask:
-  case Intrinsic::riscv_vluxseg2:
-  case Intrinsic::riscv_vluxseg2_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 2);
-    return true;
-  case Intrinsic::riscv_vlseg3:
-  case Intrinsic::riscv_vlseg3ff:
-  case Intrinsic::riscv_vlseg3_mask:
-  case Intrinsic::riscv_vlseg3ff_mask:
-  case Intrinsic::riscv_vloxseg3:
-  case Intrinsic::riscv_vloxseg3_mask:
-  case Intrinsic::riscv_vluxseg3:
-  case Intrinsic::riscv_vluxseg3_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 3);
-    return true;
-  case Intrinsic::riscv_vlseg4:
-  case Intrinsic::riscv_vlseg4ff:
-  case Intrinsic::riscv_vlseg4_mask:
-  case Intrinsic::riscv_vlseg4ff_mask:
-  case Intrinsic::riscv_vloxseg4:
-  case Intrinsic::riscv_vloxseg4_mask:
-  case Intrinsic::riscv_vluxseg4:
-  case Intrinsic::riscv_vluxseg4_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 4);
-    return true;
-  case Intrinsic::riscv_vlseg5:
-  case Intrinsic::riscv_vlseg5ff:
-  case Intrinsic::riscv_vlseg5_mask:
-  case Intrinsic::riscv_vlseg5ff_mask:
-  case Intrinsic::riscv_vloxseg5:
-  case Intrinsic::riscv_vloxseg5_mask:
-  case Intrinsic::riscv_vluxseg5:
-  case Intrinsic::riscv_vluxseg5_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 5);
-    return true;
-  case Intrinsic::riscv_vlseg6:
-  case Intrinsic::riscv_vlseg6ff:
-  case Intrinsic::riscv_vlseg6_mask:
-  case Intrinsic::riscv_vlseg6ff_mask:
-  case Intrinsic::riscv_vloxseg6:
-  case Intrinsic::riscv_vloxseg6_mask:
-  case Intrinsic::riscv_vluxseg6:
-  case Intrinsic::riscv_vluxseg6_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 6);
-    return true;
-  case Intrinsic::riscv_vlseg7:
-  case Intrinsic::riscv_vlseg7ff:
-  case Intrinsic::riscv_vlseg7_mask:
-  case Intrinsic::riscv_vlseg7ff_mask:
-  case Intrinsic::riscv_vloxseg7:
-  case Intrinsic::riscv_vloxseg7_mask:
-  case Intrinsic::riscv_vluxseg7:
-  case Intrinsic::riscv_vluxseg7_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 7);
-    return true;
-  case Intrinsic::riscv_vlseg8:
-  case Intrinsic::riscv_vlseg8ff:
-  case Intrinsic::riscv_vlseg8_mask:
-  case Intrinsic::riscv_vlseg8ff_mask:
-  case Intrinsic::riscv_vloxseg8:
-  case Intrinsic::riscv_vloxseg8_mask:
-  case Intrinsic::riscv_vluxseg8:
-  case Intrinsic::riscv_vluxseg8_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ false, /* IsUnitStrided */ false,
-                        /* NF */ 8);
-    return true;
-  case Intrinsic::riscv_vse:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ true);
-    return true;
-  case Intrinsic::riscv_vsse:
-  case Intrinsic::riscv_vsoxei:
-  case Intrinsic::riscv_vsuxei:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false);
-    return true;
-  case Intrinsic::riscv_vsseg2:
-  case Intrinsic::riscv_vsseg2_mask:
-  case Intrinsic::riscv_vsoxseg2:
-  case Intrinsic::riscv_vsoxseg2_mask:
-  case Intrinsic::riscv_vsuxseg2:
-  case Intrinsic::riscv_vsuxseg2_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 2);
-    return true;
-  case Intrinsic::riscv_vsseg3:
-  case Intrinsic::riscv_vsseg3_mask:
-  case Intrinsic::riscv_vsoxseg3:
-  case Intrinsic::riscv_vsoxseg3_mask:
-  case Intrinsic::riscv_vsuxseg3:
-  case Intrinsic::riscv_vsuxseg3_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 3);
-    return true;
-  case Intrinsic::riscv_vsseg4:
-  case Intrinsic::riscv_vsseg4_mask:
-  case Intrinsic::riscv_vsoxseg4:
-  case Intrinsic::riscv_vsoxseg4_mask:
-  case Intrinsic::riscv_vsuxseg4:
-  case Intrinsic::riscv_vsuxseg4_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 4);
-    return true;
-  case Intrinsic::riscv_vsseg5:
-  case Intrinsic::riscv_vsseg5_mask:
-  case Intrinsic::riscv_vsoxseg5:
-  case Intrinsic::riscv_vsoxseg5_mask:
-  case Intrinsic::riscv_vsuxseg5:
-  case Intrinsic::riscv_vsuxseg5_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 5);
-    return true;
-  case Intrinsic::riscv_vsseg6:
-  case Intrinsic::riscv_vsseg6_mask:
-  case Intrinsic::riscv_vsoxseg6:
-  case Intrinsic::riscv_vsoxseg6_mask:
-  case Intrinsic::riscv_vsuxseg6:
-  case Intrinsic::riscv_vsuxseg6_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 6);
-    return true;
-  case Intrinsic::riscv_vsseg7:
-  case Intrinsic::riscv_vsseg7_mask:
-  case Intrinsic::riscv_vsoxseg7:
-  case Intrinsic::riscv_vsoxseg7_mask:
-  case Intrinsic::riscv_vsuxseg7:
-  case Intrinsic::riscv_vsuxseg7_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 7);
-    return true;
-  case Intrinsic::riscv_vsseg8:
-  case Intrinsic::riscv_vsseg8_mask:
-  case Intrinsic::riscv_vsoxseg8:
-  case Intrinsic::riscv_vsoxseg8_mask:
-  case Intrinsic::riscv_vsuxseg8:
-  case Intrinsic::riscv_vsuxseg8_mask:
-    SetRVVLoadStoreInfo(/* IsStore */ true, /* IsUnitStrided */ false,
-                        /* NF */ 8);
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return SetRVVLoadStoreInfo(/*PtrOp*/ 0, /*IsStore*/ false,
                                /*IsUnitStrided*/ false);
->>>>>>> eopXD/eopc/for-pulldown
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -3648,17 +3431,8 @@ static bool isInterleaveShuffle(ArrayRef<int> Mask, MVT VT, int &EvenSrc,
   if (!ShuffleVectorInst::isInterleaveMask(Mask, 2, Size * 2, StartIndexes))
     return false;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: this is a bugfix for a bug in the upstream compiler, must be removed
-  // once it is fixed in the upstream.
   EvenSrc = StartIndexes[0];
   OddSrc = StartIndexes[1];
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  EvenSrc = StartIndexes[0];
-  OddSrc = StartIndexes[1];
->>>>>>> eopXD/eopc/for-pulldown
 
   // One source should be low half of first vector.
   if (EvenSrc != 0 && OddSrc != 0)
