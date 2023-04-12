@@ -625,15 +625,11 @@ private:
   void visitTargetIntrinsic(const CallInst &I, unsigned Intrinsic);
   void visitConstrainedFPIntrinsic(const ConstrainedFPIntrinsic &FPI);
   void visitVPLoad(const VPIntrinsic &VPIntrin, EVT VT,
-<<<<<<< HEAD
-                   SmallVector<SDValue, 7> &OpValues);
+                   const SmallVectorImpl<SDValue> &OpValues);
 #if SIFIVE_CUSTOMIZATION
   void visitVPLoadFF(const VPIntrinsic &VPIntrin, EVT VT, EVT EVLVT,
                      const SmallVectorImpl<SDValue> &OpValues);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                   const SmallVectorImpl<SDValue> &OpValues);
->>>>>>> eopXD/eopc/for-pulldown
   void visitVPStore(const VPIntrinsic &VPIntrin,
                     const SmallVectorImpl<SDValue> &OpValues);
   void visitVPGather(const VPIntrinsic &VPIntrin, EVT VT,
