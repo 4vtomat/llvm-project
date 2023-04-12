@@ -434,13 +434,7 @@ void RISCVPassConfig::addPreEmitPass() {
 
 void RISCVPassConfig::addPreEmitPass2() {
   addPass(createRISCVExpandPseudoPass());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   addPass(createRISCVInsertNTLHInstsPass());
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  addPass(createRISCVInsertNTLHInstsPass());
->>>>>>> eopXD/eopc/for-pulldown
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
   // possibility for other passes to break the requirements for forward
