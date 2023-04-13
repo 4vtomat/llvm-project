@@ -346,6 +346,9 @@ public:
     VPWidenMemoryInstructionSC,
     VPWidenSC,
     VPWidenSelectSC,
+#if SIFIVE_CUSTOMIZATION
+    VPVFirstICmpSC,
+#endif
     // START: Phi-like recipes. Need to be kept together.
 #if SIFIVE_CUSTOMIZATION
     VPCSADataUpdateSC,

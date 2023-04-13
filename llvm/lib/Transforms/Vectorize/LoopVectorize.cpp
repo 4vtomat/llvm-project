@@ -180,6 +180,9 @@ const char LLVMLoopVectorizeFollowupEpilogue[] =
 /// @}
 
 STATISTIC(LoopsVectorized, "Number of loops vectorized");
+#if SIFIVE_CUSTOMIZATION
+STATISTIC(UncountableLoopsVectorized, "Number of uncountable loops vectorized");
+#endif
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
 #if SIFIVE_CUSTOMIZATION
@@ -671,10 +674,17 @@ protected:
   using ScalarParts = SmallVector<SmallVector<Value *, 4>, 2>;
 
   /// Set up the values of the IVs correctly when exiting the vector loop.
+#if SIFIVE_CUSTOMIZATION
+  virtual void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
+                            Value *VectorTripCount, Value *EndValue,
+                            BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
+                            VPlan &Plan, VPTransformState &State);
+#else
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
                     Value *VectorTripCount, Value *EndValue,
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
                     VPlan &Plan);
+#endif
 
   /// Introduce a conditional branch (on true, condition to be set later) at the
   /// end of the header=latch connecting it to itself (across the backedge) and
@@ -712,9 +722,15 @@ protected:
   void truncateToMinimalBitwidths(VPTransformState &State);
 
   /// Returns (and creates if needed) the original loop trip count.
+#if SIFIVE_CUSTOMIZATION
+  virtual
+#endif
   Value *getOrCreateTripCount(BasicBlock *InsertBlock);
 
   /// Returns (and creates if needed) the trip count of the widened loop.
+#if SIFIVE_CUSTOMIZATION
+  virtual
+#endif
   Value *getOrCreateVectorTripCount(BasicBlock *InsertBlock);
 
   /// Returns a bitcasted value to the requested vector type.
@@ -881,6 +897,38 @@ protected:
   // correct start value of reduction PHIs when vectorizing the epilogue.
   SmallMapVector<const RecurrenceDescriptor *, PHINode *, 4>
       ReductionResumeValues;
+};
+
+class UncountableInnerLoopVectorizer final : public InnerLoopVectorizer {
+public:
+  UncountableInnerLoopVectorizer(
+      Loop *OrigLoop, PredicatedScalarEvolution &PSE, LoopInfo *LI,
+      DominatorTree *DT, const TargetLibraryInfo *TLI,
+      const TargetTransformInfo *TTI, AssumptionCache *AC,
+      OptimizationRemarkEmitter *ORE, ElementCount VecWidth,
+      ElementCount MinProfitableTripCount, unsigned UnrollFactor,
+      LoopVectorizationLegality *LVL, llvm::LoopVectorizationCostModel *CM,
+      BlockFrequencyInfo *BFI, ProfileSummaryInfo *PSI,
+      GeneratedRTChecks &Checks)
+      : InnerLoopVectorizer(OrigLoop, PSE, LI, DT, TLI, TTI, AC, ORE, VecWidth,
+                            MinProfitableTripCount, UnrollFactor, LVL, CM, BFI,
+                            PSI, Checks) {
+    assert(UnrollFactor == 1 && "UF is not 1 for uncountable loops");
+  }
+
+  ~UncountableInnerLoopVectorizer() = default;
+
+  /// Set up the values of the IVs correctly when exiting the vector loop.
+  void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
+                    Value *VectorTripCount, Value *EndValue,
+                    BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
+                    VPlan &Plan, VPTransformState &State) override;
+
+  /// Returns (and creates if needed) the original loop trip count.
+  Value *getOrCreateTripCount(BasicBlock *InsertBlock) override;
+
+  /// Returns (and creates if needed) the trip count of the widened loop.
+  Value *getOrCreateVectorTripCount(BasicBlock *InsertBlock) override;
 };
 
 class InnerLoopUnroller : public InnerLoopVectorizer {
@@ -1623,9 +1671,18 @@ public:
   /// that may be vectorized as interleave, gather-scatter or scalarized.
   void collectUniformsAndScalars(ElementCount VF) {
     // Do the analysis once.
+#if SIFIVE_CUSTOMIZATION
+    if (VF.isScalar() || Uniforms.contains(VF) || NonUniforms.contains(VF))
+#else
     if (VF.isScalar() || Uniforms.contains(VF))
+#endif
       return;
     setCostBasedWideningDecision(VF);
+#if SIFIVE_CUSTOMIZATION
+    if (Legal->isVectorizableUncountable())
+      collectLoopUniformsForUncountableLoops(VF);
+    else
+#endif
     collectLoopUniforms(VF);
     collectLoopScalars(VF);
   }
@@ -1805,6 +1862,9 @@ public:
   void invalidateCostModelingDecisions() {
     WideningDecisions.clear();
     Uniforms.clear();
+#if SIFIVE_CUSTOMIZATION
+    NonUniforms.clear();
+#endif
     Scalars.clear();
   }
 #if SIFIVE_CUSTOMIZATION
@@ -1815,6 +1875,13 @@ public:
     if (VectorizerProfitableVectorTripCount != 0)
       return VectorizerProfitableVectorTripCount.getValue();
     return std::nullopt;
+  }
+
+  bool hasNonUniforms(ElementCount VF) const {
+    auto NonUniform = NonUniforms.find(VF);
+    if (NonUniform == NonUniforms.end())
+      return false;
+    return !NonUniform->second.empty();
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1953,6 +2020,12 @@ private:
   /// vectorization factor. The entries are VF-ScalarCostTy pairs.
   DenseMap<ElementCount, ScalarCostsTy> InstsToScalarize;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Holds the instructions known to be non-uniform after vectorization.
+  /// The data is collected per VF.
+  DenseMap<ElementCount, SmallPtrSet<Instruction *, 4>> NonUniforms;
+#endif
+
   /// Holds the instructions known to be uniform after vectorization.
   /// The data is collected per VF.
   DenseMap<ElementCount, SmallPtrSet<Instruction *, 4>> Uniforms;
@@ -1995,6 +2068,10 @@ private:
   /// vectorized loop, each corresponding to an iteration of the original
   /// scalar loop.
   void collectLoopUniforms(ElementCount VF);
+
+#if SIFIVE_CUSTOMIZATION
+  void collectLoopUniformsForUncountableLoops(ElementCount VF);
+#endif
 
   /// Collect the instructions that are scalar after vectorization. An
   /// instruction is scalar if it is known to be uniform or will be scalarized
@@ -3146,6 +3223,10 @@ void InnerLoopVectorizer::scalarizeInstruction(const Instruction *Instr,
 }
 
 Value *InnerLoopVectorizer::getOrCreateTripCount(BasicBlock *InsertBlock) {
+#if SIFIVE_CUSTOMIZATION
+  assert(!Legal->isVectorizableUncountable() &&
+         "Should not create trip count for uncountable loops");
+#endif
   if (TripCount)
     return TripCount;
 
@@ -3658,6 +3739,13 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 
   // Create an empty vector loop, and prepare basic blocks for the runtime
   // checks.
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->isVectorizableUncountable()) {
+    createVectorLoopSkeleton("vec.uncountable.");
+    return {LoopVectorPreHeader, nullptr};
+  }
+#endif
+
   createVectorLoopSkeleton("");
 
   // Now, compare the new count to zero. If it is zero skip the vector loop and
@@ -3689,11 +3777,21 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 // in LCSSA form, with all external PHIs that use the IV having one input value,
 // coming from the remainder loop. We need those PHIs to also have a correct
 // value for the IV when arriving directly from the middle block.
+#if SIFIVE_CUSTOMIZATION
+void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
+                                       const InductionDescriptor &II,
+                                       Value *VectorTripCount, Value *EndValue,
+                                       BasicBlock *MiddleBlock,
+                                       BasicBlock *VectorHeader, VPlan &Plan,
+                                       VPTransformState &State) {
+#else
 void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
                                        const InductionDescriptor &II,
                                        Value *VectorTripCount, Value *EndValue,
                                        BasicBlock *MiddleBlock,
                                        BasicBlock *VectorHeader, VPlan &Plan) {
+#endif
+
   // There are two kinds of external IV usages - those that use the value
   // computed in the last iteration (the PHI) and those that use the penultimate
   // value (the value that feeds into the phi from the loop latch).
@@ -3718,7 +3816,7 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   // The simplest way to get this is to recompute it from the constituent SCEVs,
   // that is Start + (Step * (CRD - 1)).
   for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
+    Instruction *UI = cast<Instruction>(U);
     if (!OrigLoop->contains(UI)) {
       assert(isa<PHINode>(UI) && "Expected LCSSA form");
 
@@ -4111,8 +4209,13 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
     for (const auto &Entry : Legal->getInductionVars())
       fixupIVUsers(Entry.first, Entry.second,
                    getOrCreateVectorTripCount(VectorLoop->getLoopPreheader()),
+#if SIFIVE_CUSTOMIZATION
+                   Plan.isUncountable() ? nullptr : IVEndValues[Entry.first],
+                   LoopMiddleBlock, VectorLoop->getHeader(), Plan, State);
+#else
                    IVEndValues[Entry.first], LoopMiddleBlock,
                    VectorLoop->getHeader(), Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
     fixCSALiveOuts(State, Plan);
@@ -4691,6 +4794,121 @@ bool InnerLoopVectorizer::useOrderedReductions(
   return Cost->useOrderedReductions(RdxDesc);
 }
 
+#if SIFIVE_CUSTOMIZATION
+
+//===--------------------------------------------------------------------===//
+// UncountableInnerLoopVectorizer
+//===--------------------------------------------------------------------===//
+
+/// Set up the values of IVs when exiting the vector loop.
+void UncountableInnerLoopVectorizer::fixupIVUsers(
+    PHINode *OrigPhi, const InductionDescriptor &II, Value *VectorTripCount,
+    Value *EndValue, BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
+    VPlan &Plan, VPTransformState &State) {
+
+  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
+  assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
+  assert(!EndValue && "EndValue not null for uncountable loop");
+
+  // ATM, all IVs in uncountable loops have their exiting values routed to the
+  // penultimate value (the value that feeds into the phi from the loop latch).
+  // This makes their exit values to penultimate value + last iteration's VL.
+  // The assumption that their increments happens before exiting the loop holds
+  // for single-block uncountable loops.
+  assert(OrigLoop->getUniqueExitBlock() && "Expected a single exit block");
+  DenseMap<Value *, Value *> MissingVals;
+
+  auto FixupIVUser = [&](Instruction *UI, bool AddOne) {
+    if (OrigLoop->contains(UI))
+      return;
+
+    assert(isa<PHINode>(UI) && "Expected LCSSA form");
+    IRBuilder<> B(MiddleBlock->getTerminator());
+
+    // Fast-math-flags propagate from the original induction instruction.
+    if (isa_and_present<FPMathOperator>(II.getInductionBinOp()))
+      B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
+
+    LLVM_DEBUG(dbgs() << "Uncountable Loop: MiddleBlock before fixupIVUsers\n";
+               MiddleBlock->dump();
+
+               dbgs() << "Uncountable Loop: Vector loop PHIs\n";
+               State.VectorLoopIVMap[OrigPhi]->dump(););
+
+    // Fix liveout values of IVs in the middle block i.e. vector loop IV
+    // PHI+VFirst+1. This is because VFirst starts from 0.
+    auto MapIt = State.VectorLoopIVMap.find(OrigPhi);
+    assert(MapIt != State.VectorLoopIVMap.end() &&
+           "VectorLoopPHINode is null for uncountable loops");
+    Value *VectorLoopPHINode = MapIt->second;
+    Value *VFirst = State.getVFirst();
+    assert(VFirst && "VFirst is null for uncountable loops");
+    Value *Cast = nullptr;
+    if (VectorLoopPHINode->getType()->isVectorTy()) {
+      // Fp inductions are not supported yet
+      assert(II.getKind() == InductionDescriptor::IK_IntInduction &&
+             "Not Int IV");
+      Value *Extract = B.CreateExtractElement(
+          VectorLoopPHINode, State.Builder.getInt32(0), "vector.iv.extract");
+      Cast = B.CreateBitOrPointerCast(Extract, State.Builder.getInt64Ty());
+    } else {
+      assert(II.getKind() == InductionDescriptor::IK_PtrInduction &&
+             "Not pointer IV");
+      Cast = B.CreateBitOrPointerCast(VectorLoopPHINode,
+                                      State.Builder.getInt64Ty());
+    }
+
+    Value *IterNumInLastVectIter =
+        AddOne ? B.CreateAdd(VFirst, State.Builder.getInt64(1)) : VFirst;
+    ConstantInt *Step = II.getConstIntStepValue();
+    Value *Delta = B.CreateMul(IterNumInLastVectIter, Step);
+    Value *IVExitValue = B.CreateAdd(Cast, Delta);
+    Value *Escape = B.CreateBitOrPointerCast(IVExitValue, OrigPhi->getType());
+    Escape->setName("ind.escape");
+    MissingVals[UI] = Escape;
+  };
+
+  // An external user of the last iteration's value should see the value that
+  // the remainder loop uses to initialize its own IV.
+  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopLatch());
+  for (User *U : PostInc->users()) {
+    auto *UI = cast<Instruction>(U);
+    FixupIVUser(UI, true);
+  }
+
+  // An external user of the penultimate value need to see the value from the
+  // phi.
+  for (User *U : OrigPhi->users()) {
+    auto *UI = cast<Instruction>(U);
+    FixupIVUser(UI, false);
+  }
+
+  for (auto &I : MissingVals) {
+    auto *PHI = cast<PHINode>(I.first);
+    // One corner case we have to handle is two IVs "chasing" each-other,
+    // that is %IV2 = phi [...], [ %IV1, %latch ]
+    // In this case, if IV1 has an external use, we need to avoid adding both
+    // "last value of IV1" and "penultimate value of IV2". So, verify that we
+    // don't already have an incoming value for the middle block.
+    if (PHI->getBasicBlockIndex(MiddleBlock) == -1) {
+      PHI->addIncoming(I.second, MiddleBlock);
+      Plan.removeLiveOut(PHI);
+    }
+  }
+}
+
+Value *
+UncountableInnerLoopVectorizer::getOrCreateTripCount(BasicBlock *InsertBlock) {
+  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
+  return nullptr;
+}
+
+Value *UncountableInnerLoopVectorizer::getOrCreateVectorTripCount(
+    BasicBlock *InsertBlock) {
+  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
+  return nullptr;
+}
+#endif // SIFIVE_CUSTOMIZATION
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
   // function is called from collectUniformsAndScalars(), which already does
@@ -5382,6 +5600,125 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   Uniforms[VF].insert(Worklist.begin(), Worklist.end());
 }
 
+#if SIFIVE_CUSTOMIZATION
+// TODO: Merge countable and uncountable uniform analysis
+void LoopVectorizationCostModel::collectLoopUniformsForUncountableLoops(
+    ElementCount VF) {
+  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
+  assert(VF.isVector() && Uniforms.find(VF) == Uniforms.end() &&
+         NonUniforms.find(VF) == NonUniforms.end() &&
+         "This function should not be visited twice for the same VF");
+
+  Uniforms[VF].clear();
+  NonUniforms[VF].clear();
+
+  SetVector<Instruction *> NonUniformWorklist;
+
+  // Global values, params and instructions outside of current loop are out of
+  // scope.
+  auto IsOutOfScope = [&](Value *V) -> bool {
+    Instruction *I = dyn_cast<Instruction>(V);
+    return !I || !TheLoop->contains(I);
+  };
+
+  auto AddToWorklistIfAllowed = [&](Instruction *I) {
+    if (IsOutOfScope(I))
+      return;
+    LLVM_DEBUG(dbgs() << "Uncountable Loop: Adding to NonUniformWorklist\n";
+               I->dump(););
+    NonUniformWorklist.insert(I);
+  };
+
+  // Return true if all lanes perform the same memory operation, and we can
+  // thus chose to execute only one.
+  auto IsUniformMemOpUse = [&](Instruction *I) {
+    if (!Legal->isUniformMemOp(*I))
+      return false;
+    if (isa<LoadInst>(I))
+      // Loading the same address always produces the same result - at least
+      // assuming aliasing and ordering which have already been checked.
+      return true;
+    // Storing the same value on every iteration.
+    return TheLoop->isLoopInvariant(cast<StoreInst>(I)->getValueOperand());
+  };
+
+  auto IsUniformDecision = [&](Instruction *I, ElementCount VF) {
+    InstWidening WideningDecision = getWideningDecision(I, VF);
+    assert(WideningDecision != CM_Unknown &&
+           "Widening decision should be ready at this moment");
+
+    if (IsUniformMemOpUse(I) && !Hints->isFixedVectorizationDisabled())
+      return true;
+
+    return WideningDecision == CM_Widen ||
+           WideningDecision == CM_Widen_Reverse ||
+           WideningDecision == CM_Strided || WideningDecision == CM_Interleave;
+  };
+
+  // Returns true if Ptr is the pointer operand of a memory access instruction
+  // I, and I is known to not require scalarization.
+  auto IsVectorizedMemAccessUse = [&](Instruction *I, Value *Ptr) -> bool {
+    return getLoadStorePointerOperand(I) == Ptr && IsUniformDecision(I, VF);
+  };
+
+  // Mark root instructions that need to be vectorized.
+  for (auto *BB : TheLoop->blocks()) {
+    for (auto &I : *BB) {
+      if (isa<LoadInst, StoreInst>(&I)) {
+        InstWidening WideningDecision = getWideningDecision(&I, VF);
+        assert(WideningDecision != CM_Unknown &&
+               "Widening decision should be ready at this moment");
+
+        // 1) Loads and stores to vectorize
+        if (WideningDecision != CM_Scalarize) {
+          LLVM_DEBUG(dbgs() << "Adding to NonUniformWorklist\n"; I.dump(););
+          NonUniformWorklist.insert(&I);
+        }
+
+        // 2) Address expressiones to vectorize
+        auto *Ptr = getLoadStorePointerOperand(&I);
+        if (!Ptr)
+          continue;
+
+        if (!IsUniformDecision(&I, VF)) {
+          assert(!IsVectorizedMemAccessUse(&I, Ptr) &&
+                 "Uniform address consistency check");
+          AddToWorklistIfAllowed(&I);
+        }
+      }
+    }
+  }
+
+  // Sweep through the loop body to find all non-uniforms.
+  while (!NonUniformWorklist.empty()) {
+    auto *I = NonUniformWorklist.pop_back_val();
+    assert(!NonUniforms[VF].contains(I) && "Non-uniform has been visited");
+    assert(!IsOutOfScope(I) && "Non-uniform is out of scope");
+    NonUniforms[VF].insert(I);
+    // Mark all users of a non-uniform non-uniform
+    for (auto *U : I->users()) {
+      if (!NonUniforms[VF].contains(cast<Instruction>(U))) {
+        LLVM_DEBUG(dbgs() << "Adding to NonUniformWorklist\n";
+                   cast<Instruction>(U)->dump(););
+        NonUniformWorklist.insert(cast<Instruction>(U));
+      }
+    }
+  }
+
+  // Sweep through the loop body to find all uniforms.
+  for (auto *BB : TheLoop->blocks())
+    for (Instruction &I : *BB)
+      if (!NonUniforms[VF].contains(&I))
+        Uniforms[VF].insert(&I);
+
+  LLVM_DEBUG(dbgs() << "Unforms:\n";
+  for (Instruction *I : Uniforms[VF])
+    I->dump();
+  dbgs() << "NonUniforms:\n";
+  for (Instruction *I : NonUniforms[VF])
+    I->dump(););
+}
+#endif // SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::runtimeChecksRequired() {
   LLVM_DEBUG(dbgs() << "LV: Performing code size checks.\n");
 
@@ -5815,6 +6152,19 @@ FixedScalableVFPair LoopVectorizationCostModel::computeFeasibleMaxVF(
 
 FixedScalableVFPair
 LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->isVectorizableUncountable()) {
+    FixedScalableVFPair MaxVF =
+        computeFeasibleMaxVF(0 /*uncountable*/, UserVF, false);
+    if (Hints->isFixedVectorizationDisabled() && !MaxVF)
+      reportVectorizationFailure(
+          "Cannot vectorize operations on unsupported scalable vector type",
+          "Cannot vectorize operations on unsupported scalable vector type",
+          "UnsupportedScalableVectorType", ORE, TheLoop);
+
+    return MaxVF;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (Legal->getRuntimePointerChecking()->Need && TTI.hasBranchDivergence()) {
     // TODO: It may by useful to do since it's still likely to be dynamically
     // uniform if the target can skip.
@@ -8746,6 +9096,12 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     if (CM.selectUserVectorizationFactor(UserVF)) {
       LLVM_DEBUG(dbgs() << "LV: Using user VF " << UserVF << ".\n");
       CM.collectInLoopReductions();
+#if SIFIVE_CUSTOMIZATION
+      // Stop vectorizing an uncountable loop if there is no instruction to
+      // vectorize
+      if (Legal->isVectorizableUncountable() && !CM.hasNonUniforms(UserVF))
+        return std::nullopt;
+#endif
       buildVPlansWithVPRecipes(UserVF, UserVF);
       LLVM_DEBUG(printPlans(dbgs()));
       return {{UserVF, 0, 0}};
@@ -8766,6 +9122,12 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
   for (const auto &VF : VFCandidates) {
     // Collect Uniform and Scalar instructions after vectorization with VF.
     CM.collectUniformsAndScalars(VF);
+#if SIFIVE_CUSTOMIZATION
+    // Stop vectorizing an uncountable loop if there is no instruction to
+    // vectorize
+    if (Legal->isVectorizableUncountable() && !CM.hasNonUniforms(VF))
+      return std::nullopt;
+#endif
 
     // Collect the instructions (and their associated costs) that will be more
     // profitable to scalarize.
@@ -8846,6 +9208,12 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
                                            InnerLoopVectorizer &ILV,
                                            DominatorTree *DT,
                                            bool IsEpilogueVectorization) {
+#if SIFIVE_CUSTOMIZATION
+  assert((!Legal->isVectorizableUncountable() ||
+          (BestVPlan.isUncountable() && BestVPlan.getInitRVL() &&
+           BestVPlan.getRVL() && !ILV.InitVL)) &&
+         "Uncountable loop is not set up correctly for executing VPlan");
+#endif
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
@@ -8861,10 +9229,16 @@ void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
   // simply happens to be prone to hitting this in practice.  In theory, we
   // can hit the same issue for any SCEV, or ValueTracking query done during
   // mutation.  See PR49900.
+#if SIFIVE_CUSTOMIZATION
+  if (!BestVPlan.isUncountable()) {
+#endif
   ILV.getOrCreateTripCount(OrigLoop->getLoopPreheader());
 
   if (!IsEpilogueVectorization)
     VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif
 
   // Perform the actual loop transformation.
 
@@ -9495,7 +9869,9 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
     return new VPWidenMemoryInstructionRecipe(*Load, Operands[0], Mask,
 #if SIFIVE_CUSTOMIZATION
-                                              Consecutive, Reverse, Stride);
+        Consecutive, Reverse, Stride,
+        Legal->isVectorizableUncountable() &&
+            Legal->getSpeculativeLoads().contains(Load));
 #else
                                               Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9503,8 +9879,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   StoreInst *Store = cast<StoreInst>(I);
   return new VPWidenMemoryInstructionRecipe(*Store, Operands[1], Operands[0],
 #if SIFIVE_CUSTOMIZATION
-                                            Mask, Consecutive, Reverse,
-                                            Stride);
+                                            Mask, Consecutive, Reverse, Stride);
 #else
                                             Mask, Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9536,12 +9911,24 @@ static VPWidenIntOrFpInductionRecipe *createWidenInductionRecipes(
   VPValue *Step =
       vputils::getOrCreateVPValueForSCEVExpr(Plan, IndDesc.getStep(), SE);
   if (auto *TruncI = dyn_cast<TruncInst>(PhiOrTrunc)) {
+#if SIFIVE_CUSTOMIZATION
+    return new VPWidenIntOrFpInductionRecipe(
+        Phi, Start, Step, IndDesc, TruncI, !NeedsScalarIVOnly,
+        CM.Legal->isVectorizableUncountable());
+#else
     return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI,
                                              !NeedsScalarIVOnly);
+#endif // SIFIVE_CUSTOMIZATION
   }
   assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
+#if SIFIVE_CUSTOMIZATION
+  return new VPWidenIntOrFpInductionRecipe(
+      Phi, Start, Step, IndDesc, !NeedsScalarIVOnly,
+      CM.Legal->isVectorizableUncountable());
+#else
   return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc,
                                            !NeedsScalarIVOnly);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
@@ -9558,6 +9945,16 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
     VPValue *Step = vputils::getOrCreateVPValueForSCEVExpr(Plan, II->getStep(),
                                                            *PSE.getSE());
     assert(isa<SCEVConstant>(II->getStep()));
+#if SIFIVE_CUSTOMIZATION
+    return new VPWidenPointerInductionRecipe(
+        Phi, Operands[0], Step, *II,
+        LoopVectorizationPlanner::getDecisionAndClampRange(
+            [&](ElementCount VF) {
+              return CM.isScalarAfterVectorization(Phi, VF);
+            },
+            Range),
+        CM.Legal->isVectorizableUncountable());
+#else
     return new VPWidenPointerInductionRecipe(
         Phi, Operands[0], Step, *II,
         LoopVectorizationPlanner::getDecisionAndClampRange(
@@ -9565,6 +9962,7 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
               return CM.isScalarAfterVectorization(Phi, VF);
             },
             Range));
+#endif // SIFIVE_CUSTOMIZATION
   }
   return nullptr;
 }
@@ -9988,7 +10386,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
     return toVPRecipeResult(tryToWidenCall(CI, Operands, Range, Plan));
 
 #if SIFIVE_CUSTOMIZATION
-  if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
+  if (isa<LoadInst, StoreInst>(Instr)) {
     if (preferPredicatedWiden()) {
       // Note: VLS skips this check with CM_Scalarize
       // We add it here for VLA
@@ -9997,9 +10395,37 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         return nullptr;
     }
-#endif // SIFIVE_CUSTOMIZATION
+
+    return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
+  }
+
+  if (Legal->isVectorizableUncountable()) {
+    // For uncountable loops, if the condition of a BranchInst is vectorized,
+    // generate BranchOnVFirstCmp; otherwise, keep it in scalar.
+    // TODO: This only works for single block uncountable loops.
+    if (auto *Br = dyn_cast<BranchInst>(Instr)) {
+      assert(Br->isConditional() && "Branch is not conditional");
+      auto *Cond = Br->getCondition();
+      if (!shouldWiden(cast<Instruction>(Cond), Range))
+        return nullptr;
+
+      // The branch has two possible ways to hook with its successors.
+      VPValue *VPV = nullptr;
+      if (Br->getSuccessor(0) != OrigLoop->getHeader()) {
+        VPV = Operands[0];
+      } else {
+        VPV = new VPInstruction(VPInstruction::Not, {Operands[0]});
+        VPBB->appendRecipe(cast<VPInstruction>(VPV));
+      }
+
+      return toVPRecipeResult(new VPInstruction(
+          VPInstruction::BranchOnVFirstCmp, {VPV}, Instr->getDebugLoc()));
+    }
+  }
+#else
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
     return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!shouldWiden(Instr, Range))
     return nullptr;
@@ -10288,9 +10714,15 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
 
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
 // original exit block.
+#if SIFIVE_CUSTOMIZATION
+static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
+                                VPBasicBlock *MiddleVPBB, Loop *OrigLoop,
+                                VPlan &Plan, LoopVectorizationLegality *Legal) {
+#else
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
                                 VPBasicBlock *MiddleVPBB, Loop *OrigLoop,
                                 VPlan &Plan) {
+#endif
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
@@ -10301,6 +10733,27 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
 #endif // SIFIVE_CUSTOMIZATION
     return;
 
+#if SIFIVE_CUSTOMIZATION
+  if (Plan.isUncountable()) {
+    // TODO: This whole LiveOut thing may not work properly when multiple
+    // exiting blocks exist. Revisit this part later.
+    // IV LiveOut can be deemed as only using the first lane in the vector loop.
+    // After exiting the vector loop, the IV needs to be compensated by the
+    // number of scalar iterations performed by the last vector iteration. This
+    // optimization is not applied to reduction-like PHIs.
+    SmallVector<BasicBlock *, 8> ExitingBlocks;
+    OrigLoop->getExitingBlocks(ExitingBlocks);
+
+    for (BasicBlock *ExitingBB : ExitingBlocks) {
+      for (PHINode &ExitPhi : ExitBB->phis()) {
+          Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
+          VPValue *V =
+              Plan.getOrAddVPValue(IncomingValue, /*OverrideAllowed*/ true);
+          Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
+      }
+    }
+  } else {
+#endif // SIFIVE_CUSTOMIZATION
   // Introduce VPUsers modeling the exit values.
   for (PHINode &ExitPhi : ExitBB->phis()) {
     Value *IncomingValue =
@@ -10308,6 +10761,9 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
     VPValue *V = Plan.getOrAddVPValue(IncomingValue, true);
     Plan.addLiveOut(&ExitPhi, V);
   }
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
@@ -10323,6 +10779,10 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // ---------------------------------------------------------------------------
 
   for (const auto &Reduction : CM.getInLoopReductionChains()) {
+#if SIFIVE_CUSTOMIZATION
+    assert(!Legal->isVectorizableUncountable() &&
+          "Reduction is not supported for uncountable loops yet");
+#endif
     PHINode *Phi = Reduction.first;
     RecurKind Kind =
         Legal->getReductionVars().find(Phi)->second.getRecurrenceKind();
@@ -10345,6 +10805,10 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // placeholders for its members' Recipes which we'll be replacing with a
   // single VPInterleaveRecipe.
   for (InterleaveGroup<Instruction> *IG : IAI.getInterleaveGroups()) {
+#if SIFIVE_CUSTOMIZATION
+    assert(!Legal->isVectorizableUncountable() &&
+           "Interleaving is not supported for uncountable loops yet");
+#endif
     auto applyIG = [IG, this](ElementCount VF) -> bool {
       return (VF.isVector() && // Query is illegal for VF == 1
               CM.getWideningDecision(IG->getInsertPos(), VF) ==
@@ -10367,7 +10831,16 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // followed by a region for the vector loop, followed by the middle block. The
   // skeleton vector loop region contains a header and latch block.
   VPBasicBlock *Preheader = new VPBasicBlock("vector.ph");
+#if SIFIVE_CUSTOMIZATION
+  auto Plan =
+      std::make_unique<VPlan>(Preheader, Legal->isVectorizableUncountable());
+  if (Legal->isVectorizableUncountable()) {
+    Plan->createRVL();
+    Plan->createInitRVL();
+  }
+#else
   auto Plan = std::make_unique<VPlan>(Preheader);
+#endif
 
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
   VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
@@ -10385,8 +10858,15 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
        ElementCount::isKnownLT(VF, Range.End); VF *= 2)
     IVUpdateMayOverflow |= !isIndvarOverflowCheckKnownFalse(&CM, VF);
 
+#if SIFIVE_CUSTOMIZATION
+  Instruction *DLInst = nullptr;
+  // Canonical IV is not available for uncountable loops in general.
+  if (!Legal->isVectorizableUncountable()) {
+      DLInst = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
+#else
   Instruction *DLInst =
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
+#endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(),
@@ -10402,6 +10882,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
                         CM.getTailFoldingStyle(IVUpdateMayOverflow));
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
+  }
   // Create the node for previous RVL value, required for the splice
   // intrinsic of a fixed order recurrence and CSA
   bool NeedOtherRVLs = !Legal->getFixedOrderRecurrences().empty() ||
@@ -10432,8 +10913,15 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
 
       // First filter out irrelevant instructions, to ensure no recipes are
       // built for them.
-      if (isa<BranchInst>(Instr) || DeadInstructions.count(Instr))
-        continue;
+#if SIFIVE_CUSTOMIZATION
+      // Branches need to be processed for uncountable loops
+      if (Legal->isVectorizableUncountable()) {
+        if (DeadInstructions.count(Instr))
+          continue;
+      } else
+#endif // SIFIVE_CUSTOMIZATION
+        if (isa<BranchInst>(Instr) || DeadInstructions.count(Instr))
+          continue;
 
       SmallVector<VPValue *, 4> Operands;
       auto *Phi = dyn_cast<PHINode>(Instr);
@@ -10468,6 +10956,16 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
       }
       // Otherwise, add the new recipe.
       VPRecipeBase *Recipe = RecipeOrValue.get<VPRecipeBase *>();
+#if SIFIVE_CUSTOMIZATION
+      // Branches do not define any value and need to be specialized
+      if (Legal->isVectorizableUncountable())
+        if (auto *VPI = dyn_cast<VPInstruction>(Recipe))
+          if (VPI->getOpcode() == VPInstruction::BranchOnVFirstCmp) {
+            RecipeBuilder.setRecipe(Instr, Recipe);
+            VPBB->appendRecipe(Recipe);
+            continue;
+          }
+#endif // SIFIVE_CUSTOMIZATION
       for (auto *Def : Recipe->definedValues()) {
         auto *UV = Def->getUnderlyingValue();
         Plan->addVPValue(UV, Def);
@@ -10489,6 +10987,9 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   }
 
 #if SIFIVE_CUSTOMIZATION
+  if (Legal->isVectorizableUncountable())
+    HeaderVPBB->setName("vector.body");
+
   addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB,
                            DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range,
                            *Plan);
@@ -10497,7 +10998,11 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // After here, VPBB should not be used.
   VPBB = nullptr;
 
+#if SIFIVE_CUSTOMIZATION
+  addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan, Legal);
+#else
   addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
@@ -10505,11 +11010,21 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
 
+#if SIFIVE_CUSTOMIZATION
+  LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
+    dbgs() << "Uncountable Loop: Initial VPlan\n";
+    Plan->print(dbgs());
+  });
+#endif
+
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
   // bring the VPlan to its final state.
   // ---------------------------------------------------------------------------
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->isVectorizableUncountable())
+#endif
   VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
   VPlanTransforms::removeRedundantInductionCasts(*Plan);
 
@@ -10561,6 +11076,10 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   // in ways that accessing values using original IR values is incorrect.
   Plan->disableValue2VPValue();
 
+#if SIFIVE_CUSTOMIZATION
+  // Skip optimizeInductions as it has a dependency on canonical IV.
+  if (!Legal->isVectorizableUncountable())
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::removeDeadRecipes(*Plan);
 
@@ -10570,6 +11089,12 @@ VPlanPtr LoopVectorizationPlanner::buildVPlanWithVPRecipes(
   VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
 
   assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
+#if SIFIVE_CUSTOMIZATION
+  LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
+    dbgs() << "Uncountable Loop: Final VPlan\n";
+    Plan->print(dbgs());
+  });
+#endif // SIFIVE_CUSTOMIZATION
   return Plan;
 }
 
@@ -10881,6 +11406,18 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
   // TODO: Model increment value in VPlan, by turning the recipe into a
   // multi-def and a subclass of VPHeaderPHIRecipe.
   VecInd->addIncoming(LastInduction, VectorPH);
+#if SIFIVE_CUSTOMIZATION
+  if (isUncountable()) {
+    if (auto *OrigPhiNode = dyn_cast<PHINode>(this->getUnderlyingValue())) {
+      LLVM_DEBUG(dbgs() << "Uncountable Loop: adding PHINode:";
+                 OrigPhiNode->dump(););
+      State.VectorLoopIVMap[OrigPhiNode] = VecInd;
+    } else {
+      llvm_unreachable(
+          "PHINode not available for a pointer induction variable");
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
@@ -10889,6 +11426,10 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   assert(cast<PHINode>(getUnderlyingInstr())->getType()->isPointerTy() &&
          "Unexpected type.");
 
+#if SIFIVE_CUSTOMIZATION
+  if (isUncountable())
+    return executeUncountable(State);
+#endif // SIFIVE_CUSTOMIZATION
   auto *IVR = getParent()->getPlan()->getCanonicalIV();
   PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0));
 
@@ -11209,8 +11750,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         // If RVL is not nullptr, then RVL must be a valid value set during plan
         // creation and must be used to correctly reverse the address
         RunTimeVF = State.get(RVL, Part);
-	if (RunTimeVF->getType() != IndexTy)
-	  RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
+        if (RunTimeVF->getType() != IndexTy)
+          RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         // If the address is consecutive but reversed, then the
@@ -11393,25 +11934,68 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // if RVLPart is not null, we can vectorize using predicated
       // intrinsic.
       if (RVLPart) {
-        BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-        Function *VPIntr =
-            Intrinsic::getDeclaration(VectorPH->getModule(), Intrinsic::vp_load,
-                                      {DataTy, VecPtr->getType()});
+        if (Speculative) {
+          assert(State.Plan->isUncountable() && "Not an uncountable loop");
+          // For FFLoad, we'd like to generate something like below.
+          // %a = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8(
+          //   <vscale x 8 x i8>* %0, i64 %1)
+          // %b = extractvalue { <vscale x 8 x i8>, i64 } %a, 0
+          // %c = extractvalue { <vscale x 8 x i8>, i64 } %a, 1
+          BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+          Intrinsic::ID FFLoadIntrinsicId =
+              Function::lookupIntrinsicID("llvm.riscv.vleff");
+          Value *RVL = State.get(State.Plan->getRVL(), 0);
+          assert(RVL && "VL is null for uncountable loops");
+          // llvm.riscv.* intrinsics take i64 VL so cast VL to i64 when needed.
+          // VP intrinsics take i32 VL instead.
+          // TODO: Switch to VP vleff when available.
+          // TODO: Make the types consistent to avoid inserting casts.
+          if (RVL->getType() != State.Builder.getInt64Ty())
+            RVL = Builder.CreateIntCast(RVL, State.Builder.getInt64Ty(),
+                                        /*isSigned=*/false);
 
-        Value *BlockInMaskPart =
-            isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
-                           : Builder.getTrueVector(DataTy->getElementCount());
+          Function *VPIntr = Intrinsic::getDeclaration(
+              VectorPH->getModule(), FFLoadIntrinsicId,
+              {DataTy, RVL->getType()});
+          Value *FFLI = Builder.CreateCall(
+              VPIntr, {PoisonValue::get(DataTy), VecPtr, RVL});
+          State.addMetadata(FFLI, LI);
+          NewLI = Builder.CreateExtractValue(FFLI, 0);
+          Value *VL = Builder.CreateExtractValue(FFLI, 1);
+          // VP intrinsics expect i32 VL
+          if (VL->getType() != State.Builder.getInt32Ty())
+            VL =
+                State.Builder.CreateZExtOrTrunc(VL, State.Builder.getInt32Ty());
+          State.set(State.Plan->getRVL(), VL, 0);
+        } else {
+          BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+          Function *VPIntr = Intrinsic::getDeclaration(
+              VectorPH->getModule(), Intrinsic::vp_load,
+              {DataTy, VecPtr->getType()});
 
-        NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
-                                   "vp.op.load");
+          Value *BlockInMaskPart =
+              isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
+                             : Builder.getTrueVector(DataTy->getElementCount());
+
+          NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
+                                     "vp.op.load");
+        }
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateMaskedLoad(
             DataTy, VecPtr, Alignment, BlockInMaskParts[Part],
             PoisonValue::get(DataTy), "wide.masked.load");
       else
+#if SIFIVE_CUSTOMIZATION
+      {
+#endif // SIFIVE_CUSTOMIZATION
         NewLI =
             Builder.CreateAlignedLoad(DataTy, VecPtr, Alignment, "wide.load");
+#if SIFIVE_CUSTOMIZATION
+      }
+      // Metadata has been attached to the ffload already
+      if (!Speculative)
+#endif // SIFIVE_CUSTOMIZATION
 
       // Add metadata to the load, but setVectorValue to the reverse shuffle.
       State.addMetadata(NewLI, LI);
@@ -11516,10 +12100,18 @@ Value *VPTransformState::get(VPValue *Def, unsigned Part) {
   unsigned LastLane = IsUniform ? 0 : VF.getKnownMinValue() - 1;
   // Check if there is a scalar value for the selected lane.
   if (!hasScalarValue(Def, {Part, LastLane})) {
+#if SIFIVE_CUSTOMIZATION
+    // At the moment, VPWidenIntOrFpInductionRecipes, VPScalarIVStepsRecipes,
+    // and VPWidenPointerInductionRecipe can also be uniform.
+    assert((isa<VPWidenIntOrFpInductionRecipe, VPScalarIVStepsRecipe,
+                VPWidenPointerInductionRecipe>(Def->getDefiningRecipe())) &&
+           "unexpected recipe found to be invariant");
+#else
     // At the moment, VPWidenIntOrFpInductionRecipes and VPScalarIVStepsRecipes can also be uniform.
     assert((isa<VPWidenIntOrFpInductionRecipe>(Def->getDefiningRecipe()) ||
             isa<VPScalarIVStepsRecipe>(Def->getDefiningRecipe())) &&
            "unexpected recipe found to be invariant");
+#endif // SIFIVE_CUSTOMIZATION
     IsUniform = true;
     LastLane = 0;
   }
@@ -12024,6 +12616,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
     unsigned SelectedIC = std::max(IC, UserIC);
 #if SIFIVE_CUSTOMIZATION
+    if (LVL.useVLAVectorizer() && LVL.isVectorizableUncountable())
+      SelectedIC = 1;
     // Check if it is profitable to vectorize with runtime checks.
     bool ForceVectorization =
         Hints.getForce() == LoopVectorizeHints::FK_Enabled;
@@ -12031,14 +12625,22 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
     //  Optimistically generate runtime checks if they are needed. Drop them if
     //  they turn out to not be profitable.
-    if (VF.Width.isVector() || SelectedIC > 1)
-      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC
 #if SIFIVE_CUSTOMIZATION
-                    ,
+    //  TODO: RTC for uncountable loops
+    if ((!LVL.useVLAVectorizer() || !LVL.isVectorizableUncountable()) &&
+        (VF.Width.isVector() || SelectedIC > 1))
+      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
                     ForceVectorization);
-#endif // SIFIVE_CUSTOMIZATION
+
+    if ((!LVL.useVLAVectorizer() || !LVL.isVectorizableUncountable()) &&
+        !ForceVectorization &&
+#else
+    if (VF.Width.isVector() || SelectedIC > 1)
+      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
+                    ForceVectorization);
 
     if (!ForceVectorization &&
+#endif // SIFIVE_CUSTOMIZATION
         !areRuntimeChecksProfitable(Checks, VF, CM.getVScaleForTuning(), L,
                                     *PSE.getSE())) {
       ORE->emit([&]() {
@@ -12306,6 +12908,19 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
         if (!MainILV.areSafetyChecksAdded())
           DisableRuntimeUnroll = true;
+#if SIFIVE_CUSTOMIZATION
+      } else if (LVL.isVectorizableUncountable()) {
+        UncountableInnerLoopVectorizer UILV(L, PSE, LI, DT, TLI, TTI, AC, ORE,
+                                            VF.Width, VF.MinProfitableTripCount,
+                                            IC, &LVL, &CM, BFI, PSI, Checks);
+        SCEVBlockRAII SCEVRAII(UILV, IgnoreSCEVMemCheckBB);
+        VPlan &BestPlan = LVP.getBestPlanFor(VF.Width);
+        LVP.executePlan(VF.Width, IC, BestPlan, UILV, DT, false);
+        ++LoopsVectorized;
+        ++UncountableLoopsVectorized;
+        // Always disable runtime unroll
+        DisableRuntimeUnroll = true;
+#endif // SIFIVE_CUSTOMIZATION
       } else {
         InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                                VF.MinProfitableTripCount, IC, &LVL, &CM, BFI,
@@ -12356,7 +12971,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           };
           return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),
                                     L->getHeader())
-                 << "vectorized loop ((lmul, type): "
+                 << "vectorized "
+                 << (LVL.isVectorizableUncountable() ? "uncountable " : "")
+                 << "loop ((lmul, type): "
                  << NV("VectorizationFactor", VFToLMULTypeSizePair(VF.Width))
                  << ")";
         }

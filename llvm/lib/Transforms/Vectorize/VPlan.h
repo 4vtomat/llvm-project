@@ -57,6 +57,9 @@ class BasicBlock;
 class DominatorTree;
 class InductionDescriptor;
 class InnerLoopVectorizer;
+#if SIFIVE_CUSTOMIZATION
+class UncountableInnerLoopVectorizer;
+#endif
 class IRBuilderBase;
 class LoopInfo;
 class PredicateScalarEvolution;
@@ -323,6 +326,12 @@ struct VPTransformState {
     DenseMap<VPValue *, ScalarsPerPartValuesTy> PerPartScalars;
   } Data;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Map scalar loop induction variables' PHINodes to their vector loop
+  /// counterpart
+  SmallDenseMap<PHINode *, PHINode *> VectorLoopIVMap;
+#endif
+
   /// Get the generated Value for a given VPValue and a given Part. Note that
   /// as some Defs are still created by ILV and managed in its ValueMap, this
   /// method will delegate the call to ILV in such cases in order to provide
@@ -466,6 +475,16 @@ struct VPTransformState {
   /// UnknownNumSafeElems if the dependence distance is unknown, or there is no
   /// dependency.
   uint64_t MaxSafeNumElems = UnknownNumSafeElems;
+
+  // TODO: Use a VPValue to hold the mapping to VFirst for consistency.
+  /// Keep the vfirst instruction
+  Value *VFirst = nullptr;
+
+  /// Set vfirst
+  void setVFirst(Value *VFirst) { this->VFirst = VFirst; }
+
+  /// Get vfirst
+  Value *getVFirst() const { return VFirst; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
@@ -759,9 +778,19 @@ public:
 class VPLiveOut : public VPUser {
   PHINode *Phi;
 
+#if SIFIVE_CUSTOMIZATION
+  bool OnlyFirstLaneUsed;
+#endif
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  VPLiveOut(PHINode *Phi, VPValue *Op, bool OnlyFirstLaneUsed = false)
+      : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi),
+        OnlyFirstLaneUsed(OnlyFirstLaneUsed) {}
+#else
   VPLiveOut(PHINode *Phi, VPValue *Op)
       : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Fixup the wrapped LCSSA phi node in the unique exit block.  This simply
   /// means we need to add the appropriate incoming value from the middle
@@ -776,6 +805,15 @@ public:
            "Op must be an operand of the recipe");
     return true;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if the VPUser only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return OnlyFirstLaneUsed;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   PHINode *getPhi() const { return Phi; }
 };
@@ -932,6 +970,7 @@ public:
     BranchOnCount,
 #if SIFIVE_CUSTOMIZATION
     BranchOnCond,
+    BranchOnVFirstCmp,
     CSAInitMask,
     CSAInitData,
     CSAMaskPhi,
@@ -1017,6 +1056,9 @@ public:
     case Instruction::AtomicRMW:
     case VPInstruction::BranchOnCond:
     case VPInstruction::BranchOnCount:
+#if SIFIVE_CUSTOMIZATION
+    case VPInstruction::BranchOnVFirstCmp:
+#endif
       return false;
     default:
       return true;
@@ -1042,6 +1084,9 @@ public:
     case VPInstruction::CanonicalIVIncrementForPart:
     case VPInstruction::CanonicalIVIncrementForPartNUW:
     case VPInstruction::BranchOnCount:
+#if SIFIVE_CUSTOMIZATION
+    case VPInstruction::BranchOnVFirstCmp:
+#endif
       return true;
     };
     llvm_unreachable("switch should return");
@@ -1344,21 +1389,40 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
   TruncInst *Trunc;
   const InductionDescriptor &IndDesc;
   bool NeedsVectorIV;
+#if SIFIVE_CUSTOMIZATION
+  bool IsUncountable = false;
+#endif
 
 public:
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+#if SIFIVE_CUSTOMIZATION
+                                bool NeedsVectorIV, bool IsUncountable = false)
+#else
                                 bool NeedsVectorIV)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
+#if SIFIVE_CUSTOMIZATION
+        Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
+#else
         Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+#if SIFIVE_CUSTOMIZATION
+                                TruncInst *Trunc, bool NeedsVectorIV, bool IsUncountable = false)
+#else
                                 TruncInst *Trunc, bool NeedsVectorIV)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
+#if SIFIVE_CUSTOMIZATION
+        IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
+#else
         IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 
@@ -1369,6 +1433,10 @@ public:
   /// Generate the vectorized and scalarized versions of the phi node as
   /// needed by their users.
   void execute(VPTransformState &State) override;
+
+#if SIFIVE_CUSTOMIZATION
+  bool isUncountable() const { return IsUncountable; }
+#endif
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1422,15 +1490,20 @@ class VPWidenPointerInductionRecipe : public VPHeaderPHIRecipe {
 
   bool IsScalarAfterVectorization;
 
+  /// Indicator if only the pointer induction variable is an uniform
+  bool IsUncountable = false;
+
 public:
   /// Create a new VPWidenPointerInductionRecipe for \p Phi with start value \p
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
-                                bool IsScalarAfterVectorization)
+                                bool IsScalarAfterVectorization,
+                                bool IsUncountable)
       : VPHeaderPHIRecipe(VPDef::VPWidenPointerInductionSC, Phi),
         IndDesc(IndDesc),
-        IsScalarAfterVectorization(IsScalarAfterVectorization) {
+        IsScalarAfterVectorization(IsScalarAfterVectorization),
+        IsUncountable(IsUncountable) {
     addOperand(Start);
     addOperand(Step);
   }
@@ -1442,11 +1515,32 @@ public:
   /// Generate vector values for the pointer induction.
   void execute(VPTransformState &State) override;
 
+  /// Generate vector values for the pointer induction in an uncountable loop.
+  void executeUncountable(VPTransformState &State);
+
   /// Returns true if only scalar values will be generated.
   bool onlyScalarsGenerated(ElementCount VF);
 
   /// Returns the induction descriptor for the recipe.
   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
+
+  /// Returns true if only scalar values will be generated.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return all_of(users(),
+                  [this](VPUser *U) { return U->onlyFirstLaneUsed(this); });
+  }
+
+#if SIFIVE_CUSTOMIZATION
+  bool isUncountable() const { return IsUncountable; }
+
+  /// Returns whether the pointer iv is an uniform
+  bool isUniform() const {
+    ConstantInt *Step = IndDesc.getConstIntStepValue();
+    return Step && Step->isOne();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -2013,15 +2107,20 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
 #if SIFIVE_CUSTOMIZATION
   // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
   const SCEV *Stride = nullptr;
+
+  // Speculative load/store
+  bool Speculative = false;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr)
+                                 const SCEV *Stride = nullptr,
+                                 bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride) {
+        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride),
+        Speculative(Speculative) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
@@ -2037,7 +2136,8 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr)
+                                 const SCEV *Stride = nullptr,
+                                 bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
         Stride(Stride) {
@@ -2613,6 +2713,12 @@ class VPlan {
 
   /// Pair of LMUL and Type's size applicable for this VPlan.
   SmallVector<std::pair<unsigned, Type *>, 1> LMULTypePairs;
+
+  /// Keep the VPValue that increments the primary IV.
+  VPValue *IVIncrement = nullptr;
+
+  /// Uncountable loops
+  bool IsUncountable = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Represents the vector trip count.
@@ -2638,10 +2744,18 @@ class VPlan {
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
+#if SIFIVE_CUSTOMIZATION
+  VPlan(VPBlockBase *Entry = nullptr, bool IsUncountable = false)
+      : Entry(Entry), IsUncountable(IsUncountable) {
+    if (Entry)
+      Entry->setPlan(this);
+  }
+#else
   VPlan(VPBlockBase *Entry = nullptr) : Entry(Entry) {
     if (Entry)
       Entry->setPlan(this);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   ~VPlan();
 
@@ -2677,6 +2791,10 @@ public:
 
   /// The trip count of the original loop.
   VPValue *getOrCreateTripCount() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not create trip count for uncountable loops");
+#endif
     if (!TripCount)
       TripCount = new VPValue();
     return TripCount;
@@ -2684,12 +2802,19 @@ public:
 
   /// The backedge taken count of the original loop.
   VPValue *getOrCreateBackedgeTakenCount() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not create backedge taken count for uncountable loops");
+#endif
     if (!BackedgeTakenCount)
       BackedgeTakenCount = new VPValue();
     return BackedgeTakenCount;
   }
 
 #if SIFIVE_CUSTOMIZATION
+  /// Return whether the vPlan is uncountable
+  bool isUncountable() const { return IsUncountable; }
+
   /// Returns VPValue for RVL.
   VPValue *getRVL() const { return RVL; }
 
@@ -2744,7 +2869,15 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   /// The vector trip count.
+#if SIFIVE_CUSTOMIZATION
+  VPValue &getVectorTripCount() {
+    assert(!isUncountable() &&
+           "Should not get vectro trip count for uncountable loops");
+    return VectorTripCount;
+  }
+#else
   VPValue &getVectorTripCount() { return VectorTripCount; }
+#endif
 
   /// Mark the plan to indicate that using Value2VPValue is not safe any
   /// longer, because it may be stale.
@@ -2859,6 +2992,10 @@ public:
 
   /// Returns the canonical induction recipe of the vector loop.
   VPCanonicalIVPHIRecipe *getCanonicalIV() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not get canonical IV for uncountable loops");
+#endif
     VPBasicBlock *EntryVPBB = getVectorLoopRegion()->getEntryBasicBlock();
     if (EntryVPBB->empty()) {
       // VPlan native path.
@@ -2871,7 +3008,11 @@ public:
   /// be only one at most. If there isn't one, then return nullptr.
   VPActiveLaneMaskPHIRecipe *getActiveLaneMaskPhi();
 
+#if SIFIVE_CUSTOMIZATION
+  void addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed = false);
+#else
   void addLiveOut(PHINode *PN, VPValue *V);
+#endif // SIFIVE_CUSTOMIZATION
 
   void clearLiveOuts() {
     for (auto &KV : LiveOuts)

@@ -428,6 +428,13 @@ void VPBasicBlock::execute(VPTransformState *State) {
   LLVM_DEBUG(dbgs() << "LV: vectorizing VPBB:" << getName()
                     << " in BB:" << NewBB->getName() << '\n');
 
+#if SIFIVE_CUSTOMIZATION
+  // If this is the header of the vector loop, insert vsetvlimax.
+  if (getPlan()->isUncountable() &&
+      this == getPlan()->getVectorLoopRegion()->getEntryBasicBlock())
+    getPlan()->getSetVL(*State, nullptr);
+#endif // SIFIVE_CUSTOMIZATION
+
   State->CFG.VPBB2IRBB[this] = NewBB;
   State->CFG.PrevVPBB = this;
 
@@ -628,6 +635,27 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 
 #if SIFIVE_CUSTOMIZATION
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
+  assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
+         "LMUL is not supported by the hardware");
+  Constant *SEWArg = ConstantInt::get(
+      IntegerType::get(State.Builder.getContext(), 64), State.SEW);
+  Constant *LMULArg = ConstantInt::get(
+      IntegerType::get(State.Builder.getContext(), 64), State.LMULExp);
+
+  if (State.Plan->isUncountable()) {
+    assert(State.Plan->getInitRVL() && "InitRVL is null");
+    assert(State.Plan->getRVL() && "RVL is null");
+    assert(!RVL && "RVL not expected by uncountable loops");
+
+    Value *VLMax64 = State.Builder.CreateIntrinsic(
+        Intrinsic::riscv_vsetvlimax, {SEWArg->getType()}, {SEWArg, LMULArg});
+    Value *VLMax32 =
+        State.Builder.CreateTrunc(VLMax64, State.Builder.getInt32Ty());
+    State.set(State.Plan->getInitRVL(), VLMax64, 0);
+    State.set(State.Plan->getRVL(), VLMax32, 0);
+    return nullptr;
+  }
+
   assert(RVL->getType()->isIntegerTy() &&
          "Requested vector length should be an integer.");
   Value *RVLArg = State.Builder.CreateZExtOrTrunc(
@@ -652,17 +680,11 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
                                                  RVLUpperBound);
   }
 
-  assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
-         "LMUL is not supported by the hardware");
-  Constant *SEWArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.SEW);
-  Constant *LMULArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.LMULExp);
-
   Value *GVL = State.Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
+
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) {
   InstructionCost Overhead;
   for (VPBlockBase *Block : depth_first(Entry)) {
@@ -741,6 +763,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              VPTransformState &State,
                              bool IsEpilogueVectorization) {
 
+#if SIFIVE_CUSTOMIZATION
+  if (!isUncountable()) {
+#endif // SIFIVE_CUSTOMIZATION
   // Check if the trip count is needed, and if so build it.
   if (TripCount && TripCount->getNumUsers()) {
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
@@ -785,6 +810,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
            "resetting the start value");
     IV->setOperand(0, VPV);
   }
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
@@ -842,14 +870,47 @@ void VPlan::execute(VPTransformState *State) {
         auto *WidenPhi = cast<VPWidenPointerInductionRecipe>(&R);
         // TODO: Split off the case that all users of a pointer phi are scalar
         // from the VPWidenPointerInductionRecipe.
+#if SIFIVE_CUSTOMIZATION
+        // Don't skip pointer IVs for uncountable loops as their incoming value
+        // still needs to be fixed.
+        if (WidenPhi->onlyScalarsGenerated(State->VF) && !isUncountable())
+#else
         if (WidenPhi->onlyScalarsGenerated(State->VF))
+#endif
           continue;
 
         auto *GEP = cast<GetElementPtrInst>(State->get(WidenPhi, 0));
         Phi = cast<PHINode>(GEP->getPointerOperand());
+#if SIFIVE_CUSTOMIZATION
+        if (isUncountable()) {
+          // Create IV stepping after the last instruction updating vl to ensure
+          // the step is based on the proper vl.
+          Value *RVL = State->get(State->Plan->getRVL(), 0);
+          if (GEP != RVL) {
+            State->Builder.SetInsertPoint(
+                cast<Instruction>(RVL)->getNextNode());
+            Value *NewGEP =
+                State->Builder.CreateGEP(GEP->getSourceElementType(),
+                                         GEP->getOperand(0), RVL, "vector.gep");
+            // TODO: Need to update any state?
+            Phi->setIncomingValue(1, NewGEP);
+
+            // If GEP has only one use i.e Phi, remove it. Note the condition
+            // checks hasNUses(0) because the def of its only use i.e. Phi has
+            // been updated above.
+            if (GEP->hasNUses(0))
+              GEP->eraseFromParent();
+          }
+        }
+#endif // SIFIVE_CUSTOMIZATION
       }
 
       Phi->setIncomingBlock(1, VectorLatchBB);
+
+#if SIFIVE_CUSTOMIZATION
+      if (isUncountable())
+        continue;
+#endif
 
       // Move the last step to the end of the latch block. This ensures
       // consistent placement of all induction updates.
@@ -974,10 +1035,17 @@ LLVM_DUMP_METHOD
 void VPlan::dump() const { print(dbgs()); }
 #endif
 
+#if SIFIVE_CUSTOMIZATION
+void VPlan::addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed) {
+  assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
+  LiveOuts.insert({PN, new VPLiveOut(PN, V, onlyFirstLaneUsed)});
+}
+#else
 void VPlan::addLiveOut(PHINode *PN, VPValue *V) {
   assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
   LiveOuts.insert({PN, new VPLiveOut(PN, V)});
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPlan::updateDominatorTree(DominatorTree *DT, BasicBlock *LoopHeaderBB,
                                 BasicBlock *LoopLatchBB,

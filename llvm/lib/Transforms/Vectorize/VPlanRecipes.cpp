@@ -28,6 +28,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Transforms/Utils/InjectTLIMappings.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -571,6 +572,46 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     State.set(this, VLSel, Part);
     break;
   }
+  case VPInstruction::BranchOnVFirstCmp: {
+    // Create vfirst
+    BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+    Intrinsic::ID VFirstIntrinsicId =
+        Function::lookupIntrinsicID("llvm.riscv.vfirst");
+    Value *Mask = State.get(getOperand(0), Part);
+    Value *RVL = State.get(State.Plan->getRVL(), 0);
+    assert(RVL && "VL is null for uncountable loops");
+    // Cast VL to i64 to invoke llvm.riscv.* intrinsics as LV only
+    // supports RV64 atm. VP intrinsics needs i32 VL in contrast.
+    // TODO: Switch to VP vfirst when available.
+    if (RVL->getType() != State.Builder.getInt64Ty())
+      RVL = Builder.CreateZExt(RVL, State.Builder.getInt64Ty());
+
+    Function *VPIntr =
+        Intrinsic::getDeclaration(VectorPH->getModule(), VFirstIntrinsicId,
+                                  {Mask->getType(), RVL->getType()});
+    Value *VFirstI = Builder.CreateCall(VPIntr, {Mask, RVL});
+    State.setVFirst(VFirstI);
+
+    // Create cmp
+    Value *Cond = Builder.CreateICmp(ICmpInst::ICMP_SGE, VFirstI,
+                                     ConstantInt::get(VFirstI->getType(), 0));
+
+    // Create the branch
+    VPRegionBlock *TopRegion = State.Plan->getVectorLoopRegion();
+    VPBasicBlock *Header = TopRegion->getEntry()->getEntryBasicBlock();
+
+    // Replace the temporary unreachable terminator with a new conditional
+    // branch, hooking it up to backward destination (the header) now and to the
+    // forward destination (the exit/middle block) later when it is created.
+    // Note that CreateCondBr expects a valid BB as first argument, so we need
+    // to set it to nullptr later.
+    BranchInst *CondBr = Builder.CreateCondBr(Cond, State.CFG.VPBB2IRBB[Header],
+                                              Builder.GetInsertBlock());
+    CondBr->setSuccessor(0, nullptr);
+    Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
+
+    break;
+  }
   // TODO: This case can be removed when support for Call instruction is added
   // to VPlan in upstream. For now it helps catch any use of VPInstruction for
   // Call opcode that is now supported by the new VPCallInstruction recipe.
@@ -666,6 +707,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     break;
   case VPInstruction::CSAAnyActive:
     O << "csa-anyactive";
+    break;
+  case VPInstruction::BranchOnVFirstCmp:
+    O << "branch-on-vfirst-cmp ";
     break;
 #endif // SIFIVE_CUSTOMIZATION
   default:
@@ -1498,7 +1542,14 @@ void VPPredInstPHIRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
                                            VPSlotTracker &SlotTracker) const {
+#if SIFIVE_CUSTOMIZATION
+  if (this->Speculative)
+    O << Indent << "WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ";
+  else
+    O << Indent << "WIDEN ";
+#else
   O << Indent << "WIDEN ";
+#endif
 
   if (!isStore()) {
     getVPSingleValue()->printAsOperand(O, SlotTracker);
@@ -1604,6 +1655,107 @@ void VPWidenPointerInductionRecipe::print(raw_ostream &O, const Twine &Indent,
   O << ", " << *IndDesc.getStep();
 }
 #endif
+
+#if SIFIVE_CUSTOMIZATION
+// Unlike induction variables in countable loops, induction variables in
+// uncountable loops don't have the canonical IV to leverage so always have
+// their PHIs created.
+void VPWidenPointerInductionRecipe::executeUncountable(
+    VPTransformState &State) {
+  assert(isa<SCEVConstant>(IndDesc.getStep()) &&
+         "Induction step not a SCEV constant!");
+  Type *PhiType = IndDesc.getStep()->getType();
+
+  // Build a pointer phi
+  Value *ScalarStartValue = getStartValue()->getLiveInIRValue();
+  Type *ScStValueType = ScalarStartValue->getType();
+  auto *NewPointerPhi = PHINode::Create(ScStValueType, 2, "pointer.phi",
+                                        State.CFG.PrevBB->getFirstNonPHI());
+
+  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+  NewPointerPhi->addIncoming(ScalarStartValue, VectorPH);
+
+  if (auto *OrigPhiNode = dyn_cast<PHINode>(this->getUnderlyingValue())) {
+    LLVM_DEBUG(dbgs() << "Uncountable Loop: adding PHINode:";
+               OrigPhiNode->dump(););
+    State.VectorLoopIVMap[OrigPhiNode] = NewPointerPhi;
+  } else {
+    llvm_unreachable("PHINode not available for a pointer induction variable");
+  }
+
+  // A pointer induction, performed by using a gep
+  Instruction *InductionLoc = &*State.Builder.GetInsertPoint();
+  Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
+  // RuntimeVF is still computed based on vscale for uncountable loops. This
+  // ensures VL is properly restored to what vsetvlimax sets at the beginning of
+  // every vector iteration if ffload modifies VL even if vsetvlimax is hoisted
+  // out of the vector loop.
+  Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+  Value *NumUnrolledElems =
+      State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
+  // If MaxSafeNumElems is not unknown, then we have clamped the VL.
+  // Therefore, we need to bump the pointer by the clamped disntance
+  // instead.
+  Value *PtrStride =
+      State.MaxSafeNumElems == VPTransformState::UnknownNumSafeElems
+          ? NumUnrolledElems
+          : ConstantInt::get(PhiType, State.MaxSafeNumElems);
+  Value *InductionGEP = GetElementPtrInst::Create(
+      IndDesc.getElementType(), NewPointerPhi,
+      State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
+      InductionLoc);
+  // Add induction update using an incorrect block temporarily. The phi node
+  // will be fixed after VPlan execution. Note that at this point the latch
+  // block cannot be used, as it does not exist yet.
+  // TODO: Model increment value in VPlan, by turning the recipe into a
+  // multi-def and a subclass of VPHeaderPHIRecipe.
+  NewPointerPhi->addIncoming(InductionGEP, VectorPH);
+
+  // Create UF many actual address geps that use the pointer
+  // phi as base and a vectorized version of the step value
+  // (<step*0, ..., step*N>) as offset.
+  assert(State.UF == 1 && "UF is not 1 for uncountable loops");
+  for (unsigned Part = 0; Part < State.UF; ++Part) {
+    // Determine the number of scalars we need to generate for each unroll
+    // iteration. If the instruction is uniform, we only need to generate the
+    // first lane. Otherwise, we generate all VF values.
+    if (onlyScalarsGenerated(State.VF)) {
+      assert(State.VF.isScalable() &&
+             "Only scalable VF is supported for uncountable loops");
+      Value *StartOffsetScalar =
+          State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, Part));
+      assert(ScalarStepValue ==
+                 State.get(getOperand(1), VPIteration(0, Part)) &&
+             "scalar step must be the same across all parts");
+      Value *GEP = State.Builder.CreateGEP(
+          IndDesc.getElementType(), NewPointerPhi,
+          State.Builder.CreateMul(StartOffsetScalar, ScalarStepValue),
+          "vector.gep");
+      State.set(this, GEP, Part);
+      continue;
+    }
+
+    Type *VecPhiType = VectorType::get(PhiType, State.VF);
+    Value *StartOffsetScalar =
+        State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, Part));
+    Value *StartOffset =
+        State.Builder.CreateVectorSplat(State.VF, StartOffsetScalar);
+    // Create a vector of consecutive numbers from zero to VF.
+    StartOffset = State.Builder.CreateAdd(
+        StartOffset, State.Builder.CreateStepVector(VecPhiType));
+
+    assert(ScalarStepValue == State.get(getOperand(1), VPIteration(0, Part)) &&
+           "scalar step must be the same across all parts");
+    Value *GEP = State.Builder.CreateGEP(
+        IndDesc.getElementType(), NewPointerPhi,
+        State.Builder.CreateMul(
+            StartOffset,
+            State.Builder.CreateVectorSplat(State.VF, ScalarStepValue),
+            "vector.gep"));
+    State.set(this, GEP, Part);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPExpandSCEVRecipe::execute(VPTransformState &State) {
   assert(!State.Instance && "cannot be used in per-lane");

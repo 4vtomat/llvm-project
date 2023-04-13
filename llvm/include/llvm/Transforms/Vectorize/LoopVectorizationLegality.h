@@ -321,6 +321,11 @@ public:
   /// If false, good old LV code.
   bool canVectorize(bool UseVPlanNativePath);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if the loop is uncountable and vectorizable
+  bool isVectorizableUncountable() const { return IsVectorizableUncountable; }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Returns true if it is legal to vectorize the FP math operations in this
   /// loop. Vectorizing is legal if we allow reordering of FP operations, or if
   /// we can use in-order reductions.
@@ -457,6 +462,24 @@ public:
   bool useVLAVectorizer() const {
     return TTI->useVLAVectorizer();
   }
+
+  /// Returns true if an uncountable loop is safe for speculation
+  bool isSpeculationSafe(PredicatedScalarEvolution &PSE);
+
+  /// Returns all speculative loads.
+  const SmallPtrSetImpl<Instruction *> &getSpeculativeLoads() const {
+    return SpeculativeLoads;
+  }
+
+  /// Returns true if an uncountable loop can be vectorized
+  bool canVectorizeUncountableLoop(PredicatedScalarEvolution &PSE);
+
+  /// Mark a loop as a vectorizable uncountable loop
+  void setVectorizableUncountable() {
+    assert(!IsVectorizableUncountable &&
+           "IsVectorizableUncountable should only be set once");
+    IsVectorizableUncountable = true;
+  };
 #endif // SIFIVE_CUSTOMIZATION
 
 private:
@@ -623,6 +646,14 @@ private:
   /// BFI and PSI are used to check for profile guided size optimizations.
   BlockFrequencyInfo *BFI;
   ProfileSummaryInfo *PSI;
+
+#if SIFIVE_CUSTOMIZATION
+  bool IsVectorizableUncountable = false;
+
+  /// Hold all loads and stores that need to be speculative.
+  SmallPtrSet<Instruction *, 4> SpeculativeLoads;
+  SmallPtrSet<Instruction *, 4> SpeculativeStores;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // namespace llvm

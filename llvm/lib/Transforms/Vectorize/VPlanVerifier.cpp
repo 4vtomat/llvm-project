@@ -269,7 +269,11 @@ bool VPlanVerifier::verifyPlanIsValid(const VPlan &Plan) {
     return false;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Plan.isUncountable() && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+#else
   if (!isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+#endif
     errs() << "VPlan vector loop header does not start with a "
               "VPCanonicalIVPHIRecipe\n";
     return false;
@@ -288,10 +292,19 @@ bool VPlanVerifier::verifyPlanIsValid(const VPlan &Plan) {
   }
 
   auto *LastInst = dyn_cast<VPInstruction>(std::prev(Exiting->end()));
+#if SIFIVE_CUSTOMIZATION
+  if (!LastInst ||
+      (LastInst->getOpcode() != VPInstruction::BranchOnCount &&
+        LastInst->getOpcode() != VPInstruction::BranchOnCond &&
+        LastInst->getOpcode() != VPInstruction::BranchOnVFirstCmp)) {
+    errs() << "VPlan vector loop exit must end with BranchOnCount, "
+              "BranchOnCond, or BranchOnVFirstCmp VPInstruction\n";
+#else
   if (!LastInst || (LastInst->getOpcode() != VPInstruction::BranchOnCount &&
                     LastInst->getOpcode() != VPInstruction::BranchOnCond)) {
     errs() << "VPlan vector loop exit must end with BranchOnCount or "
               "BranchOnCond VPInstruction\n";
+#endif
     return false;
   }
 
