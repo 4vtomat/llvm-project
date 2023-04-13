@@ -480,7 +480,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     break;
   }
   case VPInstruction::CSAMaskSel: {
-    if (State.DisableRISCVCSA) {
+    if (!State.EnableRISCVCSA) {
       Value *WidenedCond = State.get(getOperand(0), Part);
       Value *MaskPhi = State.get(getOperand(1), Part);
       Value *AnyActive = State.get(getOperand(4), Part);
@@ -1428,7 +1428,7 @@ void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
-  if (State.DisableRISCVCSA) {
+  if (!State.EnableRISCVCSA) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *AnyActive = State.get(getVPAnyActive(), Part);
       Value *DataUpdate = getVPDataPhi() == getVPTrue()
@@ -1492,7 +1492,7 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
           ? State.get(State.Plan->getRVL(), 0)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
   Value *VLToUse =
-      State.DisableRISCVCSA ? State.get(getVPCSAVLSel(), LastPart) : InitRVL;
+      State.EnableRISCVCSA ? InitRVL : State.get(getVPCSAVLSel(), LastPart);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
 
   Value *IndexVec = State.Builder.CreateStepVector(

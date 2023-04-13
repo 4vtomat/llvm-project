@@ -73,6 +73,11 @@ cl::opt<unsigned> VectorPrimaryLMULMaxExp(
              "The default value is 0, it means LMUL=pow(2, 0)=1."
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
+static cl::opt<unsigned> CSAVectorizationStrategy(
+    "sifive-csa-strategy", cl::init(2), cl::Hidden,
+    cl::desc("Control whether CSA loop vectorization is enabled. 0 means do "
+             "not enable csa. 1 means enable csa. 2 means defer to compiler to "
+             "choose for the target. Any other value has undefined semantics"));
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -2673,3 +2678,11 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                   C2.NumIVMuls, C2.NumBaseAdds,
                   C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVTTIImpl::enableCSAVectorization() const {
+  if (CSAVectorizationStrategy == 2)
+    return ST->getProcFamily() == RISCVSubtarget::SiFive7;
+  return CSAVectorizationStrategy;
+}
+#endif

@@ -944,6 +944,9 @@ public:
   bool hasArmWideBranch(bool) const { return false; }
 
   unsigned getMaxNumArgs() const { return UINT_MAX; }
+#if SIFIVE_CUSTOMIZATION
+  bool enableCSAVectorization() const { return false; }
+#endif // SIFIVE_CUSTOMIZATION
 
 protected:
   // Obtain the minimum required size to hold the value (without the sign)

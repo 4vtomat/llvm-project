@@ -1708,6 +1708,12 @@ public:
 
   /// @}
 
+#if SIFIVE_CUSTOMIZATION
+  /// \returns true if the loop vectorizer should vectorize conditional
+  /// scalar assignments for the target.
+  bool enableCSAVectorization() const;
+#endif // SIFIVE_CUSTOMIZATION
+
 private:
   /// The abstract base class used to type erase specific TTI
   /// implementations.
@@ -2093,6 +2099,9 @@ public:
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
   virtual unsigned getMaxNumArgs() const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual bool enableCSAVectorization() const = 0;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 template <typename T>
@@ -2849,6 +2858,11 @@ public:
   unsigned getMaxNumArgs() const override {
     return Impl.getMaxNumArgs();
   }
+#if SIFIVE_CUSTOMIZATION
+  bool enableCSAVectorization() const override {
+    return Impl.enableCSAVectorization();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 template <typename T>

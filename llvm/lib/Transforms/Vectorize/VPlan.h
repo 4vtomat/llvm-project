@@ -312,9 +312,9 @@ struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan, bool DisableRISCVCSA)
+                   InnerLoopVectorizer *ILV, VPlan *Plan, bool EnableRISCVCSA)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-        LVer(nullptr), DisableRISCVCSA(DisableRISCVCSA) {}
+        LVer(nullptr), EnableRISCVCSA(EnableRISCVCSA) {}
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
@@ -536,8 +536,8 @@ struct VPTransformState {
 
 #if SIFIVE_CUSTOMIZATION
   /// True if the RISCV specific implementation of CSA vectorization is
-  /// disabled.
-  bool DisableRISCVCSA;
+  /// enabled.
+  bool EnableRISCVCSA;
 #endif // SIFIVE_CUSTOMIZATION
 };
 

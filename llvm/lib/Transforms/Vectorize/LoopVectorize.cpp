@@ -455,11 +455,6 @@ cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
 
-static cl::opt<bool> DisableRISCVCSA(
-    "sifive-disable-riscv-csa", cl::init(false), cl::Hidden,
-    cl::desc("Control whether the RISCV specific implementation of CSA "
-             "vectorization is disabled."));
-
 cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
     cl::Hidden, cl::desc("Use VPlan-based cost model"));
@@ -467,6 +462,11 @@ cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
 cl::opt<bool> SiFiveEnableInterleavedAccess(
     "sifive-loop-vectorizer-enable-interleaved-access", cl::init(true),
     cl::Hidden, cl::desc("Enable interleaved access in RVV VLA vectorization"));
+
+static cl::opt<bool> EnableRISCVCSA(
+    "sifive-enable-riscv-csa", cl::init(true), cl::Hidden,
+    cl::desc("Control whether the RISCV specific implementation of CSA "
+             "vectorization is enabled."));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -9382,7 +9382,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
   // Perform the actual loop transformation.
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{BestVF,      BestUF, LI,         DT,
-                         ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
+                         ILV.Builder, &ILV,   &BestVPlan, EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
   VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
@@ -10800,7 +10800,7 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     PreheaderVPBB->appendRecipe(VPInitData);
 
     VPInstruction *VPVLPhi = nullptr;
-    if (DisableRISCVCSA) {
+    if (!EnableRISCVCSA) {
       VPVLPhi =
           new VPInstruction(VPInstruction::CSAVLPhi, {}, DL, "csa.vl.phi");
       HeaderVPBB->appendRecipe(VPVLPhi);
@@ -10840,7 +10840,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
     VPCSAExtractScalarRecipe *ExtractScalarRecipe= nullptr;
-    if (DisableRISCVCSA) {
+    if (!EnableRISCVCSA) {
       auto *VPAnyActive = new VPInstruction(VPInstruction::CSAAnyActive,
                                             {WidenedCond, AllTrueMask}, DL,
                                             "csa.cond.anyactive");

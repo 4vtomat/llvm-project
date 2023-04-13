@@ -1286,6 +1286,9 @@ bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
                                                   const DataLayout &DL) const {
   return TTIImpl->isLegalVectorInterleave(VTy, Factor, DL);
 }
+bool TargetTransformInfo::enableCSAVectorization() const {
+  return TTIImpl->enableCSAVectorization();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::Concept::~Concept() = default;

@@ -491,6 +491,12 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);
+
+#if SIFIVE_CUSTOMIZATION
+  /// \returns true if the loop vectorizer should vectorize conditional
+  /// scalar assignments for the target.
+  bool enableCSAVectorization() const;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // end namespace llvm
