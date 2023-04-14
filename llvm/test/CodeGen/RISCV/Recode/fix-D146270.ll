@@ -26,7 +26,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
 ; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    li a0, 0
+; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0
 ; CHECK-NEXT:    csrr a1, vlenb
