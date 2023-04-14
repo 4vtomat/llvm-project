@@ -685,7 +685,7 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
 
-InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) {
+InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
   for (VPBlockBase *Block : depth_first(Entry)) {
     InstructionCost O = Block->overhead(VF, Ctx);
@@ -694,7 +694,8 @@ InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) {
   return Overhead;
 }
 
-InstructionCost VPRegionBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
+InstructionCost VPRegionBlock::overhead(ElementCount VF,
+                                        VPCostContext &Ctx) const {
   ReversePostOrderTraversal<VPBlockBase *> RPOT(Entry);
   InstructionCost Overhead;
   for (VPBlockBase *Block : RPOT) {
@@ -704,10 +705,11 @@ InstructionCost VPRegionBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
   return Overhead;
 }
 
-InstructionCost VPBasicBlock::overhead(ElementCount VF, VPCostContext &Ctx) {
+InstructionCost VPBasicBlock::overhead(ElementCount VF,
+                                       VPCostContext &Ctx) const {
   InstructionCost BlockOverhead;
   VPSlotTracker Tracker(getPlan());
-  for (VPRecipeBase &Recipe : Recipes) {
+  for (const VPRecipeBase &Recipe : Recipes) {
     InstructionCost O = Recipe.overhead(VF, Ctx);
     BlockOverhead += O;
     LLVM_DEBUG(dbgs() << "LV: Found an estimated overhead of " << O

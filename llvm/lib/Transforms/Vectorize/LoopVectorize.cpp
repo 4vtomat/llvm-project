@@ -154,6 +154,7 @@
 
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_VPlanPredicatedInstructions.h"
+#include "SiFive_VPlanCostModel.h"
 #include "VPlanValue.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Support/TypeSize.h"
@@ -456,10 +457,15 @@ cl::opt<bool> llvm::AdhocSkipVectorizeInPrelink(
 cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
+
 static cl::opt<bool> DisableRISCVCSA(
     "sifive-disable-riscv-csa", cl::init(false), cl::Hidden,
     cl::desc("Control whether the RISCV specific implementation of CSA "
              "vectorization is disabled."));
+
+cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
+    "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
+    cl::Hidden, cl::desc("Use VPlan-based cost model"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -2536,63 +2542,6 @@ static void collectSupportedLoops(Loop &L, LoopInfo *LI,
   for (Loop *InnerL : L)
     collectSupportedLoops(*InnerL, LI, ORE, V);
 }
-
-#if SIFIVE_CUSTOMIZATION
-namespace {
-
-/// The class represents LMUL concept in RVV. It allows to store integer and
-/// fractional LMULs.
-class LMULType {
-private:
-  unsigned LMUL = 0;
-  bool IsFractional = false;
-
-public:
-  explicit LMULType(const unsigned LMUL, const bool IsFractional)
-      : LMUL(LMUL), IsFractional(IsFractional) {}
-
-  /// Construct LMULType from LMUL's exponent which is 3-bit 2's complement integer value:
-  /// LMULExp     LMUL
-  /// 0b000         1
-  /// 0b001         2
-  /// 0b010         4
-  /// 0b011         8
-  /// ---- fractional ----
-  /// 0b101         1/8
-  /// 0b110         1/4
-  /// 0b111         1/2
-  static LMULType getWithExponent(const unsigned LMULExp) {
-    assert(LMULExp != 4 && LMULExp <= 7 &&
-           "LMUL exponent is not a valid or not supported.");
-    bool IsFractional = (LMULExp & 0x4) != 0;
-    unsigned LMUL;
-    if (IsFractional)
-      LMUL = 1u << (8 - (LMULExp & 0x7));
-    else
-      LMUL = 1u << (LMULExp & 0x3);
-    return LMULType(LMUL, IsFractional);
-  }
-
-  /// Print methods
-  void print(raw_ostream &O) const {
-    if (IsFractional) {
-      O << "1/";
-    }
-    O << LMUL;
-  }
-
-  void dump(void) const { print(dbgs()); }
-};
-
-} // end anonymous namespace
-
-namespace llvm {
-inline raw_ostream &operator<<(raw_ostream &OS, const LMULType &LMUL) {
-  LMUL.print(OS);
-  return OS;
-}
-} // namespace llvm
-#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Implementation of LoopVectorizationLegality, InnerLoopVectorizer and
@@ -6660,6 +6609,15 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
   }
 
   SmallVector<InstructionVFPair> InvalidCosts;
+#if SIFIVE_CUSTOMIZATION
+  unsigned SmallestTypeSize, WidestTypeSize;
+  Type *WidestType;
+  std::tie(SmallestTypeSize, WidestTypeSize) =
+      getSmallestAndWidestTypes(nullptr, &WidestType);
+  const bool UseVPlanCostModel =
+      SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+#endif
+
   for (const auto &i : VFCandidates) {
     // The cost for scalar VF=1 is already calculated, so ignore it.
     if (i.isScalar())
@@ -6674,9 +6632,15 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
     // comparison to the scalar loop cost is flawed. For now, for scalable
     // vectors we assume that vectorization is always more profitable than
     // scalar loop.
-#endif // SIFIVE_CUSTOMIZATION
-    VectorizationCostTy C = expectedCost(i, &InvalidCosts);
-#if SIFIVE_CUSTOMIZATION
+    VectorizationCostTy C;
+    if (UseVPlanCostModel) {
+      VPlanCostModel VPCM(*Plan, *Legal, TTI, *TLI);
+      InstructionCost Cost = VPCM.getCost(
+          RVVPair::get(WidestType, i, PSE.getSE()->getDataLayout()));
+      C = {Cost, true};
+    } else {
+      C = expectedCost(i, &InvalidCosts);
+    }
     if (!C.first.isValid()) {
       LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << i
                         << " yields an invalid cost. Skipping\n");
@@ -12954,7 +12918,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         Triple::ArchType Arch = TargetTriple.getArch();
         if ((Arch == Triple::riscv32 || Arch == Triple::riscv64) &&
             VF.Width.isScalable() && LVL.useVLAVectorizer()) {
-          auto VFToLMULTypeSizePair = [&LVP](const ElementCount &VF) {
+          auto VFToLMULTypeSizePair = [&LVP, &M](const ElementCount &VF) {
             assert(VF.isVector() && "Cannot convert scalar type to LMUL");
             assert(VF.isScalable() && "Cannot convert fixed vector type to LMUL");
             const VPlan &BestPlan = LVP.getBestPlanFor(VF);
@@ -12965,8 +12929,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
             // vectorization, use integer type as it's more generic.
             std::string LMULTypeString;
             raw_string_ostream RSO(LMULTypeString);
-            auto LMUL = LMULType::getWithExponent(LMULExp);
-            RSO << '(' << LMUL << ", " << *DType << ')';
+            RSO << RVVPair::getWithExponent(DType, LMULExp, M.getDataLayout());
             return LMULTypeString;
           };
           return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),

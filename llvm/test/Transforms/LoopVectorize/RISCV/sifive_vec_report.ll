@@ -3,17 +3,17 @@
 ; RUN: opt -S -passes=loop-vectorize -mtriple riscv64-unknown-linux-gnu -prefer-predicate-over-epilogue=predicate-dont-vectorize -scalable-vectorization=only -riscv-use-vla-vectorizer -riscv-v-vector-bits-min=-1 -mattr="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" %s -vector-primary-lmul-max=2 -pass-remarks='loop-vectorize' 2>&1 | FileCheck %s --check-prefix=LMUL-MAX-2
 ; RUN: opt -S -passes=loop-vectorize -mtriple riscv64-unknown-linux-gnu -prefer-predicate-over-epilogue=predicate-dont-vectorize -scalable-vectorization=only -riscv-use-vla-vectorizer -riscv-v-vector-bits-min=-1 -mattr="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" %s -vector-primary-lmul-max=3 -pass-remarks='loop-vectorize' 2>&1 | FileCheck %s --check-prefix=LMUL-MAX-3
 
-; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, i64))
-; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, float))
-; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, double))
+; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, i64))
+; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, float))
+; LMUL-MAX-1: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, double))
 
-; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, i64))
-; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, float))
-; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, double))
+; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, i64))
+; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))
+; LMUL-MAX-2: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, double))
 
-; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, i64))
-; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, float))
-; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, double))
+; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, i64))
+; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, float))
+; LMUL-MAX-3: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, double))
 
 define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias nocapture noundef %a, ptr noalias nocapture noundef %b) local_unnamed_addr #0 {
 entry:

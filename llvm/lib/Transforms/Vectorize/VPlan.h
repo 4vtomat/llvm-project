@@ -725,7 +725,7 @@ public:
   virtual void execute(VPTransformState *State) = 0;
 
 #if SIFIVE_CUSTOMIZATION
-  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -850,7 +850,7 @@ public:
   virtual void execute(VPTransformState &State) = 0;
 
 #if SIFIVE_CUSTOMIZATION
-  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -892,6 +892,13 @@ public:
   const Instruction *getUnderlyingInstr() const {
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue());
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool hasUnderlyingInstr() const {
+    return getNumDefinedValues() == 1 &&
+           getVPSingleValue()->getUnderlyingValue() != nullptr;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPDef *D) {
@@ -1668,7 +1675,7 @@ public:
   void execute(VPTransformState &State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -2140,7 +2147,8 @@ public:
                                  bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        Stride(Stride) {
+        Stride(Stride), Speculative(Speculative) {
+    assert(!Speculative && "Speculative store is not yet supported");
 #else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
@@ -2190,6 +2198,8 @@ public:
     assert(isStrided() && "Cannot get stride for non-strided memory access");
     return Stride;
   }
+
+  bool isSpeculative() const { return Speculative; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Generate the wide load/store.
@@ -2214,8 +2224,6 @@ public:
   Type *getElementType() const {
     return getLoadStoreType(&Ingredient);
   }
-
-  bool getConsecutive() const { return Consecutive; }
 
   bool getReverse() const { return Reverse; }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2513,7 +2521,7 @@ public:
   void execute(VPTransformState *State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
   /// Return the position of the first non-phi node recipe in the block.
   iterator getFirstNonPhi();
@@ -2643,7 +2651,7 @@ public:
   void execute(VPTransformState *State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
   void dropAllReferences(VPValue *NewValue) override;
 
@@ -2714,9 +2722,6 @@ class VPlan {
   /// Pair of LMUL and Type's size applicable for this VPlan.
   SmallVector<std::pair<unsigned, Type *>, 1> LMULTypePairs;
 
-  /// Keep the VPValue that increments the primary IV.
-  VPValue *IVIncrement = nullptr;
-
   /// Uncountable loops
   bool IsUncountable = false;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2778,7 +2783,7 @@ public:
   void execute(VPTransformState *State);
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx);
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
   VPBlockBase *getEntry() { return Entry; }
   const VPBlockBase *getEntry() const { return Entry; }

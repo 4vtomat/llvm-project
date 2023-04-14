@@ -1935,7 +1935,7 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
 InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
-                                               VPCostContext &Ctx) {
+                                               VPCostContext &Ctx) const {
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   auto *VectorTy =
