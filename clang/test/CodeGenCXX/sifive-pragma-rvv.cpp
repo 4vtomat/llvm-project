@@ -651,7 +651,7 @@ void m8_e64(int *a, int *b, int *c, int n) {
   DUMMY_LOOP;
 }
 //.
-// CHECK: attributes #0 = { mustprogress noinline nounwind vscale_range(1,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+zve32x,+zve64x,+zvl32b,+zvl64b" }
+// CHECK: attributes #0 = { mustprogress noinline nounwind vscale_range(1,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+zicsr,+zve32x,+zve64x,+zvl32b,+zvl64b" }
 //.
 // CHECK: !0 = !{i32 1, !"wchar_size", i32 4}
 // CHECK: !1 = !{i32 1, !"target-abi", !"lp64"}
