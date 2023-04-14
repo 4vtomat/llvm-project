@@ -1417,6 +1417,56 @@ void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
     State.set(this, DataPhi, Part);
 }
 
+InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
+                                               VPCostContext &Ctx) const {
+  if (VF.isScalar())
+    return 0;
+
+  InstructionCost C = 0;
+  auto *VectorTy =
+      VectorType::get(getUnderlyingValue()->getType(), VF);
+  auto *MaskTy =
+      VectorType::get(IntegerType::getInt1Ty(VectorTy->getContext()), VF);
+
+  constexpr TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+  // TODO: When we move to VPlan based CM, the costs of recipes in PH and exit
+  // should be added as overhead to the vector loop automatically. When that 
+  // happens, the generation of overhead for those recipes in this function can
+  // be removed.
+
+  // All True/False Mask
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
+
+  // CSAInitMask
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  // CSAInitData
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+
+  // CSAExtractScalar
+  // StepVector
+  ArrayRef<Value *> Args;
+  IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_stepvector,
+                                    VectorTy, Args);
+  C += Ctx.TTI->getIntrinsicInstrCost(CostAttrs, CostKind);
+  // NegOneSplat
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  // ActiveIdx
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select, VectorTy, CostKind);
+  // LastIdx
+  C += Ctx.TTI->getMinMaxReductionCost(VectorTy, MaskTy, true,
+                                       FastMathFlags(), CostKind);
+  // ExtractFromVec
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
+                                       CostKind);
+  // LastIdxGeZero
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ICmp, VectorTy, CostKind);
+  // ChooseFromVecOrInit
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select,
+                                       VectorTy->getScalarType(), CostKind);
+  return C * Ctx.TTI->getCSAOverheadFactor();
+}
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {

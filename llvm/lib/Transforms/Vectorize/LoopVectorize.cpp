@@ -8726,6 +8726,64 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
+                                  TTI::TargetCostKind CostKind, ElementCount VF,
+                                  LoopVectorizationLegality *Legal,
+                                  const TargetTransformInfo &TTI) {
+  assert(VF.isVector() && Legal->isCSAPhi(Phi) &&
+         "VF must be vector and Phi must be a CSA Phi.");
+  auto *MaskTy = VectorType::get(IntegerType::getInt1Ty(VTy->getContext()), VF);
+  InstructionCost C = 0;
+  if (!EnableRISCVCSA) {
+    // AnyActive
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // vp.reduce.or
+    C += TTI.getArithmeticReductionCost(Instruction::Or, VTy, std::nullopt,
+                                        CostKind);
+    // VPVLSel
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // MaskUpdate
+    C += TTI.getArithmeticInstrCost(Instruction::Select, MaskTy, CostKind);
+    // Data Update
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    return C;
+  }
+  // CSAMaskUpdate
+  // UndistCond is a VPMerge and happens on non mask type
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+  // Convert the non masked mask to mask type
+  C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
+  // ZExt init RVL
+  C += TTI.getArithmeticInstrCost(
+      Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
+  // RISCV_VMSBF
+  IntrinsicCostAttributes CostAttrs(Intrinsic::riscv_vmsbf, VTy,
+                                    {VTy, Type::getInt64Ty(VTy->getContext())});
+  C += TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
+  // VPAnd
+  C += TTI.getArithmeticInstrCost(Instruction::And, MaskTy, CostKind);
+  // NewMask is a VPOr
+  C += TTI.getArithmeticInstrCost(Instruction::Or, MaskTy, CostKind);
+
+  // DataUpdate
+  // VPMerge
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+
+  // The cost returned by the cost model is larger than that of the cycle count
+  // that is returned by MCA for the scalar CSA loop. It is believed that the
+  // main reason for this discrepancy is because MCA models instruction level
+  // parallelism that exists on the target processor. The cost model has
+  // difficulty modeling this since it operates on the IR and not the generated
+  // assembely, so there is no easy way to query the scheduler model to get this
+  // information. As a solution, the cost of the scalar loop could be lowered by
+  // some parallelization factor, or the cost of the vector loop can be
+  // increased by this amount. We opt to increase the vectorized cost as to not
+  // disturb the tuning of non-csa loops. This factor is an empirical value
+  // that can be determined for each target.
+  return C * TTI.getCSABodyFactor();
+}
+#endif
 InstructionCost
 LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
                                                Type *&VectorTy) {
@@ -8828,7 +8886,12 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
                  Instruction::Select, ToVectorTy(Phi->getType(), VF),
                  ToVectorTy(Type::getInt1Ty(Phi->getContext()), VF),
                  CmpInst::BAD_ICMP_PREDICATE, CostKind);
-
+#if SIFIVE_CUSTOMIZATION
+    if (VF.isVector() && Legal->isCSAPhi(Phi)) {
+      auto *VTy = cast<VectorType>(VectorTy);
+      return getCSACost(Phi, VTy, CostKind, VF, Legal, TTI);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return TTI.getCFInstrCost(Instruction::PHI, CostKind);
   }
   case Instruction::UDiv:

@@ -2223,6 +2223,8 @@ public:
 
   void execute(VPTransformState &State) override;
 
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,

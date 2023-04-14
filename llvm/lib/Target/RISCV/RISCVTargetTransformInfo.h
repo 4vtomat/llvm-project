@@ -496,6 +496,9 @@ public:
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;
+
+  unsigned getCSABodyFactor() const;
+  unsigned getCSAOverheadFactor() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
 

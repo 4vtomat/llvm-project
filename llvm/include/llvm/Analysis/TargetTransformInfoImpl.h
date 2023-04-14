@@ -946,6 +946,8 @@ public:
   unsigned getMaxNumArgs() const { return UINT_MAX; }
 #if SIFIVE_CUSTOMIZATION
   bool enableCSAVectorization() const { return false; }
+  unsigned getCSABodyFactor() const { return 1; }
+  unsigned getCSAOverheadFactor() const { return 1; }
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:
