@@ -58,7 +58,7 @@
 // CHECK-NOT: __riscv_zvks {{.*$}}
 // CHECK-NOT: __riscv_zvksed {{.*$}}
 // CHECK-NOT: __riscv_zvksh {{.*$}}
-<<<<<<< HEAD
+// CHECK-NOT: __riscv_zicond {{.*$}}
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicclsm
 // CHECK-NOT: __riscv_ziccif
@@ -91,9 +91,6 @@
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // end SIFIVE_CUSTOMIZATION
-=======
-// CHECK-NOT: __riscv_zicond {{.*$}}
->>>>>>> eopXD/eopc/for-pulldown
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32i -x c -E -dM %s \
 // RUN: -o - | FileCheck %s
@@ -866,13 +863,9 @@
 // RUN: -o - 2>&1 | FileCheck --check-prefix=CHECK-ZVKSH-EXT %s
 // RUN: not %clang -target riscv64 -menable-experimental-extensions \
 // RUN: -march=rv64i_zve32x_zvksh0p3 -x c -E -dM %s \
-<<<<<<< HEAD
 // RUN: -o - 2>&1 | FileCheck --check-prefix=CHECK-ZVKSH-EXT %s
 // CHECK-ZVKSH-EXT-NOT: __riscv_zvksh  3000{{$}}
 #endif // SIFIVE_CUSTOMIZATION
-=======
-// RUN: -o - | FileCheck --check-prefix=CHECK-ZVKSH-EXT %s
-// CHECK-ZVKSH-EXT: __riscv_zvksh  3000{{$}}
 
 // RUN: %clang -target riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32i_zicond1p0 -x c -E -dM %s \
@@ -881,4 +874,3 @@
 // RUN: -march=rv64i_zicond1p0 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZICOND-EXT %s
 // CHECK-ZICOND-EXT: __riscv_zicond  1000000{{$}}
->>>>>>> eopXD/eopc/for-pulldown
