@@ -732,8 +732,6 @@ define <vscale x 8 x double> @vp_nearbyint_nxv8f64_unmasked(<vscale x 8 x double
 declare <vscale x 16 x double> @llvm.vp.nearbyint.nxv16f64(<vscale x 16 x double>, <vscale x 16 x i1>, i32)
 
 define <vscale x 16 x double> @vp_nearbyint_nxv16f64(<vscale x 16 x double> %va, <vscale x 16 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: vp_nearbyint_nxv16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vmv1r.v v1, v0
@@ -778,14 +776,11 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v24, v8, v0.t
 ; CHECK-NEXT:    ret
->>>>>>> eopXD/eopc/for-pulldown
   %v = call <vscale x 16 x double> @llvm.vp.nearbyint.nxv16f64(<vscale x 16 x double> %va, <vscale x 16 x i1> %m, i32 %evl)
   ret <vscale x 16 x double> %v
 }
 
 define <vscale x 16 x double> @vp_nearbyint_nxv16f64_unmasked(<vscale x 16 x double> %va, i32 zeroext %evl) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: vp_nearbyint_nxv16f64_unmasked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -818,7 +813,6 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64_unmasked(<vscale x 16 x dou
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v8, v24, v8, v0.t
 ; CHECK-NEXT:    ret
->>>>>>> eopXD/eopc/for-pulldown
   %head = insertelement <vscale x 16 x i1> poison, i1 true, i32 0
   %m = shufflevector <vscale x 16 x i1> %head, <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer
   %v = call <vscale x 16 x double> @llvm.vp.nearbyint.nxv16f64(<vscale x 16 x double> %va, <vscale x 16 x i1> %m, i32 %evl)

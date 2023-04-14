@@ -259,12 +259,8 @@ define void @example2(i32 %n, i32 %x) optsize {
 
 ; Loop has no primary induction as its integer IV has step -1 starting at
 ; unknown N, but can still be vectorized.
-<<<<<<< HEAD
 ; SIFIVE: checks have been updated to combine (add (zext (add X, -1)), 1) to (zext X)
-define void @example3(i32 %n, i32* noalias nocapture %p, i32* noalias nocapture %q) optsize {
-=======
-define void @example3(i32 %n, ptr noalias nocapture %p, ptr noalias nocapture %q) optsize {
->>>>>>> eopXD/eopc/for-pulldown
+define void @example3(i32 %n, i32* noalias nocapture %p, ptr noalias nocapture %q) optsize {
 ; CHECK-LABEL: @example3(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq i32 [[N:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[DOT_CRIT_EDGE:%.*]], label [[DOTLR_PH_PREHEADER:%.*]]

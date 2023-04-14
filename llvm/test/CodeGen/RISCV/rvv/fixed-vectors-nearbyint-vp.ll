@@ -659,8 +659,6 @@ define <16 x double> @vp_nearbyint_v16f64_unmasked(<16 x double> %va, i32 zeroex
 declare <32 x double> @llvm.vp.nearbyint.v32f64(<32 x double>, <32 x i1>, i32)
 
 define <32 x double> @vp_nearbyint_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: vp_nearbyint_v32f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vmv1r.v v2, v0
@@ -705,14 +703,11 @@ define <32 x double> @vp_nearbyint_v32f64(<32 x double> %va, <32 x i1> %m, i32 z
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v16, v24, v16, v0.t
 ; CHECK-NEXT:    ret
->>>>>>> eopXD/eopc/for-pulldown
   %v = call <32 x double> @llvm.vp.nearbyint.v32f64(<32 x double> %va, <32 x i1> %m, i32 %evl)
   ret <32 x double> %v
 }
 
 define <32 x double> @vp_nearbyint_v32f64_unmasked(<32 x double> %va, i32 zeroext %evl) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: vp_nearbyint_v32f64_unmasked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -757,7 +752,6 @@ define <32 x double> @vp_nearbyint_v32f64_unmasked(<32 x double> %va, i32 zeroex
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfsgnj.vv v16, v24, v16, v0.t
 ; CHECK-NEXT:    ret
->>>>>>> eopXD/eopc/for-pulldown
   %head = insertelement <32 x i1> poison, i1 true, i32 0
   %m = shufflevector <32 x i1> %head, <32 x i1> poison, <32 x i32> zeroinitializer
   %v = call <32 x double> @llvm.vp.nearbyint.v32f64(<32 x double> %va, <32 x i1> %m, i32 %evl)

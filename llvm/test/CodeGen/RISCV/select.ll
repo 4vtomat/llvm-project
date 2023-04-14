@@ -944,30 +944,19 @@ define i32 @select_and_3(i1 zeroext %cond, i32 %a) {
 ; RV64IM-NEXT:    mv a0, a1
 ; RV64IM-NEXT:    ret
 ;
-<<<<<<< HEAD
-; CONDOPS-LABEL: select_and_3:
-; CONDOPS:       # %bb.0: # %entry
-; CONDOPS-NEXT:    vt.maskc a0, a1, a0
-; CONDOPS-NEXT:    andi a1, a1, 42
-; CONDOPS-NEXT:    or a0, a1, a0
-; CONDOPS-NEXT:    ret
-=======
 ; RV64IMXVTCONDOPS-LABEL: select_and_3:
 ; RV64IMXVTCONDOPS:       # %bb.0: # %entry
 ; RV64IMXVTCONDOPS-NEXT:    vt.maskc a0, a1, a0
-; RV64IMXVTCONDOPS-NEXT:    li a2, 42
-; RV64IMXVTCONDOPS-NEXT:    and a1, a1, a2
+; RV64IMXVTCONDOPS-NEXT:    andi a1, a1, 42
 ; RV64IMXVTCONDOPS-NEXT:    or a0, a1, a0
 ; RV64IMXVTCONDOPS-NEXT:    ret
 ;
 ; CHECKZICOND-LABEL: select_and_3:
 ; CHECKZICOND:       # %bb.0: # %entry
 ; CHECKZICOND-NEXT:    czero.eqz a0, a1, a0
-; CHECKZICOND-NEXT:    li a2, 42
-; CHECKZICOND-NEXT:    and a1, a1, a2
+; CHECKZICOND-NEXT:    andi a1, a1, 42
 ; CHECKZICOND-NEXT:    or a0, a1, a0
 ; CHECKZICOND-NEXT:    ret
->>>>>>> eopXD/eopc/for-pulldown
 entry:
   %c = and i32 %a, 42
   %res = select i1 %cond, i32 %a, i32 %c

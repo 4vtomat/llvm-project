@@ -1,7 +1,7 @@
 ## Arch string without version.
 
-# RUN: not llvm-mc %s -triple=riscv32 -filetype=asm | FileCheck %s
-# RUN: not llvm-mc %s -triple=riscv64 -filetype=asm \
+# RUN: llvm-mc %s -triple=riscv32 -filetype=asm | FileCheck %s
+# RUN: llvm-mc %s -triple=riscv64 -filetype=asm \
 # RUN:     | FileCheck --check-prefixes=CHECK,CHECK-RV64 %s
 
 .attribute arch, "rv32i"
@@ -9,15 +9,6 @@
 
 .attribute arch, "rv32i2p1"
 # CHECK: attribute      5, "rv32i2p1"
-<<<<<<< HEAD
-
-.attribute arch, "rv32i2p1_m2"
-# CHECK: attribute      5, "rv32i2p1_m2p0"
-
-.attribute arch, "rv32i2p1_ma"
-# CHECK: attribute      5, "rv32i2p1_m2p0_a2p1"
-=======
->>>>>>> eopXD/eopc/for-pulldown
 
 .attribute arch, "rv32e"
 # CHECK: attribute      5, "rv32e2p0"
@@ -25,15 +16,12 @@
 .attribute arch, "rv64e"
 # CHECK-RV64: attribute      5, "rv64e2p0"
 
-<<<<<<< HEAD
-=======
 .attribute arch, "rv32i2p1_m2"
 # CHECK: attribute      5, "rv32i2p1_m2p0"
 
 .attribute arch, "rv32i2p1_ma"
 # CHECK: attribute      5, "rv32i2p1_m2p0_a2p1"
 
->>>>>>> eopXD/eopc/for-pulldown
 .attribute arch, "rv32g"
 # CHECK: attribute      5, "rv32i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0"
 
@@ -89,21 +77,13 @@
 # CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl1024b1p0_zvl128b1p0_zvl16384b1p0_zvl2048b1p0_zvl256b1p0_zvl32768b1p0_zvl32b1p0_zvl4096b1p0_zvl512b1p0_zvl64b1p0_zvl65536b1p0_zvl8192b1p0"
 
 .attribute arch, "rv32izve32x"
-<<<<<<< HEAD
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvl32b1p0"
-=======
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvl32b1p0"
->>>>>>> eopXD/eopc/for-pulldown
 
 .attribute arch, "rv32ifzve32f"
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0"
 
 .attribute arch, "rv32izve64x"
-<<<<<<< HEAD
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
-=======
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
->>>>>>> eopXD/eopc/for-pulldown
 
 .attribute arch, "rv32ifzve64f"
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zve64f1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
@@ -119,7 +99,6 @@
 
 .attribute arch, "rv32izicbop"
 # CHECK: attribute      5, "rv32i2p1_zicbop1p0"
-<<<<<<< HEAD
 
 .attribute arch, "rv32izicclsm"
 # CHECK: attribute      5, "rv32i2p1_zicclsm1p0"
@@ -209,8 +188,6 @@
 .attribute arch, "rv32i_sscofpmf"
 # CHECK: attribute      5, "rv32i2p1_sscofpmf1p0"
 ## end SIFIVE_CUSTOMIZATION
-=======
->>>>>>> eopXD/eopc/for-pulldown
 
 ## Experimental extensions require version string to be explicitly specified
 
@@ -224,82 +201,25 @@
 # CHECK: attribute      5, "rv32i2p1_zbc1p0"
 
 .attribute arch, "rv32i_zve32x_zvkb0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvkb0p1_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkb0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvkg0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvkg0p1_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvknha0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvknha0p1_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve64x_zvknhb0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zve64x1p0_zvknhb0p1_zvl32b1p0_zvl64b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknhb0p1_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32i_zve32x_zvkns0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvkns0p1_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvksed0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvksed0p1_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve32x_zvksh0p1"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvksh0p1_zvl32b1p0"
-
-## SIFIVE_CUSTOMIZATION
-.attribute arch, "rv32i_zve64x_zvkb0p3"
-<<<<<<< HEAD
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvkg0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkg0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve64x_zvkn0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvkn0p3_zvkned0p3_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvknha0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvknha0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve64x_zvknhb0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zve64x1p0_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvkned0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkned0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvks0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksed0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksh0p3"
-# CHECK-NOT: attribute      5, "rv32i2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
-#end SIFIVE_CUSTOMIZATION
-=======
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvkg0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve64x_zvkn0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p3_zvkn0p3_zvkned0p3_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvknha0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve64x_zvknhb0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha0p3_zvknhb0p3_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32i_zve32x_zvkned0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkned0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvks0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkb0p3_zvks0p3_zvksed0p3_zvksh0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksed0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed0p3_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksh0p3"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p3_zvl32b1p0"
->>>>>>> eopXD/eopc/for-pulldown
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
 
 .attribute arch, "rv32izbs1p0"
 # CHECK: attribute      5, "rv32i2p1_zbs1p0"
@@ -311,18 +231,6 @@
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zfh1p0"
 
 .attribute arch, "rv32izfinx"
-<<<<<<< HEAD
-# CHECK: attribute      5, "rv32i2p1_zfinx1p0"
-
-.attribute arch, "rv32izfinx_zdinx"
-# CHECK: attribute      5, "rv32i2p1_zfinx1p0_zdinx1p0"
-
-.attribute arch, "rv32izfinx_zhinxmin"
-# CHECK: attribute      5, "rv32i2p1_zfinx1p0_zhinxmin1p0"
-
-.attribute arch, "rv32izfinx_zhinx1p0"
-# CHECK: attribute      5, "rv32i2p1_zfinx1p0_zhinx1p0"
-=======
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zfinx1p0"
 
 .attribute arch, "rv32izfinx_zdinx"
@@ -333,7 +241,6 @@
 
 .attribute arch, "rv32izfinx_zhinx1p0"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zfinx1p0_zhinx1p0"
->>>>>>> eopXD/eopc/for-pulldown
 
 .attribute arch, "rv32i_zbkb1p0"
 # CHECK: attribute      5, "rv32i2p1_zbkb1p0"
@@ -394,7 +301,6 @@
 
 .attribute arch, "rv32izcb1p0"
 # CHECK: attribute      5, "rv32i2p1_zca1p0_zcb1p0"
-<<<<<<< HEAD
 
 .attribute arch, "rv32ifv_xsfvfnrclipxfqf_xsfvfwmaccqqq"
 # CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl64b1p0_xsfvfnrclipxfqf0p1_xsfvfwmaccqqq0p1"
@@ -439,20 +345,13 @@
 # CHECK: attribute      5, "rv32i2p1_f2p2_d2p2_v1p0_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl1024b1p0_zvl128b1p0_zvl16384b1p0_zvl2048b1p0_zvl256b1p0_zvl32768b1p0_zvl32b1p0_zvl4096b1p0_zvl512b1p0_zvl64b1p0_zvl65536b1p0_zvl8192b1p0"
 
 .attribute arch, "rv32i_zve32x"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zvl32b1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvl32b1p0"
 
 .attribute arch, "rv32i_zve64x"
-# CHECK: attribute      5, "rv32i2p1_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
-
-.attribute arch, "rv32izawrs1p0"
-# SIFIVE_CUSTOMIZATION
-# CHECK: attribute      5, "rv32i2p1_zawrs1p0"
-#end SIFIVE_CUSTOMIZATION
-=======
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32izawrs1p0"
 # CHECK: attribute      5, "rv32i2p1_zawrs1p0"
->>>>>>> eopXD/eopc/for-pulldown
 
 .attribute arch, "rv32iztso0p1"
 # CHECK: attribute      5, "rv32i2p1_ztso0p1"
@@ -465,9 +364,6 @@
 
 .attribute arch, "rv32izfa0p1"
 # CHECK: attribute      5, "rv32i2p1_f2p2_zicsr2p0_zfa0p1"
-<<<<<<< HEAD
-=======
 
 .attribute arch, "rv32izicond1p0"
 # CHECK: attribute      5, "rv32i2p1_zicond1p0"
->>>>>>> eopXD/eopc/for-pulldown
