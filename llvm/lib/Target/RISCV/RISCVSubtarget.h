@@ -259,7 +259,6 @@ public:
                            unsigned NumRegionInstrs) const override;
   bool useAA() const override;
   bool useAltGPROrder() const;
-  bool useAltFPROrder() const;
   bool useAltVROrder() const;
 #endif // SIFIVE_CUSTOMIZATION
 };
