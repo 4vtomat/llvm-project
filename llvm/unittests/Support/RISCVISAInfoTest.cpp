@@ -274,16 +274,16 @@ TEST(ParseArchString, RejectsUnrecognizedExtensionVersionsByDefault) {
       "minor version number missing after 'p' for extension 'i'");
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv64i1p0", true).takeError()),
-      "unsupported version number 1.0 for extension 'i' (this compiler supports 2.1, 2.0)"); // SIFIVE
+      "unsupported version number 1.0 for extension 'i' (this compiler supports 2.1)");
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv64i9p9", true).takeError()),
-      "unsupported version number 9.9 for extension 'i' (this compiler supports 2.1, 2.0)"); // SIFIVE
+      "unsupported version number 9.9 for extension 'i' (this compiler supports 2.1)");
   EXPECT_EQ(
       toString(RISCVISAInfo::parseArchString("rv32im0p1", true).takeError()),
-      "unsupported version number 0.1 for extension 'm' (this compiler supports 2.0)"); // SIFIVE
+      "unsupported version number 0.1 for extension 'm' (this compiler supports 2.0)");
   EXPECT_EQ(toString(RISCVISAInfo::parseArchString("rv32izifencei10p10", true)
                          .takeError()),
-            "unsupported version number 10.10 for extension 'zifencei' (this compiler supports 2.0)"); // SIFIVE
+            "unsupported version number 10.10 for extension 'zifencei' (this compiler supports 2.0)");
 }
 
 TEST(ParseArchString,
