@@ -20,18 +20,17 @@ target triple = "aarch64-unknown-linux-gnu"
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
-; VPLANS-NEXT:     EMIT vp<%6> = CANONICAL-INDUCTION
-; VPLANS-NEXT:     ACTIVE-LANE-MASK-PHI vp<%7> = phi vp<%5>, vp<%11>
-; VPLANS-NEXT:     vp<%8>    = SCALAR-STEPS vp<%6>, ir<1>
-; VPLANS-NEXT:     CLONE ir<%gep> = getelementptr ir<%ptr>, vp<%8>
-; VPLANS-NEXT:     WIDEN store ir<%gep>, ir<%val>, vp<%7>
-; VPLANS-NEXT:     EMIT vp<%10> = VF * Part +  vp<%6>
-; VPLANS-NEXT:     EMIT vp<%11> = active lane mask vp<%10> vp<%4>
-; VPLANS-NEXT:     EMIT vp<%12> = VF * UF +  vp<%6>
-; VPLANS-NEXT:     EMIT vp<%13> = not vp<%11>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%13>
-; VPLANS-NEXT:   No successors
-; VPLANS-NEXT: }
+; VPLANS-NEXT      ACTIVE-LANE-MASK-PHI vp<%6> = phi vp<%4>, vp<%10>
+; VPLANS-NEXT      vp<%7>    = SCALAR-STEPS vp<%5>, ir<1>
+; VPLANS-NEXT      CLONE ir<%gep> = getelementptr ir<%ptr>, vp<%7>
+; VPLANS-NEXT      WIDEN store ir<%gep>, ir<%val>, vp<%6>
+; VPLANS-NEXT      EMIT vp<%9> = VF * Part +  vp<%5>
+; VPLANS-NEXT      EMIT vp<%10> = active lane mask vp<%9> vp<%3>
+; VPLANS-NEXT      EMIT vp<%11> = VF * UF +  vp<%5>
+; VPLANS-NEXT      EMIT vp<%12> = not vp<%10>
+; VPLANS-NEXT      EMIT branch-on-cond vp<%12>
+; VPLANS-NEXT    No successors
+; VPLANS-NEXT  }
 
 define void @simple_memset(i32 %val, ptr %ptr, i64 %n) #0 {
 ; CHECK-LABEL: @simple_memset(
