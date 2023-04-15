@@ -77,19 +77,19 @@ define half @test_nontemporal_half(half *%a) nounwind {
 ; CHECK-RV64-LABEL: test_nontemporal_half:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    flh ft0, 0(a0)
+; CHECK-RV64-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    flh ft1, 6(a0)
-; CHECK-RV64-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV64-NEXT:    flh fa4, 6(a0)
+; CHECK-RV64-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_half:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    flh ft0, 0(a0)
+; CHECK-RV32-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    flh ft1, 6(a0)
-; CHECK-RV32-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV32-NEXT:    flh fa4, 6(a0)
+; CHECK-RV32-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load half, half* %a, !nontemporal !0
@@ -569,19 +569,19 @@ define half @test_nontemporal_P1_half(half *%a) nounwind {
 ; CHECK-RV64-LABEL: test_nontemporal_P1_half:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.p1
-; CHECK-RV64-NEXT:    flh ft0, 0(a0)
+; CHECK-RV64-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV64-NEXT:    ntl.p1
-; CHECK-RV64-NEXT:    flh ft1, 6(a0)
-; CHECK-RV64-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV64-NEXT:    flh fa4, 6(a0)
+; CHECK-RV64-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_P1_half:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.p1
-; CHECK-RV32-NEXT:    flh ft0, 0(a0)
+; CHECK-RV32-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV32-NEXT:    ntl.p1
-; CHECK-RV32-NEXT:    flh ft1, 6(a0)
-; CHECK-RV32-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV32-NEXT:    flh fa4, 6(a0)
+; CHECK-RV32-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load half, half* %a, !nontemporal !1
@@ -1061,19 +1061,19 @@ define half @test_nontemporal_PALL_half(half *%a) nounwind {
 ; CHECK-RV64-LABEL: test_nontemporal_PALL_half:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.pall
-; CHECK-RV64-NEXT:    flh ft0, 0(a0)
+; CHECK-RV64-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV64-NEXT:    ntl.pall
-; CHECK-RV64-NEXT:    flh ft1, 6(a0)
-; CHECK-RV64-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV64-NEXT:    flh fa4, 6(a0)
+; CHECK-RV64-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_PALL_half:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.pall
-; CHECK-RV32-NEXT:    flh ft0, 0(a0)
+; CHECK-RV32-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV32-NEXT:    ntl.pall
-; CHECK-RV32-NEXT:    flh ft1, 6(a0)
-; CHECK-RV32-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV32-NEXT:    flh fa4, 6(a0)
+; CHECK-RV32-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load half, half* %a, !nontemporal !2
@@ -1553,19 +1553,19 @@ define half @test_nontemporal_S1_half(half *%a) nounwind {
 ; CHECK-RV64-LABEL: test_nontemporal_S1_half:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.s1
-; CHECK-RV64-NEXT:    flh ft0, 0(a0)
+; CHECK-RV64-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV64-NEXT:    ntl.s1
-; CHECK-RV64-NEXT:    flh ft1, 6(a0)
-; CHECK-RV64-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV64-NEXT:    flh fa4, 6(a0)
+; CHECK-RV64-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_S1_half:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.s1
-; CHECK-RV32-NEXT:    flh ft0, 0(a0)
+; CHECK-RV32-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV32-NEXT:    ntl.s1
-; CHECK-RV32-NEXT:    flh ft1, 6(a0)
-; CHECK-RV32-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV32-NEXT:    flh fa4, 6(a0)
+; CHECK-RV32-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load half, half* %a, !nontemporal !3
@@ -2045,19 +2045,19 @@ define half @test_nontemporal_ALL_half(half *%a) nounwind {
 ; CHECK-RV64-LABEL: test_nontemporal_ALL_half:
 ; CHECK-RV64:       # %bb.0:
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    flh ft0, 0(a0)
+; CHECK-RV64-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV64-NEXT:    ntl.all
-; CHECK-RV64-NEXT:    flh ft1, 6(a0)
-; CHECK-RV64-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV64-NEXT:    flh fa4, 6(a0)
+; CHECK-RV64-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV64-NEXT:    ret
 ;
 ; CHECK-RV32-LABEL: test_nontemporal_ALL_half:
 ; CHECK-RV32:       # %bb.0:
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    flh ft0, 0(a0)
+; CHECK-RV32-NEXT:    flh fa5, 0(a0)
 ; CHECK-RV32-NEXT:    ntl.all
-; CHECK-RV32-NEXT:    flh ft1, 6(a0)
-; CHECK-RV32-NEXT:    fadd.h fa0, ft0, ft1
+; CHECK-RV32-NEXT:    flh fa4, 6(a0)
+; CHECK-RV32-NEXT:    fadd.h fa0, fa5, fa4
 ; CHECK-RV32-NEXT:    ret
 
   %1 = load half, half* %a, !nontemporal !4

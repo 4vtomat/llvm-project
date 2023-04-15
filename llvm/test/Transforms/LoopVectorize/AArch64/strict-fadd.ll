@@ -2165,7 +2165,6 @@ define double @reduction_increment_by_first_order_recurrence() {
 ; CHECK-UNORDERED-NEXT:    [[TMP4:%.*]] = call double @llvm.vector.reduce.fadd.v4f64(double -0.000000e+00, <4 x double> [[TMP2]])
 ; CHECK-UNORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i32 0, 0
 ; CHECK-UNORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x double> [[TMP0]], i32 3
-; CHECK-UNORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <4 x double> [[TMP0]], i32 2
 ; CHECK-UNORDERED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-UNORDERED:       scalar.ph:
 ; CHECK-UNORDERED-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
@@ -2205,7 +2204,6 @@ define double @reduction_increment_by_first_order_recurrence() {
 ; CHECK-ORDERED:       middle.block:
 ; CHECK-ORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i32 0, 0
 ; CHECK-ORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x double> [[TMP0]], i32 3
-; CHECK-ORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <4 x double> [[TMP0]], i32 2
 ; CHECK-ORDERED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED:       scalar.ph:
 ; CHECK-ORDERED-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]

@@ -26,7 +26,7 @@ define <32 x i32> @vfptosi_v32i32_v32f64_unmasked(<32 x double> %va, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v24, v16
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v24, 16
 ; CHECK-NEXT:    ret
   %v = call <32 x i32> @llvm.vp.fptosi.v32i32.v32f64(<32 x double> %va, <32 x i1> shufflevector (<32 x i1> insertelement (<32 x i1> undef, i1 true, i32 0), <32 x i1> undef, <32 x i32> zeroinitializer), i32 %evl)
@@ -54,7 +54,7 @@ define <32 x i32> @vfptoui_v32i32_v32f64_unmasked(<32 x double> %va, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v24, v16
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v24, 16
 ; CHECK-NEXT:    ret
   %v = call <32 x i32> @llvm.vp.fptoui.v32i32.v32f64(<32 x double> %va, <32 x i1> shufflevector (<32 x i1> insertelement (<32 x i1> undef, i1 true, i32 0), <32 x i1> undef, <32 x i32> zeroinitializer), i32 %evl)

@@ -7,12 +7,12 @@ define <vscale x 2 x half> @recip_nxv2f16(<vscale x 2 x half> %a, <vscale x 2 x 
 ; CHECK-LABEL: recip_nxv2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI0_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v9, v8
-; CHECK-NEXT:    vfmul.vf v10, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    ret
@@ -27,12 +27,12 @@ define <vscale x 4 x half> @recip_nxv4f16(<vscale x 4 x half> %a, <vscale x 4 x 
 ; CHECK-LABEL: recip_nxv4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI1_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v9, v8
-; CHECK-NEXT:    vfmul.vf v10, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    ret
@@ -47,12 +47,12 @@ define <vscale x 8 x half> @recip_nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x 
 ; CHECK-LABEL: recip_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI2_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vfmul.vf v12, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v12, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v10, v12, v0.t
 ; CHECK-NEXT:    ret
@@ -67,22 +67,22 @@ define <vscale x 2 x double> @recip_nxv2f64(<vscale x 2 x double> %a, <vscale x 
 ; CHECK-LABEL: recip_nxv2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI3_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
-; CHECK-NEXT:    vfrsub.vf v12, v12, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vfmul.vv v10, v8, v12, v0.t
-; CHECK-NEXT:    vfrsub.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v12, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v12, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v12, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v10, v12, v0.t
 ; CHECK-NEXT:    ret
@@ -97,22 +97,22 @@ define <vscale x 4 x double> @recip_nxv4f64(<vscale x 4 x double> %a, <vscale x 
 ; CHECK-LABEL: recip_nxv4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI4_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI4_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v16, v8, v12, v0.t
-; CHECK-NEXT:    vfrsub.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vfmul.vv v12, v8, v16, v0.t
-; CHECK-NEXT:    vfrsub.vf v12, v12, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v12, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v16, v12, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v16, v12, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v12, v16, v0.t
 ; CHECK-NEXT:    ret
@@ -127,22 +127,22 @@ define <vscale x 8 x double> @recip_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; CHECK-LABEL: recip_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI5_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfrec7.v v16, v8
 ; CHECK-NEXT:    vfmul.vv v24, v8, v16, v0.t
-; CHECK-NEXT:    vfrsub.vf v24, v24, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v24, v24, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v24, v16, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfmul.vv v16, v8, v24, v0.t
-; CHECK-NEXT:    vfrsub.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v16, v24, v24, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vfmul.vf v24, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v24, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v24, v0.t
-; CHECK-NEXT:    vfrsub.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfrsub.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v8, v16, v24, v0.t
 ; CHECK-NEXT:    ret
@@ -156,10 +156,10 @@ define <vscale x 2 x half> @recip_zero_steps_nxv2f16(<vscale x 2 x half> %a, <vs
 ; CHECK-LABEL: recip_zero_steps_nxv2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI6_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI6_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 2 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x half> %ins, <vscale x 2 x half> poison, <vscale x 2 x i32> zeroinitializer
@@ -171,10 +171,10 @@ define <vscale x 4 x half> @recip_zero_steps_nxv4f16(<vscale x 4 x half> %a, <vs
 ; CHECK-LABEL: recip_zero_steps_nxv4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI7_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI7_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI7_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 4 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x half> %ins, <vscale x 4 x half> poison, <vscale x 4 x i32> zeroinitializer
@@ -186,10 +186,10 @@ define <vscale x 8 x half> @recip_zero_steps_nxv8f16(<vscale x 8 x half> %a, <vs
 ; CHECK-LABEL: recip_zero_steps_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI8_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI8_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI8_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 8 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x half> %ins, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
@@ -201,10 +201,10 @@ define <vscale x 2 x double> @recip_zero_steps_nxv2f64(<vscale x 2 x double> %a,
 ; CHECK-LABEL: recip_zero_steps_nxv2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI9_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI9_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI9_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 2 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x double> %ins, <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
@@ -216,10 +216,10 @@ define <vscale x 4 x double> @recip_zero_steps_nxv4f64(<vscale x 4 x double> %a,
 ; CHECK-LABEL: recip_zero_steps_nxv4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI10_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI10_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI10_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 4 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x double> %ins, <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
@@ -231,10 +231,10 @@ define <vscale x 8 x double> @recip_zero_steps_nxv8f64(<vscale x 8 x double> %a,
 ; CHECK-LABEL: recip_zero_steps_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI11_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI11_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI11_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <vscale x 8 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x double> %ins, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer

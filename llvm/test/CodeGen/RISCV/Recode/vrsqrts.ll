@@ -19,10 +19,10 @@ define void @vrsqrts_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlse16.v v10, (a0), zero
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI0_1)(a0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -52,8 +52,8 @@ define void @vrsqrts_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -82,10 +82,10 @@ define void @vrsqrts_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI2_1)(a0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI2_1)(a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -114,10 +114,10 @@ define void @vrsqrtsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vlse16.v v10, (a0), zero
 ; CHECK-NEXT:    lui a0, %hi(.LCPI3_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI3_1)(a0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI3_1)(a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -147,8 +147,8 @@ define void @vrsqrtsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -177,10 +177,10 @@ define void @vrsqrtsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI5_1)(a0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_1)(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

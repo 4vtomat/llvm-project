@@ -560,8 +560,8 @@ define void @vst3_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vmv1r.v v12, v9
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    vfmv.f.s ft0, v10
-; CHECK-NEXT:    fmv.x.d a1, ft0
+; CHECK-NEXT:    vfmv.f.s fa5, v10
+; CHECK-NEXT:    fmv.x.d a1, fa5
 ; CHECK-NEXT:    sb a1, 16(a0)
 ; CHECK-NEXT:    srli a2, a1, 56
 ; CHECK-NEXT:    sb a2, 23(a0)
@@ -978,8 +978,8 @@ define void @vst3q_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    vfmv.f.s ft0, v10
-; CHECK-NEXT:    fmv.x.d a1, ft0
+; CHECK-NEXT:    vfmv.f.s fa5, v10
+; CHECK-NEXT:    fmv.x.d a1, fa5
 ; CHECK-NEXT:    sb a1, 16(a0)
 ; CHECK-NEXT:    srli a2, a1, 56
 ; CHECK-NEXT:    sb a2, 23(a0)
@@ -1343,9 +1343,8 @@ define void @vst4_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v11, 3
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v12, (a0)
@@ -1425,9 +1424,8 @@ define void @vst4_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v11, 3
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v12, (a0)
@@ -1538,9 +1536,8 @@ define void @vst4_lane_u32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vwaddu.vv v12, v8, v9
 ; CHECK-NEXT:    li a1, -1
 ; CHECK-NEXT:    vwmaccu.vx v12, a1, v9
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v12, v11, 3
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v12, (a0)
@@ -1678,9 +1675,8 @@ define void @vst4q_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vmv1r.v v14, v11
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
@@ -1763,9 +1759,8 @@ define void @vst4q_lane_s64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vmv1r.v v14, v11
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
@@ -1880,9 +1875,8 @@ define void @vst4q_lane_u64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vmv1r.v v14, v11
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v14, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma

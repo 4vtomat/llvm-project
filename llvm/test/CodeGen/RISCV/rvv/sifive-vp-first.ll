@@ -206,67 +206,12 @@ entry:
 
 declare i32 @llvm.vp.first.nxv128i1(<vscale x 128 x i1>, <vscale x 128 x i1>, i32)
 define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i32 zeroext %evl) {
-; CHECK-LABEL: vp_first_nxv128i1:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vmv1r.v v11, v8
-; CHECK-NEXT:    vmv1r.v v8, v0
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    sub a2, a0, a1
-; CHECK-NEXT:    sltu a3, a0, a2
-; CHECK-NEXT:    addi a3, a3, -1
-; CHECK-NEXT:    and a2, a3, a2
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v11
-; CHECK-NEXT:    vfirst.m a2, v10, v0.t
-; CHECK-NEXT:    bltu a0, a1, .LBB16_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    mv a0, a1
-; CHECK-NEXT:  .LBB16_2: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vfirst.m a1, v9, v0.t
-; CHECK-NEXT:    bgez a1, .LBB16_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    slti a1, a2, 0
-; CHECK-NEXT:    neg a1, a1
-; CHECK-NEXT:    or a1, a1, a0
-; CHECK-NEXT:  .LBB16_4: # %entry
-; CHECK-NEXT:    mv a0, a1
-; CHECK-NEXT:    ret
 entry:
   %a = call i32 @llvm.vp.first.nxv128i1(<vscale x 128 x i1> %op, <vscale x 128 x i1> %m, i32 %evl)
   ret i32 %a
 }
 
 define i32 @vp_first_nxv128i1_unmasked(<vscale x 128 x i1> %op, i32 zeroext %evl) {
-; CHECK-LABEL: vp_first_nxv128i1_unmasked:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    mv a2, a0
-; CHECK-NEXT:    bltu a0, a3, .LBB17_2
-; CHECK-NEXT:  # %bb.1: # %entry
-; CHECK-NEXT:    mv a2, a3
-; CHECK-NEXT:  .LBB17_2: # %entry
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vfirst.m a1, v0
-; CHECK-NEXT:    bgez a1, .LBB17_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    sub a1, a0, a3
-; CHECK-NEXT:    sltu a0, a0, a1
-; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    and a0, a0, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vfirst.m a0, v8
-; CHECK-NEXT:    add a2, a2, a0
-; CHECK-NEXT:    slti a0, a0, 0
-; CHECK-NEXT:    neg a1, a0
-; CHECK-NEXT:    or a1, a1, a2
-; CHECK-NEXT:  .LBB17_4: # %entry
-; CHECK-NEXT:    mv a0, a1
-; CHECK-NEXT:    ret
 entry:
   %head = insertelement <vscale x 128 x i1> poison, i1 true, i32 0
   %m = shufflevector <vscale x 128 x i1> %head, <vscale x 128 x i1> poison, <vscale x 128 x i32> zeroinitializer

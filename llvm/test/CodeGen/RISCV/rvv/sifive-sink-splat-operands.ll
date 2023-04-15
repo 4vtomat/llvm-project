@@ -250,10 +250,10 @@ define void @sink_splat_fadd_scalable(float* nocapture %a, float %x) {
 ; CHECK-NEXT:    sh2add a0, a4, a0
 ; CHECK-NEXT:  .LBB4_6: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    flw ft0, 0(a0)
+; CHECK-NEXT:    flw fa5, 0(a0)
 ; CHECK-NEXT:    addi a2, a2, 1
-; CHECK-NEXT:    fadd.s ft0, ft0, fa0
-; CHECK-NEXT:    fsw ft0, 0(a0)
+; CHECK-NEXT:    fadd.s fa5, fa5, fa0
+; CHECK-NEXT:    fsw fa5, 0(a0)
 ; CHECK-NEXT:    addi a0, a0, 4
 ; CHECK-NEXT:    bnez a2, .LBB4_6
 ; CHECK-NEXT:  .LBB4_7: # %for.cond.cleanup

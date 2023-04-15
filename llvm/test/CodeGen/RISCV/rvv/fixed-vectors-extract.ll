@@ -509,8 +509,8 @@ define void @store_extractelt_v2i64(ptr %x, ptr %p) nounwind {
 define void @store_extractelt_v2f64(ptr %x, ptr %p) nounwind {
 ; CHECK-LABEL: store_extractelt_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    fld ft0, 8(a0)
-; CHECK-NEXT:    fsd ft0, 0(a1)
+; CHECK-NEXT:    fld fa5, 8(a0)
+; CHECK-NEXT:    fsd fa5, 0(a1)
 ; CHECK-NEXT:    ret
   %a = load <2 x double>, ptr %x
   %b = extractelement <2 x double> %a, i64 1

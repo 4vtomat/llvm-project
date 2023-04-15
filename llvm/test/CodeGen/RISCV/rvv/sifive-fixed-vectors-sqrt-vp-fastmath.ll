@@ -28,8 +28,8 @@ define <2 x half> @sqrt_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a1, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
@@ -37,11 +37,11 @@ define <2 x half> @sqrt_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vlse16.v v11, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI0_1)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -56,8 +56,8 @@ define <4 x half> @sqrt_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a1, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
@@ -65,11 +65,11 @@ define <4 x half> @sqrt_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlse16.v v11, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI1_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI1_1)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI1_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -84,8 +84,8 @@ define <8 x half> @sqrt_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a1, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
@@ -93,11 +93,11 @@ define <8 x half> @sqrt_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlse16.v v11, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI2_1)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI2_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -112,8 +112,8 @@ define <2 x float> @sqrt_v2f32(<2 x float> %a, <2 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    lui a1, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    lui a1, 787456
@@ -123,15 +123,15 @@ define <2 x float> @sqrt_v2f32(<2 x float> %a, <2 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vmv1r.v v13, v10
 ; CHECK-NEXT:    vfmadd.vv v13, v11, v12, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v13, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -146,8 +146,8 @@ define <4 x float> @sqrt_v4f32(<4 x float> %a, <4 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    lui a1, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    lui a1, 787456
@@ -157,15 +157,15 @@ define <4 x float> @sqrt_v4f32(<4 x float> %a, <4 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vmv1r.v v13, v10
 ; CHECK-NEXT:    vfmadd.vv v13, v11, v12, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v13, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -180,8 +180,8 @@ define <8 x float> @sqrt_v8f32(<8 x float> %a, <8 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    lui a1, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v10, v12, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a1
+; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v14, v8, v12, v0.t
 ; CHECK-NEXT:    lui a1, 787456
@@ -191,15 +191,15 @@ define <8 x float> @sqrt_v8f32(<8 x float> %a, <8 x i1> %m, i32 zeroext %evl) #0
 ; CHECK-NEXT:    vmv2r.v v18, v12
 ; CHECK-NEXT:    vfmadd.vv v18, v14, v16, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v12, v12, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v12, v18, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v12, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -219,30 +219,30 @@ define <2 x double> @sqrt_v2f64(<2 x double> %a, <2 x i1> %m, i32 zeroext %evl) 
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v11, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI6_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI6_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI6_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI6_2)(a0)
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    fld fa4, %lo(.LCPI6_2)(a0)
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v10, v9, v0.t
 ; CHECK-NEXT:    vfabs.v v8, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v8, ft1, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v8, fa4, v0.t
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <2 x double> @llvm.vp.sqrt.v2f64(<2 x double> %a, <2 x i1> %m, i32 %evl)
@@ -260,30 +260,30 @@ define <4 x double> @sqrt_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl) 
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vlse64.v v14, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI7_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI7_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI7_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv2r.v v16, v10
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv.v.v v16, v10
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v10, v12, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI7_2)(a0)
-; CHECK-NEXT:    vfmul.vf v12, v12, ft0, v0.t
+; CHECK-NEXT:    fld fa4, %lo(.LCPI7_2)(a0)
+; CHECK-NEXT:    vfmul.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v12, v10, v0.t
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v8, v12, ft1, v0.t
+; CHECK-NEXT:    vmflt.vf v8, v12, fa4, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v8, v10, 0, v0
 ; CHECK-NEXT:    ret
@@ -302,30 +302,30 @@ define <8 x double> @sqrt_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl) 
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vlse64.v v12, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI8_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI8_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI8_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
 ; CHECK-NEXT:    vmv4r.v v24, v16
 ; CHECK-NEXT:    vfmadd.vv v24, v20, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; CHECK-NEXT:    vfmul.vv v20, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vmv.v.v v24, v16
 ; CHECK-NEXT:    vfmadd.vv v24, v20, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; CHECK-NEXT:    vfmul.vv v20, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vfmadd.vv v16, v20, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI8_2)(a0)
-; CHECK-NEXT:    vfmul.vf v12, v20, ft0, v0.t
+; CHECK-NEXT:    fld fa4, %lo(.LCPI8_2)(a0)
+; CHECK-NEXT:    vfmul.vf v12, v20, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v12, v16, v0.t
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v8, v16, ft1, v0.t
+; CHECK-NEXT:    vmflt.vf v8, v16, fa4, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v8, v12, 0, v0
 ; CHECK-NEXT:    ret
@@ -339,8 +339,8 @@ define <2 x half> @sqrt_zero_steps_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a0, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -355,8 +355,8 @@ define <4 x half> @sqrt_zero_steps_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a0, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -371,8 +371,8 @@ define <8 x half> @sqrt_zero_steps_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    li a0, 1024
-; CHECK-NEXT:    fmv.h.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.h.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -387,8 +387,8 @@ define <2 x float> @sqrt_zero_steps_v2f32(<2 x float> %a, <2 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    lui a0, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -403,8 +403,8 @@ define <4 x float> @sqrt_zero_steps_v4f32(<4 x float> %a, <4 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
 ; CHECK-NEXT:    lui a0, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -419,8 +419,8 @@ define <8 x float> @sqrt_zero_steps_v8f32(<8 x float> %a, <8 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    lui a0, 2048
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v10, v12, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12
 ; CHECK-NEXT:    vmv1r.v v0, v10
@@ -434,10 +434,10 @@ define <2 x double> @sqrt_zero_steps_v2f64(<2 x double> %a, <2 x i1> %m, i32 zer
 ; CHECK-LABEL: sqrt_zero_steps_v2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI15_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI15_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI15_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfabs.v v9, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v9, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v9, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v9, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
@@ -450,10 +450,10 @@ define <4 x double> @sqrt_zero_steps_v4f64(<4 x double> %a, <4 x i1> %m, i32 zer
 ; CHECK-LABEL: sqrt_zero_steps_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI16_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI16_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI16_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v10, v12, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12
 ; CHECK-NEXT:    vmv1r.v v0, v10
@@ -467,10 +467,10 @@ define <8 x double> @sqrt_zero_steps_v8f64(<8 x double> %a, <8 x i1> %m, i32 zer
 ; CHECK-LABEL: sqrt_zero_steps_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI17_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI17_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI17_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v12, v16, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v16, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v16
 ; CHECK-NEXT:    vmv1r.v v0, v12
@@ -493,13 +493,13 @@ define <2 x half> @rsqrt_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vmv1r.v v11, v9
 ; CHECK-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI18_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI18_1)(a0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI18_1)(a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI18_2)
-; CHECK-NEXT:    flh ft1, %lo(.LCPI18_2)(a0)
+; CHECK-NEXT:    flh fa4, %lo(.LCPI18_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <2 x half> %ins, <2 x half> poison, <2 x i32> zeroinitializer
@@ -522,13 +522,13 @@ define <4 x half> @rsqrt_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vmv1r.v v11, v9
 ; CHECK-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI19_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI19_1)(a0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI19_1)(a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI19_2)
-; CHECK-NEXT:    flh ft1, %lo(.LCPI19_2)(a0)
+; CHECK-NEXT:    flh fa4, %lo(.LCPI19_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <4 x half> %ins, <4 x half> poison, <4 x i32> zeroinitializer
@@ -551,13 +551,13 @@ define <8 x half> @rsqrt_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vmv1r.v v11, v9
 ; CHECK-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI20_1)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI20_1)(a0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI20_1)(a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI20_2)
-; CHECK-NEXT:    flh ft1, %lo(.LCPI20_2)(a0)
+; CHECK-NEXT:    flh fa4, %lo(.LCPI20_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <8 x half> %ins, <8 x half> poison, <8 x i32> zeroinitializer
@@ -579,20 +579,20 @@ define <2 x float> @rsqrt_v2f32(<2 x float> %a, <2 x i1> %m, i32 zeroext %evl) #
 ; CHECK-NEXT:    vmv1r.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, mu
 ; CHECK-NEXT:    vmv1r.v v10, v9
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <2 x float> %ins, <2 x float> poison, <2 x i32> zeroinitializer
@@ -614,20 +614,20 @@ define <4 x float> @rsqrt_v4f32(<4 x float> %a, <4 x i1> %m, i32 zeroext %evl) #
 ; CHECK-NEXT:    vmv1r.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.v v10, v9
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <4 x float> %ins, <4 x float> poison, <4 x i32> zeroinitializer
@@ -649,20 +649,20 @@ define <8 x float> @rsqrt_v8f32(<8 x float> %a, <8 x i1> %m, i32 zeroext %evl) #
 ; CHECK-NEXT:    vmv2r.v v16, v10
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; CHECK-NEXT:    lui a0, 782336
-; CHECK-NEXT:    fmv.w.x ft0, a0
+; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, mu
 ; CHECK-NEXT:    vmv.v.v v12, v10
 ; CHECK-NEXT:    vfmadd.vv v12, v8, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <8 x float> %ins, <8 x float> poison, <8 x i32> zeroinitializer
@@ -682,30 +682,30 @@ define <2 x double> @rsqrt_v2f64(<2 x double> %a, <2 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v11, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI24_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI24_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI24_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.v v12, v9
 ; CHECK-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v9, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v9, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v9, v9, v12, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.v v10, v9
 ; CHECK-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI24_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI24_2)(a0)
+; CHECK-NEXT:    fld fa4, %lo(.LCPI24_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v9, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <2 x double> %ins, <2 x double> poison, <2 x i32> zeroinitializer
@@ -725,30 +725,30 @@ define <4 x double> @rsqrt_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vlse64.v v14, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI25_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI25_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI25_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv2r.v v16, v10
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv.v.v v16, v10
 ; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v10, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
 ; CHECK-NEXT:    vmv.v.v v12, v10
 ; CHECK-NEXT:    vfmadd.vv v12, v8, v14, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI25_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI25_2)(a0)
+; CHECK-NEXT:    fld fa4, %lo(.LCPI25_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v10, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <4 x double> %ins, <4 x double> poison, <4 x i32> zeroinitializer
@@ -768,30 +768,30 @@ define <8 x double> @rsqrt_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vlse64.v v12, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI26_1)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI26_1)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI26_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
 ; CHECK-NEXT:    vmv4r.v v24, v16
 ; CHECK-NEXT:    vfmadd.vv v24, v20, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; CHECK-NEXT:    vfmul.vv v20, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vmv.v.v v24, v16
 ; CHECK-NEXT:    vfmadd.vv v24, v20, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v16, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v16, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; CHECK-NEXT:    vmv.v.v v20, v16
 ; CHECK-NEXT:    vfmadd.vv v20, v8, v12, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI26_2)
-; CHECK-NEXT:    fld ft1, %lo(.LCPI26_2)(a0)
+; CHECK-NEXT:    fld fa4, %lo(.LCPI26_2)(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vfmul.vf v8, v16, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v16, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v20, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v8, ft1, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <8 x double> %ins, <8 x double> poison, <8 x i32> zeroinitializer
@@ -804,10 +804,10 @@ define <2 x half> @rsqrt_zero_steps_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroex
 ; CHECK-LABEL: rsqrt_zero_steps_v2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI27_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI27_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI27_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <2 x half> %ins, <2 x half> poison, <2 x i32> zeroinitializer
@@ -820,10 +820,10 @@ define <4 x half> @rsqrt_zero_steps_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroex
 ; CHECK-LABEL: rsqrt_zero_steps_v4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI28_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI28_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI28_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <4 x half> %ins, <4 x half> poison, <4 x i32> zeroinitializer
@@ -836,10 +836,10 @@ define <8 x half> @rsqrt_zero_steps_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroex
 ; CHECK-LABEL: rsqrt_zero_steps_v8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI29_0)
-; CHECK-NEXT:    flh ft0, %lo(.LCPI29_0)(a1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI29_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <8 x half> %ins, <8 x half> poison, <8 x i32> zeroinitializer
@@ -854,8 +854,8 @@ define <2 x float> @rsqrt_zero_steps_v2f32(<2 x float> %a, <2 x i1> %m, i32 zero
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <2 x float> %ins, <2 x float> poison, <2 x i32> zeroinitializer
@@ -870,8 +870,8 @@ define <4 x float> @rsqrt_zero_steps_v4f32(<4 x float> %a, <4 x i1> %m, i32 zero
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <4 x float> %ins, <4 x float> poison, <4 x i32> zeroinitializer
@@ -886,8 +886,8 @@ define <8 x float> @rsqrt_zero_steps_v8f32(<8 x float> %a, <8 x i1> %m, i32 zero
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    lui a0, 260096
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a0
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <8 x float> %ins, <8 x float> poison, <8 x i32> zeroinitializer
@@ -900,10 +900,10 @@ define <2 x double> @rsqrt_zero_steps_v2f64(<2 x double> %a, <2 x i1> %m, i32 ze
 ; CHECK-LABEL: rsqrt_zero_steps_v2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI33_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI33_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI33_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <2 x double> %ins, <2 x double> poison, <2 x i32> zeroinitializer
@@ -916,10 +916,10 @@ define <4 x double> @rsqrt_zero_steps_v4f64(<4 x double> %a, <4 x i1> %m, i32 ze
 ; CHECK-LABEL: rsqrt_zero_steps_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI34_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI34_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI34_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <4 x double> %ins, <4 x double> poison, <4 x i32> zeroinitializer
@@ -932,10 +932,10 @@ define <8 x double> @rsqrt_zero_steps_v8f64(<8 x double> %a, <8 x i1> %m, i32 ze
 ; CHECK-LABEL: rsqrt_zero_steps_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, %hi(.LCPI35_0)
-; CHECK-NEXT:    fld ft0, %lo(.LCPI35_0)(a1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI35_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vfmul.vf v8, v8, ft0, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <8 x double> %ins, <8 x double> poison, <8 x i32> zeroinitializer

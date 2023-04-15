@@ -8,7 +8,7 @@ define void @vqmovn_high_s16(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle16.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    vnclip.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 8
 ; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -28,7 +28,7 @@ define void @vqmovn_high_s32(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vnclip.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 4
 ; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -48,7 +48,7 @@ define void @vqmovn_high_s64(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vnclip.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 2
 ; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -68,7 +68,7 @@ define void @vqmovn_high_u16(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle16.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 8
 ; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -88,7 +88,7 @@ define void @vqmovn_high_u32(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 4
 ; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
@@ -108,7 +108,7 @@ define void @vqmovn_high_u64(ptr nocapture noundef readonly %in_0, ptr nocapture
 ; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 2
 ; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret

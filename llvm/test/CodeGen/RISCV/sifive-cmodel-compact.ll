@@ -361,8 +361,8 @@ define float @lower_constantpool(float %a) nounwind {
 ; PIC-LABEL: lower_constantpool:
 ; PIC:       # %bb.0:
 ; PIC-NEXT:    lui a0, 260096
-; PIC-NEXT:    fmv.w.x ft0, a0
-; PIC-NEXT:    fadd.s fa0, fa0, ft0
+; PIC-NEXT:    fmv.w.x fa5, a0
+; PIC-NEXT:    fadd.s fa0, fa0, fa5
 ; PIC-NEXT:    ret
 ;
 ; NoPIC-LABEL: lower_constantpool:
@@ -457,7 +457,7 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; NoPIC-NEXT:    j .LBB11_8
 ; NoPIC-NEXT:  .LBB11_7: # %bb6
 ; NoPIC-NEXT:    li a0, 200
-; NoPIC-NEXT:  .LBB11_8: # %exit
+; NoPIC-NEXT:  .LBB11_8:
 ; NoPIC-NEXT:    sw a0, 0(a1)
 ; NoPIC-NEXT:  .LBB11_9: # %exit
 ; NoPIC-NEXT:    ret

@@ -1592,22 +1592,22 @@ entry:
 define void @test_32(ptr %in, ptr %out) {
 ; CHECK-LABEL: test_32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    flh ft0, 14(a0)
-; CHECK-NEXT:    flh ft1, 12(a0)
-; CHECK-NEXT:    flh ft2, 10(a0)
-; CHECK-NEXT:    flh ft3, 8(a0)
-; CHECK-NEXT:    flh ft4, 0(a0)
-; CHECK-NEXT:    flh ft5, 2(a0)
-; CHECK-NEXT:    flh ft6, 4(a0)
-; CHECK-NEXT:    flh ft7, 6(a0)
-; CHECK-NEXT:    fsh ft4, 14(a1)
-; CHECK-NEXT:    fsh ft5, 12(a1)
-; CHECK-NEXT:    fsh ft6, 10(a1)
-; CHECK-NEXT:    fsh ft7, 8(a1)
-; CHECK-NEXT:    fsh ft3, 6(a1)
-; CHECK-NEXT:    fsh ft2, 4(a1)
-; CHECK-NEXT:    fsh ft1, 2(a1)
-; CHECK-NEXT:    fsh ft0, 0(a1)
+; CHECK-NEXT:    flh fa5, 14(a0)
+; CHECK-NEXT:    flh fa4, 12(a0)
+; CHECK-NEXT:    flh fa3, 10(a0)
+; CHECK-NEXT:    flh fa2, 8(a0)
+; CHECK-NEXT:    flh fa1, 0(a0)
+; CHECK-NEXT:    flh fa0, 2(a0)
+; CHECK-NEXT:    flh ft0, 4(a0)
+; CHECK-NEXT:    flh ft1, 6(a0)
+; CHECK-NEXT:    fsh fa1, 14(a1)
+; CHECK-NEXT:    fsh fa0, 12(a1)
+; CHECK-NEXT:    fsh ft0, 10(a1)
+; CHECK-NEXT:    fsh ft1, 8(a1)
+; CHECK-NEXT:    fsh fa2, 6(a1)
+; CHECK-NEXT:    fsh fa3, 4(a1)
+; CHECK-NEXT:    fsh fa4, 2(a1)
+; CHECK-NEXT:    fsh fa5, 0(a1)
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds half, ptr %in, i64 7
@@ -1640,14 +1640,14 @@ entry:
 define void @test_36(ptr %in, ptr %out) {
 ; CHECK-LABEL: test_36:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    flw ft0, 0(a0)
-; CHECK-NEXT:    flw ft1, 4(a0)
-; CHECK-NEXT:    flw ft2, 8(a0)
-; CHECK-NEXT:    flw ft3, 12(a0)
-; CHECK-NEXT:    fsw ft0, 12(a1)
-; CHECK-NEXT:    fsw ft1, 8(a1)
-; CHECK-NEXT:    fsw ft2, 4(a1)
-; CHECK-NEXT:    fsw ft3, 0(a1)
+; CHECK-NEXT:    flw fa5, 0(a0)
+; CHECK-NEXT:    flw fa4, 4(a0)
+; CHECK-NEXT:    flw fa3, 8(a0)
+; CHECK-NEXT:    flw fa2, 12(a0)
+; CHECK-NEXT:    fsw fa5, 12(a1)
+; CHECK-NEXT:    fsw fa4, 8(a1)
+; CHECK-NEXT:    fsw fa3, 4(a1)
+; CHECK-NEXT:    fsw fa2, 0(a1)
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds float, ptr %in, i64 3
@@ -1668,10 +1668,10 @@ entry:
 define void @test_40(ptr %in, ptr %out) {
 ; CHECK-LABEL: test_40:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    fld ft0, 0(a0)
-; CHECK-NEXT:    fld ft1, 8(a0)
-; CHECK-NEXT:    fsd ft0, 8(a1)
-; CHECK-NEXT:    fsd ft1, 0(a1)
+; CHECK-NEXT:    fld fa5, 0(a0)
+; CHECK-NEXT:    fld fa4, 8(a0)
+; CHECK-NEXT:    fsd fa5, 8(a1)
+; CHECK-NEXT:    fsd fa4, 0(a1)
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds double, ptr %in, i64 1

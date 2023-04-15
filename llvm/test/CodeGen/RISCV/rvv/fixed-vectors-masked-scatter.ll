@@ -235,12 +235,9 @@ define void @mscatter_v2i64_truncstore_v2i8(<2 x i64> %val, <2 x ptr> %ptrs, <2 
 ; RV64ZVE32F-LABEL: mscatter_v2i64_truncstore_v2i8:
 ; RV64ZVE32F:       # %bb.0:
 ; RV64ZVE32F-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-<<<<<<< HEAD
-; RV64ZVE32F-NEXT:    vslideup.vi v8, v9, 1
-=======
 ; RV64ZVE32F-NEXT:    vmv.s.x v9, a1
 ; RV64ZVE32F-NEXT:    vmv.s.x v8, a0
->>>>>>> eopXD/eopc/for-pulldown
+; RV64ZVE32F-NEXT:    vslideup.vi v8, v9, 1
 ; RV64ZVE32F-NEXT:    vmv.x.s a0, v0
 ; RV64ZVE32F-NEXT:    andi a1, a0, 1
 ; RV64ZVE32F-NEXT:    andi a0, a0, 3

@@ -4,16 +4,12 @@
 define void @vpadal_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadal_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 16
-; CHECK-NEXT:    vwadd.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e16.v v8, (a1)
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -51,16 +47,12 @@ entry:
 define void @vpadal_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadal_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 8
-; CHECK-NEXT:    vwadd.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e8.v v8, (a1)
+; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -75,16 +67,12 @@ entry:
 define void @vpadal_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadal_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 16
-; CHECK-NEXT:    vwaddu.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e16.v v8, (a1)
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -122,16 +110,12 @@ entry:
 define void @vpadal_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadal_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 8
-; CHECK-NEXT:    vwaddu.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e8.v v8, (a1)
+; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -146,16 +130,12 @@ entry:
 define void @vpadalq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 16
-; CHECK-NEXT:    vwadd.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e16.v v8, (a1)
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -170,17 +150,12 @@ entry:
 define void @vpadalq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v9, v9, a0
-; CHECK-NEXT:    vwadd.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e32.v v8, (a1)
+; CHECK-NEXT:    vle64.v v10, (a0)
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -195,16 +170,12 @@ entry:
 define void @vpadalq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 8
-; CHECK-NEXT:    vwadd.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e8.v v8, (a1)
+; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -219,16 +190,12 @@ entry:
 define void @vpadalq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 16
-; CHECK-NEXT:    vwaddu.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e16.v v8, (a1)
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -243,17 +210,12 @@ entry:
 define void @vpadalq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v9, v9, a0
-; CHECK-NEXT:    vwaddu.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e32.v v8, (a1)
+; CHECK-NEXT:    vle64.v v10, (a0)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -268,16 +230,12 @@ entry:
 define void @vpadalq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpadalq_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v9, 0
-; CHECK-NEXT:    vnsrl.wi v9, v9, 8
-; CHECK-NEXT:    vwaddu.vv v11, v10, v9
+; CHECK-NEXT:    vlseg2e8.v v8, (a1)
+; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v11, v8
+; CHECK-NEXT:    vadd.vv v8, v11, v10
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -292,12 +250,9 @@ entry:
 define void @vpaddl_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddl_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 16
-; CHECK-NEXT:    vwadd.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e16.v v8, (a0)
+; CHECK-NEXT:    vwadd.vv v10, v8, v9
 ; CHECK-NEXT:    vse32.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -327,12 +282,9 @@ entry:
 define void @vpaddl_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddl_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 8
-; CHECK-NEXT:    vwadd.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e8.v v8, (a0)
+; CHECK-NEXT:    vwadd.vv v10, v8, v9
 ; CHECK-NEXT:    vse16.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -345,12 +297,9 @@ entry:
 define void @vpaddl_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddl_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 16
-; CHECK-NEXT:    vwaddu.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e16.v v8, (a0)
+; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    vse32.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -380,12 +329,9 @@ entry:
 define void @vpaddl_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddl_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 8
-; CHECK-NEXT:    vwaddu.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e8.v v8, (a0)
+; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    vse16.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -398,12 +344,9 @@ entry:
 define void @vpaddlq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 16
-; CHECK-NEXT:    vwadd.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e16.v v8, (a0)
+; CHECK-NEXT:    vwadd.vv v10, v8, v9
 ; CHECK-NEXT:    vse32.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -416,13 +359,9 @@ entry:
 define void @vpaddlq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v8, v8, a0
-; CHECK-NEXT:    vwadd.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e32.v v8, (a0)
+; CHECK-NEXT:    vwadd.vv v10, v8, v9
 ; CHECK-NEXT:    vse64.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -435,12 +374,9 @@ entry:
 define void @vpaddlq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 8
-; CHECK-NEXT:    vwadd.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e8.v v8, (a0)
+; CHECK-NEXT:    vwadd.vv v10, v8, v9
 ; CHECK-NEXT:    vse16.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -453,12 +389,9 @@ entry:
 define void @vpaddlq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 16
-; CHECK-NEXT:    vwaddu.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e16.v v8, (a0)
+; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    vse32.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -471,13 +404,9 @@ entry:
 define void @vpaddlq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v8, v8, a0
-; CHECK-NEXT:    vwaddu.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e32.v v8, (a0)
+; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    vse64.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -490,12 +419,9 @@ entry:
 define void @vpaddlq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpaddlq_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v8, 0
-; CHECK-NEXT:    vnsrl.wi v8, v8, 8
-; CHECK-NEXT:    vwaddu.vv v10, v9, v8
+; CHECK-NEXT:    vlseg2e8.v v8, (a0)
+; CHECK-NEXT:    vwaddu.vv v10, v8, v9
 ; CHECK-NEXT:    vse16.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
