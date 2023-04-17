@@ -1,10 +1,10 @@
-; RUN: opt < %s -mtriple riscv64 -riscv-v-vector-bits-min=256 -mattr="+v" -passes=loop-vectorize -riscv-use-vla-vectorizer -force-vector-width=4 -S -pass-remarks-analysis=loop-vectorize  2>&1 | FileCheck %s
+; RUN: opt < %s -mtriple riscv64 -riscv-v-vector-bits-min=256 -mattr="+v" -passes=loop-vectorize -riscv-use-vla-vectorizer -force-vector-width=4 -scalable-vectorization=off -S -pass-remarks-analysis=loop-vectorize  2>&1 | FileCheck %s
 
 ; void test(int *A, int Length) {
 ;   for (int i = 0; i < Length; i++)
 ;     A[i] = i;
 ; }
-; CHECK: warning: <unknown>:0:0: ignoring user-specified vector width because RVV VLA vectorization was enabled. Consider to use '#pragma clang rvv lmul_sew(LMUL, SEW)' instead
+; CHECK: warning: <unknown>:0:0: ignoring user-specified vector width because RVV VLA vectorization was enabled. Consider using '#pragma clang rvv lmul_sew(LMUL, SEW)' instead
 define void @test(ptr nocapture %A, i32 %Length) {
 entry:
   %cmp4 = icmp sgt i32 %Length, 0
