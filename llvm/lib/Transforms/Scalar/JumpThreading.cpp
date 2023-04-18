@@ -1549,6 +1549,82 @@ Constant *JumpThreadingPass::evaluateOnPredecessorEdge(BasicBlock *BB,
   return nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Does this case produce a ConstantInt result in all phis where control flow
+// merges? For now we only handle the case where the incoming values of the phis
+// are ConstantInts. CommonDest is updated the first this is called.
+static bool doesCaseProduceConstantInt(const SwitchInst *SI,
+                                       const BasicBlock *CaseDest,
+                                       const BasicBlock **CommonDest,
+                                       const TargetTransformInfo &TTI) {
+  const BasicBlock *Pred = SI->getParent();
+
+  // Look through empty blocks with simple branch.
+  auto I = CaseDest->instructionsWithoutDebug(true).begin();
+  if (I->isTerminator()) {
+    if (I->getNumSuccessors() != 1 || I->isExceptionalTerminator())
+      return false;
+    Pred = CaseDest;
+    CaseDest = I->getSuccessor(0);
+  }
+
+  // If we did not have a CommonDest before, use the current one.
+  if (!*CommonDest)
+    *CommonDest = CaseDest;
+  // If the destination isn't the common one, abort.
+  if (CaseDest != *CommonDest)
+    return false;
+
+  // Get the values for this case from phi nodes in the destination block.
+  bool HasConstantPHI = false;
+  for (const PHINode &PHI : (*CommonDest)->phis()) {
+    int Idx = PHI.getBasicBlockIndex(Pred);
+    if (Idx == -1)
+      continue;
+
+    // Only handle ConstantInt phi inputs.
+    auto *ConstVal = dyn_cast<ConstantInt>(PHI.getIncomingValue(Idx));
+    if (!ConstVal)
+      return false;
+
+    HasConstantPHI = true;
+  }
+
+  return HasConstantPHI;
+}
+
+// Look for switch statements that can be implemented as a lookup table.
+// We currently handle the cases where every case selects a ConstantInt in
+// phis in a common destination block.
+static bool isSwitchLookupTable(const SwitchInst *SI,
+                                const TargetTransformInfo &TTI) {
+  // Only care about large switches where the cost of breaking SimplifyCFG is
+  // quite high.
+  // TODO: investigate lower bounds thresholds (SI->getNumCases()) for common
+  // lookup tables for further benefit.
+  if (SI->getNumCases() < 100)
+    return false;
+
+  // The common destination block shared by all cases.
+  const BasicBlock *CommonDest = nullptr;
+
+  for (SwitchInst::ConstCaseIt CI = SI->case_begin(), E = SI->case_end();
+       CI != E; ++CI) {
+    if (!doesCaseProduceConstantInt(SI, CI->getCaseSuccessor(), &CommonDest,
+                                    TTI))
+      return false;
+  }
+
+  // For now, only handle switches where the default is also a constant.
+  bool HasDefaultResults =
+      doesCaseProduceConstantInt(SI, SI->getDefaultDest(), &CommonDest, TTI);
+  if (!HasDefaultResults)
+    return false;
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool JumpThreadingPass::processThreadableEdges(Value *Cond, BasicBlock *BB,
                                                ConstantPreference Preference,
                                                Instruction *CxtI) {
@@ -1627,6 +1703,15 @@ bool JumpThreadingPass::processThreadableEdges(Value *Cond, BasicBlock *BB,
     // destination.
     if (isa<IndirectBrInst>(Pred->getTerminator()))
       continue;
+
+#if SIFIVE_CUSTOMIZATION
+    // Try not to break switches of common lookup table forms that SimplifyCFG
+    // operates on.
+    const BasicBlock *PredPred = Pred->getSinglePredecessor();
+    if (PredPred && isa<SwitchInst>(PredPred->getTerminator()) &&
+        isSwitchLookupTable(cast<SwitchInst>(PredPred->getTerminator()), *TTI))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
 
     PredToDestList.emplace_back(Pred, DestBB);
   }
