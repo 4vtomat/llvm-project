@@ -53,22 +53,12 @@ STATISTIC(NumOfUncountableLoopsWithMoreThanTwoBlocks,
           "Number of uncountable loops with more than two blocks");
 STATISTIC(NumOfUncountableLoopsSpeculationUnsafe,
           "Number of uncountable loops unsafe for speculation");
-STATISTIC(NumOfUncountableLoopsWithLoadsNotStridingAtOne,
-          "Number of uncountable loops with loads not striding at 1");
 STATISTIC(NumOfUncountableLoopsNotEndingWithConditionalBranch,
           "Number of uncountable loops not ending with conditional branch");
-STATISTIC(NumOfUncountableLoopsWithStores,
-          "Number of uncountable loops with stores");
 STATISTIC(NumOfUncountableLoopsWithUnsupportedPHI,
           "Number of uncountable loops with unsupported phi");
-STATISTIC(NumOfUncountableLoopsWithMoreThanOneHeaderPHI,
-          "Number of uncountable loops with more than one header phi");
-STATISTIC(NumOfUncountableLoopsWithNonIVHeaderPHI,
-          "Number of uncountable loops with header PHI not an IV");
 STATISTIC(NumOfUncountableLoopsWithoutHeaderPHI,
           "Number of uncountable loops without a PHI in header");
-STATISTIC(NumOfUncountableLoopsWithConstantBounds,
-          "Number of uncountable loops with constant bounds");
 STATISTIC(NumOfUncountableLoopsWithMultipleExitBlocks,
           "Number of uncountable loops with multiple exit blocks");
 STATISTIC(NumOfUncountableLoopsWithMultipleLiveOutValues,
@@ -1783,7 +1773,7 @@ bool LoopVectorizationLegality::isSpeculationSafe(
           } else {
             SpeculativeStores.insert(I);
           }
-        // fall through
+          LLVM_FALLTHROUGH;
         default:
           for (Value *Operand : I->operands()) {
             if (Visited.contains(Operand))
