@@ -40,12 +40,12 @@ void foo (int *a, int *b, int *c, int n) {
 #pragma clang rvv lmul_sew(mf2, e64) /* expected-error {{(LMUL, SEW) pair (mf2, e64) does not map to a valid VF}}*/
   DUMMY_LOOP;
 
-#pragma clang loop vectorize_width(4) /* expected-warning {{Use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
+#pragma clang loop vectorize_width(4) /* expected-warning {{use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
   DUMMY_LOOP;
 
-#pragma clang loop vectorize_width(4, fixed) /* expected-warning {{Use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
+#pragma clang loop vectorize_width(4, fixed) /* expected-warning {{use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
   DUMMY_LOOP;
 
-#pragma clang loop vectorize_width(4, scalable) /* expected-warning {{Use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
+#pragma clang loop vectorize_width(4, scalable) /* expected-warning {{use #pragma clang rvv lmul_sew instead of vectorize_width for RISC-V vectors}} */
   DUMMY_LOOP;
 }
