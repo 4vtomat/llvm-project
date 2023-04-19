@@ -46,9 +46,9 @@ define <4 x double> @vfpext_v4f16_v4f64(<4 x half> %va) {
 ; CHECK-LABEL: vfpext_v4f16_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v8, v10
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v9
 ; CHECK-NEXT:    ret
   %evec = call <4 x double> @llvm.experimental.constrained.fpext.v4f64.v4f16(<4 x half> %va, metadata !"fpexcept.strict")
   ret <4 x double> %evec
@@ -71,9 +71,9 @@ define <8 x double> @vfpext_v8f16_v8f64(<8 x half> %va) {
 ; CHECK-LABEL: vfpext_v8f16_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v10
 ; CHECK-NEXT:    ret
   %evec = call <8 x double> @llvm.experimental.constrained.fpext.v8f64.v8f16(<8 x half> %va, metadata !"fpexcept.strict")
   ret <8 x double> %evec

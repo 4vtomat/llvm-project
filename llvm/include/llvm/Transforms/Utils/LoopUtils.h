@@ -392,6 +392,12 @@ Value *createSimpleTargetReduction(IRBuilderBase &B,
                                    const TargetTransformInfo *TTI, Value *Src,
                                    RecurKind RdxKind);
 
+#if SIFIVE_CUSTOMIZATION
+Value *createSimpleTargetReduction(IRBuilderBase &B,
+                                   const TargetTransformInfo *TTI, Value *Src,
+                                   RecurKind RdxKind, Value *RVL);
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Create a target reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::SelectICmp or RecurKind::SelectFCmp. The reduction operation
 /// is described by \p Desc.
@@ -400,6 +406,13 @@ Value *createSelectCmpTargetReduction(IRBuilderBase &B,
                                       Value *Src,
                                       const RecurrenceDescriptor &Desc,
                                       PHINode *OrigPhi);
+#if SIFIVE_CUSTOMIZATION
+Value *createSelectCmpTargetReduction(IRBuilderBase &B,
+                                      const TargetTransformInfo *TTI,
+                                      Value *Src,
+                                      const RecurrenceDescriptor &Desc,
+                                      PHINode *OrigPhi, Value *RVL);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Create a generic target reduction using a recurrence descriptor \p Desc
 /// The target is queried to determine if intrinsics or shuffle sequences are
@@ -408,12 +421,23 @@ Value *createSelectCmpTargetReduction(IRBuilderBase &B,
 Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
                              const RecurrenceDescriptor &Desc, Value *Src,
                              PHINode *OrigPhi = nullptr);
+#if SIFIVE_CUSTOMIZATION
+Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
+                             const RecurrenceDescriptor &Desc, Value *Src,
+                             Value *RVL, PHINode *OrigPhi = nullptr);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// descriptor \p Desc.
 Value *createOrderedReduction(IRBuilderBase &B,
                               const RecurrenceDescriptor &Desc, Value *Src,
                               Value *Start);
+
+#if SIFIVE_CUSTOMIZATION
+Value *createOrderedReduction(IRBuilderBase &B,
+                              const RecurrenceDescriptor &Desc, Value *Src,
+                              Value *Start, Value *RVL);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Get the intersection (logical and) of all of the potential IR flags
 /// of each scalar operation (VL) that will be converted into a vector (I).

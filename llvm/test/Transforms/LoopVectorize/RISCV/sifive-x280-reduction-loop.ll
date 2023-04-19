@@ -23,11 +23,11 @@
 define float @foo(ptr nocapture noundef readonly %ptr) {
 ; CHECK-REMARK-9: remark: <unknown>:0:0: the cost-model indicates that vectorization is not beneficial
 ; CHECK-REMARK-10: remark: <unknown>:0:0: the cost-model indicates that vectorization is not beneficial
-; CHECK-REMARK-48: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, float))
-; CHECK-REMARK-56: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, float))
-; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, float))
-; CHECK-REMARK-160: remark: <unknown>:0:0: vectorized loop ((lmul, type): (4, float))
-; CHECK-REMARK-512: remark: <unknown>:0:0: vectorized loop ((lmul, type): (8, float))
+; CHECK-REMARK-48: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m1, float))
+; CHECK-REMARK-56: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, float))
+; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))
+; CHECK-REMARK-160: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, float))
+; CHECK-REMARK-512: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, float))
 entry:
   br label %for.body
 

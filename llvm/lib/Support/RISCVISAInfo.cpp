@@ -56,7 +56,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zihpm", RISCVExtensionVersion{1, 0}},
     {"ss", RISCVExtensionVersion{1, 12}},
     {"svbare", RISCVExtensionVersion{1, 0}},
-    {"svptead", RISCVExtensionVersion{1, 0}},
+    {"svade", RISCVExtensionVersion{1, 0}},
     {"ssccptr", RISCVExtensionVersion{1, 0}},
     {"sstvecd", RISCVExtensionVersion{1, 0}},
     {"sstvala", RISCVExtensionVersion{1, 0}},

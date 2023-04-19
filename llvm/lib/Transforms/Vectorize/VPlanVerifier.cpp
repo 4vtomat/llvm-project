@@ -143,11 +143,19 @@ static bool verifyPhiRecipes(const VPBasicBlock *VPBB) {
   const VPRegionBlock *ParentR = VPBB->getParent();
   bool IsHeaderVPBB = ParentR && !ParentR->isReplicator() &&
                       ParentR->getEntryBasicBlock() == VPBB;
+#if SIFIVE_CUSTOMIZATION
+  while (RecipeI != End && vputils::isPhi(*RecipeI)) {
+#else
   while (RecipeI != End && RecipeI->isPhi()) {
+#endif // SIFIVE_CUSTOMIZATION
     if (isa<VPActiveLaneMaskPHIRecipe>(RecipeI))
       NumActiveLaneMaskPhiRecipes++;
 
-    if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe>(*RecipeI)) {
+#if SIFIVE_CUSTOMIZATION
+    if (IsHeaderVPBB && !vputils::isHeaderPhi(*RecipeI)) {
+#else
+    if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe>(*RecipeI)) {    
+#endif // SIFIVE_CUSTOMIZATION
       errs() << "Found non-header PHI recipe in header VPBB";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
       errs() << ": ";
@@ -156,7 +164,11 @@ static bool verifyPhiRecipes(const VPBasicBlock *VPBB) {
       return false;
     }
 
+#if SIFIVE_CUSTOMIZATION
+    if (!IsHeaderVPBB && vputils::isHeaderPhi(*RecipeI)) {
+#else
     if (!IsHeaderVPBB && isa<VPHeaderPHIRecipe>(*RecipeI)) {
+#endif // SIFIVE_CUSTOMIZATION
       errs() << "Found header PHI recipe in non-header VPBB";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
       errs() << ": ";
@@ -174,7 +186,11 @@ static bool verifyPhiRecipes(const VPBasicBlock *VPBB) {
   }
 
   while (RecipeI != End) {
+#if SIFIVE_CUSTOMIZATION
+    if (vputils::isPhi(*RecipeI) && !isa<VPBlendRecipe>(&*RecipeI)) {
+#else
     if (RecipeI->isPhi() && !isa<VPBlendRecipe>(&*RecipeI)) {
+#endif // SIFIVE_CUSTOMIZATION
       errs() << "Found phi-like recipe after non-phi recipe";
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -207,7 +223,12 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
       for (const VPUser *U : V->users()) {
         auto *UI = dyn_cast<VPRecipeBase>(U);
         // TODO: check dominance of incoming values for phis properly.
+#if SIFIVE_CUSTOMIZATION
+        if (!UI || vputils::isHeaderPhi(*UI) ||
+            isa<VPPredInstPHIRecipe>(UI))
+#else
         if (!UI || isa<VPHeaderPHIRecipe>(UI) || isa<VPPredInstPHIRecipe>(UI))
+#endif // SIFIVE_CUSTOMIZATION
           continue;
 
         // If the user is in the same block, check it comes after R in the
@@ -248,7 +269,11 @@ bool VPlanVerifier::verifyPlanIsValid(const VPlan &Plan) {
     return false;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Plan.isUncountable() && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+#else
   if (!isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+#endif
     errs() << "VPlan vector loop header does not start with a "
               "VPCanonicalIVPHIRecipe\n";
     return false;
@@ -267,10 +292,19 @@ bool VPlanVerifier::verifyPlanIsValid(const VPlan &Plan) {
   }
 
   auto *LastInst = dyn_cast<VPInstruction>(std::prev(Exiting->end()));
+#if SIFIVE_CUSTOMIZATION
+  if (!LastInst ||
+      (LastInst->getOpcode() != VPInstruction::BranchOnCount &&
+        LastInst->getOpcode() != VPInstruction::BranchOnCond &&
+        LastInst->getOpcode() != VPInstruction::BranchOnVFirstCmp)) {
+    errs() << "VPlan vector loop exit must end with BranchOnCount, "
+              "BranchOnCond, or BranchOnVFirstCmp VPInstruction\n";
+#else
   if (!LastInst || (LastInst->getOpcode() != VPInstruction::BranchOnCount &&
                     LastInst->getOpcode() != VPInstruction::BranchOnCond)) {
     errs() << "VPlan vector loop exit must end with BranchOnCount or "
               "BranchOnCond VPInstruction\n";
+#endif
     return false;
   }
 

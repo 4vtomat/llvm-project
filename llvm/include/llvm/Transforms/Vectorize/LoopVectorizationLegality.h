@@ -31,6 +31,9 @@
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Support/TypeSize.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_CSADescriptors.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 class AAResults;
@@ -299,6 +302,12 @@ public:
   /// induction descriptor.
   using InductionList = MapVector<PHINode *, InductionDescriptor>;
 
+#if SIFIVE_CUSTOMIZATION
+  /// CSAList contains the CSA descriptors for all the CSAs that were found
+  /// in the loop, rooted by their phis.
+  using CSAList = MapVector<PHINode *, CSADescriptor>;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// RecurrenceSet contains the phi nodes that are recurrences other than
   /// inductions and reductions.
   using RecurrenceSet = SmallPtrSet<const PHINode *, 8>;
@@ -311,6 +320,11 @@ public:
   /// (should be functional for inner loop vectorization) based on VPlan.
   /// If false, good old LV code.
   bool canVectorize(bool UseVPlanNativePath);
+
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if the loop is uncountable and vectorizable
+  bool isVectorizableUncountable() const { return IsVectorizableUncountable; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if it is legal to vectorize the FP math operations in this
   /// loop. Vectorizing is legal if we allow reordering of FP operations, or if
@@ -347,6 +361,13 @@ public:
 
   /// Returns True if V is a Phi node of an induction variable in this loop.
   bool isInductionPhi(const Value *V) const;
+#if SIFIVE_CUSTOMIZATION
+  /// Returns the CSAs found in the loop.
+  const CSAList& getCSAs() const { return CSAs; }
+
+  /// Returns true if Phi is the root of a CSA in the loop.
+  bool isCSAPhi(PHINode *Phi) const { return CSAs.count(Phi) != 0; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns a pointer to the induction descriptor, if \p Phi is an integer or
   /// floating point induction.
@@ -441,6 +462,24 @@ public:
   bool useVLAVectorizer() const {
     return TTI->useVLAVectorizer();
   }
+
+  /// Returns true if an uncountable loop is safe for speculation
+  bool isSpeculationSafe(PredicatedScalarEvolution &PSE);
+
+  /// Returns all speculative loads.
+  const SmallPtrSetImpl<Instruction *> &getSpeculativeLoads() const {
+    return SpeculativeLoads;
+  }
+
+  /// Returns true if an uncountable loop can be vectorized
+  bool canVectorizeUncountableLoop(PredicatedScalarEvolution &PSE);
+
+  /// Mark a loop as a vectorizable uncountable loop
+  void setVectorizableUncountable() {
+    assert(!IsVectorizableUncountable &&
+           "IsVectorizableUncountable should only be set once");
+    IsVectorizableUncountable = true;
+  };
 #endif // SIFIVE_CUSTOMIZATION
 
   PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
@@ -561,6 +600,10 @@ private:
   /// Notice that inductions don't need to start at zero and that induction
   /// variables can be pointers.
   InductionList Inductions;
+#if SIFIVE_CUSTOMIZATION
+  /// Holds the conditional scalar assignments
+  CSAList CSAs;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Holds all the casts that participate in the update chain of the induction
   /// variables, and that have been proven to be redundant (possibly under a
@@ -607,6 +650,14 @@ private:
   /// BFI and PSI are used to check for profile guided size optimizations.
   BlockFrequencyInfo *BFI;
   ProfileSummaryInfo *PSI;
+
+#if SIFIVE_CUSTOMIZATION
+  bool IsVectorizableUncountable = false;
+
+  /// Hold all loads and stores that need to be speculative.
+  SmallPtrSet<Instruction *, 4> SpeculativeLoads;
+  SmallPtrSet<Instruction *, 4> SpeculativeStores;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // namespace llvm

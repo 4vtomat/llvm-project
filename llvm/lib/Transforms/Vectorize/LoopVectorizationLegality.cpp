@@ -15,8 +15,14 @@
 //
 
 #include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/ADT/Statistic.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/Loads.h"
 #include "llvm/Analysis/LoopInfo.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/LoopIterator.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/OptimizationRemarkEmitter.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
@@ -32,6 +38,63 @@ using namespace PatternMatch;
 
 #define LV_NAME "loop-vectorize"
 #define DEBUG_TYPE LV_NAME
+
+#if SIFIVE_CUSTOMIZATION
+STATISTIC(
+    NumOfUncountableLoopsAnalyzedForVectorization,
+    "Number of uncountable loops inspected for uncountable loop opportunity");
+STATISTIC(NumOfUncountableLoopsVectorizable,
+          "Number of vectorizable uncountable loops");
+STATISTIC(NumOfUncountableLoopsWithOneBlock,
+          "Number of uncountable loops with one block");
+STATISTIC(NumOfUncountableLoopsWithTwoBlocks,
+          "Number of uncountable loops with two blocks");
+STATISTIC(NumOfUncountableLoopsWithMoreThanTwoBlocks,
+          "Number of uncountable loops with more than two blocks");
+STATISTIC(NumOfUncountableLoopsSpeculationUnsafe,
+          "Number of uncountable loops unsafe for speculation");
+STATISTIC(NumOfUncountableLoopsNotEndingWithConditionalBranch,
+          "Number of uncountable loops not ending with conditional branch");
+STATISTIC(NumOfUncountableLoopsWithUnsupportedPHI,
+          "Number of uncountable loops with unsupported phi");
+STATISTIC(NumOfUncountableLoopsWithoutHeaderPHI,
+          "Number of uncountable loops without a PHI in header");
+STATISTIC(NumOfUncountableLoopsWithMultipleExitBlocks,
+          "Number of uncountable loops with multiple exit blocks");
+STATISTIC(NumOfUncountableLoopsWithMultipleLiveOutValues,
+          "Number of uncountable loops with multiple live out values");
+STATISTIC(NumOfUncountableLoopsWithNonPtrIVs,
+          "Number of uncountable loops with non-ptr induction variables");
+STATISTIC(NumOfUncountableLoopsWithNonIVLiveOutValues,
+          "Number of uncountable loops with non-IV live out values");
+
+namespace UncountableLoopVectorization {
+enum class Option {
+  On = 0,       // Uncountable loop vectorization on
+  Off,          // Uncountable loop vectorization off (default)
+  AnalysisOnly, // Uncountable loop vectorizaton analysis only
+  Stress // Uncountable loop vectorizaton stress mode to test scenarios that are
+         // not enabled by default
+};
+} // namespace UncountableLoopVectorization
+
+static cl::opt<UncountableLoopVectorization::Option>
+    UncountableLoopVectorizationOption(
+        "sifive-uncountable-loop-vectorization",
+        cl::init(UncountableLoopVectorization::Option::Off), cl::Hidden,
+        cl::desc("Knobs for the uncountable loop vectorization pipeline."),
+        cl::values(
+            clEnumValN(UncountableLoopVectorization::Option::On, "on",
+                       "Uncountable loop vectorization on"),
+            clEnumValN(UncountableLoopVectorization::Option::Off, "off",
+                       "Uncountable loop vectorization off (default)"),
+            clEnumValN(UncountableLoopVectorization::Option::AnalysisOnly,
+                       "analysis-only",
+                       "Uncountable loop vectorizaton analysis only"),
+            clEnumValN(UncountableLoopVectorization::Option::Stress, "stress",
+                       "Uncountable loop vectorizaton stress mode to test "
+                       "scenarios that are not enabled by default")));
+#endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool>
     EnableIfConversion("enable-if-conversion", cl::init(true), cl::Hidden,
@@ -65,6 +128,9 @@ static cl::opt<bool>
     ForceVectorization("force-vectorization", cl::init(false), cl::Hidden,
                        cl::desc("Force vectorization regardless if "
                                 "vectorization is profitable or not"));
+static cl::opt<bool>
+    DisableCSA("sifive-disable-csa", cl::init(true), cl::Hidden,
+               cl::desc("Control whether CSA loop vectorization is disabled"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<LoopVectorizeHints::ScalableForceKind>
@@ -897,6 +963,18 @@ bool LoopVectorizationLegality::canVectorizeInstrs() {
           addInductionPhi(Phi, ID, AllowedExit);
           continue;
         }
+#if SIFIVE_CUSTOMIZATION
+        if (useVLAVectorizer() && !DisableCSA) {
+          CSADescriptor CSADesc =
+              CSADescriptor::createCSADescriptor(Phi, TheLoop);
+          if (CSADesc.isValidCSA()) {
+            LLVM_DEBUG(dbgs()
+                       << "LV: found legal CSA opportunity" << *Phi << "\n");
+            CSAs.insert({Phi, CSADesc});
+            continue;
+          }
+        }
+#endif // SIFIVE_CUSTOMIZATION
 
         reportVectorizationFailure("Found an unidentified PHI",
             "value that could not be identified as "
@@ -1517,6 +1595,37 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
       return false;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Countable vs uncountable loops
+  const SCEV *ExitCount = PSE.getBackedgeTakenCount();
+  if (isa<SCEVCouldNotCompute>(ExitCount)) {
+    // TODO: Consider merging memory safety analysis with LAA.
+    // There are false positives that SE categorizes countable loops as
+    // uncountable.
+    if (useVLAVectorizer() && canVectorizeUncountableLoop(PSE)) {
+      // Vectorizable uncountable loops still need to set up LAI.
+      LLVM_DEBUG(dbgs() << "LV: Can vectorize an uncountable loop!\n");
+      setVectorizableUncountable();
+      // Set up analysis results
+      LAI = &LAIs.getInfo(*TheLoop);
+      return true;
+    }
+
+    // Non-vectorizable uncountable loops need to print the same diagnoistic
+    // message as the countable pipeline.
+    ORE->emit(OptimizationRemarkAnalysis(
+                  Hints->vectorizeAnalysisPassName(), "loop not vectorized: ",
+                  OptimizationRemarkAnalysis(
+                      DEBUG_TYPE, "CantComputeNumberOfIterations",
+                      TheLoop->getStartLoc(), TheLoop->getHeader()))
+              << "could not determine number of loop iterations");
+    LLVM_DEBUG(dbgs() << "LV: Can't vectorize non-uncountable-loop "
+                         "uncountable loops yet\n");
+    return false;
+  }
+  // Memory safety analysis has a separate pipeline for uncountable loops.
+  // Skip the countable loop one.
+#endif // SIFIVE_CUSTOMIZATION
   // Go over each instruction and look at memory deps.
   if (!canVectorizeMemory()) {
     LLVM_DEBUG(dbgs() << "LV: Can't vectorize due to memory conflicts\n");
@@ -1621,4 +1730,406 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Return: true - good for vectorization
+//         false - bad for vectorization
+bool LoopVectorizationLegality::isSpeculationSafe(
+    PredicatedScalarEvolution &PSE) {
+  ScalarEvolution *SE = PSE.getSE();
+
+  SmallVector<BasicBlock *, 16> ExitingBlocks;
+  TheLoop->getExitingBlocks(ExitingBlocks);
+
+  // Find uncountable exiting blocks
+  SmallVector<const BasicBlock *, 4> UncountableExitingBlocks;
+  for (BasicBlock *ExitingBB : ExitingBlocks) {
+    const SCEV *ExitCount =
+        SE->getExitCount(TheLoop, ExitingBB, ScalarEvolution::SymbolicMaximum);
+    if (isa<SCEVCouldNotCompute>(ExitCount))
+      UncountableExitingBlocks.push_back(ExitingBB);
+  }
+
+  // Find header PHIs
+  SmallPtrSet<PHINode *, 4> HeaderPhis;
+  for (PHINode &PN : TheLoop->getHeader()->phis())
+    HeaderPhis.insert(&PN);
+
+  // Find the seeding set of speculative loads and stores
+  for (const BasicBlock *UncountableExitingBlock : UncountableExitingBlocks) {
+    // Mark loads and stores that the uncountable exit depends
+    auto *BI = UncountableExitingBlock->getTerminator();
+    // TODO: Support unconditional uncountable exiting blocks
+    if (!isa<BranchInst>(BI) || !cast<BranchInst>(BI)->isConditional())
+      return false;
+
+    SmallVector<Value *, 4> Worklist;
+    SmallPtrSet<Value *, 4> Visited;
+
+    for (Value *Operand : BI->operands())
+      Worklist.push_back(Operand);
+
+    while (!Worklist.empty()) {
+      Value *V = Worklist.pop_back_val();
+      Visited.insert(V);
+
+      // Stop at header phis
+      if (auto *PHI = dyn_cast<PHINode>(V)) {
+        if (HeaderPhis.contains(PHI))
+          continue;
+      }
+
+      if (auto *I = dyn_cast<Instruction>(V)) {
+        if (!TheLoop->contains(I))
+          continue;
+
+        switch (I->getOpcode()) {
+        // Unsafe speculative instructions other than loads and stores
+        // are not supported yet.
+        case Instruction::Load:
+        case Instruction::Store:
+          if (I->getOpcode() == Instruction::Load) {
+            SpeculativeLoads.insert(I);
+          } else {
+            SpeculativeStores.insert(I);
+          }
+          LLVM_FALLTHROUGH;
+        default:
+          for (Value *Operand : I->operands()) {
+            if (Visited.contains(Operand))
+              continue;
+            Worklist.push_back(Operand);
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  LLVM_DEBUG(
+      dbgs() << "Uncountable Loop: Seeding set of speculative loads:\n";
+      for (auto *I : SpeculativeLoads) { I->dump(); }
+      dbgs() << "Uncountable Loop: Seeding set of speculative stores:\n";
+      for (auto *I : SpeculativeStores) { I->dump(); }
+  );
+
+  // Limit to speculative loads only first
+  if (!SpeculativeStores.empty()) {
+    LLVM_DEBUG(dbgs() << "Uncountable Loop: Have speculative store\n");
+    return false;
+  }
+
+  // Limit to up two speculative loads first
+  if (SpeculativeLoads.size() > 2) {
+    LLVM_DEBUG(dbgs() << "Uncountable Loop: More than two speculative loads\n");
+    return false;
+  }
+
+  // TODO: Find stores aliasing with speculative loads and stores and mark them
+  // as speculative.
+
+  // TODO: Before de-speculation is in place, assume all loads are
+  // speculative.
+  // TODO: Before de-speculation is in place, no store is supported.
+  for (BasicBlock *BB : TheLoop->blocks()) {
+    for (Instruction &I : *BB) {
+      if (isSafeToSpeculativelyExecute(&I))
+        continue;
+
+      if (auto *LI = dyn_cast<LoadInst>(&I)) {
+        if (!SpeculativeLoads.contains(LI)) {
+          LLVM_DEBUG(dbgs() << "Uncountable Loop: Add an independent "
+                               "speculative load: \n";
+                     LI->dump(););
+          SpeculativeLoads.insert(LI);
+        }
+        continue;
+      }
+
+      if (isa<StoreInst>(&I)) {
+        LLVM_DEBUG(
+            dbgs() << "Uncountable Loop: Have potential speculative store\n");
+        return false;
+      }
+
+      if (!isa<PHINode, BranchInst>(&I)) {
+        LLVM_DEBUG(
+            dbgs() << "Uncountable Loop: Other speculation unsafe instructions\n";
+            I.dump(););
+        return false;
+      }
+    }
+  }
+
+  // All speculative loads should stride at step 1.
+  for (Instruction *I : SpeculativeLoads) {
+    auto *LI = cast<LoadInst>(I);
+    if (!LI->isSimple()) {
+      LLVM_DEBUG(dbgs() << "Uncountable Loop: Have complex loads\n");
+      return false;
+    }
+
+    int Stride =
+        isConsecutivePtr(getLoadStoreType(LI), getLoadStorePointerOperand(LI));
+    if (Stride != 1) {
+      LLVM_DEBUG(
+          dbgs()
+          << "Uncountable Loop: Have specualtive load not striding at 1\n");
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool LoopVectorizationLegality::canVectorizeUncountableLoop(
+    PredicatedScalarEvolution &PSE) {
+  LLVM_DEBUG(dbgs() << "\nUncountable Loop: Inspecting an uncountable loop "
+                       "for vectorization opportunity\n");
+  NumOfUncountableLoopsAnalyzedForVectorization++;
+
+  // !!!BIG RED SWITCH!!!
+  if (UncountableLoopVectorizationOption ==
+      UncountableLoopVectorization::Option::Off) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop vectorization is disabled";
+    });
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Uncountable loop vectorization "
+                         "is disabled\n");
+    return false;
+  }
+
+  if (!TheLoop->isLoopSimplifyForm()) {
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop is not in simplify form\n");
+    return false;
+  }
+
+  if (!TheLoop->isLCSSAForm(*DT)) {
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop is not in LCSSA form\n");
+    return false;
+  }
+
+  // TODO: Consider supporting multi exit blocks
+  BasicBlock *ExitBB = TheLoop->getUniqueExitBlock();
+  if (!ExitBB) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop does not have unique exit block";
+    });
+    LLVM_DEBUG(
+        dbgs() << "\nUncountable Loop: Loop does not have unique exit block\n");
+    NumOfUncountableLoopsWithMultipleExitBlocks++;
+    return false;
+  }
+
+  // Limit to single block to cover strlen-like loops first.
+  // TODO: Expand to support multi-block uncountable loops.
+  const unsigned NumBlocks = TheLoop->getNumBlocks();
+  if (NumBlocks == 1)
+    NumOfUncountableLoopsWithOneBlock++;
+  else if (NumBlocks == 2)
+    NumOfUncountableLoopsWithTwoBlocks++;
+  else
+    NumOfUncountableLoopsWithMoreThanTwoBlocks++;
+
+  // Limit to single block to cover strlen-like loops first.
+  if (NumBlocks != 1) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop is not single block";
+    });
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop is not single block\n");
+    return false;
+  }
+
+  // Limit to conditional exit branches first
+  // TODO: Support unconditional exit branches
+  SmallVector<BasicBlock *, 8> ExitingBlocks;
+  TheLoop->getExitingBlocks(ExitingBlocks);
+
+  for (BasicBlock *ExitingBB : ExitingBlocks) {
+    auto *BI = dyn_cast<BranchInst>(ExitingBB->getTerminator());
+    if (!BI || !BI->isConditional() || isa<ConstantInt>(BI->getCondition())) {
+      ORE->emit([&]() {
+        return OptimizationRemarkAnalysis(
+                   Hints->vectorizeAnalysisPassName(),
+                   "loop not vectorized: ", TheLoop->getStartLoc(),
+                   TheLoop->getHeader())
+               << "Uncountable loop does not exit with conditional branches";
+      });
+
+      LLVM_DEBUG(
+          dbgs()
+          << "\nUncountable Loop: Does not exit with conditional branches\n");
+      NumOfUncountableLoopsNotEndingWithConditionalBranch++;
+      return false;
+    }
+  }
+
+  // Exclude integer induction variables first.
+  // TODO: Support signed and unsigned induction variables.
+  for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :
+       getInductionVars()) {
+    if (!InductionEntry.first->getType()->isPointerTy()) {
+      ORE->emit([&]() {
+        return OptimizationRemarkAnalysis(
+                   Hints->vectorizeAnalysisPassName(),
+                   "loop not vectorized: ", TheLoop->getStartLoc(),
+                   TheLoop->getHeader())
+               << "Uncountable loop has non-ptr induction variables";
+      });
+      LLVM_DEBUG(
+          dbgs()
+          << "\nUncountable Loop: Loop has non-ptr induction variables\n");
+      NumOfUncountableLoopsWithNonPtrIVs++;
+      return false;
+    }
+  }
+
+  // 1) Up to one PHI
+  // 2) All PHIs are IV
+  size_t NumOfHeaderPhis = 0;
+  for (PHINode &PN : TheLoop->getHeader()->phis()) {
+    ++NumOfHeaderPhis;
+
+    // TODO: Cover int and fp inductions and runtime constant steps.
+    InductionDescriptor IndDesc;
+    if (!InductionDescriptor::isInductionPHI(&PN, TheLoop, PSE, IndDesc) ||
+        IndDesc.getKind() != InductionDescriptor::IK_PtrInduction ||
+        !IndDesc.getConstIntStepValue()) {
+      ORE->emit([&]() {
+        return OptimizationRemarkAnalysis(
+                   Hints->vectorizeAnalysisPassName(),
+                   "loop not vectorized: ", TheLoop->getStartLoc(),
+                   TheLoop->getHeader())
+               << "Uncountable loop's ptr IV has non constant step";
+      });
+      LLVM_DEBUG(
+          dbgs() << "\nUncountable Loop: Ptr IV with non constant step\n");
+      NumOfUncountableLoopsWithUnsupportedPHI++;
+      return false;
+    }
+  }
+
+  // TODO: Remove this restriction
+  if (NumOfHeaderPhis != 1) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop's header does not have a single PHI";
+    });
+    LLVM_DEBUG(
+        dbgs()
+        << "\nUncountable Loop: Loop header does not have a single PHI\n");
+    NumOfUncountableLoopsWithoutHeaderPHI++;
+    return false;
+  }
+
+  if (!isSpeculationSafe(PSE)) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop is unsafe for speculation";
+    });
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Unsafe for speculation\n");
+    NumOfUncountableLoopsSpeculationUnsafe++;
+    return false;
+  }
+
+  SmallPtrSet<Value *, 4> LiveOutValues;
+  for (BasicBlock *ExitingBB : ExitingBlocks) {
+    for (PHINode &ExitPhi : ExitBB->phis()) {
+      Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
+      auto *I = dyn_cast<Instruction>(IncomingValue);
+      if (I && TheLoop->contains(I))
+        LiveOutValues.insert(IncomingValue);
+    }
+  }
+
+  // TODO: Remove this restriction.
+  if (LiveOutValues.size() > 1) {
+    ORE->emit([&]() {
+      return OptimizationRemarkAnalysis(
+                 Hints->vectorizeAnalysisPassName(),
+                 "loop not vectorized: ", TheLoop->getStartLoc(),
+                 TheLoop->getHeader())
+             << "Uncountable loop have multiple liveouts";
+    });
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Have multiple liveouts\n");
+    NumOfUncountableLoopsWithMultipleLiveOutValues++;
+    return false;
+  }
+
+  // Limit liveouts to IVs only
+  // TODO: Ptr and Fp induction variables don't have their getInductionBinOp set.
+  auto SetIsInductionBinOp = [&](const Value *LiveOut,
+                                 bool &IsInductionBinOp) -> void {
+    for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :
+         getInductionVars()) {
+      if (LiveOut == InductionEntry.second.getInductionBinOp()) {
+        IsInductionBinOp = true;
+        break;
+      }
+    }
+  };
+
+  for (const Value *LiveOut : LiveOutValues) {
+    if (!isInductionVariable(LiveOut)) {
+      bool IsInductionBinOp = false;
+      SetIsInductionBinOp(LiveOut, IsInductionBinOp);
+
+      if (!IsInductionBinOp) {
+        ORE->emit([&]() {
+          return OptimizationRemarkAnalysis(
+                     Hints->vectorizeAnalysisPassName(),
+                     "loop not vectorized: ", TheLoop->getStartLoc(),
+                     TheLoop->getHeader())
+                 << "Uncountable loop has unsupported liveouts";
+        });
+        LLVM_DEBUG(dbgs() << "\nUncountable Loop: Have unsupported liveouts\n");
+        NumOfUncountableLoopsWithNonIVLiveOutValues++;
+        return false;
+      }
+    }
+  }
+
+  // TODO: Profile manually unrolled uncountable loops
+  // TODO: profile loop bounds
+
+  NumOfUncountableLoopsVectorizable++;
+
+  // clang-format off
+  LLVM_DEBUG(
+      dbgs() << "\nUncountable Loop: Found one vectorizable uncountable loop";
+      dbgs() << "\n*** Uncountable Loop: BEGIN ***\n";
+      if (Module *TheModule = TheLoop->getHeader()->getModule())
+        if (Function *TheFunction = TheLoop->getHeader()->getParent())
+          if (DISubprogram *SP = TheFunction->getSubprogram())
+            if (auto SLoc = TheLoop->getStartLoc())
+              dbgs() << "\nUncountable Loop: Loop on line "
+                     << SLoc->getLine() << " of function "
+                     << SP->getName() << " in file "
+                     << TheModule->getSourceFileName() << "\n";
+      TheLoop->dumpVerbose();
+      dbgs() << "*** Uncountable Loop: Loop END ***\n";
+  );
+  // clang-format on
+
+  return !(UncountableLoopVectorizationOption ==
+           UncountableLoopVectorization::Option::AnalysisOnly);
+}
+#endif // SIFIVE_CUSTOMIZATION
 } // namespace llvm

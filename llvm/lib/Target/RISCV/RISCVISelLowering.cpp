@@ -6712,7 +6712,8 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
   MVT SetccVecVT = MVT::getVectorVT(MVT::i1, VecVT.getVectorElementCount());
   MVT SetccVT = VT.isVector() ? SetccVecVT : XLenVT;
   SDValue RShiftAmount;
-  if (Size == 8) {
+  if (VT.getScalarSizeInBits() == 8 ||
+      DAG.ComputeMaxSignificantBits(Op1) <= 8) {
     RShiftAmount =
         DAG.getNode(ISD::SUB, DL, VT, DAG.getConstant(0, DL, VT), Op1);
   } else {

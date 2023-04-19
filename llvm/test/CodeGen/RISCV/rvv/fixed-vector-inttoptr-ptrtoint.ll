@@ -31,8 +31,7 @@ define <4 x i32> @ptrtoint_v4i32_v4p0(<4 x ptr> %va, <4 x i1> %m, i32 zeroext %e
 ; CHECK-LABEL: ptrtoint_v4i32_v4p0:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %v = call <4 x i32> @llvm.vp.ptrtoint.v4i32.v4p0(<4 x ptr> %va, <4 x i1> %m, i32 %evl)
   ret <4 x i32> %v

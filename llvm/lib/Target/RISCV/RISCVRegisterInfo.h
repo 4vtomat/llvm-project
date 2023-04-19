@@ -99,6 +99,26 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
                              SmallVectorImpl<MCPhysReg> &Hints,
                              const MachineFunction &MF, const VirtRegMap *VRM,
                              const LiveRegMatrix *Matrix) const override;
+#if SIFIVE_CUSTOMIZATION
+  bool enableTargetInterference() const override;
+
+  BitVector getTargetInterferenceReg(const LiveInterval &VirtReg,
+                                     MCRegister PhysReg,
+                                     const MachineRegisterInfo *MRI,
+                                     const VirtRegMap *VRM) const override;
+
+  bool needConstraintsMI(const MachineInstr *MI) const;
+
+  bool needUpdateECSlot(const llvm::LiveRange &LR,
+                        llvm::LiveRange &newLR) const override;
+  static unsigned getMCRegIndex(MCRegister Reg, const MachineRegisterInfo *MRI);
+  static unsigned getMCRegLMUL(MCRegister Reg);
+  static bool isRVVConstraintsType2(unsigned DestRegIndex, unsigned DestRegLMUL,
+                                    unsigned SrcRegIndex, unsigned SrcRegLMUL);
+  static bool isRVVConstraintsType3(unsigned DestRegIndex, unsigned DestRegLMUL,
+                                    unsigned SrcRegIndex, unsigned SrcRegLMUL);
+
+#endif // SIFIVE_CUSTOMIZATION
 };
 }
 

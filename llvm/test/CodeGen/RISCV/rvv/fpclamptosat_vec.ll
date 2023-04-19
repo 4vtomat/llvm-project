@@ -202,9 +202,9 @@ define <4 x i32> @stest_f32i32(<4 x float> %x) {
 ; CHECK-V-NEXT:    addiw a1, a0, -1
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a1
-; CHECK-V-NEXT:    vmax.vx v10, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x float> %x to <4 x i64>
@@ -260,9 +260,9 @@ define <4 x i32> @utest_f32i32(<4 x float> %x) {
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-V-NEXT:    vminu.vx v10, v10, a0
+; CHECK-V-NEXT:    vminu.vx v8, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <4 x float> %x to <4 x i64>
@@ -329,9 +329,9 @@ define <4 x i32> @ustest_f32i32(<4 x float> %x) {
 ; CHECK-V-NEXT:    srli a0, a0, 32
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
-; CHECK-V-NEXT:    vmax.vx v10, v8, zero
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x float> %x to <4 x i64>
@@ -499,6 +499,7 @@ define <4 x i32> @stest_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    lui a0, 524288
 ; CHECK-V-NEXT:    addiw a1, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a1
 ; CHECK-V-NEXT:    vmax.vx v10, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -511,6 +512,17 @@ define <4 x i32> @stest_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a1
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x half> %x to <4 x i64>
@@ -658,6 +670,7 @@ define <4 x i32> @utesth_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vminu.vx v10, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
@@ -669,6 +682,16 @@ define <4 x i32> @utesth_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <4 x half> %x to <4 x i64>
@@ -826,6 +849,7 @@ define <4 x i32> @ustest_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    vmax.vx v10, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -838,6 +862,17 @@ define <4 x i32> @ustest_f16i32(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x half> %x to <4 x i64>
@@ -885,10 +920,10 @@ define <2 x i16> @stest_f64i16(<2 x double> %x) {
 ; CHECK-V-LABEL: stest_f64i16:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 8
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vmin.vx v8, v9, a0
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-V-NEXT:    lui a0, 1048568
 ; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
@@ -926,10 +961,10 @@ define <2 x i16> @utest_f64i16(<2 x double> %x) {
 ; CHECK-V-LABEL: utest_f64i16:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vminu.vx v8, v9, a0
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
@@ -967,10 +1002,10 @@ define <2 x i16> @ustest_f64i16(<2 x double> %x) {
 ; CHECK-V-LABEL: ustest_f64i16:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vmin.vx v8, v9, a0
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-V-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
@@ -1495,8 +1530,9 @@ define <8 x i16> @stest_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    addiw a0, a0, -1
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    lui a0, 1048568
-; CHECK-V-NEXT:    vmax.vx v10, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
@@ -1510,6 +1546,18 @@ define <8 x i16> @stest_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <8 x half> %x to <8 x i32>
@@ -1781,6 +1829,7 @@ define <8 x i16> @utesth_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 7
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vminu.vx v10, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
@@ -1796,6 +1845,20 @@ define <8 x i16> @utesth_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <8 x half> %x to <8 x i32>
@@ -2089,6 +2152,7 @@ define <8 x i16> @ustest_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 7
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    vmax.vx v10, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
@@ -2105,6 +2169,21 @@ define <8 x i16> @ustest_f16i16(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
+; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <8 x half> %x to <8 x i32>
@@ -3515,9 +3594,9 @@ define <4 x i32> @stest_f32i32_mm(<4 x float> %x) {
 ; CHECK-V-NEXT:    addiw a1, a0, -1
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a1
-; CHECK-V-NEXT:    vmax.vx v10, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x float> %x to <4 x i64>
@@ -3571,9 +3650,9 @@ define <4 x i32> @utest_f32i32_mm(<4 x float> %x) {
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-V-NEXT:    vminu.vx v10, v10, a0
+; CHECK-V-NEXT:    vminu.vx v8, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <4 x float> %x to <4 x i64>
@@ -3639,9 +3718,9 @@ define <4 x i32> @ustest_f32i32_mm(<4 x float> %x) {
 ; CHECK-V-NEXT:    srli a0, a0, 32
 ; CHECK-V-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
-; CHECK-V-NEXT:    vmax.vx v10, v8, zero
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x float> %x to <4 x i64>
@@ -3807,6 +3886,7 @@ define <4 x i32> @stest_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    lui a0, 524288
 ; CHECK-V-NEXT:    addiw a1, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a1
 ; CHECK-V-NEXT:    vmax.vx v10, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -3819,6 +3899,17 @@ define <4 x i32> @stest_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a1
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x half> %x to <4 x i64>
@@ -3964,6 +4055,7 @@ define <4 x i32> @utesth_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vminu.vx v10, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
@@ -3975,6 +4067,16 @@ define <4 x i32> @utesth_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <4 x half> %x to <4 x i64>
@@ -4131,6 +4233,7 @@ define <4 x i32> @ustest_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 3
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a0, a0, 32
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    vmax.vx v10, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -4143,6 +4246,17 @@ define <4 x i32> @ustest_f16i32_mm(<4 x half> %x) {
 ; CHECK-V-NEXT:    ld s1, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s2, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 48
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
+; CHECK-V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 64
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <4 x half> %x to <4 x i64>
@@ -4188,10 +4302,10 @@ define <2 x i16> @stest_f64i16_mm(<2 x double> %x) {
 ; CHECK-V-LABEL: stest_f64i16_mm:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 8
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vmin.vx v8, v9, a0
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-V-NEXT:    lui a0, 1048568
 ; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
@@ -4227,10 +4341,10 @@ define <2 x i16> @utest_f64i16_mm(<2 x double> %x) {
 ; CHECK-V-LABEL: utest_f64i16_mm:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vminu.vx v8, v9, a0
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-V-NEXT:    ret
@@ -4267,10 +4381,10 @@ define <2 x i16> @ustest_f64i16_mm(<2 x double> %x) {
 ; CHECK-V-LABEL: ustest_f64i16_mm:
 ; CHECK-V:       # %bb.0: # %entry
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v9, v8
+; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
-; CHECK-V-NEXT:    vmin.vx v8, v9, a0
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-V-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
@@ -4788,8 +4902,9 @@ define <8 x i16> @stest_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    addiw a0, a0, -1
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    lui a0, 1048568
-; CHECK-V-NEXT:    vmax.vx v10, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
 ; CHECK-V-NEXT:    csrr a0, vlenb
 ; CHECK-V-NEXT:    slli a0, a0, 1
@@ -4803,6 +4918,18 @@ define <8 x i16> @stest_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <8 x half> %x to <8 x i32>
@@ -5070,6 +5197,7 @@ define <8 x i16> @utesth_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 7
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vminu.vx v10, v10, a0
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-V-NEXT:    vnsrl.wi v8, v10, 0
@@ -5085,6 +5213,20 @@ define <8 x i16> @utesth_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vminu.vx v8, v8, a0
+; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <8 x half> %x to <8 x i32>
@@ -5377,6 +5519,7 @@ define <8 x i16> @ustest_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    vslideup.vi v10, v8, 7
 ; CHECK-V-NEXT:    lui a0, 16
 ; CHECK-V-NEXT:    addiw a0, a0, -1
+<<<<<<< HEAD:llvm/test/CodeGen/RISCV/rvv/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    vmin.vx v8, v10, a0
 ; CHECK-V-NEXT:    vmax.vx v10, v8, zero
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
@@ -5393,6 +5536,21 @@ define <8 x i16> @ustest_f16i16_mm(<8 x half> %x) {
 ; CHECK-V-NEXT:    ld s5, 24(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    ld s6, 16(sp) # 8-byte Folded Reload
 ; CHECK-V-NEXT:    addi sp, sp, 80
+=======
+; CHECK-V-NEXT:    vmin.vx v8, v8, a0
+; CHECK-V-NEXT:    vmax.vx v8, v8, zero
+; CHECK-V-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
+; CHECK-V-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-V-NEXT:    ld ra, 88(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s0, 80(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s1, 72(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s2, 64(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s3, 56(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s4, 48(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s5, 40(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    ld s6, 32(sp) # 8-byte Folded Reload
+; CHECK-V-NEXT:    addi sp, sp, 96
+>>>>>>> origin/sifive-dev:llvm/test/CodeGen/RISCV/fpclamptosat_vec.ll
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <8 x half> %x to <8 x i32>

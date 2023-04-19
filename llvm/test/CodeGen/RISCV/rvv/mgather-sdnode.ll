@@ -1230,8 +1230,8 @@ define <vscale x 8 x i64> @mgather_baseidx_nxv8i64(ptr %base, <vscale x 8 x i64>
 ; RV32-LABEL: mgather_baseidx_nxv8i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
-; RV32-NEXT:    vnsrl.wi v24, v8, 0
-; RV32-NEXT:    vsll.vi v8, v24, 3
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
+; RV32-NEXT:    vsll.vi v8, v8, 3
 ; RV32-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; RV32-NEXT:    vluxei32.v v16, (a0), v8, v0.t
 ; RV32-NEXT:    vmv.v.v v8, v16
@@ -2147,8 +2147,8 @@ define <vscale x 8 x double> @mgather_baseidx_nxv8f64(ptr %base, <vscale x 8 x i
 ; RV32-LABEL: mgather_baseidx_nxv8f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
-; RV32-NEXT:    vnsrl.wi v24, v8, 0
-; RV32-NEXT:    vsll.vi v8, v24, 3
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
+; RV32-NEXT:    vsll.vi v8, v8, 3
 ; RV32-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
 ; RV32-NEXT:    vluxei32.v v16, (a0), v8, v0.t
 ; RV32-NEXT:    vmv.v.v v8, v16

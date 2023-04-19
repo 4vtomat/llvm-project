@@ -4,7 +4,7 @@
 ; VEC-NOT-FORCED: number of checks exceeded threshold
 ; VEC-NOT-FORCED: remark: <unknown>:0:0: loop not vectorized
 
-; VEC-FORCED: remark: <unknown>:0:0: vectorized loop ((lmul, type): (2, i32))
+; VEC-FORCED: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, i32))
 ; VEC-FORCED:       vector.memcheck:
 ; VEC-FORCED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; VEC-FORCED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4

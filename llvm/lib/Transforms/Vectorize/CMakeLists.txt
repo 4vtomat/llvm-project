@@ -13,6 +13,7 @@ add_llvm_component_library(LLVMVectorize
   VPlanVerifier.cpp
   # SIFIVE_CUSTOMIZATION
   SiFive_VPlanPredicatedInstructions.cpp
+  SiFive_VPlanCostModel.cpp
   # end SIFIVE_CUSTOMIZATION
 
   ADDITIONAL_HEADER_DIRS

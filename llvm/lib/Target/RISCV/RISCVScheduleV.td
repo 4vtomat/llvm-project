@@ -9,7 +9,11 @@
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with def operands.
 
+#ifdef SIFIVE_CUSTOMIZATION
+defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
+#else
 defvar SchedMxList = ["M1", "M2", "M4", "M8", "MF2", "MF4", "MF8"];
+#endif // SIFIVE_CUSTOMIZATION
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
 defvar SchedMxListFW = !listremove(SchedMxList, ["M8", "MF8"]);
@@ -37,28 +41,33 @@ multiclass LMULSchedWritesImpl<string name, list<string> MxList> {
   }
 }
 
-// SIFIVE_CUSTOMIZATION
-defvar SchedMxListWithWorst = !listconcat(SchedMxList, ["WorstCase"]);
-defvar SchedMxListWWithWorst = !listconcat(SchedMxListW, ["WorstCase"]);
-defvar SchedMxListFWWithWorst = !listconcat(SchedMxListFW, ["WorstCase"]);
-defvar SchedMxListFWRedWithWorst = !listconcat(SchedMxListFWRed, ["WorstCase"]);
+#ifdef SIFIVE_CUSTOMIZATION
+// Helper function to get the largest LMUL from MxList
+// Precondition: MxList is sorted in ascending LMUL order.
+class LargestLMUL<list<string> MxList> {
+  // MX list is sorted from smallest to largest
+  string r = !foldl(!head(MxList), MxList, last, curr, curr);
+}
+// Helper function to get the smallest SEW that can be used with LMUL mx
+// Precondition: MxList is sorted in ascending LMUL order and SchedSEWSet<mx>
+class SmallestSEW<string mx> {
+  int r = !head(SchedSEWSet<mx>.val);
+}
 
 // Creates WriteRes for (name, mx, resources) tuple
 multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
-                          string mx> {
+                          string mx, bit IsWorstCase> {
   def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
+  if IsWorstCase then
+    def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
 }
-multiclass LMULSEWWriteResMX<string name, list<ProcResourceKind> resources,
-                          string mx> {
-  if !eq(mx, "WorstCase") then {
-    if !exists<SchedWrite>(name # "_WorstCase") then
-      def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
-  } else {
-    foreach sew = SchedSEWSet<mx>.val in
-      def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
-  }
+multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
+                             string mx, int sew,  bit IsWorstCase> {
+  def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
+  if IsWorstCase then
+    def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
 }
-// END SIFIVE_CUSTOMIZATION
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass LMULSchedReadsImpl<string name, list<string> MxList> {
   def name # "_WorstCase" : SchedRead;

@@ -70,7 +70,7 @@
 // CHECK-NOT: __riscv_zihpm
 // CHECK-NOT: __riscv_ss
 // CHECK-NOT: __riscv_svbare
-// CHECK-NOT: __riscv_svptead
+// CHECK-NOT: __riscv_svade
 // CHECK-NOT: __riscv_ssccptr
 // CHECK-NOT: __riscv_sstvecd
 // CHECK-NOT: __riscv_sstvala
@@ -583,11 +583,11 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-SVBARE-EXT %s
 // CHECK-SVBARE-EXT: __riscv_svbare  1000000{{$}}
 
-// RUN: %clang -target riscv32 -march=rv32isvptead -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-SVPTEAD-EXT %s
-// RUN: %clang -target riscv64 -march=rv64isvptead  -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-SVPTEAD-EXT %s
-// CHECK-SVPTEAD-EXT: __riscv_svptead  1000000{{$}}
+// RUN: %clang -target riscv32 -march=rv32isvade -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVADE-EXT %s
+// RUN: %clang -target riscv64 -march=rv64isvade  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVADE-EXT %s
+// CHECK-SVADE-EXT: __riscv_svade  1000000{{$}}
 
 // RUN: %clang -target riscv32 -march=rv32issccptr -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSCCPTR-EXT %s

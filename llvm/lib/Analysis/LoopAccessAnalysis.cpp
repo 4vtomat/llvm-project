@@ -2131,7 +2131,18 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // clang-format off
+  LLVM_DEBUG(dbgs() << "Total Dependences: " << Dependences.size() << "\n";
+             dbgs() << "Data Dependences:\n";
+             for (Dependence &Dep : Dependences) {
+               Dep.print(dbgs(), 2, getMemoryInstructions());
+               dbgs() << "\n";
+             });
+  // clang-format on
+#else
   LLVM_DEBUG(dbgs() << "Total Dependences: " << Dependences.size() << "\n");
+#endif // SIFIVE_CUSTOMIZATION
   return isSafeForVectorization();
 }
 

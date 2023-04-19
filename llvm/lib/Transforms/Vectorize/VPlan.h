@@ -57,6 +57,9 @@ class BasicBlock;
 class DominatorTree;
 class InductionDescriptor;
 class InnerLoopVectorizer;
+#if SIFIVE_CUSTOMIZATION
+class UncountableInnerLoopVectorizer;
+#endif
 class IRBuilderBase;
 class LoopInfo;
 class PredicateScalarEvolution;
@@ -241,14 +244,84 @@ struct VPIteration {
   bool isFirstIteration() const { return Part == 0 && Lane.isFirstLane(); }
 };
 
+#if SIFIVE_CUSTOMIZATION
+class VPInstruction;
+class VPCSAHeaderPHIRecipe;
+class VPCSADataUpdateRecipe;
+class VPCSAExtractScalarRecipe;
+
+/// VPCSAState holds information required to vectorize a conditional scalar
+/// assignment.
+class VPCSAState {
+  VPValue *VPInitScalar = nullptr;
+
+  VPInstruction *VPInitMask = nullptr;
+
+  VPInstruction *VPInitData = nullptr;
+
+  VPInstruction *VPVLPhi= nullptr;
+
+  VPInstruction *VPMaskPhi = nullptr;
+
+  VPCSAHeaderPHIRecipe *PhiRecipe = nullptr;
+
+  VPCSADataUpdateRecipe *DataUpdate = nullptr;
+
+  VPCSAExtractScalarRecipe *ExtractScalarRecipe = nullptr;
+
+public:
+  VPCSAState(VPValue *VPInitScalar, VPInstruction *InitMask,
+             VPInstruction *InitData, VPInstruction *VLPhi,
+             VPInstruction *MaskPhi)
+      : VPInitScalar(VPInitScalar), VPInitMask(InitMask), VPInitData(InitData),
+        VPVLPhi(VLPhi), VPMaskPhi(MaskPhi) {}
+
+  VPCSAState(VPValue *VPInitScalar) : VPInitScalar(VPInitScalar) {}
+
+  VPValue *getVPInitScalar() const { return VPInitScalar; }
+
+  VPInstruction *getVPInitMask() const { return VPInitMask; }
+
+  VPInstruction *getVPInitData() const { return VPInitData; }
+
+  VPInstruction *getVPVLPhi() const { return VPVLPhi; }
+
+  VPInstruction *getVPMaskPhi() const { return VPMaskPhi; }
+
+  VPCSAHeaderPHIRecipe *getPhiRecipe() const { return PhiRecipe; }
+
+  void setPhiRecipe(VPCSAHeaderPHIRecipe *R) { PhiRecipe = R; }
+
+  VPCSADataUpdateRecipe *getDataUpdate() const { return DataUpdate; }
+
+  void setDataUpdate(VPCSADataUpdateRecipe *R) { DataUpdate = R; }
+
+  void setExtractScalarRecipe(VPCSAExtractScalarRecipe *R) {
+    ExtractScalarRecipe = R;
+  }
+
+  VPCSAExtractScalarRecipe *getExtractScalarRecipe() const {
+    return ExtractScalarRecipe;
+  }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
+#if SIFIVE_CUSTOMIZATION
+  VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
+                   DominatorTree *DT, IRBuilderBase &Builder,
+                   InnerLoopVectorizer *ILV, VPlan *Plan, bool DisableRISCVCSA)
+      : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
+        LVer(nullptr), DisableRISCVCSA(DisableRISCVCSA) {}
+#else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
         LVer(nullptr) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The chosen Vectorization and Unroll Factors of the loop being vectorized.
   ElementCount VF;
@@ -279,6 +352,12 @@ struct VPTransformState {
     using ScalarsPerPartValuesTy = SmallVector<SmallVector<Value *, 4>, 2>;
     DenseMap<VPValue *, ScalarsPerPartValuesTy> PerPartScalars;
   } Data;
+
+#if SIFIVE_CUSTOMIZATION
+  /// Map scalar loop induction variables' PHINodes to their vector loop
+  /// counterpart
+  SmallDenseMap<PHINode *, PHINode *> VectorLoopIVMap;
+#endif
 
   /// Get the generated Value for a given VPValue and a given Part. Note that
   /// as some Defs are still created by ILV and managed in its ValueMap, this
@@ -423,6 +502,16 @@ struct VPTransformState {
   /// UnknownNumSafeElems if the dependence distance is unknown, or there is no
   /// dependency.
   uint64_t MaxSafeNumElems = UnknownNumSafeElems;
+
+  // TODO: Use a VPValue to hold the mapping to VFirst for consistency.
+  /// Keep the vfirst instruction
+  Value *VFirst = nullptr;
+
+  /// Set vfirst
+  void setVFirst(Value *VFirst) { this->VFirst = VFirst; }
+
+  /// Get vfirst
+  Value *getVFirst() const { return VFirst; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
@@ -444,6 +533,12 @@ struct VPTransformState {
   /// This is currently only used to add no-alias metadata based on the
   /// memchecks.  The actually versioning is performed manually.
   std::unique_ptr<LoopVersioning> LVer;
+
+#if SIFIVE_CUSTOMIZATION
+  /// True if the RISCV specific implementation of CSA vectorization is
+  /// disabled.
+  bool DisableRISCVCSA;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 #if SIFIVE_CUSTOMIZATION
@@ -657,7 +752,7 @@ public:
   virtual void execute(VPTransformState *State) = 0;
 
 #if SIFIVE_CUSTOMIZATION
-  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -710,9 +805,19 @@ public:
 class VPLiveOut : public VPUser {
   PHINode *Phi;
 
+#if SIFIVE_CUSTOMIZATION
+  bool OnlyFirstLaneUsed;
+#endif
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  VPLiveOut(PHINode *Phi, VPValue *Op, bool OnlyFirstLaneUsed = false)
+      : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi),
+        OnlyFirstLaneUsed(OnlyFirstLaneUsed) {}
+#else
   VPLiveOut(PHINode *Phi, VPValue *Op)
       : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   static inline bool classof(const VPUser *U) {
     return U->getVPUserID() == VPUser::VPUserID::LiveOut;
@@ -731,6 +836,15 @@ public:
            "Op must be an operand of the recipe");
     return true;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// Returns true if the VPUser only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return OnlyFirstLaneUsed;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   PHINode *getPhi() const { return Phi; }
 };
@@ -767,7 +881,7 @@ public:
   virtual void execute(VPTransformState &State) = 0;
 
 #if SIFIVE_CUSTOMIZATION
-  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) {
+  virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -810,6 +924,13 @@ public:
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool hasUnderlyingInstr() const {
+    return getNumDefinedValues() == 1 &&
+           getVPSingleValue()->getUnderlyingValue() != nullptr;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPDef *D) {
     // All VPDefs are also VPRecipeBases.
@@ -823,10 +944,12 @@ public:
   /// Returns true if the recipe may have side-effects.
   bool mayHaveSideEffects() const;
 
-  /// Returns true for PHI-like recipes.
-  bool isPhi() const {
+#ifndef SIFIVE_CUSTOMIZATION
+   /// Returns true for PHI-like recipes.
+   bool isPhi() const {
     return getVPDefID() >= VPFirstPHISC && getVPDefID() <= VPLastPHISC;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the recipe may read from memory.
   bool mayReadFromMemory() const;
@@ -883,7 +1006,19 @@ public:
     CanonicalIVIncrementForPart,
     CanonicalIVIncrementForPartNUW,
     BranchOnCount,
+#if SIFIVE_CUSTOMIZATION
+    BranchOnCond,
+    BranchOnVFirstCmp,
+    CSAInitMask,
+    CSAInitData,
+    CSAMaskPhi,
+    CSAMaskSel,
+    CSAVLPhi,
+    CSAVLSel,
+    CSAAnyActive,
+#else
     BranchOnCond
+#endif // SIFIVE_CUSTOMIZATION
   };
 
 private:
@@ -959,6 +1094,9 @@ public:
     case Instruction::AtomicRMW:
     case VPInstruction::BranchOnCond:
     case VPInstruction::BranchOnCount:
+#if SIFIVE_CUSTOMIZATION
+    case VPInstruction::BranchOnVFirstCmp:
+#endif
       return false;
     default:
       return true;
@@ -984,6 +1122,9 @@ public:
     case VPInstruction::CanonicalIVIncrementForPart:
     case VPInstruction::CanonicalIVIncrementForPartNUW:
     case VPInstruction::BranchOnCount:
+#if SIFIVE_CUSTOMIZATION
+    case VPInstruction::BranchOnVFirstCmp:
+#endif
       return true;
     };
     llvm_unreachable("switch should return");
@@ -1286,21 +1427,40 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
   TruncInst *Trunc;
   const InductionDescriptor &IndDesc;
   bool NeedsVectorIV;
+#if SIFIVE_CUSTOMIZATION
+  bool IsUncountable = false;
+#endif
 
 public:
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+#if SIFIVE_CUSTOMIZATION
+                                bool NeedsVectorIV, bool IsUncountable = false)
+#else
                                 bool NeedsVectorIV)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
+#if SIFIVE_CUSTOMIZATION
+        Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
+#else
         Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+#if SIFIVE_CUSTOMIZATION
+                                TruncInst *Trunc, bool NeedsVectorIV, bool IsUncountable = false)
+#else
                                 TruncInst *Trunc, bool NeedsVectorIV)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
+#if SIFIVE_CUSTOMIZATION
+        IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
+#else
         IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 
@@ -1311,6 +1471,10 @@ public:
   /// Generate the vectorized and scalarized versions of the phi node as
   /// needed by their users.
   void execute(VPTransformState &State) override;
+
+#if SIFIVE_CUSTOMIZATION
+  bool isUncountable() const { return IsUncountable; }
+#endif
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1364,15 +1528,20 @@ class VPWidenPointerInductionRecipe : public VPHeaderPHIRecipe {
 
   bool IsScalarAfterVectorization;
 
+  /// Indicator if only the pointer induction variable is an uniform
+  bool IsUncountable = false;
+
 public:
   /// Create a new VPWidenPointerInductionRecipe for \p Phi with start value \p
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
-                                bool IsScalarAfterVectorization)
+                                bool IsScalarAfterVectorization,
+                                bool IsUncountable)
       : VPHeaderPHIRecipe(VPDef::VPWidenPointerInductionSC, Phi),
         IndDesc(IndDesc),
-        IsScalarAfterVectorization(IsScalarAfterVectorization) {
+        IsScalarAfterVectorization(IsScalarAfterVectorization),
+        IsUncountable(IsUncountable) {
     addOperand(Start);
     addOperand(Step);
   }
@@ -1384,11 +1553,32 @@ public:
   /// Generate vector values for the pointer induction.
   void execute(VPTransformState &State) override;
 
+  /// Generate vector values for the pointer induction in an uncountable loop.
+  void executeUncountable(VPTransformState &State);
+
   /// Returns true if only scalar values will be generated.
   bool onlyScalarsGenerated(ElementCount VF);
 
   /// Returns the induction descriptor for the recipe.
   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
+
+  /// Returns true if only scalar values will be generated.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return all_of(users(),
+                  [this](VPUser *U) { return U->onlyFirstLaneUsed(this); });
+  }
+
+#if SIFIVE_CUSTOMIZATION
+  bool isUncountable() const { return IsUncountable; }
+
+  /// Returns whether the pointer iv is an uniform
+  bool isUniform() const {
+    ConstantInt *Step = IndDesc.getConstIntStepValue();
+    return Step && Step->isOne();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1516,7 +1706,7 @@ public:
   void execute(VPTransformState &State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -1826,6 +2016,83 @@ public:
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+class VPCSAHeaderPHIRecipe final : public VPHeaderPHIRecipe {
+public:
+  VPCSAHeaderPHIRecipe(PHINode *Phi, VPValue *VPInitData)
+      : VPHeaderPHIRecipe(VPDef::VPCSAHeaderPHISC, Phi,
+                          VPInitData) {}
+
+  ~VPCSAHeaderPHIRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VP_CLASSOF_IMPL(VPDef::VPCSAHeaderPHISC)
+
+  static inline bool classof(const VPHeaderPHIRecipe *R) {
+    return R->getVPDefID() == VPDef::VPCSAHeaderPHISC;
+  }
+
+  VPValue *getVPInitData() { return getOperand(0); }
+};
+
+class VPCSADataUpdateRecipe final : public VPRecipeBase, public VPValue {
+public:
+  VPCSADataUpdateRecipe(SelectInst *SI, ArrayRef<VPValue *> Operands)
+      : VPRecipeBase(VPRecipeBase::VPCSADataUpdateSC, Operands),
+        VPValue(this, SI) {}
+
+  ~VPCSADataUpdateRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VPValue *getVPDataPhi() const { return getOperand(0); }
+  VPValue *getVPCond() const { return getOperand(1); }
+  VPValue *getVPTrue() const { return getOperand(2); }
+  VPValue *getVPFalse() const { return getOperand(3); }
+
+  VPValue *getVPNewMask() const { return getOperand(4); }
+  void setVPNewMask(VPValue *NewMask) { addOperand(NewMask); }
+
+  VPValue *getVPAnyActive() const { return getOperand(5); }
+  void setVPAnyActive(VPValue *AnyActive) { addOperand(AnyActive); }
+};
+
+class VPCSAExtractScalarRecipe final : public VPRecipeBase, public VPValue {
+public:
+  VPCSAExtractScalarRecipe(ArrayRef<VPValue *> Operands)
+      : VPRecipeBase(VPRecipeBase::VPCSAExtractScalarSC, Operands),
+        VPValue(this) {}
+
+  ~VPCSAExtractScalarRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VPValue *getVPInitScalar() const { return getOperand(0); }
+  VPValue *getVPMaskSel() const { return getOperand(1); }
+  VPValue *getVPDataSel() const { return getOperand(2); }
+  VPValue *getVPCSAVLSel() const { return getOperand(3); }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPPredInstPHIRecipe is a recipe for generating the phi nodes needed when
 /// control converges back from a Branch-on-Mask. The phi nodes are needed in
 /// order to merge values that are set under such a branch and feed their uses.
@@ -1886,15 +2153,20 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
 #if SIFIVE_CUSTOMIZATION
   // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
   const SCEV *Stride = nullptr;
+
+  // Speculative load/store
+  bool Speculative = false;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr)
+                                 const SCEV *Stride = nullptr,
+                                 bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride) {
+        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride),
+        Speculative(Speculative) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
@@ -1910,10 +2182,12 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr)
+                                 const SCEV *Stride = nullptr,
+                                 bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        Stride(Stride) {
+        Stride(Stride), Speculative(Speculative) {
+    assert(!Speculative && "Speculative store is not yet supported");
 #else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
@@ -1963,6 +2237,8 @@ public:
     assert(isStrided() && "Cannot get stride for non-strided memory access");
     return Stride;
   }
+
+  bool isSpeculative() const { return Speculative; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Generate the wide load/store.
@@ -1987,8 +2263,6 @@ public:
   Type *getElementType() const {
     return getLoadStoreType(&Ingredient);
   }
-
-  bool getConsecutive() const { return Consecutive; }
 
   bool getReverse() const { return Reverse; }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2286,7 +2560,7 @@ public:
   void execute(VPTransformState *State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
   /// Return the position of the first non-phi node recipe in the block.
   iterator getFirstNonPhi();
@@ -2416,7 +2690,7 @@ public:
   void execute(VPTransformState *State) override;
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) override;
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
   void dropAllReferences(VPValue *NewValue) override;
 
@@ -2481,8 +2755,14 @@ class VPlan {
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
 
+  /// Represents constant all false mask.
+  VPValue *AllFalseMask = nullptr;
+
   /// Pair of LMUL and Type's size applicable for this VPlan.
   SmallVector<std::pair<unsigned, Type *>, 1> LMULTypePairs;
+
+  /// Uncountable loops
+  bool IsUncountable = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Represents the vector trip count.
@@ -2503,13 +2783,35 @@ class VPlan {
   /// Values used outside the plan.
   MapVector<PHINode *, VPLiveOut *> LiveOuts;
 
+#if SIFIVE_CUSTOMIZATION
+  MapVector<PHINode *, VPCSAState *> CSAStates;
+#endif // SIFIVE_CUSTOMIZATION
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  VPlan(VPBlockBase *Entry = nullptr, bool IsUncountable = false)
+      : Entry(Entry), IsUncountable(IsUncountable) {
+    if (Entry)
+      Entry->setPlan(this);
+  }
+#else
   VPlan(VPBlockBase *Entry = nullptr) : Entry(Entry) {
     if (Entry)
       Entry->setPlan(this);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   ~VPlan();
+
+#if SIFIVE_CUSTOMIZATION
+  void addCSAState(PHINode *Phi, VPCSAState * S) {
+    CSAStates.insert({Phi , S});
+  }
+
+  MapVector<PHINode *, VPCSAState *> const &getCSAStates() const {
+    return CSAStates;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
@@ -2520,7 +2822,7 @@ public:
   void execute(VPTransformState *State);
 
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx);
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
   VPBlockBase *getEntry() { return Entry; }
   const VPBlockBase *getEntry() const { return Entry; }
@@ -2533,6 +2835,10 @@ public:
 
   /// The trip count of the original loop.
   VPValue *getOrCreateTripCount() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not create trip count for uncountable loops");
+#endif
     if (!TripCount)
       TripCount = new VPValue();
     return TripCount;
@@ -2540,12 +2846,19 @@ public:
 
   /// The backedge taken count of the original loop.
   VPValue *getOrCreateBackedgeTakenCount() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not create backedge taken count for uncountable loops");
+#endif
     if (!BackedgeTakenCount)
       BackedgeTakenCount = new VPValue();
     return BackedgeTakenCount;
   }
 
 #if SIFIVE_CUSTOMIZATION
+  /// Return whether the vPlan is uncountable
+  bool isUncountable() const { return IsUncountable; }
+
   /// Returns VPValue for RVL.
   VPValue *getRVL() const { return RVL; }
 
@@ -2583,6 +2896,13 @@ public:
     return AllTrueMask;
   }
 
+  /// Gets or creates a constant all-false mask VPValue.
+  VPValue *getOrCreateAllFalseMask() {
+    if (!AllFalseMask)
+      AllFalseMask = new VPValue;
+    return AllFalseMask;
+  }
+
   void addLMULTypePair(const unsigned LMUL, Type *DType) {
     LMULTypePairs.emplace_back(LMUL, DType);
   }
@@ -2593,7 +2913,15 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   /// The vector trip count.
+#if SIFIVE_CUSTOMIZATION
+  VPValue &getVectorTripCount() {
+    assert(!isUncountable() &&
+           "Should not get vectro trip count for uncountable loops");
+    return VectorTripCount;
+  }
+#else
   VPValue &getVectorTripCount() { return VectorTripCount; }
+#endif
 
   /// Mark the plan to indicate that using Value2VPValue is not safe any
   /// longer, because it may be stale.
@@ -2708,6 +3036,10 @@ public:
 
   /// Returns the canonical induction recipe of the vector loop.
   VPCanonicalIVPHIRecipe *getCanonicalIV() {
+#if SIFIVE_CUSTOMIZATION
+    assert(!isUncountable() &&
+           "Should not get canonical IV for uncountable loops");
+#endif
     VPBasicBlock *EntryVPBB = getVectorLoopRegion()->getEntryBasicBlock();
     if (EntryVPBB->empty()) {
       // VPlan native path.
@@ -2720,7 +3052,11 @@ public:
   /// be only one at most. If there isn't one, then return nullptr.
   VPActiveLaneMaskPHIRecipe *getActiveLaneMaskPhi();
 
+#if SIFIVE_CUSTOMIZATION
+  void addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed = false);
+#else
   void addLiveOut(PHINode *PN, VPValue *V);
+#endif // SIFIVE_CUSTOMIZATION
 
   void removeLiveOut(PHINode *PN) {
     delete LiveOuts[PN];
@@ -3054,6 +3390,18 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return Rep->isUniform();
   return false;
 }
+#if SIFIVE_CUSTOMIZATION
+
+/// Returns true for PHI-like recipes.
+bool isPhi(const VPRecipeBase &R);
+
+/// Returns true for PHI-like recipes that generate their own backedge
+bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
+
+/// Returns true for PHI-like recipes that exists in vector loop header basic
+/// block
+bool isHeaderPhi(const VPRecipeBase &R);
+#endif // SIFIVE_CUSTOMIZATION
 } // end namespace vputils
 
 #if SIFIVE_CUSTOMIZATION
