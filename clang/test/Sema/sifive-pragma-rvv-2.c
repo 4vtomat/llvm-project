@@ -7,6 +7,6 @@
 #define DUMMY_LOOP for (int i=0; i<n; ++i) c[i] = a[i] + b[i]
 
 void foo (int *a, int *b, int *c, int n) {
-#pragma clang rvv lmul_sew(m1, e32) /* expected-error {{require vector support to use the #pragma clang rvv lmul_sew}} */
+#pragma clang rvv lmul_sew(m1, e32) /* expected-error {{vector support is required to use '#pragma clang rvv lmul_sew'}} */
   DUMMY_LOOP;
 }
