@@ -355,11 +355,17 @@ defm relax: BB<"relax",
   "Enable target-specific relaxations if supported (default)",
   "Disable target-specific relaxations">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 defm relax_gp: BB<"relax-gp",
   "Enable GP relaxation",
   "Disable GP relaxation (default)">;
 #endif
+=======
+defm relax_gp: BB<"relax-gp",
+  "Enable global pointer relaxation",
+  "Disable global pointer relaxation (default)">;
+>>>>>>> upstream/main
 
 defm reproduce:
   EEq<"reproduce",

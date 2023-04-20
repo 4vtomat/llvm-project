@@ -1148,7 +1148,8 @@ genOMP(Fortran::lower::AbstractConverter &converter,
 ///    1 * x = x
 static int getOperationIdentity(llvm::StringRef reductionOpName,
                                 mlir::Location loc) {
-  if (reductionOpName.contains("add") || reductionOpName.contains("or"))
+  if (reductionOpName.contains("add") || reductionOpName.contains("or") ||
+      reductionOpName.contains("neqv"))
     return 0;
   if (reductionOpName.contains("multiply") || reductionOpName.contains("and") ||
       reductionOpName.contains("eqv"))
@@ -1171,6 +1172,15 @@ static Value getReductionInitValue(mlir::Location loc, mlir::Type type,
     unsigned bits = type.getIntOrFloatBitWidth();
     int64_t minInt = llvm::APInt::getSignedMinValue(bits).getSExtValue();
     return builder.createIntegerConstant(loc, type, minInt);
+  } else if (reductionOpName.contains("min")) {
+    if (auto ty = type.dyn_cast<mlir::FloatType>()) {
+      const llvm::fltSemantics &sem = ty.getFloatSemantics();
+      return builder.createRealConstant(
+          loc, type, llvm::APFloat::getSmallest(sem, /*Negative=*/true));
+    }
+    unsigned bits = type.getIntOrFloatBitWidth();
+    int64_t maxInt = llvm::APInt::getSignedMaxValue(bits).getSExtValue();
+    return builder.createIntegerConstant(loc, type, maxInt);
   } else {
     if (type.isa<FloatType>())
       return builder.create<mlir::arith::ConstantOp>(
@@ -1254,6 +1264,10 @@ createReductionDecl(fir::FirOpBuilder &builder, llvm::StringRef reductionOpName,
       reductionOp =
           getReductionOperation<mlir::arith::MaxFOp, mlir::arith::MaxSIOp>(
               builder, type, loc, op1, op2);
+    } else if (name->source == "min") {
+      reductionOp =
+          getReductionOperation<mlir::arith::MinFOp, mlir::arith::MinSIOp>(
+              builder, type, loc, op1, op2);
     } else {
       TODO(loc, "Reduction of some intrinsic operators is not supported");
     }
@@ -1320,6 +1334,16 @@ static omp::ReductionDeclareOp createReductionDecl(
 
     Value cmpiOp = builder.create<mlir::arith::CmpIOp>(
         loc, arith::CmpIPredicate::eq, op1I1, op2I1);
+
+    reductionOp = builder.createConvert(loc, type, cmpiOp);
+    break;
+  }
+  case Fortran::parser::DefinedOperator::IntrinsicOperator::NEQV: {
+    Value op1I1 = builder.createConvert(loc, builder.getI1Type(), op1);
+    Value op2I1 = builder.createConvert(loc, builder.getI1Type(), op2);
+
+    Value cmpiOp = builder.create<mlir::arith::CmpIOp>(
+        loc, arith::CmpIPredicate::ne, op1I1, op2I1);
 
     reductionOp = builder.createConvert(loc, type, cmpiOp);
     break;
@@ -1421,6 +1445,8 @@ static std::string getReductionName(
     return "eqv_reduction";
   case Fortran::parser::DefinedOperator::IntrinsicOperator::OR:
     return "or_reduction";
+  case Fortran::parser::DefinedOperator::IntrinsicOperator::NEQV:
+    return "neqv_reduction";
   default:
     reductionName = "other_reduction";
     break;
@@ -1529,6 +1555,7 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
         case Fortran::parser::DefinedOperator::IntrinsicOperator::AND:
         case Fortran::parser::DefinedOperator::IntrinsicOperator::EQV:
         case Fortran::parser::DefinedOperator::IntrinsicOperator::OR:
+        case Fortran::parser::DefinedOperator::IntrinsicOperator::NEQV:
           break;
 
         default:
@@ -1567,10 +1594,11 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
                          &redOperator.u)) {
         if (const auto *name{Fortran::parser::Unwrap<Fortran::parser::Name>(
                 reductionIntrinsic)}) {
-          if (name->source != "max") {
+          if ((name->source != "max") && (name->source != "min")) {
             TODO(currentLocation,
                  "Reduction of intrinsic procedures is not supported");
           }
+          std::string intrinsicOp = name->ToString();
           for (const auto &ompObject : objectList.v) {
             if (const auto *name{Fortran::parser::Unwrap<Fortran::parser::Name>(
                     ompObject)}) {
@@ -1582,7 +1610,7 @@ static void genOMP(Fortran::lower::AbstractConverter &converter,
                 assert(redType.isIntOrIndexOrFloat() &&
                        "Unsupported reduction type");
                 decl = createReductionDecl(
-                    firOpBuilder, getReductionName("max", redType),
+                    firOpBuilder, getReductionName(intrinsicOp, redType),
                     *reductionIntrinsic, redType, currentLocation);
                 reductionDeclSymbols.push_back(SymbolRefAttr::get(
                     firOpBuilder.getContext(), decl.getSymName()));
@@ -2294,6 +2322,7 @@ void Fortran::lower::genOpenMPReduction(
         case Fortran::parser::DefinedOperator::IntrinsicOperator::AND:
         case Fortran::parser::DefinedOperator::IntrinsicOperator::EQV:
         case Fortran::parser::DefinedOperator::IntrinsicOperator::OR:
+        case Fortran::parser::DefinedOperator::IntrinsicOperator::NEQV:
           break;
         default:
           continue;
@@ -2335,7 +2364,7 @@ void Fortran::lower::genOpenMPReduction(
                          &redOperator.u)) {
         if (const auto *name{Fortran::parser::Unwrap<Fortran::parser::Name>(
                 reductionIntrinsic)}) {
-          if (name->source != "max") {
+          if ((name->source != "max") && (name->source != "min")) {
             continue;
           }
           for (const auto &ompObject : objectList.v) {
@@ -2352,7 +2381,8 @@ void Fortran::lower::genOpenMPReduction(
                     // Match the pattern here.
                     mlir::Operation *reductionOp =
                         findReductionChain(loadVal, &reductionVal);
-                    if (reductionOp == nullptr) continue;
+                    if (reductionOp == nullptr)
+                      continue;
                     assert(mlir::isa<mlir::arith::SelectOp>(reductionOp) &&
                            "Selection Op not found in reduction intrinsic");
                     mlir::Operation *compareOp =

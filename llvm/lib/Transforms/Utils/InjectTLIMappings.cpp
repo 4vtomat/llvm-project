@@ -169,7 +169,6 @@ void InjectTLIMappingsLegacy::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addPreserved<ScalarEvolutionWrapperPass>();
   AU.addPreserved<AAResultsWrapperPass>();
   AU.addPreserved<LoopAccessLegacyAnalysis>();
-  AU.addPreserved<DemandedBitsWrapperPass>();
   AU.addPreserved<OptimizationRemarkEmitterWrapperPass>();
   AU.addPreserved<GlobalsAAWrapperPass>();
 }

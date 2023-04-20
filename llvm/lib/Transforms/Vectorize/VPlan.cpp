@@ -731,12 +731,13 @@ VPlan::~VPlan() {
 
     VPBlockBase::deleteCFG(Entry);
   }
-  for (VPValue *VPV : VPValuesToFree)
+  for (VPValue *VPV : VPLiveInsToFree)
     delete VPV;
   if (TripCount)
     delete TripCount;
   if (BackedgeTakenCount)
     delete BackedgeTakenCount;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (RVL)
       delete RVL;
@@ -751,6 +752,8 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
   for (auto &P : VPExternalDefs)
     delete P.second;
+=======
+>>>>>>> upstream/main
 }
 
 VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {
@@ -796,7 +799,7 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   // needs to be changed from zero to the value after the main vector loop.
   // FIXME: Improve modeling for canonical IV start values in the epilogue loop.
   if (CanonicalIVStartValue) {
-    VPValue *VPV = getOrAddExternalDef(CanonicalIVStartValue);
+    VPValue *VPV = getVPValueOrAddLiveIn(CanonicalIVStartValue);
     auto *IV = getCanonicalIV();
     assert(all_of(IV->users(),
                   [](const VPUser *U) {
@@ -1401,9 +1404,9 @@ bool vputils::onlyFirstLaneUsed(VPValue *Def) {
 VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
                                                 ScalarEvolution &SE) {
   if (auto *E = dyn_cast<SCEVConstant>(Expr))
-    return Plan.getOrAddExternalDef(E->getValue());
+    return Plan.getVPValueOrAddLiveIn(E->getValue());
   if (auto *E = dyn_cast<SCEVUnknown>(Expr))
-    return Plan.getOrAddExternalDef(E->getValue());
+    return Plan.getVPValueOrAddLiveIn(E->getValue());
 
   VPBasicBlock *Preheader = Plan.getEntry()->getEntryBasicBlock();
   VPExpandSCEVRecipe *Step = new VPExpandSCEVRecipe(Expr, SE);

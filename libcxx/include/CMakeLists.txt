@@ -357,6 +357,7 @@ set(files
   __format/range_default_formatter.h
   __format/range_formatter.h
   __format/unicode.h
+  __format/width_estimation_table.h
   __functional/binary_function.h
   __functional/binary_negate.h
   __functional/bind.h
@@ -596,16 +597,15 @@ set(files
   __thread/timed_backoff_policy.h
   __threading_support
   __tree
-  __tuple_dir/apply_cv.h
-  __tuple_dir/make_tuple_types.h
-  __tuple_dir/pair_like.h
-  __tuple_dir/sfinae_helpers.h
-  __tuple_dir/tuple_element.h
-  __tuple_dir/tuple_indices.h
-  __tuple_dir/tuple_like.h
-  __tuple_dir/tuple_like_ext.h
-  __tuple_dir/tuple_size.h
-  __tuple_dir/tuple_types.h
+  __tuple/make_tuple_types.h
+  __tuple/pair_like.h
+  __tuple/sfinae_helpers.h
+  __tuple/tuple_element.h
+  __tuple/tuple_indices.h
+  __tuple/tuple_like.h
+  __tuple/tuple_like_ext.h
+  __tuple/tuple_size.h
+  __tuple/tuple_types.h
   __type_traits/add_const.h
   __type_traits/add_cv.h
   __type_traits/add_lvalue_reference.h

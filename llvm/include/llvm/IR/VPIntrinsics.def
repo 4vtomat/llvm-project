@@ -385,9 +385,13 @@ END_REGISTER_VP(vp_fmuladd, VP_FMULADD)
 
 // llvm.vp.copysign(x,y,mask,vlen)
 BEGIN_REGISTER_VP(vp_copysign, 2, 3, VP_FCOPYSIGN, -1)
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(copysign)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+VP_PROPERTY_BINARYOP
+>>>>>>> upstream/main
 END_REGISTER_VP(vp_copysign, VP_FCOPYSIGN)
 
 // llvm.vp.minnum(x, y, mask,vlen)

@@ -38,12 +38,18 @@ class TargetRegisterInfo;
 class VirtRegMap;
 
 class LiveRegMatrix : public MachineFunctionPass {
+<<<<<<< HEAD
   const TargetRegisterInfo *TRI;
 #if SIFIVE_CUSTOMIZATION
   const MachineRegisterInfo *MRI;
 #endif // SIFIVE_CUSTOMIZATION
   LiveIntervals *LIS;
   VirtRegMap *VRM;
+=======
+  const TargetRegisterInfo *TRI = nullptr;
+  LiveIntervals *LIS = nullptr;
+  VirtRegMap *VRM = nullptr;
+>>>>>>> upstream/main
 
   // UserTag changes whenever virtual registers have been modified.
   unsigned UserTag = 0;

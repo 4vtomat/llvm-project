@@ -2119,6 +2119,7 @@ include "RISCVInstrInfoZfh.td"
 include "RISCVInstrInfoZicbo.td"
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
+include "RISCVInstrInfoZihintntl.td"
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
@@ -2126,4 +2127,8 @@ include "RISCVInstrInfoZicond.td"
 
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
+<<<<<<< HEAD
 include "RISCVInstrInfoZihintntl.td"
+=======
+include "RISCVInstrInfoXSf.td"
+>>>>>>> upstream/main

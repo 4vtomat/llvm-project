@@ -357,10 +357,15 @@ static void checkOptions() {
   if (config->pcRelOptimize && config->emachine != EM_PPC64)
     error("--pcrel-optimize is only supported on PowerPC64 targets");
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (config->relaxGP && config->emachine != EM_RISCV)
     error("--relax-gp is only supported on RISC-V targets");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (config->relaxGP && config->emachine != EM_RISCV)
+    error("--relax-gp is only supported on RISC-V targets");
+>>>>>>> upstream/main
 
   if (config->pie && config->shared)
     error("-shared and -pie may not be used together");
@@ -1222,9 +1227,13 @@ static void readConfigs(opt::InputArgList &args) {
   config->printSymbolOrder =
       args.getLastArgValue(OPT_print_symbol_order);
   config->relax = args.hasFlag(OPT_relax, OPT_no_relax, true);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   config->relaxGP = args.hasFlag(OPT_relax_gp, OPT_no_relax_gp, false);
 #endif
+=======
+  config->relaxGP = args.hasFlag(OPT_relax_gp, OPT_no_relax_gp, false);
+>>>>>>> upstream/main
   config->rpath = getRpath(args);
   config->relocatable = args.hasArg(OPT_relocatable);
 
@@ -1425,7 +1434,9 @@ static void readConfigs(opt::InputArgList &args) {
   }
 
   // --threads= takes a positive integer and provides the default value for
-  // --thinlto-jobs=.
+  // --thinlto-jobs=. If unspecified, cap the number of threads since
+  // overhead outweighs optimization for used parallel algorithms for the
+  // non-LTO parts.
   if (auto *arg = args.getLastArg(OPT_threads)) {
     StringRef v(arg->getValue());
     unsigned threads = 0;
@@ -1434,6 +1445,9 @@ static void readConfigs(opt::InputArgList &args) {
             arg->getValue() + "'");
     parallel::strategy = hardware_concurrency(threads);
     config->thinLTOJobs = v;
+  } else if (parallel::strategy.compute_thread_count() > 16) {
+    log("set maximum concurrency to 16, specify --threads= to change");
+    parallel::strategy = hardware_concurrency(16);
   }
   if (auto *arg = args.getLastArg(OPT_thinlto_jobs_eq))
     config->thinLTOJobs = arg->getValue();

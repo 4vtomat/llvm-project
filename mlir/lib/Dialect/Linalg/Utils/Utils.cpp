@@ -42,6 +42,7 @@
 
 using namespace mlir;
 using namespace presburger;
+using namespace mlir::affine;
 using namespace mlir::linalg;
 using namespace mlir::scf;
 
@@ -267,36 +268,6 @@ bool isReductionIterator(utils::IteratorType iteratorType) {
   return iteratorType == utils::IteratorType::reduction;
 }
 
-/// Helper function that creates a memref::DimOp or tensor::DimOp depending on
-/// the type of `source`.
-Value createOrFoldDimOp(OpBuilder &b, Location loc, Value source, int64_t dim) {
-  if (source.getType().isa<UnrankedMemRefType, MemRefType>())
-    return b.createOrFold<memref::DimOp>(loc, source, dim);
-  if (source.getType().isa<UnrankedTensorType, RankedTensorType>())
-    return b.createOrFold<tensor::DimOp>(loc, source, dim);
-  llvm_unreachable("Expected MemRefType or TensorType");
-}
-
-OpFoldResult createFoldedDimOp(OpBuilder &b, Location loc, Value source,
-                               int64_t dim) {
-  auto shapedType = source.getType().cast<ShapedType>();
-  if (!shapedType.hasRank() || shapedType.isDynamicDim(dim))
-    return createOrFoldDimOp(b, loc, source, dim);
-  return b.getIndexAttr(shapedType.getDimSize(dim));
-}
-
-/// Given an operation, retrieves the value of each dynamic dimension through
-/// constructing the necessary DimOp operators.
-SmallVector<Value, 4> getDynOperands(Location loc, Value val, OpBuilder &b) {
-  SmallVector<Value, 4> dynOperands;
-  auto shapedType = val.getType().cast<ShapedType>();
-  for (const auto &dim : llvm::enumerate(shapedType.getShape())) {
-    if (dim.value() == ShapedType::kDynamic)
-      dynOperands.push_back(createOrFoldDimOp(b, loc, val, dim.index()));
-  }
-  return dynOperands;
-}
-
 Value makeComposedPadHighOp(OpBuilder &b, Location loc, RankedTensorType type,
                             Value source, Value pad, bool nofold) {
   // Exit if `source` is not defined by an ExtractSliceOp.
@@ -486,11 +457,11 @@ void GenerateLoopNest<AffineForOp>::doit(
     constantSteps.push_back(op.value());
   }
 
-  mlir::buildAffineLoopNest(b, loc, lbs, ubs, constantSteps,
-                            [&](OpBuilder &b, Location loc, ValueRange ivs) {
-                              bodyBuilderFn(b, loc, ivs,
-                                            linalgOp->getOperands());
-                            });
+  affine::buildAffineLoopNest(b, loc, lbs, ubs, constantSteps,
+                              [&](OpBuilder &b, Location loc, ValueRange ivs) {
+                                bodyBuilderFn(b, loc, ivs,
+                                              linalgOp->getOperands());
+                              });
 }
 
 /// Update the `lb`, `ub` and `step` to get per processor `lb`, `ub` and `step`.
@@ -500,8 +471,9 @@ void updateBoundsForCyclicDistribution(OpBuilder &b, Location loc, Value procId,
   AffineExpr d0, d1;
   bindDims(b.getContext(), d0, d1);
   AffineExpr s0 = getAffineSymbolExpr(0, b.getContext());
-  lb = makeComposedAffineApply(b, loc, d0 + d1 * s0, {lb, procId, step});
-  step = makeComposedAffineApply(b, loc, d0 * s0, {nprocs, step});
+  lb =
+      affine::makeComposedAffineApply(b, loc, d0 + d1 * s0, {lb, procId, step});
+  step = affine::makeComposedAffineApply(b, loc, d0 * s0, {nprocs, step});
 }
 
 /// Generates a loop nest consisting of scf.parallel and scf.for, depending

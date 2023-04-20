@@ -404,16 +404,10 @@ public:
   /// branches.
   bool hasBranchDivergence() const;
 
-  /// Return true if the target prefers to use GPU divergence analysis to
-  /// replace the legacy version.
-  bool useGPUDivergenceAnalysis() const;
-
   /// Returns whether V is a source of divergence.
   ///
   /// This function provides the target-dependent information for
-  /// the target-independent LegacyDivergenceAnalysis. LegacyDivergenceAnalysis
-  /// first builds the dependency graph, and then runs the reachability
-  /// algorithm starting with the sources of divergence.
+  /// the target-independent UniformityAnalysis.
   bool isSourceOfDivergence(const Value *V) const;
 
   // Returns true for the target specific
@@ -1412,6 +1406,7 @@ public:
 
   InstructionCost getMinMaxReductionCost(
       VectorType *Ty, VectorType *CondTy, bool IsUnsigned,
+      FastMathFlags FMF = FastMathFlags(),
       TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput) const;
 
   /// Calculate the cost of an extended reduction pattern, similar to
@@ -1429,7 +1424,7 @@ public:
   /// ResTy vecreduce.opcode(ext(Ty A)).
   InstructionCost getExtendedReductionCost(
       unsigned Opcode, bool IsUnsigned, Type *ResTy, VectorType *Ty,
-      std::optional<FastMathFlags> FMF,
+      FastMathFlags FMF,
       TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput) const;
 
   /// \returns The cost of Intrinsic instructions. Analyses the real arguments.
@@ -1686,6 +1681,9 @@ public:
   /// false, but it shouldn't matter what it returns anyway.
   bool hasArmWideBranch(bool Thumb) const;
 
+  /// \return The maximum number of function arguments the target supports.
+  unsigned getMaxNumArgs() const;
+
   /// @}
 
 private:
@@ -1724,7 +1722,6 @@ public:
                                              TargetCostKind CostKind) = 0;
   virtual BranchProbability getPredictableBranchThreshold() = 0;
   virtual bool hasBranchDivergence() = 0;
-  virtual bool useGPUDivergenceAnalysis() = 0;
   virtual bool isSourceOfDivergence(const Value *V) = 0;
   virtual bool isAlwaysUniform(const Value *V) = 0;
   virtual bool isValidAddrSpaceCast(unsigned FromAS, unsigned ToAS) const = 0;
@@ -1981,10 +1978,10 @@ public:
                              TTI::TargetCostKind CostKind) = 0;
   virtual InstructionCost
   getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy, bool IsUnsigned,
-                         TTI::TargetCostKind CostKind) = 0;
+                         FastMathFlags FMF, TTI::TargetCostKind CostKind) = 0;
   virtual InstructionCost getExtendedReductionCost(
       unsigned Opcode, bool IsUnsigned, Type *ResTy, VectorType *Ty,
-      std::optional<FastMathFlags> FMF,
+      FastMathFlags FMF,
       TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput) = 0;
   virtual InstructionCost getMulAccReductionCost(
       bool IsUnsigned, Type *ResTy, VectorType *Ty,
@@ -2064,6 +2061,7 @@ public:
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
+  virtual unsigned getMaxNumArgs() const = 0;
 };
 
 template <typename T>
@@ -2111,9 +2109,6 @@ public:
     return Impl.getPredictableBranchThreshold();
   }
   bool hasBranchDivergence() override { return Impl.hasBranchDivergence(); }
-  bool useGPUDivergenceAnalysis() override {
-    return Impl.useGPUDivergenceAnalysis();
-  }
   bool isSourceOfDivergence(const Value *V) override {
     return Impl.isSourceOfDivergence(V);
   }
@@ -2617,19 +2612,20 @@ public:
   }
   InstructionCost
   getMinMaxReductionCost(VectorType *Ty, VectorType *CondTy, bool IsUnsigned,
+                         FastMathFlags FMF,
                          TTI::TargetCostKind CostKind) override {
-    return Impl.getMinMaxReductionCost(Ty, CondTy, IsUnsigned, CostKind);
+    return Impl.getMinMaxReductionCost(Ty, CondTy, IsUnsigned, FMF, CostKind);
   }
-  InstructionCost getExtendedReductionCost(
-      unsigned Opcode, bool IsUnsigned, Type *ResTy, VectorType *Ty,
-      std::optional<FastMathFlags> FMF,
-      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput) override {
+  InstructionCost
+  getExtendedReductionCost(unsigned Opcode, bool IsUnsigned, Type *ResTy,
+                           VectorType *Ty, FastMathFlags FMF,
+                           TTI::TargetCostKind CostKind) override {
     return Impl.getExtendedReductionCost(Opcode, IsUnsigned, ResTy, Ty, FMF,
                                          CostKind);
   }
-  InstructionCost getMulAccReductionCost(
-      bool IsUnsigned, Type *ResTy, VectorType *Ty,
-      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput) override {
+  InstructionCost
+  getMulAccReductionCost(bool IsUnsigned, Type *ResTy, VectorType *Ty,
+                         TTI::TargetCostKind CostKind) override {
     return Impl.getMulAccReductionCost(IsUnsigned, ResTy, Ty, CostKind);
   }
   InstructionCost getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
@@ -2792,6 +2788,10 @@ public:
 
   bool hasArmWideBranch(bool Thumb) const override {
     return Impl.hasArmWideBranch(Thumb);
+  }
+
+  unsigned getMaxNumArgs() const override {
+    return Impl.getMaxNumArgs();
   }
 };
 

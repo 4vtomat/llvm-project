@@ -698,8 +698,9 @@ void MatcherGen::EmitResultLeafAsOperand(const TreePatternNode *N,
     if (Def->getName() == "undef_tied_input") {
       MVT::SimpleValueType ResultVT = N->getSimpleType(0);
       auto IDOperandNo = NextRecordedOperandNo++;
-      AddMatcher(new EmitNodeMatcher("TargetOpcode::IMPLICIT_DEF",
-                                     ResultVT, std::nullopt, false, false,
+      Record *ImpDef = Def->getRecords().getDef("IMPLICIT_DEF");
+      CodeGenInstruction &II = CGP.getTargetInfo().getInstruction(ImpDef);
+      AddMatcher(new EmitNodeMatcher(II, ResultVT, std::nullopt, false, false,
                                      false, false, -1, IDOperandNo));
       ResultOps.push_back(IDOperandNo);
       return;
@@ -981,11 +982,9 @@ EmitResultInstructionAsOperand(const TreePatternNode *N,
   assert((!ResultVTs.empty() || TreeHasOutGlue || NodeHasChain) &&
          "Node has no result");
 
-  AddMatcher(new EmitNodeMatcher(II.Namespace.str()+"::"+II.TheDef->getName().str(),
-                                 ResultVTs, InstOps,
-                                 NodeHasChain, TreeHasInGlue, TreeHasOutGlue,
-                                 NodeHasMemRefs, NumFixedArityOperands,
-                                 NextRecordedOperandNo));
+  AddMatcher(new EmitNodeMatcher(II, ResultVTs, InstOps, NodeHasChain,
+                                 TreeHasInGlue, TreeHasOutGlue, NodeHasMemRefs,
+                                 NumFixedArityOperands, NextRecordedOperandNo));
 
   // The non-chain and non-glue results of the newly emitted node get recorded.
   for (unsigned i = 0, e = ResultVTs.size(); i != e; ++i) {
@@ -1075,7 +1074,7 @@ void MatcherGen::EmitResultCode() {
   SmallVector<unsigned, 8> Results(Ops);
 
   // Apply result permutation.
-  for (unsigned ResNo = 0; ResNo < Pattern.getDstPattern()->getNumResults();
+  for (unsigned ResNo = 0; ResNo < Pattern.getDstPattern()->getNumTypes();
        ++ResNo) {
     Results[ResNo] = Ops[Pattern.getDstPattern()->getResultIndex(ResNo)];
   }

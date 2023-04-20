@@ -48,9 +48,14 @@ static Value createIntConst(Location loc, Type type, int64_t value,
 
 static Value createTruncatedFPValue(Value operand, ImplicitLocOpBuilder &b) {
   Type opType = operand.getType();
-  Value fixedConvert = b.create<arith::FPToSIOp>(b.getI64Type(), operand);
+  Type i64Ty = b.getI64Type();
+  if (auto shapedTy = dyn_cast<ShapedType>(opType))
+    i64Ty = shapedTy.clone(i64Ty);
+  Value fixedConvert = b.create<arith::FPToSIOp>(i64Ty, operand);
   Value fpFixedConvert = b.create<arith::SIToFPOp>(opType, fixedConvert);
-  return fpFixedConvert;
+  // The truncation does not preserve the sign when the truncated
+  // value is -0. So here the sign is copied again.
+  return b.create<math::CopySignOp>(fpFixedConvert, operand);
 }
 
 /// Expands tanh op into
@@ -157,6 +162,93 @@ static LogicalResult convertCeilOp(math::CeilOp op, PatternRewriter &rewriter) {
   rewriter.replaceOp(op, ret);
   return success();
 }
+// Converts  Powf(float a, float b) (meaning a^b) to exp^(b * ln(a))
+static LogicalResult convertPowfOp(math::PowFOp op, PatternRewriter &rewriter) {
+  ImplicitLocOpBuilder b(op->getLoc(), rewriter);
+  Value operandA = op.getOperand(0);
+  Value operandB = op.getOperand(1);
+  Type opType = operandA.getType();
+
+  Value logA = b.create<math::LogOp>(opType, operandA);
+  Value mult = b.create<arith::MulFOp>(opType, logA, operandB);
+  Value expResult = b.create<math::ExpOp>(opType, mult);
+  rewriter.replaceOp(op, expResult);
+  return success();
+}
+
+// exp2f(float x) -> exp(x * ln(2))
+//   Proof: Let's say 2^x = y
+//   ln(2^x) = ln(y)
+//   x * ln(2) = ln(y) => e ^(x*ln(2)) = y
+static LogicalResult convertExp2fOp(math::Exp2Op op,
+                                    PatternRewriter &rewriter) {
+  ImplicitLocOpBuilder b(op->getLoc(), rewriter);
+  Value operand = op.getOperand();
+  Type opType = operand.getType();
+  Value ln2 = createFloatConst(op->getLoc(), opType, llvm::numbers::ln2, b);
+  Value mult = b.create<arith::MulFOp>(opType, operand, ln2);
+  Value exp = b.create<math::ExpOp>(op->getLoc(), mult);
+  rewriter.replaceOp(op, exp);
+  return success();
+}
+
+static LogicalResult convertRoundOp(math::RoundOp op,
+                                    PatternRewriter &rewriter) {
+  Location loc = op.getLoc();
+  ImplicitLocOpBuilder b(loc, rewriter);
+  Value operand = op.getOperand();
+  Type opType = operand.getType();
+  Type opEType = getElementTypeOrSelf(opType);
+
+  if (!opEType.isF32()) {
+    return rewriter.notifyMatchFailure(op, "not a round of f32.");
+  }
+
+  Type i32Ty = b.getI32Type();
+  if (auto shapedTy = dyn_cast<ShapedType>(opType))
+    i32Ty = shapedTy.clone(i32Ty);
+
+  Value half = createFloatConst(loc, opType, 0.5, b);
+  Value c23 = createIntConst(loc, i32Ty, 23, b);
+  Value c127 = createIntConst(loc, i32Ty, 127, b);
+  Value expMask = createIntConst(loc, i32Ty, (1 << 8) - 1, b);
+
+  Value incrValue = b.create<math::CopySignOp>(half, operand);
+  Value add = b.create<arith::AddFOp>(opType, operand, incrValue);
+  Value fpFixedConvert = createTruncatedFPValue(add, b);
+
+  // There are three cases where adding 0.5 to the value and truncating by
+  // converting to an i64 does not result in the correct behavior:
+  //
+  // 1. Special values: +-inf and +-nan
+  //     Casting these special values to i64 has undefined behavior. To identify
+  //     these values, we use the fact that these values are the only float
+  //     values with the maximum possible biased exponent.
+  //
+  // 2. Large values: 2^23 <= |x| <= INT_64_MAX
+  //     Adding 0.5 to a float larger than or equal to 2^23 results in precision
+  //     errors that sometimes round the value up and sometimes round the value
+  //     down. For example:
+  //         8388608.0 + 0.5 = 8388608.0
+  //         8388609.0 + 0.5 = 8388610.0
+  //
+  // 3. Very large values: |x| > INT_64_MAX
+  //     Casting to i64 a value greater than the max i64 value will overflow the
+  //     i64 leading to wrong outputs.
+  //
+  // All three cases satisfy the property `biasedExp >= 23`.
+  Value operandBitcast = b.create<arith::BitcastOp>(i32Ty, operand);
+  Value operandExp = b.create<arith::AndIOp>(
+      b.create<arith::ShRUIOp>(operandBitcast, c23), expMask);
+  Value operandBiasedExp = b.create<arith::SubIOp>(operandExp, c127);
+  Value isSpecialValOrLargeVal =
+      b.create<arith::CmpIOp>(arith::CmpIPredicate::sge, operandBiasedExp, c23);
+
+  Value result = b.create<arith::SelectOp>(isSpecialValOrLargeVal, operand,
+                                           fpFixedConvert);
+  rewriter.replaceOp(op, result);
+  return success();
+}
 
 // Converts math.ctlz to scf and arith operations. This is done
 // by performing a binary search on the bits.
@@ -220,6 +312,18 @@ void mlir::populateExpandFmaFPattern(RewritePatternSet &patterns) {
 
 void mlir::populateExpandCeilFPattern(RewritePatternSet &patterns) {
   patterns.add(convertCeilOp);
+}
+
+void mlir::populateExpandExp2FPattern(RewritePatternSet &patterns) {
+  patterns.add(convertExp2fOp);
+}
+
+void mlir::populateExpandPowFPattern(RewritePatternSet &patterns) {
+  patterns.add(convertPowfOp);
+}
+
+void mlir::populateExpandRoundFPattern(RewritePatternSet &patterns) {
+  patterns.add(convertRoundOp);
 }
 
 void mlir::populateExpandFloorFPattern(RewritePatternSet &patterns) {

@@ -9,13 +9,14 @@
 #ifndef LINALG_TRANSFORM_OPS
 #define LINALG_TRANSFORM_OPS
 
+include "mlir/Dialect/Linalg/TransformOps/LinalgTransformEnums.td"
+include "mlir/Dialect/Transform/IR/TransformAttrs.td"
 include "mlir/Dialect/Transform/IR/TransformDialect.td"
 include "mlir/Dialect/Transform/IR/TransformInterfaces.td"
 include "mlir/Dialect/Transform/IR/TransformTypes.td"
 include "mlir/Dialect/PDL/IR/PDLTypes.td"
 include "mlir/Dialect/SCF/IR/DeviceMappingInterface.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
-include "mlir/IR/EnumAttr.td"
 include "mlir/IR/OpBase.td"
 include "mlir/IR/RegionKindInterface.td"
 
@@ -344,14 +345,6 @@ def LowerUnPackOp : Op<Transform_Dialect, "structured.lower_unpack", [
 // MatchOp
 //===----------------------------------------------------------------------===//
 
-def MatchInterfaceEnum : I32EnumAttr<"MatchInterfaceEnum", "An interface to match",
-    [
-      I32EnumAttrCase<"LinalgOp", 0>,
-      I32EnumAttrCase<"TilingInterface", 1>
-    ]>{
-  let cppNamespace = "mlir::transform";
-}
-
 def MatchOp : Op<Transform_Dialect, "structured.match",
     [MemoryEffectsOpInterface,
      NavigationTransformOpTrait,
@@ -394,7 +387,8 @@ def MatchOp : Op<Transform_Dialect, "structured.match",
   let results = (outs TransformHandleTypeInterface:$results);
 
   let builders = [
-    OpBuilder<(ins "Value":$target, "ArrayRef<StringRef>":$opNames)>
+    OpBuilder<(ins "Value":$target, "ArrayRef<StringRef>":$opNames)>,
+    OpBuilder<(ins "TypeRange":$resultTypes, "Value":$target, "ArrayRef<StringRef>":$opNames)>
   ];
 
   let assemblyFormat = [{
@@ -1716,6 +1710,12 @@ def TileToScfForOp : Op<Transform_Dialect, "structured.tile_to_scf_for",
                    DefaultValuedOptionalAttr<DenseI64ArrayAttr, "{}">:$interchange);
   let results = (outs PDL_Operation:$tiled_linalg_op,
                       Variadic<PDL_Operation>:$loops);
+  
+  let builders = [
+    OpBuilder<(ins "Value":$target,
+                   "ArrayRef<OpFoldResult>":$mixedTileSizes,
+                   CArg<"ArrayRef<int64_t>", "{}">:$interchange)>
+  ];
 
   let hasCustomAssemblyFormat = 1;
 
@@ -1964,8 +1964,9 @@ def ConvertConv2DToImg2ColOp : Op<Transform_Dialect,
 
 def HoistRedundantTensorSubsetsOp :
   Op<Transform_Dialect, "structured.hoist_redundant_tensor_subsets",
-    [FunctionalStyleTransformOpTrait, MemoryEffectsOpInterface,
-     TransformEachOpTrait, TransformOpInterface]> {
+    [DeclareOpInterfaceMethods<MemoryEffectsOpInterface>,
+     TransformEachOpTrait,
+     TransformOpInterface]> {
   let description = [{
     Hoists supported tensor subset extract/insert operation pairs out of 
     immediately enclosing loop iteratively, if the following conditions
@@ -1985,18 +1986,18 @@ def HoistRedundantTensorSubsetsOp :
 
     #### Return modes:
 
-    The operation always succeeds and returns a handle to the transformed
-    function op.
+    The operation always succeeds and returns nothing.
   }];
 
   let arguments = (ins TransformHandleTypeInterface:$target);
-  let results = (outs TransformHandleTypeInterface:$transformed);
+  let results = (outs);
 
-  let assemblyFormat = "$target attr-dict `:` functional-type(operands, results) ";
+  let assemblyFormat = [{
+    $target 
+    attr-dict 
+    `:` functional-type(operands, results)
+  }];
 
-  let builders = [
-    OpBuilder<(ins "Value":$target)>,
-  ];
   let extraClassDeclaration = [{
     ::mlir::DiagnosedSilenceableFailure applyToOne(
         ::mlir::Operation *target,
@@ -2037,7 +2038,7 @@ def InsertSliceToCopyOp :
   ];
   let extraClassDeclaration = [{
     ::mlir::DiagnosedSilenceableFailure applyToOne(
-        ::mlir::tensor::InsertSliceOp target,
+        ::mlir::Operation *target,
         ::mlir::transform::ApplyToEachResultList &results,
         ::mlir::transform::TransformState &state);
   }];

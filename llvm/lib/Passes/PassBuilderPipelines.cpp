@@ -303,6 +303,61 @@ void PassBuilder::invokePeepholeEPCallbacks(FunctionPassManager &FPM,
   for (auto &C : PeepholeEPCallbacks)
     C(FPM, Level);
 }
+void PassBuilder::invokeLateLoopOptimizationsEPCallbacks(
+    LoopPassManager &LPM, OptimizationLevel Level) {
+  for (auto &C : LateLoopOptimizationsEPCallbacks)
+    C(LPM, Level);
+}
+void PassBuilder::invokeLoopOptimizerEndEPCallbacks(LoopPassManager &LPM,
+                                                    OptimizationLevel Level) {
+  for (auto &C : LoopOptimizerEndEPCallbacks)
+    C(LPM, Level);
+}
+void PassBuilder::invokeScalarOptimizerLateEPCallbacks(
+    FunctionPassManager &FPM, OptimizationLevel Level) {
+  for (auto &C : ScalarOptimizerLateEPCallbacks)
+    C(FPM, Level);
+}
+void PassBuilder::invokeCGSCCOptimizerLateEPCallbacks(CGSCCPassManager &CGPM,
+                                                      OptimizationLevel Level) {
+  for (auto &C : CGSCCOptimizerLateEPCallbacks)
+    C(CGPM, Level);
+}
+void PassBuilder::invokeVectorizerStartEPCallbacks(FunctionPassManager &FPM,
+                                                   OptimizationLevel Level) {
+  for (auto &C : VectorizerStartEPCallbacks)
+    C(FPM, Level);
+}
+void PassBuilder::invokeOptimizerEarlyEPCallbacks(ModulePassManager &MPM,
+                                                  OptimizationLevel Level) {
+  for (auto &C : OptimizerEarlyEPCallbacks)
+    C(MPM, Level);
+}
+void PassBuilder::invokeOptimizerLastEPCallbacks(ModulePassManager &MPM,
+                                                 OptimizationLevel Level) {
+  for (auto &C : OptimizerLastEPCallbacks)
+    C(MPM, Level);
+}
+void PassBuilder::invokeFullLinkTimeOptimizationEarlyEPCallbacks(
+    ModulePassManager &MPM, OptimizationLevel Level) {
+  for (auto &C : FullLinkTimeOptimizationEarlyEPCallbacks)
+    C(MPM, Level);
+}
+void PassBuilder::invokeFullLinkTimeOptimizationLastEPCallbacks(
+    ModulePassManager &MPM, OptimizationLevel Level) {
+  for (auto &C : FullLinkTimeOptimizationLastEPCallbacks)
+    C(MPM, Level);
+}
+void PassBuilder::invokePipelineStartEPCallbacks(ModulePassManager &MPM,
+                                                 OptimizationLevel Level) {
+  for (auto &C : PipelineStartEPCallbacks)
+    C(MPM, Level);
+}
+void PassBuilder::invokePipelineEarlySimplificationEPCallbacks(
+    ModulePassManager &MPM, OptimizationLevel Level) {
+  for (auto &C : PipelineEarlySimplificationEPCallbacks)
+    C(MPM, Level);
+}
 
 // Helper to add AnnotationRemarksPass.
 static void addAnnotationRemarksPass(ModulePassManager &MPM) {
@@ -387,8 +442,7 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
   LPM2.addPass(LoopIdiomRecognizePass());
   LPM2.addPass(IndVarSimplifyPass());
 
-  for (auto &C : LateLoopOptimizationsEPCallbacks)
-    C(LPM2, Level);
+  invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
 
   LPM2.addPass(LoopDeletionPass());
 
@@ -406,8 +460,7 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
                                     /* OnlyWhenForced= */ !PTO.LoopUnrolling,
                                     PTO.ForgetAllSCEVInLoopUnroll));
 
-  for (auto &C : LoopOptimizerEndEPCallbacks)
-    C(LPM2, Level);
+  invokeLoopOptimizerEndEPCallbacks(LPM2, Level);
 
   // We provide the opt remark emitter pass for LICM to use. We only need to do
   // this once as it is immutable.
@@ -448,8 +501,7 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
 
   FPM.addPass(CoroElidePass());
 
-  for (auto &C : ScalarOptimizerLateEPCallbacks)
-    C(FPM, Level);
+  invokeScalarOptimizerLateEPCallbacks(FPM, Level);
 
   // Finally, do an expensive DCE pass to catch all the dead code exposed by
   // the simplifications and basic cleanup after all the simplifications.
@@ -573,8 +625,7 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
   LPM2.addPass(LoopIdiomRecognizePass());
   LPM2.addPass(IndVarSimplifyPass());
 
-  for (auto &C : LateLoopOptimizationsEPCallbacks)
-    C(LPM2, Level);
+  invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
 
   LPM2.addPass(LoopDeletionPass());
 
@@ -592,8 +643,7 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
                                     /* OnlyWhenForced= */ !PTO.LoopUnrolling,
                                     PTO.ForgetAllSCEVInLoopUnroll));
 
-  for (auto &C : LoopOptimizerEndEPCallbacks)
-    C(LPM2, Level);
+  invokeLoopOptimizerEndEPCallbacks(LPM2, Level);
 
   // We provide the opt remark emitter pass for LICM to use. We only need to do
   // this once as it is immutable.
@@ -665,8 +715,7 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
 
   FPM.addPass(CoroElidePass());
 
-  for (auto &C : ScalarOptimizerLateEPCallbacks)
-    C(FPM, Level);
+  invokeScalarOptimizerLateEPCallbacks(FPM, Level);
 
   FPM.addPass(SimplifyCFGPass(SimplifyCFGOptions()
                                   .convertSwitchRangeToICmp(true)
@@ -844,18 +893,15 @@ PassBuilder::buildInlinerPipeline(OptimizationLevel Level,
   // functions.
   MainCGPipeline.addPass(PostOrderFunctionAttrsPass(/*SkipNonRecursive*/ true));
 
-  // When at O3 add argument promotion to the pass pipeline.
-  // FIXME: It isn't at all clear why this should be limited to O3.
-  if (Level == OptimizationLevel::O3)
-    MainCGPipeline.addPass(ArgumentPromotionPass());
+  // Try to promote pointer arguments for internal functions.
+  MainCGPipeline.addPass(ArgumentPromotionPass());
 
   // Try to perform OpenMP specific optimizations. This is a (quick!) no-op if
   // there are no OpenMP runtime calls present in the module.
   if (Level == OptimizationLevel::O2 || Level == OptimizationLevel::O3)
     MainCGPipeline.addPass(OpenMPOptCGSCCPass());
 
-  for (auto &C : CGSCCOptimizerLateEPCallbacks)
-    C(MainCGPipeline, Level);
+  invokeCGSCCOptimizerLateEPCallbacks(MainCGPipeline, Level);
 
   // Add the core function simplification pipeline nested inside the
   // CGSCC walk.
@@ -1012,8 +1058,7 @@ PassBuilder::buildModuleSimplificationPipeline(OptimizationLevel Level,
   if (Phase == ThinOrFullLTOPhase::ThinLTOPostLink)
     MPM.addPass(LowerTypeTestsPass(nullptr, nullptr, true));
 
-  for (auto &C : PipelineEarlySimplificationEPCallbacks)
-    C(MPM, Level);
+  invokePipelineEarlySimplificationEPCallbacks(MPM, Level);
 
   // Interprocedural constant propagation now that basic cleanup has occurred
   // and prior to optimizing globals.
@@ -1309,8 +1354,7 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   // memory operations.
   MPM.addPass(RecomputeGlobalsAAPass());
 
-  for (auto &C : OptimizerEarlyEPCallbacks)
-    C(MPM, Level);
+  invokeOptimizerEarlyEPCallbacks(MPM, Level);
 
   FunctionPassManager OptimizePM;
   OptimizePM.addPass(Float2IntPass());
@@ -1333,8 +1377,7 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   // rather than on each loop in an inside-out manner, and so they are actually
   // function passes.
 
-  for (auto &C : VectorizerStartEPCallbacks)
-    C(OptimizePM, Level);
+  invokeVectorizerStartEPCallbacks(OptimizePM, Level);
 
   LoopPassManager LPM;
   // First rotate loops that may have been un-rotated by prior passes.
@@ -1390,8 +1433,7 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM),
                                                 PTO.EagerlyInvalidateAnalyses));
 
-  for (auto &C : OptimizerLastEPCallbacks)
-    C(MPM, Level);
+  invokeOptimizerLastEPCallbacks(MPM, Level);
 
   // Split out cold code. Splitting is done late to avoid hiding context from
   // other optimizations and inadvertently regressing performance. The tradeoff
@@ -1447,8 +1489,7 @@ PassBuilder::buildPerModuleDefaultPipeline(OptimizationLevel Level,
     MPM.addPass(createModuleToFunctionPassAdaptor(AddDiscriminatorsPass()));
 
   // Apply module pipeline start EP callback.
-  for (auto &C : PipelineStartEPCallbacks)
-    C(MPM, Level);
+  invokePipelineStartEPCallbacks(MPM, Level);
 
   const ThinOrFullLTOPhase LTOPhase = LTOPreLink
                                           ? ThinOrFullLTOPhase::FullLTOPreLink
@@ -1489,8 +1530,7 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
     MPM.addPass(createModuleToFunctionPassAdaptor(AddDiscriminatorsPass()));
 
   // Apply module pipeline start EP callback.
-  for (auto &C : PipelineStartEPCallbacks)
-    C(MPM, Level);
+  invokePipelineStartEPCallbacks(MPM, Level);
 
   // If we are planning to perform ThinLTO later, we don't bloat the code with
   // unrolling/vectorization/... now. Just simplify the module as much as we
@@ -1515,10 +1555,8 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
   // Handle Optimizer{Early,Last}EPCallbacks added by clang on PreLink. Actual
   // optimization is going to be done in PostLink stage, but clang can't add
   // callbacks there in case of in-process ThinLTO called by linker.
-  for (auto &C : OptimizerEarlyEPCallbacks)
-    C(MPM, Level);
-  for (auto &C : OptimizerLastEPCallbacks)
-    C(MPM, Level);
+  invokeOptimizerEarlyEPCallbacks(MPM, Level);
+  invokeOptimizerLastEPCallbacks(MPM, Level);
 
   // Emit annotation remarks.
   addAnnotationRemarksPass(MPM);
@@ -1531,9 +1569,6 @@ PassBuilder::buildThinLTOPreLinkDefaultPipeline(OptimizationLevel Level) {
 ModulePassManager PassBuilder::buildThinLTODefaultPipeline(
     OptimizationLevel Level, const ModuleSummaryIndex *ImportSummary) {
   ModulePassManager MPM;
-
-  // Convert @llvm.global.annotations to !annotation metadata.
-  MPM.addPass(Annotation2MetadataPass());
 
   if (ImportSummary) {
     // These passes import type identifier resolutions for whole-program
@@ -1601,11 +1636,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
                                      ModuleSummaryIndex *ExportSummary) {
   ModulePassManager MPM;
 
-  // Convert @llvm.global.annotations to !annotation metadata.
-  MPM.addPass(Annotation2MetadataPass());
-
-  for (auto &C : FullLinkTimeOptimizationEarlyEPCallbacks)
-    C(MPM, Level);
+  invokeFullLinkTimeOptimizationEarlyEPCallbacks(MPM, Level);
 
   // Create a function that performs CFI checks for cross-DSO calls with targets
   // in the current module.
@@ -1620,8 +1651,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
     // in ICP.
     MPM.addPass(LowerTypeTestsPass(nullptr, nullptr, true));
 
-    for (auto &C : FullLinkTimeOptimizationLastEPCallbacks)
-      C(MPM, Level);
+    invokeFullLinkTimeOptimizationLastEPCallbacks(MPM, Level);
 
     // Emit annotation remarks.
     addAnnotationRemarksPass(MPM);
@@ -1702,8 +1732,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
     // pipeline).
     MPM.addPass(LowerTypeTestsPass(nullptr, nullptr, true));
 
-    for (auto &C : FullLinkTimeOptimizationLastEPCallbacks)
-      C(MPM, Level);
+    invokeFullLinkTimeOptimizationLastEPCallbacks(MPM, Level);
 
     // Emit annotation remarks.
     addAnnotationRemarksPass(MPM);
@@ -1898,10 +1927,24 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
     MPM.addPass(HotColdSplittingPass());
 
   // Add late LTO optimization passes.
+  FunctionPassManager LateFPM;
+
+  // LoopSink pass sinks instructions hoisted by LICM, which serves as a
+  // canonicalization pass that enables other optimizations. As a result,
+  // LoopSink pass needs to be a very late IR pass to avoid undoing LICM
+  // result too early.
+  LateFPM.addPass(LoopSinkPass());
+
+  // This hoists/decomposes div/rem ops. It should run after other sink/hoist
+  // passes to avoid re-sinking, but before SimplifyCFG because it can allow
+  // flattening of blocks.
+  LateFPM.addPass(DivRemPairsPass());
+
   // Delete basic blocks, which optimization passes may have killed.
-  MPM.addPass(createModuleToFunctionPassAdaptor(SimplifyCFGPass(
+  LateFPM.addPass(SimplifyCFGPass(
       SimplifyCFGOptions().convertSwitchRangeToICmp(true).hoistCommonInsts(
-          true))));
+          true)));
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(LateFPM)));
 
   // Drop bodies of available eternally objects to improve GlobalDCE.
   MPM.addPass(EliminateAvailableExternallyPass());
@@ -1915,8 +1958,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   if (PTO.CallGraphProfile)
     MPM.addPass(CGProfilePass());
 
-  for (auto &C : FullLinkTimeOptimizationLastEPCallbacks)
-    C(MPM, Level);
+  invokeFullLinkTimeOptimizationLastEPCallbacks(MPM, Level);
 
   // Emit annotation remarks.
   addAnnotationRemarksPass(MPM);
@@ -1946,14 +1988,12 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
         /* IsCS */ false, PGOOpt->ProfileFile, PGOOpt->ProfileRemappingFile,
         PGOOpt->FS);
 
-  for (auto &C : PipelineStartEPCallbacks)
-    C(MPM, Level);
+  invokePipelineStartEPCallbacks(MPM, Level);
 
   if (PGOOpt && PGOOpt->DebugInfoForProfiling)
     MPM.addPass(createModuleToFunctionPassAdaptor(AddDiscriminatorsPass()));
 
-  for (auto &C : PipelineEarlySimplificationEPCallbacks)
-    C(MPM, Level);
+  invokePipelineEarlySimplificationEPCallbacks(MPM, Level);
 
   // Build a minimal pipeline based on the semantics required by LLVM,
   // which is just that always inlining occurs. Further, disable generating
@@ -1971,15 +2011,13 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
 
   if (!CGSCCOptimizerLateEPCallbacks.empty()) {
     CGSCCPassManager CGPM;
-    for (auto &C : CGSCCOptimizerLateEPCallbacks)
-      C(CGPM, Level);
+    invokeCGSCCOptimizerLateEPCallbacks(CGPM, Level);
     if (!CGPM.isEmpty())
       MPM.addPass(createModuleToPostOrderCGSCCPassAdaptor(std::move(CGPM)));
   }
   if (!LateLoopOptimizationsEPCallbacks.empty()) {
     LoopPassManager LPM;
-    for (auto &C : LateLoopOptimizationsEPCallbacks)
-      C(LPM, Level);
+    invokeLateLoopOptimizationsEPCallbacks(LPM, Level);
     if (!LPM.isEmpty()) {
       MPM.addPass(createModuleToFunctionPassAdaptor(
           createFunctionToLoopPassAdaptor(std::move(LPM))));
@@ -1987,8 +2025,7 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
   }
   if (!LoopOptimizerEndEPCallbacks.empty()) {
     LoopPassManager LPM;
-    for (auto &C : LoopOptimizerEndEPCallbacks)
-      C(LPM, Level);
+    invokeLoopOptimizerEndEPCallbacks(LPM, Level);
     if (!LPM.isEmpty()) {
       MPM.addPass(createModuleToFunctionPassAdaptor(
           createFunctionToLoopPassAdaptor(std::move(LPM))));
@@ -1996,19 +2033,16 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
   }
   if (!ScalarOptimizerLateEPCallbacks.empty()) {
     FunctionPassManager FPM;
-    for (auto &C : ScalarOptimizerLateEPCallbacks)
-      C(FPM, Level);
+    invokeScalarOptimizerLateEPCallbacks(FPM, Level);
     if (!FPM.isEmpty())
       MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
   }
 
-  for (auto &C : OptimizerEarlyEPCallbacks)
-    C(MPM, Level);
+  invokeOptimizerEarlyEPCallbacks(MPM, Level);
 
   if (!VectorizerStartEPCallbacks.empty()) {
     FunctionPassManager FPM;
-    for (auto &C : VectorizerStartEPCallbacks)
-      C(FPM, Level);
+    invokeVectorizerStartEPCallbacks(FPM, Level);
     if (!FPM.isEmpty())
       MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
   }
@@ -2022,8 +2056,7 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
   CoroPM.addPass(GlobalDCEPass());
   MPM.addPass(CoroConditionalWrapper(std::move(CoroPM)));
 
-  for (auto &C : OptimizerLastEPCallbacks)
-    C(MPM, Level);
+  invokeOptimizerLastEPCallbacks(MPM, Level);
 
   if (LTOPreLink)
     addRequiredLTOPreLinkPasses(MPM);

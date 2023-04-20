@@ -51,6 +51,11 @@ public:
 
 } // end anonymous namespace
 
+// These are internal relocation numbers for GP relaxation. They aren't part
+// of the psABI spec.
+#define INTERNAL_R_RISCV_GPREL_I 256
+#define INTERNAL_R_RISCV_GPREL_S 257
+
 const uint64_t dtpOffset = 0x800;
 
 enum Op {
@@ -65,9 +70,13 @@ enum Op {
 
 enum Reg {
   X_RA = 1,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   X_GP = 3,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  X_GP = 3,
+>>>>>>> upstream/main
   X_TP = 4,
   X_T0 = 5,
   X_T1 = 6,
@@ -512,6 +521,7 @@ void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
     return;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case R_RISCV_GPREL_I:
   case R_RISCV_GPREL_S: {
@@ -521,13 +531,25 @@ void RISCV::relocate(uint8_t *loc, const Relocation &rel, uint64_t val) const {
     uint32_t insn = read32le(loc);
     insn = (insn & ~(31 << 15)) | (X_GP << 15);
     if (rel.type == R_RISCV_GPREL_I)
+=======
+  case INTERNAL_R_RISCV_GPREL_I:
+  case INTERNAL_R_RISCV_GPREL_S: {
+    Defined *gp = ElfSym::riscvGlobalPointer;
+    int64_t displace = SignExtend64(val - gp->getVA(), bits);
+    checkInt(loc, displace, 12, rel);
+    uint32_t insn = (read32le(loc) & ~(31 << 15)) | (X_GP << 15);
+    if (rel.type == INTERNAL_R_RISCV_GPREL_I)
+>>>>>>> upstream/main
       insn = setLO12_I(insn, displace);
     else
       insn = setLO12_S(insn, displace);
     write32le(loc, insn);
     return;
   }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
   case R_RISCV_ADD8:
     *loc += val;
@@ -706,6 +728,7 @@ static void relaxTlsLe(const InputSection &sec, size_t i, uint64_t loc,
   }
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void relaxHi20Lo12(const InputSection &sec, size_t i, uint64_t loc,
                           Relocation &r, uint32_t &remove) {
@@ -732,6 +755,31 @@ static void relaxHi20Lo12(const InputSection &sec, size_t i, uint64_t loc,
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static void relaxHi20Lo12(const InputSection &sec, size_t i, uint64_t loc,
+                          Relocation &r, uint32_t &remove) {
+  const Defined *gp = ElfSym::riscvGlobalPointer;
+  if (!gp)
+    return;
+
+  if (!isInt<12>(r.sym->getVA(r.addend) - gp->getVA()))
+    return;
+
+  switch (r.type) {
+  case R_RISCV_HI20:
+    // Remove lui rd, %hi20(x).
+    sec.relaxAux->relocTypes[i] = R_RISCV_RELAX;
+    remove = 4;
+    break;
+  case R_RISCV_LO12_I:
+    sec.relaxAux->relocTypes[i] = INTERNAL_R_RISCV_GPREL_I;
+    break;
+  case R_RISCV_LO12_S:
+    sec.relaxAux->relocTypes[i] = INTERNAL_R_RISCV_GPREL_S;
+    break;
+  }
+}
+>>>>>>> upstream/main
 
 static bool relax(InputSection &sec) {
   const uint64_t secAddr = sec.getVA();
@@ -784,11 +832,18 @@ static bool relax(InputSection &sec) {
           sec.relocs()[i + 1].type == R_RISCV_RELAX)
         relaxTlsLe(sec, i, loc, r, remove);
       break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case R_RISCV_HI20:
     case R_RISCV_LO12_I:
     case R_RISCV_LO12_S:
       if (config->relaxGP && i + 1 != sec.relocs().size() &&
+=======
+    case R_RISCV_HI20:
+    case R_RISCV_LO12_I:
+    case R_RISCV_LO12_S:
+      if (i + 1 != sec.relocs().size() &&
+>>>>>>> upstream/main
           sec.relocs()[i + 1].type == R_RISCV_RELAX)
         relaxHi20Lo12(sec, i, loc, r, remove);
       break;
@@ -906,11 +961,17 @@ void elf::riscvFinalizeRelax(int passes) {
           }
         } else if (RelType newType = aux.relocTypes[i]) {
           switch (newType) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           case R_RISCV_GPREL_I:
           case R_RISCV_GPREL_S:
             break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+          case INTERNAL_R_RISCV_GPREL_I:
+          case INTERNAL_R_RISCV_GPREL_S:
+            break;
+>>>>>>> upstream/main
           case R_RISCV_RELAX:
             // Used by relaxTlsLe to indicate the relocation is ignored.
             break;

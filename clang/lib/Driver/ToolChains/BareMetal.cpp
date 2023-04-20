@@ -345,6 +345,7 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   CmdArgs.push_back("-o");
   CmdArgs.push_back(Output.getFilename());
 
+<<<<<<< HEAD
   const Driver &D = TC.getDriver();
   if (D.isUsingLTO()) {
     assert(!Inputs.empty() && "Must have at least one input.");
@@ -353,6 +354,10 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   }
 
   C.addCommand(std::make_unique<Command>(JA, *this, ResponseFileSupport::None(),
+=======
+  C.addCommand(std::make_unique<Command>(JA, *this,
+                                         ResponseFileSupport::AtFileCurCP(),
+>>>>>>> upstream/main
                                          Args.MakeArgString(TC.GetLinkerPath()),
                                          CmdArgs, Inputs, Output));
 }
