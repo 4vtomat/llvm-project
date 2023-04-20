@@ -146,11 +146,7 @@ define <vscale x 8 x half> @vp_nearbyint_nxv8f16(<vscale x 8 x half> %va, <vscal
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v10, v8, v0.t
@@ -194,11 +190,7 @@ define <vscale x 16 x half> @vp_nearbyint_nxv16f16(<vscale x 16 x half> %va, <vs
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v12, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v12, v8, v0.t
@@ -242,11 +234,7 @@ define <vscale x 32 x half> @vp_nearbyint_nxv32f16(<vscale x 32 x half> %va, <vs
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v16, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v16, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v16, v8, v0.t
@@ -378,11 +366,7 @@ define <vscale x 4 x float> @vp_nearbyint_nxv4f32(<vscale x 4 x float> %va, <vsc
 ; CHECK-NEXT:    lui a0, 307200
 ; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v10, v8, v0.t
@@ -426,11 +410,7 @@ define <vscale x 8 x float> @vp_nearbyint_nxv8f32(<vscale x 8 x float> %va, <vsc
 ; CHECK-NEXT:    lui a0, 307200
 ; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v12, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v12, v8, v0.t
@@ -474,11 +454,7 @@ define <vscale x 16 x float> @vp_nearbyint_nxv16f32(<vscale x 16 x float> %va, <
 ; CHECK-NEXT:    lui a0, 307200
 ; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v16, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v16, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v16, v8, v0.t
@@ -566,11 +542,7 @@ define <vscale x 2 x double> @vp_nearbyint_nxv2f64(<vscale x 2 x double> %va, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v10, v8, v0.t
@@ -614,11 +586,7 @@ define <vscale x 4 x double> @vp_nearbyint_nxv4f64(<vscale x 4 x double> %va, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v12, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v12, v8, v0.t
@@ -662,11 +630,7 @@ define <vscale x 7 x double> @vp_nearbyint_nxv7f64(<vscale x 7 x double> %va, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v16, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v16, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v16, v8, v0.t
@@ -710,11 +674,7 @@ define <vscale x 8 x double> @vp_nearbyint_nxv8f64(<vscale x 8 x double> %va, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v16, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v0, v16, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v16, v8, v0.t
@@ -758,35 +718,19 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    srli a2, a1, 3
 ; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslidedown.vx v2, v0, a2
-=======
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a2
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    sub a2, a0, a1
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a2, a3, a2
 ; CHECK-NEXT:    lui a3, %hi(.LCPI32_0)
-<<<<<<< HEAD
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI32_0)(a3)
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v2
 ; CHECK-NEXT:    vfabs.v v24, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v2, v24, fa5, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v24, fa5, v0.t
 ; CHECK-NEXT:    frflags a2
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v2
-=======
-; CHECK-NEXT:    fld ft0, %lo(.LCPI32_0)(a3)
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vfabs.v v24, v16, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v24, ft0, v0.t
-; CHECK-NEXT:    frflags a2
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vfcvt.x.f.v v24, v16, v0.t
 ; CHECK-NEXT:    vfcvt.f.x.v v24, v24, v0.t
 ; CHECK-NEXT:    fsflags a2
@@ -800,11 +744,7 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    vfabs.v v24, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmflt.vf v1, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v1, v24, ft0, v0.t
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v1
@@ -824,21 +764,13 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64_unmasked(<vscale x 16 x dou
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    sub a2, a0, a1
 ; CHECK-NEXT:    lui a3, %hi(.LCPI33_0)
-<<<<<<< HEAD
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI33_0)(a3)
-=======
-; CHECK-NEXT:    fld ft0, %lo(.LCPI33_0)(a3)
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a2, a3, a2
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v24, v16
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmflt.vf v0, v24, fa5
-=======
-; CHECK-NEXT:    vmflt.vf v0, v24, ft0
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    frflags a2
 ; CHECK-NEXT:    vfcvt.x.f.v v24, v16, v0.t
 ; CHECK-NEXT:    vfcvt.f.x.v v24, v24, v0.t
@@ -851,11 +783,7 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64_unmasked(<vscale x 16 x dou
 ; CHECK-NEXT:  .LBB33_2:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v24, v8
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmflt.vf v0, v24, fa5
-=======
-; CHECK-NEXT:    vmflt.vf v0, v24, ft0
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    frflags a0
 ; CHECK-NEXT:    vfcvt.x.f.v v24, v8, v0.t
 ; CHECK-NEXT:    vfcvt.f.x.v v24, v24, v0.t

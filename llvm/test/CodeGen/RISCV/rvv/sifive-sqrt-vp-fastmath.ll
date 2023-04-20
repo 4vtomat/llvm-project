@@ -84,13 +84,8 @@ define <vscale x 8 x half> @sqrt_nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x i
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    li a1, 1024
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.h.x fa5, a1
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-=======
-; CHECK-NEXT:    fmv.h.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v10, v10, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
@@ -151,13 +146,8 @@ define <vscale x 4 x float> @sqrt_nxv4f32(<vscale x 4 x float> %a, <vscale x 4 x
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    lui a1, 2048
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.w.x fa5, a1
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-=======
-; CHECK-NEXT:    fmv.w.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v10, v10, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v10, v10, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v14, v8, v12, v0.t
 ; CHECK-NEXT:    lui a1, 787456
@@ -190,13 +180,8 @@ define <vscale x 8 x float> @sqrt_nxv8f32(<vscale x 8 x float> %a, <vscale x 8 x
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    lui a1, 2048
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.w.x fa5, a1
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-=======
-; CHECK-NEXT:    fmv.w.x ft0, a1
-; CHECK-NEXT:    vmflt.vf v12, v12, ft0, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v20, v8
 ; CHECK-NEXT:    vfmul.vv v24, v8, v20, v0.t
 ; CHECK-NEXT:    lui a1, 787456
@@ -256,14 +241,8 @@ define <vscale x 2 x double> @sqrt_nxv2f64(<vscale x 2 x double> %a, <vscale x 2
 ; CHECK-NEXT:    fld fa4, %lo(.LCPI6_2)(a0)
 ; CHECK-NEXT:    vfmul.vf v12, v12, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v10, v12, v10, v0.t
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v8, v12, fa4, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
 ; CHECK-NEXT:    vfabs.v v8, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v8, ft1, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v8, fa4, v0.t
 ; CHECK-NEXT:    vmerge.vim v8, v10, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 2 x double> @llvm.vp.sqrt.nxv2f64(<vscale x 2 x double> %a, <vscale x 2 x i1> %m, i32 %evl)
@@ -303,14 +282,8 @@ define <vscale x 4 x double> @sqrt_nxv4f64(<vscale x 4 x double> %a, <vscale x 4
 ; CHECK-NEXT:    fld fa4, %lo(.LCPI7_2)(a0)
 ; CHECK-NEXT:    vfmul.vf v12, v20, fa5, v0.t
 ; CHECK-NEXT:    vfmul.vv v12, v12, v16, v0.t
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v8, v16, fa4, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
 ; CHECK-NEXT:    vfabs.v v8, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v8, ft1, v0.t
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmflt.vf v0, v8, fa4, v0.t
 ; CHECK-NEXT:    vmerge.vim v8, v12, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 4 x double> @llvm.vp.sqrt.nxv4f64(<vscale x 4 x double> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -418,31 +391,17 @@ define <vscale x 8 x double> @sqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 8
 ; CHECK-NEXT:    vfmadd.vv v24, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_2)
-<<<<<<< HEAD
 ; CHECK-NEXT:    fld fa4, %lo(.LCPI8_2)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v16, fa5, v0.t
-; CHECK-NEXT:    vfmul.vv v16, v8, v24, v0.t
-=======
-; CHECK-NEXT:    fld ft1, %lo(.LCPI8_2)(a0)
-; CHECK-NEXT:    vfmul.vf v8, v16, ft0, v0.t
 ; CHECK-NEXT:    vfmul.vv v8, v8, v24, v0.t
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfabs.v v24, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v8, v24, fa4, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vim v8, v16, 0, v0
-=======
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfabs.v v16, v16, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v16, ft1, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v16, fa4, v0.t
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 5
 ; CHECK-NEXT:    add sp, sp, a0
@@ -490,18 +449,10 @@ define <vscale x 8 x half> @sqrt_zero_steps_nxv8f16(<vscale x 8 x half> %a, <vsc
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    li a0, 1024
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.h.x fa5, a0
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v12, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v12
-; CHECK-NEXT:    vmv1r.v v0, v10
-=======
-; CHECK-NEXT:    fmv.h.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 8 x half> @llvm.vp.sqrt.nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x i1> %m, i32 %evl)
@@ -530,18 +481,10 @@ define <vscale x 4 x float> @sqrt_zero_steps_nxv4f32(<vscale x 4 x float> %a, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
 ; CHECK-NEXT:    lui a0, 2048
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.w.x fa5, a0
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v12, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v12
-; CHECK-NEXT:    vmv1r.v v0, v10
-=======
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 4 x float> @llvm.vp.sqrt.nxv4f32(<vscale x 4 x float> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -554,18 +497,10 @@ define <vscale x 8 x float> @sqrt_zero_steps_nxv8f32(<vscale x 8 x float> %a, <v
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
 ; CHECK-NEXT:    lui a0, 2048
-<<<<<<< HEAD
 ; CHECK-NEXT:    fmv.w.x fa5, a0
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v16, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v16
-; CHECK-NEXT:    vmv1r.v v0, v12
-=======
-; CHECK-NEXT:    fmv.w.x ft0, a0
-; CHECK-NEXT:    vmflt.vf v0, v12, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 8 x float> @llvm.vp.sqrt.nxv8f32(<vscale x 8 x float> %a, <vscale x 8 x i1> %m, i32 %evl)
@@ -578,18 +513,10 @@ define <vscale x 2 x double> @sqrt_zero_steps_nxv2f64(<vscale x 2 x double> %a, 
 ; CHECK-NEXT:    lui a1, %hi(.LCPI15_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI15_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v10, v12, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v12, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v12
-; CHECK-NEXT:    vmv1r.v v0, v10
-=======
 ; CHECK-NEXT:    vfabs.v v10, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v10, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v10, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v10
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 2 x double> @llvm.vp.sqrt.nxv2f64(<vscale x 2 x double> %a, <vscale x 2 x i1> %m, i32 %evl)
@@ -602,18 +529,10 @@ define <vscale x 4 x double> @sqrt_zero_steps_nxv4f64(<vscale x 4 x double> %a, 
 ; CHECK-NEXT:    lui a1, %hi(.LCPI16_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI16_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v12, v16, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v16, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v16
-; CHECK-NEXT:    vmv1r.v v0, v12
-=======
 ; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v12, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v12, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v12
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 4 x double> @llvm.vp.sqrt.nxv4f64(<vscale x 4 x double> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -626,18 +545,10 @@ define <vscale x 8 x double> @sqrt_zero_steps_nxv8f64(<vscale x 8 x double> %a, 
 ; CHECK-NEXT:    lui a1, %hi(.LCPI17_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI17_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v24, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v16, v24, fa5, v0.t
-; CHECK-NEXT:    vfrsqrt7.v v24, v8
-; CHECK-NEXT:    vfmul.vv v8, v8, v24
-; CHECK-NEXT:    vmv1r.v v0, v16
-=======
 ; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vmflt.vf v0, v16, ft0, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
 ; CHECK-NEXT:    vfrsqrt7.v v16, v8
 ; CHECK-NEXT:    vfmul.vv v8, v8, v16
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    ret
   %1 = tail call fast <vscale x 8 x double> @llvm.vp.sqrt.nxv8f64(<vscale x 8 x double> %a, <vscale x 8 x i1> %m, i32 %evl)

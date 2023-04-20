@@ -2512,14 +2512,8 @@ define <32 x double> @vpgather_baseidx_v32f64(ptr %base, <32 x i64> %idxs, <32 x
 ; RV32-NEXT:    vnsrl.wi v16, v16, 0
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    li a2, 32
-<<<<<<< HEAD
 ; RV32-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; RV32-NEXT:    vslideup.vi v16, v24, 16
-=======
-; RV32-NEXT:    vsetvli zero, a2, e32, m8, tu, ma
 ; RV32-NEXT:    vslideup.vi v8, v16, 16
-; RV32-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; RV32-NEXT:    li a3, 16
 ; RV32-NEXT:    vsll.vi v16, v8, 3
 ; RV32-NEXT:    mv a2, a1

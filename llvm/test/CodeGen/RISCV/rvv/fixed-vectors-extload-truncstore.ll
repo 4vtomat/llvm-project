@@ -1790,13 +1790,8 @@ define void @truncstore_v16i64_v16i16(<16 x i64> %x, ptr %z) {
 ; LMULMAX4-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; LMULMAX4-NEXT:    vnsrl.wi v8, v8, 0
 ; LMULMAX4-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-<<<<<<< HEAD
-; LMULMAX4-NEXT:    vnsrl.wi v8, v14, 0
-; LMULMAX4-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-=======
 ; LMULMAX4-NEXT:    vnsrl.wi v8, v8, 0
-; LMULMAX4-NEXT:    vsetivli zero, 16, e16, m2, tu, ma
->>>>>>> origin/sifive-dev
+; LMULMAX4-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; LMULMAX4-NEXT:    vslideup.vi v8, v12, 8
 ; LMULMAX4-NEXT:    vse16.v v8, (a0)
 ; LMULMAX4-NEXT:    ret
@@ -1840,19 +1835,11 @@ define void @truncstore_v16i64_v16i32(<16 x i64> %x, ptr %z) {
 ; LMULMAX4-LABEL: truncstore_v16i64_v16i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-<<<<<<< HEAD
-; LMULMAX4-NEXT:    vnsrl.wi v16, v12, 0
-; LMULMAX4-NEXT:    vnsrl.wi v12, v8, 0
-; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; LMULMAX4-NEXT:    vslideup.vi v12, v16, 8
-; LMULMAX4-NEXT:    vse32.v v12, (a0)
-=======
 ; LMULMAX4-NEXT:    vnsrl.wi v12, v12, 0
 ; LMULMAX4-NEXT:    vnsrl.wi v8, v8, 0
-; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, tu, ma
+; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
 ; LMULMAX4-NEXT:    vslideup.vi v8, v12, 8
 ; LMULMAX4-NEXT:    vse32.v v8, (a0)
->>>>>>> origin/sifive-dev
 ; LMULMAX4-NEXT:    ret
   %y = trunc <16 x i64> %x to <16 x i32>
   store <16 x i32> %y, ptr %z

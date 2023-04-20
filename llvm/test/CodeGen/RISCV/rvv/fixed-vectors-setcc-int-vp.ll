@@ -1299,16 +1299,9 @@ define <64 x i1> @icmp_eq_vv_v64i32(<64 x i32> %va, <64 x i32> %vb, <64 x i1> %m
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-<<<<<<< HEAD
-; CHECK-NEXT:    vmseq.vv v16, v8, v24, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vi v16, v1, 4
-; CHECK-NEXT:    vmv1r.v v0, v16
-=======
 ; CHECK-NEXT:    vmseq.vv v0, v8, v24, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v16, 4
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0
@@ -1337,16 +1330,9 @@ define <64 x i1> @icmp_eq_vx_v64i32(<64 x i32> %va, i32 %b, <64 x i1> %m, i32 ze
 ; CHECK-NEXT:  .LBB100_2:
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    vmseq.vx v16, v8, a0, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vi v16, v25, 4
-; CHECK-NEXT:    vmv1r.v v0, v16
-=======
 ; CHECK-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v16, 4
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <64 x i32> poison, i32 %b, i32 0
   %vb = shufflevector <64 x i32> %elt.head, <64 x i32> poison, <64 x i32> zeroinitializer
@@ -1373,16 +1359,9 @@ define <64 x i1> @icmp_eq_vx_swap_v64i32(<64 x i32> %va, i32 %b, <64 x i1> %m, i
 ; CHECK-NEXT:  .LBB101_2:
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    vmseq.vx v16, v8, a0, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vi v16, v25, 4
-; CHECK-NEXT:    vmv1r.v v0, v16
-=======
 ; CHECK-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v16, 4
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <64 x i32> poison, i32 %b, i32 0
   %vb = shufflevector <64 x i32> %elt.head, <64 x i32> poison, <64 x i32> zeroinitializer

@@ -158,19 +158,11 @@ define void @fpround_v8f32_v8f16(ptr %x, ptr %y) {
 ; LMULMAX1-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; LMULMAX1-NEXT:    vle32.v v8, (a0)
 ; LMULMAX1-NEXT:    vle32.v v9, (a2)
-<<<<<<< HEAD
-; LMULMAX1-NEXT:    vfncvt.f.f.w v10, v8
-; LMULMAX1-NEXT:    vfncvt.f.f.w v8, v9
-; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; LMULMAX1-NEXT:    vslideup.vi v10, v8, 4
-; LMULMAX1-NEXT:    vse16.v v10, (a1)
-=======
 ; LMULMAX1-NEXT:    vfncvt.f.f.w v8, v8
 ; LMULMAX1-NEXT:    vfncvt.f.f.w v9, v9
-; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
+; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; LMULMAX1-NEXT:    vslideup.vi v8, v9, 4
 ; LMULMAX1-NEXT:    vse16.v v8, (a1)
->>>>>>> origin/sifive-dev
 ; LMULMAX1-NEXT:    ret
   %a = load <8 x float>, ptr %x
   %d = fptrunc <8 x float> %a to <8 x half>
@@ -217,13 +209,8 @@ define void @fpround_v8f64_v8f16(ptr %x, ptr %y) {
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; LMULMAX1-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; LMULMAX1-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; LMULMAX1-NEXT:    vfncvt.f.f.w v8, v10
-; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-=======
 ; LMULMAX1-NEXT:    vfncvt.f.f.w v8, v8
-; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
->>>>>>> origin/sifive-dev
+; LMULMAX1-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; LMULMAX1-NEXT:    vslideup.vi v9, v8, 6
 ; LMULMAX1-NEXT:    vse16.v v9, (a1)
 ; LMULMAX1-NEXT:    ret

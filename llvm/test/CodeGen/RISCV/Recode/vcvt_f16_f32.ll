@@ -22,15 +22,9 @@ define void @vcvt_high_f16_f32(ptr nocapture noundef readonly %in_0, ptr nocaptu
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v9, v10, 4
-=======
 ; CHECK-NEXT:    vfncvt.f.f.w v8, v8
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, tu, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 4
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:

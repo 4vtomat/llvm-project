@@ -71,14 +71,8 @@ define <128 x i7> @vtrunc_v128i7_v128i16(<128 x i16> %a, <128 x i1> %m, i32 zero
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    li a0, 128
-<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vslideup.vx v16, v24, a1
-; CHECK-NEXT:    vmv.v.v v8, v16
-=======
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v16, a1
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret
   %v = call <128 x i7> @llvm.vp.trunc.v128i7.v128i16(<128 x i16> %a, <128 x i1> %m, i32 %vl)
   ret <128 x i7> %v
@@ -432,15 +426,9 @@ define <128 x i32> @vtrunc_v128i32_v128i64(<128 x i64> %a, <128 x i1> %m, i32 ze
 ; CHECK-NEXT:    slli a1, a1, 5
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8r.v v24, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vnsrl.wi v16, v24, 0, v0.t
-; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-=======
 ; CHECK-NEXT:    vl8r.v v16, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vnsrl.wi v16, v16, 0, v0.t
-; CHECK-NEXT:    vsetvli zero, a3, e32, m8, tu, ma
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
 ; CHECK-NEXT:    vslideup.vi v16, v8, 16
 ; CHECK-NEXT:    vse32.v v16, (a0)
 ; CHECK-NEXT:    addi a1, a0, 256
@@ -494,14 +482,8 @@ define <32 x i32> @vtrunc_v32i32_v32i64(<32 x i64> %a, <32 x i1> %m, i32 zeroext
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    li a0, 32
-<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; CHECK-NEXT:    vslideup.vi v16, v24, 16
-; CHECK-NEXT:    vmv.v.v v8, v16
-=======
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v16, 16
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    ret
   %v = call <32 x i32> @llvm.vp.trunc.v32i32.v32i64(<32 x i64> %a, <32 x i1> %m, i32 %vl)
   ret <32 x i32> %v

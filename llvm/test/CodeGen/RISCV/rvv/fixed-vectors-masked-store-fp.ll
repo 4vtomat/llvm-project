@@ -379,18 +379,8 @@ define void @masked_store_v32f64(<32 x double>* %val_ptr, <32 x double>* %a, <32
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v16, (a0)
 ; RV32-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
-; RV32-NEXT:    add a0, sp, a0
-; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vmfeq.vf v8, v16, fa5
-=======
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vmfeq.vf v8, v8, ft0
->>>>>>> origin/sifive-dev
+; RV32-NEXT:    vmfeq.vf v8, v8, fa5
 ; RV32-NEXT:    vse64.v v24, (a1), v0.t
 ; RV32-NEXT:    addi a0, a1, 128
 ; RV32-NEXT:    vmv1r.v v0, v8
@@ -419,18 +409,8 @@ define void @masked_store_v32f64(<32 x double>* %val_ptr, <32 x double>* %a, <32
 ; RV64-NEXT:    addi a0, a0, 128
 ; RV64-NEXT:    vle64.v v16, (a0)
 ; RV64-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; RV64-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    add a0, sp, a0
-; RV64-NEXT:    addi a0, a0, 16
-; RV64-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmfeq.vf v8, v16, fa5
-=======
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmfeq.vf v8, v8, ft0
->>>>>>> origin/sifive-dev
+; RV64-NEXT:    vmfeq.vf v8, v8, fa5
 ; RV64-NEXT:    vse64.v v24, (a1), v0.t
 ; RV64-NEXT:    addi a0, a1, 128
 ; RV64-NEXT:    vmv1r.v v0, v8
@@ -487,18 +467,8 @@ define void @masked_store_v64f32(<64 x float>* %val_ptr, <64 x float>* %a, <64 x
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vle32.v v16, (a0)
 ; CHECK-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vf v8, v16, fa5
-=======
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vf v8, v8, ft0
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmfeq.vf v8, v8, fa5
 ; CHECK-NEXT:    vse32.v v24, (a1), v0.t
 ; CHECK-NEXT:    addi a0, a1, 128
 ; CHECK-NEXT:    vmv1r.v v0, v8
@@ -536,18 +506,8 @@ define void @masked_store_v128f16(<128 x half>* %val_ptr, <128 x half>* %a, <128
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vle16.v v16, (a0)
 ; CHECK-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vf v8, v16, fa5
-=======
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmfeq.vf v8, v8, ft0
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    vmfeq.vf v8, v8, fa5
 ; CHECK-NEXT:    vse16.v v24, (a1), v0.t
 ; CHECK-NEXT:    addi a0, a1, 128
 ; CHECK-NEXT:    vmv1r.v v0, v8
