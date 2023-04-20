@@ -2102,31 +2102,20 @@ multiclass VPseudoILoad<bit Ordered, int TargetConstraintType = 1> {
           defvar UseNewTypeConstraints = !if(!eq(TargetConstraintType, 1), 1, NewTypeConstraints);
 #endif // SIFIVE_CUSTOMIZATION
           let VLMul = lmul.value in {
-<<<<<<< HEAD
             def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo :
-              VPseudoILoadNoMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint>,
-              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_TU":
-              VPseudoILoadNoMaskTU<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint>,
-              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
-              VPseudoILoadMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint>,
-=======
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # LInfo :
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadNoMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
 #endif // SIFIVE_CUSTOMIZATION
-              VLXSched<eew, Order, LInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # LInfo # "_TU":
+              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
+            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_TU":
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadNoMaskTU<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
 #endif // SIFIVE_CUSTOMIZATION
-              VLXSched<eew, Order, LInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # LInfo # "_MASK" :
+              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
+            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
               RISCVMaskedPseudo</*MaskOpIdx*/ 3>,
               VLXSched<eew, Order, DataLInfo, IdxLInfo>;
           }
