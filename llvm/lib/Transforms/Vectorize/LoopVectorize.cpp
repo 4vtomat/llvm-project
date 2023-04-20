@@ -9969,9 +9969,6 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
   if (auto *II = Legal->getPointerInductionDescriptor(Phi)) {
     VPValue *Step = vputils::getOrCreateVPValueForSCEVExpr(Plan, II->getStep(),
                                                            *PSE.getSE());
-<<<<<<< HEAD
-=======
-    assert(isa<SCEVConstant>(II->getStep()));
 #if SIFIVE_CUSTOMIZATION
     return new VPWidenPointerInductionRecipe(
         Phi, Operands[0], Step, *II,
@@ -9982,7 +9979,6 @@ VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
             Range),
         CM.Legal->isVectorizableUncountable());
 #else
->>>>>>> origin/sifive-dev
     return new VPWidenPointerInductionRecipe(
         Phi, Operands[0], Step, *II,
         LoopVectorizationPlanner::getDecisionAndClampRange(
@@ -11035,20 +11031,16 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // After here, VPBB should not be used.
   VPBB = nullptr;
 
-<<<<<<< HEAD
   if (CM.requiresScalarEpilogue(Range)) {
     // No edge from the middle block to the unique exit block has been inserted
     // and there is nothing to fix from vector loop; phis should have incoming
     // from scalar loop only.
   } else
-    addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan);
-=======
 #if SIFIVE_CUSTOMIZATION
-  addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan, Legal);
+    addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan, Legal);
 #else
-  addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan);
+    addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
@@ -11136,17 +11128,13 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
 
   assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
-<<<<<<< HEAD
-  return std::make_optional(std::move(Plan));
-=======
 #if SIFIVE_CUSTOMIZATION
   LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
     dbgs() << "Uncountable Loop: Final VPlan\n";
     Plan->print(dbgs());
   });
 #endif // SIFIVE_CUSTOMIZATION
-  return Plan;
->>>>>>> origin/sifive-dev
+  return std::make_optional(std::move(Plan));
 }
 
 VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
