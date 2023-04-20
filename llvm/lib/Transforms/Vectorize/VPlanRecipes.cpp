@@ -444,9 +444,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   case VPInstruction::CSAInitData: {
     if (Part == 0) {
       Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
-      Value *Poison = PoisonValue::get(ElemTyp);
-      Value *InitData =
-          State.Builder.CreateVectorSplat(State.VF, Poison, "csa.data.init");
+      Value *InitData = PoisonValue::get(VectorType::get(ElemTyp, State.VF));
       State.set(this, InitData, Part);
     } else {
       State.set(this, State.get(this, Part - 1), Part);
