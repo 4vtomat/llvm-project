@@ -611,7 +611,6 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
                                AssemblerPredicate<(all_of FeatureStdExtZawrs),
                                "'Zawrs' (Wait on Reservation Set)">;
 
-#ifndef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
@@ -639,16 +638,10 @@ def FeatureStdExtZvknhb
     : SubtargetFeature<"experimental-zvknhb", "HasStdExtZvknhb", "true",
                        "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))",
                        [FeatureStdExtZvknha]>;
-def HasStdExtZvknha : Predicate<"Subtarget->hasStdExtZvknha()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvknha),
-                                "'Zvknha' (Vector SHA-2. (SHA-256 only))">;
 
 def FeatureStdExtZvkned
     : SubtargetFeature<"experimental-zvkned", "HasStdExtZvkned", "true",
                        "'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
-def HasStdExtZvkned : Predicate<"Subtarget->hasStdExtZvkned()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkned),
-                                "'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
 
 def FeatureStdExtZvks
     : SubtargetFeature<"experimental-zvks", "HasStdExtZvks", "true",
@@ -658,16 +651,66 @@ def FeatureStdExtZvks
 def FeatureStdExtZvksed
     : SubtargetFeature<"experimental-zvksed", "HasStdExtZvksed", "true",
                        "'Zvksed' (SM4 Block Cipher Instructions.)">;
-def HasStdExtZvksed : Predicate<"Subtarget->hasStdExtZvksed()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvksed),
-                                "'Zvksed' (SM4 Block Cipher Instructions.)">;
 
 def FeatureStdExtZvksh
     : SubtargetFeature<"experimental-zvksh", "HasStdExtZvksh", "true",
                        "'Zvksh' (SM3 Hash Function Instructions.)">;
-def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
-                               AssemblerPredicate<(all_of FeatureStdExtZvksh),
-                               "'Zvksh' (SM3 Hash Function Instructions.)">;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZvkb0p1
+    : SubtargetFeature<"experimental-zvkb0p1", "HasStdExtZvkb0p1", "true",
+                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkb0p1 : Predicate<"Subtarget->hasStdExtZvkb0p1()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkbOrZvkb0p1
+    : Predicate<"Subtarget->hasStdExtZvkb() || Subtarget->hasStdExtZvkb0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvkb, FeatureStdExtZvkb0p1),
+                         "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+
+def FeatureStdExtZvkg0p1
+    : SubtargetFeature<"experimental-zvkg0p1", "HasStdExtZvkg0p1", "true",
+                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+def HasStdExtZvkg0p1 : Predicate<"Subtarget->hasStdExtZvkg0p1()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkg0p1),
+                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+
+def FeatureStdExtZvknha0p1
+    : SubtargetFeature<"experimental-zvknha0p1", "HasStdExtZvknha0p1", "true",
+                       "'Zvknha' (Vector SHA-2. (SHA-256 only))">;
+
+def FeatureStdExtZvknhb0p1
+    : SubtargetFeature<"experimental-zvknhb0p1", "HasStdExtZvknhb0p1", "true",
+                       "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))",
+                       [FeatureStdExtZvknha0p1]>;
+def HasStdExtZvknha
+    : Predicate<"Subtarget->hasStdExtZvknha() || Subtarget->hasStdExtZvknha0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvknha, FeatureStdExtZvknha0p1),
+                         "'Zvknha' (Vector SHA-2. (SHA-256 only))">;
+
+def FeatureStdExtZvkns
+    : SubtargetFeature<"experimental-zvkns", "HasStdExtZvkns", "true",
+                       "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
+def HasStdExtZvknsOrZvkned
+    : Predicate<"Subtarget->hasStdExtZvkns() || Subtarget->hasStdExtZvkned()">,
+                AssemblerPredicate<(any_of FeatureStdExtZvkns, FeatureStdExtZvkned),
+                "'Zvkns' or 'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
+
+def FeatureStdExtZvksed0p1
+    : SubtargetFeature<"experimental-zvksed0p1", "HasStdExtZvksed0p1", "true",
+                       "'Zvksed' (SM4 Block Cipher Instructions.)">;
+def HasStdExtZvksed
+    : Predicate<"Subtarget->hasStdExtZvksed() || Subtarget->hasStdExtZvksed0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvksed, FeatureStdExtZvksed0p1),
+                         "'Zvksed' (SM4 Block Cipher Instructions.)">;
+
+def FeatureStdExtZvksh0p1
+    : SubtargetFeature<"experimental-zvksh0p1", "HasStdExtZvksh0p1", "true",
+                       "'Zvksh' (SM3 Hash Function Instructions.)">;
+def HasStdExtZvksh
+    : Predicate<"Subtarget->hasStdExtZvksh() || Subtarget->hasStdExtZvksh0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvksh, FeatureStdExtZvksh0p1),
+                         "'Zvksh' (SM3 Hash Function Instructions.)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtZicond
@@ -863,54 +906,6 @@ def FeatureRecodeFullfp16
     : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
                        "fullfp16 (A corresponding feature for NEON fullfp16.)",
                        [FeatureStdExtZfh, FeatureStdExtZvfh]>;
-
-def FeatureStdExtZvkb
-    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
-                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
-                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-
-def FeatureStdExtZvkg
-    : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
-                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
-def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkg),
-                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
-
-def FeatureStdExtZvknha
-    : SubtargetFeature<"experimental-zvknha", "HasStdExtZvknha", "true",
-                       "'Zvknha' (Vector SHA-2. (SHA-256 only))">;
-
-def FeatureStdExtZvknhb
-    : SubtargetFeature<"experimental-zvknhb", "HasStdExtZvknhb", "true",
-                       "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))",
-		       [FeatureStdExtZvknha]>;
-def HasStdExtZvknhaOrZvknhb  : Predicate<"Subtarget->hasStdExtZvknha() || Subtarget->hasStdExtZvknhb()">,
-                                AssemblerPredicate<(any_of FeatureStdExtZvknha, FeatureStdExtZvknhb),
-                                "'Zvknha' (Vector SHA-2. (SHA-256 only)) or "
-                                "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))">;
-
-def FeatureStdExtZvkns
-    : SubtargetFeature<"experimental-zvkns", "HasStdExtZvkns", "true",
-                       "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
-def HasStdExtZvkns : Predicate<"Subtarget->hasStdExtZvkns()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvkns),
-                                "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
-
-def FeatureStdExtZvksed
-    : SubtargetFeature<"experimental-zvksed", "HasStdExtZvksed", "true",
-                       "'Zvksed' (SM4 Block Cipher Instructions.)">;
-def HasStdExtZvksed : Predicate<"Subtarget->hasStdExtZvksed()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvksed),
-                                "'Zvksed' (SM4 Block Cipher Instructions.)">;
-
-def FeatureStdExtZvksh
-    : SubtargetFeature<"experimental-zvksh", "HasStdExtZvksh", "true",
-                       "'Zvksh' (SM3 Hash Function Instructions.)">;
-def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
-                                "'Zvksh' (SM3 Hash Function Instructions.)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit

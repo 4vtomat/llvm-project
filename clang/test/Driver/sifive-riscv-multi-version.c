@@ -9,9 +9,10 @@
 // RUN: %clang -target riscv32-unknown-elf -march=rv32gzba1p0 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-VERSION %s
 // RUN: %clang -target riscv32-unknown-elf -march=rv32gzba0p93 -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-VERSION %s
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-VERSION-1 %s
 //
 // CHECK-EXP-VERSION: "-target-feature" "+zba"
+// CHECK-EXP-VERSION-1: "-target-feature" "+zba0p93"
 
 // RUN: %clang -target riscv32-unknown-elf -march=rv32gzba1p1 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-UNSUPPORTED-VERSION %s

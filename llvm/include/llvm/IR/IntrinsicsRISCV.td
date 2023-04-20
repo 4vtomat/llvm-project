@@ -1916,7 +1916,7 @@ include "llvm/IR/IntrinsicsRISCVXTHead.td"
 // added by the vector cyptography extension, if the extension is present.
 let TargetPrefix = "riscv" in {
 #ifdef SIFIVE_CUSTOMIZATION
-  // zvkns
+  // zvkns or zvkned
   defm vaesdf : RISCVUnaryAAUnMaskedP;
   defm vaesdm : RISCVUnaryAAUnMaskedP;
   defm vaesef : RISCVUnaryAAUnMaskedP;
@@ -1935,6 +1935,10 @@ let TargetPrefix = "riscv" in {
   defm vror : RISCVBinaryAAX;
 
   // zvkg
+  def int_riscv_vghsh : RISCVBinaryAAXUnMaskedP;
+  def int_riscv_vgmul : RISCVBinaryAAXUnMaskedP;
+
+  // zvkg0p1
   def int_riscv_vghmac : RISCVBinaryAAXUnMaskedP;
 
   // zvksed

@@ -3,7 +3,7 @@
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 
 vaeskf1.vi v10, v9, 0
-# CHECK-ERROR-NOT: immediate must be an integer in the range [1, 10]
+# CHECK-ERROR: immediate must be an integer in the range [1, 10]
 
 vaeskf2.vi v10, v9, 0
-# CHECK-ERROR-NOT: immediate must be an integer in the range [2, 14]
+# CHECK-ERROR: immediate must be an integer in the range [2, 14]

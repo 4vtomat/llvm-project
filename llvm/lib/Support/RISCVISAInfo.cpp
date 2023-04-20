@@ -37,6 +37,11 @@ struct RISCVSupportedExtension {
 
 } // end anonymous namespace
 
+#if SIFIVE_CUSTOMIZATION
+static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
+    tryDecodeExtWithVersion(StringRef Ext);
+#endif // SIFIVE_CUSTOMIZATION
+
 static constexpr StringLiteral AllStdExts = "mafdqlcbkjtpvnh";
 
 static const char *RISCVGImplications[] = {
@@ -188,15 +193,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     // vector crypto
-#if SIFIVE_CUSTOMIZATION
-    {"zvkb", RISCVExtensionVersion{0, 1}},
-    {"zvkg", RISCVExtensionVersion{0, 1}},
-    {"zvknha", RISCVExtensionVersion{0, 1}},
-    {"zvknhb", RISCVExtensionVersion{0, 1}},
-    {"zvkns", RISCVExtensionVersion{0, 1}},
-    {"zvksed", RISCVExtensionVersion{0, 1}},
-    {"zvksh", RISCVExtensionVersion{0, 1}},
-#else // SIFIVE_CUSTOMIZATION
     {"zvkb", RISCVExtensionVersion{0, 3}},
     {"zvkg", RISCVExtensionVersion{0, 3}},
     {"zvkn", RISCVExtensionVersion{0, 3}},
@@ -206,6 +202,14 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvks", RISCVExtensionVersion{0, 3}},
     {"zvksed", RISCVExtensionVersion{0, 3}},
     {"zvksh", RISCVExtensionVersion{0, 3}},
+#if SIFIVE_CUSTOMIZATION
+    {"zvkb", RISCVExtensionVersion{0, 1}},
+    {"zvkg", RISCVExtensionVersion{0, 1}},
+    {"zvkns", RISCVExtensionVersion{0, 1}},
+    {"zvknha", RISCVExtensionVersion{0, 1}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}},
+    {"zvksed", RISCVExtensionVersion{0, 1}},
+    {"zvksh", RISCVExtensionVersion{0, 1}},
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -304,6 +308,18 @@ isExperimentalExtension(StringRef Ext) {
   auto ExtIterator =
       llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
 #if SIFIVE_CUSTOMIZATION
+  if (auto ExtInfo = tryDecodeExtWithVersion(Ext)) {
+    Ext = ExtInfo->first;
+    auto MajorVersion = ExtInfo->second.MajorVersion;
+    auto MinorVersion = ExtInfo->second.MinorVersion;
+    auto FindByNameAndVersion = [=](const RISCVSupportedExtension &ExtInfo) {
+      return ExtInfo.Name == Ext && (MajorVersion == ExtInfo.Version.Major) &&
+             (MinorVersion == ExtInfo.Version.Minor);
+    };
+
+    return llvm::any_of(SupportedExperimentalExtensions, FindByNameAndVersion);
+  }
+
   return ExtIterator != std::end(SupportedExperimentalExtensions);
 #else
   if (ExtIterator == std::end(SupportedExperimentalExtensions))
@@ -334,12 +350,25 @@ bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
   bool IsExperimental = stripExperimentalPrefix(Ext);
 
   if (IsExperimental)
+#if SIFIVE_CUSTOMIZATION
+    return isExperimentalExtension(Ext);
+  else
+    return isSupportedExtension(Ext);
+#else
     return llvm::any_of(SupportedExperimentalExtensions, FindByName(Ext));
   else
     return llvm::any_of(SupportedExtensions, FindByName(Ext));
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 bool RISCVISAInfo::isSupportedExtension(StringRef Ext) {
+#if SIFIVE_CUSTOMIZATION
+  if (auto ExtInfo = tryDecodeExtWithVersion(Ext))
+    return isSupportedExtension(ExtInfo->first,
+                                ExtInfo->second.MajorVersion,
+                                ExtInfo->second.MinorVersion);
+#endif // SIFIVE_CUSTOMIZATION
+
   return llvm::any_of(SupportedExtensions, FindByName(Ext)) ||
          llvm::any_of(SupportedExperimentalExtensions, FindByName(Ext));
 }
@@ -434,12 +463,35 @@ bool RISCVISAInfo::compareExtension(const std::string &LHS,
   return LHS < RHS;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// If the extension version is not default, append the version number
+// after its extension name, otherwise return its extension name.
+static std::string tryAppendVersionInfo(
+    const StringRef Name, const llvm::RISCVExtensionInfo &Version) {
+  auto Major = Version.MajorVersion;
+  auto Minor = Version.MinorVersion;
+  auto DefaultVersion = findDefaultVersion(Name);
+  bool IsDefault =
+      (Major == DefaultVersion->Major && Minor == DefaultVersion->Minor) ||
+      (Major == 0 && Minor == 0);
+
+  std::string ExtString = Name.str();
+  if (!IsDefault)
+    ExtString += std::to_string(Major) + "p" + std::to_string(Minor);
+
+  return RISCVISAInfo::isSupportedExtensionFeature(ExtString) ? ExtString
+                                                              : Name.str();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVISAInfo::toFeatures(
     std::vector<StringRef> &Features,
     llvm::function_ref<StringRef(const Twine &)> StrAlloc,
     bool AddAllExtensions) const {
   for (auto const &Ext : Exts) {
-    StringRef ExtName = Ext.first;
+#if SIFIVE_CUSTOMIZATION
+    std::string ExtName = tryAppendVersionInfo(Ext.first, Ext.second);
+#endif // SIFIVE_CUSTOMIZATION
 
     if (ExtName == "i")
       continue;
@@ -609,6 +661,18 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
     bool Add = ExtName[0] == '+';
     ExtName = ExtName.drop_front(1); // Drop '+' or '-'
     Experimental = stripExperimentalPrefix(ExtName);
+#if SIFIVE_CUSTOMIZATION
+    unsigned Major, Minor;
+
+    if (auto ExtInfo = tryDecodeExtWithVersion(ExtName)) {
+      ExtName = ExtInfo->first;
+      Major = ExtInfo->second.MajorVersion;
+      Minor = ExtInfo->second.MinorVersion;
+
+      if (!isSupportedExtension(ExtName, Major, Minor))
+        continue;
+    } else {
+#endif // SIFIVE_CUSTOMIZATION
     auto ExtensionInfos = Experimental
                               ? ArrayRef(SupportedExperimentalExtensions)
                               : ArrayRef(SupportedExtensions);
@@ -620,9 +684,14 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
     if (ExtensionInfoIterator == ExtensionInfos.end())
       continue;
 
+    Major = ExtensionInfoIterator->Version.Major;
+    Minor = ExtensionInfoIterator->Version.Minor;
+#if SIFIVE_CUSTOMIZATION
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
     if (Add)
-      ISAInfo->addExtension(ExtName, ExtensionInfoIterator->Version.Major,
-                            ExtensionInfoIterator->Version.Minor);
+      ISAInfo->addExtension(ExtName, Major, Minor);
     else
       ISAInfo->Exts.erase(ExtName.str());
   }
@@ -971,28 +1040,9 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
-#if SIFIVE_CUSTOMIZATION
-  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") ||
-       Exts.count("zvkns") || Exts.count("zvksed") || Exts.count("zvksh")) &&
-      !HasVector)
-    return createStringError(
-        errc::invalid_argument,
-        "'zvk*' requires 'v' or 'zve*' extension to also be specified");
-
-  if (Exts.count("zvknhb") && !Exts.count("zve64x"))
-    return createStringError(
-        errc::invalid_argument,
-        "'zvknhb' requires 'zve64x' extension to also be specified");
-
-  if (Exts.count("smwgd") && !Exts.count("smwg"))
-    return createStringError(
-        errc::invalid_argument,
-        "'smwgd' requires 'smwg' extension to also be specified");
-#else // SIFIVE_CUSTOMIZATION
-
   if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
-       Exts.count("zvknha") || Exts.count("zvkned") || Exts.count("zvks") ||
-       Exts.count("zvksed") || Exts.count("zvksh")) &&
+       Exts.count("zvkned") || Exts.count("zvknha") || Exts.count("zvkns") ||
+       Exts.count("zvks") || Exts.count("zvksed") || Exts.count("zvksh")) &&
       !HasVector)
     return createStringError(
         errc::invalid_argument,
@@ -1002,7 +1052,11 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "'zvknhb' requires 'v' or 'zve64*' extension to also be specified");
-#endif // SIFIVE_CUSTOMIZATION
+
+  if (Exts.count("smwgd") && !Exts.count("smwg"))
+    return createStringError(
+        errc::invalid_argument,
+        "'smwgd' requires 'smwg' extension to also be specified");
 
   // Additional dependency checks.
   // TODO: The 'q' extension requires rv64.
@@ -1045,17 +1099,14 @@ static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
-#if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
-#else // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb", "zvkb"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
-#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZfa[] = {"f"};
@@ -1103,11 +1154,9 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zve64f"}, {ImpliedExtsZve64f}},
     {{"zve64x"}, {ImpliedExtsZve64x}},
     {{"zvfh"}, {ImpliedExtsZvfh}},
-#ifndef SIFIVE_CUSTOMIZATION
     {{"zvkn"}, {ImpliedExtsZvkn}},
     {{"zvknhb"}, {ImpliedExtsZvknhb}},
     {{"zvks"}, {ImpliedExtsZvks}},
-#endif // SIFIVE_CUSTOMIZATION
     {{"zvl1024b"}, {ImpliedExtsZvl1024b}},
     {{"zvl128b"}, {ImpliedExtsZvl128b}},
     {{"zvl16384b"}, {ImpliedExtsZvl16384b}},
@@ -1253,6 +1302,10 @@ std::vector<std::string> RISCVISAInfo::toFeatureVector() const {
       continue;
     if (!isSupportedExtension(ExtName))
       continue;
+
+#if SIFIVE_CUSTOMIZATION
+    ExtName = tryAppendVersionInfo(Ext.first, Ext.second);
+#endif // SIFIVE_CUSTOMIZATION
     std::string Feature = isExperimentalExtension(ExtName)
                               ? "+experimental-" + ExtName
                               : "+" + ExtName;
@@ -1260,6 +1313,27 @@ std::vector<std::string> RISCVISAInfo::toFeatureVector() const {
   }
   return FeatureVector;
 }
+
+#if SIFIVE_CUSTOMIZATION
+static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
+    tryDecodeExtWithVersion(StringRef Ext) {
+  auto Pos = findFirstNonVersionCharacter(Ext) + 1;
+  if (Pos == Ext.size())
+    return std::nullopt;
+
+  StringRef Name(Ext.substr(0, Pos));
+  StringRef Vers(Ext.substr(Pos));
+
+  unsigned Major, Minor, ConsumeLength;
+
+  if (auto E = getExtensionVersion(Name, Vers, Major, Minor, ConsumeLength, true, true))
+    // If IgnoreUnknown, then ignore an unrecognised version of the baseline
+    // ISA and just use the default supported version.
+    consumeError(std::move(E));
+
+  return std::make_pair(Name, RISCVExtensionInfo{Major, Minor});
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>
 RISCVISAInfo::postProcessAndChecking(std::unique_ptr<RISCVISAInfo> &&ISAInfo) {
