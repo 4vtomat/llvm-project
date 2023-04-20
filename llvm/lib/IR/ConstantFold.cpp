@@ -674,12 +674,6 @@ Constant *llvm::ConstantFoldInsertElementInstruction(Constant *Val,
   ConstantInt *CIdx = dyn_cast<ConstantInt>(Idx);
   if (!CIdx) return nullptr;
 
-#if SIFIVE_CUSTOMIZATION
-  // Inserting null into all zeros is still all zeros.
-  if (isa<ConstantAggregateZero>(Val) && Elt->isNullValue())
-    return Val;
-#endif
-
   // Do not iterate on scalable vector. The num of elements is unknown at
   // compile-time.
   if (isa<ScalableVectorType>(Val->getType()))
