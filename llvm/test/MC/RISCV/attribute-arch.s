@@ -200,7 +200,6 @@
 .attribute arch, "rv32izbc1p0"
 # CHECK: attribute      5, "rv32i2p1_zbc1p0"
 
-<<<<<<< HEAD
 .attribute arch, "rv32i_zve32x_zvkb0p1"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkb0p1_zvl32b1p0"
 
@@ -221,7 +220,7 @@
 
 .attribute arch, "rv32i_zve32x_zvksh0p1"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p1_zvl32b1p0"
-=======
+
 .attribute arch, "rv32i_zve64x_zvbb0p5"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zvbb0p5_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
 
@@ -260,7 +259,6 @@
 
 .attribute arch, "rv32i_zvkt0p5"
 # CHECK: attribute      5, "rv32i2p1_zvkt0p5"
->>>>>>> upstream/main
 
 .attribute arch, "rv32izbs1p0"
 # CHECK: attribute      5, "rv32i2p1_zbs1p0"
