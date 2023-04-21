@@ -974,17 +974,17 @@ Error RISCVISAInfo::checkDependency() {
       !HasVector)
     return createStringError(
         errc::invalid_argument,
-        "zvk* requires v or zve* extension to also be specified");
+        "'zvk*' requires 'v' or 'zve*' extension to also be specified");
 
   if (Exts.count("zvknhb") && !Exts.count("zve64x"))
     return createStringError(
         errc::invalid_argument,
-        "zvknhb requires zve64x extension to also be specified");
+        "'zvknhb' requires 'zve64x' extension to also be specified");
 
   if (Exts.count("smwgd") && !Exts.count("smwg"))
     return createStringError(
         errc::invalid_argument,
-        "smwgd requires smwg extension to also be specified");
+        "'smwgd' requires 'smwg' extension to also be specified");
 #else // SIFIVE_CUSTOMIZATION
 
   if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
