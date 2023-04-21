@@ -22,17 +22,11 @@ def FeatureStdExtZicntr
     : SubtargetFeature<"zicntr", "HasStdExtZicntr", "true",
                        "'Zicntr' (Base Counters and Timers)",
                        [FeatureStdExtZicsr]>;
-def HasStdExtZicntr : Predicate<"Subtarget->hasStdExtZicntr()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZicntr),
-                                "'Zicntr' (Base Counters and Timers)">;
 
 def FeatureStdExtZihpm
     : SubtargetFeature<"zihpm", "HasStdExtZihpm", "true",
                        "'Zihpm' (Hardware Performance Counters)",
                        [FeatureStdExtZicsr]>;
-def HasStdExtZihpm : Predicate<"Subtarget->hasStdExtZihpm()">,
-                                AssemblerPredicate<(all_of FeatureStdExtZihpm),
-                                "'Zihpm' (Hardware Performance Counters)">;
 
 def FeatureStdExtSs
     : SubtargetFeature<"ss", "HasStdExtSs", "true",
