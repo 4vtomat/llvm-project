@@ -2122,8 +2122,16 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     // Get minimum VLen from march.
     unsigned MinVLen = 0;
     StringRef Arch = riscv::getRISCVArch(Args, Triple);
+#if SIFIVE_CUSTOMIZATION
+    // Allow user to use unratified extension without version,
+    // see SCT-2482.
+    auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
+        Arch, /*EnableExperimentalExtensions*/ true,
+        /*ExperimentalExtensionVersionCheck*/ false);
+#else
     auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
         Arch, /*EnableExperimentalExtensions*/ true);
+#endif
     if (!ISAInfo) {
       // Ignore parsing error.
       consumeError(ISAInfo.takeError());

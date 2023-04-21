@@ -1,5 +1,3 @@
-# SIFIVE disabled this test due to removal of version number checking
-XFAIL: *
 ## Invalid arch string
 
 # RUN: not llvm-mc -triple riscv32 < %s 2>&1 | FileCheck %s

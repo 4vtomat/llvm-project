@@ -838,6 +838,7 @@ def MisleadingIndentation : DiagGroup<"misleading-indentation">;
 #ifdef SIFIVE_CUSTOMIZATION
 def MultilibFallback : DiagGroup<"multilib-fallback">;
 def RISCVVectorPragma : DiagGroup<"riscv-vector-pragma">;
+def RISCVImplicitExtensionVersion : DiagGroup<"riscv-implicit-extension-version">;
 #endif // SIFIVE_CUSTOMIZATION
 
 // This covers both the deprecated case (in C++98)
