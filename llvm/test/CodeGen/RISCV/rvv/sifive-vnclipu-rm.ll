@@ -167,8 +167,9 @@ define <vscale x 8 x i8> @intrinsic_vnclipu_wv_nxv8i8_nxv8i16_nxv8i8(<vscale x 8
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v10
+; CHECK-NEXT:    vnclipu.wv v11, v8, v10
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v11
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i8> @llvm.riscv.vnclipu.rm.nxv8i8.nxv8i16.nxv8i8(
@@ -218,8 +219,9 @@ define <vscale x 16 x i8> @intrinsic_vnclipu_wv_nxv16i8_nxv16i16_nxv16i8(<vscale
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v12
+; CHECK-NEXT:    vnclipu.wv v14, v8, v12
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v14
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i8> @llvm.riscv.vnclipu.rm.nxv16i8.nxv16i16.nxv16i8(
@@ -269,8 +271,9 @@ define <vscale x 32 x i8> @intrinsic_vnclipu_wv_nxv32i8_nxv32i16_nxv32i8(<vscale
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v16
+; CHECK-NEXT:    vnclipu.wv v20, v8, v16
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v20
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i8> @llvm.riscv.vnclipu.rm.nxv32i8.nxv32i16.nxv32i8(
@@ -422,8 +425,9 @@ define <vscale x 4 x i16> @intrinsic_vnclipu_wv_nxv4i16_nxv4i32_nxv4i16(<vscale 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v10
+; CHECK-NEXT:    vnclipu.wv v11, v8, v10
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v11
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i16> @llvm.riscv.vnclipu.rm.nxv4i16.nxv4i32.nxv4i16(
@@ -473,8 +477,9 @@ define <vscale x 8 x i16> @intrinsic_vnclipu_wv_nxv8i16_nxv8i32_nxv8i16(<vscale 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v12
+; CHECK-NEXT:    vnclipu.wv v14, v8, v12
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v14
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i16> @llvm.riscv.vnclipu.rm.nxv8i16.nxv8i32.nxv8i16(
@@ -524,8 +529,9 @@ define <vscale x 16 x i16> @intrinsic_vnclipu_wv_nxv16i16_nxv16i32_nxv16i16(<vsc
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v16
+; CHECK-NEXT:    vnclipu.wv v20, v8, v16
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v20
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i16> @llvm.riscv.vnclipu.rm.nxv16i16.nxv16i32.nxv16i16(
@@ -626,8 +632,9 @@ define <vscale x 2 x i32> @intrinsic_vnclipu_wv_nxv2i32_nxv2i64_nxv2i32(<vscale 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v10
+; CHECK-NEXT:    vnclipu.wv v11, v8, v10
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v11
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vnclipu.rm.nxv2i32.nxv2i64.nxv2i32(
@@ -677,8 +684,9 @@ define <vscale x 4 x i32> @intrinsic_vnclipu_wv_nxv4i32_nxv4i64_nxv4i32(<vscale 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v12
+; CHECK-NEXT:    vnclipu.wv v14, v8, v12
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v14
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vnclipu.rm.nxv4i32.nxv4i64.nxv4i32(
@@ -728,8 +736,9 @@ define <vscale x 8 x i32> @intrinsic_vnclipu_wv_nxv8i32_nxv8i64_nxv8i32(<vscale 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wv v8, v8, v16
+; CHECK-NEXT:    vnclipu.wv v20, v8, v16
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v20
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vnclipu.rm.nxv8i32.nxv8i64.nxv8i32(
@@ -932,8 +941,9 @@ define <vscale x 8 x i8> @intrinsic_vnclipu_vx_nxv8i8_nxv8i16(<vscale x 8 x i16>
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v10, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i8> @llvm.riscv.vnclipu.rm.nxv8i8.nxv8i16(
@@ -983,8 +993,9 @@ define <vscale x 16 x i8> @intrinsic_vnclipu_vx_nxv16i8_nxv16i16(<vscale x 16 x 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v12, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i8> @llvm.riscv.vnclipu.rm.nxv16i8.nxv16i16(
@@ -1034,8 +1045,9 @@ define <vscale x 32 x i8> @intrinsic_vnclipu_vx_nxv32i8_nxv32i16(<vscale x 32 x 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v16, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i8> @llvm.riscv.vnclipu.rm.nxv32i8.nxv32i16(
@@ -1187,8 +1199,9 @@ define <vscale x 4 x i16> @intrinsic_vnclipu_vx_nxv4i16_nxv4i32(<vscale x 4 x i3
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v10, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i16> @llvm.riscv.vnclipu.rm.nxv4i16.nxv4i32(
@@ -1238,8 +1251,9 @@ define <vscale x 8 x i16> @intrinsic_vnclipu_vx_nxv8i16_nxv8i32(<vscale x 8 x i3
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v12, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i16> @llvm.riscv.vnclipu.rm.nxv8i16.nxv8i32(
@@ -1289,8 +1303,9 @@ define <vscale x 16 x i16> @intrinsic_vnclipu_vx_nxv16i16_nxv16i32(<vscale x 16 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v16, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i16> @llvm.riscv.vnclipu.rm.nxv16i16.nxv16i32(
@@ -1391,8 +1406,9 @@ define <vscale x 2 x i32> @intrinsic_vnclipu_vx_nxv2i32_nxv2i64(<vscale x 2 x i6
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v10, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vnclipu.rm.nxv2i32.nxv2i64(
@@ -1442,8 +1458,9 @@ define <vscale x 4 x i32> @intrinsic_vnclipu_vx_nxv4i32_nxv4i64(<vscale x 4 x i6
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v12, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vnclipu.rm.nxv4i32.nxv4i64(
@@ -1493,8 +1510,9 @@ define <vscale x 8 x i32> @intrinsic_vnclipu_vx_nxv8i32_nxv8i64(<vscale x 8 x i6
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a1, vxrm, 0
-; CHECK-NEXT:    vnclipu.wx v8, v8, a0
+; CHECK-NEXT:    vnclipu.wx v16, v8, a0
 ; CHECK-NEXT:    csrw vxrm, a1
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vnclipu.rm.nxv8i32.nxv8i64(
@@ -1649,8 +1667,9 @@ define <vscale x 8 x i8> @intrinsic_vnclipu_vi_nxv8i8_nxv8i16_i8(<vscale x 8 x i
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v10, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i8> @llvm.riscv.vnclipu.rm.nxv8i8.nxv8i16(
@@ -1686,8 +1705,9 @@ define <vscale x 16 x i8> @intrinsic_vnclipu_vi_nxv16i8_nxv16i16_i8(<vscale x 16
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v12, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i8> @llvm.riscv.vnclipu.rm.nxv16i8.nxv16i16(
@@ -1723,8 +1743,9 @@ define <vscale x 32 x i8> @intrinsic_vnclipu_vi_nxv32i8_nxv32i16_i8(<vscale x 32
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v16, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i8> @llvm.riscv.vnclipu.rm.nxv32i8.nxv32i16(
@@ -1834,8 +1855,9 @@ define <vscale x 4 x i16> @intrinsic_vnclipu_vi_nxv4i16_nxv4i32_i16(<vscale x 4 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v10, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i16> @llvm.riscv.vnclipu.rm.nxv4i16.nxv4i32(
@@ -1871,8 +1893,9 @@ define <vscale x 8 x i16> @intrinsic_vnclipu_vi_nxv8i16_nxv8i32_i16(<vscale x 8 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v12, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i16> @llvm.riscv.vnclipu.rm.nxv8i16.nxv8i32(
@@ -1908,8 +1931,9 @@ define <vscale x 16 x i16> @intrinsic_vnclipu_vi_nxv16i16_nxv16i32_i16(<vscale x
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v16, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i16> @llvm.riscv.vnclipu.rm.nxv16i16.nxv16i32(
@@ -1982,8 +2006,9 @@ define <vscale x 2 x i32> @intrinsic_vnclipu_vi_nxv2i32_nxv2i64_i32(<vscale x 2 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v10, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vnclipu.rm.nxv2i32.nxv2i64(
@@ -2019,8 +2044,9 @@ define <vscale x 4 x i32> @intrinsic_vnclipu_vi_nxv4i32_nxv4i64_i32(<vscale x 4 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v12, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vnclipu.rm.nxv4i32.nxv4i64(
@@ -2056,8 +2082,9 @@ define <vscale x 8 x i32> @intrinsic_vnclipu_vi_nxv8i32_nxv8i64_i32(<vscale x 8 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    csrrwi a0, vxrm, 0
-; CHECK-NEXT:    vnclipu.wi v8, v8, 9
+; CHECK-NEXT:    vnclipu.wi v16, v8, 9
 ; CHECK-NEXT:    csrw vxrm, a0
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vnclipu.rm.nxv8i32.nxv8i64(

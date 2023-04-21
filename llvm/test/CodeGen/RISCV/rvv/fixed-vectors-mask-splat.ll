@@ -219,8 +219,8 @@ define void @splat_v32i1(ptr %x, i1 %y) {
 ; LMULMAX2-NEXT:    li a2, 32
 ; LMULMAX2-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; LMULMAX2-NEXT:    vmv.v.x v8, a1
-; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX2-NEXT:    vsm.v v8, (a0)
+; LMULMAX2-NEXT:    vmsne.vi v10, v8, 0
+; LMULMAX2-NEXT:    vsm.v v10, (a0)
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-RV32-LABEL: splat_v32i1:
@@ -297,10 +297,10 @@ define void @splat_v64i1(ptr %x, i1 %y) {
 ; LMULMAX2-NEXT:    li a2, 32
 ; LMULMAX2-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; LMULMAX2-NEXT:    vmv.v.x v8, a1
-; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
+; LMULMAX2-NEXT:    vmsne.vi v10, v8, 0
 ; LMULMAX2-NEXT:    addi a1, a0, 4
-; LMULMAX2-NEXT:    vsm.v v8, (a1)
-; LMULMAX2-NEXT:    vsm.v v8, (a0)
+; LMULMAX2-NEXT:    vsm.v v10, (a1)
+; LMULMAX2-NEXT:    vsm.v v10, (a0)
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-RV32-LABEL: splat_v64i1:

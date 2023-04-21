@@ -179,9 +179,9 @@ define void @trunc_v8i8_v8i32(ptr %x, ptr %z) {
 ; LMULMAX8:       # %bb.0:
 ; LMULMAX8-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; LMULMAX8-NEXT:    vle32.v v8, (a0)
-; LMULMAX8-NEXT:    vnsrl.wi v8, v8, 0
+; LMULMAX8-NEXT:    vnsrl.wi v10, v8, 0
 ; LMULMAX8-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; LMULMAX8-NEXT:    vnsrl.wi v8, v8, 0
+; LMULMAX8-NEXT:    vnsrl.wi v8, v10, 0
 ; LMULMAX8-NEXT:    vse8.v v8, (a1)
 ; LMULMAX8-NEXT:    ret
 ;
@@ -189,9 +189,9 @@ define void @trunc_v8i8_v8i32(ptr %x, ptr %z) {
 ; LMULMAX2:       # %bb.0:
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; LMULMAX2-NEXT:    vle32.v v8, (a0)
-; LMULMAX2-NEXT:    vnsrl.wi v8, v8, 0
+; LMULMAX2-NEXT:    vnsrl.wi v10, v8, 0
 ; LMULMAX2-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; LMULMAX2-NEXT:    vnsrl.wi v8, v8, 0
+; LMULMAX2-NEXT:    vnsrl.wi v8, v10, 0
 ; LMULMAX2-NEXT:    vse8.v v8, (a1)
 ; LMULMAX2-NEXT:    ret
 ;

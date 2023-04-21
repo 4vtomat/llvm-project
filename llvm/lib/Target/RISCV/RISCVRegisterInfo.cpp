@@ -38,7 +38,7 @@ static cl::opt<bool> DisableCostPerUse("riscv-disable-cost-per-use",
 static cl::opt<bool>
     EnableRVVOverlapConstraints("riscv-rvv-overlap-constraints",
                                 cl::desc("Enable RVV overlap constraints."),
-                                cl::init(true), cl::Hidden);
+                                cl::init(false), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
     DisableRegAllocHints("riscv-disable-regalloc-hints", cl::Hidden,

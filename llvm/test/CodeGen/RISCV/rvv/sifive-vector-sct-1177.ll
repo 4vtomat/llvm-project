@@ -15,13 +15,17 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    .cfi_offset ra, -8
 ; CHECK-NEXT:    .cfi_offset s0, -16
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
+; CHECK-NEXT:    li a1, 24
+; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * vlenb
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 24 * vlenb
 ; CHECK-NEXT:    li a0, 55
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vloxseg2ei32.v v16, (a0), v8
-; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2
 ; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
@@ -33,37 +37,44 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; CHECK-NEXT:    vfwadd.vv v16, v8, v8, v0.t
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    call _Z5checkIjEbPKT_S2_m
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v8, v8, v0.t
+; CHECK-NEXT:    vrgather.vv v4, v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vl4r.v v20, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vl4r.v v24, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    slli a2, a2, 2
+; CHECK-NEXT:    vl4r.v v24, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    add a1, a1, a2
+; CHECK-NEXT:    vl4r.v v28, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 4
+; CHECK-NEXT:    add a1, sp, a1
+; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfwsub.wv v24, v8, v20
+; CHECK-NEXT:    vfwsub.wv v16, v8, v24
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
-; CHECK-NEXT:    vssubu.vv v16, v16, v8, v0.t
+; CHECK-NEXT:    vssubu.vv v4, v4, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, s0, e32, m8, tu, mu
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfdiv.vv v24, v16, v8, v0.t
-; CHECK-NEXT:    vse32.v v24, (a0)
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
+; CHECK-NEXT:    vse32.v v8, (a0)
 entry:
   %0 = call { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half> undef, <vscale x 16 x half> undef, half* nonnull undef, <vscale x 16 x i32> undef, i64 55)
   %1 = extractvalue { <vscale x 16 x half>, <vscale x 16 x half> } %0, 0
