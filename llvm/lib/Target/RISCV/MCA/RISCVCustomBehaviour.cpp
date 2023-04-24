@@ -81,7 +81,11 @@ RISCVInstrumentManager::createInstrument(llvm::StringRef Desc,
                       << '\n');
     return nullptr;
   }
+#if SIFIVE_CUSTOMIZATION
+  if (!RISCVLMULInstrument::isDataValid(Data)) {
+#else
   if (RISCVLMULInstrument::isDataValid(Data)) {
+#endif // SIFIVE_CUSTOMIZATION
     LLVM_DEBUG(dbgs() << "RVCB: Bad data for instrument kind " << Desc << ": "
                       << Data << '\n');
     return nullptr;
