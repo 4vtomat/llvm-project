@@ -1872,14 +1872,6 @@ template <class ELFT> void Writer<ELFT>::finalizeSections() {
     // should only be defined in an executable. If .sdata does not exist, its
     // value/section does not matter but it has to be relative, so set its
     // st_shndx arbitrarily to 1 (Out::elfHeader).
-<<<<<<< HEAD
-    if (config->emachine == EM_RISCV && !config->shared) {
-      OutputSection *sec = findSection(".sdata");
-#if SIFIVE_CUSTOMIZATION
-      ElfSym::riscvGlobalPointer = addOptionalRegular(
-          "__global_pointer$", sec ? sec : Out::elfHeader, 0x800, STV_DEFAULT);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (config->emachine == EM_RISCV) {
       ElfSym::riscvGlobalPointer = nullptr;
       if (!config->shared) {
@@ -1894,7 +1886,6 @@ template <class ELFT> void Writer<ELFT>::finalizeSections() {
             ElfSym::riscvGlobalPointer = cast<Defined>(s);
         }
       }
->>>>>>> upstream/main
     }
 
     if (config->emachine == EM_386 || config->emachine == EM_X86_64) {

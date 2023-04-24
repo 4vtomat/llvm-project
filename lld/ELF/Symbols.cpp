@@ -71,11 +71,7 @@ Defined *ElfSym::globalOffsetTable;
 Defined *ElfSym::mipsGp;
 Defined *ElfSym::mipsGpDisp;
 Defined *ElfSym::mipsLocalGp;
-<<<<<<< HEAD
-Defined *ElfSym::riscvGlobalPointer; // SIFIVE
-=======
 Defined *ElfSym::riscvGlobalPointer;
->>>>>>> upstream/main
 Defined *ElfSym::relaIpltStart;
 Defined *ElfSym::relaIpltEnd;
 Defined *ElfSym::tlsModuleBase;

@@ -512,15 +512,8 @@ struct ElfSym {
   static Defined *mipsGpDisp;
   static Defined *mipsLocalGp;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   // __global_pointer$ for RISC-V.
   static Defined *riscvGlobalPointer;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  // __global_pointer$ for RISC-V.
-  static Defined *riscvGlobalPointer;
->>>>>>> upstream/main
 
   // __rel{,a}_iplt_{start,end} symbols.
   static Defined *relaIpltStart;

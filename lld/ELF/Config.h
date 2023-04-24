@@ -253,13 +253,7 @@ struct Config {
   bool printGcSections;
   bool printIcfSections;
   bool relax;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool relaxGP;
-#endif
-=======
-  bool relaxGP;
->>>>>>> upstream/main
   bool relocatable;
   bool relrGlibc = false;
   bool relrPackDynRelocs = false;
