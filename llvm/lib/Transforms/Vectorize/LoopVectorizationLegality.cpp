@@ -106,8 +106,16 @@ AllowStridedPointerIVs("lv-strided-pointer-ivs", cl::init(false), cl::Hidden,
                                 "pointer induction variables."));
 
 namespace llvm {
+#if SIFIVE_CUSTOMIZATION
+// Don't allow fp reordering even if vectorization was enforced or width was
+// specified. User need to use `#pragma clang fp reassociate(on)` within the
+// loop body to allow reassociation
+cl::opt<bool>
+    HintsAllowReordering("hints-allow-reordering", cl::init(false), cl::Hidden,
+#else
 cl::opt<bool>
     HintsAllowReordering("hints-allow-reordering", cl::init(true), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
                          cl::desc("Allow enabling loop hints to reorder "
                                   "FP operations during vectorization."));
 }
@@ -392,15 +400,8 @@ bool LoopVectorizeHints::allowReordering() const {
   // loop hints are provided
   ElementCount EC = getWidth();
   return HintsAllowReordering &&
-#if SIFIVE_CUSTOMIZATION
-         // Don't allow fp reordering if vectorization was enforced.
-         // User need to use `#pragma clang fp reassociate(on)` within the loop
-         // body to allow reassociation
-         (
-#else
          (getForce() == LoopVectorizeHints::FK_Enabled ||
-#endif // SIFIVE_CUSTOMIZATION
-             EC.getKnownMinValue() > 1);
+          EC.getKnownMinValue() > 1);
 }
 
 #if SIFIVE_CUSTOMIZATION
