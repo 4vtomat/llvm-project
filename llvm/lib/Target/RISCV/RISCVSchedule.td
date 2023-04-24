@@ -255,7 +255,6 @@ def : ReadAdvance<ReadSFB, 0>;
 } // Unsupported = true
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass UnsupportedSchedCMOV {
 let Unsupported = true in {
@@ -265,7 +264,7 @@ def : ReadAdvance<ReadCMOV, 0>;
 } // Unsupported = true
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 multiclass UnsupportedSchedZfa {
 let Unsupported = true in {
 def : WriteRes<WriteFCvtF32ToF32, []>;
@@ -280,7 +279,6 @@ def : ReadAdvance<ReadFCvtF64ToF64, 0>;
 def : ReadAdvance<ReadFCvtF16ToF16, 0>;
 } // Unsupported = true
 }
->>>>>>> upstream/main
 
 // Include the scheduler resources for other instruction extensions.
 include "RISCVScheduleZb.td"

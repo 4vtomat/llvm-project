@@ -1427,8 +1427,7 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
   PHINode *IV;
   TruncInst *Trunc;
   const InductionDescriptor &IndDesc;
-<<<<<<< HEAD
-  bool NeedsVectorIV;
+
 #if SIFIVE_CUSTOMIZATION
   bool IsUncountable = false;
 #endif
@@ -1437,46 +1436,32 @@ public:
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
 #if SIFIVE_CUSTOMIZATION
-                                bool NeedsVectorIV, bool IsUncountable = false)
+                                bool IsUncountable = false)
 #else
-                                bool NeedsVectorIV)
+                                )
 #endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
 #if SIFIVE_CUSTOMIZATION
-        Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
+        Trunc(nullptr), IndDesc(IndDesc), IsUncountable(IsUncountable) {
 #else
-        Trunc(nullptr), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-
-public:
-  VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-                                const InductionDescriptor &IndDesc)
-      : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
         Trunc(nullptr), IndDesc(IndDesc) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-                                TruncInst *Trunc, bool NeedsVectorIV, bool IsUncountable = false)
+                                TruncInst *Trunc, bool IsUncountable = false)
 #else
-                                TruncInst *Trunc, bool NeedsVectorIV)
-#endif // SIFIVE_CUSTOMIZATION
-      : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
-#if SIFIVE_CUSTOMIZATION
-        IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV), IsUncountable(IsUncountable) {
-#else
-        IV(IV), Trunc(Trunc), IndDesc(IndDesc), NeedsVectorIV(NeedsVectorIV) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                 TruncInst *Trunc)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
+#if SIFIVE_CUSTOMIZATION
+        IV(IV), Trunc(Trunc), IndDesc(IndDesc), IsUncountable(IsUncountable) {
+#else
         IV(IV), Trunc(Trunc), IndDesc(IndDesc) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
   }
 

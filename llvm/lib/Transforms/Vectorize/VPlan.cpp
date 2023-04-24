@@ -737,7 +737,6 @@ VPlan::~VPlan() {
     delete TripCount;
   if (BackedgeTakenCount)
     delete BackedgeTakenCount;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (RVL)
       delete RVL;
@@ -750,10 +749,6 @@ VPlan::~VPlan() {
     for (std::pair<PHINode *, VPCSAState *> &S : CSAStates)
       delete S.second;
 #endif // SIFIVE_CUSTOMIZATION
-  for (auto &P : VPExternalDefs)
-    delete P.second;
-=======
->>>>>>> upstream/main
 }
 
 VPActiveLaneMaskPHIRecipe *VPlan::getActiveLaneMaskPhi() {

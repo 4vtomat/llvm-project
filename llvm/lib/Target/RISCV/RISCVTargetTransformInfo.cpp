@@ -422,14 +422,8 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
                                              TTI::TargetCostKind CostKind,
                                              int Index, VectorType *SubTp,
                                              ArrayRef<const Value *> Args) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  Kind = improveShuffleKindFromMask(Kind, Mask);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   Kind = improveShuffleKindFromMask(Kind, Mask);
 
->>>>>>> upstream/main
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
 
   // First, handle cases where having a fixed length vector enables us to

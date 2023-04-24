@@ -4153,7 +4153,6 @@ static Instruction *foldICmpXNegX(ICmpInst &I,
   return nullptr;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Detect a min pattern that hasn't been converted to a select yet.
 // TODO: This isn't every form such a min can take.
@@ -4209,7 +4208,6 @@ static bool isPHIMin(ICmpInst &I) {
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static Instruction *foldICmpXorXX(ICmpInst &I, const SimplifyQuery &Q,
                                   InstCombinerImpl &IC) {
   Value *Op0 = I.getOperand(0), *Op1 = I.getOperand(1), *A;
@@ -4233,7 +4231,6 @@ static Instruction *foldICmpXorXX(ICmpInst &I, const SimplifyQuery &Q,
 
   return nullptr;
 }
->>>>>>> upstream/main
 
 /// Try to fold icmp (binop), X or icmp X, (binop).
 /// TODO: A large part of this logic is duplicated in InstSimplify's

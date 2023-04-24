@@ -187,7 +187,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     // vector crypto
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     {"zvkb", RISCVExtensionVersion{0, 1}},
     {"zvkg", RISCVExtensionVersion{0, 1}},
@@ -197,17 +196,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvksed", RISCVExtensionVersion{0, 1}},
     {"zvksh", RISCVExtensionVersion{0, 1}},
 #else // SIFIVE_CUSTOMIZATION
-    {"zvkb", RISCVExtensionVersion{0, 3}},
-    {"zvkg", RISCVExtensionVersion{0, 3}},
-    {"zvkn", RISCVExtensionVersion{0, 3}},
-    {"zvknha", RISCVExtensionVersion{0, 3}},
-    {"zvknhb", RISCVExtensionVersion{0, 3}},
-    {"zvkned", RISCVExtensionVersion{0, 3}},
-    {"zvks", RISCVExtensionVersion{0, 3}},
-    {"zvksed", RISCVExtensionVersion{0, 3}},
-    {"zvksh", RISCVExtensionVersion{0, 3}},
-#endif // SIFIVE_CUSTOMIZATION
-=======
     {"zvbb", RISCVExtensionVersion{0, 5}},
     {"zvbc", RISCVExtensionVersion{0, 5}},
     {"zvkg", RISCVExtensionVersion{0, 5}},
@@ -221,7 +209,7 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvksg", RISCVExtensionVersion{0, 5}},
     {"zvksh", RISCVExtensionVersion{0, 5}},
     {"zvkt", RISCVExtensionVersion{0, 5}},
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 static bool stripExperimentalPrefix(StringRef &Ext) {
@@ -881,12 +869,9 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
   OtherExts.split(Split, '_');
 
   SmallVector<StringRef, 8> AllExts;
-<<<<<<< HEAD
-=======
   std::array<StringRef, 4> Prefix{"z", "s", "x"};
   auto I = Prefix.begin();
   auto E = Prefix.end();
->>>>>>> upstream/main
   if (Split.size() > 1 || Split[0] != "") {
     for (StringRef Ext : Split) {
       if (Ext.empty())
@@ -986,7 +971,6 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if ((Exts.count("zicntr") || Exts.count("zihpm")) && !Exts.count("zicsr"))
     return createStringError(
@@ -1011,9 +995,6 @@ Error RISCVISAInfo::checkDependency() {
         "smwgd requires smwg extension to also be specified");
 #else // SIFIVE_CUSTOMIZATION
 
-  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
-       Exts.count("zvknha") || Exts.count("zvkned") || Exts.count("zvks") ||
-=======
   if (Exts.count("zvbb") && !HasVector)
     return createStringError(
         errc::invalid_argument,
@@ -1025,7 +1006,6 @@ Error RISCVISAInfo::checkDependency() {
         "'zvbc' requires 'v' or 'zve64*' extension to also be specified");
 
   if ((Exts.count("zvkg") || Exts.count("zvkned") || Exts.count("zvknha") ||
->>>>>>> upstream/main
        Exts.count("zvksed") || Exts.count("zvksh")) &&
       !HasVector)
     return createStringError(
@@ -1075,7 +1055,6 @@ static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
 static const char *ImpliedExtsZvfh[] = {"zve32f"};
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
@@ -1083,11 +1062,6 @@ static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 #else // SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb", "zvkb"};
-static const char *ImpliedExtsZvknhb[] = {"zvknha"};
-static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
-#endif // SIFIVE_CUSTOMIZATION
-=======
 static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
                                         "zvkt"};
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
@@ -1096,7 +1070,7 @@ static const char *ImpliedExtsZvks[] = {"zvbb", "zvbc", "zvksed", "zvksh",
                                         "zvkt"};
 static const char *ImpliedExtsZvksg[] = {"zvks", "zvkg"};
 static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZfa[] = {"f"};
@@ -1145,11 +1119,8 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zvkng"}, {ImpliedExtsZvkng}},
     {{"zvknhb"}, {ImpliedExtsZvknhb}},
     {{"zvks"}, {ImpliedExtsZvks}},
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
     {{"zvksg"}, {ImpliedExtsZvksg}},
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     {{"zvl1024b"}, {ImpliedExtsZvl1024b}},
     {{"zvl128b"}, {ImpliedExtsZvl128b}},
     {{"zvl16384b"}, {ImpliedExtsZvl16384b}},

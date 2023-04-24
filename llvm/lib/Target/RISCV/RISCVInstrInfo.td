@@ -2127,8 +2127,4 @@ include "RISCVInstrInfoZihintntl.td"
 
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
-<<<<<<< HEAD
-include "RISCVInstrInfoZihintntl.td"
-=======
 include "RISCVInstrInfoXSf.td"
->>>>>>> upstream/main

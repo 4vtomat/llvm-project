@@ -9942,31 +9942,22 @@ createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
   VPValue *Step =
       vputils::getOrCreateVPValueForSCEVExpr(Plan, IndDesc.getStep(), SE);
   if (auto *TruncI = dyn_cast<TruncInst>(PhiOrTrunc)) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     return new VPWidenIntOrFpInductionRecipe(
-        Phi, Start, Step, IndDesc, TruncI, !NeedsScalarIVOnly,
+        Phi, Start, Step, IndDesc, TruncI,
         CM.Legal->isVectorizableUncountable());
 #else
-    return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI,
-                                             !NeedsScalarIVOnly);
+    return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI);
 #endif // SIFIVE_CUSTOMIZATION
   }
   assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
 #if SIFIVE_CUSTOMIZATION
   return new VPWidenIntOrFpInductionRecipe(
-      Phi, Start, Step, IndDesc, !NeedsScalarIVOnly,
+      Phi, Start, Step, IndDesc,
       CM.Legal->isVectorizableUncountable());
 #else
-  return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc,
-                                           !NeedsScalarIVOnly);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI);
-  }
-  assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
   return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 VPRecipeBase *VPRecipeBuilder::tryToOptimizeInductionPHI(
@@ -10222,13 +10213,12 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands.begin(), Operands.end());
       VPValue *Mask = createBlockInMask(I->getParent(), *Plan);
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
       assert((Mask || Legal->useVLAVectorizer()) &&
              "Mask cannot be nullptr for in non RVV VLA vectorization");
       if (Mask) {
-        VPValue *One = Plan->getOrAddExternalDef(
+        VPValue *One = Plan->getVPValueOrAddLiveIn(
             ConstantInt::get(I->getType(), 1u, false));
         auto *SafeRHS = new VPInstruction(
             Instruction::Select, {Mask, Ops[1], One}, I->getDebugLoc());
@@ -10236,15 +10226,6 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
         Ops[1] = SafeRHS;
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *One = Plan->getVPValueOrAddLiveIn(
-          ConstantInt::get(I->getType(), 1u, false));
-      auto *SafeRHS =
-         new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
-                           I->getDebugLoc());
-      VPBB->appendRecipe(SafeRHS);
-      Ops[1] = SafeRHS;
->>>>>>> upstream/main
       return new VPWidenRecipe(*I, make_range(Ops.begin(), Ops.end()));
     }
     LLVM_FALLTHROUGH;
@@ -11011,8 +10992,7 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
         continue;
       }
       // Otherwise, add the new recipe.
-<<<<<<< HEAD
-      VPRecipeBase *Recipe = RecipeOrValue.get<VPRecipeBase *>();
+      VPRecipeBase *Recipe = cast<VPRecipeBase *>(RecipeOrValue);
 #if SIFIVE_CUSTOMIZATION
       // Branches do not define any value and need to be specialized
       if (Legal->isVectorizableUncountable())
@@ -11023,9 +11003,6 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
             continue;
           }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPRecipeBase *Recipe = cast<VPRecipeBase *>(RecipeOrValue);
->>>>>>> upstream/main
       for (auto *Def : Recipe->definedValues()) {
         auto *UV = Def->getUnderlyingValue();
         Plan->addVPValue(UV, Def);

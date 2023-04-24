@@ -1252,16 +1252,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
-<<<<<<< HEAD
+                         ISD::CONCAT_VECTORS,
                          ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
                          ISD::VP_STORE,                // SIFIVE
                          ISD::SPLAT_VECTOR,            // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
                          ISD::INTRINSIC_W_CHAIN});     // SIFIVE
 #endif
-=======
-                         ISD::CONCAT_VECTORS});
->>>>>>> upstream/main
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
   if (Subtarget.useRVVForFixedLengthVectors())

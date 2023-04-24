@@ -7395,7 +7395,6 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
       // Found the bunch of extractelement instructions that must be gathered
       // into a vector and can be represented as a permutation elements in a
       // single input vector or of 2 input vectors.
-<<<<<<< HEAD
       InstructionCost Cost =
           computeExtractCost(VL, VecTy, *ExtractShuffle, ExtractMask, *TTI);
       if (NeedToShuffleReuses)
@@ -7525,9 +7524,6 @@ InstructionCost BoUpSLP::getEntryCost(const TreeEntry *E,
         }
         return ReuseShuffleCost + GatherCost - ScalarsCost;
       }
-=======
-      Cost += computeExtractCost(VL, VecTy, *ExtractShuffle, ExtractMask, *TTI);
->>>>>>> upstream/main
     }
     Estimator.gather(
         GatheredScalars,
