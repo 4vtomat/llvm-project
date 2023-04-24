@@ -131,23 +131,23 @@ define void @main() {
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_3)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
 ; CHECK-NEXT:    vmv1r.v v0, v1
-; CHECK-NEXT:    vnsrl.wi v16, v12, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v12, v12, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 4
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl4r.v v12, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vaaddu.vv v8, v12, v8, v0.t
+; CHECK-NEXT:    vl4r.v v16, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vaaddu.vv v8, v16, v8, v0.t
 ; CHECK-NEXT:    vmadd.vx v20, a0, v8, v0.t
 ; CHECK-NEXT:    lui a0, 854558
 ; CHECK-NEXT:    addiw a0, a0, 733
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
-; CHECK-NEXT:    vnmsac.vx v16, a0, v8, v0.t
+; CHECK-NEXT:    vnmsac.vx v12, a0, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vsseg2e64.v v20, (a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vsseg2e32.v v16, (a0)
+; CHECK-NEXT:    vsseg2e32.v v12, (a0)
 ;
 ; SUBREG_LIVENESS-LABEL: main:
 ; SUBREG_LIVENESS:       # %bb.0: # %entry

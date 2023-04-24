@@ -5,8 +5,7 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine(<vscale x 4 x i64> %x, <vscal
 ; CHECK-LABEL: test_vp_xor_icmp_combine:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmslt.vv v16, v8, v12, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v16
+; CHECK-NEXT:    vmslt.vv v0, v8, v12, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %allones = shufflevector <vscale x 4 x i1> %head, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -37,8 +36,8 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine_not_allones(<vscale x 4 x i64
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
-; CHECK-NEXT:    vmsle.vv v17, v12, v8, v0.t
-; CHECK-NEXT:    vmxor.mm v0, v17, v16
+; CHECK-NEXT:    vmsle.vv v8, v12, v8, v0.t
+; CHECK-NEXT:    vmxor.mm v0, v8, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> zeroinitializer, i1 1, i32 1
   %notallones = insertelement <vscale x 4 x i1> %head, i1 1, i32 2
@@ -51,8 +50,8 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine_different_mask(<vscale x 4 x 
 ; CHECK-LABEL: test_vp_xor_icmp_combine_different_mask:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmsle.vv v16, v12, v8, v0.t
-; CHECK-NEXT:    vmnot.m v0, v16
+; CHECK-NEXT:    vmsle.vv v8, v12, v8, v0.t
+; CHECK-NEXT:    vmnot.m v0, v8
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %allones = shufflevector <vscale x 4 x i1> %head, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -65,8 +64,7 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine(<vscale x 4 x double> %x, <vs
 ; CHECK-LABEL: test_vp_xor_fcmp_combine:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmflt.vv v16, v8, v12, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v16
+; CHECK-NEXT:    vmflt.vv v0, v8, v12, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %allones = shufflevector <vscale x 4 x i1> %head, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -97,8 +95,8 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x dou
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
-; CHECK-NEXT:    vmflt.vv v17, v8, v12, v0.t
-; CHECK-NEXT:    vmxnor.mm v0, v17, v16
+; CHECK-NEXT:    vmflt.vv v8, v8, v12, v0.t
+; CHECK-NEXT:    vmxnor.mm v0, v8, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> zeroinitializer, i1 1, i32 1
   %notallones = insertelement <vscale x 4 x i1> %head, i1 1, i32 2
@@ -113,8 +111,8 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_different_mask(<vscale x 4 x 
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmset.m v16
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmflt.vv v17, v8, v12, v0.t
-; CHECK-NEXT:    vmxnor.mm v0, v17, v16
+; CHECK-NEXT:    vmflt.vv v8, v8, v12, v0.t
+; CHECK-NEXT:    vmxnor.mm v0, v8, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %allones = shufflevector <vscale x 4 x i1> %head, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
