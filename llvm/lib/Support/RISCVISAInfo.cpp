@@ -969,11 +969,6 @@ Error RISCVISAInfo::checkDependency() {
         "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
 #if SIFIVE_CUSTOMIZATION
-  if ((Exts.count("zicntr") || Exts.count("zihpm")) && !Exts.count("zicsr"))
-    return createStringError(
-        errc::invalid_argument,
-        "zicntr and zihpm requires zicsr to also be specified");
-
   if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvknha") ||
        Exts.count("zvkns") || Exts.count("zvksed") || Exts.count("zvksh")) &&
       !HasVector)
@@ -1022,6 +1017,10 @@ static const char *ImpliedExtsZfinx[] = {"zicsr"};
 static const char *ImpliedExtsZdinx[] = {"zfinx"};
 static const char *ImpliedExtsZhinxmin[] = {"zfinx"};
 static const char *ImpliedExtsZhinx[] = {"zfinx"};
+#if SIFIVE_CUSTOMIZATION
+static const char *ImpliedExtsZicntr[] = {"zicsr"};
+static const char *ImpliedExtsZihpm[] = {"zicsr"};
+#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZve64d[] = {"zve64f"};
 static const char *ImpliedExtsZve64f[] = {"zve64x", "zve32f"};
 static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
@@ -1088,6 +1087,10 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zfinx"}, {ImpliedExtsZfinx}},
     {{"zhinx"}, {ImpliedExtsZhinx}},
     {{"zhinxmin"}, {ImpliedExtsZhinxmin}},
+#if SIFIVE_CUSTOMIZATION
+    {{"zicntr"}, {ImpliedExtsZicntr}},
+    {{"zihpm"}, {ImpliedExtsZihpm}},
+#endif // SIFIVE_CUSTOMIZATION
     {{"zk"}, {ImpliedExtsZk}},
     {{"zkn"}, {ImpliedExtsZkn}},
     {{"zks"}, {ImpliedExtsZks}},
