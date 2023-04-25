@@ -546,7 +546,7 @@ def RISCVVPseudosTable : GenericTable {
   let FilterClass = "RISCVVPseudo";
   let CppTypeName = "PseudoInfo";
 #ifdef SIFIVE_CUSTOMIZATION
-  let Fields = [ "Pseudo", "BaseInstr", "TargetOverlapConstraintType"];
+  let Fields = [ "Pseudo", "BaseInstr"];
 #endif // SIFIVE_CUSTOMIZATION
   let PrimaryKey = [ "Pseudo" ];
   let PrimaryKeyName = "getPseudoInfo";
@@ -2097,8 +2097,8 @@ multiclass VPseudoILoad<bit Ordered, int TargetConstraintType = 1> {
           defvar IdxVreg = idx_lmul.vrclass;
           defvar HasConstraint = !ne(sew, eew);
           defvar Order = !if(Ordered, "O", "U");
-          defvar NewTypeConstraints = !if(!or(!eq(octuple_emul, lmul.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(octuple_emul, lmul.octuple), 2, 3));
 #ifdef SIFIVE_CUSTOMIZATION
+          defvar NewTypeConstraints = !if(!or(!eq(octuple_emul, lmul.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(octuple_emul, lmul.octuple), 2, 3));
           defvar UseNewTypeConstraints = !if(!eq(TargetConstraintType, 1), 1, NewTypeConstraints);
 #endif // SIFIVE_CUSTOMIZATION
           let VLMul = lmul.value in {

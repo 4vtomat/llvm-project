@@ -1725,14 +1725,9 @@ void RISCVInstrInfo::genAlternativeCodeSequence(
 }
 
 #if SIFIVE_CUSTOMIZATION
-int RISCVInstrInfo::getOverlapConstraintsFromMI(uint16_t RVVPseudoOpcode) {
-  const RISCVVPseudosTable::PseudoInfo *RVV =
-      RISCVVPseudosTable::getPseudoInfo(RVVPseudoOpcode);
-
-  if (!RVV)
-    return 0;
-
-  return RVV->TargetOverlapConstraintType;
+unsigned RISCVInstrInfo::getOverlapConstraintsFromMI(const MCInstrDesc &Desc) {
+  return (Desc.TSFlags & RISCVII::TargetOverlapConstraintTypeMask) >>
+         RISCVII::TargetOverlapConstraintTypeShift;
 }
 
 static bool getConstrainsBetweenDstAndSrc(const MachineInstr *MBBI,
@@ -1791,8 +1786,8 @@ static bool getConstraintsWithDestAndAllSrc(const MachineInstr *MBBI,
 }
 
 static bool hasTargetInterference(const MachineInstr *MBBI) {
-  int OverlapConstraintsType =
-      RISCVInstrInfo::getOverlapConstraintsFromMI(MBBI->getOpcode());
+  unsigned OverlapConstraintsType =
+      RISCVInstrInfo::getOverlapConstraintsFromMI(MBBI->getDesc());
   if (OverlapConstraintsType == 2 || OverlapConstraintsType == 3)
     return getConstraintsWithDestAndAllSrc(MBBI, OverlapConstraintsType);
 

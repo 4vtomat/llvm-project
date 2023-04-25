@@ -903,8 +903,8 @@ static bool checkConstraintsWithTwoOperand(
   unsigned SrcRegIndex = RISCVRegisterInfo::getMCRegIndex(SrcReg, MRI);
   unsigned SrcRegLMUL = RISCVRegisterInfo::getMCRegLMUL(SrcReg);
 
-  int OverlapConstraints =
-      RISCVInstrInfo::getOverlapConstraintsFromMI(MI->getOpcode());
+  unsigned OverlapConstraints =
+      RISCVInstrInfo::getOverlapConstraintsFromMI(MI->getDesc());
   if (OverlapConstraints == 2)
     return RISCVRegisterInfo::isRVVConstraintsType2(DestRegIndex, DestRegLMUL,
                                                     SrcRegIndex, SrcRegLMUL);
@@ -992,12 +992,9 @@ BitVector RISCVRegisterInfo::getTargetInterferenceReg(
 }
 
 bool RISCVRegisterInfo::needConstraintsMI(const MachineInstr *MI) const {
-  int OverlapConstraints =
-      RISCVInstrInfo::getOverlapConstraintsFromMI(MI->getOpcode());
-  if ((OverlapConstraints == 2 || OverlapConstraints == 3))
-    return true;
-
-  return false;
+  unsigned OverlapConstraints =
+      RISCVInstrInfo::getOverlapConstraintsFromMI(MI->getDesc());
+  return (OverlapConstraints == 2 || OverlapConstraints == 3);
 }
 
 bool RISCVRegisterInfo::enableTargetInterference() const {

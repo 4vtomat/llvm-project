@@ -113,6 +113,10 @@ enum {
 #if SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
   // each subsequent TSFlag.
+
+  TargetOverlapConstraintTypeShift = 61,
+  TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
+
   HasRoundModeOpShift = 63,
   HasRoundModeOpMask = 1ULL << HasRoundModeOpShift,
 #endif // SIFIVE_CUSTOMIZATION
