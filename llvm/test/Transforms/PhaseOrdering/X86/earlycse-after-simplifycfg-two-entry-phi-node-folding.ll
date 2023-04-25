@@ -10,11 +10,20 @@ define dso_local void @foo(ptr %in, i64 %lo, i64 %hi, i32 %ishi) #0 {
 ; CHECK-LABEL: @foo(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[ISHI:%.*]], 0
-; CHECK-NEXT:    [[LO_HI:%.*]] = select i1 [[TOBOOL_NOT]], i64 [[LO:%.*]], i64 [[HI:%.*]]
-; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i32, ptr [[IN:%.*]], i64 [[LO_HI]]
+; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[IF_ELSE:%.*]], label [[IF_THEN:%.*]]
+; CHECK:       if.then:
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[IN:%.*]], i64 [[HI:%.*]]
+; CHECK-NEXT:    [[ARRAYVAL:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[INC:%.*]] = add nsw i32 [[ARRAYVAL]], 1
+; CHECK-NEXT:    store i32 [[INC]], ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    br label [[IF_END:%.*]]
+; CHECK:       if.else:
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i32, ptr [[IN]], i64 [[LO:%.*]]
 ; CHECK-NEXT:    [[ARRAYVAL2:%.*]] = load i32, ptr [[ARRAYIDX1]], align 4
 ; CHECK-NEXT:    [[INC2:%.*]] = add nsw i32 [[ARRAYVAL2]], 1
 ; CHECK-NEXT:    store i32 [[INC2]], ptr [[ARRAYIDX1]], align 4
+; CHECK-NEXT:    br label [[IF_END]]
+; CHECK:       if.end:
 ; CHECK-NEXT:    ret void
 ;
 entry:
