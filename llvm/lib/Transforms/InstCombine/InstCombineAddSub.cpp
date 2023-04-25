@@ -1793,6 +1793,28 @@ Instruction *InstCombinerImpl::visitFAdd(BinaryOperator &I) {
                                      {X->getType()}, {NewStartC, X}, &I));
     }
 
+#if SIFIVE_CUSTOMIZATION
+    Value *Mask, *EVL;
+    if (match(&I, m_c_FAdd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fadd>(
+                               m_AnyZeroFP(), m_Value(X), m_Value(Mask),
+                               m_Value(EVL))), m_Value(Y)))) {
+      // fadd (rdx 0.0, X), Y --> rdx Y, X
+      return replaceInstUsesWith(
+          I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_fadd,
+                                     {X->getType()}, {Y, X, Mask, EVL}, &I));
+    }
+
+    if (match(LHS, m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fadd>(
+            m_APFloat(StartC), m_Value(X), m_Value(Mask), m_Value(EVL)))) &&
+        match(RHS, m_APFloat(C))) {
+      // fadd (rdx StartC, X), C --> rdx (C + StartC), X
+      Constant *NewStartC = ConstantFP::get(I.getType(), *C + *StartC);
+      return replaceInstUsesWith(
+          I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_fadd,
+                                     {X->getType()}, {NewStartC, X, Mask, EVL}, &I));
+    }
+#endif
+
     // (X * MulC) + X --> X * (MulC + 1.0)
     Constant *MulC;
     if (match(&I, m_c_FAdd(m_FMul(m_Value(X), m_ImmConstant(MulC)),
