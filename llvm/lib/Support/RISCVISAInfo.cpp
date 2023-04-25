@@ -71,9 +71,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"shvstvecd", RISCVExtensionVersion{1, 0}},
     {"shvsatpa", RISCVExtensionVersion{1, 0}},
     {"shgatpa", RISCVExtensionVersion{1, 0}},
-    {"smwg", RISCVExtensionVersion{0, 3}},
-    {"smwgd", RISCVExtensionVersion{0, 3}},
-    {"sswg", RISCVExtensionVersion{0, 3}},
 #endif // SIFIVE_CUSTOMIZATION
 
     {"h", RISCVExtensionVersion{1, 0}},
@@ -175,6 +172,10 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
+    {"smwg", RISCVExtensionVersion{0, 3}},
+    {"smwgd", RISCVExtensionVersion{0, 3}},
+    {"sswg", RISCVExtensionVersion{0, 3}},
+
     {"zihintntl", RISCVExtensionVersion{0, 2}},
 
     {"zca", RISCVExtensionVersion{1, 0}},

@@ -134,20 +134,20 @@ def FeatureStdExtShgatpa
                        "be supported.)", []>;
 
 def FeatureStdExtSmwg
-    : SubtargetFeature<"smwg", "HasStdExtSmwg", "true",
+    : SubtargetFeature<"experimental-smwg", "HasStdExtSmwg", "true",
                        "'Smwg' (The Smwg extension adds the mlwid CSR, which is "
                        "an M-mode read-write CSR, whose least-significant bits "
                        "set the WID to be used by lower-privilege modes.)", []>;
 
 def FeatureStdExtSmwgd
-    : SubtargetFeature<"smwgd", "HasStdExtSmwgd", "true",
+    : SubtargetFeature<"experimental-smwgd", "HasStdExtSmwgd", "true",
                        "'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode "
                        "read-write CSR. The mwiddeleg register represents a set "
                        "of WIDs as a bit vector with WID i represented by bit i "
                        "of the register.)", []>;
 
 def FeatureStdExtSswg
-    : SubtargetFeature<"sswg", "HasStdExtSswg", "true",
+    : SubtargetFeature<"experimental-sswg", "HasStdExtSswg", "true",
                        "'Sswg' (The Sswg extension adds the [H]S-mode read-write "
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;

@@ -92,9 +92,9 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV32ZVKSED %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV32ZVKSH %s
 ; SIFIVE_CUSTOMIZATION
-; RUN: llc -mtriple=riscv32 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
-; RUN: llc -mtriple=riscv32 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
-; RUN: llc -mtriple=riscv32 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-smwg -mattr=+experimental-smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
 ; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-zicond %s -o - | FileCheck --check-prefix=RV32ZICOND %s
 
@@ -201,9 +201,9 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksed %s -o - | FileCheck --check-prefix=RV64ZVKSED %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zve32x -mattr=+experimental-zvksh %s -o - | FileCheck --check-prefix=RV64ZVKSH %s
 ; SIFIVE_CUSTOMIZATION
-; RUN: llc -mtriple=riscv64 -mattr=+smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
-; RUN: llc -mtriple=riscv64 -mattr=+smwg -mattr=+smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
-; RUN: llc -mtriple=riscv64 -mattr=+sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-smwg -mattr=+experimental-smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
 ; end SIFIVE_CUSTOMIZATION
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zicond %s -o - | FileCheck --check-prefix=RV64ZICOND %s
 

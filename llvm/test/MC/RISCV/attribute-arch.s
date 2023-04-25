@@ -175,13 +175,13 @@
 .attribute arch, "rv32ishgatpa"
 # CHECK: attribute      5, "rv32i2p1_shgatpa1p0"
 
-.attribute arch, "rv32ismwg"
+.attribute arch, "rv32ismwg0p3"
 # CHECK: attribute      5, "rv32i2p1_smwg0p3"
 
-.attribute arch, "rv32i_smwg_smwgd"
+.attribute arch, "rv32i_smwg0p3_smwgd0p3"
 # CHECK: attribute      5, "rv32i2p1_smwg0p3_smwgd0p3"
 
-.attribute arch, "rv32i_sswg"
+.attribute arch, "rv32i_sswg0p3"
 # CHECK: attribute      5, "rv32i2p1_sswg0p3"
 
 ## SIFIVE_CUSTOMIZATION

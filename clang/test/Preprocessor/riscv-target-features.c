@@ -673,21 +673,27 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-SHGATPA-EXT %s
 // CHECK-SHGATPA-EXT: __riscv_shgatpa  1000000{{$}}
 
-// RUN: %clang -target riscv32 -march=rv32ismwg -x c -E -dM %s \
+// RUN: %clang -target riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ismwg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMWG-EXT %s
-// RUN: %clang -target riscv64 -march=rv64ismwg -x c -E -dM %s \
+// RUN: %clang -target riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64ismwg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMWG-EXT %s
 // CHECK-SMWG-EXT: __riscv_smwg  3000{{$}}
 
-// RUN: %clang -target riscv32 -march=rv32i_smwg_smwgd -x c -E -dM %s \
+// RUN: %clang -target riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32i_smwg_smwgd -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMWGD-EXT %s
-// RUN: %clang -target riscv64 -march=rv64i_smwg_smwgd -x c -E -dM %s \
+// RUN: %clang -target riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64i_smwg_smwgd -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMWGD-EXT %s
 // CHECK-SMWGD-EXT: __riscv_smwgd  3000{{$}}
 
-// RUN: %clang -target riscv32 -march=rv32isswg -x c -E -dM %s \
+// RUN: %clang -target riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32isswg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
-// RUN: %clang -target riscv64 -march=rv64isswg -x c -E -dM %s \
+// RUN: %clang -target riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64isswg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
 // CHECK-SSWG-EXT: __riscv_sswg  3000{{$}}
 //
