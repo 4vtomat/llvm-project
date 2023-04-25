@@ -338,7 +338,6 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixdef_sabc -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-X-ORDER %s
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // RV32-X-ORDER: "-target-abi" "ilp32"
 // end SIFIVE_CUSTOMIZATION
@@ -348,11 +347,6 @@
 // SIFIVE_CUSTOMIZATION
 // RV32-S-ORDER: "-target-abi" "ilp32"
 // end SIFIVE_CUSTOMIZATION
-=======
-// RV32-X-ORDER: error: invalid arch name 'rv32ixdef_sabc',
-// RV32-X-ORDER: standard supervisor-level extension not given
-// RV32-X-ORDER: in canonical order 'sabc'
->>>>>>> upstream/main
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XDUP %s
