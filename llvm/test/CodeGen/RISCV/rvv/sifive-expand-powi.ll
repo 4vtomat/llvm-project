@@ -29,8 +29,8 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV32-NEXT:    j .LBB0_1
 ; RV32-NEXT:  .LBB0_4: # %powi-post-loop
 ; RV32-NEXT:    lui a1, 260096
-; RV32-NEXT:    fmv.w.x ft0, a1
-; RV32-NEXT:    vfrdiv.vf v8, v9, ft0, v0.t
+; RV32-NEXT:    fmv.w.x fa5, a1
+; RV32-NEXT:    vfrdiv.vf v8, v9, fa5, v0.t
 ; RV32-NEXT:    bltz a0, .LBB0_6
 ; RV32-NEXT:  # %bb.5: # %powi-post-loop
 ; RV32-NEXT:    vmv1r.v v8, v9
@@ -63,8 +63,8 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV64-NEXT:    j .LBB0_1
 ; RV64-NEXT:  .LBB0_4: # %powi-post-loop
 ; RV64-NEXT:    lui a1, 260096
-; RV64-NEXT:    fmv.w.x ft0, a1
-; RV64-NEXT:    vfrdiv.vf v8, v9, ft0, v0.t
+; RV64-NEXT:    fmv.w.x fa5, a1
+; RV64-NEXT:    vfrdiv.vf v8, v9, fa5, v0.t
 ; RV64-NEXT:    bltz a0, .LBB0_6
 ; RV64-NEXT:  # %bb.5: # %powi-post-loop
 ; RV64-NEXT:    vmv1r.v v8, v9
@@ -105,8 +105,8 @@ define <vscale x 1 x float> @foo2(<vscale x 1 x float> %a, i32 %b) {
 ; RV32-NEXT:    bgez a0, .LBB1_6
 ; RV32-NEXT:  # %bb.5:
 ; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x ft0, a0
-; RV32-NEXT:    vfrdiv.vf v8, v8, ft0
+; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vfrdiv.vf v8, v8, fa5
 ; RV32-NEXT:  .LBB1_6: # %powi-post-loop
 ; RV32-NEXT:    ret
 ;
@@ -139,8 +139,8 @@ define <vscale x 1 x float> @foo2(<vscale x 1 x float> %a, i32 %b) {
 ; RV64-NEXT:    bgez a0, .LBB1_6
 ; RV64-NEXT:  # %bb.5:
 ; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x ft0, a0
-; RV64-NEXT:    vfrdiv.vf v8, v8, ft0
+; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vfrdiv.vf v8, v8, fa5
 ; RV64-NEXT:  .LBB1_6: # %powi-post-loop
 ; RV64-NEXT:    ret
 entry:
