@@ -45,6 +45,9 @@ FUNCTION_PASS("ee-instrument", EntryExitInstrumenterPass, (false))
 FUNCTION_PASS("post-inline-ee-instrument", EntryExitInstrumenterPass, (true))
 FUNCTION_PASS("expand-large-div-rem", ExpandLargeDivRemPass, ())
 FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass, ())
+#ifdef SIFIVE_CUSTOMIZATION
+FUNCTION_PASS("expand-powi", ExpandPowiPass, ())
+#endif
 FUNCTION_PASS("expand-reductions", ExpandReductionsPass, ())
 FUNCTION_PASS("expandvp", ExpandVectorPredicationPass, ())
 FUNCTION_PASS("lowerinvoke", LowerInvokePass, ())

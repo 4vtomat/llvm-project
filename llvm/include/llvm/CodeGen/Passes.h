@@ -517,6 +517,11 @@ namespace llvm {
   // Expands large div/rem instructions.
   FunctionPass *createExpandLargeFpConvertPass();
 
+#if SIFIVE_CUSTOMIZATION
+  // Expands powi instructions.
+  FunctionPass *createExpandPowiPass();
+#endif
+
   // This pass expands memcmp() to load/stores.
   FunctionPass *createExpandMemCmpPass();
 
