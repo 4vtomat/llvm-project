@@ -1700,9 +1700,6 @@ RISCVAsmParser::parseCSRSystemRegister(OperandVector &Operands) {
         Warning(S, "'" + Identifier + "' is a deprecated alias for '" +
                        SysReg->Name + "'");
 
-    if (SysReg && SysReg->isDeprecated)
-      Warning(S, std::string("'") + SysReg->Name + "' is deprecated");
-
     // Accept a named Sys Reg if the required features are present.
     if (SysReg) {
       if (!SysReg->haveRequiredFeatures(getSTI().getFeatureBits())) {
