@@ -542,7 +542,6 @@ namespace {
     SDValue visitFMULForFMADistributiveCombine(SDNode *N);
 
 #if SIFIVE_CUSTOMIZATION
-    SDValue visitVPFADDForVPFMACombine(SDNode *N);
     SDValue visitVPXOR(SDNode *N);
     SDValue visitVPFDIV(SDNode *N);
     SDValue visitVPFSQRT(SDNode *N);
