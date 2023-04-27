@@ -1,4 +1,5 @@
-; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s
+; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-ORDERED
+; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -force-ordered-reductions=false -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-UNORDERED
 
 ;
 ; float reassociate_on_vec_forced(const int32_t n, float *a)
@@ -56,7 +57,8 @@ for.body:                                         ; preds = %for.body.preheader,
 ;}
 ;
 ; CHECK: LV: Checking a loop in 'reassociate_off_vec_forced'
-; CHECK: LV: loop not vectorized: cannot prove it is safe to reorder floating-point operations
+; CHECK-ORDERED: Executing best plan with
+; CHECK-UNORDERED: LV: loop not vectorized: cannot prove it is safe to reorder floating-point operations
 ;
 define dso_local float @reassociate_off_vec_forced(i32 noundef signext %n, ptr nocapture noundef readonly %a) local_unnamed_addr {
 entry:
