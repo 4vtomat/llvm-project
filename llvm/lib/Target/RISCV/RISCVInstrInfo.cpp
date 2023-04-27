@@ -2855,35 +2855,38 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
 
   for (RISCVMatInt::Inst &Inst : Seq) {
     bool LastItem = ++Num == Seq.size();
-    if (Inst.getOpcode() == RISCV::LUI) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
+    switch (Inst.getOpndKind()) {
+    case RISCVMatInt::Imm:
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addImm(Inst.getImm());
-    } else if (Inst.getOpcode() == RISCV::ADD_UW) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::ADD_UW))
+      break;
+    case RISCVMatInt::RegX0:
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(RISCV::X0);
-    } else if (Inst.getOpcode() == RISCV::SH1ADD ||
-               Inst.getOpcode() == RISCV::SH2ADD ||
-               Inst.getOpcode() == RISCV::SH3ADD) {
+      break;
+    case RISCVMatInt::RegReg:
       BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable));
-    } else {
+      break;
+    case RISCVMatInt::RegImm:
       BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addImm(Inst.getImm());
+      break;
     }
     // Only the first instruction has X0 as its source.
     SrcReg = DstReg;
