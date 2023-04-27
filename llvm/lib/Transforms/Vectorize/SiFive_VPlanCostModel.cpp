@@ -380,10 +380,6 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
   unsigned AS = getLoadStoreAddressSpace(const_cast<Instruction *>(I));
   if (IsConsecutive) {
     InstructionCost Cost = 0;
-    // FIXME: Re-enable unmasked load/store estimation. There's a huge
-    // discrepancy between getMaskedMemoryOpCost and getMemoryOpCost. The latter
-    // seems to be more precise and DLEN-aware, however, to keep original's cost
-    // model behavior, use getMaskedMemoryOpCost for now.
     if (!IsSpeculative || IsMasked) {
       Cost += TTI.getMaskedMemoryOpCost(I->getOpcode(), Ty, Alignment, AS,
                                         CostKind);
@@ -423,6 +419,8 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
       // VPSelectInstruction is generated to emit TU policy. Currently it has no
       // overhead in HW
       return 0;
+    case VPInstruction::CanonicalIVIncrement:
+    case VPInstruction::CanonicalIVIncrementNUW:
     case VPInstruction::BranchOnCount:
       return 1;
     default:

@@ -597,15 +597,7 @@ RISCVTTIImpl::getMaskedMemoryOpCost(unsigned Opcode, Type *Src, Align Alignment,
     return BaseT::getMaskedMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                         CostKind);
 
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: copied from AARCH64, need to improve.
-  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
-  if (!LT.first.isValid())
-    return InstructionCost::getInvalid();
-  return LT.first;
-#else // SIFIVE_CUSTOMIZATION
   return getMemoryOpCost(Opcode, Src, Alignment, AddressSpace, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
@@ -1679,6 +1671,12 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
     }
   }
   Cost += LT.first * getLMULCost(LT.second);
+
+  /// Extra penalty for misaligned load or store
+  if (!Alignment ||
+      (ST->hasKnownDLen() && Alignment.value() < Align(ST->getDLen() / 8)))
+    Cost += 1;
+
   return Cost;
 #else
   InstructionCost BaseCost =
