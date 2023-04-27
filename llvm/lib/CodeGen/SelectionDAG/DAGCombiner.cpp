@@ -26225,6 +26225,14 @@ SDValue DAGCombiner::visitVP_SELECT(SDNode *N) {
     return DAG.getNode(ISD::VP_AND, SDLoc(N), VT, NotCond, F, AllOnes, EVL);
   }
 
+  // select 1, T, F --> T
+  if (isOneOrOneSplat(Cond, /* AllowUndefs */ true))
+    return T;
+
+  // select 0, T, F --> F
+  if (isNullOrNullSplat(Cond, /* AllowUndefs */ true))
+    return F;
+
   return SDValue();
 }
 #endif // SIFIVE_CUSTOMIZATION

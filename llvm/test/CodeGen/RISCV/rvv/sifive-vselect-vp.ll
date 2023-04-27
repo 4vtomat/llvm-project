@@ -45,3 +45,20 @@ define <vscale x 2 x i1> @select_orn_nxv2i1(<vscale x 2 x i1> %a, <vscale x 2 x 
   %v = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> %a, <vscale x 2 x i1> %b, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %evl)
   ret <vscale x 2 x i1> %v
 }
+
+define <vscale x 2 x i1> @select_false_nvx2i1(<vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 zeroext %evl) {
+; CHECK-LABEL: select_false_nvx2i1:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    ret
+  %v = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> zeroinitializer, <vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 %evl)
+  ret <vscale x 2 x i1> %v
+}
+
+define <vscale x 2 x i1> @select_true_nvx2i1(<vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 zeroext %evl) {
+; CHECK-LABEL: select_true_nvx2i1:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
+  %v = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 zeroext %evl)
+  ret <vscale x 2 x i1> %v
+}
