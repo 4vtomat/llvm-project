@@ -253,6 +253,12 @@ bool RISCVTTIImpl::useVLAVectorizer() const {
   return UseVLAVectorizer; // TODO: Replace with a call like
                            // ST->isSiFiveCPU()
 }
+
+InstructionCost RISCVTTIImpl::getCFInstrCost(unsigned Opcode,
+                                             TTI::TargetCostKind CostKind,
+                                             const Instruction *I) {
+  return Opcode == Instruction::PHI ? 0 : 1;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::PopcntSupportKind

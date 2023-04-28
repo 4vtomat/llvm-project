@@ -7791,45 +7791,6 @@ LoopVectorizationCostModel::expectedCost(
     Cost.second |= BlockCost.second;
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // If tail folding is enabled, the cost model does not explicitly considers
-  // the cost of inserting the mask instruction and the additional select
-  // instruction for reductions. The mask is based on the induction variable
-  // which is not taken into consideration when computing FeasibleMaxVF
-  // (getSmallestAndWidestTypes is based on the original scalar loop and does
-  // not consider induction PHI. The induction variable of the vector loop might
-  // actually be different from the scalar loop's induction PHI). This allows
-  // for a FeasibleMaxVF value to be considered which might result in an illegal
-  // type to be used in the mask or select instructions based on the induction
-  // PHI for a given target. For eg. a loop with 32-bit values might result in a
-  // FeasibleMaxVF of 16, however the induction variable based on the 64-bit
-  // trip count would be splat into a <vscale x 16 x i64> vector type to be used
-  // for creating the mask, however, <vscale x 16 x i64> might be an illegal
-  // type for the given target (eg. RISC-V).
-  // FIXME: For now we add a rather inelegant hack after the cost computation to
-  // check if there tail folding is enabled and computing the cost of mask based
-  // on the induction variable type, expecting the TTI to result in an
-  // "infinitely" high cost if the type is illegal. We also just enable for the
-  // case when we are using VP instructions to avoid breaking existing tests.
-  if (Legal->useVLAVectorizer()) {
-    // Add cost of generating a compare instruction to build mask.
-    Type *VectorTy = ToVectorTy(Legal->getWidestInductionType(), VF);
-    InstructionCost MaskCost = TTI.getCmpSelInstrCost(
-        Instruction::ICmp, VectorTy,
-        ToVectorTy(Type::getInt1Ty(VectorTy->getContext()), VF),
-        CmpInst::BAD_ICMP_PREDICATE);
-    bool TypeNotScalarized =
-        VF.isVector() && VectorTy->isVectorTy() &&
-        (isa<ScalableVectorType>(VectorTy) ||
-         TTI.getNumberOfParts(VectorTy) < VF.getKnownMinValue());
-    Cost.first += MaskCost;
-    Cost.second |= TypeNotScalarized;
-
-    LLVM_DEBUG(dbgs() << "LV: Adding cost of predication by tail folding "
-                      << MaskCost << " for VF " << VF << "\n");
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   return Cost;
 }
 
