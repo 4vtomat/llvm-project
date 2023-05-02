@@ -248,9 +248,9 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       // Implement C++'s type "similarity" and consider dis-"similar"
       // pointers distinct.
       if (isa<BuiltinType>(Ty)) {
-        // Void types are generic placeholders, use
+        // Void/Char types are generic placeholders, use
         // default functionality as these commonly alias.
-        if (Ty->isVoidType())
+        if (Ty->isVoidType() || Ty->isCharType())
           return AnyPtr;
 
         llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
