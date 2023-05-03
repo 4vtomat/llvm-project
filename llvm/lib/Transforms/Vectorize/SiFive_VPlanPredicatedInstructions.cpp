@@ -275,7 +275,8 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
                          VPTransformState &State, Intrinsic::ID VPID,
                          unsigned Part) {
   IRBuilderBase &Builder = State.Builder;
-  SmallVector<Type *, 2> TysForDecl = {CI.getType()};
+  auto *DestTy = VectorType::get(CI.getType(), State.VF);
+  SmallVector<Type *, 2> TysForDecl = {DestTy};
   SmallVector<Value *, 4> Args;
   for (auto I : enumerate(ArgOperands.operands())) {
     Value *Arg;
@@ -290,8 +291,8 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
 
   Args.push_back(Builder.getTrueVector(State.VF));
   Args.push_back(State.get(State.Plan->getRVL(), Part));
-  auto *DestTy = VectorType::get(CI.getType(), State.VF);
-  CallInst *V = Builder.CreateIntrinsic(VPID, DestTy, Args, nullptr, "vp.op");
+  CallInst *V =
+      Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
     V->copyFastMathFlags(&CI);
   State.set(Def, V, Part);
