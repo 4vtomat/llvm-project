@@ -457,9 +457,6 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVShiftV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftX",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftI",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpV",     [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpX",     [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpI",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulX",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulAddV",  [SiFive7NVA], mx, IsWorstCase>;
@@ -470,6 +467,12 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVIMovV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovX",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovI",     [SiFive7NVA], mx, IsWorstCase>;
+  }
+  // Mask results can't chain.
+  let Latency = !add(Cycles, 3), ResourceCycles = [Cycles] in {
+    defm "" : LMULWriteResMX<"WriteVICmpV",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICmpX",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICmpI",     [SiFive7NVA], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxList in {
@@ -559,17 +562,23 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVFMulAddV",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMulAddF",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFRecpV",     [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFCmpV",      [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFCmpF",      [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [SiFive7NVA], mx, IsWorstCase>;
+  }
+  let Latency = 4, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVFSgnjV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFSgnjF",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFClassV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMergeV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMovV",      [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [SiFive7NVA], mx, IsWorstCase>;
+  }
+  // Mask results can't chain.
+  let Latency = !add(Cycles, 3), ResourceCycles = [Cycles] in {
+    defm "" : LMULWriteResMX<"WriteVFCmpV",      [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFCmpF",      [SiFive7NVA], mx, IsWorstCase>;
   }
 }
+
 foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSetF<mx>.val in {
     defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
@@ -657,12 +666,15 @@ foreach mx = SchedMxList in {
   defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
   defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxList>.c;
   let Latency = 8, ResourceCycles = [Cycles] in {
+    defm "" : LMULWriteResMX<"WriteVRGatherVX",    [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVRGatherVI",    [SiFive7NVA], mx, IsWorstCase>;
+  }
+  // These are independent of LMUL.
+  let Latency = 4, ResourceCycles = [1] in {
     defm "" : LMULWriteResMX<"WriteVIMovVX",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovXV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMovVF",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMovFV",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVRGatherVX",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVRGatherVI",    [SiFive7NVA], mx, IsWorstCase>;
   }
 }
 
