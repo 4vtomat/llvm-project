@@ -1381,32 +1381,6 @@ RISCVTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
     if (Instruction *V = foldVMergeWithCompare(IC, II))
       return V;
     break;
-  case Intrinsic::riscv_vfmv_v_f:
-    if (isa<UndefValue>(II.getArgOperand(0)) &&
-        isa<ConstantFP>(II.getArgOperand(1))) {
-      APInt IntFromFloat =
-          cast<ConstantFP>(II.getArgOperand(1))->getValue().bitcastToAPInt();
-      if (IntFromFloat != 0 &&
-          RISCVMatInt::getIntMatCost(IntFromFloat,
-                                     II.getType()->getScalarSizeInBits(),
-                                     ST->getFeatureBits()) < 5) {
-        Constant *Val = ConstantInt::get(
-            Type::getIntNTy(II.getContext(),
-                            II.getType()->getScalarSizeInBits()),
-            IntFromFloat);
-        Type *IntResTy = ScalableVectorType::get(
-            Type::getIntNTy(II.getContext(),
-                            II.getType()->getScalarSizeInBits()),
-            cast<ScalableVectorType>(II.getType())->getMinNumElements());
-        CallInst *Vmv = IC.Builder.CreateIntrinsic(
-            Intrinsic::riscv_vmv_v_x,
-            {IntResTy, II.getArgOperand(2)->getType()},
-            {UndefValue::get(IntResTy), Val, II.getArgOperand(2)});
-        return IC.replaceInstUsesWith(
-            II, IC.Builder.CreateBitCast(Vmv, II.getType()));
-      }
-    }
-    break;
   case Intrinsic::riscv_vmv_x_s:
     if (Instruction *V = foldVMV_X_S(IC, II))
       return V;
