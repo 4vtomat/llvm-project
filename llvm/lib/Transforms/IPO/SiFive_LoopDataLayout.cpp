@@ -341,7 +341,7 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
 }
 
 static bool updateParamTypeAttributes(
-    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    const SmallDenseMap<Type *, Type *> &TranslatedTypeMap,
     AttributeList &Attrs, LLVMContext &C) {
   bool UpdatedAttrs = false;
   for (unsigned i = 0; i < Attrs.getNumAttrSets(); ++i)
@@ -349,18 +349,17 @@ static bool updateParamTypeAttributes(
          AttrIdx <= Attribute::LastTypeAttr; AttrIdx++) {
       Attribute::AttrKind TypedAttr = (Attribute::AttrKind)AttrIdx;
       if (Type *ParamTy =
-              Attrs.getAttributeAtIndex(i, TypedAttr).getValueAsType())
-        for (auto &TypePair : TranslatedTypeSet) {
-          Type *OrigTy = TypePair.first;
-          Type *ReplacementTy = TypePair.second;
-          if (ParamTy == OrigTy) {
-            // now replace ParamTy with the ReplacementTy.
-            Attrs = Attrs.replaceAttributeTypeAtIndex(C, i, TypedAttr,
-                                                      ReplacementTy);
-            UpdatedAttrs = true;
-            break;
-          }
+              Attrs.getAttributeAtIndex(i, TypedAttr).getValueAsType()) {
+        auto It = TranslatedTypeMap.find(ParamTy);
+        if (It != TranslatedTypeMap.end()) {
+          Type *ReplacementTy = It->second;
+          // now replace ParamTy with the ReplacementTy.
+          Attrs = Attrs.replaceAttributeTypeAtIndex(C, i, TypedAttr,
+                                                    ReplacementTy);
+          UpdatedAttrs = true;
+          break;
         }
+      }
     }
 
   return UpdatedAttrs;
@@ -407,11 +406,11 @@ static bool updateDereferenceableAttributes(Instruction *Call, unsigned Bytes) {
 
 static bool updateFunctionAttributes(
     Function *F,
-    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet) {
+    const SmallDenseMap<Type *, Type *> &TranslatedTypeMap) {
   // Walk all the Attrs of this function and look for type updates.
   LLVMContext &C = F->getContext();
   AttributeList Attrs = F->getAttributes();
-  bool UpdatedAttrs = updateParamTypeAttributes(TranslatedTypeSet, Attrs, C);
+  bool UpdatedAttrs = updateParamTypeAttributes(TranslatedTypeMap, Attrs, C);
   F->setAttributes(Attrs);
   return UpdatedAttrs;
 }
@@ -1037,7 +1036,7 @@ static void updateCalledFunction(
     const TargetLibraryInfo &TLI, bool IsBaseTy,
     SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses,
     DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
-    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    const SmallDenseMap<Type *, Type *> &TranslatedTypeMap,
     LLVMContext &C, const DataLayout &DL) {
   bool AllowUserFunctionUpdate = true;
   // We can ignore some calls - really what we want to process is user calls
@@ -1069,7 +1068,7 @@ static void updateCalledFunction(
   if (AllowUserFunctionUpdate) {
     AttributeList Attrs = CI->getAttributes();
     // Update this calls attributes if any reference types match
-    updateParamTypeAttributes(TranslatedTypeSet, Attrs, C);
+    updateParamTypeAttributes(TranslatedTypeMap, Attrs, C);
     // TODO: consider adding support for updating dereferenceable attributes for
     // user calls.
     CI->setAttributes(Attrs);
@@ -1168,7 +1167,7 @@ static void doActionsForMatchedType(
     SmallPtrSetImpl<GetElementPtrInst *> &VisitedAddresses,
     SmallPtrSetImpl<StoreInst *> &VisitedStores,
     SmallPtrSetImpl<StoreInst *> &AddedStores,
-    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    const SmallDenseMap<Type *, Type *> &TranslatedTypeMap,
     DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
   auto *Ld = dyn_cast<LoadInst>(RefInst);
   auto *St = dyn_cast<StoreInst>(RefInst);
@@ -1295,7 +1294,7 @@ static void doActionsForMatchedType(
   } else if (auto *CI = dyn_cast<CallInst>(RefInst)) {
     Function *F = RefInst->getParent()->getParent();
     updateCalledFunction(CI, RefInst, RefTy, AltTy, TLI, IsBaseTy,
-                         VisitedAddresses, GEPTypeToIndices, TranslatedTypeSet,
+                         VisitedAddresses, GEPTypeToIndices, TranslatedTypeMap,
                          F->getContext(), DL);
   }
 }
@@ -1308,12 +1307,12 @@ static bool translateReferences(
     std::optional<function_ref<void(CallBase &OldCS, CallBase &NewCS)>>
         ReplaceCallSite,
     const TargetTransformInfo &TTI, const TargetLibraryInfo &TLI,
-    SmallDenseMap<std::pair<Instruction *, Type *>, int> &LocalReferenceMap,
+    SmallDenseMap<Instruction *, Type *> &LocalReferenceMap,
     const SmallVector<Type *> &LocalParamMap,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap,
-    const SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
-    const SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet,
+    const MapVector<Type *, Type *> &UniqueTypeMap,
+    const SmallDenseMap<Type *, Type *> &TranslatedTypeMap,
     DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
   // With opaque pointers, all the input args we want to replace are ptr args,
   // ergo we should be able to re-interpret these pointers and replace their
@@ -1321,7 +1320,7 @@ static bool translateReferences(
   // need to replace type usage for each call graph edge out of F as well.
   // Processing order does not matter now as we have all the information
   // needed to replace AoS references and SoA and its support code.
-  if (updateFunctionAttributes(F, TranslatedTypeSet)) {
+  if (updateFunctionAttributes(F, TranslatedTypeMap)) {
     LLVM_DEBUG(dbgs() << "Function: " << F->getName()
                       << "has argument side effects\n");
   }
@@ -1330,52 +1329,46 @@ static bool translateReferences(
   SmallPtrSet<StoreInst *, 8> AddedStores;
   DataLayout DL = F->getParent()->getDataLayout();
   bool HaveTransformations = false;
-  // For each Local Reference there is an entry in UniqueTypeSet and
-  // in the TranslatedTypeSet, use these to translate each
-  // reference into its new usage.
-  for (auto &References : LocalReferenceMap) {
-    Instruction *RefInst = References.first.first;
-    Type *RefTy = References.first.second;
-    // Foreach unique type pair
-    for (auto &TypePair : UniqueTypeSet) {
-      Type *ArrayTy = TypePair.first;
-      auto *ArrayST = cast<StructType>(ArrayTy);
-      Type *ContainerTy = TypePair.second;
-      // Find the matching replacement type
-      for (auto &TypePair : TranslatedTypeSet) {
-        Type *OrigTy = TypePair.first;
-        Type *ReplacmentTy = TypePair.second;
-        // Recall, we appended the elements
-        // of ArrayTy into ReplacmentTy as arrays
-        // of each local type. The ReplacmentTy looks
-        // just like OrigTy up to the point where
-        // the new fields are added and is used
-        // identically except for the reference to
-        // ArrayTy, which will become unused.
-        if (OrigTy == ContainerTy) {
-          if (RefTy == ContainerTy) {
-            ++NumTransformed;
-            HaveTransformations = true;
-            doActionsForMatchedType(RefInst, ContainerTy, ReplacmentTy, ArrayST,
-                                    /* IsBaseTy */ true, LocalCandidateMap, DL,
-                                    TLI, VisitedAddresses, VisitedStores,
-                                    AddedStores, TranslatedTypeSet,
-                                    GEPTypeToIndices);
-            break;
-          } else if (RefTy == ArrayTy) {
-            ++NumTransformed;
-            HaveTransformations = true;
-            doActionsForMatchedType(RefInst, ArrayTy, ReplacmentTy, ArrayST,
-                                    /*IsBaseTy */ false, LocalCandidateMap, DL,
-                                    TLI, VisitedAddresses, VisitedStores,
-                                    AddedStores, TranslatedTypeSet,
-                                    GEPTypeToIndices);
-            break;
+  // For each Local Reference there is an entry in UniqueTypeMap and in the
+  // TranslatedTypeMap. Use these to translate references into their new usages.
+  for (BasicBlock &BB : *F)
+    for (Instruction &I : BB) {
+      // This step locks processing order
+      auto It = LocalReferenceMap.find(&I);
+      if (It != LocalReferenceMap.end()) {
+        Type *RefTy = It->second;
+        // Foreach unique type pair
+        //   port to MapVector
+        for (auto &TypePair : UniqueTypeMap) {
+          Type *ArrayTy = TypePair.first;
+          auto *ArrayST = cast<StructType>(ArrayTy);
+          Type *ContainerTy = TypePair.second;
+          // Find the matching replacement type
+          // Port to MapVector
+          auto TypeIt = TranslatedTypeMap.find(ContainerTy);
+          if (TypeIt != TranslatedTypeMap.end()) {
+            Type *ReplacmentTy = TypeIt->second;
+            // Recall, we appended the elements of ArrayTy into ReplacmentTy
+            // as arrays of each local type. The ReplacmentTy looks just like
+            // OrigTy up to the point where the new fields are added and is
+            // used identically except for the reference to ArrayTy, which
+            // will become unused.
+            bool IsBaseTy = (RefTy == ContainerTy);
+            if (IsBaseTy || (RefTy == ArrayTy)) {
+              ++NumTransformed;
+              HaveTransformations = true;
+              doActionsForMatchedType(&I, RefTy, ReplacmentTy, ArrayST,
+                                      IsBaseTy, LocalCandidateMap, DL, TLI,
+                                      VisitedAddresses, VisitedStores,
+                                      AddedStores, TranslatedTypeMap,
+                                      GEPTypeToIndices);
+              break;
+            }
           }
         }
       }
     }
-  }
+
   // Now cleanup GEPs we processed and orphaned
   for (auto *CurGEP : VisitedAddresses) {
     if (CurGEP->getNumUses() == 0) {
@@ -1521,7 +1514,7 @@ static bool findRelatedCandidate(
 }
 
 static void examinePhisForReferences(
-    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+    SmallDenseMap<Instruction *, Type *>
         &LocalReferenceMap,
     Value *MemPtr, Type *ContainerTy, Module *M) {
   // Build a list of objects from the ptr phi to examine
@@ -1555,7 +1548,7 @@ static void examinePhisForReferences(
       // Thought: perhaps we want to translate these
       // GEPs back into a recognizable form.
       if (BaseTy == Int8Ty)
-        LocalReferenceMap[{const_cast<LoadInst*>(Ld), ContainerTy}]++;
+        LocalReferenceMap[const_cast<LoadInst*>(Ld)] = ContainerTy;
     }
 }
 
@@ -1616,10 +1609,10 @@ static bool legalLoadRelationships(
 }
 
 static bool addReferencesForFunction(
-    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+    SmallDenseMap<Instruction *, Type *>
         &LocalReferenceMap,
     SmallVectorImpl<Type *> &LocalParamMap,
-    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet, Function *F) {
+    const MapVector<Type *, Type *> UniqueTypeMap, Function *F) {
   Module *M = F->getParent();
   // Look for references by type if a member of our candidate map.
   bool ReferencesAsArguments = false;
@@ -1657,12 +1650,12 @@ static bool addReferencesForFunction(
 
           // See if this struct is a known container or an array
           // of structs that it holds.
-          for (auto &TypePair : UniqueTypeSet) {
+          for (auto &TypePair : UniqueTypeMap) {
             Type *ArrayTy = TypePair.first;
             Type *ContainerTy = TypePair.second;
             if (CurTy == ArrayTy) {
               ReferencesAsArguments |= isa<Argument>(Op);
-              LocalReferenceMap[{&I, CurTy}]++;
+              LocalReferenceMap[&I] = CurTy;
               if (CurGEP) {
                 Value *MemPtr = CurGEP->getPointerOperand();
                 if (isa<PHINode>(MemPtr))
@@ -1671,7 +1664,7 @@ static bool addReferencesForFunction(
               }
             } else if (CurTy == ContainerTy) {
               ReferencesAsArguments |= isa<Argument>(Op);
-              LocalReferenceMap[{&I, CurTy}]++;
+              LocalReferenceMap[&I] = CurTy;
             }
           }
         }
@@ -2109,11 +2102,11 @@ static void walkCallGraphToFillParamMap(
 // or determine as true type escape
 static bool typeBasedEscapeAnalysis(
     TargetLibraryInfo &TLI, Function *F,
-    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet) {
+    const MapVector<Type *, Type *> &UniqueTypeMap) {
   for (BasicBlock &BB : *F) {
     for (Instruction &I : BB) {
       if (auto *CurCast = dyn_cast<CastInst>(&I)) {
-        for (auto &TypePair : UniqueTypeSet) {
+        for (auto &TypePair : UniqueTypeMap) {
           Type *ArrayTy = TypePair.first;
           Type *ContainerTy = TypePair.second;
 
@@ -2179,11 +2172,11 @@ static LoopDataLayoutResult analyzeWholeProgram(
              SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>,
                            int>> &CandidateMap,
     DenseMap<Function *,
-             SmallDenseMap<std::pair<Instruction *, Type *>, int>>
+             SmallDenseMap<Instruction *, Type *>>
         &ReferenceMap,
     DenseMap<Function *, SmallVector<Type *>> &ParamMap,
     DenseMap<Function *, SmallBitVector> &InvalidateMap,
-    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet, CallGraph &MCG) {
+    MapVector<Type *, Type *> &UniqueTypeMap, CallGraph &MCG) {
 
   LLVM_DEBUG(
       dbgs() << "Analyzing Loop collection for data layout opportunities: ");
@@ -2232,10 +2225,10 @@ static LoopDataLayoutResult analyzeWholeProgram(
 
       // For all local candidate maps, fill in a unique type map of SrcGEP/GEP
       // types to use for locating references in functions.
-      for (auto &Candididates : LocalCandidateMap)
-        UniqueTypeSet.insert(
-            {Candididates.first.first->getSourceElementType(),
-             Candididates.first.second->getSourceElementType()});
+      for (auto &Candididates : LocalCandidateMap) {
+        UniqueTypeMap[Candididates.first.first->getSourceElementType()] =
+            Candididates.first.second->getSourceElementType();
+      }
     } else if (MustNotProceed) {
       return LoopDataLayoutResult::TransformationIsIllegal;
     }
@@ -2249,21 +2242,21 @@ static LoopDataLayoutResult analyzeWholeProgram(
     if (F.isDeclaration())
       continue;
 
-    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+    SmallDenseMap<Instruction *, Type *>
         &LocalReferenceMap = ReferenceMap[&F];
     SmallVector<Type *> &LocalParamMap = ParamMap[&F];
 
     // Add references to a local map and check if any references were
     // arguments and if so if we can modify the function.
     if (addReferencesForFunction(LocalReferenceMap, LocalParamMap,
-                                 UniqueTypeSet, &F))
+                                 UniqueTypeMap, &F))
       if (!canFunctionUpdate(&F, ThinLTO)) {
         LLVM_DEBUG(dbgs() << "canFunctionUpdate() issue\n");
         return LoopDataLayoutResult::TransformationIsIllegal;
       }
 
     TargetLibraryInfo &TLI = LookupTLI(F);
-    if (typeBasedEscapeAnalysis(TLI, &F, UniqueTypeSet)) {
+    if (typeBasedEscapeAnalysis(TLI, &F, UniqueTypeMap)) {
       LLVM_DEBUG(dbgs() << "Type Escape Analysis found escaped types\n");
       return LoopDataLayoutResult::TransformationIsIllegal;
     }
@@ -2289,7 +2282,7 @@ static LoopDataLayoutResult analyzeWholeProgram(
     if (!CurTy->isStructTy())
       continue;
 
-    if (any_of(UniqueTypeSet, [=](auto &TypePair) {
+    if (any_of(UniqueTypeMap, [=](auto &TypePair) {
           Type *UniqueArrayTy = TypePair.first;
           Type *UniqueContainerTy = TypePair.second;
           return ((UniqueArrayTy == CurTy) || (UniqueContainerTy == CurTy));
@@ -2301,9 +2294,9 @@ static LoopDataLayoutResult analyzeWholeProgram(
 }
 
 static void propagateNewTypeDefinitions(
-    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
-    SmallDenseSet<std::pair<Type *, Type *>> &TranslatedTypeSet, Module &M) {
-  for (auto &TypePair : UniqueTypeSet) {
+    MapVector<Type *, Type *> &UniqueTypeMap,
+    SmallDenseMap<Type *, Type *> &TranslatedTypeMap, Module &M) {
+  for (auto &TypePair : UniqueTypeMap) {
     SmallVector<Type *> EltTys;
     Type *ArrayTy = TypePair.first;
     Type *ContainerTy = TypePair.second;
@@ -2327,18 +2320,18 @@ static void propagateNewTypeDefinitions(
         StructType::create(M.getContext(), EltTys, VarName, false);
     // Now place the translated type in a set to be referenced when
     // we replace ContainerTy/ArrayTy instances during translation.
-    TranslatedTypeSet.insert({ContainerST, NewST});
+    TranslatedTypeMap[ContainerST] = NewST;
   }
 }
 
 static void mapContainerAccessToGlossary(
-    SmallDenseSet<std::pair<Type *, Type *>> &UniqueTypeSet,
+    MapVector<Type *, Type *> &UniqueTypeMap,
     DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
     DenseMap<Function *,
              SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>,
                            int>> &CandidateMap,
     Module &M) {
-  for (auto &TypePair : UniqueTypeSet) {
+  for (auto &TypePair : UniqueTypeMap) {
     bool FoundEntry = false;
     Type *ContainerTy = TypePair.second;
     for (Function &F : M) {
@@ -2349,7 +2342,7 @@ static void mapContainerAccessToGlossary(
           &LocalCandidateMap = CandidateMap[&F];
 
       // We construct an access glossary with a candidate connected GEP
-      // that matches a reference in the UniqueTypeSet for each ContainerTy.
+      // that matches a reference in the UniqueTypeMap for each ContainerTy.
       // We need this as some of the references we collect are not directly
       // mapped to a candidate and we need to compare the indices to make
       // valid updates when replacing the type and access.  The first reference
@@ -2400,14 +2393,14 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
       CandidateMap;
 
   DenseMap<Function *,
-           SmallDenseMap<std::pair<Instruction *, Type *>, int>>
+           SmallDenseMap<Instruction *, Type *>>
       ReferenceMap;
 
   DenseMap<Function *, SmallVector<Type *>> ParamMap;
   DenseMap<Function *, SmallBitVector> InvalidateMap;
-  SmallDenseSet<std::pair<Type *, Type *>, 4> UniqueTypeSet;
+  MapVector<Type *, Type *> UniqueTypeMap;
   DenseMap<Type *, SmallVector<Value *>> GEPTypeToIndices;
-  SmallDenseSet<std::pair<Type *, Type *>, 4> TranslatedTypeSet;
+  SmallDenseMap<Type *, Type *> TranslatedTypeMap;
 
   // Silently exit this optimization is disabled.
   if (!EnableLoopDataLayout)
@@ -2420,7 +2413,7 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
   auto Result = analyzeWholeProgram(
       LookupLoopInfo, LookupScalarEvolutionInfo, LookupTLI, AARGetter, GAAR, M,
       MaxElements, IsThinLTO, CandidateMap, ReferenceMap, ParamMap,
-      InvalidateMap, UniqueTypeSet, MCG);
+      InvalidateMap, UniqueTypeMap, MCG);
 
   // Silently exit as there are no opportunites to do the transformation.
   if (Result == LoopDataLayoutResult::HasNoOpportunities)
@@ -2432,9 +2425,9 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
     return PreservedAnalyses::all();
   }
 
-  propagateNewTypeDefinitions(UniqueTypeSet, TranslatedTypeSet, M);
+  propagateNewTypeDefinitions(UniqueTypeMap, TranslatedTypeMap, M);
 
-  mapContainerAccessToGlossary(UniqueTypeSet, GEPTypeToIndices, CandidateMap,
+  mapContainerAccessToGlossary(UniqueTypeMap, GEPTypeToIndices, CandidateMap,
                                M);
 
   // Once we have the candidates, walk all functions updating the
@@ -2445,7 +2438,7 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
 
     const TargetTransformInfo &TTI = FAM.getResult<TargetIRAnalysis>(F);
     SmallVector<Type *> &LocalParamMap = ParamMap[&F];
-    SmallDenseMap<std::pair<Instruction *, Type *>, int>
+    SmallDenseMap<Instruction *, Type *>
         &LocalReferenceMap = ReferenceMap[&F];
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap = CandidateMap[&F];
@@ -2457,7 +2450,7 @@ PreservedAnalyses LoopDataLayoutPass::run(Module &M,
     Changed =
         translateReferences(&F, AARGetter, MaxElements, std::nullopt, TTI, TLI,
                             LocalReferenceMap, LocalParamMap, LocalCandidateMap,
-                            UniqueTypeSet, TranslatedTypeSet, GEPTypeToIndices);
+                            UniqueTypeMap, TranslatedTypeMap, GEPTypeToIndices);
   }
 
   if (!Changed)
