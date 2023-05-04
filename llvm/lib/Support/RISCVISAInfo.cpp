@@ -459,7 +459,10 @@ static unsigned getExtensionRank(const std::string &ExtName) {
   case 'x':
     return RF_X_EXTENSION;
   default:
-    assert(ExtName.size() == 1);
+#if SIFIVE_CUSTOMIZATION
+    if (tryDecodeExtWithVersion(ExtName) == std::nullopt)
+#endif // SIFIVE_CUSTOMIZATION
+      assert(ExtName.size() == 1);
     return singleLetterExtensionRank(ExtName[0]);
   }
 }
@@ -480,6 +483,10 @@ bool RISCVISAInfo::compareExtension(const std::string &LHS,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Once the compiler sees these extensions, it translates them to default
+// version if they are not.
+static const char *SpecialExtensionList[] = { "zba", "zbb", "v" };
+
 // If the extension version is not default, append the version number
 // after its extension name, otherwise return its extension name.
 static std::string tryAppendVersionInfo(
@@ -492,7 +499,9 @@ static std::string tryAppendVersionInfo(
       (Major == 0 && Minor == 0);
 
   std::string ExtString = Name.str();
-  if (!IsDefault)
+  if (!IsDefault &&
+      llvm::none_of(SpecialExtensionList,
+                   [&](const char *Ext) { return ExtString == Ext; }))
     ExtString += std::to_string(Major) + "p" + std::to_string(Minor);
 
   return RISCVISAInfo::isSupportedExtensionFeature(ExtString) ? ExtString
@@ -520,15 +529,30 @@ void RISCVISAInfo::toFeatures(
   }
   if (AddAllExtensions) {
     for (const RISCVSupportedExtension &Ext : SupportedExtensions) {
-      if (Exts.count(Ext.Name))
+#if SIFIVE_CUSTOMIZATION
+      std::string ExtName =
+          tryAppendVersionInfo(Ext.Name,
+                               {Ext.Version.Major, Ext.Version.Minor});
+      if (ExtName == "i")
         continue;
-      Features.push_back(StrAlloc(Twine("-") + Ext.Name));
+
+      if (llvm::is_contained(Features, "+" + ExtName))
+        continue;
+      Features.push_back(StrAlloc(Twine("-") + ExtName));
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     for (const RISCVSupportedExtension &Ext : SupportedExperimentalExtensions) {
-      if (Exts.count(Ext.Name))
+#if SIFIVE_CUSTOMIZATION
+      std::string ExtName =
+          tryAppendVersionInfo(Ext.Name,
+                               {Ext.Version.Major, Ext.Version.Minor});
+      if (std::find(Features.begin(),
+                    Features.end(), "+experimental-" + ExtName) !=
+          Features.end())
         continue;
-      Features.push_back(StrAlloc(Twine("-experimental-") + Ext.Name));
+      Features.push_back(StrAlloc(Twine("-experimental-") + ExtName));
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 }
@@ -708,8 +732,16 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
 
     if (Add)
       ISAInfo->addExtension(ExtName, Major, Minor);
-    else
-      ISAInfo->Exts.erase(ExtName.str());
+    else {
+#if SIFIVE_CUSTOMIZATION
+      auto &Exts = ISAInfo->Exts;
+      std::string ExtString = ExtName.str();
+      if (Exts.count(ExtString) &&
+          Exts[ExtString].MajorVersion == Major &&
+          Exts[ExtString].MinorVersion == Minor)
+        Exts.erase(ExtString);
+#endif // SIFIVE_CUSTOMIZATION
+    }
   }
 
   return RISCVISAInfo::postProcessAndChecking(std::move(ISAInfo));
@@ -1371,6 +1403,12 @@ static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
   StringRef Vers(Ext.substr(Pos));
 
   unsigned Major, Minor, ConsumeLength;
+  if (llvm::any_of(SpecialExtensionList,
+                   [&](const char *Ext) { return Name == Ext; })) {
+    auto V = findDefaultVersion(Name);
+    Major = V->Major;
+    Minor = V->Minor;
+  }
 
   if (auto E = getExtensionVersion(Name, Vers, Major, Minor, ConsumeLength, true, true))
     // If IgnoreUnknown, then ignore an unrecognised version of the baseline
