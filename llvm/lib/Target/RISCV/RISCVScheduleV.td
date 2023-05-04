@@ -62,10 +62,9 @@ class LargestLMUL<list<string> MxList> {
 }
 // Helper function to get the smallest SEW that can be used with LMUL mx
 // Precondition: MxList is sorted in ascending LMUL order and SchedSEWSet<mx>
-class SmallestSEW<string mx> {
-  int r = !head(SchedSEWSet<mx>.val);
+class SmallestSEW<string mx, bit isF = 0> {
+    int r = !head(!if(isF, SchedSEWSetF<mx>.val, SchedSEWSet<mx>.val));
 }
-
 // Creates WriteRes for (name, mx, resources) tuple
 multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
                           string mx, bit IsWorstCase> {
@@ -75,6 +74,7 @@ multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
 }
 multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
                              string mx, int sew,  bit IsWorstCase> {
+
   def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
   if IsWorstCase then
     def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;

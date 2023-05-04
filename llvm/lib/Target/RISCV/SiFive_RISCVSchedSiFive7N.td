@@ -21,9 +21,9 @@ class SiFive7NIsWorstCaseMX<string mx, list<string> MxList> {
 /// c is true if mx and sew have the worst case behavior compared to LMULs in
 /// MxList. On the SiFive7N, the worst case LMUL is the Largest LMUL
 /// and the worst case sew is the smallest SEW for that LMUL.
-class SiFive7NIsWorstCaseMXSEW<string mx, int sew, list<string> MxList> {
+class SiFive7NIsWorstCaseMXSEW<string mx, int sew, list<string> MxList, bit isF = 0> {
   string LLMUL = LargestLMUL<MxList>.r;
-  int SSEW = SmallestSEW<mx>.r;
+  int SSEW = SmallestSEW<mx, isF>.r;
   bit c = !and(!eq(mx, LLMUL), !eq(sew, SSEW));
 }
 
@@ -126,8 +126,6 @@ class SiFive7NGetCyclesOnePerElement<string mx, int sew> {
 
 class SiFive7NGetDivOrSqrtFactor<int sew> {
   int c = !cond(
-    // TODO: Add SchedSEWSetFP upstream and remove the SEW=8 case.
-    !eq(sew, 8) : 15,
     !eq(sew, 16) : 15,
     !eq(sew, 32) : 28,
     !eq(sew, 64) : 57
@@ -483,9 +481,8 @@ foreach mx = SchedMxList in {
 }
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
-                         !div(SiFive7NGetCyclesOnePerElement<mx, sew>.c, 4));
-    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+    defvar Cycles = !mul(sew, SiFive7GetCyclesOnePerElement<mx, sew>.c);
+    defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
     let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX", [SiFive7NVA], mx, sew, IsWorstCase>;
@@ -569,11 +566,11 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [SiFive7NVA], mx, IsWorstCase>;
   }
 }
-foreach mx = SchedMxList in {
-  foreach sew = SchedSEWSet<mx>.val in {
+foreach mx = SchedMxListF in {
+  foreach sew = SchedSEWSetF<mx>.val in {
     defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
                          !div(SiFive7NGetCyclesOnePerElement<mx, sew>.c, 4));
-    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
     let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFSqrtV", [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [SiFive7NVA], mx, sew, IsWorstCase>;
@@ -876,15 +873,15 @@ defm "" : LMULReadAdvanceFW<"ReadVFWALUV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWALUF", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulF", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFDivV", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFDivF", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFDivV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFDivF", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulF", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulAddV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulAddF", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulAddV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulAddF", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFSqrtV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
 defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpF", 0>;
@@ -984,5 +981,6 @@ defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
+defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedCMOV; // SIFIVE
 }

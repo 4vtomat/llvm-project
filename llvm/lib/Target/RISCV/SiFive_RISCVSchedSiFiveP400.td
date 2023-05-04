@@ -16,9 +16,9 @@ class SiFiveP400IsWorstCaseMX<string mx, list<string> MxList> {
   bit c = !eq(mx, LLMUL);
 }
 
-class SiFiveP400IsWorstCaseMXSEW<string mx, int sew, list<string> MxList> {
+class SiFiveP400IsWorstCaseMXSEW<string mx, int sew, list<string> MxList, bit isF = 0> {
   string LLMUL = LargestLMUL<MxList>.r;
-  int SSEW = SmallestSEW<mx>.r;
+  int SSEW = SmallestSEW<mx, isF>.r;
   bit c = !and(!eq(mx, LLMUL), !eq(sew, SSEW));
 }
 
@@ -553,10 +553,10 @@ foreach mx = SchedMxListFW in {
 }
 
 // Worst case needs 76 cycles if SEW is equal to 64.
-foreach mx = SchedMxList in {
-  foreach sew = SchedSEWSet<mx>.val in {
+foreach mx = SchedMxListF in {
+  foreach sew = SchedSEWSetF<mx>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
-    defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+    defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
     let Latency = 76, ResourceCycles = [LMulLat, !mul(76, LMulLat)] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [SiFiveP400VEXQ0, SiFiveP400VFloatDiv], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivF",  [SiFiveP400VEXQ0, SiFiveP400VFloatDiv], mx, sew, IsWorstCase>;
@@ -900,15 +900,15 @@ defm "" : LMULReadAdvanceFW<"ReadVFWALUV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWALUF", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulF", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFDivV", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFDivF", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFDivV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFDivF", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulF", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulAddV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMulAddF", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulAddV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulAddF", 0>;
-defm "" : LMULSEWReadAdvance<"ReadVFSqrtV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
 defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpF", 0>;
@@ -980,4 +980,5 @@ defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
+defm : UnsupportedSchedZfa;
 }
