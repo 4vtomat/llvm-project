@@ -618,6 +618,13 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
                                "'Zawrs' (Wait on Reservation Set)">;
 
 #ifndef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZvkg
+    : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
+                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkg),
+                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+
 def FeatureStdExtZvbb
     : SubtargetFeature<"experimental-zvbb", "HasStdExtZvbb", "true",
                        "'Zvbb' (Vector Bit-manipulation used in Cryptography)">;
@@ -632,12 +639,6 @@ def HasStdExtZvbc : Predicate<"Subtarget->hasStdExtZvbc()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvbc),
                               "'Zvbc' (Vector Carryless Multiplication)">;
 
-def FeatureStdExtZvkg
-    : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",
-                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
-def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkg),
-                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
 
 def FeatureStdExtZvkn
     : SubtargetFeature<"experimental-zvkn", "HasStdExtZvkn", "true",
@@ -692,6 +693,20 @@ def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
                                AssemblerPredicate<(all_of FeatureStdExtZvksh),
                                "'Zvksh' (SM3 Hash Function Instructions.)">;
 #endif // SIFIVE_CUSTOMIZATION
+
+//def FeatureStdExtZvbb
+//    : SubtargetFeature<"experimental-zvbb", "HasStdExtZvbb", "true",
+//                       "'Zvbb' (Vector Bit-manipulation used in Cryptography)">;
+//def HasStdExtZvbb : Predicate<"Subtarget->hasStdExtZvbb()">,
+//                              AssemblerPredicate<(all_of FeatureStdExtZvbb),
+//                              "'Zvbb' (Vector Bit-manipulation used in Cryptography)">;
+
+//def FeatureStdExtZvbc
+//    : SubtargetFeature<"experimental-zvbc", "HasStdExtZvbc", "true",
+//                       "'Zvbc' (Vector Carryless Multiplication)">;
+//def HasStdExtZvbc : Predicate<"Subtarget->hasStdExtZvbc()">,
+//                              AssemblerPredicate<(all_of FeatureStdExtZvbc),
+//                              "'Zvbc' (Vector Carryless Multiplication)">;
 
 def FeatureStdExtZvkt
     : SubtargetFeature<"experimental-zvkt", "HasStdExtZvkt", "true",
@@ -804,6 +819,13 @@ def Feature32Bit
     : SubtargetFeature<"32bit", "IsRV32", "true", "Implements RV32">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZvkb
+    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
+                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+
 def FeatureStdExtSscofpmf
     : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
                        "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
@@ -890,13 +912,6 @@ def FeatureRecodeFullfp16
     : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
                        "fullfp16 (A corresponding feature for NEON fullfp16.)",
                        [FeatureStdExtZfh, FeatureStdExtZvfh]>;
-
-def FeatureStdExtZvkb
-    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
-                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
-                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 
 def FeatureStdExtZvkg
     : SubtargetFeature<"experimental-zvkg", "HasStdExtZvkg", "true",

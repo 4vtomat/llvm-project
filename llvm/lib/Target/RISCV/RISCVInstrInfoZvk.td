@@ -286,24 +286,6 @@ def rnum_2_14 : Operand<XLenVT>, ImmLeaf<XLenVT,
   let OperandNamespace = "RISCVOp";
 }
 
-let Predicates = [HasStdExtZvbb] in {
-  defm VANDN_V  : VALU_IV_V_X<"vandn", 0b000001>;
-  def  VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
-  def  VBREV_V  : VALUVs2<0b010010, 0b01010, OPMVV, "vbrev.v">;
-  def  VCLZ_V   : VALUVs2<0b010010, 0b01100, OPMVV, "vclz.v">;
-  def  VCPOP_V  : VALUVs2<0b010010, 0b01110, OPMVV, "vcpop.v">;
-  def  VCTZ_V   : VALUVs2<0b010010, 0b01101, OPMVV, "vctz.v">;
-  def  VREV8_V  : VALUVs2<0b010010, 0b01001, OPMVV, "vrev8.v">;
-  defm VROL_V   : VALU_IV_V_X<"vrol", 0b010101>;
-  defm VROR_V   : VROR_IV_V_X_I<"vror", 0b010100>;
-  defm VWSLL_V  : VALU_IV_V_X_I<"vwsll", 0b110101, uimm5>;
-} // Predicates = [HasStdExtZvbb]
-
-let Predicates = [HasStdExtZvbc] in {
-  defm VCLMUL_V  : VCLMUL_MV_V_X<"vclmul", 0b001100>;
-  defm VCLMULH_V : VCLMUL_MV_V_X<"vclmulh", 0b001101>;
-} // Predicates = [HasStdExtZvbc]
-
 let Predicates = [HasStdExtZvkg], RVVConstraint = NoConstraint in {
   def VGHSH_VV : PALUVVNoVm<0b101100, OPMVV, "vghsh.vv">;
   def VGMUL_VV : PALUVs2NoVm<0b101000, 0b10001, OPMVV, "vgmul.vv">;
@@ -334,4 +316,22 @@ let Predicates = [HasStdExtZvksh], RVVConstraint = NoConstraint in {
   def VSM3C_VI  : PALUVINoVm<0b101011, "vsm3c.vi", uimm5>;
   def VSM3ME_VV : PALUVVNoVm<0b100000, OPMVV, "vsm3me.vv">;
 } // Predicates = [HasStdExtZvksh]
+
+let Predicates = [HasStdExtZvbb] in {
+  defm VANDN_V  : VALU_IV_V_X<"vandn", 0b000001>;
+  def  VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
+  def  VBREV_V  : VALUVs2<0b010010, 0b01010, OPMVV, "vbrev.v">;
+  def  VCLZ_V   : VALUVs2<0b010010, 0b01100, OPMVV, "vclz.v">;
+  def  VCPOP_V  : VALUVs2<0b010010, 0b01110, OPMVV, "vcpop.v">;
+  def  VCTZ_V   : VALUVs2<0b010010, 0b01101, OPMVV, "vctz.v">;
+  def  VREV8_V  : VALUVs2<0b010010, 0b01001, OPMVV, "vrev8.v">;
+  defm VROL_V   : VALU_IV_V_X<"vrol", 0b010101>;
+  defm VROR_V   : VROR_IV_V_X_I<"vror", 0b010100>;
+  defm VWSLL_V  : VALU_IV_V_X_I<"vwsll", 0b110101, uimm5>;
+} // Predicates = [HasStdExtZvbb]
+
+let Predicates = [HasStdExtZvbc] in {
+  defm VCLMUL_V  : VCLMUL_MV_V_X<"vclmul", 0b001100>;
+  defm VCLMULH_V : VCLMUL_MV_V_X<"vclmulh", 0b001101>;
+} // Predicates = [HasStdExtZvbc]
 #endif // SIFIVE_CUSTOMIZATION
