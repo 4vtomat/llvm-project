@@ -1964,7 +1964,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
             : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     O = Ctx.TTI->getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
-                                        CostKind);
+                                        RdxDesc.getFastMathFlags(), CostKind);
   } else {
     O = Ctx.TTI->getArithmeticReductionCost(
         RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);

@@ -7734,7 +7734,7 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
           auto *VecCondTy =
               cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
           C = TTI.getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
-                                         CostKind);
+                                         RdxDesc.getFastMathFlags(), CostKind);
         } else {
           C = TTI.getArithmeticReductionCost(RdxDesc.getOpcode(), VectorTy,
                                              RdxDesc.getFastMathFlags(),
@@ -9932,7 +9932,8 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
 static VPWidenIntOrFpInductionRecipe *
 createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
                             VPValue *Start, const InductionDescriptor &IndDesc,
-                            VPlan &Plan, ScalarEvolution &SE, Loop &OrigLoop,
+                            VPlan &Plan, 
+                            ScalarEvolution &SE, Loop &OrigLoop,
                             VFRange &Range) {
   assert(IndDesc.getStartValue() ==
          Phi->getIncomingValueForBlock(OrigLoop.getLoopPreheader()));
@@ -9944,8 +9945,7 @@ createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
   if (auto *TruncI = dyn_cast<TruncInst>(PhiOrTrunc)) {
 #if SIFIVE_CUSTOMIZATION
     return new VPWidenIntOrFpInductionRecipe(
-        Phi, Start, Step, IndDesc, TruncI,
-        CM.Legal->isVectorizableUncountable());
+        Phi, Start, Step, IndDesc, TruncI);
 #else
     return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI);
 #endif // SIFIVE_CUSTOMIZATION
@@ -9953,8 +9953,7 @@ createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
   assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
 #if SIFIVE_CUSTOMIZATION
   return new VPWidenIntOrFpInductionRecipe(
-      Phi, Start, Step, IndDesc,
-      CM.Legal->isVectorizableUncountable());
+      Phi, Start, Step, IndDesc);
 #else
   return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc);
 #endif // SIFIVE_CUSTOMIZATION
@@ -10650,7 +10649,7 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       [&](ElementCount VF) { return VF.isScalar(); }, Range);
 
   for (const auto &CSA : CSAs) {
-    VPValue *VPInitScalar = Plan.getOrAddVPValue(
+    VPValue *VPInitScalar = Plan.getVPValueOrAddLiveIn(
         CSA.first->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
 
     // Scalar VF builds the scalar version of the loop. In that case,
@@ -10786,7 +10785,7 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
       for (PHINode &ExitPhi : ExitBB->phis()) {
           Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
           VPValue *V =
-              Plan.getOrAddVPValue(IncomingValue, /*OverrideAllowed*/ true);
+              Plan.getVPValueOrAddLiveIn(IncomingValue);
           Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
       }
     }
