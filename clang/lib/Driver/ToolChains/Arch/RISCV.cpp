@@ -42,8 +42,23 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
      EnableExperimentalExtensions = true;
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  // Allow user to use unratified extension without version, but we still need
+  // emit warning, so parse that twice.
+  // The first pass will ignore the version check and proceed.
+  // The second pass will perform a version check and emit a warning if the
+  // error was caused by missing version information. It will also emit any
+  // other errors that were not caught in the first pass.
+  // see SCT-2482.
+
+  // First pass: ignore the version checking.
+  auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
+      Arch, EnableExperimentalExtensions,
+      /*ExperimentalExtensionVersionCheck*/ false);
+#else
   auto ISAInfo =
       llvm::RISCVISAInfo::parseArchString(Arch, EnableExperimentalExtensions);
+#endif
   if (!ISAInfo) {
     handleAllErrors(ISAInfo.takeError(), [&](llvm::StringError &ErrMsg) {
       D.Diag(diag::err_drv_invalid_riscv_arch_name)
@@ -52,6 +67,42 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
 
     return false;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Second pass: Check the version and convert errors to warnings if an
+  //              experimental extension is missing a version, and emit error
+  //              for others.
+  auto ISAInfoWithVerCheck = llvm::RISCVISAInfo::parseArchString(
+      Arch, EnableExperimentalExtensions,
+      /*ExperimentalExtensionVersionCheck*/ true);
+  if (!ISAInfoWithVerCheck) {
+    handleAllErrors(
+        ISAInfoWithVerCheck.takeError(), [&](llvm::StringError &ErrMsg) {
+          StringRef Msg = ErrMsg.getMessage();
+          if (Msg.starts_with(
+                  "experimental extension requires explicit version")) {
+            // Extract extension name from error message.
+            size_t ExtNameBegin = Msg.find('`');
+            size_t ExtNameEnd = Msg.find('`', ExtNameBegin + 1);
+            StringRef ExtName =
+                Msg.substr(ExtNameBegin + 1, ExtNameEnd - ExtNameBegin - 1);
+            // Get version infomation for that extension.
+            const llvm::RISCVISAInfo::OrderedExtensionMap &ExtInfo =
+                (*ISAInfo)->getExtensions();
+            auto ExtInfoItr = ExtInfo.find(ExtName.str());
+            assert(ExtInfoItr != ExtInfo.end());
+            llvm::RISCVExtensionInfo ExtVersion = ExtInfoItr->second;
+
+            D.Diag(diag::warn_drv_require_ext_version)
+                << ExtName << ExtVersion.MajorVersion
+                << ExtVersion.MinorVersion;
+          } else {
+            D.Diag(diag::err_drv_invalid_riscv_arch_name)
+                << Arch << ErrMsg.getMessage();
+          }
+        });
+  }
+#endif
 
   (*ISAInfo)->toFeatures(
       Features, [&Args](const Twine &Str) { return Args.MakeArgString(Str); },
@@ -225,8 +276,16 @@ StringRef riscv::getRISCVABI(const ArgList &Args, const llvm::Triple &Triple) {
   // rv64* -> lp64
   StringRef Arch = getRISCVArch(Args, Triple);
 
+#if SIFIVE_CUSTOMIZATION
+  // Allow user to use unratified extension without version,
+  // see SCT-2482.
+  auto ParseResult = llvm::RISCVISAInfo::parseArchString(
+      Arch, /* EnableExperimentalExtension */ true,
+      /*ExperimentalExtensionVersionCheck*/ false);
+#else
   auto ParseResult = llvm::RISCVISAInfo::parseArchString(
       Arch, /* EnableExperimentalExtension */ true);
+#endif
   if (!ParseResult)
     // Ignore parsing error, just go 3rd step.
     consumeError(ParseResult.takeError());

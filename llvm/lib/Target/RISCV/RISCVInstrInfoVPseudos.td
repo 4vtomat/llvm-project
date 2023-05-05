@@ -546,7 +546,7 @@ def RISCVVPseudosTable : GenericTable {
   let FilterClass = "RISCVVPseudo";
   let CppTypeName = "PseudoInfo";
 #ifdef SIFIVE_CUSTOMIZATION
-  let Fields = [ "Pseudo", "BaseInstr", "TargetOverlapConstraintType"];
+  let Fields = [ "Pseudo", "BaseInstr"];
 #endif // SIFIVE_CUSTOMIZATION
   let PrimaryKey = [ "Pseudo" ];
   let PrimaryKeyName = "getPseudoInfo";
@@ -2097,8 +2097,8 @@ multiclass VPseudoILoad<bit Ordered, int TargetConstraintType = 1> {
           defvar IdxVreg = idx_lmul.vrclass;
           defvar HasConstraint = !ne(sew, eew);
           defvar Order = !if(Ordered, "O", "U");
-          defvar NewTypeConstraints = !if(!or(!eq(octuple_emul, lmul.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(octuple_emul, lmul.octuple), 2, 3));
 #ifdef SIFIVE_CUSTOMIZATION
+          defvar NewTypeConstraints = !if(!or(!eq(octuple_emul, lmul.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(octuple_emul, lmul.octuple), 2, 3));
           defvar UseNewTypeConstraints = !if(!eq(TargetConstraintType, 1), 1, NewTypeConstraints);
 #endif // SIFIVE_CUSTOMIZATION
           let VLMul = lmul.value in {
@@ -7663,7 +7663,7 @@ let Predicates = [HasExtXsfvcp] in {
   }
 }
 
-let Predicates = [HasStdExtZvkns] in {
+let Predicates = [HasStdExtZvknsOrZvkned] in {
   defm PseudoVAESDF : PPseudoVALU_V_S_NoMask;
   defm PseudoVAESDM : PPseudoVALU_V_S_NoMask;
   defm PseudoVAESEF : PPseudoVALU_V_S_NoMask;
@@ -7673,8 +7673,11 @@ let Predicates = [HasStdExtZvkns] in {
   defm PseudoVAESZ : PPseudoVALU_S_NoMask;
 } // Predicates = [HasStdExtZvkns]
 
-let Predicates = [HasStdExtZvkb] in {
-  defm PseudoVANDN : VPseudoVALU_VV_VX_VI;
+let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
+  let Predicates = [HasStdExtZvkb] in
+    defm PseudoVANDN : VPseudoVALU_VV_VX;
+  let Predicates = [HasStdExtZvkb0p1] in
+    defm PseudoVANDN_0P1 : VPseudoVALU_VV_VX_VI;
   defm PseudoVBREV8 : VPseudoVALU_V;
   defm PseudoVCLMUL : VPseudoVALU_VCLMUL;
   defm PseudoVCLMULH : VPseudoVALU_VCLMUL;
@@ -7684,8 +7687,13 @@ let Predicates = [HasStdExtZvkb] in {
 } // Predicates = [HasStdExtZvkb]
 
 let Predicates = [HasStdExtZvkg] in {
-  defm PseudoVGHMAC : PPseudoVALU_VV_NoMask;
+  defm PseudoVGHSH : PPseudoVALU_VV_NoMask;
+  defm PseudoVGMUL : PPseudoVALU_VV_NoMask;
 } // Predicates = [HasStdExtZvkg]
+
+let Predicates = [HasStdExtZvkg0p1] in {
+  defm PseudoVGHMAC : PPseudoVALU_VV_NoMask;
+} // Predicates = [HasStdExtZvkg0p1]
 
 let Predicates = [HasStdExtZvksed] in {
   defm PseudoVSM4K : PPseudoVALU_VI_NoMaskTU;
@@ -7697,11 +7705,11 @@ let Predicates = [HasStdExtZvksh] in {
   defm PseudoVSM3ME : PPseudoVALU_VV_NoMaskTU;
 } // Predicates = [HasStdExtZvksh]
 
-let Predicates = [HasStdExtZvknhaOrZvknhb] in {
+let Predicates = [HasStdExtZvknha] in {
   defm PseudoVSHA2CH : PPseudoVALU_VV_NoMask;
   defm PseudoVSHA2CL : PPseudoVALU_VV_NoMask;
   defm PseudoVSHA2MS : PPseudoVALU_VV_NoMask;
-} // Predicates = [HasStdExtZvknhaOrZvknhb]
+} // Predicates = [HasStdExtZvknha]
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -8447,7 +8455,7 @@ def : Pat<(int_riscv_vsetvxrm GPR:$rm),
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
 
-let Predicates = [HasStdExtZvkns] in {
+let Predicates = [HasStdExtZvknsOrZvkned] in {
   defm : PPatUnaryV_V_S_NoMask<"int_riscv_vaesdf", "PseudoVAESDF", I32IntegerVectors>;
   defm : PPatUnaryV_V_S_NoMask<"int_riscv_vaesdm", "PseudoVAESDM", I32IntegerVectors>;
   defm : PPatUnaryV_V_S_NoMask<"int_riscv_vaesef", "PseudoVAESEF", I32IntegerVectors>;
@@ -8455,21 +8463,29 @@ let Predicates = [HasStdExtZvkns] in {
   defm : VPatBinaryV_VI_NoMaskTA<"int_riscv_vaeskf1", "PseudoVAESKF1", I32IntegerVectors, uimm5>;
   defm : VPatBinaryV_VI_NoMask<"int_riscv_vaeskf2", "PseudoVAESKF2", I32IntegerVectors, uimm5>;
   defm : PPatUnaryV_S_NoMask<"int_riscv_vaesz", "PseudoVAESZ", I32IntegerVectors>;
-} // Predicates = [HasStdExtZvkns]
+} // Predicates = [HasStdExtZvknsOrZvkned]
 
-let Predicates = [HasStdExtZvkb] in {
-  defm : VPatBinaryV_VV_VX_VI<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
+let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
+  let Predicates = [HasStdExtZvkb] in
+    defm : VPatBinaryV_VV_VX<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
+  let Predicates = [HasStdExtZvkb0p1] in
+    defm : VPatBinaryV_VV_VX_VI<"int_riscv_vandn", "PseudoVANDN_0P1", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vbrev8", "PseudoVBREV8", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX<"int_riscv_vclmul", "PseudoVCLMUL", I64IntegerVectors>;
   defm : VPatBinaryV_VV_VX<"int_riscv_vclmulh", "PseudoVCLMULH", I64IntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vrev8", "PseudoVREV8", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX<"int_riscv_vrol", "PseudoVROL", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX_VI<"int_riscv_vror", "PseudoVROR", AllIntegerVectors>;
-} // Predicates = [HasStdExtZvkb]
+} // Predicates = [HasStdExtZvkb0p1]
 
 let Predicates = [HasStdExtZvkg] in {
-  defm : VPatBinaryV_VV_NoMask<"int_riscv_vghmac", "PseudoVGHMAC", I32IntegerVectors>;
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vghsh", "PseudoVGHSH", I32IntegerVectors>;
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vgmul", "PseudoVGMUL", I32IntegerVectors>;
 } // Predicates = [HasStdExtZvkg]
+
+let Predicates = [HasStdExtZvkg0p1] in {
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vghmac", "PseudoVGHMAC", I32IntegerVectors>;
+} // Predicates = [HasStdExtZvkg0p1]
 
 let Predicates = [HasStdExtZvksed] in {
   defm : VPatBinaryV_VI_NoMaskTA<"int_riscv_vsm4k", "PseudoVSM4K", I32IntegerVectors, uimm5>;
@@ -8481,11 +8497,11 @@ let Predicates = [HasStdExtZvksh] in {
   defm : VPatBinaryV_VV_NoMaskTA<"int_riscv_vsm3me", "PseudoVSM3ME", I32IntegerVectors>;
 } // Predicates = [HasStdExtZvksh]
 
-let Predicates = [HasStdExtZvknhaOrZvknhb] in {
+let Predicates = [HasStdExtZvknha] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ch", "PseudoVSHA2CH", I32I64IntegerVectors>;
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2cl", "PseudoVSHA2CH", I32I64IntegerVectors>;
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors>;
-} // Predicates = [HasStdExtZvknhaOrZvknhb]
+} // Predicates = [HasStdExtZvknha]
 #endif // SIFIVE_CUSTOMIZATION
 
 // Include the non-intrinsic ISel patterns

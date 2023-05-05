@@ -274,14 +274,17 @@ LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
     NewLoopProperties.push_back(MDNode::get(Ctx, VectorizeScalableMD));
 
     LoopProperties = NewLoopProperties;
-
-    const_cast<LoopAttributes &>(Attrs).VectorizeEnable =
-        LoopAttributes::Enable;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
   std::optional<bool> Enabled;
+#if SIFIVE_CUSTOMIZATION
+  if (Attrs.RvvForceLmulSew)
+    Enabled = true;
+  else if (Attrs.VectorizeEnable == LoopAttributes::Disable)
+#else
   if (Attrs.VectorizeEnable == LoopAttributes::Disable)
+#endif // SIFIVE_CUSTOMIZATION
     Enabled = false;
   else if (Attrs.VectorizeEnable != LoopAttributes::Unspecified ||
            Attrs.VectorizePredicateEnable != LoopAttributes::Unspecified ||
@@ -373,7 +376,11 @@ LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
       Attrs.VectorizeWidth > 1 ||
       Attrs.VectorizeScalable == LoopAttributes::Enable ||
       (Attrs.VectorizeScalable == LoopAttributes::Disable &&
+#if SIFIVE_CUSTOMIZATION
+       Attrs.VectorizeWidth != 1) || Attrs.RvvForceLmulSew) {
+#else
        Attrs.VectorizeWidth != 1)) {
+#endif // SIFIVE_CUSTOMIZATION
     bool AttrVal = Attrs.VectorizeEnable != LoopAttributes::Disable;
     Args.push_back(
         MDNode::get(Ctx, {MDString::get(Ctx, "llvm.loop.vectorize.enable"),

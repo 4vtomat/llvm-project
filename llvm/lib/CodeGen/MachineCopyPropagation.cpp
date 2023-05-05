@@ -800,6 +800,19 @@ void MachineCopyPropagation::ForwardCopyPropagateBlock(MachineBasicBlock &MBB) {
         // later.
         if (MO.isTied())
           ReadRegister(Reg, MI, RegularUse);
+#if SIFIVE_CUSTOMIZATION
+        // If it be used by another instruction, it should not be deleted.
+        for (const MachineOperand &UseMO : MI.uses()) {
+          if (!UseMO.isReg())
+            continue;
+          MCRegister UseReg = UseMO.getReg().asMCReg();
+          if (UseReg == MCRegister::NoRegister)
+            continue;
+          if (!TRI->regsOverlap(Reg, UseReg))
+            continue;
+          ReadRegister(UseReg, MI, RegularUse);
+        }
+#endif // SIFIVE_CUSTOMIZATION
         Tracker.clobberRegister(Reg, *TRI, *TII, UseCopyInstr);
       }
 

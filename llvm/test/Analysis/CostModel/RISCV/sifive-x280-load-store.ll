@@ -15,94 +15,94 @@ define void @load(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %9 = load <8 x bfloat>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %10 = load <16 x bfloat>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %11 = load <32 x bfloat>, ptr %p, align 64
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %12 = load <1 x float>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %13 = load <2 x float>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %14 = load <4 x float>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %12 = load <1 x float>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %13 = load <2 x float>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %14 = load <4 x float>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %15 = load <8 x float>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %16 = load <16 x float>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %17 = load <32 x float>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %18 = load <1 x double>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %19 = load <2 x double>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %18 = load <1 x double>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %19 = load <2 x double>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %20 = load <4 x double>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %21 = load <8 x double>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %22 = load <16 x double>, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %23 = load <32 x double>, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %24 = load <1 x i8>, ptr %p, align 1
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %25 = load <2 x i8>, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %26 = load <4 x i8>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %27 = load <8 x i8>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %28 = load <16 x i8>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %24 = load <1 x i8>, ptr %p, align 1
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %25 = load <2 x i8>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %26 = load <4 x i8>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %27 = load <8 x i8>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %28 = load <16 x i8>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %29 = load <32 x i8>, ptr %p, align 32
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %30 = load <1 x i16>, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %31 = load <2 x i16>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %32 = load <4 x i16>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %33 = load <8 x i16>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %30 = load <1 x i16>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %31 = load <2 x i16>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %32 = load <4 x i16>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %33 = load <8 x i16>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %34 = load <16 x i16>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %35 = load <32 x i16>, ptr %p, align 64
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %36 = load <1 x i32>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %37 = load <2 x i32>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %38 = load <4 x i32>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %36 = load <1 x i32>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %37 = load <2 x i32>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %38 = load <4 x i32>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %39 = load <8 x i32>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %40 = load <16 x i32>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %41 = load <32 x i32>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %42 = load <1 x i64>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %43 = load <2 x i64>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %42 = load <1 x i64>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %43 = load <2 x i64>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %44 = load <4 x i64>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %45 = load <8 x i64>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %46 = load <16 x i64>, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %47 = load <32 x i64>, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %48 = load <1 x ptr>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %49 = load <2 x ptr>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %48 = load <1 x ptr>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %49 = load <2 x ptr>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %50 = load <4 x ptr>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %51 = load <8 x ptr>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %52 = load <16 x ptr>, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %53 = load <32 x ptr>, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %54 = load <vscale x 1 x bfloat>, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %55 = load <vscale x 2 x bfloat>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %56 = load <vscale x 4 x bfloat>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %57 = load <vscale x 8 x bfloat>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %54 = load <vscale x 1 x bfloat>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %55 = load <vscale x 2 x bfloat>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %56 = load <vscale x 4 x bfloat>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %57 = load <vscale x 8 x bfloat>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %58 = load <vscale x 16 x bfloat>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %59 = load <vscale x 32 x bfloat>, ptr %p, align 64
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %60 = load <vscale x 1 x float>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %61 = load <vscale x 2 x float>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %62 = load <vscale x 4 x float>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %60 = load <vscale x 1 x float>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %61 = load <vscale x 2 x float>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %62 = load <vscale x 4 x float>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %63 = load <vscale x 8 x float>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %64 = load <vscale x 16 x float>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %65 = load <vscale x 32 x float>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %66 = load <vscale x 1 x double>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %67 = load <vscale x 2 x double>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %66 = load <vscale x 1 x double>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %67 = load <vscale x 2 x double>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %68 = load <vscale x 4 x double>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %69 = load <vscale x 8 x double>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %70 = load <vscale x 16 x double>, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 64 for instruction: %71 = load <vscale x 32 x double>, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %72 = load <vscale x 1 x i8>, ptr %p, align 1
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %73 = load <vscale x 2 x i8>, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %74 = load <vscale x 4 x i8>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %75 = load <vscale x 8 x i8>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %76 = load <vscale x 16 x i8>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %72 = load <vscale x 1 x i8>, ptr %p, align 1
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %73 = load <vscale x 2 x i8>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %74 = load <vscale x 4 x i8>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %75 = load <vscale x 8 x i8>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %76 = load <vscale x 16 x i8>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %77 = load <vscale x 32 x i8>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %78 = load <vscale x 64 x i8>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %79 = load <vscale x 128 x i8>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %80 = load <vscale x 1 x i16>, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %81 = load <vscale x 2 x i16>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %82 = load <vscale x 4 x i16>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %83 = load <vscale x 8 x i16>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %80 = load <vscale x 1 x i16>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %81 = load <vscale x 2 x i16>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %82 = load <vscale x 4 x i16>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %83 = load <vscale x 8 x i16>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %84 = load <vscale x 16 x i16>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %85 = load <vscale x 32 x i16>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %86 = load <vscale x 64 x i16>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %87 = load <vscale x 1 x i32>, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %88 = load <vscale x 2 x i32>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %89 = load <vscale x 4 x i32>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %87 = load <vscale x 1 x i32>, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %88 = load <vscale x 2 x i32>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %89 = load <vscale x 4 x i32>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %90 = load <vscale x 8 x i32>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %91 = load <vscale x 16 x i32>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %92 = load <vscale x 32 x i32>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %93 = load <vscale x 1 x i64>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %94 = load <vscale x 2 x i64>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %93 = load <vscale x 1 x i64>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %94 = load <vscale x 2 x i64>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %95 = load <vscale x 4 x i64>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %96 = load <vscale x 8 x i64>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %97 = load <vscale x 16 x i64>, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %98 = load <vscale x 1 x ptr>, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %99 = load <vscale x 2 x ptr>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %98 = load <vscale x 1 x ptr>, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %99 = load <vscale x 2 x ptr>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %100 = load <vscale x 4 x ptr>, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %101 = load <vscale x 8 x ptr>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %102 = load <vscale x 16 x ptr>, ptr %p, align 128
@@ -347,19 +347,19 @@ define void @store(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store ptr undef, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <1 x i8> undef, ptr %p, align 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <2 x i8> undef, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i8> undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <8 x i8> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <16 x i8> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i8> undef, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <8 x i8> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <16 x i8> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <32 x i8> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <1 x i16> undef, ptr %p, align 2
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <2 x i16> undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i16> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <8 x i16> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i16> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <8 x i16> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <16 x i16> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <32 x i16> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <1 x i32> undef, ptr %p, align 4
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <2 x i32> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i32> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <8 x i32> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <16 x i32> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <32 x i32> undef, ptr %p, align 128
@@ -375,34 +375,34 @@ define void @store(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <8 x ptr> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <16 x ptr> undef, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <32 x ptr> undef, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 1 x i8> undef, ptr %p, align 1
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 2 x i8> undef, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 4 x i8> undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 8 x i8> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 16 x i8> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 1 x i8> undef, ptr %p, align 1
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 2 x i8> undef, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 4 x i8> undef, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <vscale x 8 x i8> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: store <vscale x 16 x i8> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 32 x i8> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 64 x i8> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 128 x i8> undef, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 1 x i16> undef, ptr %p, align 2
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 2 x i16> undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 4 x i16> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 8 x i16> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 1 x i16> undef, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 2 x i16> undef, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <vscale x 4 x i16> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: store <vscale x 8 x i16> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 16 x i16> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 32 x i16> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 64 x i16> undef, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 1 x i32> undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 2 x i32> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 4 x i32> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 1 x i32> undef, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <vscale x 2 x i32> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: store <vscale x 4 x i32> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 8 x i32> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 16 x i32> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 32 x i32> undef, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 1 x i64> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 2 x i64> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <vscale x 1 x i64> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: store <vscale x 2 x i64> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 4 x i64> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 8 x i64> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 16 x i64> undef, ptr %p, align 128
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 1 x ptr> undef, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 2 x ptr> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <vscale x 1 x ptr> undef, ptr %p, align 8
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: store <vscale x 2 x ptr> undef, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 4 x ptr> undef, ptr %p, align 32
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 8 x ptr> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 16 x ptr> undef, ptr %p, align 128
@@ -565,21 +565,21 @@ define void @store(ptr %p) {
 define void @store_of_constant(ptr %p) {
   ; poison and undef
 ; THROUGHPUT-LABEL: 'store_of_constant'
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i32> poison, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i32> undef, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i32> zeroinitializer, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> poison, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> undef, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> zeroinitializer, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i64> zeroinitializer, ptr %p, align 32
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> <i32 1, i32 1, i32 1, i32 1>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <4 x i32> <i32 1, i32 1, i32 1, i32 1>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr %p, align 32
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i32> <i32 4096, i32 4096, i32 4096, i32 4096>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 1, i32 1, i32 2, i32 1>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 2, i32 1, i32 1, i32 1>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 0, i32 1, i32 2, i32 3>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 1, i32 2, i32 3, i32 4>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 -1, i32 -2, i32 -3, i32 -4>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 2, i32 4, i32 6, i32 8>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: store <4 x i32> <i32 4096, i32 4096, i32 4096, i32 4096>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 1, i32 1, i32 2, i32 1>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 2, i32 1, i32 1, i32 1>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 0, i32 1, i32 2, i32 3>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 1, i32 2, i32 3, i32 4>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 -1, i32 -2, i32 -3, i32 -4>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 2, i32 4, i32 6, i32 8>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, ptr %p, align 16
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
 ;
 ; SIZE-LABEL: 'store_of_constant'

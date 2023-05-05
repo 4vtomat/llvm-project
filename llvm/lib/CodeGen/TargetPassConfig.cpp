@@ -1088,6 +1088,9 @@ bool TargetPassConfig::addISelPasses() {
   PM->add(createTargetTransformInfoWrapperPass(TM->getTargetIRAnalysis()));
   addPass(createExpandLargeDivRemPass());
   addPass(createExpandLargeFpConvertPass());
+#if SIFIVE_CUSTOMIZATION
+  addPass(createExpandPowiPass());
+#endif
   addIRPasses();
   addCodeGenPrepare();
   addPassesToHandleExceptions();

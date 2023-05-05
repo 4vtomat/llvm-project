@@ -14441,6 +14441,8 @@ matches a conforming libm implementation.
 When specified with the fast-math-flag 'afn', the result may be approximated
 using a less accurate calculation.
 
+.. _int_powi:
+
 '``llvm.powi.*``' Intrinsic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -20060,7 +20062,7 @@ This is an overloaded intrinsic.
 Overview:
 """""""""
 
-Predicated floating-point square root of a vector of floating-point values.
+Predicated version of raising a vector of floating-point values to an integer power.
 
 
 Arguments:
@@ -20088,6 +20090,55 @@ Examples:
       ;; For all lanes below %evl, %r is lane-wise equivalent to %also.r
 
       %t = call <4 x float> @llvm.sqrt.v4f32(<4 x float> %a)
+      %also.r = select <4 x i1> %mask, <4 x float> %t, <4 x float> poison
+
+
+.. _int_vp_powi:
+
+'``llvm.vp.powi.*``' Intrinsics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Syntax:
+"""""""
+This is an overloaded intrinsic.
+
+::
+
+      declare <16 x float>  @llvm.vp.sqrt.v16f32.i32 (<16 x float> <base>, i32 <exp>, <16 x i1> <mask>, i32 <vector_length>)
+      declare <vscale x 4 x float>  @llvm.vp.sqrt.nxv4f32.i32 (<vscale x 4 x float> <op>, i32 <exp>, <vscale x 4 x i1> <mask>, i32 <vector_length>)
+      declare <256 x double>  @llvm.vp.sqrt.v256f64.i64 (<256 x double> <op>, i64 <exp>, <256 x i1> <mask>, i32 <vector_length>)
+
+Overview:
+"""""""""
+
+Predicated floating-point square root of a vector of floating-point values.
+
+
+Arguments:
+""""""""""
+
+The first operand and the result have the same vector of floating-point type.
+The second oeprand is an integer power. The third operand is the vector mask and
+has the same number of elements as the result vector type. The fourth operand is
+the explicit vector length of the operation.
+
+Semantics:
+""""""""""
+
+The '``llvm.vp.powi``' intrinsic performs floating-point powi (:ref:`powi <int_powi>`) of
+the first vector operand on each enabled lane with the second operand as
+exponent.  The result on disabled lanes is a :ref:`poison value <poisonvalues>`.
+The operation is performed in the default floating-point environment.
+
+Examples:
+"""""""""
+
+.. code-block:: llvm
+
+      %r = call <4 x float> @llvm.vp.powi.v4f32.i32(<4 x float> %a, i32 %b, <4 x i1> %mask, i32 %evl)
+      ;; For all lanes below %evl, %r is lane-wise equivalent to %also.r
+
+      %t = call <4 x float> @llvm.powi.v4f32(<4 x float> %a, i32 %b)
       %also.r = select <4 x i1> %mask, <4 x float> %t, <4 x float> poison
 
 

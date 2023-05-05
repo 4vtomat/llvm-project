@@ -73,54 +73,54 @@ csrrs t2, 0x348, zero
 # mnscratch
 # name
 # CHECK-INST: csrrs t1, mnscratch, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x00,0x35]
+# CHECK-ENC: encoding: [0x73,0x23,0x00,0x74]
 # CHECK-INST-ALIAS: csrr t1, mnscratch
 # uimm12
 # CHECK-INST: csrrs t2, mnscratch, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x35]
+# CHECK-ENC: encoding: [0xf3,0x23,0x00,0x74]
 # CHECK-INST-ALIAS: csrr t2, mnscratch
 csrrs t1, mnscratch, zero
 # uimm12
-csrrs t2, 0x350, zero
+csrrs t2, 0x740, zero
 
 # mnepc
 # name
 # CHECK-INST: csrrs t1, mnepc, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x10,0x35]
+# CHECK-ENC: encoding: [0x73,0x23,0x10,0x74]
 # CHECK-INST-ALIAS: csrr t1, mnepc
 # uimm12
 # CHECK-INST: csrrs t2, mnepc, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x10,0x35]
+# CHECK-ENC: encoding: [0xf3,0x23,0x10,0x74]
 # CHECK-INST-ALIAS: csrr t2, mnepc
 csrrs t1, mnepc, zero
 # uimm12
-csrrs t2, 0x351, zero
+csrrs t2, 0x741, zero
 
 # mncause
 # name
 # CHECK-INST: csrrs t1, mncause, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x20,0x35]
+# CHECK-ENC: encoding: [0x73,0x23,0x20,0x74]
 # CHECK-INST-ALIAS: csrr t1, mncause
 # uimm12
 # CHECK-INST: csrrs t2, mncause, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x20,0x35]
+# CHECK-ENC: encoding: [0xf3,0x23,0x20,0x74]
 # CHECK-INST-ALIAS: csrr t2, mncause
 csrrs t1, mncause, zero
 # uimm12
-csrrs t2, 0x352, zero
+csrrs t2, 0x742, zero
 
 # mnstatus
 # name
 # CHECK-INST: csrrs t1, mnstatus, zero
-# CHECK-ENC: encoding: [0x73,0x23,0x30,0x35]
+# CHECK-ENC: encoding: [0x73,0x23,0x40,0x74]
 # CHECK-INST-ALIAS: csrr t1, mnstatus
 # uimm12
 # CHECK-INST: csrrs t2, mnstatus, zero
-# CHECK-ENC: encoding: [0xf3,0x23,0x30,0x35]
+# CHECK-ENC: encoding: [0xf3,0x23,0x40,0x74]
 # CHECK-INST-ALIAS: csrr t2, mnstatus
 csrrs t1, mnstatus, zero
 # uimm12
-csrrs t2, 0x353, zero
+csrrs t2, 0x744, zero
 
 ##################################
 # World Guard Security CSRs

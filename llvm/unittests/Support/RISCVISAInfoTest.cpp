@@ -384,10 +384,10 @@ TEST(ParseArchString,
 
 TEST(ParseArchString,
      RequiresExplicitVersionNumberForExperimentalExtensionByDefault) {
-  EXPECT_NE(
+  EXPECT_EQ(
       toString(
           RISCVISAInfo::parseArchString("rv64izihintntl", true).takeError()),
-      "experimental extension requires explicit version number `zihintntl`"); // SIFIVE
+      "experimental extension requires explicit version number `zihintntl`");
 }
 
 TEST(ParseArchString,

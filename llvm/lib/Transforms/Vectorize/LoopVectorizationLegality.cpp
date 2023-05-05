@@ -211,20 +211,6 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     Force.Value = FK_Enabled;
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
-  // force-vector-width should be ignored if VLA is enabled
-  if (TTI && TTI->useVLAVectorizer() && Width.Value) {
-    Width.Value = VectorizerParams::DefaultVectorizationFactor;
-    ORE.emit([&]() {
-      return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
-                                               L->getStartLoc(), L->getHeader())
-             << "ignoring user-specified vector width because RVV VLA "
-                "vectorization was enabled. Consider to use '#pragma clang rvv "
-                "lmul_sew(LMUL, SEW)' instead";
-    });
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // If the metadata doesn't explicitly specify whether to enable scalable
   // vectorization, then decide based on the following criteria (increasing
   // level of priority):
@@ -261,6 +247,22 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
   if (TTI && TTI->useVLAVectorizer() &&
       ForceScalableVectorization == SK_Unspecified)
     Scalable.Value = SK_ScalableOnly;
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+  // Forced vector width from the metadata should be ignored if VLA is enabled
+  // if it is suggesting a fixed vector width.
+  if (TTI && TTI->useVLAVectorizer() && Width.Value &&
+      Scalable.Value == SK_FixedWidthOnly) {
+    Width.Value = VectorizerParams::DefaultVectorizationFactor;
+    ORE.emit([&]() {
+      return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
+                                               L->getStartLoc(), L->getHeader())
+             << "ignoring user-specified vector width because RVV VLA "
+                "vectorization was enabled. Consider using '#pragma clang rvv "
+                "lmul_sew(LMUL, SEW)' instead";
+    });
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   if (IsVectorized.Value != 1)

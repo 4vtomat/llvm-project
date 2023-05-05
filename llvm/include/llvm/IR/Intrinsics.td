@@ -1710,6 +1710,13 @@ let IntrProperties = [IntrNoMem, IntrNoSync, IntrWillReturn] in {
                              [ LLVMMatchType<0>,
                                LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                llvm_i32_ty]>;
+#ifdef SIFIVE_CUSTOMIZATION
+  def int_vp_powi : DefaultAttrsIntrinsic<[ llvm_anyvector_ty ],
+                             [ LLVMMatchType<0>,
+                               llvm_anyint_ty,
+                               LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                               llvm_i32_ty]>;
+#endif
 
   // Casts
   def int_vp_trunc : DefaultAttrsIntrinsic<[ llvm_anyvector_ty ],

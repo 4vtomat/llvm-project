@@ -7,6 +7,7 @@
 ; CHECK-NEXT:    FunctionPass Manager
 ; CHECK-NEXT:      Expand large div/rem
 ; CHECK-NEXT:      Expand large fp convert
+; CHECK-NEXT:      Expand powi functions
 ; CHECK-NEXT:      Expand Atomic instructions
 ; CHECK-NEXT:      Simplify the CFG
 ; CHECK-NEXT:      Dominator Tree Construction

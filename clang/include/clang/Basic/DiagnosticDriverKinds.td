@@ -29,6 +29,10 @@ def err_drv_invalid_arch_name : Error<
   "invalid arch name '%0'">;
 def err_drv_invalid_riscv_arch_name : Error<
   "invalid arch name '%0', %1">;
+def warn_drv_require_ext_version : Warning<
+  "extension '%0' is experimental and requires explicit version; assuming "
+  "version '%1.%2'">,
+  InGroup<RISCVImplicitExtensionVersion>;
 def err_drv_invalid_riscv_cpu_name_for_target : Error<
   "cpu '%0' does not support rv%select{32|64}1">;
 def warn_drv_invalid_arch_name_with_suggestion : Warning<

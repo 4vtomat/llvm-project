@@ -687,7 +687,7 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
 
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
-  for (VPBlockBase *Block : depth_first(Entry)) {
+  for (VPBlockBase *Block : vp_depth_first_shallow(Entry)) {
     InstructionCost O = Block->overhead(VF, Ctx);
     Overhead += O;
   }

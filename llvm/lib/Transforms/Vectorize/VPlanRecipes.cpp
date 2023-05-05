@@ -453,9 +453,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
   case VPInstruction::CSAInitData: {
     if (Part == 0) {
       Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
-      Value *Poison = PoisonValue::get(ElemTyp);
-      Value *InitData =
-          State.Builder.CreateVectorSplat(State.VF, Poison, "csa.data.init");
+      Value *InitData = PoisonValue::get(VectorType::get(ElemTyp, State.VF));
       State.set(this, InitData, Part);
     } else {
       State.set(this, State.get(this, Part - 1), Part);
@@ -1453,20 +1451,14 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
 
   Value *IndexVec = State.Builder.CreateStepVector(
       VectorType::get(State.Builder.getInt32Ty(), State.VF), "csa.step");
-  Value *NegOneSplat = ConstantInt::get(IndexVec->getType(), -1);
-  Value *ActiveIdx = State.Builder.CreateIntrinsic(
-      Intrinsic::vp_merge, {IndexVec->getType()},
-      {MaskSel, IndexVec, NegOneSplat, VLToUse});
-  Value *LastIdx = State.Builder.CreateIntMaxReduce(ActiveIdx, true);
+  Value *NegOne = ConstantInt::get(IndexVec->getType()->getScalarType(), -1);
+  Value *LastIdx = State.Builder.CreateIntrinsic(
+      NegOne->getType(), Intrinsic::vp_reduce_smax,
+      {NegOne, IndexVec, MaskSel, VLToUse});
   Value *ExtractFromVec =
       State.Builder.CreateExtractElement(DataSel, LastIdx, "csa.extract");
-  Type *EFVTy = ExtractFromVec->getType();
-  bool IsIntTy = EFVTy->isIntegerTy();
-  Value *Zero =
-      IsIntTy ? ConstantInt::get(EFVTy, 0) : ConstantFP::getZero(EFVTy);
-  Value *LastIdxGEZero =
-      IsIntTy ? State.Builder.CreateICmpSGE(ExtractFromVec, Zero)
-              : State.Builder.CreateFCmpOGE(ExtractFromVec, Zero);
+  Value *Zero = ConstantInt::get(LastIdx->getType(), 0);
+  Value *LastIdxGEZero = State.Builder.CreateICmpSGE(LastIdx, Zero);
   Value *ChooseFromVecOrInit =
       State.Builder.CreateSelect(LastIdxGEZero, ExtractFromVec, InitScalar);
   State.set(this, ChooseFromVecOrInit, 0);

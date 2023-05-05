@@ -1724,14 +1724,9 @@ void RISCVInstrInfo::genAlternativeCodeSequence(
 }
 
 #if SIFIVE_CUSTOMIZATION
-int RISCVInstrInfo::getOverlapConstraintsFromMI(uint16_t RVVPseudoOpcode) {
-  const RISCVVPseudosTable::PseudoInfo *RVV =
-      RISCVVPseudosTable::getPseudoInfo(RVVPseudoOpcode);
-
-  if (!RVV)
-    return 0;
-
-  return RVV->TargetOverlapConstraintType;
+unsigned RISCVInstrInfo::getOverlapConstraintsFromMI(const MCInstrDesc &Desc) {
+  return (Desc.TSFlags & RISCVII::TargetOverlapConstraintTypeMask) >>
+         RISCVII::TargetOverlapConstraintTypeShift;
 }
 
 static bool getConstrainsBetweenDstAndSrc(const MachineInstr *MBBI,
@@ -1790,8 +1785,8 @@ static bool getConstraintsWithDestAndAllSrc(const MachineInstr *MBBI,
 }
 
 static bool hasTargetInterference(const MachineInstr *MBBI) {
-  int OverlapConstraintsType =
-      RISCVInstrInfo::getOverlapConstraintsFromMI(MBBI->getOpcode());
+  unsigned OverlapConstraintsType =
+      RISCVInstrInfo::getOverlapConstraintsFromMI(MBBI->getDesc());
   if (OverlapConstraintsType == 2 || OverlapConstraintsType == 3)
     return getConstraintsWithDestAndAllSrc(MBBI, OverlapConstraintsType);
 
@@ -2859,35 +2854,38 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
 
   for (RISCVMatInt::Inst &Inst : Seq) {
     bool LastItem = ++Num == Seq.size();
-    if (Inst.getOpcode() == RISCV::LUI) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
+    switch (Inst.getOpndKind()) {
+    case RISCVMatInt::Imm:
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addImm(Inst.getImm());
-    } else if (Inst.getOpcode() == RISCV::ADD_UW) {
-      BuildMI(MBB, MBBI, DL, get(RISCV::ADD_UW))
+      break;
+    case RISCVMatInt::RegX0:
+      BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(RISCV::X0);
-    } else if (Inst.getOpcode() == RISCV::SH1ADD ||
-               Inst.getOpcode() == RISCV::SH2ADD ||
-               Inst.getOpcode() == RISCV::SH3ADD) {
+      break;
+    case RISCVMatInt::RegReg:
       BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable));
-    } else {
+      break;
+    case RISCVMatInt::RegImm:
       BuildMI(MBB, MBBI, DL, get(Inst.getOpcode()))
           .addReg(DstReg, RegState::Define |
                               getDeadRegState(DstIsDead && LastItem) |
                               getRenamableRegState(Renamable))
           .addReg(SrcReg, RegState::Kill | getRenamableRegState(SrcRenamable))
           .addImm(Inst.getImm());
+      break;
     }
     // Only the first instruction has X0 as its source.
     SrcReg = DstReg;

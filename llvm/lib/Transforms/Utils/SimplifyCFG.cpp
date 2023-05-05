@@ -1774,7 +1774,10 @@ static bool replacingOperandWithVariableIsCheap(const Instruction *I,
 // PHI node (because an operand varies in each input block), add to PHIOperands.
 static bool canSinkInstructions(
     ArrayRef<Instruction *> Insts,
-    DenseMap<Instruction *, SmallVector<Value *, 4>> &PHIOperands) {
+#if SIFIVE_CUSTOMIZATION
+    DenseMap<Instruction *, SmallVector<Value *, 4>> &PHIOperands,
+    const TargetTransformInfo &TTI) {
+#endif
   // Prune out obviously bad instructions to move. Each instruction must have
   // exactly zero or one use, and we check later that use is by a single, common
   // PHI instruction in the successor.
@@ -1890,6 +1893,35 @@ static bool canSinkInstructions(
           !canReplaceOperandWithVariable(I0, OI))
         // We can't create a PHI from this GEP.
         return false;
+
+#if SIFIVE_CUSTOMIZATION
+      // Return true if I is load/store instruction and OpIdx is pointer index
+      // of I.
+      auto IsLoadStorePointerIndex = [](const Instruction *I, unsigned OpIdx) {
+        if (auto *LI = dyn_cast<LoadInst>(I))
+          return LI->getPointerOperandIndex() == OpIdx;
+        if (auto *SI = dyn_cast<StoreInst>(I))
+          return SI->getPointerOperandIndex() == OpIdx;
+        return false;
+      };
+
+      // It may not be cheap for use variable to replace foldable GEP for
+      // load/store instructions.
+      auto LoadStoreUseFoldableGEP = [&](const Instruction *I) {
+        if (IsLoadStorePointerIndex(I, OI)) {
+          if (auto *GEP = dyn_cast<GetElementPtrInst>(I->getOperand(OI))) {
+            SmallVector<const Value *, 4> Indices(GEP->indices());
+            return TTI.getGEPCost(GEP->getSourceElementType(),
+                                  GEP->getPointerOperand(),
+                                  Indices) == TargetTransformInfo::TCC_Free;
+          }
+        }
+        return false;
+      };
+      if (any_of(Insts, LoadStoreUseFoldableGEP))
+        return false;
+#endif
+
       for (auto *I : Insts)
         PHIOperands[I].push_back(I->getOperand(OI));
     }
@@ -2079,7 +2111,10 @@ namespace {
 /// Check whether BB's predecessors end with unconditional branches. If it is
 /// true, sink any common code from the predecessors to BB.
 static bool SinkCommonCodeFromPredecessors(BasicBlock *BB,
-                                           DomTreeUpdater *DTU) {
+#if SIFIVE_CUSTOMIZATION
+                                           DomTreeUpdater *DTU,
+                                           const TargetTransformInfo &TTI) {
+#endif
   // We support two situations:
   //   (1) all incoming arcs are unconditional
   //   (2) there are non-unconditional incoming arcs
@@ -2144,7 +2179,9 @@ static bool SinkCommonCodeFromPredecessors(BasicBlock *BB,
   DenseMap<Instruction*, SmallVector<Value*,4>> PHIOperands;
   LockstepReverseIterator LRI(UnconditionalPreds);
   while (LRI.isValid() &&
-         canSinkInstructions(*LRI, PHIOperands)) {
+#if SIFIVE_CUSTOMIZATION
+         canSinkInstructions(*LRI, PHIOperands, TTI)) {
+#endif
     LLVM_DEBUG(dbgs() << "SINK: instruction can be sunk: " << *(*LRI)[0]
                       << "\n");
     InstructionsToSink.insert((*LRI).begin(), (*LRI).end());
@@ -7259,7 +7296,9 @@ bool SimplifyCFGOpt::simplifyOnce(BasicBlock *BB) {
     return true;
 
   if (SinkCommon && Options.SinkCommonInsts)
-    if (SinkCommonCodeFromPredecessors(BB, DTU) ||
+#if SIFIVE_CUSTOMIZATION
+    if (SinkCommonCodeFromPredecessors(BB, DTU, TTI) ||
+#endif
         MergeCompatibleInvokes(BB, DTU)) {
       // SinkCommonCodeFromPredecessors() does not automatically CSE PHI's,
       // so we may now how duplicate PHI's.

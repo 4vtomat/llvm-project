@@ -123,6 +123,9 @@ void initializeExpandLargeFpConvertLegacyPassPass(PassRegistry&);
 void initializeExpandLargeDivRemLegacyPassPass(PassRegistry&);
 void initializeExpandMemCmpPassPass(PassRegistry&);
 void initializeExpandPostRAPass(PassRegistry&);
+#if SIFIVE_CUSTOMIZATION
+void initializeExpandPowiLegacyPassPass(PassRegistry &);
+#endif // SIFIVE_CUSTOMIZATION
 void initializeExpandReductionsPass(PassRegistry&);
 void initializeExpandVectorPredicationPass(PassRegistry &);
 void initializeMakeGuardsExplicitLegacyPassPass(PassRegistry&);

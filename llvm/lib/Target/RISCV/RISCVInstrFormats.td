@@ -221,6 +221,10 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
 #ifdef SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
   // collisions when new TSFlags are added upstream
+
+  bits<2> TargetOverlapConstraintType = 0;
+  let TSFlags{62-61} = TargetOverlapConstraintType;
+
   bit HasRoundModeOp = 0;
   let TSFlags{63} =  HasRoundModeOp;
 #endif // SIFIVE_CUSTOMIZATION

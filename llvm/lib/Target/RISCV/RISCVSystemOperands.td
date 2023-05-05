@@ -403,10 +403,10 @@ def : SysReg<"mscratchcsw", 0x348>;
 //===-----------------------------------------------
 // Interrupt Rnmi CSRs
 //===-----------------------------------------------
-def : SysReg<"mnscratch", 0x350>;
-def : SysReg<"mnepc", 0x351>;
-def : SysReg<"mncause", 0x352>;
-def : SysReg<"mnstatus", 0x353>;
+def : SysReg<"mnscratch", 0x740>;
+def : SysReg<"mnepc", 0x741>;
+def : SysReg<"mncause", 0x742>;
+def : SysReg<"mnstatus", 0x744>;
 
 //===-----------------------------------------------
 // World Guard Security CSRs

@@ -576,6 +576,16 @@ DecodeStatus RISCVDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
       if (Result != MCDisassembler::Fail)
         return Result;
     }
+#if SIFIVE_CUSTOMIZATION
+    if (STI.hasFeature(RISCV::FeatureStdExtZvkb0p1) ||
+        STI.hasFeature(RISCV::FeatureStdExtZvkg0p1)) {
+      LLVM_DEBUG(dbgs() << "Trying zvk0p1 custom opcode table:\n");
+      Result = decodeInstruction(DecoderTableZvk0p132, MI, Insn, Address,
+                                 this, STI);
+      if (Result != MCDisassembler::Fail)
+        return Result;
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     LLVM_DEBUG(dbgs() << "Trying RISCV32 table :\n");
     return decodeInstruction(DecoderTable32, MI, Insn, Address, this, STI);

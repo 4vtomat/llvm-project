@@ -542,7 +542,6 @@ namespace {
     SDValue visitFMULForFMADistributiveCombine(SDNode *N);
 
 #if SIFIVE_CUSTOMIZATION
-    SDValue visitVPFADDForVPFMACombine(SDNode *N);
     SDValue visitVPXOR(SDNode *N);
     SDValue visitVPFDIV(SDNode *N);
     SDValue visitVPFSQRT(SDNode *N);
@@ -564,6 +563,7 @@ namespace {
     SDValue buildVPSqrtNRTwoConst(SDValue Arg, SDValue Est, SDValue Mask,
                                   SDValue EVL, unsigned Iterations,
                                   SDNodeFlags Flags, bool Reciprocal);
+    SDValue visitVP_SELECT(SDNode *N);
 #endif // SIFIVE_CUSTOMIZATION
 
     SDValue XformToShuffleWithZero(SDNode *N);
@@ -15319,10 +15319,10 @@ SDValue DAGCombiner::visitFADDForFMACombine(SDNode *N) {
     SDValue TmpFMA = FMA;
     while (E && isFusedOp(TmpFMA) && TmpFMA.hasOneUse()) {
       SDValue FMul = TmpFMA->getOperand(2);
-      if (FMul.getOpcode() == ISD::FMUL && FMul.hasOneUse()) {
+      if (matcher.match(FMul, ISD::FMUL) && FMul.hasOneUse()) { // SIFIVE
         SDValue C = FMul.getOperand(0);
         SDValue D = FMul.getOperand(1);
-        SDValue CDE = DAG.getNode(PreferredFusedOpcode, SL, VT, C, D, E);
+        SDValue CDE = matcher.getNode(PreferredFusedOpcode, SL, VT, C, D, E); // SIFIVE
         DAG.ReplaceAllUsesOfValueWith(FMul, CDE);
         // Replacing the inner FMul could cause the outer FMA to be simplified
         // away.
@@ -26219,6 +26219,56 @@ SDValue DAGCombiner::visitVPSDIVLike(SDValue N0, SDValue N1, SDNode *N) {
 
   return SDValue();
 }
+
+SDValue DAGCombiner::visitVP_SELECT(SDNode *N) {
+  // Do foldBoolSelectToLogic for VP_SELECT.
+  SDValue Cond = N->getOperand(0);
+  SDValue T = N->getOperand(1), F = N->getOperand(2);
+  SDValue EVL = N->getOperand(3);
+  EVT VT = N->getValueType(0);
+  if (VT != Cond.getValueType() || VT.getScalarSizeInBits() != 1)
+    return SDValue();
+
+  // select Cond, Cond, F --> or Cond, F
+  // select Cond, 1, F    --> or Cond, F
+  if (Cond == T || isOneOrOneSplat(T, /* AllowUndefs */ true)) {
+    SDValue AllOnes = DAG.getAllOnesConstant(SDLoc(N), VT);
+    return DAG.getNode(ISD::VP_OR, SDLoc(N), VT, Cond, F, AllOnes, EVL);
+  }
+
+  // select Cond, T, Cond --> and Cond, T
+  // select Cond, T, 0    --> and Cond, T
+  if (Cond == F || isNullOrNullSplat(F, /* AllowUndefs */ true)) {
+    SDValue AllOnes = DAG.getAllOnesConstant(SDLoc(N), VT);
+    return DAG.getNode(ISD::VP_AND, SDLoc(N), VT, Cond, T, AllOnes, EVL);
+  }
+
+  // select Cond, T, 1 --> or (not Cond), T
+  if (isOneOrOneSplat(F, /* AllowUndefs */ true)) {
+    SDValue AllOnes = DAG.getAllOnesConstant(SDLoc(N), VT);
+    SDValue NotCond =
+        DAG.getNode(ISD::VP_XOR, SDLoc(N), VT, Cond, AllOnes, AllOnes, EVL);
+    return DAG.getNode(ISD::VP_OR, SDLoc(N), VT, NotCond, T, AllOnes, EVL);
+  }
+
+  // select Cond, 0, F --> and (not Cond), F
+  if (isNullOrNullSplat(T, /* AllowUndefs */ true)) {
+    SDValue AllOnes = DAG.getAllOnesConstant(SDLoc(N), VT);
+    SDValue NotCond =
+        DAG.getNode(ISD::VP_XOR, SDLoc(N), VT, Cond, AllOnes, AllOnes, EVL);
+    return DAG.getNode(ISD::VP_AND, SDLoc(N), VT, NotCond, F, AllOnes, EVL);
+  }
+
+  // select 1, T, F --> T
+  if (isOneOrOneSplat(Cond, /* AllowUndefs */ true))
+    return T;
+
+  // select 0, T, F --> F
+  if (isNullOrNullSplat(Cond, /* AllowUndefs */ true))
+    return F;
+
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
@@ -26266,6 +26316,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     case ISD::VP_UREM:
     case ISD::VP_SREM:
       return visitVPREM(N);
+    case ISD::VP_SELECT:
+      return visitVP_SELECT(N);
 #endif // SIFIVE_CUSTOMIZATION
     }
     return SDValue();

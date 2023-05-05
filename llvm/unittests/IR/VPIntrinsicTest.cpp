@@ -77,6 +77,10 @@ protected:
            "i32)";
     Str << " declare <8 x float> @llvm.vp.sqrt.v8f32(<8 x float>, <8 x i1>, "
            "i32)";
+#if SIFIVE_CUSTOMIZATION
+    Str << " declare <8 x float> @llvm.vp.powi.v8f32.i32(<8 x float>, i32, "
+           "<8 x i1>, i32)";
+#endif // SIFIVE_CUSTOMIZATION
     Str << " declare <8 x float> @llvm.vp.fma.v8f32(<8 x float>, <8 x float>, "
            "<8 x float>, <8 x i1>, i32) ";
     Str << " declare <8 x float> @llvm.vp.fmuladd.v8f32(<8 x float>, "

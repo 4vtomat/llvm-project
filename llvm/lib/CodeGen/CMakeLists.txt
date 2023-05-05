@@ -59,6 +59,7 @@ add_llvm_component_library(LLVMCodeGen
   ExpandLargeFpConvert.cpp
   ExpandMemCmp.cpp
   ExpandPostRAPseudos.cpp
+  SiFive_ExpandPowi.cpp
   ExpandReductions.cpp
   ExpandVectorPredication.cpp
   FaultMaps.cpp

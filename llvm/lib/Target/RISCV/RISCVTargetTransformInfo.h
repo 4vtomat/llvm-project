@@ -172,6 +172,9 @@ public:
   unsigned getMinTripCountTailFoldingThreshold() const {
     return useVLAVectorizer() ? 3 : 0;
   }
+
+  InstructionCost getCFInstrCost(unsigned Opcode, TTI::TargetCostKind CostKind,
+                                 const Instruction *I);
 #endif // SIFIVE_CUSTOMIZATION
 
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);

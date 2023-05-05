@@ -302,14 +302,14 @@ define i32 @test10(i1 zeroext %flag, i32 %x, ptr %y, ptr %s) {
 ; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 5
+; CHECK-NEXT:    store volatile i32 [[X]], ptr [[S:%.*]], align 4
 ; CHECK-NEXT:    br label [[IF_END:%.*]]
 ; CHECK:       if.else:
 ; CHECK-NEXT:    [[DUMMY1:%.*]] = add i32 [[X]], 6
-; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S]], i32 0, i32 1
+; CHECK-NEXT:    store volatile i32 [[X]], ptr [[GEPB]], align 4
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
-; CHECK-NEXT:    [[GEPB_SINK:%.*]] = phi ptr [ [[GEPB]], [[IF_ELSE]] ], [ [[S]], [[IF_THEN]] ]
-; CHECK-NEXT:    store volatile i32 [[X]], ptr [[GEPB_SINK]], align 4
 ; CHECK-NEXT:    ret i32 1
 ;
 entry:
@@ -472,12 +472,22 @@ declare i32 @bar(i32)
 define i32 @test14(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-LABEL: @test14(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[DOT:%.*]] = select i1 [[FLAG:%.*]], i32 1, i32 4
-; CHECK-NEXT:    [[DOT2:%.*]] = select i1 [[FLAG]], i32 56, i32 57
-; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X:%.*]], [[DOT]]
-; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
+; CHECK:       if.then:
+; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 1
+; CHECK-NEXT:    [[GEPA:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+; CHECK-NEXT:    [[SV1:%.*]] = load i32, ptr [[GEPA]], align 4
+; CHECK-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[SV1]], 56
+; CHECK-NEXT:    br label [[IF_END:%.*]]
+; CHECK:       if.else:
+; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X]], 4
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON]], ptr [[S]], i32 0, i32 1
 ; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB]], align 4
-; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i32 [[SV2]], [[DOT2]]
+; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i32 [[SV2]], 57
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 0, metadata [[META7:![0-9]+]], metadata !DIExpression()), !dbg [[DBG9:![0-9]+]]
+; CHECK-NEXT:    br label [[IF_END]]
+; CHECK:       if.end:
+; CHECK-NEXT:    [[P:%.*]] = phi i1 [ [[CMP1]], [[IF_THEN]] ], [ [[CMP2]], [[IF_ELSE]] ]
 ; CHECK-NEXT:    ret i32 1
 ;
 entry:
@@ -523,16 +533,17 @@ define i32 @test15(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 1
+; CHECK-NEXT:    [[SV1:%.*]] = load i32, ptr [[S:%.*]], align 4
 ; CHECK-NEXT:    br label [[IF_END:%.*]]
 ; CHECK:       if.else:
 ; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X]], 4
-; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S]], i32 0, i32 1
+; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB]], align 4
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
-; CHECK-NEXT:    [[GEPB_SINK:%.*]] = phi ptr [ [[GEPB]], [[IF_ELSE]] ], [ [[S]], [[IF_THEN]] ]
+; CHECK-NEXT:    [[SV2_SINK:%.*]] = phi i32 [ [[SV2]], [[IF_ELSE]] ], [ [[SV1]], [[IF_THEN]] ]
 ; CHECK-NEXT:    [[DOTSINK:%.*]] = phi i64 [ 57, [[IF_ELSE]] ], [ 56, [[IF_THEN]] ]
-; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB_SINK]], align 4
-; CHECK-NEXT:    [[EXT2:%.*]] = zext i32 [[SV2]] to i64
+; CHECK-NEXT:    [[EXT2:%.*]] = zext i32 [[SV2_SINK]] to i64
 ; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i64 [[EXT2]], [[DOTSINK]]
 ; CHECK-NEXT:    ret i32 1
 ;
@@ -1563,7 +1574,7 @@ end:
 define void @nontemporal(ptr %ptr, i1 %cond) {
 ; CHECK-LABEL: @nontemporal(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal !7
+; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal !10
 ; CHECK-NEXT:    ret void
 ;
 entry:
