@@ -2475,7 +2475,7 @@ StmtResult Parser::ParsePragmaRvvHint(StmtVector &Stmts,
 
     TempAttrs.addNew(Hint.PragmaNameLoc->Ident, Hint.Range, nullptr,
                      Hint.PragmaNameLoc->Loc, ArgHints, 4,
-                     ParsedAttr::AS_Pragma);
+                     ParsedAttr::Form::Pragma());
   }
 
   // Get the next statement.

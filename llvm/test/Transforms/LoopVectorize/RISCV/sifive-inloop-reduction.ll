@@ -325,8 +325,7 @@ define i32 @smin(ptr nocapture %a, ptr nocapture readonly %b, i64 %n) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.reduce.smin.nxv2i32(i32 2147483647, <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
-; CHECK-NEXT:    [[RDX_MINMAX_CMP:%.*]] = icmp slt i32 [[TMP6]], [[VEC_PHI]]
-; CHECK-NEXT:    [[RDX_MINMAX_SELECT]] = select i1 [[RDX_MINMAX_CMP]], i32 [[TMP6]], i32 [[VEC_PHI]]
+; CHECK-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smin.i32(i32 [[TMP6:%.*]], i32 [[VEC_PHI:%.*]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
@@ -386,8 +385,7 @@ define i32 @umax(ptr nocapture %a, ptr nocapture readonly %b, i64 %n) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.reduce.umax.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
-; CHECK-NEXT:    [[RDX_MINMAX_CMP:%.*]] = icmp ugt i32 [[TMP6]], [[VEC_PHI]]
-; CHECK-NEXT:    [[RDX_MINMAX_SELECT]] = select i1 [[RDX_MINMAX_CMP]], i32 [[TMP6]], i32 [[VEC_PHI]]
+; CHECK-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.umax.i32(i32 [[TMP6:%.*]], i32 [[VEC_PHI:%.*]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]

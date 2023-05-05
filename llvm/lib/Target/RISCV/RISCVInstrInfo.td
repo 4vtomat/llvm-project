@@ -2127,4 +2127,3 @@ include "RISCVInstrInfoZihintntl.td"
 
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
-include "RISCVInstrInfoXSf.td"
