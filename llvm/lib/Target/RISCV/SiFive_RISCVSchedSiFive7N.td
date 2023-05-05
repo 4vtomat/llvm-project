@@ -483,8 +483,11 @@ foreach mx = SchedMxList in {
 }
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar Cycles = !mul(SiFive7NGetDivOrSqrtFactor<sew>.c,
-                         !div(SiFive7NGetCyclesOnePerElement<mx, sew>.c, 4));
+    // One bit at a time, but up to four elements can be processed at a time.
+    // Add 3 to number of elements to ensure the group formed by remainder
+    // elements are accounted for.
+    defvar Cycles =
+        !mul(sew, !div(!add(3, SiFive7NGetCyclesOnePerElement<mx, sew>.c), 4));
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
     let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [SiFive7NVA], mx, sew, IsWorstCase>;
