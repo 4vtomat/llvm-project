@@ -1123,38 +1123,38 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
 Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
                                          const TargetTransformInfo *TTI,
                                          Value *Src, RecurKind RdxKind,
-                                         Value *RVL) {
+                                         Value *RVL, Value *Mask) {
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   switch (RdxKind) {
   case RecurKind::Add:
-    return Builder.CreateAddReduce(Src, RVL);
+    return Builder.CreateAddReduce(Src, RVL, Mask);
   case RecurKind::Mul:
-    return Builder.CreateMulReduce(Src, RVL);
+    return Builder.CreateMulReduce(Src, RVL, Mask);
   case RecurKind::And:
-    return Builder.CreateAndReduce(Src, RVL);
+    return Builder.CreateAndReduce(Src, RVL, Mask);
   case RecurKind::Or:
-    return Builder.CreateOrReduce(Src, RVL);
+    return Builder.CreateOrReduce(Src, RVL, Mask);
   case RecurKind::Xor:
-    return Builder.CreateXorReduce(Src, RVL);
+    return Builder.CreateXorReduce(Src, RVL, Mask);
   case RecurKind::FMulAdd:
   case RecurKind::FAdd:
     return Builder.CreateFAddReduce(ConstantFP::getNegativeZero(SrcVecEltTy),
-                                    Src, RVL);
+                                    Src, RVL, Mask);
   case RecurKind::FMul:
     return Builder.CreateFMulReduce(ConstantFP::get(SrcVecEltTy, 1.0), Src,
-                                    RVL);
+                                    RVL, Mask);
   case RecurKind::SMax:
-    return Builder.CreateIntMaxReduce(Src, RVL, true);
+    return Builder.CreateIntMaxReduce(Src, RVL, true, Mask);
   case RecurKind::SMin:
-    return Builder.CreateIntMinReduce(Src, RVL, true);
+    return Builder.CreateIntMinReduce(Src, RVL, true, Mask);
   case RecurKind::UMax:
-    return Builder.CreateIntMaxReduce(Src, RVL, false);
+    return Builder.CreateIntMaxReduce(Src, RVL, false, Mask);
   case RecurKind::UMin:
-    return Builder.CreateIntMinReduce(Src, RVL, false);
+    return Builder.CreateIntMinReduce(Src, RVL, false, Mask);
   case RecurKind::FMax:
-    return Builder.CreateFPMaxReduce(Src, RVL);
+    return Builder.CreateFPMaxReduce(Src, RVL, Mask);
   case RecurKind::FMin:
-    return Builder.CreateFPMinReduce(Src, RVL);
+    return Builder.CreateFPMinReduce(Src, RVL, Mask);
   default:
     llvm_unreachable("Unhandled opcode");
   }
@@ -1182,7 +1182,7 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
 Value *llvm::createTargetReduction(IRBuilderBase &B,
                                    const TargetTransformInfo *TTI,
                                    const RecurrenceDescriptor &Desc, Value *Src,
-                                   Value *RVL, PHINode *OrigPhi) {
+                                   Value *RVL, PHINode *OrigPhi, Value *Mask) {
   // TODO: Support in-order reductions based on the recurrence descriptor.
   // All ops in the reduction inherit fast-math-flags from the recurrence
   // descriptor.
@@ -1190,10 +1190,12 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   B.setFastMathFlags(Desc.getFastMathFlags());
 
   RecurKind RK = Desc.getRecurrenceKind();
-  if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK))
+  if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK)) {
+    assert(!Mask && "Masked SelectCmp recurrence is not supported");
     return createSelectCmpTargetReduction(B, TTI, Src, Desc, OrigPhi, RVL);
+  }
 
-  return createSimpleTargetReduction(B, TTI, Src, RK, RVL);
+  return createSimpleTargetReduction(B, TTI, Src, RK, RVL, Mask);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1212,7 +1214,8 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createOrderedReduction(IRBuilderBase &B,
                                     const RecurrenceDescriptor &Desc,
-                                    Value *Src, Value *Start, Value *RVL) {
+                                    Value *Src, Value *Start, Value *RVL,
+                                    Value *Mask) {
   assert((Desc.getRecurrenceKind() == RecurKind::FAdd ||
           Desc.getRecurrenceKind() == RecurKind::FMulAdd) &&
          "Unexpected reduction kind");
@@ -1220,7 +1223,7 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
   assert(!Start->getType()->isVectorTy() && "Expected a scalar type");
   assert(RVL->getType()->isIntegerTy() && "Expected a integer type");
 
-  return B.CreateFAddReduce(Start, Src, RVL);
+  return B.CreateFAddReduce(Start, Src, RVL, Mask);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

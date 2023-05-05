@@ -395,7 +395,8 @@ Value *createSimpleTargetReduction(IRBuilderBase &B,
 #if SIFIVE_CUSTOMIZATION
 Value *createSimpleTargetReduction(IRBuilderBase &B,
                                    const TargetTransformInfo *TTI, Value *Src,
-                                   RecurKind RdxKind, Value *RVL);
+                                   RecurKind RdxKind, Value *RVL,
+                                   Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
@@ -424,7 +425,8 @@ Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
 #if SIFIVE_CUSTOMIZATION
 Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
                              const RecurrenceDescriptor &Desc, Value *Src,
-                             Value *RVL, PHINode *OrigPhi = nullptr);
+                             Value *RVL, PHINode *OrigPhi = nullptr,
+                             Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create an ordered reduction intrinsic using the given recurrence
@@ -436,7 +438,7 @@ Value *createOrderedReduction(IRBuilderBase &B,
 #if SIFIVE_CUSTOMIZATION
 Value *createOrderedReduction(IRBuilderBase &B,
                               const RecurrenceDescriptor &Desc, Value *Src,
-                              Value *Start, Value *RVL);
+                              Value *Start, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Get the intersection (logical and) of all of the potential IR flags
