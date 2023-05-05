@@ -128,8 +128,6 @@ def rnum_2_14 : Operand<XLenVT>, ImmLeaf<XLenVT,
   let OperandNamespace = "RISCVOp";
 }
 
-<<<<<<< HEAD
-=======
 let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
   let Predicates = [HasStdExtZvkb] in
     defm VANDN_V : VALU_IV_V_X<"vandn", 0b000001>;
@@ -143,7 +141,6 @@ let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
   defm VROR_V : VROR_IV_V_X_I<"vror", 0b010100>;
 } // Predicates = [HasStdExtZvkb]
 
->>>>>>> origin/sifive-dev
 let Predicates = [HasStdExtZvkg], RVVConstraint = NoConstraint in {
   def VGHSH_VV : PALUVVNoVm<0b101100, OPMVV, "vghsh.vv">;
   def VGMUL_VV : PALUVs2NoVm<0b101000, 0b10001, OPMVV, "vgmul.vv">;
@@ -155,17 +152,6 @@ let Predicates = [HasStdExtZvknha], RVVConstraint = NoConstraint in {
   def VSHA2MS_VV : PALUVVNoVm<0b101101, OPMVV, "vsha2ms.vv">;
 } // Predicates = [HasStdExtZvknha]
 
-<<<<<<< HEAD
-let Predicates = [HasStdExtZvkned], RVVConstraint = NoConstraint in {
-  defm VAESDF     : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
-  defm VAESDM     : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
-  defm VAESEF     : VAES_MV_V_S<0b101000, 0b101001, 0b00011, OPMVV, "vaesef">;
-  defm VAESEM     : VAES_MV_V_S<0b101000, 0b101001, 0b00010, OPMVV, "vaesem">;
-  def  VAESKF1_VI : VAESKF_MV_I<0b100010, "vaeskf1.vi", rnum_1_10>;
-  def  VAESKF2_VI : VAESKF_MV_I<0b101010, "vaeskf2.vi", rnum_2_14>;
-  def  VAESZ_VS   : PALUVs2NoVm<0b101001, 0b00111, OPMVV, "vaesz.vs">;
-} // Predicates = [HasStdExtZvkned]
-=======
 let Predicates = [HasStdExtZvknsOrZvkned], RVVConstraint = NoConstraint in {
   defm VAESDF : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
   defm VAESDM : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
@@ -175,7 +161,6 @@ let Predicates = [HasStdExtZvknsOrZvkned], RVVConstraint = NoConstraint in {
   def VAESKF2_VI : VAESKF_MV_I<0b101010, "vaeskf2.vi", rnum_2_14>;
   def VAESZ_VS : PALUVs2NoVm<0b101001, 0b00111, OPMVV, "vaesz.vs">;
 } // Predicates = [HasStdExtZvknsOrZvkned]
->>>>>>> origin/sifive-dev
 
 let Predicates = [HasStdExtZvksed], RVVConstraint = NoConstraint in {
   def  VSM4K_VI : PALUVINoVm<0b100001, "vsm4k.vi", rnum_0_7>;
@@ -187,7 +172,7 @@ let Predicates = [HasStdExtZvksh], RVVConstraint = NoConstraint in {
   def VSM3ME_VV : PALUVVNoVm<0b100000, OPMVV, "vsm3me.vv">;
 } // Predicates = [HasStdExtZvksh]
 
-<<<<<<< HEAD
+#ifndef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvbb] in {
   defm VANDN_V  : VALU_IV_V_X<"vandn", 0b000001>;
   def  VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
@@ -206,10 +191,10 @@ let Predicates = [HasStdExtZvbc] in {
   defm VCLMULH_V : VCLMUL_MV_V_X<"vclmulh", 0b001101>;
 } // Predicates = [HasStdExtZvbc]
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 let Predicates = [HasStdExtZvkg0p1],
     RVVConstraint = NoConstraint,
     DecoderNamespace = "Zvk0p1" in {
   def VGHMAC_VV : PALUVVNoVm<0b101100, OPMVV, "vghmac.vv">;
 } // Predicates = [HasStdExtZvkg0p1]
->>>>>>> origin/sifive-dev
+
