@@ -150,6 +150,14 @@ public:
     if (ISAInfo->hasExtension("a"))
       MaxAtomicInlineWidth = 32;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  unsigned getMinGlobalAlign(uint64_t TypeSize) const override {
+    if (TypeSize >= 128)
+      return 32;
+    return 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 class LLVM_LIBRARY_VISIBILITY RISCV64TargetInfo : public RISCVTargetInfo {
 public:
