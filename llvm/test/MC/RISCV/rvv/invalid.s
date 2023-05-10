@@ -72,7 +72,7 @@ vsetvli a2, a0, e8
 # CHECK-ERROR: operand must be e[8|16|32|64|128|256|512|1024],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
 vsetvli a2, a0, e8,m1
-# CHECK-ERROR: operand must be e[8|16|32|64|128|256|512|1024],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
+# COM-ERROR: operand must be e[8|16|32|64|128|256|512|1024],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu] #SIFIVE
 
 vsetvli a2, a0, e8,m1,ta
 # CHECK-ERROR: operand must be e[8|16|32|64|128|256|512|1024],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
