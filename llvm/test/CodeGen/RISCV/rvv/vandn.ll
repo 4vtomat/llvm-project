@@ -2175,8 +2175,9 @@ entry:
 define <vscale x 1 x i8> @intrinsic_vandn_vi_nxv1i8_i8(<vscale x 1 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv1i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i8> @llvm.riscv.vandn.nxv1i8.i8(
@@ -2191,8 +2192,9 @@ entry:
 define <vscale x 1 x i8> @intrinsic_vandn_mask_vi_nxv1i8_i8(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv1i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i8> @llvm.riscv.vandn.mask.nxv1i8.i8(
@@ -2208,8 +2210,9 @@ entry:
 define <vscale x 2 x i8> @intrinsic_vandn_vi_nxv2i8_i8(<vscale x 2 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv2i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i8> @llvm.riscv.vandn.nxv2i8.i8(
@@ -2224,8 +2227,9 @@ entry:
 define <vscale x 2 x i8> @intrinsic_vandn_mask_vi_nxv2i8_i8(<vscale x 2 x i8> %0, <vscale x 2 x i8> %1, <vscale x 2 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv2i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i8> @llvm.riscv.vandn.mask.nxv2i8.i8(
@@ -2241,8 +2245,9 @@ entry:
 define <vscale x 4 x i8> @intrinsic_vandn_vi_nxv4i8_i8(<vscale x 4 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv4i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i8> @llvm.riscv.vandn.nxv4i8.i8(
@@ -2257,8 +2262,9 @@ entry:
 define <vscale x 4 x i8> @intrinsic_vandn_mask_vi_nxv4i8_i8(<vscale x 4 x i8> %0, <vscale x 4 x i8> %1, <vscale x 4 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv4i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i8> @llvm.riscv.vandn.mask.nxv4i8.i8(
@@ -2274,8 +2280,9 @@ entry:
 define <vscale x 8 x i8> @intrinsic_vandn_vi_nxv8i8_i8(<vscale x 8 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv8i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i8> @llvm.riscv.vandn.nxv8i8.i8(
@@ -2290,8 +2297,9 @@ entry:
 define <vscale x 8 x i8> @intrinsic_vandn_mask_vi_nxv8i8_i8(<vscale x 8 x i8> %0, <vscale x 8 x i8> %1, <vscale x 8 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv8i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i8> @llvm.riscv.vandn.mask.nxv8i8.i8(
@@ -2307,8 +2315,9 @@ entry:
 define <vscale x 16 x i8> @intrinsic_vandn_vi_nxv16i8_i8(<vscale x 16 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv16i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i8> @llvm.riscv.vandn.nxv16i8.i8(
@@ -2323,8 +2332,9 @@ entry:
 define <vscale x 16 x i8> @intrinsic_vandn_mask_vi_nxv16i8_i8(<vscale x 16 x i8> %0, <vscale x 16 x i8> %1, <vscale x 16 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv16i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v10, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v10, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i8> @llvm.riscv.vandn.mask.nxv16i8.i8(
@@ -2340,8 +2350,9 @@ entry:
 define <vscale x 32 x i8> @intrinsic_vandn_vi_nxv32i8_i8(<vscale x 32 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv32i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i8> @llvm.riscv.vandn.nxv32i8.i8(
@@ -2356,8 +2367,9 @@ entry:
 define <vscale x 32 x i8> @intrinsic_vandn_mask_vi_nxv32i8_i8(<vscale x 32 x i8> %0, <vscale x 32 x i8> %1, <vscale x 32 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv32i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v12, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v12, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i8> @llvm.riscv.vandn.mask.nxv32i8.i8(
@@ -2373,8 +2385,9 @@ entry:
 define <vscale x 64 x i8> @intrinsic_vandn_vi_nxv64i8_i8(<vscale x 64 x i8> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv64i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 64 x i8> @llvm.riscv.vandn.nxv64i8.i8(
@@ -2389,8 +2402,9 @@ entry:
 define <vscale x 64 x i8> @intrinsic_vandn_mask_vi_nxv64i8_i8(<vscale x 64 x i8> %0, <vscale x 64 x i8> %1, <vscale x 64 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv64i8_i8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v16, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v16, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 64 x i8> @llvm.riscv.vandn.mask.nxv64i8.i8(
@@ -2406,8 +2420,9 @@ entry:
 define <vscale x 1 x i16> @intrinsic_vandn_vi_nxv1i16_i16(<vscale x 1 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv1i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i16> @llvm.riscv.vandn.nxv1i16.i16(
@@ -2422,8 +2437,9 @@ entry:
 define <vscale x 1 x i16> @intrinsic_vandn_mask_vi_nxv1i16_i16(<vscale x 1 x i16> %0, <vscale x 1 x i16> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv1i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i16> @llvm.riscv.vandn.mask.nxv1i16.i16(
@@ -2439,8 +2455,9 @@ entry:
 define <vscale x 2 x i16> @intrinsic_vandn_vi_nxv2i16_i16(<vscale x 2 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv2i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i16> @llvm.riscv.vandn.nxv2i16.i16(
@@ -2455,8 +2472,9 @@ entry:
 define <vscale x 2 x i16> @intrinsic_vandn_mask_vi_nxv2i16_i16(<vscale x 2 x i16> %0, <vscale x 2 x i16> %1, <vscale x 2 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv2i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i16> @llvm.riscv.vandn.mask.nxv2i16.i16(
@@ -2472,8 +2490,9 @@ entry:
 define <vscale x 4 x i16> @intrinsic_vandn_vi_nxv4i16_i16(<vscale x 4 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv4i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i16> @llvm.riscv.vandn.nxv4i16.i16(
@@ -2488,8 +2507,9 @@ entry:
 define <vscale x 4 x i16> @intrinsic_vandn_mask_vi_nxv4i16_i16(<vscale x 4 x i16> %0, <vscale x 4 x i16> %1, <vscale x 4 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv4i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i16> @llvm.riscv.vandn.mask.nxv4i16.i16(
@@ -2505,8 +2525,9 @@ entry:
 define <vscale x 8 x i16> @intrinsic_vandn_vi_nxv8i16_i16(<vscale x 8 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv8i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i16> @llvm.riscv.vandn.nxv8i16.i16(
@@ -2521,8 +2542,9 @@ entry:
 define <vscale x 8 x i16> @intrinsic_vandn_mask_vi_nxv8i16_i16(<vscale x 8 x i16> %0, <vscale x 8 x i16> %1, <vscale x 8 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv8i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v10, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v10, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i16> @llvm.riscv.vandn.mask.nxv8i16.i16(
@@ -2538,8 +2560,9 @@ entry:
 define <vscale x 16 x i16> @intrinsic_vandn_vi_nxv16i16_i16(<vscale x 16 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv16i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i16> @llvm.riscv.vandn.nxv16i16.i16(
@@ -2554,8 +2577,9 @@ entry:
 define <vscale x 16 x i16> @intrinsic_vandn_mask_vi_nxv16i16_i16(<vscale x 16 x i16> %0, <vscale x 16 x i16> %1, <vscale x 16 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv16i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v12, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v12, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i16> @llvm.riscv.vandn.mask.nxv16i16.i16(
@@ -2571,8 +2595,9 @@ entry:
 define <vscale x 32 x i16> @intrinsic_vandn_vi_nxv32i16_i16(<vscale x 32 x i16> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv32i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i16> @llvm.riscv.vandn.nxv32i16.i16(
@@ -2587,8 +2612,9 @@ entry:
 define <vscale x 32 x i16> @intrinsic_vandn_mask_vi_nxv32i16_i16(<vscale x 32 x i16> %0, <vscale x 32 x i16> %1, <vscale x 32 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv32i16_i16:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v16, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v16, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x i16> @llvm.riscv.vandn.mask.nxv32i16.i16(
@@ -2604,8 +2630,9 @@ entry:
 define <vscale x 1 x i32> @intrinsic_vandn_vi_nxv1i32_i32(<vscale x 1 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv1i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i32> @llvm.riscv.vandn.nxv1i32.i32(
@@ -2620,8 +2647,9 @@ entry:
 define <vscale x 1 x i32> @intrinsic_vandn_mask_vi_nxv1i32_i32(<vscale x 1 x i32> %0, <vscale x 1 x i32> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv1i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i32> @llvm.riscv.vandn.mask.nxv1i32.i32(
@@ -2637,8 +2665,9 @@ entry:
 define <vscale x 2 x i32> @intrinsic_vandn_vi_nxv2i32_i32(<vscale x 2 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv2i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vandn.nxv2i32.i32(
@@ -2653,8 +2682,9 @@ entry:
 define <vscale x 2 x i32> @intrinsic_vandn_mask_vi_nxv2i32_i32(<vscale x 2 x i32> %0, <vscale x 2 x i32> %1, <vscale x 2 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv2i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i32> @llvm.riscv.vandn.mask.nxv2i32.i32(
@@ -2670,8 +2700,9 @@ entry:
 define <vscale x 4 x i32> @intrinsic_vandn_vi_nxv4i32_i32(<vscale x 4 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv4i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vandn.nxv4i32.i32(
@@ -2686,8 +2717,9 @@ entry:
 define <vscale x 4 x i32> @intrinsic_vandn_mask_vi_nxv4i32_i32(<vscale x 4 x i32> %0, <vscale x 4 x i32> %1, <vscale x 4 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv4i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v10, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v10, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vandn.mask.nxv4i32.i32(
@@ -2703,8 +2735,9 @@ entry:
 define <vscale x 8 x i32> @intrinsic_vandn_vi_nxv8i32_i32(<vscale x 8 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv8i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vandn.nxv8i32.i32(
@@ -2719,8 +2752,9 @@ entry:
 define <vscale x 8 x i32> @intrinsic_vandn_mask_vi_nxv8i32_i32(<vscale x 8 x i32> %0, <vscale x 8 x i32> %1, <vscale x 8 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv8i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v12, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v12, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vandn.mask.nxv8i32.i32(
@@ -2736,8 +2770,9 @@ entry:
 define <vscale x 16 x i32> @intrinsic_vandn_vi_nxv16i32_i32(<vscale x 16 x i32> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv16i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i32> @llvm.riscv.vandn.nxv16i32.i32(
@@ -2752,8 +2787,9 @@ entry:
 define <vscale x 16 x i32> @intrinsic_vandn_mask_vi_nxv16i32_i32(<vscale x 16 x i32> %0, <vscale x 16 x i32> %1, <vscale x 16 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv16i32_i32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v16, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v16, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x i32> @llvm.riscv.vandn.mask.nxv16i32.i32(
@@ -2769,8 +2805,9 @@ entry:
 define <vscale x 1 x i64> @intrinsic_vandn_vi_nxv1i64_i64(<vscale x 1 x i64> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv1i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i64> @llvm.riscv.vandn.nxv1i64.i64(
@@ -2785,8 +2822,9 @@ entry:
 define <vscale x 1 x i64> @intrinsic_vandn_mask_vi_nxv1i64_i64(<vscale x 1 x i64> %0, <vscale x 1 x i64> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv1i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v9, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v9, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i64> @llvm.riscv.vandn.mask.nxv1i64.i64(
@@ -2802,8 +2840,9 @@ entry:
 define <vscale x 2 x i64> @intrinsic_vandn_vi_nxv2i64_i64(<vscale x 2 x i64> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv2i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i64> @llvm.riscv.vandn.nxv2i64.i64(
@@ -2818,8 +2857,9 @@ entry:
 define <vscale x 2 x i64> @intrinsic_vandn_mask_vi_nxv2i64_i64(<vscale x 2 x i64> %0, <vscale x 2 x i64> %1, <vscale x 2 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv2i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v10, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v10, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i64> @llvm.riscv.vandn.mask.nxv2i64.i64(
@@ -2835,8 +2875,9 @@ entry:
 define <vscale x 4 x i64> @intrinsic_vandn_vi_nxv4i64_i64(<vscale x 4 x i64> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv4i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i64> @llvm.riscv.vandn.nxv4i64.i64(
@@ -2851,8 +2892,9 @@ entry:
 define <vscale x 4 x i64> @intrinsic_vandn_mask_vi_nxv4i64_i64(<vscale x 4 x i64> %0, <vscale x 4 x i64> %1, <vscale x 4 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv4i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v12, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v12, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i64> @llvm.riscv.vandn.mask.nxv4i64.i64(
@@ -2868,8 +2910,9 @@ entry:
 define <vscale x 8 x i64> @intrinsic_vandn_vi_nxv8i64_i64(<vscale x 8 x i64> %0, iXLen %1) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_vi_nxv8i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vandn.vi v8, v8, 2
+; CHECK-NEXT:    vandn.vx v8, v8, a1
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i64> @llvm.riscv.vandn.nxv8i64.i64(
@@ -2884,8 +2927,9 @@ entry:
 define <vscale x 8 x i64> @intrinsic_vandn_mask_vi_nxv8i64_i64(<vscale x 8 x i64> %0, <vscale x 8 x i64> %1, <vscale x 8 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vandn_mask_vi_nxv8i64_i64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    li a1, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, mu
-; CHECK-NEXT:    vandn.vi v8, v16, 2, v0.t
+; CHECK-NEXT:    vandn.vx v8, v16, a1, v0.t
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x i64> @llvm.riscv.vandn.mask.nxv8i64.i64(

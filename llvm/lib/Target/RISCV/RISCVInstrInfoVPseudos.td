@@ -7673,18 +7673,18 @@ let Predicates = [HasStdExtZvknsOrZvkned] in {
   defm PseudoVAESZ : PPseudoVALU_S_NoMask;
 } // Predicates = [HasStdExtZvkns]
 
-let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
-  let Predicates = [HasStdExtZvkb] in
-    defm PseudoVANDN : VPseudoVALU_VV_VX;
-  let Predicates = [HasStdExtZvkb0p1] in
-    defm PseudoVANDN_0P1 : VPseudoVALU_VV_VX_VI;
+let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
+  defm PseudoVANDN : VPseudoVALU_VV_VX;
   defm PseudoVBREV8 : VPseudoVALU_V;
-  defm PseudoVCLMUL : VPseudoVALU_VCLMUL;
-  defm PseudoVCLMULH : VPseudoVALU_VCLMUL;
   defm PseudoVREV8 : VPseudoVALU_V;
   defm PseudoVROL : VPseudoVALU_VV_VX;
   defm PseudoVROR : VPseudoVALU_VV_VX_VI;
-} // Predicates = [HasStdExtZvkb]
+} // Predicates = [HasStdExtZvbbOrZvkb0p1]
+
+let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
+  defm PseudoVCLMUL : VPseudoVALU_VCLMUL;
+  defm PseudoVCLMULH : VPseudoVALU_VCLMUL;
+} // Predicates = [HasStdExtZvbcOrZvkb0p1]
 
 let Predicates = [HasStdExtZvkg] in {
   defm PseudoVGHSH : PPseudoVALU_VV_NoMask;
@@ -8465,18 +8465,18 @@ let Predicates = [HasStdExtZvknsOrZvkned] in {
   defm : PPatUnaryV_S_NoMask<"int_riscv_vaesz", "PseudoVAESZ", I32IntegerVectors>;
 } // Predicates = [HasStdExtZvknsOrZvkned]
 
-let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
-  let Predicates = [HasStdExtZvkb] in
-    defm : VPatBinaryV_VV_VX<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
-  let Predicates = [HasStdExtZvkb0p1] in
-    defm : VPatBinaryV_VV_VX_VI<"int_riscv_vandn", "PseudoVANDN_0P1", AllIntegerVectors>;
+let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
+  defm : VPatBinaryV_VV_VX<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vbrev8", "PseudoVBREV8", AllIntegerVectors>;
-  defm : VPatBinaryV_VV_VX<"int_riscv_vclmul", "PseudoVCLMUL", I64IntegerVectors>;
-  defm : VPatBinaryV_VV_VX<"int_riscv_vclmulh", "PseudoVCLMULH", I64IntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vrev8", "PseudoVREV8", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX<"int_riscv_vrol", "PseudoVROL", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX_VI<"int_riscv_vror", "PseudoVROR", AllIntegerVectors>;
-} // Predicates = [HasStdExtZvkb0p1]
+} // Predicates = [HasStdExtZvbbOrZvkb0p1]
+
+let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
+  defm : VPatBinaryV_VV_VX<"int_riscv_vclmul", "PseudoVCLMUL", I64IntegerVectors>;
+  defm : VPatBinaryV_VV_VX<"int_riscv_vclmulh", "PseudoVCLMULH", I64IntegerVectors>;
+} // Predicates = [HasStdExtZvbcOrZvkb0p1]
 
 let Predicates = [HasStdExtZvkg] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vghsh", "PseudoVGHSH", I32IntegerVectors>;

@@ -688,10 +688,15 @@ def FeatureStdExtZvkb0p1
 def HasStdExtZvkb0p1 : Predicate<"Subtarget->hasStdExtZvkb0p1()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
                               "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-def HasStdExtZvkbOrZvkb0p1
-    : Predicate<"Subtarget->hasStdExtZvkb() || Subtarget->hasStdExtZvkb0p1()">,
-      AssemblerPredicate<(any_of FeatureStdExtZvkb, FeatureStdExtZvkb0p1),
-                         "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvbbOrZvkb0p1
+    : Predicate<"Subtarget->hasStdExtZvbb() || Subtarget->hasStdExtZvkb0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvbb, FeatureStdExtZvkb0p1),
+                         "'Zvkb' or 'Zvbb' (Vector Bitmanip instructions for Cryptography.)">;
+
+def HasStdExtZvbcOrZvkb0p1
+    : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget->hasStdExtZvkb0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvbc, FeatureStdExtZvkb0p1),
+                         "'Zvkb' or 'Zvbc' (Vector Bitmanip instructions for Cryptography.)">;
 
 def FeatureStdExtZvkg0p1
     : SubtargetFeature<"experimental-zvkg0p1", "HasStdExtZvkg0p1", "true",
