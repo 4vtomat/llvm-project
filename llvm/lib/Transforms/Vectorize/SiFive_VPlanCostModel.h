@@ -31,6 +31,7 @@ class RVVPair {
 public:
   // FIXME: Unify with `RvvHintAttr` in Clang
   enum class LMULKind {
+    Unsupported = -1,
     // The integer value represents encoding used by backend
     Mf8 = 0b101,
     Mf4 = 0b110,
@@ -88,6 +89,8 @@ public:
   }
 
   void dump(void) const { return print(llvm::dbgs()); }
+
+  operator bool() const { return getLMULKind() != LMULKind::Unsupported; }
 
 private:
   /// Return a <integer, bool> pair where integer is a numerator if boolean is

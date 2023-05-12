@@ -255,13 +255,10 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
   if (TTI && TTI->useVLAVectorizer() &&
       ForceScalableVectorization == SK_Unspecified)
     Scalable.Value = SK_ScalableOnly;
-#endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
   // Forced vector width from the metadata should be ignored if VLA is enabled
   // if it is suggesting a fixed vector width.
-  if (TTI && TTI->useVLAVectorizer() && Width.Value &&
-      Scalable.Value == SK_FixedWidthOnly) {
+  if (TTI && TTI->useVLAVectorizer() && Width.Value) {
     Width.Value = VectorizerParams::DefaultVectorizationFactor;
     ORE.emit([&]() {
       return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
