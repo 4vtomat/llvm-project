@@ -13,8 +13,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK:       for.body.preheader:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[WIDE_TRIP_COUNT]], i64 2, i64 0)
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[WIDE_TRIP_COUNT]], [[TMP1]]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[WIDE_TRIP_COUNT]], 12
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ;

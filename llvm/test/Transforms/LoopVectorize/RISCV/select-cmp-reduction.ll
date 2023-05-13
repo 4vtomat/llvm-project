@@ -69,8 +69,7 @@ define i32 @select_icmp(i32 %x, i32 %y, i32* nocapture readonly %c, i64 %n) #0 {
 ; VP_SCALABLE-LABEL: @select_icmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
@@ -183,8 +182,7 @@ define i32 @select_fcmp(float %x, i32 %y, float* nocapture readonly %c, i64 %n) 
 ; VP_SCALABLE-LABEL: @select_fcmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
@@ -289,8 +287,7 @@ define i32 @select_const_i32_from_icmp(i32* nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE-LABEL: @select_const_i32_from_icmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
@@ -403,8 +400,7 @@ define i32 @select_i32_from_icmp(i32* nocapture readonly %v, i32 %a, i32 %b, i64
 ; VP_SCALABLE-LABEL: @select_i32_from_icmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
@@ -511,8 +507,7 @@ define i32 @select_const_i32_from_fcmp(float* nocapture readonly %v, i64 %n) #0 
 ; VP_SCALABLE-LABEL: @select_const_i32_from_fcmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
@@ -655,8 +650,7 @@ define i32 @pred_select_const_i32_from_icmp(i32* noalias nocapture readonly %src
 ; VP_SCALABLE-LABEL: @pred_select_const_i32_from_icmp
 ; VP_SCALABLE-NEXT:  entry:
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[N:%.*]], i64 2, i64 1)
-; VP_SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
-; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], [[TMP1]]
+; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VP_SCALABLE:       vector.ph:
