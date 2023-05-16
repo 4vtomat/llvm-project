@@ -110,6 +110,7 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::vp_abs:
   case Intrinsic::vp_ctlz:
   case Intrinsic::vp_cttz:
+  case Intrinsic::vp_powi:
 #endif // SIFIVE_CUSTOMIZATION
     return (ScalarOpdIdx == 1);
   case Intrinsic::smul_fix:
@@ -129,6 +130,9 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
   case Intrinsic::fptoui_sat:
     return OpdIdx == 0;
   case Intrinsic::powi:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_powi:
+#endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == 1;
   default:
     return false;

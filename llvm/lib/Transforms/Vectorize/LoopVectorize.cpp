@@ -201,10 +201,9 @@ static cl::opt<bool> VectorizerDisableProfitableTripCountRTCheck(
     cl::desc("Disable generation of runtime check of a profitable vector trip "
              "count."));
 /// TODO: Switch default to 0 with a more generic fix for SCT-1402.
-/// Right now forces it to '3' to address SCT-1343
-static cl::opt<uint64_t> VectorizerProfitableVectorTripCount(
-    "vectorizer-profitable-vector-trip-count", cl::init(3), cl::Hidden,
-    cl::desc("Number of vector iterations for which executing vector code is "
+static cl::opt<uint64_t> VectorizerProfitableScalarTripCount(
+    "vectorizer-profitable-scalar-trip-count", cl::init(12), cl::Hidden,
+    cl::desc("Number of scalar iterations for which executing vector code is "
              "profitable."));
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1906,8 +1905,11 @@ public:
   /// the vector loop profitable.
   std::optional<uint64_t> getProfitableVectorTripCount(void) const {
     // Use user-given value if it's given and is not 0
-    if (VectorizerProfitableVectorTripCount != 0)
-      return VectorizerProfitableVectorTripCount.getValue();
+    //
+    // TODO: Compute the profitable trip count instead of using a hard coded
+    // number.
+    if (VectorizerProfitableScalarTripCount != 0)
+      return VectorizerProfitableScalarTripCount.getValue();
     return std::nullopt;
   }
 
@@ -3427,19 +3429,9 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
           Count->getType(), UndefValue::get(Count->getType()->getPointerTo()));
 
     if (EnableProfitableCheck) {
-      // FIXME: That should be done during VPlan construction and be aligned
-      // with vsetvli that is emitted in the loop. Right now it's aligned, but
-      // there's no verification of this.
-      // NOTE: In this code we assume that RVV 6.3.2 for our SiFive's HW always
-      // returns VLMAX
-      if (!InitVL)
-        InitVL = Builder.CreateLoad(
-            Count->getType(),
-            UndefValue::get(Count->getType()->getPointerTo()));
-
-      Value *RHS = Builder.CreateMul(
-          InitVL,
-          ConstantInt::get(Count->getType(), *ProfitableVectorTripCount * UF));
+      // TODO: Build runtime checks into vplan to model their costs.
+      Value *RHS =
+          ConstantInt::get(Count->getType(), *ProfitableVectorTripCount);
       Value *ProfitableCheck = Builder.CreateICmp(ICmpInst::ICMP_ULE, Count,
                                                   RHS, "prof.min.iters.check");
       CheckMinIters = Builder.CreateOr(CheckMinIters, ProfitableCheck);

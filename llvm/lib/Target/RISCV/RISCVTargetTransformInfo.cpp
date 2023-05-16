@@ -1349,6 +1349,17 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return Cost * LT.first;
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_powi: {
+    // Returning the same cost model for llvm.powi
+    return BaseT::getIntrinsicInstrCost(
+        IntrinsicCostAttributes(Intrinsic::powi, ICA.getReturnType(),
+                                ICA.getArgs(), ICA.getArgTypes(),
+                                ICA.getFlags(), ICA.getInst(),
+                                ICA.getScalarizationCost()),
+        CostKind);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (ST->hasVInstructions() && RetTy->isVectorTy()) {

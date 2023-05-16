@@ -28,13 +28,13 @@ define dso_local float @dot_ref(float* nocapture noundef readonly %x, float* noc
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP3]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <256 x float>, ptr [[TMP4]], align 4, !tbaa [[TBAA4]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = fmul <256 x float> [[WIDE_LOAD]], [[WIDE_LOAD1]]
-; CHECK-NEXT:    [[TMP6]] = fadd <256 x float> [[VEC_PHI]], [[TMP5]]
+; CHECK-NEXT:    [[TMP6]] = fadd reassoc <256 x float> [[VEC_PHI]], [[TMP5]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 256
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call float @llvm.vector.reduce.fadd.v256f32(float -0.000000e+00, <256 x float> [[TMP6]])
-; CHECK-NEXT:    [[TMP9:%.*]] = fadd float 0.000000e+00, [[TMP8]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call reassoc float @llvm.vector.reduce.fadd.v256f32(float -0.000000e+00, <256 x float> [[TMP6]])
+; CHECK-NEXT:    [[TMP9:%.*]] = fadd reassoc float 0.000000e+00, [[TMP8]]
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -55,7 +55,7 @@ define dso_local float @dot_ref(float* nocapture noundef readonly %x, float* noc
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds float, ptr [[Y]], i64 [[I_010]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = load float, ptr [[ARRAYIDX1]], align 4, !tbaa [[TBAA4]]
 ; CHECK-NEXT:    [[MUL:%.*]] = fmul float [[TMP10]], [[TMP11]]
-; CHECK-NEXT:    [[ADD]] = fadd float [[S_09]], [[MUL]]
+; CHECK-NEXT:    [[ADD]] = fadd reassoc float [[S_09]], [[MUL]]
 ; CHECK-NEXT:    [[INC]] = add nuw i64 [[I_010]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
@@ -83,7 +83,7 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx1 = getelementptr inbounds float, float* %y, i64 %i.010
   %1 = load float, float* %arrayidx1, align 4, !tbaa !4
   %mul = fmul float %0, %1
-  %add = fadd float %s.09, %mul
+  %add = fadd reassoc float %s.09, %mul
   %inc = add nuw i64 %i.010, 1
   %exitcond.not = icmp eq i64 %inc, %N
   br i1 %exitcond.not, label %for.cond.cleanup.loopexit, label %for.body, !llvm.loop !8

@@ -19,7 +19,7 @@
 ; Use LMUL4 for trip count between 56~512
 define internal float @foo(ptr nocapture noundef readonly %ptr, ptr nocapture noundef readonly %ptr2) {
 ; CHECK-REMARK-2: remark: <unknown>:0:0: loop not vectorized
-; CHECK-REMARK-8: remark: <unknown>:0:0: vectorized loop ((lmul, type): (mf2, float))
+; CHECK-REMARK-8: remark: <unknown>:0:0: loop not vectorized
 ; CHECK-REMARK-16: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m1, float))
 ; CHECK-REMARK-32: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, float))
 ; CHECK-REMARK-64: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))

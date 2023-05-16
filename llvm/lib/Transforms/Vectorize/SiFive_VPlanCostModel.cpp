@@ -42,8 +42,8 @@ namespace llvm {
 // FIXME: Unify with `RvvHintAttr` in Clang
 RVVPair RVVPair::getWithExponent(Type *Ty, const unsigned LMULExp,
                                  const DataLayout &DL) {
-  assert(LMULExp != 4 && LMULExp <= 7 &&
-         "LMUL exponent is not a valid or not supported.");
+  if (LMULExp == 4 || LMULExp > 7)
+    return RVVPair(Ty, LMULKind::Unsupported, DL);
   return RVVPair(Ty, (RVVPair::LMULKind)LMULExp, DL);
 }
 
@@ -73,6 +73,8 @@ StringRef RVVPair::getStringFromLMULKind(LMULKind Kind) const {
     return "m4";
   case LMULKind::M8:
     return "m8";
+  case LMULKind::Unsupported:
+    return "unsupported";
   }
   llvm_unreachable("Unsupported LMUL Kind");
 }
@@ -81,12 +83,19 @@ Type *VPlanCostModel::getVectorType(Type *Ty, const RVVPair &RVVP) {
   assert(!isa_and_nonnull<VectorType>(Ty) &&
          "Cannot convert non-scalar type to VectorType for a given (LMUL, SEW) "
          "pair");
+  if (!RVVP)
+    return nullptr;
+
   if (Ty->isVoidTy() || Ty->isMetadataTy())
     return Ty;
   return ScalableVectorType::get(Ty, getElementCount(RVVP).getKnownMinValue());
 }
 
 InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) const {
+  if (!RVL) {
+    LLVM_DEBUG(dbgs() << "VPlanCM: unsupported Runtime VL = " << RVL << '\n');
+    return InstructionCost::getInvalid();
+  }
   InstructionCost VectorIterCost = 0;
   for (const VPBlockBase *Block : vp_depth_first_deep(Plan.getEntry()))
     VectorIterCost += getCost(Block, RVL);
