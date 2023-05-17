@@ -70,7 +70,7 @@ static cl::opt<unsigned> VectorPrimaryLMULMinExp(
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
 
-static cl::opt<unsigned> VectorPrimaryLMULMaxExp(
+cl::opt<unsigned> VectorPrimaryLMULMaxExp(
     "vector-primary-lmul-max",
     cl::desc("Limit the exponent of maximum primary LMUL used by autovectorized code."
              "The default value is 0, it means LMUL=pow(2, 0)=1."
