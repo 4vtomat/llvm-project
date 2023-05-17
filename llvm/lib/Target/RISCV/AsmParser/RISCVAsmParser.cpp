@@ -1709,9 +1709,6 @@ RISCVAsmParser::parseCSRSystemRegister(OperandVector &Operands) {
         Warning(S, "'" + Identifier + "' is a deprecated alias for '" +
                        SysReg->Name + "'");
 
-    if (SysReg && SysReg->isDeprecated)
-      Warning(S, std::string("'") + SysReg->Name + "' is deprecated");
-
     // Accept a named Sys Reg if the required features are present.
     if (SysReg) {
       if (!SysReg->haveRequiredFeatures(getSTI().getFeatureBits())) {
@@ -2004,7 +2001,9 @@ OperandMatchResultTy RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
     getLexer().Lex();
   }
 
-  if (VTypeIElements.size() == 7) {
+#if SIFIVE_CUSTOMIZATION
+  if (VTypeIElements.size() == 3 || VTypeIElements.size() == 7) {
+#endif // SIFIVE_CUSTOMIZATION
     // The VTypeIElements layout is:
     // SEW comma LMUL comma TA comma MA
     //  0    1    2     3    4   5    6
@@ -2028,25 +2027,30 @@ OperandMatchResultTy RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
     if (!RISCVVType::isValidLMUL(Lmul, Fractional))
       goto MatchFail;
 
-    // ta or tu
-    Name = VTypeIElements[4].getIdentifier();
-    bool TailAgnostic;
-    if (Name == "ta")
-      TailAgnostic = true;
-    else if (Name == "tu")
-      TailAgnostic = false;
-    else
-      goto MatchFail;
+#if SIFIVE_CUSTOMIZATION
+    bool TailAgnostic = false;
+    bool MaskAgnostic = false;
 
-    // ma or mu
-    Name = VTypeIElements[6].getIdentifier();
-    bool MaskAgnostic;
-    if (Name == "ma")
-      MaskAgnostic = true;
-    else if (Name == "mu")
-      MaskAgnostic = false;
-    else
-      goto MatchFail;
+    if (VTypeIElements.size() == 7) {
+      // ta or tu
+      Name = VTypeIElements[4].getIdentifier();
+      if (Name == "ta")
+        TailAgnostic = true;
+      else if (Name == "tu")
+        TailAgnostic = false;
+      else
+        goto MatchFail;
+
+      // ma or mu
+      Name = VTypeIElements[6].getIdentifier();
+      if (Name == "ma")
+        MaskAgnostic = true;
+      else if (Name == "mu")
+        MaskAgnostic = false;
+      else
+        goto MatchFail;
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     RISCVII::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
 

@@ -715,7 +715,7 @@ private:
 #if SIFIVE_CUSTOMIZATION
   // Helper function for creating VP reduce intrinsic call.
   CallInst *getReductionIntrinsic(Intrinsic::ID ID, Value *Acc, Value *Src,
-                                  Value *RVL);
+                                  Value *Mask, Value *RVL);
 #endif // SIFIVE_CUSTOMIZATION
 public:
   /// Create a sequential vector fadd reduction intrinsic of the source vector.
@@ -724,7 +724,8 @@ public:
   /// sequential reduction.
   CallInst *CreateFAddReduce(Value *Acc, Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateFAddReduce(Value *Acc, Value *Src, Value *RVL);
+  CallInst *CreateFAddReduce(Value *Acc, Value *Src, Value *RVL,
+                             Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a sequential vector fmul reduction intrinsic of the source vector.
@@ -733,65 +734,68 @@ public:
   /// sequential reduction.
   CallInst *CreateFMulReduce(Value *Acc, Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateFMulReduce(Value *Acc, Value *Src, Value *RVL);
+  CallInst *CreateFMulReduce(Value *Acc, Value *Src, Value *RVL,
+                             Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int add reduction intrinsic of the source vector.
   CallInst *CreateAddReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateAddReduce(Value *Src, Value *RVL);
+  CallInst *CreateAddReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int mul reduction intrinsic of the source vector.
   CallInst *CreateMulReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateMulReduce(Value *Src, Value *RVL);
+  CallInst *CreateMulReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int AND reduction intrinsic of the source vector.
   CallInst *CreateAndReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateAndReduce(Value *Src, Value *RVL);
+  CallInst *CreateAndReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int OR reduction intrinsic of the source vector.
   CallInst *CreateOrReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateOrReduce(Value *Src, Value *RVL);
+  CallInst *CreateOrReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int XOR reduction intrinsic of the source vector.
   CallInst *CreateXorReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateXorReduce(Value *Src, Value *RVL);
+  CallInst *CreateXorReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector integer max reduction intrinsic of the source
   /// vector.
   CallInst *CreateIntMaxReduce(Value *Src, bool IsSigned = false);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateIntMaxReduce(Value *Src, Value *RVL, bool IsSigned = false);
+  CallInst *CreateIntMaxReduce(Value *Src, Value *RVL, bool IsSigned = false,
+                               Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector integer min reduction intrinsic of the source
   /// vector.
   CallInst *CreateIntMinReduce(Value *Src, bool IsSigned = false);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateIntMinReduce(Value *Src, Value *RVL, bool IsSigned = false);
+  CallInst *CreateIntMinReduce(Value *Src, Value *RVL, bool IsSigned = false,
+                               Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector float max reduction intrinsic of the source
   /// vector.
   CallInst *CreateFPMaxReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateFPMaxReduce(Value *Src, Value *RVL);
+  CallInst *CreateFPMaxReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector float min reduction intrinsic of the source
   /// vector.
   CallInst *CreateFPMinReduce(Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateFPMinReduce(Value *Src, Value *RVL);
+  CallInst *CreateFPMinReduce(Value *Src, Value *RVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a lifetime.start intrinsic.

@@ -445,7 +445,6 @@ struct SysReg {
   // unsigned Number;
   FeatureBitset FeaturesRequired;
   bool isRV32Only;
-  bool isDeprecated;
 
   bool haveRequiredFeatures(const FeatureBitset &ActiveFeatures) const {
     // Not in 32-bit mode.

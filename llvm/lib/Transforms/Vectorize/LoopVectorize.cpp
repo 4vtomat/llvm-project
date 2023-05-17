@@ -11599,29 +11599,22 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
   State.Builder.setFastMathFlags(RdxDesc->getFastMathFlags());
   for (unsigned Part = 0; Part < State.UF; ++Part) {
+    Value *NewVecOp = State.get(getVecOp(), Part);
 #if SIFIVE_CUSTOMIZATION
     Value *RVLPart =
         State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-    Value *NewVecOp = State.get(getVecOp(), Part);
+    Value *NewCond = getCondOp() ? State.get(getCondOp(), Part) : nullptr;
+    if (NewCond && !RVLPart) {
+#else
     if (VPValue *Cond = getCondOp()) {
       Value *NewCond = State.get(Cond, Part);
+#endif // SIFIVE_CUSTOMIZATION
       VectorType *VecTy = cast<VectorType>(NewVecOp->getType());
       Value *Iden = RdxDesc->getRecurrenceIdentity(
           Kind, VecTy->getElementType(), RdxDesc->getFastMathFlags());
       Value *IdenVec =
           State.Builder.CreateVectorSplat(VecTy->getElementCount(), Iden);
-#if SIFIVE_CUSTOMIZATION
-      Value *Select;
-      if (RVLPart)
-        Select = State.Builder.CreateIntrinsic(
-            Intrinsic::vp_select, {NewVecOp->getType()},
-            {NewCond, NewVecOp, IdenVec, RVLPart});
-      else
-        Select = State.Builder.CreateSelect(NewCond, NewVecOp, IdenVec);
-#else
       Value *Select = State.Builder.CreateSelect(NewCond, NewVecOp, IdenVec);
-#endif // SIFIVE_CUSTOMIZATION
       NewVecOp = Select;
     }
     Value *NewRed;
@@ -11631,7 +11624,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       if (State.VF.isVector()) {
         if (RVLPart)
           NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
-                                          PrevInChain, RVLPart);
+                                          PrevInChain, RVLPart, NewCond);
         else
           NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
                                           PrevInChain);
@@ -11654,7 +11647,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
       if (RVLPart)
         NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp,
-                                       RVLPart);
+                                       RVLPart, nullptr, NewCond);
       else
         NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp);
 #else
