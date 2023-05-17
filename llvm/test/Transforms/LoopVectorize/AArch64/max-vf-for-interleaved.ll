@@ -39,9 +39,8 @@ entry:
 for.body:
   %i = phi i64 [ 0, %entry ], [ %i.next, %for.body ]
   %0 = add nuw nsw i64 %i, 2
-  %p_i.x = getelementptr inbounds %struct.pair, ptr %p, i64 %i, i32 0
   %p_i_plus_2.x = getelementptr inbounds %struct.pair, ptr %p, i64 %0, i32 0
-  %1 = load i32, ptr %p_i.x, align 4
+  %1 = load i32, ptr %p_i_plus_2.x, align 4
   store i32 %1, ptr %p_i_plus_2.x, align 4
   %p_i.y = getelementptr inbounds %struct.pair, ptr %p, i64 %i, i32 1
   %p_i_plus_2.y = getelementptr inbounds %struct.pair, ptr %p, i64 %0, i32 1
