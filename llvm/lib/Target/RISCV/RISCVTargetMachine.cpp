@@ -111,7 +111,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVDAGToDAGISelPass(*PR);
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVMachineConstPropagationPass(*PR);
-  initializeRISCVInsertNTLHInstsPass(*PR);
   initializeRISCVInsertVXRMWritePass(*PR);
   initializeRISCVCleanupVXRMPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
