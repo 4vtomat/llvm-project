@@ -66,6 +66,8 @@
 //   t: ptrdiff_t, ignores "t"
 //   u: unsigned long, ignores "t"
 //   l: long, ignores "t"
+//   f: float32, ignores "t" // SIFIVE
+//   i: int32, ignores "t" // SIFIVE
 //
 // So for instance if t is "i", i.e. int, then "e" will yield int again. "v"
 // will yield an RVV vector type (assume LMUL=1), so __rvv_int32m1_t.
@@ -171,6 +173,10 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
 
   // This builtin has a masked form.
   bit HasMasked = true;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  bit HasNontemporalOperand = false;
+#endif // SIFIVE_CUSTOMIZATION
 
   // If HasMasked, this flag states that this builtin has a maskedoff operand. It
   // is always the first operand in builtin and IR intrinsic.
