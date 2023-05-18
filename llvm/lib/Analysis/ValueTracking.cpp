@@ -4546,8 +4546,10 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
 
         // If the input denormal mode could be PreserveSign, a negative
         // subnormal input could produce a negative zero output.
-        if (KnownSrc.isKnownNeverLogicalNegZero(*II->getFunction(),
-                                                II->getType())) {
+#if SIFIVE_CUSTOMIZATION
+        const Function *F = II->getFunction();
+        if (F && KnownSrc.isKnownNeverLogicalNegZero(*F, II->getType())) {
+#endif // SIFIVE_CUSTOMIZATION
           Known.knownNot(fcNegZero);
           if (KnownSrc.isKnownNeverNaN())
             Known.SignBit = false;
@@ -4640,11 +4642,21 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
         // Canonicalize is guaranteed to quiet signaling nans.
         Known.knownNot(fcSNan);
 
+#if SIFIVE_CUSTOMIZATION
+        // Cherry-picked from upstream.
+        const Function *F = II->getFunction();
+        if (!F)
+          break;
+#endif // SIFIVE_CUSTOMIZATION
+
         // If the parent function flushes denormals, the canonical output cannot
         // be a denormal.
         const fltSemantics &FPType =
             II->getType()->getScalarType()->getFltSemantics();
-        DenormalMode DenormMode = II->getFunction()->getDenormalMode(FPType);
+#if SIFIVE_CUSTOMIZATION
+        // Cherry-picked from upstream.
+        DenormalMode DenormMode = F->getDenormalMode(FPType);
+#endif // SIFIVE_CUSTOMIZATION
         if (DenormMode.inputsAreZero() || DenormMode.outputsAreZero())
           Known.knownNot(fcSubnormal);
 
@@ -4744,7 +4756,11 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
             KnownSrc.cannotBeOrderedLessThanZero())
           Known.knownNot(fcNan);
 
-        if (KnownSrc.isKnownNeverLogicalZero(*II->getFunction(), II->getType()))
+#if SIFIVE_CUSTOMIZATION
+        // Cherry-picked from upstream.
+        const Function *F = II->getFunction();
+        if (F && KnownSrc.isKnownNeverLogicalZero(*F, II->getType()))
+#endif // SIFIVE_CUSTOMIZATION
           Known.knownNot(fcNegInf);
 
         break;
@@ -4825,7 +4841,14 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
           (KnownLHS.isKnownNeverInfinity() || KnownRHS.isKnownNeverInfinity()))
         Known.knownNot(fcNan);
 
+#if SIFIVE_CUSTOMIZATION
+      // Cherry-picked from upstream.
+      // FIXME: Context function should always be passed in separately
       const Function *F = cast<Instruction>(Op)->getFunction();
+      if (!F)
+        break;
+#endif // SIFIVE_CUSTOMIZATION
+
       if (Op->getOpcode() == Instruction::FAdd) {
         // (fadd x, 0.0) is guaranteed to return +0.0, not -0.0.
         if ((KnownLHS.isKnownNeverLogicalNegZero(*F, Op->getType()) ||
@@ -4870,9 +4893,12 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
       // TODO: Check operand combinations.
       // e.g. fmul nofpclass(inf nan zero), nofpclass(nan) -> nofpclass(nan)
       if ((KnownLHS.isKnownNeverInfinity() ||
-           KnownLHS.isKnownNeverLogicalZero(*F, Op->getType())) &&
+#if SIFIVE_CUSTOMIZATION
+           // Cherry-picked from upstream.
+           (F && KnownLHS.isKnownNeverLogicalZero(*F, Op->getType()))) &&
           (KnownRHS.isKnownNeverInfinity() ||
-           KnownRHS.isKnownNeverLogicalZero(*F, Op->getType())))
+           (F && KnownRHS.isKnownNeverLogicalZero(*F, Op->getType()))))
+#endif // SIFIVE_CUSTOMIZATION
         Known.knownNot(fcNan);
     }
 
@@ -4926,8 +4952,11 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
       if (KnownLHS.isKnownNeverNaN() && KnownRHS.isKnownNeverNaN() &&
           (KnownLHS.isKnownNeverInfinity() ||
            KnownRHS.isKnownNeverInfinity()) &&
-          (KnownLHS.isKnownNeverLogicalZero(*F, Op->getType()) ||
-           KnownRHS.isKnownNeverLogicalZero(*F, Op->getType()))) {
+#if SIFIVE_CUSTOMIZATION
+           // Cherry-picked from upstream.
+          ((F && KnownLHS.isKnownNeverLogicalZero(*F, Op->getType())) ||
+           (F && KnownRHS.isKnownNeverLogicalZero(*F, Op->getType())))) {
+#endif // SIFIVE_CUSTOMIZATION
         Known.knownNot(fcNan);
       }
 
@@ -4938,7 +4967,10 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
     } else {
       // Inf REM x and x REM 0 produce NaN.
       if (KnownLHS.isKnownNeverNaN() && KnownRHS.isKnownNeverNaN() &&
-          KnownLHS.isKnownNeverInfinity() &&
+#if SIFIVE_CUSTOMIZATION
+           // Cherry-picked from upstream.
+          KnownLHS.isKnownNeverInfinity() && F &&
+#endif // SIFIVE_CUSTOMIZATION
           KnownRHS.isKnownNeverLogicalZero(*F, Op->getType())) {
         Known.knownNot(fcNan);
       }
