@@ -589,18 +589,13 @@ bool llvm::sinkRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       bool FoldableInLoop = false;
       bool LoopNestMode = OutermostLoop != nullptr;
       if (!I.mayHaveSideEffects() &&
-<<<<<<< HEAD
-          isNotUsedOrFreeInLoop(I, LoopNestMode ? OutermostLoop : CurLoop,
-                                SafetyInfo, TTI, FreeInLoop, LoopNestMode) &&
+          isNotUsedOrFoldableInLoop(I, LoopNestMode ? OutermostLoop : CurLoop,
+                                    SafetyInfo, TTI, FoldableInLoop,
+                                    LoopNestMode) &&
 #if SIFIVE_CUSTOMIZATION
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
                              /* NewStructTBAAPtrHoisting */ false, ORE)) {
 #else
-=======
-          isNotUsedOrFoldableInLoop(I, LoopNestMode ? OutermostLoop : CurLoop,
-                                    SafetyInfo, TTI, FoldableInLoop,
-                                    LoopNestMode) &&
->>>>>>> upstream/main
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE)) {
 #endif // SIFIVE_CUSTOMIZATION
         if (sink(I, LI, DT, CurLoop, SafetyInfo, MSSAU, ORE)) {
