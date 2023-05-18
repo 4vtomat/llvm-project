@@ -949,7 +949,6 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
   OtherExts.split(Split, '_');
 
   SmallVector<StringRef, 8> AllExts;
-  std::array<StringRef, 4> Prefix{"z", "s", "x"};
   if (Split.size() > 1 || Split[0] != "") {
     for (StringRef Ext : Split) {
       if (Ext.empty())
