@@ -41,16 +41,12 @@ public:
     HasRISCVVTypes = true;
     MCountName = "_mcount";
     HasFloat16 = true;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    HasStrictFP = true;
     BFloat16Width = BFloat16Align = 16;
     BFloat16Format = &llvm::APFloat::BFloat();
     HalfArgsAndReturns = true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
     HasStrictFP = true;
->>>>>>> upstream/main
   }
 
   bool setCPU(const std::string &Name) override {
