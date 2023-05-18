@@ -9,15 +9,7 @@
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with def operands.
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
-#else
-defvar SchedMxList = ["M1", "M2", "M4", "M8", "MF2", "MF4", "MF8"];
-#endif // SIFIVE_CUSTOMIZATION
-=======
-defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
->>>>>>> upstream/main
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
 defvar SchedMxListFW = !listremove(SchedMxList, ["M8", "MF8"]);
@@ -82,35 +74,6 @@ multiclass LMULSchedWritesImpl<string name, list<string> MxList> {
     def name # "_" # mx : SchedWrite;
   }
 }
-
-#ifdef SIFIVE_CUSTOMIZATION
-// Helper function to get the largest LMUL from MxList
-// Precondition: MxList is sorted in ascending LMUL order.
-class LargestLMUL<list<string> MxList> {
-  // MX list is sorted from smallest to largest
-  string r = !foldl(!head(MxList), MxList, last, curr, curr);
-}
-// Helper function to get the smallest SEW that can be used with LMUL mx
-// Precondition: MxList is sorted in ascending LMUL order and SchedSEWSet<mx>
-class SmallestSEW<string mx, bit isF = 0> {
-    int r = !head(!if(isF, SchedSEWSetF<mx>.val, SchedSEWSet<mx>.val));
-}
-// Creates WriteRes for (name, mx, resources) tuple
-multiclass LMULWriteResMX<string name, list<ProcResourceKind> resources,
-                          string mx, bit IsWorstCase> {
-  def : WriteRes<!cast<SchedWrite>(name # "_" # mx), resources>;
-  if IsWorstCase then
-    def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
-}
-multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
-                             string mx, int sew,  bit IsWorstCase> {
-
-  def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
-  if IsWorstCase then
-    def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 multiclass LMULSchedReadsImpl<string name, list<string> MxList> {
   def name # "_WorstCase" : SchedRead;
   foreach mx = MxList in {
