@@ -2164,58 +2164,6 @@ OperandMatchResultTy RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
     if (getLexer().isNot(AsmToken::Identifier))
       break;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (VTypeIElements.size() == 3 || VTypeIElements.size() == 7) {
-#endif // SIFIVE_CUSTOMIZATION
-    // The VTypeIElements layout is:
-    // SEW comma LMUL comma TA comma MA
-    //  0    1    2     3    4   5    6
-    StringRef Name = VTypeIElements[0].getIdentifier();
-    if (!Name.consume_front("e"))
-      goto MatchFail;
-    unsigned Sew;
-    if (Name.getAsInteger(10, Sew))
-      goto MatchFail;
-    if (!RISCVVType::isValidSEW(Sew))
-      goto MatchFail;
-
-    Name = VTypeIElements[2].getIdentifier();
-    if (!Name.consume_front("m"))
-      goto MatchFail;
-    // "m" or "mf"
-    bool Fractional = Name.consume_front("f");
-    unsigned Lmul;
-    if (Name.getAsInteger(10, Lmul))
-      goto MatchFail;
-    if (!RISCVVType::isValidLMUL(Lmul, Fractional))
-      goto MatchFail;
-
-#if SIFIVE_CUSTOMIZATION
-    bool TailAgnostic = false;
-    bool MaskAgnostic = false;
-
-    if (VTypeIElements.size() == 7) {
-      // ta or tu
-      Name = VTypeIElements[4].getIdentifier();
-      if (Name == "ta")
-        TailAgnostic = true;
-      else if (Name == "tu")
-        TailAgnostic = false;
-      else
-        goto MatchFail;
-
-      // ma or mu
-      Name = VTypeIElements[6].getIdentifier();
-      if (Name == "ma")
-        MaskAgnostic = true;
-      else if (Name == "mu")
-        MaskAgnostic = false;
-      else
-        goto MatchFail;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Identifier = getTok().getIdentifier();
 
     if (parseVTypeToken(Identifier, State, Sew, Lmul, Fractional, TailAgnostic,
@@ -2224,9 +2172,11 @@ OperandMatchResultTy RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
 
     getLexer().Lex();
   }
->>>>>>> upstream/main
 
-  if (getLexer().is(AsmToken::EndOfStatement) && State == VTypeState_Done) {
+#if SIFIVE_CUSTOMIZATION
+  if (getLexer().is(AsmToken::EndOfStatement) &&
+      (State == VTypeState_TailPolicy || State == VTypeState_Done)) {
+#endif // SIFIVE_CUSTOMIZATION
     RISCVII::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
 
     unsigned VTypeI =
