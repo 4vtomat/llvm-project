@@ -4555,10 +4555,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
         (VecInfo.EC.getKnownMinValue() * VecInfo.NumVectors);
     return SemaBuiltinConstantArgRange(TheCall, 1, 0, MaxIndex - 1);
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case RISCVVector::BI__builtin_rvv_sf_vc_i_se_u8mf8:
   case RISCVVector::BI__builtin_rvv_sf_vc_i_se_u8mf4:
   case RISCVVector::BI__builtin_rvv_sf_vc_i_se_u8mf2:
@@ -4680,10 +4676,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_sf_vc_v_fv_se:
     // bit_26, vs2, fs1
     return SemaBuiltinConstantArgRange(TheCall, 0, 0, 1);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   // Check if byteselect is in [0, 3]
   case RISCV::BI__builtin_riscv_aes32dsi_32:
   case RISCV::BI__builtin_riscv_aes32dsmi_32:
