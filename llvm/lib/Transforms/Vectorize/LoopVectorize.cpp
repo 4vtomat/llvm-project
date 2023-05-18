@@ -1275,7 +1275,8 @@ void InnerLoopVectorizer::collectPoisonGeneratingRecipes(
       // This recipe contributes to the address computation of a widen
       // load/store. Collect recipe if its underlying instruction has
       // poison-generating flags.
-      Instruction *Instr = CurRec->getUnderlyingInstr();
+      Instruction *Instr =
+          CurRec->hasUnderlyingInstr() ? CurRec->getUnderlyingInstr() : nullptr;
       if (Instr && Instr->hasPoisonGeneratingFlags())
         State.MayGeneratePoisonRecipes.insert(CurRec);
 
