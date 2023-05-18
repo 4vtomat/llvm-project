@@ -348,6 +348,7 @@ void FunctionLoweringInfo::clear() {
   StatepointStackSlots.clear();
   StatepointRelocationMaps.clear();
   PreferredExtendType.clear();
+  PreprocessedDbgDeclares.clear();
 }
 
 /// CreateReg - Allocate a single virtual register for the given type.
@@ -504,7 +505,7 @@ void FunctionLoweringInfo::ComputePHILiveOutRegInfo(const PHINode *PN) {
       return;
     }
     DestLOI.NumSignBits = std::min(DestLOI.NumSignBits, SrcLOI->NumSignBits);
-    DestLOI.Known = KnownBits::commonBits(DestLOI.Known, SrcLOI->Known);
+    DestLOI.Known = DestLOI.Known.intersectWith(SrcLOI->Known);
   }
 }
 

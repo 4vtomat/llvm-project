@@ -29,7 +29,7 @@
 
 // RUN: not %clang_cc1 -triple nvptx--- -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix NVPTX
 // NVPTX: error: unknown target CPU 'not-a-cpu'
-// NVPTX-NEXT: note: valid target CPU values are: sm_20, sm_21, sm_30, sm_32, sm_35, sm_37, sm_50, sm_52, sm_53, sm_60, sm_61, sm_62, sm_70, sm_72, sm_75, sm_80, sm_86, sm_87, sm_89, sm_90, gfx600, gfx601, gfx602, gfx700, gfx701, gfx702, gfx703, gfx704, gfx705, gfx801, gfx802, gfx803, gfx805, gfx810, gfx900, gfx902, gfx904, gfx906, gfx908, gfx909, gfx90a, gfx90c, gfx940, gfx1010, gfx1011, gfx1012, gfx1013, gfx1030, gfx1031, gfx1032, gfx1033, gfx1034, gfx1035, gfx1036, gfx1100, gfx1101, gfx1102, gfx1103{{$}}
+// NVPTX-NEXT: note: valid target CPU values are: sm_20, sm_21, sm_30, sm_32, sm_35, sm_37, sm_50, sm_52, sm_53, sm_60, sm_61, sm_62, sm_70, sm_72, sm_75, sm_80, sm_86, sm_87, sm_89, sm_90, gfx600, gfx601, gfx602, gfx700, gfx701, gfx702, gfx703, gfx704, gfx705, gfx801, gfx802, gfx803, gfx805, gfx810, gfx900, gfx902, gfx904, gfx906, gfx908, gfx909, gfx90a, gfx90c, gfx940, gfx941, gfx942, gfx1010, gfx1011, gfx1012, gfx1013, gfx1030, gfx1031, gfx1032, gfx1033, gfx1034, gfx1035, gfx1036, gfx1100, gfx1101, gfx1102, gfx1103{{$}}
 
 // RUN: not %clang_cc1 -triple r600--- -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix R600
 // R600: error: unknown target CPU 'not-a-cpu'
@@ -37,7 +37,7 @@
 
 // RUN: not %clang_cc1 -triple amdgcn--- -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix AMDGCN
 // AMDGCN: error: unknown target CPU 'not-a-cpu'
-// AMDGCN-NEXT: note: valid target CPU values are: gfx600, tahiti, gfx601, pitcairn, verde, gfx602, hainan, oland, gfx700, kaveri, gfx701, hawaii, gfx702, gfx703, kabini, mullins, gfx704, bonaire, gfx705, gfx801, carrizo, gfx802, iceland, tonga, gfx803, fiji, polaris10, polaris11, gfx805, tongapro, gfx810, stoney, gfx900, gfx902, gfx904, gfx906, gfx908, gfx909, gfx90a, gfx90c, gfx940, gfx1010, gfx1011, gfx1012, gfx1013, gfx1030, gfx1031, gfx1032, gfx1033, gfx1034, gfx1035, gfx1036, gfx1100, gfx1101, gfx1102, gfx1103{{$}}
+// AMDGCN-NEXT: note: valid target CPU values are: gfx600, tahiti, gfx601, pitcairn, verde, gfx602, hainan, oland, gfx700, kaveri, gfx701, hawaii, gfx702, gfx703, kabini, mullins, gfx704, bonaire, gfx705, gfx801, carrizo, gfx802, iceland, tonga, gfx803, fiji, polaris10, polaris11, gfx805, tongapro, gfx810, stoney, gfx900, gfx902, gfx904, gfx906, gfx908, gfx909, gfx90a, gfx90c, gfx940, gfx941, gfx942, gfx1010, gfx1011, gfx1012, gfx1013, gfx1030, gfx1031, gfx1032, gfx1033, gfx1034, gfx1035, gfx1036, gfx1100, gfx1101, gfx1102, gfx1103{{$}}
 
 // RUN: not %clang_cc1 -triple wasm64--- -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix WEBASM
 // WEBASM: error: unknown target CPU 'not-a-cpu'
@@ -87,10 +87,14 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
 // RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270,
 // RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-s21, 
 // RISCV64-SAME: sifive-s51, sifive-s54, sifive-s61, sifive-s76, sifive-s76m, sifive-s76n, sifive-u54, 
 // RISCV64-SAME: sifive-u64, sifive-u74, sifive-u74m, sifive-u74n, sifive-x280, sifive-x280n, sifive-x280o
+=======
+// RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280{{$}}
+>>>>>>> upstream/main
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
 // TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
@@ -102,6 +106,7 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // TUNE-RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270, 
 // TUNE-RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, 
 // TUNE-RISCV64-SAME: sifive-s21, sifive-s51, sifive-s54, sifive-s61, sifive-s76, sifive-s76m, 
@@ -109,3 +114,6 @@
 // TUNE-RISCV64-SAME: sifive-x280, sifive-x280n, sifive-x280o, generic, rocket, sifive-6-series, 
 // TUNE-RISCV64-SAME: sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series, 
 // TUNE-RISCV64-SAME: sifive-8-series, sifive-p400-series, sifive-p500-series, sifive-p600-series
+=======
+// TUNE-RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280, generic, rocket, sifive-7-series{{$}}
+>>>>>>> upstream/main

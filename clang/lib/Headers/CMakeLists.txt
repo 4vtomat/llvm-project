@@ -98,15 +98,24 @@ set(ppc_htm_files
   htmxlintrin.h
   )
 
+<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 set(riscv_files
   riscv_ntlh.h
   )
 
+<<<<<<< HEAD
 set(rvv_v0p10_compatible_header_file
   rvv_v0p10_compatible/riscv_vector.h
 )
 #end SIFIVE_CUSTOMIZATION
+=======
+set(sifive_files
+  sifive_vector.h
+  )
+>>>>>>> upstream/main
 
 set(systemz_files
   s390intrin.h
@@ -254,9 +263,14 @@ set(files
   ${opencl_files}
   ${ppc_files}
   ${ppc_htm_files}
+<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
   ${riscv_files}
 #end SIFIVE_CUSTOMIZATION
+=======
+  ${riscv_files}
+  ${sifive_files}
+>>>>>>> upstream/main
   ${systemz_files}
   ${ve_files}
   ${x86_files}
@@ -270,6 +284,7 @@ set(cuda_wrapper_files
   cuda_wrappers/cmath
   cuda_wrappers/complex
   cuda_wrappers/new
+  cuda_wrappers/bits/shared_ptr_base.h
 )
 
 set(ppc_wrapper_files
@@ -455,9 +470,13 @@ add_header_target("loongarch-resource-headers" "${loongarch_files}")
 add_header_target("mips-resource-headers" "${mips_msa_files}")
 add_header_target("ppc-resource-headers" "${ppc_files};${ppc_wrapper_files}")
 add_header_target("ppc-htm-resource-headers" "${ppc_htm_files}")
+<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
 add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files};${rvv_v0p10_compatible_header_file};")
 #end SIFIVE_CUSTOMIZATION
+=======
+add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files}")
+>>>>>>> upstream/main
 add_header_target("systemz-resource-headers" "${systemz_files}")
 add_header_target("ve-resource-headers" "${ve_files}")
 add_header_target("webassembly-resource-headers" "${webassembly_files}")
@@ -611,6 +630,12 @@ install(
   COMPONENT riscv-resource-headers)
 # end SIFIVE
 
+install(
+  FILES ${riscv_files}
+  DESTINATION ${header_install_dir}
+  EXCLUDE_FROM_ALL
+  COMPONENT riscv-resource-headers)
+  
 install(
   FILES ${systemz_files}
   DESTINATION ${header_install_dir}

@@ -23,8 +23,10 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringSet.h"
+#include "llvm/ADT/Twine.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
+#include "llvm/TableGen/Record.h"
 #include <algorithm>
 #include <array>
 #include <functional>
@@ -34,7 +36,6 @@
 
 namespace llvm {
 
-class Record;
 class Init;
 class ListInit;
 class DagInit;
@@ -256,7 +257,7 @@ private:
 raw_ostream &operator<<(raw_ostream &OS, const TypeSetByHwMode &T);
 
 struct TypeInfer {
-  TypeInfer(TreePattern &T) : TP(T), ForceMode(0) {}
+  TypeInfer(TreePattern &T) : TP(T) {}
 
   bool isConcrete(const TypeSetByHwMode &VTS, bool AllowEmpty) const {
     return VTS.isValueTypeByHwMode(AllowEmpty);
@@ -352,8 +353,6 @@ struct TypeInfer {
   };
 
   TreePattern &TP;
-  unsigned ForceMode;     // Mode to use when set.
-  bool CodeGen = false;   // Set during generation of matcher code.
   bool Validate = true;   // Indicate whether to validate types.
 
 private:
@@ -1079,17 +1078,16 @@ class PatternToMatch {
   std::string      HwModeFeatures;
   int              AddedComplexity; // Add to matching pattern complexity.
   unsigned         ID;          // Unique ID for the record.
-  unsigned         ForceMode;   // Force this mode in type inference when set.
 
 public:
   PatternToMatch(Record *srcrecord, ListInit *preds, TreePatternNodePtr src,
                  TreePatternNodePtr dst, std::vector<Record *> dstregs,
-                 int complexity, unsigned uid, unsigned setmode = 0,
+                 int complexity, unsigned uid,
                  const Twine &hwmodefeatures = "")
       : SrcRecord(srcrecord), Predicates(preds), SrcPattern(src),
         DstPattern(dst), Dstregs(std::move(dstregs)),
         HwModeFeatures(hwmodefeatures.str()), AddedComplexity(complexity),
-        ID(uid), ForceMode(setmode) {}
+        ID(uid) {}
 
   Record          *getSrcRecord()  const { return SrcRecord; }
   ListInit        *getPredicates() const { return Predicates; }
@@ -1101,7 +1099,6 @@ public:
   StringRef   getHwModeFeatures() const { return HwModeFeatures; }
   int         getAddedComplexity() const { return AddedComplexity; }
   unsigned getID() const { return ID; }
-  unsigned getForceMode() const { return ForceMode; }
 
   std::string getPredicateCheck() const;
   void getPredicateRecords(SmallVectorImpl<Record *> &PredicateRecs) const;

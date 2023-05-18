@@ -206,7 +206,8 @@ def parse_cmp_offset(cmp_out):
     Extracts byte number from cmp output:
     file1 file2 differ: byte X, line Y
     '''
-    return int(re.search(r'byte (\d+),', cmp_out).groups()[0])
+    # NOTE: cmp counts bytes starting from 1!
+    return int(re.search(r'byte (\d+),', cmp_out).groups()[0]) - 1
 
 def report_real_time(binary, main_err, cmp_err, cfg):
     '''
@@ -245,7 +246,7 @@ def find_section(offset, readelf_hdr):
         file_offset = int(cols[5], 16)
         # section size
         size = int(cols[2], 16)
-        if offset >= file_offset and offset <= file_offset + size:
+        if offset >= file_offset and offset < file_offset + size:
             if sys.stdout.isatty(): # terminal supports colors
                 print(f"\033[1m{line}\033[0m")
             else:

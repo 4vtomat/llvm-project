@@ -103,8 +103,17 @@ Improvements to clang-tidy
 
 - Fix a potential crash when using the `--dump-config` option.
 
+- Support specifying `SystemHeaders` in the `.clang-tidy` configuration file,
+  with the same functionality as the command-line option `--system-headers`.
+
 New checks
 ^^^^^^^^^^
+
+- New :doc:`bugprone-multiple-new-in-one-expression
+  <clang-tidy/checks/bugprone/multiple-new-in-one-expression>` check.
+
+  Finds multiple ``new`` operator calls in a single expression, where the allocated
+  memory by the first ``new`` may leak if the second allocation fails and throws exception.
 
 - New :doc:`bugprone-non-zero-enum-to-bool-conversion
   <clang-tidy/checks/bugprone/non-zero-enum-to-bool-conversion>` check.
@@ -132,6 +141,12 @@ New checks
 
   Warns when lambda specify a by-value capture default and capture ``this``.
 
+- New :doc:`cppcoreguidelines-missing-std-forward
+  <clang-tidy/checks/cppcoreguidelines/missing-std-forward>` check.
+
+  Warns when a forwarding reference parameter is not forwarded within the
+  function body.
+
 - New :doc:`cppcoreguidelines-rvalue-reference-param-not-moved
   <clang-tidy/checks/cppcoreguidelines/rvalue-reference-param-not-moved>` check.
 
@@ -149,6 +164,11 @@ New checks
 
   Converts standard library type traits of the form ``traits<...>::type`` and
   ``traits<...>::value`` into ``traits_t<...>`` and ``traits_v<...>`` respectively.
+
+- New :doc:`performance-avoid-endl
+  <clang-tidy/checks/performance/avoid-endl>` check.
+
+  Finds uses of ``std::endl`` on streams and replaces them with ``'\n'``.
 
 - New :doc:`readability-avoid-unconditional-preprocessor-if
   <clang-tidy/checks/readability/avoid-unconditional-preprocessor-if>` check.
@@ -196,6 +216,10 @@ Changes in existing checks
   <clang-tidy/checks/bugprone/dynamic-static-initializers>` check.
   Global options of the same name should be used instead.
 
+- Improved :doc:`bugprone-exception-escape
+  <clang-tidy/checks/bugprone/exception-escape>` to not emit warnings for
+  forward declarations of functions.
+
 - Improved :doc:`bugprone-fold-init-type
   <clang-tidy/checks/bugprone/fold-init-type>` to handle iterators that do not
   define `value_type` type aliases.
@@ -214,8 +238,9 @@ Changes in existing checks
   to ``std::forward``.
 
 - Improved :doc:`bugprone-use-after-move
-  <clang-tidy/checks/bugprone/use-after-move>` check to also cover constructor
-  initializers.
+  <clang-tidy/checks/bugprone/use-after-move>` check. Detect uses and moves in
+  constructor initializers. Correctly handle constructor arguments as being
+  sequenced when constructor call is written as list-initialization.
 
 - Deprecated :doc:`cert-dcl21-cpp
   <clang-tidy/checks/cert/dcl21-cpp>` check.

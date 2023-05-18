@@ -28,7 +28,6 @@ namespace RISCVISD {
 enum NodeType : unsigned {
   FIRST_NUMBER = ISD::BUILTIN_OP_END,
   RET_GLUE,
-  URET_GLUE,
   SRET_GLUE,
   MRET_GLUE,
   CALL,
@@ -121,6 +120,7 @@ enum NodeType : unsigned {
   // inserter.
   FROUND,
 
+  FPCLASS,
   // READ_CYCLE_WIDE - A read of the 64-bit cycle CSR on a 32-bit target
   // (returns (Lo, Hi)). It takes a chain operand.
   READ_CYCLE_WIDE,
@@ -272,6 +272,13 @@ enum NodeType : unsigned {
   VFMSUB_VL,
   VFNMSUB_VL,
 
+  // Vector widening FMA ops with a mask as a fourth operand and VL as a fifth
+  // operand.
+  VFWMADD_VL,
+  VFWNMADD_VL,
+  VFWMSUB_VL,
+  VFWNMSUB_VL,
+
   // Widening instructions with a merge value a third operand, a mask as a
   // fourth operand, and VL as a fifth operand.
   VWMUL_VL,
@@ -366,10 +373,12 @@ enum NodeType : unsigned {
   STRICT_VFNCVT_ROD_VL,
   STRICT_SINT_TO_FP_VL,
   STRICT_UINT_TO_FP_VL,
+  STRICT_VFCVT_RM_X_F_VL,
   STRICT_VFCVT_RTZ_X_F_VL,
   STRICT_VFCVT_RTZ_XU_F_VL,
   STRICT_FSETCC_VL,
   STRICT_FSETCCS_VL,
+  STRICT_VFROUND_NOEXCEPT_VL,
 
   // WARNING: Do not add anything in the end unless you want the node to
   // have memop! In fact, starting from FIRST_TARGET_MEMORY_OPCODE all
@@ -507,7 +516,10 @@ public:
   // This method returns the name of a target specific DAG node.
   const char *getTargetNodeName(unsigned Opcode) const override;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   MachineMemOperand::Flags
   getTargetMMOFlags(const Instruction &I) const override;
 
@@ -517,7 +529,10 @@ public:
   bool
   areTwoSDNodeTargetMMOFlagsMergeable(const MemSDNode &NodeX,
                                       const MemSDNode &NodeY) const override;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
   ConstraintType getConstraintType(StringRef Constraint) const override;
 
@@ -549,6 +564,13 @@ public:
     return TargetLowering::shouldFormOverflowOp(Opcode, VT, MathUsed);
   }
 
+  bool storeOfVectorConstantIsCheap(bool IsZero, EVT MemVT, unsigned NumElem,
+                                    unsigned AddrSpace) const override {
+    // If we can replace 4 or more scalar stores, there will be a reduction
+    // in instructions even after we add a vector constant load.
+    return NumElem >= 4;
+  }
+
   bool convertSetCCLogicToBitwiseLogic(EVT VT) const override {
     return VT.isScalarInteger();
   }
@@ -574,6 +596,9 @@ public:
   ISD::NodeType getExtendForAtomicCmpSwapArg() const override {
     return ISD::SIGN_EXTEND;
   }
+
+  bool shouldTransformSignedTruncationCheck(EVT XVT,
+                                            unsigned KeptBits) const override;
 
   TargetLowering::ShiftLegalizationStrategy
   preferredShiftLegalizationStrategy(SelectionDAG &DAG, SDNode *N,
@@ -691,7 +716,7 @@ public:
 
   bool shouldRemoveExtendFromGSIndex(EVT IndexVT, EVT DataVT) const override;
 
-  bool isLegalElementTypeForRVV(Type *ScalarTy) const;
+  bool isLegalElementTypeForRVV(EVT ScalarTy) const;
 
   bool shouldConvertFpToSat(unsigned Op, EVT FPVT, EVT VT) const override;
 
@@ -728,6 +753,10 @@ public:
   /// intrinsic for this type will be legal.
   bool isLegalInterleavedAccessType(FixedVectorType *, unsigned Factor,
                                     const DataLayout &) const;
+
+  /// Return true if a stride load store of the given result type and
+  /// alignment is legal.
+  bool isLegalStridedLoadStore(EVT DataType, Align Alignment) const;
 
   unsigned getMaxSupportedInterleaveFactor() const override { return 8; }
 

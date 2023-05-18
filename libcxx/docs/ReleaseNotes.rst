@@ -41,6 +41,7 @@ Implemented Papers
 - P1328R1 - ``constexpr type_info::operator==()``
 - P1413R3 - Formatting ``thread::id`` (the ``stacktrace`` is not done yet)
 - P2675R1 - ``format``'s width estimation is too approximate and not forward compatible
+- P2505R5 - Monadic operations for ``std::expected``
 
 Improvements and New Features
 -----------------------------
@@ -52,6 +53,9 @@ Improvements and New Features
 
 - The performance of ``dynamic_cast`` on its hot paths is greatly improved and is as efficient as the
   ``libsupc++`` implementation. Note that the performance improvements are shipped in ``libcxxabi``.
+
+- `D122780 <https://reviews.llvm.org/D122780>`_ Improved the performance of ``std::sort`` and ``std::ranges::sort``
+  by up to 50% for arithmetic types and by approximately 10% for other types.
 
 Deprecations and Removals
 -------------------------
@@ -66,6 +70,13 @@ Deprecations and Removals
 
   - C++2b: ``atomic``, ``bit``, ``cstdint``, ``cstdlib``, ``cstring``, ``initializer_list``, ``limits``, ``new``,
            ``stdexcept``, ``system_error``, ``type_traits``, ``typeinfo``
+
+- ``<algorithm>`` no longer includes ``<chrono>`` in any C++ version (it was prevously included in C++17 and earlier).
+
+- ``<string>`` no longer includes ``<vector>`` in any C++ version (it was prevously included in C++20 and earlier).
+
+- ``<string>``, ``<string_view>``, and ``<mutex>`` no longer include ``<functional>``
+  in any C++ version (it was prevously included in C++20 and earlier).
 
 - The headers ``<experimental/algorithm>`` and ``<experimental/functional>`` have been removed, since all the contents
   have been implemented in namespace ``std`` for at least two releases.
@@ -84,6 +95,8 @@ Deprecations and Removals
   which is impossible in C++03 mode. Furthermore, C++17 mandated that they be ``inline constexpr`` variables,
   which led to ODR violations when mixed with the C++03 definition. Cleaning this up is required for libc++ to
   make progress on support for C++20 modules.
+
+- The ``_LIBCPP_ABI_OLD_LOGNORMAL_DISTRIBUTION`` macro has been removed.
 
 Upcoming Deprecations and Removals
 ----------------------------------

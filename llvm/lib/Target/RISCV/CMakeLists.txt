@@ -26,7 +26,6 @@ add_llvm_target(RISCVCodeGen
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
-  RISCVInsertNTLHInsts.cpp
   RISCVInsertVSETVLI.cpp
   SiFive_RISCVInsertVXRMWrite.cpp
   SiFive_RISCVCleanupVXRM.cpp
@@ -59,6 +58,7 @@ add_llvm_target(RISCVCodeGen
   Analysis
   AsmPrinter
   CodeGen
+  CodeGenTypes
   Core
   GlobalISel
   IPO

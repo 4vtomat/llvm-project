@@ -146,6 +146,7 @@ public:
 
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool canUseCMOVBranchOpt() const {
     // U8 can only predicate c.mv so requires the C extension.
@@ -157,7 +158,18 @@ public:
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool hasStdExtFOrZfinx() const { return HasStdExtF || HasStdExtZfinx; }
+  bool hasStdExtDOrZdinx() const { return HasStdExtD || HasStdExtZdinx; }
+>>>>>>> upstream/main
   bool hasStdExtZfhOrZfhmin() const { return HasStdExtZfh || HasStdExtZfhmin; }
+  bool hasStdExtZfhOrZhinx() const { return HasStdExtZfh || HasStdExtZhinx; }
+  bool hasStdExtZhinxOrZhinxmin() const {
+    return HasStdExtZhinx || HasStdExtZhinxmin;
+  }
+  bool hasStdExtZfhOrZfhminOrZhinxOrZhinxmin() const {
+    return hasStdExtZfhOrZfhmin() || hasStdExtZhinxOrZhinxmin();
+  }
   bool is64Bit() const { return IsRV64; }
   MVT getXLenVT() const { return XLenVT; }
   unsigned getXLen() const { return XLen; }
@@ -198,9 +210,7 @@ public:
   // Vector codegen related methods.
   bool hasVInstructions() const { return HasStdExtZve32x; }
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }
-  bool hasVInstructionsF16() const {
-    return HasStdExtZvfh && hasStdExtZfhOrZfhmin();
-  }
+  bool hasVInstructionsF16() const { return HasStdExtZvfh; }
   // FIXME: Consider Zfinx in the future
   bool hasVInstructionsF32() const { return HasStdExtZve32f && HasStdExtF; }
   // FIXME: Consider Zdinx in the future
@@ -211,6 +221,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   // F16 and F64 both require F32.
   bool hasVInstructionsAnyF() const { return hasVInstructionsF32(); }
+  bool hasVInstructionsFullMultiply() const { return HasStdExtV; }
   unsigned getMaxInterleaveFactor() const {
     return hasVInstructions() ? MaxInterleaveFactor : 1;
   }

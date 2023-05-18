@@ -17,10 +17,15 @@ define <vscale x 32 x i1> @vector_interleave_nxv32i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vwaddu.vv v16, v8, v12
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v16, a0, v12
+<<<<<<< HEAD
 ; CHECK-NEXT:    vand.vi v8, v18, 1
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vand.vi v10, v16, 1
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
+=======
+; CHECK-NEXT:    vmsne.vi v8, v18, 0
+; CHECK-NEXT:    vmsne.vi v0, v16, 0
+>>>>>>> upstream/main
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    srli a0, a0, 2
 ; CHECK-NEXT:    add a1, a0, a0

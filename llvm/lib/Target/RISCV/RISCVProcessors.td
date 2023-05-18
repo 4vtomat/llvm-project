@@ -274,8 +274,12 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtC],
                                      [TuneSiFive7]>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model,
+=======
+def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
+>>>>>>> upstream/main
                                       [Feature64Bit,
                                        FeatureStdExtZifencei,
                                        FeatureStdExtM,
@@ -283,6 +287,7 @@ def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model,
                                        FeatureStdExtF,
                                        FeatureStdExtD,
                                        FeatureStdExtC,
+<<<<<<< HEAD
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb],
                                       [TuneSiFive7]>;
@@ -480,6 +485,15 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksh],
                                       [TuneSiFiveP600, TuneDLen128b]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                       FeatureStdExtV,
+                                       FeatureStdExtZvl512b,
+                                       FeatureStdExtZfh,
+                                       FeatureStdExtZvfh,
+                                       FeatureStdExtZba,
+                                       FeatureStdExtZbb],
+                                      [TuneSiFive7]>;
+>>>>>>> upstream/main
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,

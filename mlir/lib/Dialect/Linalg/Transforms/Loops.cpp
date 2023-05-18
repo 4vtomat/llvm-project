@@ -162,7 +162,7 @@ static void emitScalarImplementation(OpBuilder &b, Location loc,
   SmallVector<SmallVector<Value>, 8> indexing;
   SmallVector<Value> outputBuffers;
   for (OpOperand *outputOperand : linalgOp.getDpsInitOperands()) {
-    if (!outputOperand->get().getType().isa<MemRefType>())
+    if (!isa<MemRefType>(outputOperand->get().getType()))
       continue;
     indexing.push_back(makeCanonicalAffineApplies(
         b, loc, linalgOp.getMatchingIndexingMap(outputOperand),
@@ -198,7 +198,7 @@ static void replaceIndexOpsByInductionVariables(RewriterBase &rewriter,
          "expected the number of loops and induction variables to match");
   // Replace the index operations in the body of the innermost loop op.
   if (!loopOps.empty()) {
-    LoopLikeOpInterface loopOp = loopOps.back();
+    auto loopOp = cast<LoopLikeOpInterface>(loopOps.back());
     for (IndexOp indexOp :
          llvm::make_early_inc_range(loopOp.getLoopBody().getOps<IndexOp>()))
       rewriter.replaceOp(indexOp, allIvs[indexOp.getDim()]);
@@ -242,7 +242,7 @@ static FailureOr<LinalgLoops> linalgOpToLoopsImpl(RewriterBase &rewriter,
       return failure();
     // The induction variable is a block argument of the entry block of the
     // loop operation.
-    BlockArgument ivVal = iv.dyn_cast<BlockArgument>();
+    BlockArgument ivVal = dyn_cast<BlockArgument>(iv);
     if (!ivVal)
       return failure();
     loopSet.insert(ivVal.getOwner()->getParentOp());

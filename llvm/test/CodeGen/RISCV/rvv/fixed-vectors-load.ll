@@ -27,6 +27,7 @@ define <5 x i8> @load_v5i8(ptr %p) {
 }
 
 define <5 x i8> @load_v5i8_align1(ptr %p) {
+<<<<<<< HEAD
 ; CHECK-LABEL: load_v5i8_align1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
@@ -46,6 +47,71 @@ define <5 x i8> @load_v5i8_align1(ptr %p) {
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
+=======
+; RV32-LABEL: load_v5i8_align1:
+; RV32:       # %bb.0:
+; RV32-NEXT:    lbu a1, 1(a0)
+; RV32-NEXT:    lbu a2, 0(a0)
+; RV32-NEXT:    lbu a3, 2(a0)
+; RV32-NEXT:    lbu a4, 3(a0)
+; RV32-NEXT:    slli a1, a1, 8
+; RV32-NEXT:    or a1, a1, a2
+; RV32-NEXT:    slli a3, a3, 16
+; RV32-NEXT:    slli a4, a4, 24
+; RV32-NEXT:    or a3, a4, a3
+; RV32-NEXT:    or a1, a3, a1
+; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; RV32-NEXT:    vmv.s.x v8, a1
+; RV32-NEXT:    vsetivli zero, 1, e8, mf2, ta, ma
+; RV32-NEXT:    vslidedown.vi v9, v8, 3
+; RV32-NEXT:    vmv.x.s a1, v9
+; RV32-NEXT:    vslidedown.vi v9, v8, 2
+; RV32-NEXT:    vmv.x.s a2, v9
+; RV32-NEXT:    vslidedown.vi v9, v8, 1
+; RV32-NEXT:    vmv.x.s a3, v9
+; RV32-NEXT:    vmv.x.s a4, v8
+; RV32-NEXT:    lb a0, 4(a0)
+; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; RV32-NEXT:    vslide1down.vx v8, v8, a4
+; RV32-NEXT:    vslide1down.vx v8, v8, a3
+; RV32-NEXT:    vslide1down.vx v8, v8, a2
+; RV32-NEXT:    vslide1down.vx v8, v8, a1
+; RV32-NEXT:    vslide1down.vx v8, v8, a0
+; RV32-NEXT:    vslidedown.vi v8, v8, 3
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: load_v5i8_align1:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lbu a1, 1(a0)
+; RV64-NEXT:    lbu a2, 0(a0)
+; RV64-NEXT:    lbu a3, 2(a0)
+; RV64-NEXT:    lb a4, 3(a0)
+; RV64-NEXT:    slli a1, a1, 8
+; RV64-NEXT:    or a1, a1, a2
+; RV64-NEXT:    slli a3, a3, 16
+; RV64-NEXT:    slli a4, a4, 24
+; RV64-NEXT:    or a3, a4, a3
+; RV64-NEXT:    or a1, a3, a1
+; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; RV64-NEXT:    vmv.s.x v8, a1
+; RV64-NEXT:    vsetivli zero, 1, e8, mf2, ta, ma
+; RV64-NEXT:    vslidedown.vi v9, v8, 3
+; RV64-NEXT:    vmv.x.s a1, v9
+; RV64-NEXT:    vslidedown.vi v9, v8, 2
+; RV64-NEXT:    vmv.x.s a2, v9
+; RV64-NEXT:    vslidedown.vi v9, v8, 1
+; RV64-NEXT:    vmv.x.s a3, v9
+; RV64-NEXT:    vmv.x.s a4, v8
+; RV64-NEXT:    lb a0, 4(a0)
+; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; RV64-NEXT:    vslide1down.vx v8, v8, a4
+; RV64-NEXT:    vslide1down.vx v8, v8, a3
+; RV64-NEXT:    vslide1down.vx v8, v8, a2
+; RV64-NEXT:    vslide1down.vx v8, v8, a1
+; RV64-NEXT:    vslide1down.vx v8, v8, a0
+; RV64-NEXT:    vslidedown.vi v8, v8, 3
+; RV64-NEXT:    ret
+>>>>>>> upstream/main
   %x = load <5 x i8>, ptr %p, align 1
   ret <5 x i8> %x
 }
@@ -154,11 +220,10 @@ define <6 x half> @load_v6f16(ptr %p) {
 ; RV64-LABEL: load_v6f16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    ld a2, 0(a1)
-; RV64-NEXT:    addi a1, a1, 8
 ; RV64-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; RV64-NEXT:    vlse64.v v8, (a1), zero
-; RV64-NEXT:    vsetvli zero, zero, e64, m1, tu, ma
-; RV64-NEXT:    vmv.s.x v8, a2
+; RV64-NEXT:    ld a1, 8(a1)
+; RV64-NEXT:    vslide1down.vx v8, v8, a2
+; RV64-NEXT:    vslide1down.vx v8, v8, a1
 ; RV64-NEXT:    sd a2, 0(a0)
 ; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV64-NEXT:    vslidedown.vi v8, v8, 2
@@ -308,60 +373,52 @@ define <6 x double> @load_v6f64(ptr %p) {
 define <6 x i1> @load_v6i1(ptr %p) {
 ; RV32-LABEL: load_v6i1:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    lbu a0, 0(a0)
-; RV32-NEXT:    slli a1, a0, 30
-; RV32-NEXT:    srli a1, a1, 31
-; RV32-NEXT:    slli a2, a0, 29
+; RV32-NEXT:    srli a1, a0, 5
+; RV32-NEXT:    slli a2, a0, 27
 ; RV32-NEXT:    srli a2, a2, 31
 ; RV32-NEXT:    slli a3, a0, 28
 ; RV32-NEXT:    srli a3, a3, 31
-; RV32-NEXT:    slli a4, a0, 27
+; RV32-NEXT:    slli a4, a0, 29
 ; RV32-NEXT:    srli a4, a4, 31
-; RV32-NEXT:    andi a5, a0, 1
-; RV32-NEXT:    srli a0, a0, 5
-; RV32-NEXT:    sb a0, 13(sp)
-; RV32-NEXT:    sb a5, 8(sp)
-; RV32-NEXT:    sb a4, 12(sp)
-; RV32-NEXT:    sb a3, 11(sp)
-; RV32-NEXT:    sb a2, 10(sp)
-; RV32-NEXT:    sb a1, 9(sp)
-; RV32-NEXT:    addi a0, sp, 8
+; RV32-NEXT:    slli a5, a0, 30
+; RV32-NEXT:    srli a5, a5, 31
+; RV32-NEXT:    andi a0, a0, 1
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV32-NEXT:    vle8.v v8, (a0)
+; RV32-NEXT:    vslide1down.vx v8, v8, a0
+; RV32-NEXT:    vslide1down.vx v8, v8, a5
+; RV32-NEXT:    vslide1down.vx v8, v8, a4
+; RV32-NEXT:    vslide1down.vx v8, v8, a3
+; RV32-NEXT:    vslide1down.vx v8, v8, a2
+; RV32-NEXT:    vslide1down.vx v8, v8, a1
+; RV32-NEXT:    vslidedown.vi v8, v8, 2
 ; RV32-NEXT:    vand.vi v8, v8, 1
 ; RV32-NEXT:    vmsne.vi v0, v8, 0
-; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: load_v6i1:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    lbu a0, 0(a0)
-; RV64-NEXT:    slli a1, a0, 62
-; RV64-NEXT:    srli a1, a1, 63
-; RV64-NEXT:    slli a2, a0, 61
+; RV64-NEXT:    srli a1, a0, 5
+; RV64-NEXT:    slli a2, a0, 59
 ; RV64-NEXT:    srli a2, a2, 63
 ; RV64-NEXT:    slli a3, a0, 60
 ; RV64-NEXT:    srli a3, a3, 63
-; RV64-NEXT:    slli a4, a0, 59
+; RV64-NEXT:    slli a4, a0, 61
 ; RV64-NEXT:    srli a4, a4, 63
-; RV64-NEXT:    andi a5, a0, 1
-; RV64-NEXT:    srli a0, a0, 5
-; RV64-NEXT:    sb a0, 13(sp)
-; RV64-NEXT:    sb a5, 8(sp)
-; RV64-NEXT:    sb a4, 12(sp)
-; RV64-NEXT:    sb a3, 11(sp)
-; RV64-NEXT:    sb a2, 10(sp)
-; RV64-NEXT:    sb a1, 9(sp)
-; RV64-NEXT:    addi a0, sp, 8
+; RV64-NEXT:    slli a5, a0, 62
+; RV64-NEXT:    srli a5, a5, 63
+; RV64-NEXT:    andi a0, a0, 1
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV64-NEXT:    vle8.v v8, (a0)
+; RV64-NEXT:    vslide1down.vx v8, v8, a0
+; RV64-NEXT:    vslide1down.vx v8, v8, a5
+; RV64-NEXT:    vslide1down.vx v8, v8, a4
+; RV64-NEXT:    vslide1down.vx v8, v8, a3
+; RV64-NEXT:    vslide1down.vx v8, v8, a2
+; RV64-NEXT:    vslide1down.vx v8, v8, a1
+; RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; RV64-NEXT:    vand.vi v8, v8, 1
 ; RV64-NEXT:    vmsne.vi v0, v8, 0
-; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    ret
   %x = load <6 x i1>, ptr %p
   ret <6 x i1> %x
