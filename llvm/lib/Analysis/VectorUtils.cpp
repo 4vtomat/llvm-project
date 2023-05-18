@@ -132,14 +132,10 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
   case Intrinsic::is_fpclass:
     return OpdIdx == 0;
   case Intrinsic::powi:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_powi:
 #endif // SIFIVE_CUSTOMIZATION
-    return OpdIdx == 1;
-=======
     return OpdIdx == -1 || OpdIdx == 1;
->>>>>>> upstream/main
   default:
     return OpdIdx == -1;
   }
