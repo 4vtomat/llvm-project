@@ -634,17 +634,13 @@ foreach mx = ["M2", "M4", "M8"] in {
   }
 }
 
-foreach mx = SchedMxList in {
-  defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
-  defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 2, ResourceCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVIMovVX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMovXV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-  }
-  let Latency = 6, ResourceCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVFMovVF", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMovFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-  }
+let Latency = 2, ResourceCycles = [1] in {
+  def : WriteRes<WriteVIMovVX, [SiFiveP400VEXQ0]>;
+  def : WriteRes<WriteVIMovXV, [SiFiveP400VEXQ0]>;
+}
+let Latency = 6, ResourceCycles = [1] in {
+  def : WriteRes<WriteVFMovVF, [SiFiveP400VEXQ0]>;
+  def : WriteRes<WriteVFMovFV, [SiFiveP400VEXQ0]>;
 }
 
 // Simple Gather and Compress
@@ -939,12 +935,12 @@ defm "" : LMULReadAdvance<"ReadVMSFSV", 0>;
 defm "" : LMULReadAdvance<"ReadVMIotV", 0>;
 
 // 17. Vector Permutation Instructions
-defm "" : LMULReadAdvance<"ReadVIMovVX", 0>;
-defm "" : LMULReadAdvance<"ReadVIMovXV", 0>;
-defm "" : LMULReadAdvance<"ReadVIMovXX", 0>;
-defm "" : LMULReadAdvance<"ReadVFMovVF", 0>;
-defm "" : LMULReadAdvance<"ReadVFMovFV", 0>;
-defm "" : LMULReadAdvance<"ReadVFMovFX", 0>;
+def : ReadAdvance<ReadVIMovVX, 0>;
+def : ReadAdvance<ReadVIMovXV, 0>;
+def : ReadAdvance<ReadVIMovXX, 0>;
+def : ReadAdvance<ReadVFMovVF, 0>;
+def : ReadAdvance<ReadVFMovFV, 0>;
+def : ReadAdvance<ReadVFMovFX, 0>;
 defm "" : LMULReadAdvance<"ReadVISlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVISlideX", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideV", 0>;
