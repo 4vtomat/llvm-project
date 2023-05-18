@@ -145,6 +145,27 @@ def FeatureStdExtSswg
                        "'Sswg' (The Sswg extension adds the [H]S-mode read-write "
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;
+
+def FeatureStdExtXsifivecflushdlone
+    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasStdExtXsifivecflushdlone", "true",
+                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)"
+                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)", []>;
+def HasStdExtXsifivecflushdlone :
+    Predicate<"Subtarget->hasStdExtXsifivecflushdlone()">,
+    AssemblerPredicate<(all_of FeatureStdExtXsifivecflushdlone),
+                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)"
+                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)">;
+
+def FeatureStdExtXsifivecdiscarddlone
+    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasStdExtXsifivecdiscarddlone", "true",
+                       "Cache Flush/Power Down Instructions"
+                       "'Xsifivecdiscarddlone'(Cache Flush/Power Down Instructions)"
+                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)", []>;
+def HasStdExtXsifivecdiscarddlone :
+    Predicate<"Subtarget->hasStdExtXsifivecdiscarddlone()">,
+    AssemblerPredicate<(all_of FeatureStdExtXsifivecdiscarddlone),
+                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)"
+                        "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

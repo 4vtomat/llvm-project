@@ -181,6 +181,9 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smwgd", RISCVExtensionVersion{0, 3}},
     {"sswg", RISCVExtensionVersion{0, 3}},
 
+    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}},
+    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}},
+
     {"zihintntl", RISCVExtensionVersion{0, 2}},
 
     {"zca", RISCVExtensionVersion{1, 0}},
