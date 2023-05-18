@@ -247,7 +247,7 @@ defset list<VTypeInfo> I32I64IntegerVectors = {
     def : GroupVTypeInfo<vint32m4_t,vint32m1_t,vbool8_t, 32,VRM4, V_M4>;
     def : GroupVTypeInfo<vint32m8_t,vint32m1_t,vbool4_t, 32,VRM8, V_M8>;
   }
-  defset list<VTypeInfo> I64IntegerVectors = {
+  defset list<VTypeInfo> _I64IntegerVectors = {
     def : VTypeInfo<vint64m1_t,  vbool64_t, 64, VR, V_M1>;
     def : GroupVTypeInfo<vint64m2_t,vint64m1_t,vbool32_t,64,VRM2, V_M2>;
     def : GroupVTypeInfo<vint64m4_t,vint64m1_t,vbool16_t,64,VRM4, V_M4>;
@@ -2091,21 +2091,13 @@ multiclass VPseudoSLoad {
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoILoad<bit Ordered, int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
-  foreach eew = EEWList in {
-    foreach sew = EEWList in {
-      foreach lmul = MxSet<sew>.m in {
-        defvar octuple_lmul = lmul.octuple;
-=======
-multiclass VPseudoILoad<bit Ordered> {
   foreach idxEEW = EEWList in {
     foreach dataEEW = EEWList in {
       foreach dataEMUL = MxSet<dataEEW>.m in {
         defvar dataEMULOctuple = dataEMUL.octuple;
->>>>>>> upstream/main
         // Calculate emul = eew * lmul / sew
         defvar idxEMULOctuple =
           !srl(!mul(idxEEW, dataEMULOctuple), log2<dataEEW>.val);
@@ -2117,37 +2109,25 @@ multiclass VPseudoILoad<bit Ordered> {
           defvar IdxVreg = idxEMUL.vrclass;
           defvar HasConstraint = !ne(dataEEW, idxEEW);
           defvar Order = !if(Ordered, "O", "U");
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-          defvar NewTypeConstraints = !if(!or(!eq(octuple_emul, lmul.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(octuple_emul, lmul.octuple), 2, 3));
+          defvar NewTypeConstraints = !if(!or(!eq(dataEMULOctuple, dataEMUL.octuple), !eq(IdxLInfo, "MF2")), 1, !if(!ge(dataEMULOctuple, dataEMUL.octuple), 2, 3));
           defvar UseNewTypeConstraints = !if(!eq(TargetConstraintType, 1), 1, NewTypeConstraints);
 #endif // SIFIVE_CUSTOMIZATION
-          let VLMul = lmul.value in {
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo :
-#ifdef SIFIVE_CUSTOMIZATION
-              VPseudoILoadNoMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
-#endif // SIFIVE_CUSTOMIZATION
-              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_TU":
-#ifdef SIFIVE_CUSTOMIZATION
-              VPseudoILoadNoMaskTU<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
-#endif // SIFIVE_CUSTOMIZATION
-              VLXSched<eew, Order, DataLInfo, IdxLInfo>;
-            def "EI" # eew # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
-#ifdef SIFIVE_CUSTOMIZATION
-              VPseudoILoadMask<Vreg, IdxVreg, eew, idx_lmul.value, Ordered, HasConstraint, UseNewTypeConstraints>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
           let VLMul = dataEMUL.value in {
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo :
-              VPseudoILoadNoMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint>,
-              VLXSched<dataEEW, Order, DataLInfo, IdxLInfo>;
+#ifdef SIFIVE_CUSTOMIZATION
+              VPseudoILoadNoMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,
+#endif // SIFIVE_CUSTOMIZATION
+              VLXSched<idxEEW, Order, DataLInfo, IdxLInfo>;
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_TU":
-              VPseudoILoadNoMaskTU<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint>,
-              VLXSched<dataEEW, Order, DataLInfo, IdxLInfo>;
+#ifdef SIFIVE_CUSTOMIZATION
+              VPseudoILoadNoMaskTU<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,
+#endif // SIFIVE_CUSTOMIZATION
+              VLXSched<idxEEW, Order, DataLInfo, IdxLInfo>;
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
-              VPseudoILoadMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint>,
->>>>>>> upstream/main
+#ifdef SIFIVE_CUSTOMIZATION
+              VPseudoILoadMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,
+#endif // SIFIVE_CUSTOMIZATION
               RISCVMaskedPseudo</*MaskOpIdx*/ 3>,
               VLXSched<dataEEW, Order, DataLInfo, IdxLInfo>;
           }
@@ -4037,22 +4017,17 @@ multiclass VPseudoTernaryWithPolicy<VReg RetClass,
                                     DAGOperand Op2Class,
                                     LMULInfo MInfo,
                                     string Constraint = "",
-#ifdef SIFIVE_CUSTOMIZATION
                                     bit Commutable = 0,
+#ifdef SIFIVE_CUSTOMIZATION
                                     int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value in {
     let isCommutable = Commutable in
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint, TargetConstraintType>;
-    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint, TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
-    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint>,
+    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint, TargetConstraintType>,
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3, /*HasTU*/ false, /*IsTernary*/true>;
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -8053,16 +8028,12 @@ defm : VPatBinaryRM_V_VV_VX<"int_riscv_vasub", "PseudoVASUB", AllIntegerVectors>
 //===----------------------------------------------------------------------===//
 // 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", AllIntegerVectors>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-defm : VPatBinaryV_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", IntegerVectorsExceptI64>;
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", IntegerVectorsExceptI64>;
 // vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
 let Predicates = [HasVInstructionsFullMultiply] in
-defm : VPatBinaryV_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", I64IntegerVectors>;
->>>>>>> upstream/main
+defm : VPatBinaryRM_V_VV_VX<"int_riscv_vsmul", "PseudoVSMUL", I64IntegerVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 12.4. Vector Single-Width Scaling Shift Instructions
