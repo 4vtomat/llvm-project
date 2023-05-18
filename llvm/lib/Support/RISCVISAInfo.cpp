@@ -179,14 +179,13 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 };
 
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
     {"smwg", RISCVExtensionVersion{0, 3}},
     {"smwgd", RISCVExtensionVersion{0, 3}},
     {"sswg", RISCVExtensionVersion{0, 3}},
-=======
+#endif // SIFIVE_CUSTOMIZATION
     {"smaia", RISCVExtensionVersion{1, 0}},
     {"ssaia", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
 
     {"zihintntl", RISCVExtensionVersion{0, 2}},
 
@@ -1108,46 +1107,13 @@ static const char *ImpliedExtsZfh[] = {"f"};
 static const char *ImpliedExtsZfhmin[] = {"f"};
 static const char *ImpliedExtsZfinx[] = {"zicsr"};
 static const char *ImpliedExtsZhinx[] = {"zfinx"};
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZicntr[] = {"zicsr"};
-static const char *ImpliedExtsZihpm[] = {"zicsr"};
-#endif // SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZve64d[] = {"zve64f"};
-static const char *ImpliedExtsZve64f[] = {"zve64x", "zve32f"};
-static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
-static const char *ImpliedExtsZve32f[] = {"zve32x"};
-static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
-static const char *ImpliedExtsZvl65536b[] = {"zvl32768b"};
-static const char *ImpliedExtsZvl32768b[] = {"zvl16384b"};
-static const char *ImpliedExtsZvl16384b[] = {"zvl8192b"};
-static const char *ImpliedExtsZvl8192b[] = {"zvl4096b"};
-static const char *ImpliedExtsZvl4096b[] = {"zvl2048b"};
-static const char *ImpliedExtsZvl2048b[] = {"zvl1024b"};
-static const char *ImpliedExtsZvl1024b[] = {"zvl512b"};
-static const char *ImpliedExtsZvl512b[] = {"zvl256b"};
-static const char *ImpliedExtsZvl256b[] = {"zvl128b"};
-static const char *ImpliedExtsZvl128b[] = {"zvl64b"};
-static const char *ImpliedExtsZvl64b[] = {"zvl32b"};
-=======
 static const char *ImpliedExtsZhinxmin[] = {"zfinx"};
 static const char *ImpliedExtsZicntr[] = {"zicsr"};
 static const char *ImpliedExtsZihpm[] = {"zicsr"};
->>>>>>> upstream/main
 static const char *ImpliedExtsZk[] = {"zkn", "zkt", "zkr"};
 static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
-<<<<<<< HEAD
-static const char *ImpliedExtsZvfh[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
-static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
-static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
-static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb",
-                                        "zvkb"};
-=======
 static const char *ImpliedExtsZve32f[] = {"zve32x", "f"};
 static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
 static const char *ImpliedExtsZve64d[] = {"zve64f", "d"};
@@ -1156,7 +1122,6 @@ static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
 static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
 static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
                                         "zvkt"};
->>>>>>> upstream/main
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
@@ -1172,7 +1137,11 @@ static const char *ImpliedExtsZvl512b[] = {"zvl256b"};
 static const char *ImpliedExtsZvl64b[] = {"zvl32b"};
 static const char *ImpliedExtsZvl65536b[] = {"zvl32768b"};
 static const char *ImpliedExtsZvl8192b[] = {"zvl4096b"};
-
+static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"}; // SIFIVE
+static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"}; // SIFIVE
+static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"}; // SIFIVE
+static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"}; // SIFIVE
+static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"}; // SIFIVE
 struct ImpliedExtsEntry {
   StringLiteral Name;
   ArrayRef<const char *> Exts;
@@ -1206,15 +1175,8 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zfinx"}, {ImpliedExtsZfinx}},
     {{"zhinx"}, {ImpliedExtsZhinx}},
     {{"zhinxmin"}, {ImpliedExtsZhinxmin}},
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     {{"zicntr"}, {ImpliedExtsZicntr}},
     {{"zihpm"}, {ImpliedExtsZihpm}},
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    {{"zicntr"}, {ImpliedExtsZicntr}},
-    {{"zihpm"}, {ImpliedExtsZihpm}},
->>>>>>> upstream/main
     {{"zk"}, {ImpliedExtsZk}},
     {{"zkn"}, {ImpliedExtsZkn}},
     {{"zks"}, {ImpliedExtsZks}},
