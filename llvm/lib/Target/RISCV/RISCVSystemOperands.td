@@ -365,7 +365,6 @@ foreach i = 0...3 in {
 
 def SEED : SysReg<"seed", 0x015>;
 
-<<<<<<< HEAD
 // SIFIVE
 //===-----------------------------------------------
 // Interrupt Clic CSRs (August 2018)
@@ -401,7 +400,7 @@ foreach i = 3...31 in
   def : SysReg<"mhpmevent"#i#"h", !add(0x723, !sub(i, 3))>;
 }
 // end SIFIVE
-=======
+
 //===-----------------------------------------------
 // Advanced Interrupt Architecture
 //===-----------------------------------------------
@@ -454,4 +453,3 @@ def : SysReg<"vsiph", 0x254>;
 //===-----------------------------------------------
 
 def : SysReg<"jvt", 0x017>;
->>>>>>> upstream/main
