@@ -85,12 +85,11 @@ public:
 
 private:
   void emitAttributes();
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   void emitCompactStub();
-=======
+#endif // SIFIVE_CUSTOMIZATION
 
   void emitNTLHint(const MachineInstr *MI);
->>>>>>> upstream/main
 };
 }
 
