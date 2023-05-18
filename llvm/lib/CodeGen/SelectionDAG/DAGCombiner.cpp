@@ -15369,17 +15369,10 @@ SDValue DAGCombiner::visitFADDForFMACombine(SDNode *N) {
     SDValue TmpFMA = FMA;
     while (E && isFusedOp(TmpFMA) && TmpFMA.hasOneUse()) {
       SDValue FMul = TmpFMA->getOperand(2);
-<<<<<<< HEAD
-      if (matcher.match(FMul, ISD::FMUL) && FMul.hasOneUse()) { // SIFIVE
-        SDValue C = FMul.getOperand(0);
-        SDValue D = FMul.getOperand(1);
-        SDValue CDE = matcher.getNode(PreferredFusedOpcode, SL, VT, C, D, E); // SIFIVE
-=======
       if (matcher.match(FMul, ISD::FMUL) && FMul.hasOneUse()) {
         SDValue C = FMul.getOperand(0);
         SDValue D = FMul.getOperand(1);
         SDValue CDE = matcher.getNode(PreferredFusedOpcode, SL, VT, C, D, E);
->>>>>>> upstream/main
         DAG.ReplaceAllUsesOfValueWith(FMul, CDE);
         // Replacing the inner FMul could cause the outer FMA to be simplified
         // away.
@@ -25634,7 +25627,6 @@ SDValue DAGCombiner::visitVECREDUCE(SDNode *N) {
   return SDValue();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SDValue DAGCombiner::visitVPXOR(SDNode *N) {
   // Fold:
@@ -26203,7 +26195,10 @@ SDValue DAGCombiner::visitVPSDIV(SDNode *N) {
       CombineTo(RemNode, Sub);
     }
     return V;
-=======
+  }
+  return SDValue();
+}
+
 SDValue DAGCombiner::visitVP_FSUB(SDNode *N) {
   SelectionDAG::FlagInserter FlagsInserter(DAG, N);
 
@@ -26211,12 +26206,10 @@ SDValue DAGCombiner::visitVP_FSUB(SDNode *N) {
   if (SDValue Fused = visitFSUBForFMACombine<VPMatchContext>(N)) {
     AddToWorklist(Fused.getNode());
     return Fused;
->>>>>>> upstream/main
   }
   return SDValue();
 }
 
-<<<<<<< HEAD
 SDValue DAGCombiner::visitVPSDIVLike(SDValue N0, SDValue N1, SDNode *N) {
   SDLoc DL(N);
   SDValue Mask = N->getOperand(2);
@@ -26342,8 +26335,6 @@ SDValue DAGCombiner::visitVP_SELECT(SDNode *N) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 SDValue DAGCombiner::visitVPOp(SDNode *N) {
 
   if (N->getOpcode() == ISD::VP_GATHER)
@@ -26375,7 +26366,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     switch (N->getOpcode()) {
     case ISD::VP_FADD:
       return visitVP_FADD(N);
-<<<<<<< HEAD
+    case ISD::VP_FSUB:
+      return visitVP_FSUB(N);
 #if SIFIVE_CUSTOMIZATION
     case ISD::VP_XOR:
       return visitVPXOR(N);
@@ -26393,10 +26385,6 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     case ISD::VP_SELECT:
       return visitVP_SELECT(N);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    case ISD::VP_FSUB:
-      return visitVP_FSUB(N);
->>>>>>> upstream/main
     }
     return SDValue();
   }
