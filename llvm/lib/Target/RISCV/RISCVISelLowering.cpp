@@ -1244,15 +1244,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.is64Bit())
     setTargetDAGCombine(ISD::SRA);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   setTargetDAGCombine(ISD::EXTRACT_VECTOR_ELT);
 #endif
 
-  if (Subtarget.hasStdExtF())
-=======
   if (Subtarget.hasStdExtFOrZfinx())
->>>>>>> upstream/main
     setTargetDAGCombine({ISD::FADD, ISD::FMAXNUM, ISD::FMINNUM});
 
   if (Subtarget.hasStdExtZbb())
@@ -5758,26 +5754,6 @@ static std::optional<bool> matchSetCC(SDValue LHS, SDValue RHS,
   SDValue RHS2 = Val.getOperand(1);
   ISD::CondCode CC2 = cast<CondCodeSDNode>(Val.getOperand(2))->get();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Lower fixed vector SELECTs to a scalable vector select.
-  // Scalable vector selects will be turned into select_cc and expanded to
-  // control flow via a custom inserter just like scalar.
-  if (VT.isFixedLengthVector()) {
-    MVT ContainerVT = getContainerForFixedLengthVector(VT);
-    TrueV = convertToScalableVector(ContainerVT, TrueV, DAG, Subtarget);
-    FalseV = convertToScalableVector(ContainerVT, FalseV, DAG, Subtarget);
-    SDValue Sel =
-        DAG.getNode(ISD::SELECT, DL, ContainerVT, CondV, TrueV, FalseV);
-    return convertFromScalableVector(VT, Sel, DAG, Subtarget);
-  }
-#else // SIFIVE_CUSTOMIZATION
-  // Lower vector SELECTs to VSELECTs by splatting the condition.
-  if (VT.isVector()) {
-    MVT SplatCondVT = VT.changeVectorElementType(MVT::i1);
-    SDValue CondSplat = DAG.getSplat(SplatCondVT, DL, CondV);
-    return DAG.getNode(ISD::VSELECT, DL, VT, CondSplat, TrueV, FalseV);
-=======
   if (LHS == LHS2 && RHS == RHS2) {
     if (CC == CC2)
       return true;
@@ -5789,15 +5765,8 @@ static std::optional<bool> matchSetCC(SDValue LHS, SDValue RHS,
       return true;
     if (CC == ISD::getSetCCInverse(CC2, LHS2.getValueType()))
       return false;
->>>>>>> upstream/main
   }
-#endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (!Subtarget.hasShortForwardBranchOpt() && !Subtarget.canUseCMOVBranchOpt()) {
-#else
-=======
   return std::nullopt;
 }
 
@@ -5809,9 +5778,8 @@ static SDValue combineSelectToBinOp(SDNode *N, SelectionDAG &DAG,
   MVT VT = N->getSimpleValueType(0);
   SDLoc DL(N);
 
->>>>>>> upstream/main
-  if (!Subtarget.hasShortForwardBranchOpt()) {
-#endif
+  if (!Subtarget.hasShortForwardBranchOpt() &&
+      !Subtarget.canUseCMOVBranchOpt()) {
     // (select c, -1, y) -> -c | y
     if (isAllOnesConstant(TrueV)) {
       SDValue Neg = DAG.getNegative(CondV, DL, VT);
@@ -5870,12 +5838,26 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   MVT VT = Op.getSimpleValueType();
   MVT XLenVT = Subtarget.getXLenVT();
 
+#if SIFIVE_CUSTOMIZATION
+  // Lower fixed vector SELECTs to a scalable vector select.
+  // Scalable vector selects will be turned into select_cc and expanded to
+  // control flow via a custom inserter just like scalar.
+  if (VT.isFixedLengthVector()) {
+    MVT ContainerVT = getContainerForFixedLengthVector(VT);
+    TrueV = convertToScalableVector(ContainerVT, TrueV, DAG, Subtarget);
+    FalseV = convertToScalableVector(ContainerVT, FalseV, DAG, Subtarget);
+    SDValue Sel =
+        DAG.getNode(ISD::SELECT, DL, ContainerVT, CondV, TrueV, FalseV);
+    return convertFromScalableVector(VT, Sel, DAG, Subtarget);
+  }
+#else // SIFIVE_CUSTOMIZATION
   // Lower vector SELECTs to VSELECTs by splatting the condition.
   if (VT.isVector()) {
     MVT SplatCondVT = VT.changeVectorElementType(MVT::i1);
     SDValue CondSplat = DAG.getSplat(SplatCondVT, DL, CondV);
     return DAG.getNode(ISD::VSELECT, DL, VT, CondSplat, TrueV, FalseV);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (SDValue V = combineSelectToBinOp(Op.getNode(), DAG, Subtarget))
     return V;
@@ -11292,7 +11274,6 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ADD, DL, VT, New1, DAG.getConstant(CB, DL, VT));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Reassociate (add X, (add Y, SImm12)) -> (add (add X, Y), SImm12) if the
 // the result is only used by scalar loads/stores. This allows the SImm12 to
@@ -11348,19 +11329,6 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
 }
 #endif
 
-static SDValue performADDCombine(SDNode *N, SelectionDAG &DAG,
-                                 const RISCVSubtarget &Subtarget) {
-#if SIFIVE_CUSTOMIZATION
-  {
-    SDValue N0 = N->getOperand(0);
-    SDValue N1 = N->getOperand(1);
-    if (SDValue V = reassociateAddressArith(N, N0, N1, DAG, Subtarget))
-      return V;
-    if (SDValue V = reassociateAddressArith(N, N1, N0, DAG, Subtarget))
-      return V;
-  }
-#endif
-=======
 // Try to turn (add (xor (setcc X, Y), 1) -1) into (neg (setcc X, Y)).
 static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
   SDValue N0 = N->getOperand(0);
@@ -11384,9 +11352,18 @@ static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
 
 static SDValue performADDCombine(SDNode *N, SelectionDAG &DAG,
                                  const RISCVSubtarget &Subtarget) {
+#if SIFIVE_CUSTOMIZATION
+  {
+    SDValue N0 = N->getOperand(0);
+    SDValue N1 = N->getOperand(1);
+    if (SDValue V = reassociateAddressArith(N, N0, N1, DAG, Subtarget))
+      return V;
+    if (SDValue V = reassociateAddressArith(N, N1, N0, DAG, Subtarget))
+      return V;
+  }
+#endif
   if (SDValue V = combineAddOfBooleanXor(N, DAG))
     return V;
->>>>>>> upstream/main
   if (SDValue V = transformAddImmMulImm(N, DAG, Subtarget))
     return V;
   if (SDValue V = transformAddShlImm(N, DAG, Subtarget))
@@ -15252,14 +15229,13 @@ static bool isSelectPseudo(MachineInstr &MI) {
   case RISCV::Select_FPR32_Using_CC_GPR:
   case RISCV::Select_FPR32INX_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
-<<<<<<< HEAD
+  case RISCV::Select_FPR64INX_Using_CC_GPR:
+#if SIFIVE_CUSTOMIZATION
   case RISCV::Select_VR_Using_CC_GPR:
   case RISCV::Select_VRM2_Using_CC_GPR:
   case RISCV::Select_VRM4_Using_CC_GPR:
   case RISCV::Select_VRM8_Using_CC_GPR:
-=======
-  case RISCV::Select_FPR64INX_Using_CC_GPR:
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     return true;
   }
 }
@@ -15769,14 +15745,13 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
   case RISCV::Select_FPR32_Using_CC_GPR:
   case RISCV::Select_FPR32INX_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
-<<<<<<< HEAD
+  case RISCV::Select_FPR64INX_Using_CC_GPR:
+#if SIFIVE_CUSTOMIZATION
   case RISCV::Select_VR_Using_CC_GPR:
   case RISCV::Select_VRM2_Using_CC_GPR:
   case RISCV::Select_VRM4_Using_CC_GPR:
   case RISCV::Select_VRM8_Using_CC_GPR:
-=======
-  case RISCV::Select_FPR64INX_Using_CC_GPR:
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     return emitSelectPseudo(MI, BB, Subtarget);
   case RISCV::BuildPairF64Pseudo:
     return emitBuildPairF64Pseudo(MI, BB, Subtarget);
@@ -17586,14 +17561,11 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VFNMADD_VL)
   NODE_NAME_CASE(VFMSUB_VL)
   NODE_NAME_CASE(VFNMSUB_VL)
-<<<<<<< HEAD
   NODE_NAME_CASE(VFNMSAC_VL) // SIFIVE
-=======
   NODE_NAME_CASE(VFWMADD_VL)
   NODE_NAME_CASE(VFWNMADD_VL)
   NODE_NAME_CASE(VFWMSUB_VL)
   NODE_NAME_CASE(VFWNMSUB_VL)
->>>>>>> upstream/main
   NODE_NAME_CASE(FCOPYSIGN_VL)
   NODE_NAME_CASE(SMIN_VL)
   NODE_NAME_CASE(SMAX_VL)
@@ -18720,7 +18692,6 @@ RISCVTargetLowering::getRegisterByName(const char *RegName, LLT VT,
   return Reg;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // i32->i64 sign extends of most binary operators are free on RV64.
 bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
