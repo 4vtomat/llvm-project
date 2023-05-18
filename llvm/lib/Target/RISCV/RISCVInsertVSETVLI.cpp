@@ -745,11 +745,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB, MachineInstr &MI,
   insertVSETVLI(MBB, MachineBasicBlock::iterator(&MI), DL, Info, PrevInfo);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static VSETVLIInfo getInfoForVSETVLI(const MachineInstr &MI);
-#endif // SIFIVE_CUSTOMIZATION
-=======
 // Return a VSETVLIInfo representing the changes made by this VSETVLI or
 // VSETIVLI instruction.
 static VSETVLIInfo getInfoForVSETVLI(const MachineInstr &MI) {
@@ -768,7 +763,6 @@ static VSETVLIInfo getInfoForVSETVLI(const MachineInstr &MI) {
 
   return NewInfo;
 }
->>>>>>> upstream/main
 
 void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
                      MachineBasicBlock::iterator InsertPt, DebugLoc DL,
