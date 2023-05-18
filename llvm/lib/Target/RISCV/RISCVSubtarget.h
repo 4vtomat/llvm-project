@@ -146,7 +146,6 @@ public:
 
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool canUseCMOVBranchOpt() const {
     // U8 can only predicate c.mv so requires the C extension.
@@ -158,10 +157,8 @@ public:
     return DLen;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool hasStdExtFOrZfinx() const { return HasStdExtF || HasStdExtZfinx; }
   bool hasStdExtDOrZdinx() const { return HasStdExtD || HasStdExtZdinx; }
->>>>>>> upstream/main
   bool hasStdExtZfhOrZfhmin() const { return HasStdExtZfh || HasStdExtZfhmin; }
   bool hasStdExtZfhOrZhinx() const { return HasStdExtZfh || HasStdExtZhinx; }
   bool hasStdExtZhinxOrZhinxmin() const {
