@@ -258,44 +258,32 @@ END_REGISTER_VP(vp_umax, VP_UMAX)
 BEGIN_REGISTER_VP_INTRINSIC(vp_abs, 2, 3)
 BEGIN_REGISTER_VP_SDNODE(VP_ABS, -1, vp_abs, 1, 2)
 HELPER_MAP_VPID_TO_VPSD(vp_abs, VP_ABS)
-<<<<<<< HEAD
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(abs)
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(ABS)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_abs, VP_ABS)
 
 // llvm.vp.bswap(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_bswap, 1, 2, VP_BSWAP, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(bswap)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(BSWAP)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_bswap, VP_BSWAP)
 
 // llvm.vp.bitreverse(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_bitreverse, 1, 2, VP_BITREVERSE, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(bitreverse)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(BITREVERSE)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_bitreverse, VP_BITREVERSE)
 
 // llvm.vp.ctpop(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_ctpop, 1, 2, VP_CTPOP, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(ctpop)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(CTPOP)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_ctpop, VP_CTPOP)
 
 // llvm.vp.ctlz(x,is_zero_poison,mask,vlen)
@@ -324,24 +312,18 @@ END_REGISTER_VP_INTRINSIC(vp_cttz)
 
 // llvm.vp.fshl(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fshl, 3, 4, VP_FSHL, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fshl)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSHL)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_fshl, VP_FSHL)
 
 // llvm.vp.fshr(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fshr, 3, 4, VP_FSHR, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fshr)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSHR)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_fshr, VP_FSHR)
 ///// } Integer Arithmetic
 
@@ -386,24 +368,18 @@ END_REGISTER_VP(vp_fneg, VP_FNEG)
 
 // llvm.vp.fabs(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_fabs, 1, 2, VP_FABS, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fabs)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FABS)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_fabs, VP_FABS)
 
 // llvm.vp.sqrt(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_sqrt, 1, 2, VP_SQRT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(sqrt)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSQRT)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_sqrt, VP_SQRT)
 
 // llvm.vp.fma(x,y,z,mask,vlen)
@@ -418,13 +394,10 @@ END_REGISTER_VP(vp_fma, VP_FMA)
 // llvm.vp.fmuladd(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fmuladd, 3, 4, VP_FMULADD, -1)
 VP_PROPERTY_CONSTRAINEDFP(1, 1, experimental_constrained_fmuladd)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fmuladd)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FMAD)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_fmuladd, VP_FMULADD)
 
 // llvm.vp.copysign(x,y,mask,vlen)
@@ -439,102 +412,75 @@ END_REGISTER_VP(vp_copysign, VP_FCOPYSIGN)
 // llvm.vp.minnum(x, y, mask,vlen)
 BEGIN_REGISTER_VP(vp_minnum, 2, 3, VP_FMINNUM, -1)
 VP_PROPERTY_BINARYOP
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(minnum)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FMINNUM)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_minnum, VP_FMINNUM)
 
 // llvm.vp.maxnum(x, y, mask,vlen)
 BEGIN_REGISTER_VP(vp_maxnum, 2, 3, VP_FMAXNUM, -1)
 VP_PROPERTY_BINARYOP
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(maxnum)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FMAXNUM)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_maxnum, VP_FMAXNUM)
 
 // llvm.vp.ceil(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_ceil, 1, 2, VP_FCEIL, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(ceil)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FCEIL)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_ceil, VP_FCEIL)
 
 // llvm.vp.floor(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_floor, 1, 2, VP_FFLOOR, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(floor)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FFLOOR)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_floor, VP_FFLOOR)
 
 // llvm.vp.round(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_round, 1, 2, VP_FROUND, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(round)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FROUND)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_round, VP_FROUND)
 
 // llvm.vp.roundeven(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_roundeven, 1, 2, VP_FROUNDEVEN, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(roundeven)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FROUNDEVEN)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_roundeven, VP_FROUNDEVEN)
 
 // llvm.vp.roundtozero(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_roundtozero, 1, 2, VP_FROUNDTOZERO, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(trunc)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FTRUNC)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_roundtozero, VP_FROUNDTOZERO)
 
 // llvm.vp.rint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_rint, 1, 2, VP_FRINT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(rint)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FRINT)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_rint, VP_FRINT)
 
 // llvm.vp.nearbyint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_nearbyint, 1, 2, VP_FNEARBYINT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(nearbyint)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_SDOPC(FNEARBYINT)
->>>>>>> upstream/main
 END_REGISTER_VP(vp_nearbyint, VP_FNEARBYINT)
 
 #if SIFIVE_CUSTOMIZATION
