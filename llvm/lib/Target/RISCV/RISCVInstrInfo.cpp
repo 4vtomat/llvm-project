@@ -2808,7 +2808,6 @@ void RISCVInstrInfo::getVLENFactoredAmount(MachineFunction &MF,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
@@ -2959,17 +2958,8 @@ bool RISCVInstrInfo::shouldClusterMemOps(
   return (LowOffset <= HighOffset) && (HighOffset <= LowOffset + 4);
 }
 
-ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
-RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
-  static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
-      {{MONontemporalBit0, "riscv-non-temporal-domain-bit-0"},
-       {MONontemporalBit1, "riscv-non-temporal-domain-bit-1"}};
-  return ArrayRef(TargetFlags);
-}
-
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
 RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
   static const std::pair<MachineMemOperand::Flags, const char *> TargetFlags[] =
@@ -2978,7 +2968,6 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
   return ArrayRef(TargetFlags);
 }
 
->>>>>>> upstream/main
 // Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
 bool RISCV::isSEXT_W(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::ADDIW && MI.getOperand(1).isReg() &&

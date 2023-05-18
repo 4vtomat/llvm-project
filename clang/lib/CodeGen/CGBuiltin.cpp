@@ -20025,26 +20025,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     ID = Intrinsic::riscv_sm3p1;
     IntrinsicTypes = {ResultType};
     break;
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::BI__builtin_riscv_ntl_load: {
-    llvm::Type *ResTy = ConvertType(E->getType());
-    ConstantInt *Mode = llvm::dyn_cast<llvm::ConstantInt>(Ops[1]);
 
-    assert(
-        Mode &&
-        "__builtin_riscv_ntl_load's domain argument value must be constant.");
-
-<<<<<<< HEAD
-    llvm::MDNode *Node = llvm::MDNode::get(
-        getLLVMContext(),
-        llvm::ConstantAsMetadata::get(Builder.getInt32(Mode->getZExtValue())));
-
-    int Width = ResTy->getPrimitiveSizeInBits();
-    LoadInst *Load = Builder.CreateLoad(
-        Address(Ops[0], ResTy, CharUnits::fromQuantity(Width / 8)));
-
-    Load->setMetadata(CGM.getModule().getMDKindID("nontemporal"), Node);
-=======
   // Zihintntl
   case RISCV::BI__builtin_riscv_ntl_load: {
     llvm::Type *ResTy = ConvertType(E->getType());
@@ -20071,22 +20052,10 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
                       NontemporalNode);
     Load->setMetadata(CGM.getModule().getMDKindID("riscv-nontemporal-domain"),
                       RISCVDomainNode);
->>>>>>> upstream/main
 
     return Load;
   }
   case RISCV::BI__builtin_riscv_ntl_store: {
-<<<<<<< HEAD
-    ConstantInt *Mode = llvm::dyn_cast<llvm::ConstantInt>(Ops[2]);
-
-    assert(
-        Mode &&
-        "__builtin_riscv_ntl_store's domain argument value must be constant.");
-
-    llvm::MDNode *Node = llvm::MDNode::get(
-        getLLVMContext(),
-        llvm::ConstantAsMetadata::get(Builder.getInt32(Mode->getZExtValue())));
-=======
     ConstantInt *Mode = cast<ConstantInt>(Ops[2]);
 
     llvm::MDNode *RISCVDomainNode = llvm::MDNode::get(
@@ -20094,19 +20063,12 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
         llvm::ConstantAsMetadata::get(Builder.getInt32(Mode->getZExtValue())));
     llvm::MDNode *NontemporalNode = llvm::MDNode::get(
         getLLVMContext(), llvm::ConstantAsMetadata::get(Builder.getInt32(1)));
->>>>>>> upstream/main
 
     Value *BC = Builder.CreateBitCast(
         Ops[0], llvm::PointerType::getUnqual(Ops[1]->getType()), "cast");
 
     StoreInst *Store = Builder.CreateDefaultAlignedStore(Ops[1], BC);
-<<<<<<< HEAD
-    Store->setMetadata(CGM.getModule().getMDKindID("nontemporal"), Node);
 
-    return Store;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Store->setMetadata(CGM.getModule().getMDKindID("nontemporal"),
                        NontemporalNode);
     Store->setMetadata(CGM.getModule().getMDKindID("riscv-nontemporal-domain"),
@@ -20115,7 +20077,6 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Store;
   }
 
->>>>>>> upstream/main
   // Vector builtins are handled from here.
 #include "clang/Basic/riscv_vector_builtin_cg.inc"
   // SiFive Vector builtins are handled from here.

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*===---- riscv_ntlh.h - RISC-V NTLH intrinsics ----------------------------===
  *
  * Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
@@ -16,7 +14,6 @@
 #error "NTLH intrinsics require the NTLH extension."
 #endif
 
->>>>>>> upstream/main
 enum {
   __RISCV_NTLH_INNERMOST_PRIVATE = 2,
   __RISCV_NTLH_ALL_PRIVATE,
@@ -24,14 +21,8 @@ enum {
   __RISCV_NTLH_ALL
 };
 
-<<<<<<< HEAD
-#define __rv_ntl_load(PTR, DOMAIN) __builtin_riscv_ntl_load(PTR, DOMAIN)
-#define __rv_ntl_store(PTR, VAL, DOMAIN)                                       \
-  __builtin_riscv_ntl_store(PTR, VAL, DOMAIN)
-=======
 #define __riscv_ntl_load(PTR, DOMAIN) __builtin_riscv_ntl_load((PTR), (DOMAIN))
 #define __riscv_ntl_store(PTR, VAL, DOMAIN)                                    \
   __builtin_riscv_ntl_store((PTR), (VAL), (DOMAIN))
 
 #endif
->>>>>>> upstream/main

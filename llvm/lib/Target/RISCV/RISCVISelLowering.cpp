@@ -18760,9 +18760,8 @@ bool RISCVTargetLowering::isExtFreeImpl(const Instruction *Ext) const {
   return isa<BinaryOperator>(Src) &&
          !cast<BinaryOperator>(Src)->isBitwiseLogicOp();
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 MachineMemOperand::Flags
 RISCVTargetLowering::getTargetMMOFlags(const Instruction &I) const {
   const MDNode *NontemporalInfo = I.getMetadata(LLVMContext::MD_nontemporal);
@@ -18775,12 +18774,6 @@ RISCVTargetLowering::getTargetMMOFlags(const Instruction &I) const {
   // 3 -> __RISCV_NTLH_ALL_PRIVATE
   // 4 -> __RISCV_NTLH_INNERMOST_SHARED
   // 5 -> __RISCV_NTLH_ALL
-<<<<<<< HEAD
-  int NontemporalLevel =
-      cast<ConstantInt>(
-          cast<ConstantAsMetadata>(NontemporalInfo->getOperand(0))->getValue())
-          ->getZExtValue();
-=======
   int NontemporalLevel = 5;
   const MDNode *RISCVNontemporalInfo =
       I.getMetadata("riscv-nontemporal-domain");
@@ -18790,18 +18783,10 @@ RISCVTargetLowering::getTargetMMOFlags(const Instruction &I) const {
             cast<ConstantAsMetadata>(RISCVNontemporalInfo->getOperand(0))
                 ->getValue())
             ->getZExtValue();
->>>>>>> upstream/main
 
   assert((1 <= NontemporalLevel && NontemporalLevel <= 5) &&
          "RISC-V target doesn't support this non-temporal domain.");
 
-<<<<<<< HEAD
-  // Mapping default value into __RISCV_NTLH_ALL
-  if (NontemporalLevel == 1)
-    NontemporalLevel = 5;
-
-=======
->>>>>>> upstream/main
   NontemporalLevel -= 2;
   MachineMemOperand::Flags Flags = MachineMemOperand::MONone;
   if (NontemporalLevel & 0b1)
@@ -18827,10 +18812,6 @@ bool RISCVTargetLowering::areTwoSDNodeTargetMMOFlagsMergeable(
     const MemSDNode &NodeX, const MemSDNode &NodeY) const {
   return getTargetMMOFlags(NodeX) == getTargetMMOFlags(NodeY);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 namespace llvm::RISCVVIntrinsicsTable {
 

@@ -25,18 +25,10 @@ namespace llvm {
 
 class RISCVSubtarget;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 static const MachineMemOperand::Flags MONontemporalBit0 =
     MachineMemOperand::MOTargetFlag1;
 static const MachineMemOperand::Flags MONontemporalBit1 =
     MachineMemOperand::MOTargetFlag2;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 namespace RISCVCC {
 

@@ -19577,15 +19577,8 @@ void DAGCombiner::getStoreMergeCandidates(
     // Don't mix temporal stores with non-temporal stores.
     if (St->isNonTemporal() != Other->isNonTemporal())
       return false;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (!TLI.areTwoSDNodeTargetMMOFlagsMergeable(*St, *Other))
       return false;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    if (!TLI.areTwoSDNodeTargetMMOFlagsMergeable(*St, *Other))
-      return false;
->>>>>>> upstream/main
     SDValue OtherBC = peekThroughBitcasts(Other->getValue());
     // Allow merging constants of different types as integers.
     bool NoTypeMatch = (MemVT.isInteger()) ? !MemVT.bitsEq(Other->getMemoryVT())
@@ -19611,17 +19604,9 @@ void DAGCombiner::getStoreMergeCandidates(
       // Don't mix temporal loads with non-temporal loads.
       if (cast<LoadSDNode>(Val)->isNonTemporal() != OtherLd->isNonTemporal())
         return false;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       if (!TLI.areTwoSDNodeTargetMMOFlagsMergeable(*cast<LoadSDNode>(Val),
                                                    *OtherLd))
         return false;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      if (!TLI.areTwoSDNodeTargetMMOFlagsMergeable(*cast<LoadSDNode>(Val),
-                                                   *OtherLd))
-        return false;
->>>>>>> upstream/main
       if (!(LBasePtr.equalBaseIndex(LPtr, DAG)))
         return false;
       break;
@@ -20244,25 +20229,13 @@ bool DAGCombiner::tryStoreMergeOfLoads(SmallVectorImpl<MemOpLink> &StoreNodes,
     if (IsNonTemporalLoad)
       LdMMOFlags |= MachineMemOperand::MONonTemporal;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     LdMMOFlags |= TLI.getTargetMMOFlags(*FirstLoad);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    LdMMOFlags |= TLI.getTargetMMOFlags(*FirstLoad);
->>>>>>> upstream/main
 
     MachineMemOperand::Flags StMMOFlags = IsNonTemporalStore
                                               ? MachineMemOperand::MONonTemporal
                                               : MachineMemOperand::MONone;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     StMMOFlags |= TLI.getTargetMMOFlags(*StoreNodes[0].MemNode);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    StMMOFlags |= TLI.getTargetMMOFlags(*StoreNodes[0].MemNode);
->>>>>>> upstream/main
 
     SDValue NewLoad, NewStore;
     if (UseVectorTy || !DoIntegerTruncate) {

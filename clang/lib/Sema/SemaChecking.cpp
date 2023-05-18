@@ -4695,10 +4695,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   // Check if rnum is in [0, 10]
   case RISCV::BI__builtin_riscv_aes64ks1i_64:
     return SemaBuiltinConstantArgRange(TheCall, 1, 0, 10);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case RISCV::BI__builtin_riscv_ntl_load:
   case RISCV::BI__builtin_riscv_ntl_store:
     DeclRefExpr *DRE =
@@ -4736,11 +4732,7 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
     ValType = ValType.getUnqualifiedType();
     if (!ValType->isIntegerType() && !ValType->isAnyPointerType() &&
         !ValType->isBlockPointerType() && !ValType->isFloatingType() &&
-<<<<<<< HEAD
-        !ValType->isVectorType()) {
-=======
         !ValType->isVectorType() && !ValType->isRVVType()) {
->>>>>>> upstream/main
       Diag(DRE->getBeginLoc(),
            diag::err_nontemporal_builtin_must_be_pointer_intfltptr_or_vector)
           << PointerArg->getType() << PointerArg->getSourceRange();
@@ -4763,7 +4755,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
     TheCall->setType(Context.VoidTy);
     return false;
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   return false;
 }

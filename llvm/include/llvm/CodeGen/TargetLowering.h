@@ -433,20 +433,12 @@ public:
     return MachineMemOperand::MONone;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   /// This callback is used to inspect load/store SDNode.
   /// The default implementation does nothing.
   virtual MachineMemOperand::Flags
   getTargetMMOFlags(const MemSDNode &Node) const {
     return MachineMemOperand::MONone;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   MachineMemOperand::Flags
   getLoadMemOperandFlags(const LoadInst &LI, const DataLayout &DL,
@@ -687,20 +679,12 @@ public:
     return false;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   /// Return true if it is valid to merge the TargetMMOFlags in two SDNodes.
   virtual bool
   areTwoSDNodeTargetMMOFlagsMergeable(const MemSDNode &NodeX,
                                       const MemSDNode &NodeY) const {
     return true;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   /// Use bitwise logic to make pairs of compares more efficient. For example:
   /// and (seteq A, B), (seteq C, D) --> seteq (or (xor A, B), (xor C, D)), 0
