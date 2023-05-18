@@ -6798,41 +6798,27 @@ static bool VCIXScalarNeedLegalization(unsigned IntNo) {
 // promoted or expanded.
 static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
                                            const RISCVSubtarget &Subtarget) {
-<<<<<<< HEAD
+  assert((Op.getOpcode() == ISD::INTRINSIC_VOID ||
+          Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ||
+          Op.getOpcode() == ISD::INTRINSIC_W_CHAIN) &&
+         "Unexpected opcode");
+
 #if SIFIVE_CUSTOMIZATION
-  assert((Op.getOpcode() == ISD::INTRINSIC_VOID ||
-          Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ||
-          Op.getOpcode() == ISD::INTRINSIC_W_CHAIN) &&
-         "Unexpected opcode");
-
-  bool HasChain = (Op.getOpcode() == ISD::INTRINSIC_VOID ||
-                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN);
-  unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
-  bool VCIX = VCIXScalarNeedLegalization(IntNo);
-
-  if (!VCIX && !Subtarget.hasVInstructions())
-    return SDValue();
 #else
-  assert((Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ||
-=======
-  assert((Op.getOpcode() == ISD::INTRINSIC_VOID ||
-          Op.getOpcode() == ISD::INTRINSIC_WO_CHAIN ||
->>>>>>> upstream/main
-          Op.getOpcode() == ISD::INTRINSIC_W_CHAIN) &&
-         "Unexpected opcode");
-
   if (!Subtarget.hasVInstructions())
     return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   bool HasChain = Op.getOpcode() == ISD::INTRINSIC_VOID ||
                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN;
   unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
-
->>>>>>> upstream/main
   SDLoc DL(Op);
+
+#if SIFIVE_CUSTOMIZATION
+  bool VCIX = VCIXScalarNeedLegalization(IntNo);
+  if (!VCIX && !Subtarget.hasVInstructions())
+    return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   const RISCVVIntrinsicsTable::RISCVVIntrinsicInfo *II =
       RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IntNo);
@@ -7765,15 +7751,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
   }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
-#endif // SIFIVE_CUSTOMIZATION
-
-  return SDValue();
-=======
-  return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
->>>>>>> upstream/main
 }
 
 static unsigned getRVVReductionOp(unsigned ISDOpcode) {
