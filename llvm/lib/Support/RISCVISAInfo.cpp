@@ -1161,6 +1161,7 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
+    {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
