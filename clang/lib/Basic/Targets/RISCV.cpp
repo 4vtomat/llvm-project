@@ -207,7 +207,6 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 #endif
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ISAInfo->hasExtension("xsfvfhbfmin"))
     Builder.defineMacro("__riscv_xsfvfhbfmin", "1000");
@@ -216,12 +215,11 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
   if (SiFiveRecodeTarget == "neon")
     Builder.defineMacro("__sifive_recode_neon");
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   auto VScale = getVScaleRange(Opts);
   if (VScale && VScale->first && VScale->first == VScale->second)
     Builder.defineMacro("__riscv_v_fixed_vlen",
                         Twine(VScale->first * llvm::RISCV::RVVBitsPerBlock));
->>>>>>> upstream/main
 }
 
 static constexpr Builtin::Info BuiltinInfo[] = {
@@ -353,15 +351,8 @@ bool RISCVTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
   if (ABI.empty())
     ABI = ISAInfo->computeDefaultABI().str();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (ISAInfo->hasExtension("zfh"))
     HasLegalHalfType = true;
-#endif
-=======
-  if (ISAInfo->hasExtension("zfh"))
-    HasLegalHalfType = true;
->>>>>>> upstream/main
 
   return true;
 }
