@@ -195,11 +195,10 @@ def riscv_vfnmadd_vl : SDNode<"RISCVISD::VFNMADD_VL", SDT_RISCVVecFMA_VL, [SDNPC
 def riscv_vfmsub_vl  : SDNode<"RISCVISD::VFMSUB_VL",  SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 def riscv_vfnmsub_vl : SDNode<"RISCVISD::VFNMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vfnmsac_vl : SDNode<"RISCVISD::VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 def SDT_RISCVWVecFMA_VL : SDTypeProfile<1, 5, [SDTCisVec<0>, SDTCisFP<0>,
                                                SDTCisVec<1>, SDTCisFP<1>,
                                                SDTCisOpSmallerThanOp<1, 0>,
@@ -213,7 +212,6 @@ def riscv_vfwmadd_vl  : SDNode<"RISCVISD::VFWMADD_VL",  SDT_RISCVWVecFMA_VL, [SD
 def riscv_vfwnmadd_vl : SDNode<"RISCVISD::VFWNMADD_VL", SDT_RISCVWVecFMA_VL, [SDNPCommutative]>;
 def riscv_vfwmsub_vl  : SDNode<"RISCVISD::VFWMSUB_VL",  SDT_RISCVWVecFMA_VL, [SDNPCommutative]>;
 def riscv_vfwnmsub_vl : SDNode<"RISCVISD::VFWNMSUB_VL", SDT_RISCVWVecFMA_VL, [SDNPCommutative]>;
->>>>>>> upstream/main
 
 def riscv_strict_vfmadd_vl : SDNode<"RISCVISD::STRICT_VFMADD_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative, SDNPHasChain]>;
 def riscv_strict_vfnmadd_vl : SDNode<"RISCVISD::STRICT_VFNMADD_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative, SDNPHasChain]>;
