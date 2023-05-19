@@ -2988,7 +2988,7 @@ bool LoopIdiomRecognize::replaceBitExtract(Loop *CurLoop,
 
   // We don't need to extend since we checked for overflow above.
   const SCEV *TripCount =
-      SE->getTripCountFromExitCount(BECount, /*Extend*/ false);
+      SE->getTripCountFromExitCount(BECount, BECount->getType(), CurLoop);
   if (ValSize > BECountSize)
     TripCount = SE->getZeroExtendExpr(TripCount, Val->getType());
 

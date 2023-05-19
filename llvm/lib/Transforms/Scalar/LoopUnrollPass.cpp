@@ -1646,7 +1646,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
                                        Value *Ptr) -> std::optional<int64_t> {
     const LoopAccessInfo *LAI = &GetLAA(*L);
     PredicatedScalarEvolution PSE(SE, *L);
-    const ValueToValueMap &Strides = LAI->getSymbolicStrides();
+    const auto &Strides = LAI->getSymbolicStrides();
     Function *F = L->getHeader()->getParent();
     bool OptForSize =
         F->hasOptSize() || llvm::shouldOptimizeForSize(L->getHeader(), PSI, BFI,
