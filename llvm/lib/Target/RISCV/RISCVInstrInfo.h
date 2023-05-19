@@ -238,8 +238,6 @@ public:
   bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
                            ArrayRef<const MachineOperand *> BaseOps2,
                            unsigned NumLoads, unsigned NumBytes) const override;
-  ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
-  getSerializableMachineMemOperandTargetFlags() const override;
 
   static unsigned getOverlapConstraintsFromMI(const MCInstrDesc &Desc);
 #endif // SIFIVE_CUSTOMIZATION
