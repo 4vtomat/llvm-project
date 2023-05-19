@@ -1340,6 +1340,7 @@ void VPReplicateRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 #if SIFIVE_CUSTOMIZATION
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -1348,6 +1349,7 @@ void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 
 }
+#endif
 
 void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
   // PrevBB is this BB
@@ -1365,6 +1367,7 @@ void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
     State.set(this, DataPhi, Part);
 }
 
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -1372,6 +1375,7 @@ void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
   O << " = csa-data-update ";
   printOperands(O, SlotTracker);
 }
+#endif
 
 void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   if (State.DisableRISCVCSA) {
@@ -1416,6 +1420,7 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   }
 }
 
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -1423,6 +1428,7 @@ void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
   O << " = CSA-EXTRACT-SCALAR ";
   printOperands(O, SlotTracker);
 }
+#endif
 
 void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
