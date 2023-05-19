@@ -936,11 +936,29 @@ CmpInst::Predicate llvm::getMinMaxReductionPredicate(RecurKind RK) {
 
 Value *llvm::createSelectCmpOp(IRBuilderBase &Builder, Value *StartVal,
                                RecurKind RK, Value *Left, Value *Right) {
+#if SIFIVE_CUSTOMIZATION
+  switch (RK) {
+  case RecurKind::SelectICmp:
+  case RecurKind::SelectFCmp: {
+    if (auto *VTy = dyn_cast<VectorType>(Left->getType()))
+      StartVal = Builder.CreateVectorSplat(VTy->getElementCount(), StartVal);
+    Value *Cmp =
+        Builder.CreateCmp(CmpInst::ICMP_NE, Left, StartVal, "rdx.select.cmp");
+    return Builder.CreateSelect(Cmp, Left, Right, "rdx.select");
+  }
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp:
+    return createMinMaxOp(Builder, RecurKind::SMax, Left, Right);
+  default:
+    llvm_unreachable("Unknown SelectCmp recurrence kind");
+  }
+#else
   if (auto VTy = dyn_cast<VectorType>(Left->getType()))
     StartVal = Builder.CreateVectorSplat(VTy->getElementCount(), StartVal);
   Value *Cmp =
       Builder.CreateCmp(CmpInst::ICMP_NE, Left, StartVal, "rdx.select.cmp");
   return Builder.CreateSelect(Cmp, Left, Right, "rdx.select");
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 Value *llvm::createMinMaxOp(IRBuilderBase &Builder, RecurKind RK, Value *Left,
@@ -1024,6 +1042,14 @@ Value *llvm::getShuffleReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateExtractElement(TmpVec, Builder.getInt32(0));
 }
 
+#if SIFIVE_CUSTOMIZATION
+Value *llvm::createInvariantSelectCmpTargetReduction(
+    IRBuilderBase &Builder, const TargetTransformInfo *TTI, Value *Src,
+    const RecurrenceDescriptor &Desc, PHINode *OrigPhi) {
+  assert((Desc.getRecurrenceKind() == RecurKind::SelectICmp ||
+          Desc.getRecurrenceKind() == RecurKind::SelectFCmp) &&
+         "Unexpected reduction kind");
+#else
 Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
                                             const TargetTransformInfo *TTI,
                                             Value *Src,
@@ -1032,6 +1058,7 @@ Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
   assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
+#endif // SIFIVE_CUSTOMIZATION
   Value *InitVal = Desc.getRecurrenceStartValue();
   Value *NewVal = nullptr;
 
@@ -1069,9 +1096,53 @@ Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
                                             const TargetTransformInfo *TTI,
                                             Value *Src,
                                             const RecurrenceDescriptor &Desc,
-                                            PHINode *OrigPhi, Value *RVL) {
+                                            PHINode *OrigPhi) {
   assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
              Desc.getRecurrenceKind()) &&
+         "Unexpected reduction kind");
+  RecurKind RdxKind = Desc.getRecurrenceKind();
+  switch (RdxKind) {
+  case RecurKind::SelectICmp:
+  case RecurKind::SelectFCmp:
+    return createInvariantSelectCmpTargetReduction(Builder, TTI, Src, Desc,
+                                                   OrigPhi);
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp:
+    // TODO: Decreasing induction need fix here
+    return Builder.CreateIntMaxReduce(Src, true);
+  default:
+    llvm_unreachable("Unknown SelectCmp recurrence kind");
+  }
+}
+
+Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
+                                            const TargetTransformInfo *TTI,
+                                            Value *Src,
+                                            const RecurrenceDescriptor &Desc,
+                                            Value *RVL, PHINode *OrigPhi) {
+  assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
+             Desc.getRecurrenceKind()) &&
+         "Unexpected reduction kind");
+  RecurKind RdxKind = Desc.getRecurrenceKind();
+  switch (RdxKind) {
+  case RecurKind::SelectICmp:
+  case RecurKind::SelectFCmp:
+    return createInvariantSelectCmpTargetReduction(Builder, TTI, Src, Desc,
+                                                   OrigPhi, RVL);
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp:
+    // TODO: Decreasing induction need fix here
+    return Builder.CreateIntMaxReduce(Src, RVL, true);
+  default:
+    llvm_unreachable("Unknown SelectCmp recurrence kind");
+  }
+}
+
+Value *llvm::createInvariantSelectCmpTargetReduction(
+    IRBuilderBase &Builder, const TargetTransformInfo *TTI, Value *Src,
+    const RecurrenceDescriptor &Desc, PHINode *OrigPhi, Value *RVL) {
+  assert((Desc.getRecurrenceKind() == RecurKind::SelectICmp ||
+          Desc.getRecurrenceKind() == RecurKind::SelectFCmp) &&
          "Unexpected reduction kind");
   Value *InitVal = Desc.getRecurrenceStartValue();
   Value *NewVal = nullptr;
@@ -1218,7 +1289,7 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK)) {
     assert(!Mask && "Masked SelectCmp recurrence is not supported");
-    return createSelectCmpTargetReduction(B, TTI, Src, Desc, OrigPhi, RVL);
+    return createSelectCmpTargetReduction(B, TTI, Src, Desc, RVL, OrigPhi);
   }
 
   return createSimpleTargetReduction(B, TTI, Src, RK, RVL, Mask);
@@ -1250,6 +1321,17 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
   assert(RVL->getType()->isIntegerTy() && "Expected a integer type");
 
   return B.CreateFAddReduce(Start, Src, RVL, Mask);
+}
+
+Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
+                                         const TargetTransformInfo *TTI,
+                                         const RecurrenceDescriptor &Desc,
+                                         Value *Rdx) {
+  Value *InitVal = Desc.getRecurrenceStartValue();
+  Value *Iden = Desc.getRecurrenceIdentity(
+      Desc.getRecurrenceKind(), Rdx->getType(), Desc.getFastMathFlags());
+  Value *Cmp = Builder.CreateCmp(CmpInst::ICMP_NE, Rdx, Iden, "rdx.select.cmp");
+  return Builder.CreateSelect(Cmp, Rdx, InitVal, "rdx.select");
 }
 #endif // SIFIVE_CUSTOMIZATION
 

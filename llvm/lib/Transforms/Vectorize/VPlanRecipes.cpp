@@ -1900,8 +1900,13 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
   Value *Iden = nullptr;
   RecurKind RK = RdxDesc.getRecurrenceKind();
+#if SIFIVE_CUSTOMIZATION
+  if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
+      (RK == RecurKind::SelectICmp || RK == RecurKind::SelectFCmp)) {
+#else
   if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
       RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK)) {
+#endif // SIFIVE_CUSTOMIZATION
     // MinMax reduction have the start value as their identify.
     if (ScalarPHI) {
       Iden = StartV;
@@ -1911,6 +1916,16 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
       StartV = Iden =
           Builder.CreateVectorSplat(State.VF, StartV, "minmax.ident");
     }
+#if SIFIVE_CUSTOMIZATION
+  } else if (RK == RecurKind::SelectIVICmp || RK == RecurKind::SelectIVFCmp) {
+    StartV = Iden = RdxDesc.getRecurrenceIdentity(RK, VecTy->getScalarType(),
+                                                  RdxDesc.getFastMathFlags());
+    if (!ScalarPHI) {
+      IRBuilderBase::InsertPointGuard IPBuilder(Builder);
+      Builder.SetInsertPoint(VectorPH->getTerminator());
+      StartV = Iden = Builder.CreateVectorSplat(State.VF, Iden);
+    }
+#endif // SIFIVE_CUSTOMIZATION
   } else {
     Iden = RdxDesc.getRecurrenceIdentity(RK, VecTy->getScalarType(),
                                          RdxDesc.getFastMathFlags());

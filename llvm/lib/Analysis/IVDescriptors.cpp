@@ -54,6 +54,10 @@ bool RecurrenceDescriptor::isIntegerRecurrenceKind(RecurKind Kind) {
   case RecurKind::UMin:
   case RecurKind::SelectICmp:
   case RecurKind::SelectFCmp:
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp:
+#endif // SIFIVE_CUSTOMIZATION
     return true;
   }
   return false;
@@ -375,7 +379,11 @@ bool RecurrenceDescriptor::AddReductionVar(
     // type-promoted).
     if (Cur != Start) {
       ReduxDesc =
+#if SIFIVE_CUSTOMIZATION
+          isRecurrenceInstr(TheLoop, Phi, Cur, Kind, ReduxDesc, FuncFMF, SE);
+#else
           isRecurrenceInstr(TheLoop, Phi, Cur, Kind, ReduxDesc, FuncFMF);
+#endif // SIFIVE_CUSTOMIZATION
       ExactFPMathInst = ExactFPMathInst == nullptr
                             ? ReduxDesc.getExactFPMathInst()
                             : ExactFPMathInst;
@@ -419,10 +427,20 @@ bool RecurrenceDescriptor::AddReductionVar(
     if (IsAPhi && Cur != Phi && !areAllUsesIn(Cur, VisitedInsts))
       return false;
 
+#if SIFIVE_CUSTOMIZATION
+    if ((isIntMinMaxRecurrenceKind(Kind) || Kind == RecurKind::SelectICmp ||
+         Kind == RecurKind::SelectIVICmp) &&
+#else
     if ((isIntMinMaxRecurrenceKind(Kind) || Kind == RecurKind::SelectICmp) &&
+#endif // SIFIVE_CUSTOMIZATION
         (isa<ICmpInst>(Cur) || isa<SelectInst>(Cur)))
       ++NumCmpSelectPatternInst;
-    if ((isFPMinMaxRecurrenceKind(Kind) || Kind == RecurKind::SelectFCmp) &&
+#if SIFIVE_CUSTOMIZATION
+    if ((isFPMinMaxRecurrenceKind(Kind) || Kind == RecurKind::SelectFCmp ||
+         Kind == RecurKind::SelectIVFCmp) &&
+#else
+    if ((isFPMinMaxRecurrenceKind(Kind) || Kind == RecurKind::SelectFCmp ||
+#endif // SIFIVE_CUSTOMIZATION
         (isa<FCmpInst>(Cur) || isa<SelectInst>(Cur)))
       ++NumCmpSelectPatternInst;
 
@@ -488,7 +506,11 @@ bool RecurrenceDescriptor::AddReductionVar(
                  ((!isa<FCmpInst>(UI) && !isa<ICmpInst>(UI) &&
                    !isa<SelectInst>(UI)) ||
                   (!isConditionalRdxPattern(Kind, UI).isRecurrence() &&
+#if SIFIVE_CUSTOMIZATION
+                   !isSelectCmpPattern(TheLoop, Phi, UI, IgnoredVal, SE)
+#else
                    !isSelectCmpPattern(TheLoop, Phi, UI, IgnoredVal)
+#endif // SIFIVE_CUSTOMIZATION
                         .isRecurrence() &&
                    !isMinMaxPattern(UI, Kind, IgnoredVal).isRecurrence())))
         return false;
@@ -628,8 +650,14 @@ bool RecurrenceDescriptor::AddReductionVar(
 // value if nothing changed (0 in the example above) or the other selected
 // value (3 in the example above).
 RecurrenceDescriptor::InstDesc
+#if SIFIVE_CUSTOMIZATION
+RecurrenceDescriptor::isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
+                                         Instruction *I, InstDesc &Prev,
+                                         ScalarEvolution *SE) {
+#else
 RecurrenceDescriptor::isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
                                          Instruction *I, InstDesc &Prev) {
+#endif // SIFIVE_CUSTOMIZATION
   // We must handle the select(cmp(),x,y) as a single instruction. Advance to
   // the select.
   CmpInst::Predicate Pred;
@@ -653,14 +681,55 @@ RecurrenceDescriptor::isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
   else
     return InstDesc(false, I);
 
+#if SIFIVE_CUSTOMIZATION
+  auto IsIncreasingLoopInduction = [&SE, &Loop](Value *V) {
+    auto *Phi = dyn_cast<PHINode>(V);
+    if (!Phi)
+      return false;
+
+    if (!SE)
+      return false;
+
+    InductionDescriptor ID;
+    if (!InductionDescriptor::isInductionPHI(Phi, Loop, SE, ID))
+      return false;
+
+    const SCEVAddRecExpr *AR = cast<SCEVAddRecExpr>(SE->getSCEV(Phi));
+    if (!AR->hasNoSignedWrap())
+      return false;
+
+    ConstantInt *IVStartValue = dyn_cast<ConstantInt>(ID.getStartValue());
+    if (!IVStartValue || IVStartValue->isMinSignedValue())
+      return false;
+
+    const SCEV *Step = ID.getStep();
+    return SE->isKnownPositive(Step);
+  };
+#endif // SIFIVE_CUSTOMIZATION
+
   // We are looking for selects of the form:
   //   select(cmp(), phi, loop_invariant) or
   //   select(cmp(), loop_invariant, phi)
+#if SIFIVE_CUSTOMIZATION
+  if (Loop->isLoopInvariant(NonPhi))
+    return InstDesc(I, isa<ICmpInst>(I->getOperand(0)) ? RecurKind::SelectICmp
+                                                       : RecurKind::SelectFCmp);
+  // or
+  //   select(cmp(), phi, loop_induction) or
+  //   select(cmp(), loop_induction, phi)
+  if (IsIncreasingLoopInduction(NonPhi))
+    return InstDesc(I, isa<ICmpInst>(I->getOperand(0))
+                           ? RecurKind::SelectIVICmp
+                           : RecurKind::SelectIVFCmp);
+
+  return InstDesc(false, I);
+#else
   if (!Loop->isLoopInvariant(NonPhi))
     return InstDesc(false, I);
 
   return InstDesc(I, isa<ICmpInst>(I->getOperand(0)) ? RecurKind::SelectICmp
                                                      : RecurKind::SelectFCmp);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 RecurrenceDescriptor::InstDesc
@@ -762,10 +831,16 @@ RecurrenceDescriptor::isConditionalRdxPattern(RecurKind Kind, Instruction *I) {
   return InstDesc(true, SI);
 }
 
+#if SIFIVE_CUSTOMIZATION
+RecurrenceDescriptor::InstDesc RecurrenceDescriptor::isRecurrenceInstr(
+    Loop *L, PHINode *OrigPhi, Instruction *I, RecurKind Kind, InstDesc &Prev,
+    FastMathFlags FuncFMF, ScalarEvolution *SE) {
+#else
 RecurrenceDescriptor::InstDesc
 RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
                                         Instruction *I, RecurKind Kind,
                                         InstDesc &Prev, FastMathFlags FuncFMF) {
+#endif // SIFIVE_CUSTOMIZATION
   assert(Prev.getRecKind() == RecurKind::None || Prev.getRecKind() == Kind);
   switch (I->getOpcode()) {
   default:
@@ -800,7 +875,11 @@ RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
   case Instruction::ICmp:
   case Instruction::Call:
     if (isSelectCmpRecurrenceKind(Kind))
+#if SIFIVE_CUSTOMIZATION
+      return isSelectCmpPattern(L, OrigPhi, I, Prev, SE);
+#else
       return isSelectCmpPattern(L, OrigPhi, I, Prev);
+#endif // SIFIVE_CUSTOMIZATION
     if (isIntMinMaxRecurrenceKind(Kind) ||
         (((FuncFMF.noNaNs() && FuncFMF.noSignedZeros()) ||
           (isa<FPMathOperator>(I) && I->hasNoNaNs() &&
@@ -1067,6 +1146,11 @@ Value *RecurrenceDescriptor::getRecurrenceIdentity(RecurKind K, Type *Tp,
   case RecurKind::SelectFCmp:
     return getRecurrenceStartValue();
     break;
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp:
+    return getRecurrenceIdentity(RecurKind::SMax, Tp, FMF);
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unknown recurrence kind");
   }
@@ -1094,10 +1178,16 @@ unsigned RecurrenceDescriptor::getOpcode(RecurKind Kind) {
   case RecurKind::UMax:
   case RecurKind::UMin:
   case RecurKind::SelectICmp:
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::SelectIVICmp:
+#endif // SIFIVE_CUSTOMIZATION
     return Instruction::ICmp;
   case RecurKind::FMax:
   case RecurKind::FMin:
   case RecurKind::SelectFCmp:
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::SelectIVFCmp:
+#endif // SIFIVE_CUSTOMIZATION
     return Instruction::FCmp;
   default:
     llvm_unreachable("Unknown recurrence operation");

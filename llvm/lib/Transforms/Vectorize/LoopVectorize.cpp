@@ -4780,6 +4780,12 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
                            : Builder.CreateZExt(ReducedPartRdx, PhiTy);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (RK == RecurKind::SelectIVICmp || RK == RecurKind::SelectIVFCmp)
+    ReducedPartRdx =
+        createSentinelValueHandling(Builder, TTI, RdxDesc, ReducedPartRdx);
+#endif // SIFIVE_CUSTOMIZATION
+
   PHINode *ResumePhi =
       dyn_cast<PHINode>(PhiR->getStartValue()->getUnderlyingValue());
 
