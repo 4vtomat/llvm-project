@@ -783,19 +783,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State,
                              bool IsEpilogueVectorization) {
-<<<<<<< HEAD
-
 #if SIFIVE_CUSTOMIZATION
   if (!isUncountable()) {
 #endif // SIFIVE_CUSTOMIZATION
-  // Check if the trip count is needed, and if so build it.
-  if (TripCount && TripCount->getNumUsers()) {
-    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-      State.set(TripCount, TripCountV, Part);
-  }
-
-=======
->>>>>>> upstream/main
   // Check if the backedge taken count is needed, and if so build it.
   if (BackedgeTakenCount && BackedgeTakenCount->getNumUsers()) {
     IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());

@@ -659,8 +659,8 @@ int LoopVectorizationLegality::isConsecutivePtr(Type *AccessTy,
 std::optional<int64_t>
 LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
                                                      Value *Ptr) const {
-  const ValueToValueMap &Strides =
-      LAI ? LAI->getSymbolicStrides() : ValueToValueMap();
+  const auto &Strides =
+      LAI ? LAI->getSymbolicStrides() : DenseMap<Value *, const SCEV *>();
 
   Function *F = TheLoop->getHeader()->getParent();
   bool OptForSize = F->hasOptSize() ||

@@ -529,21 +529,17 @@ struct VPTransformState {
   ///
   /// This is currently only used to add no-alias metadata based on the
   /// memchecks.  The actually versioning is performed manually.
-<<<<<<< HEAD
-  std::unique_ptr<LoopVersioning> LVer;
+  LoopVersioning *LVer = nullptr;
+
+  /// Map SCEVs to their expanded values. Populated when executing
+  /// VPExpandSCEVRecipes.
+  DenseMap<const SCEV *, Value *> ExpandedSCEVs;
 
 #if SIFIVE_CUSTOMIZATION
   /// True if the RISCV specific implementation of CSA vectorization is
   /// disabled.
   bool DisableRISCVCSA;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  LoopVersioning *LVer = nullptr;
-
-  /// Map SCEVs to their expanded values. Populated when executing
-  /// VPExpandSCEVRecipes.
-  DenseMap<const SCEV *, Value *> ExpandedSCEVs;
->>>>>>> upstream/main
 };
 
 #if SIFIVE_CUSTOMIZATION
@@ -1283,32 +1279,25 @@ public:
 /// VPWidenRecipe is a recipe for producing a copy of vector type its
 /// ingredient. This recipe covers most of the traditional vectorization cases
 /// where each ingredient transforms into a vectorized version of itself.
-<<<<<<< HEAD
-class VPWidenRecipe : public VPRecipeBase, public VPValue {
+class VPWidenRecipe : public VPRecipeWithIRFlags, public VPValue {
 #if SIFIVE_CUSTOMIZATION
 protected:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands,
                 const unsigned char RecipeSC, const unsigned char ValueSC)
-      : VPRecipeBase(RecipeSC, Operands), VPValue(ValueSC, &I, this) {}
+      : VPRecipeWithIRFlags(RecipeSC, Operands), VPValue(ValueSC, &I, this) {}
 #endif // SIFIVE_CUSTOMIZATION
-=======
-class VPWidenRecipe : public VPRecipeWithIRFlags, public VPValue {
->>>>>>> upstream/main
 
 public:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       : VPWidenRecipe(I, Operands, VPRecipeBase::VPWidenSC,
                       VPDef::VPWidenSC) {}
 #else
       : VPRecipeBase(VPDef::VPWidenSC, Operands), VPValue(this, &I) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
       : VPRecipeWithIRFlags(VPDef::VPWidenSC, Operands, I), VPValue(this, &I) {}
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   ~VPWidenRecipe() override = default;
 
@@ -2974,23 +2963,10 @@ class VPlan {
   /// Values used outside the plan.
   MapVector<PHINode *, VPLiveOut *> LiveOuts;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MapVector<PHINode *, VPCSAState *> CSAStates;
 #endif // SIFIVE_CUSTOMIZATION
 
-public:
-#if SIFIVE_CUSTOMIZATION
-  VPlan(VPBlockBase *Entry = nullptr, bool IsUncountable = false)
-      : Entry(Entry), IsUncountable(IsUncountable) {
-    if (Entry)
-      Entry->setPlan(this);
-  }
-#else
-  VPlan(VPBlockBase *Entry = nullptr) : Entry(Entry) {
-    if (Entry)
-      Entry->setPlan(this);
-=======
   /// Mapping from SCEVs to the VPValues representing their expansions.
   /// NOTE: This mapping is temporary and will be removed once all users have
   /// been modeled in VPlan directly.
@@ -3010,20 +2986,23 @@ public:
   /// the plan. At the moment, \p Preheader and \p Entry need to be
   /// disconnected, as the bypass blocks between them are not yet modeled in
   /// VPlan.
+#if SIFIVE_CUSTOMIZATION
+  VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
+        bool IsUncountable = false)
+      : Entry(Entry), Preheader(Preheader), IsUncountable(IsUncountable) {
+#else
   VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry)
       : Entry(Entry), Preheader(Preheader) {
+#endif // SIFIVE_CUSTOMIZATION
     Entry->setPlan(this);
     Preheader->setPlan(this);
     assert(Preheader->getNumSuccessors() == 0 &&
            Preheader->getNumPredecessors() == 0 &&
            "preheader must be disconnected");
->>>>>>> upstream/main
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   ~VPlan();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -3033,12 +3012,10 @@ public:
     return CSAStates;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Create an initial VPlan with preheader and entry blocks. Creates a
   /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
                                      ScalarEvolution &PSE);
->>>>>>> upstream/main
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
@@ -3048,35 +3025,20 @@ public:
   /// Generate the IR code for this VPlan.
   void execute(VPTransformState *State);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
-  VPBlockBase *getEntry() { return Entry; }
-  const VPBlockBase *getEntry() const { return Entry; }
 
-  VPBlockBase *setEntry(VPBlockBase *Block) {
-    Entry = Block;
-    Block->setPlan(this);
-    return Entry;
-  }
-
-  /// The trip count of the original loop.
-  VPValue *getOrCreateTripCount() {
-#if SIFIVE_CUSTOMIZATION
-    assert(!isUncountable() &&
-           "Should not create trip count for uncountable loops");
-#endif
-    if (!TripCount)
-      TripCount = new VPValue();
-=======
   VPBasicBlock *getEntry() { return Entry; }
   const VPBasicBlock *getEntry() const { return Entry; }
 
   /// The trip count of the original loop.
   VPValue *getTripCount() const {
+#if SIFIVE_CUSTOMIZATION
+    if (isUncountable())
+      return nullptr;
+#endif
     assert(TripCount && "trip count needs to be set before accessing it");
->>>>>>> upstream/main
     return TripCount;
   }
 

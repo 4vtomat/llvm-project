@@ -691,25 +691,12 @@ protected:
 
   /// Set up the values of the IVs correctly when exiting the vector loop.
 #if SIFIVE_CUSTOMIZATION
-  virtual void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                            Value *VectorTripCount, Value *EndValue,
-                            BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
-                            VPlan &Plan, VPTransformState &State);
-#else
+  virtual
+#endif // SIFIVE_CUSTOMIZATION
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
                     Value *VectorTripCount, Value *EndValue,
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
-<<<<<<< HEAD
-                    VPlan &Plan);
-#endif
-
-  /// Introduce a conditional branch (on true, condition to be set later) at the
-  /// end of the header=latch connecting it to itself (across the backedge) and
-  /// to the exit block of \p L.
-  void createHeaderBranch(Loop *L);
-=======
                     VPlan &Plan, VPTransformState &State);
->>>>>>> upstream/main
 
   /// Handle all cross-iteration phis in the header.
   void fixCrossIterationPHIs(VPTransformState &State);
@@ -741,15 +728,6 @@ protected:
   /// represented as.
   void truncateToMinimalBitwidths(VPTransformState &State);
 
-<<<<<<< HEAD
-  /// Returns (and creates if needed) the original loop trip count.
-#if SIFIVE_CUSTOMIZATION
-  virtual
-#endif
-  Value *getOrCreateTripCount(BasicBlock *InsertBlock);
-
-=======
->>>>>>> upstream/main
   /// Returns (and creates if needed) the trip count of the widened loop.
 #if SIFIVE_CUSTOMIZATION
   virtual
@@ -947,9 +925,6 @@ public:
                     Value *VectorTripCount, Value *EndValue,
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
                     VPlan &Plan, VPTransformState &State) override;
-
-  /// Returns (and creates if needed) the original loop trip count.
-  Value *getOrCreateTripCount(BasicBlock *InsertBlock) override;
 
   /// Returns (and creates if needed) the trip count of the widened loop.
   Value *getOrCreateVectorTripCount(BasicBlock *InsertBlock) override;
@@ -1375,20 +1350,11 @@ public:
                              AssumptionCache *AC,
                              OptimizationRemarkEmitter *ORE, const Function *F,
                              const LoopVectorizeHints *Hints,
-#if SIFIVE_CUSTOMIZATION
-                             InterleavedAccessInfo &IAI, bool IsLTOPreLink)
-#else
                              InterleavedAccessInfo &IAI)
-#endif
       : ScalarEpilogueStatus(SEL), TheLoop(L), PSE(PSE), LI(LI), Legal(Legal),
         TTI(TTI), TLI(TLI), DB(DB), AC(AC), ORE(ORE), TheFunction(F),
-#if SIFIVE_CUSTOMIZATION
-        Hints(Hints), InterleaveInfo(IAI), IsLTOPreLink(IsLTOPreLink) {
-  }
-#else
         Hints(Hints), InterleaveInfo(IAI) {
   }
-#endif
 
   /// \return An upper bound for the vectorization factors (both fixed and
   /// scalable). If the factors are 0, vectorization and interleaving should be
@@ -1399,26 +1365,6 @@ public:
   /// otherwise.
   bool runtimeChecksRequired();
 
-<<<<<<< HEAD
-  /// \return The most profitable vectorization factor and the cost of that VF.
-  /// This method checks every VF in \p CandidateVFs. If UserVF is not ZERO
-  /// then this vectorization factor will be selected if vectorization is
-  /// possible.
-#if SIFIVE_CUSTOMIZATION
-  VectorizationFactor
-  selectVectorizationFactor(const VPlanPtr &Plan,
-                            const ElementCountSet &CandidateVFs);
-#else
-  VectorizationFactor
-  selectVectorizationFactor(const ElementCountSet &CandidateVFs);
-#endif // SIFIVE_CUSTOMIZATION
-
-  VectorizationFactor
-  selectEpilogueVectorizationFactor(const ElementCount MaxVF,
-                                    const LoopVectorizationPlanner &LVP);
-
-=======
->>>>>>> upstream/main
   /// Setup cost-based decisions for user vectorization factor.
   /// \return true if the UserVF is a feasible VF to be chosen.
   bool selectUserVectorizationFactor(ElementCount UserVF) {
@@ -1966,29 +1912,10 @@ private:
   /// of elements.
   ElementCount getMaxLegalScalableVF(unsigned MaxSafeElements);
 
-<<<<<<< HEAD
-  /// The vectorization cost is a combination of the cost itself and a boolean
-  /// indicating whether any of the contributing operations will actually
-  /// operate on vector values after type legalization in the backend. If this
-  /// latter value is false, then all operations will be scalarized (i.e. no
-  /// vectorization has actually taken place).
-  using VectorizationCostTy = std::pair<InstructionCost, bool>;
-
-  /// Returns the expected execution cost. The unit of the cost does
-  /// not matter because we use the 'cost' units to compare different
-  /// vector widths. The cost that is returned is *not* normalized by
-  /// the factor width. If \p Invalid is not nullptr, this function
-  /// will add a pair(Instruction*, ElementCount) to \p Invalid for
-  /// each instruction that has an Invalid cost for the given VF.
-  VectorizationCostTy
-  expectedCost(ElementCount VF,
-               SmallVectorImpl<InstructionVFPair> *Invalid = nullptr);
 #if SIFIVE_CUSTOMIZATION
   InstructionCost expectedOverhead(ElementCount VF);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   /// Returns the execution time cost of an instruction for a given vector
   /// width. Vector width of one means scalar.
   VectorizationCostTy getInstructionCost(Instruction *I, ElementCount VF);
@@ -2161,23 +2088,10 @@ private:
         Ops, [this, VF](Value *V) { return this->needsExtract(V, VF); }));
   }
 
-<<<<<<< HEAD
-  /// Determines if we have the infrastructure to vectorize loop \p L and its
-  /// epilogue, assuming the main loop is vectorized by \p VF.
-  bool isCandidateForEpilogueVectorization(const Loop &L,
-                                           const ElementCount VF) const;
-
-  /// Returns true if epilogue vectorization is considered profitable, and
-  /// false otherwise.
-  /// \p VF is the vectorization factor chosen for the original loop.
-  bool isEpilogueVectorizationProfitable(const ElementCount VF) const;
-
 #if SIFIVE_CUSTOMIZATION
   bool canUseStridedAccess(Instruction *I) const;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 public:
   /// The loop that we evaluate.
   Loop *TheLoop;
@@ -2223,15 +2137,9 @@ public:
 
   /// All element types found in the loop.
   SmallPtrSet<Type *, 16> ElementTypesInLoop;
-<<<<<<< HEAD
 
   /// Profitable vector factors.
   SmallVector<VectorizationFactor, 8> ProfitableVFs;
-
-  /// (SIFIVE) Whether or not we are in pre-link stage
-  bool IsLTOPreLink; // SIFIVE
-=======
->>>>>>> upstream/main
 };
 } // end namespace llvm
 
@@ -3197,51 +3105,14 @@ void InnerLoopVectorizer::scalarizeInstruction(const Instruction *Instr,
     PredicatedInstructions.push_back(Cloned);
 }
 
-<<<<<<< HEAD
-Value *InnerLoopVectorizer::getOrCreateTripCount(BasicBlock *InsertBlock) {
-#if SIFIVE_CUSTOMIZATION
-  assert(!Legal->isVectorizableUncountable() &&
-         "Should not create trip count for uncountable loops");
-#endif
-  if (TripCount)
-    return TripCount;
-
-  assert(InsertBlock);
-  IRBuilder<> Builder(InsertBlock->getTerminator());
-  // Find the loop boundaries.
-  Type *IdxTy = Legal->getWidestInductionType();
-  assert(IdxTy && "No type for induction");
-  const SCEV *ExitCount = createTripCountSCEV(IdxTy, PSE, OrigLoop);
-
-  const DataLayout &DL = InsertBlock->getModule()->getDataLayout();
-
-  // Expand the trip count and place the new instructions in the preheader.
-  // Notice that the pre-header does not change, only the loop body.
-  SCEVExpander Exp(*PSE.getSE(), DL, "induction");
-
-  // Count holds the overall loop count (N).
-  TripCount = Exp.expandCodeFor(ExitCount, ExitCount->getType(),
-                                InsertBlock->getTerminator());
-
-  if (TripCount->getType()->isPointerTy())
-    TripCount =
-        CastInst::CreatePointerCast(TripCount, IdxTy, "exitcount.ptrcnt.to.int",
-                                    InsertBlock->getTerminator());
-
-  return TripCount;
-}
-
-=======
->>>>>>> upstream/main
 Value *
 InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
   if (VectorTripCount)
     return VectorTripCount;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (useVLAVectorizer()) {
-    Value *TC = getOrCreateTripCount(InsertBlock);
+    Value *TC = getTripCount();
     // Loop has multiple exits. Make sure scalar remainder executes at least 1
     // scalar iteration to perform correct jump.
     if (Cost->requiresScalarEpilogue(VF)) {
@@ -3254,10 +3125,7 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  Value *TC = getOrCreateTripCount(InsertBlock);
-=======
   Value *TC = getTripCount();
->>>>>>> upstream/main
   IRBuilder<> Builder(InsertBlock->getTerminator());
 
   Type *Ty = TC->getType();
@@ -3780,26 +3648,12 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton(
 // in LCSSA form, with all external PHIs that use the IV having one input value,
 // coming from the remainder loop. We need those PHIs to also have a correct
 // value for the IV when arriving directly from the middle block.
-#if SIFIVE_CUSTOMIZATION
 void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
                                        const InductionDescriptor &II,
                                        Value *VectorTripCount, Value *EndValue,
                                        BasicBlock *MiddleBlock,
                                        BasicBlock *VectorHeader, VPlan &Plan,
                                        VPTransformState &State) {
-#else
-void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
-                                       const InductionDescriptor &II,
-                                       Value *VectorTripCount, Value *EndValue,
-                                       BasicBlock *MiddleBlock,
-<<<<<<< HEAD
-                                       BasicBlock *VectorHeader, VPlan &Plan) {
-#endif
-
-=======
-                                       BasicBlock *VectorHeader, VPlan &Plan,
-                                       VPTransformState &State) {
->>>>>>> upstream/main
   // There are two kinds of external IV usages - those that use the value
   // computed in the last iteration (the PHI) and those that use the penultimate
   // value (the value that feeds into the phi from the loop latch).
@@ -4224,21 +4078,12 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
     for (const auto &Entry : Legal->getInductionVars())
       fixupIVUsers(Entry.first, Entry.second,
                    getOrCreateVectorTripCount(VectorLoop->getLoopPreheader()),
-#if SIFIVE_CUSTOMIZATION
-                   Plan.isUncountable() ? nullptr : IVEndValues[Entry.first],
-                   LoopMiddleBlock, VectorLoop->getHeader(), Plan, State);
-#else
                    IVEndValues[Entry.first], LoopMiddleBlock,
-<<<<<<< HEAD
-                   VectorLoop->getHeader(), Plan);
-#endif // SIFIVE_CUSTOMIZATION
+                   VectorLoop->getHeader(), Plan, State);
 
 #if SIFIVE_CUSTOMIZATION
     fixCSALiveOuts(State, Plan);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                   VectorLoop->getHeader(), Plan, State);
->>>>>>> upstream/main
   }
 
   // Fix LCSSA phis not already fixed earlier. Extracts may need to be generated
@@ -4933,17 +4778,6 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
   }
 }
 
-Value *
-UncountableInnerLoopVectorizer::getOrCreateTripCount(BasicBlock *InsertBlock) {
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  return nullptr;
-}
-
-Value *UncountableInnerLoopVectorizer::getOrCreateVectorTripCount(
-    BasicBlock *InsertBlock) {
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  return nullptr;
-}
 #endif // SIFIVE_CUSTOMIZATION
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
@@ -6657,8 +6491,7 @@ static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
   } while (!Tail.empty());
 }
 
-<<<<<<< HEAD
-VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
+VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
 #if SIFIVE_CUSTOMIZATION
     const VPlanPtr &Plan,
 #endif // SIFIVE_CUSTOMIZATION
@@ -6671,24 +6504,18 @@ VectorizationFactor LoopVectorizationCostModel::selectVectorizationFactor(
   // SCT-1716, we seek to skip the vectorizer when when all memory accesses are
   // non-unit strides during the pre-link stage.
   if (AdhocSkipVectorizeInPrelink && IsLTOPreLink &&
-      hasOnlyNonUnitStrideMemoryAccesses(TheLoop, Legal)) {
+      hasOnlyNonUnitStrideMemoryAccesses(OrigLoop, Legal)) {
     LLVM_DEBUG(dbgs() << "LV: Bail out in pre-link stage when there is only "
                          "non-unit stride memory accesses.\n");
     return VectorizationFactor::Disabled();
   }
 #endif
-
-  InstructionCost ExpectedCost = expectedCost(ElementCount::getFixed(1)).first;
-=======
-VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
-    const ElementCountSet &VFCandidates) {
   InstructionCost ExpectedCost =
       CM.expectedCost(ElementCount::getFixed(1)).first;
->>>>>>> upstream/main
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
 #if SIFIVE_CUSTOMIZATION
-  assert((Hints->isFixedVectorizationDisabled() ||
+  assert((Hints.isFixedVectorizationDisabled() ||
           VFCandidates.count(ElementCount::getFixed(1))) &&
          "Expected Scalar VF to be a candidate");
 #endif // SIFIVE_CUSTOMIZATION
@@ -6697,17 +6524,13 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
                                        ExpectedCost);
   VectorizationFactor ChosenFactor = ScalarCost;
 
-<<<<<<< HEAD
-  bool ForceVectorization = Hints->getForce() == LoopVectorizeHints::FK_Enabled;
+  bool ForceVectorization = Hints.getForce() == LoopVectorizeHints::FK_Enabled;
 #if SIFIVE_CUSTOMIZATION
   if (ForceVectorization &&
-      (VFCandidates.size() > 1 || Hints->isFixedVectorizationDisabled())) {
+      (VFCandidates.size() > 1 || Hints.isFixedVectorizationDisabled())) {
     // If fixed vectorization is disabled, the VFCandidates will not contain VF
     // = 1.
 #else
-=======
-  bool ForceVectorization = Hints.getForce() == LoopVectorizeHints::FK_Enabled;
->>>>>>> upstream/main
   if (ForceVectorization && VFCandidates.size() > 1) {
 #endif // SIFIVE_CUSTOMIZATION
     // Ignore scalar width, because the user explicitly wants vectorization.
@@ -6726,7 +6549,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
   unsigned SmallestTypeSize, WidestTypeSize;
   Type *WidestType;
   std::tie(SmallestTypeSize, WidestTypeSize) =
-      getSmallestAndWidestTypes(nullptr, &WidestType);
+      CM.getSmallestAndWidestTypes(nullptr, &WidestType);
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
 #endif
@@ -6736,7 +6559,6 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     if (i.isScalar())
       continue;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Notice that the vector loop needs to be executed less times, so
     // we need to divide the cost of the vector loops by the width of
@@ -6746,14 +6568,14 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     // comparison to the scalar loop cost is flawed. For now, for scalable
     // vectors we assume that vectorization is always more profitable than
     // scalar loop.
-    VectorizationCostTy C;
+    LoopVectorizationCostModel::VectorizationCostTy C;
     if (UseVPlanCostModel) {
       VPlanCostModel VPCM(*Plan, *Legal, TTI, *TLI);
       InstructionCost Cost = VPCM.getCost(
           RVVPair::get(WidestType, i, PSE.getSE()->getDataLayout()));
       C = {Cost, true};
     } else {
-      C = expectedCost(i, &InvalidCosts);
+      C = CM.expectedCost(i, &InvalidCosts);
     }
     if (!C.first.isValid()) {
       LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << i
@@ -6767,10 +6589,8 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
       Overhead = Plan->overhead(i, Ctx);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
 #else
-=======
     LoopVectorizationCostModel::VectorizationCostTy C =
         CM.expectedCost(i, &InvalidCosts);
->>>>>>> upstream/main
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -6816,7 +6636,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (Hints->isFixedVectorizationDisabled() && ChosenFactor.Width.isScalar()) {
+  if (Hints.isFixedVectorizationDisabled() && ChosenFactor.Width.isScalar()) {
     LLVM_DEBUG(
         dbgs()
         << "LV: Scalable vectorization could not select a viable factor\n");
@@ -9195,18 +9015,13 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     return VectorizationFactor::Disabled();
 
   // Select the optimal vectorization factor.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // TODO: Traverse each plan and select the best plan
   assert(VPlans.size() > 0 && "Must have at leat one plan");
-  VectorizationFactor VF =
-      CM.selectVectorizationFactor(VPlans[0], VFCandidates);
+  VectorizationFactor VF = selectVectorizationFactor(VPlans[0], VFCandidates);
 #else
-  VectorizationFactor VF = CM.selectVectorizationFactor(VFCandidates);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   VectorizationFactor VF = selectVectorizationFactor(VFCandidates);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
   assert((VF.Width.isScalar() || VF.ScalarCost > 0) && "when vectorizing, the scalar cost must be non-zero.");
   if (!hasPlanWithVF(VF.Width)) {
     LLVM_DEBUG(dbgs() << "LV: No VPlan could be built for " << VF.Width
@@ -9263,24 +9078,16 @@ static void AddRuntimeUnrollDisableMetaData(Loop *L) {
   }
 }
 
-<<<<<<< HEAD
-void LoopVectorizationPlanner::executePlan(ElementCount BestVF, unsigned BestUF,
-                                           VPlan &BestVPlan,
-                                           InnerLoopVectorizer &ILV,
-                                           DominatorTree *DT,
-                                           bool IsEpilogueVectorization) {
+SCEV2ValueTy LoopVectorizationPlanner::executePlan(
+    ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
+    InnerLoopVectorizer &ILV, DominatorTree *DT, bool IsEpilogueVectorization,
+    DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
 #if SIFIVE_CUSTOMIZATION
   assert((!Legal->isVectorizableUncountable() ||
           (BestVPlan.isUncountable() && BestVPlan.getInitRVL() &&
            BestVPlan.getRVL() && !ILV.InitVL)) &&
          "Uncountable loop is not set up correctly for executing VPlan");
 #endif
-=======
-SCEV2ValueTy LoopVectorizationPlanner::executePlan(
-    ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
-    InnerLoopVectorizer &ILV, DominatorTree *DT, bool IsEpilogueVectorization,
-    DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
->>>>>>> upstream/main
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
@@ -9292,29 +9099,19 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
   LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF << ", UF=" << BestUF
                     << '\n');
 
-<<<<<<< HEAD
-  // Workaround!  Compute the trip count of the original loop and cache it
-  // before we start modifying the CFG.  This code has a systemic problem
-  // wherein it tries to run analysis over partially constructed IR; this is
-  // wrong, and not simply for SCEV.  The trip count of the original loop
-  // simply happens to be prone to hitting this in practice.  In theory, we
-  // can hit the same issue for any SCEV, or ValueTracking query done during
-  // mutation.  See PR49900.
 #if SIFIVE_CUSTOMIZATION
-  if (!BestVPlan.isUncountable()) {
+  if (!BestVPlan.isUncountable())
 #endif
-  ILV.getOrCreateTripCount(OrigLoop->getLoopPreheader());
-
-=======
->>>>>>> upstream/main
   if (!IsEpilogueVectorization)
     VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif
 
   // Perform the actual loop transformation.
+#if SIFIVE_CUSTOMIZATION
+  VPTransformState State{BestVF,      BestUF, LI,         DT,
+                         ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
+#else
   VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
+#endif // SIFIVE_CUSTOMIZATION
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.
@@ -9323,24 +9120,25 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     State.Builder.SetInsertPoint(OrigLoop->getLoopPreheader()->getTerminator());
     BestVPlan.getPreheader()->execute(&State);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (!BestVPlan.isUncountable()) {
+#endif
   if (!ILV.getTripCount())
     ILV.setTripCount(State.get(BestVPlan.getTripCount(), {0, 0}));
   else
     assert(IsEpilogueVectorization && "should only re-use the existing trip "
                                       "count during epilogue vectorization");
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif
 
   // 1. Set up the skeleton for vectorization, including vector pre-header and
   // middle block. The vector loop is created during VPlan execution.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  VPTransformState State{BestVF,      BestUF, LI,         DT,
-                         ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
-#else
-  VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
-#endif // SIFIVE_CUSTOMIZATION
   Value *CanonicalIVStartValue;
   std::tie(State.CFG.PrevBB, CanonicalIVStartValue) =
-      ILV.createVectorizedLoopSkeleton();
+      ILV.createVectorizedLoopSkeleton(ExpandedSCEVs ? *ExpandedSCEVs
+                                                     : State.ExpandedSCEVs);
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
@@ -9362,7 +9160,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
                         << "\n");
     }
     unsigned Numerator = WidestTypeSize * State.VF.getKnownMinValue();
-    unsigned Denominator = TTI->getMaxElementWidth();
+    unsigned Denominator = TTI.getMaxElementWidth();
     State.LMULExp = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
                      : (8 - Log2_32(Denominator / Numerator));
@@ -9372,7 +9170,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
       IRBuilder<>::InsertPointGuard Guard(State.Builder);
       State.Builder.SetInsertPoint(cast<Instruction>(ILV.InitVL));
       if (!State.hasAnyVectorValue(BestVPlan.getInitRVL())) {
-        Value *RVL = ILV.getOrCreateTripCount(nullptr);
+        Value *RVL = ILV.getTripCount();
         Value *InitRVL = BestVPlan.getSetVL(State, RVL);
         State.set(State.Plan->getInitRVL(), InitRVL, 0);
       }
@@ -9388,12 +9186,6 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     State.Plan->addLMULTypePair(State.LMULExp, WidestType);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Value *CanonicalIVStartValue;
-  std::tie(State.CFG.PrevBB, CanonicalIVStartValue) =
-      ILV.createVectorizedLoopSkeleton(ExpandedSCEVs ? *ExpandedSCEVs
-                                                     : State.ExpandedSCEVs);
->>>>>>> upstream/main
 
   // Only use noalias metadata when using memory checks guaranteeing no overlap
   // across all iterations.
@@ -10915,32 +10707,28 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // visit each basic block after having visited its predecessor basic blocks.
   // ---------------------------------------------------------------------------
 
-<<<<<<< HEAD
   // Create initial VPlan skeleton, starting with a block for the pre-header,
   // followed by a region for the vector loop, followed by the middle block. The
   // skeleton vector loop region contains a header and latch block.
   VPBasicBlock *Preheader = new VPBasicBlock("vector.ph");
-#if SIFIVE_CUSTOMIZATION
-  auto Plan =
-      std::make_unique<VPlan>(Preheader, Legal->isVectorizableUncountable());
-  if (Legal->isVectorizableUncountable()) {
-    Plan->createRVL();
-    Plan->createInitRVL();
-  }
-#else
-  auto Plan = std::make_unique<VPlan>(Preheader);
-#endif
-
-=======
   // Create initial VPlan skeleton, having a basic block for the pre-header
   // which contains SCEV expansions that need to happen before the CFG is
   // modified; a basic block for the vector pre-header, followed by a region for
   // the vector loop, followed by the middle basic block. The skeleton vector
   // loop region contains a header and latch basic blocks.
+#if SIFIVE_CUSTOMIZATION
+  auto Plan = std::make_unique<VPlan>(Preheader, new VPBasicBlock("vector.ph"),
+                                      Legal->isVectorizableUncountable());
+  if (Legal->isVectorizableUncountable()) {
+    Plan->createRVL();
+    Plan->createInitRVL();
+  }
+#else
   VPlanPtr Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
       *PSE.getSE());
->>>>>>> upstream/main
+#endif
+
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
   VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
   VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
@@ -11850,13 +11638,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
   auto *DataTy = VectorType::get(ScalarDataTy, State.VF);
   const Align Alignment = getLoadStoreAlignment(&Ingredient);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool CreateGatherScatter = !isConsecutive();
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  bool CreateGatherScatter = !isConsecutive();
->>>>>>> upstream/main
 
   auto &Builder = State.Builder;
   InnerLoopVectorizer::VectorParts BlockInMaskParts(State.UF);
@@ -11879,8 +11661,11 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(Ptr->stripPointerCasts()))
       InBounds = gep->isInBounds();
-<<<<<<< HEAD
-    if (Reverse) {
+    if (isReverse()) {
+      // If the address is consecutive but reversed, then the
+      // wide store needs to start at the last vector element.
+      // RunTimeVF =  VScale * VF.getKnownMinValue()
+      // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
 #if SIFIVE_CUSTOMIZATION
       Value *RunTimeVF;
       if (VPValue *RVL = State.Plan->getRVL()) {
@@ -11899,14 +11684,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    if (isReverse()) {
-      // If the address is consecutive but reversed, then the
-      // wide store needs to start at the last vector element.
-      // RunTimeVF =  VScale * VF.getKnownMinValue()
-      // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
-      Value *RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
->>>>>>> upstream/main
       // NumElt = -Part * RunTimeVF
       Value *NumElt =
           Builder.CreateMul(ConstantInt::get(IndexTy, -(int64_t)Part), RunTimeVF);
@@ -12245,24 +12022,12 @@ Value *VPTransformState::get(VPValue *Def, unsigned Part) {
   unsigned LastLane = IsUniform ? 0 : VF.getKnownMinValue() - 1;
   // Check if there is a scalar value for the selected lane.
   if (!hasScalarValue(Def, {Part, LastLane})) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // At the moment, VPWidenIntOrFpInductionRecipes, VPScalarIVStepsRecipes,
-    // and VPWidenPointerInductionRecipe can also be uniform.
-    assert((isa<VPWidenIntOrFpInductionRecipe, VPScalarIVStepsRecipe,
-                VPWidenPointerInductionRecipe>(Def->getDefiningRecipe())) &&
-           "unexpected recipe found to be invariant");
-#else
-    // At the moment, VPWidenIntOrFpInductionRecipes and VPScalarIVStepsRecipes can also be uniform.
-=======
     // At the moment, VPWidenIntOrFpInductionRecipes, VPScalarIVStepsRecipes and
     // VPExpandSCEVRecipes can also be uniform.
->>>>>>> upstream/main
     assert((isa<VPWidenIntOrFpInductionRecipe>(Def->getDefiningRecipe()) ||
             isa<VPScalarIVStepsRecipe>(Def->getDefiningRecipe()) ||
             isa<VPExpandSCEVRecipe>(Def->getDefiningRecipe())) &&
            "unexpected recipe found to be invariant");
-#endif // SIFIVE_CUSTOMIZATION
     IsUniform = true;
     LastLane = 0;
   }
@@ -12353,16 +12118,17 @@ static bool processLoopInVPlanNativePath(
       getScalarEpilogueLowering(F, L, Hints, PSI, BFI, TTI, TLI, *LVL, &IAI);
 
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, LVL, *TTI, TLI, DB, AC, ORE, F,
-#if SIFIVE_CUSTOMIZATION
-                                &Hints, IAI, IsLTOPreLink);
-#else
                                 &Hints, IAI);
-#endif
 
   // Use the planner for outer loop vectorization.
   // TODO: CM is not used at this point inside the planner. Turn CM into an
   // optional argument if we don't need it in the future.
+#if SIFIVE_CUSTOMIZATION
+  LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, LVL, CM, IAI, PSE, Hints, ORE,
+                               IsLTOPreLink);
+#else
   LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, LVL, CM, IAI, PSE, Hints, ORE);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Get user vectorization factor.
   ElementCount UserVF = Hints.getWidth();
@@ -12736,21 +12502,15 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Use the cost model.
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, &LVL, *TTI, TLI, DB, AC, ORE,
-#if SIFIVE_CUSTOMIZATION
-                                F, &Hints, IAI, IsLTOPreLink);
-#else
                                 F, &Hints, IAI);
-<<<<<<< HEAD
-#endif
 
-  CM.collectValuesToIgnore();
-  CM.collectElementTypesForWidening();
-
-=======
->>>>>>> upstream/main
   // Use the planner for vectorization.
   LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, &LVL, CM, IAI, PSE, Hints,
+#if SIFIVE_CUSTOMIZATION
+                               ORE, IsLTOPreLink);
+#else
                                ORE);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Get user vectorization factor and interleave count.
   ElementCount UserVF = Hints.getWidth();
@@ -12795,12 +12555,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                     ForceVectorization);
 
     if (!ForceVectorization &&
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-        !areRuntimeChecksProfitable(Checks, VF, CM.getVScaleForTuning(), L,
-=======
         !areRuntimeChecksProfitable(Checks, VF, getVScaleForTuning(L, *TTI), L,
->>>>>>> upstream/main
                                     *PSE.getSE())) {
       ORE->emit([&]() {
         return OptimizationRemarkAnalysisAliasing(
@@ -12985,16 +12741,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
       // Consider vectorizing the epilogue too if it's profitable.
       VectorizationFactor EpilogueVF =
-<<<<<<< HEAD
-          CM.selectEpilogueVectorizationFactor(VF.Width, LVP);
+          LVP.selectEpilogueVectorizationFactor(VF.Width);
 #if SIFIVE_CUSTOMIZATION
       if (EpilogueVF != VectorizationFactor::Disabled() &&
           EpilogueVF.Width.isVector()) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-          LVP.selectEpilogueVectorizationFactor(VF.Width);
-      if (EpilogueVF.Width.isVector()) {
->>>>>>> upstream/main
 
         // The first pass vectorizes the main loop and creates a scalar epilogue
         // to be vectorized by executing the plan (potentially with a different

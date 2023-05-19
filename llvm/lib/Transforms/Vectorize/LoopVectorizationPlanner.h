@@ -319,6 +319,10 @@ class LoopVectorizationPlanner {
   /// A builder used to construct the current plan.
   VPBuilder Builder;
 
+#if SIFIVE_CUSTOMIZATION
+  /// (SIFIVE) Whether or not we are in pre-link stage
+  bool IsLTOPreLink; // SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 public:
   LoopVectorizationPlanner(Loop *L, LoopInfo *LI, const TargetLibraryInfo *TLI,
                            const TargetTransformInfo &TTI,
@@ -327,9 +331,19 @@ public:
                            InterleavedAccessInfo &IAI,
                            PredicatedScalarEvolution &PSE,
                            const LoopVectorizeHints &Hints,
+#if SIFIVE_CUSTOMIZATION
+                           OptimizationRemarkEmitter *ORE,
+                           bool IsLTOPreLink)
+#else
                            OptimizationRemarkEmitter *ORE)
+#endif // SIFIVE_CUSTOMIZATION
       : OrigLoop(L), LI(LI), TLI(TLI), TTI(TTI), Legal(Legal), CM(CM), IAI(IAI),
+#if SIFIVE_CUSTOMIZATION
+        PSE(PSE), Hints(Hints), ORE(ORE), IsLTOPreLink(IsLTOPreLink) {
+  }
+#else
         PSE(PSE), Hints(Hints), ORE(ORE) {}
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Plan how to best vectorize, return the best VF and its cost, or
   /// std::nullopt if vectorization and interleaving should be avoided up front.
@@ -422,7 +436,12 @@ private:
   /// \return The most profitable vectorization factor and the cost of that VF.
   /// This method checks every VF in \p CandidateVFs.
   VectorizationFactor
+#if SIFIVE_CUSTOMIZATION
+  selectVectorizationFactor(const VPlanPtr &Plan,
+                            const ElementCountSet &CandidateVFs);
+#else
   selectVectorizationFactor(const ElementCountSet &CandidateVFs);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the per-lane cost of VectorizationFactor A is lower than
   /// that of B.
