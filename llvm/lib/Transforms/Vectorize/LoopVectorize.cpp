@@ -4778,7 +4778,13 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
   }
 }
 
+Value *UncountableInnerLoopVectorizer::getOrCreateVectorTripCount(
+    BasicBlock *InsertBlock) {
+  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
+  return nullptr;
+}
 #endif // SIFIVE_CUSTOMIZATION
+
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
   // function is called from collectUniformsAndScalars(), which already does
