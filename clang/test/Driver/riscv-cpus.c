@@ -204,30 +204,9 @@
 
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=generic-rv32 -march=rv64i | FileCheck -check-prefix=MISMATCH-ARCH %s
 // MISMATCH-ARCH: cpu 'generic-rv32' does not support rv64
-<<<<<<< HEAD
-
-// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=generic-rv64 | FileCheck -check-prefix=MISMATCH-MCPU %s
-// MISMATCH-MCPU: error: cpu 'generic-rv64' does not support rv32
-
-// mcpu with default march include experimental extensions
-// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280 | FileCheck -check-prefix=MCPU-SIFIVE-X280 %s
-// MCPU-SIFIVE-X280: "-nostdsysteminc" "-target-cpu" "sifive-x280"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+c" "-target-feature" "+v"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zicsr" "-target-feature" "+zifencei"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zfh"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zba" "-target-feature" "+zbb"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+experimental-zvfh"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl128b"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl256b"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl32b"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl512b"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl64b"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+xsfvfhbfmin"
-// MCPU-SIFIVE-X280-SAME: "-target-feature" "+xsfvqmaccqoq"
-// MCPU-SIFIVE-X280-SAME: "-target-abi" "lp64d"
-
 // mcpu with default march include experimental extensions
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280n | FileCheck -check-prefix=MCPU-SIFIVE-X280N %s
+
 // MCPU-SIFIVE-X280N: "-nostdsysteminc" "-target-cpu" "sifive-x280n"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-X280N-SAME: "-target-feature" "+c" "-target-feature" "+v"
@@ -331,5 +310,3 @@
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-U64-SAME: "-target-abi" "lp64d"
-=======
->>>>>>> upstream/main

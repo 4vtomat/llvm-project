@@ -218,25 +218,12 @@
 // RV32-ORDER: error: invalid arch name 'rv32imcq',
 // RV32-ORDER: standard user-level extension not given in canonical order 'q'
 
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
 // RV32-DER: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
 
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32izve32f -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVE32F-ER %s
-// RV32-ZVE32F-ER: error: invalid arch name 'rv32izve32f',
-// RV32-ZVE32F-ER: 'zve32f' requires 'f' or 'zfinx' extension to also be specified
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32ifzve64d -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVE64D-ER %s
-// RV32-ZVE64D-ER: error: invalid arch name 'rv32ifzve64d',
-// RV32-ZVE64D-ER: 'zve64d' requires 'd' or 'zdinx' extension to also be specified
-
-=======
->>>>>>> upstream/main
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVL64B-ER %s
 // RV32-ZVL64B-ER: error: invalid arch name 'rv32izvl64b',

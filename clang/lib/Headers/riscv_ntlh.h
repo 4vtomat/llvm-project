@@ -10,9 +10,11 @@
 #ifndef __RISCV_NTLH_H
 #define __RISCV_NTLH_H
 
+#if 0 // SIFIVE_CUSTOMIZATION
 #ifndef __riscv_zihintntl
 #error "NTLH intrinsics require the NTLH extension."
 #endif
+#endif // SIFIVE_CUSTOMIZATION
 
 enum {
   __RISCV_NTLH_INNERMOST_PRIVATE = 2,

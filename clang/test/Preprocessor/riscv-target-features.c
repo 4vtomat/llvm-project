@@ -65,7 +65,6 @@
 // CHECK-NOT: __riscv_zvksh {{.*$}}
 // CHECK-NOT: __riscv_zvkt {{.*$}}
 // CHECK-NOT: __riscv_zicond {{.*$}}
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicclsm
 // CHECK-NOT: __riscv_ziccif
@@ -98,10 +97,8 @@
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // end SIFIVE_CUSTOMIZATION
-=======
 // CHECK-NOT: __riscv_smaia {{.*$}}
 // CHECK-NOT: __riscv_ssaia {{.*$}}
->>>>>>> upstream/main
 
 // RUN: %clang -target riscv32-unknown-linux-gnu -march=rv32i -x c -E -dM %s \
 // RUN: -o - | FileCheck %s
