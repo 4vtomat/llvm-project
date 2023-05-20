@@ -2280,6 +2280,13 @@ let HasMasked = false, HasVL = false, IRName = "" in {
                     "(FixedSEW:" # dst_sew # ")USvm",
                     "c", "(FixedSEW:" # dst_sew # ")USv">;
     }
+
+#ifdef SIFIVE_CUSTOMIZATION
+    // reinterpret for bf16 <-> uint16
+    // Reinterpret between different type under the same SEW and LMUL
+    def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
+    def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   let Name = "vundefined", SupportOverloading = false,
@@ -2450,18 +2457,6 @@ let RequiredFeatures = ["Xsfvfwmaccqqq"],
     IntrinsicTypes = [-1, 1, 2] in {
   let OverloadedName = "sf_vfwmacc_4x4x4" in
     def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
-}
-
-// reinterpret for bf16 <-> uint16
-let RequiredFeatures = ["HasBfloat16"], HasMasked = false, HasVL = false, IRName = "" in {
-  let Name = "vreinterpret_v", MaskedPolicyScheme = NonePolicy,
-      ManualCodegen = [{
-        return Builder.CreateBitCast(Ops[0], ResultType);
-      }] in {
-    // Reinterpret between different type under the same SEW and LMUL
-    def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
-    def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
-  }
 }
 
 let HeaderCode = [{
