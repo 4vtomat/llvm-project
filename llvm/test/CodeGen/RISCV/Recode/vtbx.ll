@@ -198,117 +198,107 @@ entry:
 define void @vqtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx3_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -128
-; CHECK-NEXT:    .cfi_def_cfa_offset 128
-; CHECK-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 128
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    lbu a4, 47(a1)
 ; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lbu a2, 46(a1)
-; CHECK-NEXT:    sb a2, 46(sp)
-; CHECK-NEXT:    lbu a2, 45(a1)
-; CHECK-NEXT:    sb a2, 45(sp)
-; CHECK-NEXT:    lbu a2, 44(a1)
-; CHECK-NEXT:    sb a2, 44(sp)
-; CHECK-NEXT:    lbu a2, 43(a1)
-; CHECK-NEXT:    sb a2, 43(sp)
-; CHECK-NEXT:    lbu a2, 42(a1)
-; CHECK-NEXT:    sb a2, 42(sp)
-; CHECK-NEXT:    lbu a2, 41(a1)
-; CHECK-NEXT:    sb a2, 41(sp)
-; CHECK-NEXT:    lbu a2, 40(a1)
-; CHECK-NEXT:    sb a2, 40(sp)
-; CHECK-NEXT:    lbu a2, 39(a1)
-; CHECK-NEXT:    sb a2, 39(sp)
-; CHECK-NEXT:    lbu a2, 38(a1)
-; CHECK-NEXT:    sb a2, 38(sp)
-; CHECK-NEXT:    lbu a2, 37(a1)
-; CHECK-NEXT:    sb a2, 37(sp)
-; CHECK-NEXT:    lbu a2, 36(a1)
-; CHECK-NEXT:    sb a2, 36(sp)
-; CHECK-NEXT:    lbu a2, 35(a1)
-; CHECK-NEXT:    sb a2, 35(sp)
-; CHECK-NEXT:    lbu a2, 34(a1)
-; CHECK-NEXT:    sb a2, 34(sp)
-; CHECK-NEXT:    lbu a2, 33(a1)
-; CHECK-NEXT:    sb a2, 33(sp)
-; CHECK-NEXT:    lbu a2, 32(a1)
-; CHECK-NEXT:    sb a2, 32(sp)
-; CHECK-NEXT:    lbu a2, 31(a1)
-; CHECK-NEXT:    sb a2, 31(sp)
-; CHECK-NEXT:    lbu a2, 30(a1)
-; CHECK-NEXT:    sb a2, 30(sp)
-; CHECK-NEXT:    lbu a2, 29(a1)
-; CHECK-NEXT:    sb a2, 29(sp)
-; CHECK-NEXT:    lbu a2, 28(a1)
-; CHECK-NEXT:    sb a2, 28(sp)
-; CHECK-NEXT:    lbu a2, 27(a1)
-; CHECK-NEXT:    sb a2, 27(sp)
-; CHECK-NEXT:    lbu a2, 26(a1)
-; CHECK-NEXT:    sb a2, 26(sp)
-; CHECK-NEXT:    lbu a2, 25(a1)
-; CHECK-NEXT:    sb a2, 25(sp)
-; CHECK-NEXT:    lbu a2, 24(a1)
-; CHECK-NEXT:    sb a2, 24(sp)
-; CHECK-NEXT:    lbu a2, 23(a1)
-; CHECK-NEXT:    sb a2, 23(sp)
-; CHECK-NEXT:    lbu a2, 22(a1)
-; CHECK-NEXT:    sb a2, 22(sp)
-; CHECK-NEXT:    lbu a2, 21(a1)
-; CHECK-NEXT:    sb a2, 21(sp)
-; CHECK-NEXT:    lbu a2, 20(a1)
-; CHECK-NEXT:    sb a2, 20(sp)
-; CHECK-NEXT:    lbu a2, 19(a1)
-; CHECK-NEXT:    sb a2, 19(sp)
-; CHECK-NEXT:    lbu a2, 18(a1)
-; CHECK-NEXT:    sb a2, 18(sp)
-; CHECK-NEXT:    lbu a2, 17(a1)
-; CHECK-NEXT:    sb a2, 17(sp)
-; CHECK-NEXT:    lbu a2, 16(a1)
-; CHECK-NEXT:    sb a2, 16(sp)
-; CHECK-NEXT:    lbu a2, 15(a1)
-; CHECK-NEXT:    sb a2, 15(sp)
-; CHECK-NEXT:    lbu a2, 14(a1)
-; CHECK-NEXT:    sb a2, 14(sp)
-; CHECK-NEXT:    lbu a2, 13(a1)
-; CHECK-NEXT:    sb a2, 13(sp)
-; CHECK-NEXT:    lbu a2, 12(a1)
-; CHECK-NEXT:    sb a2, 12(sp)
-; CHECK-NEXT:    lbu a2, 11(a1)
-; CHECK-NEXT:    sb a2, 11(sp)
-; CHECK-NEXT:    lbu a2, 10(a1)
-; CHECK-NEXT:    sb a2, 10(sp)
-; CHECK-NEXT:    lbu a2, 9(a1)
-; CHECK-NEXT:    sb a2, 9(sp)
-; CHECK-NEXT:    lbu a2, 8(a1)
-; CHECK-NEXT:    sb a2, 8(sp)
-; CHECK-NEXT:    lbu a2, 7(a1)
-; CHECK-NEXT:    sb a2, 7(sp)
-; CHECK-NEXT:    lbu a2, 6(a1)
-; CHECK-NEXT:    sb a2, 6(sp)
-; CHECK-NEXT:    lbu a2, 5(a1)
-; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lbu a2, 0(a1)
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
+; CHECK-NEXT:    lbu a4, 1(a1)
+; CHECK-NEXT:    lbu a5, 2(a1)
+; CHECK-NEXT:    lbu a6, 3(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
 ; CHECK-NEXT:    lbu a2, 4(a1)
-; CHECK-NEXT:    sb a2, 4(sp)
-; CHECK-NEXT:    lbu a2, 3(a1)
-; CHECK-NEXT:    sb a2, 3(sp)
-; CHECK-NEXT:    lbu a2, 2(a1)
-; CHECK-NEXT:    sb a2, 2(sp)
-; CHECK-NEXT:    lbu a2, 1(a1)
-; CHECK-NEXT:    sb a2, 1(sp)
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    sb a1, 0(sp)
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    mv a2, sp
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    lbu a4, 5(a1)
+; CHECK-NEXT:    lbu a5, 6(a1)
+; CHECK-NEXT:    lbu a6, 7(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 8(a1)
+; CHECK-NEXT:    lbu a4, 9(a1)
+; CHECK-NEXT:    lbu a5, 10(a1)
+; CHECK-NEXT:    lbu a6, 11(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 12(a1)
+; CHECK-NEXT:    lbu a4, 13(a1)
+; CHECK-NEXT:    lbu a5, 14(a1)
+; CHECK-NEXT:    lbu a6, 15(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 16(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 20(a1)
+; CHECK-NEXT:    lbu a4, 21(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 24(a1)
+; CHECK-NEXT:    lbu a4, 25(a1)
+; CHECK-NEXT:    lbu a5, 26(a1)
+; CHECK-NEXT:    lbu a6, 27(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 28(a1)
+; CHECK-NEXT:    lbu a4, 29(a1)
+; CHECK-NEXT:    lbu a5, 30(a1)
+; CHECK-NEXT:    lbu a6, 31(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 32(a1)
+; CHECK-NEXT:    lbu a4, 33(a1)
+; CHECK-NEXT:    lbu a5, 34(a1)
+; CHECK-NEXT:    lbu a6, 35(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 36(a1)
+; CHECK-NEXT:    lbu a4, 37(a1)
+; CHECK-NEXT:    lbu a5, 38(a1)
+; CHECK-NEXT:    lbu a6, 39(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 40(a1)
+; CHECK-NEXT:    lbu a4, 41(a1)
+; CHECK-NEXT:    lbu a5, 42(a1)
+; CHECK-NEXT:    lbu a6, 43(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 44(a1)
+; CHECK-NEXT:    lbu a4, 45(a1)
+; CHECK-NEXT:    lbu a5, 46(a1)
+; CHECK-NEXT:    lbu a1, 47(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a1
+; CHECK-NEXT:    vslidedown.vi v12, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
 ; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    li a1, 47
@@ -316,10 +306,6 @@ define void @vqtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    vle8.v v16, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v16, (a3)
-; CHECK-NEXT:    addi sp, s0, -128
-; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 128
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -336,117 +322,107 @@ entry:
 define void @vqtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx3_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -128
-; CHECK-NEXT:    .cfi_def_cfa_offset 128
-; CHECK-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 128
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    lbu a4, 47(a1)
 ; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lbu a2, 46(a1)
-; CHECK-NEXT:    sb a2, 46(sp)
-; CHECK-NEXT:    lbu a2, 45(a1)
-; CHECK-NEXT:    sb a2, 45(sp)
-; CHECK-NEXT:    lbu a2, 44(a1)
-; CHECK-NEXT:    sb a2, 44(sp)
-; CHECK-NEXT:    lbu a2, 43(a1)
-; CHECK-NEXT:    sb a2, 43(sp)
-; CHECK-NEXT:    lbu a2, 42(a1)
-; CHECK-NEXT:    sb a2, 42(sp)
-; CHECK-NEXT:    lbu a2, 41(a1)
-; CHECK-NEXT:    sb a2, 41(sp)
-; CHECK-NEXT:    lbu a2, 40(a1)
-; CHECK-NEXT:    sb a2, 40(sp)
-; CHECK-NEXT:    lbu a2, 39(a1)
-; CHECK-NEXT:    sb a2, 39(sp)
-; CHECK-NEXT:    lbu a2, 38(a1)
-; CHECK-NEXT:    sb a2, 38(sp)
-; CHECK-NEXT:    lbu a2, 37(a1)
-; CHECK-NEXT:    sb a2, 37(sp)
-; CHECK-NEXT:    lbu a2, 36(a1)
-; CHECK-NEXT:    sb a2, 36(sp)
-; CHECK-NEXT:    lbu a2, 35(a1)
-; CHECK-NEXT:    sb a2, 35(sp)
-; CHECK-NEXT:    lbu a2, 34(a1)
-; CHECK-NEXT:    sb a2, 34(sp)
-; CHECK-NEXT:    lbu a2, 33(a1)
-; CHECK-NEXT:    sb a2, 33(sp)
-; CHECK-NEXT:    lbu a2, 32(a1)
-; CHECK-NEXT:    sb a2, 32(sp)
-; CHECK-NEXT:    lbu a2, 31(a1)
-; CHECK-NEXT:    sb a2, 31(sp)
-; CHECK-NEXT:    lbu a2, 30(a1)
-; CHECK-NEXT:    sb a2, 30(sp)
-; CHECK-NEXT:    lbu a2, 29(a1)
-; CHECK-NEXT:    sb a2, 29(sp)
-; CHECK-NEXT:    lbu a2, 28(a1)
-; CHECK-NEXT:    sb a2, 28(sp)
-; CHECK-NEXT:    lbu a2, 27(a1)
-; CHECK-NEXT:    sb a2, 27(sp)
-; CHECK-NEXT:    lbu a2, 26(a1)
-; CHECK-NEXT:    sb a2, 26(sp)
-; CHECK-NEXT:    lbu a2, 25(a1)
-; CHECK-NEXT:    sb a2, 25(sp)
-; CHECK-NEXT:    lbu a2, 24(a1)
-; CHECK-NEXT:    sb a2, 24(sp)
-; CHECK-NEXT:    lbu a2, 23(a1)
-; CHECK-NEXT:    sb a2, 23(sp)
-; CHECK-NEXT:    lbu a2, 22(a1)
-; CHECK-NEXT:    sb a2, 22(sp)
-; CHECK-NEXT:    lbu a2, 21(a1)
-; CHECK-NEXT:    sb a2, 21(sp)
-; CHECK-NEXT:    lbu a2, 20(a1)
-; CHECK-NEXT:    sb a2, 20(sp)
-; CHECK-NEXT:    lbu a2, 19(a1)
-; CHECK-NEXT:    sb a2, 19(sp)
-; CHECK-NEXT:    lbu a2, 18(a1)
-; CHECK-NEXT:    sb a2, 18(sp)
-; CHECK-NEXT:    lbu a2, 17(a1)
-; CHECK-NEXT:    sb a2, 17(sp)
-; CHECK-NEXT:    lbu a2, 16(a1)
-; CHECK-NEXT:    sb a2, 16(sp)
-; CHECK-NEXT:    lbu a2, 15(a1)
-; CHECK-NEXT:    sb a2, 15(sp)
-; CHECK-NEXT:    lbu a2, 14(a1)
-; CHECK-NEXT:    sb a2, 14(sp)
-; CHECK-NEXT:    lbu a2, 13(a1)
-; CHECK-NEXT:    sb a2, 13(sp)
-; CHECK-NEXT:    lbu a2, 12(a1)
-; CHECK-NEXT:    sb a2, 12(sp)
-; CHECK-NEXT:    lbu a2, 11(a1)
-; CHECK-NEXT:    sb a2, 11(sp)
-; CHECK-NEXT:    lbu a2, 10(a1)
-; CHECK-NEXT:    sb a2, 10(sp)
-; CHECK-NEXT:    lbu a2, 9(a1)
-; CHECK-NEXT:    sb a2, 9(sp)
-; CHECK-NEXT:    lbu a2, 8(a1)
-; CHECK-NEXT:    sb a2, 8(sp)
-; CHECK-NEXT:    lbu a2, 7(a1)
-; CHECK-NEXT:    sb a2, 7(sp)
-; CHECK-NEXT:    lbu a2, 6(a1)
-; CHECK-NEXT:    sb a2, 6(sp)
-; CHECK-NEXT:    lbu a2, 5(a1)
-; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lbu a2, 0(a1)
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
+; CHECK-NEXT:    lbu a4, 1(a1)
+; CHECK-NEXT:    lbu a5, 2(a1)
+; CHECK-NEXT:    lbu a6, 3(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
 ; CHECK-NEXT:    lbu a2, 4(a1)
-; CHECK-NEXT:    sb a2, 4(sp)
-; CHECK-NEXT:    lbu a2, 3(a1)
-; CHECK-NEXT:    sb a2, 3(sp)
-; CHECK-NEXT:    lbu a2, 2(a1)
-; CHECK-NEXT:    sb a2, 2(sp)
-; CHECK-NEXT:    lbu a2, 1(a1)
-; CHECK-NEXT:    sb a2, 1(sp)
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    sb a1, 0(sp)
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    mv a2, sp
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    lbu a4, 5(a1)
+; CHECK-NEXT:    lbu a5, 6(a1)
+; CHECK-NEXT:    lbu a6, 7(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 8(a1)
+; CHECK-NEXT:    lbu a4, 9(a1)
+; CHECK-NEXT:    lbu a5, 10(a1)
+; CHECK-NEXT:    lbu a6, 11(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 12(a1)
+; CHECK-NEXT:    lbu a4, 13(a1)
+; CHECK-NEXT:    lbu a5, 14(a1)
+; CHECK-NEXT:    lbu a6, 15(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 16(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 20(a1)
+; CHECK-NEXT:    lbu a4, 21(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 24(a1)
+; CHECK-NEXT:    lbu a4, 25(a1)
+; CHECK-NEXT:    lbu a5, 26(a1)
+; CHECK-NEXT:    lbu a6, 27(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 28(a1)
+; CHECK-NEXT:    lbu a4, 29(a1)
+; CHECK-NEXT:    lbu a5, 30(a1)
+; CHECK-NEXT:    lbu a6, 31(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 32(a1)
+; CHECK-NEXT:    lbu a4, 33(a1)
+; CHECK-NEXT:    lbu a5, 34(a1)
+; CHECK-NEXT:    lbu a6, 35(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 36(a1)
+; CHECK-NEXT:    lbu a4, 37(a1)
+; CHECK-NEXT:    lbu a5, 38(a1)
+; CHECK-NEXT:    lbu a6, 39(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 40(a1)
+; CHECK-NEXT:    lbu a4, 41(a1)
+; CHECK-NEXT:    lbu a5, 42(a1)
+; CHECK-NEXT:    lbu a6, 43(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 44(a1)
+; CHECK-NEXT:    lbu a4, 45(a1)
+; CHECK-NEXT:    lbu a5, 46(a1)
+; CHECK-NEXT:    lbu a1, 47(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a1
+; CHECK-NEXT:    vslidedown.vi v12, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
 ; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    li a1, 47
@@ -454,10 +430,6 @@ define void @vqtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    vle8.v v16, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v16, (a3)
-; CHECK-NEXT:    addi sp, s0, -128
-; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 128
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -474,117 +446,107 @@ entry:
 define void @vqtbx3q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx3q_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -128
-; CHECK-NEXT:    .cfi_def_cfa_offset 128
-; CHECK-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 128
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    lbu a4, 47(a1)
 ; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lbu a2, 46(a1)
-; CHECK-NEXT:    sb a2, 46(sp)
-; CHECK-NEXT:    lbu a2, 45(a1)
-; CHECK-NEXT:    sb a2, 45(sp)
-; CHECK-NEXT:    lbu a2, 44(a1)
-; CHECK-NEXT:    sb a2, 44(sp)
-; CHECK-NEXT:    lbu a2, 43(a1)
-; CHECK-NEXT:    sb a2, 43(sp)
-; CHECK-NEXT:    lbu a2, 42(a1)
-; CHECK-NEXT:    sb a2, 42(sp)
-; CHECK-NEXT:    lbu a2, 41(a1)
-; CHECK-NEXT:    sb a2, 41(sp)
-; CHECK-NEXT:    lbu a2, 40(a1)
-; CHECK-NEXT:    sb a2, 40(sp)
-; CHECK-NEXT:    lbu a2, 39(a1)
-; CHECK-NEXT:    sb a2, 39(sp)
-; CHECK-NEXT:    lbu a2, 38(a1)
-; CHECK-NEXT:    sb a2, 38(sp)
-; CHECK-NEXT:    lbu a2, 37(a1)
-; CHECK-NEXT:    sb a2, 37(sp)
-; CHECK-NEXT:    lbu a2, 36(a1)
-; CHECK-NEXT:    sb a2, 36(sp)
-; CHECK-NEXT:    lbu a2, 35(a1)
-; CHECK-NEXT:    sb a2, 35(sp)
-; CHECK-NEXT:    lbu a2, 34(a1)
-; CHECK-NEXT:    sb a2, 34(sp)
-; CHECK-NEXT:    lbu a2, 33(a1)
-; CHECK-NEXT:    sb a2, 33(sp)
-; CHECK-NEXT:    lbu a2, 32(a1)
-; CHECK-NEXT:    sb a2, 32(sp)
-; CHECK-NEXT:    lbu a2, 31(a1)
-; CHECK-NEXT:    sb a2, 31(sp)
-; CHECK-NEXT:    lbu a2, 30(a1)
-; CHECK-NEXT:    sb a2, 30(sp)
-; CHECK-NEXT:    lbu a2, 29(a1)
-; CHECK-NEXT:    sb a2, 29(sp)
-; CHECK-NEXT:    lbu a2, 28(a1)
-; CHECK-NEXT:    sb a2, 28(sp)
-; CHECK-NEXT:    lbu a2, 27(a1)
-; CHECK-NEXT:    sb a2, 27(sp)
-; CHECK-NEXT:    lbu a2, 26(a1)
-; CHECK-NEXT:    sb a2, 26(sp)
-; CHECK-NEXT:    lbu a2, 25(a1)
-; CHECK-NEXT:    sb a2, 25(sp)
-; CHECK-NEXT:    lbu a2, 24(a1)
-; CHECK-NEXT:    sb a2, 24(sp)
-; CHECK-NEXT:    lbu a2, 23(a1)
-; CHECK-NEXT:    sb a2, 23(sp)
-; CHECK-NEXT:    lbu a2, 22(a1)
-; CHECK-NEXT:    sb a2, 22(sp)
-; CHECK-NEXT:    lbu a2, 21(a1)
-; CHECK-NEXT:    sb a2, 21(sp)
-; CHECK-NEXT:    lbu a2, 20(a1)
-; CHECK-NEXT:    sb a2, 20(sp)
-; CHECK-NEXT:    lbu a2, 19(a1)
-; CHECK-NEXT:    sb a2, 19(sp)
-; CHECK-NEXT:    lbu a2, 18(a1)
-; CHECK-NEXT:    sb a2, 18(sp)
-; CHECK-NEXT:    lbu a2, 17(a1)
-; CHECK-NEXT:    sb a2, 17(sp)
-; CHECK-NEXT:    lbu a2, 16(a1)
-; CHECK-NEXT:    sb a2, 16(sp)
-; CHECK-NEXT:    lbu a2, 15(a1)
-; CHECK-NEXT:    sb a2, 15(sp)
-; CHECK-NEXT:    lbu a2, 14(a1)
-; CHECK-NEXT:    sb a2, 14(sp)
-; CHECK-NEXT:    lbu a2, 13(a1)
-; CHECK-NEXT:    sb a2, 13(sp)
-; CHECK-NEXT:    lbu a2, 12(a1)
-; CHECK-NEXT:    sb a2, 12(sp)
-; CHECK-NEXT:    lbu a2, 11(a1)
-; CHECK-NEXT:    sb a2, 11(sp)
-; CHECK-NEXT:    lbu a2, 10(a1)
-; CHECK-NEXT:    sb a2, 10(sp)
-; CHECK-NEXT:    lbu a2, 9(a1)
-; CHECK-NEXT:    sb a2, 9(sp)
-; CHECK-NEXT:    lbu a2, 8(a1)
-; CHECK-NEXT:    sb a2, 8(sp)
-; CHECK-NEXT:    lbu a2, 7(a1)
-; CHECK-NEXT:    sb a2, 7(sp)
-; CHECK-NEXT:    lbu a2, 6(a1)
-; CHECK-NEXT:    sb a2, 6(sp)
-; CHECK-NEXT:    lbu a2, 5(a1)
-; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lbu a2, 0(a1)
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
+; CHECK-NEXT:    lbu a4, 1(a1)
+; CHECK-NEXT:    lbu a5, 2(a1)
+; CHECK-NEXT:    lbu a6, 3(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
 ; CHECK-NEXT:    lbu a2, 4(a1)
-; CHECK-NEXT:    sb a2, 4(sp)
-; CHECK-NEXT:    lbu a2, 3(a1)
-; CHECK-NEXT:    sb a2, 3(sp)
-; CHECK-NEXT:    lbu a2, 2(a1)
-; CHECK-NEXT:    sb a2, 2(sp)
-; CHECK-NEXT:    lbu a2, 1(a1)
-; CHECK-NEXT:    sb a2, 1(sp)
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    sb a1, 0(sp)
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    mv a2, sp
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    lbu a4, 5(a1)
+; CHECK-NEXT:    lbu a5, 6(a1)
+; CHECK-NEXT:    lbu a6, 7(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 8(a1)
+; CHECK-NEXT:    lbu a4, 9(a1)
+; CHECK-NEXT:    lbu a5, 10(a1)
+; CHECK-NEXT:    lbu a6, 11(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 12(a1)
+; CHECK-NEXT:    lbu a4, 13(a1)
+; CHECK-NEXT:    lbu a5, 14(a1)
+; CHECK-NEXT:    lbu a6, 15(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 16(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 20(a1)
+; CHECK-NEXT:    lbu a4, 21(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 24(a1)
+; CHECK-NEXT:    lbu a4, 25(a1)
+; CHECK-NEXT:    lbu a5, 26(a1)
+; CHECK-NEXT:    lbu a6, 27(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 28(a1)
+; CHECK-NEXT:    lbu a4, 29(a1)
+; CHECK-NEXT:    lbu a5, 30(a1)
+; CHECK-NEXT:    lbu a6, 31(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 32(a1)
+; CHECK-NEXT:    lbu a4, 33(a1)
+; CHECK-NEXT:    lbu a5, 34(a1)
+; CHECK-NEXT:    lbu a6, 35(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 36(a1)
+; CHECK-NEXT:    lbu a4, 37(a1)
+; CHECK-NEXT:    lbu a5, 38(a1)
+; CHECK-NEXT:    lbu a6, 39(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 40(a1)
+; CHECK-NEXT:    lbu a4, 41(a1)
+; CHECK-NEXT:    lbu a5, 42(a1)
+; CHECK-NEXT:    lbu a6, 43(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 44(a1)
+; CHECK-NEXT:    lbu a4, 45(a1)
+; CHECK-NEXT:    lbu a5, 46(a1)
+; CHECK-NEXT:    lbu a1, 47(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a1
+; CHECK-NEXT:    vslidedown.vi v12, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
 ; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    li a1, 47
@@ -592,10 +554,6 @@ define void @vqtbx3q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    vle8.v v16, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v16, (a3)
-; CHECK-NEXT:    addi sp, s0, -128
-; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 128
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -612,117 +570,107 @@ entry:
 define void @vqtbx3q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx3q_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -128
-; CHECK-NEXT:    .cfi_def_cfa_offset 128
-; CHECK-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 128
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    lbu a4, 47(a1)
 ; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    sb a4, 47(sp)
-; CHECK-NEXT:    lbu a2, 46(a1)
-; CHECK-NEXT:    sb a2, 46(sp)
-; CHECK-NEXT:    lbu a2, 45(a1)
-; CHECK-NEXT:    sb a2, 45(sp)
-; CHECK-NEXT:    lbu a2, 44(a1)
-; CHECK-NEXT:    sb a2, 44(sp)
-; CHECK-NEXT:    lbu a2, 43(a1)
-; CHECK-NEXT:    sb a2, 43(sp)
-; CHECK-NEXT:    lbu a2, 42(a1)
-; CHECK-NEXT:    sb a2, 42(sp)
-; CHECK-NEXT:    lbu a2, 41(a1)
-; CHECK-NEXT:    sb a2, 41(sp)
-; CHECK-NEXT:    lbu a2, 40(a1)
-; CHECK-NEXT:    sb a2, 40(sp)
-; CHECK-NEXT:    lbu a2, 39(a1)
-; CHECK-NEXT:    sb a2, 39(sp)
-; CHECK-NEXT:    lbu a2, 38(a1)
-; CHECK-NEXT:    sb a2, 38(sp)
-; CHECK-NEXT:    lbu a2, 37(a1)
-; CHECK-NEXT:    sb a2, 37(sp)
-; CHECK-NEXT:    lbu a2, 36(a1)
-; CHECK-NEXT:    sb a2, 36(sp)
-; CHECK-NEXT:    lbu a2, 35(a1)
-; CHECK-NEXT:    sb a2, 35(sp)
-; CHECK-NEXT:    lbu a2, 34(a1)
-; CHECK-NEXT:    sb a2, 34(sp)
-; CHECK-NEXT:    lbu a2, 33(a1)
-; CHECK-NEXT:    sb a2, 33(sp)
-; CHECK-NEXT:    lbu a2, 32(a1)
-; CHECK-NEXT:    sb a2, 32(sp)
-; CHECK-NEXT:    lbu a2, 31(a1)
-; CHECK-NEXT:    sb a2, 31(sp)
-; CHECK-NEXT:    lbu a2, 30(a1)
-; CHECK-NEXT:    sb a2, 30(sp)
-; CHECK-NEXT:    lbu a2, 29(a1)
-; CHECK-NEXT:    sb a2, 29(sp)
-; CHECK-NEXT:    lbu a2, 28(a1)
-; CHECK-NEXT:    sb a2, 28(sp)
-; CHECK-NEXT:    lbu a2, 27(a1)
-; CHECK-NEXT:    sb a2, 27(sp)
-; CHECK-NEXT:    lbu a2, 26(a1)
-; CHECK-NEXT:    sb a2, 26(sp)
-; CHECK-NEXT:    lbu a2, 25(a1)
-; CHECK-NEXT:    sb a2, 25(sp)
-; CHECK-NEXT:    lbu a2, 24(a1)
-; CHECK-NEXT:    sb a2, 24(sp)
-; CHECK-NEXT:    lbu a2, 23(a1)
-; CHECK-NEXT:    sb a2, 23(sp)
-; CHECK-NEXT:    lbu a2, 22(a1)
-; CHECK-NEXT:    sb a2, 22(sp)
-; CHECK-NEXT:    lbu a2, 21(a1)
-; CHECK-NEXT:    sb a2, 21(sp)
-; CHECK-NEXT:    lbu a2, 20(a1)
-; CHECK-NEXT:    sb a2, 20(sp)
-; CHECK-NEXT:    lbu a2, 19(a1)
-; CHECK-NEXT:    sb a2, 19(sp)
-; CHECK-NEXT:    lbu a2, 18(a1)
-; CHECK-NEXT:    sb a2, 18(sp)
-; CHECK-NEXT:    lbu a2, 17(a1)
-; CHECK-NEXT:    sb a2, 17(sp)
-; CHECK-NEXT:    lbu a2, 16(a1)
-; CHECK-NEXT:    sb a2, 16(sp)
-; CHECK-NEXT:    lbu a2, 15(a1)
-; CHECK-NEXT:    sb a2, 15(sp)
-; CHECK-NEXT:    lbu a2, 14(a1)
-; CHECK-NEXT:    sb a2, 14(sp)
-; CHECK-NEXT:    lbu a2, 13(a1)
-; CHECK-NEXT:    sb a2, 13(sp)
-; CHECK-NEXT:    lbu a2, 12(a1)
-; CHECK-NEXT:    sb a2, 12(sp)
-; CHECK-NEXT:    lbu a2, 11(a1)
-; CHECK-NEXT:    sb a2, 11(sp)
-; CHECK-NEXT:    lbu a2, 10(a1)
-; CHECK-NEXT:    sb a2, 10(sp)
-; CHECK-NEXT:    lbu a2, 9(a1)
-; CHECK-NEXT:    sb a2, 9(sp)
-; CHECK-NEXT:    lbu a2, 8(a1)
-; CHECK-NEXT:    sb a2, 8(sp)
-; CHECK-NEXT:    lbu a2, 7(a1)
-; CHECK-NEXT:    sb a2, 7(sp)
-; CHECK-NEXT:    lbu a2, 6(a1)
-; CHECK-NEXT:    sb a2, 6(sp)
-; CHECK-NEXT:    lbu a2, 5(a1)
-; CHECK-NEXT:    sb a2, 5(sp)
+; CHECK-NEXT:    lbu a2, 0(a1)
+; CHECK-NEXT:    li a4, 64
+; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
+; CHECK-NEXT:    lbu a4, 1(a1)
+; CHECK-NEXT:    lbu a5, 2(a1)
+; CHECK-NEXT:    lbu a6, 3(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
 ; CHECK-NEXT:    lbu a2, 4(a1)
-; CHECK-NEXT:    sb a2, 4(sp)
-; CHECK-NEXT:    lbu a2, 3(a1)
-; CHECK-NEXT:    sb a2, 3(sp)
-; CHECK-NEXT:    lbu a2, 2(a1)
-; CHECK-NEXT:    sb a2, 2(sp)
-; CHECK-NEXT:    lbu a2, 1(a1)
-; CHECK-NEXT:    sb a2, 1(sp)
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    sb a1, 0(sp)
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    mv a2, sp
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a2)
+; CHECK-NEXT:    lbu a4, 5(a1)
+; CHECK-NEXT:    lbu a5, 6(a1)
+; CHECK-NEXT:    lbu a6, 7(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 8(a1)
+; CHECK-NEXT:    lbu a4, 9(a1)
+; CHECK-NEXT:    lbu a5, 10(a1)
+; CHECK-NEXT:    lbu a6, 11(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 12(a1)
+; CHECK-NEXT:    lbu a4, 13(a1)
+; CHECK-NEXT:    lbu a5, 14(a1)
+; CHECK-NEXT:    lbu a6, 15(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 16(a1)
+; CHECK-NEXT:    lbu a4, 17(a1)
+; CHECK-NEXT:    lbu a5, 18(a1)
+; CHECK-NEXT:    lbu a6, 19(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 20(a1)
+; CHECK-NEXT:    lbu a4, 21(a1)
+; CHECK-NEXT:    lbu a5, 22(a1)
+; CHECK-NEXT:    lbu a6, 23(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 24(a1)
+; CHECK-NEXT:    lbu a4, 25(a1)
+; CHECK-NEXT:    lbu a5, 26(a1)
+; CHECK-NEXT:    lbu a6, 27(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 28(a1)
+; CHECK-NEXT:    lbu a4, 29(a1)
+; CHECK-NEXT:    lbu a5, 30(a1)
+; CHECK-NEXT:    lbu a6, 31(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 32(a1)
+; CHECK-NEXT:    lbu a4, 33(a1)
+; CHECK-NEXT:    lbu a5, 34(a1)
+; CHECK-NEXT:    lbu a6, 35(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 36(a1)
+; CHECK-NEXT:    lbu a4, 37(a1)
+; CHECK-NEXT:    lbu a5, 38(a1)
+; CHECK-NEXT:    lbu a6, 39(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 40(a1)
+; CHECK-NEXT:    lbu a4, 41(a1)
+; CHECK-NEXT:    lbu a5, 42(a1)
+; CHECK-NEXT:    lbu a6, 43(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a6
+; CHECK-NEXT:    lbu a2, 44(a1)
+; CHECK-NEXT:    lbu a4, 45(a1)
+; CHECK-NEXT:    lbu a5, 46(a1)
+; CHECK-NEXT:    lbu a1, 47(a1)
+; CHECK-NEXT:    vslide1down.vx v12, v12, a2
+; CHECK-NEXT:    vslide1down.vx v12, v12, a4
+; CHECK-NEXT:    vslide1down.vx v12, v12, a5
+; CHECK-NEXT:    vslide1down.vx v12, v12, a1
+; CHECK-NEXT:    vslidedown.vi v12, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
 ; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    li a1, 47
@@ -730,10 +678,6 @@ define void @vqtbx3q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    vle8.v v16, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v16, (a3)
-; CHECK-NEXT:    addi sp, s0, -128
-; CHECK-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
-; CHECK-NEXT:    addi sp, sp, 128
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1

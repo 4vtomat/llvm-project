@@ -38,7 +38,7 @@ define void @vqshl_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsll.vx v9, v8, a2
@@ -211,34 +211,34 @@ define void @vqshl_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vqshl_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle64.v v9, (a0)
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vand.vx v10, v8, a0
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vminu.vx v8, v10, a0
-; CHECK-NEXT:    li a0, 63
-; CHECK-NEXT:    vminu.vx v11, v8, a0
-; CHECK-NEXT:    vsll.vv v12, v9, v11
-; CHECK-NEXT:    vsra.vv v11, v12, v11
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsgtu.vx v8, v8, a0
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vmsle.vi v0, v9, -1
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    srli a1, a0, 1
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    slli a0, a0, 63
+; CHECK-NEXT:    li a1, 255
+; CHECK-NEXT:    vand.vx v11, v8, a1
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    vminu.vx v8, v11, a1
+; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vminu.vx v12, v8, a1
+; CHECK-NEXT:    vmsgtu.vx v8, v8, a1
 ; CHECK-NEXT:    vmsne.vi v13, v9, 0
 ; CHECK-NEXT:    vmand.mm v8, v13, v8
-; CHECK-NEXT:    vmor.mm v8, v11, v8
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    srli a3, a1, 1
-; CHECK-NEXT:    vmv.v.x v11, a3
-; CHECK-NEXT:    slli a1, a1, 63
-; CHECK-NEXT:    vmerge.vxm v11, v11, a1, v0
+; CHECK-NEXT:    vsll.vv v13, v9, v12
+; CHECK-NEXT:    vsra.vv v12, v13, v12
+; CHECK-NEXT:    vmsne.vv v12, v9, v12
+; CHECK-NEXT:    vmor.mm v8, v12, v8
+; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v12, v11, v0
-; CHECK-NEXT:    li a1, 127
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    vrsub.vx v10, v10, a1
-; CHECK-NEXT:    vminu.vx v10, v10, a0
+; CHECK-NEXT:    vmerge.vvm v8, v13, v10, v0
+; CHECK-NEXT:    li a0, 127
+; CHECK-NEXT:    vmsgtu.vx v0, v11, a0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vrsub.vx v10, v11, a0
+; CHECK-NEXT:    vminu.vx v10, v10, a1
 ; CHECK-NEXT:    vsra.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -457,7 +457,7 @@ define void @vqshlq_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsll.vx v9, v8, a2
@@ -634,34 +634,34 @@ define void @vqshlq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vqshlq_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vle64.v v8, (a1)
 ; CHECK-NEXT:    vle64.v v9, (a0)
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vand.vx v10, v8, a0
-; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vminu.vx v8, v10, a0
-; CHECK-NEXT:    li a0, 63
-; CHECK-NEXT:    vminu.vx v11, v8, a0
-; CHECK-NEXT:    vsll.vv v12, v9, v11
-; CHECK-NEXT:    vsra.vv v11, v12, v11
-; CHECK-NEXT:    vmsne.vv v11, v9, v11
-; CHECK-NEXT:    vmsgtu.vx v8, v8, a0
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vmsle.vi v0, v9, -1
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    srli a1, a0, 1
+; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    slli a0, a0, 63
+; CHECK-NEXT:    li a1, 255
+; CHECK-NEXT:    vand.vx v11, v8, a1
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    vminu.vx v8, v11, a1
+; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vminu.vx v12, v8, a1
+; CHECK-NEXT:    vmsgtu.vx v8, v8, a1
 ; CHECK-NEXT:    vmsne.vi v13, v9, 0
 ; CHECK-NEXT:    vmand.mm v8, v13, v8
-; CHECK-NEXT:    vmor.mm v8, v11, v8
-; CHECK-NEXT:    vmslt.vx v0, v9, zero
-; CHECK-NEXT:    li a1, -1
-; CHECK-NEXT:    srli a3, a1, 1
-; CHECK-NEXT:    vmv.v.x v11, a3
-; CHECK-NEXT:    slli a1, a1, 63
-; CHECK-NEXT:    vmerge.vxm v11, v11, a1, v0
+; CHECK-NEXT:    vsll.vv v13, v9, v12
+; CHECK-NEXT:    vsra.vv v12, v13, v12
+; CHECK-NEXT:    vmsne.vv v12, v9, v12
+; CHECK-NEXT:    vmor.mm v8, v12, v8
+; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v12, v11, v0
-; CHECK-NEXT:    li a1, 127
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    vrsub.vx v10, v10, a1
-; CHECK-NEXT:    vminu.vx v10, v10, a0
+; CHECK-NEXT:    vmerge.vvm v8, v13, v10, v0
+; CHECK-NEXT:    li a0, 127
+; CHECK-NEXT:    vmsgtu.vx v0, v11, a0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vrsub.vx v10, v11, a0
+; CHECK-NEXT:    vminu.vx v10, v10, a1
 ; CHECK-NEXT:    vsra.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

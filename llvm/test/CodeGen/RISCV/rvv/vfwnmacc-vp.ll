@@ -901,9 +901,9 @@ define <vscale x 4 x double> @vfnmacc_vv_nxv4f64_nxv4f16(<vscale x 4 x half> %a,
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfwcvt.f.f.v v10, v8, v0.t
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v9, v0.t
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfwnmacc.vv v12, v10, v16, v0.t
+; CHECK-NEXT:    vfwnmacc.vv v12, v10, v8, v0.t
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:    ret
   %aext = call <vscale x 4 x double> @llvm.vp.fpext.nxv4f64.nxv4f16(<vscale x 4 x half> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -919,9 +919,9 @@ define <vscale x 4 x double> @vfnmacc_vv_nxv4f64_nxv4f16_unmasked(<vscale x 4 x 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v9
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfwnmacc.vv v12, v10, v16
+; CHECK-NEXT:    vfwnmacc.vv v12, v10, v8
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 4 x i1> poison, i1 -1, i32 0
@@ -941,9 +941,9 @@ define <vscale x 8 x double> @vfnmacc_vv_nxv8f64_nxv4f16(<vscale x 8 x half> %a,
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfwcvt.f.f.v v12, v8, v0.t
-; CHECK-NEXT:    vfwcvt.f.f.v v24, v10, v0.t
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwnmacc.vv v16, v12, v24, v0.t
+; CHECK-NEXT:    vfwnmacc.vv v16, v12, v8, v0.t
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:    ret
   %aext = call <vscale x 8 x double> @llvm.vp.fpext.nxv8f64.nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x i1> %m, i32 %evl)
@@ -959,9 +959,9 @@ define <vscale x 8 x double> @vfnmacc_vv_nxv8f64_nxv4f16_unmasked(<vscale x 8 x 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvt.f.f.v v24, v10
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwnmacc.vv v16, v12, v24
+; CHECK-NEXT:    vfwnmacc.vv v16, v12, v8
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 8 x i1> poison, i1 -1, i32 0

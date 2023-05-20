@@ -678,7 +678,7 @@ define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ; CHECK-LABEL: sshl_sat_v1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    srli a1, a0, 1
 ; CHECK-NEXT:    vsll.vv v10, v8, v9
@@ -700,7 +700,7 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i64:
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e64, m2, ta, ma
-; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v12, v8, v10
@@ -716,7 +716,7 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-V-LABEL: sshl_sat_v2i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-V-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a1, a0, 1
 ; CHECK-V-NEXT:    vsll.vv v10, v8, v9
@@ -738,7 +738,7 @@ define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i64:
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
-; CHECK-ZVE64X-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
 ; CHECK-ZVE64X-NEXT:    vsll.vv v16, v8, v12
@@ -754,7 +754,7 @@ define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ; CHECK-V-LABEL: sshl_sat_v4i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-V-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a1, a0, 1
 ; CHECK-V-NEXT:    vsll.vv v12, v8, v10

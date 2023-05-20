@@ -19,14 +19,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>} @vector_deinterleave_nxv16i1_nxv
 ; CHECK-NEXT:    vmerge.vim v12, v10, 1, v0
 ; CHECK-NEXT:    vnsrl.wi v8, v12, 0
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnsrl.wi v8, v12, 8
-; CHECK-NEXT:    vand.vi v8, v8, 1
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
-=======
-; CHECK-NEXT:    vnsrl.wi v10, v12, 8
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
 %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave2.nxv32i1(<vscale x 32 x i1> %vec)
 ret {<vscale x 16 x i1>, <vscale x 16 x i1>} %retval

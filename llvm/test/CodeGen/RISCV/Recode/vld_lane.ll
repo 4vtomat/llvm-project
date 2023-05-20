@@ -775,8 +775,6 @@ entry:
 define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -795,15 +793,14 @@ define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a0, a3, a0
-; CHECK-NEXT:    addi a1, sp, 8
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vse16.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 10
-; CHECK-NEXT:    vse16.v v11, (a3)
-; CHECK-NEXT:    sh a0, 12(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v11, (a1)
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
 ; CHECK-NEXT:    li a0, 13
@@ -817,7 +814,6 @@ define void @vld3_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vrgather.vi v13, v11, 2, v0.t
 ; CHECK-NEXT:    vmv1r.v v10, v13
 ; CHECK-NEXT:    vsseg3e16.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <4 x i16>, <4 x i16>, <4 x i16> } @llvm.aarch64.neon.ld3.v4i16.p0(ptr %in_1)
@@ -937,8 +933,6 @@ entry:
 define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    lbu a3, 1(a0)
 ; CHECK-NEXT:    lbu a4, 0(a0)
@@ -948,15 +942,17 @@ define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v11, a3
 ; CHECK-NEXT:    lbu a0, 2(a0)
-; CHECK-NEXT:    addi a1, sp, 8
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; CHECK-NEXT:    vse8.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 9
-; CHECK-NEXT:    vse8.v v11, (a3)
-; CHECK-NEXT:    sb a0, 10(sp)
+; CHECK-NEXT:    vsetivli zero, 0, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 5
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
 ; CHECK-NEXT:    li a0, 253
@@ -970,7 +966,6 @@ define void @vld3_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vrgather.vi v13, v11, 2, v0.t
 ; CHECK-NEXT:    vmv1r.v v10, v13
 ; CHECK-NEXT:    vsseg3e8.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <8 x i8>, <8 x i8>, <8 x i8> } @llvm.aarch64.neon.ld3.v8i8.p0(ptr %in_1)
@@ -988,8 +983,6 @@ entry:
 define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -1008,15 +1001,14 @@ define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a0, a3, a0
-; CHECK-NEXT:    addi a1, sp, 8
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vse16.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 10
-; CHECK-NEXT:    vse16.v v11, (a3)
-; CHECK-NEXT:    sh a0, 12(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v11, (a1)
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
 ; CHECK-NEXT:    li a0, 13
@@ -1030,7 +1022,6 @@ define void @vld3_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vrgather.vi v13, v11, 2, v0.t
 ; CHECK-NEXT:    vmv1r.v v10, v13
 ; CHECK-NEXT:    vsseg3e16.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <4 x i16>, <4 x i16>, <4 x i16> } @llvm.aarch64.neon.ld3.v4i16.p0(ptr %in_1)
@@ -1150,8 +1141,6 @@ entry:
 define void @vld3_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    lbu a3, 1(a0)
 ; CHECK-NEXT:    lbu a4, 0(a0)
@@ -1161,15 +1150,17 @@ define void @vld3_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v11, a3
 ; CHECK-NEXT:    lbu a0, 2(a0)
-; CHECK-NEXT:    addi a1, sp, 8
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; CHECK-NEXT:    vse8.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 9
-; CHECK-NEXT:    vse8.v v11, (a3)
-; CHECK-NEXT:    sb a0, 10(sp)
+; CHECK-NEXT:    vsetivli zero, 0, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 5
 ; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 5
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
@@ -1183,7 +1174,6 @@ define void @vld3_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vmv1r.v v9, v13
 ; CHECK-NEXT:    vmv1r.v v10, v14
 ; CHECK-NEXT:    vsseg3e8.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <8 x i8>, <8 x i8>, <8 x i8> } @llvm.aarch64.neon.ld3.v8i8.p0(ptr %in_1)
@@ -1439,8 +1429,6 @@ entry:
 define void @vld3q_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -1459,15 +1447,17 @@ define void @vld3q_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a0, a3, a0
-; CHECK-NEXT:    mv a1, sp
+; CHECK-NEXT:    vsetivli zero, 0, e16, mf2, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vse16.v v11, (a1)
 ; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 2
-; CHECK-NEXT:    vse16.v v11, (a3)
-; CHECK-NEXT:    sh a0, 4(sp)
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vle16.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 5
 ; CHECK-NEXT:    vslideup.vi v8, v11, 7
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    li a0, 128
@@ -1479,7 +1469,6 @@ define void @vld3q_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.v.v v9, v13
 ; CHECK-NEXT:    vmv.v.v v10, v14
 ; CHECK-NEXT:    vsseg3e16.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <8 x i16>, <8 x i16>, <8 x i16> } @llvm.aarch64.neon.ld3.v8i16.p0(ptr %in_1)
@@ -1497,8 +1486,6 @@ entry:
 define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v9, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -1535,15 +1522,14 @@ define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    addi a3, sp, 4
-; CHECK-NEXT:    vse32.v v8, (a3)
-; CHECK-NEXT:    sw a0, 8(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v12, (a1)
+; CHECK-NEXT:    vmv.x.s a1, v8
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vslidedown.vi v8, v8, 1
+; CHECK-NEXT:    vmv.x.s a1, v8
+; CHECK-NEXT:    vslide1down.vx v8, v12, a1
+; CHECK-NEXT:    vslide1down.vx v8, v8, a0
+; CHECK-NEXT:    vslidedown.vi v12, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v12, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
@@ -1558,7 +1544,6 @@ define void @vld3q_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmerge.vvm v11, v12, v11, v0
 ; CHECK-NEXT:    vmv.v.v v10, v13
 ; CHECK-NEXT:    vsseg3e32.v v9, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <4 x i32>, <4 x i32>, <4 x i32> } @llvm.aarch64.neon.ld3.v4i32.p0(ptr %in_1)
@@ -1668,8 +1653,6 @@ entry:
 define void @vld3q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    lbu a3, 1(a0)
 ; CHECK-NEXT:    lbu a4, 0(a0)
@@ -1679,15 +1662,17 @@ define void @vld3q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v11, a3
 ; CHECK-NEXT:    lbu a0, 2(a0)
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; CHECK-NEXT:    vse8.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 1
-; CHECK-NEXT:    vse8.v v11, (a3)
-; CHECK-NEXT:    sb a0, 2(sp)
+; CHECK-NEXT:    vsetivli zero, 0, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 13
 ; CHECK-NEXT:    vsetivli zero, 7, e8, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 6
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -1703,7 +1688,6 @@ define void @vld3q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.v.v v9, v13
 ; CHECK-NEXT:    vmv.v.v v10, v14
 ; CHECK-NEXT:    vsseg3e8.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <16 x i8>, <16 x i8>, <16 x i8> } @llvm.aarch64.neon.ld3.v16i8.p0(ptr %in_1)
@@ -1721,8 +1705,6 @@ entry:
 define void @vld3q_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -1741,15 +1723,17 @@ define void @vld3q_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.s.x v11, a1
 ; CHECK-NEXT:    slli a3, a3, 8
 ; CHECK-NEXT:    or a0, a3, a0
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vse16.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 2
-; CHECK-NEXT:    vse16.v v11, (a3)
-; CHECK-NEXT:    sh a0, 4(sp)
+; CHECK-NEXT:    vsetivli zero, 0, e16, mf2, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 5
 ; CHECK-NEXT:    vsetivli zero, 7, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 6
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
@@ -1763,7 +1747,6 @@ define void @vld3q_lane_u16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.v.v v9, v13
 ; CHECK-NEXT:    vmv.v.v v10, v14
 ; CHECK-NEXT:    vsseg3e16.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <8 x i16>, <8 x i16>, <8 x i16> } @llvm.aarch64.neon.ld3.v8i16.p0(ptr %in_1)
@@ -1781,8 +1764,6 @@ entry:
 define void @vld3q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
 ; CHECK-NEXT:    lbu a1, 1(a0)
@@ -1819,15 +1800,14 @@ define void @vld3q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a1
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 4
-; CHECK-NEXT:    vse32.v v11, (a3)
-; CHECK-NEXT:    sw a0, 8(sp)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
-; CHECK-NEXT:    vle32.v v11, (a1)
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
 ; CHECK-NEXT:    vslideup.vi v8, v11, 3
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    li a0, 8
@@ -1839,7 +1819,6 @@ define void @vld3q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vmv.v.v v9, v13
 ; CHECK-NEXT:    vmv.v.v v10, v14
 ; CHECK-NEXT:    vsseg3e32.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <4 x i32>, <4 x i32>, <4 x i32> } @llvm.aarch64.neon.ld3.v4i32.p0(ptr %in_1)
@@ -1947,8 +1926,6 @@ entry:
 define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    lbu a3, 1(a0)
 ; CHECK-NEXT:    lbu a4, 0(a0)
@@ -1958,15 +1935,17 @@ define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v11, a3
 ; CHECK-NEXT:    lbu a0, 2(a0)
-; CHECK-NEXT:    mv a1, sp
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; CHECK-NEXT:    vse8.v v11, (a1)
-; CHECK-NEXT:    vslidedown.vi v11, v11, 1
-; CHECK-NEXT:    addi a3, sp, 1
-; CHECK-NEXT:    vse8.v v11, (a3)
-; CHECK-NEXT:    sb a0, 2(sp)
+; CHECK-NEXT:    vsetivli zero, 0, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.x.s a1, v11
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v11, (a1)
+; CHECK-NEXT:    vslide1down.vx v12, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v11, 1
+; CHECK-NEXT:    vmv.x.s a1, v11
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vslide1down.vx v11, v12, a1
+; CHECK-NEXT:    vslide1down.vx v11, v11, a0
+; CHECK-NEXT:    vslidedown.vi v11, v11, 13
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v11, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
@@ -1982,7 +1961,6 @@ define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vmv.v.v v9, v13
 ; CHECK-NEXT:    vmv.v.v v10, v14
 ; CHECK-NEXT:    vsseg3e8.v v8, (a2)
-; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <16 x i8>, <16 x i8>, <16 x i8> } @llvm.aarch64.neon.ld3.v16i8.p0(ptr %in_1)

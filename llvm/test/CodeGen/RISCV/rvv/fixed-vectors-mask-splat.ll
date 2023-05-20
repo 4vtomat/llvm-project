@@ -26,19 +26,7 @@ define void @splat_ones_v1i1(ptr %x) {
 define void @splat_zeros_v2i1(ptr %x) {
 ; CHECK-LABEL: splat_zeros_v2i1:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v9, 0
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v9, v8, 0
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsne.vi v8, v9, 0
-; CHECK-NEXT:    vsm.v v8, (a0)
-=======
 ; CHECK-NEXT:    sb zero, 0(a0)
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   store <2 x i1> zeroinitializer, ptr %x
   ret void

@@ -30,25 +30,10 @@ define <4 x i32> @vec_v4i32(<4 x i32> %x, <4 x i32> %y) nounwind {
 ; CHECK-LABEL: vec_v4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
 ; CHECK-NEXT:    vnclip.wi v8, v10, 0
-=======
-; CHECK-NEXT:    vmsle.vi v0, v8, -1
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vsll.vv v10, v8, v9
-; CHECK-NEXT:    vsra.vv v9, v10, v9
-; CHECK-NEXT:    vmsne.vv v8, v8, v9
-; CHECK-NEXT:    vmv.v.x v9, a0
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a0, a0, 31
-; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %tmp = call <4 x i32> @llvm.sshl.sat.v4i32(<4 x i32> %x, <4 x i32> %y)
   ret <4 x i32> %tmp
@@ -58,23 +43,10 @@ define <8 x i16> @vec_v8i16(<8 x i16> %x, <8 x i16> %y) nounwind {
 ; CHECK-LABEL: vec_v8i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
 ; CHECK-NEXT:    vnclip.wi v8, v10, 0
-=======
-; CHECK-NEXT:    vmsle.vi v0, v8, -1
-; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    addiw a1, a0, -1
-; CHECK-NEXT:    vsll.vv v10, v8, v9
-; CHECK-NEXT:    vsra.vv v9, v10, v9
-; CHECK-NEXT:    vmsne.vv v8, v8, v9
-; CHECK-NEXT:    vmv.v.x v9, a1
-; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %tmp = call <8 x i16> @llvm.sshl.sat.v8i16(<8 x i16> %x, <8 x i16> %y)
   ret <8 x i16> %tmp
@@ -84,23 +56,10 @@ define <16 x i8> @vec_v16i8(<16 x i8> %x, <16 x i8> %y) nounwind {
 ; CHECK-LABEL: vec_v16i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
 ; CHECK-NEXT:    vnclip.wi v8, v10, 0
-=======
-; CHECK-NEXT:    vmsle.vi v0, v8, -1
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vsll.vv v10, v8, v9
-; CHECK-NEXT:    vsra.vv v9, v10, v9
-; CHECK-NEXT:    vmsne.vv v8, v8, v9
-; CHECK-NEXT:    vmv.v.x v9, a0
-; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %tmp = call <16 x i8> @llvm.sshl.sat.v16i8(<16 x i8> %x, <16 x i8> %y)
   ret <16 x i8> %tmp

@@ -587,13 +587,8 @@ define void @setlt_vi_v128i8(ptr %x, ptr %z) {
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    vmslt.vx v8, v8, zero
+; CHECK-NEXT:    vmsle.vi v8, v8, -1
 ; CHECK-NEXT:    vsm.v v8, (a1)
-=======
-; CHECK-NEXT:    vmsle.vi v16, v8, -1
-; CHECK-NEXT:    vsm.v v16, (a1)
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %a = load <128 x i8>, ptr %x
   %b = insertelement <128 x i8> poison, i8 0, i32 0

@@ -9,7 +9,7 @@ define <vscale x 1 x double> @test1(<vscale x 1 x double> %x, <vscale x 1 x doub
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmadd.vv v9, v8, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
@@ -23,7 +23,7 @@ define <vscale x 1 x double> @test2(<vscale x 1 x double> %x, <vscale x 1 x doub
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmadd.vv v9, v8, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
