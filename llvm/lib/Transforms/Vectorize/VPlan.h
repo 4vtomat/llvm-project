@@ -1285,7 +1285,7 @@ protected:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands,
                 const unsigned char RecipeSC, const unsigned char ValueSC)
-      : VPRecipeWithIRFlags(RecipeSC, Operands), VPValue(ValueSC, &I, this) {}
+      : VPRecipeWithIRFlags(RecipeSC, Operands, I), VPValue(ValueSC, &I, this) {}
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
@@ -3011,11 +3011,16 @@ public:
   MapVector<PHINode *, VPCSAState *> const &getCSAStates() const {
     return CSAStates;
   }
-#endif // SIFIVE_CUSTOMIZATION
+  /// Create an initial VPlan with preheader and entry blocks. Creates a
+  /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
+  static VPlanPtr createInitialVPlan(const SCEV *TripCount,
+                                     ScalarEvolution &PSE, bool IsUncountable);
+#else
   /// Create an initial VPlan with preheader and entry blocks. Creates a
   /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
                                      ScalarEvolution &PSE);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
@@ -3117,6 +3122,9 @@ public:
            "Should not get vectro trip count for uncountable loops");
     return VectorTripCount;
   }
+
+  /// Initialize AllTrue and AllFalse masks if there are users.
+  void initializeMasks(VPTransformState &State);
 #else
   VPValue &getVectorTripCount() { return VectorTripCount; }
 #endif

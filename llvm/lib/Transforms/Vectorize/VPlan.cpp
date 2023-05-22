@@ -761,10 +761,24 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+#if SIFIVE_CUSTOMIZATION
+VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
+                                   bool IsUncountable) {
+#else
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE) {
+#endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock *Preheader = new VPBasicBlock("ph");
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
+#if SIFIVE_CUSTOMIZATION
+  auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
+  if (IsUncountable) {
+    assert(!TripCount &&
+           "Trip Count must not be set when loop is not countable");
+    return Plan;
+  }
+#else
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader);
+#endif // SIFIVE_CUSTOMIZATION
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
   return Plan;
@@ -826,8 +840,10 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
+}
 
 #if SIFIVE_CUSTOMIZATION
+void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
     Value *True = State.Builder.getTrueVector(State.VF);
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
@@ -838,8 +854,8 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
     for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
       State.set(AllFalseMask, False, Part);
   }
-#endif // SIFIVE_CUSTOMIZATION
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Generate the code inside the preheader and body of the vectorized loop.
 /// Assumes a single pre-header basic-block was created for this. Introduce

@@ -9115,6 +9115,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{BestVF,      BestUF, LI,         DT,
                          ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
+  BestVPlan.initializeMasks(State);
 #else
   VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
 #endif // SIFIVE_CUSTOMIZATION
@@ -10712,20 +10713,20 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // Build initial VPlan: Scan the body of the loop in a topological order to
   // visit each basic block after having visited its predecessor basic blocks.
   // ---------------------------------------------------------------------------
-
-  // Create initial VPlan skeleton, starting with a block for the pre-header,
-  // followed by a region for the vector loop, followed by the middle block. The
-  // skeleton vector loop region contains a header and latch block.
-  VPBasicBlock *Preheader = new VPBasicBlock("vector.ph");
   // Create initial VPlan skeleton, having a basic block for the pre-header
   // which contains SCEV expansions that need to happen before the CFG is
   // modified; a basic block for the vector pre-header, followed by a region for
   // the vector loop, followed by the middle basic block. The skeleton vector
   // loop region contains a header and latch basic blocks.
 #if SIFIVE_CUSTOMIZATION
-  auto Plan = std::make_unique<VPlan>(Preheader, new VPBasicBlock("vector.ph"),
-                                      Legal->isVectorizableUncountable());
-  if (Legal->isVectorizableUncountable()) {
+  const bool IsUncountable = Legal->isVectorizableUncountable();
+  const SCEV *TripCountSCEV =
+      IsUncountable
+          ? nullptr
+          : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
+  VPlanPtr Plan =
+      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
+  if (IsUncountable) {
     Plan->createRVL();
     Plan->createInitRVL();
   }
@@ -10765,9 +10766,9 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
       DLInst ? DLInst->getDebugLoc() : DebugLoc(),
       CM.getTailFoldingStyle(IVUpdateMayOverflow),
       Legal->useVLAVectorizer());
-  addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Preheader, HeaderVPBB,
-                          DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range,
-                          *Plan);
+  addCSAPreprocessRecipes(
+      Legal->getCSAs(), OrigLoop, Plan->getPreheader(), HeaderVPBB,
+      DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range, *Plan);
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
                         DLInst ? DLInst->getDebugLoc() : DebugLoc(),
@@ -11005,9 +11006,19 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
   // Create new empty VPlan
+#if SIFIVE_CUSTOMIZATION
+  const bool IsUncountable = Legal->isVectorizableUncountable();
+  const SCEV *TripCountSCEV =
+      IsUncountable
+          ? nullptr
+          : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
+  auto Plan =
+      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
+#else
   auto Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
       *PSE.getSE());
+#endif // SIFIVE_CUSTOMIZATION
 
   // Build hierarchical CFG
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);

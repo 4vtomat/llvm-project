@@ -1052,6 +1052,18 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
   if (I)
     State.setDebugLocFromInst(I);
+#if SIFIVE_CUSTOMIZATION
+  if (State.Plan->getRVL() &&
+      State.get(getOperand(0), 0)->getType()->isVectorTy() &&
+      !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
+    for (unsigned Part = 0; Part < State.UF; ++Part) {
+      llvm::widenPredicatedInstruction(I, this, *this, State, nullptr, Part);
+      Value *V = State.get(this, Part);
+      State.addMetadata(V, I);
+    }
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   auto &Builder = State.Builder;
   /// Vectorize casts.
   assert(State.VF.isVector() && "Not vectorizing?");

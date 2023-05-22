@@ -64,8 +64,13 @@ protected:
   VPlanPtr buildHCFG(BasicBlock *LoopHeader) {
     doAnalysis(*LoopHeader->getParent());
 
+#if SIFIVE_CUSTOMIZATION
+    auto Plan = VPlan::createInitialVPlan(
+        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, false);
+#else
     auto Plan = VPlan::createInitialVPlan(
         SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE);
+#endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
@@ -75,8 +80,13 @@ protected:
   VPlanPtr buildPlainCFG(BasicBlock *LoopHeader) {
     doAnalysis(*LoopHeader->getParent());
 
+#if SIFIVE_CUSTOMIZATION
+    auto Plan = VPlan::createInitialVPlan(
+        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, false);
+#else
     auto Plan = VPlan::createInitialVPlan(
         SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE);
+#endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
     HCFGBuilder.buildPlainCFG();
     return Plan;
