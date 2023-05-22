@@ -638,7 +638,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
-            DefaultPolicy, IsTuple));
+            DefaultPolicy));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
@@ -646,7 +646,7 @@ void RVVEmitter::createRVVIntrinsics(
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
-              NonTemporalDefaultPolicy, IsTuple));
+              NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
@@ -662,7 +662,7 @@ void RVVEmitter::createRVVIntrinsics(
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
                 ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures,
-                NF, P, IsTuple));
+                NF, P));
           }
         if (!HasMasked)
           continue;
@@ -673,7 +673,7 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
-            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy, IsTuple));
+            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy));
 
 #if SIFIVE_CUSTOMIZATION
         std::optional<RVVTypes> NTLMaskTypes =
@@ -684,8 +684,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
-              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy,
-              IsTuple));
+              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
 
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
@@ -702,7 +701,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures, NF,
-              P, IsTuple));
+              P));
         }
       } // End for Log2LMULList
     }   // End for TypeRange
