@@ -1140,11 +1140,6 @@ void VPlanPrinter::dump() {
     OS << " := BackedgeTakenCount";
   }
 #if SIFIVE_CUSTOMIZATION
-  if (Plan.TripCount) {
-    OS << "\\n";
-    Plan.TripCount->print(OS, SlotTracker);
-    OS << " := TripCount";
-  }
   if (Plan.RVL) {
     OS << "\\n";
     Plan.RVL->print(OS, SlotTracker);
