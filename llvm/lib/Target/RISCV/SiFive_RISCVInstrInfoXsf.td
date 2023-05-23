@@ -176,7 +176,6 @@ def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
 
 let hasNoSchedulingInfo = 1, hasSideEffects = 1,
     mayLoad = 0, mayStore = 0 in {
-let Predicates = [HasStdExtXsifivecflushdlone] in
 def CFLUSH_D_L1
     : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1),
               "cflush.d.l1", "$rs1">, Sched<[]> {
@@ -184,7 +183,6 @@ def CFLUSH_D_L1
   let rs2 = 0b00000;
 }
 
-let Predicates = [HasStdExtXsifivecdiscarddlone] in
 def CDISCARD_D_L1
     : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1),
               "cdiscard.d.l1", "$rs1">, Sched<[]> {
