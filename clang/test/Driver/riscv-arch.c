@@ -569,23 +569,3 @@
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-D-ZDINX-ER %s
 // RV32-D-ZDINX-ER: error: invalid arch name 'rv32idzdinx',
 // RV32-D-ZFINX-ER: 'f' and 'zfinx' extensions are incompatible
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32ifdvzvkb -### %s \
-// RUN: -menable-experimental-extensions -fsyntax-only 2>&1 \
-// RUN: | FileCheck -check-prefix=RV32-EXP-EXT-NO-VER %s
-// RV32-EXP-EXT-NO-VER: warning: extension 'zvkb' is experimental and requires
-// RV32-EXP-EXT-NO-VER-SAME: explicit version; assuming version '0.3'
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32ifdvzvkb -### %s \
-// RUN: -menable-experimental-extensions -fsyntax-only \
-// RUN: -Werror=riscv-implicit-extension-version 2>&1 \
-// RUN: | FileCheck -check-prefix=RV32-EXP-EXT-NO-VER-ERR %s
-// RV32-EXP-EXT-NO-VER-ERR: error: extension 'zvkb' is experimental and requires
-// RV32-EXP-EXT-NO-VER-ERR-SAME: explicit version; assuming version '0.3'
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32ifdvzvkb -### %s \
-// RUN: -menable-experimental-extensions -fsyntax-only \
-// RUN: -Wno-riscv-implicit-extension-version 2>&1 \
-// RUN: | FileCheck -check-prefix=RV32-EXP-EXT-NO-VER-WNO %s
-// RV32-EXP-EXT-NO-VER-WNO-NOT: warning: extension 'zvkb' is experimental and requires
-// RV32-EXP-EXT-NO-VER-WNO-NOT: explicit version; assuming version '0.3'
