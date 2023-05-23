@@ -14,7 +14,15 @@
 
 namespace clang {
 namespace driver {
+// For hacking compile options base on --specs options.
+enum class LibcType {
+  None,
+  NewlibNano,
+  SeggerGloss // Should match https://github.com/sifive/segger_libc/blob/sifive-dev/src/gloss-segger.specs
+};
+
 namespace toolchains {
+
 
 class LLVM_LIBRARY_VISIBILITY RISCVToolChain : public Generic_ELF {
 public:
@@ -36,11 +44,15 @@ public:
   addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
                            llvm::opt::ArgStringList &CC1Args) const override;
 
+  LibcType SpecialLibc;
+
 protected:
   Tool *buildLinker() const override;
 
 private:
   std::string computeSysRoot() const override;
+
+
 };
 
 } // end namespace toolchains
@@ -49,13 +61,15 @@ namespace tools {
 namespace RISCV {
 class LLVM_LIBRARY_VISIBILITY Linker : public Tool {
 public:
-  Linker(const ToolChain &TC) : Tool("RISCV::Linker", "ld", TC) {}
+  Linker(const ToolChain &TC, LibcType libc) : Tool("RISCV::Linker", "ld", TC), SpecialLibc(libc) {}
   bool hasIntegratedCPP() const override { return false; }
   bool isLinkJob() const override { return true; }
   void ConstructJob(Compilation &C, const JobAction &JA,
                     const InputInfo &Output, const InputInfoList &Inputs,
                     const llvm::opt::ArgList &TCArgs,
                     const char *LinkingOutput) const override;
+  LibcType SpecialLibc;
+
 };
 } // end namespace RISCV
 } // end namespace tools

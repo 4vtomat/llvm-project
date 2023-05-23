@@ -71,10 +71,20 @@ RISCVToolChain::RISCVToolChain(const Driver &D, const llvm::Triple &Triple,
     getProgramPaths().push_back(D.Dir);
   }
   getFilePaths().push_back(computeSysRoot() + "/lib");
+
+  // Check if we are using special libc base on --specs option.
+  // The 'SpecialLibc' variable is used to hack flags at different stages.
+  SpecialLibc = LibcType::None;
+  for (auto Specs : Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
+    if (Specs == "nano.specs")
+      SpecialLibc = LibcType::NewlibNano;
+    else if (Specs == "gloss-segger.specs")
+      SpecialLibc = LibcType::SeggerGloss;
+  }
 }
 
 Tool *RISCVToolChain::buildLinker() const {
-  return new tools::RISCV::Linker(*this);
+  return new tools::RISCV::Linker(*this, this->SpecialLibc);
 }
 
 ToolChain::RuntimeLibType RISCVToolChain::GetDefaultRuntimeLibType() const {
@@ -92,12 +102,31 @@ void RISCVToolChain::addClangTargetOptions(
     llvm::opt::ArgStringList &CC1Args,
     Action::OffloadKind) const {
   CC1Args.push_back("-nostdsysteminc");
+
+  switch (SpecialLibc) {
+    case LibcType::SeggerGloss:
+        CC1Args.push_back("-D__SEGGER_LIBC__");
+      break;
+    default:
+      break;
+  }
 }
 
 void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
                                                ArgStringList &CC1Args) const {
   if (DriverArgs.hasArg(options::OPT_nostdinc))
     return;
+
+  // Segger includ path should be searched firstly.
+  SmallString<128> SeggerDir(computeSysRoot());
+  switch (SpecialLibc) {
+    case LibcType::SeggerGloss:
+      llvm::sys::path::append(SeggerDir, "include/segger");
+      addSystemInclude(DriverArgs, CC1Args, SeggerDir.str());
+      break;
+    default:
+      break;
+  }
 
   if (!DriverArgs.hasArg(options::OPT_nobuiltininc)) {
     SmallString<128> Dir(getDriver().ResourceDir);
@@ -216,28 +245,41 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("--start-group");
     CmdArgs.push_back("-lc");
     CmdArgs.push_back("-lgloss");
+    CmdArgs.push_back("-lgcc");
     CmdArgs.push_back("--end-group");
     AddRunTimeLibs(ToolChain, ToolChain.getDriver(), CmdArgs, Args);
   }
 
-  bool UseNewlibNano = false;
-  for (auto Specs : Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
-    if (Specs == "nano.specs")
-      UseNewlibNano = true;
-  }
 
-  if (UseNewlibNano) {
-    for (size_t i = 0; i < CmdArgs.size(); ++i) {
-      StringRef Arg = CmdArgs[i];
-      if (Arg == "-lc")
-        CmdArgs[i] = "-lc_nano";
-      if (Arg == "-lgloss")
-        CmdArgs[i] = "-lgloss_nano";
-      if (Arg == "-lm")
-        CmdArgs[i] = "-lm_nano";
-      if (Arg == "-lg")
-        CmdArgs[i] = "-lg_nano";
-    }
+  switch (SpecialLibc) {
+    case LibcType::NewlibNano:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_nano";
+          if (Arg == "-lgloss")
+            CmdArgs[i] = "-lgloss_nano";
+          if (Arg == "-lm")
+            CmdArgs[i] = "-lm_nano";
+          if (Arg == "-lg")
+            CmdArgs[i] = "-lg_nano";
+        }
+      break;
+    case LibcType::SeggerGloss:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_segger";
+          if (Arg == "-lgloss")
+            CmdArgs[i] = "-lgloss-segger";
+          // libg.a is the same as libc.a.
+          // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+          if (Arg == "-lg")
+            CmdArgs[i] = "lc_segger";
+        }
+      break;
+    default:
+      break;
   }
 
   if (WantCRTs)
@@ -249,4 +291,6 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
       JA, *this, ResponseFileSupport::AtFileCurCP(), Args.MakeArgString(Linker),
       CmdArgs, Inputs, Output));
 }
+
+
 // RISCV tools end.
