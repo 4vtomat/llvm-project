@@ -68,6 +68,7 @@ void initializeRISCVExpandAtomicPseudoPass(PassRegistry &);
 FunctionPass *createRISCVInsertVSETVLIPass();
 void initializeRISCVInsertVSETVLIPass(PassRegistry &);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVPostRAExpandPseudoPass();
 void initializeRISCVPostRAExpandPseudoPass(PassRegistry &);
@@ -78,6 +79,10 @@ void initializeRISCVInsertVXRMWritePass(PassRegistry &);
 FunctionPass *createRISCVInsertNTLHInstsPass();
 void initializeRISCVInsertNTLHInstsPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+FunctionPass *createRISCVInsertReadWriteCSRPass();
+void initializeRISCVInsertReadWriteCSRPass(PassRegistry &);
+>>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 
 FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);

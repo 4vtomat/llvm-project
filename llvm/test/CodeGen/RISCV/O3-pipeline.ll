@@ -117,7 +117,11 @@
 ; CHECK-NEXT:       MachineDominator Tree Construction
 ; CHECK-NEXT:       RISC-V VL Optimizer
 ; CHECK-NEXT:       RISC-V Insert VSETVLI pass
+<<<<<<< HEAD
 ; CHECK-NEXT:       RISCV Insert required VXRM values
+=======
+; CHECK-NEXT:       RISC-V Insert Read/Write CSR Pass
+>>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 ; CHECK-NEXT:       Detect Dead Lanes
 ; CHECK-NEXT:       RISC-V init undef pass
 ; CHECK-NEXT:       Process Implicit Definitions

@@ -215,6 +215,7 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit IsSignExtendingOpW = 0;
   let TSFlags{18} = IsSignExtendingOpW;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
   // collisions when new TSFlags are added upstream
@@ -225,6 +226,10 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit HasRoundModeOp = 0;
   let TSFlags{63} =  HasRoundModeOp;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bit HasRoundModeOp = 0;
+  let TSFlags{19} =  HasRoundModeOp;
+>>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 }
 
 // Pseudo instructions

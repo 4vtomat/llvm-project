@@ -108,6 +108,7 @@ enum {
   IsSignExtendingOpWShift = UsesMaskPolicyShift + 1,
   IsSignExtendingOpWMask = 1ULL << IsSignExtendingOpWShift,
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
   // each subsequent TSFlag.
@@ -118,6 +119,10 @@ enum {
   HasRoundModeOpShift = 63,
   HasRoundModeOpMask = 1ULL << HasRoundModeOpShift,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  HasRoundModeOpShift = IsSignExtendingOpWShift + 1,
+  HasRoundModeOpMask = 1 << HasRoundModeOpShift,
+>>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 };
 
 enum VLMUL : uint8_t {
@@ -173,6 +178,11 @@ static inline bool isRVVWideningReduction(uint64_t TSFlags) {
 /// \returns true if mask policy is valid for the instruction.
 static inline bool usesMaskPolicy(uint64_t TSFlags) {
   return TSFlags & UsesMaskPolicyMask;
+}
+
+/// \returns true if there is a rounding mode operand for this instruction
+static inline bool hasRoundModeOp(uint64_t TSFlags) {
+  return TSFlags & HasRoundModeOpMask;
 }
 
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
