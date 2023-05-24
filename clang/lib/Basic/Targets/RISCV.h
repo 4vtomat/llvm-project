@@ -128,6 +128,8 @@ class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
 public:
   RISCV32TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
       : RISCVTargetInfo(Triple, Opts) {
+    LargeArrayMinWidth = 128; // SIFIVE
+    LargeArrayAlign = 32; // SIFIVE
     IntPtrType = SignedInt;
     PtrDiffType = SignedInt;
     SizeType = UnsignedInt;
