@@ -94,6 +94,15 @@ INITIALIZE_PASS(RISCVMergeBaseOffsetOpt, DEBUG_TYPE,
 //    3) The offset value in the Global Address or Constant Pool is 0.
 bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
                                              MachineInstr *&Lo) {
+#if SIFIVE_CUSTOMIZATION
+  if (Hi.getOpcode() == RISCV::PseudoLIaddr) {
+    // Most of the code should handle it correctly without modification by
+    // setting Lo and Hi both point to PseudoLIaddr
+    Lo = &Hi;
+    return true;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   if (Hi.getOpcode() != RISCV::LUI && Hi.getOpcode() != RISCV::AUIPC)
     return false;
 
@@ -426,6 +435,14 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
 
   Hi.getOperand(1).setOffset(NewOffset);
   MachineOperand &ImmOp = Lo.getOperand(2);
+#if SIFIVE_CUSTOMIZATION
+  // Expand PseudoLIaddr into LUI
+  if (Hi.getOpcode() == RISCV::PseudoLIaddr) {
+    auto *TII = ST->getInstrInfo();
+    Hi.setDesc(TII->get(RISCV::LUI));
+    Hi.removeOperand(2);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (Hi.getOpcode() != RISCV::AUIPC)
     ImmOp.setOffset(NewOffset);
 
@@ -439,6 +456,12 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
     UseMI.getOperand(1).setReg(Hi.getOperand(0).getReg());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Prevent Lo (originally PseudoLIaddr, which is also pointed by Hi) from
+  // being erased
+  if (Lo.getOpcode() == RISCV::LUI)
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   Lo.eraseFromParent();
   return true;
 }

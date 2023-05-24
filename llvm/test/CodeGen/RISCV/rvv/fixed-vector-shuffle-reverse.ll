@@ -2763,31 +2763,141 @@ define <16 x i8> @reverse_v16i8(<16 x i8> %a) {
 }
 
 define <32 x i8> @reverse_v32i8(<32 x i8> %a) {
-; CHECK-LABEL: reverse_v32i8:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a0, %hi(.LCPI11_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI11_0)
-; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a0)
-; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    vmv.v.v v8, v10
-; CHECK-NEXT:    ret
+; RV32-BITS-UNKNOWN-LABEL: reverse_v32i8:
+; RV32-BITS-UNKNOWN:       # %bb.0:
+; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI11_0)
+; RV32-BITS-UNKNOWN-NEXT:    addi a0, a0, %lo(.LCPI11_0)
+; RV32-BITS-UNKNOWN-NEXT:    li a1, 32
+; RV32-BITS-UNKNOWN-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; RV32-BITS-UNKNOWN-NEXT:    vle8.v v12, (a0)
+; RV32-BITS-UNKNOWN-NEXT:    vrgather.vv v10, v8, v12
+; RV32-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v10
+; RV32-BITS-UNKNOWN-NEXT:    ret
+;
+; RV32-BITS-256-LABEL: reverse_v32i8:
+; RV32-BITS-256:       # %bb.0:
+; RV32-BITS-256-NEXT:    lui a0, %hi(.LCPI11_0)
+; RV32-BITS-256-NEXT:    addi a0, a0, %lo(.LCPI11_0)
+; RV32-BITS-256-NEXT:    li a1, 32
+; RV32-BITS-256-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; RV32-BITS-256-NEXT:    vle8.v v12, (a0)
+; RV32-BITS-256-NEXT:    vrgather.vv v10, v8, v12
+; RV32-BITS-256-NEXT:    vmv.v.v v8, v10
+; RV32-BITS-256-NEXT:    ret
+;
+; RV32-BITS-512-LABEL: reverse_v32i8:
+; RV32-BITS-512:       # %bb.0:
+; RV32-BITS-512-NEXT:    lui a0, %hi(.LCPI11_0)
+; RV32-BITS-512-NEXT:    addi a0, a0, %lo(.LCPI11_0)
+; RV32-BITS-512-NEXT:    li a1, 32
+; RV32-BITS-512-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; RV32-BITS-512-NEXT:    vle8.v v12, (a0)
+; RV32-BITS-512-NEXT:    vrgather.vv v10, v8, v12
+; RV32-BITS-512-NEXT:    vmv.v.v v8, v10
+; RV32-BITS-512-NEXT:    ret
+;
+; RV64-BITS-UNKNOWN-LABEL: reverse_v32i8:
+; RV64-BITS-UNKNOWN:       # %bb.0:
+; RV64-BITS-UNKNOWN-NEXT:    li a0, 32
+; RV64-BITS-UNKNOWN-NEXT:    lui a1, %hi(.LCPI11_0)
+; RV64-BITS-UNKNOWN-NEXT:    addi a1, a1, %lo(.LCPI11_0)
+; RV64-BITS-UNKNOWN-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
+; RV64-BITS-UNKNOWN-NEXT:    vle8.v v12, (a1)
+; RV64-BITS-UNKNOWN-NEXT:    vrgather.vv v10, v8, v12
+; RV64-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v10
+; RV64-BITS-UNKNOWN-NEXT:    ret
+;
+; RV64-BITS-256-LABEL: reverse_v32i8:
+; RV64-BITS-256:       # %bb.0:
+; RV64-BITS-256-NEXT:    li a0, 32
+; RV64-BITS-256-NEXT:    lui a1, %hi(.LCPI11_0)
+; RV64-BITS-256-NEXT:    addi a1, a1, %lo(.LCPI11_0)
+; RV64-BITS-256-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
+; RV64-BITS-256-NEXT:    vle8.v v12, (a1)
+; RV64-BITS-256-NEXT:    vrgather.vv v10, v8, v12
+; RV64-BITS-256-NEXT:    vmv.v.v v8, v10
+; RV64-BITS-256-NEXT:    ret
+;
+; RV64-BITS-512-LABEL: reverse_v32i8:
+; RV64-BITS-512:       # %bb.0:
+; RV64-BITS-512-NEXT:    li a0, 32
+; RV64-BITS-512-NEXT:    lui a1, %hi(.LCPI11_0)
+; RV64-BITS-512-NEXT:    addi a1, a1, %lo(.LCPI11_0)
+; RV64-BITS-512-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
+; RV64-BITS-512-NEXT:    vle8.v v12, (a1)
+; RV64-BITS-512-NEXT:    vrgather.vv v10, v8, v12
+; RV64-BITS-512-NEXT:    vmv.v.v v8, v10
+; RV64-BITS-512-NEXT:    ret
   %res = call <32 x i8> @llvm.experimental.vector.reverse.v32i8(<32 x i8> %a)
   ret <32 x i8> %res
 }
 
 define <64 x i8> @reverse_v64i8(<64 x i8> %a) {
-; CHECK-LABEL: reverse_v64i8:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI12_0)
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v16, (a0)
-; CHECK-NEXT:    vrgather.vv v12, v8, v16
-; CHECK-NEXT:    vmv.v.v v8, v12
-; CHECK-NEXT:    ret
+; RV32-BITS-UNKNOWN-LABEL: reverse_v64i8:
+; RV32-BITS-UNKNOWN:       # %bb.0:
+; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI12_0)
+; RV32-BITS-UNKNOWN-NEXT:    addi a0, a0, %lo(.LCPI12_0)
+; RV32-BITS-UNKNOWN-NEXT:    li a1, 64
+; RV32-BITS-UNKNOWN-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
+; RV32-BITS-UNKNOWN-NEXT:    vle8.v v16, (a0)
+; RV32-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-UNKNOWN-NEXT:    ret
+;
+; RV32-BITS-256-LABEL: reverse_v64i8:
+; RV32-BITS-256:       # %bb.0:
+; RV32-BITS-256-NEXT:    lui a0, %hi(.LCPI12_0)
+; RV32-BITS-256-NEXT:    addi a0, a0, %lo(.LCPI12_0)
+; RV32-BITS-256-NEXT:    li a1, 64
+; RV32-BITS-256-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
+; RV32-BITS-256-NEXT:    vle8.v v16, (a0)
+; RV32-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-256-NEXT:    ret
+;
+; RV32-BITS-512-LABEL: reverse_v64i8:
+; RV32-BITS-512:       # %bb.0:
+; RV32-BITS-512-NEXT:    lui a0, %hi(.LCPI12_0)
+; RV32-BITS-512-NEXT:    addi a0, a0, %lo(.LCPI12_0)
+; RV32-BITS-512-NEXT:    li a1, 64
+; RV32-BITS-512-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
+; RV32-BITS-512-NEXT:    vle8.v v16, (a0)
+; RV32-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-512-NEXT:    ret
+;
+; RV64-BITS-UNKNOWN-LABEL: reverse_v64i8:
+; RV64-BITS-UNKNOWN:       # %bb.0:
+; RV64-BITS-UNKNOWN-NEXT:    li a0, 64
+; RV64-BITS-UNKNOWN-NEXT:    lui a1, %hi(.LCPI12_0)
+; RV64-BITS-UNKNOWN-NEXT:    addi a1, a1, %lo(.LCPI12_0)
+; RV64-BITS-UNKNOWN-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
+; RV64-BITS-UNKNOWN-NEXT:    vle8.v v16, (a1)
+; RV64-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-UNKNOWN-NEXT:    ret
+;
+; RV64-BITS-256-LABEL: reverse_v64i8:
+; RV64-BITS-256:       # %bb.0:
+; RV64-BITS-256-NEXT:    li a0, 64
+; RV64-BITS-256-NEXT:    lui a1, %hi(.LCPI12_0)
+; RV64-BITS-256-NEXT:    addi a1, a1, %lo(.LCPI12_0)
+; RV64-BITS-256-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
+; RV64-BITS-256-NEXT:    vle8.v v16, (a1)
+; RV64-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-256-NEXT:    ret
+;
+; RV64-BITS-512-LABEL: reverse_v64i8:
+; RV64-BITS-512:       # %bb.0:
+; RV64-BITS-512-NEXT:    li a0, 64
+; RV64-BITS-512-NEXT:    lui a1, %hi(.LCPI12_0)
+; RV64-BITS-512-NEXT:    addi a1, a1, %lo(.LCPI12_0)
+; RV64-BITS-512-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
+; RV64-BITS-512-NEXT:    vle8.v v16, (a1)
+; RV64-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-512-NEXT:    ret
   %res = call <64 x i8> @llvm.experimental.vector.reverse.v64i8(<64 x i8> %a)
   ret <64 x i8> %res
 }
@@ -2853,16 +2963,71 @@ define <16 x i16> @reverse_v16i16(<16 x i16> %a) {
 }
 
 define <32 x i16> @reverse_v32i16(<32 x i16> %a) {
-; CHECK-LABEL: reverse_v32i16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a0, %hi(.LCPI18_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI18_0)
-; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
-; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    vrgather.vv v12, v8, v16
-; CHECK-NEXT:    vmv.v.v v8, v12
-; CHECK-NEXT:    ret
+; RV32-BITS-UNKNOWN-LABEL: reverse_v32i16:
+; RV32-BITS-UNKNOWN:       # %bb.0:
+; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI18_0)
+; RV32-BITS-UNKNOWN-NEXT:    addi a0, a0, %lo(.LCPI18_0)
+; RV32-BITS-UNKNOWN-NEXT:    li a1, 32
+; RV32-BITS-UNKNOWN-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-UNKNOWN-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-UNKNOWN-NEXT:    ret
+;
+; RV32-BITS-256-LABEL: reverse_v32i16:
+; RV32-BITS-256:       # %bb.0:
+; RV32-BITS-256-NEXT:    lui a0, %hi(.LCPI18_0)
+; RV32-BITS-256-NEXT:    addi a0, a0, %lo(.LCPI18_0)
+; RV32-BITS-256-NEXT:    li a1, 32
+; RV32-BITS-256-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-256-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-256-NEXT:    ret
+;
+; RV32-BITS-512-LABEL: reverse_v32i16:
+; RV32-BITS-512:       # %bb.0:
+; RV32-BITS-512-NEXT:    lui a0, %hi(.LCPI18_0)
+; RV32-BITS-512-NEXT:    addi a0, a0, %lo(.LCPI18_0)
+; RV32-BITS-512-NEXT:    li a1, 32
+; RV32-BITS-512-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-512-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-512-NEXT:    ret
+;
+; RV64-BITS-UNKNOWN-LABEL: reverse_v32i16:
+; RV64-BITS-UNKNOWN:       # %bb.0:
+; RV64-BITS-UNKNOWN-NEXT:    li a0, 32
+; RV64-BITS-UNKNOWN-NEXT:    lui a1, %hi(.LCPI18_0)
+; RV64-BITS-UNKNOWN-NEXT:    addi a1, a1, %lo(.LCPI18_0)
+; RV64-BITS-UNKNOWN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-UNKNOWN-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-UNKNOWN-NEXT:    ret
+;
+; RV64-BITS-256-LABEL: reverse_v32i16:
+; RV64-BITS-256:       # %bb.0:
+; RV64-BITS-256-NEXT:    li a0, 32
+; RV64-BITS-256-NEXT:    lui a1, %hi(.LCPI18_0)
+; RV64-BITS-256-NEXT:    addi a1, a1, %lo(.LCPI18_0)
+; RV64-BITS-256-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-256-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-256-NEXT:    ret
+;
+; RV64-BITS-512-LABEL: reverse_v32i16:
+; RV64-BITS-512:       # %bb.0:
+; RV64-BITS-512-NEXT:    li a0, 32
+; RV64-BITS-512-NEXT:    lui a1, %hi(.LCPI18_0)
+; RV64-BITS-512-NEXT:    addi a1, a1, %lo(.LCPI18_0)
+; RV64-BITS-512-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-512-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-512-NEXT:    ret
   %res = call <32 x i16> @llvm.experimental.vector.reverse.v32i16(<32 x i16> %a)
   ret <32 x i16> %res
 }
@@ -3132,16 +3297,71 @@ define <16 x half> @reverse_v16f16(<16 x half> %a) {
 }
 
 define <32 x half> @reverse_v32f16(<32 x half> %a) {
-; CHECK-LABEL: reverse_v32f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a0, %hi(.LCPI33_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI33_0)
-; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
-; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    vrgather.vv v12, v8, v16
-; CHECK-NEXT:    vmv.v.v v8, v12
-; CHECK-NEXT:    ret
+; RV32-BITS-UNKNOWN-LABEL: reverse_v32f16:
+; RV32-BITS-UNKNOWN:       # %bb.0:
+; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI33_0)
+; RV32-BITS-UNKNOWN-NEXT:    addi a0, a0, %lo(.LCPI33_0)
+; RV32-BITS-UNKNOWN-NEXT:    li a1, 32
+; RV32-BITS-UNKNOWN-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-UNKNOWN-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-UNKNOWN-NEXT:    ret
+;
+; RV32-BITS-256-LABEL: reverse_v32f16:
+; RV32-BITS-256:       # %bb.0:
+; RV32-BITS-256-NEXT:    lui a0, %hi(.LCPI33_0)
+; RV32-BITS-256-NEXT:    addi a0, a0, %lo(.LCPI33_0)
+; RV32-BITS-256-NEXT:    li a1, 32
+; RV32-BITS-256-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-256-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-256-NEXT:    ret
+;
+; RV32-BITS-512-LABEL: reverse_v32f16:
+; RV32-BITS-512:       # %bb.0:
+; RV32-BITS-512-NEXT:    lui a0, %hi(.LCPI33_0)
+; RV32-BITS-512-NEXT:    addi a0, a0, %lo(.LCPI33_0)
+; RV32-BITS-512-NEXT:    li a1, 32
+; RV32-BITS-512-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; RV32-BITS-512-NEXT:    vle16.v v16, (a0)
+; RV32-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV32-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV32-BITS-512-NEXT:    ret
+;
+; RV64-BITS-UNKNOWN-LABEL: reverse_v32f16:
+; RV64-BITS-UNKNOWN:       # %bb.0:
+; RV64-BITS-UNKNOWN-NEXT:    li a0, 32
+; RV64-BITS-UNKNOWN-NEXT:    lui a1, %hi(.LCPI33_0)
+; RV64-BITS-UNKNOWN-NEXT:    addi a1, a1, %lo(.LCPI33_0)
+; RV64-BITS-UNKNOWN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-UNKNOWN-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-UNKNOWN-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-UNKNOWN-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-UNKNOWN-NEXT:    ret
+;
+; RV64-BITS-256-LABEL: reverse_v32f16:
+; RV64-BITS-256:       # %bb.0:
+; RV64-BITS-256-NEXT:    li a0, 32
+; RV64-BITS-256-NEXT:    lui a1, %hi(.LCPI33_0)
+; RV64-BITS-256-NEXT:    addi a1, a1, %lo(.LCPI33_0)
+; RV64-BITS-256-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-256-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-256-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-256-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-256-NEXT:    ret
+;
+; RV64-BITS-512-LABEL: reverse_v32f16:
+; RV64-BITS-512:       # %bb.0:
+; RV64-BITS-512-NEXT:    li a0, 32
+; RV64-BITS-512-NEXT:    lui a1, %hi(.LCPI33_0)
+; RV64-BITS-512-NEXT:    addi a1, a1, %lo(.LCPI33_0)
+; RV64-BITS-512-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+; RV64-BITS-512-NEXT:    vle16.v v16, (a1)
+; RV64-BITS-512-NEXT:    vrgather.vv v12, v8, v16
+; RV64-BITS-512-NEXT:    vmv.v.v v8, v12
+; RV64-BITS-512-NEXT:    ret
   %res = call <32 x half> @llvm.experimental.vector.reverse.v32f16(<32 x half> %a)
   ret <32 x half> %res
 }
