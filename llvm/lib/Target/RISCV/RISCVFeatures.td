@@ -148,24 +148,20 @@ def FeatureStdExtSswg
 
 def FeatureStdExtXsifivecflushdlone
     : SubtargetFeature<"experimental-xsifivecflushdlone", "HasStdExtXsifivecflushdlone", "true",
-                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)"
-                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)", []>;
+                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
 def HasStdExtXsifivecflushdlone :
     Predicate<"Subtarget->hasStdExtXsifivecflushdlone()">,
     AssemblerPredicate<(all_of FeatureStdExtXsifivecflushdlone),
-                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)"
-                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)">;
+                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)">;
 
 def FeatureStdExtXsifivecdiscarddlone
     : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasStdExtXsifivecdiscarddlone", "true",
                        "Cache Flush/Power Down Instructions"
-                       "'Xsifivecdiscarddlone'(Cache Flush/Power Down Instructions)"
-                       "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)", []>;
+                       "'Xsifivecdiscarddlone'(Cache Flush/Power Down Instructions)", []>;
 def HasStdExtXsifivecdiscarddlone :
     Predicate<"Subtarget->hasStdExtXsifivecdiscarddlone()">,
     AssemblerPredicate<(all_of FeatureStdExtXsifivecdiscarddlone),
-                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)"
-                        "(https://github.com/sifive/arch-specs/blob/master/core/cflush-cease.adoc)">;
+                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
