@@ -1,0 +1,259 @@
+= SiFive pass:[C/C++] Compiler Developers' Guide
+***
+:toc:
+
+== About this Document
+This document provides a reference for developing with the SiFive pass:[C/C++] compiler tools.
+SiFive offers tools built upon the open source LLVM Compiler Infrastructure Project (LLVM-based) and the GNU Compiler Collection (GCC-based).
+
+This document contains information specific to using the *LLVM-based* SiFive pass:[C/C++] compiler.
+Version {doc-version} of this document describes the compiler options and pass:[C/C++] language features supported specifically for SiFive Core IP processors.
+This document does not cover general LLVM usage;
+for pointers to LLVM documentation, see <<additional-resources>>.
+
+=== About this Version
+Version {doc-version} of this document covers the SiFive LLVM-based compiler v{sw-version},
+based on the LLVM open source release v{llvm-version}.
+
+To check your software version:
+
+* Baremetal toolchain:
++
+[subs="attributes+"]
+----
+$ riscv64-unknown-elf-clang --version
+
+(SiFive LLVM-Metal {llvm-version}-{sw-version}) clang version {llvm-version}
+----
+
+* Linux toolchain:
++
+[subs="attributes+"]
+----
+$ riscv64-unknown-linux-gnu-clang --version
+
+(SiFive LLVM-Linux {llvm-version}-{sw-version}) clang version {llvm-version}
+----
+
+=== Downloading Freedom Tools
+The SiFive pass:[C/C++] compiler tools are included with Freedom Tools v{sw-version}.
+The Freedom Tools package is available for download from your SCD workspace.
+For steps on how to access and download Freedom Tools,
+refer to "How to Access the SiFive Software and Tools Downloads on SCS":
+https://sifive.atlassian.net/servicedesk/customer/portal/47/article/2192998455
+
+Within the Freedom Tools package, the compiler packages start with:
+
+* `riscv64-unknown-elf-toolsuite-{llvm-version}-{sw-version}-`
+* `riscv64-unknown-linux-gnu-toolsuite-{llvm-version}-{sw-version}-`
+
+[[additional-resources]]
+=== Additional Resources
+Additional resources on general LLVM compiler options and usage:
+
+* Clang {upstream-llvm-version} Compiler User's Manual: +
+https://releases.llvm.org/{upstream-llvm-version}/tools/clang/docs/UsersManual.html
+* Clang {upstream-llvm-version} Command Line Argument Reference: +
+https://releases.llvm.org/{upstream-llvm-version}/tools/clang/docs/ClangCommandLineReference.html
+
+== SiFive-Specific Compiler Options
+<<table-options>> lists the currently supported SiFive-specific compiler options.
+These options, when appropriately used, affect the optimization,
+code generation, and more, of the generated executable.
+
+[[table-options]]
+.SiFive-Specific Compiler Options
+[cols="m,a",options="header,autowidth"]
+|===
+h|Compiler Option h|Description
+
+|-march/-mtune/-mcpu
+|These options are used together to specify code generation and optimization for specific SiFive processors.
+These options are further described in <<march-mtune-mcpu>>.
+
+* `-march`: generates code for specific SiFive processors.
+Using this option may produce incompatible binaries across all SiFive processors.
+* `-mtune`: performs optimization for specific SiFive processors.
+Does not change the extended instruction sets to be used.
+* `-mcpu`: equal to `-march + -mtune`. Sets the default `-march` and `-mtune` at the same time.
+
+|-mllvm -allow-epilog-peeling
+|Enable Epilog Peeling; allows peeling from final iterations of loops.
+The control flow is removed from the main loop, helping subsequent optimizations.
+
+|-U __rvv_0p10_compatible_intrinsics
+|*[Experimental] This option may be deprecated and removed in a future release.*
+
+The RISC-V Vectors (RVV) v0.10 compatible header is included by default when `riscv_vector.h`
+is included. Specifying this option disables the inclusion of the header file,
+disabling compiler support of the v0.10 intrinsics.
+
+|-fno-use-vla-vectorizer
+|The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
+This option enables the Vector Length Specific (VLS) vectorizer instead of the default VLA vectorizer.
+
+|-mllvm -vector-primary-lmul-min
+|*[Experimental] This option may be deprecated and removed in a future release.*
+
+Limits the exponent of the minimum primary LMUL considered by the VLA vectorizer's cost model.
+The default value is 0, meaning `LMUL=pow(2,0)=1`.
+Fractional LMULs are currently not supported.
+Acceptable values are [0,1,2,3].
+This option does not force vectorization.
+
+|-mllvm -vector-primary-lmul-max
+|*[Experimental] This option may be deprecated and removed in a future release.*
+
+Limits the exponent of the maximum primary LMUL considered by the VLA vectorizer's cost model.
+The default value is 0, meaning `LMUL=pow(2,0)=1`.
+Fractional LMULs are currently not supported.
+Acceptable values are [0,1,2,3].
+This option does not force vectorization.
+|===
+
+[[march-mtune-mcpu]]
+=== SiFive `-march`/`-mtune`/`-mcpu` Options
+
+* Set `-march` to generate code for processors that support specified extensions
+** The `-march` string (e.g., `rv32imafdc`) specifies processors (e.g., `rv32i`) and supported RISC-V extensions (e.g., `mafdc`)
+** Using this option may produce incompatible binaries across all SiFive processors
+* Set `-mtune` to perform optimizations for the specified processor
+** Does not change the extended instruction sets to be used
+* Set `-mcpu` to set the default `-march` and default `-mtune` at the same time
+** `-mcpu = -march + -mtune`
+
+==== Usage Example
+To compile a `hello` program that runs on the 22G1 X280 platform (with default settings):
+
+[subs="attributes,quotes"]
+----
+$ riscv64-unknown-elf-clang *-mcpu=sifive-x280o* hello.c
+----
+
+Alternatively, you can replace `-mcpu` with separately defined `-march` and `-mtune` flags.
+To compile a `hello` example for a 21G3 P550 platform:
+
+[subs="attributes,quotes"]
+----
+$ riscv64-unknown-elf-clang *-march=rv64imafdc_zba_zbb -mtune=sifive-p550* hello.c
+----
+
+<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release and `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
+Support of options starts from the compiler release specified in the table.
+
+// For PDF formatting
+<<<
+
+// WARNING: These column widths have been carefully and precisely selected to
+// minimize awkward line breaks and maximize readability.
+[[table-arch-options]]
+.SiFive `-march`/`-mtune`/`-mcpu` Options
+[.sifive-fixed.sifive-small-font,cols="13%,14%,16%m,37%a,20%m",options="header"]
+|===
+h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mtune`
+
+|23G3 and above |2023.03.0 and above |sifive-p650 
+|`rv64gc_zfhmin_zba_zbb_zbs`
+|sifive-p650
+
+|23G3 and above |2023.03.0 and above |sifive-p670
+|`rv64gcv_zfhmin_zba_zbb_zbs_zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_zvksed0p1_zvksh0p1_zvl128b`
+|sifive-p670
+
+|23G3 and above |2023.03.0 and above |sifive-p450
+|`rv64gc_zfhmin_zba_zbb_zbs`
+|sifive-p450
+
+|23G3 and above |2023.03.0 and above |sifive-p470
+|`rv64gcv_zfhmin_zba_zbb_zbs_zvkb0p1_zvkg0p1_zvknhb0p1_zvkns0p1_zvksed0p1_zvksh0p1_zvl128b`
+|sifive-p470
+
+|23G2 and above |2023.03.0 and above |sifive-u64 |`rv64gc_zba_zbb` |sifive-6-series
+|23G2 and above |2023.03.0 and above |sifive-s61 |`rv64imac_zifencei_zba_zbb` |sifive-6-series
+|23G2 and above |2023.03.0 and above |sifive-e61 |`rv32imac_zifencei_zba_zbb` |sifive-6-series
+
+|22G1 and above | 2022.08.0 and above |sifive-x280o
+|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
+
+* New optional support for `xsfvcp`
+|sifive-x280o
+
+|21G3 |2021.11.5 and above |sifive-x280n
+|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
+
+* New optional support for `zve64f` and `zve32f`
+|sifive-x280n
+
+|21G2 |2021.06.3 and above |sifive-x280
+|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq`
+
+|sifive-x280
+
+|21G3 and above |2021.11.5 and above |sifive-p270n
+|`rv64imafdcv_zvfh_zba_zbb_zvl256b`
+
+|sifive-p270n
+|21G2 |2021.06.3 and above |sifive-p270
+|`rv64imafdcv_zvfh_zba_zbb_zvl256b`
+
+|sifive-270
+
+|21G3 and above |2021.11.5 and above |sifive-u64 |`rv64imafdc_zba_zbb` |sifive-6-series
+|21G3 and above |2021.11.5 and above |sifive-u74n |`rv64imafdc_zba_zbb` |sifive-7n-series
+|21G2 |2021.06.3 and above |sifive-u74m |`rv64imafdc_zba_zbb` |sifive-7m-series
+|21G3 and above |2021.11.5 and above |sifive-s76n |`rv64imafdc_zba_zbb` |sifive-7n-series
+|21G2 |2021.06.3 and above |sifive-s76m |`rv64imafdc_zba_zbb` |sifive-7m-series
+|21G3 and above |2021.11.5 and above |sifive-e76n |`rv32imafc_zba_zbb` |sifive-7n-series
+|21G2 |2021.06.3 and above |sifive-e76m |`rv32imafc_zba_zbb` |sifive-7m-series
+|21G2 and above |2021.06.3 and above |sifive-p550 |`rv64imafdc_zba_zbb` |sifive-p550
+
+|===
+
+== SiFive-Specific pass:[C/C++] Language Features
+
+=== `#pragma rvv lmul_sew(LMUL, SEW)` (experimental)
+
+Note: The pragma is still under development to fully achieve the semantic stated here, it is expected that the vectorizer is not forced under some circumstances even though the pragma is specified.
+
+The loop-level pragma disables any heuristic in the vectorizer and instructs to vectorize the loop with a specified (LMUL, SEW) pair as a primary pair, i.e. a vector iteration will process no more than ``LMUL * (VLEN / SEW)`` elements, where VLEN is a target's vector register size.
+
+----
+#pragma clang rvv lmul_sew(m1, e32)
+for (int i=0; i<n; ++i) c[i] = a[i] + b[i]
+----
+
+The legal value of LMUL (length multiplier^1^) is one of `mf8`, `mf4`, `mf2`, `m1`, `m2`, `m4`, or `m8`. The legal value of SEW (Selected Element Width^1^) is one of `e8`, `e16`, `e32`, or `e64`. Within the vectorized loop, scalar types that match the SEW in the pragma (if vectorizable) will use the number of registers specified as LMUL. Other scalar types will use an LMUL scaled by the element width.
+
+Note that some combinations will have the same effect for a single loop because the LMUL will be scaled according to the exact data type (element width); for example (`m1`, `e64`) will have the same effect as (`mf2`, `e32`), (`mf4`, `e16`), and (`mf8`, `e8`).
+
+Note that (`mf8`, `e8`), (`mf4`, `e16`), (`mf2`, `e32`), and (`m1`, `e64`) are not available when EEW of 64^2^ is not supported. The compiler will emit error when these pairs are specified under a maximum EEW of 32.
+
+Note that `e16` requires `mf4` or higher LMUL; `e32` requires `mf2` or higher LMUL; `e64` requires `m1` or higher LMUL. The compiler will emit error upon receiving an invalid (LMUL, SEW) pair.
+
+==== Additional Resources
+
+* ^1^RISC-V Vector Specification, 3.4. Vector Type Register, vtype +
+https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#34-vector-type-register-vtype
+
+* ^2^RISC-V Vector Specification, 5.2. Vector Operands +
+https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#52-vector-operands
+
+[[section-vectorizer]]
+== Loop Vectorizer Defaults
+The SiFive pass:[C/C++] compiler v{sw-version} employs a vectorizer that may be enabled by default.
+<<table-loop-vec-defaults>> summarizes when the loop vectorizer is on by default.
+
+[[table-loop-vec-defaults]]
+.Loop Vectorizer Defaults
+[cols="m,^,^,^",options="autowidth"]
+|===
+h| h|Non-LTO h|LTO (Pre-link) h|LTO (Link)
+
+|-O0    |Disabled |Disabled |Disabled
+|-O1    |Disabled |Disabled |Disabled
+|-O2    |*Enabled*  |*Enabled*  |*Enabled*
+|-O3    |*Enabled*  |*Enabled*  |*Enabled*
+|-Os    |*Enabled*  |*Enabled*  |*Enabled*
+|-Oz    |Disabled |Disabled |Disabled
+|-Ofast |*Enabled*  |*Enabled*  |*Enabled*
+|===
