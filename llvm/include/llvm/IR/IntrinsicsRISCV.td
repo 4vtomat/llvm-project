@@ -1531,6 +1531,7 @@ let TargetPrefix = "riscv" in {
 
   def "int_riscv_vcompress" : RISCVCompress;
 
+<<<<<<< HEAD
   defm vaaddu : RISCVSaturatingBinaryAAX;
   defm vaadd : RISCVSaturatingBinaryAAX;
   defm vasubu : RISCVSaturatingBinaryAAX;
@@ -1554,6 +1555,12 @@ let TargetPrefix = "riscv" in {
   defm vaadd_rm : RISCVSaturatingBinaryAAXRoundingMode;
   defm vasubu_rm : RISCVSaturatingBinaryAAXRoundingMode;
   defm vasub_rm : RISCVSaturatingBinaryAAXRoundingMode;
+=======
+  defm vaaddu : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vaadd : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vasubu : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vasub : RISCVSaturatingBinaryAAXRoundingMode;
+>>>>>>> 5510f0b8f4b1 ([3/3][RISCV][POC] Model vxrm in C intrinsics for RVV fixed-point instruction vaadd, vasub)
 
   defm vsmul : RISCVSaturatingBinaryAAX;
 

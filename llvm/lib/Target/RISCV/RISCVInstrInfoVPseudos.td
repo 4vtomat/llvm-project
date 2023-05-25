@@ -4866,7 +4866,7 @@ class VPatBinaryNoMaskTARoundingMode<string intrinsic_name,
                                      int sew,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
                    (result_type (undef)),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4887,7 +4887,7 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      VReg result_reg_class,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4987,8 +4987,12 @@ class VPatBinaryMaskTARoundingMode<string intrinsic_name,
                                    VReg result_reg_class,
                                    VReg op1_reg_class,
                                    DAGOperand op2_kind> :
+<<<<<<< HEAD
   Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_rm_mask")
 >>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
+=======
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_mask")
+>>>>>>> 5510f0b8f4b1 ([3/3][RISCV][POC] Model vxrm in C intrinsics for RVV fixed-point instruction vaadd, vasub)
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
