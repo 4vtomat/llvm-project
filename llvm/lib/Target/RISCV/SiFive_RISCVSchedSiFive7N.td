@@ -132,6 +132,45 @@ class SiFive7NGetDivOrSqrtFactor<int sew> {
   );
 }
 
+/// Cycles for reductions take approximately VL*SEW/DLEN + 5(4 + log(DLEN/SEW))
+/// cycles
+class SiFive7NGetReductionCycles<string mx, int sew> {
+  // VLUpperBound*SEW/DLEN is equivalent to 2*LMUL since
+  // VLUpperBound=(VLEN*LMUL)/SEW.
+  defvar VLEN = 512;
+  defvar DLEN = !div(VLEN, 2);
+  defvar TwoTimesLMUL = !cond(
+    !eq(mx, "M1") : 2,
+    !eq(mx, "M2") : 4,
+    !eq(mx, "M4") : 8,
+    !eq(mx, "M8") : 16,
+    !eq(mx, "MF2") : 1,
+    !eq(mx, "MF4") : 1,
+    !eq(mx, "MF8") : 1
+  );
+  int DLEN = !div(VLEN, 2);
+  int c = !add(
+    !div(TwoTimesLMUL, DLEN),
+    !mul(5, !add(4, !logtwo(!div(DLEN, sew))))
+  );
+}
+
+/// Cycles for ordered reductions take approximately 5*VL cycles
+class SiFive7NGetOrderedReductionCycles<string mx, int sew> {
+  defvar VLEN = 512;
+  // (VLEN * LMUL) / SEW
+  defvar VLUpperBound  = !cond(
+    !eq(mx, "M1") : !div(VLEN, sew),
+    !eq(mx, "M2") : !div(!mul(VLEN, 2), sew),
+    !eq(mx, "M4") : !div(!mul(VLEN, 4), sew),
+    !eq(mx, "M8") : !div(!mul(VLEN, 8), sew),
+    !eq(mx, "MF2") : !div(!div(VLEN, 2), sew),
+    !eq(mx, "MF4") : !div(!div(VLEN, 4), sew),
+    !eq(mx, "MF8") : !div(!div(VLEN, 8), sew),
+  );
+  int c = !mul(5, VLUpperBound);
+}
+
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
 def SiFive7NModel : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
@@ -632,13 +671,52 @@ foreach mx = SchedMxListFW in {
 }
 
 // 14. Vector Reduction Operations
-let Latency = 32 in {
-defm "" : LMULSEWWriteRes<"WriteVIRedV_From", [SiFive7NVA]>;
-defm "" : LMULSEWWriteResWRed<"WriteVIWRedV_From", [SiFive7NVA]>;
-defm "" : LMULSEWWriteResF<"WriteVFRedV_From", [SiFive7NVA]>;
-defm "" : LMULSEWWriteResF<"WriteVFRedOV_From", [SiFive7NVA]>;
-defm "" : LMULSEWWriteResFWRed<"WriteVFWRedV_From", [SiFive7NVA]>;
-defm "" : LMULSEWWriteResFWRed<"WriteVFWRedOV_From", [SiFive7NVA]>;
+foreach mx = SchedMxList in {
+  foreach sew = SchedSEWSet<mx>.val in {
+    defvar Cycles = SiFive7NGetReductionCycles<mx, sew>.c;
+    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+    let Latency = Cycles, ResourceCycles = [Cycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+  }
+}
+
+foreach mx = SchedMxListWRed in {
+  foreach sew = SchedSEWSet<mx, 1>.val in {
+    defvar Cycles = SiFive7NGetReductionCycles<mx, sew>.c;
+    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
+    let Latency = Cycles, ResourceCycles = [Cycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+  }
+}
+
+foreach mx = SchedMxListF in {
+  foreach sew = SchedSEWSetF<mx>.val in {
+    defvar RedCycles = SiFive7NGetReductionCycles<mx, sew>.c;
+    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
+    let Latency = RedCycles, ResourceCycles = [RedCycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+    defvar OrdRedCycles = SiFive7NGetOrderedReductionCycles<mx, sew>.c;
+    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFive7VA],
+                                 mx, sew, IsWorstCase>;
+  }
+}
+
+foreach mx = SchedMxListFWRed in {
+  foreach sew = SchedSEWSetF<mx, 1>.val in {
+    defvar RedCycles = SiFive7NGetReductionCycles<mx, sew>.c;
+    defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
+    let Latency = RedCycles, ResourceCycles = [RedCycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+    defvar OrdRedCycles = SiFive7NGetOrderedReductionCycles<mx, sew>.c;
+    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+  }
 }
 
 // 15. Vector Mask Instructions
