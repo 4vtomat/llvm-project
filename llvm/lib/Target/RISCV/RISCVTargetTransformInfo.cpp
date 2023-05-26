@@ -615,6 +615,10 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
+#if SIFIVE_CUSTOMIZATION
+  if (isa<ScalableVectorType>(VecTy))
+    return getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
   auto *FVTy = cast<FixedVectorType>(VecTy);
   InstructionCost MemCost =
       getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
@@ -2308,6 +2312,20 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
   NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);
   assert(isPowerOf2_32(NumElts) && "Expected power of 2 NumElts");
   return ScalableVectorType::get(VecTy->getElementType(), NumElts);
+}
+
+bool RISCVTTIImpl::isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                                           const DataLayout &DL) const {
+  EVT VT = TLI->getValueType(DL, VTy);
+  VTy = isa<ScalableVectorType>(VTy)
+            ? VTy
+            : cast<VectorType>(getScalableVectorFromFixed(VTy));
+  MVT ContainerVT = VT.getSimpleVT();
+  auto [LMUL, Fractional] =
+      RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(ContainerVT));
+  if (Fractional)
+    return true;
+  return Factor * LMUL <= 8;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

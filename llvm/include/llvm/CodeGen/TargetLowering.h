@@ -2957,6 +2957,35 @@ public:
     return false;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Lower an interleaved load to target specific intrinsics. Return
+  /// true on success.
+  ///
+  /// \p Load is the generic load instruction
+  /// \p Mask is a mask value
+  /// \p ExtractValues is a list of ExtractValueInst from a deinterleave
+  /// \p Factor is the interleave factor.
+  virtual bool
+  lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
+                               ArrayRef<ExtractValueInst *> ExtractValues,
+                               unsigned Factor) const {
+    return false;
+  }
+
+  /// Lower an interleaved store to target specific intrinsics. Return
+  /// true on success.
+  ///
+  /// \p Store is the generic store instruction.
+  /// \p Mask is a mask value
+  /// \p InterleaveIntrin is vector.interleave intrinsic
+  /// \p Factor is the interleave factor.
+  virtual bool lowerInterleavedScalableStore(Instruction *Store, Value *Mask,
+                                             IntrinsicInst *InterleaveIntrin,
+                                             unsigned Factor) const {
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Return true if an fpext operation is free (for instance, because
   /// single-precision floating-point numbers are implicitly extended to
   /// double-precision).

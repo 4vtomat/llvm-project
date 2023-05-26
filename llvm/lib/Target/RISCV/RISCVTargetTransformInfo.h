@@ -464,6 +464,9 @@ public:
   bool forceCheckAddressingMode() const;
 
   Type *getScalableVectorFromFixed(Type *Ty) const;
+
+  bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                               const DataLayout &DL) const;
 #endif // SIFIVE_CUSTOMIZATION
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);

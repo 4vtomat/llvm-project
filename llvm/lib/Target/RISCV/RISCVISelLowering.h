@@ -724,10 +724,12 @@ public:
   /// returns the address of that location. Otherwise, returns nullptr.
   Value *getIRStackGuard(IRBuilderBase &IRB) const override;
 
-  /// Returns whether or not generating a fixed length interleaved load/store
-  /// intrinsic for this type will be legal.
-  bool isLegalInterleavedAccessType(FixedVectorType *, unsigned Factor,
+#if SIFIVE_CUSTOMIZATION
+  /// Returns whether or not generating a interleaved load/store intrinsic for
+  /// this type will be legal.
+  bool isLegalInterleavedAccessType(VectorType *, unsigned Factor,
                                     const DataLayout &) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   unsigned getMaxSupportedInterleaveFactor() const override { return 8; }
 
@@ -738,6 +740,17 @@ public:
 
   bool lowerInterleavedStore(StoreInst *SI, ShuffleVectorInst *SVI,
                              unsigned Factor) const override;
+
+#if SIFIVE_CUSTOMIZATION
+  bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
+                                    ArrayRef<ExtractValueInst *> ExtractValues,
+                                    unsigned Factor) const override;
+
+  bool lowerInterleavedScalableStore(Instruction *Store, Value *Mask,
+
+                                     IntrinsicInst *InterleaveIntrin,
+                                     unsigned Factor) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   /// RISCVCCAssignFn - This target-specific function extends the default
