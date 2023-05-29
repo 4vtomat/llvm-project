@@ -3096,7 +3096,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             {NewLoads[Part]}, nullptr, "deinterleaved.results");
 
         for (unsigned I = 0; I < InterleaveFactor; ++I) {
-          if (!Group->getMember(I))
+          Instruction *Member = Group->getMember(I);
+          if (!Member)
             continue;
 
           Value *Result = Builder.CreateExtractValue(DeinterleavedResults, I);
@@ -3107,6 +3108,11 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                   Intrinsic::experimental_vp_reverse, {Result->getType()},
                   {Result, TrueVector, State.get(State.Plan->getRVL(), Part)},
                   nullptr, "deinterleaved.result.reverse");
+          }
+          // If this member has different type, cast the result type.
+          if (Member->getType() != ScalarTy) {
+            VectorType *OtherVTy = VectorType::get(Member->getType(), VF);
+            Result = createBitOrPointerCast(Result, OtherVTy, DL);
           }
           State.set(VPDefs[I], Result, Part);
         }
