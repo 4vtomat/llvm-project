@@ -18,7 +18,8 @@ namespace driver {
 enum class LibcType {
   None,
   NewlibNano,
-  SeggerGloss // Should match https://github.com/sifive/segger_libc/blob/sifive-dev/src/gloss-segger.specs
+  SeggerGloss, // Should match https://github.com/sifive/segger_libc/blob/sifive-dev/src/gloss-segger.specs
+  SeggerMetal // Should match https://github.com/sifive/segger_libc/blob/sifive-dev/src/metal0-segger.specs
 };
 
 namespace toolchains {

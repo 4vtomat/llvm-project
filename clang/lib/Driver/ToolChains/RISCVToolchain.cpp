@@ -80,6 +80,8 @@ RISCVToolChain::RISCVToolChain(const Driver &D, const llvm::Triple &Triple,
       SpecialLibc = LibcType::NewlibNano;
     else if (Specs == "gloss-segger.specs")
       SpecialLibc = LibcType::SeggerGloss;
+    else if (Specs == "metal-segger.specs")
+      SpecialLibc = LibcType::SeggerMetal;
   }
 }
 
@@ -105,6 +107,7 @@ void RISCVToolChain::addClangTargetOptions(
 
   switch (SpecialLibc) {
     case LibcType::SeggerGloss:
+    case LibcType::SeggerMetal:
         CC1Args.push_back("-D__SEGGER_LIBC__");
       break;
     default:
@@ -121,6 +124,7 @@ void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   SmallString<128> SeggerDir(computeSysRoot());
   switch (SpecialLibc) {
     case LibcType::SeggerGloss:
+    case LibcType::SeggerMetal:
       llvm::sys::path::append(SeggerDir, "include/segger");
       addSystemInclude(DriverArgs, CC1Args, SeggerDir.str());
       break;
@@ -251,6 +255,7 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   }
 
 
+  auto *GlossIdx = CmdArgs.begin();
   switch (SpecialLibc) {
     case LibcType::NewlibNano:
         for (size_t i = 0; i < CmdArgs.size(); ++i) {
@@ -277,6 +282,24 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
           if (Arg == "-lg")
             CmdArgs[i] = "lc_segger";
         }
+      break;
+    case LibcType::SeggerMetal:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_segger";
+          if (Arg == "-lgloss") {
+            CmdArgs[i] = "-lmetal";
+            GlossIdx += i;
+          }
+          // libg.a is the same as libc.a.
+          // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+          if (Arg == "-lg")
+            CmdArgs[i] = "lc_segger";
+        }
+        // Insert metal-segger in group
+        if (GlossIdx != CmdArgs.begin())
+          CmdArgs.insert(GlossIdx, "-lmetal-segger");
       break;
     default:
       break;
