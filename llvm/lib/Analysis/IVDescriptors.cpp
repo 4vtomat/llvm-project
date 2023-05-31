@@ -705,6 +705,52 @@ RecurrenceDescriptor::isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
     const SCEV *Step = ID.getStep();
     return SE->isKnownPositive(Step);
   };
+
+  auto IsTruncIncreasingLoopInduction = [&SE, &Loop](Value *V) {
+    Value *Src;
+    if (!match(V, m_Trunc(m_Value(Src))))
+      return false;
+
+    auto *Phi = dyn_cast<PHINode>(Src);
+    if (!Phi)
+      return false;
+
+    if (!SE)
+      return false;
+
+    auto LoopBound = Loop::LoopBounds::getBounds(*Loop, *Phi, *SE);
+    if (!LoopBound)
+      return false;
+
+    Type *DstTy = cast<TruncInst>(V)->getType();
+    unsigned DstNumBits = DstTy->getIntegerBitWidth();
+    auto Direction = LoopBound->getDirection();
+
+    // Handle the cases where the trip count is constant, and there is no loop
+    // guard.
+    if (auto *ConstUB =
+            dyn_cast<ConstantInt>(&(LoopBound->getFinalIVValue()))) {
+      const APInt &ConstUBVal = ConstUB->getValue();
+      // Ensure that the constant upper bound does not cause overflow in
+      // destination type of truncate instruction
+      return ConstUBVal.isSignedIntN(DstNumBits) &&
+             Direction == Loop::LoopBounds::Direction::Increasing;
+    }
+
+    BranchInst *LoopGuard = Loop->getLoopGuardBranch();
+    if (!LoopGuard)
+      return false;
+
+    // Ensure that the condition of loop guard is a signed comparison, and the
+    // size of the truncated type must be greater than or equal to the unwidened
+    // trip count.
+    auto *Cond = dyn_cast<ICmpInst>(LoopGuard->getCondition());
+    if (!Cond || !Cond->isSigned() ||
+        Cond->getOperand(0)->getType()->getIntegerBitWidth() > DstNumBits)
+      return false;
+
+    return Direction == Loop::LoopBounds::Direction::Increasing;
+  };
 #endif // SIFIVE_CUSTOMIZATION
 
   // We are looking for selects of the form:
@@ -717,7 +763,8 @@ RecurrenceDescriptor::isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
   // or
   //   select(cmp(), phi, loop_induction) or
   //   select(cmp(), loop_induction, phi)
-  if (IsIncreasingLoopInduction(NonPhi))
+  if (IsIncreasingLoopInduction(NonPhi) ||
+      IsTruncIncreasingLoopInduction(NonPhi))
     return InstDesc(I, isa<ICmpInst>(I->getOperand(0))
                            ? RecurKind::SelectIVICmp
                            : RecurKind::SelectIVFCmp);
