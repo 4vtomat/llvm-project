@@ -2168,7 +2168,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV32I-NEXT:    lw t5, 4(sp) # 4-byte Folded Reload
 ; RV32I-NEXT:    lw t6, 0(sp) # 4-byte Folded Reload
 ; RV32I-NEXT:    addi sp, sp, 64
-; RV32I-NEXT:    uret
+; RV32I-NEXT:    mret
 ;
 ; RV64I-LABEL: interrupt:
 ; RV64I:       # %bb.0:
@@ -2207,7 +2207,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV64I-NEXT:    ld t5, 8(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    ld t6, 0(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    addi sp, sp, 128
-; RV64I-NEXT:    uret
+; RV64I-NEXT:    mret
 ;
 ; RV32I-SR-LABEL: interrupt:
 ; RV32I-SR:       # %bb.0:
@@ -2246,7 +2246,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV32I-SR-NEXT:    lw t5, 4(sp) # 4-byte Folded Reload
 ; RV32I-SR-NEXT:    lw t6, 0(sp) # 4-byte Folded Reload
 ; RV32I-SR-NEXT:    addi sp, sp, 64
-; RV32I-SR-NEXT:    uret
+; RV32I-SR-NEXT:    mret
 ;
 ; RV64I-SR-LABEL: interrupt:
 ; RV64I-SR:       # %bb.0:
@@ -2285,7 +2285,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV64I-SR-NEXT:    ld t5, 8(sp) # 8-byte Folded Reload
 ; RV64I-SR-NEXT:    ld t6, 0(sp) # 8-byte Folded Reload
 ; RV64I-SR-NEXT:    addi sp, sp, 128
-; RV64I-SR-NEXT:    uret
+; RV64I-SR-NEXT:    mret
 ;
 ; RV32I-FP-SR-LABEL: interrupt:
 ; RV32I-FP-SR:       # %bb.0:
@@ -2388,7 +2388,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV32I-FP-SR-NEXT:    flw fs10, 4(sp) # 4-byte Folded Reload
 ; RV32I-FP-SR-NEXT:    flw fs11, 0(sp) # 4-byte Folded Reload
 ; RV32I-FP-SR-NEXT:    addi sp, sp, 192
-; RV32I-FP-SR-NEXT:    uret
+; RV32I-FP-SR-NEXT:    mret
 ;
 ; RV64I-FP-SR-LABEL: interrupt:
 ; RV64I-FP-SR:       # %bb.0:
@@ -2491,7 +2491,7 @@ define void @interrupt() nounwind "interrupt"="user" {
 ; RV64I-FP-SR-NEXT:    fld fs10, 8(sp) # 8-byte Folded Reload
 ; RV64I-FP-SR-NEXT:    fld fs11, 0(sp) # 8-byte Folded Reload
 ; RV64I-FP-SR-NEXT:    addi sp, sp, 384
-; RV64I-FP-SR-NEXT:    uret
+; RV64I-FP-SR-NEXT:    mret
   %call = call i32 @foo()
   ret void
 }

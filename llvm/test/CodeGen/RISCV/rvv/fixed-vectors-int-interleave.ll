@@ -465,38 +465,17 @@ define <64 x i32> @interleave_v32i32(<32 x i32> %x, <32 x i32> %y) {
 ; RV64-V128-NEXT:    slli a0, a0, 4
 ; RV64-V128-NEXT:    sub sp, sp, a0
 ; RV64-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-<<<<<<< HEAD
-; RV64-V128-NEXT:    lui a0, %hi(.LCPI17_0)
-; RV64-V128-NEXT:    addi a0, a0, %lo(.LCPI17_0)
-; RV64-V128-NEXT:    li a1, 32
-; RV64-V128-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-; RV64-V128-NEXT:    vle32.v v0, (a0)
-; RV64-V128-NEXT:    vmv8r.v v24, v8
-; RV64-V128-NEXT:    vrgather.vv v8, v24, v0
-; RV64-V128-NEXT:    addi a0, sp, 16
-; RV64-V128-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV64-V128-NEXT:    lui a0, %hi(.LCPI17_1)
-; RV64-V128-NEXT:    addi a0, a0, %lo(.LCPI17_1)
-; RV64-V128-NEXT:    vle32.v v24, (a0)
-; RV64-V128-NEXT:    csrr a0, vlenb
-; RV64-V128-NEXT:    slli a0, a0, 3
-; RV64-V128-NEXT:    add a0, sp, a0
-; RV64-V128-NEXT:    addi a0, a0, 16
-; RV64-V128-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV64-V128-NEXT:    lui a0, 699051
-; RV64-V128-NEXT:    addiw a0, a0, -1366
-=======
 ; RV64-V128-NEXT:    li a0, 32
-; RV64-V128-NEXT:    lui a1, %hi(.LCPI15_0)
-; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI15_0)
+; RV64-V128-NEXT:    lui a1, %hi(.LCPI17_0)
+; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI17_0)
 ; RV64-V128-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; RV64-V128-NEXT:    vle32.v v0, (a1)
 ; RV64-V128-NEXT:    vmv8r.v v24, v8
 ; RV64-V128-NEXT:    vrgather.vv v8, v24, v0
 ; RV64-V128-NEXT:    addi a1, sp, 16
 ; RV64-V128-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
-; RV64-V128-NEXT:    lui a1, %hi(.LCPI15_1)
-; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI15_1)
+; RV64-V128-NEXT:    lui a1, %hi(.LCPI17_1)
+; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI17_1)
 ; RV64-V128-NEXT:    vle32.v v24, (a1)
 ; RV64-V128-NEXT:    csrr a1, vlenb
 ; RV64-V128-NEXT:    slli a1, a1, 3
@@ -505,7 +484,6 @@ define <64 x i32> @interleave_v32i32(<32 x i32> %x, <32 x i32> %y) {
 ; RV64-V128-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
 ; RV64-V128-NEXT:    lui a1, 699051
 ; RV64-V128-NEXT:    addiw a1, a1, -1366
->>>>>>> origin/sifive-dev
 ; RV64-V128-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; RV64-V128-NEXT:    vmv.s.x v0, a1
 ; RV64-V128-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
