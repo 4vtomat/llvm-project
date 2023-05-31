@@ -72,6 +72,7 @@ RISCVToolChain::RISCVToolChain(const Driver &D, const llvm::Triple &Triple,
   }
   getFilePaths().push_back(computeSysRoot() + "/lib");
 
+#if SIFIVE_CUSTOMIZATION
   // Check if we are using special libc base on --specs option.
   // The 'SpecialLibc' variable is used to hack flags at different stages.
   SpecialLibc = LibcType::None;
@@ -83,10 +84,15 @@ RISCVToolChain::RISCVToolChain(const Driver &D, const llvm::Triple &Triple,
     else if (Specs == "metal-segger.specs")
       SpecialLibc = LibcType::SeggerMetal;
   }
+#endif
 }
 
 Tool *RISCVToolChain::buildLinker() const {
-  return new tools::RISCV::Linker(*this, this->SpecialLibc);
+#if SIFIVE_CUSTOMIZATION
+  return new tools::RISCV::Linker(*this, SpecialLibc);
+#else
+  return new tools::RISCV::Linker(*this);
+#endif
 }
 
 ToolChain::RuntimeLibType RISCVToolChain::GetDefaultRuntimeLibType() const {
@@ -105,6 +111,7 @@ void RISCVToolChain::addClangTargetOptions(
     Action::OffloadKind) const {
   CC1Args.push_back("-nostdsysteminc");
 
+#if SIFIVE_CUSTOMIZATION
   switch (SpecialLibc) {
     case LibcType::SeggerGloss:
     case LibcType::SeggerMetal:
@@ -113,6 +120,7 @@ void RISCVToolChain::addClangTargetOptions(
     default:
       break;
   }
+#endif
 }
 
 void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
@@ -120,6 +128,7 @@ void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   if (DriverArgs.hasArg(options::OPT_nostdinc))
     return;
 
+#if SIFIVE_CUSTOMIZATION
   // Segger includ path should be searched firstly.
   SmallString<128> SeggerDir(computeSysRoot());
   switch (SpecialLibc) {
@@ -131,6 +140,7 @@ void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
     default:
       break;
   }
+#endif
 
   if (!DriverArgs.hasArg(options::OPT_nobuiltininc)) {
     SmallString<128> Dir(getDriver().ResourceDir);
@@ -249,13 +259,14 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("--start-group");
     CmdArgs.push_back("-lc");
     CmdArgs.push_back("-lgloss");
-    CmdArgs.push_back("-lgcc");
     CmdArgs.push_back("--end-group");
     AddRunTimeLibs(ToolChain, ToolChain.getDriver(), CmdArgs, Args);
   }
 
 
+#if SIFIVE_CUSTOMIZATION
   auto *GlossIdx = CmdArgs.begin();
+
   switch (SpecialLibc) {
     case LibcType::NewlibNano:
         for (size_t i = 0; i < CmdArgs.size(); ++i) {
@@ -304,6 +315,7 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     default:
       break;
   }
+#endif
 
   if (WantCRTs)
     CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath(crtend)));
@@ -314,6 +326,4 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
       JA, *this, ResponseFileSupport::AtFileCurCP(), Args.MakeArgString(Linker),
       CmdArgs, Inputs, Output));
 }
-
-
 // RISCV tools end.
