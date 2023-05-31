@@ -661,7 +661,7 @@ foreach mx = SchedMxList in {
 }
 
 // 16. Vector Permutation Instructions
-let Latency = 8, ResourceCycles = [1] in {
+let Latency = 4, ResourceCycles = [1] in {
   def : WriteRes<WriteVIMovVX, [SiFive7VA]>;
   def : WriteRes<WriteVIMovXV, [SiFive7VA]>;
   def : WriteRes<WriteVFMovVF, [SiFive7VA]>;
@@ -673,16 +673,6 @@ foreach mx = SchedMxList in {
   let Latency = 8, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVRGatherVX",    [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVRGatherVI",    [SiFive7VA], mx, IsWorstCase>;
-<<<<<<< HEAD
-=======
-  }
-  // These are independent of LMUL.
-  let Latency = 4, ResourceCycles = [1] in {
-    defm "" : LMULWriteResMX<"WriteVIMovVX",    [SiFive7VA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMovXV",    [SiFive7VA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMovVF",    [SiFive7VA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMovFV",    [SiFive7VA], mx, IsWorstCase>;
->>>>>>> origin/sifive-dev
   }
 }
 

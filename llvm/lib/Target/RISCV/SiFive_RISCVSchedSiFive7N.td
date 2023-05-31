@@ -661,7 +661,7 @@ foreach mx = SchedMxList in {
   }
 }
 
-let Latency = 8, ResourceCycles = [1] in {
+let Latency = 4, ResourceCycles = [1] in {
   def : WriteRes<WriteVIMovVX, [SiFive7NVA]>;
   def : WriteRes<WriteVIMovXV, [SiFive7NVA]>;
   def : WriteRes<WriteVFMovVF, [SiFive7NVA]>;
@@ -675,16 +675,6 @@ foreach mx = SchedMxList in {
   let Latency = 8, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVRGatherVX",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVRGatherVI",    [SiFive7NVA], mx, IsWorstCase>;
-<<<<<<< HEAD
-=======
-  }
-  // These are independent of LMUL.
-  let Latency = 4, ResourceCycles = [1] in {
-    defm "" : LMULWriteResMX<"WriteVIMovVX",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMovXV",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMovVF",    [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMovFV",    [SiFive7NVA], mx, IsWorstCase>;
->>>>>>> origin/sifive-dev
   }
 }
 
