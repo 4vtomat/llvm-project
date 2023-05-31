@@ -1248,26 +1248,18 @@ void InnerLoopVectorizer::collectPoisonGeneratingRecipes(
         continue;
 
       // This recipe contributes to the address computation of a widen
-<<<<<<< HEAD
       // load/store. If the underlying instruction has poison-generating flags,
       // drop them directly.
       if (auto *RecWithFlags = dyn_cast<VPRecipeWithIRFlags>(CurRec)) {
         RecWithFlags->dropPoisonGeneratingFlags();
       } else {
-        Instruction *Instr = CurRec->getUnderlyingInstr();
+        Instruction *Instr =
+          CurRec->hasUnderlyingInstr() ? CurRec->getUnderlyingInstr() : nullptr;
         (void)Instr;
         assert((!Instr || !Instr->hasPoisonGeneratingFlags()) &&
                "found instruction with poison generating flags not covered by "
                "VPRecipeWithIRFlags");
       }
-=======
-      // load/store. Collect recipe if its underlying instruction has
-      // poison-generating flags.
-      Instruction *Instr =
-          CurRec->hasUnderlyingInstr() ? CurRec->getUnderlyingInstr() : nullptr;
-      if (Instr && Instr->hasPoisonGeneratingFlags())
-        State.MayGeneratePoisonRecipes.insert(CurRec);
->>>>>>> origin/sifive-dev
 
       // Add new definitions to the worklist.
       for (VPValue *operand : CurRec->operands())
