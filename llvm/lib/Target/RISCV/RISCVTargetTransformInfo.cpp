@@ -1431,8 +1431,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     assert(ISD && "Invalid opcode");
 
     // FIXME: Need to consider vsetvli and lmul.
-    int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
-                  (int)Log2_32(Src->getScalarSizeInBits());
     switch (ISD) {
     case ISD::SIGN_EXTEND:
     case ISD::ZERO_EXTEND:
@@ -1458,7 +1456,8 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
 #else
       if (Dst->getScalarSizeInBits() == 1) {
         // We do not use several vncvt to truncate to mask vector. So we could
-        // not use PowDiff to calculate it.
+        // not use Log2(Dst->ScalarSizeInBits()) - Log2(Src->ScalarSizeInBits())
+        // to calculate it.
         // Instead we use the following instructions to truncate to mask vector:
         // vand.vi v8, v8, 1
         // vmsne.vi v0, v8, 0
