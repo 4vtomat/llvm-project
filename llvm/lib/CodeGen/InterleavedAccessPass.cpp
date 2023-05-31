@@ -243,7 +243,7 @@ static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
   if (auto *IMI = dyn_cast<IntrinsicInst>(WideMask)) {
     switch (IMI->getIntrinsicID()) {
     case Intrinsic::experimental_vector_interleave2:
-      assert(Factor != 2 && "Interleave factor of a data and mask don't match");
+      assert(Factor == 2 && "Interleave factor of a data and mask don't match");
       if (IMI->getOperand(0) != IMI->getOperand(1))
         return std::nullopt;
 

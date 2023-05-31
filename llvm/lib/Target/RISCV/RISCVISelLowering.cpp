@@ -18258,7 +18258,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
 
   Intrinsic::ID VlsegNID = IntrIds[Factor-2];
   if (Mask) {
-    Mask = Builder.getTrueVector(VTy->getElementCount());
     VlsegNID = IntrMaskIds[Factor-2];
     Operands.push_back(Mask);
   }
@@ -18339,7 +18338,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   Operands.push_back(VPStore->getOperand(1));
 
   if (Mask) {
-    Mask = Builder.getTrueVector(VTy->getElementCount());
     VssegNID = IntrMaskIds[Factor - 2];
     Operands.push_back(Mask);
   }

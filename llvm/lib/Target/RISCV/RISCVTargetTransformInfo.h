@@ -467,6 +467,9 @@ public:
 
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                const DataLayout &DL) const;
+  bool enableMaskedInterleavedAccessVectorization() const {
+    return useVLAVectorizer();
+  }
 #endif // SIFIVE_CUSTOMIZATION
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);
