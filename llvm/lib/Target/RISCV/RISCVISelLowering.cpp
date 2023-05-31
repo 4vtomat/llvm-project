@@ -1219,6 +1219,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setMinimumJumpTableEntries(5);
 
 #if SIFIVE_CUSTOMIZATION
+  // Increase number of stores for memcpy expansion for RV32.
+  if (!Subtarget.is64Bit())
+    MaxStoresPerMemcpy = 12;
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
   setJumpIsExpensive(!Subtarget.setJumpIsCheap());
 #endif // SIFIVE_CUSTOMIZATION
 
