@@ -60,11 +60,11 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; CHECKIFD:       # %bb.0:
 ; CHECKIFD-NEXT:    fadd.d fa0, fa0, fa1
 ; CHECKIFD-NEXT:    lui a0, %hi(G)
-; CHECKIFD-NEXT:    fld fa5, %lo(G)(a0)
-; CHECKIFD-NEXT:    addi a1, a0, %lo(G)
-; CHECKIFD-NEXT:    fsd fa0, %lo(G)(a0)
-; CHECKIFD-NEXT:    fld fa5, 72(a1)
-; CHECKIFD-NEXT:    fsd fa0, 72(a1)
+; CHECKIFD-NEXT:    addi a0, a0, %lo(G)
+; CHECKIFD-NEXT:    fld fa5, 0(a0)
+; CHECKIFD-NEXT:    fsd fa0, 0(a0)
+; CHECKIFD-NEXT:    fld fa5, 72(a0)
+; CHECKIFD-NEXT:    fsd fa0, 72(a0)
 ; CHECKIFD-NEXT:    ret
 ;
 ; RV64IZFINXZDINX-LABEL: fld_fsd_global:

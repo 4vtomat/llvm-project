@@ -11,20 +11,20 @@ define void @test(ptr %Ptr, i8 %Val) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 506, [[INDEX]]
+; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 253, [[INDEX]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 0, i64 0)
 ; CHECK-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[INDEX]], 2
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 10, [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[PTR:%.*]], i64 [[TMP4]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr [[TMP5]], i64 2, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr [[TMP5]], i64 4, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = or i64 [[TMP4]], 1
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 [[TMP6]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr [[TMP7]], i64 2, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr [[TMP7]], i64 4, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 506
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 253
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
@@ -41,7 +41,7 @@ define void @test(ptr %Ptr, i8 %Val) {
 ; CHECK:       edge1:
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 [[INDVAR_NEXT]]
 ; CHECK-NEXT:    store i8 [[VAL]], ptr [[ARRAYIDX2]], align 1
-; CHECK-NEXT:    [[INDVAR_NEXT1]] = add nuw nsw i64 [[INDVAR]], 2
+; CHECK-NEXT:    [[INDVAR_NEXT1]] = add nuw nsw i64 [[INDVAR]], 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ult i64 [[INDVAR_NEXT1]], 1024
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[EDGE]], label [[LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       loopexit:
@@ -61,7 +61,7 @@ edge:
 edge1:
   %arrayidx2 = getelementptr inbounds i8, ptr %Ptr, i64 %indvar.next
   store i8 %Val, ptr %arrayidx2, align 1
-  %indvar.next1 = add nuw nsw i64 %indvar, 2
+  %indvar.next1 = add nuw nsw i64 %indvar, 4
   %cmp1 = icmp ult i64 %indvar.next1, 1024
   br i1 %cmp1, label %edge, label %loopexit
 

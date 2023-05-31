@@ -1262,6 +1262,12 @@ bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
 bool TargetTransformInfo::forceCheckAddressingMode() const {
   return TTIImpl->forceCheckAddressingMode();
 }
+
+bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
+                                                  unsigned Factor,
+                                                  const DataLayout &DL) const {
+  return TTIImpl->isLegalVectorInterleave(VTy, Factor, DL);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::Concept::~Concept() = default;

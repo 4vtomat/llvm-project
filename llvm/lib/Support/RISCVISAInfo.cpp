@@ -187,6 +187,10 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smaia", RISCVExtensionVersion{1, 0}},
     {"ssaia", RISCVExtensionVersion{1, 0}},
 
+    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}},
+    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}},
+#endif // SIFIVE_CUSTOMIZATION
+
     {"zihintntl", RISCVExtensionVersion{0, 2}},
 
     {"zca", RISCVExtensionVersion{1, 0}},
@@ -214,15 +218,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvksg", RISCVExtensionVersion{0, 5}},
     {"zvksh", RISCVExtensionVersion{0, 5}},
     {"zvkt", RISCVExtensionVersion{0, 5}},
-    {"zvkb", RISCVExtensionVersion{0, 3}},
-    {"zvkg", RISCVExtensionVersion{0, 3}},
-    {"zvkn", RISCVExtensionVersion{0, 3}},
-    {"zvknha", RISCVExtensionVersion{0, 3}},
-    {"zvknhb", RISCVExtensionVersion{0, 3}},
-    {"zvkned", RISCVExtensionVersion{0, 3}},
-    {"zvks", RISCVExtensionVersion{0, 3}},
-    {"zvksed", RISCVExtensionVersion{0, 3}},
-    {"zvksh", RISCVExtensionVersion{0, 3}},
 #if SIFIVE_CUSTOMIZATION
     {"zvkb", RISCVExtensionVersion{0, 1}},
     {"zvkg", RISCVExtensionVersion{0, 1}},
@@ -1114,6 +1109,7 @@ static const char *ImpliedExtsZk[] = {"zkn", "zkt", "zkr"};
 static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
+<<<<<<< HEAD
 static const char *ImpliedExtsZve32f[] = {"zve32x", "f"};
 static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
 static const char *ImpliedExtsZve64d[] = {"zve64f", "d"};
@@ -1122,9 +1118,29 @@ static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
 static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
 static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
                                         "zvkt"};
+=======
+static const char *ImpliedExtsZvfh[] = {"zve32f"};
+#if SIFIVE_CUSTOMIZATION
+static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
+static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
+static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
+static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
+static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
+// FIXME: This needs to based on which version of Zvkn is enabled.
+//static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
+//                                        "zvkt"};
+static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb",
+                                        "zvkb"};
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
+#if SIFIVE_CUSTOMIZATION
+// FIXME: This needs to based on which version of Zvks is enabled.
+//static const char *ImpliedExtsZvks[] = {"zvbb", "zvbc", "zvksed", "zvksh",
+//                                        "zvkt"};
 static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
+#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvksg[] = {"zvks", "zvkg"};
 static const char *ImpliedExtsZvl1024b[] = {"zvl512b"};
 static const char *ImpliedExtsZvl128b[] = {"zvl64b"};

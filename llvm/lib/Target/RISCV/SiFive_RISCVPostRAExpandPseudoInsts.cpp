@@ -49,6 +49,7 @@ private:
   bool expandMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
   bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool expandLIaddr(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
 };
 
 char RISCVPostRAExpandPseudo::ID = 0;
@@ -85,6 +86,8 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
   switch (MBBI->getOpcode()) {
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
+  case RISCV::PseudoLIaddr:
+    return expandLIaddr(MBB, MBBI);
   default:
     return false;
   }
@@ -99,6 +102,12 @@ bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
     return false;
 
   TII->expandLIsimm32(MBB, MBBI);
+  return true;
+}
+
+bool RISCVPostRAExpandPseudo::expandLIaddr(MachineBasicBlock &MBB,
+                                           MachineBasicBlock::iterator MBBI) {
+  TII->expandLIaddr(MBB, MBBI);
   return true;
 }
 

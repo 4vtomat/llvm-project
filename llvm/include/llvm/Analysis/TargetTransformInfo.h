@@ -1604,6 +1604,12 @@ public:
   /// \returns True if the target force to check addressing mode
   /// in SeparateConstOffsetFromGEP pass.
   bool forceCheckAddressingMode() const;
+
+  /// \returns True if `experimental.vector.interleave` or
+  /// `experimental.vector.deinterleave` intrinsics are legal for a given vector
+  /// type \p VTy and given interleave factor \p Factor
+  bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                               const DataLayout &DL) const;
 #endif // SIFIVE_CUSTOMIZATION
   /// \returns the lower bound of a trip count to decide on vectorization
   /// while tail-folding.
@@ -2051,6 +2057,8 @@ public:
   virtual bool useVLAVectorizer() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
   virtual bool forceCheckAddressingMode() = 0;
+  virtual bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                                       const DataLayout &DL) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
@@ -2773,6 +2781,11 @@ public:
 
   bool forceCheckAddressingMode() override {
     return Impl.forceCheckAddressingMode();
+  }
+
+  bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                               const DataLayout &DL) const override {
+    return Impl.isLegalVectorInterleave(VTy, Factor, DL);
   }
 #endif // SIFIVE_CUSTOMIZATION
   VPLegalization

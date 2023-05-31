@@ -70,7 +70,7 @@ static cl::opt<unsigned> VectorPrimaryLMULMinExp(
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
 
-static cl::opt<unsigned> VectorPrimaryLMULMaxExp(
+cl::opt<unsigned> VectorPrimaryLMULMaxExp(
     "vector-primary-lmul-max",
     cl::desc("Limit the exponent of maximum primary LMUL used by autovectorized code."
              "The default value is 0, it means LMUL=pow(2, 0)=1."
@@ -94,15 +94,21 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
     else
       Cost = LMul;
 #if SIFIVE_CUSTOMIZATION
-    // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->isSiFiveCPU())
+    // Here uses DLEN as the reciprocal throughput cost,
+    // x280: VLEN = 2 * DLEN
+    // p470: VLEN = DLEN, 1 vector pipe
+    // p670: VLEN = DLEN, 2 vector pipes
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
       Cost = Fractional ? 1 : LMul * 2;
 #endif // SIFIVE_CUSTOMIZATION
   } else {
     Cost = VT.getSizeInBits() / ST->getRealMinVLen();
 #if SIFIVE_CUSTOMIZATION
-    // VLEN = 2 * DLEN in x280, the cost is assumed to be twice
-    if (ST->isSiFiveCPU())
+    // Here uses DLEN as the reciprocal throughput cost,
+    // x280: VLEN = 2 * DLEN
+    // p470: VLEN = DLEN, 1 vector pipe
+    // p670: VLEN = DLEN, 2 vector pipes
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
       Cost = VT.getSizeInBits() / (ST->getRealMinVLen() / 2);
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -618,6 +624,10 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
+#if SIFIVE_CUSTOMIZATION
+  if (isa<ScalableVectorType>(VecTy))
+    return getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
   auto *FVTy = cast<FixedVectorType>(VecTy);
   InstructionCost MemCost =
       getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
@@ -1386,11 +1396,41 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
                                                TTI::CastContextHint CCH,
                                                TTI::TargetCostKind CostKind,
                                                const Instruction *I) {
+#if SIFIVE_CUSTOMIZATION
+  std::pair<InstructionCost, MVT> SrcLT = getTypeLegalizationCost(Src);
+  std::pair<InstructionCost, MVT> DstLT = getTypeLegalizationCost(Dst);
+  if (SrcLT.second.isVector() && DstLT.second.isVector()) {
+    if (SrcLT.first > 1 || DstLT.first > 1)
+      return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
+    const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
+    const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
+    InstructionCost SrcLMULCost = 1;
+    InstructionCost DstLMULCost = 1;
+    InstructionCost PowDiffCost = 1;
+    if (CostKind == TTI::TCK_RecipThroughput) {
+      SrcLMULCost = getLMULCost(SrcLT.second);
+      DstLMULCost = getLMULCost(DstLT.second);
+      PowDiffCost = 0;
+      unsigned SrcSize = SrcEltSize;
+      if (SrcSize != 1 && DstEltSize != 1) {
+        for (; SrcSize != DstEltSize;) {
+          MVT SrcMVT =
+              SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
+          PowDiffCost += getLMULCost(SrcMVT);
+          if (SrcSize < DstEltSize)
+            SrcSize = SrcSize << 1;
+          else
+            SrcSize = SrcSize >> 1;
+        }
+      }
+    }
+#else
   if (isa<VectorType>(Dst) && isa<VectorType>(Src)) {
     // FIXME: Need to compute legalizing cost for illegal types.
     if (!isTypeLegal(Src) || !isTypeLegal(Dst))
       return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
 
+#endif // SIFIVE_CUSTOMIZATION
     // Skip if element size of Dst or Src is bigger than ELEN.
     if (Src->getScalarSizeInBits() > ST->getELEN() ||
         Dst->getScalarSizeInBits() > ST->getELEN())
@@ -1405,6 +1445,12 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     switch (ISD) {
     case ISD::SIGN_EXTEND:
     case ISD::ZERO_EXTEND:
+#if SIFIVE_CUSTOMIZATION
+      if (SrcEltSize == 1)
+        return DstLT.first * 2 * DstLMULCost;
+
+      return SrcLT.first * 1 * SrcLMULCost;
+#else
       if (Src->getScalarSizeInBits() == 1) {
         // We do not use vsext/vzext to extend from mask vector.
         // Instead we use the following instructions to extend from mask vector:
@@ -1412,17 +1458,13 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         // vmerge.vim v8, v8, -1, v0
         return 2;
       }
-#if SIFIVE_CUSTOMIZATION
-      if (ST->isSiFiveCPU())
-        if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
-          const unsigned VL = getEstimatedVLFor(VTy);
-          const unsigned DLen = ST->getRealMinVLen() / 2;
-          return divideCeil(std::max(DLen, VL * Src->getScalarSizeInBits()),
-                            DLen);
-        }
-#endif // SIFIVE_CUSTOMIZATION
       return 1;
+#endif // SIFIVE_CUSTOMIZATION
     case ISD::TRUNCATE:
+#if SIFIVE_CUSTOMIZATION
+      if (DstEltSize == 1)
+        return SrcLT.first * 2 * SrcLMULCost;
+#else
       if (Dst->getScalarSizeInBits() == 1) {
         // We do not use several vncvt to truncate to mask vector. So we could
         // not use PowDiff to calculate it.
@@ -1431,29 +1473,47 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         // vmsne.vi v0, v8, 0
         return 2;
       }
-#if SIFIVE_CUSTOMIZATION
-      if (ST->isSiFiveCPU())
-        if (auto *VTy = dyn_cast<ScalableVectorType>(Dst)) {
-          const unsigned VL = getEstimatedVLFor(VTy);
-          const unsigned DLen = ST->getRealMinVLen() / 2;
-          const unsigned DstEltSize = Dst->getScalarSizeInBits();
-          InstructionCost Cost = 0;
-          for (unsigned SrcEltSize = Src->getScalarSizeInBits();
-               SrcEltSize != DstEltSize; SrcEltSize >>= 1) {
-            Cost += divideCeil(std::max(DLen, VL * SrcEltSize), DLen);
-          }
-          return Cost;
-        }
 #endif // SIFIVE_CUSTOMIZATION
       [[fallthrough]];
     case ISD::FP_EXTEND:
     case ISD::FP_ROUND:
       // Counts of narrow/widen instructions.
+#if SIFIVE_CUSTOMIZATION
+      return SrcLT.first * PowDiffCost;
+#else
       return std::abs(PowDiff);
+#endif // SIFIVE_CUSTOMIZATION
     case ISD::FP_TO_SINT:
     case ISD::FP_TO_UINT:
     case ISD::SINT_TO_FP:
     case ISD::UINT_TO_FP:
+#if SIFIVE_CUSTOMIZATION
+      if (SrcEltSize == 1) {
+        return DstLT.first * 3 * DstLMULCost;
+      }
+      if (DstEltSize == 1) {
+        return SrcLT.first * 3 * SrcLMULCost;
+      }
+      int PowDiff =
+          std::abs((int)Log2_32(DstEltSize) - (int)Log2_32(SrcEltSize));
+      if (PowDiff <= 1)
+        return SrcLT.first * SrcLMULCost;
+      // Backend could lower (v[sz]ext i8 to double) to vfcvt(v[sz]ext.f8 i8),
+      // so it only need two conversion.
+      if (SrcLT.second.isInteger() && (SrcEltSize < DstEltSize)) {
+        if (CostKind != TTI::TCK_RecipThroughput) {
+          return 2;
+        } else {
+          InstructionCost ExtendCost = SrcLMULCost;
+          unsigned ExtendSize = SrcEltSize << (PowDiff - 1);
+          MVT ExtendMVT = SrcLT.second.changeVectorElementType(
+              MVT::getIntegerVT(ExtendSize));
+          InstructionCost FcvtCost = getLMULCost(ExtendMVT);
+          return SrcLT.first * (ExtendCost + FcvtCost);
+        }
+      }
+      return SrcLT.first * PowDiffCost;
+#else
       if (Src->getScalarSizeInBits() == 1 || Dst->getScalarSizeInBits() == 1) {
         // The cost of convert from or to mask vector is different from other
         // cases. We could not use PowDiff to calculate it.
@@ -1476,6 +1536,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         return 2;
       // Counts of narrow/widen instructions.
       return std::abs(PowDiff);
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
   return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
@@ -2098,10 +2159,23 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   case ISD::MUL:
   case ISD::MULHS:
   case ISD::MULHU:
+#if SIFIVE_CUSTOMIZATION
+    // Make cost of the vector instruction the same as the cost of two scalar
+    // INT instructions
+    if (ST->isSiFiveCPU())
+      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 2;
+    [[fallthrough]];
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
   case ISD::FSUB:
   case ISD::FMUL:
   case ISD::FNEG: {
+#if SIFIVE_CUSTOMIZATION
+    // Make cost of the vector instruction the same as the cost of three scalar
+    // FP instructions
+    if (ST->isSiFiveCPU())
+      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 6;
+#endif // SIFIVE_CUSTOMIZATION
     return ConstantMatCost + getLMULCost(LT.second) * LT.first * 1;
   }
   default:
@@ -2247,6 +2321,20 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
   NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);
   assert(isPowerOf2_32(NumElts) && "Expected power of 2 NumElts");
   return ScalableVectorType::get(VecTy->getElementType(), NumElts);
+}
+
+bool RISCVTTIImpl::isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                                           const DataLayout &DL) const {
+  EVT VT = TLI->getValueType(DL, VTy);
+  VTy = isa<ScalableVectorType>(VTy)
+            ? VTy
+            : cast<VectorType>(getScalableVectorFromFixed(VTy));
+  MVT ContainerVT = VT.getSimpleVT();
+  auto [LMUL, Fractional] =
+      RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(ContainerVT));
+  if (Fractional)
+    return true;
+  return Factor * LMUL <= 8;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

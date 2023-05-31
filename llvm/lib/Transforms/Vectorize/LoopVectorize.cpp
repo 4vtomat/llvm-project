@@ -463,6 +463,10 @@ static cl::opt<bool> DisableRISCVCSA(
 cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
     cl::Hidden, cl::desc("Use VPlan-based cost model"));
+
+cl::opt<bool> SiFiveEnableInterleavedAccess(
+    "sifive-loop-vectorizer-enable-interleaaved-access", cl::init(true),
+    cl::Hidden, cl::desc("Enable interleaved access in RVV VLA vectorization"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -1244,6 +1248,7 @@ void InnerLoopVectorizer::collectPoisonGeneratingRecipes(
         continue;
 
       // This recipe contributes to the address computation of a widen
+<<<<<<< HEAD
       // load/store. If the underlying instruction has poison-generating flags,
       // drop them directly.
       if (auto *RecWithFlags = dyn_cast<VPRecipeWithIRFlags>(CurRec)) {
@@ -1255,6 +1260,14 @@ void InnerLoopVectorizer::collectPoisonGeneratingRecipes(
                "found instruction with poison generating flags not covered by "
                "VPRecipeWithIRFlags");
       }
+=======
+      // load/store. Collect recipe if its underlying instruction has
+      // poison-generating flags.
+      Instruction *Instr =
+          CurRec->hasUnderlyingInstr() ? CurRec->getUnderlyingInstr() : nullptr;
+      if (Instr && Instr->hasPoisonGeneratingFlags())
+        State.MayGeneratePoisonRecipes.insert(CurRec);
+>>>>>>> origin/sifive-dev
 
       // Add new definitions to the worklist.
       for (VPValue *operand : CurRec->operands())
@@ -2861,12 +2874,19 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   // Prepare for the vector type of the interleaved load/store.
   Type *ScalarTy = getLoadStoreType(Instr);
   unsigned InterleaveFactor = Group->getFactor();
+#if SIFIVE_CUSTOMIZATION
+#else
   assert(!VF.isScalable() && "scalable vectors not yet supported.");
+#endif // SIFIVE_CUSTOMIZATION
   auto *VecTy = VectorType::get(ScalarTy, VF * InterleaveFactor);
 
   // Prepare for the new pointers.
   SmallVector<Value *, 2> AddrParts;
+#if SIFIVE_CUSTOMIZATION
+  Value *IndexVal = Builder.getInt32(Group->getIndex(Instr));
+#else
   unsigned Index = Group->getIndex(Instr);
+#endif // SIFIVE_CUSTOMIZATION
 
   // TODO: extend the masked interleaved-group support to reversed access.
   assert((!BlockInMask || !Group->isReverse()) &&
@@ -2878,8 +2898,28 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   // pointer operand of the interleaved access is supposed to be uniform. For
   // uniform instructions, we're only required to generate a value for the
   // first vector lane in each unroll iteration.
+#if SIFIVE_CUSTOMIZATION
+  if (Group->isReverse()) {
+    if (Legal->useVLAVectorizer()) {
+      assert(State.Plan->getRVL() &&
+             "RuntimeVL must be initialized at this point");
+      Value *RVL = Builder.CreateZExtOrTrunc(State.get(State.Plan->getRVL(), 0),
+                                             Builder.getInt32Ty());
+      IndexVal = Builder.CreateAdd(
+          IndexVal,
+          Builder.CreateMul(Builder.CreateSub(RVL, Builder.getInt32(1)),
+                            Builder.getInt32(InterleaveFactor)));
+    } else {
+      IndexVal = Builder.CreateAdd(
+          IndexVal,
+          Builder.getInt32((VF.getKnownMinValue() - 1) * Group->getFactor()));
+    }
+  }
+  IndexVal = Builder.CreateNeg(IndexVal);
+#else
   if (Group->isReverse())
     Index += (VF.getKnownMinValue() - 1) * Group->getFactor();
+#endif // SIFIVE_CUSTOMIZATION
 
   for (unsigned Part = 0; Part < UF; Part++) {
     Value *AddrPart = State.get(Addr, VPIteration(Part, 0));
@@ -2900,8 +2940,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(AddrPart->stripPointerCasts()))
       InBounds = gep->isInBounds();
-    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index),
+#if SIFIVE_CUSTOMIZATION
+    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, IndexVal,
                                  "", InBounds);
+#else
+    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index),
+#endif // SIFIVE_CUSTOMIZATION
 
     // Cast to the vector pointer type.
     unsigned AddressSpace = AddrPart->getType()->getPointerAddressSpace();
@@ -2916,6 +2960,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   if (isa<LoadInst>(Instr)) {
     Value *MaskForGaps = nullptr;
     if (NeedsMaskForGaps) {
+#if SIFIVE_CUSTOMIZATION
+      assert(!Legal->useVLAVectorizer() &&
+             "Gaps are not supported with VLA vectorizer");
+#endif // SIFIVE_CUSTOMIZATION
       MaskForGaps =
           createBitMaskForGaps(Builder, VF.getKnownMinValue(), *Group);
       assert(MaskForGaps && "Mask for Gaps is required but it is null");
@@ -2923,6 +2971,74 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
     // For each unroll part, create a wide load for the group.
     SmallVector<Value *, 2> NewLoads;
+#if SIFIVE_CUSTOMIZATION
+    if (Legal->useVLAVectorizer()) {
+      for (unsigned Part = 0; Part < UF; ++Part) {
+        Instruction *NewLoad;
+        Value *GroupMask;
+        if (BlockInMask) {
+          assert(useMaskedInterleavedAccesses(*TTI) &&
+                 "masked interleaved groups are not allowed.");
+          Value *BlockInMaskPart = State.get(BlockInMask, Part);
+          Value *Operands[] = {BlockInMaskPart, BlockInMaskPart};
+          Type *Types[] = {VectorType::get(
+              Type::getInt1Ty(Builder.getContext()), VF * InterleaveFactor)};
+          GroupMask = State.Builder.CreateIntrinsic(
+              Intrinsic::experimental_vector_interleave2, Types, Operands,
+              nullptr, "interleaved.mask");
+        } else {
+          GroupMask = State.Builder.getTrueVector(VF * InterleaveFactor);
+        }
+        assert(State.Plan->getRVL() &&
+               "RuntimeVL must be initialized at this point");
+        Value *RVL32 = Builder.CreateZExtOrTrunc(
+            State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
+        Value *InterleaveRVL = Builder.CreateMul(
+            RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+        Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
+        Type *Types[] = {VecTy, Operands[0]->getType()};
+        NewLoad = State.Builder.CreateIntrinsic(
+            Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
+
+        Group->addMetadata(NewLoad);
+        NewLoads.push_back(NewLoad);
+      }
+
+      // For each member in the group, shuffle out the appropriate data from the
+      // wide loads.
+      for (unsigned Part = 0; Part < UF; ++Part) {
+        SmallVector<Type *> Types;
+        Types.push_back(NewLoads[Part]->getType());
+
+        Value *DeinterleavedResults = State.Builder.CreateIntrinsic(
+            Intrinsic::experimental_vector_deinterleave2, Types,
+            {NewLoads[Part]}, nullptr, "deinterleaved.results");
+
+        for (unsigned I = 0; I < InterleaveFactor; ++I) {
+          Instruction *Member = Group->getMember(I);
+          if (!Member)
+            continue;
+
+          Value *Result = Builder.CreateExtractValue(DeinterleavedResults, I);
+          if (Group->isReverse()) {
+              Value *TrueVector = Builder.getTrueVector(VF);
+
+              Result = Builder.CreateIntrinsic(
+                  Intrinsic::experimental_vp_reverse, {Result->getType()},
+                  {Result, TrueVector, State.get(State.Plan->getRVL(), Part)},
+                  nullptr, "deinterleaved.result.reverse");
+          }
+          // If this member has different type, cast the result type.
+          if (Member->getType() != ScalarTy) {
+            VectorType *OtherVTy = VectorType::get(Member->getType(), VF);
+            Result = createBitOrPointerCast(Result, OtherVTy, DL);
+          }
+          State.set(VPDefs[I], Result, Part);
+        }
+      }
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     for (unsigned Part = 0; Part < UF; Part++) {
       Instruction *NewLoad;
       if (BlockInMask || MaskForGaps) {
@@ -2986,6 +3102,67 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
   // The sub vector type for current instruction.
   auto *SubVT = VectorType::get(ScalarTy, VF);
+
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer()) {
+    assert(Group->getFactor() == Group->getNumMembers() &&
+           "Interleaving for stores with gaps is not supported for VLA");
+    for (unsigned Part = 0; Part < UF; ++Part) {
+      Value *GroupMask;
+      if (BlockInMask) {
+        assert(useMaskedInterleavedAccesses(*TTI) &&
+               "masked interleaved groups are not allowed.");
+        Value *BlockInMaskPart = State.get(BlockInMask, Part);
+        SmallVector<Value *> Operands;
+        for (unsigned I = 0; I < Group->getFactor(); ++I)
+          Operands.push_back(BlockInMaskPart);
+
+        Type *Types[] = {VectorType::get(Type::getInt1Ty(Builder.getContext()),
+                                         VF * InterleaveFactor)};
+        GroupMask = State.Builder.CreateIntrinsic(
+            Intrinsic::experimental_vector_interleave2, Types, Operands,
+            nullptr, "interleaved.mask");
+      } else {
+        GroupMask = State.Builder.getTrueVector(VF * InterleaveFactor);
+      }
+
+      // Interleave store values
+      SmallVector<Value *> Operands;
+      for (unsigned I = 0; I < Group->getFactor(); ++I) {
+        Value *StoredValue = State.get(StoredValues[I], Part);
+        if (Group->isReverse()) {
+          Value *TrueVector = Builder.getTrueVector(VF);
+
+          StoredValue = Builder.CreateIntrinsic(
+              Intrinsic::experimental_vp_reverse, {StoredValue->getType()},
+              {StoredValue, TrueVector, State.get(State.Plan->getRVL(), Part)},
+              nullptr, "result.reverse");
+        }
+        if (StoredValue->getType() != SubVT)
+          StoredValue = createBitOrPointerCast(StoredValue, SubVT, DL);
+
+        Operands.push_back(StoredValue);
+      }
+
+      Value *StoredVal = State.Builder.CreateIntrinsic(
+          Intrinsic::experimental_vector_interleave2, {VecTy}, Operands, nullptr,
+          "interleaved.vec");
+
+      assert(State.Plan->getRVL() &&
+             "RuntimeVL must be initialized at this point");
+      Value *RVL32 = Builder.CreateZExtOrTrunc(
+          State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
+      Value *InterleaveRVL = Builder.CreateMul(
+          RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+      Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveRVL};
+      Instruction *WideStore = State.Builder.CreateIntrinsic(
+          Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,
+          nullptr);
+      Group->addMetadata(WideStore);
+    }
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Vectorize the interleaved store group.
   Value *MaskForGaps =
@@ -3257,7 +3434,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
       // Don't require this overflow check as with VP-intrinsics we don't mask
       // the loop body.
            !useVLAVectorizer() &&
-#endif // SIFIVE_CUSTOMIZATION0
+#endif // SIFIVE_CUSTOMIZATION
            !isIndvarOverflowCheckKnownFalse(Cost, VF, UF) &&
            Style != TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck) {
     // vscale is not necessarily a power-of-2, which means we cannot guarantee
@@ -5172,6 +5349,36 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
       !isScalarEpilogueAllowed();
   bool StoreAccessWithGapsRequiresMasking =
       isa<StoreInst>(I) && (Group->getNumMembers() < Group->getFactor());
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer()) {
+    if (!SiFiveEnableInterleavedAccess) {
+      LLVM_DEBUG(dbgs() << "LV: Interleaving for VLA vectorization is "
+                           "disabled by the option\n");
+      return false;
+    }
+    if (InterleaveFactor != 2 || Group->getNumMembers() < InterleaveFactor) {
+      // Since VLA vectorizer uses `llvm.experimental.vector.deinterleave2` and
+      // `llvm.experimental.vector.interleave2` intrinsics, only support cases
+      // with stride=2
+      LLVM_DEBUG(
+          dbgs() << "LV: Interleave factor = " << InterleaveFactor
+                 << " is not currently supported by VLA vectorization\n");
+      return false;
+    }
+    // Need to also make sure that special interleave intrinsics are legal for a
+    // given VF
+    if (!TTI.isLegalVectorInterleave(VectorType::get(ScalarTy, VF),
+                                     InterleaveFactor,
+                                     I->getModule()->getDataLayout())) {
+      LLVM_DEBUG(
+          dbgs()
+          << "LV: Interleave and Deinterleave intrinsics won't be legal with "
+          << VectorType::get(ScalarTy, VF)
+          << " for interleave factor = " << InterleaveFactor << '\n');
+      return false;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (!PredicatedAccessRequiresMasking &&
       !LoadAccessWithGapsRequiresEpilogMasking &&
       !StoreAccessWithGapsRequiresMasking)
@@ -6180,7 +6387,9 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   // found modulo the vectorization factor is not zero, try to fold the tail
   // by masking.
   // FIXME: look for a smaller MaxVF that does divide TC rather than masking.
-  if (Legal->prepareToFoldTailByMasking()) {
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer() || Legal->prepareToFoldTailByMasking()) {
+#endif // SIFIVE_CUSTOMIZATION
     CanFoldTailByMasking = true;
     return MaxFactors;
   }
@@ -7854,7 +8063,9 @@ LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
                                                    ElementCount VF) {
   // TODO: Once we have support for interleaving with scalable vectors
   // we can calculate the cost properly here.
-  if (VF.isScalable())
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer() && VF.isScalable())
+#endif // SIFIVE_CUSTOMIZATION
     return InstructionCost::getInvalid();
 
   Type *ValTy = getLoadStoreType(I);
@@ -8295,12 +8506,10 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         if (GatherScatterCost < ScalarizationCost) {
           if (UseStridedAccesses && canUseStridedAccess(&I)) {
             setWideningDecision(&I, VF, CM_Strided, GatherScatterCost);
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Can use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "Can use strided access " << I << "\n");
           } else {
             if (UseStridedAccesses) {
-              LLVM_DEBUG(llvm::dbgs()
-                         << "Cannot use strided access " << I << "\n");
+              LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << "\n");
             }
             setWideningDecision(&I, VF, CM_GatherScatter, GatherScatterCost);
           }
@@ -8376,10 +8585,9 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
             // FIXME
             // Cost = StridedAccessCost;
             Decision = CM_Strided;
-            LLVM_DEBUG(llvm::dbgs() << "Can use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "Can use strided access " << I << "\n");
           } else {
-            LLVM_DEBUG(llvm::dbgs()
-                       << "Cannot use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << "\n");
           }
         }
 #endif // SIFIVE_CUSTOMIZATION
@@ -8943,6 +9151,9 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     return std::nullopt;
 
   // Invalidate interleave groups if all blocks of loop will be predicated.
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer())
+#endif // SIFIVE_CUSTOMIZATION
   if (CM.blockNeedsPredicationForAnyReason(OrigLoop->getHeader()) &&
       !useMaskedInterleavedAccesses(TTI)) {
     LLVM_DEBUG(

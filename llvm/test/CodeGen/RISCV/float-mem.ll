@@ -64,11 +64,11 @@ define dso_local float @flw_fsw_global(float %a, float %b) nounwind {
 ; CHECKIF:       # %bb.0:
 ; CHECKIF-NEXT:    fadd.s fa0, fa0, fa1
 ; CHECKIF-NEXT:    lui a0, %hi(G)
-; CHECKIF-NEXT:    flw fa5, %lo(G)(a0)
-; CHECKIF-NEXT:    addi a1, a0, %lo(G)
-; CHECKIF-NEXT:    fsw fa0, %lo(G)(a0)
-; CHECKIF-NEXT:    flw fa5, 36(a1)
-; CHECKIF-NEXT:    fsw fa0, 36(a1)
+; CHECKIF-NEXT:    addi a0, a0, %lo(G)
+; CHECKIF-NEXT:    flw fa5, 0(a0)
+; CHECKIF-NEXT:    fsw fa0, 0(a0)
+; CHECKIF-NEXT:    flw fa5, 36(a0)
+; CHECKIF-NEXT:    fsw fa0, 36(a0)
 ; CHECKIF-NEXT:    ret
 ;
 ; CHECKIZFINX-LABEL: flw_fsw_global:

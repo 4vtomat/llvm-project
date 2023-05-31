@@ -67,6 +67,9 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Transforms/Utils/Local.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/PatternMatch.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include <cassert>
 #include <utility>
 
@@ -112,6 +115,16 @@ private:
   /// Transform an interleaved store into target specific intrinsics.
   bool lowerInterleavedStore(StoreInst *SI,
                              SmallVector<Instruction *, 32> &DeadInsts);
+
+#if SIFIVE_CUSTOMIZATION
+  /// Transform an interleaved vp.load into target specific intrinsics.
+  bool lowerInterleavedLoad(IntrinsicInst *VPLoad,
+                            SmallVectorImpl<Instruction *> &DeadInsts);
+
+  /// Transform an interleaved vp.store into target specific intrinsics.
+  bool lowerInterleavedStore(IntrinsicInst *VPStore,
+                             SmallVectorImpl<Instruction *> &DeadInsts);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the uses of an interleaved load by the
   /// extractelement instructions in \p Extracts can be replaced by uses of the
@@ -216,6 +229,34 @@ static bool isReInterleaveMask(ShuffleVectorInst *SVI, unsigned &Factor,
 
   return false;
 }
+
+#if SIFIVE_CUSTOMIZATION
+/// Check the interleaved mask
+///
+/// - if a value within the optional is non-nullptr, the value corresponds to
+///   deinterleaved mask
+/// - if a value within the option is nullptr, the value corresponds to all-true
+///   mask
+/// - return nullopt if mask cannot be deinterleaved
+static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
+  using namespace llvm::PatternMatch;
+  if (auto *IMI = dyn_cast<IntrinsicInst>(WideMask)) {
+    switch (IMI->getIntrinsicID()) {
+    case Intrinsic::experimental_vector_interleave2:
+      assert(Factor != 2 && "Interleave factor of a data and mask don't match");
+      if (IMI->getOperand(0) != IMI->getOperand(1))
+        return std::nullopt;
+
+      return IMI->getOperand(0);
+    default:
+      return std::nullopt;
+    }
+  }
+  if (match(WideMask, m_AllOnes()))
+    return nullptr;
+  return std::nullopt;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool InterleavedAccess::lowerInterleavedLoad(
     LoadInst *LI, SmallVector<Instruction *, 32> &DeadInsts) {
@@ -322,6 +363,68 @@ bool InterleavedAccess::lowerInterleavedLoad(
   DeadInsts.push_back(LI);
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool InterleavedAccess::lowerInterleavedLoad(
+    IntrinsicInst *VPLoad, SmallVectorImpl<Instruction *> &DeadInsts) {
+  assert(VPLoad->getIntrinsicID() == Intrinsic::vp_load &&
+         "Unexpected intrinsic type");
+
+  SmallVector<IntrinsicInst *, 4> VectorDeinterleaves;
+
+  unsigned Factor = -1U;
+
+  for (auto *User : VPLoad->users()) {
+    // TODO: Support extract element
+    auto *II = dyn_cast<IntrinsicInst>(User);
+    if (!II)
+      return false;
+    switch (II->getIntrinsicID()) {
+    case Intrinsic::experimental_vector_deinterleave2:
+      Factor = 2;
+      VectorDeinterleaves.push_back(II);
+      break;
+    default:
+      return false;
+    }
+  }
+
+  // Currently expect a single user of the `vp.load` which suppose to be
+  // `vector.deinterleave` intrinsic.
+  if (VectorDeinterleaves.size() != 1)
+    return false;
+
+  // Make sure all users of the deinterleave intrinsic are vector extracts that
+  // can be easily handled.
+  SmallVector<ExtractValueInst *> VectorExtracts;
+  for (auto *U : VectorDeinterleaves[0]->users()) {
+    auto *VE = dyn_cast<ExtractValueInst>(U);
+    if (!VE)
+      return false;
+    VectorExtracts.push_back(VE);
+  }
+
+  // Check mask operand. Handle both all-true and interleaved mask.
+  Value *WideMask = VPLoad->getOperand(1);
+  IRBuilder<> Builder(VPLoad);
+  std::optional<Value *> Mask = getMask(WideMask, Factor);
+  if (!Mask)
+    return false;
+
+  LLVM_DEBUG(dbgs() << "IA: Found an interleaved load: " << *VPLoad << "\n");
+
+  // Since lowerInterleaveLoad expects Shuffles and LoadInst, use special TLI
+  // function to emit target-specific interleaved instruction.
+  if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, VectorExtracts, Factor))
+    return false;
+
+  append_range(DeadInsts, VectorDeinterleaves);
+  DeadInsts.push_back(VPLoad);
+  if (auto *WMI = dyn_cast<Instruction>(WideMask))
+    DeadInsts.push_back(WMI);
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool InterleavedAccess::replaceBinOpShuffles(
     ArrayRef<ShuffleVectorInst *> BinOpShuffles,
@@ -446,6 +549,48 @@ bool InterleavedAccess::lowerInterleavedStore(
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool InterleavedAccess::lowerInterleavedStore(
+    IntrinsicInst *VPStore, SmallVectorImpl<Instruction *> &DeadInsts) {
+  assert(VPStore->getIntrinsicID() == Intrinsic::vp_store &&
+         "Unexpected intrinsic type");
+
+  Value *WideStoredValue = VPStore->getOperand(0);
+  auto *VectorInterleave = dyn_cast<IntrinsicInst>(WideStoredValue);
+  if (!WideStoredValue->hasOneUse() || !VectorInterleave)
+    return false;
+
+  unsigned Factor = -1U;
+  switch (VectorInterleave->getIntrinsicID()) {
+  case Intrinsic::experimental_vector_interleave2:
+    Factor = 2;
+    break;
+  default:
+    return false;
+  }
+
+  Value *WideMask = VPStore->getOperand(2);
+  std::optional<Value *> Mask = getMask(WideMask, Factor);
+  if (!Mask)
+    return false;
+
+  LLVM_DEBUG(dbgs() << "IA: Found an interleaved store: " << *VPStore << "\n");
+
+  // Since lowerInterleavedStore expects Shuffle and StoreInst, use special TLI
+  // function to emit target-specific interleaved instruction.
+  if (!TLI->lowerInterleavedScalableStore(VPStore, *Mask, VectorInterleave,
+                                          Factor))
+    return false;
+
+  DeadInsts.push_back(VPStore);
+  DeadInsts.push_back(VectorInterleave);
+  if (auto *WMI = dyn_cast<Instruction>(WideMask))
+    DeadInsts.push_back(WMI);
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool InterleavedAccess::runOnFunction(Function &F) {
   auto *TPC = getAnalysisIfAvailable<TargetPassConfig>();
   if (!TPC || !LowerInterleavedAccesses)
@@ -468,6 +613,20 @@ bool InterleavedAccess::runOnFunction(Function &F) {
 
     if (auto *SI = dyn_cast<StoreInst>(&I))
       Changed |= lowerInterleavedStore(SI, DeadInsts);
+
+#if SIFIVE_CUSTOMIZATION
+    if (auto *Intrin = dyn_cast<IntrinsicInst>(&I))
+      switch (Intrin->getIntrinsicID()) {
+        case Intrinsic::vp_load:
+          Changed |= lowerInterleavedLoad(Intrin, DeadInsts);
+          break;
+        case Intrinsic::vp_store:
+          Changed |= lowerInterleavedStore(Intrin, DeadInsts);
+          break;
+        default:
+          break;
+      }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   for (auto *I : DeadInsts)

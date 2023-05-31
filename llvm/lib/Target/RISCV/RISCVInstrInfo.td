@@ -1335,6 +1335,24 @@ def : Pat<(FrameAddrRegImm GPR:$rs1, simm12:$imm12),
 
 /// HI and ADD_LO address nodes.
 
+#ifdef SIFIVE_CUSTOMIZATION
+let Size = 8, isReMaterializable = 1 in
+def PseudoLIaddr : Pseudo<(outs GPR:$dst), (ins i64imm:$hi, i64imm:$lo), []>,
+                     Sched<[WriteIALU]>;
+
+def LUIADDI : PatFrag<(ops node:$hi, node:$lo),
+                      (riscv_add_lo (riscv_hi node:$hi), node:$lo)>;
+
+def : Pat<(LUIADDI tglobaladdr:$hi, tglobaladdr:$lo),
+          (PseudoLIaddr imm:$hi, imm:$lo)>;
+def : Pat<(LUIADDI tblockaddress:$hi, tblockaddress:$lo),
+          (PseudoLIaddr imm:$hi, imm:$lo)>;
+def : Pat<(LUIADDI tjumptable:$hi, tjumptable:$lo),
+          (PseudoLIaddr imm:$hi, imm:$lo)>;
+def : Pat<(LUIADDI tconstpool:$hi, tconstpool:$lo),
+          (PseudoLIaddr imm:$hi, imm:$lo)>;
+#endif
+
 def : Pat<(riscv_hi tglobaladdr:$in), (LUI tglobaladdr:$in)>;
 def : Pat<(riscv_hi tblockaddress:$in), (LUI tblockaddress:$in)>;
 def : Pat<(riscv_hi tjumptable:$in), (LUI tjumptable:$in)>;

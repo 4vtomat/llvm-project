@@ -18505,8 +18505,9 @@ Value *RISCVTargetLowering::getIRStackGuard(IRBuilderBase &IRB) const {
   return TargetLowering::getIRStackGuard(IRB);
 }
 
+#if SIFIVE_CUSTOMIZATION
 bool RISCVTargetLowering::isLegalInterleavedAccessType(
-    FixedVectorType *VTy, unsigned Factor, const DataLayout &DL) const {
+    VectorType *VTy, unsigned Factor, const DataLayout &DL) const {
   if (!Subtarget.useRVVForFixedLengthVectors())
     return false;
   EVT VT = getValueType(DL, VTy);
@@ -18519,16 +18520,20 @@ bool RISCVTargetLowering::isLegalInterleavedAccessType(
 
   // Sometimes the interleaved access pass picks up splats as interleaves of one
   // element. Don't lower these.
-  if (VTy->getNumElements() < 2)
-    return false;
+  if (auto *FVTy = dyn_cast<FixedVectorType>(VTy))
+    if (FVTy->getNumElements() < 2)
+      return false;
 
   // Need to make sure that EMUL * NFIELDS ≤ 8
-  MVT ContainerVT = getContainerForFixedLengthVector(VT.getSimpleVT());
+  MVT ContainerVT = VTy->isScalableTy()
+                        ? VT.getSimpleVT()
+                        : getContainerForFixedLengthVector(VT.getSimpleVT());
   auto [LMUL, Fractional] = RISCVVType::decodeVLMUL(getLMUL(ContainerVT));
   if (Fractional)
     return true;
   return Factor * LMUL <= 8;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTargetLowering::isLegalStridedLoadStore(EVT DataType,
                                                   Align Alignment) const {
@@ -18655,6 +18660,169 @@ bool RISCVTargetLowering::lowerInterleavedStore(StoreInst *SI,
 
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+/// Lower an interleaved vp.load into a vlsegN intrinsic.
+///
+/// E.g. Lower an interleaved vp.load (Factor = 2):
+///   %l = call <vscale x 64 x i8> @llvm.vp.load.nxv64i8.p0(ptr %ptr,
+///                                                         %mask,
+///                                                         i32 %wide.rvl)
+///   %dl = tail call { <vscale x 32 x i8>, <vscale x 32 x i8> }
+///             @llvm.experimental.vector.deinterleave2.nxv64i8(
+///               <vscale x 64 x i8> %l)
+///   %r0 = extractvalue { <vscale x 32 x i8>, <vscale x 32 x i8> } %dl, 0
+///   %r1 = extractvalue { <vscale x 32 x i8>, <vscale x 32 x i8> } %dl, 1
+///
+/// Into:
+///   %rvl = udiv %wide.rvl, 2
+///   %sl = call { <vscale x 32 x i8>, <vscale x 32 x i8> }
+///             @llvm.riscv.vlseg2.mask.nxv32i8.i64(<vscale x 32 x i8> undef,
+///                                                 <vscale x 32 x i8> undef,
+///                                                 ptr %ptr,
+///                                                 %mask,
+///                                                 i64 %rvl,
+///                                                 i64 1)
+///   %r0 = extractvalue { <vscale x 32 x i8>, <vscale x 32 x i8> } %sl, 0
+///   %r1 = extractvalue { <vscale x 32 x i8>, <vscale x 32 x i8> } %sl, 1
+///
+/// NOTE: the deinterleave2 intrinsic won't be touched and is expected to be
+/// removed by the caller
+bool RISCVTargetLowering::lowerInterleavedScalableLoad(
+    Instruction *Load, Value *Mask,
+    ArrayRef<ExtractValueInst *> ExtractValues, unsigned Factor) const {
+  auto *VPLoad = dyn_cast<IntrinsicInst>(Load);
+  if (!VPLoad || VPLoad->getIntrinsicID() != Intrinsic::vp_load)
+    return false;
+
+  auto *WideVTy = cast<VectorType>(Load->getType());
+  unsigned WideNumElements = WideVTy->getElementCount().getKnownMinValue();
+  assert(WideNumElements % Factor == 0 &&
+         "ElementCount of a wide load must be divisible by interleave factor");
+  auto *VTy =
+      VectorType::get(WideVTy->getScalarType(), WideNumElements / Factor,
+                      WideVTy->isScalableTy());
+  if (!isLegalInterleavedAccessType(VTy, Factor,
+                                    Load->getModule()->getDataLayout()))
+    return false;
+
+  IRBuilder<> Builder(VPLoad);
+  Value *WideRVL = VPLoad->getOperand(2);
+  auto *XLenTy = Type::getIntNTy(VPLoad->getContext(), Subtarget.getXLen());
+  Value *RVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+      XLenTy);
+
+  static const Intrinsic::ID IntrMaskIds[] = {
+      Intrinsic::riscv_vlseg2_mask, Intrinsic::riscv_vlseg3_mask,
+      Intrinsic::riscv_vlseg4_mask, Intrinsic::riscv_vlseg5_mask,
+      Intrinsic::riscv_vlseg6_mask, Intrinsic::riscv_vlseg7_mask,
+      Intrinsic::riscv_vlseg8_mask,
+  };
+  static const Intrinsic::ID IntrIds[] = {
+      Intrinsic::riscv_vlseg2, Intrinsic::riscv_vlseg3, Intrinsic::riscv_vlseg4,
+      Intrinsic::riscv_vlseg5, Intrinsic::riscv_vlseg6, Intrinsic::riscv_vlseg7,
+      Intrinsic::riscv_vlseg8,
+  };
+  Value *UndefVal = UndefValue::get(VTy);
+  SmallVector<Value *> Operands = {UndefVal, UndefVal, VPLoad->getOperand(0)};
+
+  Intrinsic::ID VlsegNID = IntrIds[Factor-2];
+  if (Mask) {
+    Mask = Builder.getTrueVector(VTy->getElementCount());
+    VlsegNID = IntrMaskIds[Factor-2];
+    Operands.push_back(Mask);
+  }
+
+  Operands.push_back(RVL);
+
+  // Tail-policy
+  if (Mask)
+    Operands.push_back(ConstantInt::get(XLenTy, 1));
+
+  Function *VlsegNFunc = Intrinsic::getDeclaration(
+      VPLoad->getModule(), VlsegNID, {VTy, RVL->getType()});
+  CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
+  for (ExtractValueInst *VE : ExtractValues)
+    VE->setOperand(0, VlsegN);
+
+  return true;
+}
+
+/// Lower an interleaved vp.store into a vssegN intrinsic.
+///
+/// E.g. Lower an interleaved vp.store (Factor = 2):
+///
+///   %is = tail call <vscale x 64 x i8>
+///             @llvm.experimental.vector.interleave2.nxv64i8(
+///                               <vscale x 32 x i8> %load0,
+///                               <vscale x 32 x i8> %load1
+///   %wide.rvl = shl nuw nsw i32 %rvl, 1
+///   tail call void @llvm.vp.store.nxv64i8.p0(
+///                               <vscale x 64 x i8> %is, ptr %ptr,
+///                               %mask,
+///                               i32 %wide.rvl)
+///
+/// Into:
+///   call void @llvm.riscv.vsseg2.mask.nxv32i8.i64(
+///                               <vscale x 32 x i8> %load1,
+///                               <vscale x 32 x i8> %load2, ptr %ptr,
+///                               %mask,
+///                               i64 %rvl)
+bool RISCVTargetLowering::lowerInterleavedScalableStore(
+    Instruction *Store, Value *Mask, IntrinsicInst *InterleaveIntrin,
+    unsigned Factor) const {
+  auto *VPStore = dyn_cast<IntrinsicInst>(Store);
+  if (!VPStore || VPStore->getIntrinsicID() != Intrinsic::vp_store)
+    return false;
+
+  // Start to build operands for the segmented-store instructions
+  SmallVector<Value *> Operands;
+  for (unsigned I = 0; I < Factor; ++I)
+    Operands.push_back(InterleaveIntrin->getOperand(I));
+
+  VectorType *VTy = cast<VectorType>(Operands[0]->getType());
+
+  if (!isLegalInterleavedAccessType(VTy, Factor,
+                                    Store->getModule()->getDataLayout()))
+    return false;
+
+  IRBuilder<> Builder(VPStore);
+  Value *WideRVL = VPStore->getOperand(3);
+  auto *XLenTy = Type::getIntNTy(VPStore->getContext(), Subtarget.getXLen());
+  Value *RVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+      XLenTy);
+
+  static const Intrinsic::ID IntrMaskIds[] = {
+      Intrinsic::riscv_vsseg2_mask, Intrinsic::riscv_vsseg3_mask,
+      Intrinsic::riscv_vsseg4_mask, Intrinsic::riscv_vsseg5_mask,
+      Intrinsic::riscv_vsseg6_mask, Intrinsic::riscv_vsseg7_mask,
+      Intrinsic::riscv_vsseg8_mask,
+  };
+  static const Intrinsic::ID IntrIds[] = {
+      Intrinsic::riscv_vsseg2, Intrinsic::riscv_vsseg3, Intrinsic::riscv_vsseg4,
+      Intrinsic::riscv_vsseg5, Intrinsic::riscv_vsseg6, Intrinsic::riscv_vsseg7,
+      Intrinsic::riscv_vsseg8,
+  };
+
+  Intrinsic::ID VssegNID = IntrIds[Factor - 2];
+  Operands.push_back(VPStore->getOperand(1));
+
+  if (Mask) {
+    Mask = Builder.getTrueVector(VTy->getElementCount());
+    VssegNID = IntrMaskIds[Factor - 2];
+    Operands.push_back(Mask);
+  }
+
+  Operands.push_back(RVL);
+  Function *VssegNFunc = Intrinsic::getDeclaration(
+      VPStore->getModule(), VssegNID, {VTy, RVL->getType()});
+
+  Builder.CreateCall(VssegNFunc, Operands);
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 #define GET_REGISTER_MATCHER
 #include "RISCVGenAsmMatcher.inc"

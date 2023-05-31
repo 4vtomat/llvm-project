@@ -184,6 +184,7 @@ public:
 
   bool shouldExpandReduction(const IntrinsicInst *II) const;
   bool supportsScalableVectors() const { return ST->hasVInstructions(); }
+  bool enableOrderedReductions() const { return true; }
   bool enableScalableVectorization() const { return ST->hasVInstructions(); }
   TailFoldingStyle
   getPreferredTailFoldingStyle(bool IVUpdateMayOverflow) const {
@@ -468,6 +469,9 @@ public:
   bool forceCheckAddressingMode() const;
 
   Type *getScalableVectorFromFixed(Type *Ty) const;
+
+  bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                               const DataLayout &DL) const;
 #endif // SIFIVE_CUSTOMIZATION
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);

@@ -116,11 +116,11 @@ define half @flh_fsh_global(half %a, half %b) nounwind {
 ; CHECKIZFH:       # %bb.0:
 ; CHECKIZFH-NEXT:    fadd.h fa0, fa0, fa1
 ; CHECKIZFH-NEXT:    lui a0, %hi(G)
-; CHECKIZFH-NEXT:    flh fa5, %lo(G)(a0)
-; CHECKIZFH-NEXT:    addi a1, a0, %lo(G)
-; CHECKIZFH-NEXT:    fsh fa0, %lo(G)(a0)
-; CHECKIZFH-NEXT:    flh fa5, 18(a1)
-; CHECKIZFH-NEXT:    fsh fa0, 18(a1)
+; CHECKIZFH-NEXT:    addi a0, a0, %lo(G)
+; CHECKIZFH-NEXT:    flh fa5, 0(a0)
+; CHECKIZFH-NEXT:    fsh fa0, 0(a0)
+; CHECKIZFH-NEXT:    flh fa5, 18(a0)
+; CHECKIZFH-NEXT:    fsh fa0, 18(a0)
 ; CHECKIZFH-NEXT:    ret
 ;
 ; CHECKIZHINX-LABEL: flh_fsh_global:
@@ -142,11 +142,11 @@ define half @flh_fsh_global(half %a, half %b) nounwind {
 ; CHECKIZFHMIN-NEXT:    fadd.s fa5, fa4, fa5
 ; CHECKIZFHMIN-NEXT:    fcvt.h.s fa0, fa5
 ; CHECKIZFHMIN-NEXT:    lui a0, %hi(G)
-; CHECKIZFHMIN-NEXT:    flh fa5, %lo(G)(a0)
-; CHECKIZFHMIN-NEXT:    addi a1, a0, %lo(G)
-; CHECKIZFHMIN-NEXT:    fsh fa0, %lo(G)(a0)
-; CHECKIZFHMIN-NEXT:    flh fa5, 18(a1)
-; CHECKIZFHMIN-NEXT:    fsh fa0, 18(a1)
+; CHECKIZFHMIN-NEXT:    addi a0, a0, %lo(G)
+; CHECKIZFHMIN-NEXT:    flh fa5, 0(a0)
+; CHECKIZFHMIN-NEXT:    fsh fa0, 0(a0)
+; CHECKIZFHMIN-NEXT:    flh fa5, 18(a0)
+; CHECKIZFHMIN-NEXT:    fsh fa0, 18(a0)
 ; CHECKIZFHMIN-NEXT:    ret
 ;
 ; CHECKIZHINXMIN-LABEL: flh_fsh_global:

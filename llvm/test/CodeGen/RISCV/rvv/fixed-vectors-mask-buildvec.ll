@@ -891,20 +891,11 @@ define <128 x i1> @buildvec_mask_optsize_v128i1() optsize {
 ;
 ; RV64-LMULMAX8-LABEL: buildvec_mask_optsize_v128i1:
 ; RV64-LMULMAX8:       # %bb.0:
-; RV64-LMULMAX8-NEXT:    lui a0, %hi(.LCPI21_0)
-; RV64-LMULMAX8-NEXT:    addi a0, a0, %lo(.LCPI21_0)
-; RV64-LMULMAX8-NEXT:    li a1, 128
-; RV64-LMULMAX8-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; RV64-LMULMAX8-NEXT:    vlm.v v0, (a0)
+; RV64-LMULMAX8-NEXT:    li a0, 128
+; RV64-LMULMAX8-NEXT:    lui a1, %hi(.LCPI21_0)
+; RV64-LMULMAX8-NEXT:    addi a1, a1, %lo(.LCPI21_0)
+; RV64-LMULMAX8-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV64-LMULMAX8-NEXT:    vlm.v v0, (a1)
 ; RV64-LMULMAX8-NEXT:    ret
-;
-; ZVE32F-LABEL: buildvec_mask_optsize_v128i1:
-; ZVE32F:       # %bb.0:
-; ZVE32F-NEXT:    lui a0, %hi(.LCPI21_0)
-; ZVE32F-NEXT:    addi a0, a0, %lo(.LCPI21_0)
-; ZVE32F-NEXT:    li a1, 128
-; ZVE32F-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
-; ZVE32F-NEXT:    vlm.v v0, (a0)
-; ZVE32F-NEXT:    ret
   ret <128 x i1> <i1 0, i1 0, i1 0, i1 0, i1 1, i1 1, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 0, i1 0, i1 0, i1 0, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 0, i1 0, i1 0, i1 1, i1 1, i1 1, i1 0, i1 0, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 0, i1 0, i1 0, i1 0, i1 1, i1 1, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 0, i1 0, i1 0, i1 0, i1 0, i1 1, i1 1, i1 0, i1 1, i1 1, i1 0, i1 1, i1 0, i1 1, i1 1, i1 0, i1 0, i1 0, i1 0, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 1, i1 0, i1 0, i1 0, i1 1, i1 1, i1 1, i1 0, i1 0, i1 0, i1 1, i1 0, i1 1, i1 1, i1 1, i1 0, i1 1, i1 0, i1 1, i1 1, i1 0, i1 0, i1 1, i1 1, i1 1>
 }

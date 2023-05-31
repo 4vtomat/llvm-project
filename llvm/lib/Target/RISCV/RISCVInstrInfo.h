@@ -226,6 +226,8 @@ public:
 
   void expandLIsimm32(MachineBasicBlock &MBB,
                       MachineBasicBlock::iterator MBBI) const;
+  void expandLIaddr(MachineBasicBlock &MBB,
+                    MachineBasicBlock::iterator MBBI) const;
 
   // Get the base operand and byte offset of an instruction that reads/writes
   // memory.
