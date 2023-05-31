@@ -183,7 +183,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smwg", RISCVExtensionVersion{0, 3}},
     {"smwgd", RISCVExtensionVersion{0, 3}},
     {"sswg", RISCVExtensionVersion{0, 3}},
-#endif // SIFIVE_CUSTOMIZATION
     {"smaia", RISCVExtensionVersion{1, 0}},
     {"ssaia", RISCVExtensionVersion{1, 0}},
 
@@ -1109,17 +1108,12 @@ static const char *ImpliedExtsZk[] = {"zkn", "zkt", "zkr"};
 static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
-<<<<<<< HEAD
 static const char *ImpliedExtsZve32f[] = {"zve32x", "f"};
 static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
 static const char *ImpliedExtsZve64d[] = {"zve64f", "d"};
 static const char *ImpliedExtsZve64f[] = {"zve64x", "zve32f"};
 static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
 static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
-static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
-                                        "zvkt"};
-=======
-static const char *ImpliedExtsZvfh[] = {"zve32f"};
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
@@ -1132,7 +1126,6 @@ static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb",
                                         "zvkb"};
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 #if SIFIVE_CUSTOMIZATION
@@ -1153,11 +1146,6 @@ static const char *ImpliedExtsZvl512b[] = {"zvl256b"};
 static const char *ImpliedExtsZvl64b[] = {"zvl32b"};
 static const char *ImpliedExtsZvl65536b[] = {"zvl32768b"};
 static const char *ImpliedExtsZvl8192b[] = {"zvl4096b"};
-static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"}; // SIFIVE
-static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"}; // SIFIVE
-static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"}; // SIFIVE
-static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"}; // SIFIVE
-static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"}; // SIFIVE
 struct ImpliedExtsEntry {
   StringLiteral Name;
   ArrayRef<const char *> Exts;
