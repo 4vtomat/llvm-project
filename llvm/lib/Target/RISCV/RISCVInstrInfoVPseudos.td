@@ -1974,12 +1974,12 @@ multiclass VPseudoILoad<bit Ordered, int TargetConstraintType = 1> {
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadNoMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,
 #endif // SIFIVE_CUSTOMIZATION
-              VLXSched<idxEEW, Order, DataLInfo, IdxLInfo>;
+              VLXSched<dataEEW, Order, DataLInfo, IdxLInfo>;
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_TU":
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadNoMaskTU<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,
 #endif // SIFIVE_CUSTOMIZATION
-              VLXSched<idxEEW, Order, DataLInfo, IdxLInfo>;
+              VLXSched<dataEEW, Order, DataLInfo, IdxLInfo>;
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
 #ifdef SIFIVE_CUSTOMIZATION
               VPseudoILoadMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered, HasConstraint, UseNewTypeConstraints>,

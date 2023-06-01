@@ -2284,8 +2284,10 @@ let HasMasked = false, HasVL = false, IRName = "" in {
 #ifdef SIFIVE_CUSTOMIZATION
     // reinterpret for bf16 <-> uint16
     // Reinterpret between different type under the same SEW and LMUL
-    def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
-    def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
+    let RequiredFeatures = ["HasBfloat16"] in {
+      def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
+      def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
+    }
 #endif // SIFIVE_CUSTOMIZATION
   }
 

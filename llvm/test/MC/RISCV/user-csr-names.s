@@ -11,7 +11,6 @@
 # RUN:     | FileCheck -check-prefix=CHECK-INST-ALIAS %s
 
 ##################################
-# User Floating Pont CSRs
 # User Floating Point CSRs
 ##################################
 # Tests in rvf-user-mode-csr.s
