@@ -58,12 +58,12 @@ entry:
 }
 
 define void @t1(ptr nocapture %C) nounwind {
-; RV32-LABEL: t1:
-; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lui a1, %hi(.L.str1)
-; RV32-NEXT:    addi a1, a1, %lo(.L.str1)
-; RV32-NEXT:    li a2, 31
-; RV32-NEXT:    tail memcpy@plt
+; RV32ALIGNED-LABEL: t1:
+; RV32ALIGNED:       # %bb.0: # %entry
+; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str1)
+; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str1)
+; RV32ALIGNED-NEXT:    li a2, 31
+; RV32ALIGNED-NEXT:    tail memcpy@plt
 ;
 ; RV64ALIGNED-LABEL: t1:
 ; RV64ALIGNED:       # %bb.0: # %entry
@@ -71,6 +71,35 @@ define void @t1(ptr nocapture %C) nounwind {
 ; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str1)
 ; RV64ALIGNED-NEXT:    li a2, 31
 ; RV64ALIGNED-NEXT:    tail memcpy@plt
+;
+; RV32UNALIGNED-LABEL: t1:
+; RV32UNALIGNED:       # %bb.0: # %entry
+; RV32UNALIGNED-NEXT:    sb zero, 30(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 4
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1870
+; RV32UNALIGNED-NEXT:    sh a1, 28(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 300325
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
+; RV32UNALIGNED-NEXT:    sw a1, 24(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 132181
+; RV32UNALIGNED-NEXT:    addi a1, a1, -689
+; RV32UNALIGNED-NEXT:    sw a1, 20(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 340483
+; RV32UNALIGNED-NEXT:    addi a1, a1, -947
+; RV32UNALIGNED-NEXT:    sw a1, 16(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 267556
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
+; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 337154
+; RV32UNALIGNED-NEXT:    addi a1, a1, 69
+; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 320757
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
+; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 365861
+; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
+; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
+; RV32UNALIGNED-NEXT:    ret
 ;
 ; RV64UNALIGNED-LABEL: t1:
 ; RV64UNALIGNED:       # %bb.0: # %entry
@@ -96,12 +125,12 @@ entry:
 }
 
 define void @t2(ptr nocapture %C) nounwind {
-; RV32-LABEL: t2:
-; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lui a1, %hi(.L.str2)
-; RV32-NEXT:    addi a1, a1, %lo(.L.str2)
-; RV32-NEXT:    li a2, 36
-; RV32-NEXT:    tail memcpy@plt
+; RV32ALIGNED-LABEL: t2:
+; RV32ALIGNED:       # %bb.0: # %entry
+; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str2)
+; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str2)
+; RV32ALIGNED-NEXT:    li a2, 36
+; RV32ALIGNED-NEXT:    tail memcpy@plt
 ;
 ; RV64ALIGNED-LABEL: t2:
 ; RV64ALIGNED:       # %bb.0: # %entry
@@ -109,6 +138,37 @@ define void @t2(ptr nocapture %C) nounwind {
 ; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str2)
 ; RV64ALIGNED-NEXT:    li a2, 36
 ; RV64ALIGNED-NEXT:    tail memcpy@plt
+;
+; RV32UNALIGNED-LABEL: t2:
+; RV32UNALIGNED:       # %bb.0: # %entry
+; RV32UNALIGNED-NEXT:    lui a1, 1156
+; RV32UNALIGNED-NEXT:    addi a1, a1, 332
+; RV32UNALIGNED-NEXT:    sw a1, 32(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 270852
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1870
+; RV32UNALIGNED-NEXT:    sw a1, 28(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 300325
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
+; RV32UNALIGNED-NEXT:    sw a1, 24(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 132181
+; RV32UNALIGNED-NEXT:    addi a1, a1, -689
+; RV32UNALIGNED-NEXT:    sw a1, 20(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 340483
+; RV32UNALIGNED-NEXT:    addi a1, a1, -947
+; RV32UNALIGNED-NEXT:    sw a1, 16(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 267556
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
+; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 337154
+; RV32UNALIGNED-NEXT:    addi a1, a1, 69
+; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 320757
+; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
+; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
+; RV32UNALIGNED-NEXT:    lui a1, 365861
+; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
+; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
+; RV32UNALIGNED-NEXT:    ret
 ;
 ; RV64UNALIGNED-LABEL: t2:
 ; RV64UNALIGNED:       # %bb.0: # %entry

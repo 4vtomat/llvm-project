@@ -383,7 +383,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
   static const unsigned FPOpToExpand[] = {
       ISD::FSIN, ISD::FCOS,       ISD::FSINCOS,   ISD::FPOW,
-      ISD::FREM, ISD::FP16_TO_FP, ISD::FP_TO_FP16};
+      ISD::FREM};
 
   static const unsigned FPRndMode[] = {
       ISD::FCEIL, ISD::FFLOOR, ISD::FTRUNC, ISD::FRINT, ISD::FROUND,
@@ -465,7 +465,15 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(FPOpToExpand, MVT::f32, Expand);
     setLoadExtAction(ISD::EXTLOAD, MVT::f32, MVT::f16, Expand);
     setTruncStoreAction(MVT::f32, MVT::f16, Expand);
+<<<<<<< HEAD
     setOperationAction(ISD::IS_FPCLASS, MVT::f32, Custom);
+=======
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE cherry-picked from D151284 for SCT-2553.
+    setOperationAction(ISD::FP_TO_FP16, MVT::f32, Custom);
+    setOperationAction(ISD::FP16_TO_FP, MVT::f32, Custom);
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 
     if (Subtarget.hasStdExtZfa())
       setOperationAction(ISD::FNEARBYINT, MVT::f32, Legal);
@@ -499,7 +507,15 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(FPOpToExpand, MVT::f64, Expand);
     setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::f16, Expand);
     setTruncStoreAction(MVT::f64, MVT::f16, Expand);
+<<<<<<< HEAD
     setOperationAction(ISD::IS_FPCLASS, MVT::f64, Custom);
+=======
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE cherry-picked from D151284 for SCT-2553.
+    setOperationAction(ISD::FP_TO_FP16, MVT::f64, Custom);
+    setOperationAction(ISD::FP16_TO_FP, MVT::f64, Expand);
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
   }
 
   if (Subtarget.is64Bit()) {
@@ -1225,6 +1241,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setPrefLoopAlignment(Subtarget.getPrefLoopAlignment());
 
   setMinimumJumpTableEntries(5);
+
+#if SIFIVE_CUSTOMIZATION
+  // Increase number of stores for memcpy expansion for RV32.
+  if (!Subtarget.is64Bit())
+    MaxStoresPerMemcpy = 12;
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
   setJumpIsExpensive(!Subtarget.setJumpIsCheap());
@@ -5007,6 +5029,38 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::FP_TO_SINT_SAT:
   case ISD::FP_TO_UINT_SAT:
     return lowerFP_TO_INT_SAT(Op, DAG, Subtarget);
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE cherry-picked from D151284 for SCT-2553.
+  case ISD::FP_TO_FP16: {
+    // Custom lower to ensure the libcall return is passed in an FPR on hard
+    // float ABIs.
+    assert(Subtarget.hasStdExtF() && "Unexpected custom legalization");
+    SDLoc DL(Op);
+    MakeLibCallOptions CallOptions;
+    RTLIB::Libcall LC =
+        RTLIB::getFPROUND(Op.getOperand(0).getValueType(), MVT::f16);
+    SDValue Res =
+        makeLibCall(DAG, LC, MVT::f32, Op.getOperand(0), CallOptions, DL).first;
+    if (Subtarget.is64Bit())
+      return DAG.getNode(RISCVISD::FMV_X_ANYEXTW_RV64, DL, MVT::i64, Res);
+    return DAG.getBitcast(MVT::i32, Res);
+  }
+  case ISD::FP16_TO_FP: {
+    // Custom lower to ensure the libcall argument is passed in an FPR on hard
+    // float ABIs.
+    assert(Subtarget.hasStdExtF() && "Unexpected custom legalization");
+    SDLoc DL(Op);
+    MakeLibCallOptions CallOptions;
+    SDValue Arg = Subtarget.is64Bit()
+                      ? DAG.getNode(RISCVISD::FMV_W_X_RV64, DL, MVT::f32,
+                                    Op.getOperand(0))
+                      : DAG.getBitcast(MVT::f32, Op.getOperand(0));
+    SDValue Res =
+        makeLibCall(DAG, RTLIB::FPEXT_F16_F32, MVT::f32, Arg, CallOptions, DL)
+            .first;
+    return Res;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::FTRUNC:
   case ISD::FCEIL:
   case ISD::FFLOOR:
@@ -18747,7 +18801,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
 
   Intrinsic::ID VlsegNID = IntrIds[Factor-2];
   if (Mask) {
-    Mask = Builder.getTrueVector(VTy->getElementCount());
     VlsegNID = IntrMaskIds[Factor-2];
     Operands.push_back(Mask);
   }
@@ -18828,7 +18881,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   Operands.push_back(VPStore->getOperand(1));
 
   if (Mask) {
-    Mask = Builder.getTrueVector(VTy->getElementCount());
     VssegNID = IntrMaskIds[Factor - 2];
     Operands.push_back(Mask);
   }

@@ -108,6 +108,11 @@ static bool tryFoldBinOp(const TargetInstrInfo *TII, MachineInstr &Root) {
       MachineOperand &MO = Root.getOperand(i);
       if (MO.isReg() && MO.isKill() &&
           Register::isPhysicalRegister(MO.getReg())) {
+        // FIXME: We can't handle an instruction using the same register twice.
+        const MachineOperand &OtherMO = Root.getOperand(3 - i);
+        if (OtherMO.isReg() && MO.getReg() == OtherMO.getReg())
+          return false;
+
         MachineBasicBlock::reverse_iterator RevInst = Root.getReverseIterator();
         DenseSet<Register> DefRegs;
         for (MachineInstr &MI : make_range(std::next(RevInst), MBB.rend())) {
