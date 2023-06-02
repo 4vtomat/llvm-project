@@ -138,6 +138,14 @@ namespace Intrinsic {
       PPCQuad,
       AnyPtrToElt,
       AArch64Svcount,
+#if SIFIVE_CUSTOMIZATION
+      OneThirdVecArgument,
+      OneFourthVecArgument,
+      OneFifthVecArgument,
+      OneSixthVecArgument,
+      OneSeventhVecArgument,
+      OneEighthVecArgument,
+#endif // SIFIVE_CUSTOMIZATION
     } Kind;
 
     union {
@@ -161,6 +169,14 @@ namespace Intrinsic {
              Kind == TruncArgument || Kind == HalfVecArgument ||
              Kind == SameVecWidthArgument ||
              Kind == PtrToElt || Kind == VecElementArgument ||
+// SIFIVE_CUSTOMIZATION
+             Kind == OneThirdVecArgument ||
+             Kind == OneFourthVecArgument ||
+             Kind == OneFifthVecArgument ||
+             Kind == OneSixthVecArgument ||
+             Kind == OneSeventhVecArgument ||
+             Kind == OneEighthVecArgument ||
+// SIFIVE_CUSTOMIZATION
              Kind == Subdivide2Argument || Kind == Subdivide4Argument ||
              Kind == VecOfBitcastsToInt);
       return Argument_Info >> 3;
@@ -170,6 +186,14 @@ namespace Intrinsic {
              Kind == TruncArgument || Kind == HalfVecArgument ||
              Kind == SameVecWidthArgument ||
              Kind == VecElementArgument || Kind == Subdivide2Argument ||
+// SIFIVE_CUSTOMIZATION
+             Kind == OneThirdVecArgument ||
+             Kind == OneFourthVecArgument ||
+             Kind == OneFifthVecArgument ||
+             Kind == OneSixthVecArgument ||
+             Kind == OneSeventhVecArgument ||
+             Kind == OneEighthVecArgument ||
+// SIFIVE_CUSTOMIZATION
              Kind == Subdivide4Argument || Kind == VecOfBitcastsToInt);
       return (ArgKind)(Argument_Info & 7);
     }

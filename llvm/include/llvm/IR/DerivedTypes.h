@@ -509,6 +509,17 @@ public:
                            EltCnt.divideCoefficientBy(2));
   }
 
+#if SIFIVE_CUSTOMIZATION
+  static VectorType *getOneNthElementsVectorType(VectorType *VTy,
+                                                 unsigned Denominator) {
+    auto EltCnt = VTy->getElementCount();
+    assert(EltCnt.isKnownMultipleOf(Denominator) &&
+           "Cannot take one-nth of a vector");
+    return VectorType::get(VTy->getScalarType(),
+                           EltCnt.divideCoefficientBy(Denominator));
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// This static method returns a VectorType with twice as many elements as the
   /// input type and the same element type.
   static VectorType *getDoubleElementsVectorType(VectorType *VTy) {
