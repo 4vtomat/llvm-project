@@ -13315,6 +13315,12 @@ static SDValue combineVFMADD_VLWithVFNEG_VL(SDNode *N, SelectionDAG &DAG) {
   if (!NegA && !NegB && !NegC)
     return SDValue();
 
+#if SIFIVE_CUSTOMIZATION
+  // Avoid negateFMAOpcode assertion fail.
+  if (NegA == NegB && !NegC)
+    return SDValue();
+#endif // combineVFMADD_VLWithVFNEG_VL
+
   unsigned NewOpcode = negateFMAOpcode(N->getOpcode(), NegA != NegB, NegC);
   if (N->isTargetStrictFPOpcode())
     return DAG.getNode(NewOpcode, SDLoc(N), N->getVTList(),
