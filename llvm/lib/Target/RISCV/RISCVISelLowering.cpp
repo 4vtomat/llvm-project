@@ -465,15 +465,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(FPOpToExpand, MVT::f32, Expand);
     setLoadExtAction(ISD::EXTLOAD, MVT::f32, MVT::f16, Expand);
     setTruncStoreAction(MVT::f32, MVT::f16, Expand);
-<<<<<<< HEAD
     setOperationAction(ISD::IS_FPCLASS, MVT::f32, Custom);
-=======
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE cherry-picked from D151284 for SCT-2553.
     setOperationAction(ISD::FP_TO_FP16, MVT::f32, Custom);
     setOperationAction(ISD::FP16_TO_FP, MVT::f32, Custom);
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 
     if (Subtarget.hasStdExtZfa())
       setOperationAction(ISD::FNEARBYINT, MVT::f32, Legal);
@@ -507,15 +504,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(FPOpToExpand, MVT::f64, Expand);
     setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::f16, Expand);
     setTruncStoreAction(MVT::f64, MVT::f16, Expand);
-<<<<<<< HEAD
     setOperationAction(ISD::IS_FPCLASS, MVT::f64, Custom);
-=======
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE cherry-picked from D151284 for SCT-2553.
     setOperationAction(ISD::FP_TO_FP16, MVT::f64, Custom);
     setOperationAction(ISD::FP16_TO_FP, MVT::f64, Expand);
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
   }
 
   if (Subtarget.is64Bit()) {
