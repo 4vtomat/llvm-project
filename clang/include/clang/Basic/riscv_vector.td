@@ -770,6 +770,7 @@ class PVString<int nf, bit signed> {
           !eq(nf, 8): !if(signed, "PvPvPvPvPvPvPvPv", "PUvPUvPUvPUvPUvPUvPUvPUv"));
 }
 
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -924,6 +925,8 @@ multiclass RVVUnitStridedSegLoadFF<string op> {
   }
 }
 
+=======
+>>>>>>> 5a80ef3fde9c ([1/6][Clang][RISCV] Replace unit-stride (fault-first) segment load with tuple type interfaces)
 multiclass RVVStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1645,12 +1648,16 @@ defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
 // 7.8 Vector Load/Store Segment Instructions
+<<<<<<< HEAD
 let UnMaskedPolicyScheme = HasPassthruOperand,
 #ifdef SIFIVE_CUSTOMIZATION
     HasNontemporalOperand = true in {
 #endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegLoad<"vlseg">;
 defm : RVVUnitStridedSegLoadFF<"vlseg">;
+=======
+let UnMaskedPolicyScheme = HasPassthruOperand in {
+>>>>>>> 5a80ef3fde9c ([1/6][Clang][RISCV] Replace unit-stride (fault-first) segment load with tuple type interfaces)
 defm : RVVStridedSegLoad<"vlsseg">;
 defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
@@ -1666,8 +1673,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -1778,8 +1784,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "ff_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "ff_tuple",
+        let Name = op # nf # "e" # eew # "ff_v",
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
