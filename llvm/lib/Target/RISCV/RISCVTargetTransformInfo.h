@@ -395,6 +395,10 @@ public:
     case RecurKind::FMax:
     case RecurKind::SelectICmp:
     case RecurKind::SelectFCmp:
+#if SIFIVE_CUSTOMIZATION
+    case RecurKind::SelectIVICmp:
+    case RecurKind::SelectIVFCmp:
+#endif // SIFIVE_CUSTOMIZATION
     case RecurKind::FMulAdd:
       return true;
     default:

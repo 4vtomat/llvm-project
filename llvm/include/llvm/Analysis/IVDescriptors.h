@@ -50,8 +50,14 @@ enum class RecurKind {
   FMulAdd,    ///< Fused multiply-add of floats (a * b + c).
   SelectICmp, ///< Integer select(icmp(),x,y) where one of (x,y) is loop
               ///< invariant
-  SelectFCmp  ///< Integer select(fcmp(),x,y) where one of (x,y) is loop
+  SelectFCmp, ///< Integer select(fcmp(),x,y) where one of (x,y) is loop
               ///< invariant
+#if SIFIVE_CUSTOMIZATION
+  SelectIVICmp, ///< Integer select(icmp(),x,y) where one of (x,y) is increasing
+                ///< loop induction PHI
+  SelectIVFCmp, ///< Integer select(fcmp(),x,y) where one of (x,y) is increasing
+                ///< loop induction PHI
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// The RecurrenceDescriptor is used to identify recurrences variables in a
@@ -121,9 +127,15 @@ public:
   /// advances the instruction pointer 'I' from the compare instruction to the
   /// select instruction and stores this pointer in 'PatternLastInst' member of
   /// the returned struct.
+#if SIFIVE_CUSTOMIZATION
+  static InstDesc isRecurrenceInstr(Loop *L, PHINode *Phi, Instruction *I,
+                                    RecurKind Kind, InstDesc &Prev,
+                                    FastMathFlags FuncFMF, ScalarEvolution *SE);
+#else
   static InstDesc isRecurrenceInstr(Loop *L, PHINode *Phi, Instruction *I,
                                     RecurKind Kind, InstDesc &Prev,
                                     FastMathFlags FuncFMF);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if instruction I has multiple uses in Insts
   static bool hasMultipleUsesOf(Instruction *I,
@@ -144,11 +156,21 @@ public:
   /// Returns a struct describing whether the instruction is either a
   ///   Select(ICmp(A, B), X, Y), or
   ///   Select(FCmp(A, B), X, Y)
+#if SIFIVE_CUSTOMIZATION
+  /// where one of (X, Y) is a loop invariant integer or an increasing loop
+  /// induction variable and the other is a PHI value. \p Prev specifies the
+  /// description of an already processed select instruction, so its
+  /// corresponding cmp can be matched to it.
+  static InstDesc isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
+                                     Instruction *I, InstDesc &Prev,
+                                     ScalarEvolution *SE);
+#else
   /// where one of (X, Y) is a loop invariant integer and the other is a PHI
   /// value. \p Prev specifies the description of an already processed select
   /// instruction, so its corresponding cmp can be matched to it.
   static InstDesc isSelectCmpPattern(Loop *Loop, PHINode *OrigPhi,
                                      Instruction *I, InstDesc &Prev);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns a struct describing if the instruction is a
   /// Select(FCmp(X, Y), (Z = X op PHINode), PHINode) instruction pattern.
@@ -232,9 +254,15 @@ public:
   }
 
   /// Returns true if the recurrence kind is of the form
-  ///   select(cmp(),x,y) where one of (x,y) is loop invariant.
+  ///   select(cmp(),x,y) where one of (x,y) is loop invariant or increasing
+  /// loop induction.
   static bool isSelectCmpRecurrenceKind(RecurKind Kind) {
+#if SIFIVE_CUSTOMIZATION
+    return Kind == RecurKind::SelectICmp || Kind == RecurKind::SelectFCmp ||
+           Kind == RecurKind::SelectIVICmp || Kind == RecurKind::SelectIVFCmp;
+#else
     return Kind == RecurKind::SelectICmp || Kind == RecurKind::SelectFCmp;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// Returns the type of the recurrence. This type can be narrower than the
