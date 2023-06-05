@@ -1098,6 +1098,7 @@ class VString<int nf, bit signed> {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1262,6 +1263,8 @@ multiclass RVVIndexedSegStore<string op> {
   }
 }
 
+=======
+>>>>>>> 1de5de4b7300 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
 multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
@@ -2042,8 +2045,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
       foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v_tuple",
-            OverloadedName = op # nf # "ei" # eew # "_tuple",
+        let Name = op # nf # "ei" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -2107,6 +2109,11 @@ defm : RVVIndexedSegStoreTuple<"vsuxseg">;
 defm : RVVIndexedSegStoreTuple<"vsoxseg">;
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+>>>>>>> 93314aa0f7f7 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
 let UnMaskedPolicyScheme = NonePolicy,
 <<<<<<< HEAD
     MaskedPolicyScheme = NonePolicy,
@@ -2125,6 +2132,8 @@ defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
 }
 
+=======
+>>>>>>> 1de5de4b7300 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
 // 12. Vector Integer Arithmetic Instructions
 // 12.1. Vector Single-Width Integer Add and Subtract
 let UnMaskedPolicyScheme = HasPassthruOperand in {
