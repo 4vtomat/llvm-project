@@ -1090,6 +1090,7 @@ class VString<int nf, bit signed> {
                    !eq(nf, 8): !if(signed, "vvvvvvvv", "UvUvUvUvUvUvUvUv"));
 }
 
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1144,6 +1145,8 @@ multiclass RVVUnitStridedSegStore<string op> {
   }
 }
 
+=======
+>>>>>>> 8720bdff91cc ([2/6][Clang][RISCV] Replace unit-stride segment store with tuple type interfaces)
 multiclass RVVStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1732,8 +1735,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-      let Name = op # nf # "e" # eew # "_v_tuple",
-          OverloadedName = op # nf # "e" # eew # "_tuple",
+      let Name = op # nf # "e" # eew # "_v",
           IRName = op # nf,
           MaskedIRName = op # nf # "_mask",
           NF = nf,
@@ -2093,11 +2095,15 @@ defm : RVVIndexedSegStoreTuple<"vsoxseg">;
 }
 
 let UnMaskedPolicyScheme = NonePolicy,
+<<<<<<< HEAD
     MaskedPolicyScheme = NonePolicy,
 #ifdef SIFIVE_CUSTOMIZATION
     HasNontemporalOperand = true in {
 #endif // SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegStore<"vsseg">;
+=======
+    MaskedPolicyScheme = NonePolicy in {
+>>>>>>> 8720bdff91cc ([2/6][Clang][RISCV] Replace unit-stride segment store with tuple type interfaces)
 defm : RVVStridedSegStore<"vssseg">;
 defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
