@@ -772,6 +772,7 @@ class PVString<int nf, bit signed> {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1083,6 +1084,8 @@ multiclass RVVIndexedSegLoad<string op> {
   }
 }
 
+=======
+>>>>>>> c8447dd94422 ([5/6][Clang][RISCV] Replace indexed segment load with tuple type interfaces)
 class VString<int nf, bit signed> {
   string S = !cond(!eq(nf, 2): !if(signed, "vv", "UvUv"),
                    !eq(nf, 3): !if(signed, "vvv", "UvUvUv"),
@@ -1656,6 +1659,7 @@ defm vle16ff: RVVVLEFFBuiltin<["s","x"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
+<<<<<<< HEAD
 // 7.8 Vector Load/Store Segment Instructions
 <<<<<<< HEAD
 let UnMaskedPolicyScheme = HasPassthruOperand,
@@ -1675,6 +1679,8 @@ defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
 
+=======
+>>>>>>> c8447dd94422 ([5/6][Clang][RISCV] Replace indexed segment load with tuple type interfaces)
 multiclass RVVUnitStridedSegLoadTuple<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1977,8 +1983,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
       foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v_tuple",
-            OverloadedName = op # nf # "ei" # eew # "_tuple",
+        let Name = op # nf # "ei" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -2083,6 +2088,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
   }
 }
 
+// 7.8 Vector Load/Store Segment Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand,
     IsTuple = true in {
   defm : RVVUnitStridedSegLoadTuple<"vlseg">;
