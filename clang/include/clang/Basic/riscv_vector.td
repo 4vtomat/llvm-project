@@ -1094,6 +1094,7 @@ class VString<int nf, bit signed> {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1203,6 +1204,8 @@ multiclass RVVStridedSegStore<string op> {
   }
 }
 
+=======
+>>>>>>> a30b1b4af11f ([4/6][Clang][RISCV] Replace strided segment store with tuple type interfaces)
 multiclass RVVIndexedSegStore<string op> {
   foreach type = TypeList in {
     foreach eew_info = EEWList in {
@@ -1925,8 +1928,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -2108,8 +2110,11 @@ let UnMaskedPolicyScheme = NonePolicy,
 defm : RVVUnitStridedSegStore<"vsseg">;
 =======
     MaskedPolicyScheme = NonePolicy in {
+<<<<<<< HEAD
 >>>>>>> 8720bdff91cc ([2/6][Clang][RISCV] Replace unit-stride segment store with tuple type interfaces)
 defm : RVVStridedSegStore<"vssseg">;
+=======
+>>>>>>> a30b1b4af11f ([4/6][Clang][RISCV] Replace strided segment store with tuple type interfaces)
 defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
 }
