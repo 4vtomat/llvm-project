@@ -771,6 +771,7 @@ class PVString<int nf, bit signed> {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1005,6 +1006,8 @@ multiclass RVVStridedSegLoad<string op> {
   }
 }
 
+=======
+>>>>>>> 4fc7afbfaf35 ([3/6][Clang][RISCV] Replace strided segment load with tuple type interfaces)
 multiclass RVVIndexedSegLoad<string op> {
   foreach type = TypeList in {
     foreach eew_info = EEWList in {
@@ -1660,8 +1663,11 @@ defm : RVVUnitStridedSegLoad<"vlseg">;
 defm : RVVUnitStridedSegLoadFF<"vlseg">;
 =======
 let UnMaskedPolicyScheme = HasPassthruOperand in {
+<<<<<<< HEAD
 >>>>>>> 5a80ef3fde9c ([1/6][Clang][RISCV] Replace unit-stride (fault-first) segment load with tuple type interfaces)
 defm : RVVStridedSegLoad<"vlsseg">;
+=======
+>>>>>>> 4fc7afbfaf35 ([3/6][Clang][RISCV] Replace strided segment load with tuple type interfaces)
 defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
@@ -1859,8 +1865,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
