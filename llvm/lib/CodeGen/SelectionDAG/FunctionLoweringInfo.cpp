@@ -152,10 +152,9 @@ void FunctionLoweringInfo::set(const Function &fn, MachineFunction &mf,
                                                               false, AI);
           }
 
-          // Scalable vectors and structures that contain scalable vectors may
-          // need a special StackID to distinguish them from other (fixed size)
-          // stack objects.
-          if (Ty->isScalableTy())
+          // Scalable vectors may need a special StackID to distinguish
+          // them from other (fixed size) stack objects.
+          if (isa<ScalableVectorType>(Ty))
             MF->getFrameInfo().setStackID(FrameIndex,
                                           TFI->getStackIDForScalableVectors());
 

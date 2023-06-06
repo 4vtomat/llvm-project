@@ -2025,7 +2025,7 @@ void SelectionDAGBuilder::visitRet(const ReturnInst &I) {
     SmallVector<EVT, 4> ValueVTs, MemVTs;
     SmallVector<uint64_t, 4> Offsets;
     ComputeValueVTs(TLI, DL, I.getOperand(0)->getType(), ValueVTs, &MemVTs,
-                    &Offsets, 0);
+                    &Offsets);
     unsigned NumValues = ValueVTs.size();
 
     SmallVector<SDValue, 4> Chains(NumValues);
@@ -4164,7 +4164,7 @@ void SelectionDAGBuilder::visitLoad(const LoadInst &I) {
   Type *Ty = I.getType();
   SmallVector<EVT, 4> ValueVTs, MemVTs;
   SmallVector<uint64_t, 4> Offsets;
-  ComputeValueVTs(TLI, DAG.getDataLayout(), Ty, ValueVTs, &MemVTs, &Offsets, 0);
+  ComputeValueVTs(TLI, DAG.getDataLayout(), Ty, ValueVTs, &MemVTs, &Offsets);
   unsigned NumValues = ValueVTs.size();
   if (NumValues == 0)
     return;
@@ -4263,7 +4263,7 @@ void SelectionDAGBuilder::visitStoreToSwiftError(const StoreInst &I) {
   SmallVector<uint64_t, 4> Offsets;
   const Value *SrcV = I.getOperand(0);
   ComputeValueVTs(DAG.getTargetLoweringInfo(), DAG.getDataLayout(),
-                  SrcV->getType(), ValueVTs, &Offsets, 0);
+                  SrcV->getType(), ValueVTs, &Offsets);
   assert(ValueVTs.size() == 1 && Offsets[0] == 0 &&
          "expect a single EVT for swifterror");
 
@@ -4299,7 +4299,7 @@ void SelectionDAGBuilder::visitLoadFromSwiftError(const LoadInst &I) {
   SmallVector<EVT, 4> ValueVTs;
   SmallVector<uint64_t, 4> Offsets;
   ComputeValueVTs(DAG.getTargetLoweringInfo(), DAG.getDataLayout(), Ty,
-                  ValueVTs, &Offsets, 0);
+                  ValueVTs, &Offsets);
   assert(ValueVTs.size() == 1 && Offsets[0] == 0 &&
          "expect a single EVT for swifterror");
 
@@ -4336,7 +4336,7 @@ void SelectionDAGBuilder::visitStore(const StoreInst &I) {
   SmallVector<EVT, 4> ValueVTs, MemVTs;
   SmallVector<uint64_t, 4> Offsets;
   ComputeValueVTs(DAG.getTargetLoweringInfo(), DAG.getDataLayout(),
-                  SrcV->getType(), ValueVTs, &MemVTs, &Offsets, 0);
+                  SrcV->getType(), ValueVTs, &MemVTs, &Offsets);
   unsigned NumValues = ValueVTs.size();
   if (NumValues == 0)
     return;
@@ -10017,7 +10017,7 @@ TargetLowering::LowerCallTo(TargetLowering::CallLoweringInfo &CLI) const {
   SmallVector<EVT, 4> RetTys;
   SmallVector<uint64_t, 4> Offsets;
   auto &DL = CLI.DAG.getDataLayout();
-  ComputeValueVTs(*this, DL, CLI.RetTy, RetTys, &Offsets, 0);
+  ComputeValueVTs(*this, DL, CLI.RetTy, RetTys, &Offsets);
 
   if (CLI.IsPostTypeLegalization) {
     // If we are lowering a libcall after legalization, split the return type.
