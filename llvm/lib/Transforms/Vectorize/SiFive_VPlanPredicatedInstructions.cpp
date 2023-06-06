@@ -60,9 +60,8 @@ static void widenSelectInstruction(VPTransformState &State,
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
   Value *RVLArg = State.get(RVL, Part);
-  Value *V = State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
-                                           {Cond, Op1, Op2, RVLArg}, nullptr,
-                                           "vp.op.select");
+  Value *V = State.Builder.CreateIntrinsic(
+      VPOpCode, {Op1->getType()}, {Cond, Op1, Op2, RVLArg}, nullptr, Name);
   State.set(Def, V, Part);
 }
 
