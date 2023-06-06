@@ -9,19 +9,19 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
-; CHECK-NEXT:    [[UGLYGEP:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], i64 48
-; CHECK-NEXT:    [[UGLYGEP1:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906944
-; CHECK-NEXT:    [[UGLYGEP2:%.*]] = getelementptr i8, ptr [[ELMS_I159:%.*]], i64 8
-; CHECK-NEXT:    [[UGLYGEP3:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], i64 274877906888
-; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[UGLYGEP]], [[UGLYGEP2]]
-; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[ELMS_I159]], [[UGLYGEP1]]
+; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], i64 48
+; CHECK-NEXT:    [[SCEVGEP1:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906944
+; CHECK-NEXT:    [[SCEVGEP2:%.*]] = getelementptr i8, ptr [[ELMS_I159:%.*]], i64 8
+; CHECK-NEXT:    [[SCEVGEP3:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], i64 274877906888
+; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[SCEVGEP]], [[SCEVGEP2]]
+; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[ELMS_I159]], [[SCEVGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
-; CHECK-NEXT:    [[BOUND04:%.*]] = icmp ult ptr [[UGLYGEP]], [[UGLYGEP3]]
-; CHECK-NEXT:    [[BOUND15:%.*]] = icmp ult ptr [[TMP0]], [[UGLYGEP1]]
+; CHECK-NEXT:    [[BOUND04:%.*]] = icmp ult ptr [[SCEVGEP]], [[SCEVGEP3]]
+; CHECK-NEXT:    [[BOUND15:%.*]] = icmp ult ptr [[TMP0]], [[SCEVGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT6:%.*]] = and i1 [[BOUND04]], [[BOUND15]]
 ; CHECK-NEXT:    [[CONFLICT_RDX:%.*]] = or i1 [[FOUND_CONFLICT]], [[FOUND_CONFLICT6]]
-; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr [[UGLYGEP]], inttoptr (i64 274877906944 to ptr)
-; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr inttoptr (i64 56 to ptr), [[UGLYGEP1]]
+; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr [[SCEVGEP]], inttoptr (i64 274877906944 to ptr)
+; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr inttoptr (i64 56 to ptr), [[SCEVGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    [[CONFLICT_RDX10:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT9]]
 ; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
