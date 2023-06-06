@@ -71,10 +71,28 @@ RISCVToolChain::RISCVToolChain(const Driver &D, const llvm::Triple &Triple,
     getProgramPaths().push_back(D.Dir);
   }
   getFilePaths().push_back(computeSysRoot() + "/lib");
+
+#if SIFIVE_CUSTOMIZATION
+  // Check if we are using special libc base on --specs option.
+  // The 'SpecialLibc' variable is used to hack flags at different stages.
+  SpecialLibc = LibcType::None;
+  for (auto Specs : Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
+    if (Specs == "nano.specs")
+      SpecialLibc = LibcType::NewlibNano;
+    else if (Specs == "gloss-segger.specs")
+      SpecialLibc = LibcType::SeggerGloss;
+    else if (Specs == "metal-segger.specs")
+      SpecialLibc = LibcType::SeggerMetal;
+  }
+#endif
 }
 
 Tool *RISCVToolChain::buildLinker() const {
+#if SIFIVE_CUSTOMIZATION
+  return new tools::RISCV::Linker(*this, SpecialLibc);
+#else
   return new tools::RISCV::Linker(*this);
+#endif
 }
 
 ToolChain::RuntimeLibType RISCVToolChain::GetDefaultRuntimeLibType() const {
@@ -92,12 +110,37 @@ void RISCVToolChain::addClangTargetOptions(
     llvm::opt::ArgStringList &CC1Args,
     Action::OffloadKind) const {
   CC1Args.push_back("-nostdsysteminc");
+
+#if SIFIVE_CUSTOMIZATION
+  switch (SpecialLibc) {
+    case LibcType::SeggerGloss:
+    case LibcType::SeggerMetal:
+        CC1Args.push_back("-D__SEGGER_LIBC__");
+      break;
+    default:
+      break;
+  }
+#endif
 }
 
 void RISCVToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
                                                ArgStringList &CC1Args) const {
   if (DriverArgs.hasArg(options::OPT_nostdinc))
     return;
+
+#if SIFIVE_CUSTOMIZATION
+  // Segger includ path should be searched firstly.
+  SmallString<128> SeggerDir(computeSysRoot());
+  switch (SpecialLibc) {
+    case LibcType::SeggerGloss:
+    case LibcType::SeggerMetal:
+      llvm::sys::path::append(SeggerDir, "include/segger");
+      addSystemInclude(DriverArgs, CC1Args, SeggerDir.str());
+      break;
+    default:
+      break;
+  }
+#endif
 
   if (!DriverArgs.hasArg(options::OPT_nobuiltininc)) {
     SmallString<128> Dir(getDriver().ResourceDir);
@@ -220,25 +263,59 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     AddRunTimeLibs(ToolChain, ToolChain.getDriver(), CmdArgs, Args);
   }
 
-  bool UseNewlibNano = false;
-  for (auto Specs : Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
-    if (Specs == "nano.specs")
-      UseNewlibNano = true;
-  }
 
-  if (UseNewlibNano) {
-    for (size_t i = 0; i < CmdArgs.size(); ++i) {
-      StringRef Arg = CmdArgs[i];
-      if (Arg == "-lc")
-        CmdArgs[i] = "-lc_nano";
-      if (Arg == "-lgloss")
-        CmdArgs[i] = "-lgloss_nano";
-      if (Arg == "-lm")
-        CmdArgs[i] = "-lm_nano";
-      if (Arg == "-lg")
-        CmdArgs[i] = "-lg_nano";
-    }
+#if SIFIVE_CUSTOMIZATION
+  auto *GlossIdx = CmdArgs.begin();
+
+  switch (SpecialLibc) {
+    case LibcType::NewlibNano:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_nano";
+          if (Arg == "-lgloss")
+            CmdArgs[i] = "-lgloss_nano";
+          if (Arg == "-lm")
+            CmdArgs[i] = "-lm_nano";
+          if (Arg == "-lg")
+            CmdArgs[i] = "-lg_nano";
+        }
+      break;
+    case LibcType::SeggerGloss:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_segger";
+          if (Arg == "-lgloss")
+            CmdArgs[i] = "-lgloss-segger";
+          // libg.a is the same as libc.a.
+          // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+          if (Arg == "-lg")
+            CmdArgs[i] = "lc_segger";
+        }
+      break;
+    case LibcType::SeggerMetal:
+        for (size_t i = 0; i < CmdArgs.size(); ++i) {
+          StringRef Arg = CmdArgs[i];
+          if (Arg == "-lc")
+            CmdArgs[i] = "-lc_segger";
+          if (Arg == "-lgloss") {
+            CmdArgs[i] = "-lmetal";
+            GlossIdx += i;
+          }
+          // libg.a is the same as libc.a.
+          // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+          if (Arg == "-lg")
+            CmdArgs[i] = "lc_segger";
+        }
+        // Insert metal-segger in group
+        if (GlossIdx != CmdArgs.begin())
+          CmdArgs.insert(GlossIdx, "-lmetal-segger");
+      break;
+    default:
+      break;
   }
+#endif
 
   if (WantCRTs)
     CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath(crtend)));
