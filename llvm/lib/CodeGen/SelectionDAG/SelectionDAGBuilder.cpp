@@ -7488,12 +7488,50 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::callbr_landingpad:
     visitCallBrLandingPad(I);
     return;
+#if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vector_interleave2:
-    visitVectorInterleave(I, 2); // SIFIVE
+    visitVectorInterleave(I, 2);
+    return;
+  case Intrinsic::experimental_vector_interleave3:
+    visitVectorInterleave(I, 3);
+    return;
+  case Intrinsic::experimental_vector_interleave4:
+    visitVectorInterleave(I, 4);
+    return;
+  case Intrinsic::experimental_vector_interleave5:
+    visitVectorInterleave(I, 5);
+    return;
+  case Intrinsic::experimental_vector_interleave6:
+    visitVectorInterleave(I, 6);
+    return;
+  case Intrinsic::experimental_vector_interleave7:
+    visitVectorInterleave(I, 7);
+    return;
+  case Intrinsic::experimental_vector_interleave8:
+    visitVectorInterleave(I, 8);
     return;
   case Intrinsic::experimental_vector_deinterleave2:
-    visitVectorDeinterleave(I, 2); // SIFIVE
+    visitVectorDeinterleave(I, 2);
     return;
+  case Intrinsic::experimental_vector_deinterleave3:
+    visitVectorDeinterleave(I, 3);
+    return;
+  case Intrinsic::experimental_vector_deinterleave4:
+    visitVectorDeinterleave(I, 4);
+    return;
+  case Intrinsic::experimental_vector_deinterleave5:
+    visitVectorDeinterleave(I, 5);
+    return;
+  case Intrinsic::experimental_vector_deinterleave6:
+    visitVectorDeinterleave(I, 6);
+    return;
+  case Intrinsic::experimental_vector_deinterleave7:
+    visitVectorDeinterleave(I, 7);
+    return;
+  case Intrinsic::experimental_vector_deinterleave8:
+    visitVectorDeinterleave(I, 8);
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
