@@ -7489,10 +7489,10 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
     visitCallBrLandingPad(I);
     return;
   case Intrinsic::experimental_vector_interleave2:
-    visitVectorInterleave(I);
+    visitVectorInterleave(I, 2); // SIFIVE
     return;
   case Intrinsic::experimental_vector_deinterleave2:
-    visitVectorDeinterleave(I);
+    visitVectorDeinterleave(I, 2); // SIFIVE
     return;
   }
 }
@@ -11771,26 +11771,32 @@ void SelectionDAGBuilder::visitVectorReverse(const CallInst &I) {
   setValue(&I, DAG.getVectorShuffle(VT, DL, V, DAG.getUNDEF(VT), Mask));
 }
 
-void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I) {
+#if SIFIVE_CUSTOMIZATION
+void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I,
+                                                  unsigned Factor) {
   auto DL = getCurSDLoc();
   SDValue InVec = getValue(I.getOperand(0));
-  EVT OutVT =
-      InVec.getValueType().getHalfNumVectorElementsVT(*DAG.getContext());
 
+  SmallVector<EVT, 4> ValueVTs;
+  ComputeValueVTs(DAG.getTargetLoweringInfo(), DAG.getDataLayout(), I.getType(),
+                  ValueVTs);
+
+  EVT OutVT = ValueVTs[0];
   unsigned OutNumElts = OutVT.getVectorMinNumElements();
 
-  // ISD Node needs the input vectors split into two equal parts
-  SDValue Lo = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, OutVT, InVec,
-                           DAG.getVectorIdxConstant(0, DL));
-  SDValue Hi = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, OutVT, InVec,
-                           DAG.getVectorIdxConstant(OutNumElts, DL));
+  SmallVector<SDValue, 4> SubVecs(Factor);
+  for (unsigned i = 0; i != Factor; ++i) {
+    assert(ValueVTs[i] == OutVT && "Expected VTs to be the same");
+    SubVecs[i] = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, OutVT, InVec,
+                             DAG.getVectorIdxConstant(OutNumElts * i, DL));
+  }
 
   // Use VECTOR_SHUFFLE for fixed-length vectors to benefit from existing
   // legalisation and combines.
-  if (OutVT.isFixedLengthVector()) {
-    SDValue Even = DAG.getVectorShuffle(OutVT, DL, Lo, Hi,
+  if (OutVT.isFixedLengthVector() && Factor == 2) {
+    SDValue Even = DAG.getVectorShuffle(OutVT, DL, SubVecs[0], SubVecs[1],
                                         createStrideMask(0, 2, OutNumElts));
-    SDValue Odd = DAG.getVectorShuffle(OutVT, DL, Lo, Hi,
+    SDValue Odd = DAG.getVectorShuffle(OutVT, DL, SubVecs[0], SubVecs[1],
                                        createStrideMask(1, 2, OutNumElts));
     SDValue Res = DAG.getMergeValues({Even, Odd}, getCurSDLoc());
     setValue(&I, Res);
@@ -11798,34 +11804,48 @@ void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I) {
   }
 
   SDValue Res = DAG.getNode(ISD::VECTOR_DEINTERLEAVE, DL,
-                            DAG.getVTList(OutVT, OutVT), Lo, Hi);
+                            DAG.getVTList(ValueVTs), SubVecs);
   setValue(&I, Res);
 }
 
-void SelectionDAGBuilder::visitVectorInterleave(const CallInst &I) {
+void SelectionDAGBuilder::visitVectorInterleave(const CallInst &I,
+                                                unsigned Factor) {
   auto DL = getCurSDLoc();
-  EVT InVT = getValue(I.getOperand(0)).getValueType();
-  SDValue InVec0 = getValue(I.getOperand(0));
-  SDValue InVec1 = getValue(I.getOperand(1));
+
+  SmallVector<SDValue, 4> InVecs(Factor);
+  for (unsigned i = 0; i != Factor; ++i) {
+    InVecs[i] = getValue(I.getOperand(i));
+    assert(InVecs[i].getValueType() == InVecs[0].getValueType() &&
+           "Expected VTs to be the same");
+  }
+
+  EVT InVT = InVecs[0].getValueType();
+
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
   EVT OutVT = TLI.getValueType(DAG.getDataLayout(), I.getType());
 
   // Use VECTOR_SHUFFLE for fixed-length vectors to benefit from existing
   // legalisation and combines.
-  if (OutVT.isFixedLengthVector()) {
+  if (OutVT.isFixedLengthVector() && Factor == 2) {
     unsigned NumElts = InVT.getVectorMinNumElements();
-    SDValue V = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, InVec0, InVec1);
+    SDValue V = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, InVecs);
     setValue(&I, DAG.getVectorShuffle(OutVT, DL, V, DAG.getUNDEF(OutVT),
                                       createInterleaveMask(NumElts, 2)));
     return;
   }
 
-  SDValue Res = DAG.getNode(ISD::VECTOR_INTERLEAVE, DL,
-                            DAG.getVTList(InVT, InVT), InVec0, InVec1);
-  Res = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, Res.getValue(0),
-                    Res.getValue(1));
+  SmallVector<EVT, 4> ValueVTs(Factor, InVT);
+  SDValue Res =
+      DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, DAG.getVTList(ValueVTs), InVecs);
+
+  SmallVector<SDValue, 4> Results(Factor);
+  for (unsigned i = 0; i != Factor; ++i)
+    Results[i] = Res.getValue(i);
+
+  Res = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, Results);
   setValue(&I, Res);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 void SelectionDAGBuilder::visitFreeze(const FreezeInst &I) {
   SmallVector<EVT, 4> ValueVTs;
