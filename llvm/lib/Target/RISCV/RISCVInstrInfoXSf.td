@@ -9,15 +9,6 @@
 // This file describes the vendor extensions defined by SiFive.
 //
 //===----------------------------------------------------------------------===//
-class GetLMulLowerMX<string MX> {
-  string mx = !cond(!eq(MX, "MF8"): "mf8",
-                    !eq(MX, "MF4"): "mf4",
-                    !eq(MX, "MF2"): "mf2",
-                    !eq(MX, "M1") : "m1",
-                    !eq(MX, "M2") : "m2",
-                    !eq(MX, "M4") : "m4",
-                    !eq(MX, "M8") : "m8");
-}
 
 #ifdef SIFIVE_CUSTOMIZATION
 defset list<VTypeInfoToWide> AllVQMACCQoQVectors = {
@@ -82,52 +73,6 @@ class RVInstVXCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
   let RVVConstraint = NoConstraint;
 }
 
-class RVInstVCCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
-                      string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> rs2;
-  bits<5> rs1;
-  bits<5> rd;
-  bits<2> funct6_lo2;
-  bit vm;
-
-  let Inst{31-28} = funct6_hi4;
-  let Inst{27-26} = funct6_lo2;
-  let Inst{25} = vm;
-  let Inst{24-20} = rs2;
-  let Inst{19-15} = rs1;
-  let Inst{14-12} = funct3;
-  let Inst{11-7} = rd;
-  let Opcode = OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-
-class RVInstVCFCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
-                       string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> rs2;
-  bits<5> rs1;
-  bits<5> rd;
-  bit funct6_lo1;
-  bit vm;
-
-  let Inst{31-28} = funct6_hi4;
-  let Inst{27} = 1;
-  let Inst{26} = funct6_lo1;
-  let Inst{25} = vm;
-  let Inst{24-20} = rs2;
-  let Inst{19-15} = rs1;
-  let Inst{14-12} = funct3;
-  let Inst{11-7} = rd;
-  let Opcode = OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   : RVInstVVCustom2<funct6, opv, (outs VR:$vd),
                     (ins VR:$vs1, VR:$vs2), opcodestr, "$vd, $vs1, $vs2"> {
@@ -176,6 +121,7 @@ let Predicates = [HasExtXsfvfnrclipxfqf] in {
   def VFNRCLIP_XU_F_QF : CustomSiFiveVF<"sf.vfnrclip.xu.f.qf", OPFVF, 0b100010>, Sched<[]> ;
   def VFNRCLIP_X_F_QF : CustomSiFiveVF<"sf.vfnrclip.x.f.qf", OPFVF, 0b100011>, Sched<[]> ;
 } // Predicates = [HasExtXsfvfnrclipxfqf]
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // XSFVCP extension instructions.
@@ -231,6 +177,51 @@ def timm5 : Operand<XLenVT>, TImmLeaf<XLenVT, [{return isInt<5>(Imm);}]> {
 
 class SwapVCIXIns<dag funct6, dag rd, dag rs2, dag rs1, bit swap> {
   dag Ins = !con(funct6, !if(swap, rs2, rd), !if(swap, rd, rs2), rs1);
+}
+
+class RVInstVCCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
+                      string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+  bits<2> funct6_lo2;
+  bit vm;
+
+  let Inst{31-28} = funct6_hi4;
+  let Inst{27-26} = funct6_lo2;
+  let Inst{25} = vm;
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = funct3;
+  let Inst{11-7} = rd;
+  let Opcode = OPC_CUSTOM_2.Value;
+
+  let Uses = [VTYPE, VL];
+  let RVVConstraint = NoConstraint;
+}
+
+class RVInstVCFCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
+                       string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+  bit funct6_lo1;
+  bit vm;
+
+  let Inst{31-28} = funct6_hi4;
+  let Inst{27} = 1;
+  let Inst{26} = funct6_lo1;
+  let Inst{25} = vm;
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = funct3;
+  let Inst{11-7} = rd;
+  let Opcode = OPC_CUSTOM_2.Value;
+
+  let Uses = [VTYPE, VL];
+  let RVVConstraint = NoConstraint;
 }
 
 class GetFTypeInfo<int sew> {
@@ -326,15 +317,6 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm VVW : CustomSiFiveVCIX<"vvw", VCIX_XVW, VR,    VR,    VR>,    Sched<[]>;
   defm FVW : CustomSiFiveVCIX<"fvw", VCIX_XVW, VR,    VR,    FPR32>, Sched<[]>;
 }
-
-let isBarrier = 1, isReturn = 1, isTerminator = 1,
-    hasNoSchedulingInfo = 1 in {
-def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
-  let rd = 0;
-  let rs1 = 0;
-  let rs2 = 0b00010;
-}
-} // let isBarrier = 1, ...
 
 class VPseudoVC_X<Operand OpClass, DAGOperand RS1Class,
                   bit HasSideEffect = 1> :
@@ -484,56 +466,6 @@ let Predicates = [HasVendorXSfvcp] in {
     foreach m = f.MxList in
     defm f.FX # "VW" : VPseudoVC_XVW<m, f.fprclass, payload1>;
   }
-}
-
-let IsRVVWideningReduction = 1 in {
-foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-  }
-}
-
-foreach m = [V_M1, V_M2, V_M4, V_M8] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-  }
-}
-}
-
-foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-  }
-}
-
-let Predicates = [HasExtXsfvfhbfmin] in {
-#ifdef SIFIVE_CUSTOMIZATION
-defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V</*TargetConstraintType*/ 3>;
-defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W</*TargetConstraintType*/ 2>;
-#endif // SIFIVE_CUSTOMIZATION
-}
-
-let IsRVVWideningReduction = 1 in {
-foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVFWMACC4X4X4_VV # "_" # m.MX: VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-  }
-}
 }
 
 class VPatVC_OP4<string intrinsic_name,
@@ -686,6 +618,57 @@ let Predicates = [HasVendorXSfvcp] in {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+let IsRVVWideningReduction = 1 in {
+foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+  }
+}
+
+foreach m = [V_M1, V_M2, V_M4, V_M8] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
+  }
+}
+}
+
+foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+  }
+}
+
+let Predicates = [HasExtXsfvfhbfmin] in {
+#ifdef SIFIVE_CUSTOMIZATION
+defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V</*TargetConstraintType*/ 3>;
+defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W</*TargetConstraintType*/ 2>;
+#endif // SIFIVE_CUSTOMIZATION
+}
+
+let IsRVVWideningReduction = 1 in {
+foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
+  defvar Constraint = "@earlyclobber $rd";
+  let VLMul = m.value in {
+    def PseudoVFWMACC4X4X4_VV # "_" # m.MX: VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
+  }
+}
+}
+
 def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
 
 def : Pat<(int_riscv_vsetvxrm GPR:$rm),
@@ -752,6 +735,15 @@ let Predicates = [HasExtXsfvfwmaccqqq] in {
   }
 }
 
+let isBarrier = 1, isReturn = 1, isTerminator = 1,
+    hasNoSchedulingInfo = 1 in {
+def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
+  let rd = 0;
+  let rs1 = 0;
+  let rs2 = 0b00010;
+}
+} // let isBarrier = 1, ...
+
 let hasNoSchedulingInfo = 1, hasSideEffects = 1,
     mayLoad = 0, mayStore = 0 in {
 def CFLUSH_D_L1
@@ -776,3 +768,4 @@ def CFLUSH_I_L1
   let rs2 = 0b00001;
 }
 } // hasNoSchedulingInfo = 1, ...
+#endif // SIFIVE_CUSTOMIZATION
