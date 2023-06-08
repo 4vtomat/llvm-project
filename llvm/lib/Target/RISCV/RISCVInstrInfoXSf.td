@@ -81,14 +81,16 @@ class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccqoq] in {
+let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccqoq],
+    DecoderNamespace = "XSfvqmaccqoq" in {
   def VQMACCU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccu.4x8x4", OPMVV, 0b111100>;
   def VQMACC4x8x4_VV : CustomSiFiveVV<"sf.vqmacc.4x8x4", OPMVV, 0b111101>;
   def VQMACCUS4x8x4_VV : CustomSiFiveVV<"sf.vqmaccus.4x8x4", OPMVV, 0b111110>;
   def VQMACCSU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccsu.4x8x4", OPMVV, 0b111111>;
 } // Predicates = [HasVendorXSfvqmaccqoq]
 
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccdod] in {
+let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccdod],
+    DecoderNamespace = "XSfvqmaccdod" in {
   def VQMACCU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccu.2x8x2", OPMVV, 0b101100>;
   def VQMACC2x8x2_VV : CustomSiFiveVV<"sf.vqmacc.2x8x2", OPMVV, 0b101101>;
   def VQMACCUS2x8x2_VV : CustomSiFiveVV<"sf.vqmaccus.2x8x2", OPMVV, 0b101110>;
@@ -104,7 +106,8 @@ defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
 }
 } // Predicates = [HasVendorXSfvqmaccdod]
 
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvfwmaccqqq] in {
+let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvfwmaccqqq],
+    DecoderNamespace = "XSfvfwmaccqqq" in {
   def VFWMACC4X4X4_VV : CustomSiFiveVV<"sf.vfwmacc.4x4x4", OPFVV, 0b111100>, Sched<[]> ;
 } // Predicates = [HasVendorXSfvfwmaccqqq]
 
@@ -117,7 +120,7 @@ class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-let Predicates = [HasVendorXSfvfnrclipxfqf] in {
+let Predicates = [HasVendorXSfvfnrclipxfqf], DecoderNamespace = "XSfvfnrclipxfqf" in {
   def VFNRCLIP_XU_F_QF : CustomSiFiveVF<"sf.vfnrclip.xu.f.qf", OPFVF, 0b100010>, Sched<[]> ;
   def VFNRCLIP_X_F_QF : CustomSiFiveVF<"sf.vfnrclip.x.f.qf", OPFVF, 0b100011>, Sched<[]> ;
 } // Predicates = [HasVendorXSfvfnrclipxfqf]
