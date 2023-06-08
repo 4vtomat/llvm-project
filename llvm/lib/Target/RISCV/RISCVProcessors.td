@@ -348,8 +348,8 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
                                        FeatureStdExtZvfh,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
-                                       FeatureStdExtXsfvqmaccqoq,   // SIFIVE
-                                       FeatureStdExtXsfvfhbfmin],   // SIFIVE
+                                       FeatureVendorXSfvqmaccqoq,   // SIFIVE
+                                       FeatureVendorXSfvfhbfmin],   // SIFIVE
                                       [TuneSiFive7, TuneDLen256b]>; // SIFIVE
 
 #ifdef SIFIVE_CUSTOMIZATION
@@ -368,10 +368,10 @@ def SIFIVE_X280N :
                        FeatureStdExtZvfh,
                        FeatureStdExtZba,
                        FeatureStdExtZbb,
-                       FeatureStdExtXsfvfhbfmin,
-                       FeatureStdExtXsfvqmaccqoq,
-                       FeatureStdExtXsfvfnrclipxfqf,
-                       FeatureStdExtXsfvfwmaccqqq],
+                       FeatureVendorXSfvfhbfmin,
+                       FeatureVendorXSfvqmaccqoq,
+                       FeatureVendorXSfvfnrclipxfqf,
+                       FeatureVendorXSfvfwmaccqqq],
                       [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
 def SIFIVE_X280O :
@@ -389,10 +389,10 @@ def SIFIVE_X280O :
                        FeatureStdExtZvfh,
                        FeatureStdExtZba,
                        FeatureStdExtZbb,
-                       FeatureStdExtXsfvfhbfmin,
-                       FeatureStdExtXsfvqmaccqoq,
-                       FeatureStdExtXsfvfnrclipxfqf,
-                       FeatureStdExtXsfvfwmaccqqq],
+                       FeatureVendorXSfvfhbfmin,
+                       FeatureVendorXSfvqmaccqoq,
+                       FeatureVendorXSfvfnrclipxfqf,
+                       FeatureVendorXSfvfwmaccqqq],
                       [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
 
 // FIXME: This needs its own scheduler model

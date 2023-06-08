@@ -66,8 +66,8 @@ def SiFiveP400Model : SchedMachineModel {
   let UnsupportedFeatures = [HasStdExtZbkb, HasStdExtZbkc, HasStdExtZbkx,
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
-                             HasExtXsfvqmaccqoq, HasExtXsfvqmaccdod, // SIFIVE
-                             HasExtXsfvfhbfmin]; // SIFIVE
+                             HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod, // SIFIVE
+                             HasVendorXSfvfhbfmin]; // SIFIVE
   let CompleteModel = false;
 }
 

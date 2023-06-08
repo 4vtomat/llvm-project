@@ -19,8 +19,8 @@ def SiFive6Model : SchedMachineModel {
   let LoadLatency = 3;
   let MispredictPenalty = 3;
   let UnsupportedFeatures = [HasVInstructions,
-                             HasExtXsfvqmaccqoq, HasExtXsfvqmaccdod,
-                             HasExtXsfvfhbfmin];
+                             HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod,
+                             HasVendorXSfvfhbfmin];
   let CompleteModel = false;
 }
 

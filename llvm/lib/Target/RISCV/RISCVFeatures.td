@@ -928,6 +928,47 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                                 AssemblerPredicate<(all_of FeatureVendorXSfvcp),
                                 "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfvqmaccqoq
+    : SubtargetFeature<"xsfvqmaccqoq", "HasVendorXSfvqmaccqoq", "true",
+                       "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
+                       [FeatureStdExtZve32x, FeatureStdExtZvl256b]>;
+def HasVendorXSfvqmaccqoq : Predicate<"Subtarget->hasVendorXSfvqmaccqoq()">,
+                         AssemblerPredicate<(all_of FeatureVendorXSfvqmaccqoq),
+                         "'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)">;
+def FeatureVendorXSfvqmaccdod
+    : SubtargetFeature<"xsfvqmaccdod", "HasVendorXSfvqmaccdod", "true",
+                       "Xsfvqmaccdod (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)",
+                       [FeatureStdExtZve32x, FeatureStdExtZvl128b]>;
+def HasVendorXSfvqmaccdod : Predicate<"Subtarget->hasVendorXSfvqmaccdod()">,
+                         AssemblerPredicate<(all_of FeatureVendorXSfvqmaccdod),
+                         "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
+
+def FeatureVendorXSfvfhbfmin
+    : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
+                       "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
+                       [FeatureStdExtZve32f]>;
+def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
+                         AssemblerPredicate<(all_of FeatureVendorXSfvfhbfmin),
+                         "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
+
+def FeatureVendorXSfvfwmaccqqq
+    : SubtargetFeature<"xsfvfwmaccqqq", "HasVendorXSfvfwmaccqqq", "true",
+                       "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
+                       [FeatureStdExtZve32f, FeatureStdExtZvl256b]>;
+def HasVendorXSfvfwmaccqqq : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
+                          AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
+                          "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
+
+def FeatureVendorXSfvfnrclipxfqf
+    : SubtargetFeature<"xsfvfnrclipxfqf", "HasVendorXSfvfnrclipxfqf", "true",
+                       "Xsfvfnrclipxfqf (Support SiFive custom FP32-to-int8 ranged clip instructions)",
+                       [FeatureStdExtZve32f]>;
+def HasVendorXSfvfnrclipxfqf : Predicate<"Subtarget->hasVendorXSfvfnrclipxfqf()">,
+                            AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
+                            "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
+#endif // SIFIVE_CUSTOMIZATION
+
 //===----------------------------------------------------------------------===//
 // LLVM specific features and extensions
 //===----------------------------------------------------------------------===//
@@ -944,45 +985,6 @@ def FeatureStdExtSscofpmf
 def HasStdExtSscofpmf : Predicate<"Subtarget->hasStdExtSscofpmf()">,
                                   AssemblerPredicate<(all_of FeatureStdExtSscofpmf),
                                   "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
-
-def FeatureStdExtXsfvqmaccqoq
-    : SubtargetFeature<"xsfvqmaccqoq", "HasExtXsfvqmaccqoq", "true",
-                       "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl256b]>;
-def HasExtXsfvqmaccqoq : Predicate<"Subtarget->hasExtXsfvqmaccqoq()">,
-                         AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccqoq),
-                         "'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)">;
-def FeatureStdExtXsfvqmaccdod
-    : SubtargetFeature<"xsfvqmaccdod", "HasExtXsfvqmaccdod", "true",
-                       "Xsfvqmaccdod (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl128b]>;
-def HasExtXsfvqmaccdod : Predicate<"Subtarget->hasExtXsfvqmaccdod()">,
-                         AssemblerPredicate<(all_of FeatureStdExtXsfvqmaccdod),
-                         "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
-
-def FeatureStdExtXsfvfhbfmin
-    : SubtargetFeature<"xsfvfhbfmin", "HasExtXsfvfhbfmin", "true",
-                       "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
-                       [FeatureStdExtZve32f]>;
-def HasExtXsfvfhbfmin : Predicate<"Subtarget->hasExtXsfvfhbfmin()">,
-                         AssemblerPredicate<(all_of FeatureStdExtXsfvfhbfmin),
-                         "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
-
-def FeatureStdExtXsfvfwmaccqqq
-    : SubtargetFeature<"xsfvfwmaccqqq", "HasExtXsfvfwmaccqqq", "true",
-                       "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
-                       [FeatureStdExtZve32f, FeatureStdExtZvl256b]>;
-def HasExtXsfvfwmaccqqq : Predicate<"Subtarget->hasExtXsfvfwmaccqqq()">,
-                          AssemblerPredicate<(all_of FeatureStdExtXsfvfwmaccqqq),
-                          "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
-
-def FeatureStdExtXsfvfnrclipxfqf
-    : SubtargetFeature<"xsfvfnrclipxfqf", "HasExtXsfvfnrclipxfqf", "true",
-                       "Xsfvfnrclipxfqf (Support SiFive custom FP32-to-int8 ranged clip instructions)",
-                       [FeatureStdExtZve32f]>;
-def HasExtXsfvfnrclipxfqf : Predicate<"Subtarget->hasExtXsfvfnrclipxfqf()">,
-                            AssemblerPredicate<(all_of FeatureStdExtXsfvfnrclipxfqf),
-                            "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
 
 def FeatureStdExtZicclsm
     : SubtargetFeature<"zicclsm", "HasStdExtZicclsm", "true",
