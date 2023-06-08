@@ -274,23 +274,6 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtC],
                                      [TuneSiFive7]>;
 
-def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
-                                      [Feature64Bit,
-                                       FeatureStdExtZifencei,
-                                       FeatureStdExtM,
-                                       FeatureStdExtA,
-                                       FeatureStdExtF,
-                                       FeatureStdExtD,
-                                       FeatureStdExtC,
-                                       FeatureStdExtV,
-                                       FeatureStdExtZvl512b,
-                                       FeatureStdExtZfh,
-                                       FeatureStdExtZvfh,
-                                       FeatureStdExtZba,
-                                       FeatureStdExtZbb,
-                                       FeatureStdExtXsfvqmaccqoq,   // SIFIVE
-                                       FeatureStdExtXsfvfhbfmin],   // SIFIVE
-                                      [TuneSiFive7, TuneDLen256b]>; // SIFIVE
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model,
                                       [Feature64Bit,
@@ -349,7 +332,27 @@ def SIFIVE_P270N :
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
                       [TuneSiFive7, TuneDLen128b, TunePseudoLIsimm32]>;
+#endif // SIFIVE_CUSTOMIZATION
 
+def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
+                                      [Feature64Bit,
+                                       FeatureStdExtZifencei,
+                                       FeatureStdExtM,
+                                       FeatureStdExtA,
+                                       FeatureStdExtF,
+                                       FeatureStdExtD,
+                                       FeatureStdExtC,
+                                       FeatureStdExtV,
+                                       FeatureStdExtZvl512b,
+                                       FeatureStdExtZfh,
+                                       FeatureStdExtZvfh,
+                                       FeatureStdExtZba,
+                                       FeatureStdExtZbb,
+                                       FeatureStdExtXsfvqmaccqoq,   // SIFIVE
+                                       FeatureStdExtXsfvfhbfmin],   // SIFIVE
+                                      [TuneSiFive7, TuneDLen256b]>; // SIFIVE
+
+#ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_X280N :
   RISCVProcessorModel<"sifive-x280n", SiFive7NModel,
                       [Feature64Bit,
