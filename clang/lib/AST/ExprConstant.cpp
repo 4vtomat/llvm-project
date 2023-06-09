@@ -9025,8 +9025,7 @@ static CharUnits GetAlignOfType(EvalInfo &Info, QualType T,
   // C++ [expr.alignof]p3:
   //     When alignof is applied to a reference type, the result is the
   //     alignment of the referenced type.
-  if (const ReferenceType *Ref = T->getAs<ReferenceType>())
-    T = Ref->getPointeeType();
+  T = T.getNonReferenceType();
 
   if (T.getQualifiers().hasUnaligned())
     return CharUnits::One();
@@ -10173,6 +10172,8 @@ bool RecordExprEvaluator::VisitCXXStdInitializerListExpr(
   if (!EvaluateLValue(E->getSubExpr(), Array, Info))
     return false;
 
+  assert(ArrayType && "unexpected type for array initializer");
+
   // Get a pointer to the first element of the array.
   Array.addArray(Info, E, ArrayType);
 
@@ -11289,7 +11290,6 @@ EvaluateBuiltinClassifyType(QualType T, const LangOptions &LangOpts) {
   assert(!T->isDependentType() && "unexpected dependent type");
 
   QualType CanTy = T.getCanonicalType();
-  const BuiltinType *BT = dyn_cast<BuiltinType>(CanTy);
 
   switch (CanTy->getTypeClass()) {
 #define TYPE(ID, BASE)
@@ -11302,7 +11302,7 @@ EvaluateBuiltinClassifyType(QualType T, const LangOptions &LangOpts) {
       llvm_unreachable("unexpected non-canonical or dependent type");
 
   case Type::Builtin:
-    switch (BT->getKind()) {
+      switch (cast<BuiltinType>(CanTy)->getKind()) {
 #define BUILTIN_TYPE(ID, SINGLETON_ID)
 #define SIGNED_TYPE(ID, SINGLETON_ID) \
     case BuiltinType::ID: return GCCTypeClass::Integer;
@@ -11718,6 +11718,18 @@ static bool convertUnsignedAPIntToCharUnits(const llvm::APInt &Int,
   return true;
 }
 
+/// If we're evaluating the object size of an instance of a struct that
+/// contains a flexible array member, add the size of the initializer.
+static void addFlexibleArrayMemberInitSize(EvalInfo &Info, const QualType &T,
+                                           const LValue &LV, CharUnits &Size) {
+  if (!T.isNull() && T->isStructureType() &&
+      T->getAsStructureType()->getDecl()->hasFlexibleArrayMember())
+    if (const auto *V = LV.getLValueBase().dyn_cast<const ValueDecl *>())
+      if (const auto *VD = dyn_cast<VarDecl>(V))
+        if (VD->hasInit())
+          Size += VD->getFlexibleArrayInitChars(Info.Ctx);
+}
+
 /// Helper for tryEvaluateBuiltinObjectSize -- Given an LValue, this will
 /// determine how many bytes exist from the beginning of the object to either
 /// the end of the current subobject, or the end of the object itself, depending
@@ -11752,7 +11764,9 @@ static bool determineEndOffset(EvalInfo &Info, SourceLocation ExprLoc,
       return false;
 
     QualType BaseTy = getObjectType(LVal.getLValueBase());
-    return CheckedHandleSizeof(BaseTy, EndOffset);
+    const bool Ret = CheckedHandleSizeof(BaseTy, EndOffset);
+    addFlexibleArrayMemberInitSize(Info, BaseTy, LVal, EndOffset);
+    return Ret;
   }
 
   // We want to evaluate the size of a subobject.

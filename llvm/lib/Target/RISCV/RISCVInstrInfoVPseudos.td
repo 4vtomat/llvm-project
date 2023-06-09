@@ -130,6 +130,7 @@ defvar MxListF = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
 
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar MxListW = [V_MF8, V_MF4, V_MF2, V_M1, V_M2, V_M4];
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // Used for widening reductions. It can contain M8 because wider operands are
 // scalar operands.
@@ -142,6 +143,16 @@ defvar MxListFW = [V_MF4, V_MF2, V_M1, V_M2, V_M4];
 // contain M8 because wider operands are scalar operands.
 defvar MxListFWRed = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
 #endif // SIFIVE_CUSTOMIZATION
+=======
+// Used for widening reductions. It can contain M8 because wider operands are
+// scalar operands.
+defvar MxListWRed = MxList;
+// For floating point which don't need MF8.
+defvar MxListFW = [V_MF4, V_MF2, V_M1, V_M2, V_M4];
+// For widening floating-point Reduction as it doesn't contain MF8. It can
+// contain M8 because wider operands are scalar operands.
+defvar MxListFWRed = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
+>>>>>>> upstream/main.local
 
 // Use for zext/sext.vf2
 defvar MxListVF2 = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];
@@ -1427,10 +1438,10 @@ class VPseudoBinaryMaskPolicy<VReg RetClass,
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoBinaryTailPolicy<VReg RetClass,
-                              RegisterClass Op1Class,
-                              DAGOperand Op2Class,
-                              string Constraint> :
+class VPseudoTernaryMaskPolicy<VReg RetClass,
+                               RegisterClass Op1Class,
+                               DAGOperand Op2Class,
+                               string Constraint> :
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                 (ins GetVRegNoV0<RetClass>.R:$merge,
                      Op1Class:$rs2, Op2Class:$rs1,
@@ -2774,7 +2785,7 @@ multiclass VPseudoVCLS_V {
 multiclass VPseudoVSQR_V {
   foreach m = MxListF in {
     defvar mx = m.MX;
-    defvar sews = SchedSEWSetF<m.MX>.val;
+    defvar sews = SchedSEWSet<m.MX, /*isF*/ 1>.val;
 
     let VLMul = m.value in
       foreach e = sews in {
@@ -3289,7 +3300,7 @@ multiclass VPseudoVFMUL_VV_VF {
 multiclass VPseudoVFDIV_VV_VF {
   foreach m = MxListF in {
     defvar mx = m.MX;
-    defvar sews = SchedSEWSetF<mx>.val;
+    defvar sews = SchedSEWSet<mx, /*isF*/ 1>.val;
     foreach e = sews in {
       defvar WriteVFDivV_MX_E = !cast<SchedWrite>("WriteVFDivV_" # mx # "_E" # e);
       defvar ReadVFDivV_MX_E = !cast<SchedRead>("ReadVFDivV_" # mx # "_E" # e);
@@ -3302,7 +3313,7 @@ multiclass VPseudoVFDIV_VV_VF {
   foreach f = FPList in {
     foreach m = f.MxList in {
       defvar mx = m.MX;
-      defvar sews = SchedSEWSetF<mx>.val;
+      defvar sews = SchedSEWSet<mx, /*isF*/ 1>.val;
       foreach e = sews in {
         defvar WriteVFDivF_MX_E = !cast<SchedWrite>("WriteVFDivF_" # mx # "_E" # e);
         defvar ReadVFDivV_MX_E = !cast<SchedRead>("ReadVFDivV_" # mx # "_E" # e);
@@ -3319,7 +3330,7 @@ multiclass VPseudoVFRDIV_VF {
   foreach f = FPList in {
     foreach m = f.MxList in {
       defvar mx = m.MX;
-      defvar sews = SchedSEWSetF<mx>.val;
+      defvar sews = SchedSEWSet<mx, /*isF*/ 1>.val;
       foreach e = sews in {
         defvar WriteVFDivF_MX_E = !cast<SchedWrite>("WriteVFDivF_" # mx # "_E" # e);
         defvar ReadVFDivV_MX_E = !cast<SchedRead>("ReadVFDivV_" # mx # "_E" # e);
@@ -3855,13 +3866,18 @@ multiclass VPseudoTernaryWithTailPolicy_E<VReg RetClass,
                                           RegisterClass Op1Class,
                                           DAGOperand Op2Class,
                                           LMULInfo MInfo,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                                           int sew,
 #endif
+=======
+                                          int sew,
+>>>>>>> upstream/main.local
                                           string Constraint = "",
                                           bit Commutable = 0> {
   let VLMul = MInfo.value in {
     defvar mx = MInfo.MX;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
       let isCommutable = Commutable in
       def "_" # mx # "_E" # sew : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
@@ -3874,6 +3890,11 @@ multiclass VPseudoTernaryWithTailPolicy_E<VReg RetClass,
       def "_" # mx # "_E" # e # "_MASK" : VPseudoBinaryTailPolicy<RetClass, Op1Class, Op2Class, Constraint>;
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    let isCommutable = Commutable in
+    def "_" # mx # "_E" # sew : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
+    def "_" # mx # "_E" # sew # "_MASK" : VPseudoTernaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint>;
+>>>>>>> upstream/main.local
   }
 }
 
@@ -3899,10 +3920,6 @@ multiclass VPseudoTernaryWithPolicy<VReg RetClass,
 multiclass VPseudoTernaryV_VV_AAXA<LMULInfo m, string Constraint = ""> {
   defm _VV : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m,
                                       Constraint, /*Commutable*/1>;
-}
-
-multiclass VPseudoVSLDV_VX<LMULInfo m, string Constraint = ""> {
-  defm _VX : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
 }
 
 multiclass VPseudoTernaryV_VX_AAXA<LMULInfo m, string Constraint = ""> {
@@ -3946,8 +3963,23 @@ multiclass VPseudoTernaryW_VF<LMULInfo m, FPR_Info f, int TargetConstraintType =
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+multiclass VPseudoVSLDVWithPolicy<VReg RetClass,
+                                  RegisterClass Op1Class,
+                                  DAGOperand Op2Class,
+                                  LMULInfo MInfo,
+                                  string Constraint = ""> {
+  let VLMul = MInfo.value in {
+    def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
+    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint>;
+  }
+}
+
+multiclass VPseudoVSLDV_VX<LMULInfo m, string Constraint = ""> {
+  defm _VX : VPseudoVSLDVWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
+}
+
 multiclass VPseudoVSLDV_VI<Operand ImmType = simm5, LMULInfo m, string Constraint = ""> {
-  defm _VI : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, ImmType, m, Constraint>;
+  defm _VI : VPseudoVSLDVWithPolicy<m.vrclass, m.vrclass, ImmType, m, Constraint>;
 }
 
 multiclass VPseudoVMAC_VV_VX_AAXA<string Constraint = ""> {
@@ -4195,23 +4227,30 @@ multiclass VPseudoVCMPM_VX_VI<int TargetConstraintType = 1> {
 multiclass VPseudoVRED_VS {
   foreach m = MxList in {
     defvar mx = m.MX;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main.local
     foreach e = SchedSEWSet<mx>.val in {
       defvar WriteVIRedV_From_MX_E = !cast<SchedWrite>("WriteVIRedV_From_" # mx # "_E" # e);
       defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m, e>,
                  Sched<[WriteVIRedV_From_MX_E, ReadVIRedV, ReadVIRedV, ReadVIRedV,
                         ReadVMask]>;
     }
+<<<<<<< HEAD
 #else
     defvar WriteVIRedV_From_MX = !cast<SchedWrite>("WriteVIRedV_From_" # mx);
     defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m>,
                Sched<[WriteVIRedV_From_MX, ReadVIRedV, ReadVIRedV, ReadVIRedV,
                       ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main.local
   }
 }
 
 multiclass VPseudoVWRED_VS {
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   foreach m = MxListWRed in {
     defvar mx = m.MX;
@@ -4224,11 +4263,16 @@ multiclass VPseudoVWRED_VS {
   }
 #else
   foreach m = MxList in {
+=======
+  foreach m = MxListWRed in {
+>>>>>>> upstream/main.local
     defvar mx = m.MX;
-    defvar WriteVIWRedV_From_MX = !cast<SchedWrite>("WriteVIWRedV_From_" # mx);
-    defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m>,
-               Sched<[WriteVIWRedV_From_MX, ReadVIWRedV, ReadVIWRedV,
-                      ReadVIWRedV, ReadVMask]>;
+    foreach e = SchedSEWSet<mx, /*isF*/ 0, /*isWidening*/ 1>.val in {
+      defvar WriteVIWRedV_From_MX_E = !cast<SchedWrite>("WriteVIWRedV_From_" # mx # "_E" # e);
+      defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m, e>,
+                 Sched<[WriteVIWRedV_From_MX_E, ReadVIWRedV, ReadVIWRedV,
+                        ReadVIWRedV, ReadVMask]>;
+    }
   }
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -4236,42 +4280,57 @@ multiclass VPseudoVWRED_VS {
 multiclass VPseudoVFRED_VS {
   foreach m = MxListF in {
     defvar mx = m.MX;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     foreach e = SchedSEWSetF<mx>.val in {
+=======
+    foreach e = SchedSEWSet<mx, /*isF*/ 1>.val in {
+>>>>>>> upstream/main.local
       defvar WriteVFRedV_From_MX_E = !cast<SchedWrite>("WriteVFRedV_From_" # mx # "_E" # e);
       defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m, e>,
                  Sched<[WriteVFRedV_From_MX_E, ReadVFRedV, ReadVFRedV, ReadVFRedV,
                         ReadVMask]>;
     }
+<<<<<<< HEAD
 #else
     defvar WriteVFRedV_From_MX = !cast<SchedWrite>("WriteVFRedV_From_" # mx);
     defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m>,
                Sched<[WriteVFRedV_From_MX, ReadVFRedV, ReadVFRedV, ReadVFRedV,
                       ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main.local
   }
 }
 
 multiclass VPseudoVFREDO_VS {
   foreach m = MxListF in {
     defvar mx = m.MX;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     foreach e = SchedSEWSetF<mx>.val in {
+=======
+    foreach e = SchedSEWSet<mx, /*isF*/ 1>.val in {
+>>>>>>> upstream/main.local
       defvar WriteVFRedOV_From_MX_E = !cast<SchedWrite>("WriteVFRedOV_From_" # mx # "_E" # e);
       defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m, e>,
                  Sched<[WriteVFRedOV_From_MX_E, ReadVFRedOV, ReadVFRedOV,
                         ReadVFRedOV, ReadVMask]>;
     }
+<<<<<<< HEAD
 #else
     defvar WriteVFRedOV_From_MX = !cast<SchedWrite>("WriteVFRedOV_From_" # mx);
     defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m>,
                Sched<[WriteVFRedOV_From_MX, ReadVFRedOV, ReadVFRedOV,
                       ReadVFRedOV, ReadVMask]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main.local
   }
 }
 
 multiclass VPseudoVFWRED_VS {
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   foreach m = MxListFWRed in {
     defvar mx = m.MX;
@@ -4284,11 +4343,16 @@ multiclass VPseudoVFWRED_VS {
   }
 #else
   foreach m = MxListF in {
+=======
+  foreach m = MxListFWRed in {
+>>>>>>> upstream/main.local
     defvar mx = m.MX;
-    defvar WriteVFWRedV_From_MX = !cast<SchedWrite>("WriteVFWRedV_From_" # mx);
-    defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m>,
-               Sched<[WriteVFWRedV_From_MX, ReadVFWRedV, ReadVFWRedV,
-                      ReadVFWRedV, ReadVMask]>;
+    foreach e = SchedSEWSet<mx, /*isF*/ 1, /*isWidening*/ 1>.val in {
+      defvar WriteVFWRedV_From_MX_E = !cast<SchedWrite>("WriteVFWRedV_From_" # mx # "_E" # e);
+      defm _VS : VPseudoTernaryWithTailPolicy_E<V_M1.vrclass, m.vrclass, V_M1.vrclass, m, e>,
+                 Sched<[WriteVFWRedV_From_MX_E, ReadVFWRedV, ReadVFWRedV,
+                        ReadVFWRedV, ReadVMask]>;
+    }
   }
 #endif // SIFIVE_CUSTOMIZATION
 }

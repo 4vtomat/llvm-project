@@ -409,6 +409,7 @@ public:
   /// loop. Do not use after invoking 'createVectorizedLoopSkeleton' (PR34965).
   int isConsecutivePtr(Type *AccessTy, Value *Ptr) const;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// This function resembles isConsecutivePtr but returns None when stride is
   /// unknown
@@ -418,10 +419,20 @@ public:
 
   /// Returns true if the value V is uniform within the loop.
   bool isUniform(Value *V) const;
+=======
+  /// Returns true if value V is uniform across \p VF lanes, when \p VF is
+  /// provided, and otherwise if \p V is invariant across all loop iterations.
+  bool isInvariant(Value *V) const;
+
+  /// Returns true if value V is uniform across \p VF lanes, when \p VF is
+  /// provided, and otherwise if \p V is invariant across all loop iterations.
+  bool isUniform(Value *V, ElementCount VF) const;
+>>>>>>> upstream/main.local
 
   /// A uniform memory op is a load or store which accesses the same memory
-  /// location on all lanes.
-  bool isUniformMemOp(Instruction &I) const;
+  /// location on all \p VF lanes, if \p VF is provided and otherwise if the
+  /// memory location is invariant.
+  bool isUniformMemOp(Instruction &I, ElementCount VF) const;
 
   /// Returns the information that we collected about runtime memory check.
   const RuntimePointerChecking *getRuntimePointerChecking() const {

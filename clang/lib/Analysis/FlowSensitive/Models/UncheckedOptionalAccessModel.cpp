@@ -307,12 +307,12 @@ StorageLocation *maybeInitializeOptionalValueMember(QualType Q,
                                                     Environment &Env) {
   // The "value" property represents a synthetic field. As such, it needs
   // `StorageLocation`, like normal fields (and other variables). So, we model
-  // it with a `ReferenceValue`, since that includes a storage location.  Once
+  // it with a `PointerValue`, since that includes a storage location.  Once
   // the property is set, it will be shared by all environments that access the
   // `Value` representing the optional (here, `OptionalVal`).
   if (auto *ValueProp = OptionalVal.getProperty("value")) {
-    auto *ValueRef = clang::cast<ReferenceValue>(ValueProp);
-    auto &ValueLoc = ValueRef->getReferentLoc();
+    auto *ValuePtr = clang::cast<PointerValue>(ValueProp);
+    auto &ValueLoc = ValuePtr->getPointeeLoc();
     if (Env.getValue(ValueLoc) == nullptr) {
       // The property was previously set, but the value has been lost. This can
       // happen, for example, because of an environment merge (where the two
@@ -339,8 +339,8 @@ StorageLocation *maybeInitializeOptionalValueMember(QualType Q,
     return nullptr;
   auto &ValueLoc = Env.createStorageLocation(Ty);
   Env.setValue(ValueLoc, *ValueVal);
-  auto &ValueRef = Env.create<ReferenceValue>(ValueLoc);
-  OptionalVal.setProperty("value", ValueRef);
+  auto &ValuePtr = Env.create<PointerValue>(ValueLoc);
+  OptionalVal.setProperty("value", ValuePtr);
   return &ValueLoc;
 }
 
@@ -396,6 +396,18 @@ void transferUnwrapCall(const Expr *UnwrapExpr, const Expr *ObjectExpr,
       if (auto *Loc = maybeInitializeOptionalValueMember(
               UnwrapExpr->getType(), *OptionalVal, State.Env))
         State.Env.setStorageLocation(*UnwrapExpr, *Loc);
+  }
+}
+
+void transferArrowOpCall(const Expr *UnwrapExpr, const Expr *ObjectExpr,
+                         LatticeTransferState &State) {
+  if (auto *OptionalVal =
+          getValueBehindPossiblePointer(*ObjectExpr, State.Env)) {
+    if (auto *Loc = maybeInitializeOptionalValueMember(
+            UnwrapExpr->getType()->getPointeeType(), *OptionalVal, State.Env)) {
+      State.Env.setValueStrict(*UnwrapExpr,
+                               State.Env.create<PointerValue>(*Loc));
+    }
   }
 }
 
@@ -774,23 +786,20 @@ auto buildTransferMatchSwitch() {
             transferUnwrapCall(E, E->getImplicitObjectArgument(), State);
           })
 
-      // optional::operator*, optional::operator->
-      // FIXME: This does something slightly strange for `operator->`.
-      // `transferUnwrapCall()` may create a new value of type `T` for the
-      // `optional<T>`, and it associates that value with `E`. In the case of
-      // `operator->`, `E` is a pointer. As a result, we associate an
-      // expression of pointer type with a storage location of non-pointer type
-      // `T`. This can confound other code that expects expressions of
-      // pointer type to be associated with `PointerValue`s, such as the
-      // centrally provided accessors `getImplicitObjectLocation()` and
-      // `getBaseObjectLocation()`, and this is the reason we need to use our
-      // own 'maybeSkipPointer()` and `getValueBehindPossiblePointer()` instead
-      // of these accessors.
-      .CaseOfCFGStmt<CallExpr>(valueOperatorCall(std::nullopt),
+      // optional::operator*
+      .CaseOfCFGStmt<CallExpr>(isOptionalOperatorCallWithName("*"),
                                [](const CallExpr *E,
                                   const MatchFinder::MatchResult &,
                                   LatticeTransferState &State) {
                                  transferUnwrapCall(E, E->getArg(0), State);
+                               })
+
+      // optional::operator->
+      .CaseOfCFGStmt<CallExpr>(isOptionalOperatorCallWithName("->"),
+                               [](const CallExpr *E,
+                                  const MatchFinder::MatchResult &,
+                                  LatticeTransferState &State) {
+                                 transferArrowOpCall(E, E->getArg(0), State);
                                })
 
       // optional::has_value

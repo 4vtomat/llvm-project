@@ -317,6 +317,27 @@ def hlfir_ConcatOp : hlfir_Op<"concat", []> {
   let hasVerifier = 1;
 }
 
+def hlfir_AllOp : hlfir_Op<"all", []> {
+  let summary = "ALL transformational intrinsic";
+  let description = [{
+    Takes a logical array MASK as argument, optionally along a particular dimension,
+    and returns true if all elements of MASK are true.
+  }];
+
+  let arguments = (ins
+    AnyFortranLogicalArrayObject:$mask,
+    Optional<AnyIntegerType>:$dim
+  );
+
+  let results = (outs AnyFortranValue);
+
+  let assemblyFormat = [{
+    $mask  (`dim` $dim^)?  attr-dict `:` functional-type(operands, results)
+  }];
+
+  let hasVerifier = 1;
+}
+
 def hlfir_AnyOp : hlfir_Op<"any", []> {
   let summary = "ANY transformational intrinsic";
   let description = [{
@@ -329,7 +350,7 @@ def hlfir_AnyOp : hlfir_Op<"any", []> {
     Optional<AnyIntegerType>:$dim
   );
 
-  let results = (outs hlfir_ExprType);
+  let results = (outs AnyFortranValue);
 
   let assemblyFormat = [{
     $mask  (`dim` $dim^)?  attr-dict `:` functional-type(operands, results)
@@ -355,7 +376,7 @@ def hlfir_ProductOp : hlfir_Op<"product", [AttrSizedOperandSegments,
                       "::mlir::arith::FastMathFlags::none">:$fastmath
   );
 
-  let results = (outs hlfir_ExprType);
+  let results = (outs AnyFortranValue);
 
   let assemblyFormat = [{
     $array (`dim` $dim^)? (`mask` $mask^)? attr-dict `:` functional-type(operands, results)
@@ -400,7 +421,7 @@ def hlfir_SumOp : hlfir_Op<"sum", [AttrSizedOperandSegments,
                       "::mlir::arith::FastMathFlags::none">:$fastmath
   );
 
-  let results = (outs hlfir_ExprType);
+  let results = (outs AnyFortranValue);
 
   let assemblyFormat = [{
     $array (`dim` $dim^)? (`mask` $mask^)? attr-dict `:` functional-type(operands, results)
@@ -606,6 +627,11 @@ def hlfir_ElementalOp : hlfir_Op<"elemental", [RecursiveMemoryEffects]> {
     The shape and typeparams operands represent the extents and type
     parameters of the resulting array value.
 
+    Currently there is no way to control the iteration order of a hlfir
+    elemental operation and so operations in the body of the elemental must
+    not have side effects. If this is changed, an attribute must be added so
+    that the elemental inlining pass can skip these impure elementals.
+
 
     Example: Y + X,  with Integer :: X(10, 20), Y(10,20)
     ```
@@ -639,10 +665,14 @@ def hlfir_ElementalOp : hlfir_Op<"elemental", [RecursiveMemoryEffects]> {
   let extraClassDeclaration = [{
       mlir::Block *getBody() { return &getRegion().front(); }
 
-      // Get the indices iterating over the shape.
+      /// Get the indices iterating over the shape.
       mlir::Block::BlockArgListType getIndices() {
        return getBody()->getArguments();
       }
+
+      /// Must this elemental be evaluated in order?
+      /// TODO: add attribute and set it in lowering.
+      bool isOrdered() {return true;}
   }];
 
   let skipDefaultBuilders = 1;
@@ -670,9 +700,17 @@ def hlfir_ApplyOp : hlfir_Op<"apply", [NoMemoryEffect, AttrSizedOperandSegments]
   let description = [{
     Given an hlfir.expr array value, hlfir.apply allow retrieving
     the value for an element given one based indices.
+
     When hlfir.apply is used on an hlfir.elemental, and if the hlfir.elemental
     operation evaluation can be moved to the location of the hlfir.apply, it is
     as if the hlfir.elemental body was evaluated given the hlfir.apply indices.
+    Therefore, apply operations on hlfir.elemental expressions should be located
+    such that evaluating the hlfir.elemental at the position of the hlfir.apply
+    operation produces the same result as evaluating the hlfir.elemental at its
+    location in the instruction stream. Attention should be paid to
+    hlfir.elemental memory side effects (in practice these are unlikely).
+    "10.1.4 Evaluation of operations" says that expression evaluation shall not
+    impact/be impacted by other expression evaluation in the statement.
   }];
 
   let arguments = (ins hlfir_ExprType:$expr,

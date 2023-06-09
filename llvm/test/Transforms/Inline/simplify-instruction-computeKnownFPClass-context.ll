@@ -30,8 +30,12 @@ define i1 @simplify_fcmp_ord_fdiv_caller(double nofpclass(zero nan inf) %i0, dou
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_fdiv_caller
 ; CHECK-SAME: (double nofpclass(nan inf zero) [[I0:%.*]], double nofpclass(nan inf zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = fdiv double [[I0]], [[I1]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
 ; CHECK-NEXT:    ret i1 [[CMP_I]]
+=======
+; CHECK-NEXT:    ret i1 true
+>>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_fdiv_callee(double %i0, double %i1)
   ret i1 %call
@@ -48,8 +52,12 @@ define i1 @simplify_fcmp_ord_frem_caller(double nofpclass(zero nan inf) %i0, dou
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_frem_caller
 ; CHECK-SAME: (double nofpclass(nan inf zero) [[I0:%.*]], double nofpclass(nan inf zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = frem double [[I0]], [[I1]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
 ; CHECK-NEXT:    ret i1 [[CMP_I]]
+=======
+; CHECK-NEXT:    ret i1 true
+>>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_frem_callee(double %i0, double %i1)
   ret i1 %call
@@ -66,8 +74,12 @@ define i1 @simplify_fcmp_ord_fmul_caller(double nofpclass(zero nan) %i0, double 
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_fmul_caller
 ; CHECK-SAME: (double nofpclass(nan zero) [[I0:%.*]], double nofpclass(nan zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = fmul double [[I0]], [[I1]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
 ; CHECK-NEXT:    ret i1 [[CMP_I]]
+=======
+; CHECK-NEXT:    ret i1 true
+>>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_fmul_callee(double %i0, double %i1)
   ret i1 %call
@@ -138,3 +150,38 @@ define internal i1 @simplify_fcmp_ord_log_callee(double %a) {
 }
 
 declare double @llvm.log.f64(double)
+<<<<<<< HEAD
+=======
+
+declare float @llvm.maxnum.f32(float, float) #0
+declare <4 x float> @foo() #1
+
+define void @caller_maxnum() {
+; CHECK-LABEL: define void @caller_maxnum() {
+; CHECK-NEXT:  bb:
+; CHECK-NEXT:    [[I1_I:%.*]] = call <4 x float> @foo()
+; CHECK-NEXT:    [[I2_I:%.*]] = extractelement <4 x float> [[I1_I]], i64 0
+; CHECK-NEXT:    [[I3_I:%.*]] = fmul float [[I2_I]], 0.000000e+00
+; CHECK-NEXT:    [[I4_I:%.*]] = call float @llvm.maxnum.f32(float [[I3_I]], float 0.000000e+00)
+; CHECK-NEXT:    [[I5_I:%.*]] = call float @llvm.maxnum.f32(float [[I4_I]], float [[I2_I]])
+; CHECK-NEXT:    ret void
+;
+bb:
+  call void @callee_maxnum()
+  ret void
+}
+
+define internal void @callee_maxnum() {
+bb:
+  %i1 = call <4 x float> @foo()
+  %i2 = extractelement <4 x float> %i1, i64 0
+  %i3 = fmul float %i2, 0.000000e+00
+  %i4 = call float @llvm.maxnum.f32(float %i3, float 0.000000e+00)
+  %i5 = call float @llvm.maxnum.f32(float %i4, float %i2)
+  %i6 = fcmp olt float %i5, 0.000000e+00
+  ret void
+}
+
+attributes #0 = { nocallback nofree nosync nounwind speculatable willreturn memory(none) }
+attributes #1 = { nocallback nofree nosync nounwind willreturn memory(none) }
+>>>>>>> upstream/main.local

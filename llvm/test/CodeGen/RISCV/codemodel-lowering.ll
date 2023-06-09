@@ -139,6 +139,7 @@ define float @lower_constantpool(float %a) nounwind {
   ret float %1
 }
 
+<<<<<<< HEAD
 ; Test that we duplicate the auipc and fold %pcrel_lo when it used multiple
 ; times for -riscv-enable-advanced-merge-base-offset-opt
 define void @lower_global_rmw(i32 %a) nounwind {
@@ -295,3 +296,25 @@ for.body:                                         ; preds = %entry, %for.body
   %exitcond.not = icmp eq i32 %inc, 10
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+=======
+; Check lowering of extern_weaks
+@W = extern_weak global i32
+
+define i32 @lower_extern_weak(i32 %a) nounwind {
+; RV32I-SMALL-LABEL: lower_extern_weak:
+; RV32I-SMALL:       # %bb.0:
+; RV32I-SMALL-NEXT:    lui a0, %hi(W)
+; RV32I-SMALL-NEXT:    lw a0, %lo(W)(a0)
+; RV32I-SMALL-NEXT:    ret
+;
+; RV32I-MEDIUM-LABEL: lower_extern_weak:
+; RV32I-MEDIUM:       # %bb.0:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV32I-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
+; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi3)(a0)
+; RV32I-MEDIUM-NEXT:    lw a0, 0(a0)
+; RV32I-MEDIUM-NEXT:    ret
+  %1 = load volatile i32, ptr @W
+  ret i32 %1
+}
+>>>>>>> upstream/main.local

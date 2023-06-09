@@ -848,6 +848,11 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   PHINode *getPhi() const { return Phi; }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the VPLiveOut to \p O.
+  void print(raw_ostream &O, VPSlotTracker &SlotTracker) const;
+#endif
 };
 
 /// VPRecipeBase is a base class modeling a sequence of one or more output IR
@@ -1274,6 +1279,22 @@ public:
            "recipe doesn't have inbounds flag");
     return GEPFlags.IsInBounds;
   }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  FastMathFlags getFastMathFlags() const {
+    FastMathFlags Res;
+    Res.setAllowReassoc(FMFs.AllowReassoc);
+    Res.setNoNaNs(FMFs.NoNaNs);
+    Res.setNoInfs(FMFs.NoInfs);
+    Res.setNoSignedZeros(FMFs.NoSignedZeros);
+    Res.setAllowReciprocal(FMFs.AllowReciprocal);
+    Res.setAllowContract(FMFs.AllowContract);
+    Res.setApproxFunc(FMFs.ApproxFunc);
+    return Res;
+  }
+
+  void printFlags(raw_ostream &O) const;
+#endif
 };
 
 /// VPWidenRecipe is a recipe for producing a copy of vector type its
@@ -3595,6 +3616,8 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
   assert(Def && "Must have definition for value defined inside vector region");
   if (auto Rep = dyn_cast<VPReplicateRecipe>(Def))
     return Rep->isUniform();
+  if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
+    return all_of(GEP->operands(), isUniformAfterVectorization);
   return false;
 }
 #if SIFIVE_CUSTOMIZATION

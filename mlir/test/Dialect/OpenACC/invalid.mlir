@@ -393,4 +393,81 @@ acc.firstprivate.recipe @privatization_i32 : i32 init {
   acc.yield
 }
 
+// -----
 
+// expected-error@+1 {{expects non-empty init region}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+} combiner {}
+
+// -----
+
+// expected-error@+1 {{expects init region with one argument of the reduction type}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i32):
+  %1 = arith.constant 0 : i64
+  acc.yield %1 : i64
+} combiner {}
+
+// -----
+
+// expected-error@+1 {{expects init region to yield a value of the reduction type}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i64):
+  %1 = arith.constant 0 : i32
+  acc.yield %1 : i32
+} combiner {}
+
+// -----
+
+// expected-error@+1 {{expects non-empty combiner region}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i64):
+  %1 = arith.constant 0 : i64
+  acc.yield %1 : i64
+} combiner {}
+
+// -----
+
+// expected-error@+1 {{expects combiner region with two arguments of the reduction type}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i64):
+  %1 = arith.constant 0 : i64
+  acc.yield %1 : i64
+} combiner {
+^bb0(%0: i32):
+  acc.yield %0 : i32
+}
+
+// -----
+
+// expected-error@+1 {{expects combiner region with two arguments of the reduction type}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i64):
+  %1 = arith.constant 0 : i64
+  acc.yield %1 : i64
+} combiner {
+^bb0(%0: i64):
+  acc.yield %0 : i64
+}
+
+// -----
+
+// expected-error@+1 {{expects combiner region to yield a value of the reduction type}}
+acc.reduction.recipe @reduction_i64 : i64 reduction_operator<add> init {
+^bb0(%0: i64):
+  %1 = arith.constant 0 : i64
+  acc.yield %1 : i64
+} combiner {
+^bb0(%0: i64, %1: i64):
+  %2 = arith.constant 0 : i32
+  acc.yield %2 : i32
+}
+
+// -----
+
+func.func @fct1(%0 : !llvm.ptr<i32>) -> () {
+  // expected-error@+1 {{expected symbol reference @privatization_i32 to point to a private declaration}}
+  acc.serial private(@privatization_i32 -> %0 : !llvm.ptr<i32>) {
+  }
+  return
+}

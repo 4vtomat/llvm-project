@@ -85,7 +85,6 @@
 #include "llvm/Support/MD5.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/TargetParser/RISCVTargetParser.h"
 #include "llvm/TargetParser/Triple.h"
 #include <algorithm>
 #include <cassert>
@@ -500,10 +499,7 @@ const RawComment *ASTContext::getRawCommentForAnyRedecl(
   // Any redeclarations of D that we haven't checked for comments yet?
   // We can't use DenseMap::iterator directly since it'd get invalid.
   auto LastCheckedRedecl = [this, CanonicalD]() -> const Decl * {
-    auto LookupRes = CommentlessRedeclChains.find(CanonicalD);
-    if (LookupRes != CommentlessRedeclChains.end())
-      return LookupRes->second;
-    return nullptr;
+    return CommentlessRedeclChains.lookup(CanonicalD);
   }();
 
   for (const auto Redecl : D->redecls()) {
@@ -1156,7 +1152,7 @@ ArrayRef<Decl *> ASTContext::getModuleInitializers(Module *M) {
 void ASTContext::setCurrentNamedModule(Module *M) {
   assert(M->isModulePurview());
   assert(!CurrentCXXNamedModule &&
-        "We should set named module for ASTContext for only once");
+         "We should set named module for ASTContext for only once");
   CurrentCXXNamedModule = M;
 }
 
@@ -1524,11 +1520,7 @@ ASTContext::setTemplateOrSpecializationInfo(VarDecl *Inst,
 
 NamedDecl *
 ASTContext::getInstantiatedFromUsingDecl(NamedDecl *UUD) {
-  auto Pos = InstantiatedFromUsingDecl.find(UUD);
-  if (Pos == InstantiatedFromUsingDecl.end())
-    return nullptr;
-
-  return Pos->second;
+  return InstantiatedFromUsingDecl.lookup(UUD);
 }
 
 void
@@ -1547,11 +1539,7 @@ ASTContext::setInstantiatedFromUsingDecl(NamedDecl *Inst, NamedDecl *Pattern) {
 
 UsingEnumDecl *
 ASTContext::getInstantiatedFromUsingEnumDecl(UsingEnumDecl *UUD) {
-  auto Pos = InstantiatedFromUsingEnumDecl.find(UUD);
-  if (Pos == InstantiatedFromUsingEnumDecl.end())
-    return nullptr;
-
-  return Pos->second;
+  return InstantiatedFromUsingEnumDecl.lookup(UUD);
 }
 
 void ASTContext::setInstantiatedFromUsingEnumDecl(UsingEnumDecl *Inst,
@@ -1562,12 +1550,7 @@ void ASTContext::setInstantiatedFromUsingEnumDecl(UsingEnumDecl *Inst,
 
 UsingShadowDecl *
 ASTContext::getInstantiatedFromUsingShadowDecl(UsingShadowDecl *Inst) {
-  llvm::DenseMap<UsingShadowDecl*, UsingShadowDecl*>::const_iterator Pos
-    = InstantiatedFromUsingShadowDecl.find(Inst);
-  if (Pos == InstantiatedFromUsingShadowDecl.end())
-    return nullptr;
-
-  return Pos->second;
+  return InstantiatedFromUsingShadowDecl.lookup(Inst);
 }
 
 void
@@ -1578,12 +1561,7 @@ ASTContext::setInstantiatedFromUsingShadowDecl(UsingShadowDecl *Inst,
 }
 
 FieldDecl *ASTContext::getInstantiatedFromUnnamedFieldDecl(FieldDecl *Field) {
-  llvm::DenseMap<FieldDecl *, FieldDecl *>::iterator Pos
-    = InstantiatedFromUnnamedFieldDecl.find(Field);
-  if (Pos == InstantiatedFromUnnamedFieldDecl.end())
-    return nullptr;
-
-  return Pos->second;
+  return InstantiatedFromUnnamedFieldDecl.lookup(Field);
 }
 
 void ASTContext::setInstantiatedFromUnnamedFieldDecl(FieldDecl *Inst,
@@ -3019,7 +2997,7 @@ TypeSourceInfo *ASTContext::CreateTypeSourceInfo(QualType T,
 
   auto *TInfo =
     (TypeSourceInfo*)BumpAlloc.Allocate(sizeof(TypeSourceInfo) + DataSize, 8);
-  new (TInfo) TypeSourceInfo(T);
+  new (TInfo) TypeSourceInfo(T, DataSize);
   return TInfo;
 }
 
@@ -9587,7 +9565,14 @@ bool ASTContext::areLaxCompatibleSveTypes(QualType FirstType,
 static uint64_t getRVVTypeSize(ASTContext &Context, const BuiltinType *Ty) {
   assert(Ty->isRVVVLSBuiltinType() && "Invalid RVV Type");
   auto VScale = Context.getTargetInfo().getVScaleRange(Context.getLangOpts());
-  return VScale ? VScale->first * llvm::RISCV::RVVBitsPerBlock : 0;
+  if (!VScale)
+    return 0;
+
+  ASTContext::BuiltinVectorTypeInfo Info = Context.getBuiltinVectorTypeInfo(Ty);
+
+  unsigned EltSize = Context.getTypeSize(Info.ElementType);
+  unsigned MinElts = Info.EC.getKnownMinValue();
+  return VScale->first * MinElts * EltSize;
 }
 
 bool ASTContext::areCompatibleRVVTypes(QualType FirstType,
@@ -9605,7 +9590,8 @@ bool ASTContext::areCompatibleRVVTypes(QualType FirstType,
                  VT->getElementType().getCanonicalType() ==
                      FirstType->getRVVEltType(*this);
         if (VT->getVectorKind() == VectorType::GenericVector)
-          return getTypeSize(SecondType) == getRVVTypeSize(*this, BT) &&
+          return FirstType->isRVVVLSBuiltinType() &&
+                 getTypeSize(SecondType) == getRVVTypeSize(*this, BT) &&
                  hasSameType(VT->getElementType(),
                              getBuiltinVectorTypeInfo(BT).ElementType);
       }
@@ -9627,6 +9613,9 @@ bool ASTContext::areLaxCompatibleRVVTypes(QualType FirstType,
   auto IsLaxCompatible = [this](QualType FirstType, QualType SecondType) {
     const auto *BT = FirstType->getAs<BuiltinType>();
     if (!BT)
+      return false;
+
+    if (!BT->isRVVVLSBuiltinType())
       return false;
 
     const auto *VecTy = SecondType->getAs<VectorType>();
@@ -11451,6 +11440,17 @@ static QualType DecodeTypeFromStr(const char *&Str, const ASTContext &Context,
     Type = Context.getScalableVectorType(ElementType, NumElements);
     break;
   }
+  case 'Q': {
+    switch (*Str++) {
+    case 'a': {
+      Type = Context.SveCountTy;
+      break;
+    }
+    default:
+      llvm_unreachable("Unexpected target builtin type");
+    }
+    break;
+  }
   case 'V': {
     char *End;
     unsigned NumElements = strtoul(Str, &End, 10);
@@ -11931,9 +11931,7 @@ bool ASTContext::DeclMustBeEmitted(const Decl *D) {
     return false;
 
   // Variables in other module units shouldn't be forced to be emitted.
-  auto *VM = VD->getOwningModule();
-  if (VM && VM->getTopLevelModule()->isModulePurview() &&
-      VM->getTopLevelModule() != getCurrentNamedModule())
+  if (VD->isInAnotherModuleUnit())
     return false;
 
   // Variables that can be needed in other TUs are required.
@@ -13589,16 +13587,17 @@ operator<<(const StreamingDiagnostic &DB,
 }
 
 bool ASTContext::mayExternalize(const Decl *D) const {
-  bool IsStaticVar =
-      isa<VarDecl>(D) && cast<VarDecl>(D)->getStorageClass() == SC_Static;
+  bool IsInternalVar =
+      isa<VarDecl>(D) &&
+      basicGVALinkageForVariable(*this, cast<VarDecl>(D)) == GVA_Internal;
   bool IsExplicitDeviceVar = (D->hasAttr<CUDADeviceAttr>() &&
                               !D->getAttr<CUDADeviceAttr>()->isImplicit()) ||
                              (D->hasAttr<CUDAConstantAttr>() &&
                               !D->getAttr<CUDAConstantAttr>()->isImplicit());
-  // CUDA/HIP: static managed variables need to be externalized since it is
+  // CUDA/HIP: managed variables need to be externalized since it is
   // a declaration in IR, therefore cannot have internal linkage. Kernels in
   // anonymous name space needs to be externalized to avoid duplicate symbols.
-  return (IsStaticVar &&
+  return (IsInternalVar &&
           (D->hasAttr<HIPManagedAttr>() || IsExplicitDeviceVar)) ||
          (D->hasAttr<CUDAGlobalAttr>() &&
           basicGVALinkageForFunction(*this, cast<FunctionDecl>(D)) ==

@@ -166,6 +166,12 @@ enum NodeType : unsigned {
   // value. The fourth and fifth operands are the mask and VL operands.
   VSLIDE1UP_VL,
   VSLIDE1DOWN_VL,
+  // Matches the semantics of vfslide1up/vfslide1down. The first operand is
+  // passthru operand, the second is source vector, third is a scalar value
+  // whose type matches the element type of the vectors.  The fourth and fifth
+  // operands are the mask and VL operands.
+  VFSLIDE1UP_VL,
+  VFSLIDE1DOWN_VL,
   // Matches the semantics of the vid.v instruction, with a mask and VL
   // operand.
   VID_VL,
@@ -247,10 +253,14 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
+<<<<<<< HEAD
   VFRSQRT7_VL,  // SIFIVE
   VFREC7_VL,    // SIFIVE
   VFCLASS_VL,   // SIFIVE
   VFNMSAC_VL,   // SIFIVE
+=======
+  FCLASS_VL,
+>>>>>>> upstream/main.local
   FCOPYSIGN_VL, // Has a merge operand
   VFCVT_RTZ_X_F_VL,
   VFCVT_RTZ_XU_F_VL,
@@ -293,6 +303,12 @@ enum NodeType : unsigned {
   VWSUB_W_VL,
   VWSUBU_W_VL,
   VFWMUL_VL, // SIFIVE
+
+  VFWMUL_VL,
+  VFWADD_VL,
+  VFWSUB_VL,
+  VFWADD_W_VL,
+  VFWSUB_W_VL,
 
   // Narrowing logical shift right.
   // Operands are (source, shift, passthru, mask, vl)
@@ -384,8 +400,9 @@ enum NodeType : unsigned {
   // have memop! In fact, starting from FIRST_TARGET_MEMORY_OPCODE all
   // opcodes will be thought as target memory ops!
 
-  // Load address.
-  LA = ISD::FIRST_TARGET_MEMORY_OPCODE,
+  // Represents an AUIPC+L[WD] pair. Selected to PseudoLGA.
+  LGA = ISD::FIRST_TARGET_MEMORY_OPCODE,
+  // Load initial exec thread-local address.
   LA_TLS_IE,
 
   TH_LWD,
@@ -762,6 +779,7 @@ public:
   bool lowerInterleavedStore(StoreInst *SI, ShuffleVectorInst *SVI,
                              unsigned Factor) const override;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
                                     ArrayRef<ExtractValueInst *> ExtractValues,
@@ -774,6 +792,8 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
 private:
+=======
+>>>>>>> upstream/main.local
   /// RISCVCCAssignFn - This target-specific function extends the default
   /// CCValAssign with additional information used to lower RISC-V calling
   /// conventions.
@@ -785,6 +805,7 @@ private:
                                const RISCVTargetLowering &TLI,
                                std::optional<unsigned> FirstMaskArgument);
 
+private:
   void analyzeInputArgs(MachineFunction &MF, CCState &CCInfo,
                         const SmallVectorImpl<ISD::InputArg> &Ins, bool IsRet,
                         RISCVCCAssignFn Fn) const;
@@ -794,11 +815,16 @@ private:
                          RISCVCCAssignFn Fn) const;
 
   template <class NodeTy>
+<<<<<<< HEAD
   SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true) const;
 #if SIFIVE_CUSTOMIZATION
   template <class NodeTy>
   SDValue getCompactAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
+                  bool IsExternWeak = false) const;
+>>>>>>> upstream/main.local
   SDValue getStaticTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG,
                            bool UseGOT) const;
   SDValue getDynamicTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG) const;
@@ -869,10 +895,14 @@ private:
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG, unsigned NewOpc,
                             bool HasMergeOp = false, bool HasMask = true) const;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
                                bool HasMask) const;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  SDValue LowerIS_FPCLASS(SDValue Op, SelectionDAG &DAG) const;
+>>>>>>> upstream/main.local
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG, unsigned RISCVISDOpc,
                     bool HasMergeOp = false) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG, unsigned MaskOpc,
@@ -934,6 +964,9 @@ private:
 
   MVT getVPExplicitVectorLengthTy() const override;
 
+  bool shouldExpandGetVectorLength(EVT TripCountVT, unsigned VF,
+                                   bool IsScalable) const override;
+
   /// RVV code generation for fixed length vectors does not lower all
   /// BUILD_VECTORs. This makes BUILD_VECTOR legalisation a source of stores to
   /// merge. However, merging them creates a BUILD_VECTOR that is just as
@@ -956,6 +989,26 @@ private:
   /// faster than two FDIVs.
   unsigned combineRepeatedFPDivisors() const override;
 };
+
+namespace RISCV {
+
+bool CC_RISCV(const DataLayout &DL, RISCVABI::ABI ABI, unsigned ValNo,
+              MVT ValVT, MVT LocVT, CCValAssign::LocInfo LocInfo,
+              ISD::ArgFlagsTy ArgFlags, CCState &State, bool IsFixed,
+              bool IsRet, Type *OrigTy, const RISCVTargetLowering &TLI,
+              std::optional<unsigned> FirstMaskArgument);
+
+bool CC_RISCV_FastCC(const DataLayout &DL, RISCVABI::ABI ABI, unsigned ValNo,
+                     MVT ValVT, MVT LocVT, CCValAssign::LocInfo LocInfo,
+                     ISD::ArgFlagsTy ArgFlags, CCState &State, bool IsFixed,
+                     bool IsRet, Type *OrigTy, const RISCVTargetLowering &TLI,
+                     std::optional<unsigned> FirstMaskArgument);
+
+bool CC_RISCV_GHC(unsigned ValNo, MVT ValVT, MVT LocVT,
+                  CCValAssign::LocInfo LocInfo, ISD::ArgFlagsTy ArgFlags,
+                  CCState &State);
+} // end namespace RISCV
+
 namespace RISCVVIntrinsicsTable {
 
 struct RISCVVIntrinsicInfo {

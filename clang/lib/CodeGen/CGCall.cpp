@@ -1751,7 +1751,7 @@ CodeGenTypes::GetFunctionType(const CGFunctionInfo &FI) {
 
 llvm::Type *CodeGenTypes::GetFunctionTypeForVTable(GlobalDecl GD) {
   const CXXMethodDecl *MD = cast<CXXMethodDecl>(GD.getDecl());
-  const FunctionProtoType *FPT = MD->getType()->getAs<FunctionProtoType>();
+  const FunctionProtoType *FPT = MD->getType()->castAs<FunctionProtoType>();
 
   if (!isFuncTypeConvertible(FPT))
     return llvm::StructType::get(getLLVMContext());
@@ -3440,8 +3440,9 @@ static llvm::StoreInst *findDominatingStoreToReturnValue(CodeGenFunction &CGF) {
   // single-predecessors chain from the current insertion point.
   llvm::BasicBlock *StoreBB = store->getParent();
   llvm::BasicBlock *IP = CGF.Builder.GetInsertBlock();
+  llvm::SmallPtrSet<llvm::BasicBlock *, 4> SeenBBs;
   while (IP != StoreBB) {
-    if (!(IP = IP->getSinglePredecessor()))
+    if (!SeenBBs.insert(IP).second || !(IP = IP->getSinglePredecessor()))
       return nullptr;
   }
 
@@ -5700,7 +5701,6 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
           assert(unpaddedIndex == 0);
         Builder.CreateStore(elt, eltAddr);
       }
-      // FALLTHROUGH
       [[fallthrough]];
     }
 

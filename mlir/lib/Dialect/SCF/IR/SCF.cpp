@@ -1261,9 +1261,9 @@ ParseResult ForallOp::parse(OpAsmParser &parser, OperationState &result) {
       dynamicSteps;
   if (succeeded(parser.parseOptionalKeyword("in"))) {
     // Parse upper bounds.
-    if (parseDynamicIndexList(parser, dynamicUbs, staticUbs,
-                              /*valueTypes=*/nullptr,
-                              OpAsmParser::Delimiter::Paren) ||
+    if (parseDynamicIndexList(
+            parser, dynamicUbs, staticUbs, /*isTrailingIdxScalable=*/nullptr,
+            /*valueTypes=*/nullptr, OpAsmParser::Delimiter::Paren) ||
         parser.resolveOperands(dynamicUbs, indexType, result.operands))
       return failure();
 
@@ -1273,26 +1273,26 @@ ParseResult ForallOp::parse(OpAsmParser &parser, OperationState &result) {
   } else {
     // Parse lower bounds.
     if (parser.parseEqual() ||
-        parseDynamicIndexList(parser, dynamicLbs, staticLbs,
-                              /*valueTypes=*/nullptr,
-                              OpAsmParser::Delimiter::Paren) ||
+        parseDynamicIndexList(
+            parser, dynamicLbs, staticLbs, /*isTrailingIdxScalable=*/nullptr,
+            /*valueTypes=*/nullptr, OpAsmParser::Delimiter::Paren) ||
 
         parser.resolveOperands(dynamicLbs, indexType, result.operands))
       return failure();
 
     // Parse upper bounds.
     if (parser.parseKeyword("to") ||
-        parseDynamicIndexList(parser, dynamicUbs, staticUbs,
-                              /*valueTypes=*/nullptr,
-                              OpAsmParser::Delimiter::Paren) ||
+        parseDynamicIndexList(
+            parser, dynamicUbs, staticUbs, /*isTrailingIdxScalable=*/nullptr,
+            /*valueTypes=*/nullptr, OpAsmParser::Delimiter::Paren) ||
         parser.resolveOperands(dynamicUbs, indexType, result.operands))
       return failure();
 
     // Parse step values.
     if (parser.parseKeyword("step") ||
-        parseDynamicIndexList(parser, dynamicSteps, staticSteps,
-                              /*valueTypes=*/nullptr,
-                              OpAsmParser::Delimiter::Paren) ||
+        parseDynamicIndexList(
+            parser, dynamicSteps, staticSteps, /*scalable=*/nullptr,
+            /*valueTypes=*/nullptr, OpAsmParser::Delimiter::Paren) ||
         parser.resolveOperands(dynamicSteps, indexType, result.operands))
       return failure();
   }
@@ -1680,6 +1680,25 @@ void ForallOp::getCanonicalizationPatterns(RewritePatternSet &results,
   results.add<DimOfForallOp, FoldTensorCastOfOutputIntoForallOp,
               ForallOpControlOperandsFolder,
               ForallOpSingleOrZeroIterationDimsFolder>(context);
+}
+
+/// Given the region at `index`, or the parent operation if `index` is None,
+/// return the successor regions. These are the regions that may be selected
+/// during the flow of control. `operands` is a set of optional attributes that
+/// correspond to a constant value for each operand, or null if that operand is
+/// not a constant.
+void ForallOp::getSuccessorRegions(std::optional<unsigned> index,
+                                   ArrayRef<Attribute> operands,
+                                   SmallVectorImpl<RegionSuccessor> &regions) {
+  // If the predecessor is ForallOp, branch into the body with empty arguments.
+  if (!index) {
+    regions.push_back(RegionSuccessor(&getRegion()));
+    return;
+  }
+
+  // Otherwise, the loop should branch back to the parent operation.
+  assert(*index == 0 && "expected loop region");
+  regions.push_back(RegionSuccessor());
 }
 
 //===----------------------------------------------------------------------===//
@@ -2974,6 +2993,26 @@ void ParallelOp::getCanonicalizationPatterns(RewritePatternSet &results,
   results
       .add<ParallelOpSingleOrZeroIterationDimsFolder, MergeNestedParallelLoops>(
           context);
+}
+
+/// Given the region at `index`, or the parent operation if `index` is None,
+/// return the successor regions. These are the regions that may be selected
+/// during the flow of control. `operands` is a set of optional attributes that
+/// correspond to a constant value for each operand, or null if that operand is
+/// not a constant.
+void ParallelOp::getSuccessorRegions(
+    std::optional<unsigned> index, ArrayRef<Attribute> operands,
+    SmallVectorImpl<RegionSuccessor> &regions) {
+  // If the predecessor is ParallelOp, branch into the body with empty
+  // arguments.
+  if (!index) {
+    regions.push_back(RegionSuccessor(&getRegion()));
+    return;
+  }
+
+  assert(*index == 0 && "expected loop region");
+  // Otherwise, the loop should branch back to the parent operation.
+  regions.push_back(RegionSuccessor());
 }
 
 //===----------------------------------------------------------------------===//

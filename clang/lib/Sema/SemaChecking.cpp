@@ -2028,6 +2028,9 @@ bool Sema::CheckTSBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
   case llvm::Triple::wasm32:
   case llvm::Triple::wasm64:
     return CheckWebAssemblyBuiltinFunctionCall(TI, BuiltinID, TheCall);
+  case llvm::Triple::nvptx:
+  case llvm::Triple::nvptx64:
+    return CheckNVPTXBuiltinFunctionCall(TI, BuiltinID, TheCall);
   }
 }
 
@@ -2876,6 +2879,9 @@ bool Sema::CheckSVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall) {
 #define GET_SVE_IMMEDIATE_CHECK
 #include "clang/Basic/arm_sve_sema_rangechecks.inc"
 #undef GET_SVE_IMMEDIATE_CHECK
+#define GET_SME_IMMEDIATE_CHECK
+#include "clang/Basic/arm_sme_sema_rangechecks.inc"
+#undef GET_SME_IMMEDIATE_CHECK
   }
 
   // Perform all the immediate checks for this builtin call.
@@ -2979,6 +2985,14 @@ bool Sema::CheckSVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall) {
       break;
     case SVETypeFlags::ImmCheck0_3:
       if (SemaBuiltinConstantArgRange(TheCall, ArgNum, 0, 3))
+        HasError = true;
+      break;
+    case SVETypeFlags::ImmCheck0_0:
+      if (SemaBuiltinConstantArgRange(TheCall, ArgNum, 0, 0))
+        HasError = true;
+      break;
+    case SVETypeFlags::ImmCheck0_15:
+      if (SemaBuiltinConstantArgRange(TheCall, ArgNum, 0, 15))
         HasError = true;
       break;
     }
@@ -3804,7 +3818,7 @@ bool Sema::CheckLoongArchBuiltinFunctionCall(const TargetInfo &TI,
       return Diag(TheCall->getBeginLoc(),
                   diag::err_loongarch_builtin_requires_la64)
              << TheCall->getSourceRange();
-    LLVM_FALLTHROUGH;
+    [[fallthrough]];
   case LoongArch::BI__builtin_loongarch_cacop_w: {
     if (BuiltinID == LoongArch::BI__builtin_loongarch_cacop_w &&
         !TI.hasFeature("32bit"))
@@ -4829,6 +4843,20 @@ bool Sema::CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
     return BuiltinWasmRefNullExtern(TheCall);
   case WebAssembly::BI__builtin_wasm_ref_null_func:
     return BuiltinWasmRefNullFunc(TheCall);
+  }
+
+  return false;
+}
+
+bool Sema::CheckNVPTXBuiltinFunctionCall(const TargetInfo &TI,
+                                         unsigned BuiltinID,
+                                         CallExpr *TheCall) {
+  switch (BuiltinID) {
+  case NVPTX::BI__nvvm_cp_async_ca_shared_global_4:
+  case NVPTX::BI__nvvm_cp_async_ca_shared_global_8:
+  case NVPTX::BI__nvvm_cp_async_ca_shared_global_16:
+  case NVPTX::BI__nvvm_cp_async_cg_shared_global_16:
+    return checkArgCountAtMost(*this, TheCall, 3);
   }
 
   return false;
@@ -6396,7 +6424,15 @@ ExprResult Sema::BuildAtomicExpr(SourceRange CallRange, SourceRange ExprRange,
              Op == AtomicExpr::AO__atomic_store_n ||
              Op == AtomicExpr::AO__atomic_exchange_n ||
              Op == AtomicExpr::AO__atomic_compare_exchange_n;
-  bool IsAddSub = false;
+  // Bit mask for extra allowed value types other than integers for atomic
+  // arithmetic operations. Add/sub allow pointer and floating point. Min/max
+  // allow floating point.
+  enum ArithOpExtraValueType {
+    AOEVT_None = 0,
+    AOEVT_Pointer = 1,
+    AOEVT_FP = 2,
+  };
+  unsigned ArithAllows = AOEVT_None;
 
   switch (Op) {
   case AtomicExpr::AO__c11_atomic_init:
@@ -6422,18 +6458,30 @@ ExprResult Sema::BuildAtomicExpr(SourceRange CallRange, SourceRange ExprRange,
   case AtomicExpr::AO__atomic_store_n:
     Form = Copy;
     break;
-  case AtomicExpr::AO__hip_atomic_fetch_add:
-  case AtomicExpr::AO__hip_atomic_fetch_min:
-  case AtomicExpr::AO__hip_atomic_fetch_max:
-  case AtomicExpr::AO__c11_atomic_fetch_add:
-  case AtomicExpr::AO__c11_atomic_fetch_sub:
-  case AtomicExpr::AO__opencl_atomic_fetch_add:
-  case AtomicExpr::AO__opencl_atomic_fetch_sub:
   case AtomicExpr::AO__atomic_fetch_add:
   case AtomicExpr::AO__atomic_fetch_sub:
   case AtomicExpr::AO__atomic_add_fetch:
   case AtomicExpr::AO__atomic_sub_fetch:
-    IsAddSub = true;
+  case AtomicExpr::AO__c11_atomic_fetch_add:
+  case AtomicExpr::AO__c11_atomic_fetch_sub:
+  case AtomicExpr::AO__opencl_atomic_fetch_add:
+  case AtomicExpr::AO__opencl_atomic_fetch_sub:
+  case AtomicExpr::AO__hip_atomic_fetch_add:
+  case AtomicExpr::AO__hip_atomic_fetch_sub:
+    ArithAllows = AOEVT_Pointer | AOEVT_FP;
+    Form = Arithmetic;
+    break;
+  case AtomicExpr::AO__atomic_fetch_max:
+  case AtomicExpr::AO__atomic_fetch_min:
+  case AtomicExpr::AO__atomic_max_fetch:
+  case AtomicExpr::AO__atomic_min_fetch:
+  case AtomicExpr::AO__c11_atomic_fetch_max:
+  case AtomicExpr::AO__c11_atomic_fetch_min:
+  case AtomicExpr::AO__opencl_atomic_fetch_max:
+  case AtomicExpr::AO__opencl_atomic_fetch_min:
+  case AtomicExpr::AO__hip_atomic_fetch_max:
+  case AtomicExpr::AO__hip_atomic_fetch_min:
+    ArithAllows = AOEVT_FP;
     Form = Arithmetic;
     break;
   case AtomicExpr::AO__c11_atomic_fetch_and:
@@ -6454,16 +6502,6 @@ ExprResult Sema::BuildAtomicExpr(SourceRange CallRange, SourceRange ExprRange,
   case AtomicExpr::AO__atomic_or_fetch:
   case AtomicExpr::AO__atomic_xor_fetch:
   case AtomicExpr::AO__atomic_nand_fetch:
-    Form = Arithmetic;
-    break;
-  case AtomicExpr::AO__c11_atomic_fetch_min:
-  case AtomicExpr::AO__c11_atomic_fetch_max:
-  case AtomicExpr::AO__opencl_atomic_fetch_min:
-  case AtomicExpr::AO__opencl_atomic_fetch_max:
-  case AtomicExpr::AO__atomic_min_fetch:
-  case AtomicExpr::AO__atomic_max_fetch:
-  case AtomicExpr::AO__atomic_fetch_min:
-  case AtomicExpr::AO__atomic_fetch_max:
     Form = Arithmetic;
     break;
 
@@ -6553,12 +6591,13 @@ ExprResult Sema::BuildAtomicExpr(SourceRange CallRange, SourceRange ExprRange,
   if (Form == Arithmetic) {
     // GCC does not enforce these rules for GNU atomics, but we do to help catch
     // trivial type errors.
-    auto IsAllowedValueType = [&](QualType ValType) {
+    auto IsAllowedValueType = [&](QualType ValType,
+                                  unsigned AllowedType) -> bool {
       if (ValType->isIntegerType())
         return true;
       if (ValType->isPointerType())
-        return true;
-      if (!ValType->isFloatingType())
+        return AllowedType & AOEVT_Pointer;
+      if (!(ValType->isFloatingType() && (AllowedType & AOEVT_FP)))
         return false;
       // LLVM Parser does not allow atomicrmw with x86_fp80 type.
       if (ValType->isSpecificBuiltinType(BuiltinType::LongDouble) &&
@@ -6567,13 +6606,13 @@ ExprResult Sema::BuildAtomicExpr(SourceRange CallRange, SourceRange ExprRange,
         return false;
       return true;
     };
-    if (IsAddSub && !IsAllowedValueType(ValType)) {
-      Diag(ExprRange.getBegin(), diag::err_atomic_op_needs_atomic_int_ptr_or_fp)
-          << IsC11 << Ptr->getType() << Ptr->getSourceRange();
-      return ExprError();
-    }
-    if (!IsAddSub && !ValType->isIntegerType()) {
-      Diag(ExprRange.getBegin(), diag::err_atomic_op_needs_atomic_int)
+    if (!IsAllowedValueType(ValType, ArithAllows)) {
+      auto DID = ArithAllows & AOEVT_FP
+                     ? (ArithAllows & AOEVT_Pointer
+                            ? diag::err_atomic_op_needs_atomic_int_ptr_or_fp
+                            : diag::err_atomic_op_needs_atomic_int_or_fp)
+                     : diag::err_atomic_op_needs_atomic_int;
+      Diag(ExprRange.getBegin(), DID)
           << IsC11 << Ptr->getType() << Ptr->getSourceRange();
       return ExprError();
     }
