@@ -8833,6 +8833,9 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
   assert(VecVT.isScalableVector() &&
          "vector_interleave on non-scalable vector!");
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned Factor = Op.getNumOperands();
+
   // i1 vectors need to be widened to i8
   if (VecVT.getVectorElementType() == MVT::i1)
     return widenVectorOpsToi8(Op, DL, DAG);
@@ -8841,24 +8844,87 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
   SDValue VL = DAG.getRegister(RISCV::X0, XLenVT);
 
   // If the VT is LMUL=8, we need to split and reassemble.
-  if (VecVT.getSizeInBits().getKnownMinValue() == (8 * RISCV::RVVBitsPerBlock)) {
-    auto [Op0Lo, Op0Hi] = DAG.SplitVectorOperand(Op.getNode(), 0);
-    auto [Op1Lo, Op1Hi] = DAG.SplitVectorOperand(Op.getNode(), 1);
-    EVT SplitVT = Op0Lo.getValueType();
+  if ((VecVT.getSizeInBits().getKnownMinValue() * Factor) >
+      (8 * RISCV::RVVBitsPerBlock)) {
+    SmallVector<SDValue, 8> Ops(Factor * 2);
+    for (unsigned i = 0; i != Factor; ++i) {
+      auto [OpLo, OpHi] = DAG.SplitVectorOperand(Op.getNode(), i);
+      Ops[i] = OpLo;
+      Ops[i + Factor] = OpHi;
+    }
 
-    SDValue ResLo = DAG.getNode(ISD::VECTOR_INTERLEAVE, DL,
-                                DAG.getVTList(SplitVT, SplitVT), Op0Lo, Op1Lo);
-    SDValue ResHi = DAG.getNode(ISD::VECTOR_INTERLEAVE, DL,
-                                DAG.getVTList(SplitVT, SplitVT), Op0Hi, Op1Hi);
+    SmallVector<EVT, 8> VTs(Factor, Ops[0].getValueType());
 
-    SDValue Lo = DAG.getNode(ISD::CONCAT_VECTORS, DL, VecVT,
-                             ResLo.getValue(0), ResLo.getValue(1));
-    SDValue Hi = DAG.getNode(ISD::CONCAT_VECTORS, DL, VecVT,
-                             ResHi.getValue(0), ResHi.getValue(1));
-    return DAG.getMergeValues({Lo, Hi}, DL);
+    SDValue Res[] = {DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, VTs,
+                                 ArrayRef(Ops).slice(0, Factor)),
+                     DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, VTs,
+                                 ArrayRef(Ops).slice(Factor, Factor))};
+
+    SmallVector<SDValue, 8> Concats(Factor);
+    for (unsigned i = 0; i != Factor; ++i) {
+      unsigned IdxLo = 2 * i;
+      unsigned IdxHi = 2 * i + 1;
+      Concats[i] = DAG.getNode(ISD::CONCAT_VECTORS, DL, VecVT,
+                               Res[IdxLo / Factor].getValue(IdxLo % Factor),
+                               Res[IdxHi / Factor].getValue(IdxHi % Factor));
+    }
+
+    return DAG.getMergeValues(Concats, DL);
   }
 
   SDValue Interleaved;
+
+  // Spill to the stack using a segment store for simplicity.
+  if (Factor != 2) {
+    EVT MemVT =
+        EVT::getVectorVT(*DAG.getContext(), VecVT.getVectorElementType(),
+                         VecVT.getVectorElementCount() * Factor);
+
+    // Allocate a stack slot.
+    Align Alignment = DAG.getReducedAlign(VecVT, /*UseABI=*/false);
+    SDValue StackPtr =
+        DAG.CreateStackTemporary(MemVT.getStoreSize(), Alignment);
+    EVT PtrVT = StackPtr.getValueType();
+    auto &MF = DAG.getMachineFunction();
+    auto FrameIndex = cast<FrameIndexSDNode>(StackPtr.getNode())->getIndex();
+    auto PtrInfo = MachinePointerInfo::getFixedStack(MF, FrameIndex);
+
+    static const Intrinsic::ID IntrIds[] = {
+        Intrinsic::riscv_vsseg2, Intrinsic::riscv_vsseg3,
+        Intrinsic::riscv_vsseg4, Intrinsic::riscv_vsseg5,
+        Intrinsic::riscv_vsseg6, Intrinsic::riscv_vsseg7,
+        Intrinsic::riscv_vsseg8,
+    };
+
+    SmallVector<SDValue, 13> Ops;
+    Ops.push_back(DAG.getEntryNode());
+    Ops.push_back(DAG.getTargetConstant(IntrIds[Factor - 2], DL, XLenVT));
+    for (unsigned i = 0; i != Factor; ++i)
+      Ops.push_back(Op.getOperand(i));
+    Ops.push_back(StackPtr);
+    Ops.push_back(VL);
+
+    SDValue Chain = DAG.getMemIntrinsicNode(
+        ISD::INTRINSIC_VOID, DL, DAG.getVTList(MVT::Other), Ops,
+        VecVT.getVectorElementType(), PtrInfo, Alignment,
+        MachineMemOperand::MOStore, MemoryLocation::UnknownSize);
+
+    SmallVector<SDValue, 8> Loads(Factor);
+
+    SDValue Increment =
+        DAG.getVScale(DL, PtrVT,
+                      APInt(PtrVT.getFixedSizeInBits(),
+                            VecVT.getStoreSize().getKnownMinValue()));
+    for (unsigned i = 0; i != Factor; ++i) {
+      if (i != 0)
+        StackPtr = DAG.getNode(ISD::ADD, DL, PtrVT, StackPtr, Increment);
+
+      Loads[i] = DAG.getLoad(VecVT, DL, Chain, StackPtr, PtrInfo);
+    }
+
+    return DAG.getMergeValues(Loads, DL);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // If the element type is smaller than ELEN, then we can interleave with
   // vwaddu.vv and vwmaccu.vx

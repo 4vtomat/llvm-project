@@ -1495,6 +1495,17 @@ void DAGTypeLegalizer::SplitVecRes_INSERT_SUBVECTOR(SDNode *N, SDValue &Lo,
     return;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (getTypeAction(SubVecVT) == TargetLowering::TypeWidenVector &&
+      Vec.isUndef() && SubVecVT.getVectorElementType() == MVT::i1) {
+    SDValue WideSubVec = GetWidenedVector(SubVec);
+    if (WideSubVec.getValueType() == VecVT) {
+      std::tie(Lo, Hi) = DAG.SplitVector(WideSubVec, SDLoc(WideSubVec));
+      return;
+    }
+  }
+#endif
+
   // Spill the vector to the stack.
   // In cases where the vector is illegal it will be broken down into parts
   // and stored in parts - we should use the alignment for the smallest part.
