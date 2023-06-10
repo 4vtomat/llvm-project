@@ -5719,7 +5719,7 @@ void LoopVectorizationCostModel::collectLoopUniformsForUncountableLoops(
   // Return true if all lanes perform the same memory operation, and we can
   // thus chose to execute only one.
   auto IsUniformMemOpUse = [&](Instruction *I) {
-    if (!Legal->isUniformMemOp(*I))
+    if (!Legal->isUniformMemOp(*I, VF))
       return false;
     if (isa<LoadInst>(I))
       // Loading the same address always produces the same result - at least
@@ -8462,15 +8462,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       if (isa<StoreInst>(&I) && isScalarWithPredication(&I, VF))
         NumPredStores++;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      if (Legal->isUniformMemOp(I) && !Hints->isFixedVectorizationDisabled()) {
+      if (Legal->isUniformMemOp(I, VF) && !Hints->isFixedVectorizationDisabled()) {
 #else
-      if (Legal->isUniformMemOp(I)) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (Legal->isUniformMemOp(I, VF)) {
->>>>>>> upstream/main.local
+#endif // SIFIVE_CUSTOMIZATION
         auto isLegalToScalarize = [&]() {
           if (!VF.isScalable())
             // Scalarization of fixed length vectors "just works".

@@ -655,7 +655,6 @@ int LoopVectorizationLegality::isConsecutivePtr(Type *AccessTy,
   return 0;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 std::optional<int64_t>
 LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
@@ -678,12 +677,8 @@ LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
 }
 #endif
 
-bool LoopVectorizationLegality::isUniform(Value *V) const {
-  return LAI->isUniform(V);
-=======
 bool LoopVectorizationLegality::isInvariant(Value *V) const {
   return LAI->isInvariant(V);
->>>>>>> upstream/main.local
 }
 
 namespace {

@@ -211,18 +211,15 @@ public:
                                         Align Alignment, unsigned AddressSpace,
                                         TTI::TargetCostKind CostKind);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isLoweredToCall(const Function *F);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   InstructionCost getPointersChainCost(ArrayRef<const Value *> Ptrs,
                                        const Value *Base,
                                        const TTI::PointersChainInfo &Info,
                                        Type *AccessTy,
                                        TTI::TargetCostKind CostKind);
 
->>>>>>> upstream/main.local
   void getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                TTI::UnrollingPreferences &UP,
                                OptimizationRemarkEmitter *ORE);
@@ -476,7 +473,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  unsigned getInliningThresholdMultiplier();
+  unsigned getInliningThresholdMultiplier() const;
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
   bool forceCheckAddressingMode() const;

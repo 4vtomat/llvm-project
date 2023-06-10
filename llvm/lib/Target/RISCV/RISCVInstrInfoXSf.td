@@ -150,7 +150,7 @@ let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasExtXsfvqmaccdod] in 
   def VQMACCSU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccsu.2x8x2", OPMVV, 0b101111>;
 } // Predicates = [HasExtXsfvqmaccdod]
 
-let Predicates = [HasExtXsfvfhbfmin] in {
+let Predicates = [HasExtXsfvfhbfmin], DecoderNamespace = "XSfvfhbfmin" in {
 let Constraints = "@earlyclobber $vd", RVVConstraint = WidenCvt in {
 defm VFWCVT_F_BF16_V : VWCVTF_FV_VS2<"sf.vfwcvt.f.bf16.v", 0b010010, 0b01101>;
 }

@@ -253,14 +253,11 @@ enum NodeType : unsigned {
   FNEG_VL,
   FABS_VL,
   FSQRT_VL,
-<<<<<<< HEAD
   VFRSQRT7_VL,  // SIFIVE
   VFREC7_VL,    // SIFIVE
   VFCLASS_VL,   // SIFIVE
   VFNMSAC_VL,   // SIFIVE
-=======
   FCLASS_VL,
->>>>>>> upstream/main.local
   FCOPYSIGN_VL, // Has a merge operand
   VFCVT_RTZ_X_F_VL,
   VFCVT_RTZ_XU_F_VL,
@@ -302,7 +299,6 @@ enum NodeType : unsigned {
   VWADDU_W_VL,
   VWSUB_W_VL,
   VWSUBU_W_VL,
-  VFWMUL_VL, // SIFIVE
 
   VFWMUL_VL,
   VFWADD_VL,
@@ -779,7 +775,6 @@ public:
   bool lowerInterleavedStore(StoreInst *SI, ShuffleVectorInst *SVI,
                              unsigned Factor) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
                                     ArrayRef<ExtractValueInst *> ExtractValues,
@@ -791,9 +786,6 @@ public:
                                      unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
-private:
-=======
->>>>>>> upstream/main.local
   /// RISCVCCAssignFn - This target-specific function extends the default
   /// CCValAssign with additional information used to lower RISC-V calling
   /// conventions.
@@ -815,16 +807,12 @@ private:
                          RISCVCCAssignFn Fn) const;
 
   template <class NodeTy>
-<<<<<<< HEAD
-  SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true) const;
+  SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
+                  bool IsExternWeak = false) const;
 #if SIFIVE_CUSTOMIZATION
   template <class NodeTy>
   SDValue getCompactAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
-                  bool IsExternWeak = false) const;
->>>>>>> upstream/main.local
   SDValue getStaticTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG,
                            bool UseGOT) const;
   SDValue getDynamicTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG) const;
@@ -895,14 +883,11 @@ private:
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG, unsigned NewOpc,
                             bool HasMergeOp = false, bool HasMask = true) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
                                bool HasMask) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue LowerIS_FPCLASS(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> upstream/main.local
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG, unsigned RISCVISDOpc,
                     bool HasMergeOp = false) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG, unsigned MaskOpc,

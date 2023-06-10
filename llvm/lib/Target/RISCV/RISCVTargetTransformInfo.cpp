@@ -89,11 +89,7 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
     bool Fractional;
     std::tie(LMul, Fractional) =
         RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(VT));
-<<<<<<< HEAD
-    if (Fractional)
-      Cost = 1;
-    else
-      Cost = LMul;
+    Cost = Fractional ? 1 : LMul;
 #if SIFIVE_CUSTOMIZATION
     // Here uses DLEN as the reciprocal throughput cost,
     // x280: VLEN = 2 * DLEN
@@ -103,20 +99,15 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = Fractional ? 1 : LMul * 2;
 #endif // SIFIVE_CUSTOMIZATION
   } else {
-    Cost = VT.getSizeInBits() / ST->getRealMinVLen();
+    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen());
 #if SIFIVE_CUSTOMIZATION
     // Here uses DLEN as the reciprocal throughput cost,
     // x280: VLEN = 2 * DLEN
     // p470: VLEN = DLEN, 1 vector pipe
     // p670: VLEN = DLEN, 2 vector pipes
     if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      Cost = VT.getSizeInBits() / (ST->getRealMinVLen() / 2);
+      Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / 2);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    Cost = Fractional ? 1 : LMul;
-  } else {
-    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen());
->>>>>>> upstream/main.local
   }
   return Cost;
 }
@@ -2348,7 +2339,7 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-unsigned RISCVTTIImpl::getInliningThresholdMultiplier() {
+unsigned RISCVTTIImpl::getInliningThresholdMultiplier() const {
   return InliningThresholdMultiplier;
 }
 

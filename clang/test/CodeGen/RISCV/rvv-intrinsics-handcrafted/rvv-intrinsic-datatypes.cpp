@@ -72,7 +72,6 @@
 // CHECK-NEXT:    [[F64M2:%.*]] = alloca <vscale x 2 x double>, align 8
 // CHECK-NEXT:    [[F64M4:%.*]] = alloca <vscale x 4 x double>, align 8
 // CHECK-NEXT:    [[F64M8:%.*]] = alloca <vscale x 8 x double>, align 8
-// CHECK-NEXT:    [[I32M1X2:%.*]] = alloca { <vscale x 2 x i32>, <vscale x 2 x i32> }, align 4
 // CHECK-NEXT:    ret void
 //
 void foo () {
@@ -151,5 +150,5 @@ void foo () {
   vfloat64m4_t f64m4;
   vfloat64m8_t f64m8;
 
-  vint32m1x2_t i32m1x2;
+  //vint32m1x2_t i32m1x2; // SIFIVE
 }

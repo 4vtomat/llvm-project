@@ -58,18 +58,15 @@ private:
   bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool removeRedundantVMV(MachineBasicBlock &MBB,
                           MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   bool expandRV32ZdinxStore(MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MBBI);
   bool expandRV32ZdinxLoad(MachineBasicBlock &MBB,
                            MachineBasicBlock::iterator MBBI);
->>>>>>> upstream/main.local
 #ifndef NDEBUG
   unsigned getInstSizeInBytes(const MachineFunction &MF) const {
     unsigned Size = 0;
@@ -121,7 +118,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
   switch (MBBI->getOpcode()) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
@@ -130,12 +126,10 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoSBFX:
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::PseudoRV32ZdinxSD:
     return expandRV32ZdinxStore(MBB, MBBI);
   case RISCV::PseudoRV32ZdinxLD:
     return expandRV32ZdinxLoad(MBB, MBBI);
->>>>>>> upstream/main.local
   case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCADD:
   case RISCV::PseudoCCSUB:
@@ -392,7 +386,6 @@ bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
                                            MachineBasicBlock::iterator MBBI) {
@@ -403,7 +396,7 @@ bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // This function expands the PseudoRV32ZdinxSD for storing a double-precision
 // floating-point value into memory by generating an equivalent instruction
 // sequence for RV32.
@@ -485,7 +478,6 @@ bool RISCVExpandPseudo::expandRV32ZdinxLoad(MachineBasicBlock &MBB,
   MBBI->eraseFromParent();
   return true;
 }
->>>>>>> upstream/main.local
 
 class RISCVPreRAExpandPseudo : public MachineFunctionPass {
 public:

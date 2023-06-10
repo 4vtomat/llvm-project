@@ -338,12 +338,9 @@ endfunction(clang_generate_header)
 
 
 # Copy header files from the source directory to the build directory
-<<<<<<< HEAD
-foreach( f ${files} ${cuda_wrapper_files} ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files} ${rvv_v0p10_compatible_header_file}) # SIFIVE
-=======
 foreach( f ${files} ${cuda_wrapper_files} ${cuda_wrapper_bits_files}
-           ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files})
->>>>>>> upstream/main.local
+           ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files}
+           ${rvv_v0p10_compatible_header_file}) # SIFIVE
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 

@@ -84,24 +84,21 @@ def riscv_read_cycle_wide : SDNode<"RISCVISD::READ_CYCLE_WIDE",
 def riscv_add_lo : SDNode<"RISCVISD::ADD_LO", SDTIntBinOp>;
 def riscv_hi : SDNode<"RISCVISD::HI", SDTIntUnaryOp>;
 def riscv_lla : SDNode<"RISCVISD::LLA", SDTIntUnaryOp>;
-<<<<<<< HEAD
+def riscv_lga : SDNode<"RISCVISD::LGA", SDTLoad,
+                       [SDNPHasChain, SDNPMayLoad, SDNPMemOperand]>;
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
                               SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                                    SDTCisSameAs<0, 2>,
                                                    SDTCisSameAs<0, 3>,
                                                    SDTCisInt<0>]>>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-def riscv_lga : SDNode<"RISCVISD::LGA", SDTLoad,
-                       [SDNPHasChain, SDNPMayLoad, SDNPMemOperand]>;
+#else
 def riscv_add_tprel : SDNode<"RISCVISD::ADD_TPREL",
                              SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                                   SDTCisSameAs<0, 2>,
                                                   SDTCisSameAs<0, 3>,
                                                   SDTCisInt<0>]>>;
->>>>>>> upstream/main.local
-
+#endif // SIFIVE_CUSTOMIZATION
 def riscv_la_tls_ie : SDNode<"RISCVISD::LA_TLS_IE", SDTLoad,
                              [SDNPHasChain, SDNPMayLoad, SDNPMemOperand]>;
 def riscv_la_tls_gd : SDNode<"RISCVISD::LA_TLS_GD", SDTIntUnaryOp>;

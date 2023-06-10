@@ -38,24 +38,20 @@ entry:
 define void @vpmax_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmax_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v10, a0, v9
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vfmax.vv v8, v10, v11
-; CHECK-NEXT:    vmfne.vv v9, v11, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vfmax.vv v9, v8, v10
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
 ; CHECK-NEXT:    vmfne.vv v10, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v10, v9
+; CHECK-NEXT:    vmor.mm v0, v8, v10
 ; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v9, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -198,24 +194,20 @@ entry:
 define void @vpmin_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmin_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v10, a0, v9
 ; CHECK-NEXT:    li a0, 2
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
-; CHECK-NEXT:    vrgather.vi v11, v8, 1
-; CHECK-NEXT:    vrgather.vi v11, v9, 1, v0.t
-; CHECK-NEXT:    vfmin.vv v8, v10, v11
-; CHECK-NEXT:    vmfne.vv v9, v11, v11
+; CHECK-NEXT:    vrgather.vi v10, v8, 1
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
+; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
+; CHECK-NEXT:    vfmin.vv v9, v8, v10
+; CHECK-NEXT:    vmfne.vv v8, v8, v8
 ; CHECK-NEXT:    vmfne.vv v10, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v10, v9
+; CHECK-NEXT:    vmor.mm v0, v8, v10
 ; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v9, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

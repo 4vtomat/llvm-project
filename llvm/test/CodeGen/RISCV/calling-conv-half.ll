@@ -1212,8 +1212,6 @@ define half @call_varg(half %a) nounwind {
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    addi sp, sp, -16
 ; RV32I-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
-; RV32I-NEXT:    slli a0, a0, 16
-; RV32I-NEXT:    srli a0, a0, 16
 ; RV32I-NEXT:    call __extendhfsf2@plt
 ; RV32I-NEXT:    call __extendsfdf2@plt
 ; RV32I-NEXT:    mv a2, a0
@@ -1228,11 +1226,7 @@ define half @call_varg(half %a) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    addi sp, sp, -16
 ; RV64I-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    slli a0, a0, 48
-; RV64I-NEXT:    srli a0, a0, 48
 ; RV64I-NEXT:    call __extendhfsf2@plt
-; RV64I-NEXT:    slli a0, a0, 32
-; RV64I-NEXT:    srli a0, a0, 32
 ; RV64I-NEXT:    call __extendsfdf2@plt
 ; RV64I-NEXT:    mv a1, a0
 ; RV64I-NEXT:    li a0, 1
@@ -1340,8 +1334,6 @@ define half @call_varg(half %a) nounwind {
 ; RV32-ILP32:       # %bb.0:
 ; RV32-ILP32-NEXT:    addi sp, sp, -16
 ; RV32-ILP32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
-; RV32-ILP32-NEXT:    slli a0, a0, 16
-; RV32-ILP32-NEXT:    srli a0, a0, 16
 ; RV32-ILP32-NEXT:    call __extendhfsf2@plt
 ; RV32-ILP32-NEXT:    call __extendsfdf2@plt
 ; RV32-ILP32-NEXT:    mv a2, a0

@@ -560,7 +560,7 @@ foreach mx = SchedMxListFW in {
 
 // Worst case needs 76 cycles if SEW is equal to 64.
 foreach mx = SchedMxListF in {
-  foreach sew = SchedSEWSetF<mx>.val in {
+  foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
     let Latency = 76, ResourceCycles = [LMulLat, !mul(76, LMulLat)] in {
@@ -583,7 +583,7 @@ foreach mx = SchedMxList in {
 }
 
 foreach mx = SchedMxListWRed in {
-  foreach sew = SchedSEWSet<mx, 1>.val in {
+  foreach sew = SchedSEWSet<mx, 0, 1>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
     let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in
@@ -593,7 +593,7 @@ foreach mx = SchedMxListWRed in {
 }
 
 foreach mx = SchedMxListF in {
-  foreach sew = SchedSEWSetF<mx>.val in {
+  foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
     let Latency = !add(6, !mul(6, LMulLat)), ResourceCycles = [LMulLat] in {
@@ -606,7 +606,7 @@ foreach mx = SchedMxListF in {
 }
 
 foreach mx = SchedMxListFWRed in {
-  foreach sew = SchedSEWSetF<mx, 1>.val in {
+  foreach sew = SchedSEWSet<mx, 1, 1>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
     let Latency = !add(6, !mul(6, LMulLat)), ResourceCycles = [LMulLat] in {

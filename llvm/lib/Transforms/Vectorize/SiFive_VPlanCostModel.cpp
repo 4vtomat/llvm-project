@@ -186,7 +186,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               Value *Op2 = I->getOperand(1);
               auto Op2Info = TTI.getOperandInfo(Op2);
               if (Op2Info.Kind == TargetTransformInfo::OK_AnyValue &&
-                  Legal.isUniform(Op2))
+                  Legal.isUniform(Op2, VF))
                 Op2Info.Kind = TargetTransformInfo::OK_UniformValue;
 
               SmallVector<const Value *, 4> Operands(I->operand_values());

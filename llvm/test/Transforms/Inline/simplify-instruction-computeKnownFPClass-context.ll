@@ -30,12 +30,7 @@ define i1 @simplify_fcmp_ord_fdiv_caller(double nofpclass(zero nan inf) %i0, dou
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_fdiv_caller
 ; CHECK-SAME: (double nofpclass(nan inf zero) [[I0:%.*]], double nofpclass(nan inf zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = fdiv double [[I0]], [[I1]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
-; CHECK-NEXT:    ret i1 [[CMP_I]]
-=======
 ; CHECK-NEXT:    ret i1 true
->>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_fdiv_callee(double %i0, double %i1)
   ret i1 %call
@@ -52,12 +47,7 @@ define i1 @simplify_fcmp_ord_frem_caller(double nofpclass(zero nan inf) %i0, dou
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_frem_caller
 ; CHECK-SAME: (double nofpclass(nan inf zero) [[I0:%.*]], double nofpclass(nan inf zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = frem double [[I0]], [[I1]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
-; CHECK-NEXT:    ret i1 [[CMP_I]]
-=======
 ; CHECK-NEXT:    ret i1 true
->>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_frem_callee(double %i0, double %i1)
   ret i1 %call
@@ -74,12 +64,7 @@ define i1 @simplify_fcmp_ord_fmul_caller(double nofpclass(zero nan) %i0, double 
 ; CHECK-LABEL: define i1 @simplify_fcmp_ord_fmul_caller
 ; CHECK-SAME: (double nofpclass(nan zero) [[I0:%.*]], double nofpclass(nan zero) [[I1:%.*]]) {
 ; CHECK-NEXT:    [[SUB_DOUBLE_SUB_I:%.*]] = fmul double [[I0]], [[I1]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp ord double [[SUB_DOUBLE_SUB_I]], 0.000000e+00
-; CHECK-NEXT:    ret i1 [[CMP_I]]
-=======
 ; CHECK-NEXT:    ret i1 true
->>>>>>> upstream/main.local
 ;
   %call = call i1 @simplify_fcmp_ord_fmul_callee(double %i0, double %i1)
   ret i1 %call
@@ -150,8 +135,6 @@ define internal i1 @simplify_fcmp_ord_log_callee(double %a) {
 }
 
 declare double @llvm.log.f64(double)
-<<<<<<< HEAD
-=======
 
 declare float @llvm.maxnum.f32(float, float) #0
 declare <4 x float> @foo() #1
@@ -184,4 +167,3 @@ bb:
 
 attributes #0 = { nocallback nofree nosync nounwind speculatable willreturn memory(none) }
 attributes #1 = { nocallback nofree nosync nounwind willreturn memory(none) }
->>>>>>> upstream/main.local

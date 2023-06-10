@@ -12,29 +12,16 @@
 defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 // Used for widening reductions, which does contain M8.
 defvar SchedMxListWRed = SchedMxList;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-// Used for widening reductions, which does contain M8.
-defvar SchedMxListWRed = SchedMxList;
->>>>>>> upstream/main.local
 defvar SchedMxListFW = !listremove(SchedMxList, ["M8", "MF8"]);
 // Used for floating-point as it doesn't contain MF8.
 defvar SchedMxListF = !listremove(SchedMxList, ["MF8"]);
 // Used for widening floating-point Reduction as it doesn't contain MF8.
 defvar SchedMxListFWRed = SchedMxListF;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// For widening instructions, SEW will not be 64.
-class SchedSEWSet<string mx, bit isWidening = 0> {
-=======
 class SchedSEWSet<string mx, bit isF = 0, bit isWidening = 0> {
   assert !or(!not(isF), !ne(mx, "MF8")), "LMUL shouldn't be MF8 for floating-point";
->>>>>>> upstream/main.local
   defvar t = !cond(!eq(mx, "M1"):  [8, 16, 32, 64],
                    !eq(mx, "M2"):  [8, 16, 32, 64],
                    !eq(mx, "M4"):  [8, 16, 32, 64],
@@ -42,48 +29,12 @@ class SchedSEWSet<string mx, bit isF = 0, bit isWidening = 0> {
                    !eq(mx, "MF2"): [8, 16, 32],
                    !eq(mx, "MF4"): [8, 16],
                    !eq(mx, "MF8"): [8]);
-<<<<<<< HEAD
-  list<int> val = !if(isWidening, !listremove(t, [64]), t);
-}
-
-// For floating-point instructions, SEW won't be 8.
-class SchedSEWSetF<string mx, bit isWidening = 0> {
-  defvar t = !cond(!eq(mx, "M1"):  [16, 32, 64],
-                   !eq(mx, "M2"):  [16, 32, 64],
-                   !eq(mx, "M4"):  [16, 32, 64],
-                   !eq(mx, "M8"):  [16, 32, 64],
-                   !eq(mx, "MF2"): [16, 32],
-                   !eq(mx, "MF4"): [16]);
-  list<int> val = !if(isWidening, !listremove(t, [64]), t);
-}
-#else
-class SchedSEWSet<string mx> {
-  list<int> val = !cond(!eq(mx, "M1"):  [8, 16, 32, 64],
-                        !eq(mx, "M2"):  [8, 16, 32, 64],
-                        !eq(mx, "M4"):  [8, 16, 32, 64],
-                        !eq(mx, "M8"):  [8, 16, 32, 64],
-                        !eq(mx, "MF2"): [8, 16, 32],
-                        !eq(mx, "MF4"): [8, 16],
-                        !eq(mx, "MF8"): [8]);
-}
-
-// For floating-point instructions, SEW won't be 8.
-class SchedSEWSetF<string mx> {
-  list<int> val = !cond(!eq(mx, "M1"):  [16, 32, 64],
-                        !eq(mx, "M2"):  [16, 32, 64],
-                        !eq(mx, "M4"):  [16, 32, 64],
-                        !eq(mx, "M8"):  [16, 32, 64],
-                        !eq(mx, "MF2"): [16, 32],
-                        !eq(mx, "MF4"): [16]);
-=======
   // For floating-point instructions, SEW won't be 8.
   defvar remove8 = !if(isF, !listremove(t, [8]), t);
   // For widening instructions, SEW will not be 64.
   defvar remove64 = !if(isWidening, !listremove(remove8, [64]), remove8);
   list<int> val = remove64;
->>>>>>> upstream/main.local
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 // Helper function to get the largest LMUL from MxList
 // Precondition: MxList is sorted in ascending LMUL order.
@@ -149,56 +100,8 @@ multiclass LMULReadAdvanceImpl<string name, int val,
 // ReadAdvance for each (name, LMUL, SEW) tuple for each LMUL in each of the
 // SchedMxList variants above. Each multiclass is responsible for defining
 // a record that represents the WorseCase behavior for name.
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass LMULSEWSchedWritesImpl<string name, list<string> MxList, bit isF = 0,
                                   bit isWidening = 0> {
-  def name # "_WorstCase" : SchedWrite;
-  foreach mx = MxList in {
-    foreach sew = !if(isF, SchedSEWSetF<mx, isWidening>.val,
-                      SchedSEWSet<mx, isWidening>.val) in
-      def name # "_" # mx # "_E" # sew : SchedWrite;
-  }
-}
-multiclass LMULSEWSchedReadsImpl<string name, list<string> MxList, bit isF = 0,
-                                 bit isWidening = 0> {
-  def name # "_WorstCase" : SchedRead;
-  foreach mx = MxList in {
-    foreach sew = !if(isF,SchedSEWSetF<mx, isWidening>.val,
-                      SchedSEWSet<mx, isWidening>.val) in
-      def name # "_" # mx # "_E" # sew : SchedRead;
-  }
-}
-multiclass LMULSEWWriteResImpl<string name, list<ProcResourceKind> resources,
-                               list<string> MxList, bit isF = 0,
-                               bit isWidening = 0> {
-  if !exists<SchedWrite>(name # "_WorstCase") then
-    def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
-  foreach mx = MxList in {
-    foreach sew = !if(isF,SchedSEWSetF<mx, isWidening>.val,
-                      SchedSEWSet<mx, isWidening>.val) in
-      if !exists<SchedWrite>(name # "_" # mx # "_E" # sew) then
-        def : WriteRes<!cast<SchedWrite>(name # "_" # mx # "_E" # sew), resources>;
-  }
-}
-multiclass LMULSEWReadAdvanceImpl<string name, int val, list<SchedWrite> writes = [],
-                                  list<string> MxList, bit isF = 0,
-                                  bit isWidening = 0> {
-  if !exists<SchedRead>(name # "_WorstCase") then
-    def : ReadAdvance<!cast<SchedRead>(name # "_WorstCase"), val, writes>;
-  foreach mx = MxList in {
-    foreach sew = !if(isF,SchedSEWSetF<mx, isWidening>.val,
-                      SchedSEWSet<mx, isWidening>.val) in
-      if !exists<SchedRead>(name # "_" # mx # "_E" # sew) then
-        def : ReadAdvance<!cast<SchedRead>(name # "_" # mx # "_E" # sew), val, writes>;
-  }
-}
-#else
-multiclass LMULSEWSchedWritesImpl<string name, list<string> MxList, bit isF = 0> {
-=======
-multiclass LMULSEWSchedWritesImpl<string name, list<string> MxList, bit isF = 0,
-                                  bit isWidening = 0> {
->>>>>>> upstream/main.local
   def name # "_WorstCase" : SchedWrite;
   foreach mx = MxList in {
     foreach sew = SchedSEWSet<mx, isF, isWidening>.val in
@@ -235,7 +138,6 @@ multiclass LMULSEWReadAdvanceImpl<string name, int val, list<SchedWrite> writes 
         def : ReadAdvance<!cast<SchedRead>(name # "_" # mx # "_E" # sew), val, writes>;
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 // Define classes to define list containing all SchedWrites for each (name, LMUL)
 // pair for each LMUL in each of the SchedMxList variants above and name in
 // argument `names`. These classes can be used to construct a list of existing
@@ -263,24 +165,9 @@ class LMULSchedWriteList<list<string> names> : LMULSchedWriteListImpl<names, Sch
 multiclass LMULSEWSchedWrites<string name> : LMULSEWSchedWritesImpl<name, SchedMxList>;
 multiclass LMULSEWSchedReads<string name> : LMULSEWSchedReadsImpl<name, SchedMxList>;
 multiclass LMULSEWWriteRes<string name, list<ProcResourceKind> resources>
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  : LMULSEWWriteResImpl<name, resources, SchedMxList>;
-#else
-  : LMULSEWWriteResImpl<name, resources>;
-#endif // SIFIVE_CUSTOMIZATION
-multiclass LMULSEWReadAdvance<string name, int val, list<SchedWrite> writes = []>
-#ifdef SIFIVE_CUSTOMIZATION
-  : LMULSEWReadAdvanceImpl<name, val, writes, SchedMxList>;
-#else
-  : LMULSEWReadAdvanceImpl<name, val, writes>;
-#endif // SIFIVE_CUSTOMIZATION
-#ifdef SIFIVE_CUSTOMIZATION
-=======
   : LMULSEWWriteResImpl<name, resources, SchedMxList>;
 multiclass LMULSEWReadAdvance<string name, int val, list<SchedWrite> writes = []>
   : LMULSEWReadAdvanceImpl<name, val, writes, SchedMxList>;
->>>>>>> upstream/main.local
 
 multiclass LMULSEWSchedWritesWRed<string name>
     : LMULSEWSchedWritesImpl<name, SchedMxListWRed, 0, 1>;
@@ -291,31 +178,13 @@ multiclass LMULSEWSchedWritesFWRed<string name>
     : LMULSEWSchedWritesImpl<name, SchedMxListFWRed, 1, 1>;
 multiclass LMULSEWWriteResFWRed<string name, list<ProcResourceKind> resources>
     : LMULSEWWriteResImpl<name, resources, SchedMxListFWRed, 1, 1>;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main.local
 
 multiclass LMULSEWSchedWritesF<string name> : LMULSEWSchedWritesImpl<name, SchedMxListF, 1>;
 multiclass LMULSEWSchedReadsF<string name> : LMULSEWSchedReadsImpl<name, SchedMxListF, 1>;
 multiclass LMULSEWWriteResF<string name, list<ProcResourceKind> resources>
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  : LMULSEWWriteResImpl<name, resources, SchedMxListF, 1>;
-#else
-  : LMULSEWWriteResImpl<name, resources, 1>;
-#endif // SIFIVE_CUSTOMIZATION
-multiclass LMULSEWReadAdvanceF<string name, int val, list<SchedWrite> writes = []>
-#ifdef SIFIVE_CUSTOMIZATION
-  : LMULSEWReadAdvanceImpl<name, val, writes, SchedMxListF, 1>;
-#else
-  : LMULSEWReadAdvanceImpl<name, val, writes, 1>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   : LMULSEWWriteResImpl<name, resources, SchedMxListF, 1>;
 multiclass LMULSEWReadAdvanceF<string name, int val, list<SchedWrite> writes = []>
   : LMULSEWReadAdvanceImpl<name, val, writes, SchedMxListF, 1>;
->>>>>>> upstream/main.local
 
 multiclass LMULSchedWritesW<string name> : LMULSchedWritesImpl<name, SchedMxListW>;
 multiclass LMULSchedReadsW<string name> : LMULSchedReadsImpl<name, SchedMxListW>;
@@ -333,16 +202,6 @@ multiclass LMULReadAdvanceFW<string name, int val, list<SchedWrite> writes = []>
   : LMULReadAdvanceImpl<name, val, writes>;
 class LMULSchedWriteListFW<list<string> names> : LMULSchedWriteListImpl<names, SchedMxListFW>;
 
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-multiclass LMULSchedWritesFWRed<string name> : LMULSchedWritesImpl<name, SchedMxListFWRed>;
-multiclass LMULWriteResFWRed<string name, list<ProcResourceKind> resources>
-  : LMULWriteResImpl<name, resources>;
-class LMULSchedWriteListFWRed<list<string> names> : LMULSchedWriteListImpl<names, SchedMxListFWRed>;
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> upstream/main.local
 // 3.6 Vector Byte Length vlenb
 def WriteRdVLENB      : SchedWrite;
 
@@ -540,8 +399,6 @@ defm "" : LMULSchedWritesFW<"WriteVFNCvtFToFV">;
 // MF8 and M8. Use the _From suffix to indicate the number of the
 // LMUL from VS2.
 // 14.1. Vector Single-Width Integer Reduction Instructions
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSEWSchedWrites<"WriteVIRedV_From">;
 // 14.2. Vector Widening Integer Reduction Instructions
 defm "" : LMULSEWSchedWritesWRed<"WriteVIWRedV_From">;
@@ -551,25 +408,6 @@ defm "" : LMULSEWSchedWritesF<"WriteVFRedOV_From">;
 // 14.4. Vector Widening Floating-Point Reduction Instructions
 defm "" : LMULSEWSchedWritesFWRed<"WriteVFWRedV_From">;
 defm "" : LMULSEWSchedWritesFWRed<"WriteVFWRedOV_From">;
-#else
-defm "" : LMULSchedWrites<"WriteVIRedV_From">;
-=======
-defm "" : LMULSEWSchedWrites<"WriteVIRedV_From">;
->>>>>>> upstream/main.local
-// 14.2. Vector Widening Integer Reduction Instructions
-defm "" : LMULSEWSchedWritesWRed<"WriteVIWRedV_From">;
-// 14.3. Vector Single-Width Floating-Point Reduction Instructions
-defm "" : LMULSEWSchedWritesF<"WriteVFRedV_From">;
-defm "" : LMULSEWSchedWritesF<"WriteVFRedOV_From">;
-// 14.4. Vector Widening Floating-Point Reduction Instructions
-<<<<<<< HEAD
-defm "" : LMULSchedWritesFWRed<"WriteVFWRedV_From">;
-defm "" : LMULSchedWritesFWRed<"WriteVFWRedOV_From">;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-defm "" : LMULSEWSchedWritesFWRed<"WriteVFWRedV_From">;
-defm "" : LMULSEWSchedWritesFWRed<"WriteVFWRedOV_From">;
->>>>>>> upstream/main.local
 
 // 15. Vector Mask Instructions
 // 15.1. Vector Mask-Register Logical Instructions
@@ -993,27 +831,12 @@ defm "" : LMULWriteResW<"WriteVFNCvtFToIV", []>;
 defm "" : LMULWriteResFW<"WriteVFNCvtFToFV", []>;
 
 // 14. Vector Reduction Operations
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main.local
 defm "" : LMULSEWWriteRes<"WriteVIRedV_From", []>;
 defm "" : LMULSEWWriteResWRed<"WriteVIWRedV_From", []>;
 defm "" : LMULSEWWriteResF<"WriteVFRedV_From", []>;
 defm "" : LMULSEWWriteResF<"WriteVFRedOV_From", []>;
 defm "" : LMULSEWWriteResFWRed<"WriteVFWRedV_From", []>;
 defm "" : LMULSEWWriteResFWRed<"WriteVFWRedOV_From", []>;
-<<<<<<< HEAD
-#else
-defm "" : LMULWriteRes<"WriteVIRedV_From", []>;
-defm "" : LMULWriteRes<"WriteVIWRedV_From", []>;
-defm "" : LMULWriteRes<"WriteVFRedV_From", []>;
-defm "" : LMULWriteRes<"WriteVFRedOV_From", []>;
-defm "" : LMULWriteResFWRed<"WriteVFWRedV_From", []>;
-defm "" : LMULWriteResFWRed<"WriteVFWRedOV_From", []>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main.local
 
 // 15. Vector Mask Instructions
 defm "" : LMULWriteRes<"WriteVMALUV", []>;

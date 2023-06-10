@@ -20308,13 +20308,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
         Ops[0], llvm::PointerType::getUnqual(Ops[1]->getType()), "cast");
 
     StoreInst *Store = Builder.CreateDefaultAlignedStore(Ops[1], BC);
-<<<<<<< HEAD
-
-    Store->setMetadata(CGM.getModule().getMDKindID("nontemporal"),
-                       NontemporalNode);
-=======
     Store->setMetadata(llvm::LLVMContext::MD_nontemporal, NontemporalNode);
->>>>>>> upstream/main.local
     Store->setMetadata(CGM.getModule().getMDKindID("riscv-nontemporal-domain"),
                        RISCVDomainNode);
 

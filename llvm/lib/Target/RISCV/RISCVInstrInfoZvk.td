@@ -99,13 +99,8 @@ let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
   def  VCPOP_V  : VALUVs2<0b010010, 0b01110, OPMVV, "vcpop.v">;
   def  VCTZ_V   : VALUVs2<0b010010, 0b01101, OPMVV, "vctz.v">;
   let Constraints = "@earlyclobber $vd", RVVConstraint = WidenV in
-<<<<<<< HEAD
-  defm VWSLL_V  : VALU_IV_V_X_I<"vwsll", 0b110101, uimm5>;
-} // Predicates = [HasStdExtZvbbOrZvkb0p1]
-=======
   defm VWSLL_V  : VSHT_IV_V_X_I<"vwsll", 0b110101>;
-} // Predicates = [HasStdExtZvbb]
->>>>>>> upstream/main.local
+} // Predicates = [HasStdExtZvbbOrZvkb0p1]
 
 let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
   defm VCLMUL_V  : VCLMUL_MV_V_X<"vclmul", 0b001100>;

@@ -115,9 +115,8 @@ entry:
 define void @vsri_n_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vsri_n_u64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vse64.v v8, (a2)
+; CHECK-NEXT:    ld a0, 0(a0)
+; CHECK-NEXT:    sd a0, 0(a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8

@@ -356,11 +356,6 @@ struct KnownFPClass {
   }
 
   void fabs() {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // Cherry-picked form upstream.
-=======
->>>>>>> upstream/main.local
     if (KnownFPClasses & fcNegZero)
       KnownFPClasses |= fcPosZero;
 
@@ -374,10 +369,6 @@ struct KnownFPClass {
       KnownFPClasses |= fcPosNormal;
 
     signBitMustBeZero();
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main.local
   }
 
   /// Return true if the sign bit must be 0, ignoring the sign of nans.

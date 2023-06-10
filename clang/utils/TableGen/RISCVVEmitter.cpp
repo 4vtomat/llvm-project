@@ -412,44 +412,18 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
     }
   }
 
-<<<<<<< HEAD
-  for (int Log2LMUL : Log2LMULs) {
-    auto T = TypeCache.computeType(BasicType::Float16, Log2LMUL,
-                                   PrototypeDescriptor::Vector);
-    if (T)
-      printType(*T);
-  }
-
 #if SIFIVE_CUSTOMIZATION
-  for (int Log2LMUL : Log2LMULs) {
-    auto T = TypeCache.computeType(BasicType::BFloat, Log2LMUL,
-                                   PrototypeDescriptor::Vector);
-    if (T)
-      printType(*T);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  for (int Log2LMUL : Log2LMULs) {
-    auto T = TypeCache.computeType(BasicType::Float32, Log2LMUL,
-                                   PrototypeDescriptor::Vector);
-    if (T)
-      printType(*T);
-  }
-
-  for (int Log2LMUL : Log2LMULs) {
-    auto T = TypeCache.computeType(BasicType::Float64, Log2LMUL,
-                                   PrototypeDescriptor::Vector);
-    if (T)
-      printType(*T);
-=======
+  for (BasicType BT : {BasicType::Float16, BasicType::BFloat,
+                       BasicType::Float32, BasicType::Float64}) {
+#else
   for (BasicType BT :
        {BasicType::Float16, BasicType::Float32, BasicType::Float64}) {
+#endif // SIFIVE_CUSTOMIZATION
     for (int Log2LMUL : Log2LMULs) {
       auto T = TypeCache.computeType(BT, Log2LMUL, PrototypeDescriptor::Vector);
       if (T)
         printType(*T);
     }
->>>>>>> upstream/main.local
   }
 
   OS << "#define __riscv_v_intrinsic_overloading 1\n";
@@ -611,28 +585,22 @@ void RVVEmitter::createRVVIntrinsics(
         BasicPrototype, /*IsMasked=*/false,
         /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
         DefaultPolicy);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     auto NTLPrototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/false,
         /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
         NonTemporalDefaultPolicy);
 #endif // SIFIVE_CUSTOMIZATION
-    auto MaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
-        BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
-        MaskedPolicyScheme, DefaultPolicy);
-#if SIFIVE_CUSTOMIZATION
-    auto NTLMaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
-        BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
-        MaskedPolicyScheme, NonTemporalDefaultPolicy);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     llvm::SmallVector<PrototypeDescriptor> MaskedPrototype;
     if (HasMasked)
       MaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
           BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
           MaskedPolicyScheme, DefaultPolicy);
->>>>>>> upstream/main.local
+#if SIFIVE_CUSTOMIZATION
+    auto NTLMaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
+        BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
+        MaskedPolicyScheme, NonTemporalDefaultPolicy);
+#endif // SIFIVE_CUSTOMIZATION
 
     // Create Intrinsics for each type and LMUL.
     for (char I : TypeRange) {
@@ -658,7 +626,6 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
-<<<<<<< HEAD
             DefaultPolicy));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
@@ -669,9 +636,6 @@ void RVVEmitter::createRVVIntrinsics(
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
               NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
-=======
-            DefaultPolicy, IsTuple));
->>>>>>> upstream/main.local
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
             SmallVector<PrototypeDescriptor> PolicyPrototype =
@@ -686,7 +650,7 @@ void RVVEmitter::createRVVIntrinsics(
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
                 ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures,
-                NF, P, IsTuple));
+                NF, P));
           }
         if (!HasMasked)
           continue;
@@ -697,7 +661,6 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
-<<<<<<< HEAD
             IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy));
 
 #if SIFIVE_CUSTOMIZATION
@@ -712,9 +675,6 @@ void RVVEmitter::createRVVIntrinsics(
               IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy, IsTuple));
->>>>>>> upstream/main.local
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         for (auto P : SupportedMaskedPolicies) {
@@ -729,7 +689,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures, NF,
-              P, IsTuple));
+              P));
         }
       } // End for Log2LMULList
     }   // End for TypeRange

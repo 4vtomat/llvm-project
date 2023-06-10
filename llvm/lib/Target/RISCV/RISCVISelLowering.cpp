@@ -7193,7 +7193,6 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   return DAG.getNode(Op->getOpcode(), DL, Op->getVTList(), Operands);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue getFixedVFclass(SDValue Op, SelectionDAG &DAG,
                                const RISCVSubtarget &Subtarget) {
@@ -7328,7 +7327,7 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
   return DAG.getSelect(DL, VecVT, IsRight, RShift, LShift);
 }
 #endif
-=======
+
 // Lower the llvm.get.vector.length intrinsic to vsetvli. We only support
 // scalable vector llvm.get.vector.length for now.
 //
@@ -7371,7 +7370,6 @@ static SDValue lowerGetVectorLength(SDNode *N, SelectionDAG &DAG,
   SDValue ID = DAG.getTargetConstant(Intrinsic::riscv_vsetvli, DL, XLenVT);
   return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, XLenVT, ID, AVL, Sew, LMul);
 }
->>>>>>> upstream/main.local
 
 SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                                      SelectionDAG &DAG) const {
@@ -13039,17 +13037,9 @@ static SDValue performFP_TO_INTCombine(SDNode *N,
 
   SDValue Src = N->getOperand(0);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Don't do this when Src is strict-fp.
-  if (Src->isStrictFPOpcode())
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Don't do this for strict-fp Src.
   if (Src->isStrictFPOpcode() || Src->isTargetStrictFPOpcode())
     return SDValue();
->>>>>>> upstream/main.local
 
   // Ensure the FP type is legal.
   if (!TLI.isTypeLegal(Src.getValueType()))
@@ -13150,17 +13140,9 @@ static SDValue performFP_TO_INT_SATCombine(SDNode *N,
 
   SDValue Src = N->getOperand(0);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Don't do this when Src is strict-fp.
-  if (Src->isStrictFPOpcode())
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Don't do this for strict-fp Src.
   if (Src->isStrictFPOpcode() || Src->isTargetStrictFPOpcode())
     return SDValue();
->>>>>>> upstream/main.local
 
   // Ensure the FP type is also legal.
   if (!TLI.isTypeLegal(Src.getValueType()))
@@ -15666,16 +15648,13 @@ static bool isSelectPseudo(MachineInstr &MI) {
   case RISCV::Select_FPR32INX_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
   case RISCV::Select_FPR64INX_Using_CC_GPR:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::Select_VR_Using_CC_GPR:
   case RISCV::Select_VRM2_Using_CC_GPR:
   case RISCV::Select_VRM4_Using_CC_GPR:
   case RISCV::Select_VRM8_Using_CC_GPR:
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::Select_FPR64IN32X_Using_CC_GPR:
->>>>>>> upstream/main.local
     return true;
   }
 }
@@ -16186,16 +16165,13 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
   case RISCV::Select_FPR32INX_Using_CC_GPR:
   case RISCV::Select_FPR64_Using_CC_GPR:
   case RISCV::Select_FPR64INX_Using_CC_GPR:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::Select_VR_Using_CC_GPR:
   case RISCV::Select_VRM2_Using_CC_GPR:
   case RISCV::Select_VRM4_Using_CC_GPR:
   case RISCV::Select_VRM8_Using_CC_GPR:
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::Select_FPR64IN32X_Using_CC_GPR:
->>>>>>> upstream/main.local
     return emitSelectPseudo(MI, BB, Subtarget);
   case RISCV::BuildPairF64Pseudo:
   case RISCV::BuildPairF64Pseudo_INX:
@@ -17909,13 +17885,12 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(ADD_LO)
   NODE_NAME_CASE(HI)
   NODE_NAME_CASE(LLA)
-<<<<<<< HEAD
-  NODE_NAME_CASE(ADD_REGREL) // SIFIVE
-  NODE_NAME_CASE(LA)
-=======
   NODE_NAME_CASE(LGA)
+#if SIFIVE_CUSTOMIZATION
+  NODE_NAME_CASE(ADD_REGREL)
+#else
   NODE_NAME_CASE(ADD_TPREL)
->>>>>>> upstream/main.local
+#endif
   NODE_NAME_CASE(LA_TLS_IE)
   NODE_NAME_CASE(LA_TLS_GD)
   NODE_NAME_CASE(MULHSU)
@@ -18014,13 +17989,10 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(FNEG_VL)
   NODE_NAME_CASE(FABS_VL)
   NODE_NAME_CASE(FSQRT_VL)
-<<<<<<< HEAD
   NODE_NAME_CASE(VFRSQRT7_VL) // SIFIVE
   NODE_NAME_CASE(VFREC7_VL) // SIFIVE
   NODE_NAME_CASE(VFCLASS_VL) // SIFIVE
-=======
   NODE_NAME_CASE(FCLASS_VL)
->>>>>>> upstream/main.local
   NODE_NAME_CASE(VFMADD_VL)
   NODE_NAME_CASE(VFNMADD_VL)
   NODE_NAME_CASE(VFMSUB_VL)
@@ -18083,15 +18055,11 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VWADDU_W_VL)
   NODE_NAME_CASE(VWSUB_W_VL)
   NODE_NAME_CASE(VWSUBU_W_VL)
-<<<<<<< HEAD
-  NODE_NAME_CASE(VFWMUL_VL) // SIFIVE
-=======
   NODE_NAME_CASE(VFWMUL_VL)
   NODE_NAME_CASE(VFWADD_VL)
   NODE_NAME_CASE(VFWSUB_VL)
   NODE_NAME_CASE(VFWADD_W_VL)
   NODE_NAME_CASE(VFWSUB_W_VL)
->>>>>>> upstream/main.local
   NODE_NAME_CASE(VNSRL_VL)
   NODE_NAME_CASE(SETCC_VL)
   NODE_NAME_CASE(VSELECT_VL)

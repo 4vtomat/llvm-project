@@ -57,17 +57,15 @@ public:
                           SmallVectorImpl<MCFixup> &Fixups,
                           const MCSubtargetInfo &STI) const;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  void expandAddRegRel(const MCInst &MI, raw_ostream &OS,
+  void expandAddRegRel(const MCInst &MI, SmallVectorImpl<char> &CB,
                        SmallVectorImpl<MCFixup> &Fixups,
                        const MCSubtargetInfo &STI) const;
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
   void expandAddTPRel(const MCInst &MI, SmallVectorImpl<char> &CB,
                       SmallVectorImpl<MCFixup> &Fixups,
                       const MCSubtargetInfo &STI) const;
->>>>>>> upstream/main.local
+#endif
 
   void expandLongCondBr(const MCInst &MI, SmallVectorImpl<char> &CB,
                         SmallVectorImpl<MCFixup> &Fixups,
@@ -158,19 +156,19 @@ void RISCVMCCodeEmitter::expandFunctionCall(const MCInst &MI,
   support::endian::write(CB, Binary, support::little);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Expand PseudoAddRegRel to a simple ADD with the correct relocation.
-void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI, raw_ostream &OS,
+void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
+                                         SmallVectorImpl<char> &CB,
                                          SmallVectorImpl<MCFixup> &Fixups,
                                          const MCSubtargetInfo &STI) const {
-=======
+#else
 // Expand PseudoAddTPRel to a simple ADD with the correct relocation.
 void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
                                         SmallVectorImpl<char> &CB,
                                         SmallVectorImpl<MCFixup> &Fixups,
                                         const MCSubtargetInfo &STI) const {
->>>>>>> upstream/main.local
+#endif // SIFIVE_CUSTOMIZATION
   MCOperand DestReg = MI.getOperand(0);
   MCOperand SrcReg1 = MI.getOperand(1);
   MCOperand SrcReg2 = MI.getOperand(2);
@@ -226,7 +224,6 @@ void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
   uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
   support::endian::write(CB, Binary, support::little);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 static unsigned getInvertedBranchOp(unsigned BrOp) {
   switch (BrOp) {
@@ -325,13 +322,13 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI,
     expandFunctionCall(MI, CB, Fixups, STI);
     MCNumEmitted += 2;
     return;
-<<<<<<< HEAD
-  case RISCV::PseudoAddRegRel: // SIFIVE
-    expandAddRegRel(MI, OS, Fixups, STI); // SIFIVE
-=======
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoAddRegRel:
+    expandAddRegRel(MI, CB, Fixups, STI);
+#else
   case RISCV::PseudoAddTPRel:
     expandAddTPRel(MI, CB, Fixups, STI);
->>>>>>> upstream/main.local
+#endif // SIFIVE_CUSTOMIZATION
     MCNumEmitted += 1;
     return;
   case RISCV::PseudoLongBEQ:

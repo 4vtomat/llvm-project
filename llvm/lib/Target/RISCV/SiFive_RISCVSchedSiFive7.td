@@ -617,7 +617,7 @@ foreach mx = SchedMxList in {
 }
 
 foreach mx = SchedMxListF in {
-  foreach sew = SchedSEWSetF<mx>.val in {
+  foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar Cycles = !mul(SiFive7GetDivOrSqrtFactor<sew>.c,
                          !div(SiFive7GetCyclesOnePerElement<mx, sew>.c, 4));
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1 >.c;
@@ -680,7 +680,7 @@ foreach mx = SchedMxList in {
 }
 
 foreach mx = SchedMxListWRed in {
-  foreach sew = SchedSEWSet<mx, 1>.val in {
+  foreach sew = SchedSEWSet<mx, 0, 1>.val in {
     defvar Cycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
     let Latency = Cycles, ResourceCycles = [Cycles] in
@@ -690,7 +690,7 @@ foreach mx = SchedMxListWRed in {
 }
 
 foreach mx = SchedMxListF in {
-  foreach sew = SchedSEWSetF<mx>.val in {
+  foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar RedCycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
     let Latency = RedCycles, ResourceCycles = [RedCycles] in
@@ -704,7 +704,7 @@ foreach mx = SchedMxListF in {
 }
 
 foreach mx = SchedMxListFWRed in {
-  foreach sew = SchedSEWSetF<mx, 1>.val in {
+  foreach sew = SchedSEWSet<mx, 1, 1>.val in {
     defvar RedCycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
     let Latency = RedCycles, ResourceCycles = [RedCycles] in

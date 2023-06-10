@@ -472,27 +472,25 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
            SE.isKnownPredicate(Pred, IterVal, RightSCEV))
       PeelOneMoreIteration();
 
-    // SIFIVE
+#if SIFIVE_CUSTOMIZATION
     // With *that* peel count, does the predicate !Pred become known in the
-<<<<<<< HEAD
     // first iteration of the loop body after prolog peeling?
     if (PeelProlog && !SE.isKnownPredicate(CmpInst::getInversePredicate(Pred),
                                            IterVal, RightSCEV))
-      continue; // If not, give up.
+      return; // If not, give up.
 
     // With *that* peel count, is the predicate Pred still known in the
     // IterVal iteration of the loop body after epilog peeling?  This means we
     // have reached MaxPeelCount iterations and have not found a partition
     // point.
     if (!PeelProlog && SE.isKnownPredicate(Pred, IterVal, RightSCEV))
-      continue; // If not, give up.
-    // end SIFIVE
-=======
+      return; // If not, give up.
+#else
     // first iteration of the loop body after peeling?
     if (!SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
                              RightSCEV))
       return; // If not, give up.
->>>>>>> upstream/main.local
+#endif // SIFIVE_CUSTOMIZATION
 
     // However, for equality comparisons, that isn't always sufficient to
     // eliminate the comparsion in loop body, we may need to peel one more

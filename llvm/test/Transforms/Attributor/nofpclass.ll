@@ -1058,11 +1058,7 @@ define float @returned_fneg_fabs_noneg(float nofpclass(ninf nsub nnorm nzero) %x
 }
 
 define float @returned_fneg_fabs_nopos(float nofpclass(pinf psub pnorm pzero) %x) {
-<<<<<<< HEAD
-; CHECK: Function Attrs: nofree norecurse nosync nounwind willreturn memory(none)
-=======
 ; CHECK: Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
->>>>>>> upstream/main.local
 ; CHECK-LABEL: define nofpclass(pinf pzero psub pnorm) float @returned_fneg_fabs_nopos
 ; CHECK-SAME: (float nofpclass(pinf pzero psub pnorm) [[X:%.*]]) #[[ATTR2]] {
 ; CHECK-NEXT:    [[FABS:%.*]] = call nofpclass(ninf nzero nsub nnorm) float @llvm.fabs.f32(float nofpclass(pinf pzero psub pnorm) [[X]]) #[[ATTR13]]
@@ -1075,11 +1071,7 @@ define float @returned_fneg_fabs_nopos(float nofpclass(pinf psub pnorm pzero) %x
 }
 
 define float @returned_fneg_fabs_mixed(float nofpclass(psub nnorm nzero qnan ninf) %x) {
-<<<<<<< HEAD
-; CHECK: Function Attrs: nofree norecurse nosync nounwind willreturn memory(none)
-=======
 ; CHECK: Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
->>>>>>> upstream/main.local
 ; CHECK-LABEL: define nofpclass(qnan pinf pzero psub pnorm) float @returned_fneg_fabs_mixed
 ; CHECK-SAME: (float nofpclass(qnan ninf nzero psub nnorm) [[X:%.*]]) #[[ATTR2]] {
 ; CHECK-NEXT:    [[FABS:%.*]] = call nofpclass(qnan ninf nzero nsub nnorm) float @llvm.fabs.f32(float nofpclass(qnan ninf nzero psub nnorm) [[X]]) #[[ATTR13]]
