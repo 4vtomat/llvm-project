@@ -561,9 +561,9 @@ DecodeStatus RISCVDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
                       STI.hasFeature(RISCV::FeatureStdExtZvkg0p1),
                   DecoderTableZvk0p132,
                   "zvk0p1 custom opcode table");
-    TRY_TO_DECODE(RISCV::FeatureStdExtXsfvfhbfmin,
-                  DecoderTableXSfvfhbfmin32,
-                  "SiFive vfhbfmin custom opcode table");
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtXsfvfhbfmin,
+                          DecoderTableXSfvfhbfmin32,
+                          "SiFive vfhbfmin custom opcode table");
 #endif // SIFIVE_CUSTOMIZATION
     TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
                           "SiFive VCIX custom opcode table");
