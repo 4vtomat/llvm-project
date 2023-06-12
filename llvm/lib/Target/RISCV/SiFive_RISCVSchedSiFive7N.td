@@ -557,6 +557,8 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVShiftV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftX",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftI",    [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIMinMaxV",  [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIMinMaxX",  [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulX",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulAddV",  [SiFive7NVA], mx, IsWorstCase>;
@@ -668,6 +670,8 @@ foreach mx = SchedMxList in {
   let Latency = 4, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVFSgnjV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFSgnjF",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFMinMaxV",   [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFMinMaxF",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFClassV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMergeV",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMovV",      [SiFive7NVA], mx, IsWorstCase>;
@@ -994,6 +998,8 @@ defm : LMULReadAdvanceW<"ReadVNShiftV", 0>;
 defm : LMULReadAdvanceW<"ReadVNShiftX", 0>;
 defm : LMULReadAdvance<"ReadVICmpV", 0>;
 defm : LMULReadAdvance<"ReadVICmpX", 0>;
+defm : LMULReadAdvance<"ReadVIMinMaxV", 0>;
+defm : LMULReadAdvance<"ReadVIMinMaxX", 0>;
 defm : LMULReadAdvance<"ReadVIMulV", 0>;
 defm : LMULReadAdvance<"ReadVIMulX", 0>;
 defm : LMULSEWReadAdvance<"ReadVIDivV", 0>;
@@ -1038,6 +1044,8 @@ defm "" : LMULReadAdvanceFW<"ReadVFWMulAddV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWMulAddF", 0>;
 defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
 defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
+defm "" : LMULReadAdvance<"ReadVFMinMaxV", 0>;
+defm "" : LMULReadAdvance<"ReadVFMinMaxF", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpF", 0>;
 defm "" : LMULReadAdvance<"ReadVFSgnjV", 0>;
