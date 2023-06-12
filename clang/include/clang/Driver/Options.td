@@ -3723,7 +3723,6 @@ def mcmodel_EQ_medlow : Flag<["-"], "mcmodel=medlow">, Group<m_Group>,
 def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_Group>,
   Flags<[CC1Option]>, Alias<mcmodel_EQ>, AliasArgs<["medium"]>,
   HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
-<<<<<<< HEAD
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
   HelpText<"Turn on VLA vectorization">, Flags<[CoreOption, NoXarchOption]>;
@@ -3734,9 +3733,7 @@ def msifive_recode_EQ : Joined<["-"], "msifive-recode=">, Group<m_Group>,
   Values<"off,neon">,
   Flags<[CC1Option]>, MarshallingInfoString<TargetOpts<"SiFiveRecode">, [{"off"}]>;
 // end SIFIVE
-=======
 let Flags = [TargetSpecific] in {
->>>>>>> upstream/main
 def menable_experimental_extensions : Flag<["-"], "menable-experimental-extensions">, Group<m_Group>,
   HelpText<"Enable use of experimental RISC-V extensions.">;
 def mrvv_vector_bits_EQ : Joined<["-"], "mrvv-vector-bits=">, Group<m_Group>,
