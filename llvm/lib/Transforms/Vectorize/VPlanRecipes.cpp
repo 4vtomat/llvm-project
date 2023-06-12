@@ -1426,7 +1426,7 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   if (State.DisableRISCVCSA) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *AnyActive = State.get(getVPAnyActive(), Part);
-      Value *DataUpdate = isa<PHINode>(State.get(getVPTrue(), Part))
+      Value *DataUpdate = getVPDataPhi() == getVPTrue()
                               ? State.get(getVPFalse(), Part)
                               : State.get(getVPTrue(), Part);
       PHINode *DataPhi = cast<PHINode>(State.get(getVPDataPhi(), Part));
@@ -1445,9 +1445,9 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewMask = State.get(getVPNewMask(), Part);
     Value *DataPhi = State.get(getVPDataPhi(), Part);
-    Value *UndistData = isa<PHINode>(State.get(getVPTrue(), Part))
-                            ? State.get(getVPFalse(), Part)
-                            : State.get(getVPTrue(), Part);
+    Value *UndistData = getVPDataPhi() == getVPTrue()
+                              ? State.get(getVPFalse(), Part)
+                              : State.get(getVPTrue(), Part);
     Value *InitRVL =
         State.Plan->getRVL()
             ? State.get(State.Plan->getInitRVL(), Part)
