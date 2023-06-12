@@ -8206,7 +8206,6 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
 
   // Target must have NEON (or MVE, whose vectors are similar enough
   // not to need a separate attribute)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   llvm::Triple::ArchType Arch = S.Context.getTargetInfo().getTriple().getArch();
   if (Arch != llvm::Triple::riscv64) {
@@ -8216,21 +8215,13 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
       Attr.setInvalid();
       return;
     } else if (!S.Context.getTargetInfo().hasFeature("neon") &&
-               !S.Context.getTargetInfo().hasFeature("mve")) {
+               !S.Context.getTargetInfo().hasFeature("mve") &&
+               !IsTargetCUDAAndHostARM) {
       S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
           << Attr << "'neon' or 'mve'";
       Attr.setInvalid();
       return;
     }
-=======
-  if (!(S.Context.getTargetInfo().hasFeature("neon") ||
-        S.Context.getTargetInfo().hasFeature("mve") ||
-        IsTargetCUDAAndHostARM)) {
-    S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
-        << Attr << "'neon' or 'mve'";
-    Attr.setInvalid();
-    return;
->>>>>>> upstream/main
   }
 #endif
   // Check the attribute arguments.
