@@ -58,7 +58,7 @@ public:
   const std::string &includeSuffix() const { return IncludeSuffix; }
 
   /// Get the flags that indicate or contraindicate this multilib's use
-  /// All elements begin with either '+' or '-'
+  /// All elements begin with either '-' or '!'
   const flags_list &flags() const { return Flags; }
 #if SIFIVE_CUSTOMIZATION
   flags_list &flags() { return Flags; }

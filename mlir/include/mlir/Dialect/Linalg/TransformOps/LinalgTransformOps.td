@@ -823,6 +823,7 @@ def PadOp : Op<Transform_Dialect, "structured.pad",
     (ins TransformHandleTypeInterface:$target,
          DefaultValuedAttr<ArrayAttr, "{}">:$padding_values,
          DefaultValuedAttr<I64ArrayAttr, "{}">:$padding_dimensions,
+         OptionalAttr<I64ArrayAttr>:$pad_to_multiple_of,
          DefaultValuedAttr<I64ArrayAttr, "{}">:$pack_paddings,
          DefaultValuedAttr<
           TypedArrayAttrBase<I64ArrayAttr, "array of arrays of i64">,
@@ -1896,13 +1897,16 @@ def MaskedVectorizeOp : Op<Transform_Dialect, "structured.masked_vectorize",
                        Variadic<TransformHandleTypeInterface>:$vector_sizes,
                        UnitAttr:$vectorize_nd_extract,
                        DefaultValuedOptionalAttr<DenseI64ArrayAttr, "{}">:
-                          $static_vector_sizes);
+                          $static_vector_sizes,
+                       DefaultValuedOptionalAttr<BoolAttr, "false">:$last_vector_size_scalable);
+
   let results = (outs);
   let assemblyFormat = [{
       $target
       `vector_sizes` custom<DynamicIndexList>($vector_sizes,
                                               $static_vector_sizes,
-                                              type($vector_sizes))
+                                              type($vector_sizes),
+                                              $last_vector_size_scalable)
       attr-dict
       `:` type($target)
   }];

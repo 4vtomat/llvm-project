@@ -2367,13 +2367,19 @@ bool Type::isSizelessBuiltinType() const {
   return false;
 }
 
-bool Type::isWebAssemblyReferenceType() const {
-  return isWebAssemblyExternrefType();
-}
-
 bool Type::isWebAssemblyExternrefType() const {
   if (const auto *BT = getAs<BuiltinType>())
     return BT->getKind() == BuiltinType::WasmExternRef;
+  return false;
+}
+
+bool Type::isWebAssemblyTableType() const {
+  if (const auto *ATy = dyn_cast<ArrayType>(this))
+    return ATy->getElementType().isWebAssemblyReferenceType();
+
+  if (const auto *PTy = dyn_cast<PointerType>(this))
+    return PTy->getPointeeType().isWebAssemblyReferenceType();
+
   return false;
 }
 
@@ -2448,6 +2454,7 @@ QualType Type::getSveEltType(const ASTContext &Ctx) const {
 bool Type::isRVVVLSBuiltinType() const {
   if (const BuiltinType *BT = getAs<BuiltinType>()) {
     switch (BT->getKind()) {
+<<<<<<< HEAD
     // FIXME: Support more than LMUL 1.
 #if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
@@ -2459,6 +2466,11 @@ bool Type::isRVVVLSBuiltinType() const {
     case BuiltinType::Id: \
       return NF == 1 && (NumEls * ElBits) == llvm::RISCV::RVVBitsPerBlock;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned, IsFP) \
+    case BuiltinType::Id: \
+      return NF == 1;
+>>>>>>> upstream/main
 #include "clang/Basic/RISCVVTypes.def"
     default:
       return false;
@@ -2714,6 +2726,19 @@ bool QualType::hasNonTrivialToPrimitiveDestructCUnion(const RecordDecl *RD) {
 
 bool QualType::hasNonTrivialToPrimitiveCopyCUnion(const RecordDecl *RD) {
   return RD->hasNonTrivialToPrimitiveCopyCUnion();
+}
+
+bool QualType::isWebAssemblyReferenceType() const {
+  return isWebAssemblyExternrefType() || isWebAssemblyFuncrefType();
+}
+
+bool QualType::isWebAssemblyExternrefType() const {
+  return getTypePtr()->isWebAssemblyExternrefType();
+}
+
+bool QualType::isWebAssemblyFuncrefType() const {
+  return getTypePtr()->isFunctionPointerType() &&
+         getAddressSpace() == LangAS::wasm_funcref;
 }
 
 QualType::PrimitiveDefaultInitializeKind

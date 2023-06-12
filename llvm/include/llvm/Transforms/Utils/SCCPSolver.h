@@ -74,8 +74,6 @@ public:
 
   ~SCCPSolver();
 
-  void addLoopInfo(Function &F, LoopInfo &LI);
-
   void addPredicateInfo(Function &F, DominatorTree &DT, AssumptionCache &AC);
 
   /// markBlockExecutable - This method can be used by clients to mark all of
@@ -84,8 +82,6 @@ public:
   bool markBlockExecutable(BasicBlock *BB);
 
   const PredicateBase *getPredicateInfoFor(Instruction *I);
-
-  const LoopInfo &getLoopInfo(Function &F);
 
   /// trackValueOfGlobalVariable - Clients can use this method to
   /// inform the SCCPSolver that it should track loads and stores to the
@@ -134,7 +130,7 @@ public:
 
   std::vector<ValueLatticeElement> getStructLatticeValueFor(Value *V) const;
 
-  void removeLatticeValueFor(Value *V);
+  void moveLatticeValue(Value *From, Value *To);
 
   /// Invalidate the Lattice Value of \p Call and its users after specializing
   /// the call. Then recompute it.
@@ -188,7 +184,6 @@ public:
   void visitCall(CallInst &I);
 
   bool simplifyInstsInBlock(BasicBlock &BB,
-                            SmallPtrSetImpl<Value *> &InsertedValues,
                             Statistic &InstRemovedStat,
                             Statistic &InstReplacedStat);
 

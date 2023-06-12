@@ -472,6 +472,8 @@ SITargetLowering::SITargetLowering(const TargetMachine &TM,
                        MVT::f64, Custom);
 
   setOperationAction(ISD::FFLOOR, MVT::f64, Legal);
+  setOperationAction({ISD::FLDEXP, ISD::STRICT_FLDEXP}, {MVT::f32, MVT::f64},
+                     Legal);
 
   setOperationAction({ISD::FSIN, ISD::FCOS, ISD::FDIV}, MVT::f32, Custom);
   setOperationAction(ISD::FDIV, MVT::f64, Custom);
@@ -528,7 +530,7 @@ SITargetLowering::SITargetLowering(const TargetMachine &TM,
 
     // F16 - VOP2 Actions.
     setOperationAction({ISD::BR_CC, ISD::SELECT_CC}, MVT::f16, Expand);
-
+    setOperationAction({ISD::FLDEXP, ISD::STRICT_FLDEXP}, MVT::f16, Custom);
     setOperationAction(ISD::FDIV, MVT::f16, Custom);
 
     // F16 - VOP3 Actions.
@@ -4547,6 +4549,30 @@ MachineBasicBlock *SITargetLowering::EmitInstrWithCustomInserter(
     MI.eraseFromParent();
     return BB;
   }
+  case AMDGPU::ENDPGM_TRAP: {
+    const DebugLoc &DL = MI.getDebugLoc();
+    if (BB->succ_empty() && std::next(MI.getIterator()) == BB->end()) {
+      MI.setDesc(TII->get(AMDGPU::S_ENDPGM));
+      MI.addOperand(MachineOperand::CreateImm(0));
+      return BB;
+    }
+
+    // We need a block split to make the real endpgm a terminator. We also don't
+    // want to break phis in successor blocks, so we can't just delete to the
+    // end of the block.
+
+    MachineBasicBlock *SplitBB = BB->splitAt(MI, false /*UpdateLiveIns*/);
+    MachineBasicBlock *TrapBB = MF->CreateMachineBasicBlock();
+    MF->push_back(TrapBB);
+    BuildMI(*TrapBB, TrapBB->end(), DL, TII->get(AMDGPU::S_ENDPGM))
+      .addImm(0);
+    BuildMI(*BB, &MI, DL, TII->get(AMDGPU::S_CBRANCH_EXECNZ))
+      .addMBB(TrapBB);
+
+    BB->addSuccessor(TrapBB);
+    MI.eraseFromParent();
+    return SplitBB;
+  }
   default:
     return AMDGPUTargetLowering::EmitInstrWithCustomInserter(MI, BB);
   }
@@ -4843,6 +4869,9 @@ SDValue SITargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
   case ISD::FMINNUM:
   case ISD::FMAXNUM:
     return lowerFMINNUM_FMAXNUM(Op, DAG);
+  case ISD::FLDEXP:
+  case ISD::STRICT_FLDEXP:
+    return lowerFLDEXP(Op, DAG);
   case ISD::FMA:
     return splitTernaryVectorOp(Op, DAG);
   case ISD::FP_TO_SINT:
@@ -5464,6 +5493,40 @@ SDValue SITargetLowering::lowerFMINNUM_FMAXNUM(SDValue Op,
   return Op;
 }
 
+SDValue SITargetLowering::lowerFLDEXP(SDValue Op, SelectionDAG &DAG) const {
+  bool IsStrict = Op.getOpcode() == ISD::STRICT_FLDEXP;
+  EVT VT = Op.getValueType();
+  assert(VT == MVT::f16);
+
+  SDValue Exp = Op.getOperand(IsStrict ? 2 : 1);
+  EVT ExpVT = Exp.getValueType();
+  if (ExpVT == MVT::i16)
+    return Op;
+
+  SDLoc DL(Op);
+
+  // Correct the exponent type for f16 to i16.
+  // Clamp the range of the exponent to the instruction's range.
+
+  // TODO: This should be a generic narrowing legalization, and can easily be
+  // for GlobalISel.
+
+  SDValue MinExp = DAG.getConstant(minIntN(16), DL, ExpVT);
+  SDValue ClampMin = DAG.getNode(ISD::SMAX, DL, ExpVT, Exp, MinExp);
+
+  SDValue MaxExp = DAG.getConstant(maxIntN(16), DL, ExpVT);
+  SDValue Clamp = DAG.getNode(ISD::SMIN, DL, ExpVT, ClampMin, MaxExp);
+
+  SDValue TruncExp = DAG.getNode(ISD::TRUNCATE, DL, MVT::i16, Clamp);
+
+  if (IsStrict) {
+    return DAG.getNode(ISD::STRICT_FLDEXP, DL, {VT, MVT::Other},
+                       {Op.getOperand(0), Op.getOperand(1), TruncExp});
+  }
+
+  return DAG.getNode(ISD::FLDEXP, DL, VT, Op.getOperand(0), TruncExp);
+}
+
 SDValue SITargetLowering::lowerXMULO(SDValue Op, SelectionDAG &DAG) const {
   EVT VT = Op.getValueType();
   SDLoc SL(Op);
@@ -5533,7 +5596,7 @@ SDValue SITargetLowering::lowerTrapEndpgm(
     SDValue Op, SelectionDAG &DAG) const {
   SDLoc SL(Op);
   SDValue Chain = Op.getOperand(0);
-  return DAG.getNode(AMDGPUISD::ENDPGM, SL, MVT::Other, Chain);
+  return DAG.getNode(AMDGPUISD::ENDPGM_TRAP, SL, MVT::Other, Chain);
 }
 
 SDValue SITargetLowering::loadImplicitKernelArgument(SelectionDAG &DAG, MVT VT,
@@ -7151,8 +7214,7 @@ SDValue SITargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return emitRemovedIntrinsicError(DAG, DL, VT);
   }
   case Intrinsic::amdgcn_ldexp:
-    return DAG.getNode(AMDGPUISD::LDEXP, DL, VT,
-                       Op.getOperand(1), Op.getOperand(2));
+    return DAG.getNode(ISD::FLDEXP, DL, VT, Op.getOperand(1), Op.getOperand(2));
 
   case Intrinsic::amdgcn_fract:
     return DAG.getNode(AMDGPUISD::FRACT, DL, VT, Op.getOperand(1));
@@ -10379,6 +10441,7 @@ bool SITargetLowering::isCanonicalized(SelectionDAG &DAG, SDValue Op,
   case ISD::FREM:
   case ISD::FP_ROUND:
   case ISD::FP_EXTEND:
+  case ISD::FLDEXP:
   case AMDGPUISD::FMUL_LEGACY:
   case AMDGPUISD::FMAD_FTZ:
   case AMDGPUISD::RCP:
@@ -10390,7 +10453,6 @@ bool SITargetLowering::isCanonicalized(SelectionDAG &DAG, SDValue Op,
   case AMDGPUISD::DIV_FMAS:
   case AMDGPUISD::DIV_FIXUP:
   case AMDGPUISD::FRACT:
-  case AMDGPUISD::LDEXP:
   case AMDGPUISD::CVT_PKRTZ_F16_F32:
   case AMDGPUISD::CVT_F32_UBYTE0:
   case AMDGPUISD::CVT_F32_UBYTE1:
@@ -11976,12 +12038,12 @@ SDValue SITargetLowering::PerformDAGCombine(SDNode *N,
     return performFCanonicalizeCombine(N, DCI);
   case AMDGPUISD::RCP:
     return performRcpCombine(N, DCI);
+  case ISD::FLDEXP:
   case AMDGPUISD::FRACT:
   case AMDGPUISD::RSQ:
   case AMDGPUISD::RCP_LEGACY:
   case AMDGPUISD::RCP_IFLAG:
-  case AMDGPUISD::RSQ_CLAMP:
-  case AMDGPUISD::LDEXP: {
+  case AMDGPUISD::RSQ_CLAMP: {
     // FIXME: This is probably wrong. If src is an sNaN, it won't be quieted
     SDValue Src = N->getOperand(0);
     if (Src.isUndef())
@@ -13026,6 +13088,30 @@ void SITargetLowering::computeKnownBitsForTargetInstr(
   case AMDGPU::G_AMDGPU_BUFFER_LOAD_USHORT:
     Known.Zero.setHighBits(16);
     break;
+  case AMDGPU::G_AMDGPU_SMED3:
+  case AMDGPU::G_AMDGPU_UMED3: {
+    auto [Dst, Src0, Src1, Src2] = MI->getFirst4Regs();
+
+    KnownBits Known2;
+    KB.computeKnownBitsImpl(Src2, Known2, DemandedElts, Depth + 1);
+    if (Known2.isUnknown())
+      break;
+
+    KnownBits Known1;
+    KB.computeKnownBitsImpl(Src1, Known1, DemandedElts, Depth + 1);
+    if (Known1.isUnknown())
+      break;
+
+    KnownBits Known0;
+    KB.computeKnownBitsImpl(Src0, Known0, DemandedElts, Depth + 1);
+    if (Known0.isUnknown())
+      break;
+
+    // TODO: Handle LeadZero/LeadOne from UMIN/UMAX handling.
+    Known.Zero = Known0.Zero & Known1.Zero & Known2.Zero;
+    Known.One = Known0.One & Known1.One & Known2.One;
+    break;
+  }
   }
 }
 
@@ -13532,6 +13618,11 @@ bool SITargetLowering::isReassocProfitable(SelectionDAG &DAG, SDValue N0,
   // base and offset
   return (DAG.isBaseWithConstantOffset(N0) &&
           hasMemSDNodeUser(*N0->use_begin()));
+}
+
+bool SITargetLowering::isReassocProfitable(MachineRegisterInfo &MRI,
+                                           Register N0, Register N1) const {
+  return true; // FIXME: handle regbanks
 }
 
 MachineMemOperand::Flags

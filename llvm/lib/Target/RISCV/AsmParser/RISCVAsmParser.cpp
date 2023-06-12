@@ -2781,9 +2781,14 @@ bool RISCVAsmParser::parseDirectiveOption() {
       Args.emplace_back(Type, Ext->Key);
 
       if (Type == RISCVOptionArchArgType::Plus) {
+        FeatureBitset OldFeatureBits = STI->getFeatureBits();
+
         setFeatureBits(Ext->Value, Ext->Key);
         auto ParseResult = RISCVFeatures::parseFeatureBits(isRV64(), STI->getFeatureBits());
         if (!ParseResult) {
+          copySTI().setFeatureBits(OldFeatureBits);
+          setAvailableFeatures(ComputeAvailableFeatures(OldFeatureBits));
+
           std::string Buffer;
           raw_string_ostream OutputErrMsg(Buffer);
           handleAllErrors(ParseResult.takeError(), [&](llvm::StringError &ErrMsg) {
@@ -3026,7 +3031,7 @@ void RISCVAsmParser::emitLoadImm(MCRegister DestReg, int64_t Value,
       RISCVMatInt::generateInstSeq(Value, getSTI().getFeatureBits());
 
   MCRegister SrcReg = RISCV::X0;
-  for (RISCVMatInt::Inst &Inst : Seq) {
+  for (const RISCVMatInt::Inst &Inst : Seq) {
     switch (Inst.getOpndKind()) {
     case RISCVMatInt::Imm:
       emitToStreamer(Out,

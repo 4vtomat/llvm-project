@@ -2552,6 +2552,16 @@ static bool handlePotentiallyDeadBlock(BasicBlock *BB, InstCombiner &IC) {
     Changed = true;
   }
 
+  // Replace phi node operands in successor blocks with poison.
+  for (BasicBlock *Succ : successors(BB))
+    for (PHINode &PN : Succ->phis())
+      for (Use &U : PN.incoming_values())
+        if (PN.getIncomingBlock(U) == BB && !isa<PoisonValue>(U)) {
+          IC.replaceUse(U, PoisonValue::get(PN.getType()));
+          IC.addToWorklist(&PN);
+          Changed = true;
+        }
+
   // TODO: Successor blocks may also be dead.
   return Changed;
 }
@@ -4151,18 +4161,13 @@ bool InstructionCombiningPass::runOnFunction(Function &F) {
       nullptr;
 
   return combineInstructionsOverFunction(F, Worklist, AA, AC, TLI, TTI, DT, ORE,
-                                         BFI, PSI, MaxIterations, LI);
+                                         BFI, PSI,
+                                         InstCombineDefaultMaxIterations, LI);
 }
 
 char InstructionCombiningPass::ID = 0;
 
-InstructionCombiningPass::InstructionCombiningPass()
-    : FunctionPass(ID), MaxIterations(InstCombineDefaultMaxIterations) {
-  initializeInstructionCombiningPassPass(*PassRegistry::getPassRegistry());
-}
-
-InstructionCombiningPass::InstructionCombiningPass(unsigned MaxIterations)
-    : FunctionPass(ID), MaxIterations(MaxIterations) {
+InstructionCombiningPass::InstructionCombiningPass() : FunctionPass(ID) {
   initializeInstructionCombiningPassPass(*PassRegistry::getPassRegistry());
 }
 
@@ -4187,8 +4192,4 @@ void llvm::initializeInstCombine(PassRegistry &Registry) {
 
 FunctionPass *llvm::createInstructionCombiningPass() {
   return new InstructionCombiningPass();
-}
-
-FunctionPass *llvm::createInstructionCombiningPass(unsigned MaxIterations) {
-  return new InstructionCombiningPass(MaxIterations);
 }

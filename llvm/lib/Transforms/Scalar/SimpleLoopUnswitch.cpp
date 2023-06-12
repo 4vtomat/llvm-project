@@ -2735,6 +2735,8 @@ static BranchInst *turnGuardIntoBranch(IntrinsicInst *GI, Loop &L,
       MSSAU->getMemorySSA()->verifyMemorySSA();
   }
 
+  if (VerifyLoopInfo)
+    LI.verify(DT);
   ++NumGuards;
   return CheckBI;
 }

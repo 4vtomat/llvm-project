@@ -13,7 +13,7 @@
 #include "llvm/Transforms/IPO/SCCP.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Analysis/AssumptionCache.h"
-#include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/BlockFrequencyInfo.h"
 #include "llvm/Analysis/PostDominators.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
@@ -111,10 +111,11 @@ static bool runIPSCCP(
     std::function<TargetTransformInfo &(Function &)> GetTTI,
     std::function<AssumptionCache &(Function &)> GetAC,
     std::function<DominatorTree &(Function &)> GetDT,
-    std::function<LoopInfo &(Function &)> GetLI,
+    std::function<BlockFrequencyInfo &(Function &)> GetBFI,
     bool IsFuncSpecEnabled) {
   SCCPSolver Solver(DL, GetTLI, M.getContext());
-  FunctionSpecializer Specializer(Solver, M, FAM, GetTLI, GetTTI, GetAC);
+  FunctionSpecializer Specializer(Solver, M, FAM, GetBFI, GetTLI, GetTTI,
+                                  GetAC);
 
   // Loop over all functions, marking arguments to those with their addresses
   // taken or that are external as overdefined.
@@ -125,9 +126,6 @@ static bool runIPSCCP(
     DominatorTree &DT = GetDT(F);
     AssumptionCache &AC = GetAC(F);
     Solver.addPredicateInfo(F, DT, AC);
-
-    if (IsFuncSpecEnabled)
-      Solver.addLoopInfo(F, GetLI(F));
 
     // Determine if we can track the function's return values. If so, add the
     // function to the solver's set of return-tracked functions.
@@ -211,7 +209,6 @@ static bool runIPSCCP(
       MadeChanges |= ReplacedPointerArg;
     }
 
-    SmallPtrSet<Value *, 32> InsertedValues;
     for (BasicBlock &BB : F) {
       if (!Solver.isBlockExecutable(&BB)) {
         LLVM_DEBUG(dbgs() << "  BasicBlock Dead:" << BB);
@@ -225,7 +222,7 @@ static bool runIPSCCP(
       }
 
       MadeChanges |= Solver.simplifyInstsInBlock(
-          BB, InsertedValues, NumInstRemoved, NumInstReplaced);
+          BB, NumInstRemoved, NumInstReplaced);
     }
 
     DominatorTree *DT = FAM->getCachedResult<DominatorTreeAnalysis>(F);
@@ -395,11 +392,12 @@ PreservedAnalyses IPSCCPPass::run(Module &M, ModuleAnalysisManager &AM) {
   auto GetDT = [&FAM](Function &F) -> DominatorTree & {
     return FAM.getResult<DominatorTreeAnalysis>(F);
   };
-  auto GetLI = [&FAM](Function &F) -> LoopInfo & {
-    return FAM.getResult<LoopAnalysis>(F);
+  auto GetBFI = [&FAM](Function &F) -> BlockFrequencyInfo & {
+    return FAM.getResult<BlockFrequencyAnalysis>(F);
   };
 
-  if (!runIPSCCP(M, DL, &FAM, GetTLI, GetTTI, GetAC, GetDT, GetLI,
+
+  if (!runIPSCCP(M, DL, &FAM, GetTLI, GetTTI, GetAC, GetDT, GetBFI,
                  isFuncSpecEnabled()))
     return PreservedAnalyses::all();
 

@@ -165,14 +165,32 @@ define double @extractelt_v4f64(ptr %x) nounwind {
 define i64 @extractelt_v3i64(ptr %x) nounwind {
 ; RV32-LABEL: extractelt_v3i64:
 ; RV32:       # %bb.0:
+<<<<<<< HEAD
 ; RV32-NEXT:    lw a2, 16(a0)
 ; RV32-NEXT:    lw a1, 20(a0)
 ; RV32-NEXT:    mv a0, a2
+=======
+; RV32-NEXT:    vsetivli zero, 3, e64, m2, ta, ma
+; RV32-NEXT:    vle64.v v8, (a0)
+; RV32-NEXT:    vsetivli zero, 1, e32, m2, ta, ma
+; RV32-NEXT:    vslidedown.vi v10, v8, 4
+; RV32-NEXT:    vmv.x.s a0, v10
+; RV32-NEXT:    vslidedown.vi v8, v8, 5
+; RV32-NEXT:    vmv.x.s a1, v8
+>>>>>>> upstream/main
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: extractelt_v3i64:
 ; RV64:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-NEXT:    ld a0, 16(a0)
+=======
+; RV64-NEXT:    vsetivli zero, 3, e64, m2, ta, ma
+; RV64-NEXT:    vle64.v v8, (a0)
+; RV64-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
+; RV64-NEXT:    vslidedown.vi v8, v8, 2
+; RV64-NEXT:    vmv.x.s a0, v8
+>>>>>>> upstream/main
 ; RV64-NEXT:    ret
   %a = load <3 x i64>, ptr %x
   %b = extractelement <3 x i64> %a, i32 2
@@ -417,8 +435,9 @@ define double @extractelt_v4f64_idx(ptr %x, i32 zeroext %idx) nounwind {
 define i64 @extractelt_v3i64_idx(ptr %x, i32 zeroext %idx) nounwind {
 ; RV32-LABEL: extractelt_v3i64_idx:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; RV32-NEXT:    vsetivli zero, 3, e64, m2, ta, ma
 ; RV32-NEXT:    vle64.v v8, (a0)
+; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32-NEXT:    vadd.vv v8, v8, v8
 ; RV32-NEXT:    add a1, a1, a1
 ; RV32-NEXT:    vsetivli zero, 1, e32, m2, ta, ma
@@ -431,8 +450,9 @@ define i64 @extractelt_v3i64_idx(ptr %x, i32 zeroext %idx) nounwind {
 ;
 ; RV64-LABEL: extractelt_v3i64_idx:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; RV64-NEXT:    vsetivli zero, 3, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
+; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vadd.vv v8, v8, v8
 ; RV64-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
 ; RV64-NEXT:    vslidedown.vx v8, v8, a1

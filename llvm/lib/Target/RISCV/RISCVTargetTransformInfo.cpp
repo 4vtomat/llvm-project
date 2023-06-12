@@ -621,10 +621,15 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(VecTy))
     return getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (isa<ScalableVectorType>(VecTy))
+    return InstructionCost::getInvalid();
+>>>>>>> upstream/main
   auto *FVTy = cast<FixedVectorType>(VecTy);
   InstructionCost MemCost =
       getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);

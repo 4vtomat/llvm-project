@@ -523,6 +523,37 @@ static std::optional<unsigned> getSmallBestKnownTC(ScalarEvolution &SE,
   return std::nullopt;
 }
 
+/// Return a vector containing interleaved elements from multiple
+/// smaller input vectors.
+static Value *interleaveVectors(IRBuilderBase &Builder, ArrayRef<Value *> Vals,
+                                const Twine &Name) {
+  unsigned Factor = Vals.size();
+  assert(Factor > 1 && "Tried to interleave invalid number of vectors");
+
+  VectorType *VecTy = cast<VectorType>(Vals[0]->getType());
+#ifndef NDEBUG
+  for (Value *Val : Vals)
+    assert(Val->getType() == VecTy && "Tried to interleave mismatched types");
+#endif
+
+  // Scalable vectors cannot use arbitrary shufflevectors (only splats), so
+  // must use intrinsics to interleave.
+  if (VecTy->isScalableTy()) {
+    VectorType *WideVecTy = VectorType::getDoubleElementsVectorType(VecTy);
+    return Builder.CreateIntrinsic(
+        WideVecTy, Intrinsic::experimental_vector_interleave2, Vals,
+        /*FMFSource=*/nullptr, Name);
+  }
+
+  // Fixed length. Start by concatenating all vectors into a wide vector.
+  Value *WideVec = concatenateVectors(Builder, Vals);
+
+  // Interleave the elements into the wide vector.
+  const unsigned NumElts = VecTy->getElementCount().getFixedValue();
+  return Builder.CreateShuffleVector(
+      WideVec, createInterleaveMask(NumElts, Factor), Name);
+}
+
 namespace {
 // Forward declare GeneratedRTChecks.
 class GeneratedRTChecks;
@@ -2866,10 +2897,13 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   // Prepare for the vector type of the interleaved load/store.
   Type *ScalarTy = getLoadStoreType(Instr);
   unsigned InterleaveFactor = Group->getFactor();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #else
   assert(!VF.isScalable() && "scalable vectors not yet supported.");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
   auto *VecTy = VectorType::get(ScalarTy, VF * InterleaveFactor);
 
   // Prepare for the new pointers.
@@ -2884,12 +2918,14 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   assert((!BlockInMask || !Group->isReverse()) &&
          "Reversed masked interleave-group not supported.");
 
+  Value *Idx;
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
   // pointer operand of the interleaved access is supposed to be uniform. For
   // uniform instructions, we're only required to generate a value for the
   // first vector lane in each unroll iteration.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
     if (Legal->useVLAVectorizer()) {
@@ -2912,6 +2948,16 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   if (Group->isReverse())
     Index += (VF.getKnownMinValue() - 1) * Group->getFactor();
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (Group->isReverse()) {
+    Value *RuntimeVF = getRuntimeVF(Builder, Builder.getInt32Ty(), VF);
+    Idx = Builder.CreateSub(RuntimeVF, Builder.getInt32(1));
+    Idx = Builder.CreateMul(Idx, Builder.getInt32(Group->getFactor()));
+    Idx = Builder.CreateAdd(Idx, Builder.getInt32(Index));
+    Idx = Builder.CreateNeg(Idx);
+  } else
+    Idx = Builder.getInt32(-Index);
+>>>>>>> upstream/main
 
   for (unsigned Part = 0; Part < UF; Part++) {
     Value *AddrPart = State.get(Addr, VPIteration(Part, 0));
@@ -2932,12 +2978,16 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(AddrPart->stripPointerCasts()))
       InBounds = gep->isInBounds();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, IndexVal,
                                  "", InBounds);
 #else
     AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index),
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Idx, "", InBounds);
+>>>>>>> upstream/main
 
     // Cast to the vector pointer type.
     unsigned AddressSpace = AddrPart->getType()->getPointerAddressSpace();
@@ -3057,6 +3107,41 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                                             Group->getAlign(), "wide.vec");
       Group->addMetadata(NewLoad);
       NewLoads.push_back(NewLoad);
+    }
+
+    if (VecTy->isScalableTy()) {
+      assert(InterleaveFactor == 2 &&
+             "Unsupported deinterleave factor for scalable vectors");
+
+      for (unsigned Part = 0; Part < UF; ++Part) {
+        // Scalable vectors cannot use arbitrary shufflevectors (only splats),
+        // so must use intrinsics to deinterleave.
+        Value *DI = Builder.CreateIntrinsic(
+            Intrinsic::experimental_vector_deinterleave2, VecTy, NewLoads[Part],
+            /*FMFSource=*/nullptr, "strided.vec");
+        unsigned J = 0;
+        for (unsigned I = 0; I < InterleaveFactor; ++I) {
+          Instruction *Member = Group->getMember(I);
+
+          if (!Member)
+            continue;
+
+          Value *StridedVec = Builder.CreateExtractValue(DI, I);
+          // If this member has different type, cast the result type.
+          if (Member->getType() != ScalarTy) {
+            VectorType *OtherVTy = VectorType::get(Member->getType(), VF);
+            StridedVec = createBitOrPointerCast(StridedVec, OtherVTy, DL);
+          }
+
+          if (Group->isReverse())
+            StridedVec = Builder.CreateVectorReverse(StridedVec, "reverse");
+
+          State.set(VPDefs[J], StridedVec, Part);
+          ++J;
+        }
+      }
+
+      return;
     }
 
     // For each member in the group, shuffle out the appropriate data from the
@@ -3193,14 +3278,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       StoredVecs.push_back(StoredVec);
     }
 
-    // Concatenate all vectors into a wide vector.
-    Value *WideVec = concatenateVectors(Builder, StoredVecs);
-
-    // Interleave the elements in the wide vector.
-    Value *IVec = Builder.CreateShuffleVector(
-        WideVec, createInterleaveMask(VF.getKnownMinValue(), InterleaveFactor),
-        "interleaved.vec");
-
+    // Interleave all the smaller vectors into one wider vector.
+    Value *IVec = interleaveVectors(Builder, StoredVecs, "interleaved.vec");
     Instruction *NewStoreInstr;
     if (BlockInMask || MaskForGaps) {
       Value *GroupMask = MaskForGaps;
@@ -8063,6 +8142,7 @@ LoopVectorizationCostModel::getGatherScatterCost(Instruction *I,
 InstructionCost
 LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
                                                    ElementCount VF) {
+<<<<<<< HEAD
   // TODO: Once we have support for interleaving with scalable vectors
   // we can calculate the cost properly here.
 #if SIFIVE_CUSTOMIZATION
@@ -8070,6 +8150,8 @@ LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
 #endif // SIFIVE_CUSTOMIZATION
     return InstructionCost::getInvalid();
 
+=======
+>>>>>>> upstream/main
   Type *ValTy = getLoadStoreType(I);
   auto *VectorTy = cast<VectorType>(ToVectorTy(ValTy, VF));
   unsigned AS = getLoadStoreAddressSpace(I);
@@ -10914,9 +10996,15 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
            "Interleaving is not supported for uncountable loops yet");
 #endif
     auto applyIG = [IG, this](ElementCount VF) -> bool {
-      return (VF.isVector() && // Query is illegal for VF == 1
-              CM.getWideningDecision(IG->getInsertPos(), VF) ==
-                  LoopVectorizationCostModel::CM_Interleave);
+      bool Result = (VF.isVector() && // Query is illegal for VF == 1
+                     CM.getWideningDecision(IG->getInsertPos(), VF) ==
+                         LoopVectorizationCostModel::CM_Interleave);
+      // For scalable vectors, the only interleave factor currently supported
+      // is 2 since we require the (de)interleave2 intrinsics instead of
+      // shufflevectors.
+      assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
+             "Unsupported interleave factor for scalable vectors");
+      return Result;
     };
     if (!getDecisionAndClampRange(applyIG, Range))
       continue;

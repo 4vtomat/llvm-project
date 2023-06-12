@@ -8,6 +8,7 @@
 
 ; FIXME: This should be widened to a vlseg2 of <4 x i32> with VL set to 3
 define {<3 x i32>, <3 x i32>} @load_factor2_v3(ptr %ptr) {
+<<<<<<< HEAD
 ; RV32-LABEL: load_factor2_v3:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lw a1, 0(a0)
@@ -45,6 +46,26 @@ define {<3 x i32>, <3 x i32>} @load_factor2_v3(ptr %ptr) {
 ; RV64-NEXT:    vslide1down.vx v9, v9, a4
 ; RV64-NEXT:    vslidedown.vi v9, v9, 1
 ; RV64-NEXT:    ret
+=======
+; CHECK-LABEL: load_factor2_v3:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetivli zero, 6, e32, m2, ta, ma
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vid.v v8
+; CHECK-NEXT:    vadd.vv v9, v8, v8
+; CHECK-NEXT:    vrgather.vv v8, v10, v9
+; CHECK-NEXT:    li a0, 4
+; CHECK-NEXT:    vmv.s.x v0, a0
+; CHECK-NEXT:    vsetivli zero, 4, e32, m2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v10, 4
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vrgather.vi v8, v12, 0, v0.t
+; CHECK-NEXT:    vadd.vi v11, v9, 1
+; CHECK-NEXT:    vrgather.vv v9, v10, v11
+; CHECK-NEXT:    vrgather.vi v9, v12, 1, v0.t
+; CHECK-NEXT:    ret
+>>>>>>> upstream/main
   %interleaved.vec = load <6 x i32>, ptr %ptr
   %v0 = shufflevector <6 x i32> %interleaved.vec, <6 x i32> poison, <3 x i32> <i32 0, i32 2, i32 4>
   %v1 = shufflevector <6 x i32> %interleaved.vec, <6 x i32> poison, <3 x i32> <i32 1, i32 3, i32 5>

@@ -90,10 +90,25 @@ public:
   /// \brief Code object version for AMDGPU.
   CodeObjectVersionKind CodeObjectVersion = CodeObjectVersionKind::COV_None;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \brief The architecture SiFive Recode targets to.
   std::string SiFiveRecode;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// \brief Enumeration values for AMDGPU printf lowering scheme
+  enum class AMDGPUPrintfKind {
+    /// printf lowering scheme involving hostcalls, currently used by HIP
+    /// programs by default
+    Hostcall = 0,
+
+    /// printf lowering scheme involving implicit printf buffers,
+    Buffered = 1,
+  };
+
+  /// \brief AMDGPU Printf lowering scheme
+  AMDGPUPrintfKind AMDGPUPrintfKindVal = AMDGPUPrintfKind::Hostcall;
+>>>>>>> upstream/main
 
   // The code model to be used as specified by the user. Corresponds to
   // CodeModel::Model enum defined in include/llvm/Support/CodeGen.h, plus
