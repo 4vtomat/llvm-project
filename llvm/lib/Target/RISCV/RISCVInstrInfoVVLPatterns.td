@@ -667,12 +667,14 @@ class VPatBinaryVL_V<SDPatternOperator vop,
                        (result_type result_reg_class:$merge),
                        (mask_type V0),
                        VLOpFrag)),
-<<<<<<< HEAD
-      (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_MASK")
+      (!cast<Instruction>(
+                   !if(isSEWAware,
+                       instruction_name#"_"#suffix#"_"#vlmul.MX#"_E"#!shl(1, log2sew)#"_MASK",
+                       instruction_name#"_"#suffix#"_"#vlmul.MX#"_MASK"))
                    result_reg_class:$merge,
                    op1_reg_class:$rs1,
                    op2_reg_class:$rs2,
-                   (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
+                   (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_V<SDNode vop,
@@ -731,37 +733,6 @@ multiclass VPatBinaryVL_V_E<SDPatternOperator vop,
                      (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 }
 
-class VPatBinaryVL_V_E<SDPatternOperator vop,
-                       string instruction_name,
-                       string suffix,
-                       ValueType result_type,
-                       ValueType op1_type,
-                       ValueType op2_type,
-                       ValueType mask_type,
-                       int log2sew,
-                       LMULInfo vlmul,
-                       int sew,
-                       VReg result_reg_class,
-                       VReg op1_reg_class,
-                       VReg op2_reg_class>
-    : Pat<(result_type (vop
-                       (op1_type op1_reg_class:$rs1),
-                       (op2_type op2_reg_class:$rs2),
-                       (result_type result_reg_class:$merge),
-                       (mask_type V0),
-                       VLOpFrag)),
-      (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_E"# sew#"_MASK")
-=======
-      (!cast<Instruction>(
-                   !if(isSEWAware,
-                       instruction_name#"_"#suffix#"_"#vlmul.MX#"_E"#!shl(1, log2sew)#"_MASK",
-                       instruction_name#"_"#suffix#"_"#vlmul.MX#"_MASK"))
->>>>>>> upstream/main
-                   result_reg_class:$merge,
-                   op1_reg_class:$rs1,
-                   op2_reg_class:$rs2,
-                   (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
-
 multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                                     string instruction_name,
                                     string suffix,
@@ -816,12 +787,14 @@ class VPatBinaryVL_XI<SDPatternOperator vop,
                    (result_type result_reg_class:$merge),
                    (mask_type V0),
                    VLOpFrag)),
-<<<<<<< HEAD
-      (!cast<Instruction>(instruction_name#_#suffix#_# vlmul.MX#"_MASK")
+      (!cast<Instruction>(
+                   !if(isSEWAware,
+                       instruction_name#_#suffix#_#vlmul.MX#"_E"#!shl(1, log2sew)#"_MASK",
+                       instruction_name#_#suffix#_#vlmul.MX#"_MASK"))
                    result_reg_class:$merge,
                    vop_reg_class:$rs1,
                    xop_kind:$rs2,
-                   (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
+                   (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_XI<SDNode vop,
@@ -855,38 +828,6 @@ multiclass VPatBinaryRM_VL_XI<SDNode vop,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-class VPatBinaryVL_XI_E<SDPatternOperator vop,
-                        string instruction_name,
-                        string suffix,
-                        ValueType result_type,
-                        ValueType vop1_type,
-                        ValueType vop2_type,
-                        ValueType mask_type,
-                        int log2sew,
-                        LMULInfo vlmul,
-                        int sew,
-                        VReg result_reg_class,
-                        VReg vop_reg_class,
-                        ComplexPattern SplatPatKind,
-                        DAGOperand xop_kind>
-    : Pat<(result_type (vop
-                   (vop1_type vop_reg_class:$rs1),
-                   (vop2_type (SplatPatKind (XLenVT xop_kind:$rs2))),
-                   (result_type result_reg_class:$merge),
-                   (mask_type V0),
-                   VLOpFrag)),
-      (!cast<Instruction>(instruction_name#_#suffix#_# vlmul.MX#"_E"# sew#"_MASK")
-=======
-      (!cast<Instruction>(
-                   !if(isSEWAware,
-                       instruction_name#_#suffix#_#vlmul.MX#"_E"#!shl(1, log2sew)#"_MASK",
-                       instruction_name#_#suffix#_#vlmul.MX#"_MASK"))
->>>>>>> upstream/main
-                   result_reg_class:$merge,
-                   vop_reg_class:$rs1,
-                   xop_kind:$rs2,
-                   (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
-
 multiclass VPatBinaryVL_VV_VX<SDPatternOperator vop, string instruction_name,
                               list<VTypeInfo> vtilist = AllIntegerVectors,
                               bit isSEWAware = 0> {
@@ -899,8 +840,7 @@ multiclass VPatBinaryVL_VV_VX<SDPatternOperator vop, string instruction_name,
       def : VPatBinaryVL_XI<vop, instruction_name, "VX",
                             vti.Vector, vti.Vector, vti.Vector, vti.Mask,
                             vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
-<<<<<<< HEAD
-                            SplatPat, GPR>;
+                            SplatPat, GPR, isSEWAware>;
     }
   }
 }
@@ -931,25 +871,6 @@ multiclass VPatBinaryRM_VL_VV_VX_VI<SDNode vop, string instruction_name,
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-multiclass VPatBinaryVL_VV_VX_E<SDPatternOperator vop,
-                                string instruction_name> {
-  foreach vti = AllIntegerVectors in {
-    let Predicates = GetVTypePredicates<vti>.Predicates in {
-      def : VPatBinaryVL_V_E<vop, instruction_name, "VV",
-                            vti.Vector, vti.Vector, vti.Vector, vti.Mask,
-                            vti.Log2SEW, vti.LMul, vti.SEW,
-                            vti.RegClass, vti.RegClass, vti.RegClass>;
-      def : VPatBinaryVL_XI_E<vop, instruction_name, "VX",
-                            vti.Vector, vti.Vector, vti.Vector, vti.Mask,
-                            vti.Log2SEW, vti.LMul, vti.SEW,
-                            vti.RegClass, vti.RegClass, SplatPat, GPR>;
-=======
-                            SplatPat, GPR, isSEWAware>;
->>>>>>> upstream/main
-    }
-  }
-}
 
 multiclass VPatBinaryVL_VV_VX_VI<SDPatternOperator vop, string instruction_name,
                                  Operand ImmType = simm5>
