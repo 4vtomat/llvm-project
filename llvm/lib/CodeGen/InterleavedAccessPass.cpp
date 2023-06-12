@@ -420,8 +420,7 @@ bool InterleavedAccess::lowerInterleavedLoad(
 
   append_range(DeadInsts, VectorDeinterleaves);
   DeadInsts.push_back(VPLoad);
-  if (auto *WMI = dyn_cast<Instruction>(WideMask))
-    DeadInsts.push_back(WMI);
+
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -584,8 +583,6 @@ bool InterleavedAccess::lowerInterleavedStore(
 
   DeadInsts.push_back(VPStore);
   DeadInsts.push_back(VectorInterleave);
-  if (auto *WMI = dyn_cast<Instruction>(WideMask))
-    DeadInsts.push_back(WMI);
 
   return true;
 }

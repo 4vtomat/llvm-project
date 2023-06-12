@@ -465,7 +465,7 @@ cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     cl::Hidden, cl::desc("Use VPlan-based cost model"));
 
 cl::opt<bool> SiFiveEnableInterleavedAccess(
-    "sifive-loop-vectorizer-enable-interleaaved-access", cl::init(false),
+    "sifive-loop-vectorizer-enable-interleaved-access", cl::init(true),
     cl::Hidden, cl::desc("Enable interleaved access in RVV VLA vectorization"));
 #endif // SIFIVE_CUSTOMIZATION
 
