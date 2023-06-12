@@ -26489,7 +26489,6 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
       return visitVP_FADD(N);
     case ISD::VP_FSUB:
       return visitVP_FSUB(N);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case ISD::VP_XOR:
       return visitVPXOR(N);
@@ -26507,10 +26506,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     case ISD::VP_SELECT:
       return visitVP_SELECT(N);
 #endif // SIFIVE_CUSTOMIZATION
-=======
     case ISD::VP_FMA:
       return visitFMA<VPMatchContext>(N);
->>>>>>> upstream/main
     }
     return SDValue();
   }
