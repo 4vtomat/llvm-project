@@ -2897,13 +2897,6 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   // Prepare for the vector type of the interleaved load/store.
   Type *ScalarTy = getLoadStoreType(Instr);
   unsigned InterleaveFactor = Group->getFactor();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#else
-  assert(!VF.isScalable() && "scalable vectors not yet supported.");
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   auto *VecTy = VectorType::get(ScalarTy, VF * InterleaveFactor);
 
   // Prepare for the new pointers.
@@ -2918,14 +2911,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   assert((!BlockInMask || !Group->isReverse()) &&
          "Reversed masked interleave-group not supported.");
 
-  Value *Idx;
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
   // pointer operand of the interleaved access is supposed to be uniform. For
   // uniform instructions, we're only required to generate a value for the
   // first vector lane in each unroll iteration.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
     if (Legal->useVLAVectorizer()) {
@@ -2945,10 +2936,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   }
   IndexVal = Builder.CreateNeg(IndexVal);
 #else
-  if (Group->isReverse())
-    Index += (VF.getKnownMinValue() - 1) * Group->getFactor();
-#endif // SIFIVE_CUSTOMIZATION
-=======
+  Value *Idx;
   if (Group->isReverse()) {
     Value *RuntimeVF = getRuntimeVF(Builder, Builder.getInt32Ty(), VF);
     Idx = Builder.CreateSub(RuntimeVF, Builder.getInt32(1));
@@ -2957,7 +2945,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     Idx = Builder.CreateNeg(Idx);
   } else
     Idx = Builder.getInt32(-Index);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   for (unsigned Part = 0; Part < UF; Part++) {
     Value *AddrPart = State.get(Addr, VPIteration(Part, 0));
@@ -2978,16 +2966,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(AddrPart->stripPointerCasts()))
       InBounds = gep->isInBounds();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, IndexVal,
                                  "", InBounds);
 #else
-    AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Builder.getInt32(-Index),
-#endif // SIFIVE_CUSTOMIZATION
-=======
     AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Idx, "", InBounds);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
     // Cast to the vector pointer type.
     unsigned AddressSpace = AddrPart->getType()->getPointerAddressSpace();
@@ -8142,7 +8126,6 @@ LoopVectorizationCostModel::getGatherScatterCost(Instruction *I,
 InstructionCost
 LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
                                                    ElementCount VF) {
-<<<<<<< HEAD
   // TODO: Once we have support for interleaving with scalable vectors
   // we can calculate the cost properly here.
 #if SIFIVE_CUSTOMIZATION
@@ -8150,8 +8133,6 @@ LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
 #endif // SIFIVE_CUSTOMIZATION
     return InstructionCost::getInvalid();
 
-=======
->>>>>>> upstream/main
   Type *ValTy = getLoadStoreType(I);
   auto *VectorTy = cast<VectorType>(ToVectorTy(ValTy, VF));
   unsigned AS = getLoadStoreAddressSpace(I);
