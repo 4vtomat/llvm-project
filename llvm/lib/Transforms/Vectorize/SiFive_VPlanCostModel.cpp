@@ -30,30 +30,38 @@ using namespace llvm;
 
 #define DEBUG_TYPE "vplan-cost-model"
 
-static ElementCount getElementCount(const RVVPair &RVVP) {
-  std::pair<unsigned, bool> LMUL = RVVP.getLMUL();
-  unsigned KnownMinValue =
-      LMUL.second ? RISCV::RVVBitsPerBlock / (LMUL.first * RVVP.getSEW())
-                  : RISCV::RVVBitsPerBlock * LMUL.first / RVVP.getSEW();
+static ElementCount getElementCount(const std::pair<unsigned, bool> LMUL,
+                                    const unsigned SEW) {
+  unsigned KnownMinValue = LMUL.second
+                               ? RISCV::RVVBitsPerBlock / (LMUL.first * SEW)
+                               : RISCV::RVVBitsPerBlock * LMUL.first / SEW;
   return ElementCount::get(KnownMinValue, true);
 }
 
+static ElementCount getElementCount(const RVVPair &RVVP) {
+  return getElementCount(RVVP.getLMUL(), RVVP.getSEW());
+}
+
 namespace llvm {
+ElementCount RVVPair::getElementCount(const int LMULExp,
+                                      const unsigned SEW) {
+  return ::getElementCount(getIntFromLMULKind((LMULKind)LMULExp), SEW);
+}
+
 // FIXME: Unify with `RvvHintAttr` in Clang
-RVVPair RVVPair::getWithExponent(Type *Ty, const unsigned LMULExp,
+RVVPair RVVPair::getWithExponent(Type *Ty, const int LMULExp,
                                  const DataLayout &DL) {
-  if (LMULExp == 4 || LMULExp > 7)
+  if (LMULExp < -3 || LMULExp > 3)
     return RVVPair(Ty, LMULKind::Unsupported, DL);
   return RVVPair(Ty, (RVVPair::LMULKind)LMULExp, DL);
 }
 
 // FIXME: Unify with `RvvHintAttr` in Clang
-std::pair<unsigned, bool> RVVPair::getIntFromLMULKind(LMULKind Kind) const {
-  unsigned LMULExp = (unsigned)Kind;
-  assert(LMULExp != 4 && LMULExp <= 7 &&
+std::pair<unsigned, bool> RVVPair::getIntFromLMULKind(LMULKind Kind) {
+  int LMULExp = (int)Kind;
+  assert(LMULExp >= -3 && LMULExp <= 3 &&
          "LMUL exponent is not a valid or not supported.");
-  return {LMULExp < 4 ? 1 << LMULExp : 1 << (8 - LMULExp),
-          (LMULExp & 0b100) != 0};
+  return {1u << std::abs(LMULExp), LMULExp < 0};
 }
 
 // FIXME: Unify with `RvvHintAttr` in Clang

@@ -16,6 +16,7 @@
 
 #include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
 #if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanCostModel.h"
 #include "llvm/ADT/Statistic.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/Loads.h"
@@ -183,6 +184,11 @@ bool LoopVectorizeHints::Hint::validate(unsigned Val) {
   case HK_PREDICATE:
   case HK_SCALABLE:
     return (Val == 0 || Val == 1);
+#if SIFIVE_CUSTOMIZATION
+  case HK_LMUL_SEW:
+    // This hint is not handlded by this validate function
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
   }
   return false;
 }
@@ -200,6 +206,9 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
       IsVectorized("isvectorized", 0, HK_ISVECTORIZED),
       Predicate("vectorize.predicate.enable", FK_Undefined, HK_PREDICATE),
       Scalable("vectorize.scalable.enable", SK_Unspecified, HK_SCALABLE),
+#if SIFIVE_CUSTOMIZATION
+      LmulSew("vectorize.lmul_sew", -1U, HK_LMUL_SEW),
+#endif // SIFIVE_CUSTOMIZATION
       TheLoop(L), ORE(ORE) {
   // Populate values with existing loop metadata.
 #if SIFIVE_CUSTOMIZATION
@@ -279,6 +288,32 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
   LLVM_DEBUG(if (InterleaveOnlyWhenForced && getInterleave() == 1) dbgs()
              << "LV: Interleaving disabled by the pass manager\n");
 }
+
+#if SIFIVE_CUSTOMIZATION
+std::optional<int> LoopVectorizeHints::getLMULExp() const {
+  if (LmulSew.Lmul == INT_MAX)
+    return std::nullopt;
+  return LmulSew.Lmul;
+}
+
+std::optional<unsigned> LoopVectorizeHints::getSEW() const {
+  if (LmulSew.Value == -1U)
+    return std::nullopt;
+  return LmulSew.Value;
+}
+
+ElementCount LoopVectorizeHints::getWidth() const {
+  // Since a lot of code depends on this function, build ElementCount from LMUL
+  // and SEW here
+  std::optional<int> LMULExp = getLMULExp();
+  std::optional<unsigned> SEW = getSEW();
+  if (LMULExp && SEW)
+    return RVVPair::getElementCount(*LMULExp, *SEW);
+  return ElementCount::get(
+      Width.Value, ((ScalableForceKind)Scalable.Value == SK_PreferScalable ||
+                    (ScalableForceKind)Scalable.Value == SK_ScalableOnly));
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void LoopVectorizeHints::setAlreadyVectorized() {
   LLVMContext &Context = TheLoop->getHeader()->getContext();
@@ -439,6 +474,9 @@ void LoopVectorizeHints::getHintsFromMetadata() {
     if (Args.size() == 1)
 #if SIFIVE_CUSTOMIZATION
       setHint(Name, Args[0], ReportInvalid);
+
+    if (Args.size() == 2)
+      setLmulSewHint(Name, Args, ReportInvalid);
 #else
       setHint(Name, Args[0]);
 #endif // SIFIVE_CUSTOMIZATION
@@ -446,6 +484,59 @@ void LoopVectorizeHints::getHintsFromMetadata() {
 }
 
 #if SIFIVE_CUSTOMIZATION
+void LoopVectorizeHints::setLmulSewHint(StringRef Name,
+                                        ArrayRef<Metadata *> Args,
+                                        const bool ReportInvalid) {
+  if (!Name.startswith(Prefix()))
+    return;
+
+  Name = Name.substr(Prefix().size(), StringRef::npos);
+  if (Name != LmulSew.Name)
+    return;
+
+  auto *C = mdconst::dyn_extract<ConstantInt>(Args[0]);
+  if (!C) {
+    LLVM_DEBUG(dbgs() << "LV: `llvm.loop.vectorize.lmul_sew` metadata "
+                         "suppose to have ConstantInt as a first operand\n");
+    return;
+  }
+  int LMUL = C->getSExtValue();
+
+  C = mdconst::dyn_extract<ConstantInt>(Args[1]);
+  if (!C) {
+    LLVM_DEBUG(dbgs() << "LV: `llvm.loop.vectorize.lmul_sew` metadata "
+                         "suppose to have ConstantInt as a second operand\n");
+    return;
+  }
+  unsigned SEW = C->getZExtValue();
+
+  bool UnsupportedPair = false;
+  if (SEW >= 64 && LMUL < 0)
+    UnsupportedPair = true;
+  else if (SEW >= 32 && LMUL < -1)
+    UnsupportedPair = true;
+  else if (SEW >= 16 && LMUL < -2)
+    UnsupportedPair = true;
+
+  if (UnsupportedPair) {
+    Force.Value = FK_Undefined;
+    LLVM_DEBUG(dbgs() << "LV: ignore 'lmul_sew' clause and assume "
+                         "vectorization is not forced\n");
+    if (ReportInvalid) {
+      ORE.emit([&]() {
+        return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
+                                                 TheLoop->getStartLoc(),
+                                                 TheLoop->getHeader())
+               << "ignoring user-specified '#pragma clang rvv "
+                  "lmul_sew' specified pair is not valid";
+      });
+    }
+    return;
+  }
+  LmulSew.Value = SEW;
+  LmulSew.Lmul = LMUL;
+}
+
 void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg,
                                  const bool ReportInvalid) {
 #else

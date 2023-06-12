@@ -1386,14 +1386,7 @@ public:
   /// \return The size (in bits) of the smallest and widest types in the code
   /// that needs to be vectorized. We ignore values that remain scalar such as
   /// 64 bit loop indices.
-#if SIFIVE_CUSTOMIZATION
-  /// Additionally return smallest and widest types
-  std::pair<unsigned, unsigned>
-  getSmallestAndWidestTypes(Type **SmallestTypePtr = nullptr,
-                            Type **WidestTypePtr = nullptr);
-#else
   std::pair<unsigned, unsigned> getSmallestAndWidestTypes();
-#endif // SIFIVE_CUSTOMIZATION
 
   /// \return The desired interleave count.
   /// If interleave count has been specified by metadata it will be returned.
@@ -2145,6 +2138,11 @@ public:
 
   /// Profitable vector factors.
   SmallVector<VectorizationFactor, 8> ProfitableVFs;
+
+#if SIFIVE_CUSTOMIZATION
+  Type *SmallestType = nullptr;
+  Type *WidestType = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // end namespace llvm
 
@@ -6764,9 +6762,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
   SmallVector<InstructionVFPair> InvalidCosts;
 #if SIFIVE_CUSTOMIZATION
   unsigned SmallestTypeSize, WidestTypeSize;
-  Type *WidestType;
-  std::tie(SmallestTypeSize, WidestTypeSize) =
-      CM.getSmallestAndWidestTypes(nullptr, &WidestType);
+  std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
 #endif
@@ -6789,7 +6785,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     if (UseVPlanCostModel) {
       VPlanCostModel VPCM(*Plan, *Legal, TTI, *TLI);
       InstructionCost Cost = VPCM.getCost(
-          RVVPair::get(WidestType, i, PSE.getSE()->getDataLayout()));
+          RVVPair::get(CM.WidestType, i, PSE.getSE()->getDataLayout()));
       C = {Cost, true};
     } else {
       C = CM.expectedCost(i, &InvalidCosts);
@@ -7002,17 +6998,12 @@ VectorizationFactor LoopVectorizationPlanner::selectEpilogueVectorizationFactor(
 }
 
 std::pair<unsigned, unsigned>
-#if SIFIVE_CUSTOMIZATION
-LoopVectorizationCostModel::getSmallestAndWidestTypes(Type **SmallestTypePtr,
-                                                      Type **WidestTypePtr) {
-#else
 LoopVectorizationCostModel::getSmallestAndWidestTypes() {
-#endif // SIFIVE_CUSTOMIZATION
   unsigned MinWidth = -1U;
   unsigned MaxWidth = 8;
 #if SIFIVE_CUSTOMIZATION
-  Type *SmallestType = nullptr;
-  Type *WidestType = Type::getInt8Ty(TheFunction->getContext());
+  SmallestType = nullptr;
+  WidestType = Type::getInt8Ty(TheFunction->getContext());
 #endif // SIFIVE_CUSTOMIZATION
   const DataLayout &DL = TheFunction->getParent()->getDataLayout();
   // For in-loop reductions, no element types are added to ElementTypesInLoop
@@ -7089,12 +7080,6 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
-#if SIFIVE_CUSTOMIZATION
-  if (WidestTypePtr)
-    *WidestTypePtr = WidestType;
-  if (SmallestTypePtr)
-    *SmallestTypePtr = SmallestType;
-#endif // SIFIVE_CUSTOMIZATION
   return {MinWidth, MaxWidth};
 }
 
@@ -9364,23 +9349,33 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
   if (State.Plan->getRVL()) {
-    unsigned SmallestTypeSize, WidestTypeSize;
-    Type *WidestType;
-    std::tie(SmallestTypeSize, WidestTypeSize) =
-        ILV.Cost->getSmallestAndWidestTypes(nullptr, &WidestType);
-    assert(SmallestTypeSize >= 8 && WidestTypeSize <= 64 &&
-           "Cannot set vector length: Unsupported type");
-    State.SEW = Log2_32(WidestTypeSize) - 3;
+    unsigned SEW;
+    Type *SEWType;
+    if (std::optional<unsigned> SewHint = Hints.getSEW()) {
+      SEW = *SewHint;
+      SEWType = State.Builder.getIntNTy(SEW);
+      LLVM_DEBUG(dbgs() << "LV: use user-given SEW = " << SEW
+                        << " for vectorization\n");
+    } else {
+      SEWType = ILV.Cost->WidestType;
+      assert(SEWType &&
+             "Widest type of the loop must be computed before this point");
+      const DataLayout &DL = ILV.PSE.getSE()->getDataLayout();
+      SEW = DL.getTypeSizeInBits(SEWType);
+      assert(SEW <= 64 &&
+             "Cannot set vector length: Unsupported type");
+    }
+    State.SEW = Log2_32(SEW) - 3;
     // Only update MaxSafeNumElems if there is a dependency
     if (Legal->getMaxSafeDepDistBytes() != -1U) {
       State.MaxSafeNumElems =
-          Legal->getMaxSafeDepDistBytes() / (WidestTypeSize / 8);
+          Legal->getMaxSafeDepDistBytes() / (SEW / 8);
       LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeDepDistBytes="
                         << Legal->getMaxSafeDepDistBytes()
                         << ", MaxSafeNumElems=" << State.MaxSafeNumElems
                         << "\n");
     }
-    unsigned Numerator = WidestTypeSize * State.VF.getKnownMinValue();
+    unsigned Numerator = SEW * State.VF.getKnownMinValue();
     unsigned Denominator = TTI.getMaxElementWidth();
     State.LMULExp = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
@@ -9404,7 +9399,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     // FIXME: The list of pairs should be filled outside of this function and
     // needs to be cleared along with all but one VFs removal.
     // FIXME: Change 'WidestType' to whatever is used for LMUL selection.
-    State.Plan->addLMULTypePair(State.LMULExp, WidestType);
+    State.Plan->addLMULTypePair(State.LMULExp, SEWType);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -13131,7 +13126,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
             // vectorization, use integer type as it's more generic.
             std::string LMULTypeString;
             raw_string_ostream RSO(LMULTypeString);
-            RSO << RVVPair::getWithExponent(DType, LMULExp, M.getDataLayout());
+            RSO << RVVPair::getWithExponent(
+                DType, LMULExp < 5 ? LMULExp : LMULExp - 8, M.getDataLayout());
             return LMULTypeString;
           };
           return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),

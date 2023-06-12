@@ -69,6 +69,9 @@ class LoopVectorizeHints {
     HK_FORCE,
     HK_ISVECTORIZED,
     HK_PREDICATE,
+#if SIFIVE_CUSTOMIZATION
+    HK_LMUL_SEW,
+#endif // SIFIVE_CUSTOMIZATION
     HK_SCALABLE
   };
 
@@ -76,10 +79,17 @@ class LoopVectorizeHints {
   struct Hint {
     const char *Name;
     unsigned Value; // This may have to change for non-numeric values.
+#if SIFIVE_CUSTOMIZATION
+    int Lmul;
+#endif // SIFIVE_CUSTOMIZATION
     HintKind Kind;
 
     Hint(const char *Name, unsigned Value, HintKind Kind)
+#if SIFIVE_CUSTOMIZATION
+        : Name(Name), Value(Value), Lmul(INT_MIN), Kind(Kind) {}
+#else
         : Name(Name), Value(Value), Kind(Kind) {}
+#endif // SIFIVE_CUSTOMIZATION
 
     bool validate(unsigned Val);
   };
@@ -101,6 +111,11 @@ class LoopVectorizeHints {
 
   /// Says whether we should use fixed width or scalable vectorization.
   Hint Scalable;
+
+#if SIFIVE_CUSTOMIZATION
+  /// Forced LMUL and SEW for the loop
+  Hint LmulSew;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Return the loop metadata prefix.
   static StringRef Prefix() { return "llvm.loop."; }
@@ -144,6 +159,10 @@ public:
   /// Mark the loop \p L as the one that should be revectorized without strides
   /// checks.
   void setRevectorizeWithoutStrideChecks();
+
+  /// Parse `llvm.loop.vectorize.lmul_sew` metadata and set corresponding hint
+  void setLmulSewHint(StringRef Name, ArrayRef<Metadata *> Args,
+                      const bool ReportInvalid);
 #endif // SIFIVE_CUSTOMIZATION
 
   bool allowVectorization(Function *F, Loop *L,
@@ -152,16 +171,16 @@ public:
   /// Dumps all the hint information.
   void emitRemarkWithHints() const;
 
-  ElementCount getWidth() const {
 #if SIFIVE_CUSTOMIZATION
-    return ElementCount::get(
-        Width.Value, ((ScalableForceKind)Scalable.Value == SK_PreferScalable ||
-                      (ScalableForceKind)Scalable.Value == SK_ScalableOnly));
+  std::optional<int> getLMULExp() const;
+  std::optional<unsigned> getSEW() const;
+  ElementCount getWidth() const;
 #else
+  ElementCount getWidth() const {
     return ElementCount::get(Width.Value, (ScalableForceKind)Scalable.Value ==
                                               SK_PreferScalable);
-#endif // SIFIVE_CUSTOMIZATION
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   unsigned getInterleave() const {
     if (Interleave.Value)

@@ -22,22 +22,22 @@ void foo (int *a, int *b, int *c, int n) {
 #pragma clang rvv lmul_sew(m2, e32) /* expected-error {{duplicate directives 'lmul_sew(m1, e32)' and 'lmul_sew(m2, e32)'}} */
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf8, e16) /* expected-error {{(LMUL, SEW) pair (mf8, e16) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf8, e16) /* expected-error {{(LMUL, SEW) pair (mf8, e16) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf8, e32) /* expected-error {{(LMUL, SEW) pair (mf8, e32) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf8, e32) /* expected-error {{(LMUL, SEW) pair (mf8, e32) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf4, e32) /* expected-error {{(LMUL, SEW) pair (mf4, e32) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf4, e32) /* expected-error {{(LMUL, SEW) pair (mf4, e32) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf8, e64) /* expected-error {{(LMUL, SEW) pair (mf8, e64) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf8, e64) /* expected-error {{(LMUL, SEW) pair (mf8, e64) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf4, e64) /* expected-error {{(LMUL, SEW) pair (mf4, e64) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf4, e64) /* expected-error {{(LMUL, SEW) pair (mf4, e64) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
-#pragma clang rvv lmul_sew(mf2, e64) /* expected-error {{(LMUL, SEW) pair (mf2, e64) does not map to a valid VF}}*/
+#pragma clang rvv lmul_sew(mf2, e64) /* expected-error {{(LMUL, SEW) pair (mf2, e64) is not supported by RISC-V Vector Extension}}*/
   DUMMY_LOOP;
 
 #pragma clang loop vectorize_width(4) /* expected-warning {{use '#pragma clang rvv lmul_sew' instead of vectorize_width for RISC-V vectors}} */

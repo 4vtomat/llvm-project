@@ -31,15 +31,15 @@ class RVVPair {
 public:
   // FIXME: Unify with `RvvHintAttr` in Clang
   enum class LMULKind {
-    Unsupported = -1,
+    Unsupported = INT_MIN,
     // The integer value represents encoding used by backend
-    Mf8 = 0b101,
-    Mf4 = 0b110,
-    Mf2 = 0b111,
-    M1 = 0b000,
-    M2 = 0b001,
-    M4 = 0b010,
-    M8 = 0b011,
+    Mf8 = -3,
+    Mf4 = -2,
+    Mf2 = -1,
+    M1 = 0,
+    M2 = 1,
+    M4 = 2,
+    M8 = 3,
   };
 
   explicit RVVPair(Type *Ty, LMULKind Kind, const DataLayout &DL)
@@ -57,17 +57,18 @@ public:
   /// 0b101         1/8      mf8
   /// 0b110         1/4      mf4
   /// 0b111         1/2      mf2
-  static RVVPair getWithExponent(Type *Ty, const unsigned LMULExp,
+  static RVVPair getWithExponent(Type *Ty, const int LMULExp,
                                  const DataLayout &DL);
 
   static RVVPair get(Type *Ty, ElementCount EC, const DataLayout &DL) {
     const unsigned Numerator = DL.getTypeSizeInBits(Ty) * EC.getKnownMinValue();
     const unsigned Denominator = RISCV::RVVBitsPerBlock;
-    const unsigned LMULExp = Numerator >= Denominator
-                                 ? Log2_32(Numerator / Denominator)
-                                 : (8 - Log2_32(Denominator / Numerator));
+    const int LMULExp = Log2_32(Numerator / Denominator);
     return getWithExponent(Ty, LMULExp, DL);
   }
+
+  /// Return ElementCount that corresponds to current given parameters
+  static ElementCount getElementCount(const int LMULExp, const unsigned SEW);
 
   /// Return a <integer, bool> pair where integer is a numerator if boolean is
   /// false or denominator if boolean is true
@@ -95,7 +96,7 @@ public:
 private:
   /// Return a <integer, bool> pair where integer is a numerator if boolean is
   /// false or denominator if boolean is true for a given \p LMUL
-  std::pair<unsigned, bool> getIntFromLMULKind(LMULKind LMUL) const;
+  static std::pair<unsigned, bool> getIntFromLMULKind(LMULKind LMUL);
 
   /// Convert LMULKind to string representation for a given \p LMUL
   StringRef getStringFromLMULKind(LMULKind LMUL) const;

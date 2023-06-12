@@ -236,6 +236,16 @@ SmallVector<Instruction *, 8> findDefsUsedOutsideOfLoop(Loop *L);
 std::optional<ElementCount>
 getOptionalElementCountLoopAttribute(const Loop *TheLoop);
 
+#if SIFIVE_CUSTOMIZATION
+/// Find a combination of metadata (("llvm.loop.vectorize.lmul" or
+/// "llvm.loop.vectorize.sew") and "llvm.loop.vectorize.scalable.enable") for a
+/// loop and return pair of int where first integer is LMUL and second is SEW.
+/// If one of the metadata is not set, return -1. If both metadata cannot be
+/// found, return std::nullopt
+std::optional<std::pair<int, int>>
+getOptionalLmulSewLoopAttribute(const Loop *TheLoop);
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Create a new loop identifier for a loop created from a loop transformation.
 ///
 /// @param OrigLoopID The loop ID of the loop before the transformation.
