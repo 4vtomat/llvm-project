@@ -2454,23 +2454,12 @@ QualType Type::getSveEltType(const ASTContext &Ctx) const {
 bool Type::isRVVVLSBuiltinType() const {
   if (const BuiltinType *BT = getAs<BuiltinType>()) {
     switch (BT->getKind()) {
-<<<<<<< HEAD
-    // FIXME: Support more than LMUL 1.
 #if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
     case BuiltinType::Id: \
-      return NF == 1 && (NumEls * ElBits) == llvm::RISCV::RVVBitsPerBlock;
-#else
-#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned, IsFP) \
-    case BuiltinType::Id: \
-      return NF == 1 && (NumEls * ElBits) == llvm::RISCV::RVVBitsPerBlock;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned, IsFP) \
-    case BuiltinType::Id: \
       return NF == 1;
->>>>>>> upstream/main
+#endif
 #include "clang/Basic/RISCVVTypes.def"
     default:
       return false;
