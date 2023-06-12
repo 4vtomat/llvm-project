@@ -1024,13 +1024,10 @@ private:
   SDValue WidenVecOp_VECREDUCE(SDNode *N);
   SDValue WidenVecOp_VECREDUCE_SEQ(SDNode *N);
   SDValue WidenVecOp_VP_REDUCE(SDNode *N);
-<<<<<<< HEAD
+  SDValue WidenVecOp_ExpOp(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
   SDValue WidenVecOp_VP_FIRST(SDNode *N);
 #endif
-=======
-  SDValue WidenVecOp_ExpOp(SDNode *N);
->>>>>>> upstream/main
 
   /// Helper function to generate a set of operations to perform
   /// a vector operation for a wider type.
