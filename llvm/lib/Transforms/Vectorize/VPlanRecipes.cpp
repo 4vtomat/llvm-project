@@ -1539,10 +1539,13 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *DataSel = State.get(getVPDataSel(), LastPart);
   Value *InitRVL =
       State.Plan->getRVL()
-          ? State.get(State.Plan->getRVL(), 0)
+          ? State.get(State.Plan->getInitRVL(), 0)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+  Value *InitRVL32 =
+      State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+
   Value *VLToUse =
-      State.EnableRISCVCSA ? InitRVL : State.get(getVPCSAVLSel(), LastPart);
+      State.EnableRISCVCSA ? InitRVL32 : State.get(getVPCSAVLSel(), LastPart);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
 
   Value *IndexVec = State.Builder.CreateStepVector(
