@@ -90,9 +90,7 @@ define void @integer_induction_wraps_scev_predicate_known(i32 %x, ptr %call, ptr
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[MUL:%.*]] = shl i32 [[X]], 1
 ; CHECK-NEXT:    [[TMP0:%.*]] = sext i32 [[MUL]] to i64
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_SCEVCHECK:%.*]]
-; CHECK:       vector.scevcheck:
-; CHECK-NEXT:    br i1 true, label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 4294967264, [[TMP0]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP1]]
@@ -108,19 +106,31 @@ define void @integer_induction_wraps_scev_predicate_known(i32 %x, ptr %call, ptr
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[INDEX]] to i32
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i32 30, [[DOTCAST]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i32 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP4]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr ptr, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    store <4 x ptr> [[TMP3]], ptr [[TMP6]], align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[OFFSET_IDX]], 1
+; CHECK-NEXT:    [[TMP6:%.*]] = add i32 [[OFFSET_IDX]], 2
+; CHECK-NEXT:    [[TMP7:%.*]] = add i32 [[OFFSET_IDX]], 3
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP4]]
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP5]]
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP6]]
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP7]]
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <4 x ptr> [[TMP3]], i32 0
+; CHECK-NEXT:    store ptr [[TMP12]], ptr [[TMP8]], align 4
+; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <4 x ptr> [[TMP3]], i32 1
+; CHECK-NEXT:    store ptr [[TMP13]], ptr [[TMP9]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <4 x ptr> [[TMP3]], i32 2
+; CHECK-NEXT:    store ptr [[TMP14]], ptr [[TMP10]], align 4
+; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <4 x ptr> [[TMP3]], i32 3
+; CHECK-NEXT:    store ptr [[TMP15]], ptr [[TMP11]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4294967264
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4294967264
+; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 4294967267, 4294967264
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -2, [[MIDDLE_BLOCK]] ], [ 30, [[ENTRY:%.*]] ], [ 30, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ], [ [[START]], [[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -2, [[MIDDLE_BLOCK]] ], [ 30, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_COND]] ]
