@@ -619,50 +619,17 @@ define void @copysign_neg_trunc_v4f16_v4f32(ptr %x, ptr %y) {
 declare <4 x half> @llvm.copysign.v4f16(<4 x half>, <4 x half>)
 
 define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
-<<<<<<< HEAD
-; LMULMAX1-RV32-LABEL: copysign_neg_trunc_v3f16_v3f32:
-; LMULMAX1-RV32:       # %bb.0:
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; LMULMAX1-RV32-NEXT:    vle32.v v8, (a1)
-; LMULMAX1-RV32-NEXT:    vle16.v v9, (a0)
-; LMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
-; LMULMAX1-RV32-NEXT:    vfsgnjn.vv v8, v9, v8
-; LMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 4
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; LMULMAX1-RV32-NEXT:    vse16.v v9, (a1)
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; LMULMAX1-RV32-NEXT:    vse32.v v8, (a0)
-; LMULMAX1-RV32-NEXT:    ret
-;
-; LMULMAX1-RV64-LABEL: copysign_neg_trunc_v3f16_v3f32:
-; LMULMAX1-RV64:       # %bb.0:
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; LMULMAX1-RV64-NEXT:    vle64.v v8, (a0)
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; LMULMAX1-RV64-NEXT:    vle32.v v9, (a1)
-; LMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
-; LMULMAX1-RV64-NEXT:    vfsgnjn.vv v8, v8, v9
-; LMULMAX1-RV64-NEXT:    vslidedown.vi v9, v8, 2
-; LMULMAX1-RV64-NEXT:    addi a1, a0, 4
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; LMULMAX1-RV64-NEXT:    vse16.v v9, (a1)
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; LMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
-; LMULMAX1-RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: copysign_neg_trunc_v3f16_v3f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8
-; CHECK-NEXT:    vfsgnjn.vv v8, v9, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
+; CHECK-NEXT:    vfsgnjn.vv v8, v9, v8
 ; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
->>>>>>> upstream/main
   %a = load <3 x half>, ptr %x
   %b = load <3 x float>, ptr %y
   %c = fneg <3 x float> %b
