@@ -242,30 +242,6 @@ define void @non_constant_vector_expansion(i32 %0, ptr %call) {
 ; STRIDED-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x i64> [[DOTSPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
 ; STRIDED-NEXT:    [[VECTOR_GEP:%.*]] = mul <4 x i64> <i64 0, i64 1, i64 2, i64 3>, [[DOTSPLAT]]
 ; STRIDED-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <4 x i64> [[VECTOR_GEP]]
-<<<<<<< HEAD
-; STRIDED-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[INDEX]] to i32
-; STRIDED-NEXT:    [[OFFSET_IDX:%.*]] = add i32 30, [[DOTCAST]]
-; STRIDED-NEXT:    [[TMP5:%.*]] = add i32 [[OFFSET_IDX]], 0
-; STRIDED-NEXT:    [[TMP6:%.*]] = add i32 [[OFFSET_IDX]], 1
-; STRIDED-NEXT:    [[TMP7:%.*]] = add i32 [[OFFSET_IDX]], 2
-; STRIDED-NEXT:    [[TMP8:%.*]] = add i32 [[OFFSET_IDX]], 3
-; STRIDED-NEXT:    [[TMP9:%.*]] = getelementptr ptr, ptr [[CALL:%.*]], i32 [[TMP5]]
-; STRIDED-NEXT:    [[TMP10:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP6]]
-; STRIDED-NEXT:    [[TMP11:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP7]]
-; STRIDED-NEXT:    [[TMP12:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP8]]
-; STRIDED-NEXT:    [[TMP13:%.*]] = extractelement <4 x ptr> [[TMP4]], i32 0
-; STRIDED-NEXT:    store ptr [[TMP13]], ptr [[TMP9]], align 4
-; STRIDED-NEXT:    [[TMP14:%.*]] = extractelement <4 x ptr> [[TMP4]], i32 1
-; STRIDED-NEXT:    store ptr [[TMP14]], ptr [[TMP10]], align 4
-; STRIDED-NEXT:    [[TMP15:%.*]] = extractelement <4 x ptr> [[TMP4]], i32 2
-; STRIDED-NEXT:    store ptr [[TMP15]], ptr [[TMP11]], align 4
-; STRIDED-NEXT:    [[TMP16:%.*]] = extractelement <4 x ptr> [[TMP4]], i32 3
-; STRIDED-NEXT:    store ptr [[TMP16]], ptr [[TMP12]], align 4
-; STRIDED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; STRIDED-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP3]]
-; STRIDED-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4294967264
-; STRIDED-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-=======
 ; STRIDED-NEXT:    [[OFFSET_IDX:%.*]] = trunc i64 [[INDEX]] to i32
 ; STRIDED-NEXT:    [[TMP5:%.*]] = add i32 [[OFFSET_IDX]], 0
 ; STRIDED-NEXT:    [[TMP6:%.*]] = getelementptr ptr, ptr [[CALL:%.*]], i32 [[TMP5]]
@@ -275,24 +251,10 @@ define void @non_constant_vector_expansion(i32 %0, ptr %call) {
 ; STRIDED-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP3]]
 ; STRIDED-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
 ; STRIDED-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
->>>>>>> upstream/main
 ; STRIDED:       middle.block:
 ; STRIDED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 101, 100
 ; STRIDED-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; STRIDED:       scalar.ph:
-<<<<<<< HEAD
-; STRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -2, [[MIDDLE_BLOCK]] ], [ 30, [[ENTRY:%.*]] ]
-; STRIDED-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ null, [[ENTRY]] ]
-; STRIDED-NEXT:    br label [[FOR_COND:%.*]]
-; STRIDED:       for.cond:
-; STRIDED-NEXT:    [[TMP18:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_COND]] ]
-; STRIDED-NEXT:    [[P_0:%.*]] = phi ptr [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[ADD_PTR:%.*]], [[FOR_COND]] ]
-; STRIDED-NEXT:    [[ADD_PTR]] = getelementptr i8, ptr [[P_0]], i32 [[MUL]]
-; STRIDED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP18]]
-; STRIDED-NEXT:    store ptr [[P_0]], ptr [[ARRAYIDX]], align 4
-; STRIDED-NEXT:    [[INC]] = add i32 [[TMP18]], 1
-; STRIDED-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP18]], 0
-=======
 ; STRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 100, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; STRIDED-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ null, [[ENTRY]] ]
 ; STRIDED-NEXT:    br label [[FOR_COND:%.*]]
@@ -304,7 +266,6 @@ define void @non_constant_vector_expansion(i32 %0, ptr %call) {
 ; STRIDED-NEXT:    store ptr [[P_0]], ptr [[ARRAYIDX]], align 4
 ; STRIDED-NEXT:    [[INC]] = add i32 [[TMP9]], 1
 ; STRIDED-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP9]], 100
->>>>>>> upstream/main
 ; STRIDED-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP7:![0-9]+]]
 ; STRIDED:       for.end:
 ; STRIDED-NEXT:    ret void
