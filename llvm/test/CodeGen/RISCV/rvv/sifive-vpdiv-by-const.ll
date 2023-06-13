@@ -344,8 +344,10 @@ define <vscale x 2 x i32> @vpudiv_by_const_no_add_nxv2i32(<vscale x 2 x i32> %va
 define <vscale x 1 x i64> @vpudiv_by_const_no_add_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_const_no_add_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI19_0)
-; CHECK-NEXT:    ld a1, %lo(.LCPI19_0)(a1)
+; CHECK-NEXT:    lui a1, 838861
+; CHECK-NEXT:    addiw a1, a1, -819
+; CHECK-NEXT:    slli a2, a1, 32
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulhu.vx v8, v8, a1, v0.t
 ; CHECK-NEXT:    vsrl.vi v8, v8, 2, v0.t
@@ -920,8 +922,10 @@ define <vscale x 2 x i32> @vpsdiv_const_add_ashr_nxv2i32(<vscale x 2 x i32> %va,
 define <vscale x 1 x i64> @vpsdiv_const_add_ashr_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_const_add_ashr_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI48_0)
-; CHECK-NEXT:    ld a1, %lo(.LCPI48_0)(a1)
+; CHECK-NEXT:    lui a1, 559241
+; CHECK-NEXT:    addiw a1, a1, -1911
+; CHECK-NEXT:    slli a2, a1, 32
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulh.vx v9, v8, a1, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v9, v8, v0.t
@@ -996,8 +1000,10 @@ define <vscale x 2 x i32> @vpsdiv_const_sub_ashr_nxv2i32(<vscale x 2 x i32> %va,
 define <vscale x 1 x i64> @vpsdiv_const_sub_ashr_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_const_sub_ashr_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI52_0)
-; CHECK-NEXT:    ld a1, %lo(.LCPI52_0)(a1)
+; CHECK-NEXT:    lui a1, 349525
+; CHECK-NEXT:    addiw a1, a1, 1365
+; CHECK-NEXT:    slli a2, a1, 32
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulh.vx v9, v8, a1, v0.t
 ; CHECK-NEXT:    vsub.vv v8, v9, v8, v0.t
@@ -1068,8 +1074,10 @@ define <vscale x 2 x i32> @vpurem_by_max_nxv2i32(<vscale x 2 x i32> %va, <vscale
 define <vscale x 1 x i64> @vpurem_by_const_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpurem_by_const_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI57_0)
-; CHECK-NEXT:    ld a1, %lo(.LCPI57_0)(a1)
+; CHECK-NEXT:    lui a1, 838861
+; CHECK-NEXT:    addiw a1, a1, -819
+; CHECK-NEXT:    slli a2, a1, 32
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
 ; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
