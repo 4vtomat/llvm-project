@@ -110,10 +110,10 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv64i1(<vscale x 64 x i1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v24, 0
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
-; CHECK-NEXT:    vwaddu.vv v24, v12, v20
-; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vwaddu.vv v8, v12, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v20
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vmsne.vi v8, v24, 0
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    ret
   %res = call <vscale x 128 x i1> @llvm.experimental.vector.interleave2.nxv128i1(<vscale x 64 x i1> %a, <vscale x 64 x i1> %b)
   ret <vscale x 128 x i1> %res
@@ -127,9 +127,9 @@ define <vscale x 128 x i8> @vector_interleave_nxv128i8_nxv64i8(<vscale x 64 x i8
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
   %res = call <vscale x 128 x i8> @llvm.experimental.vector.interleave2.nxv128i8(<vscale x 64 x i8> %a, <vscale x 64 x i8> %b)
   ret <vscale x 128 x i8> %res
@@ -143,9 +143,9 @@ define <vscale x 64 x i16> @vector_interleave_nxv64i16_nxv32i16(<vscale x 32 x i
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
   %res = call <vscale x 64 x i16> @llvm.experimental.vector.interleave2.nxv64i16(<vscale x 32 x i16> %a, <vscale x 32 x i16> %b)
   ret <vscale x 64 x i16> %res
@@ -159,9 +159,9 @@ define <vscale x 32 x i32> @vector_interleave_nxv32i32_nxv16i32(<vscale x 16 x i
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
   %res = call <vscale x 32 x i32> @llvm.experimental.vector.interleave2.nxv32i32(<vscale x 16 x i32> %a, <vscale x 16 x i32> %b)
   ret <vscale x 32 x i32> %res
@@ -333,9 +333,9 @@ define <vscale x 64 x half> @vector_interleave_nxv64f16_nxv32f16(<vscale x 32 x 
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
   %res = call <vscale x 64 x half> @llvm.experimental.vector.interleave2.nxv64f16(<vscale x 32 x half> %a, <vscale x 32 x half> %b)
   ret <vscale x 64 x half> %res
@@ -349,9 +349,9 @@ define <vscale x 32 x float> @vector_interleave_nxv32f32_nxv16f32(<vscale x 16 x
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
   %res = call <vscale x 32 x float> @llvm.experimental.vector.interleave2.nxv32f32(<vscale x 16 x float> %a, <vscale x 16 x float> %b)
   ret <vscale x 32 x float> %res
