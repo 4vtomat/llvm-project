@@ -73,7 +73,7 @@ public:
   ///       '+' which promotes using this multilib in the presence of that flag
   ///     otherwise '-print-multi-lib' will not emit them correctly.
   Multilib &flag(StringRef F) {
-    assert(F.front() == '+' || F.front() == '-');
+    assert(F.front() == '-' || F.front() == '!');
     Flags.push_back(std::string(F));
     return *this;
   }

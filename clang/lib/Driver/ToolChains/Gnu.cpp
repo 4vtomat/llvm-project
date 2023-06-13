@@ -1838,12 +1838,12 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
 
   auto CurrentExts = ISAInfo->getExtensions();
 
-  addMultilibFlag(ISAInfo->getXLen() == 32, "m32", NewFlags);
-  addMultilibFlag(ISAInfo->getXLen() == 64, "m64", NewFlags);
+  addMultilibFlag(ISAInfo->getXLen() == 32, "-m32", NewFlags);
+  addMultilibFlag(ISAInfo->getXLen() == 64, "-m64", NewFlags);
 
   // Collect all flags except march=*
   for (StringRef Flag : Flags) {
-    if (Flag.startswith("+march=") || Flag.startswith("-march="))
+    if (Flag.startswith("!march=") || Flag.startswith("-march="))
       continue;
 
     NewFlags.push_back(Flag.str());
@@ -1859,7 +1859,7 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
                                     M.includeSuffix(), Multilib::flags_list());
     for (StringRef Flag : M.flags()) {
       // Add back the all option except -march.
-      if (!Flag.startswith("+march=")) {
+      if (!Flag.startswith("-march=")) {
         NewMultilib.flag(Flag);
         continue;
       }
@@ -1882,28 +1882,28 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
       auto MLConfigArchExts = MLConfigISAInfo->getExtensions();
       for (auto MLConfigArchExt : MLConfigArchExts) {
         auto ExtName = MLConfigArchExt.first;
-        NewMultilib.flag(Twine("+", ExtName).str());
+        NewMultilib.flag(Twine("-", ExtName).str());
 
         if (!AllArchExts.contains(ExtName)) {
           AllArchExts.insert(ExtName);
-          addMultilibFlag(ISAInfo->hasExtension(ExtName), ExtName.c_str(),
-                          NewFlags);
+          addMultilibFlag(ISAInfo->hasExtension(ExtName),
+                          Twine("-", ExtName).str(), NewFlags);
         }
       }
 
       // Check XLEN explicitly.
       if (MLConfigISAInfo->getXLen() == 32) {
-        NewMultilib.flag("+m32");
-        NewMultilib.flag("-m64");
-      } else {
         NewMultilib.flag("-m32");
-        NewMultilib.flag("+m64");
+        NewMultilib.flag("!m64");
+      } else {
+        NewMultilib.flag("!m32");
+        NewMultilib.flag("-m64");
       }
 
       // Atomic extension must explicitly check, soft and hard atomic operation
       // never co-work correctly.
       if (!MLConfigISAInfo->hasExtension("a"))
-        NewMultilib.flag("-a");
+        NewMultilib.flag("!a");
     }
 
     if (Skip)
@@ -1998,26 +1998,27 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
     // multilib path rule is ${march}/${mabi}
     auto Multilib = makeMultilib(Path);
     for (StringRef Option : OptionList) {
-      Multilib.flag(Twine("+", Option).str());
+      Multilib.flag(Twine("-", Option).str());
 
       // Gather all used option from multi-lib config.
       if (Option.startswith("march=")) {
         if (!AllArch.contains(Option)) {
           // Make sure every option we only process once
           AllArch.insert(Option);
-          addMultilibFlag(CurrentArchOpt == Option, Option.str().c_str(),
-                          Flags);
+          addMultilibFlag(CurrentArchOpt == Option,
+                          Twine("-", Option.str()).str(), Flags);
         }
       } else if (Option.startswith("mabi=")) {
         if (!AllABI.contains(Option)) {
           AllABI.insert(Option);
-          addMultilibFlag(CurrentABIOpt == Option, Option.str().c_str(), Flags);
+          addMultilibFlag(CurrentABIOpt == Option,
+                          Twine("-", Option.str()).str(), Flags);
         }
       } else if (Option.startswith("mcmodel=")) {
         if (!AllMCmodel.contains(Option)) {
           AllMCmodel.insert(Option);
-          addMultilibFlag(CurrentMCmodelOpt == Option, Option.str().c_str(),
-                          Flags);
+          addMultilibFlag(CurrentMCmodelOpt == Option,
+                          Twine("-", Option.str()).str(), Flags);
         }
       } else {
         // Got unrecognized option in multi-lib config, fallback.
