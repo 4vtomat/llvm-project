@@ -1503,17 +1503,17 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
     Value *UndistData = getVPDataPhi() == getVPTrue()
                               ? State.get(getVPFalse(), Part)
                               : State.get(getVPTrue(), Part);
-    Value *InitRVL =
+    Value *RVL =
         State.Plan->getRVL()
-            ? State.get(State.Plan->getInitRVL(), Part)
+            ? State.get(State.Plan->getRVL(), Part)
             : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-    Value *InitRVL32 =
-        State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+    Value *RVL32 =
+        State.Builder.CreateZExtOrTrunc(RVL, State.Builder.getInt32Ty());
 
     Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
     Value *NewData = State.Builder.CreateIntrinsic(
         DataPhi->getType(), Intrinsic::vp_merge,
-        {NewMask, UndistData, OldData, InitRVL32});
+        {NewMask, UndistData, OldData, RVL32});
     if (Part == State.UF - 1)
       cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
     State.set(this, NewData, Part);
