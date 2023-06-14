@@ -5622,6 +5622,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       if (llvm::all_of(OI->users(), [&](User *U) -> bool {
             auto *J = cast<Instruction>(U);
 #if SIFIVE_CUSTOMIZATION
+            if (isOutOfScope(J))
+              return false;
             // TODO: Support more han one use and mixed type of uses (vector +
             // uniform).
             if (Legal->useVLAVectorizer() && J->hasOneUse()) {
