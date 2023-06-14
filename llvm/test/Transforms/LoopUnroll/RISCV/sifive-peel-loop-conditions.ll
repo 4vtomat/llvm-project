@@ -280,3 +280,55 @@ for.inc.outer:
 exit.outer:
   ret void
 }
+
+; test epilog peeling not crashing on this loop
+define void @SetCoeffAndReconstruction8x8(i64 %indvars.iv383) !prof !0 {
+; CHECK-LABEL: @SetCoeffAndReconstruction8x8(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER:%.*]]
+; CHECK:       for.body405.peel.begin:
+; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[INDVARS_IV_NEXT384:%.*]], [[FOR_BODY405:%.*]] ]
+; CHECK-NEXT:    br label [[FOR_BODY405_PEEL:%.*]]
+; CHECK:       for.body405.peel:
+; CHECK-NEXT:    [[ARRAYIDX413_PEEL:%.*]] = getelementptr i32, ptr null, i64 [[INDVARS_IV383:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr null, align 4
+; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL:%.*]] = add i64 [[LABEL]], 1
+; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL]], 65
+; CHECK-NEXT:    br label [[FOR_BODY405_PEEL_NEXT:%.*]]
+; CHECK:       for.body405.peel.next:
+; CHECK-NEXT:    br label [[FOR_BODY405_PEEL2:%.*]]
+; CHECK:       for.body405.peel2:
+; CHECK-NEXT:    [[ARRAYIDX413_PEEL3:%.*]] = getelementptr i32, ptr null, i64 [[INDVARS_IV383]]
+; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr null, align 4
+; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL4:%.*]] = add i64 [[INDVARS_IV_NEXT384_PEEL]], 1
+; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL5:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL4]], 65
+; CHECK-NEXT:    br label [[FOR_BODY405_PEEL_NEXT1:%.*]]
+; CHECK:       for.body405.peel.next1:
+; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER_LOOPEXIT:%.*]]
+; CHECK:       for.cond394.preheader.loopexit:
+; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER]]
+; CHECK:       for.cond394.preheader:
+; CHECK-NEXT:    br label [[FOR_BODY405]]
+; CHECK:       for.body405:
+; CHECK-NEXT:    [[INDVARS_IV3831:%.*]] = phi i64 [ [[INDVARS_IV_NEXT384]], [[FOR_BODY405]] ], [ 0, [[FOR_COND394_PREHEADER]] ]
+; CHECK-NEXT:    [[INDVARS_IV_NEXT384]] = add nuw nsw i64 [[INDVARS_IV3831]], 1
+; CHECK-NEXT:    [[EXITCOND386_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384]], 63
+; CHECK-NEXT:    br i1 [[EXITCOND386_NOT]], label [[FOR_BODY405_PEEL_BEGIN:%.*]], label [[FOR_BODY405]], !prof [[PROF4:![0-9]+]], !llvm.loop [[LOOP5:![0-9]+]]
+;
+entry:
+  br label %for.cond394.preheader
+
+for.cond394.preheader:                            ; preds = %for.body405, %entry
+  br label %for.body405
+
+for.body405:                                      ; preds = %for.body405, %for.cond394.preheader
+  %indvars.iv3831 = phi i64 [ %indvars.iv.next384, %for.body405 ], [ 0, %for.cond394.preheader ]
+  %arrayidx413 = getelementptr i32, ptr null, i64 %indvars.iv383
+  %0 = load i32, ptr null, align 4
+  %indvars.iv.next384 = add i64 %indvars.iv3831, 1
+  %exitcond386.not = icmp eq i64 %indvars.iv.next384, 65
+  br i1 %exitcond386.not, label %for.cond394.preheader, label %for.body405, !prof !1
+}
+
+!0 = !{!"function_entry_count", i64 112759}
+!1 = !{!"branch_weights", i32 5412433, i32 5412433}

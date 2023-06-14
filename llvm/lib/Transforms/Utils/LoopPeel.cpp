@@ -1373,6 +1373,8 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
     remapInstructionsInBlocks(NewBlocks, VMap);
 
     for (auto &[Term, Info] : Weights) {
+      if (!VMap[Term])
+        continue;
       auto *TermCopy = cast<Instruction>(VMap[Term]);
       updateBranchWeights(TermCopy, Info);
     }
