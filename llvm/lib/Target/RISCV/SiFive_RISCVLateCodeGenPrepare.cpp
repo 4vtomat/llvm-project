@@ -51,7 +51,7 @@ extern cl::opt<unsigned> VectorPrimaryLMULMaxExp;
 static cl::opt<bool>
     MemToRVVOpt("riscv-mem-to-rvv", cl::Hidden,
                 cl::desc("Expand mem intrinsic to vector instructions."),
-                cl::init(true));
+                cl::init(false));
 static cl::opt<bool>
     MemAlignOpt("riscv-mem-to-rvv-dlen-align", cl::Hidden,
                 cl::desc("Let expansion mem intrinsic can align on DLEN."),
