@@ -10902,10 +10902,24 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
+    // The CSA optimization wants to use a condition such that when it is
+    // true, a new value is assigned. However, it is possible that a true lane
+    // in WidenedCond corresponds to selection of the initial value instead.
+    // In that case, we must use the negation of WidenedCond.
+    // i.e. select cond new_val old_val versus select cond.not old_val new_val
+    VPValue *CondToUse = WidenedCond;
+    if (cast<SelectInst>(CSA.second.getAssignment())->getTrueValue() ==
+        CSA.first) {
+      auto VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
+      VPNotCond->insertBefore(
+          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+      CondToUse = VPNotCond;
+    }
+
     VPCSAExtractScalarRecipe *ExtractScalarRecipe= nullptr;
     if (!EnableRISCVCSA) {
       auto *VPAnyActive = new VPInstruction(VPInstruction::CSAAnyActive,
-                                            {WidenedCond, AllTrueMask}, DL,
+                                            {CondToUse, AllTrueMask}, DL,
                                             "csa.cond.anyactive");
       VPAnyActive->insertBefore(
           Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
@@ -10916,7 +10930,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       VPVLSel->insertAfter(VPAnyActive);
       auto *VPMaskSel = new VPInstruction(
           VPInstruction::CSAMaskSel,
-          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+          {CondToUse, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
            Plan.getOrCreateAllFalseMask(), VPAnyActive},
           DL, "csa.mask.sel");
       VPMaskSel->insertAfter(VPVLSel);
@@ -10927,7 +10941,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     } else {
       auto *VPMaskSel = new VPInstruction(
           VPInstruction::CSAMaskSel,
-          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+          {CondToUse, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
            Plan.getOrCreateAllFalseMask()},
           DL, "csa.mask.sel");
       VPMaskSel->insertBefore(
