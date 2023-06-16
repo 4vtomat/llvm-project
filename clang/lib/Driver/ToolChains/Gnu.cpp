@@ -1804,6 +1804,7 @@ static std::string getGCCPath(const Driver &D, const ArgList &Args) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
 /// Extend the multi-lib re-use selection mechanism for RISC-V.
 /// This funciton will try to re-use multi-lib if they are compatible.
 /// Define of compatible:
@@ -1817,9 +1818,9 @@ static std::string getGCCPath(const Driver &D, const ArgList &Args) {
 static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
                                 StringRef Arch,
                                 const Multilib::flags_list &Flags,
-                                Multilib &SelectedMultilib) {
+                                llvm::SmallVector<Multilib> &SelectedMultilibs) {
   // Try to find exact matched multi-lib first.
-  if (RISCVMultilibSet.select(Flags, SelectedMultilib))
+  if (RISCVMultilibSet.select(Flags, SelectedMultilibs))
     return true;
 
   llvm::StringMap<bool> FlagSet;
@@ -1917,19 +1918,16 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   MultilibSet NewRISCVMultilibs =
       MultilibSet().Either(ArrayRef<Multilib>(NewMultilibs));
 
-  Multilib NewSelectedM;
-  if (NewRISCVMultilibs.select(NewFlags, NewSelectedM)) {
-    for (auto M : RISCVMultilibSet) {
-      // Look up the corresponding multi-lib entry in original multi-lib set.
-      if (M.gccSuffix() == NewSelectedM.gccSuffix()) {
-        SelectedMultilib = M;
-        return true;
-      }
-    }
-  }
+  if (NewRISCVMultilibs.select(NewFlags, SelectedMultilibs))
+    for (const Multilib &NewSelectedM : SelectedMultilibs)
+      for (auto M : RISCVMultilibSet)
+        // Look up the corresponding multi-lib entry in original multi-lib set.
+        if (M.gccSuffix() == NewSelectedM.gccSuffix())
+          return true;
 
   return false;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 static bool scanRISCVGCCMultilibConfig(const Driver &D,
                                        const llvm::Triple &TargetTriple,
@@ -2040,7 +2038,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
                  "/../../../../riscv32-unknown-elf/lib" + M.gccSuffix()});
           });
 
-  RISCVMultilibSelect(RISCVMultilibs, MArch, Flags, Result.SelectedMultilib);
+  RISCVMultilibSelect(RISCVMultilibs, MArch, Flags, Result.SelectedMultilibs);
 
   Result.Multilibs = RISCVMultilibs;
 
@@ -2154,12 +2152,7 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
     }
   }
 
-<<<<<<< HEAD
-  if (RISCVMultilibSelect(RISCVMultilibs, MArch, Flags,
-                          Result.SelectedMultilib))
-=======
   if (RISCVMultilibs.select(Flags, Result.SelectedMultilibs))
->>>>>>> upstream/main
     Result.Multilibs = RISCVMultilibs;
 }
 
