@@ -260,6 +260,21 @@ llvm::getOptionalElementCountLoopAttribute(const Loop *TheLoop) {
   return std::nullopt;
 }
 
+#if SIFIVE_CUSTOMIZATION
+std::optional<std::pair<int, int>>
+llvm::getOptionalLmulSewLoopAttribute(const Loop *TheLoop) {
+  std::optional<int> Lmul =
+      getOptionalIntLoopAttribute(TheLoop, "llvm.loop.vectorize.lmul");
+  std::optional<int> Sew =
+      getOptionalIntLoopAttribute(TheLoop, "llvm.loop.vectorize.sew");
+
+  if (!Lmul && !Sew)
+    return std::nullopt;
+
+  return std::make_pair(Lmul ? *Lmul : -1, Sew ? *Sew : -1);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 std::optional<MDNode *> llvm::makeFollowupLoopID(
     MDNode *OrigLoopID, ArrayRef<StringRef> FollowupOptions,
     const char *InheritOptionsExceptPrefix, bool AlwaysNew) {
@@ -401,6 +416,7 @@ TransformationMode llvm::hasVectorizeTransformation(const Loop *L) {
       getOptionalIntLoopAttribute(L, "llvm.loop.interleave.count");
 
 #if SIFIVE_CUSTOMIZATION
+
 #else
   // 'Forcing' vector width and interleave count to one effectively disables
   // this tranformation.

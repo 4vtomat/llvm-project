@@ -2170,10 +2170,17 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   case ISD::FMUL:
   case ISD::FNEG: {
 #if SIFIVE_CUSTOMIZATION
-    // Make cost of the vector instruction the same as the cost of three scalar
-    // FP instructions
-    if (ST->isSiFiveCPU())
+    if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400) {
+      // Make cost of the vector instruction the same as the cost of two scalar
+      // FP instructions
+      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 4;
+    } else if (ST->isSiFiveCPU()) {
+      // X280, P670 and the rest SiFive cores fall into this case.
+      // P670 has two FP pipes so we make the vector cost higher than P470
+      // Make cost of the vector instruction the same as the cost of three scalar
+      // FP instructions
       return ConstantMatCost + getLMULCost(LT.second) * LT.first * 6;
+    }
 #endif // SIFIVE_CUSTOMIZATION
     return ConstantMatCost + getLMULCost(LT.second) * LT.first * 1;
   }

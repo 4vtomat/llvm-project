@@ -209,40 +209,6 @@ LoopInfo::createUnrollAndJamMetadata(const LoopAttributes &Attrs,
   return LoopID;
 }
 
-#if SIFIVE_CUSTOMIZATION
-/*
-        | LMUL = 1     | LMUL = 2      | LMUL = 4      | LMUL = 8
---------|--------------|---------------|---------------|--------------
-int64_t | vs x 1 x i64 | vs x  2 x i64 | vs x  4 x i64 | vs x  8 x i64
-int32_t | vs x 2 x i32 | vs x  4 x i32 | vs x  8 x i32 | vs x 16 x i32
-int16_t | vs x 4 x i16 | vs x  8 x i16 | vs x 16 x i16 | vs x 32 x i16
- int8_t | vs x 8 x i8  | vs x 16 x i8  | vs x 32 x i8  | vs x 64 x i8
-*/
-static std::optional<int> mapLmulSewToVF(const std::pair<int, int> &LmulSew) {
-  int Lmul = LmulSew.first;
-  int Sew = LmulSew.second;
-  if (Lmul < -3 || Lmul > 3 ||
-      (Sew != 8 && Sew != 16 && Sew != 32 && Sew != 64))
-    return std::nullopt;
-
-  const unsigned AssumedMinimalVLen = 64;
-  // MinmumFeasibleLmul = log2(Sew / AssumedMinimalVLen)
-  if (Lmul < (int)llvm::Log2_32(Sew) - (int)llvm::Log2_32(AssumedMinimalVLen))
-    return std::nullopt;
-
-  const unsigned AssumedMinimalTotalVLen =
-      Lmul >= 0 ? AssumedMinimalVLen << Lmul : AssumedMinimalVLen >> -Lmul;
-
-  assert(AssumedMinimalTotalVLen % Sew == 0 &&
-         "Element size (sew) should always be able to utilize the whole vector "
-         "register group");
-
-  unsigned VF = AssumedMinimalTotalVLen / Sew;
-
-  return VF;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 MDNode *
 LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
                                       ArrayRef<Metadata *> LoopProperties,
@@ -256,21 +222,20 @@ LoopInfo::createLoopVectorizeMetadata(const LoopAttributes &Attrs,
     // Existing vectorizer-related metadata (code below) has early return, which
     // is why this if-statement is inserted at the very beginning of the
     // function.
-    std::optional<int> VF = mapLmulSewToVF(*Attrs.RvvForceLmulSew);
+    int Lmul = Attrs.RvvForceLmulSew->first;
+    int Sew = Attrs.RvvForceLmulSew->second;
 
-    assert(VF.has_value() && "Sema checking should have filtered out pairs "
-                             "that does not map to a valid VF");
-
-    Metadata *VectorizeWidthMD[] = {
-        MDString::get(Ctx, "llvm.loop.vectorize.width"),
-        ConstantAsMetadata::get(
-            ConstantInt::get(llvm::Type::getInt32Ty(Ctx), *VF))};
+    Metadata *LmulSewMD[] = {MDString::get(Ctx, "llvm.loop.vectorize.lmul_sew"),
+                             ConstantAsMetadata::get(ConstantInt::get(
+                                 llvm::Type::getInt32Ty(Ctx), Lmul)),
+                             ConstantAsMetadata::get(ConstantInt::get(
+                                 llvm::Type::getInt32Ty(Ctx), Sew))};
     Metadata *VectorizeScalableMD[] = {
         MDString::get(Ctx, "llvm.loop.vectorize.scalable.enable"),
         ConstantAsMetadata::get(
             ConstantInt::get(llvm::Type::getInt1Ty(Ctx), true))};
 
-    NewLoopProperties.push_back(MDNode::get(Ctx, VectorizeWidthMD));
+    NewLoopProperties.push_back(MDNode::get(Ctx, LmulSewMD));
     NewLoopProperties.push_back(MDNode::get(Ctx, VectorizeScalableMD));
 
     LoopProperties = NewLoopProperties;

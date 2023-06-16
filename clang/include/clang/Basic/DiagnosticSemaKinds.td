@@ -1035,7 +1035,7 @@ def err_pragma_loop_precedes_nonloop : Error<
 #ifdef SIFIVE_CUSTOMIZATION
 // #pragma clang rvv lmul_sew diagnostics
 def err_invalid_lmul_sew_pair : Error <
-  "(LMUL, SEW) pair (%0, %1) does not map to a valid VF"
+  "(LMUL, SEW) pair (%0, %1) is not supported by RISC-V Vector Extension"
 >;
 def err_require_vector_support : Error<
   "vector support is required to use '#pragma clang rvv lmul_sew'"

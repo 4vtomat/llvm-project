@@ -2650,7 +2650,7 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP18]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP21]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP20]], <vscale x 1 x i1> [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP22:%.*]] = trunc i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[TMP23]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[TMP21]], <vscale x 1 x i64> [[CSA_DATA_PHI]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP22]])
+; CHECK-NEXT:    [[TMP23]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[TMP21]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP9]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP24]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT2]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
@@ -2728,7 +2728,7 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_COND_ANYACTIVE:%.*]] = call i1 @llvm.vp.reduce.or.nxv1i1(i1 false, <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_VL_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], i32 [[TMP9]], i32 [[CSA_VL_PHI]]
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_MASK_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> [[CSA_MASK_PHI]]
-; DISABLE-RISCV-CSA-NEXT:    [[CSA_DATA_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i64> [[CSA_DATA_PHI]], <vscale x 1 x i64> [[CSA_DATA_PHI]]
+; DISABLE-RISCV-CSA-NEXT:    [[CSA_DATA_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP9]] to i64
 ; DISABLE-RISCV-CSA-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP17]]
 ; DISABLE-RISCV-CSA-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT2]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
@@ -2860,7 +2860,7 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[TMP30:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP28]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP29]])
 ; CHECK-NEXT:    [[TMP31]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP30]], <vscale x 1 x i1> [[TMP27]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP29]])
 ; CHECK-NEXT:    [[TMP32:%.*]] = trunc i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[TMP33]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[TMP31]], <vscale x 1 x i64> [[CSA_DATA_PHI]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP32]])
+; CHECK-NEXT:    [[TMP33]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[TMP31]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP32]])
 ; CHECK-NEXT:    [[TMP34:%.*]] = zext i32 [[TMP9]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP34]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
@@ -2952,7 +2952,7 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_COND_ANYACTIVE:%.*]] = call i1 @llvm.vp.reduce.or.nxv1i1(i1 false, <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_VL_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], i32 [[TMP9]], i32 [[CSA_VL_PHI]]
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_MASK_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> [[CSA_MASK_PHI]]
-; DISABLE-RISCV-CSA-NEXT:    [[CSA_DATA_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i64> [[CSA_DATA_PHI]], <vscale x 1 x i64> [[CSA_DATA_PHI]]
+; DISABLE-RISCV-CSA-NEXT:    [[CSA_DATA_SEL]] = select i1 [[CSA_COND_ANYACTIVE]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP27:%.*]] = zext i32 [[TMP9]] to i64
 ; DISABLE-RISCV-CSA-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP27]]
 ; DISABLE-RISCV-CSA-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP9]])
