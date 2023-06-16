@@ -646,6 +646,7 @@ CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src) {
   return getReductionIntrinsic(Intrinsic::vector_reduce_fmin, Src);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src, Value *RVL,
                                            Value *Mask) {
@@ -669,6 +670,15 @@ CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src, Value *RVL,
                                RVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+CallInst *IRBuilderBase::CreateFPMaximumReduce(Value *Src) {
+  return getReductionIntrinsic(Intrinsic::vector_reduce_fmaximum, Src);
+}
+
+CallInst *IRBuilderBase::CreateFPMinimumReduce(Value *Src) {
+  return getReductionIntrinsic(Intrinsic::vector_reduce_fminimum, Src);
+}
+>>>>>>> upstream/main
 
 CallInst *IRBuilderBase::CreateLifetimeStart(Value *Ptr, ConstantInt *Size) {
   assert(isa<PointerType>(Ptr->getType()) &&

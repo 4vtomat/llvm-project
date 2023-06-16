@@ -770,6 +770,7 @@ class PVString<int nf, bit signed> {
           !eq(nf, 8): !if(signed, "PvPvPvPvPvPvPvPv", "PUvPUvPUvPUvPUvPUvPUvPUv"));
 }
 
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1077,6 +1078,8 @@ multiclass RVVIndexedSegLoad<string op> {
   }
 }
 
+=======
+>>>>>>> upstream/main
 class VString<int nf, bit signed> {
   string S = !cond(!eq(nf, 2): !if(signed, "vv", "UvUv"),
                    !eq(nf, 3): !if(signed, "vvv", "UvUvUv"),
@@ -1087,6 +1090,7 @@ class VString<int nf, bit signed> {
                    !eq(nf, 8): !if(signed, "vvvvvvvv", "UvUvUvUvUvUvUvUv"));
 }
 
+<<<<<<< HEAD
 multiclass RVVUnitStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1247,6 +1251,8 @@ multiclass RVVIndexedSegStore<string op> {
   }
 }
 
+=======
+>>>>>>> upstream/main
 multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
@@ -1644,6 +1650,7 @@ defm vle16ff: RVVVLEFFBuiltin<["s","x"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
+<<<<<<< HEAD
 // 7.8 Vector Load/Store Segment Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand,
 #ifdef SIFIVE_CUSTOMIZATION
@@ -1656,28 +1663,41 @@ defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
 
+=======
+>>>>>>> upstream/main
 multiclass RVVUnitStridedSegLoadTuple<string op> {
-  foreach type = ["i"] in {
-    defvar eew = !cond(!eq(type, "i") : "32");
-      foreach nf = [2] in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+  foreach type = TypeList in {
+    defvar eew = !cond(!eq(type, "c") : "8",
+                       !eq(type, "s") : "16",
+                       !eq(type, "i") : "32",
+                       !eq(type, "l") : "64",
+                       !eq(type, "x") : "16",
+                       !eq(type, "f") : "32",
+                       !eq(type, "d") : "64");
+      foreach nf = NFList in {
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             ManualCodegen = [{
     {
-      assert(((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-            (!IsMasked && (PolicyAttrs & RVV_VTA))) &&
-            "FIXME: Only handling default policy (TAMA) for now");
-
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
 
-      Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      bool NoPassthru =
+        (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
+        (!IsMasked && (PolicyAttrs & RVV_VTA));
+      unsigned Offset = IsMasked ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
 
-      unsigned Offset = IsMasked ? 1 : 0;
+      if (NoPassthru) { // Push poison into passthru
+        Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      } else { // Push intrinsics operands into passthru
+        llvm::Value *PassthruOperand = IsMasked ? Ops[1] : Ops[0];
+        for (unsigned I = 0; I < NF; ++I)
+          Operands.push_back(Builder.CreateExtractValue(PassthruOperand, {I}));
+      }
+
       Operands.push_back(Ops[Offset]); // Ptr
       if (IsMasked)
         Operands.push_back(Ops[0]);
@@ -1694,19 +1714,27 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         return Builder.CreateStore(LoadValue, ReturnValue.getValue());
     }
     }] in {
-          defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", T # "vPCe", type>;
+        defvar T = "(Tuple:" # nf # ")";
+        def : RVVBuiltin<T # "v", T # "vPCe", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<T # "Uv", T # "UvPCUe", type>;
+        }
       }
     }
   }
 }
 
 multiclass RVVUnitStridedSegStoreTuple<string op> {
-  foreach type = ["i"] in {
-    defvar eew = !cond(!eq(type, "i") : "32");
-    foreach nf = [2] in {
-      let Name = op # nf # "e" # eew # "_v_tuple",
-          OverloadedName = op # nf # "e" # eew # "_tuple",
+  foreach type = TypeList in {
+    defvar eew = !cond(!eq(type, "c") : "8",
+                       !eq(type, "s") : "16",
+                       !eq(type, "i") : "32",
+                       !eq(type, "l") : "64",
+                       !eq(type, "x") : "16",
+                       !eq(type, "f") : "32",
+                       !eq(type, "d") : "64");
+      foreach nf = NFList in {
+      let Name = op # nf # "e" # eew # "_v",
           IRName = op # nf,
           MaskedIRName = op # nf # "_mask",
           NF = nf,
@@ -1737,36 +1765,49 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       return Builder.CreateCall(F, Operands, "");
    }
       }] in {
-          defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", "0Pe" # T # "v", type>;
+        defvar T = "(Tuple:" # nf # ")";
+        def : RVVBuiltin<T # "v", "0Pe" # T # "v", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<T # "Uv", "0PUe" # T # "Uv", type>;
+        }
       }
     }
   }
 }
 
 multiclass RVVUnitStridedSegLoadFFTuple<string op> {
-  foreach type = ["i"] in {
-    defvar eew = !cond(!eq(type, "i") : "32");
-      foreach nf = [2] in {
-        let Name = op # nf # "e" # eew # "ff_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "ff_tuple",
+  foreach type = TypeList in {
+    defvar eew = !cond(!eq(type, "c") : "8",
+                       !eq(type, "s") : "16",
+                       !eq(type, "i") : "32",
+                       !eq(type, "l") : "64",
+                       !eq(type, "x") : "16",
+                       !eq(type, "f") : "32",
+                       !eq(type, "d") : "64");
+      foreach nf = NFList in {
+        let Name = op # nf # "e" # eew # "ff_v",
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
             ManualCodegen = [{
     {
-      assert(((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-             (!IsMasked && (PolicyAttrs & RVV_VTA))) &&
-             "FIXME: Only handling default policy (TAMA) for now");
-
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
 
-      Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      bool NoPassthru =
+        (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
+        (!IsMasked && (PolicyAttrs & RVV_VTA));
+      unsigned Offset = IsMasked ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
 
-      unsigned Offset = IsMasked ? 1 : 0;
+      if (NoPassthru) { // Push poison into passthru
+        Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      } else { // Push intrinsics operands into passthru
+        llvm::Value *PassthruOperand = IsMasked ? Ops[1] : Ops[0];
+        for (unsigned I = 0; I < NF; ++I)
+          Operands.push_back(Builder.CreateExtractValue(PassthruOperand, {I}));
+      }
+
       Operands.push_back(Ops[Offset]); // Ptr
       if (IsMasked)
         Operands.push_back(Ops[0]);
@@ -1797,36 +1838,49 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         return Builder.CreateStore(ReturnTuple, ReturnValue.getValue());
     }
     }] in {
-          defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", T # "vPCePz", type>;
+        defvar T = "(Tuple:" # nf # ")";
+        def : RVVBuiltin<T # "v", T # "vPCePz", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<T # "Uv", T # "UvPCUePz", type>;
+        }
       }
     }
   }
 }
 
 multiclass RVVStridedSegLoadTuple<string op> {
-  foreach type = ["i"] in {
-    defvar eew = !cond(!eq(type, "i") : "32");
-      foreach nf = [2] in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+  foreach type = TypeList in {
+    defvar eew = !cond(!eq(type, "c") : "8",
+                       !eq(type, "s") : "16",
+                       !eq(type, "i") : "32",
+                       !eq(type, "l") : "64",
+                       !eq(type, "x") : "16",
+                       !eq(type, "f") : "32",
+                       !eq(type, "d") : "64");
+      foreach nf = NFList in {
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             ManualCodegen = [{
     {
-      assert(((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-             (!IsMasked && (PolicyAttrs & RVV_VTA))) &&
-             "FIXME: Only handling default policy (TAMA) for now");
-
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
 
-      Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      bool NoPassthru =
+        (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
+        (!IsMasked && (PolicyAttrs & RVV_VTA));
+      unsigned Offset = IsMasked ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
 
-      unsigned Offset = IsMasked ? 1 : 0;
+      if (NoPassthru) { // Push poison into passthru
+        Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      } else { // Push intrinsics operands into passthru
+        llvm::Value *PassthruOperand = IsMasked ? Ops[1] : Ops[0];
+        for (unsigned I = 0; I < NF; ++I)
+          Operands.push_back(Builder.CreateExtractValue(PassthruOperand, {I}));
+      }
+
       Operands.push_back(Ops[Offset]); // Ptr
       Operands.push_back(Ops[Offset + 1]); // Stride
       if (IsMasked)
@@ -1844,19 +1898,27 @@ multiclass RVVStridedSegLoadTuple<string op> {
         return Builder.CreateStore(LoadValue, ReturnValue.getValue());
     }
     }] in {
-          defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", T # "vPCet", type>;
+        defvar T = "(Tuple:" # nf # ")";
+        def : RVVBuiltin<T # "v", T # "vPCet", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<T # "Uv", T # "UvPCUet", type>;
+        }
       }
     }
   }
 }
 
 multiclass RVVStridedSegStoreTuple<string op> {
-  foreach type = ["i"] in {
-    defvar eew = !cond(!eq(type, "i") : "32");
-      foreach nf = [2] in {
-        let Name = op # nf # "e" # eew # "_v_tuple",
-            OverloadedName = op # nf # "e" # eew # "_tuple",
+  foreach type = TypeList in {
+    defvar eew = !cond(!eq(type, "c") : "8",
+                       !eq(type, "s") : "16",
+                       !eq(type, "i") : "32",
+                       !eq(type, "l") : "64",
+                       !eq(type, "x") : "16",
+                       !eq(type, "f") : "32",
+                       !eq(type, "d") : "64");
+      foreach nf = NFList in {
+        let Name = op # nf # "e" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -1889,37 +1951,45 @@ multiclass RVVStridedSegStoreTuple<string op> {
       return Builder.CreateCall(F, Operands, "");
     }
             }] in {
-          defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", "0Pet" # T # "v", type>;
+        defvar T = "(Tuple:" # nf # ")";
+        def : RVVBuiltin<T # "v", "0Pet" # T # "v", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVBuiltin<T # "Uv", "0PUet" # T # "Uv", type>;
+        }
       }
     }
   }
 }
 
 multiclass RVVIndexedSegLoadTuple<string op> {
-  foreach type = ["i"] in {
-    foreach eew_info = [["32", "(Log2EEW:5)"]] in {
+  foreach type = TypeList in {
+    foreach eew_info = EEWList in {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
-      foreach nf = [2] in {
-        let Name = op # nf # "ei" # eew # "_v_tuple",
-            OverloadedName = op # nf # "ei" # eew # "_tuple",
+      foreach nf = NFList in {
+        let Name = op # nf # "ei" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             ManualCodegen = [{
     {
-      assert(((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-             (!IsMasked && (PolicyAttrs & RVV_VTA))) &&
-             "FIXME: Only handling default policy (TAMA) for now");
-
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-
+      IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
 
-      Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      bool NoPassthru =
+        (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
+        (!IsMasked && (PolicyAttrs & RVV_VTA));
+      unsigned Offset = IsMasked ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
 
-      unsigned Offset = IsMasked ? 1 : 0;
+      if (NoPassthru) { // Push poison into passthru
+        Operands.append(NF, llvm::PoisonValue::get(ElementVectorType));
+      } else { // Push intrinsics operands into passthru
+        llvm::Value *PassthruOperand = IsMasked ? Ops[1] : Ops[0];
+        for (unsigned I = 0; I < NF; ++I)
+          Operands.push_back(Builder.CreateExtractValue(PassthruOperand, {I}));
+      }
+
       Operands.push_back(Ops[Offset]); // Ptr
       Operands.push_back(Ops[Offset + 1]); // Idx
       if (IsMasked)
@@ -1940,7 +2010,10 @@ multiclass RVVIndexedSegLoadTuple<string op> {
     }
     }] in {
           defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", T # "vPCe" # eew_type # "Uv", type>;
+          def : RVVBuiltin<T # "v", T # "vPCe" # eew_type # "Uv", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<T # "Uv", T # "UvPCUe" # eew_type # "Uv", type>;
+          }
         }
       }
     }
@@ -1948,13 +2021,12 @@ multiclass RVVIndexedSegLoadTuple<string op> {
 }
 
 multiclass RVVIndexedSegStoreTuple<string op> {
-  foreach type = ["i"] in {
-    foreach eew_info = [["32", "(Log2EEW:5)"]] in {
+  foreach type = TypeList in {
+    foreach eew_info = EEWList in {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
-      foreach nf = [2] in {
-        let Name = op # nf # "ei" # eew # "_v_tuple",
-            OverloadedName = op # nf # "ei" # eew # "_tuple",
+      foreach nf = NFList in {
+        let Name = op # nf # "ei" # eew # "_v",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -1989,22 +2061,24 @@ multiclass RVVIndexedSegStoreTuple<string op> {
     }
             }] in {
           defvar T = "(Tuple:" # nf # ")";
-          def : RVVBuiltin<"v", "0Pe" # eew_type # "Uv" # T # "v", type>;
+          def : RVVBuiltin<T # "v", "0Pe" # eew_type # "Uv" # T # "v", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<T # "Uv", "0PUe" # eew_type # "Uv" # T # "Uv", type>;
+          }
         }
       }
     }
   }
 }
 
-// TODO: Extend for policy
-let UnMaskedPolicyScheme = NonePolicy,
-    MaskedPolicyScheme = NonePolicy,
+// 7.8 Vector Load/Store Segment Instructions
+let UnMaskedPolicyScheme = HasPassthruOperand,
     IsTuple = true in {
-defm : RVVUnitStridedSegLoadTuple<"vlseg">;
-defm : RVVUnitStridedSegLoadFFTuple<"vlseg">;
-defm : RVVStridedSegLoadTuple<"vlsseg">;
-defm : RVVIndexedSegLoadTuple<"vluxseg">;
-defm : RVVIndexedSegLoadTuple<"vloxseg">;
+  defm : RVVUnitStridedSegLoadTuple<"vlseg">;
+  defm : RVVUnitStridedSegLoadFFTuple<"vlseg">;
+  defm : RVVStridedSegLoadTuple<"vlsseg">;
+  defm : RVVIndexedSegLoadTuple<"vluxseg">;
+  defm : RVVIndexedSegLoadTuple<"vloxseg">;
 }
 
 let UnMaskedPolicyScheme = NonePolicy,
@@ -2016,6 +2090,7 @@ defm : RVVIndexedSegStoreTuple<"vsuxseg">;
 defm : RVVIndexedSegStoreTuple<"vsoxseg">;
 }
 
+<<<<<<< HEAD
 
 let UnMaskedPolicyScheme = NonePolicy,
     MaskedPolicyScheme = NonePolicy,
@@ -2028,6 +2103,8 @@ defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
 }
 
+=======
+>>>>>>> upstream/main
 // 12. Vector Integer Arithmetic Instructions
 // 12.1. Vector Single-Width Integer Add and Subtract
 let UnMaskedPolicyScheme = HasPassthruOperand in {
@@ -2722,15 +2799,14 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "csilxfd", dst_lmul # "v">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "UvUvKz", "csil", dst_lmul # "Uv">;
     }
-    foreach nf = [2] in {
-      let Log2LMUL = [0] in {
-        defvar T = "(Tuple:" # nf # ")";
-        def : RVVBuiltin<T # "vv", "v" # T # "vKz", "i", "v">;
-      }
+    foreach nf = NFList in {
+      defvar T = "(Tuple:" # nf # ")";
+      def : RVVBuiltin<T # "vv", "v" # T # "vKz", "csilxfd", "v">;
+      def : RVVBuiltin<T # "UvUv", "Uv" # T # "UvKz", "csil", "Uv">;
     }
   }
 
-  let Name = "vset_v", Log2LMUL = [0, 1, 2], MaskedPolicyScheme = NonePolicy,
+  let Name = "vset_v", MaskedPolicyScheme = NonePolicy,
       ManualCodegen = [{
       {
         if (isa<StructType>(ResultType)) // For tuple type
@@ -2751,15 +2827,16 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         return Builder.CreateInsertVector(ResultType, Ops[0], Ops[2], Ops[1]);
       }
       }] in {
-    foreach dst_lmul = ["(LFixedLog2LMUL:1)", "(LFixedLog2LMUL:2)", "(LFixedLog2LMUL:3)"] in {
-      def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "csilxfd">;
-      def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "Uv" # dst_lmul #"UvKzUv", "csil">;
-    }
-    foreach nf = [2] in {
-      let Log2LMUL = [0] in {
-        defvar T = "(Tuple:" # nf # ")";
-        def : RVVBuiltin<T # "vv", T # "v" # T # "vKzv", "i", "v">;
+    let Log2LMUL = [0, 1, 2] in {
+      foreach dst_lmul = ["(LFixedLog2LMUL:1)", "(LFixedLog2LMUL:2)", "(LFixedLog2LMUL:3)"] in {
+        def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "csilxfd">;
+        def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "Uv" # dst_lmul #"UvKzUv", "csil">;
       }
+    }
+    foreach nf = NFList in {
+      defvar T = "(Tuple:" # nf # ")";
+      def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "csilxfd">;
+      def : RVVBuiltin<"Uv" # T # "Uv", T # "Uv" # T # "UvKzUv", "csil">;
     }
   }
 }

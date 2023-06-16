@@ -41,11 +41,6 @@ void initializeRISCVTypePromotionPass(PassRegistry &);
 FunctionPass *createRISCVCodeGenPreparePass();
 void initializeRISCVCodeGenPreparePass(PassRegistry &);
 
-bool lowerRISCVMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
-                                    AsmPrinter &AP);
-bool lowerRISCVMachineOperandToMCOperand(const MachineOperand &MO,
-                                         MCOperand &MCOp, const AsmPrinter &AP);
-
 FunctionPass *createRISCVISelDag(RISCVTargetMachine &TM,
                                  CodeGenOpt::Level OptLevel);
 

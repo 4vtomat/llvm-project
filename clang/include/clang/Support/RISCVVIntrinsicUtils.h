@@ -71,6 +71,12 @@ enum class VectorTypeModifier : uint8_t {
   SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
   Tuple2,
+  Tuple3,
+  Tuple4,
+  Tuple5,
+  Tuple6,
+  Tuple7,
+  Tuple8,
 };
 
 // Similar to basic type but used to describe what's kind of type related to
@@ -344,7 +350,7 @@ public:
   ScalarTypeKind getScalarType() const { return ScalarType; }
   VScaleVal getScale() const { return Scale; }
   unsigned getNF() const {
-    assert(NF > 1 && NF < 8 && "Only legal NF should be fetched");
+    assert(NF > 1 && NF <= 8 && "Only legal NF should be fetched");
     return NF;
   }
 
