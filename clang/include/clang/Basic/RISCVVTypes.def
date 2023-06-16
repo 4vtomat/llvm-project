@@ -157,9 +157,6 @@ RVV_PREDICATE_TYPE("__rvv_bool32_t", RvvBool32, RvvBool32Ty, 2)
 RVV_PREDICATE_TYPE("__rvv_bool64_t", RvvBool64, RvvBool64Ty, 1)
 
 //===- Tuple vector types -------------------------------------------------===//
-<<<<<<< HEAD
-RVV_VECTOR_TYPE_INT("__rvv_int32m1x2_t", RvvInt32m1x2, RvvInt32m1x2Ty, 2,  32, 2, true)
-=======
 //===- Int8 tuple types --------------------------------------------------===//
 RVV_VECTOR_TYPE_INT("__rvv_int8mf8x2_t", RvvInt8mf8x2, RvvInt8mf8x2Ty, 1, 8, 2, true)
 RVV_VECTOR_TYPE_INT("__rvv_int8mf8x3_t", RvvInt8mf8x3, RvvInt8mf8x3Ty, 1, 8, 3, true)
@@ -444,7 +441,6 @@ RVV_VECTOR_TYPE_FLOAT("__rvv_float64m2x3_t", RvvFloat64m2x3, RvvFloat64m2x3Ty, 2
 RVV_VECTOR_TYPE_FLOAT("__rvv_float64m2x4_t", RvvFloat64m2x4, RvvFloat64m2x4Ty, 2, 64, 4)
 
 RVV_VECTOR_TYPE_FLOAT("__rvv_float64m4x2_t", RvvFloat64m4x2, RvvFloat64m4x2Ty, 4, 64, 2)
->>>>>>> upstream/main
 
 #undef RVV_VECTOR_TYPE_BFLOAT
 #undef RVV_VECTOR_TYPE_FLOAT
