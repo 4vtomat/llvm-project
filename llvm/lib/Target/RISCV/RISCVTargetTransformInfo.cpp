@@ -54,14 +54,9 @@ static cl::opt<unsigned> RVVRegisterWidthLMUL(
 static cl::opt<unsigned> SLPMaxVF(
     "riscv-v-slp-max-vf",
     cl::desc(
-<<<<<<< HEAD
-        "Result used for getMaximumVF query which is used exclusively by "
-        "SLP vectorizer.  Defaults to 1 which disables SLP."),
-#if SIFIVE_CUSTOMIZATION
-    cl::init(0), cl::Hidden);
-#else
-    cl::init(1), cl::Hidden);
-#endif
+        "Overrides result used for getMaximumVF query which is used "
+        "exclusively by SLP vectorizer."),
+    cl::Hidden);
 
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<unsigned> VectorPrimaryLMULMinExp(
@@ -78,11 +73,6 @@ cl::opt<unsigned> VectorPrimaryLMULMaxExp(
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
 #endif
-=======
-        "Overrides result used for getMaximumVF query which is used "
-        "exclusively by SLP vectorizer."),
-    cl::Hidden);
->>>>>>> upstream/main
 
 InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
   // TODO: Here assume reciprocal throughput is 1 for LMUL_1, it is
@@ -96,8 +86,10 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
     bool Fractional;
     std::tie(LMul, Fractional) =
         RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(VT));
-<<<<<<< HEAD
-    Cost = Fractional ? 1 : LMul;
+    if (Fractional)
+      Cost = LMul <= DLenFactor ? (DLenFactor / LMul) : 1;
+    else
+      Cost = (LMul * DLenFactor);
 #if SIFIVE_CUSTOMIZATION
     // Here uses DLEN as the reciprocal throughput cost,
     // x280: VLEN = 2 * DLEN
@@ -107,7 +99,7 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = Fractional ? 1 : LMul * 2;
 #endif // SIFIVE_CUSTOMIZATION
   } else {
-    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen());
+    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / DLenFactor);
 #if SIFIVE_CUSTOMIZATION
     // Here uses DLEN as the reciprocal throughput cost,
     // x280: VLEN = 2 * DLEN
@@ -116,14 +108,6 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
     if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
       Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / 2);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    if (Fractional)
-      Cost = LMul <= DLenFactor ? (DLenFactor / LMul) : 1;
-    else
-      Cost = (LMul * DLenFactor);
-  } else {
-    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / DLenFactor);
->>>>>>> upstream/main
   }
   return Cost;
 }
