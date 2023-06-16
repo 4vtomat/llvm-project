@@ -812,7 +812,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::SFixedLog2LMUL3:
     applyFixedLog2LMUL(3, FixedLMULType::SmallerThan);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::Widening2XVectorMultipleLMUL2:
     ElementBitwidth *= 2;
@@ -835,8 +834,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     Scale = LMUL.getScale(ElementBitwidth);
     break;
 #endif // SIFIVE_CUSTOMIZATION
-  case VectorTypeModifier::Tuple2: {
-=======
   case VectorTypeModifier::Tuple2:
   case VectorTypeModifier::Tuple3:
   case VectorTypeModifier::Tuple4:
@@ -844,7 +841,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::Tuple6:
   case VectorTypeModifier::Tuple7:
   case VectorTypeModifier::Tuple8: {
->>>>>>> upstream/main
     IsTuple = true;
     NF = 2 + static_cast<uint8_t>(Transformer.VTM) -
          static_cast<uint8_t>(VectorTypeModifier::Tuple2);
@@ -1141,16 +1137,11 @@ llvm::SmallVector<PrototypeDescriptor> RVVIntrinsic::computeBuiltinTypes(
   // If HasVL, append PrototypeDescriptor:VL to last operand
   if (HasVL)
     NewPrototype.push_back(PrototypeDescriptor::VL);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (PolicyAttrs.isNTLPolicy())
     NewPrototype.push_back(PrototypeDescriptor::NTLDomainType);
 #endif // SIFIVE_CUSTOMIZATION
-  if (IsTuple)
-    NewPrototype[0].VTM = static_cast<uint8_t>(VectorTypeModifier::Tuple2);
-=======
 
->>>>>>> upstream/main
   return NewPrototype;
 }
 
