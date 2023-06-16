@@ -213,8 +213,7 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   // extended from a smaller size, always outputs a small integer, or put zeros
   // in bits 63:31. Used by the SExtWRemoval pass.
   bit IsSignExtendingOpW = 0;
-<<<<<<< HEAD
-  let TSFlags{19} = IsSignExtendingOpW;
+  let TSFlags{18} = IsSignExtendingOpW;
 
 #ifdef SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
@@ -226,9 +225,6 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit HasRoundModeOp = 0;
   let TSFlags{63} =  HasRoundModeOp;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  let TSFlags{18} = IsSignExtendingOpW;
->>>>>>> upstream/main
 }
 
 // Pseudo instructions
