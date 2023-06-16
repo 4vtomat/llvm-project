@@ -445,7 +445,6 @@ def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                        FeatureStdExtC,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb],
-<<<<<<< HEAD
                                       [TuneSiFiveP500]>;
 
 def SIFIVE_P650 : RISCVProcessorModel<"sifive-p650", SiFiveP600Model,
@@ -486,10 +485,6 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksh],
                                       [TuneSiFiveP600, TuneDLen128b]>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                      [TuneSiFive7,
-                                       TuneDLenFactor2]>;
->>>>>>> upstream/main
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,
