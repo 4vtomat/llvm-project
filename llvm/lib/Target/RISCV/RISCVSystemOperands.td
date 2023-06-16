@@ -336,11 +336,7 @@ def : SysReg<"dscratch1", 0x7B3>;
 //===----------------------------------------------------------------------===//
 def : SysReg<"vstart", 0x008>;
 def : SysReg<"vxsat", 0x009>;
-<<<<<<< HEAD
-def SysRegVXRM : SysReg<"vxrm", 0x00A>; // SIFIVE
-=======
 def SysRegVXRM : SysReg<"vxrm", 0x00A>;
->>>>>>> upstream/main
 def : SysReg<"vcsr", 0x00F>;
 def SysRegVL : SysReg<"vl", 0xC20>;
 def : SysReg<"vtype", 0xC21>;
