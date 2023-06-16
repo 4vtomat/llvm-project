@@ -1396,7 +1396,7 @@ std::vector<std::string> RISCVISAInfo::toFeatureVector() const {
 #if SIFIVE_CUSTOMIZATION
 static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
     tryDecodeExtWithVersion(StringRef Ext) {
-  auto Pos = findFirstNonVersionCharacter(Ext) + 1;
+  auto Pos = findLastNonVersionCharacter(Ext) + 1;
   if (Pos == Ext.size())
     return std::nullopt;
 
