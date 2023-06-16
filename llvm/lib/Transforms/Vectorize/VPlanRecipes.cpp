@@ -1498,7 +1498,11 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   }
 
   for (unsigned Part = 0; Part < State.UF; ++Part) {
-    Value *NewMask = State.get(getVPNewMask(), Part);
+    // We can't use the NewMask to update the data. We must use the condition
+    // vector since it is possible that condition vector is all false but
+    // lanes from a prior iteration on 0..RVL are active in NewMask.
+    // Value *Cond = State.get(getVPCond(), Part);
+    Value *Cond = State.get(getVPCond(), Part);
     Value *DataPhi = State.get(getVPDataPhi(), Part);
     Value *UndistData = getVPDataPhi() == getVPTrue()
                               ? State.get(getVPFalse(), Part)
@@ -1513,7 +1517,7 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
     Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
     Value *NewData = State.Builder.CreateIntrinsic(
         DataPhi->getType(), Intrinsic::vp_merge,
-        {NewMask, UndistData, OldData, RVL32});
+        {Cond, UndistData, OldData, RVL32});
     if (Part == State.UF - 1)
       cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
     State.set(this, NewData, Part);
