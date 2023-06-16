@@ -692,10 +692,12 @@ def FeatureStdExtZvkn
                        "This extension is shorthand for the following set of "
                        "other extensions: Zvkned, Zvknhb, Zvbb, Zvbc, and Zvkt.">;
 
+#ifndef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvknc
     : SubtargetFeature<"experimental-zvknc", "HasStdExtZvknc", "true",
                        "This extension is shorthand for the following set of "
                        "other extensions: Zvkn and Zvbc.">;
+#endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtZvkned
     : SubtargetFeature<"experimental-zvkned", "HasStdExtZvkned", "true",
@@ -726,10 +728,12 @@ def FeatureStdExtZvks
                        "This extension is shorthand for the following set of "
                        "other extensions: Zvksed, Zvksh, Zvbb, Zvbc, and Zvkt.">;
 
+#ifndef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvksc
     : SubtargetFeature<"experimental-zvksc", "HasStdExtZvksc", "true",
                        "This extension is shorthand for the following set of "
                        "other extensions: Zvks and Zvbc.">;
+#endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtZvksed
     : SubtargetFeature<"experimental-zvksed", "HasStdExtZvksed", "true",
