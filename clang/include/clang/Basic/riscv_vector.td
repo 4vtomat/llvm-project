@@ -1279,6 +1279,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar PV = PVString<nf, /*signed=*/true>.S;
           defvar PUV = PVString<nf, /*signed=*/false>.S;
@@ -1377,6 +1378,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar V = VString<nf, /*signed=*/true>.S;
           defvar UV = VString<nf, /*signed=*/false>.S;
@@ -1519,6 +1521,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar PV = PVString<nf, /*signed=*/true>.S;
           defvar PUV = PVString<nf, /*signed=*/false>.S;
@@ -1648,6 +1651,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar PV = PVString<nf, /*signed=*/true>.S;
           defvar PUV = PVString<nf, /*signed=*/false>.S;
@@ -1747,6 +1751,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar V = VString<nf, /*signed=*/true>.S;
           defvar UV = VString<nf, /*signed=*/false>.S;
@@ -1874,6 +1879,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar PV = PVString<nf, /*signed=*/true>.S;
           defvar PUV = PVString<nf, /*signed=*/false>.S;
@@ -1973,6 +1979,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
         // Declare v0.11 interface
         let HasNontemporalOperand = true,
+            IsV0p11Deprecated = true,
             IsTuple = false in {
           defvar V = VString<nf, /*signed=*/true>.S;
           defvar UV = VString<nf, /*signed=*/false>.S;
@@ -2994,4 +3001,10 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
     defm vsha2ms : RVVOutOp1BuiltinSetP<1, "il">;
   }
 }
+
+let HeaderCode = [{
+#ifdef __rvv_0p11_compatible_intrinsics
+#pragma clang riscv intrinsic v0p11
+#endif
+}] in def triggerv0p11compatible : RVVHeader;
 #endif // SIFIVE_CUSTOMIZATION

@@ -272,6 +272,12 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
     // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
     // in RISCVVEmitter.cpp.
     for (auto &Record : Recs) {
+#if SIFIVE_CUSTOMIZATION
+      // Do not add the v0.11 intrinsics into the compiler if declaration switch
+      // is not triggered.
+      if (!S.DeclareRISCVVectorV0p11Builtins && Record.IsV0p11Deprecated)
+        continue;
+#endif
       // Create Intrinsics for each type and LMUL.
       BasicType BaseType = BasicType::Unknown;
       ArrayRef<PrototypeDescriptor> BasicProtoSeq =

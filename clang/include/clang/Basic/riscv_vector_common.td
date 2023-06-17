@@ -177,6 +177,10 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
 
 #ifdef SIFIVE_CUSTOMIZATION
   bit HasNontemporalOperand = false;
+
+  // Set to true if the builtin is a deprecated intrinsic that exists in v0.11
+  // and not in v1.0
+  bit IsV0p11Deprecated = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   // If HasMasked, this flag states that this builtin has a maskedoff operand. It

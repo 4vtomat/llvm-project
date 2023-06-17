@@ -582,6 +582,7 @@ struct RVVIntrinsicRecord {
   bool HasMaskPolicy : 1;
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
+  bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
   bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;

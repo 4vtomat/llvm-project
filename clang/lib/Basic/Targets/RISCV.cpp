@@ -203,6 +203,8 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 #if SIFIVE_CUSTOMIZATION
     // Enable the inclusion of the compatible header by default.
     Builder.defineMacro("__rvv_0p10_compatible_intrinsics");
+    // Enable the inclusion for compatibility support of v0.11 intrinsics
+    Builder.defineMacro("__rvv_0p11_compatible_intrinsics");
 #endif
   }
 

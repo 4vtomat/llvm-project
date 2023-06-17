@@ -67,6 +67,7 @@ struct SemaRecord {
   bool HasMaskPolicy : 1;
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
+  bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
   bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;
@@ -572,6 +573,7 @@ void RVVEmitter::createRVVIntrinsics(
     bool HasMaskPolicy = R->getValueAsBit("HasMaskPolicy");
 #if SIFIVE_CUSTOMIZATION
     bool HasNontemporalOperand = R->getValueAsBit("HasNontemporalOperand");
+    bool IsV0p11Deprecated = R->getValueAsBit("IsV0p11Deprecated");
 #endif // SIFIVE_CUSTOMIZATION
     bool SupportOverloading = R->getValueAsBit("SupportOverloading");
     bool HasBuiltinAlias = R->getValueAsBit("HasBuiltinAlias");
@@ -777,6 +779,7 @@ void RVVEmitter::createRVVIntrinsics(
     SR.HasMaskPolicy = HasMaskPolicy;
 #if SIFIVE_CUSTOMIZATION
     SR.HasNontemporalOperand = HasNontemporalOperand;
+    SR.IsV0p11Deprecated = IsV0p11Deprecated;
 #endif // SIFIVE_CUSTOMIZATION
     SR.UnMaskedPolicyScheme = static_cast<uint8_t>(UnMaskedPolicyScheme);
     SR.MaskedPolicyScheme = static_cast<uint8_t>(MaskedPolicyScheme);
@@ -825,6 +828,7 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
     R.HasMaskPolicy = SR.HasMaskPolicy;
 #if SIFIVE_CUSTOMIZATION
     R.HasNontemporalOperand = SR.HasNontemporalOperand;
+    R.IsV0p11Deprecated = SR.IsV0p11Deprecated;
 #endif // SIFIVE_CUSTOMIZATION
     R.UnMaskedPolicyScheme = SR.UnMaskedPolicyScheme;
     R.MaskedPolicyScheme = SR.MaskedPolicyScheme;

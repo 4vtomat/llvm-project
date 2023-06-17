@@ -4165,6 +4165,7 @@ void PragmaMaxTokensTotalHandler::HandlePragma(Preprocessor &PP,
 
 // Handle '#pragma clang riscv intrinsic vector'.
 //        '#pragma clang riscv intrinsic sifive_vector'.
+//        '#pragma clang riscv intrinsic v0p11'. (SIFIVE)
 void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
                                       PragmaIntroducer Introducer,
                                       Token &FirstToken) {
@@ -4180,10 +4181,19 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
 
   PP.Lex(Tok);
   II = Tok.getIdentifierInfo();
+#if SIFIVE_CUSTOMIZATION
+  if (!II || !(II->isStr("vector") || II->isStr("sifive_vector") ||
+               II->isStr("v0p11"))) {
+#else
   if (!II || !(II->isStr("vector") || II->isStr("sifive_vector"))) {
+#endif
     PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
         << PP.getSpelling(Tok) << "riscv" << /*Expected=*/true
+#if SIFIVE_CUSTOMIZATION
+        << "'vector' or 'sifive_vector' or 'v0p11'";
+#else
         << "'vector' or 'sifive_vector'";
+#endif
     return;
   }
 
@@ -4198,6 +4208,10 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
     Actions.DeclareRISCVVBuiltins = true;
   else if (II->isStr("sifive_vector"))
     Actions.DeclareRISCVSiFiveVectorBuiltins = true;
+#if SIFIVE_CUSTOMIZATION
+  else if (II->isStr("v0p11"))
+    Actions.DeclareRISCVVectorV0p11Builtins = true;
+#endif
 }
 
 #if SIFIVE_CUSTOMIZATION

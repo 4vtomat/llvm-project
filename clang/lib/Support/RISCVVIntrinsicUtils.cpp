@@ -1274,6 +1274,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.HasMaskPolicy << ",";
 #if SIFIVE_CUSTOMIZATION
   OS << (int)Record.HasNontemporalOperand << ",";
+  OS << (int)Record.IsV0p11Deprecated << ",";
 #endif // SIFIVE_CUSTOMIZATION
   OS << (int)Record.IsTuple << ",";
   OS << (int)Record.UnMaskedPolicyScheme << ",";
