@@ -770,322 +770,6 @@ class PVString<int nf, bit signed> {
           !eq(nf, 8): !if(signed, "PvPvPvPvPvPvPvPv", "PUvPUvPUvPUvPUvPUvPUvPUv"));
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-multiclass RVVUnitStridedSegLoad<string op> {
-  foreach type = TypeList in {
-    defvar eew = !cond(!eq(type, "c") : "8",
-                       !eq(type, "s") : "16",
-                       !eq(type, "i") : "32",
-                       !eq(type, "l") : "64",
-                       !eq(type, "x") : "16",
-                       !eq(type, "f") : "32",
-                       !eq(type, "d") : "64");
-      foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-        llvm::MDNode *NTLNode;
-        if(IsNontemporal)
-          NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-      IntrinsicTypes = {ResultType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-
-      // Please refer to comment under 'defvar NFList' in this file
-      if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-          (!IsMasked && PolicyAttrs & RVV_VTA))
-        Operands.append(NF, llvm::PoisonValue::get(ResultType));
-      else {
-        if (IsMasked)
-          Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
-        else // Unmasked
-          Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
-      }
-      unsigned PtrOperandIdx = IsMasked ?
-        ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
-        (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
-      Value *PtrOperand = Ops[PtrOperandIdx];
-      Value *VLOperand = Ops[PtrOperandIdx + 1];
-      Operands.push_back(PtrOperand);
-      if (IsMasked)
-        Operands.push_back(Ops[NF]);
-      Operands.push_back(VLOperand);
-      if (IsMasked)
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-
-      llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::Value *LoadValue;
-      if (IsNontemporal)
-        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-      else
-        LoadValue = Builder.CreateCall(F, Operands, "");
-#endif // SIFIVE_CUSTOMIZATION
-      clang::CharUnits Align =
-          CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-      llvm::Value *V;
-      for (unsigned I = 0; I < NF; ++I) {
-        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
-        V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
-      }
-      return V;
-    }
-    }] in {
-          defvar PV = PVString<nf, /*signed=*/true>.S;
-          defvar PUV = PVString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0" # PV # "PCe", type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe", type>;
-        }
-      }
-    }
-  }
-}
-
-multiclass RVVUnitStridedSegLoadFF<string op> {
-  foreach type = TypeList in {
-    defvar eew = !cond(!eq(type, "c") : "8",
-                       !eq(type, "s") : "16",
-                       !eq(type, "i") : "32",
-                       !eq(type, "l") : "64",
-                       !eq(type, "x") : "16",
-                       !eq(type, "f") : "32",
-                       !eq(type, "d") : "64");
-      foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "ff_v",
-            IRName = op # nf # "ff",
-            MaskedIRName = op # nf # "ff_mask",
-            NF = nf,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-        llvm::MDNode *NTLNode;
-        if(IsNontemporal)
-          NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-      IntrinsicTypes = {ResultType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-
-      // Please refer to comment under 'defvar NFList' in this file
-      if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-          (!IsMasked && PolicyAttrs & RVV_VTA))
-        Operands.append(NF, llvm::PoisonValue::get(ResultType));
-      else {
-        if (IsMasked)
-          Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
-        else // Unmasked
-          Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
-      }
-      unsigned PtrOperandIdx = IsMasked ?
-        ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
-        (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
-      Value *PtrOperand = Ops[PtrOperandIdx];
-      Value *NewVLOperand = Ops[PtrOperandIdx + 1];
-      Value *VLOperand = Ops[PtrOperandIdx + 2];
-      Operands.push_back(PtrOperand);
-      if (IsMasked)
-        Operands.push_back(Ops[NF]);
-      Operands.push_back(VLOperand);
-      if (IsMasked)
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-
-      llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::Value *LoadValue;
-      if (IsNontemporal)
-        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-      else
-        LoadValue = Builder.CreateCall(F, Operands, "");
-#endif // SIFIVE_CUSTOMIZATION
-      clang::CharUnits Align =
-          CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-      for (unsigned I = 0; I < NF; ++I) {
-        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
-        Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
-      }
-      // Store new_vl.
-      llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {NF});
-      return Builder.CreateStore(Val, Address(NewVLOperand, Val->getType(), Align));
-    }
-    }] in {
-          defvar PV = PVString<nf, /*signed=*/true>.S;
-          defvar PUV = PVString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0" # PV # "PCe" # "Pz", type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # "Pz", type>;
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> 5a80ef3fde9c ([1/6][Clang][RISCV] Replace unit-stride (fault-first) segment load with tuple type interfaces)
-multiclass RVVStridedSegLoad<string op> {
-  foreach type = TypeList in {
-    defvar eew = !cond(!eq(type, "c") : "8",
-                       !eq(type, "s") : "16",
-                       !eq(type, "i") : "32",
-                       !eq(type, "l") : "64",
-                       !eq(type, "x") : "16",
-                       !eq(type, "f") : "32",
-                       !eq(type, "d") : "64");
-      foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-        llvm::MDNode *NTLNode;
-        if(IsNontemporal)
-          NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-      IntrinsicTypes = {ResultType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-
-      // Please refer to comment under 'defvar NFList' in this file
-      if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-          (!IsMasked && PolicyAttrs & RVV_VTA))
-        Operands.append(NF, llvm::PoisonValue::get(ResultType));
-      else {
-        if (IsMasked)
-          Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
-        else // Unmasked
-          Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
-      }
-      unsigned PtrOperandIdx = IsMasked ?
-        ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
-        (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
-      Value *PtrOperand = Ops[PtrOperandIdx];
-      Value *StrideOperand = Ops[PtrOperandIdx + 1];
-      Value *VLOperand = Ops[PtrOperandIdx + 2];
-      Operands.push_back(PtrOperand);
-      Operands.push_back(StrideOperand);
-      if (IsMasked)
-        Operands.push_back(Ops[NF]);
-      Operands.push_back(VLOperand);
-      if (IsMasked)
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-
-      llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::Value *LoadValue;
-      if (IsNontemporal)
-        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-      else
-        LoadValue = Builder.CreateCall(F, Operands, "");
-#endif // SIFIVE_CUSTOMIZATION
-      clang::CharUnits Align =
-          CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-      llvm::Value *V;
-      for (unsigned I = 0; I < NF; ++I) {
-        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
-        V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
-      }
-      return V;
-    }
-    }] in {
-          defvar PV = PVString<nf, /*signed=*/true>.S;
-          defvar PUV = PVString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0" # PV # "PCe" # "t", type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # "t", type>;
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> 4fc7afbfaf35 ([3/6][Clang][RISCV] Replace strided segment load with tuple type interfaces)
-multiclass RVVIndexedSegLoad<string op> {
-  foreach type = TypeList in {
-    foreach eew_info = EEWList in {
-      defvar eew = eew_info[0];
-      defvar eew_type = eew_info[1];
-      foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-      SmallVector<llvm::Value*, 12> Operands;
-
-      // Please refer to comment under 'defvar NFList' in this file
-      if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-          (!IsMasked && PolicyAttrs & RVV_VTA))
-        Operands.append(NF, llvm::PoisonValue::get(ResultType));
-      else {
-        if (IsMasked)
-          Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
-        else // Unmasked
-          Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
-      }
-      unsigned PtrOperandIdx = IsMasked ?
-        ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
-        (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
-      Value *PtrOperand = Ops[PtrOperandIdx];
-      Value *IndexOperand = Ops[PtrOperandIdx + 1];
-      Value *VLOperand = Ops[PtrOperandIdx + 2];
-      Operands.push_back(PtrOperand);
-      Operands.push_back(IndexOperand);
-      if (IsMasked)
-        Operands.push_back(Ops[NF]);
-      Operands.push_back(VLOperand);
-      if (IsMasked)
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-      IntrinsicTypes = {ResultType, IndexOperand->getType(), Ops.back()->getType()};
-
-      llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::Value *LoadValue;
-      if (IsNontemporal)
-        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-      else
-        LoadValue = Builder.CreateCall(F, Operands, "");
-#endif // SIFIVE_CUSTOMIZATION
-      clang::CharUnits Align =
-          CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
-      llvm::Value *V;
-      for (unsigned I = 0; I < NF; ++I) {
-        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
-        V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
-      }
-      return V;
-    }
-    }] in {
-          defvar PV = PVString<nf, /*signed=*/true>.S;
-          defvar PUV = PVString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0" # PV # "PCe" # eew_type # "Uv", type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # eew_type # "Uv", type>;
-          }
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> c8447dd94422 ([5/6][Clang][RISCV] Replace indexed segment load with tuple type interfaces)
 class VString<int nf, bit signed> {
   string S = !cond(!eq(nf, 2): !if(signed, "vv", "UvUv"),
                    !eq(nf, 3): !if(signed, "vvv", "UvUvUv"),
@@ -1096,175 +780,6 @@ class VString<int nf, bit signed> {
                    !eq(nf, 8): !if(signed, "vvvvvvvv", "UvUvUvUvUvUvUvUv"));
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-multiclass RVVUnitStridedSegStore<string op> {
-  foreach type = TypeList in {
-    defvar eew = !cond(!eq(type, "c") : "8",
-                       !eq(type, "s") : "16",
-                       !eq(type, "i") : "32",
-                       !eq(type, "l") : "64",
-                       !eq(type, "x") : "16",
-                       !eq(type, "f") : "32",
-                       !eq(type, "d") : "64");
-      foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            HasMaskedOffOperand = false,
-            MaskedPolicyScheme = NonePolicy,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      if (IsMasked) {
-        // Builtin: (mask, ptr, val0, val1, ..., vl)
-        // Intrinsic: (val0, val1, ..., ptr, mask, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-        std::swap(Ops[NF], Ops[NF + 1]);
-        IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 2]->getType()};
-        assert(Ops.size() == NF + 3);
-      } else {
-        // Builtin: (ptr, val0, val1, ..., vl)
-        // Intrinsic: (val0, val1, ..., ptr, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-        IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
-        assert(Ops.size() == NF + 2);
-      }
-#ifdef SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-    }
-            }] in {
-          defvar V = VString<nf, /*signed=*/true>.S;
-          defvar UV = VString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0Pe" # V, type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0PUe" # UV, type>;
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> 8720bdff91cc ([2/6][Clang][RISCV] Replace unit-stride segment store with tuple type interfaces)
-multiclass RVVStridedSegStore<string op> {
-  foreach type = TypeList in {
-    defvar eew = !cond(!eq(type, "c") : "8",
-                       !eq(type, "s") : "16",
-                       !eq(type, "i") : "32",
-                       !eq(type, "l") : "64",
-                       !eq(type, "x") : "16",
-                       !eq(type, "f") : "32",
-                       !eq(type, "d") : "64");
-      foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            HasMaskedOffOperand = false,
-            MaskedPolicyScheme = NonePolicy,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      if (IsMasked) {
-        // Builtin: (mask, ptr, stride, val0, val1, ..., vl).
-        // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
-        std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
-        assert(Ops.size() == NF + 4);
-      } else {
-        // Builtin: (ptr, stride, val0, val1, ..., vl).
-        // Intrinsic: (val0, val1, ..., ptr, stride, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-        assert(Ops.size() == NF + 3);
-      }
-      IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
-#ifdef SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-    }
-            }] in {
-          defvar V = VString<nf, /*signed=*/true>.S;
-          defvar UV = VString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0Pet" # V, type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0PUet" # UV, type>;
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> a30b1b4af11f ([4/6][Clang][RISCV] Replace strided segment store with tuple type interfaces)
-multiclass RVVIndexedSegStore<string op> {
-  foreach type = TypeList in {
-    foreach eew_info = EEWList in {
-      defvar eew = eew_info[0];
-      defvar eew_type = eew_info[1];
-      foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v",
-            IRName = op # nf,
-            MaskedIRName = op # nf # "_mask",
-            NF = nf,
-            HasMaskedOffOperand = false,
-            MaskedPolicyScheme = NonePolicy,
-            ManualCodegen = [{
-    {
-#ifdef SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
-#endif // SIFIVE_CUSTOMIZATION
-      if (IsMasked) {
-        // Builtin: (mask, ptr, index, val0, val1, ..., vl)
-        // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
-        std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
-        IntrinsicTypes = {Ops[0]->getType(),
-                          Ops[NF + 1]->getType(), Ops[NF + 3]->getType()};
-        assert(Ops.size() == NF + 4);
-      } else {
-        // Builtin: (ptr, index, val0, val1, ..., vl)
-        // Intrinsic: (val0, val1, ..., ptr, index, vl)
-        std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-        IntrinsicTypes = {Ops[0]->getType(),
-                          Ops[NF + 1]->getType(), Ops[NF + 2]->getType()};
-        assert(Ops.size() == NF + 3);
-      }
-#ifdef SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-    }
-            }] in {
-          defvar V = VString<nf, /*signed=*/true>.S;
-          defvar UV = VString<nf, /*signed=*/false>.S;
-          def : RVVBuiltin<"v", "0Pe" # eew_type # "Uv" # V, type>;
-          if !not(IsFloat<type>.val) then {
-            def : RVVBuiltin<"Uv", "0PUe" # eew_type # "Uv" # UV, type>;
-          }
-        }
-      }
-    }
-  }
-}
-
-=======
->>>>>>> 1de5de4b7300 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
 multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
@@ -1662,28 +1177,6 @@ defm vle16ff: RVVVLEFFBuiltin<["s","x"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
-<<<<<<< HEAD
-// 7.8 Vector Load/Store Segment Instructions
-<<<<<<< HEAD
-let UnMaskedPolicyScheme = HasPassthruOperand,
-#ifdef SIFIVE_CUSTOMIZATION
-    HasNontemporalOperand = true in {
-#endif // SIFIVE_CUSTOMIZATION
-defm : RVVUnitStridedSegLoad<"vlseg">;
-defm : RVVUnitStridedSegLoadFF<"vlseg">;
-=======
-let UnMaskedPolicyScheme = HasPassthruOperand in {
-<<<<<<< HEAD
->>>>>>> 5a80ef3fde9c ([1/6][Clang][RISCV] Replace unit-stride (fault-first) segment load with tuple type interfaces)
-defm : RVVStridedSegLoad<"vlsseg">;
-=======
->>>>>>> 4fc7afbfaf35 ([3/6][Clang][RISCV] Replace strided segment load with tuple type interfaces)
-defm : RVVIndexedSegLoad<"vluxseg">;
-defm : RVVIndexedSegLoad<"vloxseg">;
-}
-
-=======
->>>>>>> c8447dd94422 ([5/6][Clang][RISCV] Replace indexed segment load with tuple type interfaces)
 multiclass RVVUnitStridedSegLoadTuple<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1700,6 +1193,56 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+        IntrinsicTypes = {ResultType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands;
+
+        // Please refer to comment under 'defvar NFList' in this file
+        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
+            (!IsMasked && PolicyAttrs & RVV_VTA))
+          Operands.append(NF, llvm::PoisonValue::get(ResultType));
+        else {
+          if (IsMasked)
+            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+          else // Unmasked
+            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+        }
+        unsigned PtrOperandIdx = IsMasked ?
+          ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
+          (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
+        Value *PtrOperand = Ops[PtrOperandIdx];
+        Value *VLOperand = Ops[PtrOperandIdx + 1];
+        Operands.push_back(PtrOperand);
+        if (IsMasked)
+          Operands.push_back(Ops[NF]);
+        Operands.push_back(VLOperand);
+        if (IsMasked)
+          Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        llvm::Value *LoadValue;
+        if (IsNontemporal)
+          LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+        else
+          LoadValue = Builder.CreateCall(F, Operands, "");
+        clang::CharUnits Align =
+            CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
+        llvm::Value *V;
+        for (unsigned I = 0; I < NF; ++I) {
+          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
+        }
+        return V;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -1733,11 +1276,28 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         return Builder.CreateStore(LoadValue, ReturnValue.getValue());
     }
     }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar PV = PVString<nf, /*signed=*/true>.S;
+          defvar PUV = PVString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0" # PV # "PCe", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe", type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCe", type>;
         if !not(IsFloat<type>.val) then {
           def : RVVBuiltin<T # "Uv", T # "UvPCUe", type>;
         }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -1760,6 +1320,36 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           HasMaskedOffOperand = false,
           ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      unsigned NumOfOperandExpectedForV0p11 = NF + IsMasked + IsNontemporal + 2;
+      if (Ops.size() == NumOfOperandExpectedForV0p11) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        if (IsMasked) {
+          // Builtin: (mask, ptr, val0, val1, ..., vl)
+          // Intrinsic: (val0, val1, ..., ptr, mask, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
+          std::swap(Ops[NF], Ops[NF + 1]);
+          IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 2]->getType()};
+          assert(Ops.size() == NF + 3);
+        } else {
+          // Builtin: (ptr, val0, val1, ..., vl)
+          // Intrinsic: (val0, val1, ..., ptr, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
+          IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
+          assert(Ops.size() == NF + 2);
+        }
+        if(IsNontemporal)
+          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        return Builder.CreateCall(F, Ops, "");
+      }
+#endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, v_tuple, vl)
       // Intrinsic: (val0, val1, ..., ptr, mask, vl)
@@ -1784,11 +1374,28 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       return Builder.CreateCall(F, Operands, "");
    }
       }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar V = VString<nf, /*signed=*/true>.S;
+          defvar UV = VString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0Pe" # V, type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0PUe" # UV, type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", "0Pe" # T # "v", type>;
         if !not(IsFloat<type>.val) then {
           def : RVVBuiltin<T # "Uv", "0PUe" # T # "Uv", type>;
         }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -1810,6 +1417,58 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#ifdef SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+        IntrinsicTypes = {ResultType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands;
+
+        // Please refer to comment under 'defvar NFList' in this file
+        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
+            (!IsMasked && PolicyAttrs & RVV_VTA))
+          Operands.append(NF, llvm::PoisonValue::get(ResultType));
+        else {
+          if (IsMasked)
+            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+          else // Unmasked
+            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+        }
+        unsigned PtrOperandIdx = IsMasked ?
+          ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
+          (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
+        Value *PtrOperand = Ops[PtrOperandIdx];
+        Value *NewVLOperand = Ops[PtrOperandIdx + 1];
+        Value *VLOperand = Ops[PtrOperandIdx + 2];
+        Operands.push_back(PtrOperand);
+        if (IsMasked)
+          Operands.push_back(Ops[NF]);
+        Operands.push_back(VLOperand);
+        if (IsMasked)
+          Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        llvm::Value *LoadValue;
+        if (IsNontemporal)
+          LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+        else
+          LoadValue = Builder.CreateCall(F, Operands, "");
+        clang::CharUnits Align =
+            CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
+        for (unsigned I = 0; I < NF; ++I) {
+          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
+        }
+        // Store new_vl.
+        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {NF});
+        return Builder.CreateStore(Val, Address(NewVLOperand, Val->getType(), Align));
+      }
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -1857,11 +1516,28 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         return Builder.CreateStore(ReturnTuple, ReturnValue.getValue());
     }
     }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar PV = PVString<nf, /*signed=*/true>.S;
+          defvar PUV = PVString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0" # PV # "PCe" # "Pz", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # "Pz", type>;
+          }
+        }
+        // Declare v1.0 interface 
+        let IsTuple = true in {
+#endif
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCePz", type>;
         if !not(IsFloat<type>.val) then {
           def : RVVBuiltin<T # "Uv", T # "UvPCUePz", type>;
         }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -1883,6 +1559,58 @@ multiclass RVVStridedSegLoadTuple<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+        IntrinsicTypes = {ResultType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands;
+
+        // Please refer to comment under 'defvar NFList' in this file
+        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
+            (!IsMasked && PolicyAttrs & RVV_VTA))
+          Operands.append(NF, llvm::PoisonValue::get(ResultType));
+        else {
+          if (IsMasked)
+            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+          else // Unmasked
+            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+        }
+        unsigned PtrOperandIdx = IsMasked ?
+          ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
+          (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
+        Value *PtrOperand = Ops[PtrOperandIdx];
+        Value *StrideOperand = Ops[PtrOperandIdx + 1];
+        Value *VLOperand = Ops[PtrOperandIdx + 2];
+        Operands.push_back(PtrOperand);
+        Operands.push_back(StrideOperand);
+        if (IsMasked)
+          Operands.push_back(Ops[NF]);
+        Operands.push_back(VLOperand);
+        if (IsMasked)
+          Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        llvm::Value *LoadValue;
+        if (IsNontemporal)
+          LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+        else
+          LoadValue = Builder.CreateCall(F, Operands, "");
+        clang::CharUnits Align =
+            CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
+        llvm::Value *V;
+        for (unsigned I = 0; I < NF; ++I) {
+          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
+        }
+        return V;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -1917,11 +1645,28 @@ multiclass RVVStridedSegLoadTuple<string op> {
         return Builder.CreateStore(LoadValue, ReturnValue.getValue());
     }
     }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar PV = PVString<nf, /*signed=*/true>.S;
+          defvar PUV = PVString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0" # PV # "PCe" # "t", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # "t", type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCet", type>;
         if !not(IsFloat<type>.val) then {
           def : RVVBuiltin<T # "Uv", T # "UvPCUet", type>;
         }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -1945,6 +1690,35 @@ multiclass RVVStridedSegStoreTuple<string op> {
             MaskedPolicyScheme = NonePolicy,
             ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      unsigned NumOfOperandExpectedForV0p11 = NF + IsMasked + IsNontemporal + 3;
+      if (Ops.size() == NumOfOperandExpectedForV0p11) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        if (IsMasked) {
+          // Builtin: (mask, ptr, stride, val0, val1, ..., vl).
+          // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
+          std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
+          assert(Ops.size() == NF + 4);
+        } else {
+          // Builtin: (ptr, stride, val0, val1, ..., vl).
+          // Intrinsic: (val0, val1, ..., ptr, stride, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
+          assert(Ops.size() == NF + 3);
+        }
+        IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
+        if(IsNontemporal)
+          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        return Builder.CreateCall(F, Ops, "");
+      }
+#endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, stride, v_tuple, vl)
       // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
@@ -1970,11 +1744,28 @@ multiclass RVVStridedSegStoreTuple<string op> {
       return Builder.CreateCall(F, Operands, "");
     }
             }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar V = VString<nf, /*signed=*/true>.S;
+          defvar UV = VString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0Pet" # V, type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0PUet" # UV, type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", "0Pet" # T # "v", type>;
         if !not(IsFloat<type>.val) then {
           def : RVVBuiltin<T # "Uv", "0PUet" # T # "Uv", type>;
         }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
       }
     }
   }
@@ -1992,6 +1783,58 @@ multiclass RVVIndexedSegLoadTuple<string op> {
             NF = nf,
             ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+        SmallVector<llvm::Value*, 12> Operands;
+
+        // Please refer to comment under 'defvar NFList' in this file
+        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
+            (!IsMasked && PolicyAttrs & RVV_VTA))
+          Operands.append(NF, llvm::PoisonValue::get(ResultType));
+        else {
+          if (IsMasked)
+            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+          else // Unmasked
+            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+        }
+        unsigned PtrOperandIdx = IsMasked ?
+          ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
+          (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
+        Value *PtrOperand = Ops[PtrOperandIdx];
+        Value *IndexOperand = Ops[PtrOperandIdx + 1];
+        Value *VLOperand = Ops[PtrOperandIdx + 2];
+        Operands.push_back(PtrOperand);
+        Operands.push_back(IndexOperand);
+        if (IsMasked)
+          Operands.push_back(Ops[NF]);
+        Operands.push_back(VLOperand);
+        if (IsMasked)
+          Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+        IntrinsicTypes = {ResultType, IndexOperand->getType(), Ops.back()->getType()};
+
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        llvm::Value *LoadValue;
+        if (IsNontemporal)
+          LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+        else
+          LoadValue = Builder.CreateCall(F, Operands, "");
+        clang::CharUnits Align =
+            CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
+        llvm::Value *V;
+        for (unsigned I = 0; I < NF; ++I) {
+          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
+        }
+        return V;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 12> Operands;
@@ -2028,11 +1871,28 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         return Builder.CreateStore(LoadValue, ReturnValue.getValue());
     }
     }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar PV = PVString<nf, /*signed=*/true>.S;
+          defvar PUV = PVString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0" # PV # "PCe" # eew_type # "Uv", type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # eew_type # "Uv", type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
           defvar T = "(Tuple:" # nf # ")";
           def : RVVBuiltin<T # "v", T # "vPCe" # eew_type # "Uv", type>;
           if !not(IsFloat<type>.val) then {
             def : RVVBuiltin<T # "Uv", T # "UvPCUe" # eew_type # "Uv", type>;
           }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
         }
       }
     }
@@ -2053,6 +1913,37 @@ multiclass RVVIndexedSegStoreTuple<string op> {
             MaskedPolicyScheme = NonePolicy,
             ManualCodegen = [{
     {
+#if SIFIVE_CUSTOMIZATION
+      // In our downstream toolchain, for smooth transition from the v0.11
+      // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
+      // now.
+      unsigned NumOfOperandExpectedForV0p11 = NF + IsMasked + IsNontemporal + 3;
+      if (Ops.size() == NumOfOperandExpectedForV0p11) { // Deal with v0.11 interface
+        llvm::MDNode *NTLNode;
+        if(IsNontemporal)
+          NTLNode = createNTLNode();
+        if (IsMasked) {
+          // Builtin: (mask, ptr, index, val0, val1, ..., vl)
+          // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
+          std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
+          IntrinsicTypes = {Ops[0]->getType(),
+                            Ops[NF + 1]->getType(), Ops[NF + 3]->getType()};
+          assert(Ops.size() == NF + 4);
+        } else {
+          // Builtin: (ptr, index, val0, val1, ..., vl)
+          // Intrinsic: (val0, val1, ..., ptr, index, vl)
+          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
+          IntrinsicTypes = {Ops[0]->getType(),
+                            Ops[NF + 1]->getType(), Ops[NF + 2]->getType()};
+          assert(Ops.size() == NF + 3);
+        }
+        if(IsNontemporal)
+          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+        llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+        return Builder.CreateCall(F, Ops, "");
+      }
+#endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, index, v_tuple, vl)
       // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
@@ -2079,11 +1970,28 @@ multiclass RVVIndexedSegStoreTuple<string op> {
       return Builder.CreateCall(F, Operands, "");
     }
             }] in {
+#ifdef SIFIVE_CUSTOMIZATION
+        // Declare v0.11 interface
+        let HasNontemporalOperand = true,
+            IsTuple = false in {
+          defvar V = VString<nf, /*signed=*/true>.S;
+          defvar UV = VString<nf, /*signed=*/false>.S;
+          def : RVVBuiltin<"v", "0Pe" # eew_type # "Uv" # V, type>;
+          if !not(IsFloat<type>.val) then {
+            def : RVVBuiltin<"Uv", "0PUe" # eew_type # "Uv" # UV, type>;
+          }
+        }
+        // Declare v1.0 interface
+        let IsTuple = true in {
+#endif // SIFIVE_CUSTOMIZATION
           defvar T = "(Tuple:" # nf # ")";
           def : RVVBuiltin<T # "v", "0Pe" # eew_type # "Uv" # T # "v", type>;
           if !not(IsFloat<type>.val) then {
             def : RVVBuiltin<T # "Uv", "0PUe" # eew_type # "Uv" # T # "Uv", type>;
           }
+#ifdef SIFIVE_CUSTOMIZATION
+        } // This is the closing bracket for "let IsTuple = true in {"
+#endif // SIFIVE_CUSTOMIZATION
         }
       }
     }
@@ -2091,8 +1999,13 @@ multiclass RVVIndexedSegStoreTuple<string op> {
 }
 
 // 7.8 Vector Load/Store Segment Instructions
+#ifdef SIFIVE_CUSTOMIZATION
+let UnMaskedPolicyScheme = HasPassthruOperand in {
+#endif // SIFIVE_CUSTOMIZATION
+#ifndef SIFIVE_CUSTOMIZATION
 let UnMaskedPolicyScheme = HasPassthruOperand,
     IsTuple = true in {
+#endif // not SIFIVE_CUSTOMIZATION
   defm : RVVUnitStridedSegLoadTuple<"vlseg">;
   defm : RVVUnitStridedSegLoadFFTuple<"vlseg">;
   defm : RVVStridedSegLoadTuple<"vlsseg">;
@@ -2100,40 +2013,21 @@ let UnMaskedPolicyScheme = HasPassthruOperand,
   defm : RVVIndexedSegLoadTuple<"vloxseg">;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+let UnMaskedPolicyScheme = NonePolicy,
+    MaskedPolicyScheme = NonePolicy in {
+#endif // SIFIVE_CUSTOMIZATION
+#ifndef SIFIVE_CUSTOMIZATION
 let UnMaskedPolicyScheme = NonePolicy,
     MaskedPolicyScheme = NonePolicy,
     IsTuple = true in {
+#endif // not SIFIVE_CUSTOMIZATION
 defm : RVVUnitStridedSegStoreTuple<"vsseg">;
 defm : RVVStridedSegStoreTuple<"vssseg">;
 defm : RVVIndexedSegStoreTuple<"vsuxseg">;
 defm : RVVIndexedSegStoreTuple<"vsoxseg">;
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-
->>>>>>> 93314aa0f7f7 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
-let UnMaskedPolicyScheme = NonePolicy,
-<<<<<<< HEAD
-    MaskedPolicyScheme = NonePolicy,
-#ifdef SIFIVE_CUSTOMIZATION
-    HasNontemporalOperand = true in {
-#endif // SIFIVE_CUSTOMIZATION
-defm : RVVUnitStridedSegStore<"vsseg">;
-=======
-    MaskedPolicyScheme = NonePolicy in {
-<<<<<<< HEAD
->>>>>>> 8720bdff91cc ([2/6][Clang][RISCV] Replace unit-stride segment store with tuple type interfaces)
-defm : RVVStridedSegStore<"vssseg">;
-=======
->>>>>>> a30b1b4af11f ([4/6][Clang][RISCV] Replace strided segment store with tuple type interfaces)
-defm : RVVIndexedSegStore<"vsuxseg">;
-defm : RVVIndexedSegStore<"vsoxseg">;
-}
-
-=======
->>>>>>> 1de5de4b7300 ([6/6][Clang][RISCV] Replace indexed segment store with tuple type interfaces)
 // 12. Vector Integer Arithmetic Instructions
 // 12.1. Vector Single-Width Integer Add and Subtract
 let UnMaskedPolicyScheme = HasPassthruOperand in {
