@@ -2229,9 +2229,9 @@ multiclass PPseudoUnaryV_V_NoMask<LMULInfo m, string Constraint = ""> {
   }
 }
 
-multiclass PPseudoUnaryV_S_NoMask<LMULInfo m, string Constraint = ""> {
+multiclass PPseudoUnaryV_S_NoMask<LMULInfo m, string suffix, string Constraint = ""> {
   let VLMul = m.value in {
-    def "_VS_" # m.MX : PPseudoUnaryNoMask<m.vrclass, V_M1.vrclass, Constraint>;
+    def "_" # suffix # "_" # m.MX : PPseudoUnaryNoMask<m.vrclass, V_M1.vrclass, Constraint>;
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2920,20 +2920,20 @@ multiclass PPseudoVALU_V_NoMask<string Constraint = ""> {
   }
 }
 
-multiclass PPseudoVALU_S_NoMask<string Constraint = ""> {
+multiclass PPseudoVALU_S_NoMask<string suffix = "VS", string Constraint = ""> {
   foreach m = MxListVF4 in {
     defvar mx = m.MX;
     defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
     defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
 
-    defm "" : PPseudoUnaryV_S_NoMask<m, Constraint>,
+    defm "" : PPseudoUnaryV_S_NoMask<m, suffix, Constraint>,
               Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
   }
 }
 
 multiclass PPseudoVALU_V_S_NoMask<string Constraint = ""> {
   defm "" : PPseudoVALU_V_NoMask<Constraint>;
-  defm "" : PPseudoVALU_S_NoMask<Constraint>;
+  defm "" : PPseudoVALU_S_NoMask<"VS", Constraint>;
 }
 
 multiclass PPseudoVALU_VV_NoMask<string Constraint = ""> {
@@ -5177,10 +5177,10 @@ multiclass PPatUnaryV_V_NoMask<string intrinsic, string instruction,
 }
 
 multiclass PPatUnaryV_S_NoMask<string intrinsic, string instruction,
-                        list<VTypeInfo> vtilist> {
+                        list<VTypeInfo> vtilist, string suffix = "vs"> {
   foreach vti = vtilist in {
     defvar vectorM1 = !cast<VTypeInfo>("VI" # vti.SEW # "M1");
-    def : PPatUnaryNoMask<intrinsic # "_vs", instruction, "VS",
+    def : PPatUnaryNoMask<intrinsic # "_" # suffix, instruction, !toupper(suffix),
                           vti.Vector, vectorM1.Vector, vti.Log2SEW,
                           vti.LMul, vti.RegClass, VR>;
   }
@@ -7181,7 +7181,7 @@ let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
 
 let Predicates = [HasStdExtZvkg] in {
   defm PseudoVGHSH : PPseudoVALU_VV_NoMask;
-  defm PseudoVGMUL : PPseudoVALU_VV_NoMask;
+  defm PseudoVGMUL : PPseudoVALU_S_NoMask<"VV">;
 } // Predicates = [HasStdExtZvkg]
 
 let Predicates = [HasStdExtZvkg0p1] in {
@@ -7828,7 +7828,7 @@ let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
 
 let Predicates = [HasStdExtZvkg] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vghsh", "PseudoVGHSH", I32IntegerVectors>;
-  defm : VPatBinaryV_VV_NoMask<"int_riscv_vgmul", "PseudoVGMUL", I32IntegerVectors>;
+  defm : PPatUnaryV_S_NoMask<"int_riscv_vgmul", "PseudoVGMUL", I32IntegerVectors, "vv">;
 } // Predicates = [HasStdExtZvkg]
 
 let Predicates = [HasStdExtZvkg0p1] in {
