@@ -1242,6 +1242,9 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         }
         return V;
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
@@ -1269,7 +1272,13 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#if SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
       if (ReturnValue.isNull())
         return LoadValue;
       else
@@ -1289,7 +1298,8 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCe", type>;
@@ -1350,6 +1360,9 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         return Builder.CreateCall(F, Ops, "");
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, v_tuple, vl)
@@ -1371,6 +1384,10 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       Operands.push_back(Ops[Offset + 2]); // VL
 
       IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
    }
@@ -1388,7 +1405,8 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", "0Pe" # T # "v", type>;
@@ -1470,6 +1488,9 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {NF});
         return Builder.CreateStore(Val, Address(NewVLOperand, Val->getType(), Align));
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
@@ -1497,7 +1518,14 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#ifdef SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
+
       // Get alignment from the new vl operand
       clang::CharUnits Align =
           CGM.getNaturalPointeeTypeAlignment(E->getArg(Offset + 1)->getType());
@@ -1530,8 +1558,9 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
             def : RVVBuiltin<"Uv", "0" # PUV # "PCUe" # "Pz", type>;
           }
         }
-        // Declare v1.0 interface 
-        let IsTuple = true in {
+        // Declare v1.0 interface
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCePz", type>;
@@ -1613,6 +1642,9 @@ multiclass RVVStridedSegLoadTuple<string op> {
         }
         return V;
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
@@ -1640,7 +1672,13 @@ multiclass RVVStridedSegLoadTuple<string op> {
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#if SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
 
       if (ReturnValue.isNull())
         return LoadValue;
@@ -1661,7 +1699,8 @@ multiclass RVVStridedSegLoadTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "vPCet", type>;
@@ -1722,6 +1761,9 @@ multiclass RVVStridedSegStoreTuple<string op> {
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         return Builder.CreateCall(F, Ops, "");
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, stride, v_tuple, vl)
@@ -1744,6 +1786,10 @@ multiclass RVVStridedSegStoreTuple<string op> {
       Operands.push_back(Ops[Offset + 3]); // VL
 
       IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
     }
@@ -1761,7 +1807,8 @@ multiclass RVVStridedSegStoreTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", "0Pet" # T # "v", type>;
@@ -1839,6 +1886,9 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         }
         return V;
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
       IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
@@ -1868,7 +1918,13 @@ multiclass RVVIndexedSegLoadTuple<string op> {
       IntrinsicTypes = {ElementVectorType, Ops[Offset + 1]->getType(),
                         Ops.back()->getType()};
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-      llvm::Value *LoadValue = Builder.CreateCall(F, Operands, "");
+#if SIFIVE_CUSTOMIZATION
+      llvm::Value *LoadValue;
+      if (IsNontemporal)
+        LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+      else
+        LoadValue = Builder.CreateCall(F, Operands, "");
+#endif // SIFIVE_CUSTOMIZATION
 
       if (ReturnValue.isNull())
         return LoadValue;
@@ -1889,7 +1945,8 @@ multiclass RVVIndexedSegLoadTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
           defvar T = "(Tuple:" # nf # ")";
           def : RVVBuiltin<T # "v", T # "vPCe" # eew_type # "Uv", type>;
@@ -1949,6 +2006,9 @@ multiclass RVVIndexedSegStoreTuple<string op> {
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         return Builder.CreateCall(F, Ops, "");
       }
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
       // Masked
       // Builtin: (mask, ptr, index, v_tuple, vl)
@@ -1972,6 +2032,10 @@ multiclass RVVIndexedSegStoreTuple<string op> {
 
       IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
                         Operands.back()->getType()};
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
     }
@@ -1989,7 +2053,8 @@ multiclass RVVIndexedSegStoreTuple<string op> {
           }
         }
         // Declare v1.0 interface
-        let IsTuple = true in {
+        let HasNontemporalOperand = true,
+            IsTuple = true in {
 #endif // SIFIVE_CUSTOMIZATION
           defvar T = "(Tuple:" # nf # ")";
           def : RVVBuiltin<T # "v", "0Pe" # eew_type # "Uv" # T # "v", type>;
