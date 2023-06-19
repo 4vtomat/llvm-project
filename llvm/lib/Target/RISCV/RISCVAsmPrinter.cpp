@@ -713,6 +713,10 @@ static bool lowerRISCVVMachineInstrToMCInst(const MachineInstr *MI,
     --NumOps;
   if (RISCVII::hasVLOp(TSFlags))
     --NumOps;
+#ifdef SIFIVE_CUSTOMIZATION
+  if (RISCVII::hasRoundModeOp(TSFlags))
+    --NumOps;
+#endif // SIFIVE_CUSTOMIZATION
   if (RISCVII::hasSEWOp(TSFlags))
     --NumOps;
 
