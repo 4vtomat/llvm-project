@@ -3682,14 +3682,18 @@ static bool isInterleaveShuffle(ArrayRef<int> Mask, MVT VT, int &EvenSrc,
   if (EvenSrc != 0 && OddSrc != 0)
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE this fix will be copied to upstream.
   // Subvectors will be subtracted from either at the start of the two input
   // vectors, or at the start and middle of the first vector if it's an unary
   // interleave.
   // In both cases, HalfNumElts will be extracted.
-  // So make sure that EvenSrc/OddSrc are within range.
+  // We need to ensure that the extract indices are 0 or HalfNumElts otherwise
+  // we'll create an illegal extract_subvector.
+  // FIXME: We could support other values using a slidedown first.
   int HalfNumElts = NumElts / 2;
-  return (((EvenSrc % NumElts) + HalfNumElts) <= NumElts) &&
-         (((OddSrc % NumElts) + HalfNumElts) <= NumElts);
+  return ((EvenSrc % HalfNumElts) == 0) && ((OddSrc % HalfNumElts) == 0);
+#endif
 }
 
 /// Match shuffles that concatenate two vectors, rotate the concatenation,
