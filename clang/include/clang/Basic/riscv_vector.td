@@ -1666,7 +1666,8 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "_v",
+        let Name = op # nf # "e" # eew # "_v_tuple",
+            OverloadedName = op # nf # "e" # eew # "_tuple",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -1777,7 +1778,8 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
                        !eq(type, "f") : "32",
                        !eq(type, "d") : "64");
       foreach nf = NFList in {
-        let Name = op # nf # "e" # eew # "ff_v",
+        let Name = op # nf # "e" # eew # "ff_v_tuple",
+            OverloadedName = op # nf # "e" # eew # "ff_tuple",
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
