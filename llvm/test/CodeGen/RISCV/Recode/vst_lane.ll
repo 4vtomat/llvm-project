@@ -581,7 +581,7 @@ define void @vst3_lane_s8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v11, v8, 2
 ; CHECK-NEXT:    vrgather.vi v11, v9, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v11, 0
+; CHECK-NEXT:    vmv.v.v v10, v11
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf4, ta, ma
 ; CHECK-NEXT:    vse8.v v10, (a0)
 ; CHECK-NEXT:    ret
@@ -726,7 +726,7 @@ define void @vst3q_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v11, v8, 2
 ; CHECK-NEXT:    vrgather.vi v11, v9, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v11, 0
+; CHECK-NEXT:    vmv.v.v v10, v11
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v10, (a0)
 ; CHECK-NEXT:    ret
@@ -1062,7 +1062,7 @@ define void @vst4_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vv v9, v12, v8
 ; CHECK-NEXT:    vrgather.vi v9, v10, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v11, v9, 0
+; CHECK-NEXT:    vmv.v.v v11, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v11, (a0)
 ; CHECK-NEXT:    ret
@@ -1140,7 +1140,7 @@ define void @vst4_lane_s8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v8, v10, 3
 ; CHECK-NEXT:    vrgather.vi v8, v11, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
@@ -1249,7 +1249,7 @@ define void @vst4_lane_u8(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v8, v10, 2
 ; CHECK-NEXT:    vrgather.vi v8, v11, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
@@ -1278,7 +1278,7 @@ define void @vst4q_lane_f16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v8, v10, 3
 ; CHECK-NEXT:    vrgather.vi v8, v11, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
@@ -1307,7 +1307,7 @@ define void @vst4q_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vv v9, v12, v8
 ; CHECK-NEXT:    vrgather.vi v9, v10, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v11, v9, 0
+; CHECK-NEXT:    vmv.v.v v11, v9
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v11, (a0)
 ; CHECK-NEXT:    ret
@@ -1359,7 +1359,7 @@ define void @vst4q_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v12, v11, 0, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
-; CHECK-NEXT:    vslideup.vi v12, v8, 0
+; CHECK-NEXT:    vmv.v.v v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v12, (a0)
 ; CHECK-NEXT:    ret
@@ -1388,7 +1388,7 @@ define void @vst4q_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vv v9, v12, v8
 ; CHECK-NEXT:    vrgather.vi v9, v10, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v11, v9, 0
+; CHECK-NEXT:    vmv.v.v v11, v9
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v11, (a0)
 ; CHECK-NEXT:    ret
@@ -1473,7 +1473,7 @@ define void @vst4q_lane_u16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vrgather.vi v8, v10, 3
 ; CHECK-NEXT:    vrgather.vi v8, v11, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret

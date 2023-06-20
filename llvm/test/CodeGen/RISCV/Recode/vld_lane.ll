@@ -8,7 +8,7 @@ define void @vld2_lane_f16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vlseg2e16.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    li a0, 1
@@ -39,7 +39,7 @@ define void @vld2_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v9, 0
+; CHECK-NEXT:    vmv.v.v v10, v9
 ; CHECK-NEXT:    vmv1r.v v9, v10
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vsseg2e32.v v8, (a2)
@@ -82,7 +82,7 @@ define void @vld2_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vlseg2e16.v v8, (a1)
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    li a0, 1
@@ -111,7 +111,7 @@ define void @vld2_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
@@ -214,7 +214,7 @@ define void @vld2_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
@@ -343,7 +343,7 @@ define void @vld2q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
@@ -425,7 +425,7 @@ define void @vld2q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v10, 0
+; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
@@ -543,7 +543,7 @@ define void @vld2q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v10, v9, 0
+; CHECK-NEXT:    vmv.v.v v10, v9
 ; CHECK-NEXT:    vmv1r.v v9, v10
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vsseg2e64.v v8, (a2)
@@ -1536,7 +1536,7 @@ define void @vld3q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf4, ta, ma
 ; CHECK-NEXT:    vle8.v v11, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v11, 0
+; CHECK-NEXT:    vmv.v.v v8, v11
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vrgather.vv v13, v9, v12
@@ -1722,7 +1722,7 @@ define void @vld4_lane_s16(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    li a0, 1
@@ -1858,7 +1858,7 @@ define void @vld4_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    li a0, 1
@@ -2118,7 +2118,7 @@ define void @vld4q_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vrgather.vv v15, v10, v13
 ; CHECK-NEXT:    vrgather.vi v15, v12, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v12, v11, 0
+; CHECK-NEXT:    vmv.v.v v12, v11
 ; CHECK-NEXT:    vmv1r.v v9, v14
 ; CHECK-NEXT:    vmv1r.v v10, v15
 ; CHECK-NEXT:    vmv1r.v v11, v12
@@ -2542,7 +2542,7 @@ define void @vld4q_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 0
+; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    li a0, 1
