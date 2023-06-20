@@ -1958,7 +1958,8 @@ multiclass RVVIndexedSegLoadTuple<string op> {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
       foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v",
+        let Name = op # nf # "ei" # eew # "_v_tuple",
+            OverloadedName = op # nf # "ei" # eew # "_tuple",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -2063,7 +2064,6 @@ multiclass RVVIndexedSegStoreTuple<string op> {
   }
 }
 
-// 7.8 Vector Load/Store Segment Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand,
     IsTuple = true in {
   defm : RVVUnitStridedSegLoadTuple<"vlseg">;
