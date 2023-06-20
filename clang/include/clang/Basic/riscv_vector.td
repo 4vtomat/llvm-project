@@ -770,7 +770,6 @@ class PVString<int nf, bit signed> {
           !eq(nf, 8): !if(signed, "PvPvPvPvPvPvPvPv", "PUvPUvPUvPUvPUvPUvPUvPUv"));
 }
 
-<<<<<<< HEAD
 multiclass RVVUnitStridedSegLoad<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1078,8 +1077,6 @@ multiclass RVVIndexedSegLoad<string op> {
   }
 }
 
-=======
->>>>>>> upstream/main
 class VString<int nf, bit signed> {
   string S = !cond(!eq(nf, 2): !if(signed, "vv", "UvUv"),
                    !eq(nf, 3): !if(signed, "vvv", "UvUvUv"),
@@ -1090,7 +1087,6 @@ class VString<int nf, bit signed> {
                    !eq(nf, 8): !if(signed, "vvvvvvvv", "UvUvUvUvUvUvUvUv"));
 }
 
-<<<<<<< HEAD
 multiclass RVVUnitStridedSegStore<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -1251,8 +1247,6 @@ multiclass RVVIndexedSegStore<string op> {
   }
 }
 
-=======
->>>>>>> upstream/main
 multiclass RVVPseudoUnaryBuiltin<string IR, string type_range> {
   let Name = NAME,
       IRName = IR,
@@ -1650,7 +1644,6 @@ defm vle16ff: RVVVLEFFBuiltin<["s","x"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
 
-<<<<<<< HEAD
 // 7.8 Vector Load/Store Segment Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand,
 #ifdef SIFIVE_CUSTOMIZATION
@@ -1663,8 +1656,6 @@ defm : RVVIndexedSegLoad<"vluxseg">;
 defm : RVVIndexedSegLoad<"vloxseg">;
 }
 
-=======
->>>>>>> upstream/main
 multiclass RVVUnitStridedSegLoadTuple<string op> {
   foreach type = TypeList in {
     defvar eew = !cond(!eq(type, "c") : "8",
@@ -2026,7 +2017,8 @@ multiclass RVVIndexedSegStoreTuple<string op> {
       defvar eew = eew_info[0];
       defvar eew_type = eew_info[1];
       foreach nf = NFList in {
-        let Name = op # nf # "ei" # eew # "_v",
+        let Name = op # nf # "ei" # eew # "_v_tuple",
+            OverloadedName = op # nf # "ei" # eew # "_tuple",
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
@@ -2090,8 +2082,6 @@ defm : RVVIndexedSegStoreTuple<"vsuxseg">;
 defm : RVVIndexedSegStoreTuple<"vsoxseg">;
 }
 
-<<<<<<< HEAD
-
 let UnMaskedPolicyScheme = NonePolicy,
     MaskedPolicyScheme = NonePolicy,
 #ifdef SIFIVE_CUSTOMIZATION
@@ -2103,8 +2093,6 @@ defm : RVVIndexedSegStore<"vsuxseg">;
 defm : RVVIndexedSegStore<"vsoxseg">;
 }
 
-=======
->>>>>>> upstream/main
 // 12. Vector Integer Arithmetic Instructions
 // 12.1. Vector Single-Width Integer Add and Subtract
 let UnMaskedPolicyScheme = HasPassthruOperand in {
