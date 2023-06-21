@@ -383,12 +383,14 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
       return "rv32imac";
     else
       return "rv32imafdc";
+#if SIFIVE_CUSTOMIZATION
   }
 
   if (Triple.isAndroid())
     return "rv64imafdc_zbb";
 
   return "rv64imafdc";
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
