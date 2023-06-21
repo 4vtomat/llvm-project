@@ -15069,9 +15069,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
           getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
       SDValue Zero = DAG.getConstant(0, DL, XLenVT);
       SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
+      // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
+      // pulled down.
       return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
-                         Src.getOperand(0), Zero, Mask, OneVL,
-                         RISCVII::TAIL_AGNOSTIC);
+                         Src.getOperand(0), Zero, Mask, OneVL);
     }
     break;
   }
