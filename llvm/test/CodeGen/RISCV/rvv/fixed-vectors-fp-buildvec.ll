@@ -35,11 +35,9 @@ define void @buildvec_no_vid_v4f32(<4 x float>* %x) {
 define <4 x float> @hang_when_merging_stores_after_legalization(<8 x float> %x, <8 x float> %y) optsize {
 ; LMULMAX1-LABEL: hang_when_merging_stores_after_legalization:
 ; LMULMAX1:       # %bb.0:
-; LMULMAX1-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; LMULMAX1-NEXT:    vrgather.vi v12, v8, 0
-; LMULMAX1-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; LMULMAX1-NEXT:    vmv.v.i v0, 2
 ; LMULMAX1-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; LMULMAX1-NEXT:    vmv.v.i v0, 2
+; LMULMAX1-NEXT:    vrgather.vi v12, v8, 0
 ; LMULMAX1-NEXT:    vrgather.vi v12, v9, 3, v0.t
 ; LMULMAX1-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
 ; LMULMAX1-NEXT:    vslideup.vi v11, v10, 2
@@ -154,10 +152,8 @@ define void @buildvec_merge0_v4f32(<4 x float>* %x, float %f) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v0, 6
 ; CHECK-NEXT:    lui a1, 262144
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmerge.vxm v8, v8, a1, v0
 ; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    ret

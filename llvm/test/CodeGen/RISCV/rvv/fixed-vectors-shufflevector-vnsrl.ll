@@ -179,11 +179,9 @@ define void @vnsrl_32_i32(ptr %in, ptr %out) {
 ; ZVE32F:       # %bb.0: # %entry
 ; ZVE32F-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; ZVE32F-NEXT:    vle32.v v8, (a0)
-; ZVE32F-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
-; ZVE32F-NEXT:    vslidedown.vi v9, v8, 2
-; ZVE32F-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; ZVE32F-NEXT:    vmv.v.i v0, 2
 ; ZVE32F-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
+; ZVE32F-NEXT:    vslidedown.vi v9, v8, 2
+; ZVE32F-NEXT:    vmv.v.i v0, 2
 ; ZVE32F-NEXT:    vrgather.vi v10, v8, 1
 ; ZVE32F-NEXT:    vrgather.vi v10, v9, 1, v0.t
 ; ZVE32F-NEXT:    vse32.v v10, (a1)
@@ -236,11 +234,9 @@ define void @vnsrl_32_float(ptr %in, ptr %out) {
 ; ZVE32F:       # %bb.0: # %entry
 ; ZVE32F-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; ZVE32F-NEXT:    vle32.v v8, (a0)
-; ZVE32F-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
-; ZVE32F-NEXT:    vslidedown.vi v9, v8, 2
-; ZVE32F-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; ZVE32F-NEXT:    vmv.v.i v0, 2
 ; ZVE32F-NEXT:    vsetivli zero, 2, e32, m1, ta, mu
+; ZVE32F-NEXT:    vslidedown.vi v9, v8, 2
+; ZVE32F-NEXT:    vmv.v.i v0, 2
 ; ZVE32F-NEXT:    vrgather.vi v10, v8, 1
 ; ZVE32F-NEXT:    vrgather.vi v10, v9, 1, v0.t
 ; ZVE32F-NEXT:    vse32.v v10, (a1)
@@ -282,11 +278,9 @@ define void @vnsrl_64_i64(ptr %in, ptr %out) {
 ; V:       # %bb.0: # %entry
 ; V-NEXT:    vsetivli zero, 4, e64, m1, ta, ma
 ; V-NEXT:    vle64.v v8, (a0)
-; V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; V-NEXT:    vslidedown.vi v9, v8, 2
-; V-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; V-NEXT:    vmv.v.i v0, 2
 ; V-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; V-NEXT:    vslidedown.vi v9, v8, 2
+; V-NEXT:    vmv.v.i v0, 2
 ; V-NEXT:    vrgather.vi v10, v8, 1
 ; V-NEXT:    vrgather.vi v10, v9, 1, v0.t
 ; V-NEXT:    vse64.v v10, (a1)
@@ -336,11 +330,9 @@ define void @vnsrl_64_double(ptr %in, ptr %out) {
 ; V:       # %bb.0: # %entry
 ; V-NEXT:    vsetivli zero, 4, e64, m1, ta, ma
 ; V-NEXT:    vle64.v v8, (a0)
-; V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; V-NEXT:    vslidedown.vi v9, v8, 2
-; V-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; V-NEXT:    vmv.v.i v0, 2
 ; V-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; V-NEXT:    vslidedown.vi v9, v8, 2
+; V-NEXT:    vmv.v.i v0, 2
 ; V-NEXT:    vrgather.vi v10, v8, 1
 ; V-NEXT:    vrgather.vi v10, v9, 1, v0.t
 ; V-NEXT:    vse64.v v10, (a1)

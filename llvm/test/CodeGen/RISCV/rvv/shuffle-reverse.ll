@@ -45,14 +45,12 @@ define <4 x i8> @v4i8(<4 x i8> %a) {
 define <8 x i8> @v4i8_2(<4 x i8> %a, <4 x i8> %b) {
 ; CHECK-LABEL: v4i8_2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    vrsub.vi v12, v11, 7
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    vrsub.vi v8, v11, 3
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v0, 15
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; CHECK-NEXT:    vrsub.vi v8, v11, 3
 ; CHECK-NEXT:    vrgather.vv v10, v9, v8, v0.t
 ; CHECK-NEXT:    vmv1r.v v8, v10
 ; CHECK-NEXT:    ret
@@ -192,14 +190,12 @@ define <4 x i16> @v4i16(<4 x i16> %a) {
 define <8 x i16> @v4i16_2(<4 x i16> %a, <4 x i16> %b) {
 ; CHECK-LABEL: v4i16_2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    vrsub.vi v12, v11, 7
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    vrsub.vi v8, v11, 3
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v0, 15
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vrsub.vi v8, v11, 3
 ; CHECK-NEXT:    vrgather.vv v10, v9, v8, v0.t
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
@@ -507,9 +503,8 @@ define <8 x i64> @v4i64_2(<4 x i64> %a, <4 x i64> %b) {
 ; RV32-NEXT:    vrgatherei16.vv v12, v8, v19
 ; RV32-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vrsub.vi v8, v18, 3
-; RV32-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV32-NEXT:    vmv.v.i v0, 15
-; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; RV32-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; RV32-NEXT:    vrgatherei16.vv v12, v16, v8, v0.t
 ; RV32-NEXT:    vmv.v.v v8, v12
 ; RV32-NEXT:    ret
@@ -575,14 +570,12 @@ define <4 x half> @v4f16(<4 x half> %a) {
 define <8 x half> @v4f16_2(<4 x half> %a, <4 x half> %b) {
 ; CHECK-LABEL: v4f16_2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    vrsub.vi v12, v11, 7
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    vrsub.vi v8, v11, 3
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.v.i v0, 15
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
+; CHECK-NEXT:    vrsub.vi v8, v11, 3
 ; CHECK-NEXT:    vrgather.vv v10, v9, v8, v0.t
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
@@ -821,9 +814,8 @@ define <8 x double> @v4f64_2(<4 x double> %a, <4 x double> %b) {
 ; RV32-NEXT:    vrgatherei16.vv v12, v8, v19
 ; RV32-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vrsub.vi v8, v18, 3
-; RV32-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV32-NEXT:    vmv.v.i v0, 15
-; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
+; RV32-NEXT:    vsetvli zero, zero, e64, m4, ta, mu
 ; RV32-NEXT:    vrgatherei16.vv v12, v16, v8, v0.t
 ; RV32-NEXT:    vmv.v.v v8, v12
 ; RV32-NEXT:    ret

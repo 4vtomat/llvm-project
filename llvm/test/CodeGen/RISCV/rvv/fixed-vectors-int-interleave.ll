@@ -83,24 +83,20 @@ define <4 x i64> @interleave_v2i64(<2 x i64> %x, <2 x i64> %y) {
 ; RV32-V512-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
 ; RV32-V512-NEXT:    vid.v v10
 ; RV32-V512-NEXT:    vsrl.vi v11, v10, 1
-; RV32-V512-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; RV32-V512-NEXT:    vrgatherei16.vv v10, v8, v11
-; RV32-V512-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; RV32-V512-NEXT:    vsetvli zero, zero, e64, m1, ta, mu
 ; RV32-V512-NEXT:    vmv.v.i v0, 10
-; RV32-V512-NEXT:    vsetivli zero, 4, e64, m1, ta, mu
+; RV32-V512-NEXT:    vrgatherei16.vv v10, v8, v11
 ; RV32-V512-NEXT:    vrgatherei16.vv v10, v9, v11, v0.t
 ; RV32-V512-NEXT:    vmv.v.v v8, v10
 ; RV32-V512-NEXT:    ret
 ;
 ; RV64-V512-LABEL: interleave_v2i64:
 ; RV64-V512:       # %bb.0:
-; RV64-V512-NEXT:    vsetivli zero, 4, e64, m1, ta, ma
+; RV64-V512-NEXT:    vsetivli zero, 4, e64, m1, ta, mu
 ; RV64-V512-NEXT:    vid.v v10
 ; RV64-V512-NEXT:    vsrl.vi v11, v10, 1
-; RV64-V512-NEXT:    vrgather.vv v10, v8, v11
-; RV64-V512-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV64-V512-NEXT:    vmv.v.i v0, 10
-; RV64-V512-NEXT:    vsetivli zero, 4, e64, m1, ta, mu
+; RV64-V512-NEXT:    vrgather.vv v10, v8, v11
 ; RV64-V512-NEXT:    vrgather.vv v10, v9, v11, v0.t
 ; RV64-V512-NEXT:    vmv.v.v v8, v10
 ; RV64-V512-NEXT:    ret
@@ -206,28 +202,24 @@ define <4 x i32> @interleave_v4i32_offset_2(<4 x i32> %x, <4 x i32> %y) {
 define <4 x i32> @interleave_v4i32_offset_1(<4 x i32> %x, <4 x i32> %y) {
 ; V128-LABEL: interleave_v4i32_offset_1:
 ; V128:       # %bb.0:
-; V128-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; V128-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; V128-NEXT:    vid.v v10
 ; V128-NEXT:    vsrl.vi v11, v10, 1
 ; V128-NEXT:    vrgather.vv v10, v8, v11
-; V128-NEXT:    vadd.vi v8, v11, 1
-; V128-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; V128-NEXT:    vmv.v.i v0, 10
-; V128-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; V128-NEXT:    vadd.vi v8, v11, 1
 ; V128-NEXT:    vrgather.vv v10, v9, v8, v0.t
 ; V128-NEXT:    vmv.v.v v8, v10
 ; V128-NEXT:    ret
 ;
 ; V512-LABEL: interleave_v4i32_offset_1:
 ; V512:       # %bb.0:
-; V512-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
+; V512-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
 ; V512-NEXT:    vid.v v10
 ; V512-NEXT:    vsrl.vi v11, v10, 1
 ; V512-NEXT:    vrgather.vv v10, v8, v11
-; V512-NEXT:    vadd.vi v8, v11, 1
-; V512-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; V512-NEXT:    vmv.v.i v0, 10
-; V512-NEXT:    vsetivli zero, 4, e32, mf2, ta, mu
+; V512-NEXT:    vadd.vi v8, v11, 1
 ; V512-NEXT:    vrgather.vv v10, v9, v8, v0.t
 ; V512-NEXT:    vmv1r.v v8, v10
 ; V512-NEXT:    ret

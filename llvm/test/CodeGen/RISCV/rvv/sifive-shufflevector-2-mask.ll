@@ -694,11 +694,9 @@ define void @shufflevector_5_1(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vrgather.vi v9, v12, 1
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.v.i v0, 2
+; CHECK-NEXT:    vrgather.vi v9, v12, 1
 ; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vse64.v v9, (a1)
 ; CHECK-NEXT:    ret
