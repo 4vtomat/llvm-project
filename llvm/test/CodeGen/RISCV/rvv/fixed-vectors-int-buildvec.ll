@@ -446,6 +446,7 @@ define void @buildvec_seq2_v16i8_v2i64(ptr %x) {
 }
 
 define void @buildvec_seq_v9i8(ptr %x) {
+<<<<<<< HEAD
 ; CHECK-LABEL: buildvec_seq_v9i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 73
@@ -462,6 +463,34 @@ define void @buildvec_seq_v9i8(ptr %x) {
 ; CHECK-NEXT:    vsetivli zero, 9, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
 ; CHECK-NEXT:    ret
+=======
+; RV32-LABEL: buildvec_seq_v9i8:
+; RV32:       # %bb.0:
+; RV32-NEXT:    li a1, 3
+; RV32-NEXT:    sb a1, 8(a0)
+; RV32-NEXT:    li a1, 73
+; RV32-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; RV32-NEXT:    vmv.v.x v0, a1
+; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; RV32-NEXT:    vmv.v.i v8, 2
+; RV32-NEXT:    vmerge.vim v8, v8, 1, v0
+; RV32-NEXT:    li a1, 36
+; RV32-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
+; RV32-NEXT:    vmv.v.x v0, a1
+; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; RV32-NEXT:    vmerge.vim v8, v8, 3, v0
+; RV32-NEXT:    vse8.v v8, (a0)
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: buildvec_seq_v9i8:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lui a1, %hi(.LCPI26_0)
+; RV64-NEXT:    ld a1, %lo(.LCPI26_0)(a1)
+; RV64-NEXT:    li a2, 3
+; RV64-NEXT:    sb a2, 8(a0)
+; RV64-NEXT:    sd a1, 0(a0)
+; RV64-NEXT:    ret
+>>>>>>> origin/sifive-dev
   store <9 x i8> <i8 1, i8 2, i8 3, i8 1, i8 2, i8 3, i8 1, i8 2, i8 3>, ptr %x
   ret void
 }
