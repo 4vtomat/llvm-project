@@ -580,7 +580,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
   // postloop:
   //   return
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -814,7 +814,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
   //   vle8.v vData, (Src)
   //   vse8.v vData, (Dst)
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -833,7 +833,7 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -1041,7 +1041,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   Value *VL = nullptr;
   // If it already copied(broadcasted) the scalar value into a vector in
   // previous blocks, then we can use it directly, otherwise we have to do it.
-  if (!dyn_cast<ScalableVectorType>(Val->getType())) {
+  if (!isa<ScalableVectorType>(Val->getType())) {
     VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                  {LoopCount, SEW, LMUL});
     Val = Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
