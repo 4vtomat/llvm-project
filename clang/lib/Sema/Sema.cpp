@@ -2037,28 +2037,8 @@ void Sema::checkTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D) {
         targetDiag(D->getLocation(), diag::note_defined_here, FD) << D;
     }
 
-    // RISC-V vector builtin types (RISCVVTypes.def)
-    if (Ty->isRVVType(/* Bitwidth */ 64, /* IsFloat */ false) &&
-        !TI.hasFeature("zve64x"))
-      Diag(Loc, diag::err_riscv_type_requires_extension, FD) << Ty << "zve64x";
-    if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ true) &&
-        !TI.hasFeature("experimental-zvfh"))
-      Diag(Loc, diag::err_riscv_type_requires_extension, FD)
-          << Ty << "zvfh";
-    if (Ty->isRVVType(/* Bitwidth */ 32, /* IsFloat */ true) &&
-        !TI.hasFeature("zve32f"))
-      Diag(Loc, diag::err_riscv_type_requires_extension, FD) << Ty << "zve32f";
-    if (Ty->isRVVType(/* Bitwidth */ 64, /* IsFloat */ true) &&
-        !TI.hasFeature("zve64d"))
-      Diag(Loc, diag::err_riscv_type_requires_extension, FD) << Ty << "zve64d";
-#if SIFIVE_CUSTOMIZATION
-    if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
-                      /* IsBFloat */ true) &&
-        !Context.getTargetInfo().hasFeature("xsfvfhbfmin") &&
-        !Context.getTargetInfo().hasFeature("xsfvfwmaccqqq"))
-      Diag(Loc, diag::err_riscv_type_requires_extension, FD)
-          << Ty << "xsfvfhbfmin' or 'xsfvfwmaccqqq";
-#endif
+    if (Ty->isRVVType())
+      checkRVVTypeSupport(Ty, Loc, D);
 
     // Don't allow SVE types in functions without a SVE target.
     if (Ty->isSVESizelessBuiltinType() && FD && FD->hasBody()) {

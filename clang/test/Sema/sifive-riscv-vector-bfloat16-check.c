@@ -5,4 +5,9 @@
 #include <riscv_vector.h>
 
 vbfloat16mf4_t foo() { /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
-} /* expected-warning {{non-void function does not return a value}}*/
+  vbfloat16mf4_t bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+
+  (void)bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+
+  return bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+}
