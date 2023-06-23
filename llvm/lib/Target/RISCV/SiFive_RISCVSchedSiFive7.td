@@ -235,10 +235,12 @@ def SiFive7VS          : ProcResource<1> { let Super = SiFive7PipeV; } // Store 
 def SiFive7PipeAB : ProcResGroup<[SiFive7PipeA, SiFive7PipeB]>;
 
 // Branching
+let Latency = 3 in {
 def : WriteRes<WriteJmp, [SiFive7PipeB]>;
 def : WriteRes<WriteJal, [SiFive7PipeB]>;
 def : WriteRes<WriteJalr, [SiFive7PipeB]>;
 def : WriteRes<WriteJmpReg, [SiFive7PipeB]>;
+}
 
 //Short forward branch
 def : WriteRes<WriteSFB, [SiFive7PipeA, SiFive7PipeB]> {

@@ -42,10 +42,12 @@ def SiFive6FDiv        : ProcResource<1> { let Super = SiFive6PipeB; } // FP Div
 def SiFive6PipeAB : ProcResGroup<[SiFive6PipeA, SiFive6PipeB]>;
 
 // Branching
+let Latency = 3 in {
 def : WriteRes<WriteJmp, [SiFive6PipeB]>;
 def : WriteRes<WriteJal, [SiFive6PipeB]>;
 def : WriteRes<WriteJalr, [SiFive6PipeB]>;
 def : WriteRes<WriteJmpReg, [SiFive6PipeB]>;
+}
 
 //Short forward branch
 def : WriteRes<WriteSFB, [SiFive6PipeA, SiFive6PipeB]> {
