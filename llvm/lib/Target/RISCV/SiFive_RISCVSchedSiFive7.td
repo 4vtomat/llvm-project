@@ -921,7 +921,7 @@ multiclass AnyToGPRBypass<SchedRead read, int cycles> {
                                    WriteCTZ32, WriteCPOP, WriteCPOP32,
                                    WriteREV8, WriteORCB, WriteSFB,
                                    WriteIMul, WriteIMul32, WriteLDB,
-                                   WriteLDH, WriteLDW, WriteLDW, WriteLDD,
+                                   WriteLDH, WriteLDW, WriteLDD,
                                    WriteFMovF16ToI16, WriteFMovF32ToI32,
                                    WriteFMovF64ToI64, WriteFCvtF16ToI32,
                                    WriteFCvtF16ToI64, WriteFCvtF32ToI32,
@@ -945,8 +945,7 @@ def : ReadAdvance<ReadJalr, 0>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
-def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW,
-                                   WriteLDW, WriteLDD]>;
+def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
 defm : AnyToGPRBypass<ReadIALU, 2>;
 defm : AnyToGPRBypass<ReadIALU32, 2>;
 defm : AnyToGPRBypass<ReadShiftImm, 2>;

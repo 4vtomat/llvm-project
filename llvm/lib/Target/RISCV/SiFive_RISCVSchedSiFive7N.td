@@ -917,8 +917,7 @@ def : ReadAdvance<ReadJalr, 0>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
-def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW,
-                                   WriteLDW, WriteLDD]>;
+def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
 defm : AnyToGPRBypass<ReadIALU, 2>;
 defm : AnyToGPRBypass<ReadIALU32, 2>;
 defm : AnyToGPRBypass<ReadShiftImm, 2>;
