@@ -90,24 +90,8 @@ InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
       Cost = LMul <= DLenFactor ? (DLenFactor / LMul) : 1;
     else
       Cost = (LMul * DLenFactor);
-#if SIFIVE_CUSTOMIZATION
-    // Here uses DLEN as the reciprocal throughput cost,
-    // x280: VLEN = 2 * DLEN
-    // p470: VLEN = DLEN, 1 vector pipe
-    // p670: VLEN = DLEN, 2 vector pipes
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      Cost = Fractional ? 1 : LMul * 2;
-#endif // SIFIVE_CUSTOMIZATION
   } else {
     Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / DLenFactor);
-#if SIFIVE_CUSTOMIZATION
-    // Here uses DLEN as the reciprocal throughput cost,
-    // x280: VLEN = 2 * DLEN
-    // p470: VLEN = DLEN, 1 vector pipe
-    // p670: VLEN = DLEN, 2 vector pipes
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / 2);
-#endif // SIFIVE_CUSTOMIZATION
   }
   return Cost;
 }
