@@ -24,58 +24,50 @@ def SiFive6Model : SchedMachineModel {
   let CompleteModel = false;
 }
 
-// The SiFive6 microarchitecure has two pipelines: A, B
-// Pipe A can handle memory, integer alu and vector operations.
-// Pipe B can handle integer alu, control flow, integer multiply and divide,
-// and floating point computation.
+// The SiFive6 microarchitecure has one unnamed pipe.
 let SchedModel = SiFive6Model in {
-let BufferSize = 0 in {
-def SiFive6PipeA       : ProcResource<1>;
-def SiFive6PipeB       : ProcResource<1>;
-}
+let BufferSize = 0 in
+def SiFive6Pipe       : ProcResource<1>;
 
 let BufferSize = 1 in {
-def SiFive6IDiv        : ProcResource<1> { let Super = SiFive6PipeB; } // Int Division
-def SiFive6FDiv        : ProcResource<1> { let Super = SiFive6PipeB; } // FP Division/Sqrt
+def SiFive6IDiv        : ProcResource<1> { let Super = SiFive6Pipe; } // Int Division
+def SiFive6FDiv        : ProcResource<1> { let Super = SiFive6Pipe; } // FP Division/Sqrt
 }
-
-def SiFive6PipeAB : ProcResGroup<[SiFive6PipeA, SiFive6PipeB]>;
 
 // Branching
 let Latency = 3 in {
-def : WriteRes<WriteJmp, [SiFive6PipeB]>;
-def : WriteRes<WriteJal, [SiFive6PipeB]>;
-def : WriteRes<WriteJalr, [SiFive6PipeB]>;
-def : WriteRes<WriteJmpReg, [SiFive6PipeB]>;
+def : WriteRes<WriteJmp, [SiFive6Pipe]>;
+def : WriteRes<WriteJal, [SiFive6Pipe]>;
+def : WriteRes<WriteJalr, [SiFive6Pipe]>;
+def : WriteRes<WriteJmpReg, [SiFive6Pipe]>;
 }
 
 //Short forward branch
-def : WriteRes<WriteSFB, [SiFive6PipeA, SiFive6PipeB]> {
-  let Latency = 3;
-}
+let Latency = 4, ResourceCycles = [2] in
+def : WriteRes<WriteSFB, [SiFive6Pipe]>;
 
 // Integer arithmetic and logic
 let Latency = 3 in {
-def : WriteRes<WriteIALU, [SiFive6PipeAB]>;
-def : WriteRes<WriteIALU32, [SiFive6PipeAB]>;
-def : WriteRes<WriteShiftImm, [SiFive6PipeAB]>;
-def : WriteRes<WriteShiftImm32, [SiFive6PipeAB]>;
-def : WriteRes<WriteShiftReg, [SiFive6PipeAB]>;
-def : WriteRes<WriteShiftReg32, [SiFive6PipeAB]>;
+def : WriteRes<WriteIALU, [SiFive6Pipe]>;
+def : WriteRes<WriteIALU32, [SiFive6Pipe]>;
+def : WriteRes<WriteShiftImm, [SiFive6Pipe]>;
+def : WriteRes<WriteShiftImm32, [SiFive6Pipe]>;
+def : WriteRes<WriteShiftReg, [SiFive6Pipe]>;
+def : WriteRes<WriteShiftReg32, [SiFive6Pipe]>;
 }
 
 // Integer multiplication
 let Latency = 3 in {
-def : WriteRes<WriteIMul, [SiFive6PipeB]>;
-def : WriteRes<WriteIMul32, [SiFive6PipeB]>;
+def : WriteRes<WriteIMul, [SiFive6Pipe]>;
+def : WriteRes<WriteIMul32, [SiFive6Pipe]>;
 }
 
 // Integer division
-def : WriteRes<WriteIDiv, [SiFive6PipeB, SiFive6IDiv]> {
+def : WriteRes<WriteIDiv, [SiFive6Pipe, SiFive6IDiv]> {
   let Latency = 16;
   let ResourceCycles = [1, 15];
 }
-def : WriteRes<WriteIDiv32,  [SiFive6PipeB, SiFive6IDiv]> {
+def : WriteRes<WriteIDiv32,  [SiFive6Pipe, SiFive6IDiv]> {
   let Latency = 16;
   let ResourceCycles = [1, 15];
 }
@@ -83,151 +75,151 @@ def : WriteRes<WriteIDiv32,  [SiFive6PipeB, SiFive6IDiv]> {
 // Bitmanip
 let Latency = 3 in {
 // Rotates are in the late-B ALU.
-def : WriteRes<WriteRotateImm, [SiFive6PipeB]>;
-def : WriteRes<WriteRotateImm32, [SiFive6PipeB]>;
-def : WriteRes<WriteRotateReg, [SiFive6PipeB]>;
-def : WriteRes<WriteRotateReg32, [SiFive6PipeB]>;
+def : WriteRes<WriteRotateImm, [SiFive6Pipe]>;
+def : WriteRes<WriteRotateImm32, [SiFive6Pipe]>;
+def : WriteRes<WriteRotateReg, [SiFive6Pipe]>;
+def : WriteRes<WriteRotateReg32, [SiFive6Pipe]>;
 
 // clz[w]/ctz[w] are in the late-B ALU.
-def : WriteRes<WriteCLZ, [SiFive6PipeB]>;
-def : WriteRes<WriteCLZ32, [SiFive6PipeB]>;
-def : WriteRes<WriteCTZ, [SiFive6PipeB]>;
-def : WriteRes<WriteCTZ32, [SiFive6PipeB]>;
+def : WriteRes<WriteCLZ, [SiFive6Pipe]>;
+def : WriteRes<WriteCLZ32, [SiFive6Pipe]>;
+def : WriteRes<WriteCTZ, [SiFive6Pipe]>;
+def : WriteRes<WriteCTZ32, [SiFive6Pipe]>;
 
 // cpop[w] look exactly like multiply.
-def : WriteRes<WriteCPOP, [SiFive6PipeB]>;
-def : WriteRes<WriteCPOP32, [SiFive6PipeB]>;
+def : WriteRes<WriteCPOP, [SiFive6Pipe]>;
+def : WriteRes<WriteCPOP32, [SiFive6Pipe]>;
 
 // orc.b is in the late-B ALU.
-def : WriteRes<WriteORCB, [SiFive6PipeB]>;
+def : WriteRes<WriteORCB, [SiFive6Pipe]>;
 
 // rev8 is in the late-A and late-B ALUs.
-def : WriteRes<WriteREV8, [SiFive6PipeAB]>;
+def : WriteRes<WriteREV8, [SiFive6Pipe]>;
 
 // shNadd[.uw] is on the early-B and late-B ALUs.
-def : WriteRes<WriteSHXADD, [SiFive6PipeB]>;
-def : WriteRes<WriteSHXADD32, [SiFive6PipeB]>;
+def : WriteRes<WriteSHXADD, [SiFive6Pipe]>;
+def : WriteRes<WriteSHXADD32, [SiFive6Pipe]>;
 }
 
 // Memory
-def : WriteRes<WriteSTB, [SiFive6PipeA]>;
-def : WriteRes<WriteSTH, [SiFive6PipeA]>;
-def : WriteRes<WriteSTW, [SiFive6PipeA]>;
-def : WriteRes<WriteSTD, [SiFive6PipeA]>;
-def : WriteRes<WriteFST16, [SiFive6PipeA]>;
-def : WriteRes<WriteFST32, [SiFive6PipeA]>;
-def : WriteRes<WriteFST64, [SiFive6PipeA]>;
+def : WriteRes<WriteSTB, [SiFive6Pipe]>;
+def : WriteRes<WriteSTH, [SiFive6Pipe]>;
+def : WriteRes<WriteSTW, [SiFive6Pipe]>;
+def : WriteRes<WriteSTD, [SiFive6Pipe]>;
+def : WriteRes<WriteFST16, [SiFive6Pipe]>;
+def : WriteRes<WriteFST32, [SiFive6Pipe]>;
+def : WriteRes<WriteFST64, [SiFive6Pipe]>;
 
 let Latency = 3 in {
-def : WriteRes<WriteLDB, [SiFive6PipeA]>;
-def : WriteRes<WriteLDH, [SiFive6PipeA]>;
-def : WriteRes<WriteLDW, [SiFive6PipeA]>;
-def : WriteRes<WriteLDD, [SiFive6PipeA]>;
+def : WriteRes<WriteLDB, [SiFive6Pipe]>;
+def : WriteRes<WriteLDH, [SiFive6Pipe]>;
+def : WriteRes<WriteLDW, [SiFive6Pipe]>;
+def : WriteRes<WriteLDD, [SiFive6Pipe]>;
 }
 
 let Latency = 2 in {
-def : WriteRes<WriteFLD16, [SiFive6PipeA]>;
-def : WriteRes<WriteFLD32, [SiFive6PipeA]>;
-def : WriteRes<WriteFLD64, [SiFive6PipeA]>;
+def : WriteRes<WriteFLD16, [SiFive6Pipe]>;
+def : WriteRes<WriteFLD32, [SiFive6Pipe]>;
+def : WriteRes<WriteFLD64, [SiFive6Pipe]>;
 }
 
 // Atomic memory
-def : WriteRes<WriteAtomicSTW, [SiFive6PipeA]>;
-def : WriteRes<WriteAtomicSTD, [SiFive6PipeA]>;
+def : WriteRes<WriteAtomicSTW, [SiFive6Pipe]>;
+def : WriteRes<WriteAtomicSTD, [SiFive6Pipe]>;
 
 let Latency = 3 in {
-def : WriteRes<WriteAtomicW, [SiFive6PipeA]>;
-def : WriteRes<WriteAtomicD, [SiFive6PipeA]>;
-def : WriteRes<WriteAtomicLDW, [SiFive6PipeA]>;
-def : WriteRes<WriteAtomicLDD, [SiFive6PipeA]>;
+def : WriteRes<WriteAtomicW, [SiFive6Pipe]>;
+def : WriteRes<WriteAtomicD, [SiFive6Pipe]>;
+def : WriteRes<WriteAtomicLDW, [SiFive6Pipe]>;
+def : WriteRes<WriteAtomicLDD, [SiFive6Pipe]>;
 }
 
 // Half precision.
 let Latency = 5 in {
-def : WriteRes<WriteFAdd16, [SiFive6PipeB]>;
-def : WriteRes<WriteFMul16, [SiFive6PipeB]>;
-def : WriteRes<WriteFMA16, [SiFive6PipeB]>;
+def : WriteRes<WriteFAdd16, [SiFive6Pipe]>;
+def : WriteRes<WriteFMul16, [SiFive6Pipe]>;
+def : WriteRes<WriteFMA16, [SiFive6Pipe]>;
 }
 let Latency = 3 in {
-def : WriteRes<WriteFSGNJ16, [SiFive6PipeB]>;
-def : WriteRes<WriteFMinMax16, [SiFive6PipeB]>;
+def : WriteRes<WriteFSGNJ16, [SiFive6Pipe]>;
+def : WriteRes<WriteFMinMax16, [SiFive6Pipe]>;
 }
 
-def : WriteRes<WriteFDiv16, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 14;
+def : WriteRes<WriteFDiv16, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 14;
                                                          let ResourceCycles = [1, 13]; }
-def : WriteRes<WriteFSqrt16, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 14;
+def : WriteRes<WriteFSqrt16, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 14;
                                                           let ResourceCycles = [1, 13]; }
 
 // Single precision.
 let Latency = 5 in {
-def : WriteRes<WriteFAdd32, [SiFive6PipeB]>;
-def : WriteRes<WriteFMul32, [SiFive6PipeB]>;
-def : WriteRes<WriteFMA32, [SiFive6PipeB]>;
+def : WriteRes<WriteFAdd32, [SiFive6Pipe]>;
+def : WriteRes<WriteFMul32, [SiFive6Pipe]>;
+def : WriteRes<WriteFMA32, [SiFive6Pipe]>;
 }
 let Latency = 3 in {
-def : WriteRes<WriteFSGNJ32, [SiFive6PipeB]>;
-def : WriteRes<WriteFMinMax32, [SiFive6PipeB]>;
+def : WriteRes<WriteFSGNJ32, [SiFive6Pipe]>;
+def : WriteRes<WriteFMinMax32, [SiFive6Pipe]>;
 }
 
-def : WriteRes<WriteFDiv32, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 27;
+def : WriteRes<WriteFDiv32, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 27;
                                                          let ResourceCycles = [1, 26]; }
-def : WriteRes<WriteFSqrt32, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 27;
+def : WriteRes<WriteFSqrt32, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 27;
                                                           let ResourceCycles = [1, 26]; }
 
 // Double precision
 let Latency = 7 in {
-def : WriteRes<WriteFAdd64, [SiFive6PipeB]>;
-def : WriteRes<WriteFMul64, [SiFive6PipeB]>;
-def : WriteRes<WriteFMA64, [SiFive6PipeB]>;
+def : WriteRes<WriteFAdd64, [SiFive6Pipe]>;
+def : WriteRes<WriteFMul64, [SiFive6Pipe]>;
+def : WriteRes<WriteFMA64, [SiFive6Pipe]>;
 }
 let Latency = 3 in {
-def : WriteRes<WriteFSGNJ64, [SiFive6PipeB]>;
-def : WriteRes<WriteFMinMax64, [SiFive6PipeB]>;
+def : WriteRes<WriteFSGNJ64, [SiFive6Pipe]>;
+def : WriteRes<WriteFMinMax64, [SiFive6Pipe]>;
 }
 
-def : WriteRes<WriteFDiv64, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 56;
+def : WriteRes<WriteFDiv64, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 56;
                                                          let ResourceCycles = [1, 55]; }
-def : WriteRes<WriteFSqrt64, [SiFive6PipeB, SiFive6FDiv]> { let Latency = 56;
+def : WriteRes<WriteFSqrt64, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 56;
                                                           let ResourceCycles = [1, 55]; }
 
 // Conversions
 let Latency = 3 in {
-def : WriteRes<WriteFCvtI32ToF16, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtI32ToF32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtI32ToF64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtI64ToF16, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtI64ToF32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtI64ToF64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF16ToI32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF16ToI64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF16ToF32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF16ToF64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF32ToI32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF32ToI64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF32ToF16, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF32ToF64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF64ToI32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF64ToI64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF64ToF16, [SiFive6PipeB]>;
-def : WriteRes<WriteFCvtF64ToF32, [SiFive6PipeB]>;
+def : WriteRes<WriteFCvtI32ToF16, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtI32ToF32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtI32ToF64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtI64ToF16, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtI64ToF32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtI64ToF64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF16ToI32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF16ToI64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF16ToF32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF16ToF64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF32ToI32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF32ToI64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF32ToF16, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF32ToF64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF64ToI32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF64ToI64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF64ToF16, [SiFive6Pipe]>;
+def : WriteRes<WriteFCvtF64ToF32, [SiFive6Pipe]>;
 
-def : WriteRes<WriteFClass16, [SiFive6PipeB]>;
-def : WriteRes<WriteFClass32, [SiFive6PipeB]>;
-def : WriteRes<WriteFClass64, [SiFive6PipeB]>;
-def : WriteRes<WriteFCmp16, [SiFive6PipeB]>;
-def : WriteRes<WriteFCmp32, [SiFive6PipeB]>;
-def : WriteRes<WriteFCmp64, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovI16ToF16, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovF16ToI16, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovI32ToF32, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovF32ToI32, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovI64ToF64, [SiFive6PipeB]>;
-def : WriteRes<WriteFMovF64ToI64, [SiFive6PipeB]>;
+def : WriteRes<WriteFClass16, [SiFive6Pipe]>;
+def : WriteRes<WriteFClass32, [SiFive6Pipe]>;
+def : WriteRes<WriteFClass64, [SiFive6Pipe]>;
+def : WriteRes<WriteFCmp16, [SiFive6Pipe]>;
+def : WriteRes<WriteFCmp32, [SiFive6Pipe]>;
+def : WriteRes<WriteFCmp64, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovI16ToF16, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovF16ToI16, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovI32ToF32, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovF32ToI32, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovI64ToF64, [SiFive6Pipe]>;
+def : WriteRes<WriteFMovF64ToI64, [SiFive6Pipe]>;
 }
 
 
 // Others
-def : WriteRes<WriteCSR, [SiFive6PipeB]>;
+def : WriteRes<WriteCSR, [SiFive6Pipe]>;
 def : WriteRes<WriteNop, []>;
 
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
