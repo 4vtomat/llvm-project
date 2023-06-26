@@ -42,11 +42,7 @@
 ; CHECK-NEXT:       Local Stack Slot Allocation
 ; CHECK-NEXT:       RISC-V Pre-RA pseudo instruction expansion pass
 ; CHECK-NEXT:       RISC-V Insert VSETVLI pass
-<<<<<<< HEAD
-; CHECK-NEXT:       RISCV Insert required VXRM values
-=======
 ; CHECK-NEXT:       RISC-V Insert Read/Write CSR Pass
->>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 ; CHECK-NEXT:       Eliminate PHI nodes for register allocation
 ; CHECK-NEXT:       Two-Address instruction pass
 ; CHECK-NEXT:       Fast Register Allocator
