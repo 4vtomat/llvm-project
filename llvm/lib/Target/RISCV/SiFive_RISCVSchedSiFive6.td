@@ -234,18 +234,49 @@ def : WriteRes<WriteNop, []>;
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
 //===----------------------------------------------------------------------===//
+// ALU, ALU_B, IMUL, LOAD, F2I, SFB bypass to ALU, ALU_B, Branch
+multiclass AnyToGPRBypass<SchedRead read, int cycles> {
+  def : ReadAdvance<read, cycles, [WriteIALU, WriteIALU32,
+                                   WriteShiftImm, WriteShiftImm32,
+                                   WriteShiftReg, WriteShiftReg32,
+                                   WriteSHXADD, WriteSHXADD32,
+                                   WriteRotateImm, WriteRotateImm32,
+                                   WriteRotateReg, WriteRotateReg32,
+                                   WriteCLZ, WriteCLZ32, WriteCTZ,
+                                   WriteCTZ32, WriteCPOP, WriteCPOP32,
+                                   WriteREV8, WriteORCB, WriteSFB,
+                                   WriteIMul, WriteIMul32, WriteLDB,
+                                   WriteLDH, WriteLDW, WriteLDW, WriteLDD,
+                                   WriteFMovF16ToI16, WriteFMovF32ToI32,
+                                   WriteFMovF64ToI64, WriteFCvtF16ToI32,
+                                   WriteFCvtF16ToI64, WriteFCvtF32ToI32,
+                                   WriteFCvtF32ToI64, WriteFCvtF64ToI32,
+                                   WriteFCvtF64ToI64]>;
+}
+// F2F, I2F to FMA, FALU, FDIV, F2F
+multiclass AnyToFPRBypass<SchedRead read, int cycles> {
+  def : ReadAdvance<read, cycles, [WriteFCvtI32ToF16, WriteFCvtI32ToF32,
+                                   WriteFCvtI32ToF64, WriteFCvtI64ToF16,
+                                   WriteFCvtI64ToF32, WriteFCvtI64ToF64,
+                                   WriteFCvtF16ToF32, WriteFCvtF16ToF64,
+                                   WriteFCvtF32ToF16, WriteFCvtF32ToF64,
+                                   WriteFCvtF64ToF16, WriteFCvtF64ToF32,
+                                   WriteFMovI16ToF16, WriteFMovI32ToF32,
+                                   WriteFMovI64ToF64]>;
+}
+
 // Bypass and advance
-def : ReadAdvance<ReadJmp, 0>;
+defm : AnyToGPRBypass<ReadJmp, 2>;
 def : ReadAdvance<ReadJalr, 0>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 def : ReadAdvance<ReadMemBase, 0>;
-def : ReadAdvance<ReadIALU, 0>;
-def : ReadAdvance<ReadIALU32, 0>;
-def : ReadAdvance<ReadShiftImm, 0>;
-def : ReadAdvance<ReadShiftImm32, 0>;
-def : ReadAdvance<ReadShiftReg, 0>;
-def : ReadAdvance<ReadShiftReg32, 0>;
+defm : AnyToGPRBypass<ReadIALU, 2>;
+defm : AnyToGPRBypass<ReadIALU32, 2>;
+defm : AnyToGPRBypass<ReadShiftImm, 2>;
+defm : AnyToGPRBypass<ReadShiftImm32, 2>;
+defm : AnyToGPRBypass<ReadShiftReg, 2>;
+defm : AnyToGPRBypass<ReadShiftReg32, 2>;
 def : ReadAdvance<ReadIDiv, 0>;
 def : ReadAdvance<ReadIDiv32, 0>;
 def : ReadAdvance<ReadIMul, 0>;
@@ -260,73 +291,73 @@ def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
 def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
-def : ReadAdvance<ReadFAdd16, 0>;
-def : ReadAdvance<ReadFAdd32, 0>;
-def : ReadAdvance<ReadFAdd64, 0>;
-def : ReadAdvance<ReadFMul16, 0>;
-def : ReadAdvance<ReadFMA16, 0>;
-def : ReadAdvance<ReadFMul32, 0>;
-def : ReadAdvance<ReadFMA32, 0>;
-def : ReadAdvance<ReadFMul64, 0>;
-def : ReadAdvance<ReadFMA64, 0>;
-def : ReadAdvance<ReadFDiv16, 0>;
-def : ReadAdvance<ReadFDiv32, 0>;
-def : ReadAdvance<ReadFDiv64, 0>;
-def : ReadAdvance<ReadFSqrt16, 0>;
-def : ReadAdvance<ReadFSqrt32, 0>;
-def : ReadAdvance<ReadFSqrt64, 0>;
-def : ReadAdvance<ReadFCmp16, 0>;
-def : ReadAdvance<ReadFCmp32, 0>;
-def : ReadAdvance<ReadFCmp64, 0>;
-def : ReadAdvance<ReadFSGNJ16, 0>;
-def : ReadAdvance<ReadFSGNJ32, 0>;
-def : ReadAdvance<ReadFSGNJ64, 0>;
-def : ReadAdvance<ReadFMinMax16, 0>;
-def : ReadAdvance<ReadFMinMax32, 0>;
-def : ReadAdvance<ReadFMinMax64, 0>;
-def : ReadAdvance<ReadFCvtF16ToI32, 0>;
-def : ReadAdvance<ReadFCvtF16ToI64, 0>;
-def : ReadAdvance<ReadFCvtF32ToI32, 0>;
-def : ReadAdvance<ReadFCvtF32ToI64, 0>;
-def : ReadAdvance<ReadFCvtF64ToI32, 0>;
-def : ReadAdvance<ReadFCvtF64ToI64, 0>;
+defm : AnyToFPRBypass<ReadFAdd16, 1>;
+defm : AnyToFPRBypass<ReadFAdd32, 1>;
+defm : AnyToFPRBypass<ReadFAdd64, 1>;
+defm : AnyToFPRBypass<ReadFMul16, 1>;
+defm : AnyToFPRBypass<ReadFMA16, 1>;
+defm : AnyToFPRBypass<ReadFMul32, 1>;
+defm : AnyToFPRBypass<ReadFMA32, 1>;
+defm : AnyToFPRBypass<ReadFMul64, 1>;
+defm : AnyToFPRBypass<ReadFMA64, 1>;
+defm : AnyToFPRBypass<ReadFDiv16, 1>;
+defm : AnyToFPRBypass<ReadFDiv32, 1>;
+defm : AnyToFPRBypass<ReadFDiv64, 1>;
+defm : AnyToFPRBypass<ReadFSqrt16, 1>;
+defm : AnyToFPRBypass<ReadFSqrt32, 1>;
+defm : AnyToFPRBypass<ReadFSqrt64, 1>;
+defm : AnyToFPRBypass<ReadFCmp16, 1>;
+defm : AnyToFPRBypass<ReadFCmp32, 1>;
+defm : AnyToFPRBypass<ReadFCmp64, 1>;
+defm : AnyToFPRBypass<ReadFSGNJ16, 1>;
+defm : AnyToFPRBypass<ReadFSGNJ32, 1>;
+defm : AnyToFPRBypass<ReadFSGNJ64, 1>;
+defm : AnyToFPRBypass<ReadFMinMax16, 1>;
+defm : AnyToFPRBypass<ReadFMinMax32, 1>;
+defm : AnyToFPRBypass<ReadFMinMax64, 1>;
+defm : AnyToFPRBypass<ReadFCvtF16ToI32, 1>;
+defm : AnyToFPRBypass<ReadFCvtF16ToI64, 1>;
+defm : AnyToFPRBypass<ReadFCvtF32ToI32, 1>;
+defm : AnyToFPRBypass<ReadFCvtF32ToI64, 1>;
+defm : AnyToFPRBypass<ReadFCvtF64ToI32, 1>;
+defm : AnyToFPRBypass<ReadFCvtF64ToI64, 1>;
 def : ReadAdvance<ReadFCvtI32ToF16, 0>;
 def : ReadAdvance<ReadFCvtI32ToF32, 0>;
 def : ReadAdvance<ReadFCvtI32ToF64, 0>;
 def : ReadAdvance<ReadFCvtI64ToF16, 0>;
 def : ReadAdvance<ReadFCvtI64ToF32, 0>;
 def : ReadAdvance<ReadFCvtI64ToF64, 0>;
-def : ReadAdvance<ReadFCvtF32ToF64, 0>;
-def : ReadAdvance<ReadFCvtF64ToF32, 0>;
-def : ReadAdvance<ReadFCvtF16ToF32, 0>;
-def : ReadAdvance<ReadFCvtF32ToF16, 0>;
-def : ReadAdvance<ReadFCvtF16ToF64, 0>;
-def : ReadAdvance<ReadFCvtF64ToF16, 0>;
-def : ReadAdvance<ReadFMovF16ToI16, 0>;
+defm : AnyToFPRBypass<ReadFCvtF32ToF64, 1>;
+defm : AnyToFPRBypass<ReadFCvtF64ToF32, 1>;
+defm : AnyToFPRBypass<ReadFCvtF16ToF32, 1>;
+defm : AnyToFPRBypass<ReadFCvtF32ToF16, 1>;
+defm : AnyToFPRBypass<ReadFCvtF16ToF64, 1>;
+defm : AnyToFPRBypass<ReadFCvtF64ToF16, 1>;
+defm : AnyToFPRBypass<ReadFMovF16ToI16, 1>;
 def : ReadAdvance<ReadFMovI16ToF16, 0>;
-def : ReadAdvance<ReadFMovF32ToI32, 0>;
+defm : AnyToFPRBypass<ReadFMovF32ToI32, 1>;
 def : ReadAdvance<ReadFMovI32ToF32, 0>;
-def : ReadAdvance<ReadFMovF64ToI64, 0>;
+defm : AnyToFPRBypass<ReadFMovF64ToI64, 1>;
 def : ReadAdvance<ReadFMovI64ToF64, 0>;
 def : ReadAdvance<ReadFClass16, 0>;
 def : ReadAdvance<ReadFClass32, 0>;
 def : ReadAdvance<ReadFClass64, 0>;
 
 // Bitmanip
-def : ReadAdvance<ReadRotateImm, 0>;
-def : ReadAdvance<ReadRotateImm32, 0>;
-def : ReadAdvance<ReadRotateReg, 0>;
-def : ReadAdvance<ReadRotateReg32, 0>;
-def : ReadAdvance<ReadCLZ, 0>;
-def : ReadAdvance<ReadCLZ32, 0>;
-def : ReadAdvance<ReadCTZ, 0>;
-def : ReadAdvance<ReadCTZ32, 0>;
+defm : AnyToGPRBypass<ReadRotateImm, 2>;
+defm : AnyToGPRBypass<ReadRotateImm32, 2>;
+defm : AnyToGPRBypass<ReadRotateReg, 2>;
+defm : AnyToGPRBypass<ReadRotateReg32, 2>;
+defm : AnyToGPRBypass<ReadCLZ, 2>;
+defm : AnyToGPRBypass<ReadCLZ32, 2>;
+defm : AnyToGPRBypass<ReadCTZ, 2>;
+defm : AnyToGPRBypass<ReadCTZ32, 2>;
 def : ReadAdvance<ReadCPOP, 0>;
 def : ReadAdvance<ReadCPOP32, 0>;
-def : ReadAdvance<ReadORCB, 0>;
-def : ReadAdvance<ReadREV8, 0>;
-def : ReadAdvance<ReadSHXADD, 0>;
-def : ReadAdvance<ReadSHXADD32, 0>;
+defm : AnyToGPRBypass<ReadORCB, 2>;
+defm : AnyToGPRBypass<ReadREV8, 2>;
+defm : AnyToGPRBypass<ReadSHXADD, 2>;
+defm : AnyToGPRBypass<ReadSHXADD32, 2>;
 
 //Short forward branch
 def : ReadAdvance<ReadSFB, 0>;
