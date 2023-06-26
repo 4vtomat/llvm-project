@@ -27,12 +27,7 @@ add_llvm_target(RISCVCodeGen
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
   RISCVInsertVSETVLI.cpp
-<<<<<<< HEAD
-  SiFive_RISCVInsertVXRMWrite.cpp
-  SiFive_RISCVCleanupVXRM.cpp
-=======
   RISCVInsertReadWriteCSR.cpp
->>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
   RISCVInstrInfo.cpp
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
