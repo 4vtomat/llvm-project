@@ -215,21 +215,16 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit IsSignExtendingOpW = 0;
   let TSFlags{18} = IsSignExtendingOpW;
 
-<<<<<<< HEAD
+  bit HasRoundModeOp = 0;
+  let TSFlags{19} =  HasRoundModeOp;
+
 #ifdef SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
   // collisions when new TSFlags are added upstream
 
   bits<2> TargetOverlapConstraintType = 0;
-  let TSFlags{62-61} = TargetOverlapConstraintType;
-
-  bit HasRoundModeOp = 0;
-  let TSFlags{63} =  HasRoundModeOp;
+  let TSFlags{63-62} = TargetOverlapConstraintType;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bit HasRoundModeOp = 0;
-  let TSFlags{19} =  HasRoundModeOp;
->>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 }
 
 // Pseudo instructions
