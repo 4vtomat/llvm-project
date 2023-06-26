@@ -126,8 +126,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVDAGToDAGISelPass(*PR);
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVMachineConstPropagationPass(*PR);
-  initializeRISCVInsertVXRMWritePass(*PR);
-  initializeRISCVCleanupVXRMPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVInitUndefPass(*PR);
 }
@@ -574,20 +572,13 @@ void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
   if (TM->getOptLevel() != CodeGenOpt::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
-    addPass(createRISCVCleanupVXRMPass()); // SIFIVE
 #if SIFIVE_CUSTOMIZATION
     if (EnableVLOptimizer)
       addPass(createRISCVVLOptimizerPass()); // SIFIVE
 #endif
   }
   addPass(createRISCVInsertVSETVLIPass());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  addPass(createRISCVInsertVXRMWritePass());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   addPass(createRISCVInsertReadWriteCSRPass());
->>>>>>> 7c8365121a7d ([2/3][RISCV][POC] Model vxrm in LLVM intrinsics and machine instructions for RVV fixed-point instructions)
 }
 
 void RISCVPassConfig::addOptimizedRegAlloc() {
