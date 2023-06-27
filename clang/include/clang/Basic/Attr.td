@@ -4240,7 +4240,6 @@ def ReadOnlyPlacement : InheritableAttr {
   let Documentation = [ReadOnlyPlacementDocs];
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def NeonStructType : InheritableAttr {
   let Spellings = [Clang<"neon_struct_type">];
@@ -4248,11 +4247,9 @@ def NeonStructType : InheritableAttr {
   let SimpleHandler = 1;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 def AvailableOnlyInDefaultEvalMethod : InheritableAttr {
   let Spellings = [Clang<"available_only_in_default_eval_method">];
   let Subjects = SubjectList<[TypedefName], ErrorDiag>;
   let Documentation = [Undocumented];
 }
-
->>>>>>> upstream-main
