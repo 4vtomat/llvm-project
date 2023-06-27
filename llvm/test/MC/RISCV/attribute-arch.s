@@ -200,50 +200,50 @@
 .attribute arch, "rv32izbc1p0"
 # CHECK: attribute      5, "rv32i2p1_zbc1p0"
 
-.attribute arch, "rv32i_zve64x_zvbb0p9"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zvbb0p9_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvbb1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zvbb1p0_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve64x_zvbc0p9"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zvbc0p9_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvbc1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zvbc1p0_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve32x_zvkg0p9"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg0p9_zvl32b1p0"
+.attribute arch, "rv32i_zve32x_zvkg1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg1p0_zvl32b1p0"
 
-.attribute arch, "rv32i_zve64x_zvkn0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zve32x1p0_zve64x1p0_zvkn0p9_zvkned0p9_zvknha0p9_zvknhb0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvkn1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zve32x1p0_zve64x1p0_zvkn1p0_zvkned1p0_zvknha1p0_zvknhb1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
     
-.attribute arch, "rv32i_zve64x_zvknc0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zvbc0p9_zve32x1p0_zve64x1p0_zvkn0p9_zvknc0p9_zvkned0p9_zvknha0p9_zvknhb0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvknc1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zvbc1p0_zve32x1p0_zve64x1p0_zvkn1p0_zvknc1p0_zvkned1p0_zvknha1p0_zvknhb1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve64x_zvkng0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zve32x1p0_zve64x1p0_zvkg0p9_zvkn0p9_zvkned0p9_zvkng0p9_zvknha0p9_zvknhb0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvkng1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zve32x1p0_zve64x1p0_zvkg1p0_zvkn1p0_zvkned1p0_zvkng1p0_zvknha1p0_zvknhb1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve32x_zvknha0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha0p9_zvl32b1p0"
+.attribute arch, "rv32i_zve32x_zvknha1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha1p0_zvl32b1p0"
 
-.attribute arch, "rv32i_zve64x_zvknhb0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha0p9_zvknhb0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvknhb1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha1p0_zvknhb1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve32x_zvkned0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkned0p9_zvl32b1p0"
+.attribute arch, "rv32i_zve32x_zvkned1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkned1p0_zvl32b1p0"
 
-.attribute arch, "rv32i_zve64x_zvks0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zve32x1p0_zve64x1p0_zvks0p9_zvksed0p9_zvksh0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvks1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zve32x1p0_zve64x1p0_zvks1p0_zvksed1p0_zvksh1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve64x_zvksc0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zvbc0p9_zve32x1p0_zve64x1p0_zvks0p9_zvksc0p9_zvksed0p9_zvksh0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvksc1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zvbc1p0_zve32x1p0_zve64x1p0_zvks1p0_zvksc1p0_zvksed1p0_zvksh1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve64x_zvksg0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb0p9_zve32x1p0_zve64x1p0_zvkg0p9_zvks0p9_zvksed0p9_zvksg0p9_zvksh0p9_zvkt0p9_zvl32b1p0_zvl64b1p0"
+.attribute arch, "rv32i_zve64x_zvksg1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zvbb1p0_zve32x1p0_zve64x1p0_zvkg1p0_zvks1p0_zvksed1p0_zvksg1p0_zvksh1p0_zvkt1p0_zvl32b1p0_zvl64b1p0"
 
-.attribute arch, "rv32i_zve32x_zvksed0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed0p9_zvl32b1p0"
+.attribute arch, "rv32i_zve32x_zvksed1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed1p0_zvl32b1p0"
 
-.attribute arch, "rv32i_zve32x_zvksh0p9"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh0p9_zvl32b1p0"
+.attribute arch, "rv32i_zve32x_zvksh1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh1p0_zvl32b1p0"
 
-.attribute arch, "rv32i_zvkt0p9"
-# CHECK: attribute	5, "rv32i2p1_zvkt0p9"
+.attribute arch, "rv32i_zvkt1p0"
+# CHECK: attribute	5, "rv32i2p1_zvkt1p0"
 
 ## SIFIVE_CUSTOMIZATION
 .attribute arch, "rv32i_zve32x_zvkb0p1"
@@ -256,7 +256,7 @@
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha0p1_zvl32b1p0"
 
 .attribute arch, "rv32i_zve64x_zvknhb0p1"
-# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha0p9_zvknhb0p1_zvl32b1p0_zvl64b1p0"
+# CHECK: attribute	5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknha1p0_zvknhb0p1_zvl32b1p0_zvl64b1p0"
 
 .attribute arch, "rv32i_zve32x_zvkns0p1"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
