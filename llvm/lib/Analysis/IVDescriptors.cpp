@@ -883,9 +883,7 @@ RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
       return isSelectCmpPattern(L, OrigPhi, I, Prev, SE);
 #else
       return isSelectCmpPattern(L, OrigPhi, I, Prev);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
     auto HasRequiredFMF = [&]() {
      if (FuncFMF.noNaNs() && FuncFMF.noSignedZeros())
        return true;
@@ -896,7 +894,6 @@ RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
      return match(I, m_Intrinsic<Intrinsic::minimum>(m_Value(), m_Value())) ||
             match(I, m_Intrinsic<Intrinsic::maximum>(m_Value(), m_Value()));
     };
->>>>>>> upstream-main
     if (isIntMinMaxRecurrenceKind(Kind) ||
         (HasRequiredFMF() && isFPMinMaxRecurrenceKind(Kind)))
       return isMinMaxPattern(I, Kind, Prev);
