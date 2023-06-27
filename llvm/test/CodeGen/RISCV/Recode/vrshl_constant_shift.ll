@@ -35,10 +35,9 @@ define void @vrshlq_s16(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssra.vi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %src, align 2
@@ -67,10 +66,9 @@ define void @vrshlq_s32(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssra.vi v8, v8, 1
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %src, align 4
@@ -155,10 +153,9 @@ define void @vrshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssrl.vi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %src, align 2
