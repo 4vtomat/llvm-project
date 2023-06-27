@@ -4726,7 +4726,19 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_ta:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_ta:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_ta:
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
     return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
+  }
+#else
+    return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tu:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_tu:
@@ -4763,7 +4775,19 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tama:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tama:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tama:
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
     return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
+  }
+#else
+    return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tum:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tumu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_mu:
@@ -4818,7 +4842,19 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tumu:
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
+  }
+#else
+    return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::BI__builtin_riscv_ntl_load:
   case RISCV::BI__builtin_riscv_ntl_store:
     DeclRefExpr *DRE =

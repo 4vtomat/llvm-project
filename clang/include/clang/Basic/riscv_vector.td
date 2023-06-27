@@ -3186,6 +3186,7 @@ let UnMaskedPolicyScheme = HasPolicyOperand in {
 let HeaderCode = [{
 #ifdef __rvv_0p11_compatible_intrinsics
 #pragma clang riscv intrinsic v0p11
+#include <rvv_v0p11_compatible/riscv_vector.h>
 #endif
 }] in def triggerv0p11compatible : RVVHeader;
 #endif // SIFIVE_CUSTOMIZATION

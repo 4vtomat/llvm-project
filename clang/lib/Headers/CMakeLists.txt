@@ -106,6 +106,9 @@ set(riscv_files
 set(rvv_v0p10_compatible_header_file
   rvv_v0p10_compatible/riscv_vector.h
 )
+set(rvv_v0p11_compatible_header_file
+  rvv_v0p11_compatible/riscv_vector.h
+)
 #end SIFIVE_CUSTOMIZATION
 
 set(sifive_files
@@ -340,7 +343,7 @@ endfunction(clang_generate_header)
 # Copy header files from the source directory to the build directory
 foreach( f ${files} ${cuda_wrapper_files} ${cuda_wrapper_bits_files}
            ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files}
-           ${rvv_v0p10_compatible_header_file}) # SIFIVE
+           ${rvv_v0p10_compatible_header_file} ${rvv_v0p11_compatible_header_file}) # SIFIVE
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
@@ -469,7 +472,7 @@ add_header_target("mips-resource-headers" "${mips_msa_files}")
 add_header_target("ppc-resource-headers" "${ppc_files};${ppc_wrapper_files}")
 add_header_target("ppc-htm-resource-headers" "${ppc_htm_files}")
 # SIFIVE_CUSTOMIZATION
-add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files};${rvv_v0p10_compatible_header_file};")
+add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files};${rvv_v0p10_compatible_header_file};${rvv_v0p11_compatible_header_file};")
 #end SIFIVE_CUSTOMIZATION
 add_header_target("systemz-resource-headers" "${systemz_files}")
 add_header_target("ve-resource-headers" "${ve_files}")
@@ -521,6 +524,11 @@ install(
 install(
   FILES ${rvv_v0p10_compatible_header_file}
   DESTINATION ${header_install_dir}/rvv_v0p10_compatible
+  COMPONENT clang-resource-headers)
+
+install(
+  FILES ${rvv_v0p11_compatible_header_file}
+  DESTINATION ${header_install_dir}/rvv_v0p11_compatible
   COMPONENT clang-resource-headers)
 #end SIFIVE
 
@@ -626,6 +634,11 @@ install(
 install(
   FILES ${rvv_v0p10_compatible_header_file}
   DESTINATION ${header_install_dir}/rvv_v0p10_compatible
+  COMPONENT riscv-resource-headers)
+
+install(
+  FILES ${rvv_v0p11_compatible_header_file}
+  DESTINATION ${header_install_dir}/rvv_v0p11_compatible
   COMPONENT riscv-resource-headers)
 
 install(
