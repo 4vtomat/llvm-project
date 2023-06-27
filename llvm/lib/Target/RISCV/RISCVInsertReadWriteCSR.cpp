@@ -78,9 +78,13 @@ bool RISCVInsertReadWriteCSR::emitWriteVXRM(MachineBasicBlock &MBB) {
   bool Changed = false;
   for (MachineInstr &MI : MBB) {
     if (auto RoundModeIdx = getRoundModeIdx(MI)) {
+      unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+
+      if (VXRMImm == RISCVVXRndMode::DYN)
+        continue;
+
       Changed = true;
 
-      unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
       BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(RISCV::WriteVXRMImm))
           .addImm(VXRMImm);
       MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*IsDef*/ false,
