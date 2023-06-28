@@ -785,7 +785,6 @@ public:
   bool lowerInterleavedStore(StoreInst *SI, ShuffleVectorInst *SVI,
                              unsigned Factor) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
                                     ArrayRef<ExtractValueInst *> ExtractValues,
@@ -796,13 +795,12 @@ public:
                                      IntrinsicInst *InterleaveIntrin,
                                      unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   bool supportKCFIBundles() const override { return true; }
 
   MachineInstr *EmitKCFICheck(MachineBasicBlock &MBB,
                               MachineBasicBlock::instr_iterator &MBBI,
                               const TargetInstrInfo *TII) const override;
->>>>>>> upstream-main
 
   /// RISCVCCAssignFn - This target-specific function extends the default
   /// CCValAssign with additional information used to lower RISC-V calling
