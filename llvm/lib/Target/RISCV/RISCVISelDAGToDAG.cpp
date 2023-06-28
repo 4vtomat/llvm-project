@@ -3399,7 +3399,6 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(SDNode *N) {
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   unsigned Opc = N->getMachineOpcode();
@@ -3446,13 +3445,6 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static bool isImplicitDef(SDValue V) {
-  return V.isMachineOpcode() &&
-         V.getMachineOpcode() == TargetOpcode::IMPLICIT_DEF;
-}
-
-=======
->>>>>>> upstream-main
 // Try to fold away VMERGE_VVM instructions. We handle these cases:
 // -Masked TU VMERGE_VVM combined with an unmasked TA instruction instruction
 //  folds to a masked TU instruction. VMERGE_VVM must have have merge operand
