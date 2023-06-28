@@ -1118,15 +1118,13 @@ class VPseudoNullaryPseudoM<string BaseInst>
   let BaseInstr = !cast<Instruction>(BaseInst);
 }
 
-<<<<<<< HEAD
 // RetClass could be GPR or VReg.
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass, string Constraint = "", int TargetConstraintType = 1> :
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
 class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass,
                          string Constraint = ""> :
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs RetClass:$rd),
                (ins OpClass:$rs2, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
@@ -1141,15 +1139,13 @@ class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass,
   let HasSEWOp = 1;
 }
 
-<<<<<<< HEAD
 // RetClass could be GPR or VReg.
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryNoMaskTU<DAGOperand RetClass, DAGOperand OpClass, string Constraint = "", int TargetConstraintType = 1> :
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
 class VPseudoUnaryNoMaskTU<DAGOperand RetClass, DAGOperand OpClass,
                            string Constraint = ""> :
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
       Pseudo<(outs RetClass:$rd),
         (ins RetClass:$merge, OpClass:$rs2, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
@@ -1183,8 +1179,7 @@ class PPseudoUnaryNoMask<DAGOperand RetClass, VReg OpClass, string Constraint = 
 class VPseudoUnaryMask<VReg RetClass, VReg OpClass, string Constraint = ""> :
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-<<<<<<< HEAD
-                    VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
+                    VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
@@ -1192,16 +1187,17 @@ class VPseudoUnaryMask<VReg RetClass, VReg OpClass, string Constraint = ""> :
   let Constraints = Join<[Constraint, "$rd = $merge"], ",">.ret;
   let HasVLOp = 1;
   let HasSEWOp = 1;
+  let HasVecPolicyOp = 1;
   let UsesMaskPolicy = 1;
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
+#else
+class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = ""> :
 #endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-=======
->>>>>>> upstream-main
                     VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
   let mayLoad = 0;
@@ -1327,6 +1323,7 @@ class VPseudoBinaryNoMaskTU<VReg RetClass,
 #endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
+  let HasVecPolicyOp = 1;
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
@@ -1345,10 +1342,9 @@ class PPseudoBinaryNoMask<VReg RetClass,
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
-<<<<<<< HEAD
   let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
-=======
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 class VPseudoBinaryNoMaskRoundingMode<VReg RetClass,
                                       VReg Op1Class,
@@ -1400,9 +1396,7 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
   let HasVecPolicyOp = 1;
   let UsesMaskPolicy = 1;
   let HasRoundModeOp = 1;
->>>>>>> upstream-main
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 // Special version of VPseudoBinaryNoMask where we pretend the first source is
 // tied to the destination.
@@ -2245,30 +2239,22 @@ multiclass VPseudoBinaryRM<VReg RetClass,
                            VReg Op1Class,
                            DAGOperand Op2Class,
                            LMULInfo MInfo,
-#ifdef SIFIVE_CUSTOMIZATION
                            string Constraint = "",
                            int TargetConstraintType = 1> {
-#endif // SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value, HasRoundModeOp = 1 in {
     let InOperandList = (ins Op1Class:$rs2, Op2Class:$rs1,
                              ixlenimm:$rm, AVL:$vl, ixlenimm:$sew) in
     def "_" # MInfo.MX : VPseudoBinaryNoMask<RetClass, Op1Class, Op2Class,
-#ifdef SIFIVE_CUSTOMIZATION
                                              Constraint, TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
     let InOperandList = (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
-                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew) in
+                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy) in
     def "_" # MInfo.MX # "_TU" : VPseudoBinaryNoMaskTU<RetClass, Op1Class, Op2Class,
-#ifdef SIFIVE_CUSTOMIZATION
                                                        Constraint, TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
     let InOperandList = (ins GetVRegNoV0<RetClass>.R:$merge,
                              Op1Class:$rs2, Op2Class:$rs1,
                              VMaskOp:$vm, ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy) in
     def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class,
-#ifdef SIFIVE_CUSTOMIZATION
                                                            Constraint, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3>;
   }
 }
@@ -2822,13 +2808,11 @@ multiclass PseudoVEXT_VF2<int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
                             Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
       def "_" # mx # "_MASK" :
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
         VPseudoUnaryMaskTA<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
         VPseudoUnaryMask<m.vrclass, m.f2vrclass, constraints>,
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
         RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
         Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
     }
@@ -2855,13 +2839,11 @@ multiclass PseudoVEXT_VF4<int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
                             Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
       def "_" # mx # "_MASK" :
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
         VPseudoUnaryMaskTA<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
         VPseudoUnaryMask<m.vrclass, m.f4vrclass, constraints>,
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
         RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
         Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
     }
@@ -2888,13 +2870,11 @@ multiclass PseudoVEXT_VF8<int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
                             Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
       def "_" # mx # "_MASK" :
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
         VPseudoUnaryMaskTA<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
         VPseudoUnaryMask<m.vrclass, m.f8vrclass, constraints>,
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
         RISCVMaskedPseudo</*MaskOpIdx*/ 2>,
         Sched<[WriteVExtV_MX, ReadVExtV_MX, ReadVMask]>;
     }
@@ -3871,17 +3851,15 @@ multiclass VPseudoTernaryWithPolicy<VReg RetClass,
 #endif // SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value in {
     let isCommutable = Commutable in
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint, TargetConstraintType>;
     def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint, TargetConstraintType>,
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3, /*HasTU*/ false, /*IsTernary*/true>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
     def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
     def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint>,
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3, /*HasTU*/ false, /*IsCombined*/true>;
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -4273,21 +4251,17 @@ multiclass VPseudoConversion<VReg RetClass,
                              int TargetConstraintType = 1> {
 #endif // SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value in {
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX : VPseudoUnaryNoMask<RetClass, Op1Class, Constraint, TargetConstraintType>;
     def "_" # MInfo.MX # "_TU": VPseudoUnaryNoMaskTU<RetClass, Op1Class, Constraint, TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMaskTA<RetClass, Op1Class,
-#ifdef SIFIVE_CUSTOMIZATION
                                                       Constraint, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
     def "_" # MInfo.MX : VPseudoUnaryNoMask<RetClass, Op1Class, Constraint>;
     def "_" # MInfo.MX # "_TU": VPseudoUnaryNoMaskTU<RetClass, Op1Class, Constraint>;
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMask<RetClass, Op1Class,
                                                     Constraint>,
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 2>;
   }
 }
@@ -4934,7 +4908,6 @@ class VPatBinaryNoMaskTARoundingMode<string intrinsic_name,
                    (XLenVT timm:$round),
                    GPR:$vl, sew)>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
                                 string inst,
@@ -4954,10 +4927,10 @@ multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
-                   (XLenVT VXRM_DYN), GPR:$vl, sew)>;
+                   (XLenVT VXRM_DYN), GPR:$vl, sew, TU_MU)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      string inst,
                                      ValueType result_type,
@@ -4980,7 +4953,6 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                    (XLenVT timm:$round),
                    GPR:$vl, sew, TU_MU)>;
 
->>>>>>> upstream-main
 
 // Same as above but source operands are swapped.
 class VPatBinaryNoMaskSwapped<string intrinsic_name,
