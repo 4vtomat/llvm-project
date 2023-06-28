@@ -621,7 +621,6 @@ let Predicates = [HasVendorXSfvcp] in {
   }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let IsRVVWideningReduction = 1 in {
 foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
@@ -773,7 +772,6 @@ def CFLUSH_I_L1
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
-=======
 let Predicates = [HasVendorXSfcie] in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0, DecoderNamespace = "XSfcie" in {
 def SF_CFLUSH_D_L1 : RVInstI<0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1), "cflush.d.l1","$rs1">,
@@ -797,4 +795,3 @@ def SF_CEASE : RVInstI<0b000, OPC_SYSTEM, (outs), (ins), "cease","">,  Sched<[]>
 def : InstAlias<"cflush.d.l1", (SF_CFLUSH_D_L1 X0)>;
 def : InstAlias<"cdiscard.d.l1", (SF_CDISCARD_D_L1 X0)>;
 } // Predicates = [HasVendorXScie]
->>>>>>> upstream-main
