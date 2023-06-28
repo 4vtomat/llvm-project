@@ -4888,7 +4888,6 @@ void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D) {
   if (Ty->isRVVType(/* Bitwidth */ 64, /* IsFloat */ true) &&
       !TI.hasFeature("zve64d"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zve64d";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
                     /* IsBFloat */ true) &&
@@ -4897,8 +4896,6 @@ void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D) {
     Diag(Loc, diag::err_riscv_type_requires_extension, D)
         << Ty << "xsfvfhbfmin' or 'xsfvfwmaccqqq";
 #endif
-=======
->>>>>>> upstream-main
   // Given that caller already checked isRVVType() before calling this function,
   // if we don't have at least zve32x supported, then we need to emit error.
   if (!TI.hasFeature("zve32x"))
