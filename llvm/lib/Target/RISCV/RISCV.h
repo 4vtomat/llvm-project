@@ -60,9 +60,6 @@ void initializeRISCVExpandAtomicPseudoPass(PassRegistry &);
 FunctionPass *createRISCVInsertVSETVLIPass();
 void initializeRISCVInsertVSETVLIPass(PassRegistry &);
 
-FunctionPass *createRISCVInsertReadWriteCSRPass();
-void initializeRISCVInsertReadWriteCSRPass(PassRegistry &);
-
 FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 
