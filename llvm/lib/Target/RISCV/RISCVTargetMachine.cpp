@@ -102,6 +102,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
   auto *PR = PassRegistry::getPassRegistry();
   initializeGlobalISel(*PR);
+  initializeKCFIPass(*PR);
   initializeRISCVMakeCompressibleOptPass(*PR);
   initializeRISCVGatherScatterLoweringPass(*PR);
   initializeRISCVCodeGenPreparePass(*PR);
@@ -122,6 +123,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVCleanupVXRMPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVInitUndefPass(*PR);
+  initializeRISCVMoveMergePass(*PR);
 }
 
 static StringRef computeDataLayout(const Triple &TT) {
@@ -522,9 +524,16 @@ bool RISCVPassConfig::addGlobalInstructionSelect() {
   return false;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void RISCVPassConfig::addPreSched2() { addPass(createRISCVPostRAExpandPseudoPass()); }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+void RISCVPassConfig::addPreSched2() {
+  // Emit KCFI checks for indirect calls.
+  addPass(createKCFIPass());
+}
+>>>>>>> upstream-main
 
 void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
@@ -544,12 +553,19 @@ void RISCVPassConfig::addPreEmitPass() {
 }
 
 void RISCVPassConfig::addPreEmitPass2() {
+  if (TM->getOptLevel() != CodeGenOpt::None)
+    addPass(createRISCVMoveMergePass());
   addPass(createRISCVExpandPseudoPass());
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
   // possibility for other passes to break the requirements for forward
   // progress in the LR/SC block.
   addPass(createRISCVExpandAtomicPseudoPass());
+
+  // KCFI indirect call checks are lowered to a bundle.
+  addPass(createUnpackMachineBundles([&](const MachineFunction &MF) {
+    return MF.getFunction().getParent()->getModuleFlag("kcfi");
+  }));
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {

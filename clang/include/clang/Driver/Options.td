@@ -2266,10 +2266,8 @@ defm xray_function_index : BoolFOption<"xray-function-index",
           " expense of single-function patching performance">>;
 
 def fxray_link_deps : Flag<["-"], "fxray-link-deps">, Group<f_Group>,
-  Flags<[CC1Option]>,
-  HelpText<"Tells clang to add the link dependencies for XRay.">;
-def fnoxray_link_deps : Flag<["-"], "fnoxray-link-deps">, Group<f_Group>,
-  Flags<[CC1Option]>;
+  HelpText<"Link XRay runtime library when -fxray-instrument is specified (default)">;
+def fno_xray_link_deps : Flag<["-"], "fno-xray-link-deps">, Group<f_Group>;
 
 def fxray_instrumentation_bundle :
   Joined<["-"], "fxray-instrumentation-bundle=">,
@@ -3436,11 +3434,13 @@ defm column_info : BoolOption<"g", "column-info",
   CodeGenOpts<"DebugColumnInfo">, DefaultTrue,
   NegFlag<SetFalse, [CC1Option]>, PosFlag<SetTrue>, BothFlags<[CoreOption]>>,
   Group<g_flags_Group>;
-def gsplit_dwarf : Flag<["-"], "gsplit-dwarf">, Group<g_flags_Group>;
+def gsplit_dwarf : Flag<["-"], "gsplit-dwarf">, Group<g_flags_Group>,
+  Flags<[CoreOption]>;
 def gsplit_dwarf_EQ : Joined<["-"], "gsplit-dwarf=">, Group<g_flags_Group>,
-  HelpText<"Set DWARF fission mode">,
+  Flags<[CoreOption]>, HelpText<"Set DWARF fission mode">,
   Values<"split,single">;
-def gno_split_dwarf : Flag<["-"], "gno-split-dwarf">, Group<g_flags_Group>;
+def gno_split_dwarf : Flag<["-"], "gno-split-dwarf">, Group<g_flags_Group>,
+  Flags<[CoreOption]>;
 def gsimple_template_names : Flag<["-"], "gsimple-template-names">, Group<g_flags_Group>;
 def gsimple_template_names_EQ
     : Joined<["-"], "gsimple-template-names=">,
@@ -3555,7 +3555,6 @@ def mqdsp6_compat : Flag<["-"], "mqdsp6-compat">, Group<m_Group>, Flags<[NoXarch
 def m64 : Flag<["-"], "m64">, Group<m_Group>, Flags<[NoXarchOption, CoreOption]>;
 def maix64 : Flag<["-"], "maix64">, Group<m_Group>, Flags<[NoXarchOption]>;
 def mx32 : Flag<["-"], "mx32">, Group<m_Group>, Flags<[NoXarchOption, CoreOption]>;
-def mabi_EQ : Joined<["-"], "mabi=">, Group<m_Group>;
 def miamcu : Flag<["-"], "miamcu">, Group<m_Group>, Flags<[NoXarchOption, CoreOption]>,
   HelpText<"Use Intel MCU ABI">;
 def mno_iamcu : Flag<["-"], "mno-iamcu">, Group<m_Group>, Flags<[NoXarchOption, CoreOption]>;
@@ -3564,6 +3563,7 @@ def malign_loops_EQ : Joined<["-"], "malign-loops=">, Group<clang_ignored_m_Grou
 def malign_jumps_EQ : Joined<["-"], "malign-jumps=">, Group<clang_ignored_m_Group>;
 
 let Flags = [TargetSpecific] in {
+def mabi_EQ : Joined<["-"], "mabi=">, Group<m_Group>;
 def malign_branch_EQ : CommaJoined<["-"], "malign-branch=">, Group<m_Group>,
   HelpText<"Specify types of branches to align">;
 def malign_branch_boundary_EQ : Joined<["-"], "malign-branch-boundary=">, Group<m_Group>,
@@ -3651,9 +3651,7 @@ def malign_double : Flag<["-"], "malign-double">, Group<m_Group>, Flags<[CC1Opti
 let Flags = [TargetSpecific] in {
 def mfloat_abi_EQ : Joined<["-"], "mfloat-abi=">, Group<m_Group>, Values<"soft,softfp,hard">;
 def mfpmath_EQ : Joined<["-"], "mfpmath=">, Group<m_Group>;
-} // let Flags = [TargetSpecific]
 def mfpu_EQ : Joined<["-"], "mfpu=">, Group<m_Group>;
-let Flags = [TargetSpecific] in {
 def mhwdiv_EQ : Joined<["-"], "mhwdiv=">, Group<m_Group>;
 def mhwmult_EQ : Joined<["-"], "mhwmult=">, Group<m_Group>;
 } // let Flags = [TargetSpecific]
@@ -5115,7 +5113,11 @@ def falign_jumps_EQ : Joined<["-"], "falign-jumps=">, Group<clang_ignored_gcc_op
 // ignore it for now to avoid breaking builds that use it.
 def fdiagnostics_show_location_EQ : Joined<["-"], "fdiagnostics-show-location=">, Group<clang_ignored_f_Group>;
 
-defm fcheck_new : BooleanFFlag<"check-new">, Group<clang_ignored_f_Group>;
+defm check_new : BoolOption<"f", "check-new",
+  LangOpts<"CheckNew">, DefaultFalse,
+  PosFlag<SetTrue, [], "Do not assume C++ operator new may not return NULL">,
+  NegFlag<SetFalse>, BothFlags<[CC1Option]>>;
+
 defm caller_saves : BooleanFFlag<"caller-saves">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm reorder_blocks : BooleanFFlag<"reorder-blocks">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm branch_count_reg : BooleanFFlag<"branch-count-reg">, Group<clang_ignored_gcc_optimization_f_Group>;
@@ -5293,13 +5295,14 @@ def fno_sycl : Flag<["-"], "fno-sycl">, Flags<[NoXarchOption, CoreOption]>,
 // FLangOption + NoXarchOption
 //===----------------------------------------------------------------------===//
 
-def flang_experimental_exec : Flag<["-"], "flang-experimental-exec">,
-  Flags<[FlangOption, FlangOnlyOption, NoXarchOption, HelpHidden]>,
-  HelpText<"Enable support for generating executables (experimental)">;
-
 def flang_experimental_hlfir : Flag<["-"], "flang-experimental-hlfir">,
   Flags<[FlangOption, FC1Option, FlangOnlyOption, NoXarchOption, HelpHidden]>,
   HelpText<"Use HLFIR lowering (experimental)">;
+
+def flang_experimental_polymorphism : Flag<["-"], "flang-experimental-polymorphism">,
+  Flags<[FlangOption, FC1Option, FlangOnlyOption, NoXarchOption, HelpHidden]>,
+  HelpText<"Enable Fortran 2003 polymorphism (experimental)">;
+
 
 //===----------------------------------------------------------------------===//
 // FLangOption + CoreOption + NoXarchOption
@@ -5751,6 +5754,9 @@ def as_secure_log_file : Separate<["-"], "as-secure-log-file">,
 
 let Flags = [CC1Option, NoDriverOption] in {
 
+def llvm_verify_each : Flag<["-"], "llvm-verify-each">,
+  HelpText<"Run the LLVM verifier after every LLVM pass">,
+  MarshallingInfoFlag<CodeGenOpts<"VerifyEach">>;
 def disable_llvm_verifier : Flag<["-"], "disable-llvm-verifier">,
   HelpText<"Don't run the LLVM IR verifier pass">,
   MarshallingInfoNegativeFlag<CodeGenOpts<"VerifyModule">>;

@@ -13,246 +13,17 @@
 
 #include "TargetInfo.h"
 #include "ABIInfo.h"
-#include "CGBlocks.h"
-#include "CGCXXABI.h"
-#include "CGValue.h"
+#include "ABIInfoImpl.h"
 #include "CodeGenFunction.h"
-#include "clang/AST/Attr.h"
-#include "clang/AST/RecordLayout.h"
-#include "clang/Basic/Builtins.h"
 #include "clang/Basic/CodeGenOptions.h"
-#include "clang/Basic/DiagnosticFrontend.h"
 #include "clang/CodeGen/CGFunctionInfo.h"
-#include "llvm/ADT/SmallBitVector.h"
 #include "llvm/ADT/StringExtras.h"
-#include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/IR/DataLayout.h"
-#include "llvm/IR/IntrinsicsNVPTX.h"
-#include "llvm/IR/IntrinsicsS390.h"
 #include "llvm/IR/Type.h"
-#include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/TargetParser/RISCVTargetParser.h"
-#include "llvm/TargetParser/Triple.h"
-#include <algorithm>
 
 using namespace clang;
 using namespace CodeGen;
-
-// Helper for coercing an aggregate argument or return value into an integer
-// array of the same size (including padding) and alignment.  This alternate
-// coercion happens only for the RenderScript ABI and can be removed after
-// runtimes that rely on it are no longer supported.
-//
-// RenderScript assumes that the size of the argument / return value in the IR
-// is the same as the size of the corresponding qualified type. This helper
-// coerces the aggregate type into an array of the same size (including
-// padding).  This coercion is used in lieu of expansion of struct members or
-// other canonical coercions that return a coerced-type of larger size.
-//
-// Ty          - The argument / return value type
-// Context     - The associated ASTContext
-// LLVMContext - The associated LLVMContext
-static ABIArgInfo coerceToIntArray(QualType Ty,
-                                   ASTContext &Context,
-                                   llvm::LLVMContext &LLVMContext) {
-  // Alignment and Size are measured in bits.
-  const uint64_t Size = Context.getTypeSize(Ty);
-  const uint64_t Alignment = Context.getTypeAlign(Ty);
-  llvm::Type *IntType = llvm::Type::getIntNTy(LLVMContext, Alignment);
-  const uint64_t NumElements = (Size + Alignment - 1) / Alignment;
-  return ABIArgInfo::getDirect(llvm::ArrayType::get(IntType, NumElements));
-}
-
-static void AssignToArrayRange(CodeGen::CGBuilderTy &Builder,
-                               llvm::Value *Array,
-                               llvm::Value *Value,
-                               unsigned FirstIndex,
-                               unsigned LastIndex) {
-  // Alternatively, we could emit this as a loop in the source.
-  for (unsigned I = FirstIndex; I <= LastIndex; ++I) {
-    llvm::Value *Cell =
-        Builder.CreateConstInBoundsGEP1_32(Builder.getInt8Ty(), Array, I);
-    Builder.CreateAlignedStore(Value, Cell, CharUnits::One());
-  }
-}
-
-static bool isAggregateTypeForABI(QualType T) {
-  return !CodeGenFunction::hasScalarEvaluationKind(T) ||
-         T->isMemberFunctionPointerType();
-}
-
-ABIArgInfo ABIInfo::getNaturalAlignIndirect(QualType Ty, bool ByVal,
-                                            bool Realign,
-                                            llvm::Type *Padding) const {
-  return ABIArgInfo::getIndirect(getContext().getTypeAlignInChars(Ty), ByVal,
-                                 Realign, Padding);
-}
-
-ABIArgInfo
-ABIInfo::getNaturalAlignIndirectInReg(QualType Ty, bool Realign) const {
-  return ABIArgInfo::getIndirectInReg(getContext().getTypeAlignInChars(Ty),
-                                      /*ByVal*/ false, Realign);
-}
-
-Address ABIInfo::EmitMSVAArg(CodeGenFunction &CGF, Address VAListAddr,
-                             QualType Ty) const {
-  return Address::invalid();
-}
-
-static llvm::Type *getVAListElementType(CodeGenFunction &CGF) {
-  return CGF.ConvertTypeForMem(
-      CGF.getContext().getBuiltinVaListType()->getPointeeType());
-}
-
-bool ABIInfo::isPromotableIntegerTypeForABI(QualType Ty) const {
-  if (getContext().isPromotableIntegerType(Ty))
-    return true;
-
-  if (const auto *EIT = Ty->getAs<BitIntType>())
-    if (EIT->getNumBits() < getContext().getTypeSize(getContext().IntTy))
-      return true;
-
-  return false;
-}
-
-ABIInfo::~ABIInfo() = default;
-
-SwiftABIInfo::~SwiftABIInfo() = default;
-
-/// Does the given lowering require more than the given number of
-/// registers when expanded?
-///
-/// This is intended to be the basis of a reasonable basic implementation
-/// of should{Pass,Return}Indirectly.
-///
-/// For most targets, a limit of four total registers is reasonable; this
-/// limits the amount of code required in order to move around the value
-/// in case it wasn't produced immediately prior to the call by the caller
-/// (or wasn't produced in exactly the right registers) or isn't used
-/// immediately within the callee.  But some targets may need to further
-/// limit the register count due to an inability to support that many
-/// return registers.
-bool SwiftABIInfo::occupiesMoreThan(ArrayRef<llvm::Type *> scalarTypes,
-                                    unsigned maxAllRegisters) const {
-  unsigned intCount = 0, fpCount = 0;
-  for (llvm::Type *type : scalarTypes) {
-    if (type->isPointerTy()) {
-      intCount++;
-    } else if (auto intTy = dyn_cast<llvm::IntegerType>(type)) {
-      auto ptrWidth = CGT.getTarget().getPointerWidth(LangAS::Default);
-      intCount += (intTy->getBitWidth() + ptrWidth - 1) / ptrWidth;
-    } else {
-      assert(type->isVectorTy() || type->isFloatingPointTy());
-      fpCount++;
-    }
-  }
-
-  return (intCount + fpCount > maxAllRegisters);
-}
-
-bool SwiftABIInfo::shouldPassIndirectly(ArrayRef<llvm::Type *> ComponentTys,
-                                        bool AsReturnValue) const {
-  return occupiesMoreThan(ComponentTys, /*total=*/4);
-}
-
-bool SwiftABIInfo::isLegalVectorType(CharUnits VectorSize, llvm::Type *EltTy,
-                                     unsigned NumElts) const {
-  // The default implementation of this assumes that the target guarantees
-  // 128-bit SIMD support but nothing more.
-  return (VectorSize.getQuantity() > 8 && VectorSize.getQuantity() <= 16);
-}
-
-static CGCXXABI::RecordArgABI getRecordArgABI(const RecordType *RT,
-                                              CGCXXABI &CXXABI) {
-  const CXXRecordDecl *RD = dyn_cast<CXXRecordDecl>(RT->getDecl());
-  if (!RD) {
-    if (!RT->getDecl()->canPassInRegisters())
-      return CGCXXABI::RAA_Indirect;
-    return CGCXXABI::RAA_Default;
-  }
-  return CXXABI.getRecordArgABI(RD);
-}
-
-static CGCXXABI::RecordArgABI getRecordArgABI(QualType T,
-                                              CGCXXABI &CXXABI) {
-  const RecordType *RT = T->getAs<RecordType>();
-  if (!RT)
-    return CGCXXABI::RAA_Default;
-  return getRecordArgABI(RT, CXXABI);
-}
-
-static bool classifyReturnType(const CGCXXABI &CXXABI, CGFunctionInfo &FI,
-                               const ABIInfo &Info) {
-  QualType Ty = FI.getReturnType();
-
-  if (const auto *RT = Ty->getAs<RecordType>())
-    if (!isa<CXXRecordDecl>(RT->getDecl()) &&
-        !RT->getDecl()->canPassInRegisters()) {
-      FI.getReturnInfo() = Info.getNaturalAlignIndirect(Ty);
-      return true;
-    }
-
-  return CXXABI.classifyReturnType(FI);
-}
-
-/// Pass transparent unions as if they were the type of the first element. Sema
-/// should ensure that all elements of the union have the same "machine type".
-static QualType useFirstFieldIfTransparentUnion(QualType Ty) {
-  if (const RecordType *UT = Ty->getAsUnionType()) {
-    const RecordDecl *UD = UT->getDecl();
-    if (UD->hasAttr<TransparentUnionAttr>()) {
-      assert(!UD->field_empty() && "sema created an empty transparent union");
-      return UD->field_begin()->getType();
-    }
-  }
-  return Ty;
-}
-
-CGCXXABI &ABIInfo::getCXXABI() const {
-  return CGT.getCXXABI();
-}
-
-ASTContext &ABIInfo::getContext() const {
-  return CGT.getContext();
-}
-
-llvm::LLVMContext &ABIInfo::getVMContext() const {
-  return CGT.getLLVMContext();
-}
-
-const llvm::DataLayout &ABIInfo::getDataLayout() const {
-  return CGT.getDataLayout();
-}
-
-const TargetInfo &ABIInfo::getTarget() const {
-  return CGT.getTarget();
-}
-
-const CodeGenOptions &ABIInfo::getCodeGenOpts() const {
-  return CGT.getCodeGenOpts();
-}
-
-bool ABIInfo::isAndroid() const { return getTarget().getTriple().isAndroid(); }
-
-bool ABIInfo::isOHOSFamily() const {
-  return getTarget().getTriple().isOHOSFamily();
-}
-
-bool ABIInfo::isHomogeneousAggregateBaseType(QualType Ty) const {
-  return false;
-}
-
-bool ABIInfo::isHomogeneousAggregateSmallEnough(const Type *Base,
-                                                uint64_t Members) const {
-  return false;
-}
-
-bool ABIInfo::isZeroLengthBitfieldPermittedInHomogeneousAggregate() const {
-  // For compatibility with GCC, ignore empty bitfields in C++ mode.
-  return getContext().getLangOpts().CPlusPlus;
-}
 
 LLVM_DUMP_METHOD void ABIArgInfo::dump() const {
   raw_ostream &OS = llvm::errs();
@@ -293,169 +64,6 @@ LLVM_DUMP_METHOD void ABIArgInfo::dump() const {
     break;
   }
   OS << ")\n";
-}
-
-// Dynamically round a pointer up to a multiple of the given alignment.
-static llvm::Value *emitRoundPointerUpToAlignment(CodeGenFunction &CGF,
-                                                  llvm::Value *Ptr,
-                                                  CharUnits Align) {
-  // OverflowArgArea = (OverflowArgArea + Align - 1) & -Align;
-  llvm::Value *RoundUp = CGF.Builder.CreateConstInBoundsGEP1_32(
-      CGF.Builder.getInt8Ty(), Ptr, Align.getQuantity() - 1);
-  return CGF.Builder.CreateIntrinsic(
-      llvm::Intrinsic::ptrmask, {CGF.AllocaInt8PtrTy, CGF.IntPtrTy},
-      {RoundUp, llvm::ConstantInt::get(CGF.IntPtrTy, -Align.getQuantity())},
-      nullptr, Ptr->getName() + ".aligned");
-}
-
-/// Emit va_arg for a platform using the common void* representation,
-/// where arguments are simply emitted in an array of slots on the stack.
-///
-/// This version implements the core direct-value passing rules.
-///
-/// \param SlotSize - The size and alignment of a stack slot.
-///   Each argument will be allocated to a multiple of this number of
-///   slots, and all the slots will be aligned to this value.
-/// \param AllowHigherAlign - The slot alignment is not a cap;
-///   an argument type with an alignment greater than the slot size
-///   will be emitted on a higher-alignment address, potentially
-///   leaving one or more empty slots behind as padding.  If this
-///   is false, the returned address might be less-aligned than
-///   DirectAlign.
-/// \param ForceRightAdjust - Default is false. On big-endian platform and
-///   if the argument is smaller than a slot, set this flag will force
-///   right-adjust the argument in its slot irrespective of the type.
-static Address emitVoidPtrDirectVAArg(CodeGenFunction &CGF,
-                                      Address VAListAddr,
-                                      llvm::Type *DirectTy,
-                                      CharUnits DirectSize,
-                                      CharUnits DirectAlign,
-                                      CharUnits SlotSize,
-                                      bool AllowHigherAlign,
-                                      bool ForceRightAdjust = false) {
-  // Cast the element type to i8* if necessary.  Some platforms define
-  // va_list as a struct containing an i8* instead of just an i8*.
-  if (VAListAddr.getElementType() != CGF.Int8PtrTy)
-    VAListAddr = CGF.Builder.CreateElementBitCast(VAListAddr, CGF.Int8PtrTy);
-
-  llvm::Value *Ptr = CGF.Builder.CreateLoad(VAListAddr, "argp.cur");
-
-  // If the CC aligns values higher than the slot size, do so if needed.
-  Address Addr = Address::invalid();
-  if (AllowHigherAlign && DirectAlign > SlotSize) {
-    Addr = Address(emitRoundPointerUpToAlignment(CGF, Ptr, DirectAlign),
-                   CGF.Int8Ty, DirectAlign);
-  } else {
-    Addr = Address(Ptr, CGF.Int8Ty, SlotSize);
-  }
-
-  // Advance the pointer past the argument, then store that back.
-  CharUnits FullDirectSize = DirectSize.alignTo(SlotSize);
-  Address NextPtr =
-      CGF.Builder.CreateConstInBoundsByteGEP(Addr, FullDirectSize, "argp.next");
-  CGF.Builder.CreateStore(NextPtr.getPointer(), VAListAddr);
-
-  // If the argument is smaller than a slot, and this is a big-endian
-  // target, the argument will be right-adjusted in its slot.
-  if (DirectSize < SlotSize && CGF.CGM.getDataLayout().isBigEndian() &&
-      (!DirectTy->isStructTy() || ForceRightAdjust)) {
-    Addr = CGF.Builder.CreateConstInBoundsByteGEP(Addr, SlotSize - DirectSize);
-  }
-
-  Addr = CGF.Builder.CreateElementBitCast(Addr, DirectTy);
-  return Addr;
-}
-
-/// Emit va_arg for a platform using the common void* representation,
-/// where arguments are simply emitted in an array of slots on the stack.
-///
-/// \param IsIndirect - Values of this type are passed indirectly.
-/// \param ValueInfo - The size and alignment of this type, generally
-///   computed with getContext().getTypeInfoInChars(ValueTy).
-/// \param SlotSizeAndAlign - The size and alignment of a stack slot.
-///   Each argument will be allocated to a multiple of this number of
-///   slots, and all the slots will be aligned to this value.
-/// \param AllowHigherAlign - The slot alignment is not a cap;
-///   an argument type with an alignment greater than the slot size
-///   will be emitted on a higher-alignment address, potentially
-///   leaving one or more empty slots behind as padding.
-/// \param ForceRightAdjust - Default is false. On big-endian platform and
-///   if the argument is smaller than a slot, set this flag will force
-///   right-adjust the argument in its slot irrespective of the type.
-static Address emitVoidPtrVAArg(CodeGenFunction &CGF, Address VAListAddr,
-                                QualType ValueTy, bool IsIndirect,
-                                TypeInfoChars ValueInfo,
-                                CharUnits SlotSizeAndAlign,
-                                bool AllowHigherAlign,
-                                bool ForceRightAdjust = false) {
-  // The size and alignment of the value that was passed directly.
-  CharUnits DirectSize, DirectAlign;
-  if (IsIndirect) {
-    DirectSize = CGF.getPointerSize();
-    DirectAlign = CGF.getPointerAlign();
-  } else {
-    DirectSize = ValueInfo.Width;
-    DirectAlign = ValueInfo.Align;
-  }
-
-  // Cast the address we've calculated to the right type.
-  llvm::Type *DirectTy = CGF.ConvertTypeForMem(ValueTy), *ElementTy = DirectTy;
-  if (IsIndirect) {
-    unsigned AllocaAS = CGF.CGM.getDataLayout().getAllocaAddrSpace();
-    DirectTy = DirectTy->getPointerTo(AllocaAS);
-  }
-
-  Address Addr = emitVoidPtrDirectVAArg(CGF, VAListAddr, DirectTy, DirectSize,
-                                        DirectAlign, SlotSizeAndAlign,
-                                        AllowHigherAlign, ForceRightAdjust);
-
-  if (IsIndirect) {
-    Addr = Address(CGF.Builder.CreateLoad(Addr), ElementTy, ValueInfo.Align);
-  }
-
-  return Addr;
-}
-
-static Address complexTempStructure(CodeGenFunction &CGF, Address VAListAddr,
-                                    QualType Ty, CharUnits SlotSize,
-                                    CharUnits EltSize, const ComplexType *CTy) {
-  Address Addr =
-      emitVoidPtrDirectVAArg(CGF, VAListAddr, CGF.Int8Ty, SlotSize * 2,
-                             SlotSize, SlotSize, /*AllowHigher*/ true);
-
-  Address RealAddr = Addr;
-  Address ImagAddr = RealAddr;
-  if (CGF.CGM.getDataLayout().isBigEndian()) {
-    RealAddr =
-        CGF.Builder.CreateConstInBoundsByteGEP(RealAddr, SlotSize - EltSize);
-    ImagAddr = CGF.Builder.CreateConstInBoundsByteGEP(ImagAddr,
-                                                      2 * SlotSize - EltSize);
-  } else {
-    ImagAddr = CGF.Builder.CreateConstInBoundsByteGEP(RealAddr, SlotSize);
-  }
-
-  llvm::Type *EltTy = CGF.ConvertTypeForMem(CTy->getElementType());
-  RealAddr = CGF.Builder.CreateElementBitCast(RealAddr, EltTy);
-  ImagAddr = CGF.Builder.CreateElementBitCast(ImagAddr, EltTy);
-  llvm::Value *Real = CGF.Builder.CreateLoad(RealAddr, ".vareal");
-  llvm::Value *Imag = CGF.Builder.CreateLoad(ImagAddr, ".vaimag");
-
-  Address Temp = CGF.CreateMemTemp(Ty, "vacplx");
-  CGF.EmitStoreOfComplex({Real, Imag}, CGF.MakeAddrLValue(Temp, Ty),
-                         /*init*/ true);
-  return Temp;
-}
-
-static Address emitMergePHI(CodeGenFunction &CGF,
-                            Address Addr1, llvm::BasicBlock *Block1,
-                            Address Addr2, llvm::BasicBlock *Block2,
-                            const llvm::Twine &Name = "") {
-  assert(Addr1.getType() == Addr2.getType());
-  llvm::PHINode *PHI = CGF.Builder.CreatePHI(Addr1.getType(), 2, Name);
-  PHI->addIncoming(Addr1.getPointer(), Block1);
-  PHI->addIncoming(Addr2.getPointer(), Block2);
-  CharUnits Align = std::min(Addr1.getAlignment(), Addr2.getAlignment());
-  return Address(PHI, Addr1.getElementType(), Align);
 }
 
 TargetCodeGenInfo::TargetCodeGenInfo(std::unique_ptr<ABIInfo> Info)
@@ -550,229 +158,63 @@ TargetCodeGenInfo::getLLVMSyncScopeID(const LangOptions &LangOpts,
   return Ctx.getOrInsertSyncScopeID(""); /* default sync scope */
 }
 
-static bool isEmptyRecord(ASTContext &Context, QualType T, bool AllowArrays);
-
-/// isEmptyField - Return true iff a the field is "empty", that is it
-/// is an unnamed bit-field or an (array of) empty record(s).
-static bool isEmptyField(ASTContext &Context, const FieldDecl *FD,
-                         bool AllowArrays) {
-  if (FD->isUnnamedBitfield())
-    return true;
-
-  QualType FT = FD->getType();
-
-  // Constant arrays of empty records count as empty, strip them off.
-  // Constant arrays of zero length always count as empty.
-  bool WasArray = false;
-  if (AllowArrays)
-    while (const ConstantArrayType *AT = Context.getAsConstantArrayType(FT)) {
-      if (AT->getSize() == 0)
-        return true;
-      FT = AT->getElementType();
-      // The [[no_unique_address]] special case below does not apply to
-      // arrays of C++ empty records, so we need to remember this fact.
-      WasArray = true;
-    }
-
-  const RecordType *RT = FT->getAs<RecordType>();
-  if (!RT)
-    return false;
-
-  // C++ record fields are never empty, at least in the Itanium ABI.
-  //
-  // FIXME: We should use a predicate for whether this behavior is true in the
-  // current ABI.
-  //
-  // The exception to the above rule are fields marked with the
-  // [[no_unique_address]] attribute (since C++20).  Those do count as empty
-  // according to the Itanium ABI.  The exception applies only to records,
-  // not arrays of records, so we must also check whether we stripped off an
-  // array type above.
-  if (isa<CXXRecordDecl>(RT->getDecl()) &&
-      (WasArray || !FD->hasAttr<NoUniqueAddressAttr>()))
-    return false;
-
-  return isEmptyRecord(Context, FT, AllowArrays);
+void TargetCodeGenInfo::addStackProbeTargetAttributes(
+    const Decl *D, llvm::GlobalValue *GV, CodeGen::CodeGenModule &CGM) const {
+  if (llvm::Function *Fn = dyn_cast_or_null<llvm::Function>(GV)) {
+    if (CGM.getCodeGenOpts().StackProbeSize != 4096)
+      Fn->addFnAttr("stack-probe-size",
+                    llvm::utostr(CGM.getCodeGenOpts().StackProbeSize));
+    if (CGM.getCodeGenOpts().NoStackArgProbe)
+      Fn->addFnAttr("no-stack-arg-probe");
+  }
 }
 
-/// isEmptyRecord - Return true iff a structure contains only empty
-/// fields. Note that a structure with a flexible array member is not
-/// considered empty.
-static bool isEmptyRecord(ASTContext &Context, QualType T, bool AllowArrays) {
-  const RecordType *RT = T->getAs<RecordType>();
-  if (!RT)
-    return false;
-  const RecordDecl *RD = RT->getDecl();
-  if (RD->hasFlexibleArrayMember())
-    return false;
-
-  // If this is a C++ record, check the bases first.
-  if (const CXXRecordDecl *CXXRD = dyn_cast<CXXRecordDecl>(RD))
-    for (const auto &I : CXXRD->bases())
-      if (!isEmptyRecord(Context, I.getType(), true))
-        return false;
-
-  for (const auto *I : RD->fields())
-    if (!isEmptyField(Context, I, AllowArrays))
-      return false;
-  return true;
-}
-
-/// isSingleElementStruct - Determine if a structure is a "single
-/// element struct", i.e. it has exactly one non-empty field or
-/// exactly one field which is itself a single element
-/// struct. Structures with flexible array members are never
-/// considered single element structs.
+/// Create an OpenCL kernel for an enqueued block.
 ///
-/// \return The field declaration for the single non-empty field, if
-/// it exists.
-static const Type *isSingleElementStruct(QualType T, ASTContext &Context) {
-  const RecordType *RT = T->getAs<RecordType>();
-  if (!RT)
-    return nullptr;
+/// The kernel has the same function type as the block invoke function. Its
+/// name is the name of the block invoke function postfixed with "_kernel".
+/// It simply calls the block invoke function then returns.
+llvm::Value *TargetCodeGenInfo::createEnqueuedBlockKernel(
+    CodeGenFunction &CGF, llvm::Function *Invoke, llvm::Type *BlockTy) const {
+  auto *InvokeFT = Invoke->getFunctionType();
+  auto &C = CGF.getLLVMContext();
+  std::string Name = Invoke->getName().str() + "_kernel";
+  auto *FT = llvm::FunctionType::get(llvm::Type::getVoidTy(C),
+                                     InvokeFT->params(), false);
+  auto *F = llvm::Function::Create(FT, llvm::GlobalValue::ExternalLinkage, Name,
+                                   &CGF.CGM.getModule());
+  llvm::CallingConv::ID KernelCC =
+      CGF.getTypes().ClangCallConvToLLVMCallConv(CallingConv::CC_OpenCLKernel);
+  F->setCallingConv(KernelCC);
 
-  const RecordDecl *RD = RT->getDecl();
-  if (RD->hasFlexibleArrayMember())
-    return nullptr;
+  llvm::AttrBuilder KernelAttrs(C);
 
-  const Type *Found = nullptr;
+  // FIXME: This is missing setTargetAttributes
+  CGF.CGM.addDefaultFunctionDefinitionAttributes(KernelAttrs);
+  F->addFnAttrs(KernelAttrs);
 
-  // If this is a C++ record, check the bases first.
-  if (const CXXRecordDecl *CXXRD = dyn_cast<CXXRecordDecl>(RD)) {
-    for (const auto &I : CXXRD->bases()) {
-      // Ignore empty records.
-      if (isEmptyRecord(Context, I.getType(), true))
-        continue;
+  auto IP = CGF.Builder.saveIP();
+  auto *BB = llvm::BasicBlock::Create(C, "entry", F);
+  auto &Builder = CGF.Builder;
+  Builder.SetInsertPoint(BB);
+  llvm::SmallVector<llvm::Value *, 2> Args(llvm::make_pointer_range(F->args()));
+  llvm::CallInst *Call = Builder.CreateCall(Invoke, Args);
+  Call->setCallingConv(Invoke->getCallingConv());
 
-      // If we already found an element then this isn't a single-element struct.
-      if (Found)
-        return nullptr;
-
-      // If this is non-empty and not a single element struct, the composite
-      // cannot be a single element struct.
-      Found = isSingleElementStruct(I.getType(), Context);
-      if (!Found)
-        return nullptr;
-    }
-  }
-
-  // Check for single element.
-  for (const auto *FD : RD->fields()) {
-    QualType FT = FD->getType();
-
-    // Ignore empty fields.
-    if (isEmptyField(Context, FD, true))
-      continue;
-
-    // If we already found an element then this isn't a single-element
-    // struct.
-    if (Found)
-      return nullptr;
-
-    // Treat single element arrays as the element.
-    while (const ConstantArrayType *AT = Context.getAsConstantArrayType(FT)) {
-      if (AT->getSize().getZExtValue() != 1)
-        break;
-      FT = AT->getElementType();
-    }
-
-    if (!isAggregateTypeForABI(FT)) {
-      Found = FT.getTypePtr();
-    } else {
-      Found = isSingleElementStruct(FT, Context);
-      if (!Found)
-        return nullptr;
-    }
-  }
-
-  // We don't consider a struct a single-element struct if it has
-  // padding beyond the element type.
-  if (Found && Context.getTypeSize(Found) != Context.getTypeSize(T))
-    return nullptr;
-
-  return Found;
+  Builder.CreateRetVoid();
+  Builder.restoreIP(IP);
+  return F;
 }
 
 namespace {
-Address EmitVAArgInstr(CodeGenFunction &CGF, Address VAListAddr, QualType Ty,
-                       const ABIArgInfo &AI) {
-  // This default implementation defers to the llvm backend's va_arg
-  // instruction. It can handle only passing arguments directly
-  // (typically only handled in the backend for primitive types), or
-  // aggregates passed indirectly by pointer (NOTE: if the "byval"
-  // flag has ABI impact in the callee, this implementation cannot
-  // work.)
-
-  // Only a few cases are covered here at the moment -- those needed
-  // by the default abi.
-  llvm::Value *Val;
-
-  if (AI.isIndirect()) {
-    assert(!AI.getPaddingType() &&
-           "Unexpected PaddingType seen in arginfo in generic VAArg emitter!");
-    assert(
-        !AI.getIndirectRealign() &&
-        "Unexpected IndirectRealign seen in arginfo in generic VAArg emitter!");
-
-    auto TyInfo = CGF.getContext().getTypeInfoInChars(Ty);
-    CharUnits TyAlignForABI = TyInfo.Align;
-
-    llvm::Type *ElementTy = CGF.ConvertTypeForMem(Ty);
-    llvm::Type *BaseTy = llvm::PointerType::getUnqual(ElementTy);
-    llvm::Value *Addr =
-        CGF.Builder.CreateVAArg(VAListAddr.getPointer(), BaseTy);
-    return Address(Addr, ElementTy, TyAlignForABI);
-  } else {
-    assert((AI.isDirect() || AI.isExtend()) &&
-           "Unexpected ArgInfo Kind in generic VAArg emitter!");
-
-    assert(!AI.getInReg() &&
-           "Unexpected InReg seen in arginfo in generic VAArg emitter!");
-    assert(!AI.getPaddingType() &&
-           "Unexpected PaddingType seen in arginfo in generic VAArg emitter!");
-    assert(!AI.getDirectOffset() &&
-           "Unexpected DirectOffset seen in arginfo in generic VAArg emitter!");
-    assert(!AI.getCoerceToType() &&
-           "Unexpected CoerceToType seen in arginfo in generic VAArg emitter!");
-
-    Address Temp = CGF.CreateMemTemp(Ty, "varet");
-    Val = CGF.Builder.CreateVAArg(VAListAddr.getPointer(),
-                                  CGF.ConvertTypeForMem(Ty));
-    CGF.Builder.CreateStore(Val, Temp);
-    return Temp;
-  }
-}
-
-/// DefaultABIInfo - The default implementation for ABI specific
-/// details. This implementation provides information which results in
-/// self-consistent and sensible LLVM IR generation, but does not
-/// conform to any particular ABI.
-class DefaultABIInfo : public ABIInfo {
-public:
-  DefaultABIInfo(CodeGen::CodeGenTypes &CGT) : ABIInfo(CGT) {}
-
-  ABIArgInfo classifyReturnType(QualType RetTy) const;
-  ABIArgInfo classifyArgumentType(QualType RetTy) const;
-
-  void computeInfo(CGFunctionInfo &FI) const override {
-    if (!getCXXABI().classifyReturnType(FI))
-      FI.getReturnInfo() = classifyReturnType(FI.getReturnType());
-    for (auto &I : FI.arguments())
-      I.info = classifyArgumentType(I.type);
-  }
-
-  Address EmitVAArg(CodeGenFunction &CGF, Address VAListAddr,
-                    QualType Ty) const override {
-    return EmitVAArgInstr(CGF, VAListAddr, Ty, classifyArgumentType(Ty));
-  }
-};
-
 class DefaultTargetCodeGenInfo : public TargetCodeGenInfo {
 public:
   DefaultTargetCodeGenInfo(CodeGen::CodeGenTypes &CGT)
       : TargetCodeGenInfo(std::make_unique<DefaultABIInfo>(CGT)) {}
 };
+} // namespace
 
+<<<<<<< HEAD
 ABIArgInfo DefaultABIInfo::classifyArgumentType(QualType Ty) const {
   Ty = useFirstFieldIfTransparentUnion(Ty);
 
@@ -12691,4 +12133,9 @@ llvm::Value *AMDGPUTargetCodeGenInfo::createEnqueuedBlockKernel(
     F->setMetadata("kernel_arg_name", llvm::MDNode::get(C, ArgNames));
 
   return F;
+=======
+std::unique_ptr<TargetCodeGenInfo>
+CodeGen::createDefaultTargetCodeGenInfo(CodeGenModule &CGM) {
+  return std::make_unique<DefaultTargetCodeGenInfo>(CGM.getTypes());
+>>>>>>> upstream-main
 }

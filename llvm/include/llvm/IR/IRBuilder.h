@@ -2570,6 +2570,7 @@ public:
                                          unsigned Index, unsigned FieldIndex,
                                          MDNode *DbgInfo);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Return an all true boolean vector of size and scalability \p NumElts.
   Value *getTrueVector(ElementCount NumElts) {
@@ -2583,6 +2584,9 @@ public:
     return ConstantAggregateZero::get(Vty);
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  Value *createIsFPClass(Value *FPNum, unsigned Test);
+>>>>>>> upstream-main
 
 private:
   /// Helper function that creates an assume intrinsic call that

@@ -61,7 +61,6 @@ class UncountableInnerLoopVectorizer;
 #endif
 class IRBuilderBase;
 class LoopInfo;
-class PredicateScalarEvolution;
 class raw_ostream;
 class RecurrenceDescriptor;
 class SCEV;

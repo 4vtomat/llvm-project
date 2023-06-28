@@ -2972,6 +2972,7 @@ public:
     return false;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Lower an interleaved load to target specific intrinsics. Return
   /// true on success.
@@ -3000,6 +3001,29 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// Lower a deinterleave intrinsic to a target specific load intrinsic.
+  /// Return true on success. Currently only supports
+  /// llvm.experimental.vector.deinterleave2
+  ///
+  /// \p DI is the deinterleave intrinsic.
+  /// \p LI is the accompanying load instruction
+  virtual bool lowerDeinterleaveIntrinsicToLoad(IntrinsicInst *DI,
+                                                LoadInst *LI) const {
+    return false;
+  }
+
+  /// Lower an interleave intrinsic to a target specific store intrinsic.
+  /// Return true on success. Currently only supports
+  /// llvm.experimental.vector.interleave2
+  ///
+  /// \p II is the interleave intrinsic.
+  /// \p SI is the accompanying store instruction
+  virtual bool lowerInterleaveIntrinsicToStore(IntrinsicInst *II,
+                                               StoreInst *SI) const {
+    return false;
+  }
+>>>>>>> upstream-main
 
   /// Return true if an fpext operation is free (for instance, because
   /// single-precision floating-point numbers are implicitly extended to
