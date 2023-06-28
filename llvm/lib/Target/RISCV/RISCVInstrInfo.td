@@ -1480,8 +1480,12 @@ def PseudoCCADD : Pseudo<(outs GPR:$dst),
 def PseudoCCSUB : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+#else
+                  Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
+                         ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
+#endif // SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
 def PseudoCCSLL : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
@@ -1496,11 +1500,6 @@ def PseudoCCSRA : Pseudo<(outs GPR:$dst),
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
 #endif // SIFIVE_CUSTOMIZATION
-
-=======
-                  Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
-                         ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
->>>>>>> upstream-main
 def PseudoCCAND : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
@@ -1557,8 +1556,12 @@ def PseudoCCADDW : Pseudo<(outs GPR:$dst),
 def PseudoCCSUBW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
                    Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+#else
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
+#endif // SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
 def PseudoCCSLLW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
@@ -1589,10 +1592,8 @@ def PseudoCCSRAIW : Pseudo<(outs GPR:$dst),
                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
                     Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 // Macrofusion pseudo for (srli (slli X, $shamt1), $shamt2)
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
     isPseudo = 1 in {
@@ -1609,11 +1610,6 @@ let Predicates = [HasFuseBFX] in
 def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
-                          ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
-}
->>>>>>> upstream-main
 
 multiclass SelectCC_GPR_rrirr<DAGOperand valty, ValueType vt> {
   let usesCustomInserter = 1 in
@@ -1635,12 +1631,8 @@ multiclass SelectCC_GPR_rrirr<DAGOperand valty, ValueType vt> {
 let Predicates = [NoCMOVBranchOpt, NoShortForwardBranchOpt]  in
 #else
 let Predicates = [NoShortForwardBranchOpt] in
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-defm Select_GPR : SelectCC_GPR_rrirr<GPR>;
-=======
 defm Select_GPR : SelectCC_GPR_rrirr<GPR, XLenVT>;
->>>>>>> upstream-main
 
 class SelectCompressOpt<CondCode Cond>
     : Pat<(riscv_selectcc_frag:$select (XLenVT GPR:$lhs), simm12_no6:$Constant, Cond,
