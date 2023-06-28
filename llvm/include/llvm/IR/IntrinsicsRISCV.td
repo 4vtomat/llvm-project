@@ -1361,10 +1361,18 @@ let TargetPrefix = "riscv" in {
 
   def "int_riscv_vcompress" : RISCVCompress;
 
-  defm vaaddu : RISCVSaturatingBinaryAAXRoundingMode;
-  defm vaadd : RISCVSaturatingBinaryAAXRoundingMode;
-  defm vasubu : RISCVSaturatingBinaryAAXRoundingMode;
-  defm vasub : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vaaddu : RISCVSaturatingBinaryAAX;
+  defm vaadd : RISCVSaturatingBinaryAAX;
+  defm vasubu : RISCVSaturatingBinaryAAX;
+  defm vasub : RISCVSaturatingBinaryAAX;
+
+  // Note: These intrinsics has an additional `.rm` to their name compared to
+  // their existing ones. These intrinsics has an additional operand that models
+  // the rounding mode and will replace the existing ones in the next commit.
+  defm vaaddu_rm : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vaadd_rm : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vasubu_rm : RISCVSaturatingBinaryAAXRoundingMode;
+  defm vasub_rm : RISCVSaturatingBinaryAAXRoundingMode;
 
   defm vsmul : RISCVSaturatingBinaryAAX;
 

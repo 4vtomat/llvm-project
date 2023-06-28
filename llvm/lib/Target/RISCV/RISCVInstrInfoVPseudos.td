@@ -4080,7 +4080,7 @@ class VPatBinaryNoMaskTARoundingMode<string intrinsic_name,
                                      int sew,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
                    (result_type (undef)),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4101,7 +4101,7 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      VReg result_reg_class,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4187,7 +4187,7 @@ class VPatBinaryMaskTARoundingMode<string intrinsic_name,
                                    VReg result_reg_class,
                                    VReg op1_reg_class,
                                    DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_mask")
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_rm_mask")
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
