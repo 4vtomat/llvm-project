@@ -1190,7 +1190,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
       if (CI->getZExtValue() < MinCopySize)
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * 8 * MaxUnrollTimes)) {
+      if (CI->getZExtValue() < (MinVLenInBytes * MemLMULLocal * MaxUnrollTimes)) {
         expandMemmoveKnownSize(cast<MemMoveInst>(MI));
         return true;
       }
