@@ -537,14 +537,12 @@ declare <vscale x 1 x i8> @llvm.riscv.vsmul.mask.nxv1i8.nxv1i8(
   <vscale x 1 x i8>,
   <vscale x 1 x i1>,
   iXLen,
-  iXLen,
   iXLen);
 
 define <vscale x 1 x i8> @intrinsic_vsmul_mask_vv_nxv1i8_nxv1i8_nxv1i8(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vsmul_mask_vv_nxv1i8_nxv1i8_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
-; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vsmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
 entry:
@@ -553,7 +551,7 @@ entry:
     <vscale x 1 x i8> %0,
     <vscale x 1 x i8> %1,
     <vscale x 1 x i1> %2,
-    iXLen 0, iXLen %3, iXLen 3)
+    iXLen %3, iXLen 3)
 
   ret <vscale x 1 x i8> %a
 }
@@ -564,14 +562,12 @@ declare <vscale x 1 x i8> @llvm.riscv.vssrl.mask.nxv1i8.nxv1i8(
   <vscale x 1 x i8>,
   <vscale x 1 x i1>,
   iXLen,
-  iXLen,
   iXLen);
 
 define <vscale x 1 x i8> @intrinsic_vssrl_mask_vv_nxv1i8_nxv1i8_nxv1i8(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vssrl_mask_vv_nxv1i8_nxv1i8_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
-; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssrl.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
 entry:
@@ -580,7 +576,7 @@ entry:
     <vscale x 1 x i8> %0,
     <vscale x 1 x i8> %1,
     <vscale x 1 x i1> %2,
-    iXLen 0, iXLen %3, iXLen 3)
+    iXLen %3, iXLen 3)
 
   ret <vscale x 1 x i8> %a
 }
@@ -591,14 +587,12 @@ declare <vscale x 1 x i8> @llvm.riscv.vnclip.mask.nxv1i8.nxv1i16.nxv1i8(
   <vscale x 1 x i8>,
   <vscale x 1 x i1>,
   iXLen,
-  iXLen,
   iXLen);
 
 define <vscale x 1 x i8> @intrinsic_vnclip_mask_wv_nxv1i8_nxv1i16_nxv1i8(<vscale x 1 x i16> %0, <vscale x 1 x i8> %1, <vscale x 1 x i1> %2, iXLen %3) nounwind {
 ; CHECK-LABEL: intrinsic_vnclip_mask_wv_nxv1i8_nxv1i16_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
-; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vnclip.wv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
 entry:
@@ -607,7 +601,7 @@ entry:
     <vscale x 1 x i16> %0,
     <vscale x 1 x i8> %1,
     <vscale x 1 x i1> %2,
-    iXLen 0, iXLen %3, iXLen 3)
+    iXLen %3, iXLen 3)
 
   ret <vscale x 1 x i8> %a
 }
