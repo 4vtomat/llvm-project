@@ -524,16 +524,14 @@ bool RISCVPassConfig::addGlobalInstructionSelect() {
   return false;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-void RISCVPassConfig::addPreSched2() { addPass(createRISCVPostRAExpandPseudoPass()); }
-#endif // SIFIVE_CUSTOMIZATION
-=======
 void RISCVPassConfig::addPreSched2() {
+#if SIFIVE_CUSTOMIZATION
+  addPass(createRISCVPostRAExpandPseudoPass()); 
+#endif // SIFIVE_CUSTOMIZATION
+
   // Emit KCFI checks for indirect calls.
   addPass(createKCFIPass());
 }
->>>>>>> upstream-main
 
 void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
