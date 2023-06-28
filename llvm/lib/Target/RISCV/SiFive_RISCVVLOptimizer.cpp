@@ -260,7 +260,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
 
   // TODO: Pseudos that end in _MASK or _TU can have a merge operand.
   // We bail out early for instructions that have merge operands for now.
-  if (RISCVII::hasMergeOp(MI.getDesc().TSFlags))
+  if (MO.getOperandNo() == MI.getNumExplicitDefs() && MO.isReg() && MO.isTied())
     return OperandInfo(OperandInfo::State::Unknown);
 
   // switch against BaseInstr to reduce number of cases that need to be
