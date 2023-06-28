@@ -944,7 +944,6 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                                 AssemblerPredicate<(all_of FeatureVendorXSfvcp),
                                 "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfvqmaccqoq
     : SubtargetFeature<"xsfvqmaccqoq", "HasVendorXSfvqmaccqoq", "true",
@@ -985,7 +984,6 @@ def HasVendorXSfvfnrclipxfqf : Predicate<"Subtarget->hasVendorXSfvfnrclipxfqf()"
                             AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
                             "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 def FeatureVendorXSfcie
     : SubtargetFeature<"xsfcie", "HasVendorXSfcie", "true",
                        "'XSfcie' (SiFive Custom Instruction Extension SCIE.)">;
@@ -1006,7 +1004,6 @@ def FeatureVendorXCVmac
 def HasVendorXCVmac : Predicate<"Subtarget->hasVendorXCVmac()">,
                                 AssemblerPredicate<(all_of FeatureVendorXCVmac),
                                 "'XCVmac' (Multiply-Accumulate)">;
->>>>>>> upstream-main
 
 //===----------------------------------------------------------------------===//
 // LLVM specific features and extensions
