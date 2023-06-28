@@ -465,17 +465,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setLoadExtAction(ISD::EXTLOAD, MVT::f32, MVT::f16, Expand);
     setTruncStoreAction(MVT::f32, MVT::f16, Expand);
     setOperationAction(ISD::IS_FPCLASS, MVT::f32, Custom);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE cherry-picked from D151284 for SCT-2553.
     setOperationAction(ISD::FP_TO_FP16, MVT::f32, Custom);
     setOperationAction(ISD::FP16_TO_FP, MVT::f32, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
     setOperationAction(ISD::BF16_TO_FP, MVT::f32, Custom);
     setOperationAction(ISD::FP_TO_BF16, MVT::f32,
                        Subtarget.isSoftFPABI() ? LibCall : Custom);
->>>>>>> upstream-main
 
     if (Subtarget.hasStdExtZfa())
       setOperationAction(ISD::FNEARBYINT, MVT::f32, Legal);
@@ -510,17 +507,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::f16, Expand);
     setTruncStoreAction(MVT::f64, MVT::f16, Expand);
     setOperationAction(ISD::IS_FPCLASS, MVT::f64, Custom);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE cherry-picked from D151284 for SCT-2553.
     setOperationAction(ISD::FP_TO_FP16, MVT::f64, Custom);
     setOperationAction(ISD::FP16_TO_FP, MVT::f64, Expand);
 #endif // SIFIVE_CUSTOMIZATION
-=======
     setOperationAction(ISD::BF16_TO_FP, MVT::f64, Custom);
     setOperationAction(ISD::FP_TO_BF16, MVT::f64,
                        Subtarget.isSoftFPABI() ? LibCall : Custom);
->>>>>>> upstream-main
   }
 
   if (Subtarget.is64Bit()) {
@@ -3148,10 +3142,6 @@ static SDValue lowerBUILD_VECTOR(SDValue Op, SelectionDAG &DAG,
         return SDValue();
       // Now we can create our integer vector type. Note that it may be larger
       // than the resulting mask type: v4i1 would use v1i8 as its integer type.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream-main
       unsigned IntegerViaVecElts = divideCeil(NumElts, NumViaIntegerBits);
       MVT IntegerViaVecVT =
           MVT::getVectorVT(MVT::getIntegerVT(NumViaIntegerBits),
@@ -3159,11 +3149,11 @@ static SDValue lowerBUILD_VECTOR(SDValue Op, SelectionDAG &DAG,
 
       uint64_t Bits = 0;
       unsigned BitPos = 0, IntegerEltIdx = 0;
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
       SmallVector<SDValue, 8> Elts(IntegerViaVecElts, DAG.getUNDEF(XLenVT));
-=======
+#else
       SmallVector<SDValue, 8> Elts(IntegerViaVecElts);
->>>>>>> upstream-main
+#endif // SIFIVE_CUSTOMIZATION
 
       for (unsigned I = 0; I < NumElts;) {
         SDValue V = Op.getOperand(I);
@@ -3185,19 +3175,7 @@ static SDValue lowerBUILD_VECTOR(SDValue Op, SelectionDAG &DAG,
         }
       }
 
-<<<<<<< HEAD
-      // Insert the (remaining) scalar value into position in our integer
-      // vector type.
-      if (NumViaIntegerBits <= 32)
-        Bits = SignExtend64<32>(Bits);
-      SDValue Elt = DAG.getConstant(Bits, DL, XLenVT);
-      Elts[IntegerEltIdx] = Elt;
-
       SDValue Vec = DAG.getBuildVector(IntegerViaVecVT, DL, Elts);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      SDValue Vec = DAG.getBuildVector(IntegerViaVecVT, DL, Elts);
->>>>>>> upstream-main
 
       if (NumElts < NumViaIntegerBits) {
         // If we're producing a smaller vector than our minimum legal integer
@@ -3721,7 +3699,6 @@ static bool isInterleaveShuffle(ArrayRef<int> Mask, MVT VT, int &EvenSrc,
   if (EvenSrc != 0 && OddSrc != 0)
     return false;
 
-#if SIFIVE_CUSTOMIZATION
   // SIFIVE this fix will be copied to upstream.
   // Subvectors will be subtracted from either at the start of the two input
   // vectors, or at the start and middle of the first vector if it's an unary
@@ -3732,10 +3709,6 @@ static bool isInterleaveShuffle(ArrayRef<int> Mask, MVT VT, int &EvenSrc,
   // FIXME: We could support other values using a slidedown first.
   int HalfNumElts = NumElts / 2;
   return ((EvenSrc % HalfNumElts) == 0) && ((OddSrc % HalfNumElts) == 0);
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> upstream-main
 }
 
 /// Match shuffles that concatenate two vectors, rotate the concatenation,
@@ -5233,7 +5206,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::FP_TO_SINT_SAT:
   case ISD::FP_TO_UINT_SAT:
     return lowerFP_TO_INT_SAT(Op, DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // SIFIVE cherry-picked from D151284 for SCT-2553.
   case ISD::FP_TO_FP16: {
@@ -5244,7 +5216,13 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     MakeLibCallOptions CallOptions;
     RTLIB::Libcall LC =
         RTLIB::getFPROUND(Op.getOperand(0).getValueType(), MVT::f16);
-=======
+    SDValue Res =
+        makeLibCall(DAG, LC, MVT::f32, Op.getOperand(0), CallOptions, DL).first;
+    if (Subtarget.is64Bit())
+      return DAG.getNode(RISCVISD::FMV_X_ANYEXTW_RV64, DL, MVT::i64, Res);
+    return DAG.getBitcast(MVT::i32, Res);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::FP_TO_BF16: {
     // Custom lower to ensure the libcall return is passed in an FPR on hard
     // float ABIs.
@@ -5253,14 +5231,13 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     MakeLibCallOptions CallOptions;
     RTLIB::Libcall LC =
         RTLIB::getFPROUND(Op.getOperand(0).getValueType(), MVT::bf16);
->>>>>>> upstream-main
     SDValue Res =
         makeLibCall(DAG, LC, MVT::f32, Op.getOperand(0), CallOptions, DL).first;
     if (Subtarget.is64Bit())
       return DAG.getNode(RISCVISD::FMV_X_ANYEXTW_RV64, DL, MVT::i64, Res);
     return DAG.getBitcast(MVT::i32, Res);
   }
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   case ISD::FP16_TO_FP: {
     // Custom lower to ensure the libcall argument is passed in an FPR on hard
     // float ABIs.
@@ -5277,7 +5254,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return Res;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::BF16_TO_FP: {
     assert(Subtarget.hasStdExtFOrZfinx() && "Unexpected custom legalization");
     MVT VT = Op.getSimpleValueType();
@@ -5293,7 +5269,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
       return DAG.getNode(ISD::FP_EXTEND, DL, VT, Res);
     return Res;
   }
->>>>>>> upstream-main
   case ISD::FTRUNC:
   case ISD::FCEIL:
   case ISD::FFLOOR:
@@ -19365,7 +19340,6 @@ bool RISCVTargetLowering::lowerInterleavedStore(StoreInst *SI,
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// Lower an interleaved vp.load into a vlsegN intrinsic.
 ///
@@ -19526,7 +19500,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 MachineInstr *
 RISCVTargetLowering::EmitKCFICheck(MachineBasicBlock &MBB,
                                    MachineBasicBlock::instr_iterator &MBBI,
@@ -19544,7 +19518,6 @@ RISCVTargetLowering::EmitKCFICheck(MachineBasicBlock &MBB,
       .addImm(MBBI->getCFIType())
       .getInstr();
 }
->>>>>>> upstream-main
 
 #define GET_REGISTER_MATCHER
 #include "RISCVGenAsmMatcher.inc"
