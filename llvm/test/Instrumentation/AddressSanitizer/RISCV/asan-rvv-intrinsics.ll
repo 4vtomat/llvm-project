@@ -16528,3 +16528,69 @@ entry:
   tail call void @llvm.riscv.vsuxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
   ret void
 }
+
+declare <vscale x 1 x i32> @llvm.riscv.masked.strided.load.nxv1i32.p0.i64(<vscale x 1 x i32>, ptr, i64,<vscale x 1 x i1>)
+define <vscale x 1 x i32> @intrinsic_masked_strided_load_nxv1i32(ptr align 4 %ptr, <vscale x 1 x i1> %mask) sanitize_address {
+; CHECK-LABEL: @intrinsic_masked_strided_load_nxv1i32(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    br label [[ENTRY_SPLIT:%.*]]
+; CHECK:       entry.split:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[TMP6:%.*]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
+; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP6]]
+; CHECK:       2:
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[IV]], 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[PTR:%.*]], i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP5:%.*]] = ptrtoint ptr [[TMP4]] to i64
+; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP5]])
+; CHECK-NEXT:    br label [[TMP6]]
+; CHECK:       6:
+; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[IV_CHECK:%.*]] = icmp eq i64 [[IV_NEXT]], [[TMP0]]
+; CHECK-NEXT:    br i1 [[IV_CHECK]], label [[ENTRY_SPLIT_SPLIT:%.*]], label [[ENTRY_SPLIT]]
+; CHECK:       entry.split.split:
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 1 x i32> @llvm.riscv.masked.strided.load.nxv1i32.p0.i64(<vscale x 1 x i32> undef, ptr [[PTR]], i64 4, <vscale x 1 x i1> [[MASK]])
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[A]]
+;
+entry:
+  %a = call <vscale x 1 x i32> @llvm.riscv.masked.strided.load.nxv1i32.p0.i64(
+  <vscale x 1 x i32> undef,
+  ptr %ptr,
+  i64 4,
+  <vscale x 1 x i1> %mask)
+  ret <vscale x 1 x i32> %a
+}
+
+declare void @llvm.riscv.masked.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32>, ptr, i64,<vscale x 1 x i1>)
+define void @intrinsic_masked_strided_store_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %ptr, <vscale x 1 x i1> %mask) sanitize_address {
+; CHECK-LABEL: @intrinsic_masked_strided_store_nxv1i32(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    br label [[ENTRY_SPLIT:%.*]]
+; CHECK:       entry.split:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[TMP6:%.*]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
+; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP6]]
+; CHECK:       2:
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[IV]], 4
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[PTR:%.*]], i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP5:%.*]] = ptrtoint ptr [[TMP4]] to i64
+; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP5]])
+; CHECK-NEXT:    br label [[TMP6]]
+; CHECK:       6:
+; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[IV_CHECK:%.*]] = icmp eq i64 [[IV_NEXT]], [[TMP0]]
+; CHECK-NEXT:    br i1 [[IV_CHECK]], label [[ENTRY_SPLIT_SPLIT:%.*]], label [[ENTRY_SPLIT]]
+; CHECK:       entry.split.split:
+; CHECK-NEXT:    call void @llvm.riscv.masked.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> [[VAL:%.*]], ptr [[PTR]], i64 4, <vscale x 1 x i1> [[MASK]])
+; CHECK-NEXT:    ret void
+;
+entry:
+  call void @llvm.riscv.masked.strided.store.nxv1i32.p0.i64(
+  <vscale x 1 x i32> %val,
+  ptr %ptr,
+  i64 4,
+  <vscale x 1 x i1> %mask)
+  ret void
+}
