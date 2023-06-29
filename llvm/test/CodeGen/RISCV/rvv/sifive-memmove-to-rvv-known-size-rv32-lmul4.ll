@@ -41,8 +41,8 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    li a3, 248
-; CHECK-NEXT:    vsetvli zero, a3, e8, m4, ta, ma
+; CHECK-NEXT:    li a1, 248
+; CHECK-NEXT:    vsetvli a1, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1

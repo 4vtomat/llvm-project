@@ -697,12 +697,6 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                       {NewLoopCount, Sew8, Lmul});
   while (UnrollCount--) {
-    if (IsBackward) {
-      Value *NegVL = Builder.CreateNeg(VL);
-      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, NegVL);
-      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
-    }
-
     if (KnownCurrentLen != -MaxCopySize) {
       KnownCurrentLen -= MaxCopySize;
       if (KnownCurrentLen < 0)
@@ -710,6 +704,12 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
             Intrinsic::riscv_vsetvli, {CopyLenType},
             {ConstantInt::get(CopyLenType, KnownCurrentLen + MaxCopySize), Sew8,
              Lmul});
+    }
+
+    if (IsBackward) {
+      Value *NegVL = Builder.CreateNeg(VL);
+      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, NegVL);
+      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
     }
 
     Value *SrcCast =
