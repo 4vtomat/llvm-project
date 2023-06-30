@@ -911,7 +911,7 @@ def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 //===----------------------------------------------------------------------===//
 // Bypass and advance
 def : BulletAnyToGPRBypass<ReadJmp>;
-def : ReadAdvance<ReadJalr, 0>;
+def : BulletAnyToGPRBypass<ReadJalr>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
 //Load to Load/Store address
