@@ -196,6 +196,10 @@ class SiFive7GetOrderedReductionCycles<string mx, int sew> {
   int c = !mul(5, VLUpperBound);
 }
 
+// Check for ReadMemBase instructions with 0 offset.
+def MemBaseOffset0Pred : MCSchedPredicate<CheckAll<[CheckIsImmOperand<2>,
+                                                    CheckZeroOperand<2>]>>;
+
 // SiFive7 machine model for scheduling and other instruction cost heuristics.
 def SiFive7Model : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7 is in-order.
@@ -910,12 +914,21 @@ def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
 //===----------------------------------------------------------------------===//
 // Bypass and advance
+
+def SiFive7ReadMemBaseOffset0 : SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
+
+// Bypass the AG stage of a dependendent memory op after a load if the offset is
+// zero.
+def SiFive7ReadMemBase : SchedReadVariant<[
+  SchedVar<MemBaseOffset0Pred, [SiFive7ReadMemBaseOffset0]>,
+  SchedVar<NoSchedPred, [NoReadAdvance]>
+]>;
+def : SchedAlias<ReadMemBase, SiFive7ReadMemBase>;
+
 def : BulletAnyToGPRBypass<ReadJmp>;
 def : BulletAnyToGPRBypass<ReadJalr>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
-//Load to Load/Store address
-def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
 def : BulletAnyToGPRBypass<ReadIALU>;
 def : BulletAnyToGPRBypass<ReadIALU32>;
 def : BulletAnyToGPRBypass<ReadShiftImm>;

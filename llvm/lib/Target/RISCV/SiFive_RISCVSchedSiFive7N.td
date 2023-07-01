@@ -911,13 +911,23 @@ def : WriteRes<WriteRdVLENB, [SiFive7NPipeB]>;
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
+//===----------------------------------------------------------------------===//
 // Bypass and advance
+
+def SiFive7NReadMemBaseOffset0: SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
+
+// Bypass the AG stage of a dependendent memory op after a load if the offset is
+// zero.
+def SiFive7NReadMemBase : SchedReadVariant<[
+  SchedVar<MemBaseOffset0Pred, [SiFive7NReadMemBaseOffset0]>,
+  SchedVar<NoSchedPred, [NoReadAdvance]>
+]>;
+def : SchedAlias<ReadMemBase, SiFive7NReadMemBase>;
+
 def : BulletAnyToGPRBypass<ReadJmp>;
 def : BulletAnyToGPRBypass<ReadJalr>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
-//Load to Load/Store address
-def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
 def : BulletAnyToGPRBypass<ReadIALU>;
 def : BulletAnyToGPRBypass<ReadIALU32>;
 def : BulletAnyToGPRBypass<ReadShiftImm>;
