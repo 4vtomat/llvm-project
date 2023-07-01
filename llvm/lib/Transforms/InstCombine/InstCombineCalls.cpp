@@ -1364,6 +1364,97 @@ static Instruction *foldBitOrderCrossLogicOp(Value *V,
   return nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
+                                  unsigned Depth = 5) {
+  // Splats can be freely reversed.
+  if (isSplatValue(V))
+    return true;
+
+  auto *VPI = dyn_cast<VPIntrinsic>(V);
+  if (!VPI)
+    return false;
+
+  if (!VPI->hasOneUse())
+    return false;
+
+  if (Depth == 0)
+    return false;
+
+  // Mask and VL must match.
+  if (VPI->getMaskParam() != Mask || VPI->getVectorLengthParam() != VL)
+    return false;
+
+  switch (VPI->getIntrinsicID()) {
+  case Intrinsic::experimental_vp_reverse:
+    return true;
+  case Intrinsic::vp_gather: {
+    Value *Ptr = VPI->getArgOperand(0);
+
+    if (!isSplatValue(Ptr))
+      return false;
+
+    auto *MaskC = dyn_cast<Constant>(Mask);
+    if (!MaskC || !MaskC->isAllOnesValue())
+      return false;
+
+    return true;
+  }
+  // FIXME: Add more binary operations
+  case Intrinsic::vp_add:
+  case Intrinsic::vp_sub:
+  case Intrinsic::vp_mul:
+  case Intrinsic::vp_fadd:
+  case Intrinsic::vp_fsub:
+  case Intrinsic::vp_fmul: {
+    return canEvaluateVPReversed(VPI->getArgOperand(0), Mask, VL, Depth - 1) &&
+           canEvaluateVPReversed(VPI->getArgOperand(1), Mask, VL, Depth - 1);
+  }
+  // FIXME: Add more unary, ternary, etc. operations.
+  }
+
+  return false;
+}
+
+static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
+  // Splats don't need to be reversed.
+  if (isSplatValue(V))
+    return V;
+
+  auto *VPI = cast<VPIntrinsic>(V);
+
+  Value *Mask = VPI->getMaskParam();
+  Value *VL = VPI->getVectorLengthParam();
+
+  switch (VPI->getIntrinsicID()) {
+  case Intrinsic::experimental_vp_reverse:
+    return VPI->getArgOperand(0);
+  case Intrinsic::vp_gather:
+    return V;
+  case Intrinsic::vp_add:
+  case Intrinsic::vp_sub:
+  case Intrinsic::vp_mul:
+  case Intrinsic::vp_fadd:
+  case Intrinsic::vp_fsub:
+  case Intrinsic::vp_fmul: {
+    Value *NewOp0 = evaluateVPReversed(VPI->getArgOperand(0), IC);
+    Value *NewOp1 = evaluateVPReversed(VPI->getArgOperand(1), IC);
+    // If we get the same operands, we don't need to create a new intrinsic.
+    if (NewOp0 != VPI->getArgOperand(0) || NewOp1 != VPI->getArgOperand(1)) {
+      Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), VPI->getType());
+      Instruction *Intrin = CallInst::Create(F, {NewOp0, NewOp1, Mask, VL});
+      Intrin->takeName(VPI);
+      return IC.InsertNewInstWith(Intrin, *VPI);
+    }
+
+    return V;
+  }
+  }
+
+  llvm_unreachable("Unexpected value!");
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// CallInst simplification. This mostly only handles folding of intrinsic
 /// instructions. For normal calls, it allows visitCallBase to do the heavy
 /// lifting.
@@ -2960,65 +3051,12 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     break;
   }
   case Intrinsic::experimental_vp_reverse: {
-    Value *BO0, *BO1;
     Value *Vec = II->getArgOperand(0);
     Value *Mask = II->getArgOperand(1);
     Value *VL = II->getArgOperand(2);
-
-    // Match vp.gathers that splat the same value to all VL elements.
-    auto isSplatVPGather = [](Value *Op, Value *VL) {
-      Value *Ptr, *Mask;
-      if (!match(Op, m_Intrinsic<Intrinsic::vp_gather>(
-                         m_Value(Ptr), m_Value(Mask), m_Specific(VL))))
-        return false;
-
-      if (!isSplatValue(Ptr))
-        return false;
-
-      // Mask needs to be an all ones splat otherwise we can't guarantee there
-      // aren't undef elements being reversed.
-      auto *MaskC = dyn_cast<Constant>(Mask);
-      if (!MaskC || !MaskC->isAllOnesValue())
-        return false;
-
-      return true;
-    };
-
-    // FIXME: Add all VP binops.
-    // Look for VL intrinsics with splat mask.
-    // FIXME: Could we reverse the mask or look for already reversed masks?
-    if (isSplatValue(Mask) &&
-        match(Vec, m_Intrinsic<Intrinsic::vp_add>(m_Value(BO0), m_Value(BO1),
-                                                  m_Specific(Mask),
-                                                  m_Specific(VL)))) {
-      Value *X, *Y;
-      if (match(BO0, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
-                         m_Value(X), m_Specific(Mask), m_Specific(VL)))) {
-        // rev(binop rev(X), rev(Y)) --> binop X, Y
-        if (match(BO1, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
-                           m_Value(Y), m_Specific(Mask), m_Specific(VL)))) {
-          Value *Intrin = Builder.CreateIntrinsic(
-              Intrinsic::vp_add, CI.getType(), {X, Y, Mask, VL}, nullptr,
-              Vec->getName());
-          return replaceInstUsesWith(CI, Intrin);
-        }
-        // rev(binop rev(X), BO1Splat) --> binop X, BO1Splat
-        if (isSplatValue(BO1) || isSplatVPGather(BO1, VL)) {
-          Value *Intrin = Builder.CreateIntrinsic(
-              Intrinsic::vp_add, CI.getType(), {X, BO1, Mask, VL}, nullptr,
-              Vec->getName());
-          return replaceInstUsesWith(CI, Intrin);
-        }
-      }
-      // rev(binop BO0Splat, rev(Y)) --> binop BO0Splat, Y
-      if (match(BO1, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
-                         m_Value(Y), m_Specific(Mask), m_Specific(VL))) &&
-          (isSplatValue(BO0) || isSplatVPGather(BO0, VL))) {
-        Value *Intrin = Builder.CreateIntrinsic(Intrinsic::vp_add, CI.getType(),
-                                                {BO0, Y, Mask, VL}, nullptr,
-                                                Vec->getName());
-        return replaceInstUsesWith(CI, Intrin);
-      }
+    if (canEvaluateVPReversed(Vec, Mask, VL)) {
+      Value *V = evaluateVPReversed(Vec, *this);
+      return replaceInstUsesWith(CI, V);
     }
     break;
   }
