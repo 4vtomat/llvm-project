@@ -227,6 +227,17 @@ def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
 //===----------------------------------------------------------------------===//
 // Bypass and advance
+
+def SiFive6ReadMemBaseOffset0 : SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
+
+// Bypass the AG stage of a dependendent memory op after a load if the offset is
+// zero.
+def SiFive6ReadMemBase : SchedReadVariant<[
+  SchedVar<MemBaseOffset0Pred, [SiFive6ReadMemBaseOffset0]>,
+  SchedVar<NoSchedPred, [NoReadAdvance]>
+]>;
+def : SchedAlias<ReadMemBase, SiFive6ReadMemBase>;
+
 def : BulletAnyToGPRBypass<ReadJmp>;
 def : BulletAnyToGPRBypass<ReadJalr>;
 def : ReadAdvance<ReadCSR, 0>;

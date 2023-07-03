@@ -196,10 +196,6 @@ class SiFive7GetOrderedReductionCycles<string mx, int sew> {
   int c = !mul(5, VLUpperBound);
 }
 
-// Check for ReadMemBase instructions with 0 offset.
-def MemBaseOffset0Pred : MCSchedPredicate<CheckAll<[CheckIsImmOperand<2>,
-                                                    CheckZeroOperand<2>]>>;
-
 // SiFive7 machine model for scheduling and other instruction cost heuristics.
 def SiFive7Model : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7 is in-order.

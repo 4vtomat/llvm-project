@@ -6,6 +6,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#ifdef SIFIVE_CUSTOMIZATION
+// Check for ReadMemBase instructions with 0 offset.
+def MemBaseOffset0Pred : MCSchedPredicate<CheckAll<[CheckIsImmOperand<2>,
+                                                    CheckZeroOperand<2>]>>;
+#endif
+
 /// Define scheduler resources associated with def operands.
 def WriteIALU       : SchedWrite;    // 32 or 64-bit integer ALU operations
 def WriteIALU32     : SchedWrite;    // 32-bit integer ALU operations on RV64I
