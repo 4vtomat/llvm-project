@@ -2513,9 +2513,7 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#define __ARM_FP 2\n";
   OS << "#define __ARM_ARCH 8\n";
   OS << "#define __ARM_FEATURE_DIRECTED_ROUNDING\n";
-  OS << "#define __ARM_FEATURE_DOTPROD\n";
   OS << "#define __ARM_FEATURE_FMA\n";
-  OS << "#define __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
   OS << "#define __ARM_FEATURE_NUMERIC_MAXMIN\n\n";
 }
 
@@ -2530,9 +2528,7 @@ static void printNEONEnd(raw_ostream &OS) {
 static void printRecodeNEONEnd(raw_ostream &OS) {
   OS << "\n";
   OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
-  OS << "#undef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
   OS << "#undef __ARM_FEATURE_FMA\n";
-  OS << "#undef __ARM_FEATURE_DOTPROD\n";
   OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
   OS << "#undef __ARM_ARCH\n";
   OS << "#undef __ARM_FP\n";
