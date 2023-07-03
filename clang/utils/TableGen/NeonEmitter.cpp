@@ -2502,6 +2502,8 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "typedef double float64_t;\n";
   OS << "#endif\n\n";
 
+  OS << "#pragma push_macro(\"__aarch64__\")\n";
+  OS << "#undef __aarch64__\n";
   OS << "#define __aarch64__\n\n";
 
   emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlhQhfQfdQdPcQPcPsQPsPlQPl",
@@ -2510,6 +2512,16 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
 
+  OS << "#pragma push_macro(\"__ARM_FP\")\n";
+  OS << "#pragma push_macro(\"__ARM_ARCH\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_DIRECTED_ROUNDING\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_FMA\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_NUMERIC_MAXMIN\")\n";
+  OS << "#undef __ARM_FP\n";
+  OS << "#undef __ARM_ARCH\n";
+  OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
+  OS << "#undef __ARM_FEATURE_FMA\n";
+  OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
   OS << "#define __ARM_FP 2\n";
   OS << "#define __ARM_ARCH 8\n";
   OS << "#define __ARM_FEATURE_DIRECTED_ROUNDING\n";
@@ -2527,13 +2539,13 @@ static void printNEONEnd(raw_ostream &OS) {
 
 static void printRecodeNEONEnd(raw_ostream &OS) {
   OS << "\n";
-  OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
-  OS << "#undef __ARM_FEATURE_FMA\n";
-  OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
-  OS << "#undef __ARM_ARCH\n";
-  OS << "#undef __ARM_FP\n";
-  OS << "#undef __ai\n\n";
-  OS << "#undef __aarch64__\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_NUMERIC_MAXMIN\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_FMA\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_DIRECTED_ROUNDING\")\n";
+  OS << "#pragma pop_macro(\"__ARM_ARCH\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FP\")\n";
+  OS << "#undef __ai\n";
+  OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
   OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
   OS << "#endif /* __ARM_RECODE_NEON_H */\n";
 }
