@@ -2041,17 +2041,17 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   auto Bounds = InnermostLoop->getBounds(SE);
   if (!Bounds) {
     LLVM_DEBUG(dbgs() << "LAA: Could not determine bounds of loop induction "
-                         "variable, so the MaxSafeDepDistBytes is unknown");
+                         "variable, so the MaxSafeDepDistBytes is unknown\n");
     MaxSafeDepDistBytes = 0;
-    return Dependence::Unknown;
+    return Dependence::BackwardVectorizableButPreventsForwarding;
   }
   const SCEV *StepVal = SE.getSCEV(Bounds->getStepValue());
   const SCEVConstant *StepValC = dyn_cast<SCEVConstant>(StepVal);
   if (!StepValC) {
     LLVM_DEBUG(dbgs() << "LAA: Could not determine step value of loop induction "
-                         "variable, so the MaxSafeDepDistBytes is unknown");
+                         "variable, so the MaxSafeDepDistBytes is unknown\n");
     MaxSafeDepDistBytes = 0;
-    return Dependence::Unknown;
+    return Dependence::BackwardVectorizableButPreventsForwarding;
   }
 
   const APInt &LoopIVStrideAP = StepValC->getAPInt().abs();
