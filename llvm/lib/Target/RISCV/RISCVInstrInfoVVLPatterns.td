@@ -2165,7 +2165,7 @@ foreach vti = AllFloatVectors in {
                                           VLOpFrag)),
             (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
-                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_UNDISTURBED_MASK_UNDISTURBED)>;
+                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TU_MU)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
