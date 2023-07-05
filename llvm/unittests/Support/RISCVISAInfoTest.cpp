@@ -203,14 +203,11 @@ TEST(ParseArchString, RequiresCanonicalOrderForSingleLetterExtensions) {
       toString(
           RISCVISAInfo::parseArchString("rv32i_zfinx_a", true).takeError()),
       "invalid extension prefix 'a'");
-<<<<<<< HEAD
   EXPECT_NE(
       toString(RISCVISAInfo::parseArchString("rv64i_svnapot_zicsr", true)
                    .takeError()),
       "standard user-level extension not given in canonical order 'zicsr'"); // SIFIVE
-=======
   // Canonical ordering not required for z*, s*, and x* extensions.
->>>>>>> upstream-main
   EXPECT_THAT_EXPECTED(
       RISCVISAInfo::parseArchString(
           "rv64imafdc_xsfvcp_zicsr_xtheadba_svnapot_zawrs", true),
