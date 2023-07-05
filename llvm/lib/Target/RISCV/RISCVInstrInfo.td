@@ -1480,25 +1480,24 @@ def PseudoCCADD : Pseudo<(outs GPR:$dst),
 def PseudoCCSUB : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-#ifdef SIFIVE_CUSTOMIZATION
-                  Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
-#else
                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
                          ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
-#endif // SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
 def PseudoCCSLL : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                  Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                  Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                         ReadSFBJmp, ReadSFBJmp]>;
 def PseudoCCSRL : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                  Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                  Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                         ReadSFBJmp, ReadSFBJmp]>;
 def PseudoCCSRA : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                           GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                  Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                  Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                         ReadSFBJmp, ReadSFBJmp]>;
 #endif // SIFIVE_CUSTOMIZATION
 def PseudoCCAND : Pseudo<(outs GPR:$dst),
                          (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
@@ -1520,31 +1519,38 @@ def PseudoCCXOR : Pseudo<(outs GPR:$dst),
 def PseudoCCADDI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCSLLI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCSRLI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCSRAI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCANDI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCORI  : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 def PseudoCCXORI : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // RV64I instructions
@@ -1556,42 +1562,45 @@ def PseudoCCADDW : Pseudo<(outs GPR:$dst),
 def PseudoCCSUBW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-#ifdef SIFIVE_CUSTOMIZATION
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
-#else
                    Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp,
                           ReadSFBALU, ReadSFBALU, ReadSFBALU]>;
-#endif // SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
 def PseudoCCSLLW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp, ReadSFBJmp]>;
 def PseudoCCSRLW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp, ReadSFBJmp]>;
 def PseudoCCSRAW : Pseudo<(outs GPR:$dst),
                           (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                            GPR:$falsev, GPR:$rs1, GPR:$rs2), []>,
-                   Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                   Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                          ReadSFBJmp, ReadSFBJmp]>;
 
 def PseudoCCADDIW : Pseudo<(outs GPR:$dst),
                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                    Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                    Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                           ReadSFBJmp]>;
 def PseudoCCSLLIW : Pseudo<(outs GPR:$dst),
                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                    Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                    Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                           ReadSFBJmp]>;
 def PseudoCCSRLIW : Pseudo<(outs GPR:$dst),
                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                    Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                    Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                           ReadSFBJmp]>;
 def PseudoCCSRAIW : Pseudo<(outs GPR:$dst),
                            (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                             GPR:$falsev, GPR:$rs1, simm12:$rs2), []>,
-                    Sched<[WriteSFB, ReadSFB, ReadSFB, ReadSFB, ReadSFB]>;
+                    Sched<[WriteSFB, ReadSFBJmp, ReadSFBJmp, ReadSFBJmp,
+                           ReadSFBJmp]>;
 }
 
 // Macrofusion pseudo for (srli (slli X, $shamt1), $shamt2)

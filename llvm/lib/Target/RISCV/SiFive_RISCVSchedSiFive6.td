@@ -329,7 +329,8 @@ def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
 
 //Short forward branch
-def : ReadAdvance<ReadSFB, 0>;
+def : ReadAdvance<ReadSFBJmp, 0>;
+def : ReadAdvance<ReadSFBALU, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

@@ -1203,15 +1203,25 @@ defm : AnyToGPRBypass<ReadSHXADD32, 2>;
 
 // Short forward branch
 // ALU, ALU_B, SFB to SFB
-def : ReadAdvance<ReadSFB, 2, [WriteIALU, WriteIALU32,
-                               WriteShiftImm, WriteShiftImm32,
-                               WriteShiftReg, WriteShiftReg32,
-                               WriteSHXADD, WriteSHXADD32,
-                               WriteRotateImm, WriteRotateImm32,
-                               WriteRotateReg, WriteRotateReg32,
-                               WriteCLZ, WriteCLZ32, WriteCTZ,
-                               WriteCTZ32, WriteCPOP, WriteCPOP32,
-                               WriteREV8, WriteORCB, WriteSFB]>;
+// FIXME: Is this right?
+def : ReadAdvance<ReadSFBJmp, 2, [WriteIALU, WriteIALU32,
+                                  WriteShiftImm, WriteShiftImm32,
+                                  WriteShiftReg, WriteShiftReg32,
+                                  WriteSHXADD, WriteSHXADD32,
+                                  WriteRotateImm, WriteRotateImm32,
+                                  WriteRotateReg, WriteRotateReg32,
+                                  WriteCLZ, WriteCLZ32, WriteCTZ,
+                                  WriteCTZ32, WriteCPOP, WriteCPOP32,
+                                  WriteREV8, WriteORCB, WriteSFB]>;
+def : ReadAdvance<ReadSFBALU, 2, [WriteIALU, WriteIALU32,
+                                  WriteShiftImm, WriteShiftImm32,
+                                  WriteShiftReg, WriteShiftReg32,
+                                  WriteSHXADD, WriteSHXADD32,
+                                  WriteRotateImm, WriteRotateImm32,
+                                  WriteRotateReg, WriteRotateReg32,
+                                  WriteCLZ, WriteCLZ32, WriteCTZ,
+                                  WriteCTZ32, WriteCPOP, WriteCPOP32,
+                                  WriteREV8, WriteORCB, WriteSFB]>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
