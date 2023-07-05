@@ -328,20 +328,14 @@
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixdef_sabc -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-X-ORDER %s
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-// RV32-X-ORDER: "-target-abi" "ilp32"
-// end SIFIVE_CUSTOMIZATION
+// RV32-X-ORDER: error: invalid arch name 'rv32ixdef_sabc',
+// RV32-X-ORDER  unsupported non-standard user-level extension 'xdef'
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32isxabc_sdef -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-S-ORDER %s
 // SIFIVE_CUSTOMIZATION
 // RV32-S-ORDER: "-target-abi" "ilp32"
 // end SIFIVE_CUSTOMIZATION
-=======
-// RV32-X-ORDER: error: invalid arch name 'rv32ixdef_sabc',
-// RV32-X-ORDER  unsupported non-standard user-level extension 'xdef'
->>>>>>> upstream-main
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XDUP %s
@@ -395,16 +389,10 @@
 // RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izfa'
 // RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
 
-<<<<<<< HEAD
 // COM: SiFive specific logic: Disable version check for integration with FESDK.
 // COM: %clang --target=riscv32-unknown-elf -march=rv32izca -menable-experimental-extensions -### %s \
 // COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-// RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izca'
-=======
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32izfa -menable-experimental-extensions -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
 // RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izfa'
->>>>>>> upstream-main
 // RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izfa0p1 -menable-experimental-extensions -### %s \
