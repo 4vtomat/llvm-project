@@ -807,9 +807,12 @@ foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar RedCycles = SiFive7NGetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
-    let Latency = RedCycles, ResourceCycles = [RedCycles] in
+    let Latency = RedCycles, ResourceCycles = [RedCycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFive7NVA],
                                      mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+    }
     defvar OrdRedCycles = SiFive7NGetOrderedReductionCycles<mx, sew>.c;
     let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFive7NVA],
