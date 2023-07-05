@@ -4665,7 +4665,7 @@ def Select_VRM4_Using_CC_GPR : VPseudoSelectCC_rrirr<VRM4, GPR>;
 def Select_VRM8_Using_CC_GPR : VPseudoSelectCC_rrirr<VRM8, GPR>;
 
 class VPatSelectCC<ValueType vt, RegisterClass reg_class> :
-  Pat<(vt (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs, cond,
+  Pat<(vt (riscv_selectcc_frag:$cc (XLenVT GPR:$lhs), (XLenVT GPR:$rhs), cond,
                                    (vt reg_class:$truev),
                                    (vt reg_class:$falsev))),
       (!cast<Instruction>("Select_"#!cast<string>(reg_class)#"_Using_CC_GPR")

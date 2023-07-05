@@ -1459,13 +1459,13 @@ def PseudoCCMOVGPRNoX0 : Pseudo<(outs GPRNoX0:$dst),
                                 (ins GPR:$lhs, GPR:$rhs, ixlenimm:$cc,
                                  GPRNoX0:$falsev, GPRNoX0:$truev),
                                 [(set GPRNoX0:$dst,
-                                  (riscv_selectcc_frag:$cc GPR:$lhs, GPR:$rhs,
-                                                           cond, GPRNoX0:$truev,
-                                                           GPRNoX0:$falsev))]>,
+                                  (riscv_selectcc_frag:$cc (XLenVT GPR:$lhs),
+                                                           (XLenVT GPR:$rhs),
+                                                           cond, (XLenVT GPRNoX0:$truev),
+                                                           (XLenVT GPRNoX0:$falsev)))]>,
                          Sched<[WriteCMOV, ReadCMOV, ReadCMOV, ReadCMOV, ReadCMOV]>;
 }
 #endif // SIFIVE_CUSTOMIZATION
-
 // Conditional binops, that updates update $dst to (op rs1, rs2) when condition
 // is true. Returns $falsev otherwise. Selected by optimizeSelect.
 // TODO: Can we use DefaultOperands on the regular binop to accomplish this more
@@ -2103,9 +2103,11 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
 
 #ifdef SIFIVE_CUSTOMIZATION
 def : Pat<(XLenVT (abs GPR:$rs1)),
-          (PseudoCCSUB GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+          (PseudoCCSUB (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
+           (XLenVT GPR:$rs1), (XLenVT X0), (XLenVT GPR:$rs1))>;
 def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
-          (PseudoCCSUBW GPR:$rs1, X0, /* COND_LT */ 2, GPR:$rs1, X0, GPR:$rs1)>;
+          (PseudoCCSUBW (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
+           (XLenVT GPR:$rs1), (XLenVT X0), (XLenVT GPR:$rs1))>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//

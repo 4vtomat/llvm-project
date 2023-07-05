@@ -672,9 +672,9 @@ foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
 }
 }
 
-def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
+def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
 
-def : Pat<(int_riscv_vsetvxrm GPR:$rm),
+def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
           (WriteVXRM $rm)>;
 
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
