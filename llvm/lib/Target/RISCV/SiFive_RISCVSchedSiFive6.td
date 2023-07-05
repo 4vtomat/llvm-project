@@ -46,7 +46,6 @@ let Latency = 3 in {
 def : WriteRes<WriteJmp, [SiFive6PipeB]>;
 def : WriteRes<WriteJal, [SiFive6PipeB]>;
 def : WriteRes<WriteJalr, [SiFive6PipeB]>;
-def : WriteRes<WriteJmpReg, [SiFive6PipeB]>;
 }
 
 //Short forward branch
