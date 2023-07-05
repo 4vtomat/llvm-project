@@ -433,12 +433,7 @@ private:
   /// \return The most profitable vectorization factor and the cost of that VF.
   /// This method checks every VF in \p CandidateVFs.
   VectorizationFactor
-#if SIFIVE_CUSTOMIZATION
-  selectVectorizationFactor(const VPlanPtr &Plan,
-                            const ElementCountSet &CandidateVFs);
-#else
   selectVectorizationFactor(const ElementCountSet &CandidateVFs);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the per-lane cost of VectorizationFactor A is lower than
   /// that of B.
