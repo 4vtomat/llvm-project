@@ -422,7 +422,7 @@ static bool performIfConditionPHI(Function &F, BasicBlock *BB,
 // Preprocess work to make more phi-nodes be folded to selects.
 static bool preprocessFoldPHIs(Function &F, DomTreeUpdater *DTU,
                                const SimplifyCFGOptions &Options) {
-  if (!PreprocesssForSelect || !Options.FoldTwoEntryPHINode)
+  if (!PreprocesssForSelect || !Options.SpeculateBlocks)
     return false;
 
   SmallVector<BasicBlock *, 2> BBs;
