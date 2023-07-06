@@ -14,7 +14,7 @@ define void @wibble() {
 ; CHECK:       bb1:
 ; CHECK-NEXT:    [[PHI:%.*]] = phi i32 [ 0, [[BB:%.*]] ], [ [[ADD:%.*]], [[BB1]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp ult i32 [[PHI]], 127
-; CHECK-NEXT:    [[SWITCH_OFFSET:%.*]] = add i32 [[PHI]], 5
+; CHECK-NEXT:    [[SWITCH_OFFSET:%.*]] = add nsw i32 [[PHI]], 5
 ; CHECK-NEXT:    [[PHI130:%.*]] = select i1 [[TMP0]], i32 [[SWITCH_OFFSET]], i32 0
 ; CHECK-NEXT:    [[CALL:%.*]] = tail call signext i32 @snork(i32 noundef signext [[PHI130]])
 ; CHECK-NEXT:    [[ADD]] = add nuw nsw i32 [[PHI]], 1

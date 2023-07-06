@@ -332,18 +332,6 @@ define <vscale x 2 x float> @test_vp_splice_nxv2f32_masked(<vscale x 2 x float> 
 define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 zeroext %evla, i32 zeroext %evlb) {
 ; CHECK-LABEL: test_vp_splice_nxv16i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
-; CHECK-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 80
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 5
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    csrr a4, vlenb
 ; CHECK-NEXT:    slli a1, a4, 3
 ; CHECK-NEXT:    add a5, a0, a1
@@ -353,6 +341,18 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a5, a4
 ; CHECK-NEXT:  .LBB21_2:
+; CHECK-NEXT:    addi sp, sp, -80
+; CHECK-NEXT:    .cfi_def_cfa_offset 80
+; CHECK-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
+; CHECK-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
+; CHECK-NEXT:    .cfi_offset ra, -8
+; CHECK-NEXT:    .cfi_offset s0, -16
+; CHECK-NEXT:    addi s0, sp, 80
+; CHECK-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-NEXT:    csrr a6, vlenb
+; CHECK-NEXT:    slli a6, a6, 5
+; CHECK-NEXT:    sub sp, sp, a6
+; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    addi a6, sp, 64
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
@@ -400,18 +400,6 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16 x i64> %va, <vscale x 16 x i64> %vb, i32 zeroext %evla, i32 zeroext %evlb) {
 ; CHECK-LABEL: test_vp_splice_nxv16i64_negative_offset:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi sp, sp, -80
-; CHECK-NEXT:    .cfi_def_cfa_offset 80
-; CHECK-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    .cfi_offset ra, -8
-; CHECK-NEXT:    .cfi_offset s0, -16
-; CHECK-NEXT:    addi s0, sp, 80
-; CHECK-NEXT:    .cfi_def_cfa s0, 0
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 5
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    csrr a4, vlenb
 ; CHECK-NEXT:    slli a1, a4, 3
 ; CHECK-NEXT:    add a5, a0, a1
@@ -421,6 +409,18 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a5, a4
 ; CHECK-NEXT:  .LBB22_2:
+; CHECK-NEXT:    addi sp, sp, -80
+; CHECK-NEXT:    .cfi_def_cfa_offset 80
+; CHECK-NEXT:    sd ra, 72(sp) # 8-byte Folded Spill
+; CHECK-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
+; CHECK-NEXT:    .cfi_offset ra, -8
+; CHECK-NEXT:    .cfi_offset s0, -16
+; CHECK-NEXT:    addi s0, sp, 80
+; CHECK-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-NEXT:    csrr a6, vlenb
+; CHECK-NEXT:    slli a6, a6, 5
+; CHECK-NEXT:    sub sp, sp, a6
+; CHECK-NEXT:    andi sp, sp, -64
 ; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    addi a6, sp, 64
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma

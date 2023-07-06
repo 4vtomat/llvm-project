@@ -196,7 +196,6 @@ define <8 x i64> @vrgather_shuffle_vv_v8i64(<8 x i64> %x, <8 x i64> %y) {
 ;
 ; RV64-LABEL: vrgather_shuffle_vv_v8i64:
 ; RV64:       # %bb.0:
-<<<<<<< HEAD
 ; RV64-NEXT:    lui a0, %hi(.LCPI11_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI11_0)
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
@@ -207,27 +206,11 @@ define <8 x i64> @vrgather_shuffle_vv_v8i64(<8 x i64> %x, <8 x i64> %y) {
 ; RV64-NEXT:    vmv.s.x v20, a0
 ; RV64-NEXT:    vmv.v.i v16, 2
 ; RV64-NEXT:    vslideup.vi v16, v20, 7
-=======
-; RV64-NEXT:    li a0, 5
-; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; RV64-NEXT:    vmv.s.x v16, a0
-; RV64-NEXT:    vmv.v.i v20, 2
-; RV64-NEXT:    lui a0, %hi(.LCPI11_0)
-; RV64-NEXT:    addi a0, a0, %lo(.LCPI11_0)
-; RV64-NEXT:    vle64.v v24, (a0)
-; RV64-NEXT:    vslideup.vi v20, v16, 7
-; RV64-NEXT:    vrgather.vv v16, v8, v24
->>>>>>> upstream-main
 ; RV64-NEXT:    li a0, 164
 ; RV64-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV64-NEXT:    vmv.v.x v0, a0
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, mu
-<<<<<<< HEAD
 ; RV64-NEXT:    vrgather.vv v8, v12, v16, v0.t
-=======
-; RV64-NEXT:    vrgather.vv v16, v12, v20, v0.t
-; RV64-NEXT:    vmv.v.v v8, v16
->>>>>>> upstream-main
 ; RV64-NEXT:    ret
   %s = shufflevector <8 x i64> %x, <8 x i64> %y, <8 x i32> <i32 1, i32 2, i32 10, i32 5, i32 1, i32 10, i32 3, i32 13>
   ret <8 x i64> %s

@@ -305,7 +305,6 @@ body:             |
     $v24_v25_v26_v27_v28_v29_v30_v31 = COPY killed $v8_v9_v10_v11_v12_v13_v14_v15
 ...
 ---
-<<<<<<< HEAD
 name: copy_sifive_custom_macc
 tracksRegLiveness: true
 body:             |
@@ -336,7 +335,8 @@ body:             |
     $x0 = PseudoVSETVLI  $x10, 66, implicit-def $vl, implicit-def $vtype
     $v4m4 = PseudoVQMACCUS2x8x2_VV_M4 renamable $v4m4, killed renamable $v13, killed renamable $v16m4, $noreg, 3, 1, implicit $vl, implicit $vtype
     $v16m4 = COPY renamable $v4m4
-=======
+...
+---
 name: copy_narrow_copies_in_between
 tracksRegLiveness: true
 body:             |
@@ -356,4 +356,3 @@ body:             |
     $v11 = COPY $v9
     $v12m2 = COPY $v10m2
 ...
->>>>>>> upstream-main

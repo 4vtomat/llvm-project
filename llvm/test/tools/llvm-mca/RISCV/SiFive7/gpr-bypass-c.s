@@ -27,12 +27,12 @@ c.jr a0
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      20
-# CHECK-NEXT: Total Cycles:      21
+# CHECK-NEXT: Total Cycles:      23
 # CHECK-NEXT: Total uOps:        20
 
 # CHECK:      Dispatch Width:    2
-# CHECK-NEXT: uOps Per Cycle:    0.95
-# CHECK-NEXT: IPC:               0.95
+# CHECK-NEXT: uOps Per Cycle:    0.87
+# CHECK-NEXT: IPC:               0.87
 # CHECK-NEXT: Block RThroughput: 10.0
 
 # CHECK:      Instruction Info:
@@ -68,64 +68,65 @@ c.jr a0
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFive7FDiv
 # CHECK-NEXT: [1]   - SiFive7IDiv
-# CHECK-NEXT: [2]   - SiFive7PipeA
-# CHECK-NEXT: [3]   - SiFive7PipeB
-# CHECK-NEXT: [4]   - SiFive7PipeV
-# CHECK-NEXT: [5]   - SiFive7VA
-# CHECK-NEXT: [6]   - SiFive7VL
-# CHECK-NEXT: [7]   - SiFive7VS
+# CHECK-NEXT: [2]   - SiFive7Mem
+# CHECK-NEXT: [3]   - SiFive7PipeA
+# CHECK-NEXT: [4]   - SiFive7PipeB
+# CHECK-NEXT: [5]   - SiFive7PipeV
+# CHECK-NEXT: [6]   - SiFive7VA
+# CHECK-NEXT: [7]   - SiFive7VL
+# CHECK-NEXT: [8]   - SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
-# CHECK-NEXT:  -      -     9.00   11.00   -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
+# CHECK-NEXT:  -      -      -     9.00   11.00   -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     lui	a0, 1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     addi	a0, a0, 1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     addw	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     addiw	a0, a0, 1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     sub	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     subw	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     and	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     andi	a0, a0, 1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     or	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     xor	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     slli	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     srli	a0, a0, 1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     srai	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     beqz	a0, .Ltmp0
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     bnez	a0, .Ltmp1
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     jr	a0
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     lui	a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     addi	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     addw	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     addiw	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     sub	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     subw	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     and	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     andi	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     or	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     xor	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     slli	a0, a0, 1
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     srli	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     srai	a0, a0, 1
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     beqz	a0, .Ltmp0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     bnez	a0, .Ltmp1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     jr	a0
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789
-# CHECK-NEXT: Index     0123456789          0
+# CHECK-NEXT: Index     0123456789          012
 
-# CHECK:      [0,0]     DeeE .    .    .    .   lui	a0, 1
-# CHECK-NEXT: [0,1]     .DeeE.    .    .    .   add	a0, a0, a0
-# CHECK-NEXT: [0,2]     . DeeE    .    .    .   addi	a0, a0, 1
-# CHECK-NEXT: [0,3]     .  DeeE   .    .    .   addw	a0, a0, a0
-# CHECK-NEXT: [0,4]     .   DeeE  .    .    .   addiw	a0, a0, 1
-# CHECK-NEXT: [0,5]     .    DeeE .    .    .   sub	a0, a0, a0
-# CHECK-NEXT: [0,6]     .    .DeeE.    .    .   subw	a0, a0, a0
-# CHECK-NEXT: [0,7]     .    . DeeE    .    .   and	a0, a0, a0
-# CHECK-NEXT: [0,8]     .    .  DeeE   .    .   andi	a0, a0, 1
-# CHECK-NEXT: [0,9]     .    .   DeeE  .    .   or	a0, a0, a0
-# CHECK-NEXT: [0,10]    .    .    DeeE .    .   xor	a0, a0, a0
-# CHECK-NEXT: [0,11]    .    .    .DeeE.    .   slli	a0, a0, 1
-# CHECK-NEXT: [0,12]    .    .    . DeeE    .   srli	a0, a0, 1
-# CHECK-NEXT: [0,13]    .    .    .  DeeE   .   srai	a0, a0, 1
-# CHECK-NEXT: [0,14]    .    .    .   DeeE  .   add	a0, a0, a0
-# CHECK-NEXT: [0,15]    .    .    .    DeeE .   beqz	a0, .Ltmp0
-# CHECK-NEXT: [0,16]    .    .    .    DeeE .   add	a0, a0, a0
-# CHECK-NEXT: [0,17]    .    .    .    .DeeE.   bnez	a0, .Ltmp1
-# CHECK-NEXT: [0,18]    .    .    .    .DeeE.   add	a0, a0, a0
-# CHECK-NEXT: [0,19]    .    .    .    . DeeE   jr	a0
+# CHECK:      [0,0]     DeeE .    .    .    . .   lui	a0, 1
+# CHECK-NEXT: [0,1]     .DeeE.    .    .    . .   add	a0, a0, a0
+# CHECK-NEXT: [0,2]     . DeeE    .    .    . .   addi	a0, a0, 1
+# CHECK-NEXT: [0,3]     .  DeeE   .    .    . .   addw	a0, a0, a0
+# CHECK-NEXT: [0,4]     .   DeeE  .    .    . .   addiw	a0, a0, 1
+# CHECK-NEXT: [0,5]     .    DeeE .    .    . .   sub	a0, a0, a0
+# CHECK-NEXT: [0,6]     .    .DeeE.    .    . .   subw	a0, a0, a0
+# CHECK-NEXT: [0,7]     .    . DeeE    .    . .   and	a0, a0, a0
+# CHECK-NEXT: [0,8]     .    .  DeeE   .    . .   andi	a0, a0, 1
+# CHECK-NEXT: [0,9]     .    .   DeeE  .    . .   or	a0, a0, a0
+# CHECK-NEXT: [0,10]    .    .    DeeE .    . .   xor	a0, a0, a0
+# CHECK-NEXT: [0,11]    .    .    .DeeE.    . .   slli	a0, a0, 1
+# CHECK-NEXT: [0,12]    .    .    . DeeE    . .   srli	a0, a0, 1
+# CHECK-NEXT: [0,13]    .    .    .  DeeE   . .   srai	a0, a0, 1
+# CHECK-NEXT: [0,14]    .    .    .   DeeE  . .   add	a0, a0, a0
+# CHECK-NEXT: [0,15]    .    .    .    DeeE . .   beqz	a0, .Ltmp0
+# CHECK-NEXT: [0,16]    .    .    .    DeeE . .   add	a0, a0, a0
+# CHECK-NEXT: [0,17]    .    .    .    .DeeE. .   bnez	a0, .Ltmp1
+# CHECK-NEXT: [0,18]    .    .    .    .DeeE. .   add	a0, a0, a0
+# CHECK-NEXT: [0,19]    .    .    .    .   DeeE   jr	a0
 
 # CHECK:      Average Wait times (based on the timeline view):
 # CHECK-NEXT: [0]: Executions

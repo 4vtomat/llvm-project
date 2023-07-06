@@ -25,8 +25,8 @@ define <2 x i1> @test_vp_reverse_v2i1(<2 x i1> %src, i32 zeroext %evl) {
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vid.v v9
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vrsub.vx v9, v9, a0
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
@@ -61,8 +61,8 @@ define <4 x i1> @test_vp_reverse_v4i1(<4 x i1> %src, i32 zeroext %evl) {
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vid.v v9
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vrsub.vx v9, v9, a0
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
@@ -97,8 +97,8 @@ define <8 x i1> @test_vp_reverse_v8i1(<8 x i1> %src, i32 zeroext %evl) {
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vid.v v9
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vrsub.vx v9, v9, a0
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
@@ -135,9 +135,9 @@ define <16 x i1> @test_vp_reverse_v16i1(<16 x i1> %src, i32 zeroext %evl) {
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vid.v v10
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vrsub.vx v10, v10, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vrgatherei16.vv v9, v8, v10
