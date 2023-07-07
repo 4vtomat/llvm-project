@@ -2686,12 +2686,15 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
 
   OS << "#include <stdint.h>\n\n";
 
-  OS << "typedef _Float16 float16_t;\n";
+  OS << "typedef _Float16 float16_t;\n\n";
+
+  OS << "#pragma push_macro(\"__aarch64__\")\n";
+  OS << "#undef __aarch64__\n";
+  OS << "#define __aarch64__\n";
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
 
-  OS << "#define __aarch64__\n";
   OS << "#define __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n\n";
 }
 #endif
@@ -2760,8 +2763,8 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
 #if SIFIVE_CUSTOMIZATION
   if (RecodeMode) {
     OS << "#undef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n";
-    OS << "#undef __aarch64__\n";
-    OS << "#undef __ai\n\n";
+    OS << "#undef __ai\n";
+    OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
     OS << "#endif /* __ARM_RECODE_FP16_H */\n";
   } else {
     OS << "#undef __ai\n\n";
