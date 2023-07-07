@@ -2698,8 +2698,6 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
-
-  OS << "#define __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n\n";
 }
 #endif
 
@@ -2766,7 +2764,6 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
   OS << "\n";
 #if SIFIVE_CUSTOMIZATION
   if (RecodeMode) {
-    OS << "#undef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n";
     OS << "#undef __ai\n";
     OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
     OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
