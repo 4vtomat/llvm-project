@@ -18,4 +18,4 @@
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-UNSUPPORTED-VERSION %s
 //
 // CHECK-EXP-UNSUPPORTED-VERSION: error: invalid arch name 'rv32gzba1p1', unsupported version number 1.1
-// CHECK-EXP-UNSUPPORTED-VERSION: for extension 'zba' (this compiler supports 1.0, 0.93)
+// CHECK-EXP-UNSUPPORTED-VERSION: for extension 'zba' (this compiler supports 1.0)

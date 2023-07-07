@@ -91,9 +91,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zhinx", RISCVExtensionVersion{1, 0}},
 
     {"zba", RISCVExtensionVersion{1, 0}},
-    {"zba", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbb", RISCVExtensionVersion{1, 0}},
-    {"zbb", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbc", RISCVExtensionVersion{1, 0}},
     {"zbs", RISCVExtensionVersion{1, 0}},
 
@@ -114,7 +112,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zmmul", RISCVExtensionVersion{1, 0}},
 
     {"v", RISCVExtensionVersion{1, 0}},
-    {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
     {"zvl32b", RISCVExtensionVersion{1, 0}},
     {"zvl64b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
@@ -483,10 +480,6 @@ bool RISCVISAInfo::compareExtension(const std::string &LHS,
 }
 
 #if SIFIVE_CUSTOMIZATION
-// Once the compiler sees these extensions, it translates them to default
-// version if they are not.
-static const char *SpecialExtensionList[] = { "zba", "zbb", "v" };
-
 // If the extension version is not default, append the version number
 // after its extension name, otherwise return its extension name.
 static std::string tryAppendVersionInfo(
@@ -499,9 +492,7 @@ static std::string tryAppendVersionInfo(
       (Major == 0 && Minor == 0);
 
   std::string ExtString = Name.str();
-  if (!IsDefault &&
-      llvm::none_of(SpecialExtensionList,
-                   [&](const char *Ext) { return ExtString == Ext; }))
+  if (!IsDefault)
     ExtString += std::to_string(Major) + "p" + std::to_string(Minor);
 
   return RISCVISAInfo::isSupportedExtensionFeature(ExtString) ? ExtString
@@ -1403,12 +1394,6 @@ static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
   StringRef Vers(Ext.substr(Pos));
 
   unsigned Major, Minor, ConsumeLength;
-  if (llvm::any_of(SpecialExtensionList,
-                   [&](const char *Ext) { return Name == Ext; })) {
-    auto V = findDefaultVersion(Name);
-    Major = V->Major;
-    Minor = V->Minor;
-  }
 
   if (auto E = getExtensionVersion(Name, Vers, Major, Minor, ConsumeLength, true, true))
     // If IgnoreUnknown, then ignore an unrecognised version of the baseline
