@@ -11,7 +11,7 @@
 // RUN: %clang -target riscv32-unknown-elf -march=rv32g_zve64x_zvkg0p1 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=CHECK-EXP-VERSION-1 %s
 //
-// CHECK-EXP-VERSION: "-target-feature" "+experimental-zvkg"
+// CHECK-EXP-VERSION: "-target-feature" "-experimental-zvkg"
 // CHECK-EXP-VERSION-1: "-target-feature" "+experimental-zvkg0p1"
 
 // RUN: %clang -target riscv32-unknown-elf -march=rv32gzba1p1 -### %s \
