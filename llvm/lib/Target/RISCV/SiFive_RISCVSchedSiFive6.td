@@ -36,16 +36,9 @@ def SiFive6FDiv        : ProcResource<1> { let Super = SiFive6Pipe; } // FP Divi
 
 // Branching
 let Latency = 3 in {
-<<<<<<< HEAD
-def : WriteRes<WriteJmp, [SiFive6PipeB]>;
-def : WriteRes<WriteJal, [SiFive6PipeB]>;
-def : WriteRes<WriteJalr, [SiFive6PipeB]>;
-=======
 def : WriteRes<WriteJmp, [SiFive6Pipe]>;
 def : WriteRes<WriteJal, [SiFive6Pipe]>;
 def : WriteRes<WriteJalr, [SiFive6Pipe]>;
-def : WriteRes<WriteJmpReg, [SiFive6Pipe]>;
->>>>>>> origin/sifive-dev
 }
 
 //Short forward branch
