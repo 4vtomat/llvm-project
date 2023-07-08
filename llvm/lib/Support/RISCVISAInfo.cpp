@@ -85,7 +85,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svpbmt", RISCVExtensionVersion{1, 0}},
     {"v", RISCVExtensionVersion{1, 0}},
-    {"v", RISCVExtensionVersion{0, 10}}, // SIFIVE
     {"xsfcie", RISCVExtensionVersion{1, 0}},
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
@@ -150,21 +149,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zksh", RISCVExtensionVersion{1, 0}},
     {"zkt", RISCVExtensionVersion{1, 0}},
     {"zmmul", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
     {"zve32f", RISCVExtensionVersion{1, 0}},
     {"zve32x", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
     {"zve64f", RISCVExtensionVersion{1, 0}},
     {"zve64x", RISCVExtensionVersion{1, 0}},
-=======
-
-    {"v", RISCVExtensionVersion{1, 0}},
-    {"zvl32b", RISCVExtensionVersion{1, 0}},
-    {"zvl64b", RISCVExtensionVersion{1, 0}},
-    {"zvl128b", RISCVExtensionVersion{1, 0}},
-    {"zvl256b", RISCVExtensionVersion{1, 0}},
-    {"zvl512b", RISCVExtensionVersion{1, 0}},
->>>>>>> origin/sifive-dev
     {"zvl1024b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
     {"zvl16384b", RISCVExtensionVersion{1, 0}},
@@ -189,80 +178,65 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"sswg", RISCVExtensionVersion{0, 3}},
     {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}},
     {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}},
-#endif // SIFIVE_CUSTOMIZAtION
+#endif // SIFIVE_CUSTOMIZATION
     {"zfa", RISCVExtensionVersion{0, 2}},
     {"zfbfmin", RISCVExtensionVersion{0, 6}},
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
-<<<<<<< HEAD
+    {"zvbb", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvbb", RISCVExtensionVersion{0, 9}},
     {"zvbb", RISCVExtensionVersion{0, 5}},
+    {"zvbc", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvbc", RISCVExtensionVersion{0, 9}},
     {"zvbc", RISCVExtensionVersion{0, 5}},
     {"zvfbfmin", RISCVExtensionVersion{0, 6}},
     {"zvfbfwma", RISCVExtensionVersion{0, 6}},
     {"zvfh", RISCVExtensionVersion{0, 1}},
     {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvkg", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkg", RISCVExtensionVersion{0, 9}},
     {"zvkg", RISCVExtensionVersion{0, 5}},
     {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvkn", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkn", RISCVExtensionVersion{0, 9}},
     {"zvkn", RISCVExtensionVersion{0, 5}},
+    {"zvknc", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvknc", RISCVExtensionVersion{0, 9}},
+    {"zvkned", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkned", RISCVExtensionVersion{0, 9}},
     {"zvkned", RISCVExtensionVersion{0, 5}},
+    {"zvkng", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkng", RISCVExtensionVersion{0, 9}},
     {"zvkng", RISCVExtensionVersion{0, 5}},
+    {"zvknha", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvknha", RISCVExtensionVersion{0, 9}},
     {"zvknha", RISCVExtensionVersion{0, 5}},
     {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvknhb", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvknhb", RISCVExtensionVersion{0, 9}},
     {"zvknhb", RISCVExtensionVersion{0, 5}},
     {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvks", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvks", RISCVExtensionVersion{0, 9}},
     {"zvks", RISCVExtensionVersion{0, 5}},
+    {"zvksc", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvksc", RISCVExtensionVersion{0, 9}},
+    {"zvksed", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvksed", RISCVExtensionVersion{0, 9}},
     {"zvksed", RISCVExtensionVersion{0, 5}},
     {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvksg", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvksg", RISCVExtensionVersion{0, 9}},
     {"zvksg", RISCVExtensionVersion{0, 5}},
+    {"zvksh", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvksh", RISCVExtensionVersion{0, 9}},
     {"zvksh", RISCVExtensionVersion{0, 5}},
     {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvkt", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{0, 9}},
     {"zvkt", RISCVExtensionVersion{0, 5}},
-=======
-
-#if SIFIVE_CUSTOMIZATION
-    // vector crypto
-    {"zvbb", RISCVExtensionVersion{1, 0}},
-    {"zvbc", RISCVExtensionVersion{1, 0}},
-    {"zvkg", RISCVExtensionVersion{1, 0}},
-    {"zvkn", RISCVExtensionVersion{1, 0}},
-    {"zvknc", RISCVExtensionVersion{1, 0}},
-    {"zvkned", RISCVExtensionVersion{1, 0}},
-    {"zvkng", RISCVExtensionVersion{1, 0}},
-    {"zvknha", RISCVExtensionVersion{1, 0}},
-    {"zvknhb", RISCVExtensionVersion{1, 0}},
-    {"zvks", RISCVExtensionVersion{1, 0}},
-    {"zvksc", RISCVExtensionVersion{1, 0}},
-    {"zvksed", RISCVExtensionVersion{1, 0}},
-    {"zvksg", RISCVExtensionVersion{1, 0}},
-    {"zvksh", RISCVExtensionVersion{1, 0}},
-    {"zvkt", RISCVExtensionVersion{1, 0}},
-
-    {"zvkb", RISCVExtensionVersion{0, 1}},
-    {"zvkg", RISCVExtensionVersion{0, 1}},
-    {"zvknha", RISCVExtensionVersion{0, 1}},
-    {"zvknhb", RISCVExtensionVersion{0, 1}},
-    {"zvkns", RISCVExtensionVersion{0, 1}},
-    {"zvksed", RISCVExtensionVersion{0, 1}},
-    {"zvksh", RISCVExtensionVersion{0, 1}},
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 };
 
 static void verifyTables() {
