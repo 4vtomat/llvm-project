@@ -577,6 +577,14 @@ TargetTransformInfo::enableMemCmpExpansion(bool OptSize, bool IsZeroCmp) const {
   return TTIImpl->enableMemCmpExpansion(OptSize, IsZeroCmp);
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool TargetTransformInfo::getMemoryRefInfo(
+    SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+    IntrinsicInst *II) const {
+  return TTIImpl->getMemoryRefInfo(Interesting, II);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool TargetTransformInfo::enableSelectOptimize() const {
   return TTIImpl->enableSelectOptimize();
 }

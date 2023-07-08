@@ -367,6 +367,13 @@ public:
     return {};
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                        IntrinsicInst *II) const {
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   bool enableSelectOptimize() const { return true; }
 
   bool enableInterleavedAccessVectorization() const { return false; }

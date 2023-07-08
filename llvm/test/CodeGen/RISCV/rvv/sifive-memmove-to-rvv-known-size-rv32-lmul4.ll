@@ -41,8 +41,8 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    li a3, 248
-; CHECK-NEXT:    vsetvli zero, a3, e8, m4, ta, ma
+; CHECK-NEXT:    li a1, 248
+; CHECK-NEXT:    vsetvli a1, a1, e8, m4, ta, ma
 ; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    sub a0, a0, a1
@@ -93,81 +93,33 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-LABEL: KnownSize2:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    sub a2, a1, a0
-; CHECK-NEXT:    srli a2, a2, 11
-; CHECK-NEXT:    bnez a2, .LBB1_2
-; CHECK-NEXT:  # %bb.1: # %backward-pre-loop
+; CHECK-NEXT:    srli a3, a2, 11
 ; CHECK-NEXT:    li a2, 1
 ; CHECK-NEXT:    slli a2, a2, 11
+; CHECK-NEXT:    bnez a3, .LBB1_3
+; CHECK-NEXT:  # %bb.1: # %memmove-backward-pre-loop
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    li a2, 256
-; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
-; CHECK-NEXT:    sub a0, a0, a2
+; CHECK-NEXT:  .LBB1_2: # %memmove-backward-loop
+; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:    vsetvli a3, a2, e8, m4, ta, ma
+; CHECK-NEXT:    sub a0, a0, a3
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
+; CHECK-NEXT:    sub a1, a1, a3
+; CHECK-NEXT:    sub a2, a2, a3
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    sub a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    sub a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    ret
-; CHECK-NEXT:  .LBB1_2: # %memmove-forward-loop
-; CHECK-NEXT:    li a2, 256
-; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
+; CHECK-NEXT:    bnez a2, .LBB1_2
+; CHECK-NEXT:    j .LBB1_4
+; CHECK-NEXT:  .LBB1_3: # %memmove-forward-loop
+; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:    vsetvli a3, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    sub a2, a2, a3
+; CHECK-NEXT:    add a0, a0, a3
+; CHECK-NEXT:    add a1, a1, a3
+; CHECK-NEXT:    bnez a2, .LBB1_3
+; CHECK-NEXT:  .LBB1_4: # %memmove-post-loop
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i32 2048, i1 false)

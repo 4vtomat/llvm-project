@@ -29,6 +29,7 @@
 #include "llvm/Analysis/MemoryBuiltins.h"
 #include "llvm/Analysis/StackSafetyAnalysis.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
+#include "llvm/Analysis/TargetTransformInfo.h" // SIFIVE
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/BinaryFormat/MachO.h"
 #include "llvm/Demangle/Demangle.h"
@@ -676,8 +677,11 @@ struct AddressSanitizer {
   bool isInterestingAlloca(const AllocaInst &AI);
 
   bool ignoreAccess(Instruction *Inst, Value *Ptr);
+#if SIFIVE_CUSTOMIZATION
   void getInterestingMemoryOperands(
-      Instruction *I, SmallVectorImpl<InterestingMemoryOperand> &Interesting);
+      Instruction *I, SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+      const TargetTransformInfo *TTI);
+#endif // SIFIVE_CUSTOMIZATION
 
   void instrumentMop(ObjectSizeOffsetVisitor &ObjSizeVis,
                      InterestingMemoryOperand &O, bool UseCalls,
@@ -711,7 +715,10 @@ struct AddressSanitizer {
   void instrumentMemIntrinsic(MemIntrinsic *MI);
   Value *memToShadow(Value *Shadow, IRBuilder<> &IRB);
   bool suppressInstrumentationSiteForDebug(int &Instrumented);
-  bool instrumentFunction(Function &F, const TargetLibraryInfo *TLI);
+#if SIFIVE_CUSTOMIZATION
+  bool instrumentFunction(Function &F, const TargetLibraryInfo *TLI,
+                          const TargetTransformInfo *TTI);
+#endif // SIFIVE_CUSTOMIZATION
   bool maybeInsertAsanInitAtFunctionEntry(Function &F);
   bool maybeInsertDynamicShadowAtFunctionEntry(Function &F);
   void markEscapedLocalAllocas(Function &F);
@@ -1165,7 +1172,10 @@ PreservedAnalyses AddressSanitizerPass::run(Module &M,
                                        Options.Recover, Options.UseAfterScope,
                                        Options.UseAfterReturn);
     const TargetLibraryInfo &TLI = FAM.getResult<TargetLibraryAnalysis>(F);
-    Modified |= FunctionSanitizer.instrumentFunction(F, &TLI);
+#if SIFIVE_CUSTOMIZATION
+    const TargetTransformInfo &TTI = FAM.getResult<TargetIRAnalysis>(F);
+    Modified |= FunctionSanitizer.instrumentFunction(F, &TLI, &TTI);
+#endif // SIFIVE_CUSTOMIZATION
   }
   Modified |= ModuleSanitizer.instrumentModule(M);
   if (!Modified)
@@ -1302,7 +1312,10 @@ bool AddressSanitizer::ignoreAccess(Instruction *Inst, Value *Ptr) {
 }
 
 void AddressSanitizer::getInterestingMemoryOperands(
-    Instruction *I, SmallVectorImpl<InterestingMemoryOperand> &Interesting) {
+#if SIFIVE_CUSTOMIZATION
+    Instruction *I, SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+    const TargetTransformInfo *TTI) {
+#endif // SIFIVE_CUSTOMIZATION
   // Do not instrument the load fetching the dynamic shadow address.
   if (LocalDynamicShadow == I)
     return;
@@ -1395,6 +1408,11 @@ void AddressSanitizer::getInterestingMemoryOperands(
       break;
     }
     default:
+#if SIFIVE_CUSTOMIZATION
+      if (auto *II = dyn_cast<IntrinsicInst>(I))
+        if (TTI->getMemoryRefInfo(Interesting, II))
+          return;
+#endif // SIFIVE_CUSTOMIZATION
       for (unsigned ArgNo = 0; ArgNo < CI->arg_size(); ArgNo++) {
         if (!ClInstrumentByval || !CI->isByValArgument(ArgNo) ||
             ignoreAccess(I, CI->getArgOperand(ArgNo)))
@@ -1601,6 +1619,15 @@ void AddressSanitizer::instrumentMop(ObjectSizeOffsetVisitor &ObjSizeVis,
 
   unsigned Granularity = 1 << Mapping.Scale;
   if (O.MaybeMask) {
+#if SIFIVE_CUSTOMIZATION
+    if (O.MaybeIndex) {
+      // The MaybeIndex of InterestingMemoryOperand means byte-offset instead of
+      // normal array index.
+      Type *Ty = Type::getInt8Ty(*C);
+      IRBuilder IB(O.getInsn());
+      Addr = IB.CreateGEP(Ty, Addr, {O.MaybeIndex});
+    }
+#endif // SIFIVE_CUSTOMIZATION
     instrumentMaskedLoadOrStore(this, DL, IntptrTy, O.MaybeMask, O.MaybeEVL,
                                 O.MaybeStride, O.getInsn(), Addr, O.Alignment,
                                 Granularity, O.OpType, O.IsWrite, nullptr,
@@ -2768,7 +2795,10 @@ bool AddressSanitizer::suppressInstrumentationSiteForDebug(int &Instrumented) {
 }
 
 bool AddressSanitizer::instrumentFunction(Function &F,
-                                          const TargetLibraryInfo *TLI) {
+#if SIFIVE_CUSTOMIZATION
+                                          const TargetLibraryInfo *TLI,
+                                          const TargetTransformInfo *TTI) {
+#endif // SIFIVE_CUSTOMIZATION
   if (F.empty())
     return false;
   if (F.getLinkage() == GlobalValue::AvailableExternallyLinkage) return false;
@@ -2821,7 +2851,9 @@ bool AddressSanitizer::instrumentFunction(Function &F,
       if (Inst.hasMetadata(LLVMContext::MD_nosanitize))
         continue;
       SmallVector<InterestingMemoryOperand, 1> InterestingOperands;
-      getInterestingMemoryOperands(&Inst, InterestingOperands);
+#if SIFIVE_CUSTOMIZATION
+      getInterestingMemoryOperands(&Inst, InterestingOperands, TTI);
+#endif // SIFIVE_CUSTOMIZATION
 
       if (!InterestingOperands.empty()) {
         for (auto &Operand : InterestingOperands) {

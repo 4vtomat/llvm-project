@@ -913,19 +913,29 @@ def : WriteRes<WriteRdVLENB, [SiFive7NPipeB]>;
 // FIXME: This could be better modeled by looking at the regclasses of the operands.
 def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 
+//===----------------------------------------------------------------------===//
 // Bypass and advance
-defm : AnyToGPRBypass<ReadJmp, 2>;
-def : ReadAdvance<ReadJalr, 0>;
+
+def SiFive7NReadMemBaseOffset0: SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
+
+// Bypass the AG stage of a dependendent memory op after a load if the offset is
+// zero.
+def SiFive7NReadMemBase : SchedReadVariant<[
+  SchedVar<MemBaseOffset0Pred, [SiFive7NReadMemBaseOffset0]>,
+  SchedVar<NoSchedPred, [NoReadAdvance]>
+]>;
+def : SchedAlias<ReadMemBase, SiFive7NReadMemBase>;
+
+def : BulletAnyToGPRBypass<ReadJmp>;
+def : BulletAnyToGPRBypass<ReadJalr>;
 def : ReadAdvance<ReadCSR, 0>;
 def : ReadAdvance<ReadStoreData, 0>;
-//Load to Load/Store address
-def : ReadAdvance<ReadMemBase, 1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
-defm : AnyToGPRBypass<ReadIALU, 2>;
-defm : AnyToGPRBypass<ReadIALU32, 2>;
-defm : AnyToGPRBypass<ReadShiftImm, 2>;
-defm : AnyToGPRBypass<ReadShiftImm32, 2>;
-defm : AnyToGPRBypass<ReadShiftReg, 2>;
-defm : AnyToGPRBypass<ReadShiftReg32, 2>;
+def : BulletAnyToGPRBypass<ReadIALU>;
+def : BulletAnyToGPRBypass<ReadIALU32>;
+def : BulletAnyToGPRBypass<ReadShiftImm>;
+def : BulletAnyToGPRBypass<ReadShiftImm32>;
+def : BulletAnyToGPRBypass<ReadShiftReg>;
+def : BulletAnyToGPRBypass<ReadShiftReg32>;
 def : ReadAdvance<ReadIDiv, 0>;
 def : ReadAdvance<ReadIDiv32, 0>;
 def : ReadAdvance<ReadIMul, 0>;
@@ -940,53 +950,53 @@ def : ReadAdvance<ReadAtomicSTW, 0>;
 def : ReadAdvance<ReadAtomicSTD, 0>;
 def : ReadAdvance<ReadFStoreData, 0>;
 def : ReadAdvance<ReadFMemBase, 0>;
-defm : AnytoFPRBypass<ReadFAdd16, 1>;
-defm : AnytoFPRBypass<ReadFAdd32, 1>;
-defm : AnytoFPRBypass<ReadFAdd64, 1>;
-defm : AnytoFPRBypass<ReadFMul16, 1>;
-defm : AnytoFPRBypass<ReadFMA16, 1>;
-defm : AnytoFPRBypass<ReadFMul32, 1>;
-defm : AnytoFPRBypass<ReadFMA32, 1>;
-defm : AnytoFPRBypass<ReadFMul64, 1>;
-defm : AnytoFPRBypass<ReadFMA64, 1>;
-defm : AnytoFPRBypass<ReadFDiv16, 1>;
-defm : AnytoFPRBypass<ReadFDiv32, 1>;
-defm : AnytoFPRBypass<ReadFDiv64, 1>;
-defm : AnytoFPRBypass<ReadFSqrt16, 1>;
-defm : AnytoFPRBypass<ReadFSqrt32, 1>;
-defm : AnytoFPRBypass<ReadFSqrt64, 1>;
-defm : AnytoFPRBypass<ReadFCmp16, 1>;
-defm : AnytoFPRBypass<ReadFCmp32, 1>;
-defm : AnytoFPRBypass<ReadFCmp64, 1>;
-defm : AnytoFPRBypass<ReadFSGNJ16, 1>;
-defm : AnytoFPRBypass<ReadFSGNJ32, 1>;
-defm : AnytoFPRBypass<ReadFSGNJ64, 1>;
-defm : AnytoFPRBypass<ReadFMinMax16, 1>;
-defm : AnytoFPRBypass<ReadFMinMax32, 1>;
-defm : AnytoFPRBypass<ReadFMinMax64, 1>;
-defm : AnytoFPRBypass<ReadFCvtF16ToI32, 1>;
-defm : AnytoFPRBypass<ReadFCvtF16ToI64, 1>;
-defm : AnytoFPRBypass<ReadFCvtF32ToI32, 1>;
-defm : AnytoFPRBypass<ReadFCvtF32ToI64, 1>;
-defm : AnytoFPRBypass<ReadFCvtF64ToI32, 1>;
-defm : AnytoFPRBypass<ReadFCvtF64ToI64, 1>;
+def : BulletAnyToFPRBypass<ReadFAdd16>;
+def : BulletAnyToFPRBypass<ReadFAdd32>;
+def : BulletAnyToFPRBypass<ReadFAdd64>;
+def : BulletAnyToFPRBypass<ReadFMul16>;
+def : BulletAnyToFPRBypass<ReadFMA16>;
+def : BulletAnyToFPRBypass<ReadFMul32>;
+def : BulletAnyToFPRBypass<ReadFMA32>;
+def : BulletAnyToFPRBypass<ReadFMul64>;
+def : BulletAnyToFPRBypass<ReadFMA64>;
+def : BulletAnyToFPRBypass<ReadFDiv16>;
+def : BulletAnyToFPRBypass<ReadFDiv32>;
+def : BulletAnyToFPRBypass<ReadFDiv64>;
+def : BulletAnyToFPRBypass<ReadFSqrt16>;
+def : BulletAnyToFPRBypass<ReadFSqrt32>;
+def : BulletAnyToFPRBypass<ReadFSqrt64>;
+def : BulletAnyToFPRBypass<ReadFCmp16>;
+def : BulletAnyToFPRBypass<ReadFCmp32>;
+def : BulletAnyToFPRBypass<ReadFCmp64>;
+def : BulletAnyToFPRBypass<ReadFSGNJ16>;
+def : BulletAnyToFPRBypass<ReadFSGNJ32>;
+def : BulletAnyToFPRBypass<ReadFSGNJ64>;
+def : BulletAnyToFPRBypass<ReadFMinMax16>;
+def : BulletAnyToFPRBypass<ReadFMinMax32>;
+def : BulletAnyToFPRBypass<ReadFMinMax64>;
+def : BulletAnyToFPRBypass<ReadFCvtF16ToI32>;
+def : BulletAnyToFPRBypass<ReadFCvtF16ToI64>;
+def : BulletAnyToFPRBypass<ReadFCvtF32ToI32>;
+def : BulletAnyToFPRBypass<ReadFCvtF32ToI64>;
+def : BulletAnyToFPRBypass<ReadFCvtF64ToI32>;
+def : BulletAnyToFPRBypass<ReadFCvtF64ToI64>;
 def : ReadAdvance<ReadFCvtI32ToF16, 0>;
 def : ReadAdvance<ReadFCvtI32ToF32, 0>;
 def : ReadAdvance<ReadFCvtI32ToF64, 0>;
 def : ReadAdvance<ReadFCvtI64ToF16, 0>;
 def : ReadAdvance<ReadFCvtI64ToF32, 0>;
 def : ReadAdvance<ReadFCvtI64ToF64, 0>;
-defm : AnytoFPRBypass<ReadFCvtF32ToF64, 1>;
-defm : AnytoFPRBypass<ReadFCvtF64ToF32, 1>;
-defm : AnytoFPRBypass<ReadFCvtF16ToF32, 1>;
-defm : AnytoFPRBypass<ReadFCvtF32ToF16, 1>;
-defm : AnytoFPRBypass<ReadFCvtF16ToF64, 1>;
-defm : AnytoFPRBypass<ReadFCvtF64ToF16, 1>;
-defm : AnytoFPRBypass<ReadFMovF16ToI16, 1>;
+def : BulletAnyToFPRBypass<ReadFCvtF32ToF64>;
+def : BulletAnyToFPRBypass<ReadFCvtF64ToF32>;
+def : BulletAnyToFPRBypass<ReadFCvtF16ToF32>;
+def : BulletAnyToFPRBypass<ReadFCvtF32ToF16>;
+def : BulletAnyToFPRBypass<ReadFCvtF16ToF64>;
+def : BulletAnyToFPRBypass<ReadFCvtF64ToF16>;
+def : BulletAnyToFPRBypass<ReadFMovF16ToI16>;
 def : ReadAdvance<ReadFMovI16ToF16, 0>;
-defm : AnytoFPRBypass<ReadFMovF32ToI32, 1>;
+def : BulletAnyToFPRBypass<ReadFMovF32ToI32>;
 def : ReadAdvance<ReadFMovI32ToF32, 0>;
-defm : AnytoFPRBypass<ReadFMovF64ToI64, 1>;
+def : BulletAnyToFPRBypass<ReadFMovF64ToI64>;
 def : ReadAdvance<ReadFMovI64ToF64, 0>;
 def : ReadAdvance<ReadFClass16, 0>;
 def : ReadAdvance<ReadFClass32, 0>;
@@ -1160,20 +1170,20 @@ def : ReadAdvance<ReadVMov8V, 0>;
 def : ReadAdvance<ReadVMask, 0>;
 
 // Bitmanip
-defm : AnyToGPRBypass<ReadRotateImm, 2>;
-defm : AnyToGPRBypass<ReadRotateImm32, 2>;
-defm : AnyToGPRBypass<ReadRotateReg, 2>;
-defm : AnyToGPRBypass<ReadRotateReg32, 2>;
-defm : AnyToGPRBypass<ReadCLZ, 2>;
-defm : AnyToGPRBypass<ReadCLZ32, 2>;
-defm : AnyToGPRBypass<ReadCTZ, 2>;
-defm : AnyToGPRBypass<ReadCTZ32, 2>;
+def : BulletAnyToGPRBypass<ReadRotateImm>;
+def : BulletAnyToGPRBypass<ReadRotateImm32>;
+def : BulletAnyToGPRBypass<ReadRotateReg>;
+def : BulletAnyToGPRBypass<ReadRotateReg32>;
+def : BulletAnyToGPRBypass<ReadCLZ>;
+def : BulletAnyToGPRBypass<ReadCLZ32>;
+def : BulletAnyToGPRBypass<ReadCTZ>;
+def : BulletAnyToGPRBypass<ReadCTZ32>;
 def : ReadAdvance<ReadCPOP, 0>;
 def : ReadAdvance<ReadCPOP32, 0>;
-defm : AnyToGPRBypass<ReadORCB, 2>;
-defm : AnyToGPRBypass<ReadREV8, 2>;
-defm : AnyToGPRBypass<ReadSHXADD, 2>;
-defm : AnyToGPRBypass<ReadSHXADD32, 2>;
+def : BulletAnyToGPRBypass<ReadORCB>;
+def : BulletAnyToGPRBypass<ReadREV8>;
+def : BulletAnyToGPRBypass<ReadSHXADD>;
+def : BulletAnyToGPRBypass<ReadSHXADD32>;
 
 // Short forward branch
 // ALU, ALU_B, SFB to SFB

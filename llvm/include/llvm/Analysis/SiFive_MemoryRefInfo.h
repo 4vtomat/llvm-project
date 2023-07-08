@@ -1,4 +1,4 @@
-//===--------- Definition of the AddressSanitizer class ---------*- C++ -*-===//
+//===--------- Definition of the InterestingMemoryOperand class -*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,30 +6,19 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file declares common infrastructure for AddressSanitizer and
-// HWAddressSanitizer.
+// This file defines InterestingMemoryOperand class that is used when getting
+// the information of a memory reference instruction.
 //
 //===----------------------------------------------------------------------===//
-#ifndef LLVM_TRANSFORMS_INSTRUMENTATION_ADDRESSSANITIZERCOMMON_H
-#define LLVM_TRANSFORMS_INSTRUMENTATION_ADDRESSSANITIZERCOMMON_H
+#ifndef LLVM_SUPPORT_MEMORYREFINFO_H
+#define LLVM_SUPPORT_MEMORYREFINFO_H
 
-#include "llvm/Analysis/CFG.h"
-#include "llvm/Analysis/PostDominators.h"
-#include "llvm/IR/Dominators.h"
 #include "llvm/IR/Instruction.h"
-#include "llvm/IR/IntrinsicInst.h"
-#include "llvm/IR/Module.h"
-#if SIFIVE_CUSTOMIZATION
-#include "llvm/Analysis/SiFive_MemoryRefInfo.h"
-#endif
 
 namespace llvm {
-
-#if SIFIVE_CUSTOMIZATION
-#else
 class InterestingMemoryOperand {
 public:
-  Use *PtrUse;
+  Use *PtrUse = nullptr;
   bool IsWrite;
   Type *OpType;
   TypeSize TypeStoreSize = TypeSize::Fixed(0);
@@ -40,30 +29,29 @@ public:
   Value *MaybeEVL;
   // The Stride Value, if we're looking at a strided load/store.
   Value *MaybeStride;
+  // The Index Value, if we're looking at a index load/store. The index
+  // actually means byte-offset instead of array index.
+  Value *MaybeIndex;
 
+  InterestingMemoryOperand() = default;
   InterestingMemoryOperand(Instruction *I, unsigned OperandNo, bool IsWrite,
                            class Type *OpType, MaybeAlign Alignment,
                            Value *MaybeMask = nullptr,
                            Value *MaybeEVL = nullptr,
-                           Value *MaybeStride = nullptr)
+                           Value *MaybeStride = nullptr,
+                           Value *MaybeIndex = nullptr)
       : IsWrite(IsWrite), OpType(OpType), Alignment(Alignment),
-        MaybeMask(MaybeMask), MaybeEVL(MaybeEVL), MaybeStride(MaybeStride) {
+        MaybeMask(MaybeMask), MaybeEVL(MaybeEVL), MaybeStride(MaybeStride),
+        MaybeIndex(MaybeIndex) {
     const DataLayout &DL = I->getModule()->getDataLayout();
     TypeStoreSize = DL.getTypeStoreSizeInBits(OpType);
     PtrUse = &I->getOperandUse(OperandNo);
   }
 
   Instruction *getInsn() { return cast<Instruction>(PtrUse->getUser()); }
-
   Value *getPtr() { return PtrUse->get(); }
+  operator bool() { return PtrUse != nullptr; }
 };
-#endif
-
-// Get AddressSanitizer parameters.
-void getAddressSanitizerParams(const Triple &TargetTriple, int LongSize,
-                               bool IsKasan, uint64_t *ShadowBase,
-                               int *MappingScale, bool *OrShadowOffset);
 
 } // namespace llvm
-
 #endif

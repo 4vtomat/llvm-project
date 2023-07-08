@@ -3,7 +3,13 @@
 
 declare <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i1>, i32)
 declare <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i1>, i32)
 declare <vscale x 2 x i32> @llvm.vp.gather.nxv2i32.nxv2p0(<vscale x 2 x ptr>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x float> @llvm.vp.fsub.nxv2f32(<vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x i1>, i32)
+declare <vscale x 2 x float> @llvm.vp.fmul.nxv2f32(<vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x i1>, i32)
 
 define <vscale x 2 x i32> @reverse_reverse(<vscale x 2 x i32> %x, <vscale x 2 x i1> %mask1, <vscale x 2 x i1> %mask2, i32 %vl) {
 ; CHECK-LABEL: @reverse_reverse(
@@ -30,8 +36,8 @@ define <vscale x 2 x i32> @reverse_vpadd(<vscale x 2 x i32> %x, <vscale x 2 x i3
 ; CHECK-LABEL: @reverse_vpadd(
 ; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
 ; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[C1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
@@ -48,8 +54,8 @@ define <vscale x 2 x i32> @reverse_vpadd_lhs_splat(i32 %x, <vscale x 2 x i32> %y
 ; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[INSX:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[X:%.*]], i64 0
 ; CHECK-NEXT:    [[SPLATX:%.*]] = shufflevector <vscale x 2 x i32> [[INSX]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[C1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[SPLATX]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[SPLATX]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
@@ -68,8 +74,8 @@ define <vscale x 2 x i32> @reverse_vpadd_rhs_splat(<vscale x 2 x i32> %x, i32 %y
 ; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[INSY:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[Y:%.*]], i64 0
 ; CHECK-NEXT:    [[SPLATY:%.*]] = shufflevector <vscale x 2 x i32> [[INSY]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[C1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[SPLATY]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[SPLATY]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
@@ -89,8 +95,8 @@ define <vscale x 2 x i32> @reverse_vpadd_lhs_splat_vpgather(ptr %x, <vscale x 2 
 ; CHECK-NEXT:    [[INSX:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[X:%.*]], i64 0
 ; CHECK-NEXT:    [[SPLATX:%.*]] = shufflevector <vscale x 2 x ptr> [[INSX]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[SPLATGATHER:%.*]] = call <vscale x 2 x i32> @llvm.vp.gather.nxv2i32.nxv2p0(<vscale x 2 x ptr> [[SPLATX]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
-; CHECK-NEXT:    [[C1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
@@ -111,8 +117,8 @@ define <vscale x 2 x i32> @reverse_vpadd_rhs_splat_vpgather(<vscale x 2 x i32> %
 ; CHECK-NEXT:    [[INSY:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[Y:%.*]], i64 0
 ; CHECK-NEXT:    [[SPLATY:%.*]] = shufflevector <vscale x 2 x ptr> [[INSY]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[SPLATGATHER:%.*]] = call <vscale x 2 x i32> @llvm.vp.gather.nxv2i32.nxv2p0(<vscale x 2 x ptr> [[SPLATY]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
-; CHECK-NEXT:    [[C1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C1]]
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
@@ -125,3 +131,103 @@ define <vscale x 2 x i32> @reverse_vpadd_rhs_splat_vpgather(<vscale x 2 x i32> %
   %d = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %c, <vscale x 2 x i1> %mask, i32 %vl)
   ret <vscale x 2 x i32> %d
 }
+
+define <vscale x 2 x i32> @reverse_vpsub(<vscale x 2 x i32> %x, <vscale x 2 x i32> %y, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpsub(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> %a, <vscale x 2 x i32> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x i32> %d
+}
+
+define <vscale x 2 x i32> @reverse_vpmul(<vscale x 2 x i32> %x, <vscale x 2 x i32> %y, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpmul(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> %a, <vscale x 2 x i32> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x i32> %d
+}
+
+define <vscale x 2 x float> @reverse_vpfadd(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpfadd(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[X:%.*]], <vscale x 2 x float> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x float> [[C]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x float> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x float> %d
+}
+
+define <vscale x 2 x float> @reverse_vpfsub(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpfsub(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x float> @llvm.vp.fsub.nxv2f32(<vscale x 2 x float> [[X:%.*]], <vscale x 2 x float> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x float> [[C]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x float> @llvm.vp.fsub.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x float> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x float> %d
+}
+
+define <vscale x 2 x float> @reverse_vpfmul(<vscale x 2 x float> %x, <vscale x 2 x float> %y, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpfmul(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x float> @llvm.vp.fmul.nxv2f32(<vscale x 2 x float> [[X:%.*]], <vscale x 2 x float> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    ret <vscale x 2 x float> [[C]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x float> @llvm.vp.fmul.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x float> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x float> %d
+}
+
+define <vscale x 2 x float> @reverse_vpfadd_vpfmul(<vscale x 2 x float> %x, <vscale x 2 x float> %y, <vscale x 2 x float> %z, i1 %m, i32 %vl) {
+; CHECK-LABEL: @reverse_vpfadd_vpfmul(
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[D:%.*]] = call <vscale x 2 x float> @llvm.vp.fmul.nxv2f32(<vscale x 2 x float> [[X:%.*]], <vscale x 2 x float> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    [[E:%.*]] = call <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[D]], <vscale x 2 x float> [[Z:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    ret <vscale x 2 x float> [[E]]
+;
+  %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
+  %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+  %a = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %x, <vscale x 2 x i1> %mask, i32 %vl)
+  %b = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %y, <vscale x 2 x i1> %mask, i32 %vl)
+  %c = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %z, <vscale x 2 x i1> %mask, i32 %vl)
+  %d = call <vscale x 2 x float> @llvm.vp.fmul.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x float> %b, <vscale x 2 x i1> %mask, i32 %vl)
+  %e = call <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> %d, <vscale x 2 x float> %c, <vscale x 2 x i1> %mask, i32 %vl)
+  %f = call <vscale x 2 x float> @llvm.experimental.vp.reverse.nxv2f32(<vscale x 2 x float> %e, <vscale x 2 x i1> %mask, i32 %vl)
+  ret <vscale x 2 x float> %f
+}
+

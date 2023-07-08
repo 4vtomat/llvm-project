@@ -29,6 +29,7 @@
 #include "llvm/Support/AtomicOrdering.h"
 #include "llvm/Support/BranchProbability.h"
 #include "llvm/Support/InstructionCost.h"
+#include "llvm/Analysis/SiFive_MemoryRefInfo.h" // SIFIVE
 #include <functional>
 #include <optional>
 #include <utility>
@@ -900,6 +901,12 @@ public:
   };
   MemCmpExpansionOptions enableMemCmpExpansion(bool OptSize,
                                                bool IsZeroCmp) const;
+
+#if SIFIVE_CUSTOMIZATION
+  // Add InterestingMemoryOperand of Intrinsic \p II into array \p Interesting.
+  bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                        IntrinsicInst *II) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Should the Select Optimization pass be enabled and ran.
   bool enableSelectOptimize() const;
@@ -1843,6 +1850,11 @@ public:
   virtual bool enableAggressiveInterleaving(bool LoopHasReductions) = 0;
   virtual MemCmpExpansionOptions
   enableMemCmpExpansion(bool OptSize, bool IsZeroCmp) const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual bool
+  getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                   IntrinsicInst *II) const = 0;
+#endif // SIFIVE_CUSTOMIZATION
   virtual bool enableSelectOptimize() = 0;
   virtual bool enableInterleavedAccessVectorization() = 0;
   virtual bool enableMaskedInterleavedAccessVectorization() = 0;
@@ -2375,6 +2387,14 @@ public:
                                                bool IsZeroCmp) const override {
     return Impl.enableMemCmpExpansion(OptSize, IsZeroCmp);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                        IntrinsicInst *II) const override {
+    return Impl.getMemoryRefInfo(Interesting, II);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   bool enableInterleavedAccessVectorization() override {
     return Impl.enableInterleavedAccessVectorization();
   }

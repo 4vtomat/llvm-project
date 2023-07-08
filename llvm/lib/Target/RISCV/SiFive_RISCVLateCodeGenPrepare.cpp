@@ -51,7 +51,7 @@ extern cl::opt<unsigned> VectorPrimaryLMULMaxExp;
 static cl::opt<bool>
     MemToRVVOpt("riscv-mem-to-rvv", cl::Hidden,
                 cl::desc("Expand mem intrinsic to vector instructions."),
-                cl::init(false));
+                cl::init(true));
 static cl::opt<bool>
     MemAlignOpt("riscv-mem-to-rvv-dlen-align", cl::Hidden,
                 cl::desc("Let expansion mem intrinsic can align on DLEN."),
@@ -580,7 +580,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
   // postloop:
   //   return
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -697,12 +697,6 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                       {NewLoopCount, Sew8, Lmul});
   while (UnrollCount--) {
-    if (IsBackward) {
-      Value *NegVL = Builder.CreateNeg(VL);
-      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, NegVL);
-      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
-    }
-
     if (KnownCurrentLen != -MaxCopySize) {
       KnownCurrentLen -= MaxCopySize;
       if (KnownCurrentLen < 0)
@@ -710,6 +704,12 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
             Intrinsic::riscv_vsetvli, {CopyLenType},
             {ConstantInt::get(CopyLenType, KnownCurrentLen + MaxCopySize), Sew8,
              Lmul});
+    }
+
+    if (IsBackward) {
+      Value *NegVL = Builder.CreateNeg(VL);
+      SrcIndexTmp = Builder.CreateGEP(Int8Type, SrcIndexTmp, NegVL);
+      DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
     }
 
     Value *SrcCast =
@@ -814,7 +814,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
   //   vle8.v vData, (Src)
   //   vse8.v vData, (Dst)
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -833,7 +833,7 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
 
-  auto *CI = dyn_cast<ConstantInt>(CopyLen);
+  auto *CI = cast<ConstantInt>(CopyLen);
   unsigned UnrollCount = divideCeil(CI->getZExtValue(),
                                     (ST->getRealMinVLen() / 8) * MemLMULLocal);
 
@@ -1041,7 +1041,7 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   Value *VL = nullptr;
   // If it already copied(broadcasted) the scalar value into a vector in
   // previous blocks, then we can use it directly, otherwise we have to do it.
-  if (!dyn_cast<ScalableVectorType>(Val->getType())) {
+  if (!isa<ScalableVectorType>(Val->getType())) {
     VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                  {LoopCount, SEW, LMUL});
     Val = Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
@@ -1190,7 +1190,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
       if (CI->getZExtValue() < MinCopySize)
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * 8 * MaxUnrollTimes)) {
+      if (CI->getZExtValue() < (MinVLenInBytes * MemLMULLocal * MaxUnrollTimes)) {
         expandMemmoveKnownSize(cast<MemMoveInst>(MI));
         return true;
       }

@@ -6,6 +6,8 @@
 %struct.su3_vector = type { [3 x %struct.complex] }
 %struct.complex = type { double, double }
 
+; profitable case on x280 and p470
+; non-profitable case on p670
 ; reduced from Spec2k6 FP 433.milc quark_stuff.c:993
 define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-LABEL: define void @eo_fermion_force

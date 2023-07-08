@@ -2502,6 +2502,8 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "typedef double float64_t;\n";
   OS << "#endif\n\n";
 
+  OS << "#pragma push_macro(\"__aarch64__\")\n";
+  OS << "#undef __aarch64__\n";
   OS << "#define __aarch64__\n\n";
 
   emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlhQhfQfdQdPcQPcPsQPsPlQPl",
@@ -2510,12 +2512,20 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
 
+  OS << "#pragma push_macro(\"__ARM_FP\")\n";
+  OS << "#pragma push_macro(\"__ARM_ARCH\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_DIRECTED_ROUNDING\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_FMA\")\n";
+  OS << "#pragma push_macro(\"__ARM_FEATURE_NUMERIC_MAXMIN\")\n";
+  OS << "#undef __ARM_FP\n";
+  OS << "#undef __ARM_ARCH\n";
+  OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
+  OS << "#undef __ARM_FEATURE_FMA\n";
+  OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
   OS << "#define __ARM_FP 2\n";
   OS << "#define __ARM_ARCH 8\n";
   OS << "#define __ARM_FEATURE_DIRECTED_ROUNDING\n";
-  OS << "#define __ARM_FEATURE_DOTPROD\n";
   OS << "#define __ARM_FEATURE_FMA\n";
-  OS << "#define __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
   OS << "#define __ARM_FEATURE_NUMERIC_MAXMIN\n\n";
 }
 
@@ -2529,15 +2539,13 @@ static void printNEONEnd(raw_ostream &OS) {
 
 static void printRecodeNEONEnd(raw_ostream &OS) {
   OS << "\n";
-  OS << "#undef __ARM_FEATURE_NUMERIC_MAXMIN\n";
-  OS << "#undef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC\n";
-  OS << "#undef __ARM_FEATURE_FMA\n";
-  OS << "#undef __ARM_FEATURE_DOTPROD\n";
-  OS << "#undef __ARM_FEATURE_DIRECTED_ROUNDING\n";
-  OS << "#undef __ARM_ARCH\n";
-  OS << "#undef __ARM_FP\n";
-  OS << "#undef __ai\n\n";
-  OS << "#undef __aarch64__\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_NUMERIC_MAXMIN\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_FMA\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FEATURE_DIRECTED_ROUNDING\")\n";
+  OS << "#pragma pop_macro(\"__ARM_ARCH\")\n";
+  OS << "#pragma pop_macro(\"__ARM_FP\")\n";
+  OS << "#undef __ai\n";
+  OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
   OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
   OS << "#endif /* __ARM_RECODE_NEON_H */\n";
 }
@@ -2676,15 +2684,20 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
   OS << "#ifndef __ARM_RECODE_FP16_H\n";
   OS << "#define __ARM_RECODE_FP16_H\n\n";
 
+  OS << "#if !defined(__sifive_recode_neon)\n";
+  OS << "#error \"Recode support not enabled\"\n";
+  OS << "#else\n\n";
+
   OS << "#include <stdint.h>\n\n";
 
-  OS << "typedef _Float16 float16_t;\n";
+  OS << "typedef _Float16 float16_t;\n\n";
+
+  OS << "#pragma push_macro(\"__aarch64__\")\n";
+  OS << "#undef __aarch64__\n";
+  OS << "#define __aarch64__\n";
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
-
-  OS << "#define __aarch64__\n";
-  OS << "#define __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n\n";
 }
 #endif
 
@@ -2751,9 +2764,9 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
   OS << "\n";
 #if SIFIVE_CUSTOMIZATION
   if (RecodeMode) {
-    OS << "#undef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC\n";
-    OS << "#undef __aarch64__\n";
-    OS << "#undef __ai\n\n";
+    OS << "#undef __ai\n";
+    OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
+    OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
     OS << "#endif /* __ARM_RECODE_FP16_H */\n";
   } else {
     OS << "#undef __ai\n\n";

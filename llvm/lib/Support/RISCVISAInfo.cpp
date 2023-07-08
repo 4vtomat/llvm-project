@@ -108,9 +108,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"za64rs", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zawrs", RISCVExtensionVersion{1, 0}},
     {"zba", RISCVExtensionVersion{1, 0}},
-    {"zba", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbb", RISCVExtensionVersion{1, 0}},
-    {"zbb", RISCVExtensionVersion{0, 93}}, // SIFIVE
     {"zbc", RISCVExtensionVersion{1, 0}},
     {"zbkb", RISCVExtensionVersion{1, 0}},
     {"zbkc", RISCVExtensionVersion{1, 0}},
@@ -152,11 +150,21 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zksh", RISCVExtensionVersion{1, 0}},
     {"zkt", RISCVExtensionVersion{1, 0}},
     {"zmmul", RISCVExtensionVersion{1, 0}},
+<<<<<<< HEAD
     {"zve32f", RISCVExtensionVersion{1, 0}},
     {"zve32x", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
     {"zve64f", RISCVExtensionVersion{1, 0}},
     {"zve64x", RISCVExtensionVersion{1, 0}},
+=======
+
+    {"v", RISCVExtensionVersion{1, 0}},
+    {"zvl32b", RISCVExtensionVersion{1, 0}},
+    {"zvl64b", RISCVExtensionVersion{1, 0}},
+    {"zvl128b", RISCVExtensionVersion{1, 0}},
+    {"zvl256b", RISCVExtensionVersion{1, 0}},
+    {"zvl512b", RISCVExtensionVersion{1, 0}},
+>>>>>>> origin/sifive-dev
     {"zvl1024b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
     {"zvl16384b", RISCVExtensionVersion{1, 0}},
@@ -187,6 +195,7 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
+<<<<<<< HEAD
     {"zvbb", RISCVExtensionVersion{0, 9}},
     {"zvbb", RISCVExtensionVersion{0, 5}},
     {"zvbc", RISCVExtensionVersion{0, 9}},
@@ -225,6 +234,35 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{0, 9}},
     {"zvkt", RISCVExtensionVersion{0, 5}},
+=======
+
+#if SIFIVE_CUSTOMIZATION
+    // vector crypto
+    {"zvbb", RISCVExtensionVersion{1, 0}},
+    {"zvbc", RISCVExtensionVersion{1, 0}},
+    {"zvkg", RISCVExtensionVersion{1, 0}},
+    {"zvkn", RISCVExtensionVersion{1, 0}},
+    {"zvknc", RISCVExtensionVersion{1, 0}},
+    {"zvkned", RISCVExtensionVersion{1, 0}},
+    {"zvkng", RISCVExtensionVersion{1, 0}},
+    {"zvknha", RISCVExtensionVersion{1, 0}},
+    {"zvknhb", RISCVExtensionVersion{1, 0}},
+    {"zvks", RISCVExtensionVersion{1, 0}},
+    {"zvksc", RISCVExtensionVersion{1, 0}},
+    {"zvksed", RISCVExtensionVersion{1, 0}},
+    {"zvksg", RISCVExtensionVersion{1, 0}},
+    {"zvksh", RISCVExtensionVersion{1, 0}},
+    {"zvkt", RISCVExtensionVersion{1, 0}},
+
+    {"zvkb", RISCVExtensionVersion{0, 1}},
+    {"zvkg", RISCVExtensionVersion{0, 1}},
+    {"zvknha", RISCVExtensionVersion{0, 1}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}},
+    {"zvkns", RISCVExtensionVersion{0, 1}},
+    {"zvksed", RISCVExtensionVersion{0, 1}},
+    {"zvksh", RISCVExtensionVersion{0, 1}},
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 };
 
 static void verifyTables() {
@@ -482,7 +520,10 @@ static unsigned getExtensionRank(const std::string &ExtName) {
   case 'x':
     return RF_X_EXTENSION;
   default:
-    assert(ExtName.size() == 1);
+#if SIFIVE_CUSTOMIZATION
+    if (tryDecodeExtWithVersion(ExtName) == std::nullopt)
+#endif // SIFIVE_CUSTOMIZATION
+      assert(ExtName.size() == 1);
     return singleLetterExtensionRank(ExtName[0]);
   }
 }
@@ -543,15 +584,30 @@ void RISCVISAInfo::toFeatures(
   }
   if (AddAllExtensions) {
     for (const RISCVSupportedExtension &Ext : SupportedExtensions) {
-      if (Exts.count(Ext.Name))
+#if SIFIVE_CUSTOMIZATION
+      std::string ExtName =
+          tryAppendVersionInfo(Ext.Name,
+                               {Ext.Version.Major, Ext.Version.Minor});
+      if (ExtName == "i")
         continue;
-      Features.push_back(StrAlloc(Twine("-") + Ext.Name));
+
+      if (llvm::is_contained(Features, "+" + ExtName))
+        continue;
+      Features.push_back(StrAlloc(Twine("-") + ExtName));
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     for (const RISCVSupportedExtension &Ext : SupportedExperimentalExtensions) {
-      if (Exts.count(Ext.Name))
+#if SIFIVE_CUSTOMIZATION
+      std::string ExtName =
+          tryAppendVersionInfo(Ext.Name,
+                               {Ext.Version.Major, Ext.Version.Minor});
+      if (std::find(Features.begin(),
+                    Features.end(), "+experimental-" + ExtName) !=
+          Features.end())
         continue;
-      Features.push_back(StrAlloc(Twine("-experimental-") + Ext.Name));
+      Features.push_back(StrAlloc(Twine("-experimental-") + ExtName));
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 }
@@ -732,8 +788,16 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
 
     if (Add)
       ISAInfo->addExtension(ExtName, Major, Minor);
-    else
-      ISAInfo->Exts.erase(ExtName.str());
+    else {
+#if SIFIVE_CUSTOMIZATION
+      auto &Exts = ISAInfo->Exts;
+      std::string ExtString = ExtName.str();
+      if (Exts.count(ExtString) &&
+          Exts[ExtString].MajorVersion == Major &&
+          Exts[ExtString].MinorVersion == Minor)
+        Exts.erase(ExtString);
+#endif // SIFIVE_CUSTOMIZATION
+    }
   }
 
   return RISCVISAInfo::postProcessAndChecking(std::move(ISAInfo));
@@ -1150,22 +1214,7 @@ static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
-// FIXME: This needs to based on which version of Zvkn is enabled.
-//static const char *ImpliedExtsZvkn[] = {"zvbb", "zvbc", "zvkned", "zvknhb",
-//                                        "zvkt"};
-static const char *ImpliedExtsZvkn[] = {"zvkned", "zvknhb",
-                                        "zvkb"};
 #endif // SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
-static const char *ImpliedExtsZvknhb[] = {"zvknha"};
-#if SIFIVE_CUSTOMIZATION
-// FIXME: This needs to based on which version of Zvks is enabled.
-//static const char *ImpliedExtsZvks[] = {"zvbb", "zvbc", "zvksed", "zvksh",
-//                                        "zvkt"};
-static const char *ImpliedExtsZvks[] = {"zvksed", "zvksh", "zvkb"};
-#endif // SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZvksg[] = {"zvks", "zvkg"};
-#ifndef SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvkn[] = {"zvbb", "zvkned", "zvknhb", "zvkt"};
 static const char *ImpliedExtsZvknc[] = {"zvbc", "zvkn"};
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
@@ -1173,7 +1222,6 @@ static const char *ImpliedExtsZvknhb[] = {"zvknha"};
 static const char *ImpliedExtsZvks[] = {"zvbb", "zvksed", "zvksh", "zvkt"};
 static const char *ImpliedExtsZvksc[] = {"zvbc", "zvks"};
 static const char *ImpliedExtsZvksg[] = {"zvkg", "zvks"};
-#endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvl1024b[] = {"zvl512b"};
 static const char *ImpliedExtsZvl128b[] = {"zvl64b"};
 static const char *ImpliedExtsZvl16384b[] = {"zvl8192b"};
@@ -1233,15 +1281,11 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zvfbfwma"}, {ImpliedExtsZvfbfwma}},
     {{"zvfh"}, {ImpliedExtsZvfh}},
     {{"zvkn"}, {ImpliedExtsZvkn}},
-#ifndef SIFIVE_CUSTOMIZATION
     {{"zvknc"}, {ImpliedExtsZvknc}},
-#endif // SIFIVE_CUSTOMIZATION
     {{"zvkng"}, {ImpliedExtsZvkng}},
     {{"zvknhb"}, {ImpliedExtsZvknhb}},
     {{"zvks"}, {ImpliedExtsZvks}},
-#ifndef SIFIVE_CUSTOMIZATION
     {{"zvksc"}, {ImpliedExtsZvksc}},
-#endif // SIFIVE_CUSTOMIZATION
     {{"zvksg"}, {ImpliedExtsZvksg}},
     {{"zvl1024b"}, {ImpliedExtsZvl1024b}},
     {{"zvl128b"}, {ImpliedExtsZvl128b}},

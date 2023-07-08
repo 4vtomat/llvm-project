@@ -22,6 +22,7 @@
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include <optional>
 
 namespace llvm {
@@ -63,6 +64,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
+  bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                        IntrinsicInst *II) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Return the cost of materializing an immediate for a value operand of

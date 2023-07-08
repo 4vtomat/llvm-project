@@ -2803,6 +2803,11 @@ std::optional<unsigned> getMaxVScale(const Function &F,
 static bool isIndvarOverflowCheckKnownFalse(
     const LoopVectorizationCostModel *Cost,
     ElementCount VF, std::optional<unsigned> UF = std::nullopt) {
+#if SIFIVE_CUSTOMIZATION
+  /// With RVV VLA vectorization IV can never overflow
+  if (Cost->Legal->useVLAVectorizer())
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   // Always be conservative if we don't know the exact unroll factor.
   unsigned MaxUF = UF ? *UF : Cost->TTI.getMaxInterleaveFactor(VF);
 
@@ -6772,9 +6777,6 @@ static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
 }
 
 VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
-#if SIFIVE_CUSTOMIZATION
-    const VPlanPtr &Plan,
-#endif // SIFIVE_CUSTOMIZATION
     const ElementCountSet &VFCandidates) {
 #if SIFIVE_CUSTOMIZATION
   // Within SiFive, we have AOS to SOA transformation that is only effective
@@ -6848,7 +6850,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     // scalar loop.
     LoopVectorizationCostModel::VectorizationCostTy C;
     if (UseVPlanCostModel) {
-      VPlanCostModel VPCM(*Plan, *Legal, TTI, *TLI);
+      VPlanCostModel VPCM(getBestPlanFor(i), *Legal, TTI, *TLI);
       InstructionCost Cost = VPCM.getCost(
           RVVPair::get(CM.WidestType, i, PSE.getSE()->getDataLayout()));
       C = {Cost, true};
@@ -6864,7 +6866,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     InstructionCost Overhead = 0;
     if (Legal->useVLAVectorizer() &&
         !VectorizerDisableReduceOverheadEstimation && i.isVector())
-      Overhead = Plan->overhead(i, Ctx);
+      Overhead = getBestPlanFor(i).overhead(i, Ctx);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
 #else
     LoopVectorizationCostModel::VectorizationCostTy C =
@@ -9280,18 +9282,20 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
   buildVPlansWithVPRecipes(ElementCount::getFixed(1), MaxFactors.FixedVF);
   buildVPlansWithVPRecipes(ElementCount::getScalable(1), MaxFactors.ScalableVF);
 
+#if SIFIVE_CUSTOMIZATION
+  if (VPlans.empty()) {
+    LLVM_DEBUG(dbgs() << "LV: No VPlan was built for the loop: " << *OrigLoop
+                      << '\n';);
+    return VectorizationFactor::Disabled();
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   LLVM_DEBUG(printPlans(dbgs()));
   if (!MaxFactors.hasVector())
     return VectorizationFactor::Disabled();
 
   // Select the optimal vectorization factor.
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Traverse each plan and select the best plan
-  assert(VPlans.size() > 0 && "Must have at leat one plan");
-  VectorizationFactor VF = selectVectorizationFactor(VPlans[0], VFCandidates);
-#else
   VectorizationFactor VF = selectVectorizationFactor(VFCandidates);
-#endif // SIFIVE_CUSTOMIZATION
   assert((VF.Width.isScalar() || VF.ScalarCost > 0) && "when vectorizing, the scalar cost must be non-zero.");
   if (!hasPlanWithVF(VF.Width)) {
     LLVM_DEBUG(dbgs() << "LV: No VPlan could be built for " << VF.Width
@@ -11216,7 +11220,15 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.
   if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
+#if SIFIVE_CUSTOMIZATION
+  {
+    LLVM_DEBUG(dbgs() << "LV: Cannot adjust ordered recurrences. Constructed "
+                         "VPlan is rejected\n");
+#endif // SIFIVE_CUSTOMIZATION
     return std::nullopt;
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Interleave memory: for each Interleave Group we marked earlier as relevant
   // for this VPlan, replace the Recipes widening its memory instructions with a
