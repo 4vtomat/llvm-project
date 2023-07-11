@@ -3695,7 +3695,6 @@ static bool isInterleaveShuffle(ArrayRef<int> Mask, MVT VT, int &EvenSrc,
   if (EvenSrc != 0 && OddSrc != 0)
     return false;
 
-  // SIFIVE this fix will be copied to upstream.
   // Subvectors will be subtracted from either at the start of the two input
   // vectors, or at the start and middle of the first vector if it's an unary
   // interleave.
