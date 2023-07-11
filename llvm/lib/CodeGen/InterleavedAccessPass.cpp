@@ -663,25 +663,20 @@ bool InterleavedAccess::runOnFunction(Function &F) {
     if (auto *SI = dyn_cast<StoreInst>(&I))
       Changed |= lowerInterleavedStore(SI, DeadInsts);
 
+    if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
 #if SIFIVE_CUSTOMIZATION
-    if (auto *Intrin = dyn_cast<IntrinsicInst>(&I))
-      switch (Intrin->getIntrinsicID()) {
-        case Intrinsic::vp_load:
-          Changed |= lowerInterleavedLoad(Intrin, DeadInsts);
-          break;
-        case Intrinsic::vp_store:
-          Changed |= lowerInterleavedStore(Intrin, DeadInsts);
-          break;
-        case Intrinsic::experimental_vector_deinterleave2:
-          Changed |= lowerDeinterleaveIntrinsic(Intrin, DeadInsts);
-          break;
-        case Intrinsic::experimental_vector_interleave2:
-          Changed |= lowerInterleaveIntrinsic(Intrin, DeadInsts);
-          break;
-        default:
-          break;
-      }
+      if (II->getIntrinsicID() == Intrinsic::vp_load)
+        Changed |= lowerInterleavedLoad(II, DeadInsts);
+      if (II->getIntrinsicID() == Intrinsic::vp_store)
+          Changed |= lowerInterleavedStore(II, DeadInsts);
 #endif // SIFIVE_CUSTOMIZATION
+      // At present, we only have intrinsics to represent (de)interleaving
+      // with a factor of 2.
+      if (II->getIntrinsicID() == Intrinsic::experimental_vector_deinterleave2)
+        Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
+      if (II->getIntrinsicID() == Intrinsic::experimental_vector_interleave2)
+        Changed |= lowerInterleaveIntrinsic(II, DeadInsts);
+    }
   }
 
   for (auto *I : DeadInsts)
