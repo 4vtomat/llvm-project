@@ -1110,7 +1110,7 @@ uptr GetMaxVirtualAddress() {
   return 0x7f7ffffff000ULL;  // (0x00007f8000000000 - PAGE_SIZE)
 #elif SANITIZER_WORDSIZE == 64
 # if defined(__powerpc64__) || defined(__aarch64__) \
-     || defined(__loongarch__) || SANITIZER_RISCV64
+     || defined(__loongarch__) || (SIFIVE_CUSTOMIZATION && SANITIZER_RISCV64)
   // On PowerPC64 we have two different address space layouts: 44- and 46-bit.
   // We somehow need to figure out which one we are using now and choose
   // one of 0x00000fffffffffffUL and 0x00003fffffffffffUL.
@@ -1122,6 +1122,8 @@ uptr GetMaxVirtualAddress() {
   // RISC-V also has multiple address space layouts: 32, 39, 48 and 57,
   // default is 47-bit for RISCV64.
   return (1ULL << (MostSignificantSetBitIndex(GET_CURRENT_FRAME()) + 1)) - 1;
+#elif SANITIZER_RISCV64
+  return (1ULL << 38) - 1;
 # elif SANITIZER_MIPS64
   return (1ULL << 40) - 1;  // 0x000000ffffffffffUL;
 # elif defined(__s390x__)
