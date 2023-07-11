@@ -3149,11 +3149,7 @@ static SDValue lowerBUILD_VECTOR(SDValue Op, SelectionDAG &DAG,
 
       uint64_t Bits = 0;
       unsigned BitPos = 0, IntegerEltIdx = 0;
-#if SIFIVE_CUSTOMIZATION
-      SmallVector<SDValue, 8> Elts(IntegerViaVecElts, DAG.getUNDEF(XLenVT));
-#else
       SmallVector<SDValue, 8> Elts(IntegerViaVecElts);
-#endif // SIFIVE_CUSTOMIZATION
 
       for (unsigned I = 0; I < NumElts;) {
         SDValue V = Op.getOperand(I);
