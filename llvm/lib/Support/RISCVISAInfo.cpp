@@ -185,58 +185,30 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
     {"zvbb", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvbb", RISCVExtensionVersion{0, 9}},
-    {"zvbb", RISCVExtensionVersion{0, 5}},
     {"zvbc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvbc", RISCVExtensionVersion{0, 9}},
-    {"zvbc", RISCVExtensionVersion{0, 5}},
     {"zvfbfmin", RISCVExtensionVersion{0, 6}},
     {"zvfbfwma", RISCVExtensionVersion{0, 6}},
     {"zvfh", RISCVExtensionVersion{0, 1}},
     {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkg", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkg", RISCVExtensionVersion{0, 9}},
-    {"zvkg", RISCVExtensionVersion{0, 5}},
     {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkn", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkn", RISCVExtensionVersion{0, 9}},
-    {"zvkn", RISCVExtensionVersion{0, 5}},
     {"zvknc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknc", RISCVExtensionVersion{0, 9}},
     {"zvkned", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkned", RISCVExtensionVersion{0, 9}},
-    {"zvkned", RISCVExtensionVersion{0, 5}},
     {"zvkng", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkng", RISCVExtensionVersion{0, 9}},
-    {"zvkng", RISCVExtensionVersion{0, 5}},
     {"zvknha", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknha", RISCVExtensionVersion{0, 9}},
-    {"zvknha", RISCVExtensionVersion{0, 5}},
     {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvknhb", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknhb", RISCVExtensionVersion{0, 9}},
-    {"zvknhb", RISCVExtensionVersion{0, 5}},
     {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvks", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvks", RISCVExtensionVersion{0, 9}},
-    {"zvks", RISCVExtensionVersion{0, 5}},
     {"zvksc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksc", RISCVExtensionVersion{0, 9}},
     {"zvksed", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksed", RISCVExtensionVersion{0, 9}},
-    {"zvksed", RISCVExtensionVersion{0, 5}},
     {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvksg", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksg", RISCVExtensionVersion{0, 9}},
-    {"zvksg", RISCVExtensionVersion{0, 5}},
     {"zvksh", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksh", RISCVExtensionVersion{0, 9}},
-    {"zvksh", RISCVExtensionVersion{0, 5}},
     {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkt", RISCVExtensionVersion{0, 9}},
-    {"zvkt", RISCVExtensionVersion{0, 5}},
 };
 
 static void verifyTables() {
