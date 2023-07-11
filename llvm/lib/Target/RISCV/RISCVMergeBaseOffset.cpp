@@ -158,6 +158,10 @@ void RISCVMergeBaseOffsetOpt::foldOffset(MachineInstr &Hi, MachineInstr &Lo,
   if (Hi.getOpcode() != RISCV::AUIPC)
     Lo.getOperand(2).setOffset(Offset);
   // Delete the tail instruction.
+#if SIFIVE_CUSTOMIZATION
+  MRI->constrainRegClass(Lo.getOperand(0).getReg(),
+                         MRI->getRegClass(Tail.getOperand(0).getReg()));
+#endif
   MRI->replaceRegWith(Tail.getOperand(0).getReg(), Lo.getOperand(0).getReg());
   Tail.eraseFromParent();
   LLVM_DEBUG(dbgs() << "  Merged offset " << Offset << " into base.\n"
