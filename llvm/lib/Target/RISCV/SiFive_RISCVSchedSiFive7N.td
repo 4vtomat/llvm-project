@@ -41,17 +41,6 @@ class SiFive7NGetCyclesDefault<string mx> {
   );
 }
 
-class SiFive7NGetCyclesWidening<string mx> {
-  int c = !cond(
-    !eq(mx, "M1") : 2,
-    !eq(mx, "M2") : 4,
-    !eq(mx, "M4") : 8,
-    !eq(mx, "MF2") : 1,
-    !eq(mx, "MF4") : 1,
-    !eq(mx, "MF8") : 1
-  );
-}
-
 class SiFive7NGetCyclesNarrowing<string mx> {
   int c = !cond(
     !eq(mx, "M1") : 4,
@@ -648,7 +637,7 @@ foreach mx = SchedMxList in {
 
 // Widening
 foreach mx = SchedMxListW in {
-  defvar Cycles = SiFive7NGetCyclesWidening<mx>.c;
+  defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
   defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxListW>.c;
   let Latency = 8, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVIWALUV",    [SiFive7NVA], mx, IsWorstCase>;
@@ -745,14 +734,14 @@ foreach mx = SchedMxListF in {
 
 // Widening
 foreach mx = SchedMxListW in {
-  defvar Cycles = SiFive7NGetCyclesWidening<mx>.c;
+  defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
   defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxListW>.c;
   let Latency = 8, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [SiFive7NVA], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxListFW in {
-  defvar Cycles = SiFive7NGetCyclesWidening<mx>.c;
+  defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
   defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxListFW>.c;
   let Latency = 8, ResourceCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVFWALUV",     [SiFive7NVA], mx, IsWorstCase>;
