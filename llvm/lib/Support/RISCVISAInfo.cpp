@@ -317,9 +317,8 @@ static StringRef getExtensionType(StringRef Ext) {
 
 #if SIFIVE_CUSTOMIZATION
 // FIXME: SIFIVE: Binary search like upstream?
-static bool isExperimentalExtension(StringRef Ext) {
-  auto ExtIterator =
-      llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
+static std::optional<RISCVExtensionVersion>
+isExperimentalExtension(StringRef Ext) {
   if (auto ExtInfo = tryDecodeExtWithVersion(Ext)) {
     Ext = ExtInfo->first;
     auto MajorVersion = ExtInfo->second.MajorVersion;
@@ -329,12 +328,22 @@ static bool isExperimentalExtension(StringRef Ext) {
              (MinorVersion == ExtInfo.Version.Minor);
     };
 
-    return llvm::any_of(SupportedExperimentalExtensions, FindByNameAndVersion);
+    auto ExtIterator =
+        llvm::find_if(SupportedExperimentalExtensions, FindByNameAndVersion);
+    if (ExtIterator == std::end(SupportedExperimentalExtensions))
+      return std::nullopt;
+
+    return ExtIterator->Version;
   }
 
-  return ExtIterator != std::end(SupportedExperimentalExtensions);
-#endif // SIFIVE_CUSTOMIZATION
+  auto ExtIterator =
+      llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
+  if (ExtIterator == std::end(SupportedExperimentalExtensions))
+    return std::nullopt;
+
+  return ExtIterator->Version;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 static SmallVector<RISCVExtensionVersion, 4>
@@ -356,9 +365,9 @@ getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
 bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
   bool IsExperimental = stripExperimentalPrefix(Ext);
 
-  if (IsExperimental)
 #if SIFIVE_CUSTOMIZATION
-    return isExperimentalExtension(Ext);
+  if (IsExperimental)
+    return !!isExperimentalExtension(Ext);
   else
     return isSupportedExtension(Ext);
 #else
@@ -629,7 +638,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   };
 
   // If experimental extension, require use of current version number number
-  if (isExperimentalExtension(Ext)) {
+  if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
     if (!EnableExperimentalExtension) {
       std::string Error = "requires '-menable-experimental-extensions' for "
                           "experimental extension '" +
