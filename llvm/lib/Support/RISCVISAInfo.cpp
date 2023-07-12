@@ -315,10 +315,9 @@ static StringRef getExtensionType(StringRef Ext) {
   return StringRef();
 }
 
-#if SIFIVE_CUSTOMIZATION
-// FIXME: SIFIVE: Binary search like upstream?
 static std::optional<RISCVExtensionVersion>
 isExperimentalExtension(StringRef Ext) {
+#if SIFIVE_CUSTOMIZATION
   if (auto ExtInfo = tryDecodeExtWithVersion(Ext)) {
     Ext = ExtInfo->first;
     auto MajorVersion = ExtInfo->second.MajorVersion;
@@ -328,6 +327,7 @@ isExperimentalExtension(StringRef Ext) {
              (MinorVersion == ExtInfo.Version.Minor);
     };
 
+    // FIXME: SIFIVE: Binary search like upstream?
     auto ExtIterator =
         llvm::find_if(SupportedExperimentalExtensions, FindByNameAndVersion);
     if (ExtIterator == std::end(SupportedExperimentalExtensions))
@@ -335,15 +335,15 @@ isExperimentalExtension(StringRef Ext) {
 
     return ExtIterator->Version;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
-  auto ExtIterator =
-      llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
-  if (ExtIterator == std::end(SupportedExperimentalExtensions))
+  auto I =
+      llvm::lower_bound(SupportedExperimentalExtensions, Ext, LessExtName());
+  if (I == std::end(SupportedExperimentalExtensions) || I->Name != Ext)
     return std::nullopt;
 
-  return ExtIterator->Version;
+  return I->Version;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 static SmallVector<RISCVExtensionVersion, 4>
