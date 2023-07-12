@@ -59,7 +59,6 @@ def : WriteRes<WriteShiftReg32, [SiFiveP500IntArith]>;
 def : WriteRes<WriteJmp, [SiFiveP500Branch]>;
 def : WriteRes<WriteJal, [SiFiveP500Branch]>;
 def : WriteRes<WriteJalr, [SiFiveP500Branch]>;
-def : WriteRes<WriteJmpReg, [SiFiveP500Branch]>;
 }
 
 // CMOV

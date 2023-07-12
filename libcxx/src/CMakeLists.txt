@@ -12,6 +12,10 @@ set(LIBCXX_SOURCES
   condition_variable.cpp
   condition_variable_destructor.cpp
   exception.cpp
+  filesystem/filesystem_clock.cpp
+  filesystem/filesystem_error.cpp
+  filesystem/path_parser.h
+  filesystem/path.cpp
   functional.cpp
   future.cpp
   hash.cpp
@@ -34,8 +38,8 @@ set(LIBCXX_SOURCES
   memory_resource.cpp
   mutex.cpp
   mutex_destructor.cpp
-  new.cpp
   new_handler.cpp
+  new_helpers.cpp
   optional.cpp
   random_shuffle.cpp
   ryu/d2fixed.cpp
@@ -110,10 +114,12 @@ endif()
 
 if (LIBCXX_ENABLE_FILESYSTEM)
   list(APPEND LIBCXX_SOURCES
-    filesystem/filesystem_common.h
-    filesystem/operations.cpp
+    filesystem/directory_entry.cpp
     filesystem/directory_iterator.cpp
+    filesystem/file_descriptor.h
+    filesystem/operations.cpp
     filesystem/posix_compat.h
+    filesystem/time_utils.h
     )
   # Filesystem uses __int128_t, which requires a definition of __muloi4 when
   # compiled with UBSAN. This definition is not provided by libgcc_s, but is
@@ -124,6 +130,12 @@ if (LIBCXX_ENABLE_FILESYSTEM)
       filesystem/int128_builtins.cpp
       )
   endif()
+endif()
+
+if (LIBCXX_ENABLE_NEW_DELETE_DEFINITIONS)
+  list(APPEND LIBCXX_SOURCES
+    new.cpp
+    )
 endif()
 
 # Add all the headers to the project for IDEs.

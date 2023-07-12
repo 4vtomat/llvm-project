@@ -26,7 +26,6 @@ def WriteIMul32     : SchedWrite;    // 32-bit multiply on RV64I
 def WriteJmp        : SchedWrite;    // Jump
 def WriteJal        : SchedWrite;    // Jump and link
 def WriteJalr       : SchedWrite;    // Jump and link register
-def WriteJmpReg     : SchedWrite;    // Jump register
 def WriteNop        : SchedWrite;
 def WriteLDB        : SchedWrite;    // Load byte
 def WriteLDH        : SchedWrite;    // Load half-word
@@ -126,7 +125,8 @@ def ReadCMOV        : SchedRead;
 #endif // SIFIVE_CUSTOMIZATION
 // short forward branch for Bullet
 def WriteSFB        : SchedWrite;
-def ReadSFB         : SchedRead;
+def ReadSFBJmp      : SchedRead;
+def ReadSFBALU      : SchedRead;
 
 /// Define scheduler resources associated with use operands.
 def ReadJmp         : SchedRead;
@@ -259,7 +259,8 @@ multiclass UnsupportedSchedSFB {
 let Unsupported = true in {
 def : WriteRes<WriteSFB, []>;
 
-def : ReadAdvance<ReadSFB, 0>;
+def : ReadAdvance<ReadSFBJmp, 0>;
+def : ReadAdvance<ReadSFBALU, 0>;
 } // Unsupported = true
 }
 

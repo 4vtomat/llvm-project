@@ -118,7 +118,6 @@ def : WriteRes<WriteShiftReg32, [SiFiveP400IntArith]>;
 def : WriteRes<WriteJmp, [SiFiveP400Branch]>;
 def : WriteRes<WriteJal, [SiFiveP400Branch]>;
 def : WriteRes<WriteJalr, [SiFiveP400Branch]>;
-def : WriteRes<WriteJmpReg, [SiFiveP400Branch]>;
 }
 
 // CMOV
@@ -597,6 +596,8 @@ foreach mx = SchedMxListF in {
     let Latency = !add(6, !mul(6, LMulLat)), ResourceCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFiveP400VEXQ0],
                                      mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From",
+                                     [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFiveP400VEXQ0],
                                       mx, sew, IsWorstCase>;
     }

@@ -567,6 +567,9 @@ public:
   /// expression.
   const SCEV *getSCEV(Value *V);
 
+  /// Return an existing SCEV for V if there is one, otherwise return nullptr.
+  const SCEV *getExistingSCEV(Value *V);
+
   const SCEV *getConstant(ConstantInt *V);
   const SCEV *getConstant(const APInt &Val);
   const SCEV *getConstant(Type *Ty, uint64_t V, bool isSigned = false);
@@ -2073,9 +2076,6 @@ private:
   void visitAndClearUsers(SmallVectorImpl<Instruction *> &Worklist,
                           SmallPtrSetImpl<Instruction *> &Visited,
                           SmallVectorImpl<const SCEV *> &ToForget);
-
-  /// Return an existing SCEV for V if there is one, otherwise return nullptr.
-  const SCEV *getExistingSCEV(Value *V);
 
   /// Erase Value from ValueExprMap and ExprValueMap.
   void eraseValueFromMap(Value *V);

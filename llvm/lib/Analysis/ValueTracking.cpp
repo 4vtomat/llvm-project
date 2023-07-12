@@ -2588,7 +2588,7 @@ bool isKnownNonZero(const Value *V, const APInt &DemandedElts, unsigned Depth,
 
   if (PointerType *PtrTy = dyn_cast<PointerType>(V->getType())) {
     // Alloca never returns null, malloc might.
-    if (isa<AllocaInst>(V) && Q.DL.getAllocaAddrSpace() == 0)
+    if (isa<AllocaInst>(V) && PtrTy->getAddressSpace() == 0)
       return true;
 
     // A byval, inalloca may not be null in a non-default addres space. A
@@ -2777,7 +2777,7 @@ bool isKnownNonZero(const Value *V, const APInt &DemandedElts, unsigned Depth,
 
     // If there exists any subset of X (sX) and subset of Y (sY) s.t sX * sY is
     // non-zero, then X * Y is non-zero. We can find sX and sY by just taking
-    // the the lowest known One of X and Y. If they are non-zero, the result
+    // the lowest known One of X and Y. If they are non-zero, the result
     // must be non-zero. We can check if LSB(X) * LSB(Y) != 0 by doing
     // X.CountLeadingZeros + Y.CountLeadingZeros < BitWidth.
     return (XKnown.countMaxTrailingZeros() + YKnown.countMaxTrailingZeros()) <
@@ -4018,6 +4018,14 @@ std::pair<Value *, FPClassTest> llvm::fcmpToClassTest(FCmpInst::Predicate Pred,
   if (!match(RHS, m_APFloat(ConstRHS)))
     return {nullptr, fcNone};
 
+  // fcmp ord x, zero|normal|subnormal|inf -> ~fcNan
+  if (Pred == FCmpInst::FCMP_ORD && !ConstRHS->isNaN())
+    return {LHS, ~fcNan};
+
+  // fcmp uno x, zero|normal|subnormal|inf -> fcNan
+  if (Pred == FCmpInst::FCMP_UNO && !ConstRHS->isNaN())
+    return {LHS, fcNan};
+
   if (ConstRHS->isZero()) {
     // Compares with fcNone are only exactly equal to fcZero if input denormals
     // are not flushed.
@@ -4124,8 +4132,14 @@ std::pair<Value *, FPClassTest> llvm::fcmpToClassTest(FCmpInst::Predicate Pred,
     }
     case FCmpInst::FCMP_OLT:
     case FCmpInst::FCMP_UGE: {
-      if (ConstRHS->isNegative()) // TODO
-        return {nullptr, fcNone};
+      if (ConstRHS->isNegative()) {
+        // No value is ordered and less than negative infinity.
+        // All values are unordered with or at least negative infinity.
+        // fcmp olt x, -inf -> false
+        // fcmp uge x, -inf -> true
+        Mask = fcNone;
+        break;
+      }
 
       // fcmp olt fabs(x), +inf -> fcFinite
       // fcmp uge fabs(x), +inf -> ~fcFinite
@@ -4148,6 +4162,15 @@ std::pair<Value *, FPClassTest> llvm::fcmpToClassTest(FCmpInst::Predicate Pred,
       Mask = fcPosInf;
       if (IsFabs)
         Mask |= fcNegInf;
+      break;
+    }
+    case FCmpInst::FCMP_OGT:
+    case FCmpInst::FCMP_ULE: {
+      if (ConstRHS->isNegative())
+        return {nullptr, fcNone};
+
+      // No value is ordered and greater than infinity.
+      Mask = fcNone;
       break;
     }
     default:
@@ -4182,6 +4205,10 @@ std::pair<Value *, FPClassTest> llvm::fcmpToClassTest(FCmpInst::Predicate Pred,
     default:
       return {nullptr, fcNone};
     }
+  } else if (ConstRHS->isNaN()) {
+    // fcmp o__ x, nan -> false
+    // fcmp u__ x, nan -> true
+    Mask = fcNone;
   } else
     return {nullptr, fcNone};
 
@@ -4448,7 +4475,8 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
         // If the input denormal mode could be PreserveSign, a negative
         // subnormal input could produce a negative zero output.
         const Function *F = II->getFunction();
-        if (F && KnownSrc.isKnownNeverLogicalNegZero(*F, II->getType())) {
+        if (Q.IIQ.hasNoSignedZeros(II) ||
+            (F && KnownSrc.isKnownNeverLogicalNegZero(*F, II->getType()))) {
           Known.knownNot(fcNegZero);
           if (KnownSrc.isKnownNeverNaN())
             Known.SignBit = false;
@@ -4719,14 +4747,30 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
   case Instruction::FAdd:
   case Instruction::FSub: {
     KnownFPClass KnownLHS, KnownRHS;
-    computeKnownFPClass(Op->getOperand(1), DemandedElts, fcNan | fcInf,
+    bool WantNegative =
+        Op->getOpcode() == Instruction::FAdd &&
+        (InterestedClasses & KnownFPClass::OrderedLessThanZeroMask) != fcNone;
+    bool WantNaN = (InterestedClasses & fcNan) != fcNone;
+    bool WantNegZero = (InterestedClasses & fcNegZero) != fcNone;
+
+    if (!WantNaN && !WantNegative && !WantNegZero)
+      break;
+
+    FPClassTest InterestedSrcs = InterestedClasses;
+    if (WantNegative)
+      InterestedSrcs |= KnownFPClass::OrderedLessThanZeroMask;
+    if (InterestedClasses & fcNan)
+      InterestedSrcs |= fcInf;
+    computeKnownFPClass(Op->getOperand(1), DemandedElts, InterestedSrcs,
                         KnownRHS, Depth + 1, Q);
 
-    if (KnownRHS.isKnownNeverNaN() || KnownRHS.isKnownNeverNegZero() ||
-        (Opc == Instruction::FSub && KnownRHS.isKnownNeverPosZero())) {
+    if ((WantNaN && KnownRHS.isKnownNeverNaN()) ||
+        (WantNegative && KnownRHS.cannotBeOrderedLessThanZero()) ||
+        WantNegZero || Opc == Instruction::FSub) {
+
       // RHS is canonically cheaper to compute. Skip inspecting the LHS if
       // there's no point.
-      computeKnownFPClass(Op->getOperand(0), DemandedElts, fcNan | fcInf,
+      computeKnownFPClass(Op->getOperand(0), DemandedElts, InterestedSrcs,
                           KnownLHS, Depth + 1, Q);
       // Adding positive and negative infinity produces NaN.
       // TODO: Check sign of infinities.
@@ -4736,10 +4780,14 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
 
       // FIXME: Context function should always be passed in separately
       const Function *F = cast<Instruction>(Op)->getFunction();
-      if (!F)
-        break;
 
       if (Op->getOpcode() == Instruction::FAdd) {
+        if (KnownLHS.cannotBeOrderedLessThanZero() &&
+            KnownRHS.cannotBeOrderedLessThanZero())
+          Known.knownNot(KnownFPClass::OrderedLessThanZeroMask);
+        if (!F)
+          break;
+
         // (fadd x, 0.0) is guaranteed to return +0.0, not -0.0.
         if ((KnownLHS.isKnownNeverLogicalNegZero(*F, Op->getType()) ||
              KnownRHS.isKnownNeverLogicalNegZero(*F, Op->getType())) &&
@@ -4747,6 +4795,9 @@ void computeKnownFPClass(const Value *V, const APInt &DemandedElts,
             outputDenormalIsIEEEOrPosZero(*F, Op->getType()))
           Known.knownNot(fcNegZero);
       } else {
+        if (!F)
+          break;
+
         // Only fsub -0, +0 can return -0
         if ((KnownLHS.isKnownNeverLogicalNegZero(*F, Op->getType()) ||
              KnownRHS.isKnownNeverLogicalPosZero(*F, Op->getType())) &&

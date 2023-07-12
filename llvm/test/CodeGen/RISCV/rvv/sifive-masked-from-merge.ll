@@ -7,8 +7,11 @@ define <vscale x 1 x i64> @add_test(ptr %X, i32 signext %value, i64 %N, <vscale 
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vadd.vi v8, v8, 1, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmerge.vim v9, v9, 1, v0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, ma
+; CHECK-NEXT:    vadd.vv v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
   %broadcast.splatinsert = insertelement <vscale x 1 x i32> poison, i32 %value, i64 0
@@ -30,8 +33,11 @@ define <vscale x 1 x i64> @sub_test(ptr %X, i32 signext %value, i64 %N, <vscale 
 ; CHECK-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vmseq.vx v0, v9, a1
-; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, mu
-; CHECK-NEXT:    vadd.vi v8, v8, -1, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmerge.vim v9, v9, -1, v0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, ma
+; CHECK-NEXT:    vadd.vv v8, v8, v9
 ; CHECK-NEXT:    ret
 entry:
   %broadcast.splatinsert = insertelement <vscale x 1 x i32> poison, i32 %value, i64 0

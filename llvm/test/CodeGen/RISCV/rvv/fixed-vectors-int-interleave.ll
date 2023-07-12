@@ -423,9 +423,9 @@ define <64 x i32> @interleave_v32i32(<32 x i32> %x, <32 x i32> %y) {
 ; RV32-V128-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; RV32-V128-NEXT:    vle32.v v0, (a0)
 ; RV32-V128-NEXT:    vmv8r.v v24, v8
-; RV32-V128-NEXT:    vrgather.vv v8, v24, v0
 ; RV32-V128-NEXT:    addi a0, sp, 16
-; RV32-V128-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-V128-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+; RV32-V128-NEXT:    vrgather.vv v8, v24, v0
 ; RV32-V128-NEXT:    lui a0, %hi(.LCPI17_1)
 ; RV32-V128-NEXT:    addi a0, a0, %lo(.LCPI17_1)
 ; RV32-V128-NEXT:    vle32.v v24, (a0)
@@ -474,9 +474,9 @@ define <64 x i32> @interleave_v32i32(<32 x i32> %x, <32 x i32> %y) {
 ; RV64-V128-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; RV64-V128-NEXT:    vle32.v v0, (a1)
 ; RV64-V128-NEXT:    vmv8r.v v24, v8
-; RV64-V128-NEXT:    vrgather.vv v8, v24, v0
 ; RV64-V128-NEXT:    addi a1, sp, 16
-; RV64-V128-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
+; RV64-V128-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+; RV64-V128-NEXT:    vrgather.vv v8, v24, v0
 ; RV64-V128-NEXT:    lui a1, %hi(.LCPI17_1)
 ; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI17_1)
 ; RV64-V128-NEXT:    vle32.v v24, (a1)

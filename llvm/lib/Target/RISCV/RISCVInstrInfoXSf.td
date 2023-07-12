@@ -672,9 +672,9 @@ foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
 }
 }
 
-def : Pat<(int_riscv_vgetvxrm), (ReadVXRM)>;
+def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
 
-def : Pat<(int_riscv_vsetvxrm GPR:$rm),
+def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
           (WriteVXRM $rm)>;
 
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
@@ -772,3 +772,26 @@ def CFLUSH_I_L1
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
+let Predicates = [HasVendorXSfcie] in {
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0, DecoderNamespace = "XSfcie" in {
+def SF_CFLUSH_D_L1 : RVInstI<0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1), "cflush.d.l1","$rs1">,
+                             Sched<[]> {
+  let rd = 0;
+  let imm12 = {0b1111,0b1100,0b0000};
+}
+
+def SF_CDISCARD_D_L1 : RVInstI<0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1), "cdiscard.d.l1","$rs1">,
+                               Sched<[]> {
+  let rd = 0;
+  let imm12 = {0b1111,0b1100,0b0010};
+}
+
+def SF_CEASE : RVInstI<0b000, OPC_SYSTEM, (outs), (ins), "cease","">,  Sched<[]> {
+  let rs1 = 0;
+  let rd = 0;
+  let imm12 = {0b0011,0b0000,0b0101};
+}
+}
+def : InstAlias<"cflush.d.l1", (SF_CFLUSH_D_L1 X0)>;
+def : InstAlias<"cdiscard.d.l1", (SF_CDISCARD_D_L1 X0)>;
+} // Predicates = [HasVendorXScie]

@@ -13,7 +13,6 @@
 #include "Preamble.h"
 #include "Protocol.h"
 #include "SourceCode.h"
-#include "URI.h"
 #include "clang-include-cleaner/Analysis.h"
 #include "clang-include-cleaner/IncludeSpeller.h"
 #include "clang-include-cleaner/Record.h"
@@ -22,11 +21,6 @@
 #include "support/Path.h"
 #include "support/Trace.h"
 #include "clang/AST/ASTContext.h"
-#include "clang/AST/DeclCXX.h"
-#include "clang/AST/Expr.h"
-#include "clang/AST/ExprCXX.h"
-#include "clang/AST/TemplateName.h"
-#include "clang/AST/Type.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/LLVM.h"
 #include "clang/Basic/SourceLocation.h"
@@ -47,7 +41,6 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/Support/Casting.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -360,20 +353,29 @@ getUnused(ParsedAST &AST,
 std::vector<include_cleaner::SymbolReference>
 collectMacroReferences(ParsedAST &AST) {
   const auto &SM = AST.getSourceManager();
-  //  FIXME: !!this is a hacky way to collect macro references.
-  std::vector<include_cleaner::SymbolReference> Macros;
   auto &PP = AST.getPreprocessor();
-  for (const syntax::Token &Tok :
-       AST.getTokens().spelledTokens(SM.getMainFileID())) {
-    auto Macro = locateMacroAt(Tok, PP);
-    if (!Macro)
-      continue;
-    if (auto DefLoc = Macro->Info->getDefinitionLoc(); DefLoc.isValid())
+  std::vector<include_cleaner::SymbolReference> Macros;
+  for (const auto &[_, Refs] : AST.getMacros().MacroRefs) {
+    for (const auto &Ref : Refs) {
+      auto Loc = SM.getComposedLoc(SM.getMainFileID(), Ref.StartOffset);
+      const auto *Tok = AST.getTokens().spelledTokenAt(Loc);
+      if (!Tok)
+        continue;
+      auto Macro = locateMacroAt(*Tok, PP);
+      if (!Macro)
+        continue;
+      auto DefLoc = Macro->NameLoc;
+      if (!DefLoc.isValid())
+        continue;
       Macros.push_back(
-          {include_cleaner::Macro{/*Name=*/PP.getIdentifierInfo(Tok.text(SM)),
+          {include_cleaner::Macro{/*Name=*/PP.getIdentifierInfo(Tok->text(SM)),
                                   DefLoc},
-           Tok.location(), include_cleaner::RefType::Explicit});
+           Tok->location(),
+           Ref.InConditionalDirective ? include_cleaner::RefType::Ambiguous
+                                      : include_cleaner::RefType::Explicit});
+    }
   }
+
   return Macros;
 }
 

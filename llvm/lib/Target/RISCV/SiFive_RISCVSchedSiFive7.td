@@ -239,7 +239,6 @@ let Latency = 3 in {
 def : WriteRes<WriteJmp, [SiFive7PipeB]>;
 def : WriteRes<WriteJal, [SiFive7PipeB]>;
 def : WriteRes<WriteJalr, [SiFive7PipeB]>;
-def : WriteRes<WriteJmpReg, [SiFive7PipeB]>;
 }
 
 //Short forward branch
@@ -806,9 +805,12 @@ foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar RedCycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
-    let Latency = RedCycles, ResourceCycles = [RedCycles] in
+    let Latency = RedCycles, ResourceCycles = [RedCycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [SiFive7VA],
+                                     mx, sew, IsWorstCase>;
+    }
     defvar OrdRedCycles = SiFive7GetOrderedReductionCycles<mx, sew>.c;
     let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFive7VA],
@@ -1182,15 +1184,25 @@ def : BulletAnyToGPRBypass<ReadSHXADD32>;
 
 // Short forward branch
 // ALU, ALU_B, SFB to SFB
-def : ReadAdvance<ReadSFB, 2, [WriteIALU, WriteIALU32,
-                               WriteShiftImm, WriteShiftImm32,
-                               WriteShiftReg, WriteShiftReg32,
-                               WriteSHXADD, WriteSHXADD32,
-                               WriteRotateImm, WriteRotateImm32,
-                               WriteRotateReg, WriteRotateReg32,
-                               WriteCLZ, WriteCLZ32, WriteCTZ,
-                               WriteCTZ32, WriteCPOP, WriteCPOP32,
-                               WriteREV8, WriteORCB, WriteSFB]>;
+// FIXME: Is this right?
+def : ReadAdvance<ReadSFBJmp, 2, [WriteIALU, WriteIALU32,
+                                  WriteShiftImm, WriteShiftImm32,
+                                  WriteShiftReg, WriteShiftReg32,
+                                  WriteSHXADD, WriteSHXADD32,
+                                  WriteRotateImm, WriteRotateImm32,
+                                  WriteRotateReg, WriteRotateReg32,
+                                  WriteCLZ, WriteCLZ32, WriteCTZ,
+                                  WriteCTZ32, WriteCPOP, WriteCPOP32,
+                                  WriteREV8, WriteORCB, WriteSFB]>;
+def : ReadAdvance<ReadSFBALU, 2, [WriteIALU, WriteIALU32,
+                                  WriteShiftImm, WriteShiftImm32,
+                                  WriteShiftReg, WriteShiftReg32,
+                                  WriteSHXADD, WriteSHXADD32,
+                                  WriteRotateImm, WriteRotateImm32,
+                                  WriteRotateReg, WriteRotateReg32,
+                                  WriteCLZ, WriteCLZ32, WriteCTZ,
+                                  WriteCTZ32, WriteCPOP, WriteCPOP32,
+                                  WriteREV8, WriteORCB, WriteSFB]>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions

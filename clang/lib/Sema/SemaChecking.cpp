@@ -72,6 +72,7 @@
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -2170,6 +2171,10 @@ Sema::CheckBuiltinFunctionCall(FunctionDecl *FDecl, unsigned BuiltinID,
     if (SemaBuiltinFPClassification(TheCall, 6))
       return ExprError();
     break;
+  case Builtin::BI__builtin_isfpclass:
+    if (SemaBuiltinFPClassification(TheCall, 2))
+      return ExprError();
+    break;
   case Builtin::BI__builtin_isfinite:
   case Builtin::BI__builtin_isinf:
   case Builtin::BI__builtin_isinf_sign:
@@ -2632,6 +2637,9 @@ Sema::CheckBuiltinFunctionCall(FunctionDecl *FDecl, unsigned BuiltinID,
   case Builtin::BI__builtin_elementwise_log2:
   case Builtin::BI__builtin_elementwise_log10:
   case Builtin::BI__builtin_elementwise_roundeven:
+  case Builtin::BI__builtin_elementwise_round:
+  case Builtin::BI__builtin_elementwise_rint:
+  case Builtin::BI__builtin_elementwise_nearbyint:
   case Builtin::BI__builtin_elementwise_sin:
   case Builtin::BI__builtin_elementwise_trunc:
   case Builtin::BI__builtin_elementwise_canonicalize: {
@@ -7883,9 +7891,12 @@ bool Sema::SemaBuiltinFPClassification(CallExpr *TheCall, unsigned NumArgs) {
   if (checkArgCount(*this, TheCall, NumArgs))
     return true;
 
-  // __builtin_fpclassify is the only case where NumArgs != 1, so we can count
-  // on all preceding parameters just being int.  Try all of those.
-  for (unsigned i = 0; i < NumArgs - 1; ++i) {
+  // Find out position of floating-point argument.
+  unsigned FPArgNo = (NumArgs == 2) ? 0 : NumArgs - 1;
+
+  // We can count on all parameters preceding the floating-point just being int.
+  // Try all of those.
+  for (unsigned i = 0; i < FPArgNo; ++i) {
     Expr *Arg = TheCall->getArg(i);
 
     if (Arg->isTypeDependent())
@@ -7898,7 +7909,7 @@ bool Sema::SemaBuiltinFPClassification(CallExpr *TheCall, unsigned NumArgs) {
     TheCall->setArg(i, Res.get());
   }
 
-  Expr *OrigArg = TheCall->getArg(NumArgs-1);
+  Expr *OrigArg = TheCall->getArg(FPArgNo);
 
   if (OrigArg->isTypeDependent())
     return false;
@@ -7910,13 +7921,19 @@ bool Sema::SemaBuiltinFPClassification(CallExpr *TheCall, unsigned NumArgs) {
     OrigArg = UsualUnaryConversions(OrigArg).get();
   else
     OrigArg = DefaultFunctionArrayLvalueConversion(OrigArg).get();
-  TheCall->setArg(NumArgs - 1, OrigArg);
+  TheCall->setArg(FPArgNo, OrigArg);
 
   // This operation requires a non-_Complex floating-point number.
   if (!OrigArg->getType()->isRealFloatingType())
     return Diag(OrigArg->getBeginLoc(),
                 diag::err_typecheck_call_invalid_unary_fp)
            << OrigArg->getType() << OrigArg->getSourceRange();
+
+  // __builtin_isfpclass has integer parameter that specify test mask. It is
+  // passed in (...), so it should be analyzed completely here.
+  if (NumArgs == 2)
+    if (SemaBuiltinConstantArgRange(TheCall, 1, 0, llvm::fcAllFlags))
+      return true;
 
   return false;
 }
@@ -10759,11 +10776,15 @@ CheckPrintfHandler::checkFormatExpr(const analyze_printf::PrintfSpecifier &FS,
       ImplicitMatch == ArgType::NoMatchTypeConfusion)
     Match = ImplicitMatch;
   assert(Match != ArgType::MatchPromotion);
-  // Look through enums to their underlying type.
+  // Look through unscoped enums to their underlying type.
   bool IsEnum = false;
   if (auto EnumTy = ExprTy->getAs<EnumType>()) {
-    ExprTy = EnumTy->getDecl()->getIntegerType();
-    IsEnum = true;
+    if (EnumTy->isUnscopedEnumerationType()) {
+      ExprTy = EnumTy->getDecl()->getIntegerType();
+      // This controls whether we're talking about the underlying type or not,
+      // which we only want to do when it's an unscoped enum.
+      IsEnum = true;
+    }
   }
 
   // %C in an Objective-C context prints a unichar, not a wchar_t.
@@ -16393,8 +16414,12 @@ std::optional<std::pair<
     if (auto *VD = dyn_cast<VarDecl>(cast<DeclRefExpr>(E)->getDecl())) {
       // FIXME: If VD is captured by copy or is an escaping __block variable,
       // use the alignment of VD's type.
-      if (!VD->getType()->isReferenceType())
+      if (!VD->getType()->isReferenceType()) {
+        // Dependent alignment cannot be resolved -> bail out.
+        if (VD->hasDependentAlignment())
+          break;
         return std::make_pair(Ctx.getDeclAlign(VD), CharUnits::Zero());
+      }
       if (VD->hasInit())
         return getBaseAlignmentAndOffsetFromLValue(VD->getInit(), Ctx);
     }

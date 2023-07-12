@@ -39,7 +39,6 @@ let Latency = 3 in {
 def : WriteRes<WriteJmp, [SiFive6Pipe]>;
 def : WriteRes<WriteJal, [SiFive6Pipe]>;
 def : WriteRes<WriteJalr, [SiFive6Pipe]>;
-def : WriteRes<WriteJmpReg, [SiFive6Pipe]>;
 }
 
 //Short forward branch
@@ -332,7 +331,8 @@ def : BulletAnyToGPRBypass<ReadSHXADD>;
 def : BulletAnyToGPRBypass<ReadSHXADD32>;
 
 //Short forward branch
-def : ReadAdvance<ReadSFB, 0>;
+def : ReadAdvance<ReadSFBJmp, 0>;
+def : ReadAdvance<ReadSFBALU, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
