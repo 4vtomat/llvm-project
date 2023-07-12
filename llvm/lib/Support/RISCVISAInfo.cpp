@@ -322,18 +322,22 @@ isExperimentalExtension(StringRef Ext) {
     Ext = ExtInfo->first;
     auto MajorVersion = ExtInfo->second.MajorVersion;
     auto MinorVersion = ExtInfo->second.MinorVersion;
-    auto FindByNameAndVersion = [=](const RISCVSupportedExtension &ExtInfo) {
-      return ExtInfo.Name == Ext && (MajorVersion == ExtInfo.Version.Major) &&
-             (MinorVersion == ExtInfo.Version.Minor);
-    };
 
-    // FIXME: SIFIVE: Binary search like upstream?
-    auto ExtIterator =
-        llvm::find_if(SupportedExperimentalExtensions, FindByNameAndVersion);
-    if (ExtIterator == std::end(SupportedExperimentalExtensions))
+    // Find the range where this extensions exists in the table. The range
+    // may be empty.
+    auto Range = std::equal_range(std::begin(SupportedExperimentalExtensions),
+                                  std::end(SupportedExperimentalExtensions),
+                                  Ext, LessExtName());
+    auto I = std::find_if(Range.first, Range.second,
+                          [&](const RISCVSupportedExtension &ExtInfo) {
+      return MajorVersion == ExtInfo.Version.Major &&
+             MinorVersion == ExtInfo.Version.Minor;
+    });
+
+    if (I == Range.second)
       return std::nullopt;
 
-    return ExtIterator->Version;
+    return I->Version;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
