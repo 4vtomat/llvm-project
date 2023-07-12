@@ -1326,6 +1326,31 @@ class VPseudoBinaryNoMaskTU<VReg RetClass,
   let HasVecPolicyOp = 1;
 }
 
+class VPseudoBinaryNoMaskTURoundingMode<VReg RetClass,
+                                        VReg Op1Class,
+                                        DAGOperand Op2Class,
+#ifdef SIFIVE_CUSTOMIZATION
+                                        string Constraint,
+                                        int TargetConstraintType = 1> :
+#else
+                                        string Constraint> :
+#endif // SIFIVE_CUSTOMIZATION
+        Pseudo<(outs RetClass:$rd),
+               (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm,
+                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+        RISCVVPseudo {
+  let mayLoad = 0;
+  let mayStore = 0;
+  let Constraints = Join<[Constraint, "$rd = $merge"], ",">.ret;
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
+  let HasVLOp = 1;
+  let HasSEWOp = 1;
+  let HasVecPolicyOp = 1;
+  let HasRoundModeOp = 1;
+}
+
 #ifdef SIFIVE_CUSTOMIZATION
 class PPseudoBinaryNoMask<VReg RetClass,
                           VReg Op1Class,
@@ -1349,46 +1374,36 @@ class PPseudoBinaryNoMask<VReg RetClass,
 class VPseudoBinaryNoMaskRoundingMode<VReg RetClass,
                                       VReg Op1Class,
                                       DAGOperand Op2Class,
+#ifdef SIFIVE_CUSTOMIZATION
+                                      string Constraint,
+                                      int TargetConstraintType = 1> :
+#else
                                       string Constraint> :
+#endif // SIFIVE_CUSTOMIZATION
+
         Pseudo<(outs RetClass:$rd),
                (ins Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let Constraints = Constraint;
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
-  let HasRoundModeOp = 1;
-}
-
-class VPseudoBinaryNoMaskTURoundingMode<VReg RetClass,
-                                        VReg Op1Class,
-                                        DAGOperand Op2Class,
-                                        string Constraint> :
-        Pseudo<(outs RetClass:$rd),
-               (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm,
-<<<<<<< HEAD
-                    AVL:$vl, ixlenimm:$sew), []>,
-=======
-                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
->>>>>>> origin/sifive-dev
-        RISCVVPseudo {
-  let mayLoad = 0;
-  let mayStore = 0;
-  let Constraints = Join<[Constraint, "$rd = $merge"], ",">.ret;
-  let HasVLOp = 1;
-  let HasSEWOp = 1;
-<<<<<<< HEAD
-=======
-  let HasVecPolicyOp = 1;
->>>>>>> origin/sifive-dev
   let HasRoundModeOp = 1;
 }
 
 class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
                                           RegisterClass Op1Class,
                                           DAGOperand Op2Class,
-                                          string Constraint> :
+#ifdef SIFIVE_CUSTOMIZATION
+                                      string Constraint,
+                                      int TargetConstraintType = 1> :
+#else
+                                      string Constraint> :
+#endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                 (ins GetVRegNoV0<RetClass>.R:$merge,
                      Op1Class:$rs2, Op2Class:$rs1,
@@ -1398,6 +1413,9 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
   let mayLoad = 0;
   let mayStore = 0;
   let Constraints = Join<[Constraint, "$rd = $merge"], ",">.ret;
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -2241,49 +2259,25 @@ multiclass VPseudoBinary<VReg RetClass,
   }
 }
 
-<<<<<<< HEAD
 multiclass VPseudoBinaryRoundingMode<VReg RetClass,
                                      VReg Op1Class,
                                      DAGOperand Op2Class,
                                      LMULInfo MInfo,
                                      string Constraint = "",
-                                     int sew = 0> {
+                                     int sew = 0,
+#ifdef SIFIVE_CUSTOMIZATION
+                         int TargetConstraintType = 1> {
   let VLMul = MInfo.value in {
     defvar suffix = !if(sew, "_" # MInfo.MX # "_E" # sew, "_" # MInfo.MX);
     def suffix : VPseudoBinaryNoMaskRoundingMode<RetClass, Op1Class, Op2Class,
-                                                 Constraint>;
-    def suffix # "_TU" :VPseudoBinaryNoMaskTURoundingMode<RetClass,
-                                                          Op1Class, Op2Class,
-                                                          Constraint>;
-    def suffix # "_MASK" : VPseudoBinaryMaskPolicyRoundingMode<RetClass,
-                                                               Op1Class,
-                                                               Op2Class,
-                                                               Constraint>,
-                           RISCVMaskedPseudo</*MaskOpIdx*/ 3>;
-=======
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoBinaryRM<VReg RetClass,
-                           VReg Op1Class,
-                           DAGOperand Op2Class,
-                           LMULInfo MInfo,
-                           string Constraint = "",
-                           int TargetConstraintType = 1> {
-  let VLMul = MInfo.value, HasRoundModeOp = 1 in {
-    let InOperandList = (ins Op1Class:$rs2, Op2Class:$rs1,
-                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew) in
-    def "_" # MInfo.MX : VPseudoBinaryNoMask<RetClass, Op1Class, Op2Class,
-                                             Constraint, TargetConstraintType>;
-    let InOperandList = (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
-                             ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy) in
-    def "_" # MInfo.MX # "_TU" : VPseudoBinaryNoMaskTU<RetClass, Op1Class, Op2Class,
-                                                       Constraint, TargetConstraintType>;
-    let InOperandList = (ins GetVRegNoV0<RetClass>.R:$merge,
-                             Op1Class:$rs2, Op2Class:$rs1,
-                             VMaskOp:$vm, ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy) in
-    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class,
-                                                           Constraint, TargetConstraintType>,
+                                                 Constraint, TargetConstraintType>;
+    def suffix # "_TU" : VPseudoBinaryNoMaskTURoundingMode<RetClass, Op1Class, Op2Class,
+                                                           Constraint, TargetConstraintType>;
+    def suffix # "_MASK" : VPseudoBinaryMaskPolicyRoundingMode<RetClass, Op1Class,
+                                                               Op2Class, Constraint,
+                                                               TargetConstraintType>,
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3>;
->>>>>>> origin/sifive-dev
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -4897,7 +4891,7 @@ class VPatBinaryNoMaskTARoundingMode<string intrinsic_name,
                                      int sew,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
                    (result_type (undef)),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4932,29 +4926,6 @@ multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-class VPatBinaryNoMaskTARoundingMode<string intrinsic_name,
-                                     string inst,
-                                     ValueType result_type,
-                                     ValueType op1_type,
-                                     ValueType op2_type,
-                                     int sew,
-                                     VReg op1_reg_class,
-                                     DAGOperand op2_kind> :
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-                   (result_type (undef)),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT timm:$round),
-                   VLOpFrag)),
-                   (!cast<Instruction>(inst)
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT timm:$round),
-                   GPR:$vl, sew)>;
-
-=======
->>>>>>> origin/sifive-dev
 class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      string inst,
                                      ValueType result_type,
@@ -4964,11 +4935,7 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      VReg result_reg_class,
                                      VReg op1_reg_class,
                                      DAGOperand op2_kind> :
-<<<<<<< HEAD
   Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-=======
-  Pat<(result_type (!cast<Intrinsic>(intrinsic_name # "_rm")
->>>>>>> origin/sifive-dev
                    (result_type result_reg_class:$merge),
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
@@ -4979,12 +4946,7 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                    (op1_type op1_reg_class:$rs1),
                    (op2_type op2_kind:$rs2),
                    (XLenVT timm:$round),
-<<<<<<< HEAD
-                   GPR:$vl, sew)>;
-=======
                    GPR:$vl, sew, TU_MU)>;
->>>>>>> origin/sifive-dev
-
 
 // Same as above but source operands are swapped.
 class VPatBinaryNoMaskSwapped<string intrinsic_name,
@@ -5468,22 +5430,6 @@ multiclass VPatBinaryTA<string intrinsic,
                          op2_kind>;
 }
 
-multiclass VPatBinaryTANoMask<string intrinsic,
-                              string inst,
-                              ValueType result_type,
-                              ValueType op1_type,
-                              ValueType op2_type,
-                              int sew,
-                              VReg result_reg_class,
-                              VReg op1_reg_class,
-                              DAGOperand op2_kind>
-{
-  def : VPatBinaryNoMaskTA<intrinsic, inst, result_type, op1_type, op2_type,
-                           sew, op1_reg_class, op2_kind>;
-  def : VPatBinaryNoMaskTU<intrinsic, inst, result_type, op1_type, op2_type,
-                           sew, result_reg_class, op1_reg_class, op2_kind>;
-}
-
 multiclass VPatBinaryTARoundingMode<string intrinsic,
                                     string inst,
                                     ValueType result_type,
@@ -5502,6 +5448,22 @@ multiclass VPatBinaryTARoundingMode<string intrinsic,
   def : VPatBinaryMaskTARoundingMode<intrinsic, inst, result_type, op1_type, op2_type,
                                      mask_type, sew, result_reg_class, op1_reg_class,
                                      op2_kind>;
+}
+
+multiclass VPatBinaryTANoMask<string intrinsic,
+                              string inst,
+                              ValueType result_type,
+                              ValueType op1_type,
+                              ValueType op2_type,
+                              int sew,
+                              VReg result_reg_class,
+                              VReg op1_reg_class,
+                              DAGOperand op2_kind>
+{
+  def : VPatBinaryNoMaskTA<intrinsic, inst, result_type, op1_type, op2_type,
+                           sew, op1_reg_class, op2_kind>;
+  def : VPatBinaryNoMaskTU<intrinsic, inst, result_type, op1_type, op2_type,
+                           sew, result_reg_class, op1_reg_class, op2_kind>;
 }
 
 multiclass VPatBinarySwapped<string intrinsic,
