@@ -1390,6 +1390,22 @@ static void CreateCoercedStore(llvm::Value *Src,
     return;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // If coercing a fixed vector from a scalable vectro for ABI compatibility,
+  // and the types match, use the llvm.vector.extract intrinsic to perform the
+  // conversion.
+  if (auto *FixedDst = dyn_cast<llvm::FixedVectorType>(DstTy)) {
+    if (auto *ScalableSrc = dyn_cast<llvm::ScalableVectorType>(SrcTy)) {
+      if (FixedDst->getElementType() == ScalableSrc->getElementType()) {
+        auto *Zero = llvm::Constant::getNullValue(CGF.CGM.Int64Ty);
+        Src = CGF.Builder.CreateExtractVector(DstTy, Src, Zero, "castFixedRVV");
+        CGF.Builder.CreateStore(Src, Dst, DstIsVolatile);
+        return;
+      }
+    }
+  }
+#endif
+
   llvm::TypeSize DstSize = CGF.CGM.getDataLayout().getTypeAllocSize(DstTy);
 
   // If store is legal, just bitcast the src pointer.
