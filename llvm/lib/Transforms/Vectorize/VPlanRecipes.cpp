@@ -2009,17 +2009,28 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                                VPCostContext &Ctx) const {
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
-  auto *VectorTy =
-      cast<VectorType>(ToVectorTy(RdxDesc.getRecurrenceType(), VF));
+  Type *ElementTy = RdxDesc.getRecurrenceType();
+  auto *VectorTy = cast<VectorType>(ToVectorTy(ElementTy, VF));
+  auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
   InstructionCost O = 0;
   if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
     bool IsUnsigned =
         RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
             ? false
             : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
-    auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     O = Ctx.TTI->getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
                                         RdxDesc.getFastMathFlags(), CostKind);
+  } else if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RdxKind)) {
+    // The cost references the instructions created in
+    // llvm::createSelectCmpTargetReduction
+    O = Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+    O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
+                                     CmpInst::ICMP_NE, CostKind);
+    O += Ctx.TTI->getArithmeticReductionCost(
+        Instruction::Or, VecCondTy, RdxDesc.getFastMathFlags(), CostKind);
+    O += Ctx.TTI->getCmpSelInstrCost(Instruction::Select, ElementTy,
+                                     CmpInst::makeCmpResultType(ElementTy),
+                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
   } else {
     O = Ctx.TTI->getArithmeticReductionCost(
         RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
