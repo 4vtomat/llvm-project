@@ -495,16 +495,6 @@ bool InterleavedAccess::lowerDeinterleaveIntrinsic(
     if (VPLoad->getIntrinsicID() == Intrinsic::vp_load && VPLoad->hasOneUse()) {
       unsigned Factor = 2;
 
-      // Make sure all users of the deinterleave intrinsic are vector extracts
-      // that can be easily handled.
-      SmallVector<ExtractValueInst *> VectorExtracts;
-      for (auto *U : DI->users()) {
-        auto *VE = dyn_cast<ExtractValueInst>(U);
-        if (!VE)
-          return false;
-        VectorExtracts.push_back(VE);
-      }
-
       // Check mask operand. Handle both all-true and interleaved mask.
       Value *WideMask = VPLoad->getOperand(1);
       IRBuilder<> Builder(VPLoad);
@@ -517,8 +507,7 @@ bool InterleavedAccess::lowerDeinterleaveIntrinsic(
 
       // Since lowerInterleaveLoad expects Shuffles and LoadInst, use special
       // TLI function to emit target-specific interleaved instruction.
-      if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, VectorExtracts,
-                                             Factor))
+      if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, DI, Factor))
         return false;
 
       DeadInsts.push_back(DI);

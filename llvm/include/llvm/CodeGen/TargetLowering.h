@@ -2982,7 +2982,7 @@ public:
   /// \p Factor is the interleave factor.
   virtual bool
   lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
-                               ArrayRef<ExtractValueInst *> ExtractValues,
+                               IntrinsicInst *DeinterleaveIntrin,
                                unsigned Factor) const {
     return false;
   }

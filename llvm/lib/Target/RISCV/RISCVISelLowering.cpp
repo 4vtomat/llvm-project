@@ -19292,8 +19292,8 @@ bool RISCVTargetLowering::lowerInterleavedStore(StoreInst *SI,
 /// NOTE: the deinterleave2 intrinsic won't be touched and is expected to be
 /// removed by the caller
 bool RISCVTargetLowering::lowerInterleavedScalableLoad(
-    Instruction *Load, Value *Mask,
-    ArrayRef<ExtractValueInst *> ExtractValues, unsigned Factor) const {
+    Instruction *Load, Value *Mask, IntrinsicInst *DeinterleaveIntrin,
+    unsigned Factor) const {
   auto *VPLoad = dyn_cast<IntrinsicInst>(Load);
   if (!VPLoad || VPLoad->getIntrinsicID() != Intrinsic::vp_load)
     return false;
@@ -19345,8 +19345,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   Function *VlsegNFunc = Intrinsic::getDeclaration(
       VPLoad->getModule(), VlsegNID, {VTy, RVL->getType()});
   CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
-  for (ExtractValueInst *VE : ExtractValues)
-    VE->setOperand(0, VlsegN);
+  DeinterleaveIntrin->replaceAllUsesWith(VlsegN);
 
   return true;
 }

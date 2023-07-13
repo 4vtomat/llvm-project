@@ -787,7 +787,7 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
-                                    ArrayRef<ExtractValueInst *> ExtractValues,
+                                    IntrinsicInst *DeinterleaveIntrin,
                                     unsigned Factor) const override;
 
   bool lowerInterleavedScalableStore(Instruction *Store, Value *Mask,
