@@ -113,11 +113,10 @@
 ; RV64-NEXT:        RISC-V Optimize W Instructions
 ; CHECK-NEXT:       RISC-V Pre-RA pseudo instruction expansion pass
 ; CHECK-NEXT:       RISC-V Merge Base Offset
-; CHECK-NEXT:       RISCV Cleanup VXRM pass
 ; CHECK-NEXT:       MachineDominator Tree Construction
 ; CHECK-NEXT:       RISC-V VL Optimizer
 ; CHECK-NEXT:       RISC-V Insert VSETVLI pass
-; CHECK-NEXT:       RISCV Insert required VXRM values
+; CHECK-NEXT:       RISC-V Insert Read/Write CSR Pass
 ; CHECK-NEXT:       Detect Dead Lanes
 ; CHECK-NEXT:       RISC-V init undef pass
 ; CHECK-NEXT:       Process Implicit Definitions

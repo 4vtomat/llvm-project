@@ -27,8 +27,7 @@ add_llvm_target(RISCVCodeGen
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
   RISCVInsertVSETVLI.cpp
-  SiFive_RISCVInsertVXRMWrite.cpp
-  SiFive_RISCVCleanupVXRM.cpp
+  RISCVInsertReadWriteCSR.cpp
   RISCVInstrInfo.cpp
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp

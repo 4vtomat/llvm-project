@@ -11,6 +11,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "MCTargetDesc/RISCVBaseInfo.h"
 #include "MCTargetDesc/RISCVInstPrinter.h"
 #include "MCTargetDesc/RISCVMCExpr.h"
 #include "MCTargetDesc/RISCVTargetStreamer.h"
@@ -804,11 +805,9 @@ static bool lowerRISCVVMachineInstrToMCInst(const MachineInstr *MI,
     --NumOps;
   if (RISCVII::hasVLOp(TSFlags))
     --NumOps;
-#ifdef SIFIVE_CUSTOMIZATION
-  if (RISCVII::hasRoundModeOp(TSFlags))
-    --NumOps;
-#endif // SIFIVE_CUSTOMIZATION
   if (RISCVII::hasSEWOp(TSFlags))
+    --NumOps;
+  if (RISCVII::hasRoundModeOp(TSFlags))
     --NumOps;
 
   bool hasVLOutput = RISCV::isFaultFirstLoad(*MI);

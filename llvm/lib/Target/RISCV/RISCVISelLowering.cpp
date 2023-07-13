@@ -7529,24 +7529,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                        Vec, VL);
   }
 #if SIFIVE_CUSTOMIZATION
-#define CASE_RVV(Intrin, Opcode)                                               \
-  case Intrinsic::riscv_##Intrin:                                              \
-    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ false);           \
-  case Intrinsic::riscv_##Intrin##_mask:                                       \
-    return lowerRVVRMIntrinsics(Op, DAG, Opcode, /*HasMask*/ true);
-
-    CASE_RVV(vaadd_rm, RISCVISD::VAADD_VL)
-    CASE_RVV(vaaddu_rm, RISCVISD::VAADDU_VL)
-    CASE_RVV(vasub_rm, RISCVISD::VASUB_VL)
-    CASE_RVV(vasubu_rm, RISCVISD::VASUBU_VL)
-    CASE_RVV(vsmul_rm, RISCVISD::VSMUL_VL)
-    CASE_RVV(vssrl_rm, RISCVISD::VSSRL_VL)
-    CASE_RVV(vssra_rm, RISCVISD::VSSRA_VL)
-    CASE_RVV(vnclipu_rm, RISCVISD::VNCLIPU_VL)
-    CASE_RVV(vnclip_rm, RISCVISD::VNCLIP_VL)
-#undef CASE_RVV
-#endif // SIFIVE_CUSTOMIZATION
-#if SIFIVE_CUSTOMIZATION
   case Intrinsic::aarch64_neon_fmax:
   case Intrinsic::aarch64_neon_fmin: {
     // aarch64_neon_fmax is FMAXIMUM
@@ -9543,66 +9525,6 @@ SDValue RISCVTargetLowering::lowerFixedLengthVectorSelectToRVV(
 
   return convertFromScalableVector(VT, Select, DAG, Subtarget);
 }
-
-#if SIFIVE_CUSTOMIZATION
-SDValue RISCVTargetLowering::lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG,
-                                                  unsigned Opc,
-                                                  bool HasMask) const {
-  SDLoc DL(Op);
-  MVT XLenVT = Subtarget.getXLenVT();
-  MVT VT = Op.getSimpleValueType();
-  SmallVector<SDValue, 7> Ops;
-  unsigned NumOperands = Op.getNumOperands();
-  SDValue MergeOp = Op.getOperand(1);
-  if (HasMask) {
-    // masked rvv intrinsic (merge, rs1, rs2, mask, roundmode, vl, policy)
-    // VL SDNode (rs1, rs2, merge, mask, roundmode, vl, policy)
-    SDValue VL = Op.getOperand(NumOperands - 2);
-    for (size_t i = 2; i < NumOperands - 4; i++) {
-      SDValue V = Op.getOperand(i);
-      MVT OpVT = V.getSimpleValueType();
-      if (!OpVT.isScalarInteger()) {
-        Ops.push_back(V);
-        continue;
-      }
-      V = lowerScalarSplat(SDValue(), V, VL, VT, DL, DAG, Subtarget);
-      Ops.push_back(V);
-    }
-    Ops.push_back(MergeOp);
-    for (size_t i = NumOperands - 4; i < NumOperands; i++)
-      Ops.push_back(Op.getOperand(i));
-  } else {
-    // unmasked rvv intrinsic (merge, rs1, rs2, roundmode, vl)
-    // VL SDNode (rs1, rs2, merge, mask, roundmode, vl, policy)
-    SDValue VL = Op.getOperand(NumOperands - 1);
-
-    for (size_t i = 2; i < NumOperands - 2; i++) {
-      SDValue V = Op.getOperand(i);
-      MVT OpVT = V.getSimpleValueType();
-      if (!OpVT.isScalarInteger()) {
-        Ops.push_back(V);
-        continue;
-      }
-      V = lowerScalarSplat(SDValue(), V, VL, VT, DL, DAG, Subtarget);
-      Ops.push_back(V);
-    }
-
-    Ops.push_back(MergeOp);
-
-    SDValue TrueMask = getAllOnesMask(VT, VL, DL, DAG);
-    Ops.push_back(TrueMask);
-
-    for (size_t i = NumOperands - 2; i < NumOperands; i++)
-      Ops.push_back(Op.getOperand(i));
-
-    unsigned Policy = 0;
-    if (MergeOp.isUndef())
-      Policy = RISCVII::TAIL_AGNOSTIC;
-    Ops.push_back(DAG.getTargetConstant(Policy, DL, XLenVT));
-  }
-  return DAG.getNode(Opc, DL, VT, Ops);
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 SDValue RISCVTargetLowering::lowerToScalableOp(SDValue Op, SelectionDAG &DAG,
                                                unsigned NewOpc, bool HasMergeOp,
@@ -16594,23 +16516,32 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
   }
 }
 
+// Returns the index to the rounding mode immediate value if any, otherwise the
+// function will return None.
+static std::optional<unsigned> getRoundModeIdx(const MachineInstr &MI) {
+  uint64_t TSFlags = MI.getDesc().TSFlags;
+  if (!RISCVII::hasRoundModeOp(TSFlags))
+    return std::nullopt;
+
+  // The operand order
+  // -------------------------------------
+  // | n-1 (if any)   | n-2  | n-3 | n-4 |
+  // | policy         | sew  | vl  | rm  |
+  // -------------------------------------
+  return MI.getNumExplicitOperands() - RISCVII::hasVecPolicyOp(TSFlags) - 3;
+}
+
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
-#if SIFIVE_CUSTOMIZATION
-  uint64_t TSFlags = MI.getDesc().TSFlags;
-  // Add VXRM dependency to any instructions with dynamic rounding mode.
-  if (RISCVII::hasRoundModeOp(TSFlags)) {
-    unsigned Idx = RISCVII::getRoundModeOpNum(MI.getDesc());
-    const MachineOperand &RoundModeOp = MI.getOperand(Idx);
-    if (RoundModeOp.getImm() != RISCVVXRndMode::DYN)
-      return;
-    // If the instruction already reads VXRM, don't add another read.
-    if (MI.readsRegister(RISCV::VXRM))
-      return;
-    MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
-                                            /*isImp*/ true));
+  // Add VXRM dependency to vector fixed-point instructions with dynamic
+  // rounding mode.
+  if (auto RoundModeIdx = getRoundModeIdx(MI)) {
+    unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+    if (VXRMImm == RISCVVXRndMode::DYN && !MI.readsRegister(RISCV::VXRM)) {
+      MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
+                                              /*isImp*/ true));
+    }
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Add FRM dependency to any instructions with dynamic rounding mode.
   unsigned Opc = MI.getOpcode();

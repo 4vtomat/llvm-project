@@ -7,10 +7,9 @@ define void @vrhadd_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -26,10 +25,9 @@ define void @vrhadd_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -45,10 +43,9 @@ define void @vrhadd_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -64,10 +61,9 @@ define void @vrhadd_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -83,10 +79,9 @@ define void @vrhadd_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -102,10 +97,9 @@ define void @vrhadd_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -121,10 +115,9 @@ define void @vrhaddq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -140,10 +133,9 @@ define void @vrhaddq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -159,10 +151,9 @@ define void @vrhaddq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -178,10 +169,9 @@ define void @vrhaddq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -197,10 +187,9 @@ define void @vrhaddq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -216,10 +205,9 @@ define void @vrhaddq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    csrrwi a0, vxrm, 0
+; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vaaddu.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1

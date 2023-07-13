@@ -108,15 +108,16 @@ enum {
   IsSignExtendingOpWShift = UsesMaskPolicyShift + 1,
   IsSignExtendingOpWMask = 1ULL << IsSignExtendingOpWShift,
 
+  HasRoundModeOpShift = IsSignExtendingOpWShift + 1,
+  HasRoundModeOpMask = 1 << HasRoundModeOpShift,
+
 #if SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
   // each subsequent TSFlag.
 
-  TargetOverlapConstraintTypeShift = 61,
+  // TargetOverlapConstraintType occupies 2 bits (62 ~ 63).
+  TargetOverlapConstraintTypeShift = 62,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
-
-  HasRoundModeOpShift = 63,
-  HasRoundModeOpMask = 1ULL << HasRoundModeOpShift,
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -175,6 +176,11 @@ static inline bool usesMaskPolicy(uint64_t TSFlags) {
   return TSFlags & UsesMaskPolicyMask;
 }
 
+/// \returns true if there is a rounding mode operand for this instruction
+static inline bool hasRoundModeOp(uint64_t TSFlags) {
+  return TSFlags & HasRoundModeOpMask;
+}
+
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   // This method is only called if we expect to have a VL operand, and all
@@ -196,10 +202,6 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static inline bool hasRoundModeOp(uint64_t TSFlags) {
-  return TSFlags & HasRoundModeOpMask;
-}
-
 static inline unsigned getRoundModeOpNum(const MCInstrDesc &Desc) {
   uint64_t TSFlags = Desc.TSFlags;
   assert(hasRoundModeOp(TSFlags) && hasSEWOp(TSFlags) && hasVLOp(TSFlags));
@@ -402,9 +404,8 @@ enum RoundingMode {
   RNE = 1,
   RDN = 2,
   ROD = 3,
-  DYN = 4,
+  DYN = 7, // Align with RISCVFPRndMode::DYN
 };
-
 } // namespace RISCVVXRndMode
 #endif // SIFIVE_CUSTOMIZATION
 

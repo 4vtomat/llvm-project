@@ -6,10 +6,9 @@ define void @vqshrn_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclip.wi v8, v8, 6
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -23,10 +22,9 @@ define void @vqshrn_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclip.wi v8, v8, 8
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -40,10 +38,9 @@ define void @vqshrn_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclip.wi v8, v8, 4
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -57,10 +54,9 @@ define void @vqshrn_n_u16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -74,10 +70,9 @@ define void @vqshrn_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 13
 ; CHECK-NEXT:    vse16.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -91,10 +86,9 @@ define void @vqshrn_n_u64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    csrrwi a0, vxrm, 2
+; CHECK-NEXT:    csrwi vxrm, 2
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a1)
-; CHECK-NEXT:    csrw vxrm, a0
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8

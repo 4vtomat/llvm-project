@@ -54,7 +54,7 @@ while.body:                                       ; preds = %entry, %while.body
   %9 = call <vscale x 8 x i32> @llvm.riscv.vmerge.nxv8i32.i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %3, i32 0, <vscale x 8 x i1> %5, i64 %1)
   %10 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %7, i64 %1)
   %11 = call <vscale x 8 x i32> @llvm.riscv.vsll.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %10, <vscale x 8 x i32> %9, i64 %1)
-  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 %1)
+  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 7, i64 %1)
   %add.ptr2 = getelementptr inbounds i32, i32* %output_data, i64 %current_channel.021
   %13 = bitcast i32* %add.ptr2 to <vscale x 8 x i32>*
   call void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32> %12, <vscale x 8 x i32>* %13, i64 %1)
@@ -93,7 +93,7 @@ declare <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32>, <
 declare <vscale x 8 x i32> @llvm.riscv.vsll.nxv8i32.nxv8i32.i64(<vscale x 8 x i32>, <vscale x 8 x i32>, <vscale x 8 x i32>, i64)
 
 ; Function Attrs: nounwind
-declare <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32>, <vscale x 8 x i32>, <vscale x 8 x i32>, i64)
+declare <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32>, <vscale x 8 x i32>, <vscale x 8 x i32>, i64, i64)
 
 ; Function Attrs: nounwind writeonly
 declare void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32>, <vscale x 8 x i32>* nocapture, i64)
