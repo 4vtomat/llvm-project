@@ -764,19 +764,11 @@ public:
   /// returns the address of that location. Otherwise, returns nullptr.
   Value *getIRStackGuard(IRBuilderBase &IRB) const override;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  /// Returns whether or not generating a interleaved load/store intrinsic for
-  /// this type will be legal.
-  bool isLegalInterleavedAccessType(VectorType *, unsigned Factor,
-=======
   /// Returns whether or not generating a interleaved load/store intrinsic for
   /// this type will be legal.
   bool isLegalInterleavedAccessType(VectorType *VTy, unsigned Factor,
                                     Align Alignment, unsigned AddrSpace,
->>>>>>> upstream/main
                                     const DataLayout &) const;
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Return true if a stride load store of the given result type and
   /// alignment is legal.
@@ -792,7 +784,12 @@ public:
   bool lowerInterleavedStore(StoreInst *SI, ShuffleVectorInst *SVI,
                              unsigned Factor) const override;
 
-<<<<<<< HEAD
+  bool lowerDeinterleaveIntrinsicToLoad(IntrinsicInst *II,
+                                        LoadInst *LI) const override;
+
+  bool lowerInterleaveIntrinsicToStore(IntrinsicInst *II,
+                                       StoreInst *SI) const override;
+
 #if SIFIVE_CUSTOMIZATION
   bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
                                     IntrinsicInst *DeinterleaveIntrin,
@@ -803,13 +800,6 @@ public:
                                      IntrinsicInst *InterleaveIntrin,
                                      unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool lowerDeinterleaveIntrinsicToLoad(IntrinsicInst *II,
-                                        LoadInst *LI) const override;
-
-  bool lowerInterleaveIntrinsicToStore(IntrinsicInst *II,
-                                       StoreInst *SI) const override;
->>>>>>> upstream/main
 
   bool supportKCFIBundles() const override { return true; }
 
