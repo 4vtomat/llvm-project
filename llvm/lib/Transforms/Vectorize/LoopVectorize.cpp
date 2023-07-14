@@ -737,7 +737,6 @@ protected:
   /// Create code for the loop exit value of the reduction.
   void fixReduction(VPReductionPHIRecipe *Phi, VPTransformState &State);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Generate a reduction loop in the loop vectorizer for when the backend
   /// prefers not to lower the call to reduction intrinsic.
@@ -745,12 +744,6 @@ protected:
                                unsigned Op, FastMathFlags FMF);
 #endif // SIFIVE_CUSTOMIZATION
 
-  /// Clear NSW/NUW flags from reduction instructions if necessary.
-  void clearReductionWrapFlags(VPReductionPHIRecipe *PhiR,
-                               VPTransformState &State);
-
-=======
->>>>>>> upstream/main
   /// Iteratively sink the scalarized operands of a predicated instruction into
   /// the block that was created for it.
   void sinkScalarOperands(Instruction *PredInst);
