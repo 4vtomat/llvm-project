@@ -10654,7 +10654,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       Instruction *NewLI;
       Value *PO = LI->getPointerOperand();
       if (E->State == TreeEntry::Vectorize) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         Value *Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
         Value *PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
@@ -10713,11 +10712,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
           }
         } else {
 #endif // SIFIVE_CUSTOMIZATION
-        Value *VecPtr = Builder.CreateBitCast(PO, VecTy->getPointerTo(AS));
-        NewLI = Builder.CreateAlignedLoad(VecTy, VecPtr, LI->getAlign());
-=======
         NewLI = Builder.CreateAlignedLoad(VecTy, PO, LI->getAlign());
->>>>>>> upstream/main
 
         // The pointer operand uses an in-tree scalar so we add the new
         // LoadInst to ExternalUses list to make sure that an extract will
