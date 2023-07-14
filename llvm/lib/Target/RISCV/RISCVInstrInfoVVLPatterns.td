@@ -694,7 +694,6 @@ class VPatBinaryVL_V<SDPatternOperator vop,
                    op2_reg_class:$rs2,
                    (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_VL_V<SDNode vop,
                              string instruction_name,
@@ -751,7 +750,7 @@ multiclass VPatBinaryVL_V_E<SDPatternOperator vop,
                      op2_reg_class:$rs2,
                      (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 }
-=======
+
 class VPatBinaryVL_V_RM<SDPatternOperator vop,
                      string instruction_name,
                      string suffix,
@@ -783,7 +782,6 @@ class VPatBinaryVL_V_RM<SDPatternOperator vop,
                    // RISCVInsertReadWriteCSR
                    FRM_DYN,
                    GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
->>>>>>> upstream/main
 
 multiclass VPatTiedBinaryNoMaskVL_V<SDNode vop,
                                     string instruction_name,

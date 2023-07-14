@@ -65,14 +65,11 @@ struct SemaRecord {
   bool HasMaskedOffOperand :1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
-<<<<<<< HEAD
+  bool HasFRMRoundModeOp : 1;
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
   bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool HasFRMRoundModeOp : 1;
->>>>>>> upstream/main
   bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;
   uint8_t MaskedPolicyScheme : 2;
@@ -663,8 +660,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
-<<<<<<< HEAD
-            DefaultPolicy));
+            DefaultPolicy, HasFRMRoundModeOp));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
@@ -672,11 +668,8 @@ void RVVEmitter::createRVVIntrinsics(
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
-              NonTemporalDefaultPolicy));
+              NonTemporalDefaultPolicy, HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
-=======
-            DefaultPolicy, HasFRMRoundModeOp));
->>>>>>> upstream/main
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
             SmallVector<PrototypeDescriptor> PolicyPrototype =
@@ -702,8 +695,8 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
-<<<<<<< HEAD
-            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy));
+            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy,
+            HasFRMRoundModeOp));
 
 #if SIFIVE_CUSTOMIZATION
         std::optional<RVVTypes> NTLMaskTypes =
@@ -714,13 +707,10 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
-              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy));
+              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy,
+              HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy,
-            HasFRMRoundModeOp));
->>>>>>> upstream/main
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         for (auto P : SupportedMaskedPolicies) {

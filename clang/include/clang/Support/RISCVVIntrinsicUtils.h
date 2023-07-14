@@ -580,14 +580,11 @@ struct RVVIntrinsicRecord {
   bool HasMaskedOffOperand : 1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
-<<<<<<< HEAD
+  bool HasFRMRoundModeOp : 1;
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
   bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool HasFRMRoundModeOp : 1;
->>>>>>> upstream/main
   bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;
   uint8_t MaskedPolicyScheme : 2;

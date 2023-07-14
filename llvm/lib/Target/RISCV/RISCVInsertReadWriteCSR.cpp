@@ -77,21 +77,13 @@ bool RISCVInsertReadWriteCSR::emitWriteRoundingMode(MachineBasicBlock &MBB) {
   bool Changed = false;
   for (MachineInstr &MI : MBB) {
     if (auto RoundModeIdx = getRoundModeIdx(MI)) {
-<<<<<<< HEAD
-      unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
-
-      if (VXRMImm == RISCVVXRndMode::DYN)
-        continue;
-
-      Changed = true;
-
-      BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(RISCV::WriteVXRMImm))
-          .addImm(VXRMImm);
-      MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*IsDef*/ false,
-                                              /*IsImp*/ true));
-=======
       if (RISCVII::usesVXRM(MI.getDesc().TSFlags)) {
         unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+
+#ifdef SIFIVE_CUSTOMIZATION
+        if (VXRMImm == RISCVVXRndMode::DYN)
+          continue;
+#endif // SIFIVE_CUSTOMIZATION
 
         Changed = true;
 
@@ -122,7 +114,6 @@ bool RISCVInsertReadWriteCSR::emitWriteRoundingMode(MachineBasicBlock &MBB) {
                 .addReg(SavedFRM);
         MBB.insertAfter(MI, MIB);
       }
->>>>>>> upstream/main
     }
   }
   return Changed;

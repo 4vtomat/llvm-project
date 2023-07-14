@@ -16507,24 +16507,26 @@ static std::optional<unsigned> getRoundModeIdx(const MachineInstr &MI) {
 
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
-<<<<<<< HEAD
-  // Add VXRM dependency to vector fixed-point instructions with dynamic
-  // rounding mode.
-  if (auto RoundModeIdx = getRoundModeIdx(MI)) {
-    unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
-    if (VXRMImm == RISCVVXRndMode::DYN && !MI.readsRegister(RISCV::VXRM)) {
-      MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
-=======
   // Add FRM dependency to vector floating-point instructions with dynamic
   // rounding mode.
   if (auto RoundModeIdx = getRoundModeIdx(MI)) {
     unsigned FRMImm = MI.getOperand(*RoundModeIdx).getImm();
     if (FRMImm == RISCVFPRndMode::DYN && !MI.readsRegister(RISCV::FRM)) {
       MI.addOperand(MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false,
->>>>>>> upstream/main
                                               /*isImp*/ true));
     }
   }
+#if SIFIVE_CUSTOMIZATION
+  // Add VXRM dependency to vector fixed-point instructions with dynamic
+  // rounding mode.
+  if (auto RoundModeIdx = getRoundModeIdx(MI)) {
+    unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+    if (VXRMImm == RISCVVXRndMode::DYN && !MI.readsRegister(RISCV::VXRM)) {
+      MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
+                                              /*isImp*/ true));
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Add FRM dependency to any instructions with dynamic rounding mode.
   unsigned Opc = MI.getOpcode();

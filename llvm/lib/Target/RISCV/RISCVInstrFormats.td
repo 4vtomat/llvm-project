@@ -218,15 +218,6 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   bit HasRoundModeOp = 0;
   let TSFlags{19} =  HasRoundModeOp;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
-  // collisions when new TSFlags are added upstream
-
-  bits<2> TargetOverlapConstraintType = 0;
-  let TSFlags{63-62} = TargetOverlapConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // This is only valid when HasRoundModeOp is set to 1. HasRoundModeOp is set
   // to 1 for vector fixed-point or floating-point intrinsics. This bit is
   // processed under pass 'RISCVInsertReadWriteCSR' pass to distinguish between
@@ -234,7 +225,14 @@ class RVInst<dag outs, dag ins, string opcodestr, string argstr,
   // to the correct CSR.
   bit UsesVXRM = 0;
   let TSFlags{20} =  UsesVXRM;
->>>>>>> upstream/main
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
+  // collisions when new TSFlags are added upstream
+
+  bits<2> TargetOverlapConstraintType = 0;
+  let TSFlags{63-62} = TargetOverlapConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // Pseudo instructions

@@ -111,7 +111,9 @@ enum {
   HasRoundModeOpShift = IsSignExtendingOpWShift + 1,
   HasRoundModeOpMask = 1 << HasRoundModeOpShift,
 
-<<<<<<< HEAD
+  UsesVXRMShift = HasRoundModeOpShift + 1,
+  UsesVXRMMask = 1 << UsesVXRMShift,
+
 #if SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
   // each subsequent TSFlag.
@@ -120,10 +122,6 @@ enum {
   TargetOverlapConstraintTypeShift = 62,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  UsesVXRMShift = HasRoundModeOpShift + 1,
-  UsesVXRMMask = 1 << UsesVXRMShift,
->>>>>>> upstream/main
 };
 
 enum VLMUL : uint8_t {

@@ -1269,14 +1269,11 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.HasMaskedOffOperand << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
-<<<<<<< HEAD
+  OS << (int)Record.HasFRMRoundModeOp << ",";
 #if SIFIVE_CUSTOMIZATION
   OS << (int)Record.HasNontemporalOperand << ",";
   OS << (int)Record.IsV0p11Deprecated << ",";
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  OS << (int)Record.HasFRMRoundModeOp << ",";
->>>>>>> upstream/main
   OS << (int)Record.IsTuple << ",";
   OS << (int)Record.UnMaskedPolicyScheme << ",";
   OS << (int)Record.MaskedPolicyScheme << ",";
