@@ -1625,49 +1625,6 @@ bool InductionDescriptor::isInductionPHI(
   assert(PhiTy->isPointerTy() && "The PHI must be a pointer");
 
   // This allows induction variables w/non-constant steps.
-<<<<<<< HEAD
-  if (PtrTy->isOpaque()) {
-    D = InductionDescriptor(StartValue, IK_PtrInduction, Step,
-                            /* BinOp */ nullptr,
-                            Type::getInt8Ty(PtrTy->getContext()));
-    return true;
-  }
-
-  // Pointer induction should be a constant.
-  // TODO: This could be generalized, but should probably just
-  // be dropped instead once the migration to opaque ptrs is
-  // complete.
-  if (!ConstStep)
-    return false;
-
-  Type *ElementType = PtrTy->getNonOpaquePointerElementType();
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Why is this not upstream?
-  // The pointer stride cannot be determined if the pointer element type is not
-  // sized or is scalable.
-  if (!ElementType->isSized() || ElementType->getTypeID() == Type::ScalableVectorTyID)
-#endif // SIFIVE_CUSTOMIZATION
-    return false;
-
-  ConstantInt *CV = ConstStep->getValue();
-  const DataLayout &DL = Phi->getModule()->getDataLayout();
-  TypeSize TySize = DL.getTypeAllocSize(ElementType);
-  // TODO: We could potentially support this for scalable vectors if we can
-  // prove at compile time that the constant step is always a multiple of
-  // the scalable type.
-  if (TySize.isZero() || TySize.isScalable())
-    return false;
-
-  int64_t Size = static_cast<int64_t>(TySize.getFixedValue());
-  int64_t CVSize = CV->getSExtValue();
-  if (CVSize % Size)
-    return false;
-  auto *StepValue =
-      SE->getConstant(CV->getType(), CVSize / Size, true /* signed */);
-  D = InductionDescriptor(StartValue, IK_PtrInduction, StepValue,
-                          /* BinOp */ nullptr, ElementType);
-=======
   D = InductionDescriptor(StartValue, IK_PtrInduction, Step);
->>>>>>> upstream/main
   return true;
 }

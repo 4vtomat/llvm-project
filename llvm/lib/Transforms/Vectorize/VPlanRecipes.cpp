@@ -1724,7 +1724,7 @@ void VPWidenPointerInductionRecipe::executeUncountable(
           ? NumUnrolledElems
           : ConstantInt::get(PhiType, State.MaxSafeNumElems);
   Value *InductionGEP = GetElementPtrInst::Create(
-      IndDesc.getElementType(), NewPointerPhi,
+      State.Builder.getInt8Ty(), NewPointerPhi,
       State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
   // Add induction update using an incorrect block temporarily. The phi node
@@ -1751,7 +1751,7 @@ void VPWidenPointerInductionRecipe::executeUncountable(
                  State.get(getOperand(1), VPIteration(0, Part)) &&
              "scalar step must be the same across all parts");
       Value *GEP = State.Builder.CreateGEP(
-          IndDesc.getElementType(), NewPointerPhi,
+          State.Builder.getInt8Ty(), NewPointerPhi,
           State.Builder.CreateMul(StartOffsetScalar, ScalarStepValue),
           "vector.gep");
       State.set(this, GEP, Part);
@@ -1770,7 +1770,7 @@ void VPWidenPointerInductionRecipe::executeUncountable(
     assert(ScalarStepValue == State.get(getOperand(1), VPIteration(0, Part)) &&
            "scalar step must be the same across all parts");
     Value *GEP = State.Builder.CreateGEP(
-        IndDesc.getElementType(), NewPointerPhi,
+        State.Builder.getInt8Ty(), NewPointerPhi,
         State.Builder.CreateMul(
             StartOffset,
             State.Builder.CreateVectorSplat(State.VF, ScalarStepValue),
