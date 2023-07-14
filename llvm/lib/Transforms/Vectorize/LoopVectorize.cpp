@@ -13083,16 +13083,13 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
       // Consider vectorizing the epilogue too if it's profitable.
       VectorizationFactor EpilogueVF =
-<<<<<<< HEAD
-          LVP.selectEpilogueVectorizationFactor(VF.Width);
+          LVP.selectEpilogueVectorizationFactor(VF.Width, IC);
 #if SIFIVE_CUSTOMIZATION
       if (EpilogueVF != VectorizationFactor::Disabled() &&
           EpilogueVF.Width.isVector()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-          LVP.selectEpilogueVectorizationFactor(VF.Width, IC);
+#else
       if (EpilogueVF.Width.isVector()) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
         // The first pass vectorizes the main loop and creates a scalar epilogue
         // to be vectorized by executing the plan (potentially with a different
