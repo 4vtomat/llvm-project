@@ -400,7 +400,8 @@ def SIFIVE_X280O :
                        FeatureVendorXSfvqmaccqoq,
                        FeatureVendorXSfvfnrclipxfqf,
                        FeatureVendorXSfvfwmaccqqq],
-                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32]>;
+                      [TuneSiFive7, TuneDLen256b, TunePseudoLIsimm32,
+                       TuneOptimizedVRGatherVCompress]>;
 
 // FIXME: This needs its own scheduler model
 def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,

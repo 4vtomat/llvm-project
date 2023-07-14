@@ -863,8 +863,8 @@ foreach mx = SchedMxList in {
 // The Orca release makes some changes compared to the Narwhal release. Instead
 // of splitting SiFive7N to SiFive7N and SiFiveO, use SchedVariants to model
 // the minor changes.
-def SiFiveOPred : SchedPredicate<[{SchedModel->getSubtargetInfo()->getCPU() ==
-                                   "sifive-x280o"}]>;
+def SiFiveOPred : SchedPredicate<[{SchedModel->getSubtargetInfo()->hasFeature(
+                      RISCV::TuneOptimizedVRGatherVCompress)}]>;
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar Cycles = SiFive7NGetCyclesOnePerElement<mx, sew>.c;
