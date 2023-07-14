@@ -1344,18 +1344,10 @@ void AddressSanitizer::getInterestingMemoryOperands(
   } else if (auto CI = dyn_cast<CallInst>(I)) {
     switch (CI->getIntrinsicID()) {
     case Intrinsic::masked_load:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
     case Intrinsic::masked_store:
     case Intrinsic::masked_gather:
     case Intrinsic::masked_scatter: {
       bool IsWrite = CI->getType()->isVoidTy();
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
       // Masked store has an initial operand for the value.
       unsigned OpOffset = IsWrite ? 1 : 0;
       if (IsWrite ? !ClInstrumentWrites : !ClInstrumentReads)
