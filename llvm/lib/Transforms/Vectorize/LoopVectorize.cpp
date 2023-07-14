@@ -3529,14 +3529,10 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
 
   // Update dominator for Bypass & LoopExit (if needed).
   DT->changeImmediateDominator(Bypass, TCCheckBlock);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
 #endif // SIFIVE_CUSTOMIZATION
-  if (!Cost->requiresScalarEpilogue(VF))
-=======
   if (!Cost->requiresScalarEpilogue(VF.isVector()))
->>>>>>> upstream/main
     // If there is an epilogue which must run, there's no edge from the
     // middle block to exit blocks  and thus no need to update the immediate
     // dominator of the exit blocks.
