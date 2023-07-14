@@ -142,14 +142,14 @@ let Predicates = [HasStdExtZvksh], RVVConstraint = NoConstraint in {
   def VSM3ME_VV : PALUVVNoVm<0b100000, OPMVV, "vsm3me.vv">;
 } // Predicates = [HasStdExtZvksh]
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvkg0p1],
     RVVConstraint = NoConstraint,
     DecoderNamespace = "Zvk0p1" in {
   def VGHMAC_VV : PALUVVNoVm<0b101100, OPMVV, "vghmac.vv">;
 } // Predicates = [HasStdExtZvkg0p1]
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
 //===----------------------------------------------------------------------===//
 // Pseudo instructions
 //===----------------------------------------------------------------------===//
@@ -193,4 +193,3 @@ let Predicates = [HasStdExtZvbb] in {
   defm : VPatUnarySDNode_V<cttz, "PseudoVCTZ">;
   defm : VPatUnarySDNode_V<ctpop, "PseudoVCPOP">;
 }
->>>>>>> upstream/main

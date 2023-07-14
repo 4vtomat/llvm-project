@@ -820,21 +820,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Splice
       setOperationAction(ISD::VECTOR_SPLICE, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       // VP Shuffles
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
 
-      // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the range
-      // of f32.
-      EVT FloatVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
-      if (isTypeLegal(FloatVT)) {
-        setOperationAction(
-            {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
-            Custom);
-=======
       if (Subtarget.hasStdExtZvbb()) {
         setOperationAction({ISD::BITREVERSE, ISD::BSWAP}, VT, Legal);
       } else {
@@ -849,7 +840,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
               {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
               Custom);
         }
->>>>>>> upstream/main
       }
     }
 
