@@ -17,9 +17,10 @@
 #include "llvm/IR/Instruction.h"
 
 namespace llvm {
-void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
-                                VPTransformState &State, VPValue *BlockInMask,
-                                unsigned Part);
+Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
+                                  VPTransformState &State, VPValue *BlockInMask,
+                                  unsigned Part);
+
 void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
                          VPTransformState &State, Intrinsic::ID VPID,
                          unsigned Part);

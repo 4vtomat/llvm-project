@@ -51,24 +51,23 @@ static bool canUnaryOrBinaryOpBeUnmasked(const unsigned Opcode, Type *ElementTyp
   return true;
 }
 
-static void widenSelectInstruction(VPTransformState &State,
-                                   const unsigned VPOpCode, VPValue *Def,
-                                   VPUser &User, const unsigned Part,
-                                   const Twine &Name) {
+static Value *widenSelectInstruction(VPTransformState &State,
+                                     const unsigned VPOpCode, VPValue *Def,
+                                     VPUser &User, const unsigned Part,
+                                     const Twine &Name) {
   VPValue *RVL = State.Plan->getRVL();
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
   Value *RVLArg = State.get(RVL, Part);
-  Value *V = State.Builder.CreateIntrinsic(
-      VPOpCode, {Op1->getType()}, {Cond, Op1, Op2, RVLArg}, nullptr, Name);
-  State.set(Def, V, Part);
+  return State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
+                                       {Cond, Op1, Op2, RVLArg}, nullptr, Name);
 }
 
 namespace llvm {
-void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
-                                VPTransformState &State, VPValue *BlockInMask,
-                                unsigned Part) {
+Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
+                                  VPTransformState &State, VPValue *BlockInMask,
+                                  unsigned Part) {
   VPValue *RVL = State.Plan->getRVL();
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
@@ -95,9 +94,8 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     // Since LV is targeting RVV, use all-true mask for conversions.
     Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
     Builder.setEVL(State.get(RVL, Part));
-    Value *V = Builder.createVectorInstruction(CI->getOpcode(), DestTy,
-                                               {SrcVal}, "vp.cast");
-    State.set(Def, V, Part);
+    return Builder.createVectorInstruction(CI->getOpcode(), DestTy, {SrcVal},
+                                           "vp.cast");
   };
 
   switch (Opcode) {
@@ -108,17 +106,14 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
     Value *RVLArg = State.get(RVL, Part);
     Builder.setMask(MaskArg).setEVL(RVLArg);
-    Value *V = Builder.createVectorInstruction(Instruction::Xor, PredTy,
-                                               {A, MaskArg}, "pred.not");
-    State.set(Def, V, Part);
-    return;
+    return Builder.createVectorInstruction(Instruction::Xor, PredTy,
+                                           {A, MaskArg}, "pred.not");
   }
   case Instruction::Select: {
     assert((!Op || isa<VPWidenSelectRecipe>(Def->getDefiningRecipe())) &&
            "Expected with no-op only or VPWidenSelectRecipe.");
-    widenSelectInstruction(State, Intrinsic::vp_select, Def, User, Part,
-                           "vp.op.select");
-    return;
+    return widenSelectInstruction(State, Intrinsic::vp_select, Def, User, Part,
+                                  "vp.op.select");
   }
   case VPInstruction::ICmpULE: {
     assert(!Op && "Expected with no-op only.");
@@ -131,11 +126,9 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
     Value *RVLArg = State.get(RVL, Part);
     Builder.setMask(MaskArg).setEVL(RVLArg);
-    Value *V =
-        Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
-                                        {IV, TC, PredArg}, "pred.active.lane");
-    State.set(Def, V, Part);
-    return;
+    return Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
+                                           {IV, TC, PredArg},
+                                           "pred.active.lane");
   }
   case Instruction::ICmp:
   case Instruction::FCmp: {
@@ -160,15 +153,12 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
       BuilderIR.setFastMathFlags(Cmp->getFastMathFlags());
-      C = Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
+      return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                           "vp.op.fcmp");
     } else {
-      C = Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
+      return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                           "vp.op.icmp");
     }
-
-    State.set(Def, C, Part);
-    return;
   }
   case Instruction::SExt:
   case Instruction::ZExt:
@@ -263,9 +253,7 @@ void widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
       if (auto *VecOp = dyn_cast<Instruction>(V))
         VecOp->copyIRFlags(Op);
 
-    // Use this vector value for all users of the original instruction.
-    State.set(Def, V, Part);
-    return;
+    return V;
   }
   llvm_unreachable("Unexpected opcode.");
 }
@@ -316,8 +304,10 @@ void VPSelectInstruction::execute(VPTransformState &State) {
     Name = "vp.op.merge";
   }
 
-  for (unsigned Part = 0; Part < State.UF; ++Part)
-    widenSelectInstruction(State, VPOpCode, this, *this, Part, Name);
+  for (unsigned Part = 0; Part < State.UF; ++Part) {
+    Value *V = widenSelectInstruction(State, VPOpCode, this, *this, Part, Name);
+    State.set(this, V, Part);
+  }
 
 }
 

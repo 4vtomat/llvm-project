@@ -232,49 +232,30 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
   if (Instruction::isBinaryOp(getOpcode())) {
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
-      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
-                                       Part);
-      return;
-    }
+    if (State.Plan->getRVL() && A->getType()->isVectorTy())
+      return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
+                                              nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V =
-        Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
-    State.set(this, V, Part);
-    return;
-=======
     return Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
->>>>>>> upstream/main
   }
 
   switch (getOpcode()) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
-      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
-                                       Part);
-      return;
-    }
+    if (State.Plan->getRVL() && A->getType()->isVectorTy())
+      return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
+                                              nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V = Builder.CreateNot(A, Name);
-    State.set(this, V, Part);
-    break;
-=======
     return Builder.CreateNot(A, Name);
->>>>>>> upstream/main
   }
   case VPInstruction::ICmpULE: {
     Value *IV = State.get(getOperand(0), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL() && IV->getType()->isVectorTy()) {
-      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
-                                       Part);
-      return;
-    }
+    if (State.Plan->getRVL() && IV->getType()->isVectorTy())
+      return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
+                                              nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
     Value *TC = State.get(getOperand(1), Part);
     return Builder.CreateICmpULE(IV, TC, Name);
@@ -283,20 +264,13 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     Value *Cond = State.get(getOperand(0), Part);
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
-      llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
-                                       Part);
-      return;
-    }
+    if (State.Plan->getRVL() && Cond->getType()->isVectorTy())
+      return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
+                                              nullptr, Part);
+
 #endif // SIFIVE_CUSTOMIZATION
-    Value *V = Builder.CreateSelect(Cond, Op1, Op2, Name);
-    State.set(this, V, Part);
-    break;
-=======
     return Builder.CreateSelect(Cond, Op1, Op2, Name);
->>>>>>> upstream/main
   }
   case VPInstruction::ActiveLaneMask: {
     // Get first lane of vector induction variable.
@@ -326,39 +300,25 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     // For the first part, use the recurrence phi (v1), otherwise v2.
     auto *V1 = State.get(getOperand(0), 0);
     Value *PartMinus1 = Part == 0 ? V1 : State.get(getOperand(1), Part - 1);
-<<<<<<< HEAD
-    if (!PartMinus1->getType()->isVectorTy()) {
-      State.set(this, PartMinus1, Part);
-    } else {
-#if SIFIVE_CUSTOMIZATION
-      if (State.Plan->getRVL()) {
-        Value *V2 = State.get(getOperand(1), Part);
-        Value *PrevRVL = State.get(State.Plan->getPrevRVL(), Part);
-        Value *RVL = State.get(State.Plan->getRVL(), Part);
-
-        auto *IdxTy = Builder.getInt32Ty();
-        Value *Shift = ConstantInt::get(IdxTy, -1);
-        Value *Mask = Builder.getTrueVector(State.VF);
-
-        Value *Splice = Builder.CreateIntrinsic(
-            Intrinsic::experimental_vp_splice, {PartMinus1->getType()},
-            {PartMinus1, V2, Shift, Mask, PrevRVL, RVL}, nullptr);
-
-        State.set(this, Splice, Part);
-        break;
-      }
-#endif // SIFIVE_CUSTOMIZATION
-      Value *V2 = State.get(getOperand(1), Part);
-      State.set(this, Builder.CreateVectorSplice(PartMinus1, V2, -1, Name),
-                Part);
-    }
-    break;
-=======
     if (!PartMinus1->getType()->isVectorTy())
       return PartMinus1;
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->getRVL()) {
+      Value *V2 = State.get(getOperand(1), Part);
+      Value *PrevRVL = State.get(State.Plan->getPrevRVL(), Part);
+      Value *RVL = State.get(State.Plan->getRVL(), Part);
+
+      auto *IdxTy = Builder.getInt32Ty();
+      Value *Shift = ConstantInt::get(IdxTy, -1);
+      Value *Mask = Builder.getTrueVector(State.VF);
+
+      return Builder.CreateIntrinsic(
+          Intrinsic::experimental_vp_splice, {PartMinus1->getType()},
+          {PartMinus1, V2, Shift, Mask, PrevRVL, RVL}, nullptr);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Value *V2 = State.get(getOperand(1), Part);
     return Builder.CreateVectorSplice(PartMinus1, V2, -1, Name);
->>>>>>> upstream/main
   }
   case VPInstruction::CalculateTripCountMinusVF: {
     Value *ScalarTC = State.get(getOperand(0), {0, 0});
@@ -385,14 +345,8 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 #else
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      Next = Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
-    } else {
-      Next = State.get(this, 0);
-=======
       return Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
->>>>>>> upstream/main
     }
     return State.get(this, 0);
   }
