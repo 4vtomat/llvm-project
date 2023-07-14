@@ -860,13 +860,57 @@ foreach mx = SchedMxList in {
   }
 }
 
+// The Orca release makes some changes compared to the Narwhal release. Instead
+// of splitting SiFive7N to SiFive7N and SiFiveO, use SchedVariants to model
+// the minor changes.
+def SiFiveOPred : SchedPredicate<[{SchedModel->getSubtargetInfo()->getCPU() ==
+                                   "sifive-x280o"}]>;
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar Cycles = SiFive7NGetCyclesOnePerElement<mx, sew>.c;
     defvar IsWorstCase = SiFive7NIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+
+    // Define defaults
     let Latency = !add(Cycles, 3), ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7NVA], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7NVA], mx, sew, IsWorstCase>;
+    }
+
+    if !or(!or(!eq(mx, "MF2"), !eq(mx, "MF4")), !eq(mx, "MF8")) then {
+      assert !not(IsWorstCase),
+        "On SiFive7N MF2, MF4, and MF8 never lead to WorstCase behavior";
+
+      // Define Narwhal resources
+      def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVA]>
+        { let Latency = !add(Cycles, 3); let ResourceCycles = [Cycles]; }
+      def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVA]>
+        { let Latency = !add(Cycles, 3); let ResourceCycles = [Cycles]; }
+      // Define Orca resources
+      def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVA]>
+        { let Latency = 4; let ResourceCycles = [1]; }
+      def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVA]>
+        { let Latency = 4; let ResourceCycles = [1]; }
+
+      // Define variants to pick Narwhal or Orca resources
+      def "WriteVRGatherVV_" # mx # "_E" # sew # "Variant" : SchedWriteVariant<[
+        SchedVar<SiFiveOPred, [!cast<SchedWriteRes>("WriteVRGatherVV_" # mx # "_E"
+                                                    # sew # "_O")]>,
+        SchedVar<NoSchedPred, [!cast<SchedWriteRes>("WriteVRGatherVV_" # mx # "_E"
+                                                    # sew # "_N")]>]>;
+      def "WriteVCompressV_" # mx # "_E" # sew # "Variant" : SchedWriteVariant<[
+        SchedVar<SiFiveOPred, [!cast<SchedWriteRes>("WriteVCompressV_" # mx # "_E"
+                                                    # sew # "_O")]>,
+        SchedVar<NoSchedPred, [!cast<SchedWriteRes>("WriteVCompressV_" # mx # "_E"
+                                                    # sew # "_N")]>]>;
+
+      // Tie variant choice to the correct instructions. This overrides default
+      // behavior for these instructions that was defined above.
+      def : SchedAlias<
+        !cast<SchedReadWrite>("WriteVRGatherVV_" # mx # "_E" # sew),
+        !cast<SchedReadWrite>("WriteVRGatherVV_" # mx # "_E" # sew # "Variant")>;
+      def : SchedAlias<
+        !cast<SchedReadWrite>("WriteVCompressV_" # mx # "_E" # sew),
+        !cast<SchedReadWrite>("WriteVCompressV_" # mx # "_E" # sew # "Variant")>;
     }
   }
 }
