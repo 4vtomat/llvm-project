@@ -156,8 +156,7 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |`rv64gc_zfhmin_zba_zbb_zbs`
 |sifive-p650
 
-// FIXME: We need to resolve the product naming and the compiler naming
-|23G3 and above |2023.03.0 and above |sifive-p670
+|23G3.02 and above |2023.08.0 and above |sifive-p670
 |`rv64gcv_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_zvl128b`
 |sifive-p670
 
@@ -165,8 +164,7 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |`rv64gc_zfhmin_zba_zbb_zbs`
 |sifive-p450
 
-// FIXME: We need to resolve the product naming and the compiler naming
-|23G3 and above |2023.03.0 and above |sifive-p470
+|23G3.02 and above |2023.08.0 and above |sifive-p470
 |`rv64gcv_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_zvl128b`
 |sifive-p470
 
