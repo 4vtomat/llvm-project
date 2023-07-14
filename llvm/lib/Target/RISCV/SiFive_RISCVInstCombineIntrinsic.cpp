@@ -809,6 +809,23 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
   switch (IID) {
   case Intrinsic::riscv_vaadd:
   case Intrinsic::riscv_vaaddu:
+  case Intrinsic::riscv_vsmul:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3),
+           II.getArgOperand(4)});
+    // These instructions are commutable so check the other operand.
+    if (II.getArgOperand(2)->getType()->isVectorTy()) {
+      if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(3)))
+        return CreateIntrinsic(
+            &II, IID,
+            {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+            {II.getArgOperand(0), II.getArgOperand(2), V, II.getArgOperand(3),
+             II.getArgOperand(4)});
+    }
+    break;
   case Intrinsic::riscv_vadd:
   case Intrinsic::riscv_vand:
   case Intrinsic::riscv_vmax:
@@ -821,7 +838,6 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
   case Intrinsic::riscv_vor:
   case Intrinsic::riscv_vsadd:
   case Intrinsic::riscv_vsaddu:
-  case Intrinsic::riscv_vsmul:
   case Intrinsic::riscv_vsub:
   case Intrinsic::riscv_vxor:
   case Intrinsic::riscv_vfadd:
@@ -855,6 +871,15 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
     break;
   case Intrinsic::riscv_vasub:
   case Intrinsic::riscv_vasubu:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
+      return CreateIntrinsic(
+          &II, IID,
+          {II.getType(), V->getType(), II.getArgOperand(3)->getType()},
+          {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3),
+           II.getArgOperand(4)});
+
+    // These instructions are not commutable.
+    break;
   case Intrinsic::riscv_vdiv:
   case Intrinsic::riscv_vdivu:
   case Intrinsic::riscv_vmulhsu:
@@ -878,11 +903,23 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
           {II.getArgOperand(0), II.getArgOperand(1), V, II.getArgOperand(3)});
     // These instructions are not commutable.
     break;
+  case Intrinsic::riscv_vssrl:
+  case Intrinsic::riscv_vssra:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
+      // Expect II.getArgOperand(2)->getType() is a XLen value type.
+      Value *ShiftAmount =
+          IC.Builder.CreateZExtOrTrunc(V, II.getArgOperand(3)->getType());
+      return CreateIntrinsic(&II, IID,
+                             {II.getType(), ShiftAmount->getType(),
+                              II.getArgOperand(3)->getType()},
+                             {II.getArgOperand(0), II.getArgOperand(1),
+                              ShiftAmount, II.getArgOperand(3),
+                              II.getArgOperand(4)});
+    }
+    break;
   case Intrinsic::riscv_vsll:
   case Intrinsic::riscv_vsrl:
   case Intrinsic::riscv_vsra:
-  case Intrinsic::riscv_vssrl:
-  case Intrinsic::riscv_vssra:
     if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3))) {
       // Expect II.getArgOperand(2)->getType() is a XLen value type.
       Value *ShiftAmount =
