@@ -3252,7 +3252,6 @@ foreach vti = AllIntegerVectors in {
               (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX#"_MASK")
                   (vti.Vector (IMPLICIT_DEF)), (vti.Mask V0), GPR:$vl, vti.Log2SEW,
                   TAIL_AGNOSTIC)>;
-<<<<<<< HEAD
 
 #ifdef SIFIVE_CUSTOMIZATION
     // Copied from BSC
@@ -3263,14 +3262,6 @@ foreach vti = AllIntegerVectors in {
                   TAIL_AGNOSTIC)>;
 #endif // SIFIVE_CUSTOMIZATION
 
-    def : Pat<(vti.Vector (riscv_slide1up_vl (vti.Vector undef),
-                                             (vti.Vector vti.RegClass:$rs1),
-                                             GPR:$rs2, (vti.Mask true_mask),
-                                             VLOpFrag)),
-              (!cast<Instruction>("PseudoVSLIDE1UP_VX_"#vti.LMul.MX)
-                  vti.RegClass:$rs1, GPR:$rs2, GPR:$vl, vti.Log2SEW)>;
-=======
->>>>>>> upstream/main
     def : Pat<(vti.Vector (riscv_slide1up_vl (vti.Vector vti.RegClass:$rd),
                                              (vti.Vector vti.RegClass:$rs1),
                                              GPR:$rs2, (vti.Mask true_mask),
