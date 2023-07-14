@@ -8,7 +8,7 @@ vsetvli zero, a0, e8, m1, tu, mu
 # LLVM-MCA-RISCV-LMUL M1
 vadd.vv v12, v12, v12
 vsub.vv v12, v12, v12
-vsetvli zero, a0, e8, m2, tu, mu
+vsetvli zero, a0, e8, m4, tu, mu
 # LLVM-MCA-RISCV-LMUL M4
 vadd.vv v12, v12, v12
 vsub.vv v12, v12, v12
@@ -37,7 +37,7 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT:  1      4     2.00                        vadd.vv	v12, v12, v12
 # CHECK-NEXT:  1      4     2.00                        vsub.vv	v12, v12, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m2, tu, mu
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m4, tu, mu
 # CHECK-NEXT:  1      4     8.00                        vadd.vv	v12, v12, v12
 # CHECK-NEXT:  1      4     8.00                        vsub.vv	v12, v12, v12
 
@@ -57,6 +57,7 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT:  -      -      -     3.00    -     22.00  22.00   -      -
 
 # CHECK:      Resource pressure by instruction:
+<<<<<<< HEAD
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
@@ -66,6 +67,17 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     8.00   8.00    -      -     vadd.vv	v12, v12, v12
 # CHECK-NEXT:  -      -      -      -      -     8.00   8.00    -      -     vsub.vv	v12, v12, v12
+=======
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vsub.vv	v12, v12, v12
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m4, tu, mu
+# CHECK-NEXT:  -      -      -      -     8.00   8.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -     8.00   8.00    -      -     vsub.vv	v12, v12, v12
+>>>>>>> upstream/main
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789
@@ -76,7 +88,7 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT: [0,2]     .   DeeE  .    .    .    . .   vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT: [0,3]     .    . DeeeE   .    .    . .   vadd.vv	v12, v12, v12
 # CHECK-NEXT: [0,4]     .    .    .DeeeE    .    . .   vsub.vv	v12, v12, v12
-# CHECK-NEXT: [0,5]     .    .    . DeeE    .    . .   vsetvli	zero, a0, e8, m2, tu, mu
+# CHECK-NEXT: [0,5]     .    .    . DeeE    .    . .   vsetvli	zero, a0, e8, m4, tu, mu
 # CHECK-NEXT: [0,6]     .    .    .    DeeeE.    . .   vadd.vv	v12, v12, v12
 # CHECK-NEXT: [0,7]     .    .    .    .    .  DeeeE   vsub.vv	v12, v12, v12
 
@@ -92,7 +104,7 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT: 2.     1     0.0    0.0    0.0       vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT: 3.     1     0.0    0.0    0.0       vadd.vv	v12, v12, v12
 # CHECK-NEXT: 4.     1     0.0    0.0    0.0       vsub.vv	v12, v12, v12
-# CHECK-NEXT: 5.     1     0.0    0.0    0.0       vsetvli	zero, a0, e8, m2, tu, mu
+# CHECK-NEXT: 5.     1     0.0    0.0    0.0       vsetvli	zero, a0, e8, m4, tu, mu
 # CHECK-NEXT: 6.     1     0.0    0.0    0.0       vadd.vv	v12, v12, v12
 # CHECK-NEXT: 7.     1     0.0    0.0    0.0       vsub.vv	v12, v12, v12
 # CHECK-NEXT:        1     0.0    0.0    0.0       <total>

@@ -65,10 +65,14 @@ struct SemaRecord {
   bool HasMaskedOffOperand :1;
   bool HasTailPolicy : 1;
   bool HasMaskPolicy : 1;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
   bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool HasFRMRoundModeOp : 1;
+>>>>>>> upstream/main
   bool IsTuple : 1;
   uint8_t UnMaskedPolicyScheme : 2;
   uint8_t MaskedPolicyScheme : 2;
@@ -586,6 +590,7 @@ void RVVEmitter::createRVVIntrinsics(
     StringRef MaskedIRName = R->getValueAsString("MaskedIRName");
     unsigned NF = R->getValueAsInt("NF");
     bool IsTuple = R->getValueAsBit("IsTuple");
+    bool HasFRMRoundModeOp = R->getValueAsBit("HasFRMRoundModeOp");
 
     const Policy DefaultPolicy;
 #ifdef SIFIVE_CUSTOMIZATION
@@ -658,6 +663,7 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
+<<<<<<< HEAD
             DefaultPolicy));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
@@ -668,6 +674,9 @@ void RVVEmitter::createRVVIntrinsics(
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
               NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+            DefaultPolicy, HasFRMRoundModeOp));
+>>>>>>> upstream/main
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
             SmallVector<PrototypeDescriptor> PolicyPrototype =
@@ -682,7 +691,7 @@ void RVVEmitter::createRVVIntrinsics(
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
                 ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures,
-                NF, P));
+                NF, P, HasFRMRoundModeOp));
           }
         if (!HasMasked)
           continue;
@@ -693,6 +702,7 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
+<<<<<<< HEAD
             IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy));
 
 #if SIFIVE_CUSTOMIZATION
@@ -707,6 +717,10 @@ void RVVEmitter::createRVVIntrinsics(
               IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy));
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy,
+            HasFRMRoundModeOp));
+>>>>>>> upstream/main
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         for (auto P : SupportedMaskedPolicies) {
@@ -721,7 +735,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures, NF,
-              P));
+              P, HasFRMRoundModeOp));
         }
       } // End for Log2LMULList
     }   // End for TypeRange
@@ -787,6 +801,7 @@ void RVVEmitter::createRVVIntrinsics(
     SR.Suffix = parsePrototypes(SuffixProto);
     SR.OverloadedSuffix = parsePrototypes(OverloadedSuffixProto);
     SR.IsTuple = IsTuple;
+    SR.HasFRMRoundModeOp = HasFRMRoundModeOp;
 
     SemaRecords->push_back(SR);
   }
@@ -833,6 +848,7 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
     R.UnMaskedPolicyScheme = SR.UnMaskedPolicyScheme;
     R.MaskedPolicyScheme = SR.MaskedPolicyScheme;
     R.IsTuple = SR.IsTuple;
+    R.HasFRMRoundModeOp = SR.HasFRMRoundModeOp;
 
     assert(R.PrototypeIndex !=
            static_cast<uint16_t>(SemaSignatureTable::INVALID_INDEX));

@@ -4227,12 +4227,12 @@ SDValue TargetLowering::SimplifySetCC(EVT VT, SDValue N0, SDValue N1,
   bool N1ConstOrSplat =
       isConstOrConstSplat(N1, /*AllowUndefs*/ false, /*AllowTruncate*/ true);
 
-  // Ensure that the constant occurs on the RHS and fold constant comparisons.
+  // Canonicalize toward having the constant on the RHS.
   // TODO: Handle non-splat vector constants. All undef causes trouble.
   // FIXME: We can't yet fold constant scalable vector splats, so avoid an
   // infinite loop here when we encounter one.
   ISD::CondCode SwappedCC = ISD::getSetCCSwappedOperands(Cond);
-  if (N0ConstOrSplat && (!OpVT.isScalableVector() || !N1ConstOrSplat) &&
+  if (N0ConstOrSplat && !N1ConstOrSplat &&
       (DCI.isBeforeLegalizeOps() ||
        isCondCodeLegal(SwappedCC, N0.getSimpleValueType())))
     return DAG.getSetCC(dl, VT, N1, N0, SwappedCC);
@@ -5996,17 +5996,18 @@ SDValue TargetLowering::BuildSDIV(SDNode *N, SelectionDAG &DAG,
       return SDValue(LoHi.getNode(), 1);
     }
     // If type twice as wide legal, widen and use a mul plus a shift.
-    if (!VT.isVector()) {
-      unsigned Size = VT.getSizeInBits();
-      EVT WideVT = EVT::getIntegerVT(*DAG.getContext(), Size * 2);
-      if (isOperationLegal(ISD::MUL, WideVT)) {
-        X = DAG.getNode(ISD::SIGN_EXTEND, dl, WideVT, X);
-        Y = DAG.getNode(ISD::SIGN_EXTEND, dl, WideVT, Y);
-        Y = DAG.getNode(ISD::MUL, dl, WideVT, X, Y);
-        Y = DAG.getNode(ISD::SRL, dl, WideVT, Y,
-                        DAG.getShiftAmountConstant(EltBits, WideVT, dl));
-        return DAG.getNode(ISD::TRUNCATE, dl, VT, Y);
-      }
+    unsigned Size = VT.getScalarSizeInBits();
+    EVT WideVT = EVT::getIntegerVT(*DAG.getContext(), Size * 2);
+    if (VT.isVector())
+      WideVT = EVT::getVectorVT(*DAG.getContext(), WideVT,
+                                VT.getVectorElementCount());
+    if (isOperationLegalOrCustom(ISD::MUL, WideVT)) {
+      X = DAG.getNode(ISD::SIGN_EXTEND, dl, WideVT, X);
+      Y = DAG.getNode(ISD::SIGN_EXTEND, dl, WideVT, Y);
+      Y = DAG.getNode(ISD::MUL, dl, WideVT, X, Y);
+      Y = DAG.getNode(ISD::SRL, dl, WideVT, Y,
+                      DAG.getShiftAmountConstant(EltBits, WideVT, dl));
+      return DAG.getNode(ISD::TRUNCATE, dl, VT, Y);
     }
     return SDValue();
   };
@@ -6316,17 +6317,18 @@ SDValue TargetLowering::BuildUDIV(SDNode *N, SelectionDAG &DAG,
       return SDValue(LoHi.getNode(), 1);
     }
     // If type twice as wide legal, widen and use a mul plus a shift.
-    if (!VT.isVector()) {
-      unsigned Size = VT.getSizeInBits();
-      EVT WideVT = EVT::getIntegerVT(*DAG.getContext(), Size * 2);
-      if (isOperationLegal(ISD::MUL, WideVT)) {
-        X = DAG.getNode(ISD::ZERO_EXTEND, dl, WideVT, X);
-        Y = DAG.getNode(ISD::ZERO_EXTEND, dl, WideVT, Y);
-        Y = DAG.getNode(ISD::MUL, dl, WideVT, X, Y);
-        Y = DAG.getNode(ISD::SRL, dl, WideVT, Y,
-                        DAG.getShiftAmountConstant(EltBits, WideVT, dl));
-        return DAG.getNode(ISD::TRUNCATE, dl, VT, Y);
-      }
+    unsigned Size = VT.getScalarSizeInBits();
+    EVT WideVT = EVT::getIntegerVT(*DAG.getContext(), Size * 2);
+    if (VT.isVector())
+      WideVT = EVT::getVectorVT(*DAG.getContext(), WideVT,
+                                VT.getVectorElementCount());
+    if (isOperationLegalOrCustom(ISD::MUL, WideVT)) {
+      X = DAG.getNode(ISD::ZERO_EXTEND, dl, WideVT, X);
+      Y = DAG.getNode(ISD::ZERO_EXTEND, dl, WideVT, Y);
+      Y = DAG.getNode(ISD::MUL, dl, WideVT, X, Y);
+      Y = DAG.getNode(ISD::SRL, dl, WideVT, Y,
+                      DAG.getShiftAmountConstant(EltBits, WideVT, dl));
+      return DAG.getNode(ISD::TRUNCATE, dl, VT, Y);
     }
     return SDValue(); // No mulhu or equivalent
   };
@@ -8360,17 +8362,28 @@ SDValue TargetLowering::expandFMINNUM_FMAXNUM(SDNode *Node,
   return SDValue();
 }
 
-/// If this FPClassTest can be performed with a fcmp to 0, return the test mask
-/// for the floating-point mode.
-static bool isFCmpEqualZero(FPClassTest Test, const fltSemantics &Semantics,
-                            const MachineFunction &MF) {
-  if (Test == fcZero &&
+/// Returns a true value if if this FPClassTest can be performed with an ordered
+/// fcmp to 0, and a false value if it's an unordered fcmp to 0. Returns
+/// std::nullopt if it cannot be performed as a compare with 0.
+static std::optional<bool> isFCmpEqualZero(FPClassTest Test,
+                                           const fltSemantics &Semantics,
+                                           const MachineFunction &MF) {
+  FPClassTest OrderedMask = Test & ~fcNan;
+  FPClassTest NanTest = Test & fcNan;
+  bool IsOrdered = NanTest == fcNone;
+  bool IsUnordered = NanTest == fcNan;
+
+  // Skip cases that are testing for only a qnan or snan.
+  if (!IsOrdered && !IsUnordered)
+    return std::nullopt;
+
+  if (OrderedMask == fcZero &&
       MF.getDenormalMode(Semantics).Input == DenormalMode::IEEE)
-    return true;
-  if (Test == (fcZero | fcSubnormal) &&
+    return IsOrdered;
+  if (OrderedMask == (fcZero | fcSubnormal) &&
       MF.getDenormalMode(Semantics).inputsAreZero())
-    return true;
-  return false;
+    return IsOrdered;
+  return std::nullopt;
 }
 
 SDValue TargetLowering::expandIS_FPCLASS(EVT ResultVT, SDValue Op,
@@ -8397,7 +8410,7 @@ SDValue TargetLowering::expandIS_FPCLASS(EVT ResultVT, SDValue Op,
   // Some checks may be represented as inversion of simpler check, for example
   // "inf|normal|subnormal|zero" => !"nan".
   bool IsInverted = false;
-  if (FPClassTest InvertedCheck = getInvertedFPClassTest(Test)) {
+  if (FPClassTest InvertedCheck = invertFPClassTestIfSimpler(Test)) {
     IsInverted = true;
     Test = InvertedCheck;
   }
@@ -8411,19 +8424,41 @@ SDValue TargetLowering::expandIS_FPCLASS(EVT ResultVT, SDValue Op,
   // Some checks can be implemented using float comparisons, if floating point
   // exceptions are ignored.
   if (Flags.hasNoFPExcept() &&
-      // TODO: Should check isCondCodeLegal
       isOperationLegalOrCustom(ISD::SETCC, OperandVT.getScalarType())) {
-    if (isFCmpEqualZero(Test, Semantics, DAG.getMachineFunction())) {
+    ISD::CondCode OrderedCmpOpcode = IsInverted ? ISD::SETUNE : ISD::SETOEQ;
+    ISD::CondCode UnorderedCmpOpcode = IsInverted ? ISD::SETONE : ISD::SETUEQ;
+
+    if (std::optional<bool> IsCmp0 =
+            isFCmpEqualZero(Test, Semantics, DAG.getMachineFunction());
+        IsCmp0 && (isCondCodeLegalOrCustom(
+                      *IsCmp0 ? OrderedCmpOpcode : UnorderedCmpOpcode,
+                      OperandVT.getScalarType().getSimpleVT()))) {
+
       // If denormals could be implicitly treated as 0, this is not equivalent
       // to a compare with 0 since it will also be true for denormals.
       return DAG.getSetCC(DL, ResultVT, Op,
                           DAG.getConstantFP(0.0, DL, OperandVT),
-                          IsInverted ? ISD::SETUNE : ISD::SETOEQ);
+                          *IsCmp0 ? OrderedCmpOpcode : UnorderedCmpOpcode);
     }
 
-    if (Test == fcNan)
+    if (Test == fcNan &&
+        isCondCodeLegalOrCustom(IsInverted ? ISD::SETO : ISD::SETUO,
+                                OperandVT.getScalarType().getSimpleVT())) {
       return DAG.getSetCC(DL, ResultVT, Op, Op,
                           IsInverted ? ISD::SETO : ISD::SETUO);
+    }
+
+    if (Test == fcInf &&
+        isCondCodeLegalOrCustom(IsInverted ? ISD::SETUNE : ISD::SETOEQ,
+                                OperandVT.getScalarType().getSimpleVT()) &&
+        isOperationLegalOrCustom(ISD::FABS, OperandVT.getScalarType())) {
+      // isinf(x) --> fabs(x) == inf
+      SDValue Abs = DAG.getNode(ISD::FABS, DL, OperandVT, Op);
+      SDValue Inf =
+          DAG.getConstantFP(APFloat::getInf(Semantics), DL, OperandVT);
+      return DAG.getSetCC(DL, ResultVT, Abs, Inf,
+                          IsInverted ? ISD::SETUNE : ISD::SETOEQ);
+    }
   }
 
   // In the general case use integer operations.
@@ -8502,6 +8537,18 @@ SDValue TargetLowering::expandIS_FPCLASS(EVT ResultVT, SDValue Op,
     Test &= ~fcNegFinite;
   }
   appendResult(PartialRes);
+
+  if (FPClassTest PartialCheck = Test & (fcZero | fcSubnormal)) {
+    // fcZero | fcSubnormal => test all exponent bits are 0
+    // TODO: Handle sign bit specific cases
+    if (PartialCheck == (fcZero | fcSubnormal)) {
+      SDValue ExpBits = DAG.getNode(ISD::AND, DL, IntVT, OpAsInt, ExpMaskV);
+      SDValue ExpIsZero =
+          DAG.getSetCC(DL, ResultVT, ExpBits, ZeroV, ISD::SETEQ);
+      appendResult(ExpIsZero);
+      Test &= ~PartialCheck & fcAllFlags;
+    }
+  }
 
   // Check for individual classes.
 

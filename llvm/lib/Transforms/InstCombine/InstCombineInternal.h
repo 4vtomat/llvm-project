@@ -329,8 +329,7 @@ private:
   Instruction *optimizeBitCastFromPhi(CastInst &CI, PHINode *PN);
   Instruction *matchSAddSubSat(IntrinsicInst &MinMax1);
   Instruction *foldNot(BinaryOperator &I);
-
-  void freelyInvertAllUsersOf(Value *V, Value *IgnoredUser = nullptr);
+  Instruction *foldBinOpOfDisplacedShifts(BinaryOperator &I);
 
   /// Determine if a pair of casts can be replaced by a single cast.
   ///
@@ -664,6 +663,7 @@ public:
   bool removeInstructionsBeforeUnreachable(Instruction &I);
   bool handleUnreachableFrom(Instruction *I);
   bool handlePotentiallyDeadSuccessors(BasicBlock *BB, BasicBlock *LiveSucc);
+  void freelyInvertAllUsersOf(Value *V, Value *IgnoredUser = nullptr);
 };
 
 class Negator final {

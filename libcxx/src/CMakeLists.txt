@@ -68,13 +68,6 @@ set(LIBCXX_SOURCES
   verbose_abort.cpp
   )
 
-if (LIBCXX_ENABLE_DEBUG_MODE OR LIBCXX_ENABLE_BACKWARDS_COMPATIBILITY_DEBUG_MODE_SYMBOLS)
-  list(APPEND LIBCXX_SOURCES
-    debug.cpp
-    legacy_debug_handler.cpp
-    )
-endif()
-
 if (LIBCXX_ENABLE_RANDOM_DEVICE)
   list(APPEND LIBCXX_SOURCES
     random.cpp
@@ -324,6 +317,12 @@ add_custom_target(cxx DEPENDS ${LIBCXX_BUILD_TARGETS})
 set(LIBCXX_EXPERIMENTAL_SOURCES
   experimental/memory_resource.cpp
   )
+
+if (LIBCXX_PSTL_CPU_BACKEND STREQUAL "libdispatch")
+  list(APPEND LIBCXX_EXPERIMENTAL_SOURCES
+    pstl/libdispatch.cpp
+    )
+endif()
 
 add_library(cxx_experimental STATIC ${LIBCXX_EXPERIMENTAL_SOURCES})
 target_link_libraries(cxx_experimental PUBLIC cxx-headers)

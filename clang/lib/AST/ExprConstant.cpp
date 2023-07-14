@@ -583,7 +583,7 @@ namespace {
     /// LambdaCaptureFields - Mapping from captured variables/this to
     /// corresponding data members in the closure class.
     llvm::DenseMap<const ValueDecl *, FieldDecl *> LambdaCaptureFields;
-    FieldDecl *LambdaThisCaptureField;
+    FieldDecl *LambdaThisCaptureField = nullptr;
 
     CallStackFrame(EvalInfo &Info, SourceLocation CallLoc,
                    const FunctionDecl *Callee, const LValue *This,
@@ -626,7 +626,7 @@ namespace {
     /// Allocate storage for a parameter of a function call made in this frame.
     APValue &createParam(CallRef Args, const ParmVarDecl *PVD, LValue &LV);
 
-    void describe(llvm::raw_ostream &OS) override;
+    void describe(llvm::raw_ostream &OS) const override;
 
     Frame *getCaller() const override { return Caller; }
     SourceLocation getCallLocation() const override { return CallLoc; }
@@ -1914,7 +1914,7 @@ APValue *EvalInfo::createHeapAlloc(const Expr *E, QualType T, LValue &LV) {
 }
 
 /// Produce a string describing the given constexpr call.
-void CallStackFrame::describe(raw_ostream &Out) {
+void CallStackFrame::describe(raw_ostream &Out) const {
   unsigned ArgIndex = 0;
   bool IsMemberCall = isa<CXXMethodDecl>(Callee) &&
                       !isa<CXXConstructorDecl>(Callee) &&
@@ -5007,12 +5007,13 @@ static EvalStmtResult EvaluateSwitch(StmtResult &Result, EvalInfo &Info,
         !EvaluateDecl(Info, SS->getConditionVariable()))
       return ESR_Failed;
     if (SS->getCond()->isValueDependent()) {
-      if (!EvaluateDependentExpr(SS->getCond(), Info))
-        return ESR_Failed;
-    } else {
-      if (!EvaluateInteger(SS->getCond(), Value, Info))
-        return ESR_Failed;
+      // We don't know what the value is, and which branch should jump to.
+      EvaluateDependentExpr(SS->getCond(), Info);
+      return ESR_Failed;
     }
+    if (!EvaluateInteger(SS->getCond(), Value, Info))
+      return ESR_Failed;
+
     if (!CondScope.destroy())
       return ESR_Failed;
   }
@@ -14896,6 +14897,8 @@ public:
     default:
       return ExprEvaluatorBaseTy::VisitCastExpr(E);
     case CK_NullToPointer:
+      VisitIgnoredValue(E->getSubExpr());
+      return ZeroInitialization(E);
     case CK_NonAtomicToAtomic:
       return This ? EvaluateInPlace(Result, Info, *This, E->getSubExpr())
                   : Evaluate(Result, Info, E->getSubExpr());
@@ -15475,9 +15478,6 @@ bool Expr::EvaluateAsInitializer(APValue &Value, const ASTContext &Ctx,
   Info.setEvaluatingDecl(VD, Value);
   Info.InConstantContext = IsConstantInitialization;
 
-  SourceLocation DeclLoc = VD->getLocation();
-  QualType DeclTy = VD->getType();
-
   if (Info.EnableNewConstInterp) {
     auto &InterpCtx = const_cast<ASTContext &>(Ctx).getInterpContext();
     if (!InterpCtx.evaluateAsInitializer(Info, VD, Value))
@@ -15498,6 +15498,9 @@ bool Expr::EvaluateAsInitializer(APValue &Value, const ASTContext &Ctx,
     if (!Info.discardCleanups())
       llvm_unreachable("Unhandled cleanup; missing full expression marker?");
   }
+
+  SourceLocation DeclLoc = VD->getLocation();
+  QualType DeclTy = VD->getType();
   return CheckConstantExpression(Info, DeclLoc, DeclTy, Value,
                                  ConstantExprKind::Normal) &&
          CheckMemoryLeaks(Info);

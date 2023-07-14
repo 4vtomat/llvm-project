@@ -1796,8 +1796,12 @@ public:
                                   bool IsUnevaluated);
 
   ExprResult ParseStringLiteralExpression(bool AllowUserDefinedLiteral = false);
+  ExprResult ParseUnevaluatedStringLiteralExpression();
 
 private:
+  ExprResult ParseStringLiteralExpression(bool AllowUserDefinedLiteral,
+                                          bool Unevaluated);
+
   ExprResult ParseExpressionWithLeadingAt(SourceLocation AtLoc);
 
   ExprResult ParseExpressionWithLeadingExtension(SourceLocation ExtLoc);
@@ -2230,7 +2234,8 @@ private:
     DSC_objc_method_result, // ObjC method result context, enables
                             // 'instancetype'
     DSC_condition,          // condition declaration context
-    DSC_association // A _Generic selection expression's type association
+    DSC_association, // A _Generic selection expression's type association
+    DSC_new,         // C++ new expression
   };
 
   /// Is this a context in which we are parsing just a type-specifier (or
@@ -2252,6 +2257,7 @@ private:
     case DeclSpecContext::DSC_trailing:
     case DeclSpecContext::DSC_alias_declaration:
     case DeclSpecContext::DSC_association:
+    case DeclSpecContext::DSC_new:
       return true;
     }
     llvm_unreachable("Missing DeclSpecContext case");
@@ -2300,6 +2306,7 @@ private:
     case DeclSpecContext::DSC_trailing:
     case DeclSpecContext::DSC_conv_operator:
     case DeclSpecContext::DSC_template_arg:
+    case DeclSpecContext::DSC_new:
       return AllowDefiningTypeSpec::No;
     }
     llvm_unreachable("Missing DeclSpecContext case");
@@ -2323,6 +2330,7 @@ private:
     case DeclSpecContext::DSC_association:
     case DeclSpecContext::DSC_conv_operator:
     case DeclSpecContext::DSC_template_arg:
+    case DeclSpecContext::DSC_new:
 
       return false;
     }
@@ -2342,6 +2350,7 @@ private:
     case DeclSpecContext::DSC_type_specifier:
     case DeclSpecContext::DSC_association:
     case DeclSpecContext::DSC_conv_operator:
+    case DeclSpecContext::DSC_new:
       return true;
 
     case DeclSpecContext::DSC_objc_method_result:
@@ -2364,6 +2373,7 @@ private:
     case DeclSpecContext::DSC_trailing:
     case DeclSpecContext::DSC_alias_declaration:
     case DeclSpecContext::DSC_template_param:
+    case DeclSpecContext::DSC_new:
       return ImplicitTypenameContext::Yes;
 
     case DeclSpecContext::DSC_normal:

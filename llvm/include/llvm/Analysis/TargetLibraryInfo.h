@@ -99,7 +99,8 @@ public:
     SiFive_NF,        // SiFive Nonlinear Functions math library
 #endif
     SVML,             // Intel short vector math library.
-    SLEEFGNUABI       // SLEEF - SIMD Library for Evaluating Elementary Functions.
+    SLEEFGNUABI, // SLEEF - SIMD Library for Evaluating Elementary Functions.
+    ArmPL        // Arm Performance Libraries.
   };
 
   TargetLibraryInfoImpl();

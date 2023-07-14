@@ -337,13 +337,13 @@ define internal void @generic_helper() #1 {
 ; CHECK-LABEL: define {{[^@]+}}@generic_helper
 ; CHECK-SAME: () #[[ATTR5]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    call void @leaf() #[[ATTR9:[0-9]+]]
+; CHECK-NEXT:    call void @leaf() #[[ATTR7]]
 ; CHECK-NEXT:    ret void
 ;
 ; CHECK-DISABLE-SPMDIZATION-LABEL: define {{[^@]+}}@generic_helper
 ; CHECK-DISABLE-SPMDIZATION-SAME: () #[[ATTR5]] {
 ; CHECK-DISABLE-SPMDIZATION-NEXT:  entry:
-; CHECK-DISABLE-SPMDIZATION-NEXT:    call void @leaf() #[[ATTR9:[0-9]+]]
+; CHECK-DISABLE-SPMDIZATION-NEXT:    call void @leaf() #[[ATTR7]]
 ; CHECK-DISABLE-SPMDIZATION-NEXT:    ret void
 ;
 entry:
@@ -376,7 +376,7 @@ attributes #5 = { convergent }
 !8 = !{i32 7, !"frame-pointer", i32 2}
 !9 = !{!"clang version 14.0.0"}
 ;.
-; CHECK: attributes #[[ATTR0]] = { noinline norecurse nounwind "frame-pointer"="all" "kernel" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
+; CHECK: attributes #[[ATTR0]] = { convergent noinline norecurse nounwind "frame-pointer"="all" "kernel" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK: attributes #[[ATTR1]] = { noinline nounwind "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK: attributes #[[ATTR2]] = { noinline norecurse nounwind "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK: attributes #[[ATTR3]] = { nounwind }
@@ -385,9 +385,8 @@ attributes #5 = { convergent }
 ; CHECK: attributes #[[ATTR6]] = { convergent nounwind }
 ; CHECK: attributes #[[ATTR7]] = { convergent nosync nounwind memory(write) }
 ; CHECK: attributes #[[ATTR8]] = { convergent }
-; CHECK: attributes #[[ATTR9]] = { convergent nosync nounwind }
 ;.
-; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR0]] = { noinline norecurse nounwind "frame-pointer"="all" "kernel" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
+; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR0]] = { convergent noinline norecurse nounwind "frame-pointer"="all" "kernel" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR1]] = { noinline nounwind "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR2]] = { noinline norecurse nounwind "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sm_53" "target-features"="+ptx32,+sm_53" }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR3]] = { nounwind }
@@ -396,7 +395,6 @@ attributes #5 = { convergent }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR6]] = { convergent nounwind }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR7]] = { convergent nosync nounwind memory(write) }
 ; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR8]] = { convergent }
-; CHECK-DISABLE-SPMDIZATION: attributes #[[ATTR9]] = { convergent nosync nounwind }
 ;.
 ; CHECK: [[META0:![0-9]+]] = !{i32 0, i32 43, i32 17011637, !"spmd", i32 12, i32 0}
 ; CHECK: [[META1:![0-9]+]] = !{i32 0, i32 43, i32 17011637, !"generic", i32 20, i32 1}

@@ -2670,11 +2670,14 @@ HasNonDeletedDefaultedEqualityComparison(const CXXRecordDecl *Decl) {
   return llvm::all_of(Decl->bases(),
                       [](const CXXBaseSpecifier &BS) {
                         if (const auto *RD = BS.getType()->getAsCXXRecordDecl())
-                          HasNonDeletedDefaultedEqualityComparison(RD);
+                          return HasNonDeletedDefaultedEqualityComparison(RD);
                         return true;
                       }) &&
          llvm::all_of(Decl->fields(), [](const FieldDecl *FD) {
            auto Type = FD->getType();
+           if (Type->isArrayType())
+             Type = Type->getBaseElementTypeUnsafe()->getCanonicalTypeUnqualified();
+
            if (Type->isReferenceType() || Type->isEnumeralType())
              return false;
            if (const auto *RD = Type->getAsCXXRecordDecl())
@@ -4712,14 +4715,10 @@ AutoType::AutoType(QualType DeducedAsType, AutoTypeKeyword Keyword,
     auto *ArgBuffer =
         const_cast<TemplateArgument *>(getTypeConstraintArguments().data());
     for (const TemplateArgument &Arg : TypeConstraintArgs) {
-      // If we have a deduced type, our constraints never affect semantic
-      // dependence. Prior to deduction, however, our canonical type depends
-      // on the template arguments, so we are a dependent type if any of them
-      // is dependent.
-      TypeDependence ArgDependence = toTypeDependence(Arg.getDependence());
-      if (!DeducedAsType.isNull())
-        ArgDependence = toSyntacticDependence(ArgDependence);
-      addDependence(ArgDependence);
+      // We only syntactically depend on the constraint arguments. They don't
+      // affect the deduced type, only its validity.
+      addDependence(
+          toSyntacticDependence(toTypeDependence(Arg.getDependence())));
 
       new (ArgBuffer++) TemplateArgument(Arg);
     }

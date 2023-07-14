@@ -1341,6 +1341,9 @@ def HIPOnly : DiagGroup<"hip-only">;
 // Warning about mixed HIP and OpenMP compilation / target offloading.
 def HIPOpenMPOffloading: DiagGroup<"hip-omp-target-directives">;
 
+// Warning about multiple GPUs are detected.
+def MultiGPU: DiagGroup<"multi-gpu">;
+
 // Warnings which cause linking of the runtime libraries like
 // libc and the CRT to be skipped.
 def AVRRtlibLinkingQuirks : DiagGroup<"avr-rtlib-linking-quirks">;
@@ -1353,6 +1356,8 @@ def InvalidOrNonExistentDirectory : DiagGroup<"invalid-or-nonexistent-directory"
 def OptionIgnored : DiagGroup<"option-ignored">;
 
 def UnknownArgument : DiagGroup<"unknown-argument">;
+
+def UnsupportedABI : DiagGroup<"unsupported-abi">;
 
 // A warning group for warnings about code that clang accepts when
 // compiling OpenCL C/C++ but which is not compatible with the SPIR(-V) spec.

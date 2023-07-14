@@ -145,7 +145,7 @@ private:
       ConditionValue = false;
     }
 
-    Env.addToFlowCondition(*Val);
+    Env.addToFlowCondition(Val->formula());
     return {&Cond, ConditionValue};
   }
 
@@ -227,50 +227,39 @@ private:
 // Avoids unneccesary copies of the environment.
 class JoinedStateBuilder {
   AnalysisContext &AC;
-  std::optional<TypeErasedDataflowAnalysisState> OwnedState;
-  // Points either to OwnedState, an external Environment, or nothing.
-  const TypeErasedDataflowAnalysisState *CurrentState = nullptr;
+  std::vector<const TypeErasedDataflowAnalysisState *> All;
+  std::deque<TypeErasedDataflowAnalysisState> Owned;
+
+  TypeErasedDataflowAnalysisState
+  join(const TypeErasedDataflowAnalysisState &L,
+       const TypeErasedDataflowAnalysisState &R) {
+    return {AC.Analysis.joinTypeErased(L.Lattice, R.Lattice),
+            Environment::join(L.Env, R.Env, AC.Analysis)};
+  }
 
 public:
   JoinedStateBuilder(AnalysisContext &AC) : AC(AC) {}
 
   void addOwned(TypeErasedDataflowAnalysisState State) {
-    if (!CurrentState) {
-      OwnedState = std::move(State);
-      CurrentState = &*OwnedState;
-    } else if (!OwnedState) {
-      OwnedState.emplace(std::move(CurrentState->Lattice),
-                         CurrentState->Env.join(State.Env, AC.Analysis));
-      AC.Analysis.joinTypeErased(OwnedState->Lattice, State.Lattice);
-    } else {
-      OwnedState->Env = CurrentState->Env.join(State.Env, AC.Analysis);
-      AC.Analysis.joinTypeErased(OwnedState->Lattice, State.Lattice);
-    }
+    Owned.push_back(std::move(State));
+    All.push_back(&Owned.back());
   }
   void addUnowned(const TypeErasedDataflowAnalysisState &State) {
-    if (!CurrentState) {
-      CurrentState = &State;
-    } else if (!OwnedState) {
-      OwnedState.emplace(CurrentState->Lattice,
-                         CurrentState->Env.join(State.Env, AC.Analysis));
-      AC.Analysis.joinTypeErased(OwnedState->Lattice, State.Lattice);
-    } else {
-      OwnedState->Env = CurrentState->Env.join(State.Env, AC.Analysis);
-      AC.Analysis.joinTypeErased(OwnedState->Lattice, State.Lattice);
-    }
+    All.push_back(&State);
   }
   TypeErasedDataflowAnalysisState take() && {
-    if (!OwnedState) {
-      if (CurrentState)
-        OwnedState.emplace(CurrentState->Lattice, CurrentState->Env.fork());
-      else
-        // FIXME: Consider passing `Block` to Analysis.typeErasedInitialElement
-        // to enable building analyses like computation of dominators that
-        // initialize the state of each basic block differently.
-        OwnedState.emplace(AC.Analysis.typeErasedInitialElement(),
-                           AC.InitEnv.fork());
-    }
-    return std::move(*OwnedState);
+    if (All.empty())
+      // FIXME: Consider passing `Block` to Analysis.typeErasedInitialElement
+      // to enable building analyses like computation of dominators that
+      // initialize the state of each basic block differently.
+      return {AC.Analysis.typeErasedInitialElement(), AC.InitEnv.fork()};
+    if (All.size() == 1)
+      return Owned.empty() ? All.front()->fork() : std::move(Owned.front());
+
+    auto Result = join(*All[0], *All[1]);
+    for (unsigned I = 2; I < All.size(); ++I)
+      Result = join(Result, *All[I]);
+    return Result;
   }
 };
 
@@ -286,8 +275,7 @@ public:
 ///   `std::nullopt` represent basic blocks that are not evaluated yet.
 static TypeErasedDataflowAnalysisState
 computeBlockInputState(const CFGBlock &Block, AnalysisContext &AC) {
-  llvm::DenseSet<const CFGBlock *> Preds;
-  Preds.insert(Block.pred_begin(), Block.pred_end());
+  std::vector<const CFGBlock *> Preds(Block.pred_begin(), Block.pred_end());
   if (Block.getTerminator().isTemporaryDtorsBranch()) {
     // This handles a special case where the code that produced the CFG includes
     // a conditional operator with a branch that constructs a temporary and
@@ -316,7 +304,7 @@ computeBlockInputState(const CFGBlock &Block, AnalysisContext &AC) {
       auto &StmtToBlock = AC.CFCtx.getStmtToBlock();
       auto StmtBlock = StmtToBlock.find(Block.getTerminatorStmt());
       assert(StmtBlock != StmtToBlock.end());
-      Preds.erase(StmtBlock->getSecond());
+      llvm::erase_value(Preds, StmtBlock->getSecond());
     }
   }
 
@@ -377,27 +365,40 @@ builtinTransferInitializer(const CFGInitializer &Elt,
   assert(Init != nullptr);
 
   auto &Env = InputState.Env;
-  const auto &ThisLoc =
-      *cast<AggregateStorageLocation>(Env.getThisPointeeStorageLocation());
+  auto &ThisLoc = *Env.getThisPointeeStorageLocation();
 
-  const FieldDecl *Member = Init->getMember();
-  if (Member == nullptr)
-    // Not a field initializer.
+  if (!Init->isAnyMemberInitializer())
+    // FIXME: Handle base initialization
     return;
 
   auto *InitStmt = Init->getInit();
   assert(InitStmt != nullptr);
+
+  const FieldDecl *Member = nullptr;
+  StorageLocation *MemberLoc = nullptr;
+  if (Init->isMemberInitializer()) {
+    Member = Init->getMember();
+    MemberLoc = &ThisLoc.getChild(*Member);
+  } else {
+    IndirectFieldDecl *IndirectField = Init->getIndirectMember();
+    assert(IndirectField != nullptr);
+    MemberLoc = &ThisLoc;
+    for (const auto *I : IndirectField->chain()) {
+      Member = cast<FieldDecl>(I);
+      MemberLoc = &cast<AggregateStorageLocation>(MemberLoc)->getChild(*Member);
+    }
+  }
+  assert(Member != nullptr);
+  assert(MemberLoc != nullptr);
 
   if (Member->getType()->isReferenceType()) {
     auto *InitStmtLoc = Env.getStorageLocationStrict(*InitStmt);
     if (InitStmtLoc == nullptr)
       return;
 
-    auto &MemberLoc = ThisLoc.getChild(*Member);
-    Env.setValue(MemberLoc, Env.create<ReferenceValue>(*InitStmtLoc));
+    Env.setValue(*MemberLoc, Env.create<ReferenceValue>(*InitStmtLoc));
   } else if (auto *InitStmtVal = Env.getValueStrict(*InitStmt)) {
-    auto &MemberLoc = ThisLoc.getChild(*Member);
-    Env.setValue(MemberLoc, *InitStmtVal);
+    Env.setValue(*MemberLoc, *InitStmtVal);
   }
 }
 
@@ -581,7 +582,7 @@ runTypeErasedDataflowAnalysis(
     }
   }
 
-  return BlockStates;
+  return std::move(BlockStates);
 }
 
 } // namespace dataflow

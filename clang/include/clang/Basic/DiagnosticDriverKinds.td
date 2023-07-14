@@ -86,6 +86,9 @@ def err_drv_hipspv_no_hip_path : Error<
 def err_drv_undetermined_gpu_arch : Error<
   "cannot determine %0 architecture: %1; consider passing it via "
   "'%2'">;
+def warn_drv_multi_gpu_arch : Warning<
+  "multiple %0 architectures are detected: %1; only the first one is used for "
+  "'%2'">, InGroup<MultiGPU>;
 def err_drv_cuda_version_unsupported : Error<
   "GPU arch %0 is supported by CUDA versions between %1 and %2 (inclusive), "
   "but installation at %3 is %4; use '--cuda-path' to specify a different CUDA "
@@ -420,10 +423,10 @@ def warn_drv_assuming_mfloat_abi_is : Warning<
   "unknown platform, assuming -mfloat-abi=%0">;
 def warn_drv_unsupported_float_abi_by_lib : Warning<
   "float ABI '%0' is not supported by current library">,
-  InGroup<DiagGroup<"unsupported-abi">>;
+  InGroup<UnsupportedABI>;
 def warn_drv_no_floating_point_registers: Warning<
-  "'%0': selected processor lacks floating point registers; flag ignored">,
-  InGroup<OptionIgnored>;
+  "'%0': selected processor lacks floating point registers">,
+  InGroup<UnsupportedABI>;
 def warn_ignoring_ftabstop_value : Warning<
   "ignoring invalid -ftabstop value '%0', using default value %1">;
 def warn_drv_overriding_flag_option : Warning<
@@ -748,8 +751,9 @@ def err_drv_loongarch_invalid_mfpu_EQ : Error<
 def err_drv_expand_response_file : Error<
   "failed to expand response file: %0">;
 
-def err_drv_no_matching_multilib : Error<
-  "no multilib found matching flags: %0">;
+def warn_drv_missing_multilib : Warning<
+  "no multilib found matching flags: %0">,
+  InGroup<DiagGroup<"missing-multilib">>;
 def note_drv_available_multilibs : Note<
   "available multilibs are:%0">;
 }

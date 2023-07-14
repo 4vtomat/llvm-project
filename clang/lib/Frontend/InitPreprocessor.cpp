@@ -574,6 +574,9 @@ static void InitializeStandardPredefinedMacros(const TargetInfo &TI,
       Builder.defineMacro("__CLANG_RDC__");
     if (!LangOpts.HIP)
       Builder.defineMacro("__CUDA__");
+    if (LangOpts.GPUDefaultStream ==
+        LangOptions::GPUDefaultStreamKind::PerThread)
+      Builder.defineMacro("CUDA_API_PER_THREAD_DEFAULT_STREAM");
   }
   if (LangOpts.HIP) {
     Builder.defineMacro("__HIP__");
@@ -1343,7 +1346,8 @@ void clang::InitializePreprocessor(
   if (InitOpts.UsePredefines) {
     // FIXME: This will create multiple definitions for most of the predefined
     // macros. This is not the right way to handle this.
-    if ((LangOpts.CUDA || LangOpts.OpenMPIsDevice || LangOpts.SYCLIsDevice) &&
+    if ((LangOpts.CUDA || LangOpts.OpenMPIsTargetDevice ||
+         LangOpts.SYCLIsDevice) &&
         PP.getAuxTargetInfo())
       InitializePredefinedMacros(*PP.getAuxTargetInfo(), LangOpts, FEOpts,
                                  PP.getPreprocessorOpts(), Builder);

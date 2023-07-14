@@ -199,6 +199,13 @@ def Builtin_Float16 : Builtin_FloatType<"Float16"> {
 }
 
 //===----------------------------------------------------------------------===//
+// FloatTF32Type
+
+def Builtin_FloatTF32 : Builtin_FloatType<"FloatTF32"> {
+  let summary = "TF32 floating-point type";
+}
+
+//===----------------------------------------------------------------------===//
 // Float32Type
 
 def Builtin_Float32 : Builtin_FloatType<"Float32"> {
@@ -1066,13 +1073,11 @@ def Builtin_Vector : Builtin_Type<"Vector", [ShapedTypeInterface], "Type"> {
   let parameters = (ins
     ArrayRefParameter<"int64_t">:$shape,
     "Type":$elementType,
-    "unsigned":$numScalableDims,
     ArrayRefParameter<"bool">:$scalableDims
   );
   let builders = [
     TypeBuilderWithInferredContext<(ins
       "ArrayRef<int64_t>":$shape, "Type":$elementType,
-      CArg<"unsigned", "0">:$numScalableDims,
       CArg<"ArrayRef<bool>", "{}">:$scalableDims
     ), [{
       // While `scalableDims` is optional, its default value should be
@@ -1082,8 +1087,7 @@ def Builtin_Vector : Builtin_Type<"Vector", [ShapedTypeInterface], "Type"> {
         isScalableVec.resize(shape.size(), false);
         scalableDims = isScalableVec;
       }
-      return $_get(elementType.getContext(), shape, elementType,
-                   numScalableDims, scalableDims);
+      return $_get(elementType.getContext(), shape, elementType, scalableDims);
     }]>
   ];
   let extraClassDeclaration = [{
@@ -1100,7 +1104,13 @@ def Builtin_Vector : Builtin_Type<"Vector", [ShapedTypeInterface], "Type"> {
 
     /// Returns true if the vector contains scalable dimensions.
     bool isScalable() const {
-      return getNumScalableDims() > 0;
+      return llvm::is_contained(getScalableDims(), true);
+    }
+    bool allDimsScalable() const {
+      // Treat 0-d vectors as fixed size.
+      if (getRank() == 0)
+        return false;
+      return !llvm::is_contained(getScalableDims(), false);
     }
 
     /// Get or create a new VectorType with the same shape as `this` and an

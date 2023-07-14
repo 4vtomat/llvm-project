@@ -15,6 +15,7 @@
 
 #include "llvm/Transforms/IPO/Attributor.h"
 
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/Statistic.h"
@@ -24,6 +25,7 @@
 #include "llvm/Analysis/InlineCost.h"
 #include "llvm/Analysis/MemoryBuiltins.h"
 #include "llvm/Analysis/MustExecute.h"
+#include "llvm/IR/AttributeMask.h"
 #include "llvm/IR/Attributes.h"
 #include "llvm/IR/Constant.h"
 #include "llvm/IR/ConstantFold.h"
@@ -34,6 +36,7 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/ValueHandle.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
@@ -41,6 +44,7 @@
 #include "llvm/Support/DebugCounter.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/GraphWriter.h"
+#include "llvm/Support/ModRef.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/Cloning.h"
@@ -200,9 +204,10 @@ bool AA::isNoSyncInst(Attributor &A, const Instruction &I,
     if (AANoSync::isNoSyncIntrinsic(&I))
       return true;
 
-    const auto *NoSyncAA = A.getAAFor<AANoSync>(
-        QueryingAA, IRPosition::callsite_function(*CB), DepClassTy::OPTIONAL);
-    return NoSyncAA && NoSyncAA->isAssumedNoSync();
+    bool IsKnownNoSync;
+    return AA::hasAssumedIRAttr<Attribute::NoSync>(
+        A, &QueryingAA, IRPosition::callsite_function(*CB),
+        DepClassTy::OPTIONAL, IsKnownNoSync);
   }
 
   if (!I.mayReadOrWriteMemory())
@@ -565,11 +570,11 @@ static bool isAssumedReadOnlyOrReadNone(Attributor &A, const IRPosition &IRP,
                                         bool RequireReadNone, bool &IsKnown) {
   if (RequireReadNone) {
     if (AA::hasAssumedIRAttr<Attribute::ReadNone>(
-            A, QueryingAA, IRP, DepClassTy::OPTIONAL, IsKnown,
+            A, &QueryingAA, IRP, DepClassTy::OPTIONAL, IsKnown,
             /* IgnoreSubsumingPositions */ true))
       return true;
   } else if (AA::hasAssumedIRAttr<Attribute::ReadOnly>(
-                 A, QueryingAA, IRP, DepClassTy::OPTIONAL, IsKnown,
+                 A, &QueryingAA, IRP, DepClassTy::OPTIONAL, IsKnown,
                  /* IgnoreSubsumingPositions */ true))
     return true;
 
@@ -799,14 +804,15 @@ bool AA::isAssumedThreadLocalObject(Attributor &A, Value &Obj,
                  << "' is thread local; stack objects are thread local.\n");
       return true;
     }
-    const auto *NoCaptureAA = A.getAAFor<AANoCapture>(
-        QueryingAA, IRPosition::value(Obj), DepClassTy::OPTIONAL);
+    bool IsKnownNoCapture;
+    bool IsAssumedNoCapture = AA::hasAssumedIRAttr<Attribute::NoCapture>(
+        A, &QueryingAA, IRPosition::value(Obj), DepClassTy::OPTIONAL,
+        IsKnownNoCapture);
     LLVM_DEBUG(dbgs() << "[AA] Object '" << Obj << "' is "
-                      << (NoCaptureAA->isAssumedNoCapture() ? "" : "not")
-                      << " thread local; "
-                      << (NoCaptureAA->isAssumedNoCapture() ? "non-" : "")
+                      << (IsAssumedNoCapture ? "" : "not") << " thread local; "
+                      << (IsAssumedNoCapture ? "non-" : "")
                       << "captured stack object.\n");
-    return NoCaptureAA && NoCaptureAA->isAssumedNoCapture();
+    return IsAssumedNoCapture;
   }
   if (auto *GV = dyn_cast<GlobalVariable>(&Obj)) {
     if (GV->isConstant()) {
@@ -904,38 +910,42 @@ static bool isEqualOrWorse(const Attribute &New, const Attribute &Old) {
 }
 
 /// Return true if the information provided by \p Attr was added to the
-/// attribute list \p Attrs. This is only the case if it was not already present
-/// in \p Attrs at the position describe by \p PK and \p AttrIdx.
+/// attribute set \p AttrSet. This is only the case if it was not already
+/// present in \p AttrSet.
 static bool addIfNotExistent(LLVMContext &Ctx, const Attribute &Attr,
-                             AttributeList &Attrs, int AttrIdx,
-                             bool ForceReplace = false) {
+                             AttributeSet AttrSet, bool ForceReplace,
+                             AttrBuilder &AB) {
 
   if (Attr.isEnumAttribute()) {
     Attribute::AttrKind Kind = Attr.getKindAsEnum();
-    if (Attrs.hasAttributeAtIndex(AttrIdx, Kind))
-      if (!ForceReplace &&
-          isEqualOrWorse(Attr, Attrs.getAttributeAtIndex(AttrIdx, Kind)))
-        return false;
-    Attrs = Attrs.addAttributeAtIndex(Ctx, AttrIdx, Attr);
+    if (AttrSet.hasAttribute(Kind))
+      return false;
+    AB.addAttribute(Kind);
     return true;
   }
   if (Attr.isStringAttribute()) {
     StringRef Kind = Attr.getKindAsString();
-    if (Attrs.hasAttributeAtIndex(AttrIdx, Kind))
-      if (!ForceReplace &&
-          isEqualOrWorse(Attr, Attrs.getAttributeAtIndex(AttrIdx, Kind)))
+    if (AttrSet.hasAttribute(Kind)) {
+      if (!ForceReplace)
         return false;
-    Attrs = Attrs.addAttributeAtIndex(Ctx, AttrIdx, Attr);
+    }
+    AB.addAttribute(Kind, Attr.getValueAsString());
     return true;
   }
   if (Attr.isIntAttribute()) {
     Attribute::AttrKind Kind = Attr.getKindAsEnum();
-    if (Attrs.hasAttributeAtIndex(AttrIdx, Kind))
-      if (!ForceReplace &&
-          isEqualOrWorse(Attr, Attrs.getAttributeAtIndex(AttrIdx, Kind)))
+    if (!ForceReplace && Kind == Attribute::Memory) {
+      MemoryEffects ME = Attr.getMemoryEffects() & AttrSet.getMemoryEffects();
+      if (ME == AttrSet.getMemoryEffects())
         return false;
-    Attrs = Attrs.removeAttributeAtIndex(Ctx, AttrIdx, Kind);
-    Attrs = Attrs.addAttributeAtIndex(Ctx, AttrIdx, Attr);
+      AB.addMemoryAttr(ME);
+      return true;
+    }
+    if (AttrSet.hasAttribute(Kind)) {
+      if (!ForceReplace && isEqualOrWorse(Attr, AttrSet.getAttribute(Kind)))
+        return false;
+    }
+    AB.addAttribute(Attr);
     return true;
   }
 
@@ -1011,63 +1021,168 @@ ChangeStatus AbstractAttribute::update(Attributor &A) {
   return HasChanged;
 }
 
+bool Attributor::getAttrsFromAssumes(const IRPosition &IRP,
+                                     Attribute::AttrKind AK,
+                                     SmallVectorImpl<Attribute> &Attrs) {
+  assert(IRP.getPositionKind() != IRPosition::IRP_INVALID &&
+         "Did expect a valid position!");
+  MustBeExecutedContextExplorer *Explorer =
+      getInfoCache().getMustBeExecutedContextExplorer();
+  if (!Explorer)
+    return false;
+
+  Value &AssociatedValue = IRP.getAssociatedValue();
+
+  const Assume2KnowledgeMap &A2K =
+      getInfoCache().getKnowledgeMap().lookup({&AssociatedValue, AK});
+
+  // Check if we found any potential assume use, if not we don't need to create
+  // explorer iterators.
+  if (A2K.empty())
+    return false;
+
+  LLVMContext &Ctx = AssociatedValue.getContext();
+  unsigned AttrsSize = Attrs.size();
+  auto EIt = Explorer->begin(IRP.getCtxI()),
+       EEnd = Explorer->end(IRP.getCtxI());
+  for (const auto &It : A2K)
+    if (Explorer->findInContextOf(It.first, EIt, EEnd))
+      Attrs.push_back(Attribute::get(Ctx, AK, It.second.Max));
+  return AttrsSize != Attrs.size();
+}
+
+template <typename DescTy>
 ChangeStatus
-IRAttributeManifest::manifestAttrs(Attributor &A, const IRPosition &IRP,
-                                   const ArrayRef<Attribute> &DeducedAttrs,
-                                   bool ForceReplace) {
-  Function *ScopeFn = IRP.getAnchorScope();
-  IRPosition::Kind PK = IRP.getPositionKind();
-
-  // In the following some generic code that will manifest attributes in
-  // DeducedAttrs if they improve the current IR. Due to the different
-  // annotation positions we use the underlying AttributeList interface.
-
-  AttributeList Attrs;
-  switch (PK) {
-  case IRPosition::IRP_INVALID:
-  case IRPosition::IRP_FLOAT:
+Attributor::updateAttrMap(const IRPosition &IRP,
+                          const ArrayRef<DescTy> &AttrDescs,
+                          function_ref<bool(const DescTy &, AttributeSet,
+                                            AttributeMask &, AttrBuilder &)>
+                              CB) {
+  if (AttrDescs.empty())
     return ChangeStatus::UNCHANGED;
-  case IRPosition::IRP_ARGUMENT:
-  case IRPosition::IRP_FUNCTION:
-  case IRPosition::IRP_RETURNED:
-    Attrs = ScopeFn->getAttributes();
+  switch (IRP.getPositionKind()) {
+  case IRPosition::IRP_FLOAT:
+  case IRPosition::IRP_INVALID:
+    return ChangeStatus::UNCHANGED;
+  default:
     break;
-  case IRPosition::IRP_CALL_SITE:
-  case IRPosition::IRP_CALL_SITE_RETURNED:
-  case IRPosition::IRP_CALL_SITE_ARGUMENT:
-    Attrs = cast<CallBase>(IRP.getAnchorValue()).getAttributes();
-    break;
-  }
+  };
+
+  AttributeList AL;
+  Value *AttrListAnchor = IRP.getAttrListAnchor();
+  auto It = AttrsMap.find(AttrListAnchor);
+  if (It == AttrsMap.end())
+    AL = IRP.getAttrList();
+  else
+    AL = It->getSecond();
+
+  LLVMContext &Ctx = IRP.getAnchorValue().getContext();
+  auto AttrIdx = IRP.getAttrIdx();
+  AttributeSet AS = AL.getAttributes(AttrIdx);
+  AttributeMask AM;
+  AttrBuilder AB(Ctx);
 
   ChangeStatus HasChanged = ChangeStatus::UNCHANGED;
-  LLVMContext &Ctx = IRP.getAnchorValue().getContext();
-  for (const Attribute &Attr : DeducedAttrs) {
-    if (!addIfNotExistent(Ctx, Attr, Attrs, IRP.getAttrIdx(), ForceReplace))
-      continue;
-
-    HasChanged = ChangeStatus::CHANGED;
-  }
+  for (const DescTy &AttrDesc : AttrDescs)
+    if (CB(AttrDesc, AS, AM, AB))
+      HasChanged = ChangeStatus::CHANGED;
 
   if (HasChanged == ChangeStatus::UNCHANGED)
-    return HasChanged;
+    return ChangeStatus::UNCHANGED;
 
-  switch (PK) {
-  case IRPosition::IRP_ARGUMENT:
-  case IRPosition::IRP_FUNCTION:
-  case IRPosition::IRP_RETURNED:
-    ScopeFn->setAttributes(Attrs);
-    break;
-  case IRPosition::IRP_CALL_SITE:
-  case IRPosition::IRP_CALL_SITE_RETURNED:
-  case IRPosition::IRP_CALL_SITE_ARGUMENT:
-    cast<CallBase>(IRP.getAnchorValue()).setAttributes(Attrs);
-    break;
-  case IRPosition::IRP_INVALID:
-  case IRPosition::IRP_FLOAT:
-    break;
+  AL = AL.removeAttributesAtIndex(Ctx, AttrIdx, AM);
+  AL = AL.addAttributesAtIndex(Ctx, AttrIdx, AB);
+  AttrsMap[AttrListAnchor] = AL;
+  return ChangeStatus::CHANGED;
+}
+
+bool Attributor::hasAttr(const IRPosition &IRP,
+                         ArrayRef<Attribute::AttrKind> AttrKinds,
+                         bool IgnoreSubsumingPositions,
+                         Attribute::AttrKind ImpliedAttributeKind) {
+  bool Implied = false;
+  bool HasAttr = false;
+  auto HasAttrCB = [&](const Attribute::AttrKind &Kind, AttributeSet AttrSet,
+                       AttributeMask &, AttrBuilder &) {
+    if (AttrSet.hasAttribute(Kind)) {
+      Implied |= Kind != ImpliedAttributeKind;
+      HasAttr = true;
+    }
+    return false;
+  };
+  for (const IRPosition &EquivIRP : SubsumingPositionIterator(IRP)) {
+    updateAttrMap<Attribute::AttrKind>(EquivIRP, AttrKinds, HasAttrCB);
+    if (HasAttr)
+      break;
+    // The first position returned by the SubsumingPositionIterator is
+    // always the position itself. If we ignore subsuming positions we
+    // are done after the first iteration.
+    if (IgnoreSubsumingPositions)
+      break;
+    Implied = true;
+  }
+  if (!HasAttr) {
+    Implied = true;
+    SmallVector<Attribute> Attrs;
+    for (Attribute::AttrKind AK : AttrKinds)
+      if (getAttrsFromAssumes(IRP, AK, Attrs)) {
+        HasAttr = true;
+        break;
+      }
   }
 
-  return HasChanged;
+  // Check if we should manifest the implied attribute kind at the IRP.
+  if (ImpliedAttributeKind != Attribute::None && HasAttr && Implied)
+    manifestAttrs(IRP, {Attribute::get(IRP.getAnchorValue().getContext(),
+                                       ImpliedAttributeKind)});
+  return HasAttr;
+}
+
+void Attributor::getAttrs(const IRPosition &IRP,
+                          ArrayRef<Attribute::AttrKind> AttrKinds,
+                          SmallVectorImpl<Attribute> &Attrs,
+                          bool IgnoreSubsumingPositions) {
+  auto CollectAttrCB = [&](const Attribute::AttrKind &Kind,
+                           AttributeSet AttrSet, AttributeMask &,
+                           AttrBuilder &) {
+    if (AttrSet.hasAttribute(Kind))
+      Attrs.push_back(AttrSet.getAttribute(Kind));
+    return false;
+  };
+  for (const IRPosition &EquivIRP : SubsumingPositionIterator(IRP)) {
+    updateAttrMap<Attribute::AttrKind>(EquivIRP, AttrKinds, CollectAttrCB);
+    // The first position returned by the SubsumingPositionIterator is
+    // always the position itself. If we ignore subsuming positions we
+    // are done after the first iteration.
+    if (IgnoreSubsumingPositions)
+      break;
+  }
+  for (Attribute::AttrKind AK : AttrKinds)
+    getAttrsFromAssumes(IRP, AK, Attrs);
+}
+
+ChangeStatus
+Attributor::removeAttrs(const IRPosition &IRP,
+                        const ArrayRef<Attribute::AttrKind> &AttrKinds) {
+  auto RemoveAttrCB = [&](const Attribute::AttrKind &Kind, AttributeSet AttrSet,
+                          AttributeMask &AM, AttrBuilder &) {
+    if (!AttrSet.hasAttribute(Kind))
+      return false;
+    AM.addAttribute(Kind);
+    return true;
+  };
+  return updateAttrMap<Attribute::AttrKind>(IRP, AttrKinds, RemoveAttrCB);
+}
+
+ChangeStatus Attributor::manifestAttrs(const IRPosition &IRP,
+                                       const ArrayRef<Attribute> &Attrs,
+                                       bool ForceReplace) {
+  LLVMContext &Ctx = IRP.getAnchorValue().getContext();
+  auto AddAttrCB = [&](const Attribute &Attr, AttributeSet AttrSet,
+                       AttributeMask &, AttrBuilder &AB) {
+    return addIfNotExistent(Ctx, Attr, AttrSet, ForceReplace, AB);
+  };
+  return updateAttrMap<Attribute>(IRP, Attrs, AddAttrCB);
 }
 
 const IRPosition IRPosition::EmptyKey(DenseMapInfo<void *>::getEmptyKey());
@@ -1139,87 +1254,6 @@ SubsumingPositionIterator::SubsumingPositionIterator(const IRPosition &IRP) {
     return;
   }
   }
-}
-
-bool IRPosition::hasAttr(ArrayRef<Attribute::AttrKind> AKs,
-                         bool IgnoreSubsumingPositions, Attributor *A) const {
-  SmallVector<Attribute, 4> Attrs;
-  for (const IRPosition &EquivIRP : SubsumingPositionIterator(*this)) {
-    for (Attribute::AttrKind AK : AKs)
-      if (EquivIRP.getAttrsFromIRAttr(AK, Attrs))
-        return true;
-    // The first position returned by the SubsumingPositionIterator is
-    // always the position itself. If we ignore subsuming positions we
-    // are done after the first iteration.
-    if (IgnoreSubsumingPositions)
-      break;
-  }
-  if (A)
-    for (Attribute::AttrKind AK : AKs)
-      if (getAttrsFromAssumes(AK, Attrs, *A))
-        return true;
-  return false;
-}
-
-void IRPosition::getAttrs(ArrayRef<Attribute::AttrKind> AKs,
-                          SmallVectorImpl<Attribute> &Attrs,
-                          bool IgnoreSubsumingPositions, Attributor *A) const {
-  for (const IRPosition &EquivIRP : SubsumingPositionIterator(*this)) {
-    for (Attribute::AttrKind AK : AKs)
-      EquivIRP.getAttrsFromIRAttr(AK, Attrs);
-    // The first position returned by the SubsumingPositionIterator is
-    // always the position itself. If we ignore subsuming positions we
-    // are done after the first iteration.
-    if (IgnoreSubsumingPositions)
-      break;
-  }
-  if (A)
-    for (Attribute::AttrKind AK : AKs)
-      getAttrsFromAssumes(AK, Attrs, *A);
-}
-
-bool IRPosition::getAttrsFromIRAttr(Attribute::AttrKind AK,
-                                    SmallVectorImpl<Attribute> &Attrs) const {
-  if (getPositionKind() == IRP_INVALID || getPositionKind() == IRP_FLOAT)
-    return false;
-
-  AttributeList AttrList;
-  if (const auto *CB = dyn_cast<CallBase>(&getAnchorValue()))
-    AttrList = CB->getAttributes();
-  else
-    AttrList = getAssociatedFunction()->getAttributes();
-
-  bool HasAttr = AttrList.hasAttributeAtIndex(getAttrIdx(), AK);
-  if (HasAttr)
-    Attrs.push_back(AttrList.getAttributeAtIndex(getAttrIdx(), AK));
-  return HasAttr;
-}
-
-bool IRPosition::getAttrsFromAssumes(Attribute::AttrKind AK,
-                                     SmallVectorImpl<Attribute> &Attrs,
-                                     Attributor &A) const {
-  assert(getPositionKind() != IRP_INVALID && "Did expect a valid position!");
-  Value &AssociatedValue = getAssociatedValue();
-
-  const Assume2KnowledgeMap &A2K =
-      A.getInfoCache().getKnowledgeMap().lookup({&AssociatedValue, AK});
-
-  // Check if we found any potential assume use, if not we don't need to create
-  // explorer iterators.
-  if (A2K.empty())
-    return false;
-
-  LLVMContext &Ctx = AssociatedValue.getContext();
-  unsigned AttrsSize = Attrs.size();
-  MustBeExecutedContextExplorer *Explorer =
-      A.getInfoCache().getMustBeExecutedContextExplorer();
-  if (!Explorer)
-    return false;
-  auto EIt = Explorer->begin(getCtxI()), EEnd = Explorer->end(getCtxI());
-  for (const auto &It : A2K)
-    if (Explorer->findInContextOf(It.first, EIt, EEnd))
-      Attrs.push_back(Attribute::get(Ctx, AK, It.second.Max));
-  return AttrsSize != Attrs.size();
 }
 
 void IRPosition::verify() {
@@ -1407,6 +1441,8 @@ bool Attributor::isAssumedDead(const AbstractAttribute &AA,
                                const AAIsDead *FnLivenessAA,
                                bool &UsedAssumedInformation,
                                bool CheckBBLivenessOnly, DepClassTy DepClass) {
+  if (!Configuration.UseLiveness)
+    return false;
   const IRPosition &IRP = AA.getIRPosition();
   if (!Functions.count(IRP.getAnchorScope()))
     return false;
@@ -1419,6 +1455,8 @@ bool Attributor::isAssumedDead(const Use &U,
                                const AAIsDead *FnLivenessAA,
                                bool &UsedAssumedInformation,
                                bool CheckBBLivenessOnly, DepClassTy DepClass) {
+  if (!Configuration.UseLiveness)
+    return false;
   Instruction *UserI = dyn_cast<Instruction>(U.getUser());
   if (!UserI)
     return isAssumedDead(IRPosition::value(*U.get()), QueryingAA, FnLivenessAA,
@@ -1467,6 +1505,8 @@ bool Attributor::isAssumedDead(const Instruction &I,
                                bool &UsedAssumedInformation,
                                bool CheckBBLivenessOnly, DepClassTy DepClass,
                                bool CheckForDeadStore) {
+  if (!Configuration.UseLiveness)
+    return false;
   const IRPosition::CallBaseContext *CBCtx =
       QueryingAA ? QueryingAA->getCallBaseContext() : nullptr;
 
@@ -1527,6 +1567,8 @@ bool Attributor::isAssumedDead(const IRPosition &IRP,
                                const AAIsDead *FnLivenessAA,
                                bool &UsedAssumedInformation,
                                bool CheckBBLivenessOnly, DepClassTy DepClass) {
+  if (!Configuration.UseLiveness)
+    return false;
   // Don't check liveness for constants, e.g. functions, used as (floating)
   // values since the context instruction and such is here meaningless.
   if (IRP.getPositionKind() == IRPosition::IRP_FLOAT &&
@@ -1572,6 +1614,8 @@ bool Attributor::isAssumedDead(const BasicBlock &BB,
                                const AbstractAttribute *QueryingAA,
                                const AAIsDead *FnLivenessAA,
                                DepClassTy DepClass) {
+  if (!Configuration.UseLiveness)
+    return false;
   const Function &F = *BB.getParent();
   if (!FnLivenessAA || FnLivenessAA->getAnchorScope() != &F)
     FnLivenessAA = getOrCreateAAFor<AAIsDead>(IRPosition::function(F),
@@ -2206,6 +2250,16 @@ ChangeStatus Attributor::manifestAttributes() {
     llvm_unreachable("Expected the final number of abstract attributes to "
                      "remain unchanged!");
   }
+
+  for (auto &It : AttrsMap) {
+    AttributeList &AL = It.getSecond();
+    const IRPosition &IRP =
+        isa<Function>(It.getFirst())
+            ? IRPosition::function(*cast<Function>(It.getFirst()))
+            : IRPosition::callsite_function(*cast<CallBase>(It.getFirst()));
+    IRP.setAttrList(AL);
+  }
+
   return ManifestChange;
 }
 
@@ -3171,6 +3225,16 @@ void Attributor::rememberDependences() {
   }
 }
 
+template <Attribute::AttrKind AK, typename AAType>
+void Attributor::checkAndQueryIRAttr(const IRPosition &IRP,
+                                     AttributeSet Attrs) {
+  bool IsKnown;
+  if (!Attrs.hasAttribute(AK))
+    if (!AA::hasAssumedIRAttr<AK>(*this, nullptr, IRP, DepClassTy::NONE,
+                                  IsKnown))
+      getOrCreateAAFor<AAType>(IRP);
+}
+
 void Attributor::identifyDefaultAbstractAttributes(Function &F) {
   if (!VisitedFunctions.insert(&F).second)
     return;
@@ -3189,135 +3253,150 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
   }
 
   IRPosition FPos = IRPosition::function(F);
+  bool IsIPOAmendable = isFunctionIPOAmendable(F);
+  auto Attrs = F.getAttributes();
+  auto FnAttrs = Attrs.getFnAttrs();
 
   // Check for dead BasicBlocks in every function.
   // We need dead instruction detection because we do not want to deal with
   // broken IR in which SSA rules do not apply.
   getOrCreateAAFor<AAIsDead>(FPos);
 
-  // Every function might be "will-return".
-  getOrCreateAAFor<AAWillReturn>(FPos);
-
-  // Every function might be "must-progress".
-  getOrCreateAAFor<AAMustProgress>(FPos);
-
-  // Every function might contain instructions that cause "undefined behavior".
+  // Every function might contain instructions that cause "undefined
+  // behavior".
   getOrCreateAAFor<AAUndefinedBehavior>(FPos);
-
-  // Every function can be nounwind.
-  getOrCreateAAFor<AANoUnwind>(FPos);
-
-  // Every function might be marked "nosync"
-  getOrCreateAAFor<AANoSync>(FPos);
-
-  // Every function might be "no-free".
-  getOrCreateAAFor<AANoFree>(FPos);
-
-  // Every function might be "no-return".
-  getOrCreateAAFor<AANoReturn>(FPos);
-
-  // Every function might be "no-recurse".
-  getOrCreateAAFor<AANoRecurse>(FPos);
-
-  // Every function can be "non-convergent".
-  if (F.hasFnAttribute(Attribute::Convergent))
-    getOrCreateAAFor<AANonConvergent>(FPos);
-
-  // Every function might be "readnone/readonly/writeonly/...".
-  getOrCreateAAFor<AAMemoryBehavior>(FPos);
-
-  // Every function can be "readnone/argmemonly/inaccessiblememonly/...".
-  getOrCreateAAFor<AAMemoryLocation>(FPos);
-
-  // Every function can track active assumptions.
-  getOrCreateAAFor<AAAssumptionInfo>(FPos);
 
   // Every function might be applicable for Heap-To-Stack conversion.
   if (EnableHeapToStack)
     getOrCreateAAFor<AAHeapToStack>(FPos);
 
-  // Return attributes are only appropriate if the return type is non void.
-  Type *ReturnType = F.getReturnType();
-  if (!ReturnType->isVoidTy()) {
-    // Argument attribute "returned" --- Create only one per function even
-    // though it is an argument attribute.
-    getOrCreateAAFor<AAReturnedValues>(FPos);
+  // Everything that is visible from the outside (=function, argument, return
+  // positions), cannot be changed if the function is not IPO amendable. We can
+  // however analyse the code inside.
+  if (IsIPOAmendable) {
 
-    IRPosition RetPos = IRPosition::returned(F);
+    // Every function might be "will-return".
+    checkAndQueryIRAttr<Attribute::WillReturn, AAWillReturn>(FPos, FnAttrs);
 
-    // Every returned value might be dead.
-    getOrCreateAAFor<AAIsDead>(RetPos);
+    // Every function might be "must-progress".
+    checkAndQueryIRAttr<Attribute::MustProgress, AAMustProgress>(FPos, FnAttrs);
 
-    // Every function might be simplified.
-    bool UsedAssumedInformation = false;
-    getAssumedSimplified(RetPos, nullptr, UsedAssumedInformation,
-                         AA::Intraprocedural);
+    // Every function can be nounwind.
+    checkAndQueryIRAttr<Attribute::NoUnwind, AANoUnwind>(FPos, FnAttrs);
 
-    // Every returned value might be marked noundef.
-    getOrCreateAAFor<AANoUndef>(RetPos);
+    // Every function might be marked "nosync"
+    checkAndQueryIRAttr<Attribute::NoSync, AANoSync>(FPos, FnAttrs);
 
-    if (ReturnType->isPointerTy()) {
+    // Every function might be "no-free".
+    checkAndQueryIRAttr<Attribute::NoFree, AANoFree>(FPos, FnAttrs);
 
-      // Every function with pointer return type might be marked align.
-      getOrCreateAAFor<AAAlign>(RetPos);
+    // Every function might be "no-return".
+    checkAndQueryIRAttr<Attribute::NoReturn, AANoReturn>(FPos, FnAttrs);
 
-      // Every function with pointer return type might be marked nonnull.
-      getOrCreateAAFor<AANonNull>(RetPos);
+    // Every function might be "no-recurse".
+    checkAndQueryIRAttr<Attribute::NoRecurse, AANoRecurse>(FPos, FnAttrs);
 
-      // Every function with pointer return type might be marked noalias.
-      getOrCreateAAFor<AANoAlias>(RetPos);
+    // Every function can be "non-convergent".
+    if (Attrs.hasFnAttr(Attribute::Convergent))
+      getOrCreateAAFor<AANonConvergent>(FPos);
 
-      // Every function with pointer return type might be marked
-      // dereferenceable.
-      getOrCreateAAFor<AADereferenceable>(RetPos);
-    } else if (AttributeFuncs::isNoFPClassCompatibleType(ReturnType)) {
-      getOrCreateAAFor<AANoFPClass>(RetPos);
+    // Every function might be "readnone/readonly/writeonly/...".
+    getOrCreateAAFor<AAMemoryBehavior>(FPos);
+
+    // Every function can be "readnone/argmemonly/inaccessiblememonly/...".
+    getOrCreateAAFor<AAMemoryLocation>(FPos);
+
+    // Every function can track active assumptions.
+    getOrCreateAAFor<AAAssumptionInfo>(FPos);
+
+    // Return attributes are only appropriate if the return type is non void.
+    Type *ReturnType = F.getReturnType();
+    if (!ReturnType->isVoidTy()) {
+      // Argument attribute "returned" --- Create only one per function even
+      // though it is an argument attribute.
+      getOrCreateAAFor<AAReturnedValues>(FPos);
+
+      IRPosition RetPos = IRPosition::returned(F);
+      AttributeSet RetAttrs = Attrs.getRetAttrs();
+
+      // Every returned value might be dead.
+      getOrCreateAAFor<AAIsDead>(RetPos);
+
+      // Every function might be simplified.
+      bool UsedAssumedInformation = false;
+      getAssumedSimplified(RetPos, nullptr, UsedAssumedInformation,
+                           AA::Intraprocedural);
+
+      // Every returned value might be marked noundef.
+      checkAndQueryIRAttr<Attribute::NoUndef, AANoUndef>(RetPos, RetAttrs);
+
+      if (ReturnType->isPointerTy()) {
+
+        // Every function with pointer return type might be marked align.
+        getOrCreateAAFor<AAAlign>(RetPos);
+
+        // Every function with pointer return type might be marked nonnull.
+        checkAndQueryIRAttr<Attribute::NonNull, AANonNull>(RetPos, RetAttrs);
+
+        // Every function with pointer return type might be marked noalias.
+        checkAndQueryIRAttr<Attribute::NoAlias, AANoAlias>(RetPos, RetAttrs);
+
+        // Every function with pointer return type might be marked
+        // dereferenceable.
+        getOrCreateAAFor<AADereferenceable>(RetPos);
+      } else if (AttributeFuncs::isNoFPClassCompatibleType(ReturnType)) {
+        getOrCreateAAFor<AANoFPClass>(RetPos);
+      }
     }
-  }
 
-  for (Argument &Arg : F.args()) {
-    IRPosition ArgPos = IRPosition::argument(Arg);
+    for (Argument &Arg : F.args()) {
+      IRPosition ArgPos = IRPosition::argument(Arg);
+      auto ArgNo = Arg.getArgNo();
+      AttributeSet ArgAttrs = Attrs.getParamAttrs(ArgNo);
 
-    // Every argument might be simplified. We have to go through the Attributor
-    // interface though as outside AAs can register custom simplification
-    // callbacks.
-    bool UsedAssumedInformation = false;
-    getAssumedSimplified(ArgPos, /* AA */ nullptr, UsedAssumedInformation,
-                         AA::Intraprocedural);
+      // Every argument might be simplified. We have to go through the
+      // Attributor interface though as outside AAs can register custom
+      // simplification callbacks.
+      bool UsedAssumedInformation = false;
+      getAssumedSimplified(ArgPos, /* AA */ nullptr, UsedAssumedInformation,
+                           AA::Intraprocedural);
 
-    // Every argument might be dead.
-    getOrCreateAAFor<AAIsDead>(ArgPos);
+      // Every argument might be dead.
+      getOrCreateAAFor<AAIsDead>(ArgPos);
 
-    // Every argument might be marked noundef.
-    getOrCreateAAFor<AANoUndef>(ArgPos);
+      // Every argument might be marked noundef.
+      checkAndQueryIRAttr<Attribute::NoUndef, AANoUndef>(ArgPos, ArgAttrs);
 
-    if (Arg.getType()->isPointerTy()) {
-      // Every argument with pointer type might be marked nonnull.
-      getOrCreateAAFor<AANonNull>(ArgPos);
+      if (Arg.getType()->isPointerTy()) {
+        // Every argument with pointer type might be marked nonnull.
+        checkAndQueryIRAttr<Attribute::NonNull, AANonNull>(ArgPos, ArgAttrs);
 
-      // Every argument with pointer type might be marked noalias.
-      getOrCreateAAFor<AANoAlias>(ArgPos);
+        // Every argument with pointer type might be marked noalias.
+        checkAndQueryIRAttr<Attribute::NoAlias, AANoAlias>(ArgPos, ArgAttrs);
 
-      // Every argument with pointer type might be marked dereferenceable.
-      getOrCreateAAFor<AADereferenceable>(ArgPos);
+        // Every argument with pointer type might be marked dereferenceable.
+        getOrCreateAAFor<AADereferenceable>(ArgPos);
 
-      // Every argument with pointer type might be marked align.
-      getOrCreateAAFor<AAAlign>(ArgPos);
+        // Every argument with pointer type might be marked align.
+        getOrCreateAAFor<AAAlign>(ArgPos);
 
-      // Every argument with pointer type might be marked nocapture.
-      getOrCreateAAFor<AANoCapture>(ArgPos);
+        // Every argument with pointer type might be marked nocapture.
+        checkAndQueryIRAttr<Attribute::NoCapture, AANoCapture>(ArgPos,
+                                                               ArgAttrs);
 
-      // Every argument with pointer type might be marked
-      // "readnone/readonly/writeonly/..."
-      getOrCreateAAFor<AAMemoryBehavior>(ArgPos);
+        // Every argument with pointer type might be marked
+        // "readnone/readonly/writeonly/..."
+        getOrCreateAAFor<AAMemoryBehavior>(ArgPos);
 
-      // Every argument with pointer type might be marked nofree.
-      getOrCreateAAFor<AANoFree>(ArgPos);
+        // Every argument with pointer type might be marked nofree.
+        checkAndQueryIRAttr<Attribute::NoFree, AANoFree>(ArgPos, ArgAttrs);
 
-      // Every argument with pointer type might be privatizable (or promotable)
-      getOrCreateAAFor<AAPrivatizablePtr>(ArgPos);
-    } else if (AttributeFuncs::isNoFPClassCompatibleType(Arg.getType())) {
-      getOrCreateAAFor<AANoFPClass>(ArgPos);
+        // Every argument with pointer type might be privatizable (or
+        // promotable)
+        getOrCreateAAFor<AAPrivatizablePtr>(ArgPos);
+      } else if (AttributeFuncs::isNoFPClassCompatibleType(Arg.getType())) {
+        getOrCreateAAFor<AANoFPClass>(ArgPos);
+      }
     }
   }
 
@@ -3355,9 +3434,11 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
         getOrCreateAAFor<AANoFPClass>(CBInstPos);
     }
 
+    const AttributeList &CBAttrs = CBFnPos.getAttrList();
     for (int I = 0, E = CB.arg_size(); I < E; ++I) {
 
       IRPosition CBArgPos = IRPosition::callsite_argument(CB, I);
+      AttributeSet CBArgAttrs = CBAttrs.getParamAttrs(I);
 
       // Every call site argument might be dead.
       getOrCreateAAFor<AAIsDead>(CBArgPos);
@@ -3370,7 +3451,7 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
                            AA::Intraprocedural);
 
       // Every call site argument might be marked "noundef".
-      getOrCreateAAFor<AANoUndef>(CBArgPos);
+      checkAndQueryIRAttr<Attribute::NoUndef, AANoUndef>(CBArgPos, CBArgAttrs);
 
       Type *ArgTy = CB.getArgOperand(I)->getType();
 
@@ -3382,13 +3463,14 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
       }
 
       // Call site argument attribute "non-null".
-      getOrCreateAAFor<AANonNull>(CBArgPos);
+      checkAndQueryIRAttr<Attribute::NonNull, AANonNull>(CBArgPos, CBArgAttrs);
 
       // Call site argument attribute "nocapture".
-      getOrCreateAAFor<AANoCapture>(CBArgPos);
+      checkAndQueryIRAttr<Attribute::NoCapture, AANoCapture>(CBArgPos,
+                                                             CBArgAttrs);
 
       // Call site argument attribute "no-alias".
-      getOrCreateAAFor<AANoAlias>(CBArgPos);
+      checkAndQueryIRAttr<Attribute::NoAlias, AANoAlias>(CBArgPos, CBArgAttrs);
 
       // Call site argument attribute "dereferenceable".
       getOrCreateAAFor<AADereferenceable>(CBArgPos);
@@ -3398,10 +3480,11 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
 
       // Call site argument attribute
       // "readnone/readonly/writeonly/..."
-      getOrCreateAAFor<AAMemoryBehavior>(CBArgPos);
+      if (!CBAttrs.hasParamAttr(I, Attribute::ReadNone))
+        getOrCreateAAFor<AAMemoryBehavior>(CBArgPos);
 
       // Call site argument attribute "nofree".
-      getOrCreateAAFor<AANoFree>(CBArgPos);
+      checkAndQueryIRAttr<Attribute::NoFree, AANoFree>(CBArgPos, CBArgAttrs);
     }
     return true;
   };
@@ -3418,18 +3501,21 @@ void Attributor::identifyDefaultAbstractAttributes(Function &F) {
   assert(Success && "Expected the check call to be successful!");
 
   auto LoadStorePred = [&](Instruction &I) -> bool {
-    if (isa<LoadInst>(I)) {
-      getOrCreateAAFor<AAAlign>(
-          IRPosition::value(*cast<LoadInst>(I).getPointerOperand()));
+    if (auto *LI = dyn_cast<LoadInst>(&I)) {
+      getOrCreateAAFor<AAAlign>(IRPosition::value(*LI->getPointerOperand()));
       if (SimplifyAllLoads)
         getAssumedSimplified(IRPosition::value(I), nullptr,
                              UsedAssumedInformation, AA::Intraprocedural);
+      getOrCreateAAFor<AAAddressSpace>(
+          IRPosition::value(*LI->getPointerOperand()));
     } else {
       auto &SI = cast<StoreInst>(I);
       getOrCreateAAFor<AAIsDead>(IRPosition::inst(I));
       getAssumedSimplified(IRPosition::value(*SI.getValueOperand()), nullptr,
                            UsedAssumedInformation, AA::Intraprocedural);
       getOrCreateAAFor<AAAlign>(IRPosition::value(*SI.getPointerOperand()));
+      getOrCreateAAFor<AAAddressSpace>(
+          IRPosition::value(*SI.getPointerOperand()));
     }
     return true;
   };
@@ -3535,7 +3621,7 @@ raw_ostream &llvm::operator<<(raw_ostream &OS,
   return OS;
 }
 
-void AbstractAttribute::print(raw_ostream &OS) const {
+void AbstractAttribute::print(Attributor *A, raw_ostream &OS) const {
   OS << "[";
   OS << getName();
   OS << "] for CtxI ";
@@ -3547,7 +3633,7 @@ void AbstractAttribute::print(raw_ostream &OS) const {
   } else
     OS << "<<null inst>>";
 
-  OS << " at position " << getIRPosition() << " with state " << getAsStr()
+  OS << " at position " << getIRPosition() << " with state " << getAsStr(A)
      << '\n';
 }
 

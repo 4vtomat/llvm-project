@@ -305,6 +305,14 @@ const MemoryMapParams Linux_X86_64_MemoryMapParams = {
 };
 // NOLINTEND(readability-identifier-naming)
 
+// loongarch64 Linux
+const MemoryMapParams Linux_LoongArch64_MemoryMapParams = {
+    0,              // AndMask (not used)
+    0x500000000000, // XorMask
+    0,              // ShadowBase (not used)
+    0x100000000000, // OriginBase
+};
+
 namespace {
 
 class DFSanABIList {
@@ -1127,6 +1135,9 @@ bool DataFlowSanitizer::initializeModule(Module &M) {
     break;
   case Triple::x86_64:
     MapParams = &Linux_X86_64_MemoryMapParams;
+    break;
+  case Triple::loongarch64:
+    MapParams = &Linux_LoongArch64_MemoryMapParams;
     break;
   default:
     report_fatal_error("unsupported architecture");
@@ -2156,9 +2167,8 @@ std::pair<Value *, Value *> DFSanFunction::loadShadowFast(
       ShadowSize == 4 ? Type::getInt32Ty(*DFS.Ctx) : Type::getInt64Ty(*DFS.Ctx);
 
   IRBuilder<> IRB(Pos);
-  Value *WideAddr = IRB.CreateBitCast(ShadowAddr, WideShadowTy->getPointerTo());
   Value *CombinedWideShadow =
-      IRB.CreateAlignedLoad(WideShadowTy, WideAddr, ShadowAlign);
+      IRB.CreateAlignedLoad(WideShadowTy, ShadowAddr, ShadowAlign);
 
   unsigned WideShadowBitWidth = WideShadowTy->getIntegerBitWidth();
   const uint64_t BytesPerWideShadow = WideShadowBitWidth / DFS.ShadowWidthBits;
@@ -2195,10 +2205,10 @@ std::pair<Value *, Value *> DFSanFunction::loadShadowFast(
   // shadow).
   for (uint64_t ByteOfs = BytesPerWideShadow; ByteOfs < Size;
        ByteOfs += BytesPerWideShadow) {
-    WideAddr = IRB.CreateGEP(WideShadowTy, WideAddr,
-                             ConstantInt::get(DFS.IntptrTy, 1));
+    ShadowAddr = IRB.CreateGEP(WideShadowTy, ShadowAddr,
+                               ConstantInt::get(DFS.IntptrTy, 1));
     Value *NextWideShadow =
-        IRB.CreateAlignedLoad(WideShadowTy, WideAddr, ShadowAlign);
+        IRB.CreateAlignedLoad(WideShadowTy, ShadowAddr, ShadowAlign);
     CombinedWideShadow = IRB.CreateOr(CombinedWideShadow, NextWideShadow);
     if (ShouldTrackOrigins) {
       Value *NextOrigin = DFS.loadNextOrigin(Pos, OriginAlign, &OriginAddr);

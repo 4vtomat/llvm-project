@@ -368,8 +368,8 @@ struct AAUniformWorkGroupSizeFunction : public AAUniformWorkGroupSize {
 
     AttrList.push_back(Attribute::get(Ctx, "uniform-work-group-size",
                                       getAssumed() ? "true" : "false"));
-    return IRAttributeManifest::manifestAttrs(A, getIRPosition(), AttrList,
-                                              /* ForceReplace */ true);
+    return A.manifestAttrs(getIRPosition(), AttrList,
+                           /* ForceReplace */ true);
   }
 
   bool isValidState() const override {
@@ -377,7 +377,7 @@ struct AAUniformWorkGroupSizeFunction : public AAUniformWorkGroupSize {
     return true;
   }
 
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     return "AMDWorkGroupSize[" + std::to_string(getAssumed()) + "]";
   }
 
@@ -526,16 +526,17 @@ struct AAAMDAttributesFunction : public AAAMDAttributes {
         AttrList.push_back(Attribute::get(Ctx, Attr.second));
     }
 
-    return IRAttributeManifest::manifestAttrs(A, getIRPosition(), AttrList,
-                                              /* ForceReplace */ true);
+    return A.manifestAttrs(getIRPosition(), AttrList,
+                           /* ForceReplace */ true);
   }
 
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     std::string Str;
     raw_string_ostream OS(Str);
     OS << "AMDInfo[";
     for (auto Attr : ImplicitAttrs)
-      OS << ' ' << Attr.second;
+      if (isAssumed(Attr.first))
+        OS << ' ' << Attr.second;
     OS << " ]";
     return OS.str();
   }
@@ -731,12 +732,12 @@ struct AAAMDSizeRangeAttribute
     SmallString<10> Buffer;
     raw_svector_ostream OS(Buffer);
     OS << getAssumed().getLower() << ',' << getAssumed().getUpper() - 1;
-    return IRAttributeManifest::manifestAttrs(
-        A, getIRPosition(), {Attribute::get(Ctx, AttrName, OS.str())},
-        /* ForceReplace */ true);
+    return A.manifestAttrs(getIRPosition(),
+                           {Attribute::get(Ctx, AttrName, OS.str())},
+                           /* ForceReplace */ true);
   }
 
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     std::string Str;
     raw_string_ostream OS(Str);
     OS << getName() << '[';
@@ -941,12 +942,15 @@ public:
         {&AAAMDAttributes::ID, &AAUniformWorkGroupSize::ID,
          &AAPotentialValues::ID, &AAAMDFlatWorkGroupSize::ID,
          &AAAMDWavesPerEU::ID, &AACallEdges::ID, &AAPointerInfo::ID,
-         &AAPotentialConstantValues::ID});
+         &AAPotentialConstantValues::ID, &AAUnderlyingObjects::ID});
 
     AttributorConfig AC(CGUpdater);
     AC.Allowed = &Allowed;
     AC.IsModulePass = true;
     AC.DefaultInitializeLiveInternals = false;
+    AC.IPOAmendableCB = [](const Function &F) {
+      return F.getCallingConv() == CallingConv::AMDGPU_KERNEL;
+    };
 
     Attributor A(Functions, InfoCache, AC);
 

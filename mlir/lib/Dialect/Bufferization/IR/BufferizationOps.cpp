@@ -11,7 +11,6 @@
 #include "mlir/Dialect/Bufferization/IR/Bufferization.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Dialect/MemRef/IR/MemRef.h"
-#include "mlir/Dialect/MemRef/Utils/MemRefUtils.h"
 #include "mlir/Dialect/SparseTensor/IR/SparseTensor.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/IR/Matchers.h"
@@ -71,8 +70,7 @@ mlir::bufferization::castOrReallocMemRefValue(OpBuilder &b, Value value,
   for (int i = 0; i < destType.getRank(); ++i) {
     if (destType.getShape()[i] != ShapedType::kDynamic)
       continue;
-    auto index = b.createOrFold<arith::ConstantIndexOp>(loc, i);
-    Value size = b.create<memref::DimOp>(loc, value, index);
+    Value size = b.create<memref::DimOp>(loc, value, i);
     dynamicOperands.push_back(size);
   }
   // TODO: Use alloc/memcpy callback from BufferizationOptions if called via

@@ -116,6 +116,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zca", RISCVExtensionVersion{1, 0}},
     {"zcb", RISCVExtensionVersion{1, 0}},
     {"zcd", RISCVExtensionVersion{1, 0}},
+    {"zce", RISCVExtensionVersion{1, 0}},
     {"zcf", RISCVExtensionVersion{1, 0}},
     {"zcmp", RISCVExtensionVersion{1, 0}},
     {"zcmt", RISCVExtensionVersion{1, 0}},
@@ -175,15 +176,22 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smwg", RISCVExtensionVersion{0, 3}},
     {"smwgd", RISCVExtensionVersion{0, 3}},
     {"ssaia", RISCVExtensionVersion{1, 0}},
+<<<<<<< HEAD
     {"sswg", RISCVExtensionVersion{0, 3}},
     {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}},
     {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}},
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+    {"zacas", RISCVExtensionVersion{1, 0}},
+
+>>>>>>> upstream/main
     {"zfa", RISCVExtensionVersion{0, 2}},
     {"zfbfmin", RISCVExtensionVersion{0, 6}},
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
+<<<<<<< HEAD
     {"zvbb", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvbc", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvfbfmin", RISCVExtensionVersion{0, 6}},
@@ -209,6 +217,30 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvksh", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{1, 0}}, // SIFIVE
+=======
+
+    {"zvbb", RISCVExtensionVersion{1, 0}},
+    {"zvbc", RISCVExtensionVersion{1, 0}},
+
+    {"zvfbfmin", RISCVExtensionVersion{0, 6}},
+    {"zvfbfwma", RISCVExtensionVersion{0, 6}},
+    {"zvfh", RISCVExtensionVersion{0, 1}},
+
+    // vector crypto
+    {"zvkg", RISCVExtensionVersion{1, 0}},
+    {"zvkn", RISCVExtensionVersion{1, 0}},
+    {"zvknc", RISCVExtensionVersion{1, 0}},
+    {"zvkned", RISCVExtensionVersion{1, 0}},
+    {"zvkng", RISCVExtensionVersion{1, 0}},
+    {"zvknha", RISCVExtensionVersion{1, 0}},
+    {"zvknhb", RISCVExtensionVersion{1, 0}},
+    {"zvks", RISCVExtensionVersion{1, 0}},
+    {"zvksc", RISCVExtensionVersion{1, 0}},
+    {"zvksed", RISCVExtensionVersion{1, 0}},
+    {"zvksg", RISCVExtensionVersion{1, 0}},
+    {"zvksh", RISCVExtensionVersion{1, 0}},
+    {"zvkt", RISCVExtensionVersion{1, 0}},
+>>>>>>> upstream/main
 };
 
 static void verifyTables() {
@@ -1117,6 +1149,10 @@ Error RISCVISAInfo::checkDependency() {
         "' extension is incompatible with '" + (HasC ? "c" : "zcd") +
         "' extension when 'd' extension is enabled");
 
+  if (XLen != 32 && Exts.count("zcf"))
+    return createStringError(errc::invalid_argument,
+                             "'zcf' is only supported for 'rv32'");
+
   // Additional dependency checks.
   // TODO: The 'q' extension requires rv64.
   // TODO: It is illegal to specify 'e' extensions with 'f' and 'd'.
@@ -1129,7 +1165,11 @@ static const char *ImpliedExtsF[] = {"zicsr"};
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
+static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
+static const char *ImpliedExtsZcd[] = {"zca"};
+static const char *ImpliedExtsZce[] = {"zcb", "zcmp", "zcmt"};
+static const char *ImpliedExtsZcf[] = {"zca"};
 static const char *ImpliedExtsZcmp[] = {"zca"};
 static const char *ImpliedExtsZcmt[] = {"zca"};
 static const char *ImpliedExtsZdinx[] = {"zfinx"};
@@ -1202,7 +1242,11 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
+    {{"zacas"}, {ImpliedExtsZacas}},
     {{"zcb"}, {ImpliedExtsZcb}},
+    {{"zcd"}, {ImpliedExtsZcd}},
+    {{"zce"}, {ImpliedExtsZce}},
+    {{"zcf"}, {ImpliedExtsZcf}},
     {{"zcmp"}, {ImpliedExtsZcmp}},
     {{"zcmt"}, {ImpliedExtsZcmt}},
     {{"zdinx"}, {ImpliedExtsZdinx}},
@@ -1280,6 +1324,13 @@ void RISCVISAInfo::updateImplication() {
       }
     }
   }
+
+  // Add Zcf if Zce and F are enabled on RV32.
+  if (XLen == 32 && Exts.count("zce") && Exts.count("f") &&
+      !Exts.count("zcf")) {
+    auto Version = findDefaultVersion("zcf");
+    addExtension("zcf", Version->Major, Version->Minor);
+  }
 }
 
 struct CombinedExtsEntry {
@@ -1291,6 +1342,12 @@ static constexpr CombinedExtsEntry CombineIntoExts[] = {
     {{"zk"}, {ImpliedExtsZk}},
     {{"zkn"}, {ImpliedExtsZkn}},
     {{"zks"}, {ImpliedExtsZks}},
+    {{"zvkn"}, {ImpliedExtsZvkn}},
+    {{"zvknc"}, {ImpliedExtsZvknc}},
+    {{"zvkng"}, {ImpliedExtsZvkng}},
+    {{"zvks"}, {ImpliedExtsZvks}},
+    {{"zvksc"}, {ImpliedExtsZvksc}},
+    {{"zvksg"}, {ImpliedExtsZvksg}},
 };
 
 void RISCVISAInfo::updateCombination() {

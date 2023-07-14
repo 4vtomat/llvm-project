@@ -345,9 +345,9 @@ LogicalResult MultiDimReductionOp::verify() {
 /// Returns the mask type expected by this operation.
 Type MultiDimReductionOp::getExpectedMaskType() {
   auto vecType = getSourceVectorType();
-  return VectorType::get(
-      vecType.getShape(), IntegerType::get(vecType.getContext(), /*width=*/1),
-      vecType.getNumScalableDims(), vecType.getScalableDims());
+  return VectorType::get(vecType.getShape(),
+                         IntegerType::get(vecType.getContext(), /*width=*/1),
+                         vecType.getScalableDims());
 }
 
 namespace {
@@ -484,9 +484,9 @@ void ReductionOp::print(OpAsmPrinter &p) {
 /// Returns the mask type expected by this operation.
 Type ReductionOp::getExpectedMaskType() {
   auto vecType = getSourceVectorType();
-  return VectorType::get(
-      vecType.getShape(), IntegerType::get(vecType.getContext(), /*width=*/1),
-      vecType.getNumScalableDims(), vecType.getScalableDims());
+  return VectorType::get(vecType.getShape(),
+                         IntegerType::get(vecType.getContext(), /*width=*/1),
+                         vecType.getScalableDims());
 }
 
 Value mlir::vector::getVectorReductionOp(arith::AtomicRMWKind op,
@@ -929,8 +929,7 @@ Type ContractionOp::getExpectedMaskType() {
   assert(!ShapedType::isDynamicShape(maskShape) &&
          "Mask shape couldn't be computed");
   // TODO: Extend the scalable vector type representation with a bit map.
-  assert(lhsType.getNumScalableDims() == 0 &&
-         rhsType.getNumScalableDims() == 0 &&
+  assert(!lhsType.isScalable() && !rhsType.isScalable() &&
          "Scalable vectors are not supported yet");
 
   return VectorType::get(maskShape,
@@ -1149,7 +1148,7 @@ void vector::ExtractOp::build(OpBuilder &builder, OperationState &result,
                               Value source, ValueRange position) {
   SmallVector<int64_t, 4> positionConstants =
       llvm::to_vector<4>(llvm::map_range(position, [](Value pos) {
-        return pos.getDefiningOp<arith::ConstantIndexOp>().value();
+        return getConstantIntValue(pos).value();
       }));
   build(builder, result, source, positionConstants);
 }
@@ -1164,8 +1163,7 @@ ExtractOp::inferReturnTypes(MLIRContext *, std::optional<Location>,
   if (static_cast<int64_t>(op.getPosition().size()) == vectorType.getRank()) {
     inferredReturnTypes.push_back(vectorType.getElementType());
   } else {
-    auto n =
-        std::min<size_t>(op.getPosition().size(), vectorType.getRank() - 1);
+    auto n = std::min<size_t>(op.getPosition().size(), vectorType.getRank());
     inferredReturnTypes.push_back(VectorType::get(
         vectorType.getShape().drop_front(n), vectorType.getElementType()));
   }
@@ -1190,7 +1188,7 @@ LogicalResult vector::ExtractOp::verify() {
   if (positionAttr.size() >
       static_cast<unsigned>(getSourceVectorType().getRank()))
     return emitOpError(
-        "expected position attribute of rank smaller than vector rank");
+        "expected position attribute of rank no greater than vector rank");
   for (const auto &en : llvm::enumerate(positionAttr)) {
     auto attr = llvm::dyn_cast<IntegerAttr>(en.value());
     if (!attr || attr.getInt() < 0 ||
@@ -2319,7 +2317,7 @@ void InsertOp::build(OpBuilder &builder, OperationState &result, Value source,
                      Value dest, ValueRange position) {
   SmallVector<int64_t, 4> positionConstants =
       llvm::to_vector<4>(llvm::map_range(position, [](Value pos) {
-        return pos.getDefiningOp<arith::ConstantIndexOp>().value();
+        return getConstantIntValue(pos).value();
       }));
   build(builder, result, source, dest, positionConstants);
 }
@@ -2329,7 +2327,7 @@ LogicalResult InsertOp::verify() {
   auto destVectorType = getDestVectorType();
   if (positionAttr.size() > static_cast<unsigned>(destVectorType.getRank()))
     return emitOpError(
-        "expected position attribute of rank smaller than dest vector rank");
+        "expected position attribute of rank no greater than dest vector rank");
   auto srcVectorType = llvm::dyn_cast<VectorType>(getSourceType());
   if (srcVectorType &&
       (static_cast<unsigned>(srcVectorType.getRank()) + positionAttr.size() !=
@@ -2490,7 +2488,7 @@ static LogicalResult isIntegerArrayAttrSmallerThanShape(OpType op,
                                                         StringRef attrName) {
   if (arrayAttr.size() > shape.size())
     return op.emitOpError("expected ")
-           << attrName << " attribute of rank smaller than vector rank";
+           << attrName << " attribute of rank no greater than vector rank";
   return success();
 }
 
@@ -2581,7 +2579,7 @@ LogicalResult InsertStridedSliceOp::verify() {
     return emitOpError("expected strides of same size as source vector rank");
   if (sourceVectorType.getRank() > destVectorType.getRank())
     return emitOpError(
-        "expected source rank to be smaller than destination rank");
+        "expected source rank to be no greater than destination rank");
 
   auto sourceShape = sourceVectorType.getShape();
   auto destShape = destVectorType.getShape();
@@ -2792,18 +2790,13 @@ ParseResult OuterProductOp::parse(OpAsmParser &parser, OperationState &result) {
   if (vRHS) {
     SmallVector<bool> scalableDimsRes{vLHS.getScalableDims()[0],
                                       vRHS.getScalableDims()[0]};
-    auto numScalableDims =
-        count_if(scalableDimsRes, [](bool isScalable) { return isScalable; });
     resType = VectorType::get({vLHS.getDimSize(0), vRHS.getDimSize(0)},
-                              vLHS.getElementType(), numScalableDims,
-                              scalableDimsRes);
+                              vLHS.getElementType(), scalableDimsRes);
   } else {
     // Scalar RHS operand
     SmallVector<bool> scalableDimsRes{vLHS.getScalableDims()[0]};
-    auto numScalableDims =
-        count_if(scalableDimsRes, [](bool isScalable) { return isScalable; });
     resType = VectorType::get({vLHS.getDimSize(0)}, vLHS.getElementType(),
-                              numScalableDims, scalableDimsRes);
+                              scalableDimsRes);
   }
 
   if (!result.attributes.get(OuterProductOp::getKindAttrStrName())) {
@@ -2867,9 +2860,9 @@ LogicalResult OuterProductOp::verify() {
 /// verification purposes. It requires the operation to be vectorized."
 Type OuterProductOp::getExpectedMaskType() {
   auto vecType = this->getResultVectorType();
-  return VectorType::get(
-      vecType.getShape(), IntegerType::get(vecType.getContext(), /*width=*/1),
-      vecType.getNumScalableDims(), vecType.getScalableDims());
+  return VectorType::get(vecType.getShape(),
+                         IntegerType::get(vecType.getContext(), /*width=*/1),
+                         vecType.getScalableDims());
 }
 
 //===----------------------------------------------------------------------===//
@@ -2914,18 +2907,16 @@ LogicalResult ReshapeOp::verify() {
   // If all shape operands are produced by constant ops, verify that product
   // of dimensions for input/output shape match.
   auto isDefByConstant = [](Value operand) {
-    return isa_and_nonnull<arith::ConstantIndexOp>(operand.getDefiningOp());
+    return getConstantIntValue(operand).has_value();
   };
   if (llvm::all_of(getInputShape(), isDefByConstant) &&
       llvm::all_of(getOutputShape(), isDefByConstant)) {
     int64_t numInputElements = 1;
     for (auto operand : getInputShape())
-      numInputElements *=
-          cast<arith::ConstantIndexOp>(operand.getDefiningOp()).value();
+      numInputElements *= getConstantIntValue(operand).value();
     int64_t numOutputElements = 1;
     for (auto operand : getOutputShape())
-      numOutputElements *=
-          cast<arith::ConstantIndexOp>(operand.getDefiningOp()).value();
+      numOutputElements *= getConstantIntValue(operand).value();
     if (numInputElements != numOutputElements)
       return emitError("product of input and output shape sizes must match");
   }
@@ -3528,8 +3519,7 @@ static VectorType inferTransferOpMaskType(VectorType vecType,
   SmallVector<bool> scalableDims =
       applyPermutationMap(invPermMap, vecType.getScalableDims());
 
-  return VectorType::get(maskShape, i1Type, vecType.getNumScalableDims(),
-                         scalableDims);
+  return VectorType::get(maskShape, i1Type, scalableDims);
 }
 
 ParseResult TransferReadOp::parse(OpAsmParser &parser, OperationState &result) {
@@ -3652,8 +3642,8 @@ static bool isInBounds(TransferOp op, int64_t resultIdx, int64_t indicesIdx) {
   if (op.getShapedType().isDynamicDim(indicesIdx))
     return false;
   Value index = op.getIndices()[indicesIdx];
-  auto cstOp = index.getDefiningOp<arith::ConstantIndexOp>();
-  if (!cstOp)
+  std::optional<int64_t> cstOp = getConstantIntValue(index);
+  if (!cstOp.has_value())
     return false;
 
   int64_t sourceSize = op.getShapedType().getDimSize(indicesIdx);
@@ -4038,8 +4028,8 @@ static LogicalResult foldReadInitWrite(TransferWriteOp write,
     return failure();
   // If any index is nonzero.
   auto isNotConstantZero = [](Value v) {
-    auto cstOp = v.getDefiningOp<arith::ConstantIndexOp>();
-    return !cstOp || cstOp.value() != 0;
+    auto cstOp = getConstantIntValue(v);
+    return !cstOp.has_value() || cstOp.value() != 0;
   };
   if (llvm::any_of(read.getIndices(), isNotConstantZero) ||
       llvm::any_of(write.getIndices(), isNotConstantZero))
@@ -4487,9 +4477,9 @@ LogicalResult GatherOp::verify() {
 /// verification purposes. It requires the operation to be vectorized."
 Type GatherOp::getExpectedMaskType() {
   auto vecType = this->getIndexVectorType();
-  return VectorType::get(
-      vecType.getShape(), IntegerType::get(vecType.getContext(), /*width=*/1),
-      vecType.getNumScalableDims(), vecType.getScalableDims());
+  return VectorType::get(vecType.getShape(),
+                         IntegerType::get(vecType.getContext(), /*width=*/1),
+                         vecType.getScalableDims());
 }
 
 std::optional<SmallVector<int64_t, 4>> GatherOp::getShapeForUnroll() {
@@ -5276,7 +5266,7 @@ public:
                                 PatternRewriter &rewriter) const override {
     // Return if any of 'createMaskOp' operands are not defined by a constant.
     auto isNotDefByConstant = [](Value operand) {
-      return !isa_and_nonnull<arith::ConstantIndexOp>(operand.getDefiningOp());
+      return !getConstantIntValue(operand).has_value();
     };
     if (llvm::any_of(createMaskOp.getOperands(), isNotDefByConstant))
       return failure();
@@ -5298,8 +5288,7 @@ public:
     maskDimSizes.reserve(createMaskOp->getNumOperands());
     for (auto [operand, maxDimSize] : llvm::zip_equal(
              createMaskOp.getOperands(), createMaskOp.getType().getShape())) {
-      Operation *defOp = operand.getDefiningOp();
-      int64_t dimSize = cast<arith::ConstantIndexOp>(defOp).value();
+      int64_t dimSize = getConstantIntValue(operand).value();
       dimSize = std::min(dimSize, maxDimSize);
       // If one of dim sizes is zero, set all dims to zero.
       if (dimSize <= 0) {

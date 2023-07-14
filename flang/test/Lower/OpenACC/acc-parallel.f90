@@ -3,8 +3,9 @@
 ! RUN: bbc -fopenacc -emit-fir %s -o - | FileCheck %s
 
 ! CHECK-LABEL: acc.firstprivate.recipe @firstprivatization_ref_10x10xf32 : !fir.ref<!fir.array<10x10xf32>> init {
-! CHECK: ^bb0(%arg0: !fir.ref<!fir.array<10x10xf32>>):
-! CHECK:   acc.yield %arg0 : !fir.ref<!fir.array<10x10xf32>>
+! CHECK: ^bb0(%{{.*}}: !fir.ref<!fir.array<10x10xf32>>):
+! CHECK:   %[[ALLOCA:.*]] = fir.alloca !fir.array<10x10xf32> 
+! CHECK:   acc.yield %[[ALLOCA]] : !fir.ref<!fir.array<10x10xf32>>
 ! CHECK: } copy {
 ! CHECK: ^bb0(%arg0: !fir.ref<!fir.array<10x10xf32>>, %arg1: !fir.ref<!fir.array<10x10xf32>>):
 ! CHECK:   acc.terminator
@@ -328,5 +329,17 @@ subroutine acc_parallel
 ! CHECK:      acc.parallel reduction(@reduction_add_f32 -> %{{.*}} : !fir.ref<f32>, @reduction_mul_i32 -> %{{.*}} : !fir.ref<i32>) {
 ! CHECK:        acc.yield
 ! CHECK-NEXT: }{{$}}
+
+!$acc parallel default(none)
+!$acc end parallel
+
+! CHECK: acc.parallel {
+! CHECK: } attributes {defaultAttr = #acc<defaultvalue none>}
+
+!$acc parallel default(present)
+!$acc end parallel
+
+! CHECK: acc.parallel {
+! CHECK: } attributes {defaultAttr = #acc<defaultvalue present>}
 
 end subroutine acc_parallel

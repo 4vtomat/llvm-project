@@ -63,10 +63,16 @@ Changes to the LLVM IR
 
 * Introduced new ``llvm.ldexp`` and ``llvm.experimental.constrained.ldexp`` intrinsics.
 
+* Introduced new ``llvm.frexp`` intrinsic.
+
 * The constant expression variants of the following instructions have been
   removed:
 
   * ``select``
+
+* Introduced a set of experimental `convergence control intrinsics
+  <ConvergentOperations.html>`__ to explicitly define the semantics of convergent
+  operations.
 
 Changes to LLVM infrastructure
 ------------------------------
@@ -79,6 +85,12 @@ Changes to LLVM infrastructure
 
 * InstructionSimplify APIs now require instructions be inserted into a
   parent function.
+
+* A new FatLTO pipeline was added to support generating object files that have
+  both machine code and LTO compatible bitcode. See the :doc:`FatLTO`
+  documentation and the original
+  `RFC  <https://discourse.llvm.org/t/rfc-ffat-lto-objects-support/63977>`_
+  for more details.
 
 Changes to building LLVM
 ------------------------
@@ -143,8 +155,12 @@ Changes to the AMDGPU Backend
 * Added llvm.amdgcn.exp2.f32 intrinsic. This provides direct access to
   v_exp_f32.
 
-* llvm.log2.f32 is now lowered accurately. Use llvm.amdgcn.log.f32 to
-  access the old behavior.
+* llvm.log2.f32, llvm.log10.f32, and llvm.log.f32 are now lowered
+  accurately. Use llvm.amdgcn.log.f32 to access the old behavior for
+  llvm.log2.f32.
+
+* llvm.exp2.f32 and llvm.exp.f32 are now lowered accurately. Use
+  llvm.amdgcn.exp2.f32 to access the old behavior for llvm.exp2.f32.
 
 Changes to the ARM Backend
 --------------------------
@@ -241,11 +257,16 @@ Changes to the RISC-V Backend
 * Assembly support was added for the experimental Zfbfmin (scalar BF16
   conversions), Zvfbfmin (vector BF16 conversions), and Zvfbfwma (vector BF16
   widening mul-add) extensions.
+* Added assembler/disassembler support for the experimental Zacas (atomic
+  compare-and-swap) extension.
 
 Changes to the WebAssembly Backend
 ----------------------------------
 
-* ...
+* Function annotations (``__attribute__((annotate(<name>)))``)
+  now generate custom sections in the Wasm output file. A custom section
+  for each unique name will be created that contains each function
+  index the annotation applies to.
 
 Changes to the Windows Target
 -----------------------------

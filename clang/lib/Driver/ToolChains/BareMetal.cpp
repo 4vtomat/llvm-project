@@ -18,6 +18,7 @@
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/MultilibBuilder.h"
 #include "clang/Driver/Options.h"
+#include "llvm/ADT/StringExtras.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/VirtualFileSystem.h"
@@ -160,6 +161,12 @@ static bool isRISCVBareMetal(const llvm::Triple &Triple) {
   return Triple.getEnvironmentName() == "elf";
 }
 
+/// Is the triple powerpc[64][le]-*-none-eabi?
+static bool isPPCBareMetal(const llvm::Triple &Triple) {
+  return Triple.isPPC() && Triple.getOS() == llvm::Triple::UnknownOS &&
+         Triple.getEnvironment() == llvm::Triple::EABI;
+}
+
 static void findMultilibsFromYAML(const ToolChain &TC, const Driver &D,
                                   StringRef MultilibPath, const ArgList &Args,
                                   DetectedMultilibs &Result) {
@@ -175,7 +182,7 @@ static void findMultilibsFromYAML(const ToolChain &TC, const Driver &D,
   Result.Multilibs = ErrorOrMultilibSet.get();
   if (Result.Multilibs.select(Flags, Result.SelectedMultilibs))
     return;
-  D.Diag(clang::diag::err_drv_no_matching_multilib) << llvm::join(Flags, " ");
+  D.Diag(clang::diag::warn_drv_missing_multilib) << llvm::join(Flags, " ");
   std::stringstream ss;
   for (const Multilib &Multilib : Result.Multilibs)
     ss << "\n" << llvm::join(Multilib.flags(), " ");
@@ -225,7 +232,7 @@ void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
 
 bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
   return isARMBareMetal(Triple) || isAArch64BareMetal(Triple) ||
-         isRISCVBareMetal(Triple);
+         isRISCVBareMetal(Triple) || isPPCBareMetal(Triple);
 }
 
 Tool *BareMetal::buildLinker() const {
@@ -430,9 +437,9 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   CmdArgs.push_back("-Bstatic");
 
-  Args.AddAllArgs(CmdArgs, {options::OPT_L, options::OPT_T_Group,
-                            options::OPT_e, options::OPT_s, options::OPT_t,
-                            options::OPT_Z_Flag, options::OPT_r});
+  Args.AddAllArgs(CmdArgs,
+                  {options::OPT_L, options::OPT_T_Group, options::OPT_s,
+                   options::OPT_t, options::OPT_Z_Flag, options::OPT_r});
 
   TC.AddFilePathLibArgs(Args, CmdArgs);
 

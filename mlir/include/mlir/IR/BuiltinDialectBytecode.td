@@ -181,6 +181,10 @@ def SparseElementsAttr : DialectAttribute<(attr
   DenseElementsAttr:$values
 )>;
 
+def DistinctAttr : DialectAttribute<(attr
+  Attribute:$referencedAttr
+)>;
+
 // Types
 // -----
 
@@ -275,18 +279,17 @@ def VectorType : DialectType<(type
   Array<SignedVarIntList>:$shape,
   Type:$elementType
 )> {
-  let printerPredicate = "!$_val.getNumScalableDims()";
+  let printerPredicate = "!$_val.isScalable()";
 }
 
 def VectorTypeWithScalableDims : DialectType<(type
   Array<BoolList>:$scalableDims,
-  VarInt:$numScalableDims,
   Array<SignedVarIntList>:$shape,
   Type:$elementType
 )> {
-  let printerPredicate = "$_val.getNumScalableDims()";
+  let printerPredicate = "$_val.isScalable()";
   // Note: order of serialization does not match order of builder.
-  let cBuilder = "get<$_resultType>(context, shape, elementType, numScalableDims, scalableDims)";
+  let cBuilder = "get<$_resultType>(context, shape, elementType, scalableDims)";
 }
 }
 
@@ -317,7 +320,8 @@ def BuiltinDialectAttributes : DialectAttributes<"Builtin"> {
     DenseArrayAttr,
     DenseIntOrFPElementsAttr,
     DenseStringElementsAttr,
-    SparseElementsAttr
+    SparseElementsAttr,
+    DistinctAttr
   ];
 }
 

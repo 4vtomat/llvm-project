@@ -224,14 +224,15 @@ void VPRecipeBase::moveBefore(VPBasicBlock &BB,
   insertBefore(BB, I);
 }
 
-void VPInstruction::generateInstruction(VPTransformState &State,
-                                        unsigned Part) {
+Value *VPInstruction::generateInstruction(VPTransformState &State,
+                                          unsigned Part) {
   IRBuilderBase &Builder = State.Builder;
   Builder.SetCurrentDebugLocation(DL);
 
   if (Instruction::isBinaryOp(getOpcode())) {
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -243,11 +244,15 @@ void VPInstruction::generateInstruction(VPTransformState &State,
         Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
     State.set(this, V, Part);
     return;
+=======
+    return Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
+>>>>>>> upstream/main
   }
 
   switch (getOpcode()) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0), Part);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getRVL() && A->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -258,6 +263,9 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *V = Builder.CreateNot(A, Name);
     State.set(this, V, Part);
     break;
+=======
+    return Builder.CreateNot(A, Name);
+>>>>>>> upstream/main
   }
   case VPInstruction::ICmpULE: {
     Value *IV = State.get(getOperand(0), Part);
@@ -269,14 +277,13 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     }
 #endif // SIFIVE_CUSTOMIZATION
     Value *TC = State.get(getOperand(1), Part);
-    Value *V = Builder.CreateICmpULE(IV, TC, Name);
-    State.set(this, V, Part);
-    break;
+    return Builder.CreateICmpULE(IV, TC, Name);
   }
   case Instruction::Select: {
     Value *Cond = State.get(getOperand(0), Part);
     Value *Op1 = State.get(getOperand(1), Part);
     Value *Op2 = State.get(getOperand(2), Part);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
       llvm::widenPredicatedInstruction(nullptr, this, *this, State, nullptr,
@@ -287,6 +294,9 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *V = Builder.CreateSelect(Cond, Op1, Op2, Name);
     State.set(this, V, Part);
     break;
+=======
+    return Builder.CreateSelect(Cond, Op1, Op2, Name);
+>>>>>>> upstream/main
   }
   case VPInstruction::ActiveLaneMask: {
     // Get first lane of vector induction variable.
@@ -296,11 +306,9 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 
     auto *Int1Ty = Type::getInt1Ty(Builder.getContext());
     auto *PredTy = VectorType::get(Int1Ty, State.VF);
-    Instruction *Call = Builder.CreateIntrinsic(
-        Intrinsic::get_active_lane_mask, {PredTy, ScalarTC->getType()},
-        {VIVElem0, ScalarTC}, nullptr, Name);
-    State.set(this, Call, Part);
-    break;
+    return Builder.CreateIntrinsic(Intrinsic::get_active_lane_mask,
+                                   {PredTy, ScalarTC->getType()},
+                                   {VIVElem0, ScalarTC}, nullptr, Name);
   }
   case VPInstruction::FirstOrderRecurrenceSplice: {
     // Generate code to combine the previous and current values in vector v3.
@@ -318,6 +326,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     // For the first part, use the recurrence phi (v1), otherwise v2.
     auto *V1 = State.get(getOperand(0), 0);
     Value *PartMinus1 = Part == 0 ? V1 : State.get(getOperand(1), Part - 1);
+<<<<<<< HEAD
     if (!PartMinus1->getType()->isVectorTy()) {
       State.set(this, PartMinus1, Part);
     } else {
@@ -344,6 +353,12 @@ void VPInstruction::generateInstruction(VPTransformState &State,
                 Part);
     }
     break;
+=======
+    if (!PartMinus1->getType()->isVectorTy())
+      return PartMinus1;
+    Value *V2 = State.get(getOperand(1), Part);
+    return Builder.CreateVectorSplice(PartMinus1, V2, -1, Name);
+>>>>>>> upstream/main
   }
   case VPInstruction::CalculateTripCountMinusVF: {
     Value *ScalarTC = State.get(getOperand(0), {0, 0});
@@ -352,13 +367,10 @@ void VPInstruction::generateInstruction(VPTransformState &State,
     Value *Sub = Builder.CreateSub(ScalarTC, Step);
     Value *Cmp = Builder.CreateICmp(CmpInst::Predicate::ICMP_UGT, ScalarTC, Step);
     Value *Zero = ConstantInt::get(ScalarTC->getType(), 0);
-    Value *Sel = Builder.CreateSelect(Cmp, Sub, Zero);
-    State.set(this, Sel, Part);
-    break;
+    return Builder.CreateSelect(Cmp, Sub, Zero);
   }
   case VPInstruction::CanonicalIVIncrement:
   case VPInstruction::CanonicalIVIncrementNUW: {
-    Value *Next = nullptr;
     if (Part == 0) {
       bool IsNUW = getOpcode() == VPInstruction::CanonicalIVIncrementNUW;
       auto *Phi = State.get(getOperand(0), 0);
@@ -373,35 +385,33 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 #else
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
       Next = Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
     } else {
       Next = State.get(this, 0);
+=======
+      return Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
+>>>>>>> upstream/main
     }
-
-    State.set(this, Next, Part);
-    break;
+    return State.get(this, 0);
   }
 
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::CanonicalIVIncrementForPartNUW: {
     bool IsNUW = getOpcode() == VPInstruction::CanonicalIVIncrementForPartNUW;
     auto *IV = State.get(getOperand(0), VPIteration(0, 0));
-    if (Part == 0) {
-      State.set(this, IV, Part);
-      break;
-    }
+    if (Part == 0)
+      return IV;
 
     // The canonical IV is incremented by the vectorization factor (num of SIMD
     // elements) times the unroll part.
     Value *Step = createStepForVF(Builder, IV->getType(), State.VF, Part);
-    Value *Next = Builder.CreateAdd(IV, Step, Name, IsNUW, false);
-    State.set(this, Next, Part);
-    break;
+    return Builder.CreateAdd(IV, Step, Name, IsNUW, false);
   }
   case VPInstruction::BranchOnCond: {
     if (Part != 0)
-      break;
+      return nullptr;
 
     Value *Cond = State.get(getOperand(0), VPIteration(Part, 0));
     VPRegionBlock *ParentRegion = getParent()->getParent();
@@ -418,11 +428,11 @@ void VPInstruction::generateInstruction(VPTransformState &State,
 
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
-    break;
+    return CondBr;
   }
   case VPInstruction::BranchOnCount: {
     if (Part != 0)
-      break;
+      return nullptr;
     // First create the compare.
     Value *IV = State.get(getOperand(0), Part);
     Value *TC = State.get(getOperand(1), Part);
@@ -442,7 +452,7 @@ void VPInstruction::generateInstruction(VPTransformState &State,
                                               State.CFG.VPBB2IRBB[Header]);
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
-    break;
+    return CondBr;
   }
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
@@ -638,8 +648,13 @@ void VPInstruction::execute(VPTransformState &State) {
   assert(!State.Instance && "VPInstruction executing an Instance");
   IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
   State.Builder.setFastMathFlags(FMF);
-  for (unsigned Part = 0; Part < State.UF; ++Part)
-    generateInstruction(State, Part);
+  for (unsigned Part = 0; Part < State.UF; ++Part) {
+    Value *GeneratedValue = generateInstruction(State, Part);
+    if (!hasResult())
+      continue;
+    assert(GeneratedValue && "generateInstruction must produce a value");
+    State.set(this, GeneratedValue, Part);
+  }
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

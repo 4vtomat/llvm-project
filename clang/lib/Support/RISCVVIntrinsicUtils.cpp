@@ -995,16 +995,14 @@ std::optional<RVVTypePtr> RVVTypeCache::computeType(BasicType BT, int Log2LMUL,
 //===----------------------------------------------------------------------===//
 // RVVIntrinsic implementation
 //===----------------------------------------------------------------------===//
-RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
-                           StringRef NewOverloadedName,
-                           StringRef OverloadedSuffix, StringRef IRName,
-                           bool IsMasked, bool HasMaskedOffOperand, bool HasVL,
-                           PolicyScheme Scheme, bool SupportOverloading,
-                           bool HasBuiltinAlias, StringRef ManualCodegen,
-                           const RVVTypes &OutInTypes,
-                           const std::vector<int64_t> &NewIntrinsicTypes,
-                           const std::vector<StringRef> &RequiredFeatures,
-                           unsigned NF, Policy NewPolicyAttrs)
+RVVIntrinsic::RVVIntrinsic(
+    StringRef NewName, StringRef Suffix, StringRef NewOverloadedName,
+    StringRef OverloadedSuffix, StringRef IRName, bool IsMasked,
+    bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
+    bool SupportOverloading, bool HasBuiltinAlias, StringRef ManualCodegen,
+    const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
+    const std::vector<StringRef> &RequiredFeatures, unsigned NF,
+    Policy NewPolicyAttrs, bool HasFRMRoundModeOp)
     : IRName(IRName), IsMasked(IsMasked),
       HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
       SupportOverloading(SupportOverloading), HasBuiltinAlias(HasBuiltinAlias),
@@ -1023,7 +1021,7 @@ RVVIntrinsic::RVVIntrinsic(StringRef NewName, StringRef Suffix,
     OverloadedName += "_" + OverloadedSuffix.str();
 
   updateNamesAndPolicy(IsMasked, hasPolicy(), Name, BuiltinName, OverloadedName,
-                       PolicyAttrs);
+                       PolicyAttrs, HasFRMRoundModeOp);
 
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
@@ -1180,11 +1178,9 @@ RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                    "and mask policy");
 }
 
-void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
-                                        std::string &Name,
-                                        std::string &BuiltinName,
-                                        std::string &OverloadedName,
-                                        Policy &PolicyAttrs) {
+void RVVIntrinsic::updateNamesAndPolicy(
+    bool IsMasked, bool HasPolicy, std::string &Name, std::string &BuiltinName,
+    std::string &OverloadedName, Policy &PolicyAttrs, bool HasFRMRoundModeOp) {
 
   auto appendPolicySuffix = [&](const std::string &suffix) {
     Name += suffix;
@@ -1197,6 +1193,11 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
   Name = "__riscv_" + Name;
   OverloadedName = "__riscv_" + OverloadedName;
 
+  if (HasFRMRoundModeOp) {
+    Name += "_rm";
+    BuiltinName += "_rm";
+  }
+
   if (IsMasked) {
     if (PolicyAttrs.isTUMUPolicy())
       appendPolicySuffix("_tumu");
@@ -1206,19 +1207,15 @@ void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
       appendPolicySuffix("_mu");
     else if (PolicyAttrs.isTAMAPolicy()) {
       Name += "_m";
-      if (HasPolicy)
-        BuiltinName += "_tama";
-      else
-        BuiltinName += "_m";
+      BuiltinName += "_m";
     } else
       llvm_unreachable("Unhandled policy condition");
   } else {
     if (PolicyAttrs.isTUPolicy())
       appendPolicySuffix("_tu");
-    else if (PolicyAttrs.isTAPolicy()) {
-      if (HasPolicy)
-        BuiltinName += "_ta";
-    } else
+    else if (PolicyAttrs.isTAPolicy()) // no suffix needed
+      return;
+    else
       llvm_unreachable("Unhandled policy condition");
   }
 
@@ -1272,10 +1269,14 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << (int)Record.HasMaskedOffOperand << ",";
   OS << (int)Record.HasTailPolicy << ",";
   OS << (int)Record.HasMaskPolicy << ",";
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OS << (int)Record.HasNontemporalOperand << ",";
   OS << (int)Record.IsV0p11Deprecated << ",";
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  OS << (int)Record.HasFRMRoundModeOp << ",";
+>>>>>>> upstream/main
   OS << (int)Record.IsTuple << ",";
   OS << (int)Record.UnMaskedPolicyScheme << ",";
   OS << (int)Record.MaskedPolicyScheme << ",";

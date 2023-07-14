@@ -351,7 +351,7 @@ static cl::opt<bool> EnableRewritePartialRegUses(
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeAMDGPUTarget() {
   // Register the target
-  RegisterTargetMachine<R600TargetMachine> X(getTheAMDGPUTarget());
+  RegisterTargetMachine<R600TargetMachine> X(getTheR600Target());
   RegisterTargetMachine<GCNTargetMachine> Y(getTheGCNTarget());
 
   PassRegistry *PR = PassRegistry::getPassRegistry();
@@ -364,6 +364,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeAMDGPUTarget() {
   initializeAMDGPUDAGToDAGISelPass(*PR);
   initializeGCNDPPCombinePass(*PR);
   initializeSILowerI1CopiesPass(*PR);
+  initializeSILowerWWMCopiesPass(*PR);
   initializeSILowerSGPRSpillsPass(*PR);
   initializeSIFixSGPRCopiesPass(*PR);
   initializeSIFixVGPRCopiesPass(*PR);
@@ -421,6 +422,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeAMDGPUTarget() {
   initializeAMDGPUResourceUsageAnalysisPass(*PR);
   initializeGCNNSAReassignPass(*PR);
   initializeGCNPreRAOptimizationsPass(*PR);
+  initializeGCNPreRALongBranchRegPass(*PR);
   initializeGCNRewritePartialRegUsesPass(*PR);
 }
 
@@ -990,6 +992,11 @@ void AMDGPUPassConfig::addIRPasses() {
     addPass(createAMDGPULowerModuleLDSPass());
   }
 
+  // AMDGPUAttributor infers lack of llvm.amdgcn.lds.kernel.id calls, so run
+  // after their introduction
+  if (TM.getOptLevel() > CodeGenOpt::None)
+    addPass(createAMDGPUAttributorPass());
+
   if (TM.getOptLevel() > CodeGenOpt::None)
     addPass(createInferAddressSpacesPass());
 
@@ -1045,9 +1052,6 @@ void AMDGPUPassConfig::addCodeGenPrepare() {
   if (TM->getTargetTriple().getArch() == Triple::amdgcn) {
     if (RemoveIncompatibleFunctions)
       addPass(createAMDGPURemoveIncompatibleFunctionsPass(TM));
-
-    if (TM->getOptLevel() > CodeGenOpt::None)
-      addPass(createAMDGPUAttributorPass());
 
     // FIXME: This pass adds 2 hacky attributes that can be replaced with an
     // analysis, and should be removed.
@@ -1293,6 +1297,7 @@ void GCNPassConfig::addOptimizedRegAlloc() {
 }
 
 bool GCNPassConfig::addPreRewrite() {
+  addPass(&SILowerWWMCopiesID);
   if (EnableRegReassign)
     addPass(&GCNNSAReassignID);
   return true;
@@ -1339,18 +1344,24 @@ bool GCNPassConfig::addRegAssignAndRewriteFast() {
   if (!usingDefaultRegAlloc())
     report_fatal_error(RegAllocOptNotSupportedMessage);
 
+  addPass(&GCNPreRALongBranchRegID);
+
   addPass(createSGPRAllocPass(false));
 
   // Equivalent of PEI for SGPRs.
   addPass(&SILowerSGPRSpillsID);
 
   addPass(createVGPRAllocPass(false));
+
+  addPass(&SILowerWWMCopiesID);
   return true;
 }
 
 bool GCNPassConfig::addRegAssignAndRewriteOptimized() {
   if (!usingDefaultRegAlloc())
     report_fatal_error(RegAllocOptNotSupportedMessage);
+
+  addPass(&GCNPreRALongBranchRegID);
 
   addPass(createSGPRAllocPass(true));
 
@@ -1420,6 +1431,12 @@ TargetPassConfig *GCNTargetMachine::createPassConfig(PassManagerBase &PM) {
   return new GCNPassConfig(*this, PM);
 }
 
+void GCNTargetMachine::registerMachineRegisterInfoCallback(
+    MachineFunction &MF) const {
+  SIMachineFunctionInfo *MFI = MF.getInfo<SIMachineFunctionInfo>();
+  MF.getRegInfo().addDelegate(MFI);
+}
+
 MachineFunctionInfo *GCNTargetMachine::createMachineFunctionInfo(
     BumpPtrAllocator &Allocator, const Function &F,
     const TargetSubtargetInfo *STI) const {
@@ -1472,6 +1489,13 @@ bool GCNTargetMachine::parseMachineFunctionInfo(
   };
 
   if (parseOptionalRegister(YamlMFI.VGPRForAGPRCopy, MFI->VGPRForAGPRCopy))
+    return true;
+
+  if (parseOptionalRegister(YamlMFI.SGPRForEXECCopy, MFI->SGPRForEXECCopy))
+    return true;
+
+  if (parseOptionalRegister(YamlMFI.LongBranchReservedReg,
+                            MFI->LongBranchReservedReg))
     return true;
 
   auto diagnoseRegisterClass = [&](const yaml::StringValue &RegName) {

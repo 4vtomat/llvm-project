@@ -421,7 +421,7 @@ struct OMPInformationCache : public InformationCache {
     // TODO: We directly convert uses into proper calls and unknown uses.
     for (Use &U : RFI.Declaration->uses()) {
       if (Instruction *UserI = dyn_cast<Instruction>(U.getUser())) {
-        if (ModuleSlice.empty() || ModuleSlice.count(UserI->getFunction())) {
+        if (!CGSCC || CGSCC->empty() || CGSCC->contains(UserI->getFunction())) {
           RFI.getOrCreateUseVector(UserI->getFunction()).push_back(&U);
           ++NumUses;
         }
@@ -830,7 +830,7 @@ struct OpenMPOpt {
     return Ctx.getDiagHandlerPtr()->isAnyRemarkEnabled(DEBUG_TYPE);
   }
 
-  /// Run all OpenMP optimizations on the underlying SCC/ModuleSlice.
+  /// Run all OpenMP optimizations on the underlying SCC.
   bool run(bool IsModulePass) {
     if (SCC.empty())
       return false;
@@ -838,8 +838,7 @@ struct OpenMPOpt {
     bool Changed = false;
 
     LLVM_DEBUG(dbgs() << TAG << "Run on SCC with " << SCC.size()
-                      << " functions in a slice with "
-                      << OMPInfoCache.ModuleSlice.size() << " functions\n");
+                      << " functions\n");
 
     if (IsModulePass) {
       Changed |= runAttributor(IsModulePass);
@@ -1932,7 +1931,8 @@ public:
 };
 
 Kernel OpenMPOpt::getUniqueKernelFor(Function &F) {
-  if (!OMPInfoCache.ModuleSlice.empty() && !OMPInfoCache.ModuleSlice.count(&F))
+  if (OMPInfoCache.CGSCC && !OMPInfoCache.CGSCC->empty() &&
+      !OMPInfoCache.CGSCC->contains(&F))
     return nullptr;
 
   // Use a scope to keep the lifetime of the CachedKernel short.
@@ -2107,12 +2107,6 @@ struct AAICVTracker : public StateWrapper<BooleanState, AbstractAttribute> {
   using Base = StateWrapper<BooleanState, AbstractAttribute>;
   AAICVTracker(const IRPosition &IRP, Attributor &A) : Base(IRP) {}
 
-  void initialize(Attributor &A) override {
-    Function *F = getAnchorScope();
-    if (!F || !A.isFunctionIPOAmendable(*F))
-      indicatePessimisticFixpoint();
-  }
-
   /// Returns true if value is assumed to be tracked.
   bool isAssumedTracked() const { return getAssumed(); }
 
@@ -2158,7 +2152,9 @@ struct AAICVTrackerFunction : public AAICVTracker {
       : AAICVTracker(IRP, A) {}
 
   // FIXME: come up with better string.
-  const std::string getAsStr() const override { return "ICVTrackerFunction"; }
+  const std::string getAsStr(Attributor *) const override {
+    return "ICVTrackerFunction";
+  }
 
   // FIXME: come up with some stats.
   void trackStatistics() const override {}
@@ -2350,7 +2346,7 @@ struct AAICVTrackerFunctionReturned : AAICVTracker {
       : AAICVTracker(IRP, A) {}
 
   // FIXME: come up with better string.
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     return "ICVTrackerFunctionReturned";
   }
 
@@ -2420,9 +2416,7 @@ struct AAICVTrackerCallSite : AAICVTracker {
       : AAICVTracker(IRP, A) {}
 
   void initialize(Attributor &A) override {
-    Function *F = getAnchorScope();
-    if (!F || !A.isFunctionIPOAmendable(*F))
-      indicatePessimisticFixpoint();
+    assert(getAnchorScope() && "Expected anchor function");
 
     // We only initialize this AA for getters, so we need to know which ICV it
     // gets.
@@ -2451,7 +2445,9 @@ struct AAICVTrackerCallSite : AAICVTracker {
   }
 
   // FIXME: come up with better string.
-  const std::string getAsStr() const override { return "ICVTrackerCallSite"; }
+  const std::string getAsStr(Attributor *) const override {
+    return "ICVTrackerCallSite";
+  }
 
   // FIXME: come up with some stats.
   void trackStatistics() const override {}
@@ -2490,7 +2486,7 @@ struct AAICVTrackerCallSiteReturned : AAICVTracker {
       : AAICVTracker(IRP, A) {}
 
   // FIXME: come up with better string.
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     return "ICVTrackerCallSiteReturned";
   }
 
@@ -2546,14 +2542,12 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
   ~AAExecutionDomainFunction() { delete RPOT; }
 
   void initialize(Attributor &A) override {
-    if (getAnchorScope()->isDeclaration()) {
-      indicatePessimisticFixpoint();
-      return;
-    }
-    RPOT = new ReversePostOrderTraversal<Function *>(getAnchorScope());
+    Function *F = getAnchorScope();
+    assert(F && "Expected anchor function");
+    RPOT = new ReversePostOrderTraversal<Function *>(F);
   }
 
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     unsigned TotalBlocks = 0, InitialThreadBlocks = 0, AlignedBlocks = 0;
     for (auto &It : BEDMap) {
       if (!It.getFirst())
@@ -2589,7 +2583,7 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
 
     SmallPtrSet<CallBase *, 16> DeletedBarriers;
     auto HandleAlignedBarrier = [&](CallBase *CB) {
-      const ExecutionDomainTy &ED = CEDMap[{CB, PRE}];
+      const ExecutionDomainTy &ED = CB ? CEDMap[{CB, PRE}] : BEDMap[nullptr];
       if (!ED.IsReachedFromAlignedBarrierOnly ||
           ED.EncounteredNonLocalSideEffect)
         return;
@@ -2684,6 +2678,7 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
     if (!isValidState())
       return false;
 
+    bool ForwardIsOk = true;
     const Instruction *CurI;
 
     // Check forward until a call or the block end is reached.
@@ -2692,19 +2687,18 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
       auto *CB = dyn_cast<CallBase>(CurI);
       if (!CB)
         continue;
-      if (CB != &I && AlignedBarriers.contains(const_cast<CallBase *>(CB))) {
-        break;
-      }
+      if (CB != &I && AlignedBarriers.contains(const_cast<CallBase *>(CB)))
+        return true;
       const auto &It = CEDMap.find({CB, PRE});
       if (It == CEDMap.end())
         continue;
       if (!It->getSecond().IsReachingAlignedBarrierOnly)
-        return false;
+        ForwardIsOk = false;
       break;
     } while ((CurI = CurI->getNextNonDebugInstruction()));
 
     if (!CurI && !BEDMap.lookup(I.getParent()).IsReachingAlignedBarrierOnly)
-      return false;
+      ForwardIsOk = false;
 
     // Check backward until a call or the block beginning is reached.
     CurI = &I;
@@ -2712,9 +2706,8 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
       auto *CB = dyn_cast<CallBase>(CurI);
       if (!CB)
         continue;
-      if (CB != &I && AlignedBarriers.contains(const_cast<CallBase *>(CB))) {
-        break;
-      }
+      if (CB != &I && AlignedBarriers.contains(const_cast<CallBase *>(CB)))
+        return true;
       const auto &It = CEDMap.find({CB, POST});
       if (It == CEDMap.end())
         continue;
@@ -2722,6 +2715,11 @@ struct AAExecutionDomainFunction : public AAExecutionDomain {
         break;
       return false;
     } while ((CurI = CurI->getPrevNonDebugInstruction()));
+
+    // Delayed decision on the forward pass to allow aligned barrier detection
+    // in the backwards traversal.
+    if (!ForwardIsOk)
+      return false;
 
     if (!CurI) {
       const BasicBlock *BB = I.getParent();
@@ -2919,11 +2917,10 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
   // Helper to deal with an aligned barrier encountered during the forward
   // traversal. \p CB is the aligned barrier, \p ED is the execution domain when
   // it was encountered.
-  auto HandleAlignedBarrier = [&](CallBase *CB, ExecutionDomainTy &ED) {
-    if (CB)
-      Changed |= AlignedBarriers.insert(CB);
+  auto HandleAlignedBarrier = [&](CallBase &CB, ExecutionDomainTy &ED) {
+    Changed |= AlignedBarriers.insert(&CB);
     // First, update the barrier ED kept in the separate CEDMap.
-    auto &CallInED = CEDMap[{CB, PRE}];
+    auto &CallInED = CEDMap[{&CB, PRE}];
     Changed |= mergeInPredecessor(A, CallInED, ED);
     CallInED.IsReachingAlignedBarrierOnly = true;
     // Next adjust the ED we use for the traversal.
@@ -2931,9 +2928,8 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
     ED.IsReachedFromAlignedBarrierOnly = true;
     // Aligned barrier collection has to come last.
     ED.clearAssumeInstAndAlignedBarriers();
-    if (CB)
-      ED.addAlignedBarrier(A, *CB);
-    auto &CallOutED = CEDMap[{CB, POST}];
+    ED.addAlignedBarrier(A, CB);
+    auto &CallOutED = CEDMap[{&CB, POST}];
     Changed |= mergeInPredecessor(A, CallOutED, ED);
   };
 
@@ -2952,6 +2948,7 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
     // TODO: We use local reasoning since we don't have a divergence analysis
     // 	     running as well. We could basically allow uniform branches here.
     bool AlignedBarrierLastInBlock = IsEntryBB && IsKernel;
+    bool IsExplicitlyAligned = IsEntryBB && IsKernel;
     ExecutionDomainTy ED;
     // Propagate "incoming edges" into information about this block.
     if (IsEntryBB) {
@@ -2959,11 +2956,11 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
     } else {
       // For live non-entry blocks we only propagate
       // information via live edges.
-      if (LivenessAA->isAssumedDead(&BB))
+      if (LivenessAA && LivenessAA->isAssumedDead(&BB))
         continue;
 
       for (auto *PredBB : predecessors(&BB)) {
-        if (LivenessAA->isEdgeDead(PredBB, &BB))
+        if (LivenessAA && LivenessAA->isEdgeDead(PredBB, &BB))
           continue;
         bool InitialEdgeOnly = isInitialThreadOnlyEdge(
             A, dyn_cast<BranchInst>(PredBB->getTerminator()), BB);
@@ -3026,14 +3023,16 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
           AANoSync::isAlignedBarrier(*CB, AlignedBarrierLastInBlock);
 
       AlignedBarrierLastInBlock &= IsNoSync;
+      IsExplicitlyAligned &= IsNoSync;
 
       // Next we check for calls. Aligned barriers are handled
       // explicitly, everything else is kept for the backward traversal and will
       // also affect our state.
       if (CB) {
         if (IsAlignedBarrier) {
-          HandleAlignedBarrier(CB, ED);
+          HandleAlignedBarrier(*CB, ED);
           AlignedBarrierLastInBlock = true;
+          IsExplicitlyAligned = true;
           continue;
         }
 
@@ -3059,10 +3058,10 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
         // alignment.
         Function *Callee = CB->getCalledFunction();
         if (!IsNoSync && Callee && !Callee->isDeclaration()) {
-          const auto &EDAA = *A.getAAFor<AAExecutionDomain>(
+          const auto *EDAA = A.getAAFor<AAExecutionDomain>(
               *this, IRPosition::function(*Callee), DepClassTy::OPTIONAL);
-          if (EDAA.getState().isValidState()) {
-            const auto &CalleeED = EDAA.getFunctionExecutionDomain();
+          if (EDAA && EDAA->getState().isValidState()) {
+            const auto &CalleeED = EDAA->getFunctionExecutionDomain();
             ED.IsReachedFromAlignedBarrierOnly =
                     CalleeED.IsReachedFromAlignedBarrierOnly;
             AlignedBarrierLastInBlock = ED.IsReachedFromAlignedBarrierOnly;
@@ -3135,14 +3134,16 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
       Changed |= mergeInPredecessor(A, InterProceduralED, ED);
 
       auto &FnED = BEDMap[nullptr];
+      if (IsKernel && !IsExplicitlyAligned)
+        FnED.IsReachingAlignedBarrierOnly = false;
+      Changed |= mergeInPredecessor(A, FnED, ED);
+
       if (!FnED.IsReachingAlignedBarrierOnly) {
         IsEndAndNotReachingAlignedBarriersOnly = true;
         SyncInstWorklist.push_back(BB.getTerminator());
         auto &BBED = BEDMap[&BB];
         Changed |= setAndRecord(BBED.IsReachingAlignedBarrierOnly, false);
       }
-      if (IsKernel)
-        HandleAlignedBarrier(nullptr, ED);
     }
 
     ExecutionDomainTy &StoredED = BEDMap[&BB];
@@ -3177,19 +3178,19 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
       if (!CB)
         continue;
       auto &CallOutED = CEDMap[{CB, POST}];
-      if (setAndRecord(CallOutED.IsReachingAlignedBarrierOnly, false))
-        Changed = true;
+      Changed |= setAndRecord(CallOutED.IsReachingAlignedBarrierOnly, false);
       auto &CallInED = CEDMap[{CB, PRE}];
       HitAlignedBarrierOrKnownEnd =
           AlignedBarriers.count(CB) || !CallInED.IsReachingAlignedBarrierOnly;
       if (HitAlignedBarrierOrKnownEnd)
         break;
+      Changed |= setAndRecord(CallInED.IsReachingAlignedBarrierOnly, false);
     }
     if (HitAlignedBarrierOrKnownEnd)
       continue;
     BasicBlock *SyncBB = SyncInst->getParent();
     for (auto *PredBB : predecessors(SyncBB)) {
-      if (LivenessAA->isEdgeDead(PredBB, SyncBB))
+      if (LivenessAA && LivenessAA->isEdgeDead(PredBB, SyncBB))
         continue;
       if (!Visited.insert(PredBB))
         continue;
@@ -3201,8 +3202,8 @@ ChangeStatus AAExecutionDomainFunction::updateImpl(Attributor &A) {
     }
     if (SyncBB != &EntryBB)
       continue;
-    if (setAndRecord(InterProceduralED.IsReachingAlignedBarrierOnly, false))
-      Changed = true;
+    Changed |=
+        setAndRecord(InterProceduralED.IsReachingAlignedBarrierOnly, false);
   }
 
   return Changed ? ChangeStatus::CHANGED : ChangeStatus::UNCHANGED;
@@ -3245,7 +3246,7 @@ struct AAHeapToSharedFunction : public AAHeapToShared {
   AAHeapToSharedFunction(const IRPosition &IRP, Attributor &A)
       : AAHeapToShared(IRP, A) {}
 
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     return "[AAHeapToShared] " + std::to_string(MallocCalls.size()) +
            " malloc calls eligible.";
   }
@@ -3445,7 +3446,7 @@ struct AAKernelInfo : public StateWrapper<KernelInfoState, AbstractAttribute> {
   void trackStatistics() const override {}
 
   /// See AbstractAttribute::getAsStr()
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     if (!isValidState())
       return "<invalid>";
     return std::string(SPMDCompatibilityTracker.isAssumed() ? "SPMD"
@@ -4874,7 +4875,7 @@ struct AAFoldRuntimeCallCallSiteReturned : AAFoldRuntimeCall {
       : AAFoldRuntimeCall(IRP, A) {}
 
   /// See AbstractAttribute::getAsStr()
-  const std::string getAsStr() const override {
+  const std::string getAsStr(Attributor *) const override {
     if (!isValidState())
       return "<invalid>";
 
@@ -5417,6 +5418,8 @@ PreservedAnalyses OpenMPOptPass::run(Module &M, ModuleAnalysisManager &AM) {
     });
   };
 
+  bool Changed = false;
+
   // Create internal copies of each function if this is a kernel Module. This
   // allows iterprocedural passes to see every call edge.
   DenseMap<Function *, Function *> InternalizedMap;
@@ -5432,7 +5435,8 @@ PreservedAnalyses OpenMPOptPass::run(Module &M, ModuleAnalysisManager &AM) {
         }
       }
 
-    Attributor::internalizeFunctions(InternalizeFns, InternalizedMap);
+    Changed |=
+        Attributor::internalizeFunctions(InternalizeFns, InternalizedMap);
   }
 
   // Look at every function in the Module unless it was internalized.
@@ -5445,7 +5449,7 @@ PreservedAnalyses OpenMPOptPass::run(Module &M, ModuleAnalysisManager &AM) {
     }
 
   if (SCC.empty())
-    return PreservedAnalyses::all();
+    return Changed ? PreservedAnalyses::none() : PreservedAnalyses::all();
 
   AnalysisGetter AG(FAM);
 
@@ -5471,11 +5475,14 @@ PreservedAnalyses OpenMPOptPass::run(Module &M, ModuleAnalysisManager &AM) {
   AC.OREGetter = OREGetter;
   AC.PassName = DEBUG_TYPE;
   AC.InitializationCallback = OpenMPOpt::registerAAsForFunction;
+  AC.IPOAmendableCB = [](const Function &F) {
+    return F.hasFnAttribute("kernel");
+  };
 
   Attributor A(Functions, InfoCache, AC);
 
   OpenMPOpt OMPOpt(SCC, CGUpdater, OREGetter, InfoCache, A);
-  bool Changed = OMPOpt.run(true);
+  Changed |= OMPOpt.run(true);
 
   // Optionally inline device functions for potentially better performance.
   if (AlwaysInlineDeviceFunctions && isOpenMPDevice(M))

@@ -301,6 +301,7 @@ define i32 @test10(i1 zeroext %flag, i32 %x, ptr %y, ptr %s) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK:       if.then:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 5
 ; CHECK-NEXT:    store volatile i32 [[X]], ptr [[S:%.*]], align 4
 ; CHECK-NEXT:    br label [[IF_END:%.*]]
@@ -310,18 +311,29 @@ define i32 @test10(i1 zeroext %flag, i32 %x, ptr %y, ptr %s) {
 ; CHECK-NEXT:    store volatile i32 [[X]], ptr [[GEPB]], align 4
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
+=======
+; CHECK-NEXT:    call void @bar(i32 5)
+; CHECK-NEXT:    br label [[IF_END:%.*]]
+; CHECK:       if.else:
+; CHECK-NEXT:    call void @bar(i32 6)
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+; CHECK-NEXT:    br label [[IF_END]]
+; CHECK:       if.end:
+; CHECK-NEXT:    [[GEPB_SINK:%.*]] = phi ptr [ [[GEPB]], [[IF_ELSE]] ], [ [[S]], [[IF_THEN]] ]
+; CHECK-NEXT:    store volatile i32 [[X:%.*]], ptr [[GEPB_SINK]], align 4
+>>>>>>> upstream/main
 ; CHECK-NEXT:    ret i32 1
 ;
 entry:
   br i1 %flag, label %if.then, label %if.else
 
 if.then:
-  %dummy = add i32 %x, 5
+  call void @bar(i32 5)
   store volatile i32 %x, ptr %s
   br label %if.end
 
 if.else:
-  %dummy1 = add i32 %x, 6
+  call void @bar(i32 6)
   %gepb = getelementptr inbounds %struct.anon, ptr %s, i32 0, i32 1
   store volatile i32 %x, ptr %gepb
   br label %if.end
@@ -532,6 +544,7 @@ define i32 @test15(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK:       if.then:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 1
 ; CHECK-NEXT:    [[SV1:%.*]] = load i32, ptr [[S:%.*]], align 4
 ; CHECK-NEXT:    br label [[IF_END:%.*]]
@@ -539,6 +552,13 @@ define i32 @test15(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X]], 4
 ; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S]], i32 0, i32 1
 ; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB]], align 4
+=======
+; CHECK-NEXT:    call void @bar(i32 1)
+; CHECK-NEXT:    br label [[IF_END:%.*]]
+; CHECK:       if.else:
+; CHECK-NEXT:    call void @bar(i32 4)
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
+>>>>>>> upstream/main
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[SV2_SINK:%.*]] = phi i32 [ [[SV2]], [[IF_ELSE]] ], [ [[SV1]], [[IF_THEN]] ]
@@ -551,14 +571,14 @@ entry:
   br i1 %flag, label %if.then, label %if.else
 
 if.then:
-  %dummy = add i32 %x, 1
+  call void @bar(i32 1)
   %sv1 = load i32, ptr %s
   %ext1 = zext i32 %sv1 to i64
   %cmp1 = icmp eq i64 %ext1, 56
   br label %if.end
 
 if.else:
-  %dummy2 = add i32 %x, 4
+  call void @bar(i32 4)
   %gepb = getelementptr inbounds %struct.anon, ptr %s, i32 0, i32 1
   %sv2 = load i32, ptr %gepb
   %ext2 = zext i32 %sv2 to i64

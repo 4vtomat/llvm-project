@@ -476,9 +476,8 @@ namespace {
 
 /// Iterator over the redeclarations of a declaration that have already
 /// been merged into the same redeclaration chain.
-template<typename DeclT>
-class MergedRedeclIterator {
-  DeclT *Start;
+template <typename DeclT> class MergedRedeclIterator {
+  DeclT *Start = nullptr;
   DeclT *Canonical = nullptr;
   DeclT *Current = nullptr;
 
@@ -2219,7 +2218,8 @@ void ASTDeclReader::VisitCXXDeductionGuideDecl(CXXDeductionGuideDecl *D) {
   D->setExplicitSpecifier(Record.readExplicitSpec());
   D->Ctor = readDeclAs<CXXConstructorDecl>();
   VisitFunctionDecl(D);
-  D->setIsCopyDeductionCandidate(Record.readInt());
+  D->setDeductionCandidateKind(
+      static_cast<DeductionCandidate>(Record.readInt()));
 }
 
 void ASTDeclReader::VisitCXXMethodDecl(CXXMethodDecl *D) {

@@ -101,7 +101,27 @@ private:
       }
       break;
     }
+    case RPC_OPEN_FILE: {
+      uint64_t sizes[rpc::MAX_LANE_SIZE] = {0};
+      void *paths[rpc::MAX_LANE_SIZE] = {nullptr};
+      port->recv_n(paths, sizes, [&](uint64_t size) { return new char[size]; });
+      port->recv_and_send([&](rpc::Buffer *buffer, uint32_t id) {
+        FILE *file = fopen(reinterpret_cast<char *>(paths[id]),
+                           reinterpret_cast<char *>(buffer->data));
+        buffer->data[0] = reinterpret_cast<uintptr_t>(file);
+      });
+      break;
+    }
+    case RPC_CLOSE_FILE: {
+      port->recv_and_send([&](rpc::Buffer *buffer, uint32_t id) {
+        FILE *file = reinterpret_cast<FILE *>(buffer->data[0]);
+        buffer->data[0] = fclose(file);
+      });
+      break;
+    }
     case RPC_EXIT: {
+      // Send a response to the client to signal that we are ready to exit.
+      port->recv_and_send([](rpc::Buffer *) {});
       port->recv([](rpc::Buffer *buffer) {
         int status = 0;
         std::memcpy(&status, buffer->data, sizeof(int));
@@ -211,7 +231,7 @@ rpc_status_t rpc_init(uint32_t num_devices) {
 }
 
 rpc_status_t rpc_shutdown(void) {
-  if (state->reference_count-- == 1)
+  if (state && state->reference_count-- == 1)
     delete state;
 
   return RPC_STATUS_SUCCESS;
@@ -318,25 +338,50 @@ const void *rpc_get_client_buffer(uint32_t device_id) {
 
 uint64_t rpc_get_client_size() { return sizeof(rpc::Client); }
 
+using ServerPort = std::variant<rpc::Server<1>::Port *, rpc::Server<32>::Port *,
+                                rpc::Server<64>::Port *>;
+
+ServerPort getPort(rpc_port_t ref) {
+  if (ref.lane_size == 1)
+    return reinterpret_cast<rpc::Server<1>::Port *>(ref.handle);
+  else if (ref.lane_size == 32)
+    return reinterpret_cast<rpc::Server<32>::Port *>(ref.handle);
+  else if (ref.lane_size == 64)
+    return reinterpret_cast<rpc::Server<64>::Port *>(ref.handle);
+  else
+    __builtin_unreachable();
+}
+
+void rpc_send(rpc_port_t ref, rpc_port_callback_ty callback, void *data) {
+  auto port = getPort(ref);
+  std::visit(
+      [=](auto &port) {
+        port->send([=](rpc::Buffer *buffer) {
+          callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
+        });
+      },
+      port);
+}
+
+void rpc_recv(rpc_port_t ref, rpc_port_callback_ty callback, void *data) {
+  auto port = getPort(ref);
+  std::visit(
+      [=](auto &port) {
+        port->recv([=](rpc::Buffer *buffer) {
+          callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
+        });
+      },
+      port);
+}
+
 void rpc_recv_and_send(rpc_port_t ref, rpc_port_callback_ty callback,
                        void *data) {
-  if (ref.lane_size == 1) {
-    rpc::Server<1>::Port *port =
-        reinterpret_cast<rpc::Server<1>::Port *>(ref.handle);
-    port->recv_and_send([=](rpc::Buffer *buffer) {
-      callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
-    });
-  } else if (ref.lane_size == 32) {
-    rpc::Server<32>::Port *port =
-        reinterpret_cast<rpc::Server<32>::Port *>(ref.handle);
-    port->recv_and_send([=](rpc::Buffer *buffer) {
-      callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
-    });
-  } else if (ref.lane_size == 64) {
-    rpc::Server<64>::Port *port =
-        reinterpret_cast<rpc::Server<64>::Port *>(ref.handle);
-    port->recv_and_send([=](rpc::Buffer *buffer) {
-      callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
-    });
-  }
+  auto port = getPort(ref);
+  std::visit(
+      [=](auto &port) {
+        port->recv_and_send([=](rpc::Buffer *buffer) {
+          callback(reinterpret_cast<rpc_buffer_t *>(buffer), data);
+        });
+      },
+      port);
 }

@@ -281,6 +281,12 @@ LogicalResult AllocaOp::verify() {
   return success();
 }
 
+Type AllocaOp::getResultPtrElementType() {
+  // This will become trivial once non-opaque pointers are gone.
+  return getElemType().has_value() ? *getElemType()
+                                   : getResult().getType().getElementType();
+}
+
 //===----------------------------------------------------------------------===//
 // LLVM::BrOp
 //===----------------------------------------------------------------------===//
@@ -769,6 +775,35 @@ Type LLVM::GEPOp::getSourceElementType() {
   return llvm::cast<LLVMPointerType>(
              extractVectorElementType(getBase().getType()))
       .getElementType();
+}
+
+Type GEPOp::getResultPtrElementType() {
+  // Set the initial type currently being used for indexing. This will be
+  // updated as the indices get walked over.
+  Type selectedType = getSourceElementType();
+
+  // Follow the indexed elements in the gep.
+  auto indices = getIndices();
+  for (GEPIndicesAdaptor<ValueRange>::value_type index :
+       llvm::drop_begin(indices)) {
+    // GEPs can only index into aggregates which can be structs or arrays.
+
+    // The resulting type if indexing into an array type is always the element
+    // type, regardless of index.
+    if (auto arrayType = dyn_cast<LLVMArrayType>(selectedType)) {
+      selectedType = arrayType.getElementType();
+      continue;
+    }
+
+    // The GEP verifier ensures that any index into structs are static and
+    // that they refer to a field within the struct.
+    selectedType = cast<DestructurableTypeInterface>(selectedType)
+                       .getTypeAtIndex(cast<IntegerAttr>(index));
+  }
+
+  // When there are no more indices, the type currently being used for indexing
+  // is the type of the value pointed at by the returned indexed pointer.
+  return selectedType;
 }
 
 //===----------------------------------------------------------------------===//
@@ -1743,7 +1778,8 @@ void GlobalOp::print(OpAsmPrinter &p) {
                            getGlobalTypeAttrName(), getConstantAttrName(),
                            getValueAttrName(), getLinkageAttrName(),
                            getUnnamedAddrAttrName(), getThreadLocal_AttrName(),
-                           getVisibility_AttrName(), getComdatAttrName()});
+                           getVisibility_AttrName(), getComdatAttrName(),
+                           getUnnamedAddrAttrName()});
 
   // Print the trailing type unless it's a string global.
   if (llvm::dyn_cast_or_null<StringAttr>(getValueOrNull()))
@@ -2204,6 +2240,12 @@ ParseResult LLVMFuncOp::parse(OpAsmParser &parser, OperationState &result) {
                           parseOptionalLLVMKeyword<LLVM::Visibility, int64_t>(
                               parser, result, LLVM::Visibility::Default)));
 
+  // Parse optional UnnamedAddr, default to None.
+  result.addAttribute(getUnnamedAddrAttrName(result.name),
+                      parser.getBuilder().getI64IntegerAttr(
+                          parseOptionalLLVMKeyword<UnnamedAddr, int64_t>(
+                              parser, result, LLVM::UnnamedAddr::None)));
+
   // Default to C Calling Convention if no keyword is provided.
   result.addAttribute(
       getCConvAttrName(result.name),
@@ -2267,6 +2309,11 @@ void LLVMFuncOp::print(OpAsmPrinter &p) {
   StringRef visibility = stringifyVisibility(getVisibility_());
   if (!visibility.empty())
     p << visibility << ' ';
+  if (auto unnamedAddr = getUnnamedAddr()) {
+    StringRef str = stringifyUnnamedAddr(*unnamedAddr);
+    if (!str.empty())
+      p << str << ' ';
+  }
   if (getCConv() != LLVM::CConv::C)
     p << stringifyCConv(getCConv()) << ' ';
 
@@ -2294,7 +2341,7 @@ void LLVMFuncOp::print(OpAsmPrinter &p) {
       p, *this,
       {getFunctionTypeAttrName(), getArgAttrsAttrName(), getResAttrsAttrName(),
        getLinkageAttrName(), getCConvAttrName(), getVisibility_AttrName(),
-       getComdatAttrName()});
+       getComdatAttrName(), getUnnamedAddrAttrName()});
 
   // Print the body if this is not an external function.
   Region &body = getBody();
@@ -3063,7 +3110,7 @@ struct LLVMOpAsmDialectInterface : public OpAsmDialectInterface {
   AliasResult getAlias(Attribute attr, raw_ostream &os) const override {
     return TypeSwitch<Attribute, AliasResult>(attr)
         .Case<DIBasicTypeAttr, DICompileUnitAttr, DICompositeTypeAttr,
-              DIDerivedTypeAttr, DIFileAttr, DILexicalBlockAttr,
+              DIDerivedTypeAttr, DIFileAttr, DILabelAttr, DILexicalBlockAttr,
               DILexicalBlockFileAttr, DILocalVariableAttr, DINamespaceAttr,
               DINullTypeAttr, DISubprogramAttr, DISubroutineTypeAttr,
               LoopAnnotationAttr, LoopVectorizeAttr, LoopInterleaveAttr,

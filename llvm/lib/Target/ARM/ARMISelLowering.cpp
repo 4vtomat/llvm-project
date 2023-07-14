@@ -2660,13 +2660,9 @@ ARMTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
     // those, the target's already in a register, so we don't need to do
     // anything extra.
     if (isa<GlobalAddressSDNode>(Callee)) {
-      // When generating execute-only code we use movw movt pair.
-      // Currently execute-only is only available for architectures that
-      // support movw movt, so we are safe to assume that.
       if (Subtarget->genExecuteOnly()) {
-        assert(Subtarget->useMovt() &&
-               "long-calls with execute-only requires movt and movw!");
-        ++NumMovwMovt;
+        if (Subtarget->useMovt())
+          ++NumMovwMovt;
         Callee = DAG.getNode(ARMISD::Wrapper, dl, PtrVt,
                              DAG.getTargetGlobalAddress(GVal, dl, PtrVt));
       } else {
@@ -2685,13 +2681,9 @@ ARMTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
     } else if (ExternalSymbolSDNode *S=dyn_cast<ExternalSymbolSDNode>(Callee)) {
       const char *Sym = S->getSymbol();
 
-      // When generating execute-only code we use movw movt pair.
-      // Currently execute-only is only available for architectures that
-      // support movw movt, so we are safe to assume that.
       if (Subtarget->genExecuteOnly()) {
-        assert(Subtarget->useMovt() &&
-               "long-calls with execute-only requires movt and movw!");
-        ++NumMovwMovt;
+        if (Subtarget->useMovt())
+          ++NumMovwMovt;
         Callee = DAG.getNode(ARMISD::Wrapper, dl, PtrVt,
                              DAG.getTargetGlobalAddress(GVal, dl, PtrVt));
       } else {
@@ -3492,6 +3484,11 @@ SDValue ARMTargetLowering::LowerConstantPool(SDValue Op,
 }
 
 unsigned ARMTargetLowering::getJumpTableEncoding() const {
+  // If we don't have a 32-bit pc-relative branch instruction then the jump
+  // table consists of block addresses. Usually this is inline, but for
+  // execute-only it must be placed out-of-line.
+  if (Subtarget->genExecuteOnly() && !Subtarget->hasV8MBaselineOps())
+    return MachineJumpTableInfo::EK_BlockAddress;
   return MachineJumpTableInfo::EK_Inline;
 }
 
@@ -7073,6 +7070,10 @@ SDValue ARMTargetLowering::LowerConstantFP(SDValue Op, SelectionDAG &DAG,
   // Prevent floating-point constants from using literal loads
   // when execute-only is enabled.
   if (ST->genExecuteOnly()) {
+    // We shouldn't trigger this for v6m execute-only
+    assert((!ST->isThumb1Only() || ST->hasV8MBaselineOps()) &&
+           "Unexpected architecture");
+
     // If we can represent the constant as an immediate, don't lower it
     if (isFPImmLegal(FPVal, VT))
       return Op;

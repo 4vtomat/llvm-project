@@ -11,11 +11,9 @@
 #define _LIBCPP___FORMAT_FORMAT_FUNCTIONS
 
 #include <__algorithm/clamp.h>
-#include <__availability>
 #include <__concepts/convertible_to.h>
 #include <__concepts/same_as.h>
 #include <__config>
-#include <__debug>
 #include <__format/buffer.h>
 #include <__format/format_arg.h>
 #include <__format/format_arg_store.h>
@@ -39,7 +37,6 @@
 #include <__iterator/iterator_traits.h> // iter_value_t
 #include <__variant/monostate.h>
 #include <array>
-#include <string>
 #include <string_view>
 
 #ifndef _LIBCPP_HAS_NO_LOCALIZATION

@@ -111,6 +111,7 @@ enum {
   HasRoundModeOpShift = IsSignExtendingOpWShift + 1,
   HasRoundModeOpMask = 1 << HasRoundModeOpShift,
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
   // each subsequent TSFlag.
@@ -119,6 +120,10 @@ enum {
   TargetOverlapConstraintTypeShift = 62,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  UsesVXRMShift = HasRoundModeOpShift + 1,
+  UsesVXRMMask = 1 << UsesVXRMShift,
+>>>>>>> upstream/main
 };
 
 enum VLMUL : uint8_t {
@@ -180,6 +185,9 @@ static inline bool usesMaskPolicy(uint64_t TSFlags) {
 static inline bool hasRoundModeOp(uint64_t TSFlags) {
   return TSFlags & HasRoundModeOpMask;
 }
+
+/// \returns true if this instruction uses vxrm
+static inline bool usesVXRM(uint64_t TSFlags) { return TSFlags & UsesVXRMMask; }
 
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;

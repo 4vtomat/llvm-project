@@ -1124,6 +1124,10 @@ def gpu_bundle_output : Flag<["--"], "gpu-bundle-output">,
   Group<f_Group>, HelpText<"Bundle output files of HIP device compilation">;
 def no_gpu_bundle_output : Flag<["--"], "no-gpu-bundle-output">,
   Group<f_Group>, HelpText<"Do not bundle output files of HIP device compilation">;
+def fhip_emit_relocatable : Flag<["-"], "fhip-emit-relocatable">, Group<f_Group>,
+  HelpText<"Compile HIP source to relocatable">;
+def fno_hip_emit_relocatable : Flag<["-"], "fno-hip-emit-relocatable">, Group<f_Group>,
+  HelpText<"Do not override toolchain to compile HIP source to relocatable">;
 def cuid_EQ : Joined<["-"], "cuid=">, Flags<[CC1Option]>,
   HelpText<"An ID for compilation unit, which should be the same for the same "
            "compilation unit but different for different compilation units. "
@@ -1194,6 +1198,9 @@ def extract_api : Flag<["-"], "extract-api">, Flags<[CC1Option]>, Group<Action_G
   HelpText<"Extract API information">;
 def product_name_EQ: Joined<["--"], "product-name=">, Flags<[CC1Option]>,
   MarshallingInfoString<FrontendOpts<"ProductName">>;
+def emit_symbol_graph_EQ: JoinedOrSeparate<["--"], "emit-symbol-graph=">, Flags<[CC1Option]>,
+    HelpText<"Generate Extract API information as a side effect of compilation.">,
+    MarshallingInfoString<FrontendOpts<"SymbolGraphOutputDir">>;
 def extract_api_ignores_EQ: CommaJoined<["--"], "extract-api-ignores=">, Flags<[CC1Option]>,
     HelpText<"Comma separated list of files containing a new line separated list of API symbols to ignore when extracting API information.">,
     MarshallingInfoStringVector<FrontendOpts<"ExtractAPIIgnoresFileList">>;
@@ -1765,6 +1772,10 @@ defm memory_profile : OptInCC1FFlag<"memory-profile", "Enable", "Disable", " hea
 def fmemory_profile_EQ : Joined<["-"], "fmemory-profile=">,
     Group<f_Group>, Flags<[CC1Option]>, MetaVarName<"<directory>">,
     HelpText<"Enable heap memory profiling and dump results into <directory>">;
+def fmemory_profile_use_EQ : Joined<["-"], "fmemory-profile-use=">,
+    Group<f_Group>, Flags<[CC1Option, CoreOption]>, MetaVarName<"<pathname>">,
+    HelpText<"Use memory profile for profile-guided memory optimization">,
+    MarshallingInfoString<CodeGenOpts<"MemoryProfileUsePath">>;
 
 // Begin sanitizer flags. These should all be core options exposed in all driver
 // modes.
@@ -2330,6 +2341,11 @@ def flto_EQ_auto : Flag<["-"], "flto=auto">, Group<f_Group>,
   Alias<flto_EQ>, AliasArgs<["full"]>, HelpText<"Enable LTO in 'full' mode">;
 def flto : Flag<["-"], "flto">, Flags<[CoreOption, CC1Option, FC1Option, FlangOption]>, Group<f_Group>,
   Alias<flto_EQ>, AliasArgs<["full"]>, HelpText<"Enable LTO in 'full' mode">;
+defm unified_lto : BoolFOption<"unified-lto",
+  CodeGenOpts<"UnifiedLTO">, DefaultFalse,
+  PosFlag<SetTrue, [], "Use the unified LTO pipeline">,
+  NegFlag<SetFalse, [], "Use distinct LTO pipelines">,
+  BothFlags<[CC1Option], "">>;
 def fno_lto : Flag<["-"], "fno-lto">, Flags<[CoreOption, CC1Option]>, Group<f_Group>,
   HelpText<"Disable LTO mode (default)">;
 def foffload_lto_EQ : Joined<["-"], "foffload-lto=">, Flags<[CoreOption]>, Group<f_Group>,
@@ -2605,10 +2621,10 @@ def fno_experimental_isel : Flag<["-"], "fno-experimental-isel">, Group<f_clang_
   Alias<fno_global_isel>;
 def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>, Flags<[CC1Option]>,
     HelpText<"Use the given vector functions library">,
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,none">,
+    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
     NormalizedValuesScope<"CodeGenOptions">,
     NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SVML", "SLEEF",
-                      "Darwin_libsystem_m", "NoLibrary"]>,
+                      "Darwin_libsystem_m", "ArmPL", "NoLibrary"]>,
     MarshallingInfoEnum<CodeGenOpts<"VecLib">, "NoLibrary">;
 def fno_lax_vector_conversions : Flag<["-"], "fno-lax-vector-conversions">, Group<f_Group>,
   Alias<flax_vector_conversions_EQ>, AliasArgs<["none"]>;
@@ -3706,6 +3722,8 @@ def mstack_probe_size : Joined<["-"], "mstack-probe-size=">, Group<m_Group>, Fla
   MarshallingInfoInt<CodeGenOpts<"StackProbeSize">, "4096">;
 def mstack_arg_probe : Flag<["-"], "mstack-arg-probe">, Group<m_Group>,
   HelpText<"Enable stack probes">;
+def mzos_sys_include_EQ : Joined<["-"], "mzos-sys-include=">, MetaVarName<"<SysInclude>">,
+    HelpText<"Path to system headers on z/OS">;
 def mno_stack_arg_probe : Flag<["-"], "mno-stack-arg-probe">, Group<m_Group>, Flags<[CC1Option]>,
   HelpText<"Disable stack probes which are enabled by default">,
   MarshallingInfoFlag<CodeGenOpts<"NoStackArgProbe">>;
@@ -3720,6 +3738,12 @@ def meabi : Separate<["-"], "meabi">, Group<m_Group>, Flags<[CC1Option]>,
   NormalizedValues<["Default", "EABI4", "EABI5", "GNU"]>;
 def mtargetos_EQ : Joined<["-"], "mtargetos=">, Group<m_Group>,
   HelpText<"Set the deployment target to be the specified OS and OS version">;
+def mzos_hlq_le_EQ : Joined<["-"], "mzos-hlq-le=">, MetaVarName<"<LeHLQ>">,
+  HelpText<"High level qualifier for z/OS Language Environment datasets">;
+def mzos_hlq_clang_EQ : Joined<["-"], "mzos-hlq-clang=">, MetaVarName<"<ClangHLQ>">,
+  HelpText<"High level qualifier for z/OS C++RT side deck datasets">;
+def mzos_hlq_csslib_EQ : Joined<["-"], "mzos-hlq-csslib=">, MetaVarName<"<CsslibHLQ>">,
+  HelpText<"High level qualifier for z/OS CSSLIB dataset">;
 
 def mno_constant_cfstrings : Flag<["-"], "mno-constant-cfstrings">, Group<m_Group>;
 def mno_global_merge : Flag<["-"], "mno-global-merge">, Group<m_Group>, Flags<[CC1Option]>,
@@ -6732,8 +6756,9 @@ def fno_cuda_host_device_constexpr : Flag<["-"], "fno-cuda-host-device-constexpr
 
 let Flags = [CC1Option, FC1Option, NoDriverOption] in {
 
-def fopenmp_is_device : Flag<["-"], "fopenmp-is-device">,
+def fopenmp_is_target_device : Flag<["-"], "fopenmp-is-target-device">,
   HelpText<"Generate code only for an OpenMP target device.">;
+def : Flag<["-"], "fopenmp-is-device">, Alias<fopenmp_is_target_device>;
 def fopenmp_host_ir_file_path : Separate<["-"], "fopenmp-host-ir-file-path">,
   HelpText<"Path to the IR file produced by the frontend for the host.">;
 

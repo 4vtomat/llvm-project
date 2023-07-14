@@ -4716,6 +4716,7 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCV::BI__builtin_riscv_aes64ks1i_64:
     return SemaBuiltinConstantArgRange(TheCall, 1, 0, 10);
   // Check if value range for vxrm is in [0, 3]
+<<<<<<< HEAD
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_ta:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_ta:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_ta:
@@ -4745,6 +4746,26 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
     return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
   }
 #else
+=======
+  case RISCVVector::BI__builtin_rvv_vaaddu_vv:
+  case RISCVVector::BI__builtin_rvv_vaaddu_vx:
+  case RISCVVector::BI__builtin_rvv_vaadd_vv:
+  case RISCVVector::BI__builtin_rvv_vaadd_vx:
+  case RISCVVector::BI__builtin_rvv_vasubu_vv:
+  case RISCVVector::BI__builtin_rvv_vasubu_vx:
+  case RISCVVector::BI__builtin_rvv_vasub_vv:
+  case RISCVVector::BI__builtin_rvv_vasub_vx:
+  case RISCVVector::BI__builtin_rvv_vsmul_vv:
+  case RISCVVector::BI__builtin_rvv_vsmul_vx:
+  case RISCVVector::BI__builtin_rvv_vssra_vv:
+  case RISCVVector::BI__builtin_rvv_vssra_vx:
+  case RISCVVector::BI__builtin_rvv_vssrl_vv:
+  case RISCVVector::BI__builtin_rvv_vssrl_vx:
+  case RISCVVector::BI__builtin_rvv_vnclip_wv:
+  case RISCVVector::BI__builtin_rvv_vnclip_wx:
+  case RISCVVector::BI__builtin_rvv_vnclipu_wv:
+  case RISCVVector::BI__builtin_rvv_vnclipu_wx:
+>>>>>>> upstream/main
     return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
@@ -4765,6 +4786,7 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tu:
+<<<<<<< HEAD
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tama:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tama:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_tama:
@@ -4791,6 +4813,26 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
+=======
+  case RISCVVector::BI__builtin_rvv_vaaddu_vv_m:
+  case RISCVVector::BI__builtin_rvv_vaaddu_vx_m:
+  case RISCVVector::BI__builtin_rvv_vaadd_vv_m:
+  case RISCVVector::BI__builtin_rvv_vaadd_vx_m:
+  case RISCVVector::BI__builtin_rvv_vasubu_vv_m:
+  case RISCVVector::BI__builtin_rvv_vasubu_vx_m:
+  case RISCVVector::BI__builtin_rvv_vasub_vv_m:
+  case RISCVVector::BI__builtin_rvv_vasub_vx_m:
+  case RISCVVector::BI__builtin_rvv_vsmul_vv_m:
+  case RISCVVector::BI__builtin_rvv_vsmul_vx_m:
+  case RISCVVector::BI__builtin_rvv_vssra_vv_m:
+  case RISCVVector::BI__builtin_rvv_vssra_vx_m:
+  case RISCVVector::BI__builtin_rvv_vssrl_vv_m:
+  case RISCVVector::BI__builtin_rvv_vssrl_vx_m:
+  case RISCVVector::BI__builtin_rvv_vnclip_wv_m:
+  case RISCVVector::BI__builtin_rvv_vnclip_wx_m:
+  case RISCVVector::BI__builtin_rvv_vnclipu_wv_m:
+  case RISCVVector::BI__builtin_rvv_vnclipu_wx_m:
+>>>>>>> upstream/main
     return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
   }
 #else
@@ -4862,7 +4904,372 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   }
 #else
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm:
+    return SemaBuiltinConstantArgRange(TheCall, 1, 0, 4);
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfredosum_vs_rm:
+  case RISCVVector::BI__builtin_rvv_vfredusum_vs_rm:
+  case RISCVVector::BI__builtin_rvv_vfwredosum_vs_rm:
+  case RISCVVector::BI__builtin_rvv_vfwredusum_vs_rm:
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm_m:
+    return SemaBuiltinConstantArgRange(TheCall, 2, 0, 4);
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfredosum_vs_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfredusum_vs_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwredosum_vs_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwredusum_vs_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_tu:
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfredosum_vs_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfredusum_vs_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwredosum_vs_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwredusum_vs_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfrec7_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_xu_f_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_x_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfcvt_f_xu_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_x_f_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwcvt_xu_f_v_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_x_f_w_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_xu_f_w_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_x_w_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_xu_w_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfncvt_f_f_w_rm_mu:
+    return SemaBuiltinConstantArgRange(TheCall, 3, 0, 4);
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_m:
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfredosum_vs_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfredusum_vs_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwredosum_vs_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfwredusum_vs_rm_tum:
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_tumu:
+  case RISCVVector::BI__builtin_rvv_vfadd_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfadd_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfsub_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfrsub_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwadd_wf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwsub_wf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmul_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfdiv_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfrdiv_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmul_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmacc_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmacc_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmsac_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmsac_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmadd_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmadd_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfmsub_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfnmsub_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmacc_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwnmacc_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwmsac_vf_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_mu:
+  case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_mu:
+    return SemaBuiltinConstantArgRange(TheCall, 4, 0, 4);
+>>>>>>> upstream/main
   case RISCV::BI__builtin_riscv_ntl_load:
   case RISCV::BI__builtin_riscv_ntl_store:
     DeclRefExpr *DRE =
@@ -15252,37 +15659,39 @@ void Sema::CheckBoolLikeConversion(Expr *E, SourceLocation CC) {
 
 /// Diagnose when expression is an integer constant expression and its evaluation
 /// results in integer overflow
-void Sema::CheckForIntOverflow (Expr *E) {
+void Sema::CheckForIntOverflow (const Expr *E) {
   // Use a work list to deal with nested struct initializers.
-  SmallVector<Expr *, 2> Exprs(1, E);
+  SmallVector<const Expr *, 2> Exprs(1, E);
 
   do {
-    Expr *OriginalE = Exprs.pop_back_val();
-    Expr *E = OriginalE->IgnoreParenCasts();
+    const Expr *OriginalE = Exprs.pop_back_val();
+    const Expr *E = OriginalE->IgnoreParenCasts();
 
     if (isa<BinaryOperator, UnaryOperator>(E)) {
       E->EvaluateForOverflow(Context);
       continue;
     }
 
-    if (auto InitList = dyn_cast<InitListExpr>(OriginalE))
+    if (const auto *InitList = dyn_cast<InitListExpr>(OriginalE))
       Exprs.append(InitList->inits().begin(), InitList->inits().end());
     else if (isa<ObjCBoxedExpr>(OriginalE))
       E->EvaluateForOverflow(Context);
-    else if (auto Call = dyn_cast<CallExpr>(E))
+    else if (const auto *Call = dyn_cast<CallExpr>(E))
       Exprs.append(Call->arg_begin(), Call->arg_end());
-    else if (auto Message = dyn_cast<ObjCMessageExpr>(E))
+    else if (const auto *Message = dyn_cast<ObjCMessageExpr>(E))
       Exprs.append(Message->arg_begin(), Message->arg_end());
-    else if (auto Construct = dyn_cast<CXXConstructExpr>(E))
+    else if (const auto *Construct = dyn_cast<CXXConstructExpr>(E))
       Exprs.append(Construct->arg_begin(), Construct->arg_end());
-    else if (auto Array = dyn_cast<ArraySubscriptExpr>(E))
+    else if (const auto *Temporary = dyn_cast<CXXBindTemporaryExpr>(E))
+      Exprs.push_back(Temporary->getSubExpr());
+    else if (const auto *Array = dyn_cast<ArraySubscriptExpr>(E))
       Exprs.push_back(Array->getIdx());
-    else if (auto Compound = dyn_cast<CompoundLiteralExpr>(E))
+    else if (const auto *Compound = dyn_cast<CompoundLiteralExpr>(E))
       Exprs.push_back(Compound->getInitializer());
-    else if (auto New = dyn_cast<CXXNewExpr>(E)) {
-      if (New->isArray())
-        if (auto ArraySize = New->getArraySize())
-          Exprs.push_back(*ArraySize);
+    else if (const auto *New = dyn_cast<CXXNewExpr>(E);
+             New && New->isArray()) {
+      if (auto ArraySize = New->getArraySize())
+        Exprs.push_back(*ArraySize);
     }
   } while (!Exprs.empty());
 }
