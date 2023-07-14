@@ -2309,6 +2309,8 @@ public:
   bool isRVVType() const;
 
 #if SIFIVE_CUSTOMIZATION
+  bool isRVVType(unsigned ElementCount) const;
+
   bool isRVVType(unsigned Bitwidth, bool IsFloat, bool IsBFloat = false) const;
 #else
   bool isRVVType(unsigned Bitwidth, bool IsFloat) const;
@@ -7196,6 +7198,18 @@ inline bool Type::isRVVType() const {
 #include "clang/Basic/RISCVVTypes.def"
     false; // end of boolean or operation.
 }
+
+#if SIFIVE_CUSTOMIZATION
+inline bool Type::isRVVType(unsigned ElementCount) const {
+  bool Ret = false;
+#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
+                        IsFP, IsBF)                                            \
+  if (NumEls == ElementCount)                                                  \
+    Ret |= isSpecificBuiltinType(BuiltinType::Id);
+#include "clang/Basic/RISCVVTypes.def"
+  return Ret;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat,
                             bool IsBFloat) const {
