@@ -19078,14 +19078,8 @@ Value *RISCVTargetLowering::getIRStackGuard(IRBuilderBase &IRB) const {
 
 #if SIFIVE_CUSTOMIZATION
 bool RISCVTargetLowering::isLegalInterleavedAccessType(
-<<<<<<< HEAD
-    VectorType *VTy, unsigned Factor, const DataLayout &DL) const {
-  if (!Subtarget.useRVVForFixedLengthVectors())
-    return false;
-=======
     VectorType *VTy, unsigned Factor, Align Alignment, unsigned AddrSpace,
     const DataLayout &DL) const {
->>>>>>> upstream/main
   EVT VT = getValueType(DL, VTy);
   // Don't lower vlseg/vsseg for vector types that can't be split.
   if (!isTypeLegal(VT))
