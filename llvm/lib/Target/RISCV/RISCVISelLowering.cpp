@@ -5345,19 +5345,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
       return DAG.getNode(ISD::FP_EXTEND, DL, VT, Res);
     return Res;
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from D151284 for SCT-2553.
-  case ISD::FP_TO_FP16: {
-    // Custom lower to ensure the libcall return is passed in an FPR on hard
-    // float ABIs.
-    assert(Subtarget.hasStdExtF() && "Unexpected custom legalization");
-=======
   case ISD::FP_TO_FP16: {
     // Custom lower to ensure the libcall return is passed in an FPR on hard
     // float ABIs.
     assert(Subtarget.hasStdExtFOrZfinx() && "Unexpected custom legalisation");
->>>>>>> upstream/main
     SDLoc DL(Op);
     MakeLibCallOptions CallOptions;
     RTLIB::Libcall LC =
@@ -5371,11 +5362,7 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::FP16_TO_FP: {
     // Custom lower to ensure the libcall argument is passed in an FPR on hard
     // float ABIs.
-<<<<<<< HEAD
-    assert(Subtarget.hasStdExtF() && "Unexpected custom legalization");
-=======
     assert(Subtarget.hasStdExtFOrZfinx() && "Unexpected custom legalisation");
->>>>>>> upstream/main
     SDLoc DL(Op);
     MakeLibCallOptions CallOptions;
     SDValue Arg = Subtarget.is64Bit()
@@ -5387,10 +5374,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
             .first;
     return Res;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case ISD::FTRUNC:
   case ISD::FCEIL:
   case ISD::FFLOOR:
