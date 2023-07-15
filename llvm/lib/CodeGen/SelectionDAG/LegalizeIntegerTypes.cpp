@@ -284,17 +284,14 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::IS_FPCLASS:
     Res = PromoteIntRes_IS_FPCLASS(N);
     break;
-<<<<<<< HEAD
+  case ISD::FFREXP:
+    Res = PromoteIntRes_FFREXP(N);
+    break;
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     Res = PromoteIntRes_VP_FIRST(N);
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case ISD::FFREXP:
-    Res = PromoteIntRes_FFREXP(N);
-    break;
->>>>>>> upstream/main
   }
 
   // If the result is null then the sub-method took care of registering it.
