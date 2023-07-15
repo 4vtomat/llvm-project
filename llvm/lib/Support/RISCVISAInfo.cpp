@@ -171,53 +171,21 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
 // NOTE: This table should be sorted alphabetically by extension name.
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
-#ifdef SIFIVE_CUSTOMIZATION
     {"smaia", RISCVExtensionVersion{1, 0}},
-    {"smwg", RISCVExtensionVersion{0, 3}},
-    {"smwgd", RISCVExtensionVersion{0, 3}},
+    {"smwg", RISCVExtensionVersion{0, 3}}, // SIFIVE
+    {"smwgd", RISCVExtensionVersion{0, 3}}, // SIFIVE
     {"ssaia", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-    {"sswg", RISCVExtensionVersion{0, 3}},
-    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}},
-    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}},
-#endif // SIFIVE_CUSTOMIZATION
-=======
+    {"sswg", RISCVExtensionVersion{0, 3}}, // SIFIVE
+    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
 
     {"zacas", RISCVExtensionVersion{1, 0}},
 
->>>>>>> upstream/main
     {"zfa", RISCVExtensionVersion{0, 2}},
     {"zfbfmin", RISCVExtensionVersion{0, 6}},
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
-<<<<<<< HEAD
-    {"zvbb", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvbc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvfbfmin", RISCVExtensionVersion{0, 6}},
-    {"zvfbfwma", RISCVExtensionVersion{0, 6}},
-    {"zvfh", RISCVExtensionVersion{0, 1}},
-    {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkg", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkn", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkned", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvkng", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknha", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvknhb", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvks", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksc", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksed", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvksg", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksh", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkt", RISCVExtensionVersion{1, 0}}, // SIFIVE
-=======
 
     {"zvbb", RISCVExtensionVersion{1, 0}},
     {"zvbc", RISCVExtensionVersion{1, 0}},
@@ -227,20 +195,26 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvfh", RISCVExtensionVersion{0, 1}},
 
     // vector crypto
+    {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkg", RISCVExtensionVersion{1, 0}},
+    {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkn", RISCVExtensionVersion{1, 0}},
     {"zvknc", RISCVExtensionVersion{1, 0}},
     {"zvkned", RISCVExtensionVersion{1, 0}},
     {"zvkng", RISCVExtensionVersion{1, 0}},
     {"zvknha", RISCVExtensionVersion{1, 0}},
+    {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvknhb", RISCVExtensionVersion{1, 0}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvks", RISCVExtensionVersion{1, 0}},
     {"zvksc", RISCVExtensionVersion{1, 0}},
     {"zvksed", RISCVExtensionVersion{1, 0}},
+    {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvksg", RISCVExtensionVersion{1, 0}},
     {"zvksh", RISCVExtensionVersion{1, 0}},
+    {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
 };
 
 static void verifyTables() {
