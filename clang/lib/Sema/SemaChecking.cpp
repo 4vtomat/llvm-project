@@ -4765,34 +4765,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tu:
-<<<<<<< HEAD
-  case RISCVVector::BI__builtin_rvv_vaaddu_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vaaddu_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vaadd_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vaadd_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vasubu_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vasubu_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vasub_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vasub_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vsmul_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vsmul_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vssra_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vssra_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vssrl_vv_tama:
-  case RISCVVector::BI__builtin_rvv_vssrl_vx_tama:
-  case RISCVVector::BI__builtin_rvv_vnclip_wv_tama:
-  case RISCVVector::BI__builtin_rvv_vnclip_wx_tama:
-  case RISCVVector::BI__builtin_rvv_vnclipu_wv_tama:
-  case RISCVVector::BI__builtin_rvv_vnclipu_wx_tama:
-#ifdef SIFIVE_CUSTOMIZATION
-  {
-    llvm::APSInt Result;
-    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
-      return true;
-    // 7 indicates no rounding mode (vxrm) change.
-    if (Result.getSExtValue() == 7)
-      return false;
-=======
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_m:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_m:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_m:
@@ -4811,7 +4783,14 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_m:
->>>>>>> upstream/main
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
     return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
   }
 #else
