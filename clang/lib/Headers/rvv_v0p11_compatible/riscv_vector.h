@@ -312,7 +312,6 @@
                   redirect___riscv_vaadd_vx_i32m8_4, 2, 1)                     \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_4(op0, op1, vl)                        \
   __riscv_vaadd_vv_i64m1(op0, op1, 7, vl)
 #define redirect___riscv_vaadd_vv_i64m1_v1p0(op0, op1, op2, vl)                \
@@ -322,8 +321,6 @@
                   redirect___riscv_vaadd_vv_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_4(op0, op1, vl)                        \
   __riscv_vaadd_vx_i64m1(op0, op1, 7, vl)
@@ -333,7 +330,6 @@
   _GET_OVERRIDE_6(__VA_ARGS__, 6, 5, redirect___riscv_vaadd_vx_i64m1_v1p0,     \
                   redirect___riscv_vaadd_vx_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_4(op0, op1, vl)                        \
@@ -696,7 +692,6 @@
                   redirect___riscv_vasub_vx_i32m8_4, 2, 1)                     \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_4(op0, op1, vl)                        \
   __riscv_vasub_vv_i64m1(op0, op1, 7, vl)
 #define redirect___riscv_vasub_vv_i64m1_v1p0(op0, op1, op2, vl)                \
@@ -706,8 +701,6 @@
                   redirect___riscv_vasub_vv_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_4(op0, op1, vl)                        \
   __riscv_vasub_vx_i64m1(op0, op1, 7, vl)
@@ -717,7 +710,6 @@
   _GET_OVERRIDE_6(__VA_ARGS__, 6, 5, redirect___riscv_vasub_vx_i64m1_v1p0,     \
                   redirect___riscv_vasub_vx_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_4(op0, op1, vl)                        \
@@ -1526,10 +1518,9 @@
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vaadd_vv_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    __rvv_int8mf8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vaadd_vv_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    __rvv_int8mf8_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1544,9 +1535,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vaadd_vv_i8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vaadd_vx_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vaadd_vx_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1558,10 +1549,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vaadd_vx_i8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8mf4_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vaadd_vv_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    __rvv_int8mf4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vaadd_vv_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    __rvv_int8mf4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8mf4_m_5(op0, op1, op2, vl)                 \
@@ -1572,9 +1562,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vaadd_vv_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8mf4_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vaadd_vx_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vaadd_vx_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -1585,10 +1575,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vaadd_vx_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8mf2_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vaadd_vv_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    __rvv_int8mf2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vaadd_vv_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    __rvv_int8mf2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -1599,9 +1588,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vaadd_vv_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8mf2_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vaadd_vx_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vaadd_vx_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -1612,10 +1601,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vaadd_vx_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8m1_m_v1p0,       \
                   redirect___riscv_vaadd_vv_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vaadd_vv_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  __rvv_int8m1_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vaadd_vv_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   __rvv_int8m1_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -1626,9 +1614,9 @@ __rvv_int8m1_t __jumper_4___riscv_vaadd_vv_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8m1_m_v1p0,       \
                   redirect___riscv_vaadd_vx_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vaadd_vx_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vaadd_vx_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -1639,10 +1627,9 @@ __rvv_int8m1_t __jumper_4___riscv_vaadd_vx_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8m2_m_v1p0,       \
                   redirect___riscv_vaadd_vv_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vaadd_vv_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  __rvv_int8m2_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vaadd_vv_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   __rvv_int8m2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -1653,9 +1640,9 @@ __rvv_int8m2_t __jumper_4___riscv_vaadd_vv_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8m2_m_v1p0,       \
                   redirect___riscv_vaadd_vx_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vaadd_vx_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vaadd_vx_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -1666,10 +1653,9 @@ __rvv_int8m2_t __jumper_4___riscv_vaadd_vx_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8m4_m_v1p0,       \
                   redirect___riscv_vaadd_vv_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vaadd_vv_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  __rvv_int8m4_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vaadd_vv_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   __rvv_int8m4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -1680,9 +1666,9 @@ __rvv_int8m4_t __jumper_4___riscv_vaadd_vv_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8m4_m_v1p0,       \
                   redirect___riscv_vaadd_vx_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vaadd_vx_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vaadd_vx_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -1693,10 +1679,9 @@ __rvv_int8m4_t __jumper_4___riscv_vaadd_vx_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i8m8_m_v1p0,       \
                   redirect___riscv_vaadd_vv_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vaadd_vv_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  __rvv_int8m8_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vaadd_vv_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   __rvv_int8m8_t op2, size_t vl) {
   return __riscv_vaadd_vv_i8m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -1707,9 +1692,9 @@ __rvv_int8m8_t __jumper_4___riscv_vaadd_vv_i8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i8m8_m_v1p0,       \
                   redirect___riscv_vaadd_vx_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vaadd_vx_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vaadd_vx_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vaadd_vx_i8m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -1723,10 +1708,9 @@ __rvv_int8m8_t __jumper_4___riscv_vaadd_vx_i8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vaadd_vv_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      __rvv_int16mf4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vaadd_vv_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     __rvv_int16mf4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1741,9 +1725,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vaadd_vv_i16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vaadd_vx_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      int16_t op2, size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vaadd_vx_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1755,10 +1739,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vaadd_vx_i16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i16mf2_m_v1p0,     \
                   redirect___riscv_vaadd_vv_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vaadd_vv_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      __rvv_int16mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vaadd_vv_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     __rvv_int16mf2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i16mf2_m_5(op0, op1, op2, vl)                \
@@ -1769,9 +1752,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vaadd_vv_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i16mf2_m_v1p0,     \
                   redirect___riscv_vaadd_vx_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vaadd_vx_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      int16_t op2, size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vaadd_vx_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -1782,10 +1765,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vaadd_vx_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i16m1_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vaadd_vv_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    __rvv_int16m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vaadd_vv_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    __rvv_int16m1_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -1796,9 +1778,9 @@ __rvv_int16m1_t __jumper_4___riscv_vaadd_vv_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i16m1_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vaadd_vx_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vaadd_vx_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -1809,10 +1791,9 @@ __rvv_int16m1_t __jumper_4___riscv_vaadd_vx_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i16m2_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vaadd_vv_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    __rvv_int16m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vaadd_vv_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    __rvv_int16m2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -1823,9 +1804,9 @@ __rvv_int16m2_t __jumper_4___riscv_vaadd_vv_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i16m2_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vaadd_vx_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vaadd_vx_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -1836,10 +1817,9 @@ __rvv_int16m2_t __jumper_4___riscv_vaadd_vx_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i16m4_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vaadd_vv_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    __rvv_int16m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vaadd_vv_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    __rvv_int16m4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -1850,9 +1830,9 @@ __rvv_int16m4_t __jumper_4___riscv_vaadd_vv_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i16m4_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vaadd_vx_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vaadd_vx_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -1863,10 +1843,9 @@ __rvv_int16m4_t __jumper_4___riscv_vaadd_vx_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i16m8_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vaadd_vv_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    __rvv_int16m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vaadd_vv_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    __rvv_int16m8_t op2, size_t vl) {
   return __riscv_vaadd_vv_i16m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -1877,9 +1856,9 @@ __rvv_int16m8_t __jumper_4___riscv_vaadd_vv_i16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i16m8_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vaadd_vx_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vaadd_vx_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vaadd_vx_i16m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -1893,10 +1872,9 @@ __rvv_int16m8_t __jumper_4___riscv_vaadd_vx_i16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vaadd_vv_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      __rvv_int32mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vaadd_vv_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     __rvv_int32mf2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1911,9 +1889,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vaadd_vv_i32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vaadd_vx_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      int32_t op2, size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vaadd_vx_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     int32_t op2, size_t vl) {
   return __riscv_vaadd_vx_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -1925,10 +1903,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vaadd_vx_i32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i32m1_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vaadd_vv_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    __rvv_int32m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vaadd_vv_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    __rvv_int32m1_t op2, size_t vl) {
   return __riscv_vaadd_vv_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i32m1_m_5(op0, op1, op2, vl)                 \
@@ -1939,9 +1916,9 @@ __rvv_int32m1_t __jumper_4___riscv_vaadd_vv_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i32m1_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vaadd_vx_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vaadd_vx_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vaadd_vx_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -1952,10 +1929,9 @@ __rvv_int32m1_t __jumper_4___riscv_vaadd_vx_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i32m2_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vaadd_vv_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    __rvv_int32m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vaadd_vv_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    __rvv_int32m2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -1966,9 +1942,9 @@ __rvv_int32m2_t __jumper_4___riscv_vaadd_vv_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i32m2_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vaadd_vx_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vaadd_vx_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vaadd_vx_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -1979,10 +1955,9 @@ __rvv_int32m2_t __jumper_4___riscv_vaadd_vx_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i32m4_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vaadd_vv_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    __rvv_int32m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vaadd_vv_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    __rvv_int32m4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -1993,9 +1968,9 @@ __rvv_int32m4_t __jumper_4___riscv_vaadd_vv_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i32m4_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vaadd_vx_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vaadd_vx_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vaadd_vx_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vv_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -2006,10 +1981,9 @@ __rvv_int32m4_t __jumper_4___riscv_vaadd_vx_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vv_i32m8_m_v1p0,      \
                   redirect___riscv_vaadd_vv_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vaadd_vv_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    __rvv_int32m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vaadd_vv_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    __rvv_int32m8_t op2, size_t vl) {
   return __riscv_vaadd_vv_i32m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaadd_vx_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -2020,12 +1994,11 @@ __rvv_int32m8_t __jumper_4___riscv_vaadd_vv_i32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i32m8_m_v1p0,      \
                   redirect___riscv_vaadd_vx_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vaadd_vx_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vaadd_vx_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vaadd_vx_i32m8_m(mask, op1, op2, 7, vl);
 }
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vaadd_vv_i64m1_m(op0, op1, op2, 7, vl)
@@ -2036,18 +2009,13 @@ __rvv_int32m8_t __jumper_4___riscv_vaadd_vx_i32m8_m(__rvv_bool4_t mask,
                   redirect___riscv_vaadd_vv_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vaadd_vv_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    __rvv_int64m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vaadd_vv_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    __rvv_int64m1_t op2, size_t vl) {
   return __riscv_vaadd_vv_i64m1_m(mask, op1, op2, 7, vl);
 }
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vaadd_vx_i64m1_m(op0, op1, op2, 7, vl)
@@ -2058,15 +2026,12 @@ __rvv_int64m1_t __jumper_4___riscv_vaadd_vv_i64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vaadd_vx_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vaadd_vx_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vaadd_vx_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vaadd_vx_i64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_m_5(op0, op1, op2, vl)                 \
@@ -2079,10 +2044,9 @@ __rvv_int64m1_t __jumper_4___riscv_vaadd_vx_i64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vaadd_vv_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    __rvv_int64m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vaadd_vv_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    __rvv_int64m2_t op2, size_t vl) {
   return __riscv_vaadd_vv_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2097,9 +2061,9 @@ __rvv_int64m2_t __jumper_4___riscv_vaadd_vv_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vaadd_vx_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vaadd_vx_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vaadd_vx_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2114,10 +2078,9 @@ __rvv_int64m2_t __jumper_4___riscv_vaadd_vx_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vaadd_vv_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    __rvv_int64m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vaadd_vv_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    __rvv_int64m4_t op2, size_t vl) {
   return __riscv_vaadd_vv_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2132,9 +2095,9 @@ __rvv_int64m4_t __jumper_4___riscv_vaadd_vv_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vaadd_vx_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vaadd_vx_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vaadd_vx_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2149,10 +2112,9 @@ __rvv_int64m4_t __jumper_4___riscv_vaadd_vx_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vaadd_vv_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    __rvv_int64m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vaadd_vv_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    __rvv_int64m8_t op2, size_t vl) {
   return __riscv_vaadd_vv_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2167,9 +2129,9 @@ __rvv_int64m8_t __jumper_4___riscv_vaadd_vv_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vaadd_vx_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vaadd_vx_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vaadd_vx_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2184,10 +2146,9 @@ __rvv_int64m8_t __jumper_4___riscv_vaadd_vx_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vasub_vv_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    __rvv_int8mf8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vasub_vv_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    __rvv_int8mf8_t op2, size_t vl) {
   return __riscv_vasub_vv_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2202,9 +2163,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vasub_vv_i8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vasub_vx_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vasub_vx_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2216,10 +2177,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vasub_vx_i8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8mf4_m_v1p0,      \
                   redirect___riscv_vasub_vv_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vasub_vv_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    __rvv_int8mf4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vasub_vv_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    __rvv_int8mf4_t op2, size_t vl) {
   return __riscv_vasub_vv_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8mf4_m_5(op0, op1, op2, vl)                 \
@@ -2230,9 +2190,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vasub_vv_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8mf4_m_v1p0,      \
                   redirect___riscv_vasub_vx_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vasub_vx_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vasub_vx_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -2243,10 +2203,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vasub_vx_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8mf2_m_v1p0,      \
                   redirect___riscv_vasub_vv_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vasub_vv_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    __rvv_int8mf2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vasub_vv_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    __rvv_int8mf2_t op2, size_t vl) {
   return __riscv_vasub_vv_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -2257,9 +2216,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vasub_vv_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8mf2_m_v1p0,      \
                   redirect___riscv_vasub_vx_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vasub_vx_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vasub_vx_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -2270,10 +2229,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vasub_vx_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8m1_m_v1p0,       \
                   redirect___riscv_vasub_vv_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vasub_vv_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  __rvv_int8m1_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vasub_vv_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   __rvv_int8m1_t op2, size_t vl) {
   return __riscv_vasub_vv_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -2284,9 +2242,9 @@ __rvv_int8m1_t __jumper_4___riscv_vasub_vv_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8m1_m_v1p0,       \
                   redirect___riscv_vasub_vx_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vasub_vx_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vasub_vx_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -2297,10 +2255,9 @@ __rvv_int8m1_t __jumper_4___riscv_vasub_vx_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8m2_m_v1p0,       \
                   redirect___riscv_vasub_vv_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vasub_vv_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  __rvv_int8m2_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vasub_vv_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   __rvv_int8m2_t op2, size_t vl) {
   return __riscv_vasub_vv_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -2311,9 +2268,9 @@ __rvv_int8m2_t __jumper_4___riscv_vasub_vv_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8m2_m_v1p0,       \
                   redirect___riscv_vasub_vx_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vasub_vx_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vasub_vx_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -2324,10 +2281,9 @@ __rvv_int8m2_t __jumper_4___riscv_vasub_vx_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8m4_m_v1p0,       \
                   redirect___riscv_vasub_vv_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vasub_vv_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  __rvv_int8m4_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vasub_vv_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   __rvv_int8m4_t op2, size_t vl) {
   return __riscv_vasub_vv_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -2338,9 +2294,9 @@ __rvv_int8m4_t __jumper_4___riscv_vasub_vv_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8m4_m_v1p0,       \
                   redirect___riscv_vasub_vx_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vasub_vx_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vasub_vx_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -2351,10 +2307,9 @@ __rvv_int8m4_t __jumper_4___riscv_vasub_vx_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i8m8_m_v1p0,       \
                   redirect___riscv_vasub_vv_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vasub_vv_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  __rvv_int8m8_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vasub_vv_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   __rvv_int8m8_t op2, size_t vl) {
   return __riscv_vasub_vv_i8m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -2365,9 +2320,9 @@ __rvv_int8m8_t __jumper_4___riscv_vasub_vv_i8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i8m8_m_v1p0,       \
                   redirect___riscv_vasub_vx_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vasub_vx_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vasub_vx_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vasub_vx_i8m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -2381,10 +2336,9 @@ __rvv_int8m8_t __jumper_4___riscv_vasub_vx_i8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vasub_vv_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      __rvv_int16mf4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vasub_vv_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     __rvv_int16mf4_t op2, size_t vl) {
   return __riscv_vasub_vv_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2399,9 +2353,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vasub_vv_i16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vasub_vx_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      int16_t op2, size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vasub_vx_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2413,10 +2367,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vasub_vx_i16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i16mf2_m_v1p0,     \
                   redirect___riscv_vasub_vv_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vasub_vv_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      __rvv_int16mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vasub_vv_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     __rvv_int16mf2_t op2, size_t vl) {
   return __riscv_vasub_vv_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i16mf2_m_5(op0, op1, op2, vl)                \
@@ -2427,9 +2380,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vasub_vv_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i16mf2_m_v1p0,     \
                   redirect___riscv_vasub_vx_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vasub_vx_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      int16_t op2, size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vasub_vx_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -2440,10 +2393,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vasub_vx_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i16m1_m_v1p0,      \
                   redirect___riscv_vasub_vv_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vasub_vv_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    __rvv_int16m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vasub_vv_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    __rvv_int16m1_t op2, size_t vl) {
   return __riscv_vasub_vv_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -2454,9 +2406,9 @@ __rvv_int16m1_t __jumper_4___riscv_vasub_vv_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i16m1_m_v1p0,      \
                   redirect___riscv_vasub_vx_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vasub_vx_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vasub_vx_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -2467,10 +2419,9 @@ __rvv_int16m1_t __jumper_4___riscv_vasub_vx_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i16m2_m_v1p0,      \
                   redirect___riscv_vasub_vv_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vasub_vv_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    __rvv_int16m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vasub_vv_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    __rvv_int16m2_t op2, size_t vl) {
   return __riscv_vasub_vv_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -2481,9 +2432,9 @@ __rvv_int16m2_t __jumper_4___riscv_vasub_vv_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i16m2_m_v1p0,      \
                   redirect___riscv_vasub_vx_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vasub_vx_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vasub_vx_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -2494,10 +2445,9 @@ __rvv_int16m2_t __jumper_4___riscv_vasub_vx_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i16m4_m_v1p0,      \
                   redirect___riscv_vasub_vv_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vasub_vv_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    __rvv_int16m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vasub_vv_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    __rvv_int16m4_t op2, size_t vl) {
   return __riscv_vasub_vv_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -2508,9 +2458,9 @@ __rvv_int16m4_t __jumper_4___riscv_vasub_vv_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i16m4_m_v1p0,      \
                   redirect___riscv_vasub_vx_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vasub_vx_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vasub_vx_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -2521,10 +2471,9 @@ __rvv_int16m4_t __jumper_4___riscv_vasub_vx_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i16m8_m_v1p0,      \
                   redirect___riscv_vasub_vv_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vasub_vv_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    __rvv_int16m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vasub_vv_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    __rvv_int16m8_t op2, size_t vl) {
   return __riscv_vasub_vv_i16m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -2535,9 +2484,9 @@ __rvv_int16m8_t __jumper_4___riscv_vasub_vv_i16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i16m8_m_v1p0,      \
                   redirect___riscv_vasub_vx_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vasub_vx_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vasub_vx_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vasub_vx_i16m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -2551,10 +2500,9 @@ __rvv_int16m8_t __jumper_4___riscv_vasub_vx_i16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vasub_vv_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      __rvv_int32mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vasub_vv_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     __rvv_int32mf2_t op2, size_t vl) {
   return __riscv_vasub_vv_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2569,9 +2517,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vasub_vv_i32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vasub_vx_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      int32_t op2, size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vasub_vx_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     int32_t op2, size_t vl) {
   return __riscv_vasub_vx_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2583,10 +2531,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vasub_vx_i32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i32m1_m_v1p0,      \
                   redirect___riscv_vasub_vv_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vasub_vv_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    __rvv_int32m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vasub_vv_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    __rvv_int32m1_t op2, size_t vl) {
   return __riscv_vasub_vv_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i32m1_m_5(op0, op1, op2, vl)                 \
@@ -2597,9 +2544,9 @@ __rvv_int32m1_t __jumper_4___riscv_vasub_vv_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i32m1_m_v1p0,      \
                   redirect___riscv_vasub_vx_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vasub_vx_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vasub_vx_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vasub_vx_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -2610,10 +2557,9 @@ __rvv_int32m1_t __jumper_4___riscv_vasub_vx_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i32m2_m_v1p0,      \
                   redirect___riscv_vasub_vv_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vasub_vv_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    __rvv_int32m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vasub_vv_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    __rvv_int32m2_t op2, size_t vl) {
   return __riscv_vasub_vv_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -2624,9 +2570,9 @@ __rvv_int32m2_t __jumper_4___riscv_vasub_vv_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i32m2_m_v1p0,      \
                   redirect___riscv_vasub_vx_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vasub_vx_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vasub_vx_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vasub_vx_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -2637,10 +2583,9 @@ __rvv_int32m2_t __jumper_4___riscv_vasub_vx_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i32m4_m_v1p0,      \
                   redirect___riscv_vasub_vv_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vasub_vv_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    __rvv_int32m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vasub_vv_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    __rvv_int32m4_t op2, size_t vl) {
   return __riscv_vasub_vv_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -2651,9 +2596,9 @@ __rvv_int32m4_t __jumper_4___riscv_vasub_vv_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i32m4_m_v1p0,      \
                   redirect___riscv_vasub_vx_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vasub_vx_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vasub_vx_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vasub_vx_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vv_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -2664,10 +2609,9 @@ __rvv_int32m4_t __jumper_4___riscv_vasub_vx_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vv_i32m8_m_v1p0,      \
                   redirect___riscv_vasub_vv_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vasub_vv_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    __rvv_int32m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vasub_vv_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    __rvv_int32m8_t op2, size_t vl) {
   return __riscv_vasub_vv_i32m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasub_vx_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -2678,12 +2622,11 @@ __rvv_int32m8_t __jumper_4___riscv_vasub_vv_i32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i32m8_m_v1p0,      \
                   redirect___riscv_vasub_vx_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vasub_vx_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vasub_vx_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vasub_vx_i32m8_m(mask, op1, op2, 7, vl);
 }
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vasub_vv_i64m1_m(op0, op1, op2, 7, vl)
@@ -2694,18 +2637,13 @@ __rvv_int32m8_t __jumper_4___riscv_vasub_vx_i32m8_m(__rvv_bool4_t mask,
                   redirect___riscv_vasub_vv_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vasub_vv_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    __rvv_int64m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vasub_vv_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    __rvv_int64m1_t op2, size_t vl) {
   return __riscv_vasub_vv_i64m1_m(mask, op1, op2, 7, vl);
 }
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vasub_vx_i64m1_m(op0, op1, op2, 7, vl)
@@ -2716,15 +2654,12 @@ __rvv_int64m1_t __jumper_4___riscv_vasub_vv_i64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vasub_vx_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vasub_vx_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vasub_vx_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vasub_vx_i64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_m_5(op0, op1, op2, vl)                 \
@@ -2737,10 +2672,9 @@ __rvv_int64m1_t __jumper_4___riscv_vasub_vx_i64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vasub_vv_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    __rvv_int64m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vasub_vv_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    __rvv_int64m2_t op2, size_t vl) {
   return __riscv_vasub_vv_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2755,9 +2689,9 @@ __rvv_int64m2_t __jumper_4___riscv_vasub_vv_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vasub_vx_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vasub_vx_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vasub_vx_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2772,10 +2706,9 @@ __rvv_int64m2_t __jumper_4___riscv_vasub_vx_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vasub_vv_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    __rvv_int64m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vasub_vv_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    __rvv_int64m4_t op2, size_t vl) {
   return __riscv_vasub_vv_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2790,9 +2723,9 @@ __rvv_int64m4_t __jumper_4___riscv_vasub_vv_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vasub_vx_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vasub_vx_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vasub_vx_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2807,10 +2740,9 @@ __rvv_int64m4_t __jumper_4___riscv_vasub_vx_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vasub_vv_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    __rvv_int64m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vasub_vv_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    __rvv_int64m8_t op2, size_t vl) {
   return __riscv_vasub_vv_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2825,9 +2757,9 @@ __rvv_int64m8_t __jumper_4___riscv_vasub_vv_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vasub_vx_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vasub_vx_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vasub_vx_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2842,10 +2774,9 @@ __rvv_int64m8_t __jumper_4___riscv_vasub_vx_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vaaddu_vv_u8mf8_m(__rvv_bool64_t mask,
-                                                      __rvv_uint8mf8_t op1,
-                                                      __rvv_uint8mf8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vaaddu_vv_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                     __rvv_uint8mf8_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2860,9 +2791,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vaaddu_vv_u8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vaaddu_vx_u8mf8_m(__rvv_bool64_t mask,
-                                                      __rvv_uint8mf8_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vaaddu_vx_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -2874,10 +2805,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vaaddu_vx_u8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8mf4_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vaaddu_vv_u8mf4_m(__rvv_bool32_t mask,
-                                                      __rvv_uint8mf4_t op1,
-                                                      __rvv_uint8mf4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vaaddu_vv_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                     __rvv_uint8mf4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8mf4_m_5(op0, op1, op2, vl)                \
@@ -2888,9 +2818,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vaaddu_vv_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8mf4_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vaaddu_vx_u8mf4_m(__rvv_bool32_t mask,
-                                                      __rvv_uint8mf4_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vaaddu_vx_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u8mf2_m_5(op0, op1, op2, vl)                \
@@ -2901,10 +2831,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vaaddu_vx_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8mf2_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vaaddu_vv_u8mf2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint8mf2_t op1,
-                                                      __rvv_uint8mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vaaddu_vv_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                     __rvv_uint8mf2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8mf2_m_5(op0, op1, op2, vl)                \
@@ -2915,9 +2844,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vaaddu_vv_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8mf2_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vaaddu_vx_u8mf2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint8mf2_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vaaddu_vx_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u8m1_m_5(op0, op1, op2, vl)                 \
@@ -2928,10 +2857,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vaaddu_vx_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8m1_m_v1p0,      \
                   redirect___riscv_vaaddu_vv_u8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vaaddu_vv_u8m1_m(__rvv_bool8_t mask,
-                                                    __rvv_uint8m1_t op1,
-                                                    __rvv_uint8m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vaaddu_vv_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                    __rvv_uint8m1_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8m1_m_5(op0, op1, op2, vl)                 \
@@ -2942,9 +2870,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vaaddu_vv_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8m1_m_v1p0,      \
                   redirect___riscv_vaaddu_vx_u8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vaaddu_vx_u8m1_m(__rvv_bool8_t mask,
-                                                    __rvv_uint8m1_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vaaddu_vx_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u8m2_m_5(op0, op1, op2, vl)                 \
@@ -2955,10 +2883,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vaaddu_vx_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8m2_m_v1p0,      \
                   redirect___riscv_vaaddu_vv_u8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vaaddu_vv_u8m2_m(__rvv_bool4_t mask,
-                                                    __rvv_uint8m2_t op1,
-                                                    __rvv_uint8m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vaaddu_vv_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                    __rvv_uint8m2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8m2_m_5(op0, op1, op2, vl)                 \
@@ -2969,9 +2896,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vaaddu_vv_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8m2_m_v1p0,      \
                   redirect___riscv_vaaddu_vx_u8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vaaddu_vx_u8m2_m(__rvv_bool4_t mask,
-                                                    __rvv_uint8m2_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vaaddu_vx_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u8m4_m_5(op0, op1, op2, vl)                 \
@@ -2982,10 +2909,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vaaddu_vx_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8m4_m_v1p0,      \
                   redirect___riscv_vaaddu_vv_u8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vaaddu_vv_u8m4_m(__rvv_bool2_t mask,
-                                                    __rvv_uint8m4_t op1,
-                                                    __rvv_uint8m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vaaddu_vv_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                    __rvv_uint8m4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8m4_m_5(op0, op1, op2, vl)                 \
@@ -2996,9 +2922,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vaaddu_vv_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8m4_m_v1p0,      \
                   redirect___riscv_vaaddu_vx_u8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vaaddu_vx_u8m4_m(__rvv_bool2_t mask,
-                                                    __rvv_uint8m4_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vaaddu_vx_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u8m8_m_5(op0, op1, op2, vl)                 \
@@ -3009,10 +2935,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vaaddu_vx_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u8m8_m_v1p0,      \
                   redirect___riscv_vaaddu_vv_u8m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vaaddu_vv_u8m8_m(__rvv_bool1_t mask,
-                                                    __rvv_uint8m8_t op1,
-                                                    __rvv_uint8m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vaaddu_vv_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                    __rvv_uint8m8_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u8m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u8m8_m_5(op0, op1, op2, vl)                 \
@@ -3023,9 +2948,9 @@ __rvv_uint8m8_t __jumper_4___riscv_vaaddu_vv_u8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u8m8_m_v1p0,      \
                   redirect___riscv_vaaddu_vx_u8m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vaaddu_vx_u8m8_m(__rvv_bool1_t mask,
-                                                    __rvv_uint8m8_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vaaddu_vx_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u8m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -3039,10 +2964,10 @@ __rvv_uint8m8_t __jumper_4___riscv_vaaddu_vx_u8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vaaddu_vv_u16mf4_m(__rvv_bool64_t mask,
-                                                        __rvv_uint16mf4_t op1,
-                                                        __rvv_uint16mf4_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf4_t
+__jumper_4___riscv_vaaddu_vv_u16mf4_m(__rvv_bool64_t mask,
+                                      __rvv_uint16mf4_t op1,
+                                      __rvv_uint16mf4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3057,10 +2982,8 @@ __rvv_uint16mf4_t __jumper_4___riscv_vaaddu_vv_u16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vaaddu_vx_u16mf4_m(__rvv_bool64_t mask,
-                                                        __rvv_uint16mf4_t op1,
-                                                        uint16_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf4_t __jumper_4___riscv_vaaddu_vx_u16mf4_m(
+    __rvv_bool64_t mask, __rvv_uint16mf4_t op1, uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3072,10 +2995,10 @@ __rvv_uint16mf4_t __jumper_4___riscv_vaaddu_vx_u16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u16mf2_m_v1p0,    \
                   redirect___riscv_vaaddu_vv_u16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vaaddu_vv_u16mf2_m(__rvv_bool32_t mask,
-                                                        __rvv_uint16mf2_t op1,
-                                                        __rvv_uint16mf2_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf2_t
+__jumper_4___riscv_vaaddu_vv_u16mf2_m(__rvv_bool32_t mask,
+                                      __rvv_uint16mf2_t op1,
+                                      __rvv_uint16mf2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u16mf2_m_5(op0, op1, op2, vl)               \
@@ -3086,10 +3009,8 @@ __rvv_uint16mf2_t __jumper_4___riscv_vaaddu_vv_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u16mf2_m_v1p0,    \
                   redirect___riscv_vaaddu_vx_u16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vaaddu_vx_u16mf2_m(__rvv_bool32_t mask,
-                                                        __rvv_uint16mf2_t op1,
-                                                        uint16_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf2_t __jumper_4___riscv_vaaddu_vx_u16mf2_m(
+    __rvv_bool32_t mask, __rvv_uint16mf2_t op1, uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u16m1_m_5(op0, op1, op2, vl)                \
@@ -3100,10 +3021,9 @@ __rvv_uint16mf2_t __jumper_4___riscv_vaaddu_vx_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u16m1_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vaaddu_vv_u16m1_m(__rvv_bool16_t mask,
-                                                      __rvv_uint16m1_t op1,
-                                                      __rvv_uint16m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vaaddu_vv_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                     __rvv_uint16m1_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u16m1_m_5(op0, op1, op2, vl)                \
@@ -3114,9 +3034,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vaaddu_vv_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u16m1_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vaaddu_vx_u16m1_m(__rvv_bool16_t mask,
-                                                      __rvv_uint16m1_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vaaddu_vx_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u16m2_m_5(op0, op1, op2, vl)                \
@@ -3127,10 +3047,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vaaddu_vx_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u16m2_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vaaddu_vv_u16m2_m(__rvv_bool8_t mask,
-                                                      __rvv_uint16m2_t op1,
-                                                      __rvv_uint16m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vaaddu_vv_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     __rvv_uint16m2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u16m2_m_5(op0, op1, op2, vl)                \
@@ -3141,9 +3060,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vaaddu_vv_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u16m2_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vaaddu_vx_u16m2_m(__rvv_bool8_t mask,
-                                                      __rvv_uint16m2_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vaaddu_vx_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u16m4_m_5(op0, op1, op2, vl)                \
@@ -3154,10 +3073,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vaaddu_vx_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u16m4_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vaaddu_vv_u16m4_m(__rvv_bool4_t mask,
-                                                      __rvv_uint16m4_t op1,
-                                                      __rvv_uint16m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vaaddu_vv_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     __rvv_uint16m4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u16m4_m_5(op0, op1, op2, vl)                \
@@ -3168,9 +3086,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vaaddu_vv_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u16m4_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vaaddu_vx_u16m4_m(__rvv_bool4_t mask,
-                                                      __rvv_uint16m4_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vaaddu_vx_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u16m8_m_5(op0, op1, op2, vl)                \
@@ -3181,10 +3099,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vaaddu_vx_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u16m8_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u16m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vaaddu_vv_u16m8_m(__rvv_bool2_t mask,
-                                                      __rvv_uint16m8_t op1,
-                                                      __rvv_uint16m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vaaddu_vv_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     __rvv_uint16m8_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u16m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u16m8_m_5(op0, op1, op2, vl)                \
@@ -3195,9 +3112,9 @@ __rvv_uint16m8_t __jumper_4___riscv_vaaddu_vv_u16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u16m8_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u16m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vaaddu_vx_u16m8_m(__rvv_bool2_t mask,
-                                                      __rvv_uint16m8_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vaaddu_vx_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u16m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -3211,10 +3128,10 @@ __rvv_uint16m8_t __jumper_4___riscv_vaaddu_vx_u16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vaaddu_vv_u32mf2_m(__rvv_bool64_t mask,
-                                                        __rvv_uint32mf2_t op1,
-                                                        __rvv_uint32mf2_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint32mf2_t
+__jumper_4___riscv_vaaddu_vv_u32mf2_m(__rvv_bool64_t mask,
+                                      __rvv_uint32mf2_t op1,
+                                      __rvv_uint32mf2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3229,10 +3146,8 @@ __rvv_uint32mf2_t __jumper_4___riscv_vaaddu_vv_u32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vaaddu_vx_u32mf2_m(__rvv_bool64_t mask,
-                                                        __rvv_uint32mf2_t op1,
-                                                        uint32_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint32mf2_t __jumper_4___riscv_vaaddu_vx_u32mf2_m(
+    __rvv_bool64_t mask, __rvv_uint32mf2_t op1, uint32_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3244,10 +3159,9 @@ __rvv_uint32mf2_t __jumper_4___riscv_vaaddu_vx_u32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u32m1_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vaaddu_vv_u32m1_m(__rvv_bool32_t mask,
-                                                      __rvv_uint32m1_t op1,
-                                                      __rvv_uint32m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vaaddu_vv_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                     __rvv_uint32m1_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u32m1_m_5(op0, op1, op2, vl)                \
@@ -3258,9 +3172,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vaaddu_vv_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u32m1_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vaaddu_vx_u32m1_m(__rvv_bool32_t mask,
-                                                      __rvv_uint32m1_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vaaddu_vx_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u32m2_m_5(op0, op1, op2, vl)                \
@@ -3271,10 +3185,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vaaddu_vx_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u32m2_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vaaddu_vv_u32m2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint32m2_t op1,
-                                                      __rvv_uint32m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vaaddu_vv_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                     __rvv_uint32m2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u32m2_m_5(op0, op1, op2, vl)                \
@@ -3285,9 +3198,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vaaddu_vv_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u32m2_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vaaddu_vx_u32m2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint32m2_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vaaddu_vx_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u32m4_m_5(op0, op1, op2, vl)                \
@@ -3298,10 +3211,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vaaddu_vx_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u32m4_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vaaddu_vv_u32m4_m(__rvv_bool8_t mask,
-                                                      __rvv_uint32m4_t op1,
-                                                      __rvv_uint32m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vaaddu_vv_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                     __rvv_uint32m4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u32m4_m_5(op0, op1, op2, vl)                \
@@ -3312,9 +3224,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vaaddu_vv_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u32m4_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vaaddu_vx_u32m4_m(__rvv_bool8_t mask,
-                                                      __rvv_uint32m4_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vaaddu_vx_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vv_u32m8_m_5(op0, op1, op2, vl)                \
@@ -3325,10 +3237,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vaaddu_vx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vv_u32m8_m_v1p0,     \
                   redirect___riscv_vaaddu_vv_u32m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vaaddu_vv_u32m8_m(__rvv_bool4_t mask,
-                                                      __rvv_uint32m8_t op1,
-                                                      __rvv_uint32m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vaaddu_vv_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                     __rvv_uint32m8_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u32m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vaaddu_vx_u32m8_m_5(op0, op1, op2, vl)                \
@@ -3339,9 +3250,9 @@ __rvv_uint32m8_t __jumper_4___riscv_vaaddu_vv_u32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaaddu_vx_u32m8_m_v1p0,     \
                   redirect___riscv_vaaddu_vx_u32m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vaaddu_vx_u32m8_m(__rvv_bool4_t mask,
-                                                      __rvv_uint32m8_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vaaddu_vx_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u32m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -3355,14 +3266,11 @@ __rvv_uint32m8_t __jumper_4___riscv_vaaddu_vx_u32m8_m(__rvv_bool4_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vaaddu_vv_u64m1_m(__rvv_bool64_t mask,
-                                                      __rvv_uint64m1_t op1,
-                                                      __rvv_uint64m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vaaddu_vv_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                     __rvv_uint64m1_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaaddu_vx_u64m1_m_5(op0, op1, op2, vl)                \
@@ -3375,13 +3283,11 @@ __rvv_uint64m1_t __jumper_4___riscv_vaaddu_vv_u64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vaaddu_vx_u64m1_m(__rvv_bool64_t mask,
-                                                      __rvv_uint64m1_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vaaddu_vx_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #define redirect___riscv_vaaddu_vv_u64m2_m_5(op0, op1, op2, vl)                \
   __riscv_vaaddu_vv_u64m2_m(op0, op1, op2, 7, vl)
@@ -3392,10 +3298,9 @@ __rvv_uint64m1_t __jumper_4___riscv_vaaddu_vx_u64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vaaddu_vv_u64m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vaaddu_vv_u64m2_m(__rvv_bool32_t mask,
-                                                      __rvv_uint64m2_t op1,
-                                                      __rvv_uint64m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vaaddu_vv_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                     __rvv_uint64m2_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3408,9 +3313,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vaaddu_vv_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vaaddu_vx_u64m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vaaddu_vx_u64m2_m(__rvv_bool32_t mask,
-                                                      __rvv_uint64m2_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vaaddu_vx_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3423,10 +3328,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vaaddu_vx_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vaaddu_vv_u64m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vaaddu_vv_u64m4_m(__rvv_bool16_t mask,
-                                                      __rvv_uint64m4_t op1,
-                                                      __rvv_uint64m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vaaddu_vv_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                     __rvv_uint64m4_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3439,9 +3343,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vaaddu_vv_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vaaddu_vx_u64m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vaaddu_vx_u64m4_m(__rvv_bool16_t mask,
-                                                      __rvv_uint64m4_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vaaddu_vx_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3454,10 +3358,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vaaddu_vx_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vaaddu_vv_u64m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vaaddu_vv_u64m8_m(__rvv_bool8_t mask,
-                                                      __rvv_uint64m8_t op1,
-                                                      __rvv_uint64m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vaaddu_vv_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                     __rvv_uint64m8_t op2, size_t vl) {
   return __riscv_vaaddu_vv_u64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3470,9 +3373,9 @@ __rvv_uint64m8_t __jumper_4___riscv_vaaddu_vv_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vaaddu_vx_u64m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vaaddu_vx_u64m8_m(__rvv_bool8_t mask,
-                                                      __rvv_uint64m8_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vaaddu_vx_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vaaddu_vx_u64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3487,10 +3390,9 @@ __rvv_uint64m8_t __jumper_4___riscv_vaaddu_vx_u64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vasubu_vv_u8mf8_m(__rvv_bool64_t mask,
-                                                      __rvv_uint8mf8_t op1,
-                                                      __rvv_uint8mf8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vasubu_vv_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                     __rvv_uint8mf8_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3505,9 +3407,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vasubu_vv_u8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vasubu_vx_u8mf8_m(__rvv_bool64_t mask,
-                                                      __rvv_uint8mf8_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vasubu_vx_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3519,10 +3421,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vasubu_vx_u8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8mf4_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vasubu_vv_u8mf4_m(__rvv_bool32_t mask,
-                                                      __rvv_uint8mf4_t op1,
-                                                      __rvv_uint8mf4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vasubu_vv_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                     __rvv_uint8mf4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8mf4_m_5(op0, op1, op2, vl)                \
@@ -3533,9 +3434,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vasubu_vv_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8mf4_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vasubu_vx_u8mf4_m(__rvv_bool32_t mask,
-                                                      __rvv_uint8mf4_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vasubu_vx_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u8mf2_m_5(op0, op1, op2, vl)                \
@@ -3546,10 +3447,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vasubu_vx_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8mf2_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vasubu_vv_u8mf2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint8mf2_t op1,
-                                                      __rvv_uint8mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vasubu_vv_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                     __rvv_uint8mf2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8mf2_m_5(op0, op1, op2, vl)                \
@@ -3560,9 +3460,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vasubu_vv_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8mf2_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vasubu_vx_u8mf2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint8mf2_t op1,
-                                                      uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vasubu_vx_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                     uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u8m1_m_5(op0, op1, op2, vl)                 \
@@ -3573,10 +3473,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vasubu_vx_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8m1_m_v1p0,      \
                   redirect___riscv_vasubu_vv_u8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vasubu_vv_u8m1_m(__rvv_bool8_t mask,
-                                                    __rvv_uint8m1_t op1,
-                                                    __rvv_uint8m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vasubu_vv_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                    __rvv_uint8m1_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8m1_m_5(op0, op1, op2, vl)                 \
@@ -3587,9 +3486,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vasubu_vv_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8m1_m_v1p0,      \
                   redirect___riscv_vasubu_vx_u8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vasubu_vx_u8m1_m(__rvv_bool8_t mask,
-                                                    __rvv_uint8m1_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vasubu_vx_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u8m2_m_5(op0, op1, op2, vl)                 \
@@ -3600,10 +3499,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vasubu_vx_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8m2_m_v1p0,      \
                   redirect___riscv_vasubu_vv_u8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vasubu_vv_u8m2_m(__rvv_bool4_t mask,
-                                                    __rvv_uint8m2_t op1,
-                                                    __rvv_uint8m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vasubu_vv_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                    __rvv_uint8m2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8m2_m_5(op0, op1, op2, vl)                 \
@@ -3614,9 +3512,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vasubu_vv_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8m2_m_v1p0,      \
                   redirect___riscv_vasubu_vx_u8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vasubu_vx_u8m2_m(__rvv_bool4_t mask,
-                                                    __rvv_uint8m2_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vasubu_vx_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u8m4_m_5(op0, op1, op2, vl)                 \
@@ -3627,10 +3525,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vasubu_vx_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8m4_m_v1p0,      \
                   redirect___riscv_vasubu_vv_u8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vasubu_vv_u8m4_m(__rvv_bool2_t mask,
-                                                    __rvv_uint8m4_t op1,
-                                                    __rvv_uint8m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vasubu_vv_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                    __rvv_uint8m4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8m4_m_5(op0, op1, op2, vl)                 \
@@ -3641,9 +3538,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vasubu_vv_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8m4_m_v1p0,      \
                   redirect___riscv_vasubu_vx_u8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vasubu_vx_u8m4_m(__rvv_bool2_t mask,
-                                                    __rvv_uint8m4_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vasubu_vx_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u8m8_m_5(op0, op1, op2, vl)                 \
@@ -3654,10 +3551,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vasubu_vx_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u8m8_m_v1p0,      \
                   redirect___riscv_vasubu_vv_u8m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vasubu_vv_u8m8_m(__rvv_bool1_t mask,
-                                                    __rvv_uint8m8_t op1,
-                                                    __rvv_uint8m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vasubu_vv_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                    __rvv_uint8m8_t op2, size_t vl) {
   return __riscv_vasubu_vv_u8m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u8m8_m_5(op0, op1, op2, vl)                 \
@@ -3668,9 +3564,9 @@ __rvv_uint8m8_t __jumper_4___riscv_vasubu_vv_u8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u8m8_m_v1p0,      \
                   redirect___riscv_vasubu_vx_u8m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vasubu_vx_u8m8_m(__rvv_bool1_t mask,
-                                                    __rvv_uint8m8_t op1,
-                                                    uint8_t op2, size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vasubu_vx_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                    uint8_t op2, size_t vl) {
   return __riscv_vasubu_vx_u8m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -3684,10 +3580,10 @@ __rvv_uint8m8_t __jumper_4___riscv_vasubu_vx_u8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vasubu_vv_u16mf4_m(__rvv_bool64_t mask,
-                                                        __rvv_uint16mf4_t op1,
-                                                        __rvv_uint16mf4_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf4_t
+__jumper_4___riscv_vasubu_vv_u16mf4_m(__rvv_bool64_t mask,
+                                      __rvv_uint16mf4_t op1,
+                                      __rvv_uint16mf4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3702,10 +3598,8 @@ __rvv_uint16mf4_t __jumper_4___riscv_vasubu_vv_u16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vasubu_vx_u16mf4_m(__rvv_bool64_t mask,
-                                                        __rvv_uint16mf4_t op1,
-                                                        uint16_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf4_t __jumper_4___riscv_vasubu_vx_u16mf4_m(
+    __rvv_bool64_t mask, __rvv_uint16mf4_t op1, uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3717,10 +3611,10 @@ __rvv_uint16mf4_t __jumper_4___riscv_vasubu_vx_u16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u16mf2_m_v1p0,    \
                   redirect___riscv_vasubu_vv_u16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vasubu_vv_u16mf2_m(__rvv_bool32_t mask,
-                                                        __rvv_uint16mf2_t op1,
-                                                        __rvv_uint16mf2_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf2_t
+__jumper_4___riscv_vasubu_vv_u16mf2_m(__rvv_bool32_t mask,
+                                      __rvv_uint16mf2_t op1,
+                                      __rvv_uint16mf2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u16mf2_m_5(op0, op1, op2, vl)               \
@@ -3731,10 +3625,8 @@ __rvv_uint16mf2_t __jumper_4___riscv_vasubu_vv_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u16mf2_m_v1p0,    \
                   redirect___riscv_vasubu_vx_u16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vasubu_vx_u16mf2_m(__rvv_bool32_t mask,
-                                                        __rvv_uint16mf2_t op1,
-                                                        uint16_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint16mf2_t __jumper_4___riscv_vasubu_vx_u16mf2_m(
+    __rvv_bool32_t mask, __rvv_uint16mf2_t op1, uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u16m1_m_5(op0, op1, op2, vl)                \
@@ -3745,10 +3637,9 @@ __rvv_uint16mf2_t __jumper_4___riscv_vasubu_vx_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u16m1_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vasubu_vv_u16m1_m(__rvv_bool16_t mask,
-                                                      __rvv_uint16m1_t op1,
-                                                      __rvv_uint16m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vasubu_vv_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                     __rvv_uint16m1_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u16m1_m_5(op0, op1, op2, vl)                \
@@ -3759,9 +3650,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vasubu_vv_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u16m1_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vasubu_vx_u16m1_m(__rvv_bool16_t mask,
-                                                      __rvv_uint16m1_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vasubu_vx_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u16m2_m_5(op0, op1, op2, vl)                \
@@ -3772,10 +3663,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vasubu_vx_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u16m2_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vasubu_vv_u16m2_m(__rvv_bool8_t mask,
-                                                      __rvv_uint16m2_t op1,
-                                                      __rvv_uint16m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vasubu_vv_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     __rvv_uint16m2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u16m2_m_5(op0, op1, op2, vl)                \
@@ -3786,9 +3676,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vasubu_vv_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u16m2_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vasubu_vx_u16m2_m(__rvv_bool8_t mask,
-                                                      __rvv_uint16m2_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vasubu_vx_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u16m4_m_5(op0, op1, op2, vl)                \
@@ -3799,10 +3689,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vasubu_vx_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u16m4_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vasubu_vv_u16m4_m(__rvv_bool4_t mask,
-                                                      __rvv_uint16m4_t op1,
-                                                      __rvv_uint16m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vasubu_vv_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     __rvv_uint16m4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u16m4_m_5(op0, op1, op2, vl)                \
@@ -3813,9 +3702,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vasubu_vv_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u16m4_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vasubu_vx_u16m4_m(__rvv_bool4_t mask,
-                                                      __rvv_uint16m4_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vasubu_vx_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u16m8_m_5(op0, op1, op2, vl)                \
@@ -3826,10 +3715,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vasubu_vx_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u16m8_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u16m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vasubu_vv_u16m8_m(__rvv_bool2_t mask,
-                                                      __rvv_uint16m8_t op1,
-                                                      __rvv_uint16m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vasubu_vv_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     __rvv_uint16m8_t op2, size_t vl) {
   return __riscv_vasubu_vv_u16m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u16m8_m_5(op0, op1, op2, vl)                \
@@ -3840,9 +3728,9 @@ __rvv_uint16m8_t __jumper_4___riscv_vasubu_vv_u16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u16m8_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u16m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vasubu_vx_u16m8_m(__rvv_bool2_t mask,
-                                                      __rvv_uint16m8_t op1,
-                                                      uint16_t op2, size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vasubu_vx_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     uint16_t op2, size_t vl) {
   return __riscv_vasubu_vx_u16m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -3856,10 +3744,10 @@ __rvv_uint16m8_t __jumper_4___riscv_vasubu_vx_u16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vasubu_vv_u32mf2_m(__rvv_bool64_t mask,
-                                                        __rvv_uint32mf2_t op1,
-                                                        __rvv_uint32mf2_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint32mf2_t
+__jumper_4___riscv_vasubu_vv_u32mf2_m(__rvv_bool64_t mask,
+                                      __rvv_uint32mf2_t op1,
+                                      __rvv_uint32mf2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3874,10 +3762,8 @@ __rvv_uint32mf2_t __jumper_4___riscv_vasubu_vv_u32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vasubu_vx_u32mf2_m(__rvv_bool64_t mask,
-                                                        __rvv_uint32mf2_t op1,
-                                                        uint32_t op2,
-                                                        size_t vl) {
+static __inline__ __rvv_uint32mf2_t __jumper_4___riscv_vasubu_vx_u32mf2_m(
+    __rvv_bool64_t mask, __rvv_uint32mf2_t op1, uint32_t op2, size_t vl) {
   return __riscv_vasubu_vx_u32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -3889,10 +3775,9 @@ __rvv_uint32mf2_t __jumper_4___riscv_vasubu_vx_u32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u32m1_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vasubu_vv_u32m1_m(__rvv_bool32_t mask,
-                                                      __rvv_uint32m1_t op1,
-                                                      __rvv_uint32m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vasubu_vv_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                     __rvv_uint32m1_t op2, size_t vl) {
   return __riscv_vasubu_vv_u32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u32m1_m_5(op0, op1, op2, vl)                \
@@ -3903,9 +3788,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vasubu_vv_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u32m1_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vasubu_vx_u32m1_m(__rvv_bool32_t mask,
-                                                      __rvv_uint32m1_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vasubu_vx_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vasubu_vx_u32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u32m2_m_5(op0, op1, op2, vl)                \
@@ -3916,10 +3801,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vasubu_vx_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u32m2_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vasubu_vv_u32m2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint32m2_t op1,
-                                                      __rvv_uint32m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vasubu_vv_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                     __rvv_uint32m2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u32m2_m_5(op0, op1, op2, vl)                \
@@ -3930,9 +3814,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vasubu_vv_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u32m2_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vasubu_vx_u32m2_m(__rvv_bool16_t mask,
-                                                      __rvv_uint32m2_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vasubu_vx_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vasubu_vx_u32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u32m4_m_5(op0, op1, op2, vl)                \
@@ -3943,10 +3827,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vasubu_vx_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u32m4_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vasubu_vv_u32m4_m(__rvv_bool8_t mask,
-                                                      __rvv_uint32m4_t op1,
-                                                      __rvv_uint32m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vasubu_vv_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                     __rvv_uint32m4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u32m4_m_5(op0, op1, op2, vl)                \
@@ -3957,9 +3840,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vasubu_vv_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u32m4_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vasubu_vx_u32m4_m(__rvv_bool8_t mask,
-                                                      __rvv_uint32m4_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vasubu_vx_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vasubu_vx_u32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vv_u32m8_m_5(op0, op1, op2, vl)                \
@@ -3970,10 +3853,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vasubu_vx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vv_u32m8_m_v1p0,     \
                   redirect___riscv_vasubu_vv_u32m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vasubu_vv_u32m8_m(__rvv_bool4_t mask,
-                                                      __rvv_uint32m8_t op1,
-                                                      __rvv_uint32m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vasubu_vv_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                     __rvv_uint32m8_t op2, size_t vl) {
   return __riscv_vasubu_vv_u32m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vasubu_vx_u32m8_m_5(op0, op1, op2, vl)                \
@@ -3984,9 +3866,9 @@ __rvv_uint32m8_t __jumper_4___riscv_vasubu_vv_u32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasubu_vx_u32m8_m_v1p0,     \
                   redirect___riscv_vasubu_vx_u32m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vasubu_vx_u32m8_m(__rvv_bool4_t mask,
-                                                      __rvv_uint32m8_t op1,
-                                                      uint32_t op2, size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vasubu_vx_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                     uint32_t op2, size_t vl) {
   return __riscv_vasubu_vx_u32m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -4000,14 +3882,11 @@ __rvv_uint32m8_t __jumper_4___riscv_vasubu_vx_u32m8_m(__rvv_bool4_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vasubu_vv_u64m1_m(__rvv_bool64_t mask,
-                                                      __rvv_uint64m1_t op1,
-                                                      __rvv_uint64m1_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vasubu_vv_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                     __rvv_uint64m1_t op2, size_t vl) {
   return __riscv_vasubu_vv_u64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasubu_vx_u64m1_m_5(op0, op1, op2, vl)                \
@@ -4020,13 +3899,11 @@ __rvv_uint64m1_t __jumper_4___riscv_vasubu_vv_u64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vasubu_vx_u64m1_m(__rvv_bool64_t mask,
-                                                      __rvv_uint64m1_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vasubu_vx_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vasubu_vx_u64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #define redirect___riscv_vasubu_vv_u64m2_m_5(op0, op1, op2, vl)                \
   __riscv_vasubu_vv_u64m2_m(op0, op1, op2, 7, vl)
@@ -4037,10 +3914,9 @@ __rvv_uint64m1_t __jumper_4___riscv_vasubu_vx_u64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vasubu_vv_u64m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vasubu_vv_u64m2_m(__rvv_bool32_t mask,
-                                                      __rvv_uint64m2_t op1,
-                                                      __rvv_uint64m2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vasubu_vv_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                     __rvv_uint64m2_t op2, size_t vl) {
   return __riscv_vasubu_vv_u64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4053,9 +3929,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vasubu_vv_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vasubu_vx_u64m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vasubu_vx_u64m2_m(__rvv_bool32_t mask,
-                                                      __rvv_uint64m2_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vasubu_vx_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vasubu_vx_u64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4068,10 +3944,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vasubu_vx_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vasubu_vv_u64m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vasubu_vv_u64m4_m(__rvv_bool16_t mask,
-                                                      __rvv_uint64m4_t op1,
-                                                      __rvv_uint64m4_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vasubu_vv_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                     __rvv_uint64m4_t op2, size_t vl) {
   return __riscv_vasubu_vv_u64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4084,9 +3959,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vasubu_vv_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vasubu_vx_u64m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vasubu_vx_u64m4_m(__rvv_bool16_t mask,
-                                                      __rvv_uint64m4_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vasubu_vx_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vasubu_vx_u64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4099,10 +3974,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vasubu_vx_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vasubu_vv_u64m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vasubu_vv_u64m8_m(__rvv_bool8_t mask,
-                                                      __rvv_uint64m8_t op1,
-                                                      __rvv_uint64m8_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vasubu_vv_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                     __rvv_uint64m8_t op2, size_t vl) {
   return __riscv_vasubu_vv_u64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4115,9 +3989,9 @@ __rvv_uint64m8_t __jumper_4___riscv_vasubu_vv_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vasubu_vx_u64m8_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask,
-                                                      __rvv_uint64m8_t op1,
-                                                      uint64_t op2, size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                     uint64_t op2, size_t vl) {
   return __riscv_vasubu_vx_u64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4422,7 +4296,6 @@ __rvv_uint64m8_t __jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vx_i32m8_4, 2, 1)                     \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_4(op0, op1, vl)                        \
   __riscv_vsmul_vv_i64m1(op0, op1, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_v1p0(op0, op1, op2, vl)                \
@@ -4432,9 +4305,7 @@ __rvv_uint64m8_t __jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_4(op0, op1, vl)                        \
   __riscv_vsmul_vx_i64m1(op0, op1, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_v1p0(op0, op1, op2, vl)                \
@@ -4443,7 +4314,6 @@ __rvv_uint64m8_t __jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, 5, redirect___riscv_vsmul_vx_i64m1_v1p0,     \
                   redirect___riscv_vsmul_vx_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_4(op0, op1, vl)                        \
@@ -4515,11 +4385,10 @@ __rvv_uint64m8_t __jumper_4___riscv_vasubu_vx_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i8mf8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vsmul_vv_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    __rvv_int8mf8_t op2,
-                                                    size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vsmul_vv_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    __rvv_int8mf8_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4533,10 +4402,10 @@ __rvv_int8mf8_t __jumper_4___riscv_vsmul_vv_i8mf8_m(__rvv_bool64_t mask,
                   redirect___riscv_vsmul_vx_i8mf8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vsmul_vx_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    int8_t op2, size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vsmul_vx_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8mf8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4548,10 +4417,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vsmul_vx_i8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8mf4_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vsmul_vv_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    __rvv_int8mf4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vsmul_vv_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    __rvv_int8mf4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8mf4_m_5(op0, op1, op2, vl)                 \
@@ -4562,9 +4430,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vsmul_vv_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8mf4_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vsmul_vx_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vsmul_vx_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8mf4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -4575,10 +4443,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vsmul_vx_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8mf2_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vsmul_vv_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    __rvv_int8mf2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vsmul_vv_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    __rvv_int8mf2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -4589,9 +4456,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vsmul_vv_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8mf2_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vsmul_vx_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    int8_t op2, size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vsmul_vx_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -4602,10 +4469,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vsmul_vx_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8m1_m_v1p0,       \
                   redirect___riscv_vsmul_vv_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vsmul_vv_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  __rvv_int8m1_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vsmul_vv_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   __rvv_int8m1_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -4616,9 +4482,9 @@ __rvv_int8m1_t __jumper_4___riscv_vsmul_vv_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8m1_m_v1p0,       \
                   redirect___riscv_vsmul_vx_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vsmul_vx_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vsmul_vx_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -4629,10 +4495,9 @@ __rvv_int8m1_t __jumper_4___riscv_vsmul_vx_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8m2_m_v1p0,       \
                   redirect___riscv_vsmul_vv_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vsmul_vv_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  __rvv_int8m2_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vsmul_vv_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   __rvv_int8m2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -4643,9 +4508,9 @@ __rvv_int8m2_t __jumper_4___riscv_vsmul_vv_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8m2_m_v1p0,       \
                   redirect___riscv_vsmul_vx_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vsmul_vx_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vsmul_vx_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -4656,10 +4521,9 @@ __rvv_int8m2_t __jumper_4___riscv_vsmul_vx_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8m4_m_v1p0,       \
                   redirect___riscv_vsmul_vv_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vsmul_vv_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  __rvv_int8m4_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vsmul_vv_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   __rvv_int8m4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -4670,9 +4534,9 @@ __rvv_int8m4_t __jumper_4___riscv_vsmul_vv_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8m4_m_v1p0,       \
                   redirect___riscv_vsmul_vx_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vsmul_vx_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vsmul_vx_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -4683,10 +4547,9 @@ __rvv_int8m4_t __jumper_4___riscv_vsmul_vx_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i8m8_m_v1p0,       \
                   redirect___riscv_vsmul_vv_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vsmul_vv_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  __rvv_int8m8_t op2,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vsmul_vv_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   __rvv_int8m8_t op2, size_t vl) {
   return __riscv_vsmul_vv_i8m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -4697,9 +4560,9 @@ __rvv_int8m8_t __jumper_4___riscv_vsmul_vv_i8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i8m8_m_v1p0,       \
                   redirect___riscv_vsmul_vx_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vsmul_vx_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  int8_t op2, size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vsmul_vx_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   int8_t op2, size_t vl) {
   return __riscv_vsmul_vx_i8m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -4712,11 +4575,10 @@ __rvv_int8m8_t __jumper_4___riscv_vsmul_vx_i8m8_m(__rvv_bool1_t mask,
                   redirect___riscv_vsmul_vv_i16mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vsmul_vv_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      __rvv_int16mf4_t op2,
-                                                      size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vsmul_vv_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     __rvv_int16mf4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4730,10 +4592,10 @@ __rvv_int16mf4_t __jumper_4___riscv_vsmul_vv_i16mf4_m(__rvv_bool64_t mask,
                   redirect___riscv_vsmul_vx_i16mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vsmul_vx_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      int16_t op2, size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vsmul_vx_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16mf4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4745,10 +4607,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vsmul_vx_i16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i16mf2_m_v1p0,     \
                   redirect___riscv_vsmul_vv_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vsmul_vv_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      __rvv_int16mf2_t op2,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vsmul_vv_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     __rvv_int16mf2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i16mf2_m_5(op0, op1, op2, vl)                \
@@ -4759,9 +4620,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vsmul_vv_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i16mf2_m_v1p0,     \
                   redirect___riscv_vsmul_vx_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vsmul_vx_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      int16_t op2, size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vsmul_vx_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16mf2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -4772,10 +4633,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vsmul_vx_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i16m1_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vsmul_vv_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    __rvv_int16m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vsmul_vv_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    __rvv_int16m1_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -4786,9 +4646,9 @@ __rvv_int16m1_t __jumper_4___riscv_vsmul_vv_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i16m1_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vsmul_vx_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vsmul_vx_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -4799,10 +4659,9 @@ __rvv_int16m1_t __jumper_4___riscv_vsmul_vx_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i16m2_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vsmul_vv_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    __rvv_int16m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vsmul_vv_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    __rvv_int16m2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -4813,9 +4672,9 @@ __rvv_int16m2_t __jumper_4___riscv_vsmul_vv_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i16m2_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vsmul_vx_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vsmul_vx_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -4826,10 +4685,9 @@ __rvv_int16m2_t __jumper_4___riscv_vsmul_vx_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i16m4_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vsmul_vv_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    __rvv_int16m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vsmul_vv_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    __rvv_int16m4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -4840,9 +4698,9 @@ __rvv_int16m4_t __jumper_4___riscv_vsmul_vv_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i16m4_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vsmul_vx_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vsmul_vx_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -4853,10 +4711,9 @@ __rvv_int16m4_t __jumper_4___riscv_vsmul_vx_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i16m8_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vsmul_vv_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    __rvv_int16m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vsmul_vv_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    __rvv_int16m8_t op2, size_t vl) {
   return __riscv_vsmul_vv_i16m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -4867,9 +4724,9 @@ __rvv_int16m8_t __jumper_4___riscv_vsmul_vv_i16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i16m8_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vsmul_vx_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    int16_t op2, size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vsmul_vx_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    int16_t op2, size_t vl) {
   return __riscv_vsmul_vx_i16m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -4882,11 +4739,10 @@ __rvv_int16m8_t __jumper_4___riscv_vsmul_vx_i16m8_m(__rvv_bool2_t mask,
                   redirect___riscv_vsmul_vv_i32mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vsmul_vv_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      __rvv_int32mf2_t op2,
-                                                      size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vsmul_vv_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     __rvv_int32mf2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4900,10 +4756,10 @@ __rvv_int32mf2_t __jumper_4___riscv_vsmul_vv_i32mf2_m(__rvv_bool64_t mask,
                   redirect___riscv_vsmul_vx_i32mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vsmul_vx_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      int32_t op2, size_t vl) {
+#if defined(__riscv_v)
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vsmul_vx_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     int32_t op2, size_t vl) {
   return __riscv_vsmul_vx_i32mf2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -4915,10 +4771,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vsmul_vx_i32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i32m1_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vsmul_vv_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    __rvv_int32m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vsmul_vv_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    __rvv_int32m1_t op2, size_t vl) {
   return __riscv_vsmul_vv_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i32m1_m_5(op0, op1, op2, vl)                 \
@@ -4929,9 +4784,9 @@ __rvv_int32m1_t __jumper_4___riscv_vsmul_vv_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i32m1_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vsmul_vx_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vsmul_vx_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vsmul_vx_i32m1_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -4942,10 +4797,9 @@ __rvv_int32m1_t __jumper_4___riscv_vsmul_vx_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i32m2_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vsmul_vv_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    __rvv_int32m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vsmul_vv_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    __rvv_int32m2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -4956,9 +4810,9 @@ __rvv_int32m2_t __jumper_4___riscv_vsmul_vv_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i32m2_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vsmul_vx_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vsmul_vx_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vsmul_vx_i32m2_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -4969,10 +4823,9 @@ __rvv_int32m2_t __jumper_4___riscv_vsmul_vx_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i32m4_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vsmul_vv_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    __rvv_int32m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vsmul_vv_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    __rvv_int32m4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -4983,9 +4836,9 @@ __rvv_int32m4_t __jumper_4___riscv_vsmul_vv_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i32m4_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vsmul_vx_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vsmul_vx_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vsmul_vx_i32m4_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vv_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -4996,10 +4849,9 @@ __rvv_int32m4_t __jumper_4___riscv_vsmul_vx_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vv_i32m8_m_v1p0,      \
                   redirect___riscv_vsmul_vv_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vsmul_vv_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    __rvv_int32m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vsmul_vv_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    __rvv_int32m8_t op2, size_t vl) {
   return __riscv_vsmul_vv_i32m8_m(mask, op1, op2, 7, vl);
 }
 #define redirect___riscv_vsmul_vx_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -5010,13 +4862,12 @@ __rvv_int32m8_t __jumper_4___riscv_vsmul_vv_i32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i32m8_m_v1p0,      \
                   redirect___riscv_vsmul_vx_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vsmul_vx_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    int32_t op2, size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vsmul_vx_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    int32_t op2, size_t vl) {
   return __riscv_vsmul_vx_i32m8_m(mask, op1, op2, 7, vl);
 }
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vsmul_vv_i64m1_m(op0, op1, op2, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_m_v1p0(op0, op1, op2, op3, vl)         \
@@ -5026,19 +4877,14 @@ __rvv_int32m8_t __jumper_4___riscv_vsmul_vx_i32m8_m(__rvv_bool4_t mask,
                   redirect___riscv_vsmul_vv_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_v)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vsmul_vv_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    __rvv_int64m1_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vsmul_vv_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    __rvv_int64m1_t op2, size_t vl) {
   return __riscv_vsmul_vv_i64m1_m(mask, op1, op2, 7, vl);
 }
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vsmul_vx_i64m1_m(op0, op1, op2, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_m_v1p0(op0, op1, op2, op3, vl)         \
@@ -5048,15 +4894,12 @@ __rvv_int64m1_t __jumper_4___riscv_vsmul_vv_i64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vsmul_vx_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_v)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vsmul_vx_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vsmul_vx_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vsmul_vx_i64m1_m(mask, op1, op2, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_m_5(op0, op1, op2, vl)                 \
@@ -5069,10 +4912,9 @@ __rvv_int64m1_t __jumper_4___riscv_vsmul_vx_i64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m2_t __jumper_4___riscv_vsmul_vv_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    __rvv_int64m2_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vsmul_vv_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    __rvv_int64m2_t op2, size_t vl) {
   return __riscv_vsmul_vv_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5087,9 +4929,9 @@ __rvv_int64m2_t __jumper_4___riscv_vsmul_vv_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m2_t __jumper_4___riscv_vsmul_vx_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vsmul_vx_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vsmul_vx_i64m2_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5104,10 +4946,9 @@ __rvv_int64m2_t __jumper_4___riscv_vsmul_vx_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m4_t __jumper_4___riscv_vsmul_vv_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    __rvv_int64m4_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vsmul_vv_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    __rvv_int64m4_t op2, size_t vl) {
   return __riscv_vsmul_vv_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5122,9 +4963,9 @@ __rvv_int64m4_t __jumper_4___riscv_vsmul_vv_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m4_t __jumper_4___riscv_vsmul_vx_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vsmul_vx_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vsmul_vx_i64m4_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5139,10 +4980,9 @@ __rvv_int64m4_t __jumper_4___riscv_vsmul_vx_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m8_t __jumper_4___riscv_vsmul_vv_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    __rvv_int64m8_t op2,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vsmul_vv_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    __rvv_int64m8_t op2, size_t vl) {
   return __riscv_vsmul_vv_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5157,9 +4997,9 @@ __rvv_int64m8_t __jumper_4___riscv_vsmul_vv_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_v)
-__rvv_int64m8_t __jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    int64_t op2, size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    int64_t op2, size_t vl) {
   return __riscv_vsmul_vx_i64m8_m(mask, op1, op2, 7, vl);
 }
 #endif
@@ -5464,7 +5304,6 @@ __rvv_int64m8_t __jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vx_i32m8_4, 2, 1)                     \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_4(op0, op1, vl)                        \
   __riscv_vssra_vv_i64m1(op0, op1, 7, vl)
 #define redirect___riscv_vssra_vv_i64m1_v1p0(op0, op1, op2, vl)                \
@@ -5474,8 +5313,6 @@ __rvv_int64m8_t __jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vv_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_4(op0, op1, vl)                        \
   __riscv_vssra_vx_i64m1(op0, op1, 7, vl)
@@ -5485,7 +5322,6 @@ __rvv_int64m8_t __jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, 5, redirect___riscv_vssra_vx_i64m1_v1p0,     \
                   redirect___riscv_vssra_vx_i64m1_4, 2, 1)                     \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_4(op0, op1, vl)                        \
@@ -5926,10 +5762,9 @@ __rvv_int64m8_t __jumper_4___riscv_vsmul_vx_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vssra_vv_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    __rvv_uint8mf8_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vssra_vv_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    __rvv_uint8mf8_t shift, size_t vl) {
   return __riscv_vssra_vv_i8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -5944,9 +5779,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vssra_vv_i8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vssra_vx_i8mf8_m(__rvv_bool64_t mask,
-                                                    __rvv_int8mf8_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vssra_vx_i8mf8_m(__rvv_bool64_t mask, __rvv_int8mf8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -5958,10 +5793,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vssra_vx_i8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8mf4_m_v1p0,      \
                   redirect___riscv_vssra_vv_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vssra_vv_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    __rvv_uint8mf4_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vssra_vv_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    __rvv_uint8mf4_t shift, size_t vl) {
   return __riscv_vssra_vv_i8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8mf4_m_5(op0, op1, op2, vl)                 \
@@ -5972,9 +5806,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vssra_vv_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8mf4_m_v1p0,      \
                   redirect___riscv_vssra_vx_i8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vssra_vx_i8mf4_m(__rvv_bool32_t mask,
-                                                    __rvv_int8mf4_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vssra_vx_i8mf4_m(__rvv_bool32_t mask, __rvv_int8mf4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -5985,10 +5819,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vssra_vx_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8mf2_m_v1p0,      \
                   redirect___riscv_vssra_vv_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vssra_vv_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    __rvv_uint8mf2_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vssra_vv_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    __rvv_uint8mf2_t shift, size_t vl) {
   return __riscv_vssra_vv_i8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8mf2_m_5(op0, op1, op2, vl)                 \
@@ -5999,9 +5832,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vssra_vv_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8mf2_m_v1p0,      \
                   redirect___riscv_vssra_vx_i8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vssra_vx_i8mf2_m(__rvv_bool16_t mask,
-                                                    __rvv_int8mf2_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vssra_vx_i8mf2_m(__rvv_bool16_t mask, __rvv_int8mf2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -6012,10 +5845,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vssra_vx_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8m1_m_v1p0,       \
                   redirect___riscv_vssra_vv_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vssra_vv_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  __rvv_uint8m1_t shift,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vssra_vv_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   __rvv_uint8m1_t shift, size_t vl) {
   return __riscv_vssra_vv_i8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8m1_m_5(op0, op1, op2, vl)                  \
@@ -6026,9 +5858,9 @@ __rvv_int8m1_t __jumper_4___riscv_vssra_vv_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8m1_m_v1p0,       \
                   redirect___riscv_vssra_vx_i8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vssra_vx_i8m1_m(__rvv_bool8_t mask,
-                                                  __rvv_int8m1_t op1,
-                                                  size_t shift, size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vssra_vx_i8m1_m(__rvv_bool8_t mask, __rvv_int8m1_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -6039,10 +5871,9 @@ __rvv_int8m1_t __jumper_4___riscv_vssra_vx_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8m2_m_v1p0,       \
                   redirect___riscv_vssra_vv_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vssra_vv_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  __rvv_uint8m2_t shift,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vssra_vv_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   __rvv_uint8m2_t shift, size_t vl) {
   return __riscv_vssra_vv_i8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8m2_m_5(op0, op1, op2, vl)                  \
@@ -6053,9 +5884,9 @@ __rvv_int8m2_t __jumper_4___riscv_vssra_vv_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8m2_m_v1p0,       \
                   redirect___riscv_vssra_vx_i8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vssra_vx_i8m2_m(__rvv_bool4_t mask,
-                                                  __rvv_int8m2_t op1,
-                                                  size_t shift, size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vssra_vx_i8m2_m(__rvv_bool4_t mask, __rvv_int8m2_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -6066,10 +5897,9 @@ __rvv_int8m2_t __jumper_4___riscv_vssra_vx_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8m4_m_v1p0,       \
                   redirect___riscv_vssra_vv_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vssra_vv_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  __rvv_uint8m4_t shift,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vssra_vv_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   __rvv_uint8m4_t shift, size_t vl) {
   return __riscv_vssra_vv_i8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8m4_m_5(op0, op1, op2, vl)                  \
@@ -6080,9 +5910,9 @@ __rvv_int8m4_t __jumper_4___riscv_vssra_vv_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8m4_m_v1p0,       \
                   redirect___riscv_vssra_vx_i8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vssra_vx_i8m4_m(__rvv_bool2_t mask,
-                                                  __rvv_int8m4_t op1,
-                                                  size_t shift, size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vssra_vx_i8m4_m(__rvv_bool2_t mask, __rvv_int8m4_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -6093,10 +5923,9 @@ __rvv_int8m4_t __jumper_4___riscv_vssra_vx_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i8m8_m_v1p0,       \
                   redirect___riscv_vssra_vv_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vssra_vv_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  __rvv_uint8m8_t shift,
-                                                  size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vssra_vv_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   __rvv_uint8m8_t shift, size_t vl) {
   return __riscv_vssra_vv_i8m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i8m8_m_5(op0, op1, op2, vl)                  \
@@ -6107,9 +5936,9 @@ __rvv_int8m8_t __jumper_4___riscv_vssra_vv_i8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i8m8_m_v1p0,       \
                   redirect___riscv_vssra_vx_i8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_int8m8_t __jumper_4___riscv_vssra_vx_i8m8_m(__rvv_bool1_t mask,
-                                                  __rvv_int8m8_t op1,
-                                                  size_t shift, size_t vl) {
+static __inline__ __rvv_int8m8_t
+__jumper_4___riscv_vssra_vx_i8m8_m(__rvv_bool1_t mask, __rvv_int8m8_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssra_vx_i8m8_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -6123,10 +5952,9 @@ __rvv_int8m8_t __jumper_4___riscv_vssra_vx_i8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vssra_vv_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      __rvv_uint16mf4_t shift,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vssra_vv_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     __rvv_uint16mf4_t shift, size_t vl) {
   return __riscv_vssra_vv_i16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6141,9 +5969,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vssra_vv_i16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vssra_vx_i16mf4_m(__rvv_bool64_t mask,
-                                                      __rvv_int16mf4_t op1,
-                                                      size_t shift, size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vssra_vx_i16mf4_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6155,10 +5983,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vssra_vx_i16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i16mf2_m_v1p0,     \
                   redirect___riscv_vssra_vv_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vssra_vv_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      __rvv_uint16mf2_t shift,
-                                                      size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vssra_vv_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     __rvv_uint16mf2_t shift, size_t vl) {
   return __riscv_vssra_vv_i16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i16mf2_m_5(op0, op1, op2, vl)                \
@@ -6169,9 +5996,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vssra_vv_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i16mf2_m_v1p0,     \
                   redirect___riscv_vssra_vx_i16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vssra_vx_i16mf2_m(__rvv_bool32_t mask,
-                                                      __rvv_int16mf2_t op1,
-                                                      size_t shift, size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vssra_vx_i16mf2_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -6182,10 +6009,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vssra_vx_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i16m1_m_v1p0,      \
                   redirect___riscv_vssra_vv_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vssra_vv_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    __rvv_uint16m1_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vssra_vv_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    __rvv_uint16m1_t shift, size_t vl) {
   return __riscv_vssra_vv_i16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i16m1_m_5(op0, op1, op2, vl)                 \
@@ -6196,9 +6022,9 @@ __rvv_int16m1_t __jumper_4___riscv_vssra_vv_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i16m1_m_v1p0,      \
                   redirect___riscv_vssra_vx_i16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vssra_vx_i16m1_m(__rvv_bool16_t mask,
-                                                    __rvv_int16m1_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vssra_vx_i16m1_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -6209,10 +6035,9 @@ __rvv_int16m1_t __jumper_4___riscv_vssra_vx_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i16m2_m_v1p0,      \
                   redirect___riscv_vssra_vv_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vssra_vv_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    __rvv_uint16m2_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vssra_vv_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    __rvv_uint16m2_t shift, size_t vl) {
   return __riscv_vssra_vv_i16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i16m2_m_5(op0, op1, op2, vl)                 \
@@ -6223,9 +6048,9 @@ __rvv_int16m2_t __jumper_4___riscv_vssra_vv_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i16m2_m_v1p0,      \
                   redirect___riscv_vssra_vx_i16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vssra_vx_i16m2_m(__rvv_bool8_t mask,
-                                                    __rvv_int16m2_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vssra_vx_i16m2_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -6236,10 +6061,9 @@ __rvv_int16m2_t __jumper_4___riscv_vssra_vx_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i16m4_m_v1p0,      \
                   redirect___riscv_vssra_vv_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vssra_vv_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    __rvv_uint16m4_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vssra_vv_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    __rvv_uint16m4_t shift, size_t vl) {
   return __riscv_vssra_vv_i16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i16m4_m_5(op0, op1, op2, vl)                 \
@@ -6250,9 +6074,9 @@ __rvv_int16m4_t __jumper_4___riscv_vssra_vv_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i16m4_m_v1p0,      \
                   redirect___riscv_vssra_vx_i16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vssra_vx_i16m4_m(__rvv_bool4_t mask,
-                                                    __rvv_int16m4_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vssra_vx_i16m4_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -6263,10 +6087,9 @@ __rvv_int16m4_t __jumper_4___riscv_vssra_vx_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i16m8_m_v1p0,      \
                   redirect___riscv_vssra_vv_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vssra_vv_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    __rvv_uint16m8_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vssra_vv_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    __rvv_uint16m8_t shift, size_t vl) {
   return __riscv_vssra_vv_i16m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i16m8_m_5(op0, op1, op2, vl)                 \
@@ -6277,9 +6100,9 @@ __rvv_int16m8_t __jumper_4___riscv_vssra_vv_i16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i16m8_m_v1p0,      \
                   redirect___riscv_vssra_vx_i16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int16m8_t __jumper_4___riscv_vssra_vx_i16m8_m(__rvv_bool2_t mask,
-                                                    __rvv_int16m8_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int16m8_t
+__jumper_4___riscv_vssra_vx_i16m8_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i16m8_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -6293,10 +6116,9 @@ __rvv_int16m8_t __jumper_4___riscv_vssra_vx_i16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vssra_vv_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      __rvv_uint32mf2_t shift,
-                                                      size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vssra_vv_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     __rvv_uint32mf2_t shift, size_t vl) {
   return __riscv_vssra_vv_i32mf2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6311,9 +6133,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vssra_vv_i32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vssra_vx_i32mf2_m(__rvv_bool64_t mask,
-                                                      __rvv_int32mf2_t op1,
-                                                      size_t shift, size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vssra_vx_i32mf2_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssra_vx_i32mf2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6325,10 +6147,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vssra_vx_i32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i32m1_m_v1p0,      \
                   redirect___riscv_vssra_vv_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vssra_vv_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    __rvv_uint32m1_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vssra_vv_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    __rvv_uint32m1_t shift, size_t vl) {
   return __riscv_vssra_vv_i32m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i32m1_m_5(op0, op1, op2, vl)                 \
@@ -6339,9 +6160,9 @@ __rvv_int32m1_t __jumper_4___riscv_vssra_vv_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i32m1_m_v1p0,      \
                   redirect___riscv_vssra_vx_i32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m1_t __jumper_4___riscv_vssra_vx_i32m1_m(__rvv_bool32_t mask,
-                                                    __rvv_int32m1_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vssra_vx_i32m1_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i32m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -6352,10 +6173,9 @@ __rvv_int32m1_t __jumper_4___riscv_vssra_vx_i32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i32m2_m_v1p0,      \
                   redirect___riscv_vssra_vv_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vssra_vv_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    __rvv_uint32m2_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vssra_vv_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    __rvv_uint32m2_t shift, size_t vl) {
   return __riscv_vssra_vv_i32m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i32m2_m_5(op0, op1, op2, vl)                 \
@@ -6366,9 +6186,9 @@ __rvv_int32m2_t __jumper_4___riscv_vssra_vv_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i32m2_m_v1p0,      \
                   redirect___riscv_vssra_vx_i32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m2_t __jumper_4___riscv_vssra_vx_i32m2_m(__rvv_bool16_t mask,
-                                                    __rvv_int32m2_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vssra_vx_i32m2_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i32m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -6379,10 +6199,9 @@ __rvv_int32m2_t __jumper_4___riscv_vssra_vx_i32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i32m4_m_v1p0,      \
                   redirect___riscv_vssra_vv_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vssra_vv_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    __rvv_uint32m4_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vssra_vv_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    __rvv_uint32m4_t shift, size_t vl) {
   return __riscv_vssra_vv_i32m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i32m4_m_5(op0, op1, op2, vl)                 \
@@ -6393,9 +6212,9 @@ __rvv_int32m4_t __jumper_4___riscv_vssra_vv_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i32m4_m_v1p0,      \
                   redirect___riscv_vssra_vx_i32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m4_t __jumper_4___riscv_vssra_vx_i32m4_m(__rvv_bool8_t mask,
-                                                    __rvv_int32m4_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vssra_vx_i32m4_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i32m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vv_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -6406,10 +6225,9 @@ __rvv_int32m4_t __jumper_4___riscv_vssra_vx_i32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vv_i32m8_m_v1p0,      \
                   redirect___riscv_vssra_vv_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vssra_vv_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    __rvv_uint32m8_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vssra_vv_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    __rvv_uint32m8_t shift, size_t vl) {
   return __riscv_vssra_vv_i32m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssra_vx_i32m8_m_5(op0, op1, op2, vl)                 \
@@ -6420,12 +6238,11 @@ __rvv_int32m8_t __jumper_4___riscv_vssra_vv_i32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i32m8_m_v1p0,      \
                   redirect___riscv_vssra_vx_i32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int32m8_t __jumper_4___riscv_vssra_vx_i32m8_m(__rvv_bool4_t mask,
-                                                    __rvv_int32m8_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int32m8_t
+__jumper_4___riscv_vssra_vx_i32m8_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i32m8_m(mask, op1, shift, 7, vl);
 }
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vssra_vv_i64m1_m(op0, op1, op2, 7, vl)
@@ -6436,18 +6253,13 @@ __rvv_int32m8_t __jumper_4___riscv_vssra_vx_i32m8_m(__rvv_bool4_t mask,
                   redirect___riscv_vssra_vv_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vssra_vv_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    __rvv_uint64m1_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vssra_vv_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    __rvv_uint64m1_t shift, size_t vl) {
   return __riscv_vssra_vv_i64m1_m(mask, op1, shift, 7, vl);
 }
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_m_5(op0, op1, op2, vl)                 \
   __riscv_vssra_vx_i64m1_m(op0, op1, op2, 7, vl)
@@ -6458,15 +6270,12 @@ __rvv_int64m1_t __jumper_4___riscv_vssra_vv_i64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vssra_vx_i64m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int64m1_t __jumper_4___riscv_vssra_vx_i64m1_m(__rvv_bool64_t mask,
-                                                    __rvv_int64m1_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int64m1_t
+__jumper_4___riscv_vssra_vx_i64m1_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i64m1_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_m_5(op0, op1, op2, vl)                 \
@@ -6479,10 +6288,9 @@ __rvv_int64m1_t __jumper_4___riscv_vssra_vx_i64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vssra_vv_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    __rvv_uint64m2_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vssra_vv_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    __rvv_uint64m2_t shift, size_t vl) {
   return __riscv_vssra_vv_i64m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6497,9 +6305,9 @@ __rvv_int64m2_t __jumper_4___riscv_vssra_vv_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m2_t __jumper_4___riscv_vssra_vx_i64m2_m(__rvv_bool32_t mask,
-                                                    __rvv_int64m2_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int64m2_t
+__jumper_4___riscv_vssra_vx_i64m2_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i64m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6514,10 +6322,9 @@ __rvv_int64m2_t __jumper_4___riscv_vssra_vx_i64m2_m(__rvv_bool32_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vssra_vv_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    __rvv_uint64m4_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vssra_vv_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    __rvv_uint64m4_t shift, size_t vl) {
   return __riscv_vssra_vv_i64m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6532,9 +6339,9 @@ __rvv_int64m4_t __jumper_4___riscv_vssra_vv_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m4_t __jumper_4___riscv_vssra_vx_i64m4_m(__rvv_bool16_t mask,
-                                                    __rvv_int64m4_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int64m4_t
+__jumper_4___riscv_vssra_vx_i64m4_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i64m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6549,10 +6356,9 @@ __rvv_int64m4_t __jumper_4___riscv_vssra_vx_i64m4_m(__rvv_bool16_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vssra_vv_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    __rvv_uint64m8_t shift,
-                                                    size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vssra_vv_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    __rvv_uint64m8_t shift, size_t vl) {
   return __riscv_vssra_vv_i64m8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6567,9 +6373,9 @@ __rvv_int64m8_t __jumper_4___riscv_vssra_vv_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int64m8_t __jumper_4___riscv_vssra_vx_i64m8_m(__rvv_bool8_t mask,
-                                                    __rvv_int64m8_t op1,
-                                                    size_t shift, size_t vl) {
+static __inline__ __rvv_int64m8_t
+__jumper_4___riscv_vssra_vx_i64m8_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssra_vx_i64m8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6584,10 +6390,9 @@ __rvv_int64m8_t __jumper_4___riscv_vssra_vx_i64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vssrl_vv_u8mf8_m(__rvv_bool64_t mask,
-                                                     __rvv_uint8mf8_t op1,
-                                                     __rvv_uint8mf8_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vssrl_vv_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                    __rvv_uint8mf8_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6602,9 +6407,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vssrl_vv_u8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vssrl_vx_u8mf8_m(__rvv_bool64_t mask,
-                                                     __rvv_uint8mf8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vssrl_vx_u8mf8_m(__rvv_bool64_t mask, __rvv_uint8mf8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6616,10 +6421,9 @@ __rvv_uint8mf8_t __jumper_4___riscv_vssrl_vx_u8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8mf4_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vssrl_vv_u8mf4_m(__rvv_bool32_t mask,
-                                                     __rvv_uint8mf4_t op1,
-                                                     __rvv_uint8mf4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vssrl_vv_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                    __rvv_uint8mf4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8mf4_m_5(op0, op1, op2, vl)                 \
@@ -6630,9 +6434,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vssrl_vv_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8mf4_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u8mf4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vssrl_vx_u8mf4_m(__rvv_bool32_t mask,
-                                                     __rvv_uint8mf4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vssrl_vx_u8mf4_m(__rvv_bool32_t mask, __rvv_uint8mf4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u8mf2_m_5(op0, op1, op2, vl)                 \
@@ -6643,10 +6447,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vssrl_vx_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8mf2_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vssrl_vv_u8mf2_m(__rvv_bool16_t mask,
-                                                     __rvv_uint8mf2_t op1,
-                                                     __rvv_uint8mf2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vssrl_vv_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                    __rvv_uint8mf2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8mf2_m_5(op0, op1, op2, vl)                 \
@@ -6657,9 +6460,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vssrl_vv_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8mf2_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u8mf2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vssrl_vx_u8mf2_m(__rvv_bool16_t mask,
-                                                     __rvv_uint8mf2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vssrl_vx_u8mf2_m(__rvv_bool16_t mask, __rvv_uint8mf2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u8m1_m_5(op0, op1, op2, vl)                  \
@@ -6670,10 +6473,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vssrl_vx_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8m1_m_v1p0,       \
                   redirect___riscv_vssrl_vv_u8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vssrl_vv_u8m1_m(__rvv_bool8_t mask,
-                                                   __rvv_uint8m1_t op1,
-                                                   __rvv_uint8m1_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vssrl_vv_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                   __rvv_uint8m1_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8m1_m_5(op0, op1, op2, vl)                  \
@@ -6684,9 +6486,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vssrl_vv_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8m1_m_v1p0,       \
                   redirect___riscv_vssrl_vx_u8m1_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vssrl_vx_u8m1_m(__rvv_bool8_t mask,
-                                                   __rvv_uint8m1_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vssrl_vx_u8m1_m(__rvv_bool8_t mask, __rvv_uint8m1_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u8m2_m_5(op0, op1, op2, vl)                  \
@@ -6697,10 +6499,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vssrl_vx_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8m2_m_v1p0,       \
                   redirect___riscv_vssrl_vv_u8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vssrl_vv_u8m2_m(__rvv_bool4_t mask,
-                                                   __rvv_uint8m2_t op1,
-                                                   __rvv_uint8m2_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vssrl_vv_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                   __rvv_uint8m2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8m2_m_5(op0, op1, op2, vl)                  \
@@ -6711,9 +6512,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vssrl_vv_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8m2_m_v1p0,       \
                   redirect___riscv_vssrl_vx_u8m2_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vssrl_vx_u8m2_m(__rvv_bool4_t mask,
-                                                   __rvv_uint8m2_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vssrl_vx_u8m2_m(__rvv_bool4_t mask, __rvv_uint8m2_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u8m4_m_5(op0, op1, op2, vl)                  \
@@ -6724,10 +6525,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vssrl_vx_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8m4_m_v1p0,       \
                   redirect___riscv_vssrl_vv_u8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vssrl_vv_u8m4_m(__rvv_bool2_t mask,
-                                                   __rvv_uint8m4_t op1,
-                                                   __rvv_uint8m4_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vssrl_vv_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                   __rvv_uint8m4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8m4_m_5(op0, op1, op2, vl)                  \
@@ -6738,9 +6538,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vssrl_vv_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8m4_m_v1p0,       \
                   redirect___riscv_vssrl_vx_u8m4_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vssrl_vx_u8m4_m(__rvv_bool2_t mask,
-                                                   __rvv_uint8m4_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vssrl_vx_u8m4_m(__rvv_bool2_t mask, __rvv_uint8m4_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u8m8_m_5(op0, op1, op2, vl)                  \
@@ -6751,10 +6551,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vssrl_vx_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u8m8_m_v1p0,       \
                   redirect___riscv_vssrl_vv_u8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vssrl_vv_u8m8_m(__rvv_bool1_t mask,
-                                                   __rvv_uint8m8_t op1,
-                                                   __rvv_uint8m8_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vssrl_vv_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                   __rvv_uint8m8_t shift, size_t vl) {
   return __riscv_vssrl_vv_u8m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u8m8_m_5(op0, op1, op2, vl)                  \
@@ -6765,9 +6564,9 @@ __rvv_uint8m8_t __jumper_4___riscv_vssrl_vv_u8m8_m(__rvv_bool1_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u8m8_m_v1p0,       \
                   redirect___riscv_vssrl_vx_u8m8_m_5, 3, 2, 1)                 \
   (__VA_ARGS__)
-__rvv_uint8m8_t __jumper_4___riscv_vssrl_vx_u8m8_m(__rvv_bool1_t mask,
-                                                   __rvv_uint8m8_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m8_t
+__jumper_4___riscv_vssrl_vx_u8m8_m(__rvv_bool1_t mask, __rvv_uint8m8_t op1,
+                                   size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u8m8_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -6781,10 +6580,9 @@ __rvv_uint8m8_t __jumper_4___riscv_vssrl_vx_u8m8_m(__rvv_bool1_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vssrl_vv_u16mf4_m(__rvv_bool64_t mask,
-                                                       __rvv_uint16mf4_t op1,
-                                                       __rvv_uint16mf4_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16mf4_t
+__jumper_4___riscv_vssrl_vv_u16mf4_m(__rvv_bool64_t mask, __rvv_uint16mf4_t op1,
+                                     __rvv_uint16mf4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6799,10 +6597,9 @@ __rvv_uint16mf4_t __jumper_4___riscv_vssrl_vv_u16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vssrl_vx_u16mf4_m(__rvv_bool64_t mask,
-                                                       __rvv_uint16mf4_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16mf4_t
+__jumper_4___riscv_vssrl_vx_u16mf4_m(__rvv_bool64_t mask, __rvv_uint16mf4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6814,10 +6611,9 @@ __rvv_uint16mf4_t __jumper_4___riscv_vssrl_vx_u16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u16mf2_m_v1p0,     \
                   redirect___riscv_vssrl_vv_u16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vssrl_vv_u16mf2_m(__rvv_bool32_t mask,
-                                                       __rvv_uint16mf2_t op1,
-                                                       __rvv_uint16mf2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16mf2_t
+__jumper_4___riscv_vssrl_vv_u16mf2_m(__rvv_bool32_t mask, __rvv_uint16mf2_t op1,
+                                     __rvv_uint16mf2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u16mf2_m_5(op0, op1, op2, vl)                \
@@ -6828,10 +6624,9 @@ __rvv_uint16mf2_t __jumper_4___riscv_vssrl_vv_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u16mf2_m_v1p0,     \
                   redirect___riscv_vssrl_vx_u16mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vssrl_vx_u16mf2_m(__rvv_bool32_t mask,
-                                                       __rvv_uint16mf2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16mf2_t
+__jumper_4___riscv_vssrl_vx_u16mf2_m(__rvv_bool32_t mask, __rvv_uint16mf2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u16m1_m_5(op0, op1, op2, vl)                 \
@@ -6842,10 +6637,9 @@ __rvv_uint16mf2_t __jumper_4___riscv_vssrl_vx_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u16m1_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vssrl_vv_u16m1_m(__rvv_bool16_t mask,
-                                                     __rvv_uint16m1_t op1,
-                                                     __rvv_uint16m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vssrl_vv_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                    __rvv_uint16m1_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u16m1_m_5(op0, op1, op2, vl)                 \
@@ -6856,9 +6650,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vssrl_vv_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u16m1_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u16m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vssrl_vx_u16m1_m(__rvv_bool16_t mask,
-                                                     __rvv_uint16m1_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vssrl_vx_u16m1_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u16m2_m_5(op0, op1, op2, vl)                 \
@@ -6869,10 +6663,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vssrl_vx_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u16m2_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vssrl_vv_u16m2_m(__rvv_bool8_t mask,
-                                                     __rvv_uint16m2_t op1,
-                                                     __rvv_uint16m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vssrl_vv_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                    __rvv_uint16m2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u16m2_m_5(op0, op1, op2, vl)                 \
@@ -6883,9 +6676,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vssrl_vv_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u16m2_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u16m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vssrl_vx_u16m2_m(__rvv_bool8_t mask,
-                                                     __rvv_uint16m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vssrl_vx_u16m2_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u16m4_m_5(op0, op1, op2, vl)                 \
@@ -6896,10 +6689,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vssrl_vx_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u16m4_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vssrl_vv_u16m4_m(__rvv_bool4_t mask,
-                                                     __rvv_uint16m4_t op1,
-                                                     __rvv_uint16m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vssrl_vv_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                    __rvv_uint16m4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u16m4_m_5(op0, op1, op2, vl)                 \
@@ -6910,9 +6702,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vssrl_vv_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u16m4_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u16m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vssrl_vx_u16m4_m(__rvv_bool4_t mask,
-                                                     __rvv_uint16m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vssrl_vx_u16m4_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u16m8_m_5(op0, op1, op2, vl)                 \
@@ -6923,10 +6715,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vssrl_vx_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u16m8_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vssrl_vv_u16m8_m(__rvv_bool2_t mask,
-                                                     __rvv_uint16m8_t op1,
-                                                     __rvv_uint16m8_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vssrl_vv_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                    __rvv_uint16m8_t shift, size_t vl) {
   return __riscv_vssrl_vv_u16m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u16m8_m_5(op0, op1, op2, vl)                 \
@@ -6937,9 +6728,9 @@ __rvv_uint16m8_t __jumper_4___riscv_vssrl_vv_u16m8_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u16m8_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u16m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint16m8_t __jumper_4___riscv_vssrl_vx_u16m8_m(__rvv_bool2_t mask,
-                                                     __rvv_uint16m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint16m8_t
+__jumper_4___riscv_vssrl_vx_u16m8_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u16m8_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -6953,10 +6744,9 @@ __rvv_uint16m8_t __jumper_4___riscv_vssrl_vx_u16m8_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vssrl_vv_u32mf2_m(__rvv_bool64_t mask,
-                                                       __rvv_uint32mf2_t op1,
-                                                       __rvv_uint32mf2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32mf2_t
+__jumper_4___riscv_vssrl_vv_u32mf2_m(__rvv_bool64_t mask, __rvv_uint32mf2_t op1,
+                                     __rvv_uint32mf2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u32mf2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6971,10 +6761,9 @@ __rvv_uint32mf2_t __jumper_4___riscv_vssrl_vv_u32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vssrl_vx_u32mf2_m(__rvv_bool64_t mask,
-                                                       __rvv_uint32mf2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32mf2_t
+__jumper_4___riscv_vssrl_vx_u32mf2_m(__rvv_bool64_t mask, __rvv_uint32mf2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u32mf2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -6986,10 +6775,9 @@ __rvv_uint32mf2_t __jumper_4___riscv_vssrl_vx_u32mf2_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u32m1_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vssrl_vv_u32m1_m(__rvv_bool32_t mask,
-                                                     __rvv_uint32m1_t op1,
-                                                     __rvv_uint32m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vssrl_vv_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                    __rvv_uint32m1_t shift, size_t vl) {
   return __riscv_vssrl_vv_u32m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u32m1_m_5(op0, op1, op2, vl)                 \
@@ -7000,9 +6788,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vssrl_vv_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u32m1_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u32m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m1_t __jumper_4___riscv_vssrl_vx_u32m1_m(__rvv_bool32_t mask,
-                                                     __rvv_uint32m1_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vssrl_vx_u32m1_m(__rvv_bool32_t mask, __rvv_uint32m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u32m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u32m2_m_5(op0, op1, op2, vl)                 \
@@ -7013,10 +6801,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vssrl_vx_u32m1_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u32m2_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vssrl_vv_u32m2_m(__rvv_bool16_t mask,
-                                                     __rvv_uint32m2_t op1,
-                                                     __rvv_uint32m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vssrl_vv_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                    __rvv_uint32m2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u32m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u32m2_m_5(op0, op1, op2, vl)                 \
@@ -7027,9 +6814,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vssrl_vv_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u32m2_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u32m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m2_t __jumper_4___riscv_vssrl_vx_u32m2_m(__rvv_bool16_t mask,
-                                                     __rvv_uint32m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vssrl_vx_u32m2_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u32m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u32m4_m_5(op0, op1, op2, vl)                 \
@@ -7040,10 +6827,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vssrl_vx_u32m2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u32m4_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vssrl_vv_u32m4_m(__rvv_bool8_t mask,
-                                                     __rvv_uint32m4_t op1,
-                                                     __rvv_uint32m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vssrl_vv_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                    __rvv_uint32m4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u32m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u32m4_m_5(op0, op1, op2, vl)                 \
@@ -7054,9 +6840,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vssrl_vv_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u32m4_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u32m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m4_t __jumper_4___riscv_vssrl_vx_u32m4_m(__rvv_bool8_t mask,
-                                                     __rvv_uint32m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vssrl_vx_u32m4_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u32m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vv_u32m8_m_5(op0, op1, op2, vl)                 \
@@ -7067,10 +6853,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vssrl_vx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vv_u32m8_m_v1p0,      \
                   redirect___riscv_vssrl_vv_u32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vssrl_vv_u32m8_m(__rvv_bool4_t mask,
-                                                     __rvv_uint32m8_t op1,
-                                                     __rvv_uint32m8_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vssrl_vv_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                    __rvv_uint32m8_t shift, size_t vl) {
   return __riscv_vssrl_vv_u32m8_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vssrl_vx_u32m8_m_5(op0, op1, op2, vl)                 \
@@ -7081,9 +6866,9 @@ __rvv_uint32m8_t __jumper_4___riscv_vssrl_vv_u32m8_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssrl_vx_u32m8_m_v1p0,      \
                   redirect___riscv_vssrl_vx_u32m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_uint32m8_t __jumper_4___riscv_vssrl_vx_u32m8_m(__rvv_bool4_t mask,
-                                                     __rvv_uint32m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint32m8_t
+__jumper_4___riscv_vssrl_vx_u32m8_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u32m8_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -7097,14 +6882,11 @@ __rvv_uint32m8_t __jumper_4___riscv_vssrl_vx_u32m8_m(__rvv_bool4_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vssrl_vv_u64m1_m(__rvv_bool64_t mask,
-                                                     __rvv_uint64m1_t op1,
-                                                     __rvv_uint64m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vssrl_vv_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                    __rvv_uint64m1_t shift, size_t vl) {
   return __riscv_vssrl_vv_u64m1_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssrl_vx_u64m1_m_5(op0, op1, op2, vl)                 \
@@ -7117,13 +6899,11 @@ __rvv_uint64m1_t __jumper_4___riscv_vssrl_vv_u64m1_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint64m1_t __jumper_4___riscv_vssrl_vx_u64m1_m(__rvv_bool64_t mask,
-                                                     __rvv_uint64m1_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint64m1_t
+__jumper_4___riscv_vssrl_vx_u64m1_m(__rvv_bool64_t mask, __rvv_uint64m1_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u64m1_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #define redirect___riscv_vssrl_vv_u64m2_m_5(op0, op1, op2, vl)                 \
   __riscv_vssrl_vv_u64m2_m(op0, op1, op2, 7, vl)
@@ -7134,10 +6914,9 @@ __rvv_uint64m1_t __jumper_4___riscv_vssrl_vx_u64m1_m(__rvv_bool64_t mask,
                   redirect___riscv_vssrl_vv_u64m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vssrl_vv_u64m2_m(__rvv_bool32_t mask,
-                                                     __rvv_uint64m2_t op1,
-                                                     __rvv_uint64m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vssrl_vv_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                    __rvv_uint64m2_t shift, size_t vl) {
   return __riscv_vssrl_vv_u64m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7150,9 +6929,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vssrl_vv_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vssrl_vx_u64m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m2_t __jumper_4___riscv_vssrl_vx_u64m2_m(__rvv_bool32_t mask,
-                                                     __rvv_uint64m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint64m2_t
+__jumper_4___riscv_vssrl_vx_u64m2_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u64m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7165,10 +6944,9 @@ __rvv_uint64m2_t __jumper_4___riscv_vssrl_vx_u64m2_m(__rvv_bool32_t mask,
                   redirect___riscv_vssrl_vv_u64m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vssrl_vv_u64m4_m(__rvv_bool16_t mask,
-                                                     __rvv_uint64m4_t op1,
-                                                     __rvv_uint64m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vssrl_vv_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                    __rvv_uint64m4_t shift, size_t vl) {
   return __riscv_vssrl_vv_u64m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7181,9 +6959,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vssrl_vv_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vssrl_vx_u64m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m4_t __jumper_4___riscv_vssrl_vx_u64m4_m(__rvv_bool16_t mask,
-                                                     __rvv_uint64m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint64m4_t
+__jumper_4___riscv_vssrl_vx_u64m4_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u64m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7196,10 +6974,9 @@ __rvv_uint64m4_t __jumper_4___riscv_vssrl_vx_u64m4_m(__rvv_bool16_t mask,
                   redirect___riscv_vssrl_vv_u64m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vssrl_vv_u64m8_m(__rvv_bool8_t mask,
-                                                     __rvv_uint64m8_t op1,
-                                                     __rvv_uint64m8_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vssrl_vv_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                    __rvv_uint64m8_t shift, size_t vl) {
   return __riscv_vssrl_vv_u64m8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7212,9 +6989,9 @@ __rvv_uint64m8_t __jumper_4___riscv_vssrl_vv_u64m8_m(__rvv_bool8_t mask,
                   redirect___riscv_vssrl_vx_u64m8_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint64m8_t __jumper_4___riscv_vssrl_vx_u64m8_m(__rvv_bool8_t mask,
-                                                     __rvv_uint64m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint64m8_t
+__jumper_4___riscv_vssrl_vx_u64m8_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vssrl_vx_u64m8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7733,10 +7510,9 @@ __rvv_uint64m8_t __jumper_4___riscv_vssrl_vx_u64m8_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vnclip_wv_i8mf8_m(__rvv_bool64_t mask,
-                                                     __rvv_int16mf4_t op1,
-                                                     __rvv_uint8mf8_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vnclip_wv_i8mf8_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     __rvv_uint8mf8_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7751,9 +7527,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vnclip_wv_i8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int8mf8_t __jumper_4___riscv_vnclip_wx_i8mf8_m(__rvv_bool64_t mask,
-                                                     __rvv_int16mf4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf8_t
+__jumper_4___riscv_vnclip_wx_i8mf8_m(__rvv_bool64_t mask, __rvv_int16mf4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7765,10 +7541,9 @@ __rvv_int8mf8_t __jumper_4___riscv_vnclip_wx_i8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i8mf4_m_v1p0,     \
                   redirect___riscv_vnclip_wv_i8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vnclip_wv_i8mf4_m(__rvv_bool32_t mask,
-                                                     __rvv_int16mf2_t op1,
-                                                     __rvv_uint8mf4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vnclip_wv_i8mf4_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     __rvv_uint8mf4_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i8mf4_m_5(op0, op1, op2, vl)                \
@@ -7779,9 +7554,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vnclip_wv_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i8mf4_m_v1p0,     \
                   redirect___riscv_vnclip_wx_i8mf4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int8mf4_t __jumper_4___riscv_vnclip_wx_i8mf4_m(__rvv_bool32_t mask,
-                                                     __rvv_int16mf2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf4_t
+__jumper_4___riscv_vnclip_wx_i8mf4_m(__rvv_bool32_t mask, __rvv_int16mf2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i8mf2_m_5(op0, op1, op2, vl)                \
@@ -7792,10 +7567,9 @@ __rvv_int8mf4_t __jumper_4___riscv_vnclip_wx_i8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i8mf2_m_v1p0,     \
                   redirect___riscv_vnclip_wv_i8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vnclip_wv_i8mf2_m(__rvv_bool16_t mask,
-                                                     __rvv_int16m1_t op1,
-                                                     __rvv_uint8mf2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vnclip_wv_i8mf2_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                     __rvv_uint8mf2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i8mf2_m_5(op0, op1, op2, vl)                \
@@ -7806,9 +7580,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vnclip_wv_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i8mf2_m_v1p0,     \
                   redirect___riscv_vnclip_wx_i8mf2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int8mf2_t __jumper_4___riscv_vnclip_wx_i8mf2_m(__rvv_bool16_t mask,
-                                                     __rvv_int16m1_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int8mf2_t
+__jumper_4___riscv_vnclip_wx_i8mf2_m(__rvv_bool16_t mask, __rvv_int16m1_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i8m1_m_5(op0, op1, op2, vl)                 \
@@ -7819,10 +7593,9 @@ __rvv_int8mf2_t __jumper_4___riscv_vnclip_wx_i8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i8m1_m_v1p0,      \
                   redirect___riscv_vnclip_wv_i8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vnclip_wv_i8m1_m(__rvv_bool8_t mask,
-                                                   __rvv_int16m2_t op1,
-                                                   __rvv_uint8m1_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vnclip_wv_i8m1_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    __rvv_uint8m1_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i8m1_m_5(op0, op1, op2, vl)                 \
@@ -7833,9 +7606,9 @@ __rvv_int8m1_t __jumper_4___riscv_vnclip_wv_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i8m1_m_v1p0,      \
                   redirect___riscv_vnclip_wx_i8m1_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m1_t __jumper_4___riscv_vnclip_wx_i8m1_m(__rvv_bool8_t mask,
-                                                   __rvv_int16m2_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_int8m1_t
+__jumper_4___riscv_vnclip_wx_i8m1_m(__rvv_bool8_t mask, __rvv_int16m2_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i8m2_m_5(op0, op1, op2, vl)                 \
@@ -7846,10 +7619,9 @@ __rvv_int8m1_t __jumper_4___riscv_vnclip_wx_i8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i8m2_m_v1p0,      \
                   redirect___riscv_vnclip_wv_i8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vnclip_wv_i8m2_m(__rvv_bool4_t mask,
-                                                   __rvv_int16m4_t op1,
-                                                   __rvv_uint8m2_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vnclip_wv_i8m2_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    __rvv_uint8m2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i8m2_m_5(op0, op1, op2, vl)                 \
@@ -7860,9 +7632,9 @@ __rvv_int8m2_t __jumper_4___riscv_vnclip_wv_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i8m2_m_v1p0,      \
                   redirect___riscv_vnclip_wx_i8m2_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m2_t __jumper_4___riscv_vnclip_wx_i8m2_m(__rvv_bool4_t mask,
-                                                   __rvv_int16m4_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_int8m2_t
+__jumper_4___riscv_vnclip_wx_i8m2_m(__rvv_bool4_t mask, __rvv_int16m4_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i8m4_m_5(op0, op1, op2, vl)                 \
@@ -7873,10 +7645,9 @@ __rvv_int8m2_t __jumper_4___riscv_vnclip_wx_i8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i8m4_m_v1p0,      \
                   redirect___riscv_vnclip_wv_i8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vnclip_wv_i8m4_m(__rvv_bool2_t mask,
-                                                   __rvv_int16m8_t op1,
-                                                   __rvv_uint8m4_t shift,
-                                                   size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vnclip_wv_i8m4_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    __rvv_uint8m4_t shift, size_t vl) {
   return __riscv_vnclip_wv_i8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i8m4_m_5(op0, op1, op2, vl)                 \
@@ -7887,9 +7658,9 @@ __rvv_int8m4_t __jumper_4___riscv_vnclip_wv_i8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i8m4_m_v1p0,      \
                   redirect___riscv_vnclip_wx_i8m4_m_5, 3, 2, 1)                \
   (__VA_ARGS__)
-__rvv_int8m4_t __jumper_4___riscv_vnclip_wx_i8m4_m(__rvv_bool2_t mask,
-                                                   __rvv_int16m8_t op1,
-                                                   size_t shift, size_t vl) {
+static __inline__ __rvv_int8m4_t
+__jumper_4___riscv_vnclip_wx_i8m4_m(__rvv_bool2_t mask, __rvv_int16m8_t op1,
+                                    size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i8m4_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -7903,10 +7674,9 @@ __rvv_int8m4_t __jumper_4___riscv_vnclip_wx_i8m4_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vnclip_wv_i16mf4_m(__rvv_bool64_t mask,
-                                                       __rvv_int32mf2_t op1,
-                                                       __rvv_uint16mf4_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vnclip_wv_i16mf4_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                      __rvv_uint16mf4_t shift, size_t vl) {
   return __riscv_vnclip_wv_i16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7921,10 +7691,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vnclip_wv_i16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_int16mf4_t __jumper_4___riscv_vnclip_wx_i16mf4_m(__rvv_bool64_t mask,
-                                                       __rvv_int32mf2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int16mf4_t
+__jumper_4___riscv_vnclip_wx_i16mf4_m(__rvv_bool64_t mask, __rvv_int32mf2_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -7936,10 +7705,9 @@ __rvv_int16mf4_t __jumper_4___riscv_vnclip_wx_i16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i16mf2_m_v1p0,    \
                   redirect___riscv_vnclip_wv_i16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vnclip_wv_i16mf2_m(__rvv_bool32_t mask,
-                                                       __rvv_int32m1_t op1,
-                                                       __rvv_uint16mf2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vnclip_wv_i16mf2_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                      __rvv_uint16mf2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i16mf2_m_5(op0, op1, op2, vl)               \
@@ -7950,10 +7718,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vnclip_wv_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i16mf2_m_v1p0,    \
                   redirect___riscv_vnclip_wx_i16mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_int16mf2_t __jumper_4___riscv_vnclip_wx_i16mf2_m(__rvv_bool32_t mask,
-                                                       __rvv_int32m1_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int16mf2_t
+__jumper_4___riscv_vnclip_wx_i16mf2_m(__rvv_bool32_t mask, __rvv_int32m1_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i16m1_m_5(op0, op1, op2, vl)                \
@@ -7964,10 +7731,9 @@ __rvv_int16mf2_t __jumper_4___riscv_vnclip_wx_i16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i16m1_m_v1p0,     \
                   redirect___riscv_vnclip_wv_i16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vnclip_wv_i16m1_m(__rvv_bool16_t mask,
-                                                     __rvv_int32m2_t op1,
-                                                     __rvv_uint16m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vnclip_wv_i16m1_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                     __rvv_uint16m1_t shift, size_t vl) {
   return __riscv_vnclip_wv_i16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i16m1_m_5(op0, op1, op2, vl)                \
@@ -7978,9 +7744,9 @@ __rvv_int16m1_t __jumper_4___riscv_vnclip_wv_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i16m1_m_v1p0,     \
                   redirect___riscv_vnclip_wx_i16m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m1_t __jumper_4___riscv_vnclip_wx_i16m1_m(__rvv_bool16_t mask,
-                                                     __rvv_int32m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int16m1_t
+__jumper_4___riscv_vnclip_wx_i16m1_m(__rvv_bool16_t mask, __rvv_int32m2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i16m2_m_5(op0, op1, op2, vl)                \
@@ -7991,10 +7757,9 @@ __rvv_int16m1_t __jumper_4___riscv_vnclip_wx_i16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i16m2_m_v1p0,     \
                   redirect___riscv_vnclip_wv_i16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vnclip_wv_i16m2_m(__rvv_bool8_t mask,
-                                                     __rvv_int32m4_t op1,
-                                                     __rvv_uint16m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vnclip_wv_i16m2_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                     __rvv_uint16m2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i16m2_m_5(op0, op1, op2, vl)                \
@@ -8005,9 +7770,9 @@ __rvv_int16m2_t __jumper_4___riscv_vnclip_wv_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i16m2_m_v1p0,     \
                   redirect___riscv_vnclip_wx_i16m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m2_t __jumper_4___riscv_vnclip_wx_i16m2_m(__rvv_bool8_t mask,
-                                                     __rvv_int32m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int16m2_t
+__jumper_4___riscv_vnclip_wx_i16m2_m(__rvv_bool8_t mask, __rvv_int32m4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wv_i16m4_m_5(op0, op1, op2, vl)                \
@@ -8018,10 +7783,9 @@ __rvv_int16m2_t __jumper_4___riscv_vnclip_wx_i16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wv_i16m4_m_v1p0,     \
                   redirect___riscv_vnclip_wv_i16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vnclip_wv_i16m4_m(__rvv_bool4_t mask,
-                                                     __rvv_int32m8_t op1,
-                                                     __rvv_uint16m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vnclip_wv_i16m4_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                     __rvv_uint16m4_t shift, size_t vl) {
   return __riscv_vnclip_wv_i16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclip_wx_i16m4_m_5(op0, op1, op2, vl)                \
@@ -8032,9 +7796,9 @@ __rvv_int16m4_t __jumper_4___riscv_vnclip_wv_i16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclip_wx_i16m4_m_v1p0,     \
                   redirect___riscv_vnclip_wx_i16m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_int16m4_t __jumper_4___riscv_vnclip_wx_i16m4_m(__rvv_bool4_t mask,
-                                                     __rvv_int32m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int16m4_t
+__jumper_4___riscv_vnclip_wx_i16m4_m(__rvv_bool4_t mask, __rvv_int32m8_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i16m4_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -8048,14 +7812,11 @@ __rvv_int16m4_t __jumper_4___riscv_vnclip_wx_i16m4_m(__rvv_bool4_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vnclip_wv_i32mf2_m(__rvv_bool64_t mask,
-                                                       __rvv_int64m1_t op1,
-                                                       __rvv_uint32mf2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vnclip_wv_i32mf2_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                      __rvv_uint32mf2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i32mf2_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vnclip_wx_i32mf2_m_5(op0, op1, op2, vl)               \
@@ -8068,14 +7829,11 @@ __rvv_int32mf2_t __jumper_4___riscv_vnclip_wv_i32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_int32mf2_t __jumper_4___riscv_vnclip_wx_i32mf2_m(__rvv_bool64_t mask,
-                                                       __rvv_int64m1_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_int32mf2_t
+__jumper_4___riscv_vnclip_wx_i32mf2_m(__rvv_bool64_t mask, __rvv_int64m1_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i32mf2_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #define redirect___riscv_vnclip_wv_i32m1_m_5(op0, op1, op2, vl)                \
   __riscv_vnclip_wv_i32m1_m(op0, op1, op2, 7, vl)
@@ -8086,10 +7844,9 @@ __rvv_int32mf2_t __jumper_4___riscv_vnclip_wx_i32mf2_m(__rvv_bool64_t mask,
                   redirect___riscv_vnclip_wv_i32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m1_t __jumper_4___riscv_vnclip_wv_i32m1_m(__rvv_bool32_t mask,
-                                                     __rvv_int64m2_t op1,
-                                                     __rvv_uint32m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vnclip_wv_i32m1_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                     __rvv_uint32m1_t shift, size_t vl) {
   return __riscv_vnclip_wv_i32m1_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8102,9 +7859,9 @@ __rvv_int32m1_t __jumper_4___riscv_vnclip_wv_i32m1_m(__rvv_bool32_t mask,
                   redirect___riscv_vnclip_wx_i32m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m1_t __jumper_4___riscv_vnclip_wx_i32m1_m(__rvv_bool32_t mask,
-                                                     __rvv_int64m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int32m1_t
+__jumper_4___riscv_vnclip_wx_i32m1_m(__rvv_bool32_t mask, __rvv_int64m2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i32m1_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8117,10 +7874,9 @@ __rvv_int32m1_t __jumper_4___riscv_vnclip_wx_i32m1_m(__rvv_bool32_t mask,
                   redirect___riscv_vnclip_wv_i32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m2_t __jumper_4___riscv_vnclip_wv_i32m2_m(__rvv_bool16_t mask,
-                                                     __rvv_int64m4_t op1,
-                                                     __rvv_uint32m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vnclip_wv_i32m2_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                     __rvv_uint32m2_t shift, size_t vl) {
   return __riscv_vnclip_wv_i32m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8133,9 +7889,9 @@ __rvv_int32m2_t __jumper_4___riscv_vnclip_wv_i32m2_m(__rvv_bool16_t mask,
                   redirect___riscv_vnclip_wx_i32m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m2_t __jumper_4___riscv_vnclip_wx_i32m2_m(__rvv_bool16_t mask,
-                                                     __rvv_int64m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int32m2_t
+__jumper_4___riscv_vnclip_wx_i32m2_m(__rvv_bool16_t mask, __rvv_int64m4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i32m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8148,10 +7904,9 @@ __rvv_int32m2_t __jumper_4___riscv_vnclip_wx_i32m2_m(__rvv_bool16_t mask,
                   redirect___riscv_vnclip_wv_i32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m4_t __jumper_4___riscv_vnclip_wv_i32m4_m(__rvv_bool8_t mask,
-                                                     __rvv_int64m8_t op1,
-                                                     __rvv_uint32m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vnclip_wv_i32m4_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                     __rvv_uint32m4_t shift, size_t vl) {
   return __riscv_vnclip_wv_i32m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8164,9 +7919,9 @@ __rvv_int32m4_t __jumper_4___riscv_vnclip_wv_i32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vnclip_wx_i32m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_int32m4_t __jumper_4___riscv_vnclip_wx_i32m4_m(__rvv_bool8_t mask,
-                                                     __rvv_int64m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_int32m4_t
+__jumper_4___riscv_vnclip_wx_i32m4_m(__rvv_bool8_t mask, __rvv_int64m8_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclip_wx_i32m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8181,10 +7936,10 @@ __rvv_int32m4_t __jumper_4___riscv_vnclip_wx_i32m4_m(__rvv_bool8_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vnclipu_wv_u8mf8_m(__rvv_bool64_t mask,
-                                                       __rvv_uint16mf4_t op1,
-                                                       __rvv_uint8mf8_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf8_t
+__jumper_4___riscv_vnclipu_wv_u8mf8_m(__rvv_bool64_t mask,
+                                      __rvv_uint16mf4_t op1,
+                                      __rvv_uint8mf8_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8199,10 +7954,8 @@ __rvv_uint8mf8_t __jumper_4___riscv_vnclipu_wv_u8mf8_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint8mf8_t __jumper_4___riscv_vnclipu_wx_u8mf8_m(__rvv_bool64_t mask,
-                                                       __rvv_uint16mf4_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf8_t __jumper_4___riscv_vnclipu_wx_u8mf8_m(
+    __rvv_bool64_t mask, __rvv_uint16mf4_t op1, size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8mf8_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8214,10 +7967,10 @@ __rvv_uint8mf8_t __jumper_4___riscv_vnclipu_wx_u8mf8_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u8mf4_m_v1p0,    \
                   redirect___riscv_vnclipu_wv_u8mf4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vnclipu_wv_u8mf4_m(__rvv_bool32_t mask,
-                                                       __rvv_uint16mf2_t op1,
-                                                       __rvv_uint8mf4_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf4_t
+__jumper_4___riscv_vnclipu_wv_u8mf4_m(__rvv_bool32_t mask,
+                                      __rvv_uint16mf2_t op1,
+                                      __rvv_uint8mf4_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u8mf4_m_5(op0, op1, op2, vl)               \
@@ -8228,10 +7981,8 @@ __rvv_uint8mf4_t __jumper_4___riscv_vnclipu_wv_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u8mf4_m_v1p0,    \
                   redirect___riscv_vnclipu_wx_u8mf4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint8mf4_t __jumper_4___riscv_vnclipu_wx_u8mf4_m(__rvv_bool32_t mask,
-                                                       __rvv_uint16mf2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf4_t __jumper_4___riscv_vnclipu_wx_u8mf4_m(
+    __rvv_bool32_t mask, __rvv_uint16mf2_t op1, size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8mf4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u8mf2_m_5(op0, op1, op2, vl)               \
@@ -8242,10 +7993,9 @@ __rvv_uint8mf4_t __jumper_4___riscv_vnclipu_wx_u8mf4_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u8mf2_m_v1p0,    \
                   redirect___riscv_vnclipu_wv_u8mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vnclipu_wv_u8mf2_m(__rvv_bool16_t mask,
-                                                       __rvv_uint16m1_t op1,
-                                                       __rvv_uint8mf2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vnclipu_wv_u8mf2_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                      __rvv_uint8mf2_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u8mf2_m_5(op0, op1, op2, vl)               \
@@ -8256,10 +8006,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vnclipu_wv_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u8mf2_m_v1p0,    \
                   redirect___riscv_vnclipu_wx_u8mf2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint8mf2_t __jumper_4___riscv_vnclipu_wx_u8mf2_m(__rvv_bool16_t mask,
-                                                       __rvv_uint16m1_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint8mf2_t
+__jumper_4___riscv_vnclipu_wx_u8mf2_m(__rvv_bool16_t mask, __rvv_uint16m1_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u8m1_m_5(op0, op1, op2, vl)                \
@@ -8270,10 +8019,9 @@ __rvv_uint8mf2_t __jumper_4___riscv_vnclipu_wx_u8mf2_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u8m1_m_v1p0,     \
                   redirect___riscv_vnclipu_wv_u8m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vnclipu_wv_u8m1_m(__rvv_bool8_t mask,
-                                                     __rvv_uint16m2_t op1,
-                                                     __rvv_uint8m1_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vnclipu_wv_u8m1_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     __rvv_uint8m1_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u8m1_m_5(op0, op1, op2, vl)                \
@@ -8284,9 +8032,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vnclipu_wv_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u8m1_m_v1p0,     \
                   redirect___riscv_vnclipu_wx_u8m1_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m1_t __jumper_4___riscv_vnclipu_wx_u8m1_m(__rvv_bool8_t mask,
-                                                     __rvv_uint16m2_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m1_t
+__jumper_4___riscv_vnclipu_wx_u8m1_m(__rvv_bool8_t mask, __rvv_uint16m2_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u8m2_m_5(op0, op1, op2, vl)                \
@@ -8297,10 +8045,9 @@ __rvv_uint8m1_t __jumper_4___riscv_vnclipu_wx_u8m1_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u8m2_m_v1p0,     \
                   redirect___riscv_vnclipu_wv_u8m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vnclipu_wv_u8m2_m(__rvv_bool4_t mask,
-                                                     __rvv_uint16m4_t op1,
-                                                     __rvv_uint8m2_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vnclipu_wv_u8m2_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     __rvv_uint8m2_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u8m2_m_5(op0, op1, op2, vl)                \
@@ -8311,9 +8058,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vnclipu_wv_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u8m2_m_v1p0,     \
                   redirect___riscv_vnclipu_wx_u8m2_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m2_t __jumper_4___riscv_vnclipu_wx_u8m2_m(__rvv_bool4_t mask,
-                                                     __rvv_uint16m4_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m2_t
+__jumper_4___riscv_vnclipu_wx_u8m2_m(__rvv_bool4_t mask, __rvv_uint16m4_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u8m4_m_5(op0, op1, op2, vl)                \
@@ -8324,10 +8071,9 @@ __rvv_uint8m2_t __jumper_4___riscv_vnclipu_wx_u8m2_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u8m4_m_v1p0,     \
                   redirect___riscv_vnclipu_wv_u8m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vnclipu_wv_u8m4_m(__rvv_bool2_t mask,
-                                                     __rvv_uint16m8_t op1,
-                                                     __rvv_uint8m4_t shift,
-                                                     size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vnclipu_wv_u8m4_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     __rvv_uint8m4_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u8m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u8m4_m_5(op0, op1, op2, vl)                \
@@ -8338,9 +8084,9 @@ __rvv_uint8m4_t __jumper_4___riscv_vnclipu_wv_u8m4_m(__rvv_bool2_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u8m4_m_v1p0,     \
                   redirect___riscv_vnclipu_wx_u8m4_m_5, 3, 2, 1)               \
   (__VA_ARGS__)
-__rvv_uint8m4_t __jumper_4___riscv_vnclipu_wx_u8m4_m(__rvv_bool2_t mask,
-                                                     __rvv_uint16m8_t op1,
-                                                     size_t shift, size_t vl) {
+static __inline__ __rvv_uint8m4_t
+__jumper_4___riscv_vnclipu_wx_u8m4_m(__rvv_bool2_t mask, __rvv_uint16m8_t op1,
+                                     size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u8m4_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -8354,7 +8100,7 @@ __rvv_uint8m4_t __jumper_4___riscv_vnclipu_wx_u8m4_m(__rvv_bool2_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t
+static __inline__ __rvv_uint16mf4_t
 __jumper_4___riscv_vnclipu_wv_u16mf4_m(__rvv_bool64_t mask,
                                        __rvv_uint32mf2_t op1,
                                        __rvv_uint16mf4_t shift, size_t vl) {
@@ -8372,10 +8118,8 @@ __jumper_4___riscv_vnclipu_wv_u16mf4_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-__rvv_uint16mf4_t __jumper_4___riscv_vnclipu_wx_u16mf4_m(__rvv_bool64_t mask,
-                                                         __rvv_uint32mf2_t op1,
-                                                         size_t shift,
-                                                         size_t vl) {
+static __inline__ __rvv_uint16mf4_t __jumper_4___riscv_vnclipu_wx_u16mf4_m(
+    __rvv_bool64_t mask, __rvv_uint32mf2_t op1, size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u16mf4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8387,7 +8131,7 @@ __rvv_uint16mf4_t __jumper_4___riscv_vnclipu_wx_u16mf4_m(__rvv_bool64_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u16mf2_m_v1p0,   \
                   redirect___riscv_vnclipu_wv_u16mf2_m_5, 3, 2, 1)             \
   (__VA_ARGS__)
-__rvv_uint16mf2_t
+static __inline__ __rvv_uint16mf2_t
 __jumper_4___riscv_vnclipu_wv_u16mf2_m(__rvv_bool32_t mask,
                                        __rvv_uint32m1_t op1,
                                        __rvv_uint16mf2_t shift, size_t vl) {
@@ -8401,10 +8145,8 @@ __jumper_4___riscv_vnclipu_wv_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u16mf2_m_v1p0,   \
                   redirect___riscv_vnclipu_wx_u16mf2_m_5, 3, 2, 1)             \
   (__VA_ARGS__)
-__rvv_uint16mf2_t __jumper_4___riscv_vnclipu_wx_u16mf2_m(__rvv_bool32_t mask,
-                                                         __rvv_uint32m1_t op1,
-                                                         size_t shift,
-                                                         size_t vl) {
+static __inline__ __rvv_uint16mf2_t __jumper_4___riscv_vnclipu_wx_u16mf2_m(
+    __rvv_bool32_t mask, __rvv_uint32m1_t op1, size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u16mf2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u16m1_m_5(op0, op1, op2, vl)               \
@@ -8415,10 +8157,9 @@ __rvv_uint16mf2_t __jumper_4___riscv_vnclipu_wx_u16mf2_m(__rvv_bool32_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u16m1_m_v1p0,    \
                   redirect___riscv_vnclipu_wv_u16m1_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vnclipu_wv_u16m1_m(__rvv_bool16_t mask,
-                                                       __rvv_uint32m2_t op1,
-                                                       __rvv_uint16m1_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vnclipu_wv_u16m1_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                      __rvv_uint16m1_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u16m1_m_5(op0, op1, op2, vl)               \
@@ -8429,10 +8170,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vnclipu_wv_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u16m1_m_v1p0,    \
                   redirect___riscv_vnclipu_wx_u16m1_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m1_t __jumper_4___riscv_vnclipu_wx_u16m1_m(__rvv_bool16_t mask,
-                                                       __rvv_uint32m2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m1_t
+__jumper_4___riscv_vnclipu_wx_u16m1_m(__rvv_bool16_t mask, __rvv_uint32m2_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u16m1_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u16m2_m_5(op0, op1, op2, vl)               \
@@ -8443,10 +8183,9 @@ __rvv_uint16m1_t __jumper_4___riscv_vnclipu_wx_u16m1_m(__rvv_bool16_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u16m2_m_v1p0,    \
                   redirect___riscv_vnclipu_wv_u16m2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vnclipu_wv_u16m2_m(__rvv_bool8_t mask,
-                                                       __rvv_uint32m4_t op1,
-                                                       __rvv_uint16m2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vnclipu_wv_u16m2_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                      __rvv_uint16m2_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u16m2_m_5(op0, op1, op2, vl)               \
@@ -8457,10 +8196,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vnclipu_wv_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u16m2_m_v1p0,    \
                   redirect___riscv_vnclipu_wx_u16m2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m2_t __jumper_4___riscv_vnclipu_wx_u16m2_m(__rvv_bool8_t mask,
-                                                       __rvv_uint32m4_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m2_t
+__jumper_4___riscv_vnclipu_wx_u16m2_m(__rvv_bool8_t mask, __rvv_uint32m4_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u16m2_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wv_u16m4_m_5(op0, op1, op2, vl)               \
@@ -8471,10 +8209,9 @@ __rvv_uint16m2_t __jumper_4___riscv_vnclipu_wx_u16m2_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wv_u16m4_m_v1p0,    \
                   redirect___riscv_vnclipu_wv_u16m4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vnclipu_wv_u16m4_m(__rvv_bool4_t mask,
-                                                       __rvv_uint32m8_t op1,
-                                                       __rvv_uint16m4_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vnclipu_wv_u16m4_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                      __rvv_uint16m4_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u16m4_m(mask, op1, shift, 7, vl);
 }
 #define redirect___riscv_vnclipu_wx_u16m4_m_5(op0, op1, op2, vl)               \
@@ -8485,10 +8222,9 @@ __rvv_uint16m4_t __jumper_4___riscv_vnclipu_wv_u16m4_m(__rvv_bool4_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vnclipu_wx_u16m4_m_v1p0,    \
                   redirect___riscv_vnclipu_wx_u16m4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
-__rvv_uint16m4_t __jumper_4___riscv_vnclipu_wx_u16m4_m(__rvv_bool4_t mask,
-                                                       __rvv_uint32m8_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint16m4_t
+__jumper_4___riscv_vnclipu_wx_u16m4_m(__rvv_bool4_t mask, __rvv_uint32m8_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u16m4_m(mask, op1, shift, 7, vl);
 }
 #if defined(__riscv_zve64x)
@@ -8502,14 +8238,12 @@ __rvv_uint16m4_t __jumper_4___riscv_vnclipu_wx_u16m4_m(__rvv_bool4_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint32mf2_t
+static __inline__ __rvv_uint32mf2_t
 __jumper_4___riscv_vnclipu_wv_u32mf2_m(__rvv_bool64_t mask,
                                        __rvv_uint64m1_t op1,
                                        __rvv_uint32mf2_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u32mf2_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vnclipu_wx_u32mf2_m_5(op0, op1, op2, vl)              \
@@ -8522,14 +8256,10 @@ __jumper_4___riscv_vnclipu_wv_u32mf2_m(__rvv_bool64_t mask,
   (__VA_ARGS__)
 #endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
-__rvv_uint32mf2_t __jumper_4___riscv_vnclipu_wx_u32mf2_m(__rvv_bool64_t mask,
-                                                         __rvv_uint64m1_t op1,
-                                                         size_t shift,
-                                                         size_t vl) {
+static __inline__ __rvv_uint32mf2_t __jumper_4___riscv_vnclipu_wx_u32mf2_m(
+    __rvv_bool64_t mask, __rvv_uint64m1_t op1, size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u32mf2_m(mask, op1, shift, 7, vl);
 }
-#endif
 #endif
 #define redirect___riscv_vnclipu_wv_u32m1_m_5(op0, op1, op2, vl)               \
   __riscv_vnclipu_wv_u32m1_m(op0, op1, op2, 7, vl)
@@ -8540,10 +8270,9 @@ __rvv_uint32mf2_t __jumper_4___riscv_vnclipu_wx_u32mf2_m(__rvv_bool64_t mask,
                   redirect___riscv_vnclipu_wv_u32m1_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m1_t __jumper_4___riscv_vnclipu_wv_u32m1_m(__rvv_bool32_t mask,
-                                                       __rvv_uint64m2_t op1,
-                                                       __rvv_uint32m1_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vnclipu_wv_u32m1_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                      __rvv_uint32m1_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u32m1_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8556,10 +8285,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vnclipu_wv_u32m1_m(__rvv_bool32_t mask,
                   redirect___riscv_vnclipu_wx_u32m1_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m1_t __jumper_4___riscv_vnclipu_wx_u32m1_m(__rvv_bool32_t mask,
-                                                       __rvv_uint64m2_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m1_t
+__jumper_4___riscv_vnclipu_wx_u32m1_m(__rvv_bool32_t mask, __rvv_uint64m2_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u32m1_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8572,10 +8300,9 @@ __rvv_uint32m1_t __jumper_4___riscv_vnclipu_wx_u32m1_m(__rvv_bool32_t mask,
                   redirect___riscv_vnclipu_wv_u32m2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m2_t __jumper_4___riscv_vnclipu_wv_u32m2_m(__rvv_bool16_t mask,
-                                                       __rvv_uint64m4_t op1,
-                                                       __rvv_uint32m2_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vnclipu_wv_u32m2_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                      __rvv_uint32m2_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u32m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8588,10 +8315,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vnclipu_wv_u32m2_m(__rvv_bool16_t mask,
                   redirect___riscv_vnclipu_wx_u32m2_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m2_t __jumper_4___riscv_vnclipu_wx_u32m2_m(__rvv_bool16_t mask,
-                                                       __rvv_uint64m4_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m2_t
+__jumper_4___riscv_vnclipu_wx_u32m2_m(__rvv_bool16_t mask, __rvv_uint64m4_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u32m2_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8604,10 +8330,9 @@ __rvv_uint32m2_t __jumper_4___riscv_vnclipu_wx_u32m2_m(__rvv_bool16_t mask,
                   redirect___riscv_vnclipu_wv_u32m4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m4_t __jumper_4___riscv_vnclipu_wv_u32m4_m(__rvv_bool8_t mask,
-                                                       __rvv_uint64m8_t op1,
-                                                       __rvv_uint32m4_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vnclipu_wv_u32m4_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                      __rvv_uint32m4_t shift, size_t vl) {
   return __riscv_vnclipu_wv_u32m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -8620,10 +8345,9 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wv_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vnclipu_wx_u32m4_m_5, 3, 2, 1)              \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-__rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
-                                                       __rvv_uint64m8_t op1,
-                                                       size_t shift,
-                                                       size_t vl) {
+static __inline__ __rvv_uint32m4_t
+__jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask, __rvv_uint64m8_t op1,
+                                      size_t shift, size_t vl) {
   return __riscv_vnclipu_wx_u32m4_m(mask, op1, shift, 7, vl);
 }
 #endif
@@ -12105,7 +11829,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vx_i32m8_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vaadd_vv_i64m1_tu(op0, op1, op2, 7, vl)
 #define redirect___riscv_vaadd_vv_i64m1_tu_v1p0(op0, op1, op2, op3, vl)        \
@@ -12115,8 +11838,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vv_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vaadd_vx_i64m1_tu(op0, op1, op2, 7, vl)
@@ -12126,7 +11847,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vaadd_vx_i64m1_tu_v1p0,     \
                   redirect___riscv_vaadd_vx_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_tu_5(op0, op1, op2, vl)                \
@@ -12489,7 +12209,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vx_i32m8_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vasub_vv_i64m1_tu(op0, op1, op2, 7, vl)
 #define redirect___riscv_vasub_vv_i64m1_tu_v1p0(op0, op1, op2, op3, vl)        \
@@ -12499,8 +12218,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vv_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vasub_vx_i64m1_tu(op0, op1, op2, 7, vl)
@@ -12510,7 +12227,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vasub_vx_i64m1_tu_v1p0,     \
                   redirect___riscv_vasub_vx_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_tu_5(op0, op1, op2, vl)                \
@@ -13609,7 +13325,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vx_i32m8_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vaadd_vv_i64m1_tum(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vaadd_vv_i64m1_tum_v1p0(op0, op1, op2, op3, op4, vl)  \
@@ -13619,8 +13334,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vv_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vaadd_vx_i64m1_tum(op0, op1, op2, op3, 7, vl)
@@ -13630,7 +13343,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vaadd_vx_i64m1_tum_v1p0,       \
                   redirect___riscv_vaadd_vx_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_tum_6(op0, op1, op2, op3, vl)          \
@@ -13993,7 +13705,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vx_i32m8_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vasub_vv_i64m1_tum(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vasub_vv_i64m1_tum_v1p0(op0, op1, op2, op3, op4, vl)  \
@@ -14003,8 +13714,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vv_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vasub_vx_i64m1_tum(op0, op1, op2, op3, 7, vl)
@@ -14014,7 +13723,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vasub_vx_i64m1_tum_v1p0,       \
                   redirect___riscv_vasub_vx_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_tum_6(op0, op1, op2, op3, vl)          \
@@ -15131,7 +14839,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vx_i32m8_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vaadd_vv_i64m1_tumu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vaadd_vv_i64m1_tumu_v1p0(op0, op1, op2, op3, op4, vl) \
@@ -15141,8 +14848,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vv_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vaadd_vx_i64m1_tumu(op0, op1, op2, op3, 7, vl)
@@ -15152,7 +14857,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vaadd_vx_i64m1_tumu_v1p0,      \
                   redirect___riscv_vaadd_vx_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_tumu_6(op0, op1, op2, op3, vl)         \
@@ -15521,7 +15225,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vx_i32m8_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vasub_vv_i64m1_tumu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vasub_vv_i64m1_tumu_v1p0(op0, op1, op2, op3, op4, vl) \
@@ -15531,8 +15234,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vv_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vasub_vx_i64m1_tumu(op0, op1, op2, op3, 7, vl)
@@ -15542,7 +15243,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vasub_vx_i64m1_tumu_v1p0,      \
                   redirect___riscv_vasub_vx_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_tumu_6(op0, op1, op2, op3, vl)         \
@@ -16713,7 +16413,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vx_i32m8_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vaadd_vv_i64m1_mu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vaadd_vv_i64m1_mu_v1p0(op0, op1, op2, op3, op4, vl)   \
@@ -16723,8 +16422,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vaadd_vv_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vx_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vaadd_vx_i64m1_mu(op0, op1, op2, op3, 7, vl)
@@ -16734,7 +16431,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vaadd_vx_i64m1_mu_v1p0,        \
                   redirect___riscv_vaadd_vx_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vaadd_vv_i64m2_mu_6(op0, op1, op2, op3, vl)           \
@@ -17097,7 +16793,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vx_i32m8_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vasub_vv_i64m1_mu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vasub_vv_i64m1_mu_v1p0(op0, op1, op2, op3, op4, vl)   \
@@ -17107,8 +16802,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vasub_vv_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vx_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vasub_vx_i64m1_mu(op0, op1, op2, op3, 7, vl)
@@ -17118,7 +16811,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vasub_vx_i64m1_mu_v1p0,        \
                   redirect___riscv_vasub_vx_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vasub_vv_i64m2_mu_6(op0, op1, op2, op3, vl)           \
@@ -18217,7 +17909,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vx_i32m8_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vsmul_vv_i64m1_tu(op0, op1, op2, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_tu_v1p0(op0, op1, op2, op3, vl)        \
@@ -18227,9 +17918,7 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vsmul_vx_i64m1_tu(op0, op1, op2, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_tu_v1p0(op0, op1, op2, op3, vl)        \
@@ -18238,7 +17927,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vsmul_vx_i64m1_tu_v1p0,     \
                   redirect___riscv_vsmul_vx_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_tu_5(op0, op1, op2, vl)                \
@@ -18601,7 +18289,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vx_i32m8_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vsmul_vv_i64m1_tum(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_tum_v1p0(op0, op1, op2, op3, op4, vl)  \
@@ -18611,9 +18298,7 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vsmul_vx_i64m1_tum(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_tum_v1p0(op0, op1, op2, op3, op4, vl)  \
@@ -18622,7 +18307,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vsmul_vx_i64m1_tum_v1p0,       \
                   redirect___riscv_vsmul_vx_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_tum_6(op0, op1, op2, op3, vl)          \
@@ -18991,7 +18675,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vx_i32m8_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vsmul_vv_i64m1_tumu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_tumu_v1p0(op0, op1, op2, op3, op4, vl) \
@@ -19001,9 +18684,7 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vsmul_vx_i64m1_tumu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_tumu_v1p0(op0, op1, op2, op3, op4, vl) \
@@ -19012,7 +18693,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vsmul_vx_i64m1_tumu_v1p0,      \
                   redirect___riscv_vsmul_vx_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_tumu_6(op0, op1, op2, op3, vl)         \
@@ -19375,7 +19055,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vx_i32m8_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vsmul_vv_i64m1_mu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vv_i64m1_mu_v1p0(op0, op1, op2, op3, op4, vl)   \
@@ -19385,9 +19064,7 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vsmul_vv_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #endif
-#endif
 #if defined(__riscv_zve64x)
-#if defined(__riscv_v)
 #define redirect___riscv_vsmul_vx_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vsmul_vx_i64m1_mu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vsmul_vx_i64m1_mu_v1p0(op0, op1, op2, op3, op4, vl)   \
@@ -19396,7 +19073,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vsmul_vx_i64m1_mu_v1p0,        \
                   redirect___riscv_vsmul_vx_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_v)
 #define redirect___riscv_vsmul_vv_i64m2_mu_6(op0, op1, op2, op3, vl)           \
@@ -19759,7 +19435,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vx_i32m8_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vssra_vv_i64m1_tu(op0, op1, op2, 7, vl)
 #define redirect___riscv_vssra_vv_i64m1_tu_v1p0(op0, op1, op2, op3, vl)        \
@@ -19769,8 +19444,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vv_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_tu_5(op0, op1, op2, vl)                \
   __riscv_vssra_vx_i64m1_tu(op0, op1, op2, 7, vl)
@@ -19780,7 +19453,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, 6, redirect___riscv_vssra_vx_i64m1_tu_v1p0,     \
                   redirect___riscv_vssra_vx_i64m1_tu_5, 3, 2, 1)               \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_tu_5(op0, op1, op2, vl)                \
@@ -20511,7 +20183,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vx_i32m8_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vssra_vv_i64m1_tum(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vssra_vv_i64m1_tum_v1p0(op0, op1, op2, op3, op4, vl)  \
@@ -20521,8 +20192,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vv_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_tum_6(op0, op1, op2, op3, vl)          \
   __riscv_vssra_vx_i64m1_tum(op0, op1, op2, op3, 7, vl)
@@ -20532,7 +20201,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vssra_vx_i64m1_tum_v1p0,       \
                   redirect___riscv_vssra_vx_i64m1_tum_6, 4, 3, 2, 1)           \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_tum_6(op0, op1, op2, op3, vl)          \
@@ -21269,7 +20937,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vx_i32m8_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vssra_vv_i64m1_tumu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vssra_vv_i64m1_tumu_v1p0(op0, op1, op2, op3, op4, vl) \
@@ -21279,8 +20946,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vv_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_tumu_6(op0, op1, op2, op3, vl)         \
   __riscv_vssra_vx_i64m1_tumu(op0, op1, op2, op3, 7, vl)
@@ -21290,7 +20955,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vssra_vx_i64m1_tumu_v1p0,      \
                   redirect___riscv_vssra_vx_i64m1_tumu_6, 4, 3, 2, 1)          \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_tumu_6(op0, op1, op2, op3, vl)         \
@@ -22027,7 +21691,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vx_i32m8_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #if defined(__riscv_zve64x)
-#if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vssra_vv_i64m1_mu(op0, op1, op2, op3, 7, vl)
 #define redirect___riscv_vssra_vv_i64m1_mu_v1p0(op0, op1, op2, op3, op4, vl)   \
@@ -22037,8 +21700,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
                   redirect___riscv_vssra_vv_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
 #endif
-#endif
-#if defined(__riscv_zve64x)
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vx_i64m1_mu_6(op0, op1, op2, op3, vl)           \
   __riscv_vssra_vx_i64m1_mu(op0, op1, op2, op3, 7, vl)
@@ -22048,7 +21709,6 @@ __rvv_uint32m4_t __jumper_4___riscv_vnclipu_wx_u32m4_m(__rvv_bool8_t mask,
   _GET_OVERRIDE_6(__VA_ARGS__, redirect___riscv_vssra_vx_i64m1_mu_v1p0,        \
                   redirect___riscv_vssra_vx_i64m1_mu_6, 4, 3, 2, 1)            \
   (__VA_ARGS__)
-#endif
 #endif
 #if defined(__riscv_zve64x)
 #define redirect___riscv_vssra_vv_i64m2_mu_6(op0, op1, op2, op3, vl)           \
