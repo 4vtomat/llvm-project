@@ -291,6 +291,16 @@ def : WriteRes<WriteSHXADD, [SiFive7PipeB]>;
 def : WriteRes<WriteSHXADD32, [SiFive7PipeB]>;
 }
 
+// Single-bit instructions
+// BEXT[I] instruction is available on all ALUs and the other instructions
+// are only available on the SiFive7B pipe.
+let Latency = 3 in {
+def : WriteRes<WriteSingleBit, [SiFive7PipeB]>;
+def : WriteRes<WriteSingleBitImm, [SiFive7PipeB]>;
+def : WriteRes<WriteBEXT, [SiFive7PipeAB]>;
+def : WriteRes<WriteBEXTI, [SiFive7PipeAB]>;
+}
+
 // Memory
 let ResourceCycles = [0, 3] in {
 def : WriteRes<WriteSTB, [SiFive7PipeA, SiFive7Mem]>;
@@ -1170,6 +1180,9 @@ def : BulletAnyToGPRBypass<ReadORCB>;
 def : BulletAnyToGPRBypass<ReadREV8>;
 def : BulletAnyToGPRBypass<ReadSHXADD>;
 def : BulletAnyToGPRBypass<ReadSHXADD32>;
+// Single-bit instructions
+def : BulletAnyToGPRBypass<ReadSingleBit>;
+def : BulletAnyToGPRBypass<ReadSingleBitImm>;
 
 // Short forward branch
 // ALU, ALU_B, SFB to SFB
@@ -1196,7 +1209,6 @@ def : ReadAdvance<ReadSFBALU, 2, [WriteIALU, WriteIALU32,
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
 defm : UnsupportedSchedZbc;
-defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;

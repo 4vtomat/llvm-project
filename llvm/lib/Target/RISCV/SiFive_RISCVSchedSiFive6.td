@@ -100,6 +100,14 @@ def : WriteRes<WriteSHXADD, [SiFive6Pipe]>;
 def : WriteRes<WriteSHXADD32, [SiFive6Pipe]>;
 }
 
+// Single-bit instructions
+let Latency = 3 in {
+def : WriteRes<WriteSingleBit, [SiFive6Pipe]>;
+def : WriteRes<WriteSingleBitImm, [SiFive6Pipe]>;
+def : WriteRes<WriteBEXT, [SiFive6Pipe]>;
+def : WriteRes<WriteBEXTI, [SiFive6Pipe]>;
+}
+
 // Memory
 def : WriteRes<WriteSTB, [SiFive6Pipe]>;
 def : WriteRes<WriteSTH, [SiFive6Pipe]>;
@@ -216,7 +224,6 @@ def : WriteRes<WriteFMovI64ToF64, [SiFive6Pipe]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFive6Pipe]>;
 }
 
-
 // Others
 def : WriteRes<WriteCSR, [SiFive6Pipe]>;
 def : WriteRes<WriteNop, []>;
@@ -329,6 +336,9 @@ def : BulletAnyToGPRBypass<ReadORCB>;
 def : BulletAnyToGPRBypass<ReadREV8>;
 def : BulletAnyToGPRBypass<ReadSHXADD>;
 def : BulletAnyToGPRBypass<ReadSHXADD32>;
+// Single-bit instructions
+def : BulletAnyToGPRBypass<ReadSingleBit>;
+def : BulletAnyToGPRBypass<ReadSingleBitImm>;
 
 //Short forward branch
 def : ReadAdvance<ReadSFBJmp, 0>;
@@ -338,7 +348,6 @@ def : ReadAdvance<ReadSFBALU, 0>;
 // Unsupported extensions
 defm : UnsupportedSchedV;
 defm : UnsupportedSchedZbc;
-defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;
