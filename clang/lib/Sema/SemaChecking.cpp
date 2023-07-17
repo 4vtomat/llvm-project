@@ -4862,9 +4862,7 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   }
 #else
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
   case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
   case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm:
@@ -5227,7 +5225,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vfwnmsac_vv_rm_mu:
   case RISCVVector::BI__builtin_rvv_vfwnmsac_vf_rm_mu:
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 4);
->>>>>>> upstream/main
   case RISCV::BI__builtin_riscv_ntl_load:
   case RISCV::BI__builtin_riscv_ntl_store:
     DeclRefExpr *DRE =
