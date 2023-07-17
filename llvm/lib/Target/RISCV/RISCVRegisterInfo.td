@@ -122,18 +122,20 @@ def XLenRI : RegInfoByHwMode<
       [RV32,              RV64],
       [RegInfo<32,32,32>, RegInfo<64,64,64>]>;
 
-<<<<<<< HEAD
+class GPRRegisterClass<dag regList>
+    : RegisterClass<"RISCV", [XLenVT, XLenFVT, i32], 32, regList> {
+  let RegInfos = XLenRI;
+}
+
 // The order of registers represents the preferred allocation sequence.
 // Registers are listed in the order caller-save, callee-save, specials.
-def GPR : RegisterClass<"RISCV", [XLenVT, XLenFVT, i32], 32, (add
-    (sequence "X%u", 10, 17),
-    (sequence "X%u", 5, 7),
-    (sequence "X%u", 28, 31),
-    (sequence "X%u", 8, 9),
-    (sequence "X%u", 18, 27),
-    (sequence "X%u", 0, 4)
-  )> {
+def GPR : GPRRegisterClass<(add (sequence "X%u", 10, 17),
+                                (sequence "X%u", 5, 7),
+                                (sequence "X%u", 28, 31),
+                                (sequence "X%u", 8, 9),
+                                (sequence "X%u", 18, 27),
 #ifdef SIFIVE_CUSTOMIZATION
+                                (sequence "X%u", 0, 4))> {
   let AltOrders = [(add (sequence "X%u", 10, 17),
                         (sequence "X%u", 5, 7),
                         (sequence "X%u", 28, 31),
@@ -145,22 +147,10 @@ def GPR : RegisterClass<"RISCV", [XLenVT, XLenFVT, i32], 32, (add
   let AltOrderSelect = [{
     return MF.getSubtarget<RISCVSubtarget>().useAltGPROrder();
   }];
-#endif
-=======
-class GPRRegisterClass<dag regList>
-    : RegisterClass<"RISCV", [XLenVT, XLenFVT, i32], 32, regList> {
->>>>>>> upstream/main
-  let RegInfos = XLenRI;
 }
-
-// The order of registers represents the preferred allocation sequence.
-// Registers are listed in the order caller-save, callee-save, specials.
-def GPR : GPRRegisterClass<(add (sequence "X%u", 10, 17),
-                                (sequence "X%u", 5, 7),
-                                (sequence "X%u", 28, 31),
-                                (sequence "X%u", 8, 9),
-                                (sequence "X%u", 18, 27),
+#else
                                 (sequence "X%u", 0, 4))>;
+#endif //SIFIVE_CUSTOMIZATION
 
 def GPRX0 : GPRRegisterClass<(add X0)>;
 
