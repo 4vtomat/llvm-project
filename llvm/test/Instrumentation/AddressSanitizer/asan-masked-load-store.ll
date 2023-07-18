@@ -374,10 +374,6 @@ define void @scalable.store.nxv4f32(ptr %p, <vscale x 4 x float> %arg, <vscale x
   ret void
 }
 
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 ; Test masked.gather/scatter.
 declare <vscale x 4 x float> @llvm.masked.gather.nxv4f32.nxv4p0(<vscale x 4 x ptr>, i32, <vscale x 4 x i1>, <vscale x 4 x float>)
 declare void @llvm.masked.scatter.nxv4f32.nxv4p0(<vscale x 4 x float>, <vscale x 4 x ptr>, i32, <vscale x 4 x i1>)
@@ -441,9 +437,6 @@ define void @scalable.scatter.nxv4f32(<vscale x 4 x float> %val, <vscale x 4 x p
   tail call void @llvm.masked.scatter.nxv4f32.nxv4p0(<vscale x 4 x float> %val, <vscale x 4 x ptr>  %vp, i32 4, <vscale x 4 x i1> %mask)
   ret void
 }
-<<<<<<< HEAD
-; end SIFIVE_CUSTOMIZATION
-=======
 
 declare <vscale x 4 x float> @llvm.masked.expandload.nxv4f32(ptr, <vscale x 4 x i1>, <vscale x 4 x float>)
 declare void @llvm.masked.compressstore.nxv4f32(<vscale x 4 x float>, ptr, <vscale x 4 x i1>)
@@ -523,4 +516,3 @@ define void @scalable.compressstore.nxv4f32(ptr align 4 %p, <vscale x 4 x float>
   tail call void @llvm.masked.compressstore.nxv4f32(<vscale x 4 x float> %arg, ptr %p, <vscale x 4 x i1> %mask)
   ret void
 }
->>>>>>> upstream/main

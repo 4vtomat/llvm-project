@@ -45,17 +45,10 @@ vadd.vv v12, v12, v12
 # CHECK-NEXT:  -      -      -     1.00    -     17.00  17.00   -      -
 
 # CHECK:      Resource pressure by instruction:
-<<<<<<< HEAD
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -      -      -     16.00  16.00   -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m8, tu, mu
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, mf8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     1.00   1.00    -      -     vadd.vv	v12, v12, v12
-=======
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
-# CHECK-NEXT:  -      -      -      -     16.00  16.00   -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -     1.00   1.00    -      -     vadd.vv	v12, v12, v12
->>>>>>> upstream/main
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789

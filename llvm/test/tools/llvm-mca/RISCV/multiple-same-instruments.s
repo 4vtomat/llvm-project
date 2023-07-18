@@ -57,27 +57,15 @@ vsub.vv v12, v12, v12
 # CHECK-NEXT:  -      -      -     3.00    -     22.00  22.00   -      -
 
 # CHECK:      Resource pressure by instruction:
-<<<<<<< HEAD
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
 # CHECK-NEXT:  -      -      -      -      -     2.00   2.00    -      -     vsub.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m2, tu, mu
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     8.00   8.00    -      -     vadd.vv	v12, v12, v12
 # CHECK-NEXT:  -      -      -      -      -     8.00   8.00    -      -     vsub.vv	v12, v12, v12
-=======
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -      -     2.00   2.00    -      -     vsub.vv	v12, v12, v12
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -     8.00   8.00    -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -      -     8.00   8.00    -      -     vsub.vv	v12, v12, v12
->>>>>>> upstream/main
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789
