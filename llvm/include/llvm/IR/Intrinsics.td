@@ -1761,7 +1761,7 @@ def int_vp_load  : DefaultAttrsIntrinsic<[ llvm_anyvector_ty],
 
 #ifdef SIFIVE_CUSTOMIZATION
 def int_vp_load_ff : DefaultAttrsIntrinsic<[ llvm_anyvector_ty, llvm_i32_ty ],
-                                           [ LLVMAnyPointerType<LLVMMatchType<0>>,
+                                           [ llvm_anyptr_ty,
                                              LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                              llvm_i32_ty],
                                            [ NoCapture<ArgIndex<0>>, IntrNoSync, IntrReadMem, IntrWillReturn, IntrArgMemOnly ]>;
