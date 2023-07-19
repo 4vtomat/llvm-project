@@ -112,6 +112,7 @@
 ; CHECK-O23SZ-NEXT: Running pass: LCSSAPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: IndVarSimplifyPass on loop
 ; CHECK-O23SZ-NEXT: Running pass: LoopDeletionPass on loop
+; CHECK-O23SZ-NEXT: Running pass: LoopReversePass on loop
 ; CHECK-O23SZ-NEXT: Running pass: LoopFullUnrollPass on loop
 ; CHECK-O23SZ-NEXT: Running pass: LoopDistributePass on foo
 ; CHECK-O23SZ-NEXT: Running analysis: LoopAccessAnalysis on foo

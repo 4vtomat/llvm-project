@@ -118,6 +118,7 @@
 ; CHECK-O-NEXT: Running pass: LoopIdiomRecognizePass
 ; CHECK-O-NEXT: Running pass: IndVarSimplifyPass
 ; CHECK-O-NEXT: Running pass: LoopDeletionPass
+; CHECK-O-NEXT: Running pass: LoopReversePass
 ; CHECK-O-NEXT: Running pass: LoopFullUnrollPass
 ; CHECK-O-NEXT: Running pass: SROAPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: VectorCombinePass
@@ -168,6 +169,7 @@
 ; CHECK-POSTLINK-O-NEXT: Running pass: LCSSAPass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopRotatePass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopDeletionPass
+; CHECK-POSTLINK-O-NEXT: Running pass: LoopReversePass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopDistributePass
 ; CHECK-POSTLINK-O-NEXT: Running analysis: LoopAccessAnalysis on foo
 ; CHECK-POSTLINK-O-NEXT: Running pass: InjectTLIMappings
