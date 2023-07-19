@@ -1082,23 +1082,18 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
-  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
-       Exts.count("zvkned") || Exts.count("zvknha") || Exts.count("zvkns") ||
-       Exts.count("zvks") || Exts.count("zvksed") || Exts.count("zvksh")) &&
+#if SIFIVE_CUSTOMIZATION
+  if ((Exts.count("zvkb") || Exts.count("zvkns")) &&
       !HasVector)
     return createStringError(
         errc::invalid_argument,
         "'zvk*' requires 'v' or 'zve*' extension to also be specified");
 
-  if (Exts.count("zvknhb") && !Exts.count("zve64x"))
-    return createStringError(
-        errc::invalid_argument,
-        "'zvknhb' requires 'v' or 'zve64*' extension to also be specified");
-
   if (Exts.count("smwgd") && !Exts.count("smwg"))
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
+#endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)
     return createStringError(
@@ -1192,6 +1187,7 @@ static const char *ImpliedExtsZvl512b[] = {"zvl256b"};
 static const char *ImpliedExtsZvl64b[] = {"zvl32b"};
 static const char *ImpliedExtsZvl65536b[] = {"zvl32768b"};
 static const char *ImpliedExtsZvl8192b[] = {"zvl4096b"};
+
 struct ImpliedExtsEntry {
   StringLiteral Name;
   ArrayRef<const char *> Exts;
