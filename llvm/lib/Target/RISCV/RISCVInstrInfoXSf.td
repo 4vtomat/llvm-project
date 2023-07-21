@@ -697,9 +697,9 @@ multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
   foreach VtiToWti = vtilist in {
     defvar Vti = VtiToWti.Vti;
     defvar Wti = VtiToWti.Wti;
-    defm : VPatBinaryTA<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                        Wti.Vector, Wti.Scalar, Vti.Mask, Vti.Log2SEW,
-                        Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
+    defm : VPatBinary<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
+                      Wti.Vector, Wti.Scalar, Vti.Mask, Vti.Log2SEW,
+                      Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
   }
 }
 
