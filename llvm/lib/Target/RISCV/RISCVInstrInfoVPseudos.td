@@ -1272,7 +1272,7 @@ class VPseudoBinaryNoMaskRoundingMode<VReg RetClass,
                                       int UsesVXRM_ = 1> :
 #endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs RetClass:$rd),
-               (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
+               (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm, 
                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
   let mayLoad = 0;
