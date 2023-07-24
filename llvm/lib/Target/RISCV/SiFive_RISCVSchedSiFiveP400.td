@@ -576,6 +576,8 @@ foreach mx = SchedMxList in {
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
     let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP400VEXQ0],
+                                     mx, sew, IsWorstCase>;
   }
 }
 

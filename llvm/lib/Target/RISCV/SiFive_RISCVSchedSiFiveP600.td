@@ -582,6 +582,8 @@ foreach mx = SchedMxList in {
     let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [SiFiveP600VEXQ1],
                                      mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP600VEXQ1],
+                                     mx, sew, IsWorstCase>;
   }
 }
 
