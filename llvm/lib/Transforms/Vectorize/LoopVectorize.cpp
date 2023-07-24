@@ -3324,7 +3324,7 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     Value *TC = getTripCount();
     // Loop has multiple exits. Make sure scalar remainder executes at least 1
     // scalar iteration to perform correct jump.
-    if (Cost->requiresScalarEpilogue(VF)) {
+    if (Cost->requiresScalarEpilogue(VF.isVector())) {
 
       IRBuilder<> Builder(InsertBlock->getTerminator());
       TC = Builder.CreateSub(TC, ConstantInt::get(TC->getType(), 1),
@@ -3482,7 +3482,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULT, LHS, CreateStep());
   }
 #if SIFIVE_CUSTOMIZATION
-  else if (useVLAVectorizer() && Cost->requiresScalarEpilogue(VF)) {
+  else if (useVLAVectorizer() && Cost->requiresScalarEpilogue(VF.isVector())) {
     // If RVV VLA vectorization requires scalar remainder loop (for example, the
     // loop has multiple exits), need to check first that we execute at least 1
     // iteration.
