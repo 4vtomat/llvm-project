@@ -5611,26 +5611,6 @@ multiclass VPatBinaryRoundingMode<string intrinsic,
                                      op2_kind>;
 }
 
-// Missing SIFIVE_CUSTOMIZATION ?
-multiclass VPatBinaryTANoMask<string intrinsic,
-                              string inst,
-                              ValueType result_type,
-                              ValueType op1_type,
-                              ValueType op2_type,
-                              int sew,
-                              VReg result_reg_class,
-                              VReg op1_reg_class,
-                              DAGOperand op2_kind>
-{
-  // FIXME: VPatBinaryNoMaskTA no longer in upstream!
-  // ecfc2328ea8a1180170827d300674d0cf75a20d0
-  // 5cd41dc62db71f725d1ae99ddfb9fc55f95b338e
-  // def : VPatBinaryNoMaskTA<intrinsic, inst, result_type, op1_type, op2_type,
-  //                          sew, op1_reg_class, op2_kind>;
-  def : VPatBinaryNoMaskTU<intrinsic, inst, result_type, op1_type, op2_type,
-                           sew, result_reg_class, op1_reg_class, op2_kind>;
-}
-
 multiclass VPatBinarySwapped<string intrinsic,
                       string inst,
                       ValueType result_type,
@@ -5875,22 +5855,6 @@ multiclass VPatBinaryV_VI_NoMask<string intrinsic, string instruction,
     def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VI",
                            vti.Vector, vti.Vector, XLenVT, vti.Log2SEW,
                            vti.LMul, vti.RegClass, vti.RegClass, imm_type>;
-}
-
-multiclass VPatBinaryV_VI_NoMaskTA<string intrinsic, string instruction,
-                          list<VTypeInfo> vtilist, Operand imm_type = simm5> {
-  foreach vti = vtilist in
-    defm : VPatBinaryTANoMask<intrinsic, instruction # "_VI_" # vti.LMul.MX,
-                        vti.Vector, vti.Vector, XLenVT, vti.Log2SEW,
-                        vti.RegClass, vti.RegClass, imm_type>;
-}
-
-multiclass VPatBinaryV_VV_NoMaskTA<string intrinsic, string instruction,
-                          list<VTypeInfo> vtilist> {
-  foreach vti = vtilist in
-    defm : VPatBinaryTANoMask<intrinsic, instruction # "_VV_" # vti.LMul.MX,
-                        vti.Vector, vti.Vector, vti.Vector, vti.Log2SEW,
-                        vti.RegClass, vti.RegClass, vti.RegClass>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

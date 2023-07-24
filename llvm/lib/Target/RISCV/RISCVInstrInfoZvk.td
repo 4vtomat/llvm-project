@@ -308,9 +308,7 @@ multiclass PPseudoVALU_VI_NoMaskTU<Operand ImmType = uimm5, string Constraint = 
     defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
     defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
 
-    def "_VI_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.vrclass, ImmType, Constraint>,
-                        Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-    def "_VI_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.vrclass, ImmType, Constraint>,
+    def "_VI_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.vrclass, ImmType, Constraint>,
                                 Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
   }
 }
@@ -321,9 +319,7 @@ multiclass PPseudoVALU_VV_NoMaskTU<string Constraint = ""> {
     defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
     defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
 
-    def "_VV_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.vrclass, m.vrclass, Constraint>,
-                        Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-    def "_VV_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.vrclass, m.vrclass, Constraint>,
+    def "_VV_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.vrclass, m.vrclass, Constraint>,
                                 Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
   }
 }
@@ -377,6 +373,36 @@ let Predicates = [HasStdExtZvknha] in {
   defm PseudoVSHA2CL : PPseudoVALU_VV_NoMask;
   defm PseudoVSHA2MS : PPseudoVALU_VV_NoMask;
 } // Predicates = [HasStdExtZvknha]
+
+multiclass VPatBinaryTANoMask<string intrinsic,
+                              string inst,
+                              ValueType result_type,
+                              ValueType op1_type,
+                              ValueType op2_type,
+                              int sew,
+                              VReg result_reg_class,
+                              VReg op1_reg_class,
+                              DAGOperand op2_kind>
+{
+  def : VPatBinaryNoMaskTU<intrinsic, inst, result_type, op1_type, op2_type,
+                           sew, result_reg_class, op1_reg_class, op2_kind>;
+}
+
+multiclass VPatBinaryV_VI_NoMaskTA<string intrinsic, string instruction,
+                          list<VTypeInfo> vtilist, Operand imm_type = simm5> {
+  foreach vti = vtilist in
+    defm : VPatBinaryTANoMask<intrinsic, instruction # "_VI_" # vti.LMul.MX,
+                        vti.Vector, vti.Vector, XLenVT, vti.Log2SEW,
+                        vti.RegClass, vti.RegClass, imm_type>;
+}
+
+multiclass VPatBinaryV_VV_NoMaskTA<string intrinsic, string instruction,
+                          list<VTypeInfo> vtilist> {
+  foreach vti = vtilist in
+    defm : VPatBinaryTANoMask<intrinsic, instruction # "_VV_" # vti.LMul.MX,
+                        vti.Vector, vti.Vector, vti.Vector, vti.Log2SEW,
+                        vti.RegClass, vti.RegClass, vti.RegClass>;
+}
 
 class PPatUnaryNoMask<string intrinsic_name,
                       string inst,
