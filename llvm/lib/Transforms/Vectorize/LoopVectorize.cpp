@@ -7850,13 +7850,8 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
         TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
         RecurKind RdxKind = RdxDesc.getRecurrenceKind();
         if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
-          bool IsUnsigned =
-              RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
-                  ? false
-                  : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
-          auto *VecCondTy =
-              cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
-          C = TTI.getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
+          Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
+          C = TTI.getMinMaxReductionCost(Id, VectorTy,
                                          RdxDesc.getFastMathFlags(), CostKind);
         } else {
           C = TTI.getArithmeticReductionCost(RdxDesc.getOpcode(), VectorTy,

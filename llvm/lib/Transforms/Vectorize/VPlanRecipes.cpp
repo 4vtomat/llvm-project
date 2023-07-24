@@ -30,6 +30,7 @@
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Transforms/Utils/InjectTLIMappings.h"
+#include "llvm/Transforms/Utils/LoopUtils.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
@@ -1980,18 +1981,15 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
   auto *VectorTy = cast<VectorType>(ToVectorTy(ElementTy, VF));
-  auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
   InstructionCost O = 0;
   if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
-    bool IsUnsigned =
-        RecurrenceDescriptor::isFPMinMaxRecurrenceKind(RdxKind)
-            ? false
-            : (RdxKind == RecurKind::UMax || RdxKind == RecurKind::UMin);
-    O = Ctx.TTI->getMinMaxReductionCost(VectorTy, VecCondTy, IsUnsigned,
+    Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
+    O = Ctx.TTI->getMinMaxReductionCost(Id, VectorTy,
                                         RdxDesc.getFastMathFlags(), CostKind);
   } else if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RdxKind)) {
     // The cost references the instructions created in
     // llvm::createSelectCmpTargetReduction
+    auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     O = Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
     O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
                                      CmpInst::ICMP_NE, CostKind);
