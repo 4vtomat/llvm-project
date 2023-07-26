@@ -647,10 +647,8 @@ foreach m = [V_M1, V_M2, V_M4, V_M8] in {
 foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMask<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_TU" : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
   }
