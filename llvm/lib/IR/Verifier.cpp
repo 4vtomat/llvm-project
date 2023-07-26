@@ -4632,6 +4632,9 @@ void Verifier::visitProfMetadata(Instruction &I, MDNode *MD) {
 void Verifier::visitDIAssignIDMetadata(Instruction &I, MDNode *MD) {
   assert(I.hasMetadata(LLVMContext::MD_DIAssignID));
   bool ExpectedInstTy =
+#if SIFIVE_CUSTOMIZATION
+      (isa<IntrinsicInst>(I) && I.mayWriteToMemory()) ||
+#endif // SIFIVE_CUSTOMIZATION
       isa<AllocaInst>(I) || isa<StoreInst>(I) || isa<MemIntrinsic>(I);
   CheckDI(ExpectedInstTy, "!DIAssignID attached to unexpected instruction kind",
           I, MD);
