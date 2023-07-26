@@ -2618,11 +2618,6 @@ defm : VPatBinaryFPVL_R_VF_RM<any_riscv_fdiv_vl, "PseudoVFRDIV", /*isSEWAware*/ 
 // 13.5. Vector Widening Floating-Point Multiply Instructions
 defm : VPatBinaryFPWVL_VV_VF_RM<riscv_vfwmul_vl, "PseudoVFWMUL">;
 
-#ifdef SIFIVE_CUSTOMIZATION
-// 13.5. Vector Widening Floating-Point Multiply
-defm : VPatBinaryFPWVL_VV_VF<riscv_vfwmul_vl, "PseudoVFWMUL">;
-#endif // SIFIVE_CUSTOMIZATION
-
 // 13.6 Vector Single-Width Floating-Point Fused Multiply-Add Instructions.
 defm : VPatFPMulAddVL_VV_VF_RM<any_riscv_vfmadd_vl,  "PseudoVFMADD">;
 defm : VPatFPMulAddVL_VV_VF_RM<any_riscv_vfmsub_vl,  "PseudoVFMSUB">;
@@ -2641,7 +2636,11 @@ foreach vti = AllFloatVectors in {
                                           VLOpFrag)),
             (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
-                 (vti.Mask V0), GPR:$vl, vti.Log2SEW, TU_MU)>;
+                 (vti.Mask V0),
+                 // Value to indicate no rounding mode change in
+                 // RISCVInsertReadWriteCSR
+                 FRM_DYN,
+                 GPR:$vl, vti.Log2SEW, TU_MU)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2691,12 +2690,20 @@ foreach vti = AllFloatVectors in {
     def : Pat<(riscv_vfrsqrt7_vl (vti.Vector vti.RegClass:$rs2),
                                 (vti.Mask true_mask), VLOpFrag),
               (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
-                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+                  (vti.Vector (IMPLICIT_DEF)),
+                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW,
+                  TA_MA)>;
     // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
     def : Pat<(riscv_vfrec7_vl (vti.Vector vti.RegClass:$rs2),
                               (vti.Mask true_mask), VLOpFrag),
               (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
-                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+                  (vti.Vector (IMPLICIT_DEF)),
+                  vti.RegClass:$rs2,
+                  // Value to indicate no rounding mode change in
+                  // RISCVInsertReadWriteCSR
+                  FRM_DYN,
+                  GPR:$vl, vti.Log2SEW,
+                  TA_MA)>;
 #endif // SIFIVE_CUSTOMIZATION
 
     // 13.12. Vector Floating-Point Sign-Injection Instructions
@@ -2750,7 +2757,8 @@ foreach vti = AllFloatVectors in {
     def : Pat<(riscv_vfclass_vl (vti.Vector vti.RegClass:$rs2),
                                 (vti.Mask true_mask), VLOpFrag),
               (!cast<Instruction>("PseudoVFCLASS_V_"# vti.LMul.MX)
-                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW)>;
+                  (vti.Vector (IMPLICIT_DEF)),
+                  vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
 #endif // SIFIVE_CUSTOMIZATION
 
     // Rounding without exception to implement nearbyint.

@@ -1672,7 +1672,12 @@ class VPseudoTernaryNoMaskWithPolicy<VReg RetClass,
 class VPseudoTernaryNoMaskWithPolicyRoundingMode<VReg RetClass,
                                                  RegisterClass Op1Class,
                                                  DAGOperand Op2Class,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                 string Constraint,
+                                                 int TargetConstraintType = 1> :
+#else
                                                  string Constraint> :
+#endif
         Pseudo<(outs RetClass:$rd),
                (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
                     ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),
@@ -1682,6 +1687,9 @@ class VPseudoTernaryNoMaskWithPolicyRoundingMode<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $rs3"], ",");
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVecPolicyOp = 1;
   let HasVLOp = 1;
   let HasSEWOp = 1;
@@ -3744,16 +3752,31 @@ multiclass VPseudoTernaryWithPolicyRoundingMode<VReg RetClass,
                                                 DAGOperand Op2Class,
                                                 LMULInfo MInfo,
                                                 string Constraint = "",
+#ifdef SIFIVE_CUSTOMIZATION
+                                                bit Commutable = 0,
+                                                int TargetConstraintType = 1> {
+#else
                                                 bit Commutable = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value in {
     let isCommutable = Commutable in
     def "_" # MInfo.MX :
         VPseudoTernaryNoMaskWithPolicyRoundingMode<RetClass, Op1Class,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                   Op2Class, Constraint,
+                                                   TargetConstraintType>;
+#else
                                                    Op2Class, Constraint>;
+#endif // SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX # "_MASK" :
         VPseudoBinaryMaskPolicyRoundingMode<RetClass, Op1Class,
                                             Op2Class, Constraint,
+#ifdef SIFIVE_CUSTOMIZATION
+                                            /* UsesVXRM = */ 0,
+                                            TargetConstraintType>,
+#else
                                             /* UsesVXRM = */ 0>,
+#endif
                                    RISCVMaskedPseudo</*MaskOpIdx*/ 3>;
   }
 }
@@ -3797,10 +3820,19 @@ multiclass VPseudoTernaryW_VV<LMULInfo m> {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoTernaryW_VV_RM<LMULInfo m, int TargetConstraintType = 1> {
+#else
 multiclass VPseudoTernaryW_VV_RM<LMULInfo m> {
+#endif // SIFIVE_CUSTOMIZATION
   defvar constraint = "@earlyclobber $rd";
   defm _VV : VPseudoTernaryWithPolicyRoundingMode<m.wvrclass, m.vrclass, m.vrclass, m,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                  constraint, /* Commutable */ 0,
+                                                  TargetConstraintType>;
+#else
                                                   constraint>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
@@ -3825,10 +3857,20 @@ multiclass VPseudoTernaryW_VF<LMULInfo m, FPR_Info f, int TargetConstraintType =
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoTernaryW_VF_RM<LMULInfo m, FPR_Info f, int TargetConstraintType = 1> {
+#else
 multiclass VPseudoTernaryW_VF_RM<LMULInfo m, FPR_Info f> {
+#endif
   defvar constraint = "@earlyclobber $rd";
   defm "_V" # f.FX : VPseudoTernaryWithPolicyRoundingMode<m.wvrclass, f.fprclass,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                          m.vrclass, m, constraint,
+                                                          /* Commutable */0,
+                                                          TargetConstraintType>;
+#else
                                                           m.vrclass, m, constraint>;
+#endif
 }
 
 multiclass VPseudoVSLDVWithPolicy<VReg RetClass,
@@ -3981,7 +4023,7 @@ multiclass VPseudoVWMAC_VV_VF_RM {
     defvar ReadVFWMulAddV_MX = !cast<SchedRead>("ReadVFWMulAddV_" # mx);
 
 #ifdef SIFIVE_CUSTOMIZATION
-    defm "" : VPseudoTernaryW_VV<m, TargetConstraintType>,
+    defm "" : VPseudoTernaryW_VV_RM<m, TargetConstraintType>,
 #else
     defm "" : VPseudoTernaryW_VV_RM<m>,
 #endif // SIFIVE_CUSTOMIZATION
@@ -3997,7 +4039,7 @@ multiclass VPseudoVWMAC_VV_VF_RM {
       defvar ReadVFWMulAddF_MX = !cast<SchedRead>("ReadVFWMulAddF_" # mx);
 
 #ifdef SIFIVE_CUSTOMIZATION
-      defm "" : VPseudoTernaryW_VF<m, f, TargetConstraintType>,
+      defm "" : VPseudoTernaryW_VF_RM<m, f, TargetConstraintType>,
 #else
       defm "" : VPseudoTernaryW_VF_RM<m, f>,
 #endif // SIFIVE_CUSTOMIZATION
