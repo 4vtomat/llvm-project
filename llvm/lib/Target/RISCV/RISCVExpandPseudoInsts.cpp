@@ -389,7 +389,8 @@ bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
                                            MachineBasicBlock::iterator MBBI) {
-  if (MBBI->getOperand(0).getReg() == MBBI->getOperand(1).getReg()) {
+  if (MBBI->getOperand(0).getReg() == MBBI->getOperand(2).getReg() &&
+      MBBI->getOperand(1).isReg() && MBBI->getOperand(1).isUndef()) {
     MBBI->eraseFromParent();
     return true;
   }
