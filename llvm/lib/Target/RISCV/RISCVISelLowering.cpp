@@ -4907,6 +4907,19 @@ static unsigned getRISCVVLOp(SDValue Op) {
     if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
       return RISCVISD::VMXOR_VL;
     return RISCVISD::XOR_VL;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::INTRINSIC_WO_CHAIN:
+    switch (Op.getConstantOperandVal(0)) {
+    default:
+      llvm_unreachable("don't have RISC-V specified VL op for this SDNode");
+    case Intrinsic::aarch64_neon_fmax:
+    case Intrinsic::aarch64_neon_fmaxnm:
+      return RISCVISD::FMAXNUM_VL;
+    case Intrinsic::aarch64_neon_fmin:
+    case Intrinsic::aarch64_neon_fminnm:
+      return RISCVISD::FMINNUM_VL;
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
