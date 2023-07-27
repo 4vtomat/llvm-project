@@ -7611,11 +7611,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     EVT VT = Op.getValueType();
     SDValue TrueVal = DAG.getConstantFP(
         APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
-    SDValue FalseVal = lowerToScalableOp(Op, DAG,
-                                         IntNo == Intrinsic::aarch64_neon_fmax
-                                             ? RISCVISD::FMAXNUM_VL
-                                             : RISCVISD::FMINNUM_VL,
-                                         true);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG);
     EVT BoolVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
     SDValue IsNaN0 = DAG.getSetCC(DL, BoolVT, Op0, Op0, ISD::SETUNE);
     SDValue IsNaN1 = DAG.getSetCC(DL, BoolVT, Op1, Op1, ISD::SETUNE);
@@ -7647,11 +7643,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                       DAG.getConstant(256, DL, VFclassOrVT));
     SDValue TrueVal = DAG.getConstantFP(
         APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
-    SDValue FalseVal = lowerToScalableOp(Op, DAG,
-                                         IntNo == Intrinsic::aarch64_neon_fmaxnm
-                                             ? RISCVISD::FMAXNUM_VL
-                                             : RISCVISD::FMINNUM_VL,
-                                         true);
+    SDValue FalseVal = lowerToScalableOp(Op, DAG);
     return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
                            TrueVal, FalseVal, ISD::SETNE);
   }
