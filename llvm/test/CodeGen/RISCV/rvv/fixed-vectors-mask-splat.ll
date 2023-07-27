@@ -35,7 +35,6 @@ define void @splat_v1i1(ptr %x, i1 %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -59,7 +58,6 @@ define void @splat_v1i1_icmp(ptr %x, i32 signext %y, i32 signext %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -93,7 +91,6 @@ define void @splat_v4i1(ptr %x, i1 %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
