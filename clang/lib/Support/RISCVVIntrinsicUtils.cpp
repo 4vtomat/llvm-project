@@ -1213,8 +1213,16 @@ void RVVIntrinsic::updateNamesAndPolicy(
   } else {
     if (PolicyAttrs.isTUPolicy())
       appendPolicySuffix("_tu");
+#if SIFIVE_CUSTOMIZATION
+    else if (PolicyAttrs.isTAPolicy()) { // no suffix needed
+      if (PolicyAttrs.isNTLPolicy())
+        appendPolicySuffix("_ntl");
+      return;
+    }
+#else
     else if (PolicyAttrs.isTAPolicy()) // no suffix needed
       return;
+#endif
     else
       llvm_unreachable("Unhandled policy condition");
   }
