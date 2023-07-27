@@ -19375,8 +19375,14 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   auto *VTy =
       VectorType::get(WideVTy->getScalarType(), WideNumElements / Factor,
                       WideVTy->isScalableTy());
-  if (!isLegalInterleavedAccessType(VTy, Factor,
-                                    Load->getModule()->getDataLayout()))
+  // FIXME: Should pass alignment attribute from pointer, but vectorizer needs
+  // to emit it first.
+  Align Alignment = Align(Load->getModule()->getDataLayout().getTypeStoreSize(
+      WideVTy->getScalarType()));
+  if (!isLegalInterleavedAccessType(
+          VTy, Factor, Alignment,
+          VPLoad->getOperand(0)->getType()->getPointerAddressSpace(),
+          Load->getModule()->getDataLayout()))
     return false;
 
   IRBuilder<> Builder(VPLoad);
@@ -19454,8 +19460,14 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 
   VectorType *VTy = cast<VectorType>(Operands[0]->getType());
 
-  if (!isLegalInterleavedAccessType(VTy, Factor,
-                                    Store->getModule()->getDataLayout()))
+  // FIXME: Should pass alignment attribute from pointer, but vectorizer needs
+  // to emit it first.
+  Align Alignment = Align(Store->getModule()->getDataLayout().getTypeStoreSize(
+      VTy->getScalarType()));
+  if (!isLegalInterleavedAccessType(
+          VTy, Factor, Alignment,
+          Store->getOperand(1)->getType()->getPointerAddressSpace(),
+          Store->getModule()->getDataLayout()))
     return false;
 
   IRBuilder<> Builder(VPStore);
