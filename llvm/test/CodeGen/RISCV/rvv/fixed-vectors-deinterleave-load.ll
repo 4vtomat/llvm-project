@@ -33,7 +33,6 @@ define {<16 x i1>, <16 x i1>} @vector_deinterleave_load_v16i1_v32i1(ptr %p) {
 ; RV32-NEXT:    vadd.vi v10, v11, -15
 ; RV32-NEXT:    vrgather.vv v13, v8, v10, v0.t
 ; RV32-NEXT:    vmsne.vi v8, v13, 0
-; RV32-NEXT:    vmv.v.v v0, v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vector_deinterleave_load_v16i1_v32i1:
@@ -64,7 +63,6 @@ define {<16 x i1>, <16 x i1>} @vector_deinterleave_load_v16i1_v32i1(ptr %p) {
 ; RV64-NEXT:    vadd.vi v10, v11, -15
 ; RV64-NEXT:    vrgather.vv v13, v8, v10, v0.t
 ; RV64-NEXT:    vmsne.vi v8, v13, 0
-; RV64-NEXT:    vmv.v.v v0, v9
 ; RV64-NEXT:    ret
   %vec = load <32 x i1>, ptr %p
   %retval = call {<16 x i1>, <16 x i1>} @llvm.experimental.vector.deinterleave2.v32i1(<32 x i1> %vec)

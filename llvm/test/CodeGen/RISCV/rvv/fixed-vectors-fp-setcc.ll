@@ -47,7 +47,6 @@ define void @fcmp_une_vv_v4f32(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -72,7 +71,6 @@ define void @fcmp_une_vv_v4f32_nonans(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -97,7 +95,6 @@ define void @fcmp_ogt_vv_v2f64(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -122,7 +119,6 @@ define void @fcmp_ogt_vv_v2f64_nonans(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -211,7 +207,6 @@ define void @fcmp_ole_vv_v4f64(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -236,7 +231,6 @@ define void @fcmp_ole_vv_v4f64_nonans(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -469,7 +463,6 @@ define void @fcmp_ord_vv_v4f16(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -496,7 +489,6 @@ define void @fcmp_uno_vv_v4f16(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a2)
@@ -552,7 +544,6 @@ define void @fcmp_une_vf_v4f32(ptr %x, float %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -577,7 +568,6 @@ define void @fcmp_une_vf_v4f32_nonans(ptr %x, float %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -602,7 +592,6 @@ define void @fcmp_ogt_vf_v2f64(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -627,7 +616,6 @@ define void @fcmp_ogt_vf_v2f64_nonans(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -716,7 +704,6 @@ define void @fcmp_ole_vf_v4f64(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -741,7 +728,6 @@ define void @fcmp_ole_vf_v4f64_nonans(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -975,7 +961,6 @@ define void @fcmp_ord_vf_v4f16(ptr %x, half %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1003,7 +988,6 @@ define void @fcmp_uno_vf_v4f16(ptr %x, half %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1060,7 +1044,6 @@ define void @fcmp_une_fv_v4f32(ptr %x, float %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1085,7 +1068,6 @@ define void @fcmp_une_fv_v4f32_nonans(ptr %x, float %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1110,7 +1092,6 @@ define void @fcmp_ogt_fv_v2f64(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1135,7 +1116,6 @@ define void @fcmp_ogt_fv_v2f64_nonans(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1224,7 +1204,6 @@ define void @fcmp_ole_fv_v4f64(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1249,7 +1228,6 @@ define void @fcmp_ole_fv_v4f64_nonans(ptr %x, double %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1483,7 +1461,6 @@ define void @fcmp_ord_fv_v4f16(ptr %x, half %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
@@ -1511,7 +1488,6 @@ define void @fcmp_uno_fv_v4f16(ptr %x, half %y, ptr %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a1)
