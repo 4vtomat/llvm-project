@@ -6,7 +6,7 @@ define i8 @phi_i8(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i8 [ 16, %a ], [ 32, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i8 [ 16, %a ], [ 32, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i8 %x
 ;
   br i1 %c, label %a, label %b
@@ -24,7 +24,7 @@ define i16 @phi_i16_small(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i16 [ 1, %a ], [ 2, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i16 [ 1, %a ], [ 2, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i16 %x
 ;
   br i1 %c, label %a, label %b
@@ -42,7 +42,7 @@ define i16 @phi_i16_large(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i16 [ 42, %a ], [ -7616, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i16 [ 42, %a ], [ -7616, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i16 %x
 ;
   br i1 %c, label %a, label %b
@@ -60,7 +60,7 @@ define i32 @phi_i32_small(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i32 [ 1, %a ], [ 2, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i32 [ 1, %a ], [ 2, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 %x
 ;
   br i1 %c, label %a, label %b
@@ -78,7 +78,7 @@ define i32 @phi_i32_large(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i32 [ 42, %a ], [ 123456, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i32 [ 42, %a ], [ 123456, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 %x
 ;
   br i1 %c, label %a, label %b
@@ -96,7 +96,7 @@ define i64 @phi_i64_small(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i64 [ 1, %a ], [ 2, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i64 [ 1, %a ], [ 2, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i64 %x
 ;
   br i1 %c, label %a, label %b
@@ -114,7 +114,7 @@ define i64 @phi_i64_large(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi i64 [ 42, %a ], [ 123456, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi i64 [ 42, %a ], [ 123456, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i64 %x
 ;
   br i1 %c, label %a, label %b
@@ -132,7 +132,7 @@ define half @phi_f16(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi half [ 0xHE3CE, %a ], [ 0xH5144, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi half [ 0xHE3CE, %a ], [ 0xH5144, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret half %x
 ;
   br i1 %c, label %a, label %b
@@ -150,7 +150,7 @@ define float @phi_f32(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi float [ -9.990000e+02, %a ], [ 4.212500e+01, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi float [ -9.990000e+02, %a ], [ 4.212500e+01, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret float %x
 ;
   br i1 %c, label %a, label %b
@@ -168,7 +168,7 @@ define double @phi_f64(i1 %c) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br i1 %c, label %a, label %b
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: br label %d
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %x = phi double [ -9.990000e+02, %a ], [ 4.212500e+01, %b ]
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %x = phi double [ -9.990000e+02, %a ], [ 4.212500e+01, %b ]
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret double %x
 ;
   br i1 %c, label %a, label %b
