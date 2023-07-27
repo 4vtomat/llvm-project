@@ -1852,6 +1852,7 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
     // element count >= 19.
     unsigned CmpOpcode;
     Type *ScalarTy = Ty->getElementType();
+    VectorType *CondTy = cast<VectorType>(CmpInst::makeCmpResultType(Ty));
     Type *ScalarCondTy = CondTy->getElementType();
     if (Ty->isFPOrFPVectorTy()) {
       CmpOpcode = Instruction::FCmp;
