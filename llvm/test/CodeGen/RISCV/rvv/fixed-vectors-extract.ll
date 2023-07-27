@@ -37,19 +37,9 @@ define i32 @extractelt_v4i32(ptr %x) nounwind {
 define i64 @extractelt_v2i64(ptr %x) nounwind {
 ; RV32-LABEL: extractelt_v2i64:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
 ; RV32-NEXT:    lw a2, 0(a0)
 ; RV32-NEXT:    lw a1, 4(a0)
 ; RV32-NEXT:    mv a0, a2
-=======
-; RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; RV32-NEXT:    vle64.v v8, (a0)
-; RV32-NEXT:    vmv.x.s a0, v8
-; RV32-NEXT:    li a1, 32
-; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; RV32-NEXT:    vsrl.vx v8, v8, a1
-; RV32-NEXT:    vmv.x.s a1, v8
->>>>>>> upstream/main
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: extractelt_v2i64:
@@ -638,20 +628,20 @@ define i32 @extractelt_sdiv_v4i32(<4 x i32> %x) {
 ;
 ; RV64-LABEL: extractelt_sdiv_v4i32:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV64-NEXT:    vmv.v.i v9, -1
-; RV64-NEXT:    vmv.v.i v10, 0
-; RV64-NEXT:    vslideup.vi v10, v9, 3
 ; RV64-NEXT:    lui a0, %hi(.LCPI38_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI38_0)
+; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV64-NEXT:    vle32.v v9, (a0)
+; RV64-NEXT:    vmv.v.i v10, -1
+; RV64-NEXT:    vmv.v.i v11, 0
+; RV64-NEXT:    vslideup.vi v11, v10, 3
 ; RV64-NEXT:    lui a0, %hi(.LCPI38_1)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI38_1)
-; RV64-NEXT:    vle32.v v11, (a0)
-; RV64-NEXT:    vand.vv v10, v8, v10
-; RV64-NEXT:    vmulh.vv v8, v8, v9
-; RV64-NEXT:    vadd.vv v8, v8, v10
-; RV64-NEXT:    vsra.vv v8, v8, v11
+; RV64-NEXT:    vle32.v v10, (a0)
+; RV64-NEXT:    vmulh.vv v9, v8, v9
+; RV64-NEXT:    vand.vv v8, v8, v11
+; RV64-NEXT:    vadd.vv v8, v9, v8
+; RV64-NEXT:    vsra.vv v8, v8, v10
 ; RV64-NEXT:    vsrl.vi v9, v8, 31
 ; RV64-NEXT:    vadd.vv v8, v8, v9
 ; RV64-NEXT:    vslidedown.vi v8, v8, 2

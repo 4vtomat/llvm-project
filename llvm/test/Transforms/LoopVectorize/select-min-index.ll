@@ -82,13 +82,15 @@ exit:
   ret i64 %res
 }
 
-<<<<<<< HEAD
-define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
+define i64 @test_not_vectorize_select_no_min_reduction(ptr %src, i64 %n) {
 ; CHECK-VF4IC1-LABEL: define i64 @test_not_vectorize_select_no_min_reduction
-; CHECK-VF4IC1-SAME: (ptr [[SRC:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr [[SRC:%.*]], i64 [[N:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
-; CHECK-VF4IC1-NEXT:    br i1 true, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-VF4IC1-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
+; CHECK-VF4IC1-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC1:       vector.ph:
+; CHECK-VF4IC1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 4
+; CHECK-VF4IC1-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
 ; CHECK-VF4IC1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-VF4IC1:       vector.body:
 ; CHECK-VF4IC1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -105,18 +107,18 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF4IC1-NEXT:    [[TMP6]] = select <4 x i1> [[TMP5]], <4 x i64> [[VEC_IND]], <4 x i64> [[VEC_PHI]]
 ; CHECK-VF4IC1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-VF4IC1-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[VEC_IND]], <i64 4, i64 4, i64 4, i64 4>
-; CHECK-VF4IC1-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-VF4IC1-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC1:       middle.block:
 ; CHECK-VF4IC1-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[TMP6]])
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP8]], -9223372036854775808
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP8]], i64 0
-; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 0, 0
+; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x i64> [[TMP3]], i32 3
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
 ; CHECK-VF4IC1-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
-; CHECK-VF4IC1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-VF4IC1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-VF4IC1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC1-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VF4IC1:       loop:
@@ -130,17 +132,20 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF4IC1-NEXT:    [[FOO:%.*]] = call i64 @llvm.umin.i64(i64 [[SCALAR_RECUR]], i64 [[L]])
 ; CHECK-VF4IC1-NEXT:    [[MIN_IDX_NEXT]] = select i1 [[CMP]], i64 [[IV]], i64 [[MIN_IDX]]
 ; CHECK-VF4IC1-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], 0
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF4IC1:       exit:
 ; CHECK-VF4IC1-NEXT:    [[RES:%.*]] = phi i64 [ [[MIN_IDX_NEXT]], [[LOOP]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC1-NEXT:    ret i64 [[RES]]
 ;
 ; CHECK-VF4IC2-LABEL: define i64 @test_not_vectorize_select_no_min_reduction
-; CHECK-VF4IC2-SAME: (ptr [[SRC:%.*]]) {
+; CHECK-VF4IC2-SAME: (ptr [[SRC:%.*]], i64 [[N:%.*]]) {
 ; CHECK-VF4IC2-NEXT:  entry:
-; CHECK-VF4IC2-NEXT:    br i1 true, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-VF4IC2-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 8
+; CHECK-VF4IC2-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC2:       vector.ph:
+; CHECK-VF4IC2-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 8
+; CHECK-VF4IC2-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
 ; CHECK-VF4IC2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-VF4IC2:       vector.body:
 ; CHECK-VF4IC2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -167,19 +172,19 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF4IC2-NEXT:    [[TMP13]] = select <4 x i1> [[TMP11]], <4 x i64> [[STEP_ADD]], <4 x i64> [[VEC_PHI2]]
 ; CHECK-VF4IC2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-VF4IC2-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[STEP_ADD]], <i64 4, i64 4, i64 4, i64 4>
-; CHECK-VF4IC2-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-VF4IC2-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC2-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC2:       middle.block:
 ; CHECK-VF4IC2-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i64> @llvm.smax.v4i64(<4 x i64> [[TMP12]], <4 x i64> [[TMP13]])
 ; CHECK-VF4IC2-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[RDX_MINMAX]])
 ; CHECK-VF4IC2-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP15]], -9223372036854775808
 ; CHECK-VF4IC2-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP15]], i64 0
-; CHECK-VF4IC2-NEXT:    [[CMP_N:%.*]] = icmp eq i64 0, 0
+; CHECK-VF4IC2-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-VF4IC2-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x i64> [[TMP7]], i32 3
 ; CHECK-VF4IC2-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC2:       scalar.ph:
 ; CHECK-VF4IC2-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
-; CHECK-VF4IC2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-VF4IC2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-VF4IC2-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC2-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VF4IC2:       loop:
@@ -193,17 +198,20 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF4IC2-NEXT:    [[FOO:%.*]] = call i64 @llvm.umin.i64(i64 [[SCALAR_RECUR]], i64 [[L]])
 ; CHECK-VF4IC2-NEXT:    [[MIN_IDX_NEXT]] = select i1 [[CMP]], i64 [[IV]], i64 [[MIN_IDX]]
 ; CHECK-VF4IC2-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-VF4IC2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], 0
+; CHECK-VF4IC2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-VF4IC2-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF4IC2:       exit:
 ; CHECK-VF4IC2-NEXT:    [[RES:%.*]] = phi i64 [ [[MIN_IDX_NEXT]], [[LOOP]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC2-NEXT:    ret i64 [[RES]]
 ;
 ; CHECK-VF1IC2-LABEL: define i64 @test_not_vectorize_select_no_min_reduction
-; CHECK-VF1IC2-SAME: (ptr [[SRC:%.*]]) {
+; CHECK-VF1IC2-SAME: (ptr [[SRC:%.*]], i64 [[N:%.*]]) {
 ; CHECK-VF1IC2-NEXT:  entry:
-; CHECK-VF1IC2-NEXT:    br i1 true, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-VF1IC2-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
+; CHECK-VF1IC2-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF1IC2:       vector.ph:
+; CHECK-VF1IC2-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 2
+; CHECK-VF1IC2-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
 ; CHECK-VF1IC2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-VF1IC2:       vector.body:
 ; CHECK-VF1IC2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -223,17 +231,17 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF1IC2-NEXT:    [[TMP10]] = select i1 [[TMP8]], i64 [[TMP0]], i64 [[VEC_PHI]]
 ; CHECK-VF1IC2-NEXT:    [[TMP11]] = select i1 [[TMP9]], i64 [[TMP1]], i64 [[VEC_PHI1]]
 ; CHECK-VF1IC2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-; CHECK-VF1IC2-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-VF1IC2-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF1IC2-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF1IC2:       middle.block:
 ; CHECK-VF1IC2-NEXT:    [[RDX_MINMAX:%.*]] = call i64 @llvm.smax.i64(i64 [[TMP10]], i64 [[TMP11]])
 ; CHECK-VF1IC2-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[RDX_MINMAX]], -9223372036854775808
 ; CHECK-VF1IC2-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[RDX_MINMAX]], i64 0
-; CHECK-VF1IC2-NEXT:    [[CMP_N:%.*]] = icmp eq i64 0, 0
+; CHECK-VF1IC2-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-VF1IC2-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF1IC2:       scalar.ph:
 ; CHECK-VF1IC2-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ]
-; CHECK-VF1IC2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-VF1IC2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-VF1IC2-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC2-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VF1IC2:       loop:
@@ -247,16 +255,11 @@ define i64 @test_not_vectorize_select_no_min_reduction(ptr %src) {
 ; CHECK-VF1IC2-NEXT:    [[FOO:%.*]] = call i64 @llvm.umin.i64(i64 [[SCALAR_RECUR]], i64 [[L]])
 ; CHECK-VF1IC2-NEXT:    [[MIN_IDX_NEXT]] = select i1 [[CMP]], i64 [[IV]], i64 [[MIN_IDX]]
 ; CHECK-VF1IC2-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-VF1IC2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], 0
+; CHECK-VF1IC2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-VF1IC2-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF1IC2:       exit:
 ; CHECK-VF1IC2-NEXT:    [[RES:%.*]] = phi i64 [ [[MIN_IDX_NEXT]], [[LOOP]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC2-NEXT:    ret i64 [[RES]]
-=======
-define i64 @test_not_vectorize_select_no_min_reduction(ptr %src, i64 %n) {
-; CHECK-LABEL: @test_not_vectorize_select_no_min_reduction(
-; CHECK-NOT:   vector.body:
->>>>>>> upstream/main
 ;
 entry:
   br label %loop

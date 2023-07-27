@@ -563,12 +563,7 @@ define void @fp2si_v2f64_v2i32(ptr %x, ptr %y) {
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
-=======
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
->>>>>>> upstream/main
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <2 x double>, ptr %x
@@ -587,12 +582,7 @@ define void @fp2ui_v2f64_v2i32(ptr %x, ptr %y) {
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vmfne.vv v0, v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfncvt.rtz.xu.f.w v8, v8
-; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
-=======
 ; CHECK-NEXT:    vmerge.vim v8, v9, 0, v0
->>>>>>> upstream/main
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <2 x double>, ptr %x
