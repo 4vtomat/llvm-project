@@ -19362,7 +19362,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   auto *VTy =
       VectorType::get(WideVTy->getScalarType(), WideNumElements / Factor,
                       WideVTy->isScalableTy());
-  if (!isLegalInterleavedAccessType(VTy, Factor,
+  auto *LI = cast<LoadInst>(Load);
+
+  if (!isLegalInterleavedAccessType(VTy, Factor, LI->getAlign(),
+                                    LI->getPointerAddressSpace(),
                                     Load->getModule()->getDataLayout()))
     return false;
 
@@ -19440,8 +19443,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     Operands.push_back(InterleaveIntrin->getOperand(I));
 
   VectorType *VTy = cast<VectorType>(Operands[0]->getType());
+  auto *SI = cast<StoreInst>(Store);
 
-  if (!isLegalInterleavedAccessType(VTy, Factor,
+  if (!isLegalInterleavedAccessType(VTy, Factor, SI->getAlign(),
+                                    SI->getPointerAddressSpace(),
                                     Store->getModule()->getDataLayout()))
     return false;
 
